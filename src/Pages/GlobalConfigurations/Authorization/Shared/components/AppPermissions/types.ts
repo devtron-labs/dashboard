@@ -40,7 +40,7 @@ export interface AppPermissionsDetailType {
     getListForAccessType: (accessType: ACCESS_TYPE_MAP) => AppsList | JobsList
 }
 
-export interface DirectPermissionRow
+export interface DirectPermissionRowProps
     extends Pick<
         AppPermissionsDetailType,
         | 'appsList'

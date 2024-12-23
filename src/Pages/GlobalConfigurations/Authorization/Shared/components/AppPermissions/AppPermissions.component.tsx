@@ -62,7 +62,7 @@ import {
     getNavLinksConfig,
 } from './utils'
 import { getWorkflowOptions, validateDirectPermissionForm } from '../../../utils'
-import { AppPermissionsDetailType, DirectPermissionRow } from './types'
+import { AppPermissionsDetailType, DirectPermissionRowProps } from './types'
 import { APIRoleFilter, ChartGroupPermissionsFilter, DirectPermissionsRoleFilter } from '../../../types'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
 import { JobList } from '../../../../../../components/Jobs/Types'
@@ -120,7 +120,7 @@ const AppPermissions = () => {
 
     const environmentClusterOptions = getEnvironmentClusterOptions(envClustersList)
 
-    const _getEnvironmentOptions = (entity: DirectPermissionRow['permission']['entity']) =>
+    const _getEnvironmentOptions = (entity: DirectPermissionRowProps['permission']['entity']) =>
         getEnvironmentOptions(environmentsList, entity)
 
     const appPermissionDetailConfig = getAppPermissionDetailConfig(path, serverMode)

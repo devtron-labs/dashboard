@@ -20,7 +20,7 @@ import { DEFAULT_ENV } from '../../../../../../components/app/details/triggerVie
 import { createClusterEnvGroup } from '../../../../../../components/common'
 import { SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
 import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE, DirectPermissionFieldName } from './constants'
-import { DirectPermissionRow } from './types'
+import { DirectPermissionRowProps } from './types'
 
 export const getNavLinksConfig = (serverMode: SERVER_MODE, superAdmin: boolean) =>
     [
@@ -120,7 +120,7 @@ export const getEnvironmentClusterOptions = (envClustersList) =>
         isVirtualEnvironment: cluster?.isVirtualCluster,
     }))
 
-export const getEnvironmentOptions = (environmentsList, entity: DirectPermissionRow['permission']['entity']) => {
+export const getEnvironmentOptions = (environmentsList, entity: DirectPermissionRowProps['permission']['entity']) => {
     const envOptions = createClusterEnvGroup<OptionType & { isClusterCdActive: boolean }>(
         environmentsList,
         'cluster_name',
@@ -153,7 +153,7 @@ export const getEnvironmentOptions = (environmentsList, entity: DirectPermission
 
 export const getDisplayTextByName = (
     name: DirectPermissionFieldName,
-    options: OptionsOrGroups<SelectPickerOptionType, GroupBase<SelectPickerOptionType>>[],
+    options: OptionsOrGroups<SelectPickerOptionType, GroupBase<SelectPickerOptionType>>,
     selectedOptions: SelectPickerOptionType[],
 ) => {
     const selectedOptionsLength = selectedOptions?.length
@@ -179,7 +179,7 @@ export const getDisplayTextByName = (
 }
 
 export const getEnvironmentDisplayText = (
-    options: OptionsOrGroups<SelectPickerOptionType, GroupBase<SelectPickerOptionType>>[],
+    options: OptionsOrGroups<SelectPickerOptionType, GroupBase<SelectPickerOptionType>>,
     selectedOptions: SelectPickerOptionType[],
 ) => {
     const selectedOptionsLength = selectedOptions.filter(

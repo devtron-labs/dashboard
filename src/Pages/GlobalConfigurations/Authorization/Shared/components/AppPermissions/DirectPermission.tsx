@@ -43,7 +43,7 @@ import {
     roleSelectStyles,
 } from './constants'
 import { getPrimaryRoleIndex, getWorkflowOptions, parseData } from '../../../utils'
-import { DirectPermissionRow } from './types'
+import { DirectPermissionRowProps } from './types'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { DirectPermissionsRoleFilter } from '../../../types'
 import { getIsStatusDropdownDisabled } from '../../../libUtils'
@@ -64,7 +64,7 @@ const DirectPermission = ({
     getEnvironmentOptions,
     environmentClusterOptions: envClusters,
     getListForAccessType,
-}: DirectPermissionRow) => {
+}: DirectPermissionRowProps) => {
     const { customRoles } = useAuthorizationContext()
     const { showStatus, userStatus } = usePermissionConfiguration()
     const projectId =
@@ -402,6 +402,7 @@ const DirectPermission = ({
                                 permission.workflow,
                             ),
                         }}
+                        size={ComponentSizeType.large}
                     />
                 </div>
             )}
