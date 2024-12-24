@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { NodeTaintType } from '@devtron-labs/devtron-fe-common-lib'
 import { OptionType } from '../app/types'
-import { NodeTaintType } from '../ClusterNodes/types'
 import {
     ClusterComponentType,
     ClusterComponentStatusType,
