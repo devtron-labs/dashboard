@@ -42,7 +42,7 @@ export const ExportConfiguration = <ConfigValueType extends string>({
 
     return (
         <div className="fs-13 lh-20 flexbox-col dc__gap-8 flex-grow-1">
-            <h3 className="fw-6 cn-9 m-0 fs-13 lh-20 dc__truncate">{title}</h3>
+            <h3 className="fw-6 cn-9 m-0 fs-13 lh-20 dc__truncate px-8">{title}</h3>
             <div>
                 {options.map(({ label, value, description }) => (
                     <label
