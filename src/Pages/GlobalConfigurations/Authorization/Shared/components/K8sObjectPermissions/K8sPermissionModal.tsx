@@ -16,6 +16,9 @@
 
 import { useState } from 'react'
 import {
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
     Drawer,
     OptionType,
     stopPropagation,
@@ -184,23 +187,15 @@ const K8sPermissionModal = ({
                         />
                     ))}
                 </div>
-                <div className="w-100 pt-16 pb-16 pl-20 pr-20 flex right bcn-0 dc__border-top">
-                    <button
-                        type="button"
-                        data-testid="k8s-permission-cancel"
-                        className="cta cancel h-36 flex mr-16"
+                <div className="w-100 pt-16 pb-16 pl-20 pr-20 flex right dc__gap-16 bcn-0 dc__border-top">
+                    <Button
+                        text="Cancel"
                         onClick={close}
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        type="button"
-                        data-testid="k8s-permission-save"
-                        className="cta h-36 flex"
-                        onClick={savePermission}
-                    >
-                        Done
-                    </button>
+                        variant={ButtonVariantType.secondary}
+                        style={ButtonStyleType.neutral}
+                        dataTestId="k8s-permission-cancel"
+                    />
+                    <Button text="Done" onClick={savePermission} dataTestId="k8s-permission-save" />
                 </div>
             </div>
         </Drawer>
