@@ -15,6 +15,7 @@
  */
 
 import { ACCESS_TYPE_MAP, SelectPicker, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
+import { useMemo } from 'react'
 import { ALL_ENVIRONMENTS_OPTION, DirectPermissionFieldName } from './constants'
 import { DirectPermissionRowProps } from './types'
 import { getDisplayTextByName, getEnvironmentDisplayText } from './utils'
@@ -29,20 +30,24 @@ const EnvironmentSelector = ({
     'permission' | 'handleDirectPermissionChange' | 'environmentClusterOptions' | 'getEnvironmentOptions'
 >) => {
     const isAccessTypeHelm = permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
-    const environments = getEnvironmentOptions(permission.entity)
-    const options = isAccessTypeHelm
-        ? environmentClusterOptions.map((groupOption) => ({
-              label: groupOption.label,
-              options: groupOption.options.map((option) => ({
-                  label: option.label,
-                  value: option.value,
-                  description:
-                      option.clusterName +
-                      (option.clusterName && option.namespace ? '/' : '') +
-                      (option.namespace || ''),
-              })),
-          }))
-        : [ALL_ENVIRONMENTS_OPTION, ...environments]
+
+    const options = useMemo(() => {
+        const environments = getEnvironmentOptions(permission.entity)
+
+        return isAccessTypeHelm
+            ? environmentClusterOptions.map((groupOption) => ({
+                  label: groupOption.label,
+                  options: groupOption.options.map((option) => ({
+                      label: option.label,
+                      value: option.value,
+                      description:
+                          option.clusterName +
+                          (option.clusterName && option.namespace ? '/' : '') +
+                          (option.namespace || ''),
+                  })),
+              }))
+            : [ALL_ENVIRONMENTS_OPTION, ...environments]
+    }, [isAccessTypeHelm, environmentClusterOptions])
 
     return (
         <SelectPicker

@@ -15,7 +15,7 @@
  */
 
 /* eslint-disable no-param-reassign */
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Switch, Route, Redirect, useLocation, useRouteMatch } from 'react-router-dom'
 import {
     GenericSectionErrorState,
@@ -116,9 +116,15 @@ const AppPermissions = () => {
     const projectsList = configData?.[0]?.result ?? []
     const environmentsList = configData?.[1]?.result ?? []
     const chartGroupsList = configData?.[2]?.result?.groups ?? []
-    const envClustersList = configData?.[3]?.result ?? []
 
-    const environmentClusterOptions = getEnvironmentClusterOptions(envClustersList)
+    const { environmentClusterOptions, envClustersList } = useMemo(() => {
+        const _envClustersList = configData?.[3]?.result ?? []
+
+        return {
+            envClustersList: _envClustersList,
+            environmentClusterOptions: getEnvironmentClusterOptions(_envClustersList),
+        }
+    }, [configData])
 
     const _getEnvironmentOptions = (entity: DirectPermissionRowProps['permission']['entity']) =>
         getEnvironmentOptions(environmentsList, entity)
