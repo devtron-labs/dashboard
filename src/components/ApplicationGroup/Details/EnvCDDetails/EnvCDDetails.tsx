@@ -79,8 +79,6 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         autoBottomScroll: triggerDetails && TRIGGER_STATUS_PROGRESSING.includes(triggerDetails.status.toLowerCase()),
     })
 
-    console.log(triggerId, 'triggerId')
-
     const [loading, result] = useAsync(
         () =>
             Promise.allSettled([
