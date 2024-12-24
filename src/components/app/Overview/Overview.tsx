@@ -341,20 +341,23 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     }
 
     const renderLabelTags = () => (
-        <div className="flexbox-col dc__gap-12">
-            <div className="flexbox flex-justify dc__gap-10">
-                <div className="flexbox flex-align-center dc__gap-8 fs-13 fw-6 lh-20 cn-9">
-                    <TagIcon className="tags-icon icon-dim-20" />
-                    Tags
+        <div>
+            <div className="flexbox-col dc__gap-12">
+                <div className="flexbox flex-justify dc__gap-10">
+                    <div className="flexbox flex-align-center dc__gap-8 fs-13 fw-6 lh-20 cn-9">
+                        <TagIcon className="tags-icon icon-dim-20" />
+                        Tags
+                    </div>
+                    <EditIcon className="icon-dim-16 cursor mw-16" onClick={toggleTagsUpdateModal} />
                 </div>
-                <EditIcon className="icon-dim-16 cursor mw-16" onClick={toggleTagsUpdateModal} />
+                <TagChipsContainer
+                    appType={appType}
+                    labelTags={currentLabelTags}
+                    onAddTagButtonClick={toggleTagsUpdateModal}
+                    resourceName={resourceName}
+                    whiteBackground
+                />
             </div>
-            <TagChipsContainer
-                labelTags={currentLabelTags}
-                onAddTagButtonClick={toggleTagsUpdateModal}
-                resourceName={resourceName}
-                whiteBackground
-            />
             {MandatoryTagWarning && (
                 <MandatoryTagWarning
                     labelTags={currentLabelTags}
