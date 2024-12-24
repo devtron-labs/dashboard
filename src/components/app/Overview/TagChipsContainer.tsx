@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import Tippy from '@tippyjs/react'
-import { ReactComponent as InjectTag } from '../../../assets/icons/inject-tag.svg'
+import { ReactComponent as InjectTag } from '@Icons/inject-tag.svg'
 import { TagChipsContainerType } from '../types'
+import { APP_TYPE } from '@Config/constants'
 
 export default function TagChipsContainer({
+    appType,
     labelTags,
     onAddTagButtonClick,
     resourceName,
     whiteBackground = false,
 }: TagChipsContainerType) {
     return (
-        <div className="flex left flex-wrap dc__gap-8" data-testid="tag-chip-container">
+        <div className="flex left flex-wrap dc__gap-6" data-testid="tag-chip-container">
             {labelTags.length > 0 ? (
                 labelTags.map((tag, index) => (
                     <div key={tag.id} className="display-grid grid-auto-flow-column">
@@ -37,7 +38,9 @@ export default function TagChipsContainer({
                                 !tag.value ? ' br-4' : ' dc__left-radius-4'
                             }`}
                         >
-                            {tag.propagate && <InjectTag className="icon-dim-16 mt-2 mr-4 mw-16" />}
+                            {appType !== APP_TYPE.HELM_CHART && tag.propagate && (
+                                <InjectTag className="icon-dim-16 mt-2 mr-4 mw-16" />
+                            )}
                             <Tippy
                                 className="default-tt dc__word-break-all"
                                 arrow={false}
