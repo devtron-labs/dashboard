@@ -68,6 +68,7 @@ export interface GenerateActionButtonType {
     onSave: () => void
     buttonText: string
     regenerateButton?: boolean
+    disabled: boolean
 }
 
 export interface GenerateTokenModalType {

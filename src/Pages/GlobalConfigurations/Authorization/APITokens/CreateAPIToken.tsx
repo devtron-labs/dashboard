@@ -94,8 +94,15 @@ const CreateAPIToken = ({
         invalidDescription: false,
         invalidDescriptionMessage: '',
     })
-    const { permissionType, directPermission, setDirectPermission, chartPermission, k8sPermission, userRoleGroups } =
-        usePermissionConfiguration()
+    const {
+        permissionType,
+        directPermission,
+        setDirectPermission,
+        chartPermission,
+        k8sPermission,
+        userRoleGroups,
+        isSaveDisabled,
+    } = usePermissionConfiguration()
     const [customDate, setCustomDate] = useState<Moment>(null)
     const validationRules = new ValidationRules()
 
@@ -307,6 +314,7 @@ const CreateAPIToken = ({
                 }}
                 onSave={handleGenerateAPIToken}
                 buttonText="Generate token"
+                disabled={isSaveDisabled}
             />
             {showGenerateModal && (
                 <GenerateModal

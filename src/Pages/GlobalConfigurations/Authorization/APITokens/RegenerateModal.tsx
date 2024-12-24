@@ -148,6 +148,7 @@ const RegeneratedModal = ({
                     onSave={handleRegenrateToken}
                     buttonText="Regenerate Token"
                     regenerateButton
+                    disabled={false}
                 />
             </div>
         </VisibleModal>

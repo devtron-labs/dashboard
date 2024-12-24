@@ -56,6 +56,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
         k8sPermission,
         currentK8sPermissionRef,
         data: permissionGroup,
+        isSaveDisabled,
     } = usePermissionConfiguration()
     const _permissionGroup = permissionGroup as PermissionGroup
 
@@ -217,7 +218,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
                         text="Save"
                         onClick={handleSubmit}
                         size={ComponentSizeType.medium}
-                        disabled={submitting}
+                        disabled={isSaveDisabled}
                         isLoading={submitting}
                         buttonProps={{
                             type: 'submit',

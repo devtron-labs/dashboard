@@ -78,6 +78,7 @@ const AppPermissions = () => {
         setK8sPermission,
         currentK8sPermissionRef,
         data,
+        setIsSaveDisabled,
     } = usePermissionConfiguration()
     const { customRoles } = useAuthorizationContext()
     const { isSuperAdmin: superAdmin } = useMainContext()
@@ -102,7 +103,7 @@ const AppPermissions = () => {
         >
     >()
 
-    const [isDataLoading, configData, error, reload] = useAsync(() =>
+    const [isDataLoading, configData, configDataError, reload] = useAsync(() =>
         Promise.all([
             getProjectList(),
             getEnvironmentListMin(),
@@ -875,6 +876,19 @@ const AppPermissions = () => {
     }
 
     useEffect(() => {
+        setIsSaveDisabled(!!configDataError || isDataLoading || isLoading)
+    }, [isDataLoading, isLoading, configDataError])
+
+    useEffect(
+        () => () => {
+            // Set the save to false since the component has unmounted
+            // This can happen when the user was already a super admin
+            setIsSaveDisabled(false)
+        },
+        [],
+    )
+
+    useEffect(() => {
         if (!isDataLoading) {
             if (!data) {
                 const emptyPermissionArr = [
@@ -900,7 +914,7 @@ const AppPermissions = () => {
         )
     }
 
-    if (error) {
+    if (configDataError) {
         return <GenericSectionErrorState withBorder reload={reload} />
     }
 
