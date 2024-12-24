@@ -58,8 +58,9 @@ export function getAppConfigStatus(appId: number, isJobView?: boolean): Promise<
     return get(`${Routes.APP_CONFIG_STATUS}?app-id=${appId}${isJobView ? '&appType=2' : ''}`)
 }
 
-export const getSourceConfig = (id: string) => {
-    const URL = `${Routes.SOURCE_CONFIG_GET}/${id}`
+// NOTE: sending pipelineType to fetch workflowCacheConfig based on that
+export const getSourceConfig = (id: string, queryParams?: Record<'pipelineType', string>) => {
+    const URL = getUrlWithSearchParams<'pipelineType'>(`${Routes.SOURCE_CONFIG_GET}/${id}`, queryParams ?? {})
     return get(URL)
 }
 
