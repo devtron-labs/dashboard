@@ -29,7 +29,7 @@ export const getJobs = async (request, options?: APIOptions) => {
         ...response,
         result: {
             ...response?.result,
-            jobContainers: response?.result?.jobContainers.sort((a, b) =>
+            jobContainers: (response?.result?.jobContainers ?? []).sort((a, b) =>
                 stringComparatorBySortOrder(a.jobName, b.jobName),
             ),
         },
