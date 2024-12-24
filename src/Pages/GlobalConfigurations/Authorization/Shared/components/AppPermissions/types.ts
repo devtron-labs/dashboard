@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Dispatch, SetStateAction } from 'react'
 import { GroupBase } from 'react-select'
 import { ServerError, ACCESS_TYPE_MAP, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { JobList } from '../../../../../../components/Jobs/Types'
@@ -61,4 +62,23 @@ export interface DirectPermissionRowProps
 export interface WorkflowListType {
     options: GroupBase<SelectPickerOptionType>[]
     loading: boolean
+}
+
+export interface WorkflowSelectorProps
+    extends Pick<DirectPermissionRowProps, 'permission' | 'handleDirectPermissionChange'> {
+    workflowList: WorkflowListType
+}
+
+export interface AppOrJobSelectorProps
+    extends Pick<
+        DirectPermissionRowProps,
+        | 'permission'
+        | 'getListForAccessType'
+        | 'handleDirectPermissionChange'
+        | 'projectsList'
+        | 'appsList'
+        | 'jobsList'
+        | 'appsListHelmApps'
+    > {
+    setWorkflowList: Dispatch<SetStateAction<WorkflowListType>>
 }

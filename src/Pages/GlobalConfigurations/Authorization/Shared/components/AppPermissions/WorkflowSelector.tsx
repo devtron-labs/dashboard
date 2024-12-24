@@ -17,16 +17,10 @@
 import { SelectPicker, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
 import { DirectPermissionFieldName } from './constants'
-import { DirectPermissionRowProps, WorkflowListType } from './types'
+import { WorkflowSelectorProps } from './types'
 import { getDisplayTextByName } from './utils'
 
-const WorkflowSelector = ({
-    permission,
-    handleDirectPermissionChange,
-    workflowList,
-}: Pick<DirectPermissionRowProps, 'permission' | 'handleDirectPermissionChange'> & {
-    workflowList: WorkflowListType
-}) => {
+const WorkflowSelector = ({ permission, handleDirectPermissionChange, workflowList }: WorkflowSelectorProps) => {
     const options = [{ label: 'All Workflows', value: SELECT_ALL_VALUE }, ...workflowList.options]
 
     return (

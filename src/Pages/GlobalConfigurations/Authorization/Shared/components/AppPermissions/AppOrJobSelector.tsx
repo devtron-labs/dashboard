@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useRef, Dispatch, SetStateAction } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
     showError,
     getIsRequestAborted,
@@ -28,7 +28,7 @@ import { getAllWorkflowsForAppNames } from '../../../../../../services/service'
 import { HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE } from '../../../../../../config'
 import { allApplicationsOption, DirectPermissionFieldName } from './constants'
 import { getWorkflowOptions } from '../../../utils'
-import { DirectPermissionRowProps, WorkflowListType } from './types'
+import { AppOrJobSelectorProps } from './types'
 import { DirectPermissionsRoleFilter } from '../../../types'
 import { getDisplayTextByName } from './utils'
 
@@ -41,18 +41,7 @@ const AppOrJobSelector = ({
     jobsList,
     appsListHelmApps,
     setWorkflowList,
-}: Pick<
-    DirectPermissionRowProps,
-    | 'permission'
-    | 'getListForAccessType'
-    | 'handleDirectPermissionChange'
-    | 'projectsList'
-    | 'appsList'
-    | 'jobsList'
-    | 'appsListHelmApps'
-> & {
-    setWorkflowList: Dispatch<SetStateAction<WorkflowListType>>
-}) => {
+}: AppOrJobSelectorProps) => {
     const abortControllerRef = useRef<AbortController>(new AbortController())
     const [applications, setApplications] = useState<SelectPickerOptionType[]>([])
 

@@ -635,19 +635,6 @@ export function getRandomString() {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
 }
 
-export function sortBySelected(selectedArray: any[], availableArray: any[], matchKey: string) {
-    const selectedArrayMap = mapByKey(selectedArray, matchKey)
-
-    const actualSelectedArray = availableArray.filter((item) => selectedArrayMap.has(item[matchKey]))
-
-    const unselectedAvailableArray = availableArray.filter((item) => !selectedArrayMap.has(item[matchKey]))
-
-    return [
-        ...sortObjectArrayAlphabetically(actualSelectedArray, matchKey),
-        ...sortObjectArrayAlphabetically(unselectedAvailableArray, matchKey),
-    ]
-}
-
 export const sortObjectArrayAlphabetically = <T extends unknown>(arr: T[], compareKey: string) => {
     return arr.sort((a, b) => a[compareKey].localeCompare(b[compareKey]))
 }
