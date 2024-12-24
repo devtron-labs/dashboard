@@ -25,6 +25,7 @@ import {
     showError,
     getUrlWithSearchParams,
     getK8sResourceListPayload,
+    stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getManifestResource,
@@ -40,10 +41,23 @@ import { ResourceListPayloadType, ResourceType, GetResourceDataType, NodeRowDeta
 import { SIDEBAR_KEYS } from './Constants'
 import { parseNodeList } from './Utils'
 
-export const getClusterList = (): Promise<ClusterListResponse> => get(Routes.CLUSTER_LIST_PERMISSION)
+export const getClusterList = async (): Promise<ClusterListResponse> => {
+    const response = await get<ClusterListResponse['result']>(Routes.CLUSTER_LIST_PERMISSION)
 
-export const namespaceListByClusterId = (clusterId: string): Promise<ResponseType> =>
-    get(`${Routes.CLUSTER_NAMESPACE}/${clusterId}`)
+    return {
+        ...response,
+        result: (response?.result ?? []).sort((a, b) => stringComparatorBySortOrder(a.cluster_name, b.cluster_name)),
+    }
+}
+
+export const namespaceListByClusterId = async (clusterId: string) => {
+    const response = await get<string[]>(`${Routes.CLUSTER_NAMESPACE}/${clusterId}`)
+
+    return {
+        ...response,
+        result: (response?.result ?? []).sort((a, b) => stringComparatorBySortOrder(a, b)),
+    }
+}
 
 export const getResourceGroupList = (clusterId: string, signal?: AbortSignal): Promise<ResponseType<ApiResourceType>> =>
     get(`${Routes.API_RESOURCE}/${clusterId}`, {

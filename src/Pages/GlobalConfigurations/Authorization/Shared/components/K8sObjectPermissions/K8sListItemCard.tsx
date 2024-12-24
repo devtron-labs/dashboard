@@ -106,9 +106,6 @@ const K8sListItemCard = ({
             const { result } = await namespaceListByClusterId(clusterId)
             const options = [ALL_NAMESPACE, ...(result ? convertToOptionsList(result.sort()) : [])]
             setNamespaceMapping((prevMapping) => ({ ...prevMapping, [clusterId]: options }))
-            if (k8sPermission.namespace?.some((el) => el.value === SELECT_ALL_VALUE)) {
-                handleK8sPermission(K8sPermissionActionType.setNamespace, index, options)
-            }
         } catch (err) {
             showError(err)
         } finally {
