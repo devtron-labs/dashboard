@@ -31,6 +31,7 @@ import {
     SERVER_MODE,
     ACCESS_TYPE_MAP,
     ModuleNameMap,
+    stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../config'
 import {
@@ -170,9 +171,16 @@ export function getAvailableCharts(
     })
 }
 
-export function getEnvironmentListMin(includeAllowedDeploymentTypes?: boolean): Promise<any> {
+export async function getEnvironmentListMin(includeAllowedDeploymentTypes?: boolean): Promise<any> {
     const url = `${Routes.ENVIRONMENT_LIST_MIN}${includeAllowedDeploymentTypes ? '?showDeploymentOptions=true' : ''}`
-    return get(url)
+    const response = await get(url)
+
+    return {
+        ...response,
+        result: (response?.result ?? []).sort((a, b) =>
+            stringComparatorBySortOrder(a.environment_name, b.environment_name),
+        ),
+    }
 }
 
 export const getCommonAppFilters = async (
@@ -453,8 +461,20 @@ export function getWebhookDataMetaConfig(gitProviderId: string | number) {
     return get(URL)
 }
 
-export function getEnvironmentListHelmApps(): Promise<EnvironmentListHelmResponse> {
-    return get(Routes.ENVIRONMENT_LIST_MIN_HELM_PROJECTS)
+export async function getEnvironmentListHelmApps(): Promise<EnvironmentListHelmResponse> {
+    const response = await get(Routes.ENVIRONMENT_LIST_MIN_HELM_PROJECTS)
+
+    return {
+        ...response,
+        result: (response?.result ?? [])
+            .map((cluster) => ({
+                ...cluster,
+                environments: (cluster.environments ?? []).sort((a, b) =>
+                    stringComparatorBySortOrder(a.environmentName, b.environmentName),
+                ),
+            }))
+            .sort((a, b) => stringComparatorBySortOrder(a.clusterName, b.clusterName)),
+    }
 }
 
 export function getClusterNamespaceMapping(): Promise<ClusterEnvironmentDetailList> {
