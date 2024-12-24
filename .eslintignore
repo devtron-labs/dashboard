@@ -93,7 +93,6 @@ src/components/app/Overview/utils.tsx
 src/components/app/ResourceTreeNodes.tsx
 src/components/app/ResponsiveDrawer.tsx
 src/components/app/WebWorker.ts
-src/components/app/appLabelCommon.tsx
 src/components/app/create/CreateApp.tsx
 src/components/app/create/validationRules.ts
 src/components/app/details/AboutAppInfoModal.tsx
@@ -247,7 +246,6 @@ src/components/common/DatePickers/DayPickerRangeController.tsx
 src/components/common/DeprecatedUpdateWarn.tsx
 src/components/common/Description/GenericDescription.tsx
 src/components/common/DynamicTabs/__tests__/DynamicTabs.test.tsx
-src/components/common/ExportToCsv/ExportToCsv.tsx
 src/components/common/FloatingVariablesSuggestions/FloatingVariablesSuggestions.tsx
 src/components/common/FloatingVariablesSuggestions/SuggestionItem.tsx
 src/components/common/FloatingVariablesSuggestions/Suggestions.tsx
