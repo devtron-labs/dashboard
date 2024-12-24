@@ -24,6 +24,7 @@ export const initState = (
     installedConfigFromParent: any,
     chartVersionsDataFromParent: ChartVersionType[],
     deploymentAppType: DeploymentAppTypes,
+    isHelmAppScanningEnabled: boolean,
 ): ChartValuesViewState => {
     return {
         isLoading: true,
@@ -87,7 +88,7 @@ export const initState = (
             chartVersionId: selectedVersionFromParent,
             chartValuesId: chartValuesFromParent?.id,
         },
-        isManifestScanEnabled: window._env_.ENABLE_RESOURCE_SCAN_V2
+        isManifestScanEnabled: isHelmAppScanningEnabled
             ? installedConfigFromParent?.isManifestScanEnabled ?? false
             : false,
     }

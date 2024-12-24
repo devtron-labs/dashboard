@@ -17,7 +17,6 @@
 import { useMemo, useState } from 'react'
 import AppStatusDetailModal from './AppStatusDetailModal'
 import './environmentStatus.scss'
-import { ReactComponent as Alert } from '../../../assets/icons/ic-alert-triangle.svg'
 import IndexStore from '../../index.store'
 import { URLS } from '../../../../../config'
 import { AppType } from '../../appDetails.type'
@@ -61,7 +60,6 @@ const EnvironmentStatusComponent = ({
     const [, notesResult] = useAsync(() => getInstalledChartNotesDetail(+params.appId, +params.envId), [])
     const [errorsList, setErrorsList] = useState<ErrorItem[]>([])
     const [showIssuesModal, toggleIssuesModal] = useState<boolean>(false)
-    const isScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && isFELibAvailable
 
     const onClickUpgrade = () => {
         const _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`
@@ -185,7 +183,12 @@ const EnvironmentStatusComponent = ({
                     {renderHelmConfigApplyStatusBlock()}
                     {renderLastUpdatedBlock()}
                     {renderChartUsedBlock()}
-                    {isScanV2Enabled && appDetails?.appType === AppType.DEVTRON_HELM_CHART && <SecurityVulnerabilityCard cardLoading={cardLoading} installedAppId={appDetails?.installedAppId} />}
+                    {isFELibAvailable && appDetails?.appType === AppType.DEVTRON_HELM_CHART && (
+                        <SecurityVulnerabilityCard
+                            cardLoading={cardLoading}
+                            installedAppId={appDetails?.installedAppId}
+                        />
+                    )}
                 </div>
             )}
             {showAppStatusDetail && (

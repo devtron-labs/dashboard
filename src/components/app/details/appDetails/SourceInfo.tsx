@@ -158,15 +158,18 @@ export const SourceInfo = ({
                         </div>
                     </Tooltip>
                 )}
-                {appDetails?.resourceTree && !isIsolatedEnv && window._env_.FEATURE_CONFIG_DRIFT_ENABLE && ConfigSyncStatusButton && (
-                    <div className="pl-8">
-                        <ConfigSyncStatusButton
-                            areConfigurationsDrifted={appDetails.resourceTree.hasDrift}
-                            appId={appDetails.appId}
-                            envId={envId}
-                        />
-                    </div>
-                )}
+                {appDetails?.resourceTree &&
+                    !isIsolatedEnv &&
+                    window._env_.FEATURE_CONFIG_DRIFT_ENABLE &&
+                    ConfigSyncStatusButton && (
+                        <div className="pl-8">
+                            <ConfigSyncStatusButton
+                                areConfigurationsDrifted={appDetails.resourceTree.hasDrift}
+                                appId={appDetails.appId}
+                                envId={envId}
+                            />
+                        </div>
+                    )}
                 {isdeploymentAppDeleting && (
                     <div data-testid="deleteing-argocd-pipeline" className="flex left">
                         <Trash className="icon-dim-16 mr-8 ml-12" />
@@ -364,8 +367,6 @@ export const SourceInfo = ({
                                   cardLoading={cardLoading}
                                   appId={params.appId}
                                   envId={params.envId}
-                                  artifactId={ciArtifactId}
-                                  isExternalCI={isExternalCI}
                               />
                           )}
                           <div className="flex right ml-auto">

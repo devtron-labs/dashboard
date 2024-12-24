@@ -16,8 +16,8 @@
 
 import {
     ACTION_STATE,
-    ApiResponseResultType,
     ResponseType,
+    ScanResultDTO,
     ServerErrors,
     SeverityCount,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -231,12 +231,10 @@ export interface IssuesCardType {
 }
 
 export interface SecurityVulnerabilityCardType {
-    cardLoading?: boolean
+    cardLoading: boolean
     appId?: string
     envId?: string
     installedAppId?: number
-    artifactId?: number
-    isExternalCI?: boolean
 }
 
 export interface DeployedCommitCardType {
@@ -270,15 +268,12 @@ export interface UseGetAppSecurityDetailsProps {
     appId: number
     envId: number
     installedAppId?: number
-    artifactId?: number
-    imageScanDeployInfoId?: number
-    isSecurityScanV2Enabled: boolean
 }
 export interface UseGetAppSecurityDetailsReturnType {
-    scanDetailsLoading: boolean
-    scanDetailsResponse: ResponseType<ApiResponseResultType>
-    scanDetailsError: ServerErrors
-    reloadScanDetails: () => void
+    scanResultLoading: boolean
+    scanResultResponse: ResponseType<ScanResultDTO>
+    scanResultError: ServerErrors
+    reloadScanResult: () => void
     severityCount: SeverityCount
     totalCount: number
 }

@@ -73,9 +73,6 @@ import {
     ToastVariantType,
     EnvResourceType,
     abortPreviousRequests,
-    AppDetailsPayload,
-    ResponseType,
-    ApiResponseResultType,
     CommonNodeAttr,
     GetPolicyConsequencesProps,
     PolicyConsequencesDTO,
@@ -148,8 +145,6 @@ const getIsImageApproverFromUserApprovalMetaData: (
     email: string,
     userApprovalMetadata: UserApprovalMetadataType,
 ) => boolean = importComponentFromFELibrary('getIsImageApproverFromUserApprovalMetaData', () => false, 'function')
-const getSecurityScan: ({ appId, installedAppId }: AppDetailsPayload) => Promise<ResponseType<ApiResponseResultType>> =
-    importComponentFromFELibrary('getSecurityScan', null, 'function')
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
 const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
@@ -1468,7 +1463,6 @@ const CDMaterial = ({
                                 isScanned={mat.scanned}
                                 isScanEnabled={mat.scanEnabled}
                                 SecurityModalSidebar={SecurityModalSidebar}
-                                getSecurityScan={getSecurityScan}
                             />
                         )}
                 </ImageCard>

@@ -67,13 +67,9 @@ export const SecurityScansTab = () => {
         updateSearchParams,
     } = urlFilters
 
-    const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && SecurityModalSidebar
-
-    const { scanDetailsLoading, scanDetailsResponse, scanDetailsError } = useGetAppSecurityDetails({
+    const { scanResultLoading, scanResultResponse, scanResultError } = useGetAppSecurityDetails({
         appId: scanDetails.uniqueId.appId,
         envId: scanDetails.uniqueId.envId,
-        imageScanDeployInfoId: scanDetails.uniqueId.imageScanDeployInfoId,
-        isSecurityScanV2Enabled,
     })
 
     const payload: ScanListPayloadType = {
@@ -177,7 +173,6 @@ export const SecurityScansTab = () => {
         setScanDetails({
             name: scan.name,
             uniqueId: {
-                imageScanDeployInfoId: scan.imageScanDeployInfoId,
                 appId: scan.appId,
                 envId: scan.envId,
             },
@@ -379,11 +374,9 @@ export const SecurityScansTab = () => {
                 <SecurityModal
                     handleModalClose={handleCloseScanDetailsModal}
                     Sidebar={SecurityModalSidebar}
-                    isSecurityScanV2Enabled={isSecurityScanV2Enabled}
-                    isHelmApp={false}
-                    isLoading={scanDetailsLoading}
-                    error={scanDetailsError}
-                    responseData={scanDetailsResponse?.result}
+                    isLoading={scanResultLoading}
+                    error={scanResultError}
+                    responseData={scanResultResponse?.result}
                 />
             )
         }

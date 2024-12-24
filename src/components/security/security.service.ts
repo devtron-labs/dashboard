@@ -18,7 +18,6 @@ import {
     get,
     getClusterListMin,
     getEnvironmentListMinPublic,
-    handleUTCTime,
     post,
     ResponseType,
     sortCallback,

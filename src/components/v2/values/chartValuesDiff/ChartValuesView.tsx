@@ -38,6 +38,7 @@ import {
     ConfigurationType,
     ToastManager,
     ToastVariantType,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -138,12 +139,12 @@ import {
 import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 import { VIEW_MODE } from '@Pages/Shared/ConfigMapSecret/constants'
 import IndexStore from '../../appDetails/index.store'
-import { AppDetails } from '../../appDetails/appDetails.type'
 import { AUTO_GENERATE_GITOPS_REPO, CHART_VALUE_ID } from './constant'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 const getDownloadManifestUrl = importComponentFromFELibrary('getDownloadManifestUrl', null, 'function')
 const ToggleSecurityScan = importComponentFromFELibrary('ToggleSecurityScan', null, 'function')
+const getEnvironmentData: () => Promise<ResponseType<{isHelmAppScanningEnabled: boolean}>> = importComponentFromFELibrary('getEnvironmentData', null, 'function')
 
 const ChartValuesView = ({
     appId,
@@ -184,6 +185,8 @@ const ChartValuesView = ({
     const [showRepoSelector, setShowRepoSelector] = useState<boolean>(false)
     const [shouldShowPrompt, setShouldShowPrompt] = useState<boolean>(true)
 
+    const [, envVariablesResponse] = useAsync(getEnvironmentData, [], !!getEnvironmentData)
+
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
         initState(
@@ -198,6 +201,7 @@ const ChartValuesView = ({
             installedConfigFromParent,
             chartVersionsDataFromParent,
             appDetails?.deploymentAppType,
+            envVariablesResponse?.result.isHelmAppScanningEnabled ?? false
         ),
     )
 
@@ -1787,32 +1791,29 @@ const ChartValuesView = ({
                                 />
                             )}
                         </div>
-                            {window._env_.ENABLE_RESOURCE_SCAN_V2 &&
-                                !isExternalApp &&
-                                (isDeployChartView || isUpdateAppView) &&
-                                ToggleSecurityScan && (
-                                    <ToggleSecurityScan
-                                        isManifestScanEnabled={commonState.isManifestScanEnabled}
-                                        handleToggleSecurityScan={handleToggleSecurityScan}
-                                    />
-                                )}
-                            {!isDeployChartView &&
-                                chartValueId !== '0' &&
-                                !(
-                                    deployedAppDetail &&
-                                    checkIfDevtronOperatorHelmRelease(
-                                        deployedAppDetail[2],
-                                        deployedAppDetail[1],
-                                        deployedAppDetail[0],
-                                    )
-                                ) && (
-                                    <DeleteApplicationButton
-                                        type={isCreateValueView ? 'preset value' : 'Application'}
-                                        isUpdateInProgress={commonState.isUpdateInProgress}
-                                        isDeleteInProgress={commonState.isDeleteInProgress}
-                                        dispatch={dispatch}
-                                    />
-                                )}
+                        {!isExternalApp && (isDeployChartView || isUpdateAppView) && ToggleSecurityScan && (
+                            <ToggleSecurityScan
+                                isManifestScanEnabled={commonState.isManifestScanEnabled}
+                                handleToggleSecurityScan={handleToggleSecurityScan}
+                            />
+                        )}
+                        {!isDeployChartView &&
+                            chartValueId !== '0' &&
+                            !(
+                                deployedAppDetail &&
+                                checkIfDevtronOperatorHelmRelease(
+                                    deployedAppDetail[2],
+                                    deployedAppDetail[1],
+                                    deployedAppDetail[0],
+                                )
+                            ) && (
+                                <DeleteApplicationButton
+                                    type={isCreateValueView ? 'preset value' : 'Application'}
+                                    isUpdateInProgress={commonState.isUpdateInProgress}
+                                    isDeleteInProgress={commonState.isDeleteInProgress}
+                                    dispatch={dispatch}
+                                />
+                            )}
                     </div>
                     {commonState.openReadMe && (
                         <ActiveReadmeColumn

@@ -29,8 +29,8 @@ import {
     ToastManager,
     GetResourceScanDetailsPayloadType,
     ResponseType,
-    ApiResponseResultType,
     useAsync,
+    ScanResultDTO,
 } from '@devtron-labs/devtron-fe-common-lib'
 import PodPopup from './PodPopup'
 import AppDetailsStore from '../../appDetails.store'
@@ -43,9 +43,7 @@ import { URLS } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../common'
 import { getAppDetailsForManifest } from '../nodeDetail/nodeDetail.api'
 
-const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
-const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const getResourceScanDetails: ({
     name,
     namespace,
@@ -57,7 +55,7 @@ const getResourceScanDetails: ({
     appType,
     deploymentType,
     isAppDetailView,
-}: GetResourceScanDetailsPayloadType) => Promise<ResponseType<ApiResponseResultType>> = importComponentFromFELibrary(
+}: GetResourceScanDetailsPayloadType) => Promise<ResponseType<ScanResultDTO>> = importComponentFromFELibrary(
     'getResourceScanDetails',
     null,
     'function',
@@ -73,8 +71,6 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails, isDeploymentBlocked }: N
     const [forceDelete, setForceDelete] = useState(false)
     const [manifestPayload, setManifestPayload] = useState<ReturnType<typeof getAppDetailsForManifest> | null>(null)
 
-    const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && isFELibAvailable
-
     const [resourceScanLoading, resourceScanResponse, resourceScanError] = useAsync(
         () =>
             getResourceScanDetails(
@@ -85,7 +81,7 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails, isDeploymentBlocked }: N
                 }
             ),
         [manifestPayload],
-        manifestPayload && getResourceScanDetails && isSecurityScanV2Enabled,
+        manifestPayload && !!getResourceScanDetails,
     )
 
     const handleShowVulnerabilityModal = () => {
@@ -212,12 +208,9 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails, isDeploymentBlocked }: N
                 </PopupMenu.Body>
             </PopupMenu>
 
-            {!!manifestPayload && !!isFELibAvailable && (
+            {!!manifestPayload && !!getResourceScanDetails && (
                 <SecurityModal
                     handleModalClose={handleCloseVulnerabilityModal}
-                    Sidebar={SecurityModalSidebar}
-                    isResourceScan
-                    isSecurityScanV2Enabled={isSecurityScanV2Enabled}
                     isLoading={resourceScanLoading}
                     error={resourceScanError}
                     responseData={resourceScanResponse?.result}

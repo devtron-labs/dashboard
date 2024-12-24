@@ -22,7 +22,6 @@ export enum SearchType {
 interface ScanDetailsUniqueId {
     appId: number
     envId: number
-    imageScanDeployInfoId: number
 }
 export interface ScanDetailsType {
     name: string

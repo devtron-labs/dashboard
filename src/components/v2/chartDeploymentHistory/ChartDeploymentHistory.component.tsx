@@ -32,6 +32,8 @@ import {
     ShowMoreText,
     DEPLOYMENT_STATUS,
     EMPTY_STATE_STATUS,
+    useAsync,
+    ResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -68,6 +70,7 @@ import {ReactComponent as ICLines } from '@Icons/ic-lines.svg'
 
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 const ChartSecurityTab = importComponentFromFELibrary('ChartSecurityTab', null, 'function')
+const getEnvironmentData: () => Promise<ResponseType<{isHelmAppScanningEnabled: boolean}>> = importComponentFromFELibrary('getEnvironmentData', null, 'function')
 
 interface DeploymentManifestDetail extends ChartDeploymentManifestDetail {
     loading?: boolean
@@ -109,7 +112,8 @@ const ChartDeploymentHistory = ({
     let initTimer = null
     // Checking if deployment app type is argocd only then show steps tab
 
-    const isScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2
+    const [, envVariablesResponse] = useAsync(getEnvironmentData, [], !!getEnvironmentData)
+    const isScanV2Enabled = envVariablesResponse?.result.isHelmAppScanningEnabled ?? false
 
     const deploymentTabs = () => {
         const tabs = [

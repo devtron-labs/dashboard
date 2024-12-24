@@ -22,12 +22,9 @@ import {
     sortCallback,
     TeamList,
     trash,
-    LastExecutionResponseType,
     EnvironmentListHelmResponse,
-    getSortedVulnerabilities,
     TemplateListDTO,
     getUrlWithSearchParams,
-    ROUTES,
     SERVER_MODE,
     ACCESS_TYPE_MAP,
     ModuleNameMap,
@@ -302,48 +299,6 @@ export function stopStartApp(AppId, EnvironmentId, RequestType) {
 
 export const validateToken = (): Promise<ResponseType<Record<'emailId' | 'isVerified' | 'isSuperAdmin', string>>> => {
     return get(`devtron/auth/verify/v2`, { preventAutoLogout: true })
-}
-
-function parseLastExecutionResponse(response): LastExecutionResponseType {
-    const vulnerabilities = response.result.vulnerabilities || []
-    const groupedVulnerabilities = getSortedVulnerabilities(vulnerabilities)
-    return {
-        ...response,
-        result: {
-            ...response.result,
-            scanExecutionId: response.result.ScanExecutionId,
-            lastExecution: response.result.executionTime,
-            objectType: response.result.objectType,
-            severityCount: {
-                critical: response.result?.severityCount?.critical ?? 0,
-                high: response.result?.severityCount?.high ?? 0,
-                medium: response.result?.severityCount?.medium ?? 0,
-                low: response.result?.severityCount?.low ?? 0,
-                unknown: response.result?.severityCount?.unknown ?? 0,
-            },
-            vulnerabilities: groupedVulnerabilities.map((cve) => {
-                return {
-                    name: cve.cveName,
-                    severity: cve.severity,
-                    package: cve.package,
-                    version: cve.currentVersion,
-                    fixedVersion: cve.fixedVersion,
-                    policy: cve.permission,
-                }
-            }),
-            scanToolId: response.result.scanToolId,
-        },
-    }
-}
-
-export function getLastExecutionByAppArtifactId(
-    artifactId: string | number,
-    appId?: string | number,
-): Promise<LastExecutionResponseType> {
-    const url = getUrlWithSearchParams(ROUTES.SECURITY_SCAN_EXECUTION_DETAILS, { appId, artifactId })
-    return get(url).then((response) => {
-        return parseLastExecutionResponse(response)
-    })
 }
 
 export function getChartRepoList(): Promise<ResponseType> {
