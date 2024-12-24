@@ -82,6 +82,10 @@ import {
     PipelineStageBlockInfo,
     RuntimePluginVariables,
     uploadCDPipelineFile,
+    Button,
+    ComponentSizeType,
+    ButtonStyleType,
+    AnimatedDeployButton,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -102,10 +106,10 @@ import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled
 import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
 import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search.svg'
 import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
-import { ReactComponent as PlayIC } from '../../../../assets/icons/misc/arrow-solid-right.svg'
+import { ReactComponent as PlayIC } from '@Icons/ic-play-outline.svg'
 
 import noArtifact from '../../../../assets/img/no-artifact@2x.png'
-import { getCTAClass, importComponentFromFELibrary, useAppContext } from '../../../common'
+import { importComponentFromFELibrary, useAppContext } from '../../../common'
 import { CDButtonLabelMap, TriggerViewContext } from './config'
 import { triggerCDNode } from '../../service'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
@@ -1652,17 +1656,19 @@ const CDMaterial = ({
         if (deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED) {
             return null
         } else if (stageType !== STAGE_TYPE.CD) {
-            return (
-                <PlayIC
-                    className={`icon-dim-16 mr-8 dc__no-svg-fill dc__stroke-width-2 ${deploymentWindowMetadata.userActionState === ACTION_STATE.PARTIAL ? 'scn-9' : 'scn-0'}`}
-                />
-            )
+            return <PlayIC />
         }
-        return (
-            <DeployIcon
-                className={`icon-dim-16 dc__no-svg-fill mr-8 ${deploymentWindowMetadata.userActionState === ACTION_STATE.PARTIAL ? 'scn-9' : ''}`}
-            />
-        )
+        return <DeployIcon />
+    }
+
+    const getDeployButtonStyle = (userActionState: string): ButtonStyleType => {
+        if (userActionState === ACTION_STATE.BLOCKED) {
+            return ButtonStyleType.negative
+        }
+        if (userActionState === ACTION_STATE.PARTIAL) {
+            return ButtonStyleType.warning
+        }
+        return ButtonStyleType.default
     }
 
     const onClickDeploy = (e, disableDeployButton: boolean) => {
@@ -1685,30 +1691,32 @@ const CDMaterial = ({
         }
     }
 
-    const renderTriggerDeployButton = (disableDeployButton: boolean) => (
-        <button
-            data-testid="cd-trigger-deploy-button"
-            disabled={deploymentLoading || isSaveLoading}
-            className={`${getCTAClass(deploymentWindowMetadata.userActionState, disableDeployButton)} h-36`}
-            onClick={(e) => onClickDeploy(e, disableDeployButton)}
-            type="button"
-        >
-            {deploymentLoading || isSaveLoading ? (
-                <Progressing />
-            ) : (
-                <>
-                    {getDeployButtonIcon()}
-                    {deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED
-                        ? 'Deployment is blocked'
-                        : CDButtonLabelMap[stageType]}
-                    {isVirtualEnvironment && ' to isolated env'}
-                    {deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED && (
-                        <InfoOutline className="icon-dim-16 ml-5" />
-                    )}
-                </>
-            )}
-        </button>
-    )
+    const renderTriggerDeployButton = (disableDeployButton: boolean) => {
+        const userActionState: ACTION_STATE = deploymentWindowMetadata.userActionState
+        if (
+            stageType === DeploymentNodeType.CD &&
+            !disableDeployButton &&
+            (userActionState ? userActionState === ACTION_STATE.ALLOWED : true) &&
+            !(deploymentLoading || isSaveLoading)
+        ) {
+            return <AnimatedDeployButton onButtonClick={onClickDeploy} isVirtualEnvironment={isVirtualEnvironment} />
+        }
+        return (
+            <Button
+                dataTestId="cd-trigger-deploy-button"
+                startIcon={getDeployButtonIcon()}
+                isLoading={deploymentLoading || isSaveLoading}
+                text={`${
+                    userActionState === ACTION_STATE.BLOCKED ? 'Deployment is blocked' : CDButtonLabelMap[stageType]
+                }${isVirtualEnvironment ? ' to isolated env' : ''}`}
+                endIcon={userActionState === ACTION_STATE.BLOCKED ? <InfoOutline /> : null}
+                onClick={(e) => onClickDeploy(e, disableDeployButton)}
+                size={ComponentSizeType.large}
+                style={getDeployButtonStyle(userActionState)}
+                disabled={disableDeployButton}
+            />
+        )
+    }
 
     const renderTriggerModalCTA = (isApprovalConfigured: boolean) => {
         const disableDeployButton =
