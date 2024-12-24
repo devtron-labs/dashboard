@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { ResponseType, ClusterStatusType, K8sResourceDetailDataType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ResponseType,
+    K8sResourceDetailDataType,
+    ResourceDetail,
+    ClusterCapacityType,
+    ClusterDetail,
+    NodeTaintType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/Types'
 import { LabelTag, OptionType } from '../app/types'
 import { CLUSTER_PAGE_TAB } from './constants'
@@ -31,44 +38,6 @@ export enum EFFECT_TYPE {
     NoSchedule = 'NoSchedule',
     PreferNoSchedule = 'PreferNoSchedule',
     NoExecute = 'NoExecute',
-}
-
-export interface ResourceDetail {
-    name: string
-    capacity: string
-    allocatable: string
-    usage: string
-    request: string
-    limit: string
-    usagePercentage: string
-    requestPercentage: string
-    limitPercentage: string
-}
-
-export interface NodeDetailsType {
-    nodeName: string
-    nodeGroup: string
-    taints?: NodeTaintType[]
-}
-
-export interface ClusterCapacityType {
-    name: string
-    nodeCount: number
-    nodeK8sVersions: string[]
-    cpu: ResourceDetail
-    memory: ResourceDetail
-    serverVersion: string
-    nodeDetails?: NodeDetailsType[]
-    nodeErrors: Record<string, string>[]
-    status?: ClusterStatusType
-    isProd: boolean
-}
-
-export interface ClusterDetail extends ClusterCapacityType {
-    id: number
-    errorInNodeListing: string
-    nodeNames?: string[]
-    isVirtualCluster?: boolean
 }
 
 export interface ClusterDescriptionType {
@@ -168,12 +137,6 @@ export interface ClusterListType extends Pick<K8SResourceListType, 'lowercaseKin
 export interface ClusterAboutPropType {
     clusterId: string
     isSuperAdmin: boolean
-}
-
-export interface NodeTaintType {
-    effect: string
-    key: string
-    value: string
 }
 
 export interface SelectGroupType {
