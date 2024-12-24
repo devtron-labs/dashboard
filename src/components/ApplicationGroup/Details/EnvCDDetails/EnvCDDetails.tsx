@@ -33,6 +33,8 @@ import {
     getTriggerHistory,
     useScrollable,
     TRIGGER_STATUS_PROGRESSING,
+    STAGE_TYPE,
+    DeploymentStageType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams, generatePath, Route } from 'react-router-dom'
 import { useAppContext } from '../../../common'
@@ -40,7 +42,6 @@ import { ModuleNameMap } from '../../../../config'
 import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
 import { getAppsCDConfigMin } from '../../AppGroup.service'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
-import { DeploymentTemplateList } from '../../../app/details/cdDetails/cd.type'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
 import { AppGroupDetailDefaultType } from '../../AppGroup.types'
 import { APP_GROUP_CD_DETAILS } from '../../../../config/constantMessaging'
@@ -77,6 +78,8 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     const [scrollableRef, scrollToTop, scrollToBottom] = useScrollable({
         autoBottomScroll: triggerDetails && TRIGGER_STATUS_PROGRESSING.includes(triggerDetails.status.toLowerCase()),
     })
+
+    console.log(triggerId, 'triggerId')
 
     const [loading, result] = useAsync(
         () =>
@@ -131,6 +134,24 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             setHasMore(true)
             setHasMoreLoading(true)
         }
+        let _triggerId = deploymentHistoryResult.result?.cdWorkflows?.[0]?.id
+        const queryString = new URLSearchParams(location.search)
+        const deploymentStageType =
+            queryString.get('type') === STAGE_TYPE.PRECD ? DeploymentStageType.PRE : DeploymentStageType.POST
+        const triggeredHistoryResult = deploymentHistoryResult.result?.cdWorkflows?.filter((obj) => {
+            return obj.stage === deploymentStageType
+        })
+        if (triggeredHistoryResult?.[0]) {
+            _triggerId = triggeredHistoryResult[0].id
+        }
+        replace(
+            generatePath(path, {
+                appId,
+                envId,
+                pipelineId,
+                triggerId: _triggerId,
+            }),
+        )
         const newTriggerHistory = (deploymentHistoryResult.result?.cdWorkflows || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
@@ -207,17 +228,6 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     }
     if (!result || (appId && dependencyState[1] !== appId)) {
         return null
-    }
-
-    if (!triggerId && appId && pipelineId && deploymentHistoryResult?.result?.cdWorkflows?.length) {
-        replace(
-            generatePath(path, {
-                appId,
-                envId,
-                pipelineId,
-                triggerId: deploymentHistoryResult.result.cdWorkflows?.[0].id,
-            }),
-        )
     }
 
     const envOptions: CICDSidebarFilterOptionType[] = pipelineList.map((item) => {
