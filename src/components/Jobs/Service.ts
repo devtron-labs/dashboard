@@ -15,15 +15,25 @@
  */
 
 import moment from 'moment'
-import { get, post, APIOptions, ZERO_TIME_STRING, Teams, getEnvironmentListMinPublic } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, APIOptions, ZERO_TIME_STRING, Teams, getEnvironmentListMinPublic, stringComparatorBySortOrder } from '@devtron-labs/devtron-fe-common-lib'
 import { Moment12HourFormat, Routes } from '../../config'
 import { sortOptionsByLabel } from '../common'
 import { getProjectList } from '../project/service'
 import { JobCIPipeline, JobList, JobsMasterFilters } from './Types'
 import { JOB_STATUS_OPTIONS } from './Constants'
 
-export const getJobs = (request, options?: APIOptions) => {
-    return post(Routes.JOB_LIST, request, options) as Promise<JobList>
+export const getJobs = async (request, options?: APIOptions) => {
+    const response = (await post(Routes.JOB_LIST, request, options)) as JobList
+
+    return {
+        ...response,
+        result: {
+            ...response?.result,
+            jobContainers: response?.result?.jobContainers.sort((a, b) =>
+                stringComparatorBySortOrder(a.jobName, b.jobName),
+            ),
+        },
+    }
 }
 
 export const createJob = (request) => {

@@ -15,7 +15,7 @@
  */
 
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import { ACCESS_TYPE_MAP } from '@devtron-labs/devtron-fe-common-lib'
+import { ACCESS_TYPE_MAP, Button, ButtonVariantType, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as AddIcon } from '../../../../../../assets/icons/ic-add.svg'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import DirectPermission from './DirectPermission'
@@ -83,16 +83,14 @@ const AppPermissionDetail = ({
                             </div>
                         ),
                 )}
-                <div>
-                    <button
-                        type="button"
-                        className="anchor flex left dc__gap-4 fs-13 lh-20 fw-6 p-0"
-                        onClick={() => addNewPermissionRow(accessType)}
-                    >
-                        <AddIcon className="icon-dim-20 fcb-5" />
-                        Add Permission
-                    </button>
-                </div>
+                <Button
+                    text="Add Permission"
+                    startIcon={<AddIcon />}
+                    onClick={() => addNewPermissionRow(accessType)}
+                    dataTestId="add-new-permission"
+                    variant={ButtonVariantType.text}
+                    size={ComponentSizeType.medium}
+                />
             </div>
         </>
     )

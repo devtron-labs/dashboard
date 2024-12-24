@@ -140,12 +140,22 @@ export function getAppListMin(
     })
 }
 
-export function getProjectFilteredApps(
+export async function getProjectFilteredApps(
     projectIds: number[] | string[],
     accessType?: string,
 ): Promise<ProjectFilteredApps> {
     const chartOnlyQueryParam = accessType === ACCESS_TYPE_MAP.HELM_APPS ? '&appType=DevtronChart' : ''
-    return get(`app/min?teamIds=${projectIds.join(',')}${chartOnlyQueryParam}`)
+    const response = await get(`app/min?teamIds=${projectIds.join(',')}${chartOnlyQueryParam}`)
+    
+    return {
+        ...response,
+        result: (response.result || [])
+            .map((project) => ({
+                ...project,
+                appList: (project.appList ?? []).sort((a, b) => stringComparatorBySortOrder(a.name, b.name)),
+            }))
+            .sort((a, b) => stringComparatorBySortOrder(a.projectName, b.projectName)),
+    }
 }
 
 export function getAvailableCharts(

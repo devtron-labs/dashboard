@@ -29,7 +29,10 @@ import {
     CustomRoleAndMeta,
     CustomRoles,
     MetaPossibleRoles,
+    SelectPickerOptionType,
+    stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { GroupBase } from 'react-select'
 import { Moment12HourFormat, REQUIRED_FIELDS_MISSING, SELECT_ALL_VALUE, SERVER_MODE } from '../../../config'
 import {
     APIRoleFilter,
@@ -446,14 +449,20 @@ export function parseData(dataList: any[], entity: string, accessType?: string) 
     }
 }
 
-export const getWorkflowOptions = (appIdWorkflowNamesMapping: AppIdWorkflowNamesMapping['appIdWorkflowNamesMapping']) =>
-    Object.entries(appIdWorkflowNamesMapping ?? {}).map(([jobName, jobWorkflows]) => ({
-        label: jobName,
-        options: jobWorkflows.map((workflow) => ({
-            label: workflow,
-            value: workflow,
-        })),
-    }))
+export const getWorkflowOptions = (
+    appIdWorkflowNamesMapping: AppIdWorkflowNamesMapping['appIdWorkflowNamesMapping'],
+): GroupBase<SelectPickerOptionType<string>>[] =>
+    Object.entries(appIdWorkflowNamesMapping ?? {})
+        .map(([jobName, jobWorkflows]) => ({
+            label: jobName,
+            options: jobWorkflows
+                .map((workflow) => ({
+                    label: workflow,
+                    value: workflow,
+                }))
+                .sort((a, b) => stringComparatorBySortOrder(a.label, b.label)),
+        }))
+        .sort((a, b) => stringComparatorBySortOrder(a.label, b.label))
 
 export const getPrimaryRoleIndex = (multiRole: string[], excludedRoles: string[]): number => {
     const primaryRoleIndex = multiRole.findIndex((role) => !excludedRoles.includes(role))

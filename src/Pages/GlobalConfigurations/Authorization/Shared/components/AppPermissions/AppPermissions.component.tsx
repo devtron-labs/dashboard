@@ -19,7 +19,6 @@ import { useEffect, useRef, useState } from 'react'
 import { Switch, Route, Redirect, useLocation, useRouteMatch } from 'react-router-dom'
 import {
     GenericSectionErrorState,
-    OptionType,
     ReactSelectInputAction,
     showError,
     TabGroup,
@@ -307,7 +306,7 @@ const AppPermissions = () => {
                 ...workflowOptions.reduce((acc, option) => {
                     acc.push(...option.options)
                     return acc
-                }, [] as OptionType[]),
+                }, []),
             ]
         } catch (err) {
             showError(err)
