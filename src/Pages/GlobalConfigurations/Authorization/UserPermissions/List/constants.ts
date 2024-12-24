@@ -26,6 +26,9 @@ export const userListLoading: User[] = Array.from(Array(DEFAULT_SHIMMER_LOADING_
     userRoleGroups: [],
     userGroups: [],
     superAdmin: false,
+    createdOn: '',
+    updatedOn: '',
+    isDeleted: false,
     ...getDefaultUserStatusAndTimeout(),
 }))
 

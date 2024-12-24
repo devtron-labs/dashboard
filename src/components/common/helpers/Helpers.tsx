@@ -1105,8 +1105,6 @@ export const getDeploymentAppType = (
     return allowedDeploymentTypes[0]
 }
 
-
-
 export const getNonEditableChartRepoText = (name: string): string => {
     return `Cannot edit chart repo "${name}". Some charts from this repository are being used by helm apps.`
 }
@@ -1137,18 +1135,6 @@ export const getApprovalModalTypeFromURL = (url: string): APPROVAL_MODAL_TYPE =>
     }
 
     return APPROVAL_MODAL_TYPE.CONFIG
-}
-
-export const getCTAClass = (userActionState: string, disableDeployButton?: boolean): string => {
-    let className = 'cta small flex ml-auto'
-    if (disableDeployButton) {
-        className += ' disabled-opacity'
-    } else if (userActionState === ACTION_STATE.BLOCKED) {
-        className += ' danger'
-    } else if (userActionState === ACTION_STATE.PARTIAL) {
-        className += ' warning'
-    }
-    return className
 }
 
 export const getPluginIdsFromBuildStage = (
@@ -1244,7 +1230,7 @@ export const getParsedBranchValuesForPlugin = (branchName: string): string => {
  */
 export const checkIfPathIsMatching =
     (currentPathName: string, customMessage = ''): PromptProps['message'] =>
-    ({ pathname }: { pathname: string })  =>
+    ({ pathname }: { pathname: string }) =>
         currentPathName === pathname || customMessage || UNSAVED_CHANGES_PROMPT_MESSAGE
 
 export const getAppFilterLocalStorageKey = (filterParentType: FilterParentType): AppEnvLocalStorageKeyType =>
