@@ -136,20 +136,26 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         const queryString = new URLSearchParams(location.search)
         const deploymentStageType =
             queryString.get('type') === STAGE_TYPE.PRECD ? DeploymentStageType.PRE : DeploymentStageType.POST
+
         const triggeredHistoryResult = deploymentHistoryResult.result?.cdWorkflows?.filter((obj) => {
             return obj.stage === deploymentStageType
         })
+
         if (triggeredHistoryResult?.[0]) {
             _triggerId = triggeredHistoryResult[0].id
         }
-        replace(
-            generatePath(path, {
-                appId,
-                envId,
-                pipelineId,
-                triggerId: _triggerId,
-            }),
-        )
+
+        if (!triggerId && appId && pipelineId && deploymentHistoryResult?.result?.cdWorkflows?.length) {
+            replace(
+                generatePath(path, {
+                    appId,
+                    envId,
+                    pipelineId,
+                    triggerId: _triggerId,
+                }),
+            )
+        }
+
         const newTriggerHistory = (deploymentHistoryResult.result?.cdWorkflows || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
