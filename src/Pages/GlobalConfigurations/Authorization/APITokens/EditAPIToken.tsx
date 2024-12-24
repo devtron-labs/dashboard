@@ -70,8 +70,15 @@ const EditAPIToken = ({
     isLoading: boolean
     setEditData: (editData: EditDataType) => void
 }) => {
-    const { permissionType, directPermission, setDirectPermission, chartPermission, k8sPermission, userRoleGroups } =
-        usePermissionConfiguration()
+    const {
+        permissionType,
+        directPermission,
+        setDirectPermission,
+        chartPermission,
+        k8sPermission,
+        userRoleGroups,
+        isSaveDisabled,
+    } = usePermissionConfiguration()
 
     const history = useHistory()
     const match = useRouteMatch()
@@ -281,6 +288,7 @@ const EditAPIToken = ({
                 onCancel={redirectToTokenList}
                 onSave={() => handleUpdatedToken(editData.id)}
                 buttonText="Update token"
+                disabled={isSaveDisabled}
             />
             {deleteConfirmation && (
                 <DeleteAPITokenModal

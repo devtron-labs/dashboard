@@ -36,6 +36,10 @@ const AppPermissionDetail = ({
     const isAccessTypeJob = accessType === ACCESS_TYPE_MAP.JOBS
     const rowClass = getPermissionDetailRowClass(accessType, showStatus)
 
+    const handleAddPermission = () => {
+        addNewPermissionRow(accessType)
+    }
+
     return (
         <>
             <div className={`w-100 pt-6 pb-6 dc__gap-8 display-grid ${rowClass} fw-6 fs-12 cn-7 dc__uppercase`}>
@@ -86,7 +90,7 @@ const AppPermissionDetail = ({
                 <Button
                     text="Add Permission"
                     startIcon={<AddIcon />}
-                    onClick={() => addNewPermissionRow(accessType)}
+                    onClick={handleAddPermission}
                     dataTestId="add-new-permission"
                     variant={ButtonVariantType.text}
                     size={ComponentSizeType.medium}

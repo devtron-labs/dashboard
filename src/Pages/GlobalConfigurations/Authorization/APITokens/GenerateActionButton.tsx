@@ -17,7 +17,14 @@
 import { ButtonWithLoader } from '@devtron-labs/devtron-fe-common-lib'
 import { GenerateActionButtonType } from './apiToken.type'
 
-const GenerateActionButton = ({ loader, onCancel, onSave, buttonText, regenerateButton }: GenerateActionButtonType) => (
+const GenerateActionButton = ({
+    loader,
+    onCancel,
+    onSave,
+    buttonText,
+    regenerateButton,
+    disabled,
+}: GenerateActionButtonType) => (
     <div
         className={`modal__buttons w-100 pl-16 pt-16 pr-16 flex ${
             regenerateButton ? 'right ml-auto' : 'left ml-0'
@@ -35,7 +42,7 @@ const GenerateActionButton = ({ loader, onCancel, onSave, buttonText, regenerate
         <ButtonWithLoader
             rootClassName={`flex cta h-36 ${regenerateButton ? 'order-second' : 'mr-12 order-first'}`}
             onClick={onSave}
-            disabled={loader}
+            disabled={loader || disabled}
             isLoading={loader}
             dataTestId={buttonText.toLowerCase().replace(' ', '-')}
         >
