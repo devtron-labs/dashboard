@@ -41,17 +41,18 @@ import {
     ToastManager,
     ToastVariantType,
     CommonNodeAttr,
+    TriggerBlockType,
     RuntimePluginVariables,
     uploadCDPipelineFile,
     UploadFileProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useLocation } from 'react-router-dom'
-import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
-import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
-import { ReactComponent as PlayIcon } from '../../../../assets/icons/ic-play-medium.svg'
-import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
-import { ReactComponent as UnAuthorized } from '../../../../assets/icons/ic-locked.svg'
-import { ReactComponent as Tag } from '../../../../assets/icons/ic-tag.svg'
+import { ReactComponent as Close } from '@Icons/ic-cross.svg'
+import { ReactComponent as DeployIcon } from '@Icons/ic-nav-rocket.svg'
+import { ReactComponent as PlayIcon } from '@Icons/ic-play-medium.svg'
+import { ReactComponent as Error } from '@Icons/ic-warning.svg'
+import { ReactComponent as UnAuthorized } from '@Icons/ic-locked.svg'
+import { ReactComponent as Tag } from '@Icons/ic-tag.svg'
 import emptyPreDeploy from '../../../../assets/img/empty-pre-deploy.png'
 import notAuthorized from '../../../../assets/img/ic-not-authorized.svg'
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
@@ -59,7 +60,6 @@ import { BulkSelectionEvents, MATERIAL_TYPE, RuntimeParamsErrorState } from '../
 import { BulkCDDetailType, BulkCDTriggerType } from '../../AppGroup.types'
 import { BULK_CD_DEPLOYMENT_STATUS, BULK_CD_MATERIAL_STATUS, BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
-import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 import { importComponentFromFELibrary } from '../../../common'
 import { BULK_ERROR_MESSAGES } from './constants'
@@ -79,6 +79,8 @@ const getDeploymentWindowStateAppGroup = importComponentFromFELibrary(
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
 const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
+const TriggerBlockedError = importComponentFromFELibrary('TriggerBlockedError', null, 'function')
+const TriggerBlockEmptyState = importComponentFromFELibrary('TriggerBlockEmptyState', null, 'function')
 const validateRuntimeParameters = importComponentFromFELibrary(
     'validateRuntimeParameters',
     () => ({ isValid: true, cellError: {} }),
@@ -389,6 +391,10 @@ export default function BulkCDTrigger({
     }
 
     const renderEmptyView = (): JSX.Element => {
+        if (selectedApp.triggerBlockedInfo?.blockedBy === TriggerBlockType.MANDATORY_TAG) {
+            return <TriggerBlockEmptyState stageType={selectedApp.stageType} appId={selectedApp.appId} />
+        }
+
         if (selectedApp.isTriggerBlockedDueToPlugin) {
             const commonNodeAttrType: CommonNodeAttr['type'] =
                 selectedApp.stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
@@ -403,16 +409,16 @@ export default function BulkCDTrigger({
 
         if (unauthorizedAppList[selectedApp.appId]) {
             return (
-                <EmptyView
-                    imgSrc={notAuthorized}
+                <GenericEmptyState
+                    image={notAuthorized}
                     title={BULK_CD_MESSAGING.unauthorized.title}
                     subTitle={BULK_CD_MESSAGING.unauthorized.subTitle}
                 />
             )
         }
         return (
-            <EmptyView
-                imgSrc={emptyPreDeploy}
+            <GenericEmptyState
+                image={emptyPreDeploy}
                 title={`${selectedApp.name}  ${BULK_CD_MESSAGING[stage].title}`}
                 subTitle={BULK_CD_MESSAGING[stage].subTitle}
             />
@@ -457,11 +463,14 @@ export default function BulkCDTrigger({
             )
         }
 
+        if (app.triggerBlockedInfo?.blockedBy === TriggerBlockType.MANDATORY_TAG) {
+            return <TriggerBlockedError stageType={app.stageType} />
+        }
+
         if (!!warningMessage && !app.showPluginWarning) {
             return (
                 <div className="flex left top dc__gap-4">
                     <Error className="icon-dim-12 dc__no-shrink mt-5 warning-icon-y7" />
-
                     <span className="fw-4 fs-12 cy-7 dc__truncate">{warningMessage}</span>
                 </div>
             )

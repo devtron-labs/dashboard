@@ -56,6 +56,10 @@ const AppDetailsComponent = ({
     _init,
     loadingDetails,
     loadingResourceTree,
+    handleReloadResourceTree,
+    // NOTE: this might seem like a duplicate of loadingResourceTree
+    // but its not since loadingResourceTree runs a loader on the whole page
+    isReloadResourceTreeInProgress,
 }: AppDetailsComponentType) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
@@ -176,6 +180,8 @@ const AppDetailsComponent = ({
                 monitoringTools={monitoringTools}
                 isExternalApp={isExternalApp}
                 isVirtualEnvironment={isVirtualEnv.current}
+                handleReloadResourceTree={handleReloadResourceTree}
+                isReloadResourceTreeInProgress={isReloadResourceTreeInProgress}
             />
         )
     }

@@ -35,6 +35,8 @@ const NodeTreeDetailTab = ({
     isExternalApp,
     isDeploymentBlocked,
     isVirtualEnvironment,
+    handleReloadResourceTree,
+    isReloadResourceTreeInProgress,
 }: NodeTreeDetailTabProps) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
     const { path, url } = useRouteMatch()
@@ -69,6 +71,8 @@ const NodeTreeDetailTab = ({
                         tabRef={tabRef}
                         appType={appDetails.appType}
                         isExternalApp={isExternalApp}
+                        handleReloadResourceTree={handleReloadResourceTree}
+                        isReloadResourceTreeInProgress={isReloadResourceTreeInProgress}
                     />
                     <Switch>
                         <Route
