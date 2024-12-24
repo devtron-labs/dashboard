@@ -21,7 +21,9 @@ import {
     UserListSortableKeys,
     UserStatus,
     UseUrlFiltersReturnType,
+    UserTypeToFetchType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { ExportToCsvProps } from '@Components/common/ExportToCsv/types'
 import { getUserList } from '../../authorization.service'
 import { BulkSelectionActionWidgetProps, BulkSelectionModalConfig } from '../../Shared/components/BulkSelection'
 import { User } from '../../types'
@@ -42,7 +44,9 @@ export interface UserPermissionListHeaderProps {
     showStatus: boolean
     handleSearch: SearchBarProps['handleEnter']
     initialSearchText: SearchBarProps['initialSearchText']
-    getDataToExport: () => ReturnType<typeof getUserList>
+    getDataToExport: (
+        ...params: Parameters<ExportToCsvProps<UserTypeToFetchType>['apiPromise']>
+    ) => ReturnType<typeof getUserList>
     status: UserStatus[]
     handleStatusFilterChange: (status: UserStatus[]) => void
 }
