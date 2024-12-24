@@ -132,6 +132,24 @@ export interface UserDto {
         timeoutWindowExpression?: string
     }[]
     userGroups: UserGroupDTO[]
+    /**
+     * Denotes the time when the user was created
+     *
+     * Note: Enterprise only
+     */
+    createdOn: string
+    /**
+     * Denotes the time when the user was last updated
+     *
+     * Note: Enterprise only
+     */
+    updatedOn: string
+    /**
+     * Denotes is the user is deleted
+     *
+     * Note: Enterprise only
+     */
+    isDeleted: boolean
 }
 
 export interface User
@@ -160,7 +178,8 @@ export type UserCreateOrUpdateParamsType = Pick<
     userGroups: Pick<UserGroupType, 'name' | 'userGroupId'>[]
 }
 
-export interface UserCreateOrUpdatePayloadType extends Omit<UserDto, 'userGroups'> {
+export interface UserCreateOrUpdatePayloadType
+    extends Omit<UserDto, 'userGroups' | 'createdOn' | 'updatedOn' | 'isDeleted'> {
     userGroups: Pick<UserGroupDTO, 'identifier'>[]
 }
 

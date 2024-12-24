@@ -34,9 +34,14 @@ import { User } from '../../types'
 import { getIsAdminOrSystemUser, parseSearchParams } from '../utils'
 import UserPermissionContainer from './UserPermissionContainer'
 import { BulkSelectionModalConfig, BulkSelectionModalTypes } from '../../Shared/components/BulkSelection'
-import { UserListFilter } from './types'
+import { UserListFilter, UserPermissionContainerProps } from './types'
 
 const StatusHeaderCell = importComponentFromFELibrary('StatusHeaderCell', null, 'function')
+const getUserTypeToFetchFromSelectedConfigOptions = importComponentFromFELibrary(
+    'getUserTypeToFetchFromSelectedConfigOptions',
+    null,
+    'function',
+)
 
 const showStatus = !!StatusHeaderCell
 
@@ -102,7 +107,7 @@ const UserPermissionList = () => {
 
     const showLoadingState = isLoading || getIsRequestAborted(error)
 
-    const getUserDataForExport = () =>
+    const getUserDataForExport: UserPermissionContainerProps['getUserDataForExport'] = (selectedConfig) =>
         getUserList({
             ...filterConfig,
             showAll: true,
@@ -110,6 +115,9 @@ const UserPermissionList = () => {
             size: null,
             sortBy: UserListSortableKeys.email,
             sortOrder: SortingOrder.ASC,
+            ...(getUserTypeToFetchFromSelectedConfigOptions && {
+                typeToFetch: getUserTypeToFetchFromSelectedConfigOptions(selectedConfig),
+            }),
         })
 
     const getSelectAllDialogStatus = () => {

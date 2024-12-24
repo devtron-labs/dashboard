@@ -77,8 +77,15 @@ import {
     CommonNodeAttr,
     getIsApprovalPolicyConfigured,
     ApprovalRuntimeStateType,
+    GetPolicyConsequencesProps,
+    PolicyConsequencesDTO,
+    PipelineStageBlockInfo,
     RuntimePluginVariables,
     uploadCDPipelineFile,
+    Button,
+    ComponentSizeType,
+    ButtonStyleType,
+    AnimatedDeployButton,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -99,10 +106,10 @@ import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled
 import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
 import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search.svg'
 import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
-import { ReactComponent as PlayIC } from '../../../../assets/icons/misc/arrow-solid-right.svg'
+import { ReactComponent as PlayIC } from '@Icons/ic-play-outline.svg'
 
 import noArtifact from '../../../../assets/img/no-artifact@2x.png'
-import { getCTAClass, importComponentFromFELibrary, useAppContext } from '../../../common'
+import { importComponentFromFELibrary, useAppContext } from '../../../common'
 import { CDButtonLabelMap, TriggerViewContext } from './config'
 import { triggerCDNode } from '../../service'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
@@ -148,6 +155,9 @@ const getSecurityScan: ({
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
 const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
+const TriggerBlockEmptyState = importComponentFromFELibrary('TriggerBlockEmptyState', null, 'function')
+const getPolicyConsequences: ({ appId, envId }: GetPolicyConsequencesProps) => Promise<PolicyConsequencesDTO> =
+    importComponentFromFELibrary('getPolicyConsequences', null, 'function')
 const validateRuntimeParameters = importComponentFromFELibrary(
     'validateRuntimeParameters',
     () => ({ isValid: true, cellError: {} }),
@@ -221,40 +231,59 @@ const CDMaterial = ({
     const allowWarningWithTippyNodeTypeProp: CommonNodeAttr['type'] =
         stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
 
+    // this function can be used for other trigger block reasons once api supports it
+    const getIsTriggerBlocked = (cdPolicyConsequences: PipelineStageBlockInfo) => {
+        switch (stageType) {
+            case DeploymentNodeType.PRECD:
+                return cdPolicyConsequences.pre.isBlocked
+            case DeploymentNodeType.POSTCD:
+                return cdPolicyConsequences.post.isBlocked
+            case DeploymentNodeType.CD:
+                return cdPolicyConsequences.node.isBlocked
+            default:
+                return false
+        }
+    }
+
+    const getMaterialResponseList = async (): Promise<[CDMaterialResponseType, any, PolicyConsequencesDTO]> => {
+        const response = await Promise.all([
+            genericCDMaterialsService(
+                materialType === MATERIAL_TYPE.rollbackMaterialList
+                    ? CDMaterialServiceEnum.ROLLBACK
+                    : CDMaterialServiceEnum.CD_MATERIALS,
+                pipelineId,
+                // Don't think need to set stageType to approval in case of approval node
+                stageType ?? DeploymentNodeType.CD,
+                abortControllerRef.current.signal,
+                // It is meant to fetch the first 20 materials
+                {
+                    offset: 0,
+                    size: 20,
+                    search: searchImageTag,
+                    // Since by default we are setting filterView to eligible and in case of no filters everything is eligible
+                    // So there should'nt be any additional api call
+                    // NOTE: Uncomment this when backend supports the filtering, there will be some minor handling like number of images in segmented control
+                    // filter:
+                    //     state.filterView === FilterConditionViews.ELIGIBLE && !state.searchApplied
+                    //         ? CDMaterialFilterQuery.RESOURCE
+                    //         : null,
+                },
+            ),
+            getDeploymentWindowProfileMetaData && !isFromBulkCD
+                ? getDeploymentWindowProfileMetaData(appId, envId)
+                : null,
+            getPolicyConsequences ? getPolicyConsequences({ appId, envId }) : null,
+        ])
+
+        if (getIsTriggerBlocked(response[2].cd)) {
+            return [null, null, response[2]]
+        }
+        return response
+    }
+
     // TODO: Ask if pipelineId always changes on change of app else add appId as dependency
     const [loadingMaterials, responseList, materialsError, reloadMaterials] = useAsync(
-        () =>
-            abortPreviousRequests(
-                () =>
-                    Promise.all([
-                        genericCDMaterialsService(
-                            materialType === MATERIAL_TYPE.rollbackMaterialList
-                                ? CDMaterialServiceEnum.ROLLBACK
-                                : CDMaterialServiceEnum.CD_MATERIALS,
-                            pipelineId,
-                            // Don't think need to set stageType to approval in case of approval node
-                            stageType ?? DeploymentNodeType.CD,
-                            abortControllerRef.current.signal,
-                            // It is meant to fetch the first 20 materials
-                            {
-                                offset: 0,
-                                size: 20,
-                                search: searchImageTag,
-                                // Since by default we are setting filterView to eligible and in case of no filters everything is eligible
-                                // So there should'nt be any additional api call
-                                // NOTE: Uncomment this when backend supports the filtering, there will be some minor handling like number of images in segmented control
-                                // filter:
-                                //     state.filterView === FilterConditionViews.ELIGIBLE && !state.searchApplied
-                                //         ? CDMaterialFilterQuery.RESOURCE
-                                //         : null,
-                            },
-                        ),
-                        getDeploymentWindowProfileMetaData && !isFromBulkCD
-                            ? getDeploymentWindowProfileMetaData(appId, envId)
-                            : null,
-                    ]),
-                abortControllerRef,
-            ),
+        () => abortPreviousRequests(() => getMaterialResponseList(), abortControllerRef),
         // NOTE: Add state.filterView if want to add filtering support from backend
         [pipelineId, stageType, materialType, searchImageTag],
         !!pipelineId && !isTriggerBlockedDueToPlugin,
@@ -1095,6 +1124,10 @@ const CDMaterial = ({
             )
         }
 
+        if (TriggerBlockEmptyState && getIsTriggerBlocked(responseList?.[2]?.cd)) {
+            return <TriggerBlockEmptyState appId={appId} stageType={stageType} />
+        }
+
         if (
             resourceFilters?.length &&
             noEligibleImages &&
@@ -1173,7 +1206,9 @@ const CDMaterial = ({
                 const _gitCommit = getGitCommitInfo(mat)
 
                 if (
-                    (materialData.appliedFilters?.length > 0 || materialData.deploymentWindowArtifactMetadata?.type) &&
+                    (materialData.appliedFilters?.length > 0 ||
+                        materialData.deploymentBlockedState?.isBlocked ||
+                        materialData.deploymentWindowArtifactMetadata?.type) &&
                     CDMaterialInfo
                 ) {
                     return (
@@ -1187,6 +1222,7 @@ const CDMaterial = ({
                             dataSource={materialData.dataSource}
                             deploymentWindowArtifactMetadata={materialData.deploymentWindowArtifactMetadata}
                             isFilterApplied={materialData.appliedFilters?.length > 0}
+                            triggerBlockedInfo={materialData.deploymentBlockedState}
                         >
                             {(_gitCommit.WebhookData?.Data ||
                                 _gitCommit.Author ||
@@ -1624,17 +1660,19 @@ const CDMaterial = ({
         if (deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED) {
             return null
         } else if (stageType !== STAGE_TYPE.CD) {
-            return (
-                <PlayIC
-                    className={`icon-dim-16 mr-8 dc__no-svg-fill dc__stroke-width-2 ${deploymentWindowMetadata.userActionState === ACTION_STATE.PARTIAL ? 'scn-9' : 'scn-0'}`}
-                />
-            )
+            return <PlayIC />
         }
-        return (
-            <DeployIcon
-                className={`icon-dim-16 dc__no-svg-fill mr-8 ${deploymentWindowMetadata.userActionState === ACTION_STATE.PARTIAL ? 'scn-9' : ''}`}
-            />
-        )
+        return <DeployIcon />
+    }
+
+    const getDeployButtonStyle = (userActionState: string): ButtonStyleType => {
+        if (userActionState === ACTION_STATE.BLOCKED) {
+            return ButtonStyleType.negative
+        }
+        if (userActionState === ACTION_STATE.PARTIAL) {
+            return ButtonStyleType.warning
+        }
+        return ButtonStyleType.default
     }
 
     const onClickDeploy = (e, disableDeployButton: boolean) => {
@@ -1657,30 +1695,32 @@ const CDMaterial = ({
         }
     }
 
-    const renderTriggerDeployButton = (disableDeployButton: boolean) => (
-        <button
-            data-testid="cd-trigger-deploy-button"
-            disabled={deploymentLoading || isSaveLoading}
-            className={`${getCTAClass(deploymentWindowMetadata.userActionState, disableDeployButton)} h-36`}
-            onClick={(e) => onClickDeploy(e, disableDeployButton)}
-            type="button"
-        >
-            {deploymentLoading || isSaveLoading ? (
-                <Progressing />
-            ) : (
-                <>
-                    {getDeployButtonIcon()}
-                    {deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED
-                        ? 'Deployment is blocked'
-                        : CDButtonLabelMap[stageType]}
-                    {isVirtualEnvironment && ' to isolated env'}
-                    {deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED && (
-                        <InfoOutline className="icon-dim-16 ml-5" />
-                    )}
-                </>
-            )}
-        </button>
-    )
+    const renderTriggerDeployButton = (disableDeployButton: boolean) => {
+        const userActionState: ACTION_STATE = deploymentWindowMetadata.userActionState
+        if (
+            stageType === DeploymentNodeType.CD &&
+            !disableDeployButton &&
+            (userActionState ? userActionState === ACTION_STATE.ALLOWED : true) &&
+            !(deploymentLoading || isSaveLoading)
+        ) {
+            return <AnimatedDeployButton onButtonClick={onClickDeploy} isVirtualEnvironment={isVirtualEnvironment} />
+        }
+        return (
+            <Button
+                dataTestId="cd-trigger-deploy-button"
+                startIcon={getDeployButtonIcon()}
+                isLoading={deploymentLoading || isSaveLoading}
+                text={`${
+                    userActionState === ACTION_STATE.BLOCKED ? 'Deployment is blocked' : CDButtonLabelMap[stageType]
+                }${isVirtualEnvironment ? ' to isolated env' : ''}`}
+                endIcon={userActionState === ACTION_STATE.BLOCKED ? <InfoOutline /> : null}
+                onClick={(e) => onClickDeploy(e, disableDeployButton)}
+                size={ComponentSizeType.large}
+                style={getDeployButtonStyle(userActionState)}
+                disabled={disableDeployButton}
+            />
+        )
+    }
 
     const renderTriggerModalCTA = (isApprovalConfigured: boolean) => {
         const disableDeployButton =
@@ -1948,7 +1988,7 @@ const CDMaterial = ({
     return (
         <>
             <div className="trigger-modal__header">
-                <h1 className="modal__title">{renderCDModalHeader()}</h1>
+                <h2 className="modal__title">{renderCDModalHeader()}</h2>
                 <button type="button" className="dc__transparent" onClick={closeCDModal}>
                     <img alt="close" src={close} />
                 </button>

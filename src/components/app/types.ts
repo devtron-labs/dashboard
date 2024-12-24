@@ -27,6 +27,9 @@ import {
     DeploymentNodeType,
     RuntimeParamsTriggerPayloadType,
     HelmReleaseStatus,
+    DynamicDataTableRowType,
+    TagsTableColumnsType,
+    DynamicDataTableCellErrorType,
     RuntimePluginVariables,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentStatusDetailsBreakdownDataType, ErrorItem } from './details/appDetails/appDetails.type'
@@ -75,7 +78,8 @@ export interface AddNewAppState {
         cloneId: number
         appCreationType: string
     }
-    tags: TagType[]
+    tags: DynamicDataTableRowType<TagsTableColumnsType>[]
+    tagsError: DynamicDataTableCellErrorType<TagsTableColumnsType>
     isValid: {
         projectId: boolean
         appName: boolean
@@ -573,6 +577,7 @@ export interface JobPipeline {
 }
 
 export interface TagChipsContainerType {
+    appType: APP_TYPE
     labelTags: TagType[]
     onAddTagButtonClick: (e) => void
     resourceName: string

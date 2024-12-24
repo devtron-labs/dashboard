@@ -45,7 +45,11 @@ import { BlackListedCI } from '../../../workflowEditor/types'
 
 const getDeploymentWindowState = importComponentFromFELibrary('getDeploymentWindowState', null, 'function')
 const getDeploymentNotAllowedState = importComponentFromFELibrary('getDeploymentNotAllowedState', null, 'function')
-const getParsedPluginPolicyConsequenceData = importComponentFromFELibrary('getParsedPluginPolicyConsequenceData', () => null, 'function')
+const getParsedPluginPolicyConsequenceData = importComponentFromFELibrary(
+    'getParsedPluginPolicyConsequenceData',
+    () => null,
+    'function',
+)
 
 export const getTriggerWorkflows = (
     appId,
@@ -61,7 +65,6 @@ export const getTriggerWorkflows = (
         isJobView,
         filteredEnvIds,
     })
-
 
 export const getCreateWorkflows = (
     appId,
@@ -660,24 +663,22 @@ function cdPipelineToNode(
     let stageIndex = 1
 
     if (!isEmpty(cdPipeline?.preDeployStage?.steps || cdPipeline?.preStage?.config)) {
-        const trigger =
-            cdPipeline.preDeployStage?.triggerType?.toLowerCase() ||
-            cdPipeline.preStage?.triggerType?.toLowerCase() ||
-            ''
+        const preDeployStageFallback = cdPipeline.preDeployStage || cdPipeline.preStage
+        const trigger = preDeployStageFallback?.triggerType?.toLowerCase() || ''
         preCD = {
             // Need this for Release Tags in CDMaterials
             connectingCiPipelineId: cdPipeline.ciPipelineId,
             parents: [String(parentId)],
             height: dimensions.cDNodeSizes.nodeHeight,
             width: dimensions.cDNodeSizes.nodeWidth,
-            title: cdPipeline.preDeployStage?.name || cdPipeline.preStage.name || '',
+            title: preDeployStageFallback?.name || '',
             isSource: false,
             isGitSource: false,
             id: String(cdPipeline.id),
             downstreams: [`${WorkflowNodeType.CD}-${cdPipeline.id}`],
             downstreamEnvironments: [],
             type: WorkflowNodeType.PRE_CD,
-            status: cdPipeline.preDeployStage?.status || cdPipeline.preStage?.status || DEFAULT_STATUS,
+            status: preDeployStageFallback?.status || DEFAULT_STATUS,
             triggerType: TriggerTypeMap[trigger],
             environmentName: cdPipeline.environmentName || '',
             isVirtualEnvironment: cdPipeline.isVirtualEnvironment,
@@ -695,7 +696,8 @@ function cdPipelineToNode(
             isGitOpsRepoNotConfigured: cdPipeline.isGitOpsRepoNotConfigured,
             isDeploymentBlocked: cdPipeline.isDeploymentBlocked,
             showPluginWarning: cdPipeline.preDeployStage?.isOffendingMandatoryPlugin,
-            isTriggerBlocked: cdPipeline.preDeployStage?.isTriggerBlocked,
+            isTriggerBlocked: preDeployStageFallback?.isTriggerBlocked,
+            triggerBlockedInfo: preDeployStageFallback?.triggerBlockedInfo,
             pluginBlockState: getParsedPluginPolicyConsequenceData(cdPipeline.preDeployStage?.pluginBlockState),
             approvalConfigData: null,
         }
@@ -749,8 +751,9 @@ function cdPipelineToNode(
         isDeploymentBlocked: cdPipeline.isDeploymentBlocked,
         // Will populate this after initializing postCD
         showPluginWarning: false,
-        isTriggerBlocked: false,
         pluginBlockState: getParsedPluginPolicyConsequenceData(),
+        isTriggerBlocked: cdPipeline.isTriggerBlocked,
+        triggerBlockedInfo: cdPipeline.triggerBlockedInfo,
     }
     stageIndex++
 
@@ -790,7 +793,9 @@ function cdPipelineToNode(
             isGitOpsRepoNotConfigured: cdPipeline.isGitOpsRepoNotConfigured,
             isDeploymentBlocked: cdPipeline.isDeploymentBlocked,
             showPluginWarning: cdPipeline.postDeployStage?.isOffendingMandatoryPlugin,
-            isTriggerBlocked: cdPipeline.postDeployStage?.isTriggerBlocked,
+            isTriggerBlocked: cdPipeline.postDeployStage?.isTriggerBlocked || cdPipeline.postStage?.isTriggerBlocked,
+            triggerBlockedInfo:
+                cdPipeline.postDeployStage?.triggerBlockedInfo || cdPipeline.postStage?.triggerBlockedInfo,
             pluginBlockState: getParsedPluginPolicyConsequenceData(cdPipeline.postDeployStage?.pluginBlockState),
             approvalConfigData: null,
         }
@@ -809,8 +814,8 @@ function cdPipelineToNode(
         CD.title = title
     }
 
-    CD.showPluginWarning = preCD?.showPluginWarning || postCD?.showPluginWarning
-    CD.isTriggerBlocked = false
+    CD.showPluginWarning =
+        dimensions.type === WorkflowDimensionType.CREATE ? preCD?.showPluginWarning || postCD?.showPluginWarning : false
     CD.pluginBlockState = getParsedPluginPolicyConsequenceData()
     return CD
 }

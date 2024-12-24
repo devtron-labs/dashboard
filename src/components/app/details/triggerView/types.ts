@@ -243,7 +243,9 @@ interface InputMaterials {
     isActive: boolean
 }
 
-export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string }> {
+export interface TriggerCDNodeProps
+    extends RouteComponentProps<{ appId: string }>,
+        Partial<Pick<CommonNodeAttr, 'isTriggerBlocked'>> {
     x: number
     y: number
     height: number
@@ -283,7 +285,7 @@ export interface TriggerCDNodeState {
 
 export interface TriggerPrePostCDNodeProps
     extends RouteComponentProps<{ appId: string }>,
-        Pick<CommonNodeAttr, 'isTriggerBlocked'> {
+        Partial<Pick<CommonNodeAttr, 'isTriggerBlocked'>> {
     x: number
     y: number
     height: number

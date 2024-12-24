@@ -25,9 +25,11 @@ import {
     K8sResourceDetailType,
     K8sResourceDetailDataType,
     ALL_NAMESPACE_OPTION,
+    ClusterDetail,
+    ResourceDetail,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
-import { ClusterDetail, ResourceDetail, ClusterListType } from '../ClusterNodes/types'
+import { ClusterListType } from '../ClusterNodes/types'
 import { useTabs } from '../common/DynamicTabs'
 import { BaseResourceListProps } from './ResourceList/types'
 
