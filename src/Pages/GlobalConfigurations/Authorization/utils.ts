@@ -98,6 +98,9 @@ export const transformUserResponse = (_user: UserDto): User => {
         userRoleGroups,
         roleFilters,
         userGroups,
+        isDeleted,
+        createdOn,
+        updatedOn,
         ...user
     } = _user
     const timeToLive = getFormattedTimeToLive(timeoutWindowExpression)
@@ -131,6 +134,9 @@ export const transformUserResponse = (_user: UserDto): User => {
             ) ?? [],
         roleFilters: transformRoleFilters(roleFilters),
         userGroups: getParsedUserGroupList(userGroups),
+        createdOn: createdOn && createdOn !== ZERO_TIME_STRING ? moment(createdOn).format(Moment12HourFormat) : '',
+        updatedOn: updatedOn && updatedOn !== ZERO_TIME_STRING ? moment(updatedOn).format(Moment12HourFormat) : '',
+        isDeleted: isDeleted ?? false,
     }
 }
 
