@@ -242,6 +242,7 @@ export const getValColumnRowProps = ({
     isCdPipeline,
     selectedTaskIndex,
     inputVariablesListFromPrevStep,
+    isFileUploading,
 }: GetValColumnRowPropsType): VariableDataRowType['data']['format'] => {
     if (type === PluginVariableType.INPUT) {
         if (format === VariableTypeFormat.FILE) {
@@ -249,6 +250,7 @@ export const getValColumnRowProps = ({
                 type: DynamicDataTableRowDataType.FILE_UPLOAD,
                 value,
                 props: {
+                    isLoading: isFileUploading,
                     fileTypes: valueConstraint?.constraint?.fileProperty?.allowedExtensions || [],
                 },
             }
@@ -371,6 +373,7 @@ export const getVariableDataTableRows = ({
     ioVariables,
     type,
     isCustomTask,
+    isFileUploading,
     ...restProps
 }: GetVariableDataTableInitialRowsProps): VariableDataRowType[] =>
     (ioVariables || []).map(
@@ -401,6 +404,7 @@ export const getVariableDataTableRows = ({
                 refVariableName,
                 refVariableStage,
                 valueConstraint,
+                isFileUploading: isFileUploading[id],
             })
 
             return {

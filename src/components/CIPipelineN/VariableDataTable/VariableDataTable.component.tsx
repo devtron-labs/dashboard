@@ -1,4 +1,4 @@
-import { useContext, useMemo } from 'react'
+import { useContext, useMemo, useRef } from 'react'
 
 import {
     Button,
@@ -106,6 +106,9 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
             isInputPluginVariable ? 'inputVariables' : 'outputVariables'
         ]
 
+    // FILE UPLOADING STATUS REF (Record of rowIds and status)
+    const isFileUploading = useRef<Record<string | number, boolean>>({})
+
     // TABLE ROWS
     const rows = useMemo<VariableDataRowType[]>(
         () =>
@@ -119,6 +122,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                 selectedTaskIndex,
                 inputVariablesListFromPrevStep,
                 isCdPipeline,
+                isFileUploading: isFileUploading.current,
             }),
         [ioVariables],
     )
@@ -256,7 +260,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
             case VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO:
                 if (selectedRow && selectedRow.data.val.type === DynamicDataTableRowDataType.FILE_UPLOAD) {
                     selectedRow.data.val.value = rowAction.actionValue.fileName
-                    selectedRow.data.val.props.isLoading = rowAction.actionValue.isLoading
+                    selectedRow.data.val.props.isLoading = isFileUploading.current[selectedRow.id]
                     selectedRow.customState.fileInfo.fileReferenceId = rowAction.actionValue.fileReferenceId
                 }
                 break
@@ -347,6 +351,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                     selectedRow.data.val = getValColumnRowProps({
                         ...defaultRowValColumnParams,
                         format: rowAction.actionValue,
+                        valueConstraint: null,
                     })
                     selectedRow.customState = {
                         ...customState,
@@ -418,15 +423,16 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
         ) {
             handleRowUpdateAction({
                 actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
-                actionValue: { fileReferenceId: null, isLoading: false, fileName: value },
+                actionValue: { fileReferenceId: null, fileName: value },
                 rowId: updatedRow.id,
             })
 
             if (extraData.files.length) {
                 try {
+                    isFileUploading.current[updatedRow.id] = true
                     handleRowUpdateAction({
                         actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
-                        actionValue: { fileReferenceId: null, isLoading: true, fileName: value },
+                        actionValue: { fileReferenceId: null, fileName: value },
                         rowId: updatedRow.id,
                     })
 
@@ -439,15 +445,17 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                         }),
                     })
 
+                    isFileUploading.current[updatedRow.id] = false
                     handleRowUpdateAction({
                         actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
-                        actionValue: { fileReferenceId: id, isLoading: false, fileName: name },
+                        actionValue: { fileReferenceId: id, fileName: name },
                         rowId: updatedRow.id,
                     })
                 } catch {
+                    isFileUploading.current[updatedRow.id] = false
                     handleRowUpdateAction({
                         actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
-                        actionValue: { fileReferenceId: null, isLoading: false, fileName: '' },
+                        actionValue: { fileReferenceId: null, fileName: '' },
                         rowId: updatedRow.id,
                     })
                 }
