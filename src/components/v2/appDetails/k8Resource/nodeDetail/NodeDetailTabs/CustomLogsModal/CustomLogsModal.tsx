@@ -270,7 +270,7 @@ export const InputForSelectedOption = ({
                             </div>
                         </div>
                         <div className="flex mt-4 flex-justify-start">
-                            <Info className="icon-dim-16" />
+                            <Info className="icon-dim-16 scn-6" />
                             <div className="ml-4 fs-11 fw-4 cn-7">Browser time zone: {timeZone} </div>
                         </div>
                     </div>
