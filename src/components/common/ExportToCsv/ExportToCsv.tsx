@@ -17,32 +17,48 @@
 import { useEffect, useRef, useState } from 'react'
 import { CSVLink } from 'react-csv'
 import {
-    ConditionalWrap,
     VisibleModal,
     DetailsProgressing,
+    Button,
+    ButtonVariantType,
+    ComponentSizeType,
+    ButtonStyleType,
+    logExceptionToSentry,
+    GenericSectionErrorState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
-import Tippy from '@tippyjs/react'
-import { CSV_HEADERS, ExportToCsvProps, FILE_NAMES } from './constants'
-import { ReactComponent as ExportIcon } from '../../../assets/icons/ic-arrow-line-down.svg'
-import { ReactComponent as Success } from '../../../assets/icons/ic-success.svg'
-import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
+import { ReactComponent as ExportIcon } from '@Icons/ic-arrow-line-down.svg'
+import { ReactComponent as Success } from '@Icons/ic-success.svg'
+import { ReactComponent as ICDownload } from '@Icons/ic-download.svg'
+import { CSV_HEADERS, FILE_NAMES } from './constants'
 import { Moment12HourExportFormat } from '../../../config'
-import './exportToCsv.scss'
+import { ExportToCsvProps } from './types'
+import { ExportConfiguration } from './ExportConfiguration'
+import { getDefaultValueFromConfiguration } from './utils'
 
-export default function ExportToCsv({
+const ExportToCsv = <ConfigValueType extends string = string>({
     apiPromise,
     fileName,
-    className = '',
     disabled = false,
     showOnlyIcon = false,
-}: ExportToCsvProps) {
+    configuration,
+}: ExportToCsvProps<ConfigValueType>) => {
+    const [selectedConfig, setSelectedConfig] = useState<Record<ConfigValueType, boolean>>(
+        getDefaultValueFromConfiguration(configuration),
+    )
+    const [showConfiguration, setShowConfiguration] = useState(false)
     const [exportingData, setExportingData] = useState(false)
     const [showExportingModal, setShowExportingModal] = useState(false)
     const [errorExportingData, setErrorExportingData] = useState(false)
     const [dataToExport, setDataToExport] = useState(null)
     const [requestCancelled, setRequestCancelled] = useState(false)
     const csvRef = useRef(null)
+
+    const isConfigurationAvailable = !!configuration && showConfiguration
+
+    const initiateDownload = () => {
+        csvRef.current.link.click()
+    }
 
     useEffect(() => {
         if (Array.isArray(dataToExport) && csvRef?.current && !requestCancelled) {
@@ -51,8 +67,8 @@ export default function ExportToCsv({
     }, [dataToExport])
 
     const generateDataToExport = async () => {
-        if (disabled) {
-            return
+        if (showConfiguration) {
+            setShowConfiguration(false)
         }
 
         if (requestCancelled || errorExportingData) {
@@ -62,14 +78,16 @@ export default function ExportToCsv({
 
         if (!exportingData) {
             const fileNameKey = Object.keys(FILE_NAMES).find((key) => FILE_NAMES[key] === fileName)
+            // eslint-disable-next-line no-console
             console.info(`Started exporting data at ${moment().format('HH:mm:ss')}.`)
             setExportingData(true)
             setShowExportingModal(true)
 
             try {
-                const response = await apiPromise()
+                const response = await apiPromise(selectedConfig)
                 setDataToExport(response)
 
+                // eslint-disable-next-line no-console
                 console.info(
                     `Completed data export of ${response.length} ${fileNameKey || ''} at ${moment().format(
                         'HH:mm:ss',
@@ -78,119 +96,168 @@ export default function ExportToCsv({
             } catch (err) {
                 setErrorExportingData(true)
 
+                // eslint-disable-next-line no-console
                 console.error(
-                    `Data export failed at ${moment().format('HH:mm:ss')}. Reason - ${err['message'] || err['name']}`,
+                    `Data export failed at ${moment().format('HH:mm:ss')}. Reason - ${err.message || err.name}`,
                 )
+                logExceptionToSentry(err)
             } finally {
                 setExportingData(false)
             }
         }
     }
 
+    const handleExportToCsvClick = async () => {
+        if (configuration) {
+            setShowConfiguration(true)
+        } else {
+            await generateDataToExport()
+        }
+    }
+
     const handleCancelAction = () => {
+        setShowConfiguration(false)
         setRequestCancelled(true)
         setShowExportingModal(false)
     }
 
     const renderModalCTA = () => {
-        return (
-            <div className="modal__CTA flex right dc__border-top">
-                <button
-                    type="button"
-                    className="flex cta cancel h-32"
-                    onClick={handleCancelAction}
-                    data-testid="close-export-csv-button"
-                >
-                    {exportingData ? 'Cancel' : 'Close'}
-                </button>
-                {!exportingData && errorExportingData && (
-                    <button
-                        type="button"
-                        className="flex cta ml-12 h-32"
+        if (isConfigurationAvailable) {
+            return (
+                <>
+                    <Button
+                        variant={ButtonVariantType.secondary}
+                        size={ComponentSizeType.medium}
+                        style={ButtonStyleType.neutral}
+                        onClick={handleCancelAction}
+                        text="Cancel"
+                        dataTestId="cancel-export-csv-button"
+                    />
+                    <Button
+                        size={ComponentSizeType.medium}
                         onClick={generateDataToExport}
-                        data-testid="retry-export-csv-button"
-                    >
-                        Retry
-                    </button>
+                        text="Download"
+                        dataTestId="retry-export-csv-button"
+                        endIcon={<ICDownload />}
+                        disabled={!Object.values(selectedConfig).some((value) => value)}
+                    />
+                </>
+            )
+        }
+
+        return (
+            <>
+                <Button
+                    variant={ButtonVariantType.secondary}
+                    size={ComponentSizeType.medium}
+                    style={ButtonStyleType.neutral}
+                    onClick={handleCancelAction}
+                    text={exportingData ? 'Cancel' : 'Close'}
+                    dataTestId="close-export-csv-button"
+                />
+                {!exportingData && errorExportingData && (
+                    <Button
+                        size={ComponentSizeType.medium}
+                        onClick={generateDataToExport}
+                        text="Retry"
+                        dataTestId="retry-export-csv-button"
+                    />
                 )}
-            </div>
+            </>
         )
     }
 
-    const initiateDownload = () => {
-        csvRef.current.link.click()
-    }
-
     const renderExportStatus = () => {
+        if (isConfigurationAvailable && showConfiguration) {
+            return (
+                <ExportConfiguration
+                    selectedConfig={selectedConfig}
+                    setSelectedConfig={setSelectedConfig}
+                    configuration={configuration}
+                />
+            )
+        }
+
+        if (errorExportingData) {
+            return (
+                <GenericSectionErrorState
+                    title="Unable to export data"
+                    description="Encountered an error while trying to export. Please try again. If error persists then try after
+                        some time."
+                    buttonText=""
+                    subTitle=""
+                />
+            )
+        }
+
+        if (exportingData) {
+            return (
+                <DetailsProgressing size={32} loadingText="Preparing export..." fullHeight>
+                    <span className="fs-13 fw-4">Please do not reload or press the browser back button.</span>
+                </DetailsProgressing>
+            )
+        }
+
         return (
-            <div className="export-status flex">
-                {exportingData && !errorExportingData && (
-                    <DetailsProgressing size={32} loadingText="Preparing export..." fullHeight>
-                        <span className="fs-13 fw-4">Please do not reload or press the browser back button.</span>
-                    </DetailsProgressing>
-                )}
-                {errorExportingData && (
-                    <div className="export-error bcn-0 flex column cn-9 h-100">
-                        <Error className="icon-dim-32" />
-                        <span className="fs-14 fw-6 mt-8">Unable to export data</span>
-                        <span className="fs-13 fw-4 dc__align-center">
-                            Encountered an error while trying to export. Please try again. If error persists then try
-                            after some time.
-                        </span>
-                    </div>
-                )}
-                {!exportingData && !errorExportingData && (
-                    <div className="export-success bcn-0 flex column cn-9 h-100">
-                        <Success className="icon-dim-32" />
-                        <span className="fs-14 fw-6 mt-8">Your export is ready</span>
-                        <span className="fs-13 fw-4"> If download does not start automatically,</span>
-                        <span className="fs-13 fw-4 cb-5 pointer" onClick={initiateDownload}>
-                            click here to download manually.
-                        </span>
-                    </div>
-                )}
+            <div className="export-success bcn-0 flex column cn-9 h-100 lh-20">
+                <Success className="icon-dim-32" />
+                <span className="fs-14 fw-6 mt-8">Your export is ready</span>
+                <span className="fs-13 fw-4"> If download does not start automatically,</span>
+                <Button
+                    text="click here to download manually."
+                    onClick={initiateDownload}
+                    dataTestId="manual-download"
+                    variant={ButtonVariantType.text}
+                    size={ComponentSizeType.medium}
+                />
             </div>
         )
     }
 
     return (
-        <div
-            className={`export-to-csv-button ${showOnlyIcon ? 'w-32' : ''} h-32 ${className}`}
-        >
-            <ConditionalWrap
-                condition={disabled}
-                wrap={(children) => (
-                    <Tippy className="default-tt" arrow={false} placement="top" content="Nothing to export">
-                        {children}
-                    </Tippy>
-                )}
-            >
-                <button
-                    className={`flex cta ghosted flex dc__gap-8 ${showOnlyIcon ? 'w-32 mw-none' : 'w-100'} h-32 ${
-                        disabled ? 'nothing-to-export' : ''
-                    }`}
-                    onClick={generateDataToExport}
-                    data-testid="export-csv-button"
-                >
-                    <ExportIcon className="icon-dim-16" />
-                    {!showOnlyIcon && <span>Export CSV</span>}
-                </button>
-            </ConditionalWrap>
+        <div>
+            <Button
+                {...(showOnlyIcon
+                    ? {
+                          icon: <ExportIcon />,
+                          ariaLabel: 'Export CSV',
+                          showAriaLabelInTippy: false,
+                      }
+                    : {
+                          text: 'Export CSV',
+                          startIcon: <ExportIcon />,
+                      })}
+                onClick={handleExportToCsvClick}
+                size={ComponentSizeType.medium}
+                variant={ButtonVariantType.secondary}
+                dataTestId="export-csv-button"
+                disabled={disabled}
+                showTooltip={disabled}
+                tooltipProps={{
+                    content: 'Nothing to export',
+                }}
+            />
             <CSVLink
                 ref={csvRef}
                 filename={`${fileName}_${moment().format(Moment12HourExportFormat)}.csv`}
                 headers={CSV_HEADERS[fileName] || []}
                 data={dataToExport || []}
             />
-            {showExportingModal && (
+            {(showExportingModal || isConfigurationAvailable) && (
                 <VisibleModal className="export-to-csv-modal" data-testid="export-to-csv-modal">
-                    <div className="modal__body">
-                        <h2 className="cn-9 fw-6 fs-16 m-0 dc__border-bottom">Export to CSV</h2>
-                        {renderExportStatus()}
-                        {renderModalCTA()}
+                    <div className="modal__body mt-40 p-0">
+                        <h2 className="cn-9 fw-6 fs-16 m-0 dc__border-bottom px-20 py-12">Export to CSV</h2>
+                        <div
+                            className={`py-16 flex ${isConfigurationAvailable ? 'top left dc__overflow-auto mxh-350 px-12' : 'px-20'}`}
+                        >
+                            {renderExportStatus()}
+                        </div>
+                        <div className="flex right dc__gap-12 dc__border-top py-16 px-20">{renderModalCTA()}</div>
                     </div>
                 </VisibleModal>
             )}
         </div>
     )
 }
+
+export default ExportToCsv
