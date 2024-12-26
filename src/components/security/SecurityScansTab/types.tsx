@@ -19,13 +19,9 @@ export enum SearchType {
     VULNERABILITY = 'cveName',
 }
 
-interface ScanDetailsUniqueId {
+export interface ScanDetailsType {
     appId: number
     envId: number
-}
-export interface ScanDetailsType {
-    name: string
-    uniqueId: ScanDetailsUniqueId
 }
 
 export enum SecurityListSortableKeys {

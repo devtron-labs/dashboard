@@ -68,8 +68,8 @@ export const SecurityScansTab = () => {
     } = urlFilters
 
     const { scanResultLoading, scanResultResponse, scanResultError } = useGetAppSecurityDetails({
-        appId: scanDetails.uniqueId.appId,
-        envId: scanDetails.uniqueId.envId,
+        appId: scanDetails.appId,
+        envId: scanDetails.envId,
     })
 
     const payload: ScanListPayloadType = {
@@ -171,11 +171,8 @@ export const SecurityScansTab = () => {
     const handleOpenScanDetailsModal = (event: React.MouseEvent, scan: SecurityScanType) => {
         event.stopPropagation()
         setScanDetails({
-            name: scan.name,
-            uniqueId: {
-                appId: scan.appId,
-                envId: scan.envId,
-            },
+            appId: scan.appId,
+            envId: scan.envId,
         })
     }
 
@@ -369,7 +366,7 @@ export const SecurityScansTab = () => {
     }
 
     const renderScanDetailsModal = () => {
-        if (scanDetails.uniqueId.appId && scanDetails.uniqueId.envId) {
+        if (scanDetails.appId && scanDetails.envId) {
             return (
                 <SecurityModal
                     handleModalClose={handleCloseScanDetailsModal}
