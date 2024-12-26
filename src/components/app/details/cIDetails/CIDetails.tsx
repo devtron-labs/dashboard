@@ -699,8 +699,6 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
         )
     }
 
-    const {scanToolId, severityCount, totalCount } = getScanToolAndSeverityCount(scanResultResponse?.result)
-
     if (scanResultLoading) {
         return <Progressing pageLoader />
     }
@@ -713,6 +711,8 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
         }
         return <ImageNotScannedView />
     }
+
+    const {scanToolId, severityCount, totalCount } = getScanToolAndSeverityCount(scanResultResponse?.result)
 
     if (artifactId && !totalCount) {
         return <NoVulnerabilityViewWithTool scanToolId={scanToolId} />
