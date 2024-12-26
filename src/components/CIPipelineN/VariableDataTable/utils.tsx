@@ -373,7 +373,7 @@ export const getVariableDataTableRows = ({
     ioVariables,
     type,
     isCustomTask,
-    isFileUploading,
+    idToIsFileUploadingMap,
     ...restProps
 }: GetVariableDataTableInitialRowsProps): VariableDataRowType[] =>
     (ioVariables || []).map(
@@ -404,7 +404,7 @@ export const getVariableDataTableRows = ({
                 refVariableName,
                 refVariableStage,
                 valueConstraint,
-                isFileUploading: isFileUploading[id],
+                isFileUploading: idToIsFileUploadingMap[id],
             })
 
             return {

@@ -107,7 +107,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
         ]
 
     // FILE UPLOADING STATUS REF (Record of rowIds and status)
-    const isFileUploading = useRef<Record<string | number, boolean>>({})
+    const idToIsFileUploadingMap = useRef<Record<string | number, boolean>>({})
 
     // TABLE ROWS
     const rows = useMemo<VariableDataRowType[]>(
@@ -122,7 +122,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                 selectedTaskIndex,
                 inputVariablesListFromPrevStep,
                 isCdPipeline,
-                isFileUploading: isFileUploading.current,
+                idToIsFileUploadingMap: idToIsFileUploadingMap.current,
             }),
         [ioVariables],
     )
@@ -260,7 +260,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
             case VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO:
                 if (selectedRow && selectedRow.data.val.type === DynamicDataTableRowDataType.FILE_UPLOAD) {
                     selectedRow.data.val.value = rowAction.actionValue.fileName
-                    selectedRow.data.val.props.isLoading = isFileUploading.current[selectedRow.id]
+                    selectedRow.data.val.props.isLoading = idToIsFileUploadingMap.current[selectedRow.id]
                     selectedRow.customState.fileInfo.fileReferenceId = rowAction.actionValue.fileReferenceId
                 }
                 break
@@ -429,7 +429,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
 
             if (extraData.files.length) {
                 try {
-                    isFileUploading.current[updatedRow.id] = true
+                    idToIsFileUploadingMap.current[updatedRow.id] = true
                     handleRowUpdateAction({
                         actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
                         actionValue: { fileReferenceId: null, fileName: value },
@@ -445,14 +445,14 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                         }),
                     })
 
-                    isFileUploading.current[updatedRow.id] = false
+                    idToIsFileUploadingMap.current[updatedRow.id] = false
                     handleRowUpdateAction({
                         actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
                         actionValue: { fileReferenceId: id, fileName: name },
                         rowId: updatedRow.id,
                     })
                 } catch {
-                    isFileUploading.current[updatedRow.id] = false
+                    idToIsFileUploadingMap.current[updatedRow.id] = false
                     handleRowUpdateAction({
                         actionType: VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO,
                         actionValue: { fileReferenceId: null, fileName: '' },

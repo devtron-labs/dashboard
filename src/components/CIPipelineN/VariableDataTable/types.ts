@@ -164,7 +164,7 @@ export interface GetVariableDataTableInitialRowsProps
     ioVariables: VariableType[]
     type: PluginVariableType
     isCustomTask: boolean
-    isFileUploading: Record<string | number, boolean>
+    idToIsFileUploadingMap: Record<string | number, boolean>
 }
 
 export type GetValidateCellProps = {
