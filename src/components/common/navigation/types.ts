@@ -39,4 +39,5 @@ export interface MainContext {
     }
     isAirgapped: boolean
     isSuperAdmin: boolean
+    isManifestScanningEnabled: boolean
 }

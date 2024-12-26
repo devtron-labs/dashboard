@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
 import { ChartValuesViewAction, ChartValuesViewActionTypes, ChartValuesViewState } from './ChartValuesView.type'
 
@@ -24,8 +24,10 @@ export const initState = (
     installedConfigFromParent: any,
     chartVersionsDataFromParent: ChartVersionType[],
     deploymentAppType: DeploymentAppTypes,
-    isManifestScanningEnabled: boolean,
 ): ChartValuesViewState => {
+
+    const {isManifestScanningEnabled} = useMainContext()
+
     return {
         isLoading: true,
         isLodingGUIForm: false,

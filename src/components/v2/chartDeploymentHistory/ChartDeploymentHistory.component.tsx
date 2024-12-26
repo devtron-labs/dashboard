@@ -32,8 +32,7 @@ import {
     ShowMoreText,
     DEPLOYMENT_STATUS,
     EMPTY_STATE_STATUS,
-    useAsync,
-    ResponseType,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -70,7 +69,6 @@ import {ReactComponent as ICLines } from '@Icons/ic-lines.svg'
 
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 const ChartSecurityTab = importComponentFromFELibrary('ChartSecurityTab', null, 'function')
-const getEnvironmentData: () => Promise<ResponseType<{isManifestScanningEnabled: boolean}>> = importComponentFromFELibrary('getEnvironmentData', null, 'function')
 
 interface DeploymentManifestDetail extends ChartDeploymentManifestDetail {
     loading?: boolean
@@ -112,15 +110,14 @@ const ChartDeploymentHistory = ({
     let initTimer = null
     // Checking if deployment app type is argocd only then show steps tab
 
-    const [, envVariablesResponse] = useAsync(getEnvironmentData, [], !!getEnvironmentData)
-    const isScanV2Enabled = envVariablesResponse?.result.isManifestScanningEnabled ?? false
+    const { isManifestScanningEnabled } = useMainContext()
 
     const deploymentTabs = () => {
         const tabs = [
             DEPLOYMENT_HISTORY_TAB.SOURCE,
             DEPLOYMENT_HISTORY_TAB.VALUES_YAML,
             DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST,
-            (ChartSecurityTab && isScanV2Enabled && !isExternal && DEPLOYMENT_HISTORY_TAB.SECURITY),
+            (ChartSecurityTab && isManifestScanningEnabled && !isExternal && DEPLOYMENT_HISTORY_TAB.SECURITY),
         ]
         if (installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS) {
             tabs.unshift(DEPLOYMENT_HISTORY_TAB.STEPS)
@@ -599,7 +596,7 @@ const ChartDeploymentHistory = ({
                         status={deployment.status}
                     />
                 )}
-                {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SECURITY && !isExternal && isScanV2Enabled && ChartSecurityTab && (
+                {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SECURITY && !isExternal && isManifestScanningEnabled && ChartSecurityTab && (
                     <ChartSecurityTab installedAppVersionHistoryId={deploymentHistoryArr[selectedDeploymentHistoryIndex].version} />
                 )}
             </div>

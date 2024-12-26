@@ -38,7 +38,6 @@ import {
     ConfigurationType,
     ToastManager,
     ToastVariantType,
-    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -144,8 +143,6 @@ import { AUTO_GENERATE_GITOPS_REPO, CHART_VALUE_ID } from './constant'
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 const getDownloadManifestUrl = importComponentFromFELibrary('getDownloadManifestUrl', null, 'function')
 const ToggleSecurityScan = importComponentFromFELibrary('ToggleSecurityScan', null, 'function')
-const getEnvironmentData: () => Promise<ResponseType<{ isManifestScanningEnabled: boolean }>> =
-    importComponentFromFELibrary('getEnvironmentData', null, 'function')
 
 const ChartValuesView = ({
     appId,
@@ -167,7 +164,7 @@ const ChartValuesView = ({
         presetValueId: string
         envId: string
     }>()
-    const { serverMode } = useMainContext()
+    const { serverMode, isManifestScanningEnabled } = useMainContext()
     const { handleDownload } = useDownload()
     const chartValuesAbortRef = useRef<AbortController>(new AbortController())
     const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>(chartValuesListFromParent || [])
@@ -186,10 +183,6 @@ const ChartValuesView = ({
     const [showRepoSelector, setShowRepoSelector] = useState<boolean>(false)
     const [shouldShowPrompt, setShouldShowPrompt] = useState<boolean>(true)
 
-    const [, envVariablesResponse] = useAsync(getEnvironmentData, [], !!getEnvironmentData)
-
-    const isManifestScanningEnabled: boolean = envVariablesResponse?.result.isManifestScanningEnabled || false
-
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
         initState(
@@ -204,7 +197,6 @@ const ChartValuesView = ({
             installedConfigFromParent,
             chartVersionsDataFromParent,
             appDetails?.deploymentAppType,
-            isManifestScanningEnabled,
         ),
     )
 
