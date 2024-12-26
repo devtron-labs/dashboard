@@ -16,7 +16,7 @@
 
 import { useEffect, useState } from 'react'
 import { showError, Progressing, ErrorScreenNotAuthorized, DeleteComponent } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import { Route, Switch, useRouteMatch } from 'react-router-dom'
 import { SlackConfigModal } from './SlackConfigModal'
 import { SESConfigModal } from './SESConfigModal'
 import {
@@ -27,10 +27,6 @@ import {
     getSMTPConfiguration,
     getWebhookConfiguration,
 } from './notifications.service'
-import slack from '../../assets/img/slack-logo.svg'
-import ses from '../../assets/icons/ic-aws-ses.svg'
-import webhook from '../../assets/icons/ic-CIWebhook.svg'
-import { ReactComponent as SMTP } from '../../assets/icons/ic-smtp.svg'
 import { ViewType } from '../../config/constants'
 import { DC_CONFIGURATION_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { SMTPConfigModal } from './SMTPConfigModal'
@@ -40,8 +36,11 @@ import { SlackConfigurationTable } from './SlackConfigurationTable'
 import { WebhookConfigurationTable } from './WebhookConfigurationTable'
 import { SESConfigurationTable } from './SESConfigurationTable'
 import { SMTPConfigurationTable } from './SMTPConfigurationTable'
+import { ConfigurationTabSwitcher } from './ConfigurationTabsSwitcher'
+import { ConfigurationsTabTypes } from './constants'
 
 export const ConfigurationTab = () => {
+    const { path } = useRouteMatch()
     const [state, setState] = useState<ConfigurationTabState>({
         view: ViewType.LOADING,
         showSlackConfigModal: false,
@@ -64,6 +63,7 @@ export const ConfigurationTab = () => {
         slackConfig: {},
         webhookConfig: {},
         showDeleteConfigModalType: '',
+        activeTab: ConfigurationsTabTypes.SLACK,
     })
 
     const getAllChannelConfigs = (): void => {
@@ -94,10 +94,6 @@ export const ConfigurationTab = () => {
 
     const onCloseWebhookModal = () => {
         setState({ ...state, showWebhookConfigModal: false, webhookConfigId: 0 })
-    }
-
-    const addWebhookConfigHandler = () => {
-        setState({ ...state, showWebhookConfigModal: true, webhookConfigId: 0 })
     }
 
     const deleteClickHandler = async (configId, type) => {
@@ -170,95 +166,6 @@ export const ConfigurationTab = () => {
 
     const renderSMTPConfigurationTable = () => (
         <SMTPConfigurationTable state={state} setState={setState} deleteClickHandler={deleteClickHandler} />
-    )
-
-    const renderWebhookConfigurations = () => (
-        <div key="webhook-config" className="dc__position-rel white-card white-card--configuration-tab mb-16">
-            <div className="configuration-tab__header">
-                <p data-testid="webhook-config-heading-title" className="configuration-tab__title">
-                    <img src={webhook} alt="webhook" className="icon-dim-24 mr-10" />
-                    Webhook Configurations
-                </p>
-                <button
-                    type="button"
-                    className="cta flex small"
-                    onClick={addWebhookConfigHandler}
-                    data-testid="webhook-config-add-button"
-                >
-                    <Add className="icon-dim-14 mr-5" />
-                    Add
-                </button>
-            </div>
-            {renderWebhookConfigurationTable()}
-        </div>
-    )
-
-    const renderSlackConfigurations = () => (
-        <div key="slack-config" className="dc__position-rel white-card white-card--configuration-tab mb-16">
-            <div className="configuration-tab__header">
-                <p data-testid="slack-heading-title" className="configuration-tab__title">
-                    <img src={slack} alt="slack" className="icon-dim-24 mr-10" />
-                    Slack Configurations
-                </p>
-                <button
-                    type="button"
-                    className="cta flex small"
-                    onClick={() => {
-                        setState({ ...state, showSlackConfigModal: true, slackConfigId: 0 })
-                    }}
-                    data-testid="slack-add-button"
-                >
-                    <Add className="icon-dim-14 mr-5" />
-                    Add
-                </button>
-            </div>
-            {renderSlackConfigurationTable()}
-        </div>
-    )
-    const renderSESConfigurations = () => (
-        <div key="ses-config" className="dc__position-rel white-card white-card--configuration-tab">
-            <div className="configuration-tab__header">
-                <p data-testid="ses-heading-title" className="configuration-tab__title">
-                    <img alt="ses config" src={ses} className="icon-dim-24 mr-10" />
-                    SES Configurations
-                </p>
-                <button
-                    type="button"
-                    className="cta flex small"
-                    onClick={() => {
-                        setState({ ...state, showSESConfigModal: true, sesConfigId: 0 })
-                    }}
-                    data-testid="ses-add-button"
-                >
-                    <Add className="icon-dim-14 mr-5" />
-                    Add
-                </button>
-            </div>
-            {renderSESConfigurationTable()}
-        </div>
-    )
-
-    const renderSMTPConfigurations = () => (
-        <div key="smtp-config" className="dc__position-rel white-card white-card--configuration-tab">
-            <div className="configuration-tab__header">
-                <p data-testid="smtp-heading-title" className="configuration-tab__title flexbox">
-                    <SMTP className="icon-dim-24 mr-10" />
-                    SMTP Configurations
-                </p>
-                <button
-                    type="button"
-                    className="cta flex small"
-                    onClick={() => {
-                        setState({ ...state, showSMTPConfigModal: true, smtpConfigId: 0 })
-                    }}
-                    data-testid="smtp-add-button"
-                >
-                    <Add className="icon-dim-14 mr-5" />
-                    Add
-                </button>
-            </div>
-            {renderSMTPConfigurationTable()}
-        </div>
     )
 
     const setDeleting = () => {
@@ -385,17 +292,19 @@ export const ConfigurationTab = () => {
     }
     const payload = deleteConfigPayload()
     return (
-        <>
-            <div className="configuration-tab">
-                {renderSESConfigurations()}
-                {renderSMTPConfigurations()}
-                {renderSlackConfigurations()}
-                {renderWebhookConfigurations()}
-            </div>
+        <div className="bcn-0 h-100 flexbox-col dc__gap-16 pt-16">
+            <ConfigurationTabSwitcher activeTab={state.activeTab} setState={setState} state={state} />
+            <Switch>
+                <Route path={`${path}/ses`} render={() => renderSESConfigurationTable()} />
+                <Route path={`${path}/slack`} component={() => renderSlackConfigurationTable()} />
+                <Route path={`${path}/webhook`} component={() => renderWebhookConfigurationTable()} />
+                <Route path={`${path}/smtp`} component={() => renderSMTPConfigurationTable()} />
+            </Switch>
             {renderSESConfigModal()}
             {renderSMTPConfigModal()}
             {renderSlackConfigModal()}
             {renderWebhookConfigModal()}
+
             {state.confirmation && (
                 <DeleteComponent
                     setDeleting={setDeleting}
@@ -409,6 +318,6 @@ export const ConfigurationTab = () => {
                     configuration="configuration"
                 />
             )}
-        </>
+        </div>
     )
 }

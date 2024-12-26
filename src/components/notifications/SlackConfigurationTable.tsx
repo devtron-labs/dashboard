@@ -1,10 +1,12 @@
 import { Trash } from '@Components/common'
 import { DeleteComponentsName } from '@Config/constantMessaging'
 import { ViewType } from '@Config/constants'
-import { Progressing, GenericEmptyState, EMPTY_STATE_STATUS } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Edit } from '@Icons/ic-edit.svg'
 import { ConfigurationTableProps } from './types'
+import { EmptyConfigurationView } from './EmptyConfigurationView'
+import { ConfigurationsTabTypes } from './constants'
 
 export const SlackConfigurationTable = ({ setState, state, deleteClickHandler }: ConfigurationTableProps) => {
     const { slackConfigurationList, view } = state
@@ -16,11 +18,7 @@ export const SlackConfigurationTable = ({ setState, state, deleteClickHandler }:
         )
     }
     if (slackConfigurationList.length === 0) {
-        return (
-            <div className="empty-state-height">
-                <GenericEmptyState title={EMPTY_STATE_STATUS.CONFIGURATION_TAB.TITLE} noImage />
-            </div>
-        )
+        return <EmptyConfigurationView configTabType={ConfigurationsTabTypes.SLACK} />
     }
     return (
         <table className="w-100">

@@ -16,14 +16,17 @@
 
 import { components } from 'react-select'
 import { validateEmail } from '../common'
-import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg'
-import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg'
-import { ReactComponent as Email } from '../../assets/icons/ic-mail.svg'
-import { ReactComponent as RedWarning } from '../../assets/icons/ic-error-medium.svg'
-import { ReactComponent as CI } from '../../assets/icons/ic-CI.svg'
-import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg'
-import { ReactComponent as Rocket } from '../../assets/icons/ic-paper-rocket.svg'
+import { ReactComponent as ArrowDown } from '@Icons/ic-chevron-down.svg'
+import { ReactComponent as Email } from '@Icons/ic-mail.svg'
+import { ReactComponent as RedWarning } from '@Icons/ic-error-medium.svg'
+import { ReactComponent as CI } from '@Icons/ic-CI.svg'
+import { ReactComponent as CD } from '@Icons/ic-CD.svg'
+import { ReactComponent as Rocket } from '@Icons/ic-paper-rocket.svg'
+import { ReactComponent as Slack } from '@Icons/slack-logo.svg'
+import { ReactComponent as SES } from '@Icons/ic-aws-ses.svg'
+import { ReactComponent as Webhook } from '@Icons/ic-CIWebhook.svg'
+import { ReactComponent as SMTP } from '@Icons/ic-smtp.svg'
+import { ConfigurationsTabTypes, ConfigurationTabText } from './constants'
 
 export const multiSelectStyles = {
     control: (base, state) => ({
@@ -160,3 +163,26 @@ export const renderPipelineTypeIcon = (row) => {
     }
     return <CD className="icon-dim-20 dc__flip" />
 }
+
+export const getConfigurationTabTextWithIcon = () => [
+    {
+        label: ConfigurationTabText.SES,
+        icon: SES,
+        link: ConfigurationsTabTypes.SES,
+    },
+    {
+        label: ConfigurationTabText.SMTP,
+        icon: SMTP,
+        link: ConfigurationsTabTypes.SMTP,
+    },
+    {
+        label: ConfigurationTabText.SLACK,
+        icon: Slack,
+        link: ConfigurationsTabTypes.SLACK,
+    },
+    {
+        label: ConfigurationTabText.WEBHOOK,
+        icon: Webhook,
+        link: ConfigurationsTabTypes.WEBHOOK,
+    },
+]

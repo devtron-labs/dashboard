@@ -16,6 +16,7 @@
 
 import { RouteComponentProps } from 'react-router-dom'
 import { ServerError, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { ConfigurationsTabTypes } from './constants'
 
 export interface NotifierProps extends RouteComponentProps<{ id: string }> {}
 
@@ -102,6 +103,7 @@ export interface ConfigurationTabState {
     webhookConfig: any
     showDeleteConfigModalType: string
     showWebhookConfigModal: boolean
+    activeTab?: ConfigurationsTabTypes
 }
 
 export interface ConfigurationTableProps {
@@ -149,4 +151,14 @@ export interface CreateHeaderDetailsType {
 
 export interface WebhookAttributesResponseType extends ResponseType {
     result?: Record<string, string>
+}
+
+export interface EmptyConfigurationViewProps {
+    configTabType: ConfigurationsTabTypes
+}
+
+export interface ConfigurationTabSwitcherProps {
+    activeTab: ConfigurationsTabTypes
+    state: ConfigurationTabState
+    setState: React.Dispatch<React.SetStateAction<ConfigurationTabState>>
 }
