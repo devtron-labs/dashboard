@@ -44,6 +44,7 @@ const EnvironmentSelector = ({
                           option.clusterName +
                           (option.clusterName && option.namespace ? '/' : '') +
                           (option.namespace || ''),
+                      clusterName: option.clusterName,
                   })),
               }))
             : [ALL_ENVIRONMENTS_OPTION, ...environments]
