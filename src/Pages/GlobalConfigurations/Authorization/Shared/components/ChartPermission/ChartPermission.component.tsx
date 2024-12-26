@@ -16,17 +16,15 @@
 
 import React, { useMemo } from 'react'
 import {
-    Option,
-    MultiValueContainer,
-    MultiValueRemove,
     OptionType,
     Checkbox,
     noop,
     CHECKBOX_VALUE,
+    SelectPicker,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Select from 'react-select'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
-import { authorizationSelectStyles, ActionTypes } from '../../../constants'
+import { ActionTypes } from '../../../constants'
 import { ChartPermissionRow } from './types'
 import { ChartPermissionValues, CHART_PERMISSION_OPTIONS } from './constants'
 
@@ -114,39 +112,24 @@ const ChartPermission = React.memo(({ chartGroupsList }: ChartPermissionRow) => 
                     rootClassName="mb-0"
                     value={CHECKBOX_VALUE.CHECKED}
                 />
-                <Select
+                <SelectPicker
+                    inputId="chart-group-edit-select"
                     value={getSelectedValueForChartGroupEditSelect()}
                     isDisabled={chartPermission.action === ActionTypes.ADMIN}
                     options={chartGroupEditOptions}
                     onChange={handleChartEditChange}
-                    menuPlacement="auto"
-                    components={{
-                        ClearIndicator: null,
-                        IndicatorSeparator: null,
-                        Option,
-                    }}
-                    styles={authorizationSelectStyles}
+                    size={ComponentSizeType.large}
                 />
             </div>
             {chartPermission.action === ActionTypes.UPDATE && (
-                <Select
+                <SelectPicker
+                    inputId="chart-group-select-update"
                     value={chartPermission.entityName}
                     placeholder="Select Chart Group"
                     isMulti
-                    styles={authorizationSelectStyles}
-                    closeMenuOnSelect={false}
                     name="entityName"
                     options={chartGroupOptions}
                     onChange={handleChartGroupChange}
-                    hideSelectedOptions={false}
-                    menuPlacement="auto"
-                    components={{
-                        ClearIndicator: null,
-                        IndicatorSeparator: null,
-                        MultiValueRemove,
-                        MultiValueContainer,
-                        Option,
-                    }}
                 />
             )}
         </div>

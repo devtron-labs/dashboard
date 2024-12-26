@@ -42,10 +42,11 @@ import {
     abortPreviousRequests,
     getIsRequestAborted,
     DraftAction,
+    checkIfPathIsMatching,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt, useLocation, useParams } from 'react-router-dom'
 import YAML from 'yaml'
-import { checkIfPathIsMatching, FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
+import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
 import { URLS } from '@Config/routes'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'

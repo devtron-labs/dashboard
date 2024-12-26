@@ -16,10 +16,9 @@
 
 import { ReactSelectInputAction, EntityTypes } from '@devtron-labs/devtron-fe-common-lib'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
-import { ActionTypes, ACTION_LABEL, authorizationSelectStyles } from '../../../constants'
+import { ActionTypes, ACTION_LABEL } from '../../../constants'
 import { K8sPermissionFilter } from '../../../types'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
-import { K8S_EMPTY_GROUP } from '../../../../../../components/ResourceBrowser/Constants'
 
 export const apiGroupAll = (permission, isLabel = false) => {
     if (permission === '') {
@@ -36,7 +35,7 @@ export const HEADER_OPTIONS = ['CLUSTER', 'API GROUP', 'KIND', 'NAMESPACE', 'RES
 
 export const multiSelectAllState = (selected, actionMeta, setState, options) => {
     if (actionMeta.action === ReactSelectInputAction.selectOption && actionMeta.option.value === SELECT_ALL_VALUE) {
-        setState(options)
+        setState(options.filter((option) => option.value === SELECT_ALL_VALUE))
     } else if (
         (actionMeta.action === ReactSelectInputAction.deselectOption && actionMeta.option.value === SELECT_ALL_VALUE) ||
         (actionMeta.action === ReactSelectInputAction.removeValue && actionMeta.removedValue.value === SELECT_ALL_VALUE)
@@ -50,7 +49,7 @@ export const multiSelectAllState = (selected, actionMeta, setState, options) => 
     } else if (selected.length >= options.length - 1 && actionMeta.action !== 'create-option') {
         setState(options)
     } else {
-        setState(selected)
+        setState(selected.filter((option) => option.value !== SELECT_ALL_VALUE))
     }
 }
 
@@ -83,27 +82,7 @@ export const getPermissionObject = (idx = 0, k8sPermission?: K8sPermissionFilter
     }
 }
 
-export const k8sRoleSelectionStyle = {
-    ...authorizationSelectStyles,
-    option: (base, state) => ({
-        ...authorizationSelectStyles.option(base, state),
-        marginRight: '8px',
-    }),
-    valueContainer: (base, state) => ({
-        ...authorizationSelectStyles.valueContainer(base),
-        display: 'flex',
-        color: state.selectProps.menuIsOpen ? 'var(--N500)' : base.color,
-    }),
-}
-
 export const excludeKeyAndClusterValue = ({ cluster, ...rest }: K8sPermissionFilter): K8sPermissionFilter => ({
     cluster: { label: cluster.label, value: cluster.label },
     ...rest,
 })
-
-export const formatResourceKindOptionLabel = (option): JSX.Element => (
-    <div className="flex left column">
-        <span className="w-100 dc__ellipsis-right">{option.label}</span>
-        {option.value !== SELECT_ALL_VALUE && <small className="cn-6">{option.gvk?.Group || K8S_EMPTY_GROUP}</small>}
-    </div>
-)
