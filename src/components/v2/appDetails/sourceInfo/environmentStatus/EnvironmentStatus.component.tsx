@@ -25,7 +25,7 @@ import { useRouteMatch, useHistory, useParams } from 'react-router-dom'
 import NotesDrawer from './NotesDrawer'
 import { getInstalledChartNotesDetail } from '../../appDetails.api'
 import { importComponentFromFELibrary } from '../../../../common'
-import { DeploymentAppTypes, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, useAsync, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 import { EnvironmentStatusComponentType } from '../environment.type'
 import HelmAppConfigApplyStatusCard from './HelmAppConfigApplyStatusCard'
 import AppStatusCard from '../../../../app/details/appDetails/AppStatusCard'
@@ -39,7 +39,6 @@ import IssuesListingModal from '../../../../app/details/appDetails/IssuesListing
 import SecurityVulnerabilityCard from '../../../../app/details/appDetails/SecurityVulnerabilityCard'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
-const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 const EnvironmentStatusComponent = ({
     loadingDetails,
@@ -48,6 +47,7 @@ const EnvironmentStatusComponent = ({
     isVirtualEnvironment,
     refetchDeploymentStatus,
 }: EnvironmentStatusComponentType) => {
+    const { isManifestScanningEnabled } = useMainContext()
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
     const [showNotes, setShowNotes] = useState(false)
@@ -183,7 +183,7 @@ const EnvironmentStatusComponent = ({
                     {renderHelmConfigApplyStatusBlock()}
                     {renderLastUpdatedBlock()}
                     {renderChartUsedBlock()}
-                    {isFELibAvailable && appDetails?.appType === AppType.DEVTRON_HELM_CHART && (
+                    {isManifestScanningEnabled && appDetails?.appType === AppType.DEVTRON_HELM_CHART && (
                         <SecurityVulnerabilityCard
                             cardLoading={cardLoading}
                             installedAppId={appDetails?.installedAppId}
