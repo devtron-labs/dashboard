@@ -70,7 +70,6 @@ import { ReactComponent as NoVulnerability } from '../../../../assets/img/ic-vul
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { renderCIListHeader, renderDeploymentHistoryTriggerMetaText } from '../cdDetails/utils'
 import { importComponentFromFELibrary } from '@Components/common'
-import { CATEGORIES } from '@devtron-labs/devtron-fe-common-lib/dist/Shared/Components/Security/SecurityModal/types'
 
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
@@ -723,14 +722,13 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
         return <ImageNotScannedView />
     }
 
-    const scanToolId = scanResultResponse?.result.imageScan?.vulnerability?.list[0].scanToolName === 'TRIVY' ? SCAN_TOOL_ID_TRIVY : SCAN_TOOL_ID_CLAIR
+    const scanToolId =
+        scanResultResponse?.result.imageScan?.vulnerability?.list[0].scanToolName === 'TRIVY'
+            ? SCAN_TOOL_ID_TRIVY
+            : SCAN_TOOL_ID_CLAIR
 
     if (artifactId && !totalCount) {
-        return (
-            <NoVulnerabilityViewWithTool
-                scanToolId={scanToolId}
-            />
-        )
+        return <NoVulnerabilityViewWithTool scanToolId={scanToolId} />
     }
 
     return (

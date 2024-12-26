@@ -70,7 +70,7 @@ import {ReactComponent as ICLines } from '@Icons/ic-lines.svg'
 
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 const ChartSecurityTab = importComponentFromFELibrary('ChartSecurityTab', null, 'function')
-const getEnvironmentData: () => Promise<ResponseType<{isHelmAppScanningEnabled: boolean}>> = importComponentFromFELibrary('getEnvironmentData', null, 'function')
+const getEnvironmentData: () => Promise<ResponseType<{isManifestScanningEnabled: boolean}>> = importComponentFromFELibrary('getEnvironmentData', null, 'function')
 
 interface DeploymentManifestDetail extends ChartDeploymentManifestDetail {
     loading?: boolean
@@ -113,7 +113,7 @@ const ChartDeploymentHistory = ({
     // Checking if deployment app type is argocd only then show steps tab
 
     const [, envVariablesResponse] = useAsync(getEnvironmentData, [], !!getEnvironmentData)
-    const isScanV2Enabled = envVariablesResponse?.result.isHelmAppScanningEnabled ?? false
+    const isScanV2Enabled = envVariablesResponse?.result.isManifestScanningEnabled ?? false
 
     const deploymentTabs = () => {
         const tabs = [

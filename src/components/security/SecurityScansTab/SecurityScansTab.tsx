@@ -369,7 +369,7 @@ export const SecurityScansTab = () => {
     }
 
     const renderScanDetailsModal = () => {
-        if (scanDetails.uniqueId.appId) {
+        if (scanDetails.uniqueId.appId && scanDetails.uniqueId.envId) {
             return (
                 <SecurityModal
                     handleModalClose={handleCloseScanDetailsModal}

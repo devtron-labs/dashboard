@@ -144,7 +144,8 @@ import { AUTO_GENERATE_GITOPS_REPO, CHART_VALUE_ID } from './constant'
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 const getDownloadManifestUrl = importComponentFromFELibrary('getDownloadManifestUrl', null, 'function')
 const ToggleSecurityScan = importComponentFromFELibrary('ToggleSecurityScan', null, 'function')
-const getEnvironmentData: () => Promise<ResponseType<{isHelmAppScanningEnabled: boolean}>> = importComponentFromFELibrary('getEnvironmentData', null, 'function')
+const getEnvironmentData: () => Promise<ResponseType<{ isManifestScanningEnabled: boolean }>> =
+    importComponentFromFELibrary('getEnvironmentData', null, 'function')
 
 const ChartValuesView = ({
     appId,
@@ -187,6 +188,8 @@ const ChartValuesView = ({
 
     const [, envVariablesResponse] = useAsync(getEnvironmentData, [], !!getEnvironmentData)
 
+    const isManifestScanningEnabled: boolean = envVariablesResponse?.result.isManifestScanningEnabled || false
+
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
         initState(
@@ -201,7 +204,7 @@ const ChartValuesView = ({
             installedConfigFromParent,
             chartVersionsDataFromParent,
             appDetails?.deploymentAppType,
-            envVariablesResponse?.result.isHelmAppScanningEnabled ?? false
+            isManifestScanningEnabled,
         ),
     )
 
@@ -1791,12 +1794,15 @@ const ChartValuesView = ({
                                 />
                             )}
                         </div>
-                        {!isExternalApp && (isDeployChartView || isUpdateAppView) && ToggleSecurityScan && (
-                            <ToggleSecurityScan
-                                isManifestScanEnabled={commonState.isManifestScanEnabled}
-                                handleToggleSecurityScan={handleToggleSecurityScan}
-                            />
-                        )}
+                        {isManifestScanningEnabled &&
+                            !isExternalApp &&
+                            (isDeployChartView || isUpdateAppView) &&
+                            ToggleSecurityScan && (
+                                <ToggleSecurityScan
+                                    isManifestScanEnabled={commonState.isManifestScanEnabled}
+                                    handleToggleSecurityScan={handleToggleSecurityScan}
+                                />
+                            )}
                         {!isDeployChartView &&
                             chartValueId !== '0' &&
                             !(

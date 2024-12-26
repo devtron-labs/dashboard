@@ -23,12 +23,13 @@ import {
     useWindowSize,
     APPROVAL_MODAL_TYPE,
     YAMLStringify,
-    ACTION_STATE,
     DEFAULT_SECRET_PLACEHOLDER,
     ApiResourceGroupType,
     PluginDetailServiceParamsType,
     PipelineBuildStageType,
     SeverityCount,
+    useAsync,
+    ResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link, PromptProps } from 'react-router-dom'
@@ -1118,11 +1119,16 @@ export const getAPIOptionsWithTriggerTimeout = (options?: APIOptions): APIOption
     return _options
 }
 
+const getEnvironmentData: () => Promise<ResponseType<{isManifestScanningEnabled: boolean}>> = importComponentFromFELibrary('getEnvironmentData', null, 'function')
+
 export const getShowResourceScanModal = (selectedResourceKind: NodeType, isTrivyInstalled: boolean): boolean => {
+    const [, envVariablesResponse] = useAsync(getEnvironmentData, [], !!getEnvironmentData)
+
+    const isManifestScanningEnabled: boolean = envVariablesResponse?.result.isManifestScanningEnabled || false
     const fromWorkloadOrRollout =
         getAppDetailsAggregator(selectedResourceKind) === AggregationKeys.Workloads ||
         selectedResourceKind === NodeType.Rollout
-    return window._env_.ENABLE_RESOURCE_SCAN && isTrivyInstalled && fromWorkloadOrRollout
+    return isManifestScanningEnabled && isTrivyInstalled && fromWorkloadOrRollout
 }
 
 export const getApprovalModalTypeFromURL = (url: string): APPROVAL_MODAL_TYPE => {
