@@ -43,13 +43,9 @@ import {
     SecuritySummaryCard,
     TabGroup,
     TRIGGER_STATUS_PROGRESSING,
-    SCAN_TOOL_ID_TRIVY,
     ErrorScreenManager,
     getSecurityScan,
-    SeverityCount,
-    getSeverityCountFromSummary,
-    getTotalSeverityCount,
-    SCAN_TOOL_ID_CLAIR,
+    getScanToolAndSeverityCount,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, Redirect, useRouteMatch, useParams, useHistory, generatePath } from 'react-router-dom'
 import {
@@ -703,11 +699,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
         )
     }
 
-    const severityCount: SeverityCount = getSeverityCountFromSummary(
-        scanResultResponse?.result.imageScan?.vulnerability?.summary.severities,
-    )
-
-    const totalCount = getTotalSeverityCount(severityCount)
+    const {scanToolId, severityCount, totalCount } = getScanToolAndSeverityCount(scanResultResponse?.result)
 
     if (scanResultLoading) {
         return <Progressing pageLoader />
@@ -721,11 +713,6 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
         }
         return <ImageNotScannedView />
     }
-
-    const scanToolId =
-        scanResultResponse?.result.imageScan?.vulnerability?.list[0].scanToolName === 'TRIVY'
-            ? SCAN_TOOL_ID_TRIVY
-            : SCAN_TOOL_ID_CLAIR
 
     if (artifactId && !totalCount) {
         return <NoVulnerabilityViewWithTool scanToolId={scanToolId} />

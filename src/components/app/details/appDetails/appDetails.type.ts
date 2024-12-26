@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-    ACTION_STATE,
-    ResponseType,
-    ScanResultDTO,
-    ServerErrors,
-    SeverityCount,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { ACTION_STATE, ResponseType, ScanResultDTO, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import { fetchAppDetailsInTime } from '@Components/app/service'
 import { AggregatedNodes, OptionType } from '../../types'
 import { SyncErrorType, AppDetails } from '../../../v2/appDetails/appDetails.type'
@@ -274,6 +268,4 @@ export interface UseGetAppSecurityDetailsReturnType {
     scanResultResponse: ResponseType<ScanResultDTO>
     scanResultError: ServerErrors
     reloadScanResult: () => void
-    severityCount: SeverityCount
-    totalCount: number
 }
