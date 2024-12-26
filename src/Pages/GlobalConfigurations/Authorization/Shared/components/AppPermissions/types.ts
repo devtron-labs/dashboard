@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { ServerError, ACCESS_TYPE_MAP } from '@devtron-labs/devtron-fe-common-lib'
+import { Dispatch, SetStateAction } from 'react'
+import { GroupBase } from 'react-select'
+import { ServerError, ACCESS_TYPE_MAP, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { JobList } from '../../../../../../components/Jobs/Types'
 import { DirectPermissionsRoleFilter } from '../../../types'
 
@@ -40,7 +42,7 @@ export interface AppPermissionsDetailType {
     getListForAccessType: (accessType: ACCESS_TYPE_MAP) => AppsList | JobsList
 }
 
-export interface DirectPermissionRow
+export interface DirectPermissionRowProps
     extends Pick<
         AppPermissionsDetailType,
         | 'appsList'
@@ -55,4 +57,28 @@ export interface DirectPermissionRow
     handleDirectPermissionChange: (...rest) => void
     index: number
     removeRow: (index: number) => void
+}
+
+export interface WorkflowListType {
+    options: GroupBase<SelectPickerOptionType>[]
+    loading: boolean
+}
+
+export interface WorkflowSelectorProps
+    extends Pick<DirectPermissionRowProps, 'permission' | 'handleDirectPermissionChange'> {
+    workflowList: WorkflowListType
+}
+
+export interface AppOrJobSelectorProps
+    extends Pick<
+        DirectPermissionRowProps,
+        | 'permission'
+        | 'getListForAccessType'
+        | 'handleDirectPermissionChange'
+        | 'projectsList'
+        | 'appsList'
+        | 'jobsList'
+        | 'appsListHelmApps'
+    > {
+    setWorkflowList: Dispatch<SetStateAction<WorkflowListType>>
 }

@@ -15,11 +15,10 @@
  */
 
 /* eslint-disable no-param-reassign */
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Switch, Route, Redirect, useLocation, useRouteMatch } from 'react-router-dom'
 import {
     GenericSectionErrorState,
-    OptionType,
     ReactSelectInputAction,
     showError,
     TabGroup,
@@ -62,7 +61,7 @@ import {
     getNavLinksConfig,
 } from './utils'
 import { getWorkflowOptions, validateDirectPermissionForm } from '../../../utils'
-import { AppPermissionsDetailType, DirectPermissionRow } from './types'
+import { AppPermissionsDetailType, DirectPermissionRowProps } from './types'
 import { APIRoleFilter, ChartGroupPermissionsFilter, DirectPermissionsRoleFilter } from '../../../types'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
 import { JobList } from '../../../../../../components/Jobs/Types'
@@ -79,6 +78,7 @@ const AppPermissions = () => {
         setK8sPermission,
         currentK8sPermissionRef,
         data,
+        setIsSaveDisabled,
     } = usePermissionConfiguration()
     const { customRoles } = useAuthorizationContext()
     const { isSuperAdmin: superAdmin } = useMainContext()
@@ -103,7 +103,7 @@ const AppPermissions = () => {
         >
     >()
 
-    const [isDataLoading, configData, error, reload] = useAsync(() =>
+    const [isDataLoading, configData, configDataError, reload] = useAsync(() =>
         Promise.all([
             getProjectList(),
             getEnvironmentListMin(),
@@ -116,11 +116,17 @@ const AppPermissions = () => {
     const projectsList = configData?.[0]?.result ?? []
     const environmentsList = configData?.[1]?.result ?? []
     const chartGroupsList = configData?.[2]?.result?.groups ?? []
-    const envClustersList = configData?.[3]?.result ?? []
 
-    const environmentClusterOptions = getEnvironmentClusterOptions(envClustersList)
+    const { environmentClusterOptions, envClustersList } = useMemo(() => {
+        const _envClustersList = configData?.[3]?.result ?? []
 
-    const _getEnvironmentOptions = (entity: DirectPermissionRow['permission']['entity']) =>
+        return {
+            envClustersList: _envClustersList,
+            environmentClusterOptions: getEnvironmentClusterOptions(_envClustersList),
+        }
+    }, [configData])
+
+    const _getEnvironmentOptions = (entity: DirectPermissionRowProps['permission']['entity']) =>
         getEnvironmentOptions(environmentsList, entity)
 
     const appPermissionDetailConfig = getAppPermissionDetailConfig(path, serverMode)
@@ -307,7 +313,7 @@ const AppPermissions = () => {
                 ...workflowOptions.reduce((acc, option) => {
                     acc.push(...option.options)
                     return acc
-                }, [] as OptionType[]),
+                }, []),
             ]
         } catch (err) {
             showError(err)
@@ -876,6 +882,19 @@ const AppPermissions = () => {
     }
 
     useEffect(() => {
+        setIsSaveDisabled(!!configDataError || isDataLoading || isLoading)
+    }, [isDataLoading, isLoading, configDataError])
+
+    useEffect(
+        () => () => {
+            // Set the save to false since the component has unmounted
+            // This can happen when the user was already a super admin
+            setIsSaveDisabled(false)
+        },
+        [],
+    )
+
+    useEffect(() => {
         if (!isDataLoading) {
             if (!data) {
                 const emptyPermissionArr = [
@@ -901,7 +920,7 @@ const AppPermissions = () => {
         )
     }
 
-    if (error) {
+    if (configDataError) {
         return <GenericSectionErrorState withBorder reload={reload} />
     }
 
