@@ -104,6 +104,12 @@ export interface ConfigurationTabState {
     showWebhookConfigModal: boolean
 }
 
+export interface ConfigurationTableProps {
+    setState: React.Dispatch<React.SetStateAction<ConfigurationTabState>>
+    state: ConfigurationTabState
+    deleteClickHandler: (id: number, name: string) => void
+}
+
 export interface WebhookConfigModalProps {
     webhookConfigId: number
     onSaveSuccess: () => void

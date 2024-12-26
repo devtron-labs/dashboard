@@ -315,7 +315,7 @@ src/components/material/MaterialList.tsx
 src/components/material/MaterialView.tsx
 src/components/material/UpdateMaterial.tsx
 src/components/notifications/AddNotification.tsx
-src/components/notifications/ConfigurationTab.tsx
+src/components/notifications/ConfigurationTab.component.tsx
 src/components/notifications/CreateHeaderDetails.tsx
 src/components/notifications/ModifyRecipientsModal.tsx
 src/components/notifications/NotificationTab.tsx
