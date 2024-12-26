@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 
-import { CMSecretExternalType, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import { CMSecretExternalType, InfoColourBar, CMSecretComponentType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as InfoIcon } from '@Icons/info-filled.svg'
 import { ReactComponent as InfoIconN7 } from '@Icons/info-filled-n7.svg'
@@ -9,7 +9,6 @@ import { URLS } from '@Config/routes'
 import { DOCUMENTATION } from '@Config/constants'
 
 import { EXTERNAL_INFO_TEXT } from './constants'
-import { CMSecretComponentType } from './types'
 
 export const renderESOInfo = (isESO: boolean) =>
     isESO ? (

@@ -17,28 +17,23 @@ import {
     hasESO,
     OverrideMergeStrategyType,
     YAMLStringify,
-    noop,
+    ConfigMapSecretUseFormProps,
+    CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA,
+    CM_SECRET_STATE,
+    configMapSecretMountDataMap,
+    CMSecretConfigData,
+    getConfigMapSecretFormInitialValues,
+    CMSecretYamlData,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ResourceConfigStage } from '@Pages/Applications/DevtronApps/service.types'
 
 import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
+import { CODE_EDITOR_RADIO_STATE, configMapDataTypeOptions, getSecretDataTypeOptions } from './constants'
 import {
-    CODE_EDITOR_RADIO_STATE,
-    CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA,
-    configMapDataTypeOptions,
-    configMapSecretMountDataMap,
-    getSecretDataTypeOptions,
-} from './constants'
-import {
-    CMSecretYamlData,
     ConfigMapSecretFormProps,
-    ConfigMapSecretUseFormProps,
-    CMSecretComponentType,
-    CM_SECRET_STATE,
     CMSecretDraftData,
     CMSecretPayloadType,
-    CMSecretConfigData,
     ESOSecretData,
     ConfigMapSecretDecodedDataReturnType,
     ConfigMapSecretDecodedDataProps,
@@ -68,65 +63,6 @@ export const getConfigMapSecretStateLabel = (configStage: ResourceConfigStage, i
 // HELPERS UTILS ----------------------------------------------------------------
 
 // FORM UTILS ----------------------------------------------------------------
-const secureValues = (data: Record<string, string>, decodeData: boolean): CMSecretYamlData[] => {
-    let decodedData = data || DEFAULT_SECRET_PLACEHOLDER
-
-    if (decodeData) {
-        try {
-            decodedData = decode(data)
-        } catch {
-            noop()
-        }
-    }
-
-    return Object.keys(decodedData).map((k, id) => ({
-        k,
-        v: typeof decodedData[k] === 'object' ? YAMLStringify(decodedData[k]) : decodedData[k],
-        id,
-    }))
-}
-
-const processCurrentData = ({
-    configMapSecretData,
-    cmSecretStateLabel,
-    isSecret,
-}: Pick<ConfigMapSecretFormProps, 'configMapSecretData' | 'cmSecretStateLabel'> & {
-    isSecret: boolean
-}) => {
-    if (configMapSecretData.mergeStrategy === OverrideMergeStrategyType.PATCH) {
-        if (configMapSecretData.patchData) {
-            return secureValues(configMapSecretData.patchData, isSecret && configMapSecretData.externalType === '')
-        }
-
-        return CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA
-    }
-
-    if (configMapSecretData.data) {
-        return secureValues(configMapSecretData.data, isSecret && configMapSecretData.externalType === '')
-    }
-
-    if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && configMapSecretData.defaultData) {
-        return secureValues(configMapSecretData.defaultData, isSecret && configMapSecretData.externalType === '')
-    }
-
-    return CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA
-}
-
-const processExternalSubPathValues = ({
-    data,
-    esoSubPath,
-    external,
-    subPath,
-}: Pick<CMSecretConfigData, 'data' | 'esoSubPath' | 'subPath' | 'external'>) => {
-    if (subPath && external && data) {
-        return Object.keys(data).join(', ')
-    }
-    if (esoSubPath) {
-        return esoSubPath.join(', ')
-    }
-    return ''
-}
-
 export const convertYAMLToKeyValuePair = (yaml: string): CMSecretYamlData[] => {
     try {
         const obj = yaml && YAML.parse(yaml)
@@ -146,9 +82,6 @@ export const convertYAMLToKeyValuePair = (yaml: string): CMSecretYamlData[] => {
         return CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA
     }
 }
-
-export const convertKeyValuePairToYAML = (currentData: CMSecretYamlData[]) =>
-    currentData.length ? YAMLStringify(currentData.reduce((agg, { k, v }) => ({ ...agg, [k]: v }), {})) : ''
 
 export const getLockedYamlString = (yaml: string) => {
     const obj = YAML.parse(yaml)
@@ -172,128 +105,6 @@ export const getYAMLWithStringifiedNumbers = (yaml: string) => {
         ),
     )
     return YAMLStringify(jsonWithStringifiedNumbers)
-}
-
-const getSecretDataFromConfigData = ({
-    secretData,
-    defaultSecretData,
-    esoSecretData: baseEsoSecretData,
-    defaultESOSecretData,
-}: ConfigMapSecretFormProps['configMapSecretData']): Pick<
-    ConfigMapSecretUseFormProps,
-    'secretDataYaml' | 'esoSecretYaml'
-> => {
-    let jsonForSecretDataYaml: string
-
-    if (secretData?.length) {
-        jsonForSecretDataYaml = YAMLStringify(secretData)
-    } else if (defaultSecretData?.length) {
-        jsonForSecretDataYaml = YAMLStringify(defaultSecretData)
-    }
-
-    const esoSecretData: Record<string, any> =
-        !(baseEsoSecretData?.esoData || []).length &&
-        !baseEsoSecretData?.template &&
-        !baseEsoSecretData?.esoDataFrom &&
-        defaultESOSecretData
-            ? defaultESOSecretData
-            : baseEsoSecretData
-
-    const isEsoSecretData: boolean =
-        (esoSecretData?.secretStore || esoSecretData?.secretStoreRef) &&
-        (esoSecretData.esoData || esoSecretData.template || esoSecretData.esoDataFrom)
-
-    return {
-        secretDataYaml: jsonForSecretDataYaml ?? '',
-        esoSecretYaml: isEsoSecretData ? YAMLStringify(esoSecretData) : '',
-    }
-}
-
-export const getConfigMapSecretFormInitialValues = ({
-    isJob,
-    configMapSecretData,
-    cmSecretStateLabel,
-    componentType,
-    skipValidation = false,
-}: Pick<ConfigMapSecretFormProps, 'isJob' | 'cmSecretStateLabel' | 'componentType' | 'configMapSecretData'> & {
-    skipValidation?: boolean
-}): ConfigMapSecretUseFormProps => {
-    const isSecret = componentType === CMSecretComponentType.Secret
-
-    const {
-        name,
-        external,
-        externalType,
-        type,
-        mountPath,
-        defaultMountPath,
-        subPath,
-        data,
-        defaultData,
-        filePermission,
-        roleARN,
-        esoSubPath,
-    } = configMapSecretData || {}
-
-    const commonInitialValues: ConfigMapSecretUseFormProps = {
-        name: name ?? '',
-        isSecret,
-        external: external ?? false,
-        externalType: externalType ?? CMSecretExternalType.Internal,
-        selectedType: type ?? configMapSecretMountDataMap.environment.value,
-        isFilePermissionChecked: !!filePermission,
-        isSubPathChecked: !!subPath,
-        filePermission: filePermission ?? '',
-        volumeMountPath: mountPath ?? defaultMountPath ?? '',
-        roleARN: roleARN ?? '',
-        yamlMode: true,
-        hasCurrentDataErr: false,
-        isResolvedData: false,
-        skipValidation,
-        currentData: null,
-        esoSecretYaml: null,
-        externalSubpathValues: null,
-        mergeStrategy: null,
-        secretDataYaml: null,
-        yaml: null,
-    }
-
-    if (configMapSecretData) {
-        const defaultMergeStrategy = isJob || external ? OverrideMergeStrategyType.REPLACE : DEFAULT_MERGE_STRATEGY
-        const mergeStrategy =
-            configMapSecretData.mergeStrategy ||
-            (cmSecretStateLabel === CM_SECRET_STATE.INHERITED ? defaultMergeStrategy : null)
-
-        const currentData = processCurrentData({
-            configMapSecretData: { ...configMapSecretData, mergeStrategy },
-            cmSecretStateLabel,
-            isSecret,
-        })
-
-        return {
-            ...commonInitialValues,
-            externalSubpathValues: processExternalSubPathValues({
-                data: data || defaultData,
-                external,
-                subPath,
-                esoSubPath,
-            }),
-            yaml: convertKeyValuePairToYAML(currentData),
-            currentData,
-            mergeStrategy,
-            ...getSecretDataFromConfigData(configMapSecretData),
-        }
-    }
-
-    return {
-        ...commonInitialValues,
-        externalSubpathValues: '',
-        yaml: '"": ""\n',
-        currentData: CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA,
-        esoSecretYaml: '{}',
-        secretDataYaml: '[]',
-        mergeStrategy: null,
-    }
 }
 
 export const getConfigMapSecretReadOnlyValues = ({
@@ -328,6 +139,7 @@ export const getConfigMapSecretReadOnlyValues = ({
         configMapSecretData,
         cmSecretStateLabel,
         componentType,
+        fallbackMergeStrategy: DEFAULT_MERGE_STRATEGY,
     })
     const mountExistingExternal =
         external && externalType === (isSecret ? CMSecretExternalType.KubernetesSecret : CMSecretExternalType.Internal)

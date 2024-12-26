@@ -7,11 +7,12 @@ import {
     GenericEmptyState,
     Progressing,
     useAsync,
+    CMSecretComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
 import { importComponentFromFELibrary } from '@Components/common'
-import { ConfigMapSecretWrapper, CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret'
+import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret'
 import { DeploymentConfigCompare, DeploymentTemplate } from '@Pages/Applications'
 import { getEnvConfig } from '@Pages/Applications/DevtronApps/service'
 import { EnvConfigurationsNav } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/Navigation/EnvConfigurationsNav'

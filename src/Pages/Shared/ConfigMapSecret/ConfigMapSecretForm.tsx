@@ -19,6 +19,8 @@ import {
     stopPropagation,
     usePrompt,
     checkIfPathIsMatching,
+    CM_SECRET_STATE,
+    configMapSecretMountDataMap,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ROLLOUT_DEPLOYMENT } from '@Config/constants'
@@ -28,19 +30,14 @@ import {
     isVersionLessThanOrEqualToTarget,
 } from '@Components/common'
 
-import {
-    CM_SECRET_COMPONENT_NAME,
-    configMapDataTypeOptions,
-    configMapSecretMountDataMap,
-    getSecretDataTypeOptions,
-} from './constants'
+import { CM_SECRET_COMPONENT_NAME, configMapDataTypeOptions, getSecretDataTypeOptions } from './constants'
 import {
     renderChartVersionBelow3090NotSupportedText,
     renderESOInfo,
     renderExternalInfo,
     renderHashiOrAwsDeprecatedInfo,
 } from './helpers'
-import { ConfigMapSecretFormProps, ConfigMapSecretDataTypeOptionType, CM_SECRET_STATE } from './types'
+import { ConfigMapSecretFormProps, ConfigMapSecretDataTypeOptionType } from './types'
 import { ConfigMapSecretData } from './ConfigMapSecretData'
 import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
 

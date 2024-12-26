@@ -26,6 +26,10 @@ import {
     usePrompt,
     checkIfPathIsMatching,
     useUrlFilters,
+    ConfigMapSecretUseFormProps,
+    CMSecretComponentType,
+    CM_SECRET_STATE,
+    getConfigMapSecretFormInitialValues,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
@@ -34,6 +38,7 @@ import { getConfigToolbarPopupConfig } from '@Pages/Applications/DevtronApps/Det
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
 import { EnvConfigObjectKey } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 
+import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
 import {
     getConfigMapSecretConfigData,
     getConfigMapSecretConfigDraftData,
@@ -46,7 +51,6 @@ import {
 import {
     getConfigMapSecretDraftAndPublishedData,
     getConfigMapSecretError,
-    getConfigMapSecretFormInitialValues,
     getConfigMapSecretInheritedData,
     getConfigMapSecretPayload,
     getConfigMapSecretResolvedData,
@@ -57,15 +61,12 @@ import {
 import { getConfigMapSecretFormValidations } from './validations'
 import { CM_SECRET_COMPONENT_NAME, CONFIG_MAP_SECRET_NO_DATA_ERROR } from './constants'
 import {
-    CM_SECRET_STATE,
-    CMSecretComponentType,
     CMSecretDeleteModalType,
     CMSecretDraftPayloadType,
     CMSecretPayloadType,
     ConfigMapSecretContainerProps,
     ConfigMapSecretFormProps,
     ConfigMapSecretQueryParamsType,
-    ConfigMapSecretUseFormProps,
 } from './types'
 
 import { ConfigMapSecretDeleteModal } from './ConfigMapSecretDeleteModal'
@@ -133,6 +134,7 @@ export const ConfigMapSecretContainer = ({
             componentType,
             cmSecretStateLabel: envId ? CM_SECRET_STATE.ENV : CM_SECRET_STATE.BASE,
             isJob,
+            fallbackMergeStrategy: DEFAULT_MERGE_STRATEGY,
         }),
     })
 
@@ -355,6 +357,7 @@ export const ConfigMapSecretContainer = ({
             cmSecretStateLabel,
             skipValidation: !isCreateState && !formInitialData,
             isJob,
+            fallbackMergeStrategy: DEFAULT_MERGE_STRATEGY,
         })
     }, [configMapSecretData, draftData])
 
@@ -614,6 +617,7 @@ export const ConfigMapSecretContainer = ({
                 cmSecretStateLabel,
                 componentType,
                 configMapSecretData: { ...configMapSecretData, mergeStrategy: OverrideMergeStrategyType.REPLACE },
+                fallbackMergeStrategy: DEFAULT_MERGE_STRATEGY,
             })
             setValue('yaml', yaml)
             setValue('currentData', currentData)
@@ -626,6 +630,7 @@ export const ConfigMapSecretContainer = ({
                               cmSecretStateLabel,
                               componentType,
                               configMapSecretData: inheritedConfigMapSecretData,
+                              fallbackMergeStrategy: DEFAULT_MERGE_STRATEGY,
                           })
                         : formInitialValues),
                     mergeStrategy: strategy,

@@ -1,8 +1,8 @@
 import { Dispatch, MutableRefObject, SetStateAction } from 'react'
 
 import {
-    ConfigDatum,
-    CMSecretExternalType,
+    CMSecretConfigData,
+    ConfigMapSecretUseFormProps,
     DraftAction,
     DraftMetadataDTO,
     ProtectConfigTabsType,
@@ -15,25 +15,13 @@ import {
     ConfigHeaderTabType,
     OverrideMergeStrategyType,
     ConfigMapSecretDataType,
+    CMSecretComponentType,
+    CM_SECRET_STATE,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ConfigToolbarProps } from '@Pages/Applications'
 
 import { ComponentStates, EnvironmentOverrideComponentProps } from '../EnvironmentOverride/EnvironmentOverrides.types'
-
-// ENUMS
-export enum CMSecretComponentType {
-    ConfigMap = 1,
-    Secret = 2,
-}
-
-export enum CM_SECRET_STATE {
-    BASE = '',
-    INHERITED = 'INHERITING',
-    OVERRIDDEN = 'OVERRIDDEN',
-    ENV = 'ENV',
-    UNPUBLISHED = 'UNPUBLISHED',
-}
 
 // PAYLOAD PROPS
 export type CMSecretPayloadType = Pick<
@@ -85,36 +73,6 @@ export type GetConfigMapSecretConfigDataReturnType<IsJob extends boolean> = IsJo
 // SELECT PICKER OPTION TYPE
 export type ConfigMapSecretDataTypeOptionType = SelectPickerOptionType<string>
 
-// USE FORM PROPS
-export interface CMSecretYamlData {
-    k: string
-    v: string
-    id: string | number
-}
-
-export interface ConfigMapSecretUseFormProps {
-    name: string
-    isSecret: boolean
-    external: boolean
-    externalType: CMSecretExternalType
-    selectedType: string
-    isFilePermissionChecked: boolean
-    isSubPathChecked: boolean
-    externalSubpathValues: string
-    filePermission: string
-    volumeMountPath: string
-    roleARN: string
-    yamlMode: boolean
-    yaml: string
-    currentData: CMSecretYamlData[]
-    secretDataYaml: string
-    esoSecretYaml: string
-    hasCurrentDataErr: boolean
-    isResolvedData: boolean
-    mergeStrategy: ConfigToolbarProps['mergeStrategy']
-    skipValidation: boolean
-}
-
 // COMPONENT PROPS
 export interface CMSecretDraftData extends Omit<DraftMetadataDTO, 'data'> {
     unAuthorized: boolean
@@ -138,10 +96,6 @@ export interface CMSecretWrapperProps
 
 export interface ConfigMapSecretContainerProps extends Omit<CMSecretWrapperProps, 'parentState' | 'setParentState'> {
     appChartRef: { id: number; version: string; name: string }
-}
-
-export interface CMSecretConfigData extends ConfigDatum {
-    unAuthorized: boolean
 }
 
 export interface ConfigMapSecretFormProps

@@ -6,6 +6,8 @@ import {
     UseFormValidation,
     UseFormValidations,
     YAMLStringify,
+    ConfigMapSecretUseFormProps,
+    CMSecretYamlData,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { PATTERNS } from '@Config/constants'
@@ -13,7 +15,6 @@ import { ValidationRules } from '@Components/cdPipeline/validationRules'
 
 import { CONFIG_MAP_SECRET_NO_DATA_ERROR, CONFIG_MAP_SECRET_YAML_PARSE_ERROR, SECRET_TOAST_INFO } from './constants'
 import { getESOSecretDataFromYAML } from './utils'
-import { CMSecretYamlData, ConfigMapSecretUseFormProps } from './types'
 
 /**
  * Validates a YAML string for proper structure and specific key/value constraints.

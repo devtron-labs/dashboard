@@ -9,8 +9,8 @@ import {
     ProtectConfigTabsType,
     SelectPickerOptionType,
     ServerErrors,
+    CMSecretComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/types'
 import { FunctionComponent, MutableRefObject, ReactNode } from 'react'
 import { DeploymentTemplateStateType } from './DeploymentTemplate/types'
 

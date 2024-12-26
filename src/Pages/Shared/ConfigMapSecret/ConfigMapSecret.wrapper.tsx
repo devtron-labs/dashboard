@@ -8,13 +8,14 @@ import {
     Progressing,
     showError,
     useAsync,
+    CMSecretComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getAppChartRefForAppAndEnv } from '@Services/service'
 import { ComponentStates } from '@Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
 
 import { CM_SECRET_COMPONENT_NAME } from './constants'
-import { CMSecretComponentType, CMSecretWrapperProps } from './types'
+import { CMSecretWrapperProps } from './types'
 
 import { ConfigMapSecretContainer } from './ConfigMapSecretContainer'
 

@@ -29,13 +29,13 @@ import {
     DraftMetadataDTO,
     showError,
     JobCMSecretDataDTO,
+    CMSecretComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '@Config/constants'
 
 import { importComponentFromFELibrary } from '@Components/common'
 import {
-    CMSecretComponentType,
     GetConfigMapSecretConfigDataProps,
     GetConfigMapSecretConfigDataReturnType,
     UpdateConfigMapSecretProps,

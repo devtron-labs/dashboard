@@ -1,13 +1,7 @@
 import { GroupBase, OptionsOrGroups } from 'react-select'
+import { CMSecretExternalType, CMSecretComponentType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { CMSecretExternalType } from '@devtron-labs/devtron-fe-common-lib'
-
-import {
-    CMSecretComponentType,
-    CMSecretYamlData,
-    ConfigMapSecretDataTypeOptionType,
-    ConfigMapSecretNullStateProps,
-} from './types'
+import { ConfigMapSecretDataTypeOptionType, ConfigMapSecretNullStateProps } from './types'
 
 export const CM_SECRET_COMPONENT_NAME = {
     [CMSecretComponentType.ConfigMap]: 'ConfigMap',
@@ -117,13 +111,6 @@ export const getSecretDataTypeOptions = (
 
     return isJob ? kubernetesOptions : [...kubernetesOptions, ...esoOptions, ...(isHashiOrAWS ? kesOptions : [])]
 }
-
-export const configMapSecretMountDataMap = {
-    environment: { title: 'Environment Variable', value: 'environment' },
-    volume: { title: 'Data Volume', value: 'volume' },
-}
-
-export const CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA: CMSecretYamlData[] = [{ k: '', v: '', id: 0 }]
 
 export enum CODE_EDITOR_RADIO_STATE {
     DATA = 'data',

@@ -17,6 +17,7 @@ import {
     useAsync,
     checkIfPathIsMatching,
     usePrompt,
+    CM_SECRET_STATE,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
@@ -25,7 +26,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { NoPublishedVersionEmptyState, SelectMergeStrategy, ToggleResolveScopedVariables } from '@Pages/Applications'
 
 import { getConfigMapSecretManifest } from './ConfigMapSecret.service'
-import { CM_SECRET_STATE, ConfigMapSecretDryRunProps } from './types'
+import { ConfigMapSecretDryRunProps } from './types'
 import { renderExternalInfo } from './helpers'
 import { getDryRunConfigMapSecretData } from './utils'
 
