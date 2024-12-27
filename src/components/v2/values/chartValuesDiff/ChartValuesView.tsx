@@ -38,6 +38,7 @@ import {
     ConfigurationType,
     ToastManager,
     ToastVariantType,
+    UNSAVED_CHANGES_PROMPT_MESSAGE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -67,7 +68,6 @@ import {
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     DELETE_ACTION,
     SERVER_MODE,
-    UNSAVED_CHANGES_PROMPT_MESSAGE,
     URLS,
     checkIfDevtronOperatorHelmRelease,
 } from '../../../../config'

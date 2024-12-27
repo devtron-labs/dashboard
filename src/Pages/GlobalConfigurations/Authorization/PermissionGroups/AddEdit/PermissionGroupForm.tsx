@@ -17,21 +17,25 @@
 import { useState, useEffect } from 'react'
 import {
     showError,
-    Progressing,
     DeleteDialog,
     ResizableTextarea,
     CustomInput,
     useMainContext,
     ToastVariantType,
     ToastManager,
+    ButtonComponentType,
+    ButtonVariantType,
+    ComponentSizeType,
+    ButtonStyleType,
+    Button,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory } from 'react-router-dom'
+import { ReactComponent as ICDeleteInteractive } from '@Icons/ic-delete-interactive.svg'
+import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
 import { deepEqual } from '../../../../../components/common'
 
 import { URLS } from '../../../../../config'
-import { ReactComponent as Warning } from '../../../../../assets/icons/ic-warning.svg'
 import { PermissionGroup, PermissionGroupCreateOrUpdatePayload } from '../../types'
-import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
 import { createOrUpdatePermissionGroup, deletePermissionGroup } from '../../authorization.service'
 import {
     PermissionConfigurationForm,
@@ -52,6 +56,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
         k8sPermission,
         currentK8sPermissionRef,
         data: permissionGroup,
+        isSaveDisabled,
     } = usePermissionConfiguration()
     const _permissionGroup = permissionGroup as PermissionGroup
 
@@ -164,17 +169,16 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
                     </span>
                 </div>
                 {!isAddMode && (
-                    <div>
-                        <button
-                            disabled={submitting}
-                            type="button"
-                            className="cta delete override-button flex dc__gap-6 h-32"
-                            onClick={toggleDeleteConfirmationModal}
-                        >
-                            <PlusIcon className="icon-dim-14 mw-14" />
-                            Delete
-                        </button>
-                    </div>
+                    <Button
+                        disabled={submitting}
+                        variant={ButtonVariantType.secondary}
+                        style={ButtonStyleType.negative}
+                        size={ComponentSizeType.medium}
+                        dataTestId="delete-group"
+                        text="Delete"
+                        startIcon={<ICDeleteInteractive />}
+                        onClick={toggleDeleteConfirmationModal}
+                    />
                 )}
             </div>
             <div className="flexbox-col dc__content-space flex-grow-1 w-100">
@@ -209,23 +213,33 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
                     <PermissionConfigurationForm showUserPermissionGroupSelector={false} />
                 </div>
                 <div className="flexbox pt-16 pl-20 pr-20 dc__border-top-n1 dc__align-items-center dc__align-self-stretch dc__gap-8">
-                    <button type="submit" className="cta flex h-32" disabled={submitting} onClick={handleSubmit}>
-                        {submitting ? <Progressing /> : 'Save'}
-                    </button>
-                    <Link
-                        to={URLS.GLOBAL_CONFIG_AUTH_PERMISSION_GROUPS}
-                        role="button"
-                        aria-disabled={submitting}
-                        className={`cta cancel flex h-32 anchor ${
-                            submitting ? 'dc__disable-click disabled-opacity' : ''
-                        }`}
-                    >
-                        Cancel
-                    </Link>
+                    <Button
+                        dataTestId="submit-user-form"
+                        text="Save"
+                        onClick={handleSubmit}
+                        size={ComponentSizeType.medium}
+                        disabled={isSaveDisabled}
+                        isLoading={submitting}
+                        buttonProps={{
+                            type: 'submit',
+                        }}
+                    />
+                    <Button
+                        dataTestId="cancel-user-form"
+                        text="Cancel"
+                        component={ButtonComponentType.link}
+                        linkProps={{
+                            to: URLS.GLOBAL_CONFIG_AUTH_PERMISSION_GROUPS,
+                        }}
+                        variant={ButtonVariantType.secondary}
+                        size={ComponentSizeType.medium}
+                        style={ButtonStyleType.neutral}
+                        disabled={submitting}
+                    />
                     {!isAddMode &&
                         !deepEqual(currentK8sPermissionRef.current, k8sPermission.map(excludeKeyAndClusterValue)) && (
                             <span className="flex cy-7 dc__gap-4">
-                                <Warning className="icon-dim-20 warning-icon-y7" />
+                                <ICWarning className="icon-dim-20 warning-icon-y7" />
                                 Unsaved changes
                             </span>
                         )}

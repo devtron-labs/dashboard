@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import { Link } from 'react-router-dom'
+import { Button, ButtonComponentType, ComponentSizeType, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import nullStateImage from '../../../../../assets/img/empty-applist@2x.png'
 import { ReactComponent as AddIcon } from '../../../../../assets/icons/ic-add.svg'
 import { EMPTY_STATE_STATUS } from '../../../../../config/constantMessaging'
 import { URLS } from '../../../../../config'
 
 const renderAddUserButton = () => (
-    <Link
-        type="button"
-        to={`${URLS.GLOBAL_CONFIG_AUTH_USER_PERMISSION}/add`}
-        role="button"
-        className="cta dc__gap-4 flex h-32 anchor"
-    >
-        <AddIcon />
-        Add user
-    </Link>
+    <Button
+        text="Add user"
+        startIcon={<AddIcon />}
+        component={ButtonComponentType.link}
+        linkProps={{
+            to: `${URLS.GLOBAL_CONFIG_AUTH_USER_PERMISSION}/add`,
+        }}
+        size={ComponentSizeType.medium}
+        dataTestId="add-permission-group-link"
+    />
 )
 
 const NoUsers = () => (

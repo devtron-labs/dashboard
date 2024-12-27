@@ -15,8 +15,7 @@
  */
 
 import { DefaultUserKey } from '@devtron-labs/devtron-fe-common-lib'
-import { importComponentFromFELibrary, validateEmail } from '../../../../components/common'
-import { authorizationSelectStyles } from '../constants'
+import { importComponentFromFELibrary } from '../../../../components/common'
 import { User } from '../types'
 import { UserListFilter } from './List/types'
 
@@ -27,32 +26,4 @@ export const getIsAdminOrSystemUser = (userEmail: User['emailId']): boolean =>
 
 export const parseSearchParams = (searchParams: URLSearchParams): UserListFilter => ({
     status: getStatusFromSearchParams ? getStatusFromSearchParams(searchParams) : [],
-})
-
-export const getCreatableChipStyle = () => ({
-    ...authorizationSelectStyles,
-    multiValue: (base, state) => ({
-        ...base,
-        border: validateEmail(state.data.value) ? `1px solid var(--N200)` : `1px solid var(--R500)`,
-        borderRadius: `4px`,
-        background: validateEmail(state.data.value) ? 'white' : 'var(--R100)',
-        height: '28px',
-        margin: 0,
-        paddingLeft: '2px 4px',
-        fontSize: '12px',
-    }),
-    control: (base, state) => ({
-        ...authorizationSelectStyles.control(base, state),
-        minHeight: '36px',
-        height: 'auto',
-    }),
-    indicatorsContainer: (base) => ({
-        ...base,
-        height: '34px',
-    }),
-    valueContainer: (base) => ({
-        ...authorizationSelectStyles.valueContainer(base),
-        gap: '4px',
-        paddingBlock: '4px',
-    }),
 })

@@ -28,6 +28,7 @@ import {
     SERVER_MODE,
     ACCESS_TYPE_MAP,
     ModuleNameMap,
+    stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../config'
 import {
@@ -137,12 +138,22 @@ export function getAppListMin(
     })
 }
 
-export function getProjectFilteredApps(
+export async function getProjectFilteredApps(
     projectIds: number[] | string[],
     accessType?: string,
 ): Promise<ProjectFilteredApps> {
     const chartOnlyQueryParam = accessType === ACCESS_TYPE_MAP.HELM_APPS ? '&appType=DevtronChart' : ''
-    return get(`app/min?teamIds=${projectIds.join(',')}${chartOnlyQueryParam}`)
+    const response = await get(`app/min?teamIds=${projectIds.join(',')}${chartOnlyQueryParam}`)
+    
+    return {
+        ...response,
+        result: (response.result || [])
+            .map((project) => ({
+                ...project,
+                appList: (project.appList ?? []).sort((a, b) => stringComparatorBySortOrder(a.name, b.name)),
+            }))
+            .sort((a, b) => stringComparatorBySortOrder(a.projectName, b.projectName)),
+    }
 }
 
 export function getAvailableCharts(
@@ -168,9 +179,16 @@ export function getAvailableCharts(
     })
 }
 
-export function getEnvironmentListMin(includeAllowedDeploymentTypes?: boolean): Promise<any> {
+export async function getEnvironmentListMin(includeAllowedDeploymentTypes?: boolean): Promise<any> {
     const url = `${Routes.ENVIRONMENT_LIST_MIN}${includeAllowedDeploymentTypes ? '?showDeploymentOptions=true' : ''}`
-    return get(url)
+    const response = await get(url)
+
+    return {
+        ...response,
+        result: (response?.result ?? []).sort((a, b) =>
+            stringComparatorBySortOrder(a.environment_name, b.environment_name),
+        ),
+    }
 }
 
 export const getCommonAppFilters = async (
@@ -409,8 +427,20 @@ export function getWebhookDataMetaConfig(gitProviderId: string | number) {
     return get(URL)
 }
 
-export function getEnvironmentListHelmApps(): Promise<EnvironmentListHelmResponse> {
-    return get(Routes.ENVIRONMENT_LIST_MIN_HELM_PROJECTS)
+export async function getEnvironmentListHelmApps(): Promise<EnvironmentListHelmResponse> {
+    const response = await get(Routes.ENVIRONMENT_LIST_MIN_HELM_PROJECTS)
+
+    return {
+        ...response,
+        result: (response?.result ?? [])
+            .map((cluster) => ({
+                ...cluster,
+                environments: (cluster.environments ?? []).sort((a, b) =>
+                    stringComparatorBySortOrder(a.environmentName, b.environmentName),
+                ),
+            }))
+            .sort((a, b) => stringComparatorBySortOrder(a.clusterName, b.clusterName)),
+    }
 }
 
 export function getClusterNamespaceMapping(): Promise<ClusterEnvironmentDetailList> {

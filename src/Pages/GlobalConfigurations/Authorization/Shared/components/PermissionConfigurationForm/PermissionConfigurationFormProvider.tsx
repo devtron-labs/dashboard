@@ -45,6 +45,7 @@ export const PermissionConfigurationFormProvider = ({
     data: User | PermissionGroup
     showStatus: boolean
 }) => {
+    const [isSaveDisabled, setIsSaveDisabled] = useState(false)
     const [permissionType, setPermissionType] = useState<PermissionType>(PermissionType.SPECIFIC)
 
     const [directPermission, setDirectPermission] = useState<DirectPermissionsRoleFilter[]>([])
@@ -127,6 +128,8 @@ export const PermissionConfigurationFormProvider = ({
             handleUserStatusUpdate,
             data,
             showStatus,
+            isSaveDisabled,
+            setIsSaveDisabled,
         }),
         [
             permissionType,
@@ -145,6 +148,7 @@ export const PermissionConfigurationFormProvider = ({
             handleUserStatusUpdate,
             data,
             showStatus,
+            isSaveDisabled,
         ],
     )
 
