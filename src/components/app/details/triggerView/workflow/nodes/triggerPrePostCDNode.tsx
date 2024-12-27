@@ -43,7 +43,9 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                 this.props.appId,
                 this.props.environmentId,
                 this.props.id,
-                this.props.match.params.envId === this.props.environmentId.toString()
+                this.props.match.params.envId === this.props.environmentId.toString(),
+                '',
+                this.props.type
             )
         }
         return `${this.props.match.url.replace(URLS.APP_TRIGGER, URLS.APP_CD_DETAILS)}/${this.props.environmentId}/${

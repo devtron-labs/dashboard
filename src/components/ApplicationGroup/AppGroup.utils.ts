@@ -303,15 +303,16 @@ export const getAppGroupDeploymentHistoryLink = (
     pipelineId: string,
     redirectToAppGroup: boolean = true,
     status: string = '',
+    type?: string | null,
 ) => {
-    if (status.toLowerCase() === DEPLOYMENT_STATUS.PROGRESSING) {
+    if (status?.toLowerCase() === DEPLOYMENT_STATUS.PROGRESSING) {
         //If deployment is in progress then it will redirect to app details page
-        return `${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}/`
+        return `${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}`
     }
     if (redirectToAppGroup) {
         // It will redirect to application group deployment history in case of same environment
-        return `${URLS.APPLICATION_GROUP}/${envId}/${URLS.APP_CD_DETAILS}/${appId}/${pipelineId}/`
+        return `${URLS.APPLICATION_GROUP}/${envId}/${URLS.APP_CD_DETAILS}/${appId}/${pipelineId}${type ?`?type=${type}` : ''}`
         // It will redirect to application deployment history in case of other environments
     }
-    return `${URLS.APP}/${appId}/${URLS.APP_CD_DETAILS}/${envId}/${pipelineId}/`
+    return `${URLS.APP}/${appId}/${URLS.APP_CD_DETAILS}/${envId}/${pipelineId}`
 }
