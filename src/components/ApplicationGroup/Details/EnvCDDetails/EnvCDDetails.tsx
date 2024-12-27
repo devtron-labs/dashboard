@@ -126,23 +126,23 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             return
         }
 
-        const cdWorkflows = deploymentHistoryResult.result?.cdWorkflows
+        const cdWorkflows = deploymentHistoryResult.result.cdWorkflows
 
         setHasMore(cdWorkflows.length === pagination.size)
         setHasMoreLoading(cdWorkflows.length === pagination.size)
 
-        let triggerIdToSet = cdWorkflows?.[0]?.id
+        let triggerIdToSet = cdWorkflows[0].id
         const queryString = new URLSearchParams(location.search)
         const deploymentStageType =
             queryString.get('type') === STAGE_TYPE.PRECD ? DeploymentStageType.PRE : DeploymentStageType.POST
 
-        const triggeredHistoryResult = cdWorkflows?.find((obj) => obj.stage === deploymentStageType)
+        const triggeredHistoryResult = cdWorkflows.find((obj) => obj.stage === deploymentStageType)
 
         if (triggeredHistoryResult) {
             triggerIdToSet = triggeredHistoryResult.id
         }
 
-        if (!triggerId && appId && pipelineId && cdWorkflows.length) {
+        if (!triggerId && appId && pipelineId) {
             replace(
                 generatePath(path, {
                     appId,
@@ -153,7 +153,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             )
         }
 
-        const newTriggerHistory = (cdWorkflows || []).reduce((agg, curr) => {
+        const newTriggerHistory = cdWorkflows.reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
         }, triggerHistory)
