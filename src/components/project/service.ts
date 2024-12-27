@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { get, post, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, stringComparatorBySortOrder, trash } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 
 export function createProject(project) {
@@ -31,10 +31,12 @@ export function getProjectList() {
     return get(URL).then((response) => ({
         code: response.code,
         result: response.result
-            ? response.result.map((project) => ({
-                  ...project,
-                  isCollapsed: true,
-              }))
+            ? response.result
+                  .map((project) => ({
+                      ...project,
+                      isCollapsed: true,
+                  }))
+                  .sort((a, b) => stringComparatorBySortOrder(a.name, b.name))
             : [],
     }))
 }

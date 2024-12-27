@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-import { SearchBar, InfoIconTippy, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
-import { Link, useRouteMatch } from 'react-router-dom'
+import {
+    SearchBar,
+    InfoIconTippy,
+    useMainContext,
+    Button,
+    ButtonComponentType,
+    ComponentSizeType,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { useRouteMatch } from 'react-router-dom'
 import { DOCUMENTATION } from '../../../../../config'
 import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-add.svg'
 import { ReactComponent as ArrowSquareOut } from '../../../../../assets/icons/ic-arrow-square-out.svg'
@@ -39,7 +46,7 @@ const UserPermissionListHeader = ({
     const { isSuperAdmin } = useMainContext()
 
     return (
-        <div className="flex dc__content-space pl-20 pr-20">
+        <div className="flex dc__content-space px-20 dc__zi-2">
             <div className="flex dc__gap-8">
                 <h2 className="fs-16 lh-32 cn-9 fw-6 m-0">User Permissions</h2>
                 <InfoIconTippy
@@ -71,10 +78,16 @@ const UserPermissionListHeader = ({
                 />
                 {showStatus && <StatusFilterDropdown value={status} onChange={handleStatusFilterChange} />}
                 <div className="dc__divider h-20" />
-                <Link to={`${path}/add`} type="button" className="cta anchor flex dc__gap-6 h-32">
-                    <PlusIcon className="icon-dim-14 mw-14" />
-                    Add Users
-                </Link>
+                <Button
+                    text="Add Users"
+                    startIcon={<PlusIcon />}
+                    component={ButtonComponentType.link}
+                    linkProps={{
+                        to: `${path}/add`,
+                    }}
+                    size={ComponentSizeType.medium}
+                    dataTestId="add-users-link"
+                />
                 {isSuperAdmin && (
                     <>
                         <div className="dc__divider h-20" />
