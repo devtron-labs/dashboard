@@ -10,7 +10,7 @@ export const useGetAppSecurityDetails = ({
     const [scanResultLoading, scanResultResponse, scanResultError, reloadScanResult] = useAsync(
         () => getSecurityScan({ appId, envId, artifactId, installedAppId }),
         [appId, envId, installedAppId],
-        (!!appId && !!envId) || !!installedAppId,
+        !!appId || !!installedAppId,
     )
 
     return {
