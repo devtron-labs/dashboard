@@ -56,7 +56,7 @@ import {
 } from '../../service'
 import { URLS, Routes } from '../../../../config'
 import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
-import { ScanDisabledView, ImageNotScannedView, CIRunningView } from './cIDetails.util'
+import { ImageNotScannedView, CIRunningView } from './cIDetails.util'
 import './ciDetails.scss'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
@@ -705,7 +705,12 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     if (scanResultError) {
         return <ErrorScreenManager code={scanResultError.code} reload={reloadScanResult} />
     }
-    if (scanResultResponse && (!scanResultResponse.result.scanned || !scanResultResponse.result.isImageScanEnabled)) {
+    if (
+        scanResultResponse &&
+        (!scanResultResponse.result.scanned ||
+            !scanResultResponse.result.isImageScanEnabled ||
+            !scanResultResponse.result.imageScan)
+    ) {
         return <ImageNotScannedView />
     }
 
