@@ -314,5 +314,5 @@ export const getAppGroupDeploymentHistoryLink = (
         return `${URLS.APPLICATION_GROUP}/${envId}/${URLS.APP_CD_DETAILS}/${appId}/${pipelineId}${type ?`?type=${type}` : ''}`
         // It will redirect to application deployment history in case of other environments
     }
-    return `${URLS.APP}/${appId}/${URLS.APP_CD_DETAILS}/${envId}/${pipelineId}`
+    return `${URLS.APP}/${appId}/${URLS.APP_CD_DETAILS}/${envId}/${pipelineId}${type ?`?type=${type}` : ''}`
 }
