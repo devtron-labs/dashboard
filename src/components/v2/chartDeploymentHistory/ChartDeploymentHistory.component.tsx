@@ -32,7 +32,6 @@ import {
     ShowMoreText,
     DEPLOYMENT_STATUS,
     EMPTY_STATE_STATUS,
-    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -110,14 +109,12 @@ const ChartDeploymentHistory = ({
     let initTimer = null
     // Checking if deployment app type is argocd only then show steps tab
 
-    const { isManifestScanningEnabled } = useMainContext()
-
     const deploymentTabs = () => {
         const tabs = [
             DEPLOYMENT_HISTORY_TAB.SOURCE,
             DEPLOYMENT_HISTORY_TAB.VALUES_YAML,
             DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST,
-            (ChartSecurityTab && isManifestScanningEnabled && !isExternal && DEPLOYMENT_HISTORY_TAB.SECURITY),
+            (ChartSecurityTab && !isExternal && DEPLOYMENT_HISTORY_TAB.SECURITY),
         ]
         if (installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS) {
             tabs.unshift(DEPLOYMENT_HISTORY_TAB.STEPS)
@@ -596,7 +593,7 @@ const ChartDeploymentHistory = ({
                         status={deployment.status}
                     />
                 )}
-                {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SECURITY && !isExternal && isManifestScanningEnabled && ChartSecurityTab && (
+                {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SECURITY && !isExternal && ChartSecurityTab && (
                     <ChartSecurityTab installedAppVersionHistoryId={deploymentHistoryArr[selectedDeploymentHistoryIndex].version} />
                 )}
             </div>

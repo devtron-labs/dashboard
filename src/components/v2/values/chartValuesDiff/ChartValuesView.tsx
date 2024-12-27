@@ -164,7 +164,7 @@ const ChartValuesView = ({
         presetValueId: string
         envId: string
     }>()
-    const { serverMode, isManifestScanningEnabled } = useMainContext()
+    const { serverMode } = useMainContext()
     const { handleDownload } = useDownload()
     const chartValuesAbortRef = useRef<AbortController>(new AbortController())
     const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>(chartValuesListFromParent || [])
@@ -1786,15 +1786,12 @@ const ChartValuesView = ({
                                 />
                             )}
                         </div>
-                        {isManifestScanningEnabled &&
-                            !isExternalApp &&
-                            (isDeployChartView || isUpdateAppView) &&
-                            ToggleSecurityScan && (
-                                <ToggleSecurityScan
-                                    isManifestScanEnabled={commonState.isManifestScanEnabled}
-                                    handleToggleSecurityScan={handleToggleSecurityScan}
-                                />
-                            )}
+                        {!isExternalApp && (isDeployChartView || isUpdateAppView) && ToggleSecurityScan && (
+                            <ToggleSecurityScan
+                                isManifestScanEnabled={commonState.isManifestScanEnabled}
+                                handleToggleSecurityScan={handleToggleSecurityScan}
+                            />
+                        )}
                         {!isDeployChartView &&
                             chartValueId !== '0' &&
                             !(

@@ -705,10 +705,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     if (scanResultError) {
         return <ErrorScreenManager code={scanResultError.code} reload={reloadScanResult} />
     }
-    if (scanResultResponse && !scanResultResponse.result.scanned) {
-        if (!scanResultResponse.result.isImageScanEnabled) {
-            return <ScanDisabledView redirectToCreate={redirectToCreate} />
-        }
+    if (scanResultResponse && (!scanResultResponse.result.scanned || !scanResultResponse.result.isImageScanEnabled)) {
         return <ImageNotScannedView />
     }
 
