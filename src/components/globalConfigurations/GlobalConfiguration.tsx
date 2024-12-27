@@ -66,6 +66,7 @@ const PluginsPolicyV1 = importComponentFromFELibrary('PluginsPolicyV1')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy', null, 'function')
 const FilterConditions = importComponentFromFELibrary('FilterConditions')
 const LockDeploymentConfiguration = importComponentFromFELibrary('LockDeploymentConfiguration', null, 'function')
+const ApprovalPolicy = importComponentFromFELibrary('ApprovalPolicy', null, 'function')
 const CatalogFramework = importComponentFromFELibrary('CatalogFramework')
 const PullImageDigest = importComponentFromFELibrary('PullImageDigest')
 const DeploymentWindow = importComponentFromFELibrary('DeploymentWindowComponent')
@@ -460,6 +461,15 @@ const NavItem = ({ serverMode }) => {
                                     <div className="flexbox flex-justify">Deployment Window</div>
                                 </NavLink>
                             )}
+                            {ApprovalPolicy && (
+                                <NavLink
+                                    to={URLS.GLOBAL_CONFIG_APPROVAL_POLICY}
+                                    key={URLS.GLOBAL_CONFIG_APPROVAL_POLICY}
+                                    activeClassName="active-route"
+                                >
+                                    <div className="flexbox flex-justify">Approval Policy</div>
+                                </NavLink>
+                            )}
                             {window._env_.FEATURE_IMAGE_PROMOTION_ENABLE && ImagePromotion && (
                                 <NavLink
                                     to={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}
@@ -706,6 +716,11 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 DeploymentWindow && (
                     <Route key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW} path={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}>
                         <DeploymentWindow isSuperAdmin={isSuperAdmin} />
+                    </Route>
+                ),
+                ApprovalPolicy && (
+                    <Route key={URLS.GLOBAL_CONFIG_APPROVAL_POLICY} path={URLS.GLOBAL_CONFIG_APPROVAL_POLICY}>
+                        <ApprovalPolicy />
                     </Route>
                 ),
                 ImagePromotion && (

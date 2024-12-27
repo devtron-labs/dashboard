@@ -118,7 +118,7 @@ export const getConfigToolbarPopupConfig = ({
     isLoading,
     isDraftAvailable,
     handleShowEditHistory,
-    isProtected = false,
+    isApprovalPolicyConfigured = false,
     isDeletable = false,
     isDeleteOverrideDraftPresent = false,
     isDeleteDisabled = false,
@@ -171,7 +171,7 @@ export const getConfigToolbarPopupConfig = ({
 
     if (isDeletable && configHeaderTab === ConfigHeaderTabType.VALUES) {
         secondConfigSegment.push({
-            text: `Delete${isProtected ? '...' : ''}`,
+            text: `Delete${isApprovalPolicyConfigured ? '...' : ''}`,
             onClick: handleDelete,
             dataTestId: 'delete-config-map-secret',
             disabled: isLoading || isDeleteDisabled,
