@@ -116,47 +116,44 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     }, [result?.[0]?.['value']?.result])
 
     useEffect(() => {
-        // check for more
-        if (loading || !deploymentHistoryResult) {
+        if (
+            loading ||
+            !deploymentHistoryResult ||
+            !deploymentHistoryResult.result?.cdWorkflows?.length ||
+            fetchTriggerIdData === FetchIdDataStatus.FETCHING ||
+            fetchTriggerIdData === FetchIdDataStatus.SUCCESS
+        ) {
             return
         }
-        if (!deploymentHistoryResult?.result?.cdWorkflows?.length) {
-            return
-        }
-        if (fetchTriggerIdData === FetchIdDataStatus.FETCHING || fetchTriggerIdData === FetchIdDataStatus.SUCCESS) {
-            return
-        }
-        if (deploymentHistoryResult.result?.cdWorkflows?.length !== pagination.size) {
-            setHasMore(false)
-        } else {
-            setHasMore(true)
-            setHasMoreLoading(true)
-        }
-        let _triggerId = deploymentHistoryResult.result?.cdWorkflows?.[0]?.id
+
+        const cdWorkflows = deploymentHistoryResult.result?.cdWorkflows
+
+        setHasMore(cdWorkflows.length === pagination.size)
+        setHasMoreLoading(cdWorkflows.length === pagination.size)
+
+        let triggerIdToSet = cdWorkflows?.[0]?.id
         const queryString = new URLSearchParams(location.search)
         const deploymentStageType =
             queryString.get('type') === STAGE_TYPE.PRECD ? DeploymentStageType.PRE : DeploymentStageType.POST
 
-        const triggeredHistoryResult = deploymentHistoryResult.result?.cdWorkflows?.filter((obj) => {
-            return obj.stage === deploymentStageType
-        })
+        const triggeredHistoryResult = cdWorkflows?.find((obj) => obj.stage === deploymentStageType)
 
-        if (triggeredHistoryResult?.[0]) {
-            _triggerId = triggeredHistoryResult[0].id
+        if (triggeredHistoryResult) {
+            triggerIdToSet = triggeredHistoryResult.id
         }
 
-        if (!triggerId && appId && pipelineId && deploymentHistoryResult?.result?.cdWorkflows?.length) {
+        if (!triggerId && appId && pipelineId && cdWorkflows.length) {
             replace(
                 generatePath(path, {
                     appId,
                     envId,
                     pipelineId,
-                    triggerId: _triggerId,
+                    triggerId: triggerIdToSet,
                 }),
             )
         }
 
-        const newTriggerHistory = (deploymentHistoryResult.result?.cdWorkflows || []).reduce((agg, curr) => {
+        const newTriggerHistory = (cdWorkflows || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
         }, triggerHistory)
