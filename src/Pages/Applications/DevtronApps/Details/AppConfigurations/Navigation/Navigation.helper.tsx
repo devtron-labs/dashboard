@@ -1,11 +1,16 @@
 import { NavLink, generatePath } from 'react-router-dom'
 
-import { CollapsibleListItem, EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ApprovalConfigDataKindType,
+    ApprovalConfigDataType,
+    CollapsibleListItem,
+    EnvResourceType,
+    getIsApprovalPolicyConfigured,
+    ResourceIdToResourceApprovalPolicyConfigMapType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Lock } from '@Icons/ic-locked.svg'
-import { ReactComponent as ProtectedIcon } from '@Icons/ic-shield-protect-fill.svg'
 import { ReactComponent as ICStamp } from '@Icons/ic-stamp.svg'
-import { ReactComponent as ICFileEdit } from '@Icons/ic-file-edit.svg'
 import { ResourceConfigStage, ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
 import {
@@ -15,18 +20,24 @@ import {
     ExtendedCollapsibleListItem,
     EnvConfigObjectKey,
 } from '../AppConfig.types'
+import { RESOURCE_CONFIG_STATE_TO_ICON_CONFIG_MAP } from './constants'
 
-const renderNavItemIcon = (isLocked: boolean, isProtected: boolean, dataTestId: string) => {
+const renderNavItemIcon = (isLocked: boolean, isApprovalPolicyConfigured: boolean, dataTestId: string) => {
     if (isLocked) {
         return <Lock className="icon-dim-20 dc__no-shrink" data-testid={`${dataTestId}-lockicon`} />
     }
-    if (!isLocked && isProtected) {
-        return <ProtectedIcon className="icon-dim-20 fcv-5" data-testid={`${dataTestId}-protectedicon`} />
+    if (isApprovalPolicyConfigured) {
+        return <ICStamp className="icon-dim-20 scv-5 dc__no-shrink" data-testid={`${dataTestId}-protectedicon`} />
     }
     return null
 }
 
-export const renderNavItem = (item: CustomNavItemsType, isBaseConfigProtected?: boolean) => {
+/**
+ *
+ * @param item
+ * @param hideApprovalPolicyIcon Used to hide the policy icon (applicable for jobs atm)
+ */
+export const renderNavItem = (item: CustomNavItemsType, hideApprovalPolicyIcon?: boolean) => {
     const linkDataTestName = item.title.toLowerCase().split(' ').join('-')
 
     return (
@@ -42,7 +53,7 @@ export const renderNavItem = (item: CustomNavItemsType, isBaseConfigProtected?: 
             to={item.href}
         >
             <span className="dc__truncate nav-text">{item.title}</span>
-            {renderNavItemIcon(item.isLocked, isBaseConfigProtected && item.isProtectionAllowed, linkDataTestName)}
+            {renderNavItemIcon(item.isLocked, !hideApprovalPolicyIcon && item.isProtectionAllowed, linkDataTestName)}
         </NavLink>
     )
 }
@@ -63,17 +74,6 @@ export const getNavigationPath = (
     href?: string,
 ) => `${generatePath(basePath, { ...params, resourceType })}${href ? `/${href}` : ''}`
 
-const getIconClassFromConfigState = (configState: ResourceConfigState) => {
-    switch (configState) {
-        case ResourceConfigState.Draft:
-            return 'scn-6'
-        case ResourceConfigState.ApprovalPending:
-            return 'scv-5'
-        default:
-            return ''
-    }
-}
-
 /**
  * Returns an object containing the appropriate icon, icon properties and tooltip properties based on the resource configuration state.
  *
@@ -82,19 +82,23 @@ const getIconClassFromConfigState = (configState: ResourceConfigState) => {
  */
 const getIcon = (
     configState: ResourceConfigState,
-    isProtected: boolean,
+    approvalConfig: ApprovalConfigDataType,
 ): CollapsibleListItem<'navLink'>['iconConfig'] => {
-    if (isProtected && configState !== ResourceConfigState.Published && configState !== ResourceConfigState.Unnamed) {
+    const isApprovalPolicyConfigured = getIsApprovalPolicyConfigured(approvalConfig)
+
+    if (isApprovalPolicyConfigured && configState !== ResourceConfigState.Unnamed) {
+        const { Icon, tippyContent, iconClass } = RESOURCE_CONFIG_STATE_TO_ICON_CONFIG_MAP[configState]
+
         return {
-            Icon: configState === ResourceConfigState.ApprovalPending ? ICStamp : ICFileEdit,
+            Icon,
             tooltipProps: {
-                content: configState === ResourceConfigState.ApprovalPending ? 'Approval pending' : 'Draft',
+                content: tippyContent,
                 placement: 'right',
                 arrow: false,
                 className: 'default-tt',
             },
             props: {
-                className: `p-2 dc__no-shrink ${getIconClassFromConfigState(configState)}`,
+                className: `p-2 dc__no-shrink ${iconClass ?? ''}`,
             },
         }
     }
@@ -113,7 +117,7 @@ export const getEnvConfiguration = (
     envConfig: EnvConfigType,
     basePath: string,
     params: EnvConfigRouteParams,
-    isProtected: boolean,
+    approvalConfigurationMapForEnv: ResourceIdToResourceApprovalPolicyConfigMapType[number]['approvalConfigurationMap'],
 ): {
     deploymentTemplate: ExtendedCollapsibleListItem
     configmaps: ExtendedCollapsibleListItem[]
@@ -129,7 +133,10 @@ export const getEnvConfiguration = (
                           title: 'Deployment Template',
                           subtitle: SUBTITLE[envConfig[curr].configStage],
                           href: getNavigationPath(basePath, params, EnvResourceType.DeploymentTemplate),
-                          iconConfig: getIcon(envConfig[curr].configState, isProtected),
+                          iconConfig: getIcon(
+                              envConfig[curr].configState,
+                              approvalConfigurationMapForEnv?.[ApprovalConfigDataKindType.deploymentTemplate],
+                          ),
                       }
                     : envConfig[curr].map(({ configState, name, configStage }) => ({
                           configState,
@@ -142,7 +149,14 @@ export const getEnvConfiguration = (
                                   : EnvResourceType.Secret,
                               name,
                           ),
-                          iconConfig: getIcon(configState, isProtected),
+                          iconConfig: getIcon(
+                              configState,
+                              approvalConfigurationMapForEnv?.[
+                                  curr === EnvConfigObjectKey.ConfigMap
+                                      ? ApprovalConfigDataKindType.configMap
+                                      : ApprovalConfigDataKindType.configSecret
+                              ],
+                          ),
                           subtitle: SUBTITLE[configStage],
                           clearQueryParamsOnNavigation: true,
                       })),

@@ -44,6 +44,7 @@ export const ConfigMapSecretProtected = ({
     shouldMergeTemplateWithPatches,
     useFormProps,
 }: ConfigMapSecretProtectedProps) => {
+    // HOOKS
     const { data: formData } = useFormProps
 
     // STATES
@@ -216,7 +217,7 @@ export const ConfigMapSecretProtected = ({
             }
             isJob={isJob}
             appChartRef={appChartRef}
-            isProtected
+            isApprovalPolicyConfigured
             isDraft
             disableDataTypeChange={disableDataTypeChange}
             isSubmitting={false}

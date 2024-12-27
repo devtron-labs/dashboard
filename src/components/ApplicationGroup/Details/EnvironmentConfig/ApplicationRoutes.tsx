@@ -24,7 +24,12 @@ import { renderNavItem } from '@Pages/Applications/DevtronApps/Details/AppConfig
 
 import { ApplicationRouteType } from '../../AppGroup.types'
 
-const ApplicationRoute = ({ envAppList, envConfig, fetchEnvConfig }: ApplicationRouteType) => {
+const ApplicationRoute = ({
+    envAppList,
+    envConfig,
+    fetchEnvConfig,
+    appIdToAppApprovalConfigMap,
+}: ApplicationRouteType) => {
     const {
         url,
         params: { envId },
@@ -37,12 +42,13 @@ const ApplicationRoute = ({ envAppList, envConfig, fetchEnvConfig }: Application
                 <EnvConfigurationsNav
                     envConfig={envConfig}
                     fetchEnvConfig={fetchEnvConfig}
-                    environments={envAppList.map((env) => ({ ...env, isProtected: env.isProtected || false }))}
+                    environments={envAppList}
                     goBackURL={generatePath(path, { envId })}
                     showDeploymentTemplate
                     paramToCheck="appId"
                     compareWithURL={path}
                     showComparison
+                    envIdToEnvApprovalConfigurationMap={appIdToAppApprovalConfigMap}
                 />
             </Route>
             <Route key="default-navigation">
@@ -55,16 +61,13 @@ const ApplicationRoute = ({ envAppList, envConfig, fetchEnvConfig }: Application
                     </h4>
                 </div>
                 <div className="px-8 dc__overflow-auto">
-                    {envAppList.map(({ name, isProtected, id }) => (
+                    {envAppList.map(({ name, id }) => (
                         <Fragment key={id}>
-                            {renderNavItem(
-                                {
-                                    title: name,
-                                    isProtectionAllowed: isProtected,
-                                    href: `${url}/${id}/${EnvResourceType.DeploymentTemplate}`,
-                                },
-                                isProtected,
-                            )}
+                            {renderNavItem({
+                                title: name,
+                                isProtectionAllowed: appIdToAppApprovalConfigMap?.[id]?.isApprovalApplicable,
+                                href: `${url}/${id}/${EnvResourceType.DeploymentTemplate}`,
+                            })}
                         </Fragment>
                     ))}
                 </div>
