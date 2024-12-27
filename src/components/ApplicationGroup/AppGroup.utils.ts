@@ -24,6 +24,7 @@ import {
     getIsRequestAborted,
     CIMaterialType,
     SourceTypeMap,
+    DEPLOYMENT_STATUS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getParsedBranchValuesForPlugin } from '@Components/common'
 import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED, URLS } from '../../config'
@@ -34,7 +35,6 @@ import {
     CIWorkflowStatusType,
     ProcessWorkFlowStatusType,
 } from './AppGroup.types'
-import { AppStatus } from './Constants'
 
 let timeoutId
 
@@ -304,7 +304,7 @@ export const getAppGroupDeploymentHistoryLink = (
     redirectToAppGroup: boolean = true,
     status: string = '',
 ) => {
-    if (status === AppStatus.PROGRESSING) {
+    if (status.toLowerCase() === DEPLOYMENT_STATUS.PROGRESSING) {
         //If deployment is in progress then it will redirect to app details page
         return `${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}/`
     }
