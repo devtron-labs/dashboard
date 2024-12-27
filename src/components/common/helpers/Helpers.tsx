@@ -44,7 +44,7 @@ import {
 import { getAggregator } from '../../app/details/appDetails/utils'
 import { JUMP_TO_KIND_SHORT_NAMES, SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
-import { PATTERNS, UNSAVED_CHANGES_PROMPT_MESSAGE } from '../../../config/constants'
+import { PATTERNS } from '../../../config/constants'
 import { ReactComponent as GitLab } from '../../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../../assets/icons/git/github.svg'
@@ -1219,19 +1219,6 @@ export const getParsedBranchValuesForPlugin = (branchName: string): string => {
 
     return branchName
 }
-
-/**
- * Checks if the provided pathname matches the current path.
- * If the paths do not match, returns a custom message or a default unsaved changes prompt.
- *
- * @param currentPathName - The current path to compare against.
- * @param customMessage - Optional custom message to display when the path does not match.
- * @returns A function that takes an object with a `pathname` property and performs the path match check.
- */
-export const checkIfPathIsMatching =
-    (currentPathName: string, customMessage = ''): PromptProps['message'] =>
-    ({ pathname }: { pathname: string }) =>
-        currentPathName === pathname || customMessage || UNSAVED_CHANGES_PROMPT_MESSAGE
 
 export const getAppFilterLocalStorageKey = (filterParentType: FilterParentType): AppEnvLocalStorageKeyType =>
     filterParentType === FilterParentType.app ? ENV_GROUP_LOCAL_STORAGE_KEY : APP_GROUP_LOCAL_STORAGE_KEY
