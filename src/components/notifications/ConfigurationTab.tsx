@@ -16,7 +16,7 @@
 
 import { useEffect, useState } from 'react'
 import { showError, Progressing, ErrorScreenNotAuthorized, DeleteComponent } from '@devtron-labs/devtron-fe-common-lib'
-import { Route, Switch, useRouteMatch } from 'react-router-dom'
+import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom'
 import { SlackConfigModal } from './SlackConfigModal'
 import { SESConfigModal } from './SESConfigModal'
 import {
@@ -41,6 +41,7 @@ import { ConfigurationsTabTypes } from './constants'
 
 export const ConfigurationTab = () => {
     const { path } = useRouteMatch()
+    const history = useHistory()
     const [state, setState] = useState<ConfigurationTabState>({
         view: ViewType.LOADING,
         showSlackConfigModal: false,
@@ -63,7 +64,7 @@ export const ConfigurationTab = () => {
         slackConfig: {},
         webhookConfig: {},
         showDeleteConfigModalType: '',
-        activeTab: ConfigurationsTabTypes.SLACK,
+        activeTab: ConfigurationsTabTypes.SES,
     })
 
     const getAllChannelConfigs = (): void => {
@@ -85,6 +86,7 @@ export const ConfigurationTab = () => {
     }
     useEffect(() => {
         getAllChannelConfigs()
+        history.push(`${path}/ses`)
     }, [])
 
     const onSaveWebhook = () => {
@@ -295,10 +297,10 @@ export const ConfigurationTab = () => {
         <div className="bcn-0 h-100 flexbox-col dc__gap-16 pt-16">
             <ConfigurationTabSwitcher activeTab={state.activeTab} setState={setState} state={state} />
             <Switch>
-                <Route path={`${path}/ses`} render={() => renderSESConfigurationTable()} />
-                <Route path={`${path}/slack`} component={() => renderSlackConfigurationTable()} />
-                <Route path={`${path}/webhook`} component={() => renderWebhookConfigurationTable()} />
-                <Route path={`${path}/smtp`} component={() => renderSMTPConfigurationTable()} />
+                <Route path={`${path}/${ConfigurationsTabTypes.SES}`} component={renderSESConfigurationTable} />
+                <Route path={`${path}/${ConfigurationsTabTypes.SMTP}`} component={renderSMTPConfigurationTable} />
+                <Route path={`${path}/${ConfigurationsTabTypes.SLACK}`} component={renderSlackConfigurationTable} />
+                <Route path={`${path}/${ConfigurationsTabTypes.WEBHOOK}`} component={renderWebhookConfigurationTable} />
             </Switch>
             {renderSESConfigModal()}
             {renderSMTPConfigModal()}
