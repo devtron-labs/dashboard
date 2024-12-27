@@ -260,8 +260,9 @@ export interface LastUpdatedCardType {
 
 export interface UseGetAppSecurityDetailsProps {
     appId: number
-    envId: number
+    envId?: number
     installedAppId?: number
+    artifactId?: number
 }
 export interface UseGetAppSecurityDetailsReturnType {
     scanResultLoading: boolean

@@ -4,10 +4,11 @@ import { UseGetAppSecurityDetailsProps, UseGetAppSecurityDetailsReturnType } fro
 export const useGetAppSecurityDetails = ({
     appId,
     envId,
+    artifactId,
     installedAppId,
 }: UseGetAppSecurityDetailsProps): UseGetAppSecurityDetailsReturnType => {
     const [scanResultLoading, scanResultResponse, scanResultError, reloadScanResult] = useAsync(
-        () => getSecurityScan({ appId, envId, installedAppId }),
+        () => getSecurityScan({ appId, envId, artifactId, installedAppId }),
         [appId, envId, installedAppId],
         (!!appId && !!envId) || !!installedAppId,
     )

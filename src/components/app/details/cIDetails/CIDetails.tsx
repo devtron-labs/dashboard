@@ -44,7 +44,6 @@ import {
     TabGroup,
     TRIGGER_STATUS_PROGRESSING,
     ErrorScreenManager,
-    getSecurityScan,
     getScanToolAndSeverityCount,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, Redirect, useRouteMatch, useParams, useHistory, generatePath } from 'react-router-dom'
@@ -66,6 +65,7 @@ import { ReactComponent as NoVulnerability } from '../../../../assets/img/ic-vul
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { renderCIListHeader, renderDeploymentHistoryTriggerMetaText } from '../cdDetails/utils'
 import { importComponentFromFELibrary } from '@Components/common'
+import { useGetAppSecurityDetails } from '../appDetails/AppSecurity'
 
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
@@ -670,10 +670,10 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
 
     const computedAppId = appId ?? appIdFromParent
 
-    const [scanResultLoading, scanResultResponse, scanResultError, reloadScanResult] = useAsync(
-        () => getSecurityScan({ artifactId, appId }),
-        [artifactId, appId],
-    )
+    const { scanResultLoading, scanResultResponse, scanResultError, reloadScanResult } = useGetAppSecurityDetails({
+        appId: +appId,
+        artifactId,
+    })
 
     const redirectToCreate = () => {
         if (!ciPipelineId) {
@@ -712,7 +712,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
         return <ImageNotScannedView />
     }
 
-    const {scanToolId, severityCount, totalCount } = getScanToolAndSeverityCount(scanResultResponse?.result)
+    const { scanToolId, severityCount, totalCount } = getScanToolAndSeverityCount(scanResultResponse?.result)
 
     if (artifactId && !totalCount) {
         return <NoVulnerabilityViewWithTool scanToolId={scanToolId} />

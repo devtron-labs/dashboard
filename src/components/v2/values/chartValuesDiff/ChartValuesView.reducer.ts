@@ -25,8 +25,7 @@ export const initState = (
     chartVersionsDataFromParent: ChartVersionType[],
     deploymentAppType: DeploymentAppTypes,
 ): ChartValuesViewState => {
-
-    const {isManifestScanningEnabled} = useMainContext()
+    const { isManifestScanningEnabled } = useMainContext()
 
     return {
         isLoading: true,
