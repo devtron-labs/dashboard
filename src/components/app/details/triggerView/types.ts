@@ -244,7 +244,7 @@ interface InputMaterials {
 }
 
 export interface TriggerCDNodeProps
-    extends RouteComponentProps<{ appId: string }>,
+    extends RouteComponentProps<{ appId: string; envId: string }>,
         Partial<Pick<CommonNodeAttr, 'isTriggerBlocked'>> {
     x: number
     y: number
@@ -284,7 +284,7 @@ export interface TriggerCDNodeState {
 }
 
 export interface TriggerPrePostCDNodeProps
-    extends RouteComponentProps<{ appId: string }>,
+    extends RouteComponentProps<{ appId: string; envId: string }>,
         Partial<Pick<CommonNodeAttr, 'isTriggerBlocked'>> {
     x: number
     y: number
@@ -308,6 +308,7 @@ export interface TriggerPrePostCDNodeProps
     isGitOpsRepoNotConfigured?: boolean
     deploymentAppType: DeploymentAppTypes
     isDeploymentBlocked?: boolean
+    appId: number
 }
 export interface TriggerPrePostCDNodeState {
     showGitOpsRepoConfiguredWarning: boolean
@@ -319,7 +320,7 @@ export interface TriggerEdgeType {
 }
 
 export interface WorkflowProps
-    extends RouteComponentProps<{ appId: string }>,
+    extends RouteComponentProps<{ appId: string; envId: string }>,
         Pick<WorkflowType, 'artifactPromotionMetadata'> {
     id: string
     name: string
