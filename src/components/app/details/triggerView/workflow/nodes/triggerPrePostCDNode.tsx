@@ -24,6 +24,7 @@ import { TriggerViewContext } from '../../config'
 import NoGitOpsRepoConfiguredWarning from '../../../../../workflowEditor/NoGitOpsRepoConfiguredWarning'
 import { gitOpsRepoNotConfiguredWithEnforcedEnv } from '../../../../../gitOps/constants'
 import { getNodeSideHeadingAndClass } from './workflow.utils'
+import { getAppGroupDeploymentHistoryLink } from '../../../../../ApplicationGroup/AppGroup.utils'
 
 export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, TriggerPrePostCDNodeState> {
     gitOpsRepoWarningCondition =
@@ -37,7 +38,15 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
     }
 
     getCDDetailsURL(): string {
-        return `${this.props.match.url.replace(URLS.APP_TRIGGER, URLS.APP_CD_DETAILS)}/${this.props.fromAppGrouping ? this.props.appId : this.props.environmentId}/${
+        if (this.props.fromAppGrouping) {
+            return getAppGroupDeploymentHistoryLink(
+                this.props.appId,
+                this.props.environmentId,
+                this.props.id,
+                this.props.match.params.envId === this.props.environmentId.toString()
+            )
+        }
+        return `${this.props.match.url.replace(URLS.APP_TRIGGER, URLS.APP_CD_DETAILS)}/${this.props.environmentId}/${
             this.props.id
         }?type=${this.props.type}`
     }
