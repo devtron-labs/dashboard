@@ -233,3 +233,7 @@ export const BULK_CI_BUILD_STATUS = (noOfApps) => ({
 
 export const ENV_GROUP_LOCAL_STORAGE_KEY: AppEnvLocalStorageKeyType = 'envGroup__filter'
 export const APP_GROUP_LOCAL_STORAGE_KEY: AppEnvLocalStorageKeyType = 'appGroup__filter'
+
+export enum AppStatus {
+    PROGRESSING = 'Progressing',
+}

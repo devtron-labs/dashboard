@@ -34,6 +34,7 @@ import {
     CIWorkflowStatusType,
     ProcessWorkFlowStatusType,
 } from './AppGroup.types'
+import { AppStatus } from './Constants'
 
 let timeoutId
 
@@ -303,7 +304,7 @@ export const getAppGroupDeploymentHistoryLink = (
     redirectToAppGroup: boolean = true,
     status: string = '',
 ) => {
-    if (status === 'Progressing') {
+    if (status === AppStatus.PROGRESSING) {
         //If deployment is in progress then it will redirect to app details page
         return `${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}/`
     }
