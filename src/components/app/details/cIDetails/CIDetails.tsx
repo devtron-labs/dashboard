@@ -671,7 +671,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     const computedAppId = appId ?? appIdFromParent
 
     const { scanResultLoading, scanResultResponse, scanResultError, reloadScanResult } = useGetAppSecurityDetails({
-        appId: +appId,
+        appId: +computedAppId,
         artifactId,
     })
 
