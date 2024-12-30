@@ -67,8 +67,6 @@ import {
     CDMaterialSidebarType,
     CDMaterialResponseType,
     CD_MATERIAL_SIDEBAR_TABS,
-    getIsManualApprovalConfigured,
-    useUserEmail,
     ToastManager,
     ToastVariantType,
     EnvResourceType,
@@ -77,6 +75,8 @@ import {
     ResponseType,
     ApiResponseResultType,
     CommonNodeAttr,
+    getIsApprovalPolicyConfigured,
+    ApprovalRuntimeStateType,
     GetPolicyConsequencesProps,
     PolicyConsequencesDTO,
     PipelineStageBlockInfo,
@@ -144,12 +144,14 @@ const MaintenanceWindowInfoBar = importComponentFromFELibrary('MaintenanceWindow
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
 const RuntimeParameters = importComponentFromFELibrary('RuntimeParameters', null, 'function')
-const getIsImageApproverFromUserApprovalMetaData: (
-    email: string,
-    userApprovalMetadata: UserApprovalMetadataType,
-) => boolean = importComponentFromFELibrary('getIsImageApproverFromUserApprovalMetaData', () => false, 'function')
-const getSecurityScan: ({ appId, installedAppId }: AppDetailsPayload) => Promise<ResponseType<ApiResponseResultType>> =
-    importComponentFromFELibrary('getSecurityScan', null, 'function')
+const getSecurityScan: ({
+    appId,
+    installedAppId,
+}: AppDetailsPayload) => Promise<ResponseType<ApiResponseResultType>> = importComponentFromFELibrary(
+    'getSecurityScan',
+    null,
+    'function',
+)
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
 const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
@@ -211,7 +213,6 @@ const CDMaterial = ({
     const { currentAppName } = useAppContext()
 
     const appName = selectedAppName || currentAppName
-    const { email } = useUserEmail()
 
     const searchImageTag = searchParams.search
 
@@ -311,8 +312,9 @@ const CDMaterial = ({
     const resourceFilters = materialsResult?.resourceFilters ?? []
     const hideImageTaggingHardDelete = materialsResult?.hideImageTaggingHardDelete ?? false
     const requestedUserId = materialsResult?.requestedUserId ?? ''
-    const userApprovalConfig = materialsResult?.userApprovalConfig
-    const isApprovalConfigured = getIsManualApprovalConfigured(userApprovalConfig)
+    const isApprovalConfigured = getIsApprovalPolicyConfigured(
+        materialsResult?.deploymentApprovalInfo?.approvalConfigData,
+    )
     const canApproverDeploy = materialsResult?.canApproverDeploy ?? false
     const showConfigDiffView = searchParams.mode === 'review-config' && searchParams.deploy
 
@@ -634,8 +636,7 @@ const CDMaterial = ({
     const getIsApprovalRequester = (userApprovalMetadata?: UserApprovalMetadataType) =>
         userApprovalMetadata?.requestedUserData && userApprovalMetadata.requestedUserData.userId === requestedUserId
 
-    const getIsImageApprover = (userApprovalMetadata?: UserApprovalMetadataType): boolean =>
-        getIsImageApproverFromUserApprovalMetaData(email, userApprovalMetadata)
+    const getIsImageApprover = (userApprovalMetadata?: UserApprovalMetadataType): boolean => userApprovalMetadata?.hasCurrentUserApproved
 
     // NOTE: Pure
     const getApprovedImageClass = (disableSelection: boolean, isApprovalConfigured: boolean) => {
@@ -658,7 +659,10 @@ const CDMaterial = ({
         const consumedImage = []
         const approvedImages = []
         material.forEach((mat) => {
-            if (!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2) {
+            if (
+                !mat.userApprovalMetadata ||
+                mat.userApprovalMetadata.approvalRuntimeState !== ApprovalRuntimeStateType.approved
+            ) {
                 mat.isSelected = false
                 consumedImage.push(mat)
             } else {

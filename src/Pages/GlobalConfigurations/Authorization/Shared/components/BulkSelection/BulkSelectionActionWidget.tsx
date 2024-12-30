@@ -16,11 +16,14 @@
 
 import {
     BulkSelectionEvents,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
     DraggableButton,
     DraggablePositionVariant,
     DraggableWrapper,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { ReactComponent as Trash } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as Close } from '../../../../../../assets/icons/ic-close.svg'
@@ -84,34 +87,27 @@ const BulkSelectionActionWidget = ({
                     />
                 )}
                 <div className="flex dc__gap-8">
-                    <Tippy
-                        className="default-tt"
-                        arrow={false}
-                        placement="top"
-                        content={entityType === BulkSelectionEntityTypes.users ? 'Delete user(s)' : 'Delete group(s)'}
-                    >
-                        <button
-                            type="button"
-                            className="dc__transparent flex p-0 icon-delete"
-                            onClick={openBulkDeleteModal}
-                            aria-label="Delete selected user"
-                            disabled={areActionsDisabled}
-                        >
-                            <Trash className="scn-6 icon-dim-28 p-6" />
-                        </button>
-                    </Tippy>
+                    <Button
+                        icon={<Trash />}
+                        ariaLabel={entityType === BulkSelectionEntityTypes.users ? 'Delete user(s)' : 'Delete group(s)'}
+                        onClick={openBulkDeleteModal}
+                        disabled={areActionsDisabled}
+                        dataTestId="bulk-delete-button"
+                        size={ComponentSizeType.small}
+                        variant={ButtonVariantType.borderLess}
+                        style={ButtonStyleType.negativeGrey}
+                    />
                     <div className="dc__divider h-16" />
-                    <Tippy className="default-tt" arrow={false} placement="top" content="Clear Selection(s)">
-                        <button
-                            type="button"
-                            className="dc__transparent flex p-0"
-                            onClick={clearBulkSelection}
-                            aria-label="Clear bulk selection"
-                            disabled={areActionsDisabled}
-                        >
-                            <Close className="fcn-6 icon-dim-28 p-6" />
-                        </button>
-                    </Tippy>
+                    <Button
+                        icon={<Close />}
+                        ariaLabel="Clear Selection(s)"
+                        onClick={clearBulkSelection}
+                        disabled={areActionsDisabled}
+                        dataTestId="clear-bulk-selection"
+                        size={ComponentSizeType.small}
+                        variant={ButtonVariantType.borderLess}
+                        style={ButtonStyleType.neutral}
+                    />
                 </div>
             </div>
         </DraggableWrapper>

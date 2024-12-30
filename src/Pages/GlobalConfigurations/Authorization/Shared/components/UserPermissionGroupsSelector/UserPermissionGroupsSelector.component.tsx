@@ -16,28 +16,22 @@
 
 import { useEffect } from 'react'
 import {
-    MultiValueChipContainer,
-    Option,
     useAsync,
     UserRoleGroupsTable,
-    GenericSectionErrorState,
-    LoadingIndicator,
-    OptionType,
     UserStatus,
     UserRoleGroup,
+    SelectPicker,
+    SelectPickerOptionType,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Select from 'react-select'
 import { PermissionGroup, User } from '../../../types'
 import { importComponentFromFELibrary, mapByKey } from '../../../../../../components/common'
 import { getPermissionGroupList } from '../../../authorization.service'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
-import { authorizationSelectStyles } from '../../../constants'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
 
 const StatusHeaderCell = importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
-
-const MultiValueContainer = (props) => <MultiValueChipContainer {...props} validator={null} />
 
 const UserPermissionGroupsSelector = () => {
     const { userRoleGroups, setUserRoleGroups, data: userData, userStatus, showStatus } = usePermissionConfiguration()
@@ -63,24 +57,21 @@ const UserPermissionGroupsSelector = () => {
 
     const userGroupsMap = mapByKey<Map<PermissionGroup['name'], PermissionGroup>>(userGroupsList, 'name')
 
-    const groupOptions = userGroupsList?.map((group) => ({ value: group.name, label: group.name }))
+    const groupOptions: SelectPickerOptionType[] = userGroupsList?.map((group) => ({
+        value: group.name,
+        label: group.name,
+        description: group.description,
+    }))
     const selectedValue = userRoleGroups.map((userGroup) => ({ value: userGroup.name, label: userGroup.name }))
 
-    const formatChartGroupOptionLabel = ({ value, label }) => (
-        <div className="flex left column">
-            <span>{label}</span>
-            <small>{userGroupsMap.has(value) ? userGroupsMap.get(value).description : ''}</small>
-        </div>
-    )
-
-    const handleChange = (selectedOptions: OptionType[]) => {
+    const handleChange = (selectedOptions: SelectPickerOptionType[]) => {
         const alreadyAddedGroupsMap = mapByKey(userRoleGroups, 'name')
         const selectedOptionsMap = mapByKey(selectedOptions, 'value')
 
         const filteredOptions: User['userRoleGroups'] = selectedOptions
             .filter((selectedOption) => !alreadyAddedGroupsMap.has(selectedOption.value))
             .map((selectedOption) => {
-                const { id, name, description } = userGroupsMap.get(selectedOption.value)
+                const { id, name, description } = userGroupsMap.get(selectedOption.value as string)
 
                 return {
                     id,
@@ -121,41 +112,23 @@ const UserPermissionGroupsSelector = () => {
 
     return (
         <div className="flexbox-col dc__gap-8">
-            <div className="flexbox-col dc__gap-8">
-                <h3 className="cn-9 fs-13 lh-20 fw-6 m-0">Permission Groups</h3>
-                <Select
-                    placeholder="Select permission groups"
-                    value={selectedValue}
-                    components={{
-                        IndicatorSeparator: null,
-                        MultiValueContainer,
-                        ClearIndicator: null,
-                        Option,
-                        LoadingIndicator,
-                        ...(error
-                            ? {
-                                  // eslint-disable-next-line react/no-unstable-nested-components
-                                  NoOptionsMessage: () => (
-                                      <GenericSectionErrorState withBorder reload={reloadGroupList} />
-                                  ),
-                              }
-                            : {}),
-                    }}
-                    styles={authorizationSelectStyles}
-                    formatOptionLabel={formatChartGroupOptionLabel}
-                    closeMenuOnSelect={false}
-                    isMulti
-                    name="groups"
-                    options={groupOptions}
-                    hideSelectedOptions={false}
-                    onChange={handleChange}
-                    id="permission-groups-dropdown"
-                    controlShouldRenderValue={false}
-                    isLoading={isLoading}
-                    isDisabled={isLoading}
-                    menuPlacement="auto"
-                />
-            </div>
+            <SelectPicker
+                inputId="permission-groups-dropdown"
+                label="Permission Groups"
+                placeholder="Select permission groups"
+                value={selectedValue}
+                optionListError={error}
+                reloadOptionList={reloadGroupList}
+                isMulti
+                name="groups"
+                options={groupOptions}
+                onChange={handleChange}
+                controlShouldRenderValue={false}
+                isLoading={isLoading}
+                isDisabled={isLoading}
+                showSelectedOptionsCount
+                size={ComponentSizeType.large}
+            />
             {userRoleGroups.length > 0 && (
                 <UserRoleGroupsTable
                     roleGroups={userRoleGroups}

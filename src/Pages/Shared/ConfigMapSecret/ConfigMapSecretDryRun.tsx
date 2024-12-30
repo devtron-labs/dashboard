@@ -15,12 +15,13 @@ import {
     hasHashiOrAWS,
     MODES,
     useAsync,
+    checkIfPathIsMatching,
     usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
 import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
-import { checkIfPathIsMatching, importComponentFromFELibrary } from '@Components/common'
+import { importComponentFromFELibrary } from '@Components/common'
 import { NoPublishedVersionEmptyState, SelectMergeStrategy, ToggleResolveScopedVariables } from '@Pages/Applications'
 
 import { getConfigMapSecretManifest } from './ConfigMapSecret.service'
@@ -43,7 +44,7 @@ export const ConfigMapSecretDryRun = ({
     resolveScopedVariables,
     areScopeVariablesResolving,
     handleToggleScopedVariablesView,
-    isProtected,
+    isApprovalPolicyConfigured,
     draftData,
     inheritedConfigMapSecretData,
     publishedConfigMapSecretData,
@@ -80,7 +81,7 @@ export const ConfigMapSecretDryRun = ({
                 publishedConfigMapSecretData,
             }),
         [
-            isProtected,
+            isApprovalPolicyConfigured,
             dryRunEditorMode,
             formData,
             draftData,
@@ -264,10 +265,10 @@ export const ConfigMapSecretDryRun = ({
                 parentName={parentName}
             />
         ) : (
-            <footer className="py-12 px-16 dc__border-top-n1">
+            <footer className="flex right py-12 px-16 dc__border-top-n1">
                 <Button
                     dataTestId="cm-secret-form-submit-btn"
-                    text={`Save${!isCreateView ? ' Changes' : ''}${isProtected ? '...' : ''}`}
+                    text={`Save${!isCreateView ? ' Changes' : ''}${isApprovalPolicyConfigured ? '...' : ''}`}
                     size={ComponentSizeType.medium}
                     onClick={handleSubmit}
                     isLoading={isSubmitting}

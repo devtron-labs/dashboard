@@ -18,11 +18,11 @@ import {
     SelectPicker,
     stopPropagation,
     usePrompt,
+    checkIfPathIsMatching,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ROLLOUT_DEPLOYMENT } from '@Config/constants'
 import {
-    checkIfPathIsMatching,
     importComponentFromFELibrary,
     isChartRef3090OrBelow,
     isVersionLessThanOrEqualToTarget,
@@ -61,7 +61,7 @@ export const ConfigMapSecretForm = ({
     disableDataTypeChange,
     componentType,
     isSubmitting,
-    isProtected,
+    isApprovalPolicyConfigured,
     areScopeVariablesResolving,
     useFormProps,
     onSubmit,
@@ -324,10 +324,10 @@ export const ConfigMapSecretForm = ({
         )
 
     const renderFormButtons = () => (
-        <footer className="py-12 px-16 flex left dc__gap-12 dc__border-top-n1">
+        <footer className="py-12 px-16 flex right dc__gap-12 dc__border-top-n1">
             <Button
                 dataTestId="cm-secret-form-submit-btn"
-                text={`Save${!isCreateView ? ' Changes' : ''}${isProtected ? '...' : ''}`}
+                text={`Save${!isCreateView ? ' Changes' : ''}${isApprovalPolicyConfigured ? '...' : ''}`}
                 size={ComponentSizeType.medium}
                 onClick={handleSubmit(onSubmit, onError)}
                 isLoading={isSubmitting}

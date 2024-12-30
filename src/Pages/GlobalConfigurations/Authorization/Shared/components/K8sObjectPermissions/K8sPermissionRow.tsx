@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-import Tippy from '@tippyjs/react'
-import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    OptionType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Clone } from '../../../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as TrashIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as Edit } from '../../../../../../assets/icons/ic-pencil.svg'
@@ -98,40 +103,38 @@ const K8sPermissionRow = ({
                         showTooltipWhenDisabled
                         showDropdownBorder={false}
                         breakLinesForTemporaryAccess
+                        size={ComponentSizeType.medium}
                     />
                 </span>
             )}
             <span className="flex right">
-                <Tippy className="default-tt" arrow={false} placement="top" content="Duplicate">
-                    <button
-                        type="button"
-                        className="dc__transparent flex p-4"
-                        onClick={clonePermission}
-                        aria-label="Clone permission"
-                    >
-                        <Clone className="icon-dim-16 fcn-6" />
-                    </button>
-                </Tippy>
-                <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
-                    <button
-                        type="button"
-                        className="dc__transparent flex p-4"
-                        onClick={_editPermission}
-                        aria-label="Edit permission"
-                    >
-                        <Edit className="icon-dim-16 scn-6" />
-                    </button>
-                </Tippy>
-                <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
-                    <button
-                        type="button"
-                        className="dc__transparent flex icon-delete p-4"
-                        onClick={_deletePermission}
-                        aria-label="Delete permission"
-                    >
-                        <TrashIcon className="scn-6 icon-dim-16" />
-                    </button>
-                </Tippy>
+                <Button
+                    icon={<Clone />}
+                    ariaLabel="Clone permission"
+                    onClick={clonePermission}
+                    dataTestId={`clone-permission-${index}`}
+                    variant={ButtonVariantType.borderLess}
+                    size={ComponentSizeType.xs}
+                    style={ButtonStyleType.neutral}
+                />
+                <Button
+                    icon={<Edit />}
+                    ariaLabel="Edit permission"
+                    onClick={_editPermission}
+                    dataTestId={`edit-permission-${index}`}
+                    variant={ButtonVariantType.borderLess}
+                    size={ComponentSizeType.xs}
+                    style={ButtonStyleType.neutral}
+                />
+                <Button
+                    icon={<TrashIcon />}
+                    ariaLabel="Delete permission"
+                    onClick={_deletePermission}
+                    dataTestId={`delete-permission-${index}`}
+                    variant={ButtonVariantType.borderLess}
+                    size={ComponentSizeType.xs}
+                    style={ButtonStyleType.negativeGrey}
+                />
             </span>
         </div>
     )

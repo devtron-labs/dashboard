@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "1.3.5",
+        "@devtron-labs/devtron-fe-common-lib": "1.3.9",
         "@esbuild-plugins/node-globals-polyfill": "0.2.3",
         "@rjsf/core": "^5.13.3",
         "@rjsf/utils": "^5.13.3",

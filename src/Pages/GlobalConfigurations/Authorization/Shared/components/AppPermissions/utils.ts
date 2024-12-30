@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { OptionType, ACCESS_TYPE_MAP, EntityTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionType, ACCESS_TYPE_MAP, EntityTypes, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionsOrGroups, GroupBase } from 'react-select'
 import { DEFAULT_ENV } from '../../../../../../components/app/details/triggerView/Constants'
 import { createClusterEnvGroup } from '../../../../../../components/common'
 import { SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
-import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './constants'
-import { DirectPermissionRow } from './types'
+import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE, DirectPermissionFieldName } from './constants'
+import { DirectPermissionRowProps } from './types'
 
 export const getNavLinksConfig = (serverMode: SERVER_MODE, superAdmin: boolean) =>
     [
@@ -119,7 +120,7 @@ export const getEnvironmentClusterOptions = (envClustersList) =>
         isVirtualEnvironment: cluster?.isVirtualCluster,
     }))
 
-export const getEnvironmentOptions = (environmentsList, entity: DirectPermissionRow['permission']['entity']) => {
+export const getEnvironmentOptions = (environmentsList, entity: DirectPermissionRowProps['permission']['entity']) => {
     const envOptions = createClusterEnvGroup<OptionType & { isClusterCdActive: boolean }>(
         environmentsList,
         'cluster_name',
@@ -148,4 +149,57 @@ export const getEnvironmentOptions = (environmentsList, entity: DirectPermission
         return [defaultEnv, ...filteredEnvOptions]
     }
     return envOptions
+}
+
+export const getDisplayTextByName = (
+    name: DirectPermissionFieldName,
+    options: OptionsOrGroups<SelectPickerOptionType, GroupBase<SelectPickerOptionType>>,
+    selectedOptions: SelectPickerOptionType[],
+) => {
+    const selectedOptionsLength = selectedOptions?.length
+    const optionsLength =
+        options?.reduce(
+            (acc, option) =>
+                acc + (('options' in option && Array.isArray(option.options) ? option.options?.length : 1) ?? 0),
+            0,
+        ) ?? 0
+
+    const count = selectedOptionsLength === optionsLength ? 'All' : selectedOptionsLength
+
+    let Item
+    if (name === DirectPermissionFieldName.apps) {
+        Item = 'application'
+    } else if (name === DirectPermissionFieldName.jobs) {
+        Item = 'job'
+    } else {
+        Item = name
+    }
+
+    return `${count} ${Item}${selectedOptionsLength !== 1 ? 's' : ''}`
+}
+
+export const getEnvironmentDisplayText = (
+    options: OptionsOrGroups<SelectPickerOptionType, GroupBase<SelectPickerOptionType>>,
+    selectedOptions: SelectPickerOptionType[],
+) => {
+    const selectedOptionsLength = selectedOptions.filter(
+        (opt) =>
+            opt.value &&
+            !(opt.value as string).startsWith(ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE) &&
+            !(opt.value as string).startsWith(SELECT_ALL_VALUE),
+    ).length
+    let count = ''
+    // 2 represents all existing cluster option and all existing + future cluster option
+    const totalEnvironments = options.reduce(
+        (len, cluster) =>
+            len + ('options' in cluster && Array.isArray(cluster.options) ? cluster.options.length - 2 : 1),
+        0,
+    )
+    if (selectedOptionsLength === totalEnvironments) {
+        count = 'All environments'
+    } else {
+        count = `${selectedOptionsLength} environment${selectedOptionsLength !== 1 ? 's' : ''}`
+    }
+
+    return count
 }

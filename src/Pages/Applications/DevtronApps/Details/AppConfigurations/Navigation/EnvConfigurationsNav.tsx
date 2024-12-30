@@ -4,6 +4,7 @@ import Tippy from '@tippyjs/react'
 import { GroupBase, OptionsOrGroups } from 'react-select'
 
 import {
+    BASE_CONFIGURATION_ENV_ID,
     Button,
     ButtonComponentType,
     ButtonStyleType,
@@ -24,7 +25,6 @@ import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { ReactComponent as ICLocked } from '@Icons/ic-locked.svg'
 import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
 import { URLS } from '@Config/routes'
-import { ReactComponent as ProtectedIcon } from '@Icons/ic-shield-protect-fill.svg'
 import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
 import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
@@ -43,7 +43,6 @@ export const EnvConfigurationsNav = ({
     showDeploymentTemplate,
     envConfig,
     fetchEnvConfig,
-    isBaseConfigProtected,
     environments,
     goBackURL,
     paramToCheck = 'envId',
@@ -51,6 +50,7 @@ export const EnvConfigurationsNav = ({
     isCMSecretLocked,
     hideEnvSelector,
     compareWithURL,
+    envIdToEnvApprovalConfigurationMap,
 }: EnvConfigurationsNavProps) => {
     // HOOKS
     const history = useHistory()
@@ -77,7 +77,6 @@ export const EnvConfigurationsNav = ({
             ? {
                   name: BASE_CONFIGURATIONS.name,
                   id: BASE_CONFIGURATIONS.id,
-                  isProtected: isBaseConfigProtected,
               }
             : null)
     const resourceType = resourceTypeBasedOnPath(pathname)
@@ -125,10 +124,18 @@ export const EnvConfigurationsNav = ({
 
     useEffect(() => {
         if (!isLoading && config) {
-            const newEnvConfig = getEnvConfiguration(config, path, params, environmentData.isProtected)
+            // For base configurations, the env id is undefined
+            const environmentId = +envId || BASE_CONFIGURATION_ENV_ID
+
+            const newEnvConfig = getEnvConfiguration(
+                config,
+                path,
+                params,
+                envIdToEnvApprovalConfigurationMap?.[environmentId]?.approvalConfigurationMap,
+            )
             setUpdatedEnvConfig(isCreate ? addUnnamedNavLink(newEnvConfig) : newEnvConfig)
         }
-    }, [isLoading, config, pathname, isCreate])
+    }, [isLoading, config, pathname, isCreate, envIdToEnvApprovalConfigurationMap])
 
     useEffect(() => {
         if (!isLoading && config) {
@@ -244,7 +251,6 @@ export const EnvConfigurationsNav = ({
               {
                   label: BASE_CONFIGURATIONS.name,
                   value: BASE_CONFIGURATIONS.id,
-                  endIcon: isBaseConfigProtected ? <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" /> : null,
               },
           ]
         : []
@@ -253,10 +259,9 @@ export const EnvConfigurationsNav = ({
         ...baseEnvOption,
         {
             label: paramToCheck === 'envId' ? 'Environments' : 'Applications',
-            options: environments.map(({ name, id, isProtected }) => ({
+            options: environments.map(({ name, id }) => ({
                 label: name,
                 value: id,
-                endIcon: isProtected ? <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" /> : null,
             })),
         },
     ]
@@ -316,7 +321,6 @@ export const EnvConfigurationsNav = ({
                     showSelectedOptionIcon={false}
                 />
             </div>
-            {environmentData?.isProtected && <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" />}
         </div>
     )
 

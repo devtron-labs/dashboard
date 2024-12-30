@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-import { useMainContext, InfoIconTippy, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
-import { Link, useRouteMatch } from 'react-router-dom'
+import {
+    useMainContext,
+    InfoIconTippy,
+    SearchBar,
+    ButtonComponentType,
+    ComponentSizeType,
+    Button,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { useRouteMatch } from 'react-router-dom'
 import { DOCUMENTATION } from '../../../../../config'
 import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-add.svg'
 import { ReactComponent as ArrowSquareOut } from '../../../../../assets/icons/ic-arrow-square-out.svg'
@@ -63,10 +70,16 @@ const PermissionGroupListHeader = ({
                     handleEnter={handleSearch}
                     initialSearchText={initialSearchText}
                 />
-                <Link to={`${path}/add`} type="button" className="cta anchor flex dc__gap-6 h-32">
-                    <PlusIcon className="icon-dim-14 mw-14" />
-                    Create Group
-                </Link>
+                <Button
+                    text="Create Group"
+                    startIcon={<PlusIcon />}
+                    component={ButtonComponentType.link}
+                    linkProps={{
+                        to: `${path}/add`,
+                    }}
+                    size={ComponentSizeType.medium}
+                    dataTestId="add-permission-group-link"
+                />
                 {isSuperAdmin && (
                     <>
                         <div className="dc__divider h-20" />
