@@ -25,10 +25,9 @@ import { ChartListType } from '../charts.types'
 import { getNonEditableChartRepoText } from '../../common'
 import { TOAST_INFO } from '../../../config/constantMessaging'
 
-const ChartListPopUpRow = ({ index, list }: { index: number; list: ChartListType }) => {
+const ChartListPopUpRow = ({ index, list, enabled, toggleEnabled }: { index: number; list: ChartListType, enabled: boolean, toggleEnabled: (enable: boolean) => void }) => {
     const [isSpecificChartRefetchLoading, setSpecificChartRefetchLoading] = useState(false)
     const [isToggleLoading, setToggleLoading] = useState(false)
-    const [enabled, toggleEnabled] = useState<boolean>(list.active)
 
     function refetchSpecificChart(id: number, isOCIRegistry: boolean) {
         const payload = {

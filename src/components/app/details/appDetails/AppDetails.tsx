@@ -18,7 +18,6 @@ import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react'
 import {
     showError,
     Progressing,
-    ConfirmationDialog,
     noop,
     stopPropagation,
     multiSelectStyles,
@@ -35,6 +34,10 @@ import {
     ToastVariantType,
     ToastManager,
     SelectPicker,
+    ConfirmationModal,
+    ConfirmationModalVariantType,
+    ServerErrors,
+    getIsRequestAborted,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -56,16 +59,17 @@ import { NavigationArrow, useAppContext, FragmentHOC } from '../../../common'
 import { groupHeaderStyle, Option } from '../../../v2/common/ReactSelect.utils'
 import { getAppConfigStatus, getAppOtherEnvironmentMin, stopStartApp } from '../../../../services/service'
 // @ts-check
-import AppNotDeployedIcon from '../../../../assets/img/app-not-deployed.png'
-import AppNotConfiguredIcon from '../../../../assets/img/app-not-configured.png'
-import restoreIcon from '../../../../assets/icons/ic-restore.svg'
-import warningIcon from '../../../../assets/icons/ic-warning.svg'
-import { ReactComponent as PlayButton } from '../../../../assets/icons/ic-play.svg'
-import { ReactComponent as Connect } from '../../../../assets/icons/ic-connected.svg'
-import { ReactComponent as Disconnect } from '../../../../assets/icons/ic-disconnected.svg'
-import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg'
-import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.svg'
-import { ReactComponent as ForwardArrow } from '../../../../assets/icons/ic-arrow-forward.svg'
+import AppNotDeployedIcon from '@Images/app-not-deployed.png'
+import AppNotConfiguredIcon from '@Images/app-not-configured.png'
+import { ReactComponent as ICHibernate } from '@Icons/ic-medium-hibernate.svg'
+import { ReactComponent as ICUnhibernate } from '@Icons/ic-medium-unhibernate.svg'
+import { ReactComponent as PlayButton } from '@Icons/ic-play.svg'
+import { ReactComponent as Connect } from '@Icons/ic-connected.svg'
+import { ReactComponent as Disconnect } from '@Icons/ic-disconnected.svg'
+import { ReactComponent as Abort } from '@Icons/ic-abort.svg'
+import { ReactComponent as StopButton } from '@Icons/ic-stop.svg'
+import { ReactComponent as ForwardArrow } from '@Icons/ic-arrow-forward.svg'
+import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
 
 import { SourceInfo } from './SourceInfo'
 import { Application, Nodes, AggregatedNodes, NodeDetailTabs } from '../../types'
@@ -294,7 +298,7 @@ export const Details: React.FC<DetailsType> = ({
     const appDetailsRequestRef = useRef(null)
     const { envId } = useParams<{ appId: string; envId?: string }>()
     const pollResourceTreeRef = useRef(true)
-    const appDetailsAbortRef = useRef(null)
+    const appDetailsAbortRef = useRef<AbortController>(null)
     const shouldFetchTimelineRef = useRef(false)
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
@@ -383,6 +387,11 @@ export const Details: React.FC<DetailsType> = ({
         ],
     )
 
+    useEffect(() => () => {
+        clearPollingInterval()
+        IndexStore.clearAppDetails()
+    }, [])
+
     useEffect(() => {
         appDetailsAbortRef.current = new AbortController()
         return () => {
@@ -395,7 +404,8 @@ export const Details: React.FC<DetailsType> = ({
             if (setIsAppDeleted) {
                 setIsAppDeleted(true)
             }
-            if (error['code'] === 408) {
+            // NOTE: BE sends  string representation of 7000 instead of number 7000 
+            if (getIsRequestAborted(error) || (error instanceof ServerErrors && String(error.errors?.[0]?.code ?? '') === "7000")) {
                 setResourceTreeFetchTimeOut(true)
             } else {
                 setResourceTreeFetchTimeOut(false)
@@ -408,7 +418,7 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     async function callAppDetailsAPI(fetchExternalLinks?: boolean) {
-        appDetailsAPI(params.appId, params.envId, interval - 5000, appDetailsAbortRef.current.signal)
+        appDetailsAPI(params.appId, params.envId, interval - 5000, appDetailsAbortRef)
             .then(async (response) => {
                 isVirtualEnvRef.current = response.result?.isVirtualEnvironment
                 // This means the CD is not triggered and the app is not helm migrated i.e. Empty State
@@ -454,7 +464,7 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     const fetchResourceTree = () =>
-        fetchResourceTreeInTime(params.appId, params.envId, interval - 5000, appDetailsAbortRef.current.signal)
+        fetchResourceTreeInTime(params.appId, params.envId, interval - 5000, appDetailsAbortRef)
             .then((response) => {
                 if (
                     response.errors &&
@@ -593,7 +603,7 @@ export const Details: React.FC<DetailsType> = ({
     if (
         !loadingResourceTree &&
         (!appDetails?.resourceTree || !appDetails.resourceTree.nodes?.length) &&
-        !appDetails?.isPipelineTriggered
+        (!appDetails?.isPipelineTriggered || isAppDeleted)
     ) {
         return (
             <>
@@ -604,6 +614,13 @@ export const Details: React.FC<DetailsType> = ({
                             disabled={params.envId && !showCommitInfo}
                             controlStyleOverrides={{ backgroundColor: 'white' }}
                         />
+                        {isAppDeleted && appDetails?.deploymentAppDeleteRequest && (
+                            <div data-testid="deleteing-argocd-pipeline" className="flex left">
+                                <Trash className="icon-dim-16 mr-8 ml-12" />
+                                <span className="cr-5 fw-6">Deleting deployment pipeline </span>
+                                <span className="dc__loading-dots cr-5" />
+                            </div>
+                        )}
                     </div>
                 )}
                 {isAppDeleted ? (
@@ -657,12 +674,12 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     const handleHibernateConfirmationModalClose = (e) => {
-        e.stopPropagation()
+        e?.stopPropagation()
         setHibernateConfirmationModal('')
     }
 
     const renderHibernateModal = (): JSX.Element => {
-        if (isDeploymentBlocked && DeploymentWindowConfirmationDialog) {
+        if (hibernateConfirmationModal && isDeploymentBlocked && DeploymentWindowConfirmationDialog) {
             return (
                 <DeploymentWindowConfirmationDialog
                     onClose={handleHibernateConfirmationModalClose}
@@ -677,46 +694,38 @@ export const Details: React.FC<DetailsType> = ({
             )
         }
         return (
-            <ConfirmationDialog>
-                <ConfirmationDialog.Icon src={hibernateConfirmationModal === 'hibernate' ? warningIcon : restoreIcon} />
-                <ConfirmationDialog.Body
-                    title={`${hibernateConfirmationModal === 'hibernate' ? 'Hibernate' : 'Restore'} '${
-                        appDetails.appName
-                    }' on '${appDetails.environmentName}'`}
-                    subtitle={
-                        <p>
-                            Pods for this application will be
-                            <b className="mr-4 ml-4">
-                                scaled
-                                {hibernateConfirmationModal === 'hibernate'
-                                    ? ' down to 0 '
-                                    : ' up to its original count '}
-                                on {appDetails.environmentName}
-                            </b>
-                            environment.
-                        </p>
-                    }
-                >
-                    <p className="mt-16">Are you sure you want to continue?</p>
-                </ConfirmationDialog.Body>
-                <ConfirmationDialog.ButtonGroup>
-                    <button
-                        className="cta cancel"
-                        disabled={hibernating}
-                        onClick={handleHibernateConfirmationModalClose}
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        className="cta"
-                        disabled={hibernating}
-                        data-testid={`app-details-${hibernateConfirmationModal === 'hibernate' ? 'hibernate' : 'restore'}`}
-                        onClick={handleHibernate}
-                    >
-                        {hibernating ? <Progressing /> : getHibernateText()}
-                    </button>
-                </ConfirmationDialog.ButtonGroup>
-            </ConfirmationDialog>
+            <ConfirmationModal
+                variant={ConfirmationModalVariantType.custom}
+                Icon={hibernateConfirmationModal === 'hibernate' ? ICHibernate : ICUnhibernate}
+                title={`${hibernateConfirmationModal === 'hibernate' ? 'Hibernate' : 'Restore'} '${appDetails.appName}' on '${appDetails.environmentName}'`}
+                subtitle={
+                    <p className="m-0-imp fs-13">
+                        Pods for this application will be
+                        <b className="mr-4 ml-4">
+                            scaled
+                            {hibernateConfirmationModal === 'hibernate' ? ' down to 0 ' : ' up to its original count '}
+                            on {appDetails.environmentName}
+                        </b>
+                        environment.
+                    </p>
+                }
+                buttonConfig={{
+                    secondaryButtonConfig: {
+                        disabled: hibernating,
+                        onClick: handleHibernateConfirmationModalClose,
+                        text: 'Cancel',
+                    },
+                    primaryButtonConfig: {
+                        isLoading: hibernating,
+                        onClick: handleHibernate,
+                        text: getHibernateText(),
+                    },
+                }}
+                showConfirmationModal={!!hibernateConfirmationModal}
+                handleClose={handleHibernateConfirmationModalClose}
+            >
+                <span className="fs-13">Are you sure you want to continue?</span>
+            </ConfirmationModal>
         )
     }
 
@@ -821,7 +830,7 @@ export const Details: React.FC<DetailsType> = ({
                     renderCIListHeader={renderCIListHeader}
                 />
             )}
-            {hibernateConfirmationModal && renderHibernateModal()}
+            {appDetails && renderHibernateModal()}
             {rotateModal && renderRestartWorkload()}
             {
                 <ClusterMetaDataBar
@@ -831,7 +840,9 @@ export const Details: React.FC<DetailsType> = ({
                     isVirtualEnvironment={isVirtualEnvRef.current}
                 />
             }
-            {isConfigDriftEnabled && ConfigDriftModalRoute && !isVirtualEnvRef.current && <ConfigDriftModalRoute path={path} />}
+            {isConfigDriftEnabled && ConfigDriftModalRoute && !isVirtualEnvRef.current && (
+                <ConfigDriftModalRoute path={path} />
+            )}
         </>
     )
 }
@@ -955,7 +966,7 @@ export const EnvSelector = ({
                     ENV
                 </div>
             </div>
-            <div data-testid="app-deployed-env-name" className="app-details__selector w-200 dc__zi-11">
+            <div data-testid="app-deployed-env-name" className="app-details__selector w-200 dc__zi-12">
                 <SelectPicker
                     inputId="app-environment-select"
                     placeholder="Select Environment"

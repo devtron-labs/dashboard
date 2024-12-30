@@ -17,8 +17,10 @@ import {
     EnvironmentOptionType,
     AppEnvDeploymentConfigQueryParams,
     DeploymentConfigCompareProps,
+    GetAppEnvDeploymentConfigProps,
 } from '../../AppConfig.types'
 import { BASE_CONFIGURATIONS } from '../../AppConfig.constants'
+import { SetIdentifierIdBasedOnConfigurationProps } from './types'
 
 export const getPreviousDeploymentOptionValue = (identifierId: number, pipelineId?: number, chartRefId?: number) => {
     if (identifierId && pipelineId) {
@@ -120,7 +122,7 @@ export const parseCompareWithSearchParams =
                 // If `type` is 'app' (Application), set `compareWith` to the first environment if available,
                 // otherwise `null` (base configuration).
                 if (type === 'app') {
-                    compareWith = environments.length && !compareTo ? environments[0].name : null
+                    compareWith = compareTo || (environments.length ? environments[0].name : null)
                 } else {
                     // If `type` is 'appGroup' (Application Groups), set `compareWith` to the first application.
                     // If the application to compare (`compareTo`) is the same as the first application,
@@ -239,10 +241,10 @@ export const getEnvironmentConfigTypeOptions = (
     {
         label: 'Previous deployments',
         options: previousDeploymentsList.map(
-            ({ finishedOn, chartVersion, pipelineId, deploymentTemplateHistoryId, chartRefId }) => ({
+            ({ finishedOn, chartVersion, pipelineId, wfrId, chartRefId, deploymentTemplateHistoryId }) => ({
                 label: `${moment(finishedOn).format(Moment12HourFormat)} (v${chartVersion})`,
                 value: getPreviousDeploymentOptionValue(
-                    deploymentTemplateHistoryId,
+                    isManifestView ? deploymentTemplateHistoryId : wfrId,
                     pipelineId,
                     isManifestView ? chartRefId : null,
                 ),
@@ -304,3 +306,40 @@ export const isConfigTypeNonDraftOrPublished = (type: AppEnvDeploymentConfigType
 
 export const isConfigTypePublished = (type: AppEnvDeploymentConfigType) =>
     type === AppEnvDeploymentConfigType.PUBLISHED_WITH_DRAFT || type === AppEnvDeploymentConfigType.PUBLISHED_ONLY
+
+export const getAppEnvDeploymentConfigPayload = ({
+    type,
+    appName,
+    envName,
+    compareName,
+    configType,
+    identifierId,
+    pipelineId,
+}: GetAppEnvDeploymentConfigProps) =>
+    ({
+        configArea: 'AppConfiguration',
+        ...(type === 'app'
+            ? {
+                  appName,
+                  envName: compareName || '',
+              }
+            : {
+                  appName: compareName || '',
+                  envName,
+              }),
+        configType,
+        [configType === AppEnvDeploymentConfigType.DEFAULT_VERSION ? 'identifierId' : 'wfrId']: identifierId,
+        pipelineId,
+    }) as const
+
+export const getIdentifierIdBasedOnConfiguration = ({
+    identifierId,
+    isManifestView,
+    previousDeployments,
+}: SetIdentifierIdBasedOnConfigurationProps) => {
+    const _identifierId = isManifestView
+        ? previousDeployments.find((prev) => prev.wfrId === identifierId)?.deploymentTemplateHistoryId ?? null
+        : previousDeployments.find((prev) => prev.deploymentTemplateHistoryId === identifierId)?.wfrId ?? null
+
+    return String(_identifierId)
+}

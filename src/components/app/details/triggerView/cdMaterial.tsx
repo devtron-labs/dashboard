@@ -65,7 +65,6 @@ import {
     useDownload,
     SearchBar,
     CDMaterialSidebarType,
-    RuntimeParamsListItemType,
     CDMaterialResponseType,
     CD_MATERIAL_SIDEBAR_TABS,
     getIsManualApprovalConfigured,
@@ -77,6 +76,12 @@ import {
     AppDetailsPayload,
     ResponseType,
     ApiResponseResultType,
+    CommonNodeAttr,
+    GetPolicyConsequencesProps,
+    PolicyConsequencesDTO,
+    PipelineStageBlockInfo,
+    RuntimePluginVariables,
+    uploadCDPipelineFile,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -87,6 +92,7 @@ import {
     TriggerViewContextType,
     BulkSelectionEvents,
     RenderCTAType,
+    RuntimeParamsErrorState,
 } from './types'
 import close from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Check } from '../../../../assets/icons/ic-check-circle.svg'
@@ -138,17 +144,19 @@ const getIsImageApproverFromUserApprovalMetaData: (
     email: string,
     userApprovalMetadata: UserApprovalMetadataType,
 ) => boolean = importComponentFromFELibrary('getIsImageApproverFromUserApprovalMetaData', () => false, 'function')
-const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
-const getSecurityScan: ({
-    appId,
-    envId,
-    installedAppId,
-}: AppDetailsPayload) => Promise<ResponseType<ApiResponseResultType>> = importComponentFromFELibrary(
-    'getSecurityScan',
-    null,
+const getSecurityScan: ({ appId, installedAppId }: AppDetailsPayload) => Promise<ResponseType<ApiResponseResultType>> =
+    importComponentFromFELibrary('getSecurityScan', null, 'function')
+const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
+const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
+const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
+const TriggerBlockEmptyState = importComponentFromFELibrary('TriggerBlockEmptyState', null, 'function')
+const getPolicyConsequences: ({ appId, envId }: GetPolicyConsequencesProps) => Promise<PolicyConsequencesDTO> =
+    importComponentFromFELibrary('getPolicyConsequences', null, 'function')
+const validateRuntimeParameters = importComponentFromFELibrary(
+    'validateRuntimeParameters',
+    () => ({ isValid: true, cellError: {} }),
     'function',
 )
-const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 
 const CDMaterial = ({
     materialType,
@@ -177,8 +185,14 @@ const CDMaterial = ({
     selectedAppName,
     bulkRuntimeParams,
     handleBulkRuntimeParamChange,
+    bulkRuntimeParamErrorState,
     handleBulkRuntimeParamError,
     bulkSidebarTab,
+    showPluginWarningBeforeTrigger: _showPluginWarningBeforeTrigger = false,
+    consequence,
+    configurePluginURL,
+    isTriggerBlockedDueToPlugin,
+    bulkUploadFile,
 }: Readonly<CDMaterialProps>) => {
     // stageType should handle approval node, compute CDMaterialServiceEnum, create queryParams state
     // FIXME: the query params returned by useSearchString seems faulty
@@ -196,55 +210,78 @@ const CDMaterial = ({
     const { email } = useUserEmail()
 
     const searchImageTag = searchParams.search
-    const isScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && !!isFELibAvailable
 
     const [material, setMaterial] = useState<CDMaterialType[]>([])
     const [state, setState] = useState<CDMaterialState>(getInitialState(materialType, material, searchImageTag))
     // It is derived from materialResult and can be fixed as a constant fix this
     const [isConsumedImageAvailable, setIsConsumedImageAvailable] = useState<boolean>(false)
+    const [showPluginWarningOverlay, setShowPluginWarningOverlay] = useState<boolean>(false)
     // Should be able to abort request using useAsync
     const abortControllerRef = useRef(new AbortController())
     const abortDeployRef = useRef(null)
 
     const isPreOrPostCD = stageType === DeploymentNodeType.PRECD || stageType === DeploymentNodeType.POSTCD
+    const showPluginWarningBeforeTrigger = _showPluginWarningBeforeTrigger && isPreOrPostCD
+    // This check assumes we have isPreOrPostCD as true
+    const allowWarningWithTippyNodeTypeProp: CommonNodeAttr['type'] =
+        stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
+
+    // this function can be used for other trigger block reasons once api supports it
+    const getIsTriggerBlocked = (cdPolicyConsequences: PipelineStageBlockInfo) => {
+        switch (stageType) {
+            case DeploymentNodeType.PRECD:
+                return cdPolicyConsequences.pre.isBlocked
+            case DeploymentNodeType.POSTCD:
+                return cdPolicyConsequences.post.isBlocked
+            case DeploymentNodeType.CD:
+                return cdPolicyConsequences.node.isBlocked
+            default:
+                return false
+        }
+    }
+
+    const getMaterialResponseList = async (): Promise<[CDMaterialResponseType, any, PolicyConsequencesDTO]> => {
+        const response = await Promise.all([
+            genericCDMaterialsService(
+                materialType === MATERIAL_TYPE.rollbackMaterialList
+                    ? CDMaterialServiceEnum.ROLLBACK
+                    : CDMaterialServiceEnum.CD_MATERIALS,
+                pipelineId,
+                // Don't think need to set stageType to approval in case of approval node
+                stageType ?? DeploymentNodeType.CD,
+                abortControllerRef.current.signal,
+                // It is meant to fetch the first 20 materials
+                {
+                    offset: 0,
+                    size: 20,
+                    search: searchImageTag,
+                    // Since by default we are setting filterView to eligible and in case of no filters everything is eligible
+                    // So there should'nt be any additional api call
+                    // NOTE: Uncomment this when backend supports the filtering, there will be some minor handling like number of images in segmented control
+                    // filter:
+                    //     state.filterView === FilterConditionViews.ELIGIBLE && !state.searchApplied
+                    //         ? CDMaterialFilterQuery.RESOURCE
+                    //         : null,
+                },
+            ),
+            getDeploymentWindowProfileMetaData && !isFromBulkCD
+                ? getDeploymentWindowProfileMetaData(appId, envId)
+                : null,
+            getPolicyConsequences ? getPolicyConsequences({ appId, envId }) : null,
+        ])
+
+        if (getIsTriggerBlocked(response[2].cd)) {
+            return [null, null, response[2]]
+        }
+        return response
+    }
 
     // TODO: Ask if pipelineId always changes on change of app else add appId as dependency
     const [loadingMaterials, responseList, materialsError, reloadMaterials] = useAsync(
-        () =>
-            abortPreviousRequests(
-                () =>
-                    Promise.all([
-                        genericCDMaterialsService(
-                            materialType === MATERIAL_TYPE.rollbackMaterialList
-                                ? CDMaterialServiceEnum.ROLLBACK
-                                : CDMaterialServiceEnum.CD_MATERIALS,
-                            pipelineId,
-                            // Don't think need to set stageType to approval in case of approval node
-                            stageType ?? DeploymentNodeType.CD,
-                            abortControllerRef.current.signal,
-                            // It is meant to fetch the first 20 materials
-                            {
-                                offset: 0,
-                                size: 20,
-                                search: searchImageTag,
-                                // Since by default we are setting filterView to eligible and in case of no filters everything is eligible
-                                // So there should'nt be any additional api call
-                                // NOTE: Uncomment this when backend supports the filtering, there will be some minor handling like number of images in segmented control
-                                // filter:
-                                //     state.filterView === FilterConditionViews.ELIGIBLE && !state.searchApplied
-                                //         ? CDMaterialFilterQuery.RESOURCE
-                                //         : null,
-                            },
-                        ),
-                        getDeploymentWindowProfileMetaData && !isFromBulkCD
-                            ? getDeploymentWindowProfileMetaData(appId, envId)
-                            : null,
-                    ]),
-                abortControllerRef,
-            ),
+        () => abortPreviousRequests(() => getMaterialResponseList(), abortControllerRef),
         // NOTE: Add state.filterView if want to add filtering support from backend
         [pipelineId, stageType, materialType, searchImageTag],
-        !!pipelineId,
+        !!pipelineId && !isTriggerBlockedDueToPlugin,
     )
 
     const materialsResult: CDMaterialResponseType = responseList?.[0]
@@ -259,8 +296,11 @@ const CDMaterial = ({
     const [appliedFilterList, setAppliedFilterList] = useState<FilterConditionsListType[]>([])
     // ----- RUNTIME PARAMS States (To be overridden by parent props in case of bulk) -------
     const [currentSidebarTab, setCurrentSidebarTab] = useState<CDMaterialSidebarType>(CDMaterialSidebarType.IMAGE)
-    const [runtimeParamsList, setRuntimeParamsList] = useState<RuntimeParamsListItemType[]>([])
-    const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<boolean>(false)
+    const [runtimeParamsList, setRuntimeParamsList] = useState<RuntimePluginVariables[]>([])
+    const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<RuntimeParamsErrorState>({
+        isValid: true,
+        cellError: {},
+    })
     const [value, setValue] = useState()
     const [showDeploymentWindowConfirmation, setShowDeploymentWindowConfirmation] = useState(false)
 
@@ -374,7 +414,7 @@ const CDMaterial = ({
                     setTagsEditable(materialsResult.tagsEditable)
                     setAppReleaseTagNames(materialsResult.appReleaseTagNames)
                     setNoMoreImages(materialsResult.materials.length >= materialsResult.totalCount)
-                    setRuntimeParamsList(materialsResult.runtimeParams || [])
+                    setRuntimeParamsList(materialsResult.runtimeParams)
 
                     setMaterial(_newMaterials)
                     const _isConsumedImageAvailable =
@@ -394,7 +434,7 @@ const CDMaterial = ({
                 setTagsEditable(materialsResult.tagsEditable)
                 setAppReleaseTagNames(materialsResult.appReleaseTagNames)
                 setNoMoreImages(materialsResult.materials.length >= materialsResult.totalCount)
-                setRuntimeParamsList(materialsResult.runtimeParams || [])
+                setRuntimeParamsList(materialsResult.runtimeParams)
 
                 setMaterial(materialsResult.materials)
                 const _isConsumedImageAvailable =
@@ -550,15 +590,23 @@ const CDMaterial = ({
         }))
     }
 
-    const handleRuntimeParamChange: typeof handleBulkRuntimeParamChange = (
-        updatedRuntimeParams: RuntimeParamsListItemType[],
-    ) => {
+    const handleRuntimeParamChange: typeof handleBulkRuntimeParamChange = (updatedRuntimeParams) => {
         setRuntimeParamsList(updatedRuntimeParams)
     }
 
-    const handleRuntimeParamError = (errorState: boolean) => {
-        setRuntimeParamsErrorState(errorState)
+    const onRuntimeParamsError = (updatedRuntimeParamsErrorState: typeof runtimeParamsErrorState) => {
+        setRuntimeParamsErrorState(updatedRuntimeParamsErrorState)
     }
+
+    const handleUploadFile: typeof bulkUploadFile = ({ file, allowedExtensions, maxUploadSize }) =>
+        uploadCDPipelineFile({ file, allowedExtensions, maxUploadSize, appId, envId })
+
+    // RUNTIME PARAMETERS PROPS
+    const parameters = bulkRuntimeParams || runtimeParamsList
+    const errorState = bulkRuntimeParamErrorState || runtimeParamsErrorState
+    const handleRuntimeParamsChange = handleBulkRuntimeParamChange || handleRuntimeParamChange
+    const handleRuntimeParamsError = handleBulkRuntimeParamError || onRuntimeParamsError
+    const uploadRuntimeParamsFile = bulkUploadFile || handleUploadFile
 
     const clearSearch = (e: React.MouseEvent<HTMLButtonElement>): void => {
         stopPropagation(e)
@@ -690,14 +738,6 @@ const CDMaterial = ({
     }
 
     const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (runtimeParamsErrorState) {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Please resolve all the errors before switching tabs',
-            })
-            return
-        }
-
         setCurrentSidebarTab(e.target.value as CDMaterialSidebarType)
     }
 
@@ -788,7 +828,8 @@ const CDMaterial = ({
             serverError instanceof ServerErrors &&
             Array.isArray(serverError.errors) &&
             serverError.code !== 403 &&
-            serverError.code !== 408
+            serverError.code !== 408 &&
+            !getIsRequestAborted(searchParams)
         ) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 ToastManager.showToast(
@@ -854,7 +895,9 @@ const CDMaterial = ({
         deploymentWithConfig?: string,
         wfrId?: number,
     ) => {
-        if (runtimeParamsErrorState) {
+        const updatedRuntimeParamsErrorState = validateRuntimeParameters(parameters)
+        handleRuntimeParamsError(updatedRuntimeParamsErrorState)
+        if (!updatedRuntimeParamsErrorState.isValid) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: 'Please resolve all the errors before deploying',
@@ -1064,6 +1107,19 @@ const CDMaterial = ({
         consumedImagePresent?: boolean,
         noEligibleImages?: boolean,
     ) => {
+        if (isTriggerBlockedDueToPlugin && MissingPluginBlockState) {
+            return (
+                <MissingPluginBlockState
+                    configurePluginURL={configurePluginURL}
+                    nodeType={allowWarningWithTippyNodeTypeProp}
+                />
+            )
+        }
+
+        if (TriggerBlockEmptyState && getIsTriggerBlocked(responseList?.[2]?.cd)) {
+            return <TriggerBlockEmptyState appId={appId} stageType={stageType} />
+        }
+
         if (
             resourceFilters?.length &&
             noEligibleImages &&
@@ -1142,7 +1198,9 @@ const CDMaterial = ({
                 const _gitCommit = getGitCommitInfo(mat)
 
                 if (
-                    (materialData.appliedFilters?.length > 0 || materialData.deploymentWindowArtifactMetadata?.type) &&
+                    (materialData.appliedFilters?.length > 0 ||
+                        materialData.deploymentBlockedState?.isBlocked ||
+                        materialData.deploymentWindowArtifactMetadata?.type) &&
                     CDMaterialInfo
                 ) {
                     return (
@@ -1156,6 +1214,7 @@ const CDMaterial = ({
                             dataSource={materialData.dataSource}
                             deploymentWindowArtifactMetadata={materialData.deploymentWindowArtifactMetadata}
                             isFilterApplied={materialData.appliedFilters?.length > 0}
+                            triggerBlockedInfo={materialData.deploymentBlockedState}
                         >
                             {(_gitCommit.WebhookData?.Data ||
                                 _gitCommit.Author ||
@@ -1443,6 +1502,9 @@ const CDMaterial = ({
                             tabs={CD_MATERIAL_SIDEBAR_TABS}
                             initialTab={currentSidebarTab}
                             onChange={areTabsDisabled ? noop : handleSidebarTabChange}
+                            hasError={{
+                                [CDMaterialSidebarType.PARAMETERS]: !runtimeParamsErrorState.isValid,
+                            }}
                         />
                     </div>
                 )}
@@ -1523,11 +1585,13 @@ const CDMaterial = ({
                         </>
                     ) : (
                         <RuntimeParameters
-                            rootClassName=""
-                            parameters={bulkRuntimeParams || runtimeParamsList}
-                            handleChange={handleBulkRuntimeParamChange || handleRuntimeParamChange}
-                            onError={handleBulkRuntimeParamError || handleRuntimeParamError}
-                            headingClassName="pb-14 flexbox dc__gap-4"
+                            appId={appId}
+                            parameters={parameters}
+                            handleChange={handleRuntimeParamsChange}
+                            errorState={errorState}
+                            handleError={handleRuntimeParamsError}
+                            uploadFile={uploadRuntimeParamsFile}
+                            isCD
                         />
                     )}
                 </ConditionalWrap>
@@ -1604,6 +1668,11 @@ const CDMaterial = ({
     const onClickDeploy = (e, disableDeployButton: boolean) => {
         e.stopPropagation()
         if (!disableDeployButton) {
+            if (!showPluginWarningOverlay && showPluginWarningBeforeTrigger) {
+                setShowPluginWarningOverlay(true)
+                return
+            }
+
             if (
                 deploymentWindowMetadata.userActionState &&
                 deploymentWindowMetadata.userActionState !== ACTION_STATE.ALLOWED
@@ -1616,11 +1685,32 @@ const CDMaterial = ({
         }
     }
 
+    const renderTriggerDeployButton = (disableDeployButton: boolean) => (
+        <button
+            data-testid="cd-trigger-deploy-button"
+            disabled={deploymentLoading || isSaveLoading}
+            className={`${getCTAClass(deploymentWindowMetadata.userActionState, disableDeployButton)} h-36`}
+            onClick={(e) => onClickDeploy(e, disableDeployButton)}
+            type="button"
+        >
+            {deploymentLoading || isSaveLoading ? (
+                <Progressing />
+            ) : (
+                <>
+                    {getDeployButtonIcon()}
+                    {deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED
+                        ? 'Deployment is blocked'
+                        : CDButtonLabelMap[stageType]}
+                    {isVirtualEnvironment && ' to isolated env'}
+                    {deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED && (
+                        <InfoOutline className="icon-dim-16 ml-5" />
+                    )}
+                </>
+            )}
+        </button>
+    )
+
     const renderTriggerModalCTA = (isApprovalConfigured: boolean) => {
-        const buttonLabel =
-            deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED
-                ? 'Deployment is blocked'
-                : CDButtonLabelMap[stageType]
         const disableDeployButton =
             isDeployButtonDisabled() ||
             (material.length > 0 && getIsImageApprover(state.selectedMaterial?.userApprovalMetadata))
@@ -1666,26 +1756,21 @@ const CDMaterial = ({
                         </Tippy>
                     )}
                 >
-                    <button
-                        data-testid="cd-trigger-deploy-button"
-                        disabled={deploymentLoading || isSaveLoading}
-                        className={`${getCTAClass(deploymentWindowMetadata.userActionState, disableDeployButton)} h-36`}
-                        onClick={(e) => onClickDeploy(e, disableDeployButton)}
-                        type="button"
-                    >
-                        {deploymentLoading || isSaveLoading ? (
-                            <Progressing />
-                        ) : (
-                            <>
-                                {getDeployButtonIcon()}
-                                {buttonLabel}
-                                {isVirtualEnvironment && ' to isolated env'}
-                                {deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED && (
-                                    <InfoOutline className="icon-dim-16 ml-5" />
-                                )}
-                            </>
-                        )}
-                    </button>
+                    {AllowedWithWarningTippy && showPluginWarningBeforeTrigger ? (
+                        <AllowedWithWarningTippy
+                            consequence={consequence}
+                            configurePluginURL={configurePluginURL}
+                            showTriggerButton
+                            onTrigger={(e) => onClickDeploy(e, disableDeployButton)}
+                            nodeType={allowWarningWithTippyNodeTypeProp}
+                            visible={showPluginWarningOverlay}
+                            onClose={handleClosePluginWarningOverlay}
+                        >
+                            {renderTriggerDeployButton(disableDeployButton)}
+                        </AllowedWithWarningTippy>
+                    ) : (
+                        renderTriggerDeployButton(disableDeployButton)
+                    )}
                 </ConditionalWrap>
             </div>
         )
@@ -1712,8 +1797,13 @@ const CDMaterial = ({
         </div>
     )
 
+    const handleClosePluginWarningOverlay = () => {
+        setShowPluginWarningOverlay(false)
+    }
+
     const handleConfirmationClose = (e) => {
         e.stopPropagation()
+        handleClosePluginWarningOverlay()
         setShowDeploymentWindowConfirmation(false)
     }
 
@@ -1886,7 +1976,7 @@ const CDMaterial = ({
     return (
         <>
             <div className="trigger-modal__header">
-                <h1 className="modal__title">{renderCDModalHeader()}</h1>
+                <h2 className="modal__title">{renderCDModalHeader()}</h2>
                 <button type="button" className="dc__transparent" onClick={closeCDModal}>
                     <img alt="close" src={close} />
                 </button>

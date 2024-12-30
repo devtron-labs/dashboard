@@ -147,7 +147,7 @@ export const ChartRepoSelector = ({
 
     return (
         (isExternal || isUpdate) && (
-            <div className="form__row form__row--w-100">
+            <div className="w-100">
                 <div className="flex dc__content-space">
                     <span className="form__label fs-13 fw-4 lh-20 cn-7" data-testid="helm-chart-heading">
                         Helm Chart

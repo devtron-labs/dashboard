@@ -16,6 +16,7 @@
 
 import React, { useState } from 'react'
 import { NavLink } from 'react-router-dom'
+import { Button, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { CreateResource } from './ResourceList/CreateResource'
 import { CreateResourceButtonType, CreateResourceType } from './Types'
@@ -33,15 +34,13 @@ export const CreateResourceButton: React.FC<CreateResourceButtonType> = ({ clust
 
     return (
         <>
-            <button
-                className="cursor flex cta small h-28 pl-8 pr-10 pt-5 pb-5 lh-n fcb-5 mr-16"
-                data-testid="create-resource"
-                type="button"
+            <Button
+                dataTestId="create-resource"
                 onClick={handleModalOpen}
-            >
-                <Add className="icon-dim-16 fcb-5 mr-5" />
-                Create resource
-            </button>
+                text="Create resource"
+                startIcon={<Add />}
+                size={ComponentSizeType.small}
+            />
             {showModal && <CreateResource closePopup={handleModalClose} clusterId={clusterId} />}
         </>
     )

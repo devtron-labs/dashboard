@@ -57,7 +57,7 @@ describe('EnvironmentList', () => {
         let component
         jest.spyOn(data, 'getEnvAppList').mockImplementation(mockEmptyFetch)
         await act(async () => {
-            component = render(<EnvironmentsListView isSuperAdmin={true} removeAllFilters={jest.fn()} />, {
+            component = render(<EnvironmentsListView isSuperAdmin={true} clearFilters={jest.fn()} />, {
                 wrapper: BrowserRouter,
             })
         })
@@ -76,7 +76,7 @@ describe('EnvironmentList', () => {
         await act(async () => {
             component = renderWithRouter(
                 <Route path="application-group/list">
-                    <EnvironmentsListView isSuperAdmin={true} removeAllFilters={jest.fn()} />
+                    <EnvironmentsListView isSuperAdmin={true} clearFilters={jest.fn()} />
                 </Route>,
                 { route: 'application-group/list?cluster=3&offset=0' },
             )

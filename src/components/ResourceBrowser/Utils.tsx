@@ -17,25 +17,45 @@
 import React from 'react'
 import queryString from 'query-string'
 import { useLocation } from 'react-router-dom'
-import { ApiResourceGroupType, DATE_TIME_FORMAT_STRING, GVKType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ApiResourceGroupType,
+    DATE_TIME_FORMAT_STRING,
+    GVKType,
+    InitTabType,
+    K8sResourceDetailDataType,
+    K8sResourceDetailType,
+    ResponseType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { URLS, LAST_SEEN } from '../../config'
-import { eventAgeComparator, processK8SObjects } from '../common'
-import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../v2/appDetails/appDetails.store'
-import { JUMP_TO_KIND_SHORT_NAMES, K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from './Constants'
+import { eventAgeComparator, importComponentFromFELibrary, processK8SObjects } from '../common'
+import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import {
-    ClusterOptionType,
+    JUMP_TO_KIND_SHORT_NAMES,
+    K8S_EMPTY_GROUP,
+    NODE_LIST_HEADERS,
+    ORDERED_AGGREGATORS,
+    MONITORING_DASHBOARD_TAB_ID,
+    ResourceBrowserTabsId,
+    SIDEBAR_KEYS,
+} from './Constants'
+import {
+    GetTabsBasedOnRoleParamsType,
     K8SObjectChildMapType,
     K8SObjectMapType,
     K8SObjectType,
     K8sObjectOptionType,
-    FIXED_TABS_INDICES,
-    ResourceDetailDataType,
+    NodeRowDetail,
 } from './Types'
-import { InitTabType } from '../common/DynamicTabs/Types'
 import TerminalIcon from '../../assets/icons/ic-terminal-fill.svg'
 import K8ResourceIcon from '../../assets/icons/ic-object.svg'
 import ClusterIcon from '../../assets/icons/ic-world-black.svg'
+
+const getMonitoringDashboardTabConfig = importComponentFromFELibrary(
+    'getMonitoringDashboardTabConfig',
+    null,
+    'function',
+)
 
 // Converts k8SObjects list to grouped map
 export const getGroupedK8sObjectMap = (
@@ -97,12 +117,12 @@ export const getK8SObjectMapAfterGroupHeadingClick = (
     return _k8SObjectMap
 }
 
-export const sortEventListData = (eventList: ResourceDetailDataType[]): ResourceDetailDataType[] => {
+export const sortEventListData = (eventList: K8sResourceDetailDataType[]): K8sResourceDetailDataType[] => {
     if (!eventList?.length) {
         return []
     }
-    const warningEvents: ResourceDetailDataType[] = []
-    const otherEvents: ResourceDetailDataType[] = []
+    const warningEvents: K8sResourceDetailDataType[] = []
+    const otherEvents: K8sResourceDetailDataType[] = []
     eventList.forEach((event) => {
         if (event.type === 'Warning') {
             warningEvents.push(event)
@@ -111,12 +131,12 @@ export const sortEventListData = (eventList: ResourceDetailDataType[]): Resource
         }
     })
     return [
-        ...warningEvents.sort(eventAgeComparator<ResourceDetailDataType>(LAST_SEEN)),
-        ...otherEvents.sort(eventAgeComparator<ResourceDetailDataType>(LAST_SEEN)),
+        ...warningEvents.sort(eventAgeComparator<K8sResourceDetailDataType>(LAST_SEEN)),
+        ...otherEvents.sort(eventAgeComparator<K8sResourceDetailDataType>(LAST_SEEN)),
     ]
 }
 
-export const removeDefaultForStorageClass = (storageList: ResourceDetailDataType[]): ResourceDetailDataType[] =>
+export const removeDefaultForStorageClass = (storageList: K8sResourceDetailDataType[]): K8sResourceDetailDataType[] =>
     storageList.map((storage) =>
         (storage.name as string).includes('(default)')
             ? {
@@ -181,6 +201,21 @@ export const convertK8sObjectMapToOptionsList = (
         child.forEach((k8sObjectChild: K8SObjectChildMapType, key: string) => {
             switch (key.toLowerCase()) {
                 /* this is a special item in the sidebar added based on presence of a key */
+                case SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase():
+                    _k8sObjectOptionsList.push(
+                        newK8sObjectOption(
+                            SIDEBAR_KEYS.nodes,
+                            '',
+                            SIDEBAR_KEYS.nodeGVK,
+                            false,
+                            false,
+                            '',
+                            JUMP_TO_KIND_SHORT_NAMES.nodes,
+                        ),
+                    )
+                    break
+
+                /* this is a special item in the sidebar added based on presence of a key */
                 case SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase():
                     _k8sObjectOptionsList.push(
                         newK8sObjectOption(
@@ -228,18 +263,6 @@ export const convertK8sObjectMapToOptionsList = (
         })
     })
 
-    _k8sObjectOptionsList.push(
-        newK8sObjectOption(
-            SIDEBAR_KEYS.nodes,
-            '',
-            SIDEBAR_KEYS.nodeGVK,
-            false,
-            false,
-            '',
-            JUMP_TO_KIND_SHORT_NAMES.nodes,
-        ),
-    )
-
     return _k8sObjectOptionsList
 }
 
@@ -263,54 +286,60 @@ export const updateQueryString = (
     return queryString.stringify(query)
 }
 
-export const getTabsBasedOnRole = (
-    selectedCluster: ClusterOptionType,
-    namespace: string,
-    isSuperAdmin: boolean,
-    dynamicTabData: InitTabType,
+export const getURLBasedOnSidebarGVK = (kind: GVKType['Kind'], clusterId: string, namespace: string): string =>
+    `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
+
+export const getTabsBasedOnRole = ({
+    selectedCluster,
+    namespace,
+    dynamicTabData,
     isTerminalSelected = false,
     isOverviewSelected = false,
-): InitTabType[] => {
+    isMonitoringDashBoardSelected = false,
+}: GetTabsBasedOnRoleParamsType): InitTabType[] => {
     const clusterId = selectedCluster.value
-    const tabs = [
+
+    const tabs: InitTabType[] = [
         {
-            idPrefix: AppDetailsTabsIdPrefix.cluster_overview,
+            id: ResourceBrowserTabsId.cluster_overview,
             name: AppDetailsTabs.cluster_overview,
-            url: `${
-                URLS.RESOURCE_BROWSER
-            }/${clusterId}/${namespace}/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
+            url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.overviewGVK.Kind, clusterId, namespace),
             isSelected: isOverviewSelected,
-            position: FIXED_TABS_INDICES.OVERVIEW,
             iconPath: ClusterIcon,
             showNameOnSelect: false,
+            type: 'fixed',
         },
         {
-            idPrefix: AppDetailsTabsIdPrefix.k8s_Resources,
+            id: ResourceBrowserTabsId.k8s_Resources,
             name: AppDetailsTabs.k8s_Resources,
-            url: `${
-                URLS.RESOURCE_BROWSER
-            }/${clusterId}/${namespace}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
-            isSelected: (!isSuperAdmin || !isTerminalSelected) && !dynamicTabData && !isOverviewSelected,
-            position: FIXED_TABS_INDICES.K8S_RESOURCE_LIST,
+            url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.nodeGVK.Kind, clusterId, namespace),
+            isSelected: !isTerminalSelected && !dynamicTabData && !isOverviewSelected && !isMonitoringDashBoardSelected,
+            type: 'fixed',
             iconPath: K8ResourceIcon,
             showNameOnSelect: false,
             dynamicTitle: SIDEBAR_KEYS.nodeGVK.Kind,
+            shouldRemainMounted: true,
         },
-        ...(!isSuperAdmin
-            ? []
-            : [
-                  {
-                      idPrefix: AppDetailsTabsIdPrefix.terminal,
-                      name: AppDetailsTabs.terminal,
-                      url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
-                      isSelected: isTerminalSelected,
-                      position: FIXED_TABS_INDICES.ADMIN_TERMINAL,
-                      iconPath: TerminalIcon,
-                      showNameOnSelect: true,
-                      isAlive: isTerminalSelected,
-                      dynamicTitle: `${AppDetailsTabs.terminal} '${selectedCluster.label}'`,
-                  },
-              ]),
+        ...(getMonitoringDashboardTabConfig
+            ? [
+                  getMonitoringDashboardTabConfig(
+                      getURLBasedOnSidebarGVK(SIDEBAR_KEYS.monitoringGVK.Kind, clusterId, namespace),
+                      isMonitoringDashBoardSelected,
+                      MONITORING_DASHBOARD_TAB_ID,
+                  ),
+              ]
+            : []),
+        {
+            id: ResourceBrowserTabsId.terminal,
+            name: AppDetailsTabs.terminal,
+            url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
+            isSelected: isTerminalSelected,
+            type: 'fixed',
+            iconPath: TerminalIcon,
+            showNameOnSelect: true,
+            isAlive: isTerminalSelected,
+            dynamicTitle: `${AppDetailsTabs.terminal} '${selectedCluster.label}'`,
+        },
         ...(dynamicTabData ? [dynamicTabData] : []),
     ]
 
@@ -328,20 +357,9 @@ export const convertResourceGroupListToK8sObjectList = (resource, nodeType): Map
     return getGroupedK8sObjectMap(_k8SObjectList, nodeType)
 }
 
-export const getResourceFromK8SObjectMap = (map: ApiResourceGroupType[], nodeType: string) => {
-    const resource = map?.find((value) => value.gvk.Kind.toLowerCase() === nodeType.toLowerCase())
-    return (
-        resource && {
-            gvk: resource.gvk,
-            namespaced: resource.namespaced,
-            isGrouped: false,
-        }
-    )
-}
-
 export const getRenderNodeButton =
     (
-        resourceData: ResourceDetailDataType,
+        resourceData: K8sResourceDetailDataType,
         columnName: string,
         handleNodeClick: (e: React.MouseEvent<HTMLButtonElement>) => void,
     ) =>
@@ -362,3 +380,51 @@ export const renderResourceValue = (value: string) => {
 
     return isDateValue ? moment(value).format(DATE_TIME_FORMAT_STRING) : value
 }
+
+/**
+ * Provided a js object we will return a flattened object such that the nested
+ * keys are all direct children created by joining each level using (.)
+ *
+ * Ex: given object = { x: 'a', y: { a: 'b' } } returns { x: 'a', 'y.a': b }
+ *
+ * @param ob any js object
+ * @returns object without any nesting; nested keys will be
+ */
+const flattenObject = (ob: object): Record<string, any> => {
+    const toReturn = {}
+
+    Object.entries(ob).forEach(([key, value]) => {
+        if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+            const flatObject = flattenObject(value)
+
+            Object.entries(flatObject).forEach(([flatObjectKey, flatObjectValue]) => {
+                toReturn[`${key}.${flatObjectKey}`] = flatObjectValue
+            })
+        } else {
+            toReturn[key] = value
+        }
+    })
+
+    return toReturn
+}
+
+// NOTE: Please understand the big comment on @flattenObject to understand this
+export const parseNodeList = (response: ResponseType<NodeRowDetail[]>): ResponseType<K8sResourceDetailType> => ({
+    ...response,
+    result: {
+        headers: [...NODE_LIST_HEADERS] as string[],
+        data: response.result.map((data) => {
+            const _flattenNodeData = flattenObject(data)
+            const meta: Record<string, any> = {}
+
+            if (data.errors) {
+                meta.errorCount = String(Object.keys(data.errors).length || '')
+            }
+
+            meta.taintCount =
+                Object.hasOwn(data, 'taints') && 'taints' in data ? String(Object.keys(data.taints).length || '') : ''
+
+            return { ..._flattenNodeData, ...meta }
+        }),
+    },
+})

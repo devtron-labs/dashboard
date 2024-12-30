@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import { GVKType, Nodes } from '@devtron-labs/devtron-fe-common-lib'
+import { Nodes } from '@devtron-labs/devtron-fe-common-lib'
+import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg'
 import { AggregationKeys, AggregationKeysType } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
+import { RBSidebarKeysType, NODE_SEARCH_KEYS } from './Types'
 
 export const FILTER_SELECT_COMMON_STYLES = {
     ...multiSelectStyles,
     menu: (base) => ({
         ...base,
-        zIndex: 9999,
+        zIndex: 5,
         textAlign: 'left',
     }),
     control: (base, state) => ({
@@ -103,7 +105,6 @@ export const RESOURCE_ACTION_MENU = {
 }
 
 export const K8S_EMPTY_GROUP = 'k8sEmptyGroup'
-export const ALL_NAMESPACE_OPTION = { value: 'all', label: 'All namespaces' }
 export const NAMESPACE_NOT_APPLICABLE_OPTION = {
     label: 'Namespace: Not applicable',
     value: 'not-applicable',
@@ -112,6 +113,7 @@ export const NAMESPACE_NOT_APPLICABLE_TEXT = 'Namespace is not applicable for th
 export const CLUSTER_NOT_REACHABLE = 'Cluster is not reachable'
 
 export const ORDERED_AGGREGATORS: AggregationKeysType[] = [
+    AggregationKeys.Nodes,
     AggregationKeys.Events,
     AggregationKeys.Namespaces,
     AggregationKeys.Workloads,
@@ -154,6 +156,7 @@ export const EVENT_LIST = {
         count: 'Count',
         age: 'Age',
         lastSeen: 'Last Seen',
+        gptWidgetButton: '',
     },
     dataKeys: {
         involvedObject: 'involved object',
@@ -174,15 +177,7 @@ export const DELETE_MODAL_MESSAGING = {
     checkboxText: 'Force delete resource',
 }
 
-export const SIDEBAR_KEYS: {
-    nodes: string
-    events: string
-    namespaces: string
-    eventGVK: GVKType
-    namespaceGVK: GVKType
-    nodeGVK: GVKType
-    overviewGVK: GVKType
-} = {
+export const SIDEBAR_KEYS: RBSidebarKeysType = {
     nodes: 'Nodes',
     events: 'Events',
     namespaces: 'Namespaces',
@@ -204,13 +199,30 @@ export const SIDEBAR_KEYS: {
     overviewGVK: {
         Group: '',
         Version: '',
-        Kind: Nodes.Overview as Nodes,
+        Kind: Nodes.Overview,
     },
+    monitoringGVK: {
+        Group: '',
+        Version: '',
+        Kind: Nodes.MonitoringDashboard,
+    },
+    upgradeClusterGVK: {
+        Group: '',
+        Version: '',
+        Kind: Nodes.UpgradeCluster,
+    },
+}
+
+export const UPGRADE_CLUSTER_CONSTANTS = {
+    DYNAMIC_TITLE: 'Upgrade Compatibility',
+    ICON_PATH: ICArrowUpCircle,
+    ID_PREFIX: SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase(),
+    NAME: SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase(),
 }
 
 export const JUMP_TO_KIND_SHORT_NAMES: Record<string, string[] | null> = {
     events: null,
-    nodes: ['no'], // NOTE: hardcoding cuz backend doesn't send nodeGVK
+    nodes: null,
     namespaces: null,
 }
 
@@ -267,3 +279,96 @@ export const SEARCH_QUERY_PARAM_KEY = 'search'
 export const CONNECTION_TIMEOUT_TIME = 10000
 
 export const DEFAULT_K8SLIST_PAGE_SIZE = 100
+
+export const TARGET_K8S_VERSION_SEARCH_KEY = 'targetK8sVersion'
+
+export const NODE_LIST_HEADERS = [
+    'name',
+    'status',
+    'roles',
+    'errors',
+    'k8s version',
+    'node group',
+    'pods',
+    'taints',
+    'cpu usage (%)',
+    'cpu usage (absolute)',
+    'cpu allocatable',
+    'mem usage (%)',
+    'mem usage (absolute)',
+    'mem allocatable',
+    'age',
+    'unschedulable',
+] as const
+
+export const MANDATORY_NODE_LIST_HEADERS: Array<(typeof NODE_LIST_HEADERS)[number]> = [
+    'name',
+    'status',
+    'errors',
+] as const
+
+export const OPTIONAL_NODE_LIST_HEADERS = NODE_LIST_HEADERS.filter(
+    (header) => !MANDATORY_NODE_LIST_HEADERS.includes(header),
+)
+
+export const NODE_LIST_HEADERS_TO_KEY_MAP: Record<(typeof NODE_LIST_HEADERS)[number], string> = {
+    name: 'name',
+    status: 'status',
+    roles: 'roles',
+    errors: 'errorCount',
+    'k8s version': 'k8sVersion',
+    'node group': 'nodeGroup',
+    pods: 'podCount',
+    taints: 'taintCount',
+    'cpu usage (%)': 'cpu.usagePercentage',
+    'cpu usage (absolute)': 'cpu.usage',
+    'cpu allocatable': 'cpu.allocatable',
+    'mem usage (%)': 'memory.usagePercentage',
+    'mem usage (absolute)': 'memory.usageInBytes',
+    'mem allocatable': 'memory.allocatable',
+    age: 'age',
+    unschedulable: 'unschedulable',
+} as const
+
+export const NODE_SEARCH_KEY_OPTIONS = [
+    { value: NODE_SEARCH_KEYS.NAME, label: 'Name' },
+    { value: NODE_SEARCH_KEYS.LABEL, label: 'Label' },
+    { value: NODE_SEARCH_KEYS.NODE_GROUP, label: 'Node group' },
+] as const
+
+export const DEFAULT_NODE_K8S_VERSION = {
+    label: 'K8s version: Any',
+    value: 'K8s version: Any',
+}
+
+export const NODE_SEARCH_KEY_PLACEHOLDER: Record<NODE_SEARCH_KEYS, string> = {
+    [NODE_SEARCH_KEYS.NAME]: 'Search by node name Eg. ip-172-31-2-152.us-east-2.compute.internal',
+    [NODE_SEARCH_KEYS.LABEL]: 'Search by key=value Eg. environment=production, tier=frontend',
+    [NODE_SEARCH_KEYS.NODE_GROUP]: 'Search by node group name Eg. mainnode',
+}
+
+export const NODE_SEARCH_KEYS_TO_OBJECT_KEYS: Record<
+    NODE_SEARCH_KEYS,
+    (typeof NODE_LIST_HEADERS_TO_KEY_MAP)[keyof typeof NODE_LIST_HEADERS_TO_KEY_MAP]
+> = {
+    [NODE_SEARCH_KEYS.LABEL]: 'labels',
+    [NODE_SEARCH_KEYS.NAME]: 'name',
+    [NODE_SEARCH_KEYS.NODE_GROUP]: 'nodeGroup',
+}
+
+export const LOCAL_STORAGE_EXISTS = !!(Storage && localStorage)
+
+export const LOCAL_STORAGE_KEY_FOR_APPLIED_COLUMNS = 'appliedColumns'
+
+export const NODE_K8S_VERSION_FILTER_KEY = 'k8sVersion'
+
+export const MONITORING_DASHBOARD_TAB_ID = 'monitoring_dashboard'
+
+// Note: can't change the snake case to camel case since that would be breaking change
+// while reading from local storage in useTabs
+export enum ResourceBrowserTabsId {
+    k8s_Resources = 'k8s_resources',
+    log_analyzer = 'log_analyzer',
+    terminal = 'cluster_terminal',
+    cluster_overview = 'overview',
+}

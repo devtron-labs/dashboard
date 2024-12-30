@@ -309,6 +309,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                             isKubeConfigFile={this.state.isKubeConfigFile}
                             toggleClusterDetails={this.toggleClusterDetails}
                             isVirtualCluster={false}
+                            isProd={false}
                         />
                     </Drawer>
                 )}
@@ -339,6 +340,7 @@ const Cluster = ({
     toggleCheckTlsConnection,
     setTlsConnectionFalse,
     isVirtualCluster,
+    isProd,
 }) => {
     const [editMode, toggleEditMode] = useState(false)
     const [environment, setEnvironment] = useState(null)
@@ -654,7 +656,7 @@ const Cluster = ({
                     clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list collapsed-list--create'
                 }`}
             >
-                <List className="dc__border" key={clusterId} onClick={editModeToggle}>
+                <List className="dc__border dc__position-sticky dc__top-0" key={clusterId} onClick={editModeToggle}>
                     {!clusterId && (
                         <List.Logo>
                             <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />
@@ -666,6 +668,7 @@ const Cluster = ({
                             title={cluster_name || 'Add cluster'}
                             subtitle={subTitle}
                             className="fw-6 dc__mxw-400 dc__truncate-text"
+                            tag={isProd ? 'Prod' : null}
                         />
                         {clusterId && (
                             <div className="flex dc__align-right">
@@ -845,6 +848,7 @@ const Cluster = ({
                                 toggleEditMode={toggleEditMode}
                                 toggleClusterDetails
                                 isVirtualCluster={isVirtualCluster}
+                                isProd={isProd}
                             />
                         </div>
                     </Drawer>

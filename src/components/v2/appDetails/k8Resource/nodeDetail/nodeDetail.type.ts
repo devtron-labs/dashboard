@@ -15,8 +15,8 @@
  */
 
 import React from 'react'
-import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
-import { Options, OptionsBase } from '../../appDetails.type'
+import { OptionType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { AppDetails, Options, OptionsBase, SelectedResourceType } from '../../appDetails.type'
 import { CUSTOM_LOGS_FILTER, MANIFEST_KEY_FIELDS } from '../../../../../config'
 import { CustomLogFilterOptionsType, SelectedCustomLogFilterType } from './NodeDetailTabs/node.type'
 
@@ -70,6 +70,7 @@ export interface EphemeralContainerDrawerType {
     switchSelectedContainer: (string) => void
     onClickShowLaunchEphemeral: () => void
     selectedNamespaceByClickingPod?: string
+    handleSuccess: () => void
 }
 
 export interface ResponsePayload {
@@ -138,4 +139,29 @@ export interface EphemeralContainerProps {
     fluxTemplateType: string
     isResourceBrowserView: boolean
     params: ParamsType
+}
+
+export interface GetResourceRequestPayloadParamsType {
+    appDetails: AppDetails
+    nodeName: string
+    nodeType: string
+    isResourceBrowserView?: boolean
+    selectedResource?: SelectedResourceType
+    updatedManifest?: string
+}
+export interface EphemeralContainerOptionsType extends SelectPickerOptionType {
+    isExternal: boolean
+    isEphemeralContainer: boolean
+}
+
+export interface DeleteEphemeralButtonType {
+    containerName: string
+    isResourceBrowserView: boolean
+    selectedNamespace: string
+    selectedClusterId: number
+    selectedPodName: string
+    switchSelectedContainer: (string) => void
+    setContainers: React.Dispatch<React.SetStateAction<Options[]>>
+    containers: Options[]
+    isExternal: boolean
 }

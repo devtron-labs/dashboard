@@ -184,7 +184,7 @@ export async function fetchProjectsAndEnvironments(
         serverMode === SERVER_MODE.FULL ? getEnvironmentListMin(true) : getEnvironmentListHelmApps(),
     ]).then((responses: { status: string; value?: any; reason?: any }[]) => {
         const projectListRes: Teams[] = responses[0].value?.result || []
-        const environmentListRes: EnvironmentListMinType[] = responses[1].value?.result || []
+        const environmentListRes: EnvironmentListMinType[] | EnvironmentListHelmResult[] = responses[1].value?.result || []
         let envList = []
 
         if (serverMode === SERVER_MODE.FULL) {
@@ -205,8 +205,8 @@ export async function fetchProjectsAndEnvironments(
             )
         } else {
             const _sortedResult = (
-                environmentListRes ? sortObjectArrayAlphabetically(environmentListRes, 'clusterName') : []
-            ) as EnvironmentListHelmResult[]
+                environmentListRes ? sortObjectArrayAlphabetically(environmentListRes as EnvironmentListHelmResult[], 'clusterName') : []
+            )
             envList = _sortedResult.map((cluster) => ({
                 label: cluster.clusterName,
                 options: [

@@ -18,8 +18,8 @@ import { useContext } from 'react'
 import Tippy from '@tippyjs/react'
 import { ActivityIndicator, PluginImageContainer, PluginType } from '@devtron-labs/devtron-fe-common-lib'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
+import { ReactComponent as ICFileEdit } from '@Icons/ic-file-edit.svg'
 import { TaskTitleProps, TaskTitleTippyContentProps } from './types'
-import { ReactComponent as ICEditFile } from '../../assets/icons/ic-edit-file.svg'
 import { ReactComponent as ICCDStage } from '../../assets/icons/ic-cd-stage.svg'
 
 const TaskTitleTippyContent = ({ isLatest, pluginName, pluginVersion, displayName }: TaskTitleTippyContentProps) => (
@@ -53,7 +53,14 @@ const TaskTitle = ({ taskDetail }: TaskTitleProps) => {
     const { pluginDataStore } = useContext(pipelineContext)
     const isInline = taskDetail.stepType === PluginType.INLINE
     const pluginId = taskDetail.pluginRefStepDetail?.pluginId
-    const { isLatest, icon, name: pluginName, pluginVersion } = pluginDataStore.pluginVersionStore?.[pluginId] || {}
+    const {
+        icon,
+        name: pluginName,
+        pluginVersion,
+        parentPluginId,
+    } = pluginDataStore.pluginVersionStore?.[pluginId] || {}
+
+    const isLatest = pluginDataStore.parentPluginStore?.[parentPluginId]?.latestVersionId === pluginId
 
     const renderPluginImageContainer = () => (
         <PluginImageContainer
@@ -74,7 +81,7 @@ const TaskTitle = ({ taskDetail }: TaskTitleProps) => {
         }
 
         if (!pluginId) {
-            return <ICEditFile className="dc__no-shrink icon-dim-20 scn-6" />
+            return <ICFileEdit className="dc__no-shrink icon-dim-20 scn-6" />
         }
 
         if (isLatest) {

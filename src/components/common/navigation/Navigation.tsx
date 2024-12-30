@@ -46,6 +46,7 @@ import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.
 import { ReactComponent as ResourceWatcherIcon } from '../../../assets/icons/ic-monitoring.svg'
 import { importComponentFromFELibrary } from '../helpers/Helpers'
 import { OrganizationFrame, OrganizationTextLogo } from '../../../Pages/Shared'
+import { MainContext } from './types'
 
 const hideResourceWatcher = !importComponentFromFELibrary('ResourceWatcherRouter')
 const hideSoftwareDistributionHub = !importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
@@ -121,7 +122,7 @@ const NavigationList = [
         href: URLS.RESOURCE_WATCHER,
         iconClass: 'nav-resource-watcher',
         icon: ResourceWatcherIcon,
-        isAvailableInEA: false,
+        isAvailableInEA: true,
         forceHideEnvKey: 'HIDE_RESOURCE_WATCHER',
         hideNav: hideResourceWatcher,
     },
@@ -179,6 +180,7 @@ interface NavigationType extends RouteComponentProps<{}> {
     installedModuleMap: React.MutableRefObject<Record<string, boolean>>
     isSuperAdmin: boolean
     isAirgapped: boolean
+    currentServerInfo: MainContext['currentServerInfo']
 }
 
 export default class Navigation extends Component<
@@ -425,7 +427,9 @@ export default class Navigation extends Component<
                                 return this.renderNavLink(item)
                             }
                         })}
-                        {!window._env_.K8S_CLIENT && !this.props.isAirgapped && (
+                        {!window._env_.K8S_CLIENT &&
+                         !this.props.isAirgapped &&
+                         this.props.currentServerInfo.serverInfo?.installationType !== 'enterprise' && (
                             <>
                                 <div className="short-nav__divider" />
                                 {this.renderNavLink(NavigationStack, 'short-nav__stack-manager')}

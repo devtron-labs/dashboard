@@ -297,7 +297,7 @@ const ChartForm = ({
             : {}),
     }
 
-    const isFormInvalid = () => {
+    const isFormValid = () => {
         let isValid = true
 
         if (state.name.error.length > 0 || state.url.error.length > 0) {
@@ -323,16 +323,14 @@ const ChartForm = ({
     }
 
     async function onClickValidate() {
-        setValidationStatus(VALIDATION_STATUS.LOADER)
-        const isInvalid = isFormInvalid()
-        if (!isInvalid) {
+        if (!isFormValid()) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: 'Some Required Fields are missing',
             })
             return
         }
-
+        setValidationStatus(VALIDATION_STATUS.LOADER)
         const promise = validateChartRepoConfiguration(chartRepoPayload)
         await promise
             .then((response) => {
@@ -360,15 +358,14 @@ const ChartForm = ({
     }
 
     async function onClickSave(e) {
-        setValidationStatus(VALIDATION_STATUS.LOADER)
-        const isInvalid = isFormInvalid()
-        if (!isInvalid) {
+        if (!isFormValid()) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: 'Some Required Fields are missing',
             })
             return
         }
+        setValidationStatus(VALIDATION_STATUS.LOADER)
         const api = id ? updateChartProviderConfig : saveChartProviderConfig
 
         try {
@@ -453,7 +450,7 @@ const ChartForm = ({
     }
 
     return (
-        <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
+        <form onSubmit={handleOnSubmit} className="git-form flexbox-col dc__gap-12" autoComplete="off">
             {!id && (
                 <RadioGroup
                     className="chartrepo-type__radio-group"
@@ -479,7 +476,7 @@ const ChartForm = ({
                 configName="chart repo"
             />
 
-            <div className="form__row--two-third mb-16">
+            <div className="form__row--two-third">
                 {renderModifiedChartInputElement(ChartFormFields.NAME, isEditable)}
                 {renderModifiedChartInputElement(ChartFormFields.URL, isEditable)}
                 {(chartRepoType !== CHART_REPO_TYPE.PUBLIC ||
@@ -509,7 +506,7 @@ const ChartForm = ({
                 )}
 
                 <Checkbox
-                    rootClassName="fs-13 dc__hover-n50 pt-8 pb-8 mt-12"
+                    rootClassName="fs-13 dc__hover-n50 pt-8 pb-8"
                     isChecked={allowInsecure}
                     value={CHECKBOX_VALUE.CHECKED}
                     onChange={allowInsecureConnectionHandler}

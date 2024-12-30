@@ -38,11 +38,6 @@ src/components/ApplicationGroup/Details/TriggerView/EnvTriggerView.tsx
 src/components/ApplicationGroup/Details/TriggerView/SourceUpdateResponseModal.tsx
 src/components/ApplicationGroup/Details/TriggerView/TriggerModalTableRow.tsx
 src/components/ApplicationGroup/Details/TriggerView/TriggerResponseModal.tsx
-src/components/ApplicationGroup/EnvEmptyStates.tsx
-src/components/ApplicationGroup/EnvSelector.tsx
-src/components/ApplicationGroup/List/EnvironmentListView.tsx
-src/components/ApplicationGroup/List/EnvironmentsList.tsx
-src/components/ApplicationGroup/List/__tests__/EnvironmentListView.test.tsx
 src/components/ApplicationGroup/SearchBar.tsx
 src/components/CIPipelineN/AdvancedConfigOptions.tsx
 src/components/CIPipelineN/Build.tsx
@@ -66,7 +61,6 @@ src/components/ClusterNodes/ClusterEvents.tsx
 src/components/ClusterNodes/ClusterManifest.tsx
 src/components/ClusterNodes/ClusterNodeEmptyStates.tsx
 src/components/ClusterNodes/ClusterOverview.tsx
-src/components/ClusterNodes/ColumnSelector.tsx
 src/components/ClusterNodes/NodeActions/CordonNodeModal.tsx
 src/components/ClusterNodes/NodeActions/DeleteNodeModal.tsx
 src/components/ClusterNodes/NodeActions/DrainNodeModal.tsx
@@ -74,8 +68,6 @@ src/components/ClusterNodes/NodeActions/EditTaintsModal.tsx
 src/components/ClusterNodes/NodeActions/NodeActionsMenu.tsx
 src/components/ClusterNodes/NodeActions/validationRules.ts
 src/components/ClusterNodes/NodeDetails.tsx
-src/components/ClusterNodes/NodeDetailsList.tsx
-src/components/ClusterNodes/NodeListSearchFilter.tsx
 src/components/ClusterNodes/__tests__/ClusterManifest.test.tsx
 src/components/ClusterNodes/__tests__/NodeList.test.tsx
 src/components/ClusterNodes/constants.ts
@@ -101,7 +93,6 @@ src/components/app/Overview/utils.tsx
 src/components/app/ResourceTreeNodes.tsx
 src/components/app/ResponsiveDrawer.tsx
 src/components/app/WebWorker.ts
-src/components/app/appLabelCommon.tsx
 src/components/app/create/CreateApp.tsx
 src/components/app/create/validationRules.ts
 src/components/app/details/AboutAppInfoModal.tsx
@@ -133,8 +124,6 @@ src/components/app/details/metrics/deploymentMetrics.util.tsx
 src/components/app/details/testViewer/List.tsx
 src/components/app/details/testViewer/TestRunDetails.tsx
 src/components/app/details/testViewer/TestRunList.tsx
-src/components/app/details/triggerView/BranchRegexModal.tsx
-src/components/app/details/triggerView/CiWebhookDebuggingModal.tsx
 src/components/app/details/triggerView/EmptyStateCIMaterial.tsx
 src/components/app/details/triggerView/MaterialSource.tsx
 src/components/app/details/triggerView/TriggerView.tsx
@@ -265,7 +254,6 @@ src/components/common/FloatingVariablesSuggestions/__tests__/FloatingVariablesSu
 src/components/common/FloatingVariablesSuggestions/__tests__/Suggestions.test.tsx
 src/components/common/FloatingVariablesSuggestions/__tests__/SuggestionsInfo.test.tsx
 src/components/common/FloatingVariablesSuggestions/__tests__/SuggestionsItem.test.tsx
-src/components/common/GitInfoMaterial.tsx
 src/components/common/HiddenInput/HiddenInput.tsx
 src/components/common/List/List.tsx
 src/components/common/MultiSelect/MultiSelect.tsx
@@ -404,7 +392,7 @@ src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/__tes
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants.ts
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/terminal.type.ts
 src/components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api.ts
-src/components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.util.ts
+src/components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.util.tsx
 src/components/v2/appDetails/k8Resource/nodeType/Node.component.tsx
 src/components/v2/appDetails/k8Resource/nodeType/NodeDelete.component.tsx
 src/components/v2/appDetails/k8Resource/nodeType/NodeTree.component.tsx

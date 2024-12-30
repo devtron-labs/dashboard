@@ -24,13 +24,16 @@ import {
     SelectedNode,
     WorkflowType,
     PluginDataStoreType,
-    MandatoryPluginDetailType,
     ValidationResponseType,
     PipelineFormType,
+    MandatoryPluginDataType,
+    CiPipeline,
+    UploadFileDTO,
+    UploadFileProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router-dom'
 import { HostURLConfig } from '../../services/service.types'
-import { CIPipelineNodeType, CdPipelineResult, CiPipeline } from '../app/details/triggerView/types'
+import { CIPipelineNodeType, CdPipelineResult } from '../app/details/triggerView/types'
 import { InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 import { LoadingState } from '../ciConfig/types'
 import { DeleteDialogType, ForceDeleteMessageType } from '../cdPipeline/types'
@@ -150,7 +153,9 @@ export interface ReloadNoGitOpsRepoConfiguredModalType {
     closePopup: () => void
     reload: () => void
 }
-export interface CDNodeProps extends Pick<WorkflowProps, 'handleDisplayLoader'> {
+export interface CDNodeProps
+    extends Pick<WorkflowProps, 'handleDisplayLoader' | 'isOffendingPipelineView'>,
+        Pick<CommonNodeAttr, 'showPluginWarning'> {
     id: string
     deploymentStrategy: string
     triggerType: string
@@ -197,6 +202,10 @@ export interface WebhookNodeProps {
     handleSelectedNodeChange?: (selectedNode: SelectedNode) => void
     selectedNode?: SelectedNode
     isLastNode?: boolean
+    /**
+     * @default false
+     */
+    isReadonlyView?: boolean
 }
 
 export interface WebhookTippyType {
@@ -226,14 +235,14 @@ export interface PipelineFormDataErrorType {
     containerRegistryError?: { isValid: boolean; message?: string }
     repositoryError?: { isValid: boolean; message?: string }
     preBuildStage: {
-        steps: any[]
+        steps: TaskErrorObj[]
         isValid: boolean
     }
     buildStage: {
         isValid: boolean
     }
     postBuildStage: {
-        steps: any[]
+        steps: TaskErrorObj[]
         isValid: boolean
     }
     customTag?: {
@@ -245,6 +254,11 @@ export interface PipelineFormDataErrorType {
         isValid: boolean
     }
     userApprovalConfig?: ValidationResponseType
+}
+
+interface HandleValidateMandatoryPluginsParamsType {
+    newFormData?: PipelineFormType
+    newPluginDataStore?: PluginDataStoreType
 }
 
 export interface PipelineContext {
@@ -264,7 +278,14 @@ export interface PipelineContext {
     }
     formDataErrorObj: PipelineFormDataErrorType
     setFormDataErrorObj: React.Dispatch<React.SetStateAction<PipelineFormDataErrorType>>
-    validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
+    validateTask: (
+        taskData: StepType,
+        taskErrorobj: TaskErrorObj,
+        options?: {
+            isSaveAsPlugin?: boolean
+            validateVariableDataTable?: boolean
+        },
+    ) => void
     setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
     validateStage: (
         stageName: string,
@@ -315,10 +336,9 @@ export interface PipelineContext {
      * Use case: When we open another modal to create plugin and we don't want to close the parent modal on escape key press
      */
     handleDisableParentModalCloseUpdate?: (disableParentModalClose: boolean) => void
-    /**
-     * Would be available only for CI pipeline
-     */
-    mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
+    handleValidateMandatoryPlugins: (params: HandleValidateMandatoryPluginsParamsType) => void
+    mandatoryPluginData: MandatoryPluginDataType
+    uploadFile: (file: UploadFileProps) => Promise<UploadFileDTO>
 }
 
 export interface SourceTypeCardProps {

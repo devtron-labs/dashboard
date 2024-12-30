@@ -37,26 +37,30 @@ export const Build = ({
     const { formData, setFormData, formDataErrorObj, setFormDataErrorObj } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
     const handleSourceChange = (event, gitMaterialId: number, sourceType: string): void => {
-        const _formData = { ...formData }
-        const allMaterials = _formData.materials.map((mat) => {
-            if (mat.gitMaterialId === gitMaterialId) {
-                if (sourceType === SourceTypeMap.BranchRegex) {
+        setFormData((prevFormData) => {
+            const _formData = structuredClone(prevFormData)
+
+            const allMaterials = _formData.materials.map((mat) => {
+                if (mat.gitMaterialId === gitMaterialId) {
+                    if (sourceType === SourceTypeMap.BranchRegex) {
+                        return {
+                            ...mat,
+                            value: '',
+                            regex: event.target.value,
+                        }
+                    }
                     return {
                         ...mat,
-                        value: '',
-                        regex: event.target.value,
+                        regex: '',
+                        value: event.target.value,
                     }
                 }
-                return {
-                    ...mat,
-                    regex: '',
-                    value: event.target.value,
-                }
-            }
-            return mat
+                return mat
+            })
+            _formData.materials = allMaterials
+
+            return _formData
         })
-        _formData.materials = allMaterials
-        setFormData(_formData)
     }
 
     const handleOnBlur = async (): Promise<void> => {
@@ -65,23 +69,26 @@ export const Build = ({
 
     const selectSourceType = (selectedSource: CiPipelineSourceTypeOption, gitMaterialId: number): void => {
         // update source type in material
-        const _formData = { ...formData }
+        const _formData = structuredClone(formData)
         const isPrevWebhook =
             _formData.ciPipelineSourceTypeOptions.find((sto) => sto.isSelected)?.value === SourceTypeMap.WEBHOOK
+        
+        const materialIndexToUpdate = _formData.materials.findIndex((mat) => mat.gitMaterialId === gitMaterialId)
+        if (materialIndexToUpdate !== -1) {
+             const materialToUpdate = _formData.materials[materialIndexToUpdate]
+             const sourceType =
+                 gitMaterialId === materialToUpdate.gitMaterialId ? selectedSource.value : materialToUpdate.type
+             const isBranchRegexType = sourceType === SourceTypeMap.BranchRegex
 
-        const allMaterials = _formData.materials.map((mat) => {
-            const sourceType = gitMaterialId === mat.gitMaterialId ? selectedSource.value : mat.type
-            const isBranchRegexType = sourceType === SourceTypeMap.BranchRegex
-            return {
-                ...mat,
+            _formData.materials[materialIndexToUpdate] = {
+                ...materialToUpdate,
                 type: sourceType,
                 isRegex: isBranchRegexType,
-                regex: isBranchRegexType ? mat.regex : '',
-                value: isPrevWebhook && selectedSource.value !== SourceTypeMap.WEBHOOK ? '' : mat.value,
+                regex: isBranchRegexType ? materialToUpdate.regex : '',
+                value: isPrevWebhook && selectedSource.value !== SourceTypeMap.WEBHOOK ? '' : materialToUpdate.value,
             }
-        })
+        }
 
-        _formData.materials = allMaterials
         // update source type selected option in dropdown
         const _ciPipelineSourceTypeOptions = _formData.ciPipelineSourceTypeOptions.map((sourceTypeOption) => {
             return {

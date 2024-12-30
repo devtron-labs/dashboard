@@ -67,7 +67,9 @@ export default function DeleteNodeModal({ name, version, kind, closePopup }: Nod
             delete={deleteAPI}
             closeDelete={onClose}
             deletePostfix={DELETE_NODE_MODAL_MESSAGING.deletePostfix}
+            showDeleteConfirmation
             apiCallInProgress={apiCallInProgress}
+            deleteConfirmationText={name}
         >
             <InfoColourBar
                 classname="question-bar p-lr-12"

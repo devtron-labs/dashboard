@@ -25,9 +25,12 @@ import {
     ReleaseMode,
     AppEnvironment,
     DeploymentNodeType,
-    RuntimeParamsListItemType,
     RuntimeParamsTriggerPayloadType,
     HelmReleaseStatus,
+    DynamicDataTableRowType,
+    TagsTableColumnsType,
+    DynamicDataTableCellErrorType,
+    RuntimePluginVariables,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentStatusDetailsBreakdownDataType, ErrorItem } from './details/appDetails/appDetails.type'
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
@@ -75,7 +78,8 @@ export interface AddNewAppState {
         cloneId: number
         appCreationType: string
     }
-    tags: TagType[]
+    tags: DynamicDataTableRowType<TagsTableColumnsType>[]
+    tagsError: DynamicDataTableCellErrorType<TagsTableColumnsType>
     isValid: {
         projectId: boolean
         appName: boolean
@@ -441,7 +445,10 @@ export enum Nodes {
     PodDisruptionBudget = 'PodDisruptionBudget',
     Event = 'Event',
     Namespace = 'Namespace',
+    Node = 'Node',
     Overview = 'Overview',
+    MonitoringDashboard = 'MonitoringDashboard',
+    UpgradeCluster = 'UpgradeCluster',
 }
 /**
  * @deprecated - use from fe-common
@@ -458,6 +465,7 @@ export enum AggregationKeys {
     'Other Resources' = 'Other Resources',
     Events = 'Events',
     Namespaces = 'Namespaces',
+    Nodes = 'Nodes',
 }
 export type AggregationKeysType = keyof typeof AggregationKeys
 
@@ -571,6 +579,7 @@ export interface JobPipeline {
 }
 
 export interface TagChipsContainerType {
+    appType: APP_TYPE
     labelTags: TagType[]
     onAddTagButtonClick: (e) => void
     resourceName: string
@@ -647,7 +656,7 @@ export interface TriggerCDNodeServiceProps {
     /**
      * Would be available only case of PRE/POST CD
      */
-    runtimeParams?: RuntimeParamsListItemType[]
+    runtimeParams?: RuntimePluginVariables[]
 }
 
 export interface TriggerCDPipelinePayloadType {

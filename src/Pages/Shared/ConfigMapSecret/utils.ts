@@ -2,18 +2,27 @@ import YAML from 'yaml'
 
 import {
     AppEnvDeploymentConfigDTO,
+    applyCompareDiffOnUneditedDocument,
     CMSecretExternalType,
+    ConfigHeaderTabType,
+    ConfigMapSecretDataType,
     decode,
     DEFAULT_SECRET_PLACEHOLDER,
+    DraftAction,
     DraftMetadataDTO,
     DraftState,
+    DryRunEditorMode,
     ERROR_STATUS_CODE,
     getSelectPickerOptionByValue,
+    hasESO,
+    OverrideMergeStrategyType,
     YAMLStringify,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ResourceConfigStage } from '@Pages/Applications/DevtronApps/service.types'
 
+import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
 import {
     CODE_EDITOR_RADIO_STATE,
     CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA,
@@ -30,26 +39,16 @@ import {
     CMSecretDraftData,
     CMSecretPayloadType,
     CMSecretConfigData,
-    CMSecretDTO,
     ESOSecretData,
     ConfigMapSecretDecodedDataReturnType,
     ConfigMapSecretDecodedDataProps,
     ConfigMapSecretEncodedDataProps,
     ConfigMapSecretEncodedDataReturnType,
+    ConfigMapSecretQueryParamsType,
+    ConfigMapSecretDryRunProps,
 } from './types'
 
 // HELPERS UTILS ----------------------------------------------------------------
-export const hasHashiOrAWS = (externalType: CMSecretExternalType): boolean =>
-    externalType === CMSecretExternalType.AWSSecretsManager ||
-    externalType === CMSecretExternalType.AWSSystemManager ||
-    externalType === CMSecretExternalType.HashiCorpVault
-
-export const hasESO = (externalType: CMSecretExternalType): boolean =>
-    externalType === CMSecretExternalType.ESO_GoogleSecretsManager ||
-    externalType === CMSecretExternalType.ESO_AzureSecretsManager ||
-    externalType === CMSecretExternalType.ESO_AWSSecretsManager ||
-    externalType === CMSecretExternalType.ESO_HashiCorpVault
-
 export const getConfigMapSecretStateLabel = (configStage: ResourceConfigStage, isOverrideView: boolean) => {
     if (isOverrideView) {
         switch (configStage) {
@@ -69,15 +68,20 @@ export const getConfigMapSecretStateLabel = (configStage: ResourceConfigStage, i
 // HELPERS UTILS ----------------------------------------------------------------
 
 // FORM UTILS ----------------------------------------------------------------
-const secureValues = (data: Record<string, string>, decodeData: boolean, hideData: boolean): CMSecretYamlData[] => {
-    const decodedData = !hideData && decodeData ? decode(data) : data
-    const hiddenData = hideData && DEFAULT_SECRET_PLACEHOLDER
+const secureValues = (data: Record<string, string>, decodeData: boolean): CMSecretYamlData[] => {
+    let decodedData = data || DEFAULT_SECRET_PLACEHOLDER
+
+    if (decodeData) {
+        try {
+            decodedData = decode(data)
+        } catch {
+            noop()
+        }
+    }
+
     return Object.keys(decodedData).map((k, id) => ({
         k,
-        v:
-            typeof decodedData[k] === 'object'
-                ? hiddenData || YAMLStringify(decodedData[k])
-                : hiddenData || decodedData[k],
+        v: typeof decodedData[k] === 'object' ? YAMLStringify(decodedData[k]) : decodedData[k],
         id,
     }))
 }
@@ -89,19 +93,20 @@ const processCurrentData = ({
 }: Pick<ConfigMapSecretFormProps, 'configMapSecretData' | 'cmSecretStateLabel'> & {
     isSecret: boolean
 }) => {
-    if (configMapSecretData.data) {
-        return secureValues(
-            configMapSecretData.data,
-            isSecret && configMapSecretData.externalType === '',
-            isSecret && configMapSecretData.unAuthorized,
-        )
+    if (configMapSecretData.mergeStrategy === OverrideMergeStrategyType.PATCH) {
+        if (configMapSecretData.patchData) {
+            return secureValues(configMapSecretData.patchData, isSecret && configMapSecretData.externalType === '')
+        }
+
+        return CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA
     }
+
+    if (configMapSecretData.data) {
+        return secureValues(configMapSecretData.data, isSecret && configMapSecretData.externalType === '')
+    }
+
     if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && configMapSecretData.defaultData) {
-        return secureValues(
-            configMapSecretData.defaultData,
-            isSecret && configMapSecretData.externalType === '',
-            isSecret && configMapSecretData.unAuthorized,
-        )
+        return secureValues(configMapSecretData.defaultData, isSecret && configMapSecretData.externalType === '')
     }
 
     return CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA
@@ -205,83 +210,98 @@ const getSecretDataFromConfigData = ({
 }
 
 export const getConfigMapSecretFormInitialValues = ({
+    isJob,
     configMapSecretData,
     cmSecretStateLabel,
     componentType,
-}: Pick<
-    ConfigMapSecretFormProps,
-    'cmSecretStateLabel' | 'componentType' | 'configMapSecretData'
->): ConfigMapSecretUseFormProps => {
+    skipValidation = false,
+}: Pick<ConfigMapSecretFormProps, 'isJob' | 'cmSecretStateLabel' | 'componentType' | 'configMapSecretData'> & {
+    skipValidation?: boolean
+}): ConfigMapSecretUseFormProps => {
     const isSecret = componentType === CMSecretComponentType.Secret
 
+    const {
+        name,
+        external,
+        externalType,
+        type,
+        mountPath,
+        defaultMountPath,
+        subPath,
+        data,
+        defaultData,
+        filePermission,
+        roleARN,
+        esoSubPath,
+    } = configMapSecretData || {}
+
+    const commonInitialValues: ConfigMapSecretUseFormProps = {
+        name: name ?? '',
+        isSecret,
+        external: external ?? false,
+        externalType: externalType ?? CMSecretExternalType.Internal,
+        selectedType: type ?? configMapSecretMountDataMap.environment.value,
+        isFilePermissionChecked: !!filePermission,
+        isSubPathChecked: !!subPath,
+        filePermission: filePermission ?? '',
+        volumeMountPath: mountPath ?? defaultMountPath ?? '',
+        roleARN: roleARN ?? '',
+        yamlMode: true,
+        hasCurrentDataErr: false,
+        isResolvedData: false,
+        skipValidation,
+        currentData: null,
+        esoSecretYaml: null,
+        externalSubpathValues: null,
+        mergeStrategy: null,
+        secretDataYaml: null,
+        yaml: null,
+    }
+
     if (configMapSecretData) {
-        const {
-            name,
-            external,
-            externalType,
-            type,
-            mountPath,
-            defaultMountPath,
-            subPath,
-            data,
-            filePermission,
-            roleARN,
-            esoSubPath,
-        } = configMapSecretData
+        const defaultMergeStrategy = isJob || external ? OverrideMergeStrategyType.REPLACE : DEFAULT_MERGE_STRATEGY
+        const mergeStrategy =
+            configMapSecretData.mergeStrategy ||
+            (cmSecretStateLabel === CM_SECRET_STATE.INHERITED ? defaultMergeStrategy : null)
+
         const currentData = processCurrentData({
-            configMapSecretData,
+            configMapSecretData: { ...configMapSecretData, mergeStrategy },
             cmSecretStateLabel,
             isSecret,
         })
 
         return {
-            name,
-            isSecret,
-            externalType: externalType ?? CMSecretExternalType.Internal,
-            external,
-            selectedType: type ?? configMapSecretMountDataMap.environment.value,
-            isFilePermissionChecked: !!filePermission,
-            isSubPathChecked: !!subPath,
-            externalSubpathValues: processExternalSubPathValues({ data, external, subPath, esoSubPath }),
-            filePermission: filePermission ?? '',
-            volumeMountPath: mountPath ?? defaultMountPath ?? '',
-            roleARN: roleARN ?? '',
-            yamlMode: true,
+            ...commonInitialValues,
+            externalSubpathValues: processExternalSubPathValues({
+                data: data || defaultData,
+                external,
+                subPath,
+                esoSubPath,
+            }),
             yaml: convertKeyValuePairToYAML(currentData),
             currentData,
-            hasCurrentDataErr: false,
-            isResolvedData: false,
+            mergeStrategy,
             ...getSecretDataFromConfigData(configMapSecretData),
         }
     }
 
     return {
-        name: '',
-        isSecret,
-        externalType: CMSecretExternalType.Internal,
-        external: false,
-        selectedType: configMapSecretMountDataMap.environment.value,
-        isFilePermissionChecked: false,
-        isSubPathChecked: false,
+        ...commonInitialValues,
         externalSubpathValues: '',
-        filePermission: '',
-        volumeMountPath: '',
-        roleARN: '',
-        yamlMode: true,
         yaml: '"": ""\n',
         currentData: CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA,
-        hasCurrentDataErr: false,
-        isResolvedData: false,
         esoSecretYaml: '{}',
         secretDataYaml: '[]',
+        mergeStrategy: null,
     }
 }
 
 export const getConfigMapSecretReadOnlyValues = ({
     configMapSecretData,
+    cmSecretStateLabel,
     componentType,
     isJob,
-}: Pick<ConfigMapSecretFormProps, 'componentType' | 'configMapSecretData' | 'isJob'>) => {
+}: Pick<ConfigMapSecretFormProps, 'componentType' | 'configMapSecretData' | 'cmSecretStateLabel' | 'isJob'>) => {
     if (!configMapSecretData) {
         return {
             configData: [],
@@ -304,8 +324,9 @@ export const getConfigMapSecretReadOnlyValues = ({
         currentData,
         isSecret,
     } = getConfigMapSecretFormInitialValues({
+        isJob,
         configMapSecretData,
-        cmSecretStateLabel: CM_SECRET_STATE.INHERITED,
+        cmSecretStateLabel,
         componentType,
     })
     const mountExistingExternal =
@@ -330,14 +351,17 @@ export const getConfigMapSecretReadOnlyValues = ({
             {
                 displayName: 'DataType',
                 value: dataType,
+                key: 'dataType',
             },
             {
                 displayName: 'Mount data as',
                 value: configMapSecretMountDataMap[selectedType].title,
+                key: 'mountDataAs',
             },
             {
                 displayName: 'Volume mount path',
                 value: volumeMountPath,
+                key: 'volumeMountPath',
             },
             {
                 displayName: 'Set Sub Path',
@@ -345,18 +369,22 @@ export const getConfigMapSecretReadOnlyValues = ({
                     (configMapSecretMountDataMap[selectedType].value === 'volume' &&
                         (isSubPathChecked ? 'True' : 'False')) ||
                     '',
+                key: 'setSubPath',
             },
             {
                 displayName: 'Subpath Values',
                 value: externalSubpathValues,
+                key: 'externalSubpathValues',
             },
             {
                 displayName: 'File Permission',
                 value: filePermission,
+                key: 'filePermission',
             },
             {
                 displayName: 'Role ARN',
                 value: roleARN,
+                key: 'roleArn',
             },
         ],
         data: !mountExistingExternal ? (currentData?.[0]?.k && yaml) || esoSecretYaml || secretDataYaml : null,
@@ -411,6 +439,7 @@ export const getConfigMapSecretPayload = ({
     roleARN,
     volumeMountPath,
     isSubPathChecked,
+    mergeStrategy,
 }: ConfigMapSecretUseFormProps) => {
     const isESO = isSecret && hasESO(externalType)
     const _currentData = yamlMode ? convertYAMLToKeyValuePair(yaml) : currentData
@@ -438,6 +467,7 @@ export const getConfigMapSecretPayload = ({
         subPath: null,
         filePermission: null,
         esoSubPath: null,
+        mergeStrategy,
     }
 
     if (
@@ -516,14 +546,14 @@ const getConfigMapSecretDecodedData = <IsDraft extends boolean = false>({
     }
 
     const draftData = configMapSecretData as ConfigMapSecretDecodedDataProps<true>['configMapSecretData']
-    const parsedData = JSON.parse(draftData.data).configData[0]
-    if (!isSecret || draftData.unAuthorized || parsedData.externalType !== '') {
+    const cmSecretData = draftData.parsedData.configData[0]
+    if (!isSecret || draftData.unAuthorized || cmSecretData.externalType !== '') {
         return draftData as ConfigMapSecretDecodedDataReturnType<IsDraft>
     }
 
     return {
         ...draftData,
-        parsedData: decode(parsedData.data),
+        parsedData: { ...draftData.parsedData, configData: [{ ...cmSecretData, data: decode(cmSecretData.data) }] },
         isDecoded: true,
     } as ConfigMapSecretDecodedDataReturnType<IsDraft>
 }
@@ -546,13 +576,13 @@ const getConfigMapSecretEncodedData = <IsDraft extends boolean = false>({
     }
 
     const draftData = configMapSecretData as ConfigMapSecretEncodedDataProps<true>['configMapSecretData']
-    const parsedData = JSON.parse(draftData.data)
+    const { parsedData } = draftData
     return {
         ...draftData,
-        data: JSON.stringify({
+        parsedData: {
             ...parsedData,
-            configData: [{ ...parsedData.configData[0], data: decode(draftData.parsedData, true) }],
-        }),
+            configData: [{ ...parsedData.configData[0], data: decode(parsedData.configData[0].data, true) }],
+        },
     } as ConfigMapSecretEncodedDataReturnType<IsDraft>
 }
 
@@ -591,11 +621,12 @@ export const getConfigMapSecretDraftAndPublishedData = ({
     draftConfigDataRes,
 }: Pick<ConfigMapSecretFormProps, 'isJob'> & {
     isSecret: boolean
-    cmSecretConfigDataRes: PromiseSettledResult<CMSecretDTO | AppEnvDeploymentConfigDTO>
+    cmSecretConfigDataRes: PromiseSettledResult<ConfigMapSecretDataType | AppEnvDeploymentConfigDTO>
     draftConfigDataRes: PromiseSettledResult<DraftMetadataDTO>
 }) => {
     let configMapSecretData: CMSecretConfigData = null
     let draftData: CMSecretDraftData = null
+    let isDeleteDisabled = false
 
     // DRAFT DATA PROCESSING
     if (draftConfigDataRes.status === 'fulfilled') {
@@ -605,9 +636,18 @@ export const getConfigMapSecretDraftAndPublishedData = ({
             draftConfigData &&
             (draftConfigData.draftState === DraftState.Init || draftConfigData.draftState === DraftState.AwaitApproval)
         ) {
-            draftData = {
-                ...draftConfigData,
-                unAuthorized: !draftConfigData.isAppAdmin,
+            try {
+                draftData = {
+                    ...draftConfigData,
+                    parsedData: JSON.parse(draftConfigData.data),
+                    unAuthorized: !draftConfigData.isAppAdmin,
+                }
+            } catch {
+                draftData = {
+                    ...draftConfigData,
+                    parsedData: { appId: 0, configData: [], id: 0, isDeletable: false },
+                    unAuthorized: !draftConfigData.isAppAdmin,
+                }
             }
         }
     }
@@ -618,12 +658,17 @@ export const getConfigMapSecretDraftAndPublishedData = ({
 
         if (cmSecretConfigData) {
             const configData = isJob
-                ? (cmSecretConfigData as CMSecretDTO).configData
+                ? (cmSecretConfigData as ConfigMapSecretDataType).configData
                 : (cmSecretConfigData as AppEnvDeploymentConfigDTO)[!isSecret ? 'configMapData' : 'secretsData'].data
                       .configData
 
             // Since, jobs can only be created by super-admin users, modify this once API support is available.
             const unAuthorized = isJob ? false : !(cmSecretConfigData as AppEnvDeploymentConfigDTO).isAppAdmin
+            // Flag from the API to disable the delete operation.
+            isDeleteDisabled =
+                !isJob &&
+                !(cmSecretConfigData as AppEnvDeploymentConfigDTO)[!isSecret ? 'configMapData' : 'secretsData'].data
+                    .isDeletable
 
             if (configData?.length) {
                 configMapSecretData = {
@@ -643,7 +688,7 @@ export const getConfigMapSecretDraftAndPublishedData = ({
         }
     }
 
-    return { configMapSecretData, draftData }
+    return { configMapSecretData, draftData, isDeleteDisabled }
 }
 
 export const getConfigMapSecretInheritedData = ({
@@ -651,7 +696,7 @@ export const getConfigMapSecretInheritedData = ({
     isJob,
     isSecret,
 }: {
-    cmSecretConfigDataRes: PromiseSettledResult<CMSecretDTO | AppEnvDeploymentConfigDTO>
+    cmSecretConfigDataRes: PromiseSettledResult<ConfigMapSecretDataType | AppEnvDeploymentConfigDTO>
     isJob: boolean
     isSecret: boolean
 }): CMSecretConfigData => {
@@ -664,7 +709,7 @@ export const getConfigMapSecretInheritedData = ({
 
     const cmSecretConfigData = cmSecretConfigDataRes.value
     return isJob
-        ? { ...(cmSecretConfigData as CMSecretDTO).configData[0], unAuthorized: false }
+        ? { ...(cmSecretConfigData as ConfigMapSecretDataType).configData[0], unAuthorized: false }
         : {
               ...(cmSecretConfigData as AppEnvDeploymentConfigDTO)[!isSecret ? 'configMapData' : 'secretsData'].data
                   .configData[0],
@@ -683,7 +728,9 @@ export const getConfigMapSecretResolvedData = (
     const parsedResolvedData = YAML.parse(resolvedData)
 
     return {
-        resolvedFormData: parsedResolvedData.formData ?? null,
+        resolvedFormData: parsedResolvedData.formData
+            ? { ...parsedResolvedData.formData, yaml: getYAMLWithStringifiedNumbers(parsedResolvedData.formData.yaml) }
+            : null,
         resolvedInheritedConfigMapSecretData: getConfigMapSecretEncodedData({
             configMapSecretData: parsedResolvedData.inheritedConfigMapSecretData,
         }),
@@ -697,6 +744,67 @@ export const getConfigMapSecretResolvedData = (
     }
 }
 
+export const getDryRunConfigMapSecretData = ({
+    cmSecretStateLabel,
+    draftData,
+    inheritedConfigMapSecretData,
+    publishedConfigMapSecretData,
+    dryRunEditorMode,
+    formData,
+}: Pick<
+    ConfigMapSecretDryRunProps,
+    | 'formData'
+    | 'dryRunEditorMode'
+    | 'cmSecretStateLabel'
+    | 'inheritedConfigMapSecretData'
+    | 'publishedConfigMapSecretData'
+    | 'draftData'
+>) => {
+    let configMapSecretData: CMSecretConfigData =
+        cmSecretStateLabel === CM_SECRET_STATE.INHERITED ? inheritedConfigMapSecretData : publishedConfigMapSecretData
+
+    if (draftData) {
+        if (draftData.action === DraftAction.Delete) {
+            configMapSecretData = inheritedConfigMapSecretData
+        } else if (draftData.draftState === DraftState.Init || draftData.draftState === DraftState.AwaitApproval) {
+            configMapSecretData = {
+                ...draftData.parsedData.configData[0],
+                unAuthorized: !draftData.isAppAdmin,
+            }
+        }
+    }
+
+    if (!configMapSecretData?.unAuthorized && dryRunEditorMode === DryRunEditorMode.VALUES_FROM_DRAFT) {
+        const payload = getConfigMapSecretPayload(formData)
+        const inheritedData = inheritedConfigMapSecretData?.data || {}
+
+        configMapSecretData = {
+            ...((configMapSecretData || {}) as CMSecretConfigData),
+            ...payload,
+            ...(payload.mergeStrategy === OverrideMergeStrategyType.PATCH
+                ? {
+                      data: applyCompareDiffOnUneditedDocument(inheritedData, {
+                          ...inheritedData,
+                          ...payload.data,
+                      }),
+                  }
+                : {}),
+        }
+    } else if (dryRunEditorMode === DryRunEditorMode.PUBLISHED_VALUES) {
+        configMapSecretData = publishedConfigMapSecretData ?? null
+    }
+
+    return configMapSecretData
+}
+
 export const getConfigMapSecretError = <T extends unknown>(res: PromiseSettledResult<T>) =>
     res.status === 'rejected' && res.reason?.code !== ERROR_STATUS_CODE.NOT_FOUND ? res.reason : null
+
+export const parseConfigMapSecretSearchParams = (searchParams: URLSearchParams): ConfigMapSecretQueryParamsType => {
+    const headerTab = searchParams.get('headerTab') as ConfigMapSecretQueryParamsType['headerTab']
+
+    return {
+        headerTab: Object.values(ConfigHeaderTabType).includes(headerTab) ? headerTab : null,
+    }
+}
 // DATA UTILS ----------------------------------------------------------------

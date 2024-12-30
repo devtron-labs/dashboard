@@ -17,7 +17,6 @@
 import React, { useEffect, useMemo, useRef } from 'react'
 import {
     showError,
-    getUserRole,
     DevtronProgressing,
     useAsync,
     PageHeader,
@@ -44,11 +43,7 @@ const ResourceBrowser: React.FC = () => {
             return null
         }
     })
-    const [initialLoading, data, error] = useAsync(() =>
-        Promise.all([getClusterListMin(), window._env_?.K8S_CLIENT ? null : getUserRole()]),
-    )
-    /* transpose the data */
-    const [clusterListMinData = null, userRoleData = null] = data || []
+    const [initialLoading, clusterListMinData, error] = useAsync(() => getClusterListMin())
 
     useEffect(
         () => () => {
@@ -59,20 +54,13 @@ const ResourceBrowser: React.FC = () => {
 
     const sortedClusterList: ClusterDetail[] = useMemo(
         () =>
-            (
-                sortObjectArrayAlphabetically(
-                    detailClusterList?.result || clusterListMinData?.result || [],
-                    'name',
-                ) as ClusterDetail[]
-            ).filter(
+            sortObjectArrayAlphabetically(detailClusterList?.result || clusterListMinData?.result || [], 'name').filter(
                 (option) =>
                     !(window._env_.HIDE_DEFAULT_CLUSTER && option.id === DEFAULT_CLUSTER_ID) &&
                     !option.isVirtualCluster,
             ),
         [detailClusterList, clusterListMinData],
     )
-
-    const isSuperAdmin = userRoleData?.result.superAdmin || false
 
     const renderContent = () => {
         if (error) {
@@ -82,7 +70,6 @@ const ResourceBrowser: React.FC = () => {
         return (
             <ClusterSelectionList
                 clusterOptions={sortedClusterList}
-                isSuperAdmin={isSuperAdmin}
                 clusterListLoader={detailClusterListLoading}
                 initialLoading={initialLoading}
                 refreshData={reloadDetailClusterList}
@@ -95,7 +82,7 @@ const ResourceBrowser: React.FC = () => {
     }
 
     return (
-        <div className="resource-browser-container h-100 bcn-0">
+        <div className="resource-browser-container flexbox-col h-100 bcn-0">
             <PageHeader
                 isBreadcrumbs={false}
                 headerName="Kubernetes Resource Browser"

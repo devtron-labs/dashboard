@@ -84,21 +84,21 @@ export function fetchAppDetails(appId: number | string, envId: number | string):
 export function fetchAppDetailsInTime(
     appId: number | string,
     envId: number | string,
-    reloadTimeOut: number,
-    signal?: AbortSignal,
+    reloadTimeOut: APIOptions['timeout'],
+    abortControllerRef: APIOptions['abortControllerRef'],
 ): Promise<AppDetailsResponse> {
-    return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut, signal })
+    return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut, abortControllerRef })
 }
 
 export function fetchResourceTreeInTime(
     appId: number | string,
     envId: number | string,
-    reloadTimeOut: number,
-    signal?: AbortSignal,
+    reloadTimeOut: APIOptions['timeout'],
+    abortControllerRef: APIOptions['abortControllerRef'],
 ): Promise<AppDetailsResponse> {
     return get(`${Routes.APP_DETAIL}/resource-tree?app-id=${appId}&env-id=${envId}`, {
         timeout: reloadTimeOut,
-        signal,
+        abortControllerRef,
     })
 }
 
@@ -293,7 +293,7 @@ export const triggerCDNode = ({
     return post(Routes.CD_TRIGGER_POST, request, options)
 }
 
-export const triggerBranchChange = (appIds: number[], envId: number, value: string, httpProtocol: string) => {
+export const triggerBranchChange = (appIds: number[], envId: number, value: string) => {
     return new Promise((resolve) => {
         ApiQueuingWithBatch(
             appIds.map(
@@ -304,7 +304,6 @@ export const triggerBranchChange = (appIds: number[], envId: number, value: stri
                         value: value,
                     }),
             ),
-            httpProtocol,
         )
             .then((results: any[]) => {
                 // Adding for legacy code since have move API Queueing to generics with unknown as default response

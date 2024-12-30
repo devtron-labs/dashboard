@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
-import { CustomInput, DeleteDialog, DeploymentAppTypes, ForceDeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DeploymentAppTypes,
+    ForceDeleteDialog,
+    ConfirmationModal,
+    ConfirmationModalVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import ClusterNotReachableDailog from '../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 import { DELETE_ACTION } from '../../config'
 import { DeleteCDNodeProps, DeleteDialogType } from './types'
 import { handleDeleteCDNodePipeline, handleDeletePipeline } from './cdpipeline.util'
 
 const DeleteCDNode = ({
+    showDeleteDialog,
     deleteDialog,
     setDeleteDialog,
     clusterName,
@@ -32,17 +37,7 @@ const DeleteCDNode = ({
     forceDeleteData,
     deleteTitleName,
     isLoading,
-    showConfirmationBar,
 }: Readonly<DeleteCDNodeProps>) => {
-    const [deleteInput, setDeleteInput] = useState<string>('')
-    const deleteTitle = showConfirmationBar
-        ? `Delete Pipeline for '${deleteTitleName}' ?`
-        : `Delete '${deleteTitleName}' ?`
-
-    const handleDeleteInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setDeleteInput(e.target.value)
-    }
-
     const onClickHideNonCascadeDeletePopup = () => {
         setDeleteDialog(DeleteDialogType.showNormalDeleteDialog)
     }
@@ -56,7 +51,7 @@ const DeleteCDNode = ({
         handleDeletePipeline(DELETE_ACTION.FORCE_DELETE, deleteCD, deploymentAppType)
     }
 
-    if (deleteDialog === DeleteDialogType.showForceDeleteDialog) {
+    if (deleteDialog === DeleteDialogType.showForceDeleteDialog && showDeleteDialog) {
         return (
             <ForceDeleteDialog
                 forceDeleteDialogTitle={forceDeleteData.forceDeleteDialogTitle}
@@ -67,7 +62,7 @@ const DeleteCDNode = ({
         )
     }
 
-    if (deleteDialog === DeleteDialogType.showNonCascadeDeleteDialog) {
+    if (deleteDialog === DeleteDialogType.showNonCascadeDeleteDialog && showDeleteDialog) {
         return (
             <ClusterNotReachableDailog
                 clusterName={clusterName}
@@ -78,26 +73,29 @@ const DeleteCDNode = ({
     }
 
     return (
-        <DeleteDialog
-            title={deleteTitle}
-            description={`Are you sure you want to delete this CD Pipeline from '${appName}' ?`}
-            delete={() => handleDeleteCDNodePipeline(deleteCD, deploymentAppType as DeploymentAppTypes)}
-            closeDelete={hideDeleteModal}
-            apiCallInProgress={isLoading}
-            disabled={showConfirmationBar && deleteInput !== deleteTitleName}
-        >
-            {showConfirmationBar && (
-                <CustomInput
-                    disabled={isLoading}
-                    rootClassName="mt-12"
-                    data-testId="delete-dialog-input"
-                    placeholder={`Please type ${deleteTitleName} to confirm`}
-                    value={deleteInput}
-                    name="delete-input"
-                    onChange={handleDeleteInputChange}
-                />
-            )}
-        </DeleteDialog>
+        <ConfirmationModal
+            variant={ConfirmationModalVariantType.delete}
+            title={`Delete pipeline for '${deleteTitleName}' environment ?`}
+            subtitle={`Are you sure you want to delete this CD Pipeline from '${appName}' application?`}
+            buttonConfig={{
+                secondaryButtonConfig: {
+                    text: 'Cancel',
+                    onClick: hideDeleteModal,
+                    disabled: isLoading,
+                },
+                primaryButtonConfig: {
+                    text: 'Delete',
+                    onClick: () => handleDeleteCDNodePipeline(deleteCD, deploymentAppType as DeploymentAppTypes),
+                    isLoading,
+                },
+            }}
+            customInputConfig={{
+                identifier: 'delete-cd-node-input',
+                confirmationKeyword: deleteTitleName,
+            }}
+            showConfirmationModal={showDeleteDialog}
+            handleClose={hideDeleteModal}
+        />
     )
 }
 

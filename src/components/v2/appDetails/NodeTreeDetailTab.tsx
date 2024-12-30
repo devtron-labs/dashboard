@@ -25,7 +25,7 @@ import { NodeTreeDetailTabProps, NodeType } from './appDetails.type'
 import NodeDetailComponent from './k8Resource/nodeDetail/NodeDetail.component'
 import IndexStore from './index.store'
 import NodeTreeTabList from './k8Resource/NodeTreeTabList'
-import { EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
+import { EnvResourceType, noop } from '@devtron-labs/devtron-fe-common-lib'
 
 const NodeTreeDetailTab = ({
     appDetails,
@@ -100,6 +100,8 @@ const NodeTreeDetailTab = ({
                                         logSearchTerms={logSearchTerms}
                                         setLogSearchTerms={setLogSearchTerms}
                                         isExternalApp={isExternalApp}
+                                        lowercaseKindToResourceGroupMap={{}}
+                                        updateTabUrl={noop}
                                     />
                                 )
                             }}

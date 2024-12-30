@@ -22,16 +22,17 @@ import {
     DownstreamNodesEnvironmentsType,
     WorkflowType,
     getIsManualApprovalConfigured,
+    CiPipeline,
+    CdPipeline,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCDConfig, getCIConfig, getWorkflowList, getWorkflowViewList } from '../../../../services/service'
 import {
-    CdPipeline,
     CdPipelineResult,
-    CiPipeline,
     CiPipelineResult,
     Workflow,
     WorkflowResult,
     AddDimensionsToDownstreamDeploymentsParams,
+    GetInitialWorkflowsParamsType,
 } from './types'
 import { WorkflowTrigger, WorkflowCreate, Offset, WorkflowDimensions, WorkflowDimensionType } from './config'
 import { TriggerType, DEFAULT_STATUS, GIT_BRANCH_NOT_CONFIGURED } from '../../../../config'
@@ -43,22 +44,26 @@ import { BlackListedCI } from '../../../workflowEditor/types'
 
 const getDeploymentWindowState = importComponentFromFELibrary('getDeploymentWindowState', null, 'function')
 const getDeploymentNotAllowedState = importComponentFromFELibrary('getDeploymentNotAllowedState', null, 'function')
+const getParsedPluginPolicyConsequenceData = importComponentFromFELibrary(
+    'getParsedPluginPolicyConsequenceData',
+    () => null,
+    'function',
+)
 
 export const getTriggerWorkflows = (
     appId,
     useAppWfViewAPI: boolean,
     isJobView: boolean,
     filteredEnvIds?: string,
-): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
-    return getInitialWorkflows(
-        appId,
-        WorkflowTrigger,
-        WorkflowTrigger.workflow,
+): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> =>
+    getInitialWorkflows({
+        id: appId,
+        dimensions: WorkflowTrigger,
+        workflowOffset: WorkflowTrigger.workflow,
         useAppWfViewAPI,
         isJobView,
         filteredEnvIds,
-    )
-}
+    })
 
 export const getCreateWorkflows = (
     appId,
@@ -71,18 +76,26 @@ export const getCreateWorkflows = (
     filteredCIPipelines
     cachedCDConfigResponse: CdPipelineResult
     blackListedCI: BlackListedCI
-}> => {
-    return getInitialWorkflows(appId, WorkflowCreate, WorkflowCreate.workflow, false, isJobView, filteredEnvIds)
-}
+}> =>
+    getInitialWorkflows({
+        id: appId,
+        dimensions: WorkflowCreate,
+        workflowOffset: WorkflowCreate.workflow,
+        useAppWfViewAPI: false,
+        isJobView,
+        filteredEnvIds,
+    })
 
-const getInitialWorkflows = (
+export const getInitialWorkflows = ({
     id,
-    dimensions: WorkflowDimensions,
-    workflowOffset: Offset,
-    useAppWfViewAPI?: boolean,
-    isJobView?: boolean,
-    filteredEnvIds?: string,
-): Promise<{
+    dimensions,
+    workflowOffset,
+    useAppWfViewAPI,
+    isJobView,
+    filteredEnvIds,
+    shouldCheckDeploymentWindow = true,
+    offending = null,
+}: GetInitialWorkflowsParamsType): Promise<{
     isGitOpsRepoNotConfigured: boolean
     appName: string
     workflows: WorkflowType[]
@@ -91,9 +104,12 @@ const getInitialWorkflows = (
     blackListedCI: BlackListedCI
 }> => {
     if (useAppWfViewAPI) {
+        // TODO: Seems like a good candidate for Promise.allSettled
         return Promise.all([
-            getWorkflowViewList(id, filteredEnvIds),
-            getDeploymentWindowState ? getDeploymentWindowState(id, filteredEnvIds) : null,
+            getWorkflowViewList(id, filteredEnvIds, offending),
+            shouldCheckDeploymentWindow && getDeploymentWindowState
+                ? getDeploymentWindowState(id, filteredEnvIds)
+                : null,
         ]).then((response) => {
             const workflows = {
                 appId: id,
@@ -140,7 +156,7 @@ const getInitialWorkflows = (
         getCIConfig(id),
         getCDConfig(id),
         getExternalCIList(id),
-        getDeploymentWindowState ? getDeploymentWindowState(id, filteredEnvIds) : null,
+        shouldCheckDeploymentWindow && getDeploymentWindowState ? getDeploymentWindowState(id, filteredEnvIds) : null,
     ]).then(([workflow, ciConfig, cdConfig, externalCIConfig, deploymentWindowState]) => {
         if (Object.keys(deploymentWindowState?.result || {}).length > 0 && cdConfig) {
             cdConfig.pipelines?.forEach((pipeline) => {
@@ -534,7 +550,7 @@ function ciPipelineToNode(
     dimensions: WorkflowDimensions,
     cdPipelineMap: Map<number, CdPipeline>,
 ): CommonNodeAttr {
-    const sourceNodes = (ciPipeline?.ciMaterial ?? []).map((ciMaterial, index) => {
+    const sourceNodes: CommonNodeAttr[] = (ciPipeline?.ciMaterial ?? []).map((ciMaterial, index) => {
         const materialName = ciMaterial.gitMaterialName || ''
         return {
             parents: [],
@@ -559,7 +575,10 @@ function ciPipelineToNode(
             primaryBranchAfterRegex: ciMaterial?.source?.value,
             cipipelineId: ciMaterial?.id,
             isJobCI: ciPipeline?.pipelineType === CIPipelineBuildType.CI_JOB,
-        } as CommonNodeAttr
+            showPluginWarning: false,
+            isTriggerBlocked: false,
+            pluginBlockState: getParsedPluginPolicyConsequenceData(),
+        }
     })
     const trigger = ciPipeline.isManual ? TriggerType.Manual.toLocaleLowerCase() : TriggerType.Auto.toLocaleLowerCase()
 
@@ -569,7 +588,7 @@ function ciPipelineToNode(
             ? cdPipelineMap.get(ciPipeline.parentCiPipeline).environmentName
             : ciPipeline.name
 
-    const ciNode = {
+    const ciNode: CommonNodeAttr = {
         isSource: true,
         isGitSource: false,
         isRoot: false,
@@ -597,9 +616,9 @@ function ciPipelineToNode(
         sourceNodes,
         downstreamNodes: new Array<CommonNodeAttr>(),
         showPluginWarning: ciPipeline.isOffendingMandatoryPlugin,
-        isCITriggerBlocked: ciPipeline.isCITriggerBlocked,
-        ciBlockState: ciPipeline.ciBlockState,
-    } as CommonNodeAttr
+        isTriggerBlocked: ciPipeline.isCITriggerBlocked,
+        pluginBlockState: getParsedPluginPolicyConsequenceData(ciPipeline.ciBlockState),
+    }
 
     return ciNode
 }
@@ -638,27 +657,24 @@ function cdPipelineToNode(
     let preCD: CommonNodeAttr | undefined
     let postCD: CommonNodeAttr | undefined
     let stageIndex = 1
+
     if (!isEmpty(cdPipeline?.preDeployStage?.steps || cdPipeline?.preStage?.config)) {
-        const trigger =
-            cdPipeline.preDeployStage?.triggerType?.toLowerCase() ||
-            cdPipeline.preStage?.triggerType?.toLowerCase() ||
-            ''
+        const preDeployStageFallback = cdPipeline.preDeployStage || cdPipeline.preStage
+        const trigger = preDeployStageFallback?.triggerType?.toLowerCase() || ''
         preCD = {
             // Need this for Release Tags in CDMaterials
             connectingCiPipelineId: cdPipeline.ciPipelineId,
             parents: [String(parentId)],
             height: dimensions.cDNodeSizes.nodeHeight,
             width: dimensions.cDNodeSizes.nodeWidth,
-            title: cdPipeline.preDeployStage?.name || cdPipeline.preStage.name || '',
+            title: preDeployStageFallback?.name || '',
             isSource: false,
             isGitSource: false,
             id: String(cdPipeline.id),
-            activeIn: false,
-            activeOut: false,
             downstreams: [`${WorkflowNodeType.CD}-${cdPipeline.id}`],
             downstreamEnvironments: [],
             type: WorkflowNodeType.PRE_CD,
-            status: cdPipeline.preDeployStage?.status || cdPipeline.preStage?.status || DEFAULT_STATUS,
+            status: preDeployStageFallback?.status || DEFAULT_STATUS,
             triggerType: TriggerTypeMap[trigger],
             environmentName: cdPipeline.environmentName || '',
             isVirtualEnvironment: cdPipeline.isVirtualEnvironment,
@@ -675,7 +691,11 @@ function cdPipelineToNode(
             helmPackageName: cdPipeline?.helmPackageName || '',
             isGitOpsRepoNotConfigured: cdPipeline.isGitOpsRepoNotConfigured,
             isDeploymentBlocked: cdPipeline.isDeploymentBlocked,
-        } as CommonNodeAttr
+            showPluginWarning: cdPipeline.preDeployStage?.isOffendingMandatoryPlugin,
+            isTriggerBlocked: preDeployStageFallback?.isTriggerBlocked,
+            triggerBlockedInfo: preDeployStageFallback?.triggerBlockedInfo,
+            pluginBlockState: getParsedPluginPolicyConsequenceData(cdPipeline.preDeployStage?.pluginBlockState),
+        }
         stageIndex++
     }
     let cdDownstreams = []
@@ -686,7 +706,7 @@ function cdPipelineToNode(
         cdDownstreams = [`${WorkflowNodeType.POST_CD}-${cdPipeline.id}`]
     }
 
-    const CD = {
+    const CD: CommonNodeAttr = {
         connectingCiPipelineId: cdPipeline.ciPipelineId,
         parents: [String(parentId)],
         height: dimensions.cDNodeSizes.nodeHeight,
@@ -695,8 +715,6 @@ function cdPipelineToNode(
         isSource: false,
         isGitSource: false,
         id: String(cdPipeline.id),
-        activeIn: false,
-        activeOut: false,
         downstreams: cdDownstreams,
         downstreamEnvironments: [],
         type: WorkflowNodeType.CD,
@@ -726,7 +744,12 @@ function cdPipelineToNode(
         isGitOpsRepoNotConfigured: cdPipeline.isGitOpsRepoNotConfigured,
         deploymentAppCreated: cdPipeline?.deploymentAppCreated,
         isDeploymentBlocked: cdPipeline.isDeploymentBlocked,
-    } as CommonNodeAttr
+        // Will populate this after initializing postCD
+        showPluginWarning: false,
+        pluginBlockState: getParsedPluginPolicyConsequenceData(),
+        isTriggerBlocked: cdPipeline.isTriggerBlocked,
+        triggerBlockedInfo: cdPipeline.triggerBlockedInfo,
+    }
     stageIndex++
 
     if (!isEmpty(cdPipeline?.postDeployStage?.steps || cdPipeline?.postStage?.config)) {
@@ -744,8 +767,6 @@ function cdPipelineToNode(
             isSource: false,
             isGitSource: false,
             id: String(cdPipeline.id),
-            activeIn: false,
-            activeOut: false,
             downstreams: [],
             downstreamEnvironments: [],
             type: WorkflowNodeType.POST_CD,
@@ -766,12 +787,19 @@ function cdPipelineToNode(
             helmPackageName: cdPipeline?.helmPackageName || '',
             isGitOpsRepoNotConfigured: cdPipeline.isGitOpsRepoNotConfigured,
             isDeploymentBlocked: cdPipeline.isDeploymentBlocked,
-        } as CommonNodeAttr
+            showPluginWarning: cdPipeline.postDeployStage?.isOffendingMandatoryPlugin,
+            isTriggerBlocked: cdPipeline.postDeployStage?.isTriggerBlocked || cdPipeline.postStage?.isTriggerBlocked,
+            triggerBlockedInfo:
+                cdPipeline.postDeployStage?.triggerBlockedInfo || cdPipeline.postStage?.triggerBlockedInfo,
+            pluginBlockState: getParsedPluginPolicyConsequenceData(cdPipeline.postDeployStage?.pluginBlockState),
+        }
     }
+
     if (dimensions.type === WorkflowDimensionType.TRIGGER) {
         CD.preNode = preCD
         CD.postNode = postCD
     }
+
     if (dimensions.type === WorkflowDimensionType.CREATE) {
         let title = ''
         title += preCD ? 'Pre-deploy, ' : ''
@@ -779,6 +807,10 @@ function cdPipelineToNode(
         title += postCD ? ', Post-deploy' : ''
         CD.title = title
     }
+
+    CD.showPluginWarning =
+        dimensions.type === WorkflowDimensionType.CREATE ? preCD?.showPluginWarning || postCD?.showPluginWarning : false
+    CD.pluginBlockState = getParsedPluginPolicyConsequenceData()
     return CD
 }
 

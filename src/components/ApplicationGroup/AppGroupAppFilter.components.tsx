@@ -31,6 +31,7 @@ import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import { AppGroupAppFilterContextType, FilterParentType } from './AppGroup.types'
 import { AppFilterTabs } from './Constants'
 import { ShortcutKeyBadge } from '@Components/common/formFields/Widgets/Widgets'
+import { setAppGroupFilterInLocalStorage } from '@Components/common'
 
 export const ValueContainer = (props): JSX.Element => {
     const {
@@ -168,6 +169,7 @@ export const Option = (props): JSX.Element => {
 
 export const MenuList = (props: any): JSX.Element => {
     const {
+        resourceId,
         appListOptions,
         selectedAppList,
         setSelectedAppList,
@@ -182,6 +184,7 @@ export const MenuList = (props: any): JSX.Element => {
     const clearSelection = (): void => {
         setSelectedAppList([])
         setSelectedGroupFilter([])
+        setAppGroupFilterInLocalStorage({ filterParentType, resourceId, resourceList: [], groupList: [] })
     }
     const onTabChange = (e): void => {
         setSelectedFilterTab(e.currentTarget.dataset.selectedTab)

@@ -15,7 +15,6 @@
  */
 
 import { Component } from 'react'
-import ReactSelect from 'react-select'
 import {
     showError,
     Progressing,
@@ -24,9 +23,9 @@ import {
     SelectPicker,
     SelectPickerVariantType,
     getCVEUrlFromCVEName,
+    ConditionalWrap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink } from 'react-router-dom'
-import { styles, portalStyles, DropdownIndicator } from './security.util'
 import {
     VulnerabilityUIMetaData,
     GetVulnerabilityPolicyResponse,
@@ -105,6 +104,7 @@ export class SecurityPolicyEdit extends Component<
                 policies: [],
             },
             isCveError: false,
+            showLoadingOverlay: false,
         }
         this.toggleAddCveModal = this.toggleAddCveModal.bind(this)
         this.updateSeverity = this.updateSeverity.bind(this)
@@ -112,45 +112,48 @@ export class SecurityPolicyEdit extends Component<
         this.updateCVE = this.updateCVE.bind(this)
     }
 
-    componentDidMount() {
-        this.fetchVulnerabilities(this.props.level, this.props.id)
+    async componentDidMount() {
+        this.setState({ view: ViewType.LOADING })
+        await this.fetchVulnerabilities()
     }
 
-    private fetchVulnerabilities(level: string, id?: number): void {
-        this.setState({ view: ViewType.LOADING })
-        getVulnerabilities(this.props.level, this.props.id)
-            .then((response) => {
-                this.setState({
-                    view: ViewType.FORM,
-                    result: response.result,
-                    showWhitelistModal: false,
-                })
+    private async fetchVulnerabilities(): Promise<void> {
+        try {
+            const response = await getVulnerabilities(this.props.level, this.props.id)
+            this.setState({
+                view: ViewType.FORM,
+                result: response.result,
+                showWhitelistModal: false,
             })
-            .catch((error) => {
-                if (error.code === 404) {
-                    this.setState({ isCveError: true })
-                } else {
-                    showError(error)
-                    this.setState({ view: ViewType.ERROR })
-                }
-            })
+        } catch (error) {
+            if (error.code === 404) {
+                this.setState({ isCveError: true })
+            } else {
+                showError(error)
+                this.setState({ view: ViewType.ERROR })
+            }
+        }
     }
 
     saveCVE(cveId: string, action, envId?: number): void {
+        this.setState({ showLoadingOverlay: true })
         const payload = this.createCVEPayload(this.props.level, cveId, action, envId)
         savePolicy(payload)
-            .then((response) => {
+            .then(async (response) => {
                 if (response.result) {
-                    this.fetchVulnerabilities(this.props.level, this.props.id)
+                    await this.fetchVulnerabilities()
                 }
             })
             .catch((error) => {
                 showError(error)
-                this.setState({ view: ViewType.ERROR })
+            })
+            .finally(() => {
+                this.setState({ showLoadingOverlay: false })
             })
     }
 
     updateCVE(action: string, cve: CvePolicy, envId?: number): void {
+        this.setState({ showLoadingOverlay: true })
         let payload = {}
         let promise
         if (cve.policy.inherited) {
@@ -166,34 +169,42 @@ export class SecurityPolicyEdit extends Component<
         }
 
         promise
-            .then((response) => {
+            .then(async (response) => {
                 if (response.result) {
-                    this.fetchVulnerabilities(this.props.level, this.props.id)
+                    await this.fetchVulnerabilities()
                 }
             })
             .catch((error) => {
                 showError(error)
             })
+            .finally(() => {
+                this.setState({ showLoadingOverlay: false })
+            })
     }
 
     deleteCve(id: number): void {
+        this.setState({ showLoadingOverlay: true })
         const payload = {
             id,
             action: VulnerabilityAction.inherit,
         }
         updatePolicy(payload)
-            .then((response) => {
+            .then(async (response) => {
                 if (response.result) {
-                    this.fetchVulnerabilities(this.props.level, this.props.id)
+                    await this.fetchVulnerabilities()
                 }
             })
             .catch((error) => {
                 this.setState({ view: ViewType.ERROR })
                 showError(error)
             })
+            .finally(() => {
+                this.setState({ showLoadingOverlay: false })
+            })
     }
 
     updateSeverity(action: VulnerabilityAction, policy: SeverityPolicy, envId?: number): void {
+        this.setState({ showLoadingOverlay: true })
         const actionLowerCase = action.toLowerCase()
         if (
             (policy.policy.isOverriden && actionLowerCase === policy.policy.action.toLowerCase()) ||
@@ -224,13 +235,16 @@ export class SecurityPolicyEdit extends Component<
             promise = updatePolicy(payload)
         }
         promise
-            .then((response) => {
+            .then(async (response) => {
                 if (response.result) {
-                    this.fetchVulnerabilities(this.props.level, this.props.id)
+                    await this.fetchVulnerabilities()
                 }
             })
             .catch((error) => {
                 showError(error)
+            })
+            .finally(() => {
+                this.setState({ showLoadingOverlay: false })
             })
     }
 
@@ -553,40 +567,53 @@ export class SecurityPolicyEdit extends Component<
             this.setState({ isCveError: true })
         }
 
+        const wrapWithLoadingOverlay = (children) => (
+            <div className="dc__position-rel">
+                <div className="dc__position-fixed security-policy-edit-app-loader">
+                    <Progressing size={24} />
+                </div>
+                <div className="dc__opacity-0_4 dc__blur-1_5 dc__disable-click">{children}</div>
+            </div>
+        )
+
         return (
             <>
-                {this.renderHeader()}
-                {this.state.result?.policies.map((v: VulnerabilityPolicy, cardIndex) => {
-                    const showCardContent = isCollapsible ? !v.isCollapsed : true
-                    const envNameIndex = v?.name?.search('/')
+                <ConditionalWrap condition={this.state.showLoadingOverlay} wrap={wrapWithLoadingOverlay}>
+                    {this.renderHeader()}
+                    {this.state.result?.policies.map((v: VulnerabilityPolicy, cardIndex) => {
+                        const showCardContent = isCollapsible ? !v.isCollapsed : true
+                        const envNameIndex = v?.name?.search('/')
 
-                    return (
-                        <div key={v.name} className="security-policy__card mb-20 flexbox-col dc__gap-12">
-                            {isCollapsible && (
-                                <div className="flexbox flex-justify">
-                                    <p className="security-polic__app-env-name">env{v?.name.substr(envNameIndex)}</p>
-                                    <Arrow
-                                        className="icon-dim-24 cursor fwn-9 rotate dc__no-shrink"
-                                        style={{ ['--rotateBy' as any]: v.isCollapsed ? '0deg' : '180deg' }}
-                                        onClick={() => {
-                                            this.toggleCollapse(cardIndex)
-                                        }}
-                                    />
-                                </div>
-                            )}
-                            {showCardContent ? (
-                                <>
-                                    {isCollapsible ? <div className="mb-20" /> : null}
-                                    {this.renderVulnerabilitiesCard(v, v.severities)}
-                                    {this.renderPolicyListHeader()}
-                                    {v.cves.length
-                                        ? this.renderPolicyList(v.cves, v.envId)
-                                        : this.renderEmptyPolicyList()}
-                                </>
-                            ) : null}
-                        </div>
-                    )
-                })}
+                        return (
+                            <div key={v.name} className="security-policy__card mb-20 flexbox-col dc__gap-12">
+                                {isCollapsible && (
+                                    <div className="flexbox flex-justify">
+                                        <p className="security-polic__app-env-name">
+                                            env{v?.name.substr(envNameIndex)}
+                                        </p>
+                                        <Arrow
+                                            className="icon-dim-24 cursor fwn-9 rotate dc__no-shrink"
+                                            style={{ ['--rotateBy' as any]: v.isCollapsed ? '0deg' : '180deg' }}
+                                            onClick={() => {
+                                                this.toggleCollapse(cardIndex)
+                                            }}
+                                        />
+                                    </div>
+                                )}
+                                {showCardContent ? (
+                                    <>
+                                        {isCollapsible ? <div className="mb-20" /> : null}
+                                        {this.renderVulnerabilitiesCard(v, v.severities)}
+                                        {this.renderPolicyListHeader()}
+                                        {v.cves.length
+                                            ? this.renderPolicyList(v.cves, v.envId)
+                                            : this.renderEmptyPolicyList()}
+                                    </>
+                                ) : null}
+                            </div>
+                        )
+                    })}
+                </ConditionalWrap>
                 {this.state.showWhitelistModal ? (
                     <AddCveModal
                         saveCVE={this.saveCVE}

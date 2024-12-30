@@ -46,6 +46,7 @@ import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { BodyType, ProtectedInputType } from './globalConfiguration.type'
 import { GlobalConfigurationProvider, useGlobalConfiguration } from './GlobalConfigurationProvider'
+import { OffendingPipelineModalAppView } from '@Pages/GlobalConfigurations/PluginPolicy/OffendingPipelineModal'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -61,7 +62,8 @@ const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
 // NOTE: Might import from index itself
 const BuildInfra = lazy(() => import('../../Pages/GlobalConfigurations/BuildInfra/BuildInfra'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
-const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
+const PluginsPolicyV1 = importComponentFromFELibrary('PluginsPolicyV1')
+const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy', null, 'function')
 const FilterConditions = importComponentFromFELibrary('FilterConditions')
 const LockDeploymentConfiguration = importComponentFromFELibrary('LockDeploymentConfiguration', null, 'function')
 const CatalogFramework = importComponentFromFELibrary('CatalogFramework')
@@ -499,11 +501,11 @@ const NavItem = ({ serverMode }) => {
 
                             {PluginsPolicy && (
                                 <NavLink
-                                    to={URLS.GLOBAL_CONFIG_PLUGINS}
-                                    key={URLS.GLOBAL_CONFIG_PLUGINS}
+                                    to={URLS.GLOBAL_CONFIG_PLUGIN_POLICY}
+                                    key={URLS.GLOBAL_CONFIG_PLUGIN_POLICY}
                                     activeClassName="active-route"
                                 >
-                                    <div className="flexbox flex-justify">Plugins</div>
+                                    <div className="flexbox flex-justify">Plugin Policy</div>
                                 </NavLink>
                             )}
 
@@ -523,7 +525,7 @@ const NavItem = ({ serverMode }) => {
                                     key={URLS.GLOBAL_CONFIG_TAGS}
                                     activeClassName="active-route"
                                 >
-                                    <div className="flexbox flex-justify">Tags</div>
+                                    <div className="flexbox flex-justify">Tags Policy</div>
                                 </NavLink>
                             )}
                             {FilterConditions && (
@@ -587,22 +589,24 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 }}
             />
             {!window._env_.K8S_CLIENT && [
-                ...serverMode !== SERVER_MODE.EA_ONLY ? [(
-                    <Route
-                        key={URLS.GLOBAL_CONFIG_HOST_URL}
-                        path={URLS.GLOBAL_CONFIG_HOST_URL}
-                        render={(props) => {
-                            return (
-                                <HostURLConfiguration
-                                    {...props}
-                                    isSuperAdmin={isSuperAdmin}
-                                    refreshGlobalConfig={getHostURLConfig}
-                                    handleChecklistUpdate={handleChecklistUpdate}
-                                />
-                            )
-                        }}
-                    />
-                )] : [],
+                ...(serverMode !== SERVER_MODE.EA_ONLY
+                    ? [
+                          <Route
+                              key={URLS.GLOBAL_CONFIG_HOST_URL}
+                              path={URLS.GLOBAL_CONFIG_HOST_URL}
+                              render={(props) => {
+                                  return (
+                                      <HostURLConfiguration
+                                          {...props}
+                                          isSuperAdmin={isSuperAdmin}
+                                          refreshGlobalConfig={getHostURLConfig}
+                                          handleChecklistUpdate={handleChecklistUpdate}
+                                      />
+                                  )
+                              }}
+                          />,
+                      ]
+                    : []),
                 <Route
                     key={URLS.GLOBAL_CONFIG_GITOPS}
                     path={URLS.GLOBAL_CONFIG_GITOPS}
@@ -617,15 +621,17 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                         return <Project {...props} isSuperAdmin={isSuperAdmin} />
                     }}
                 />,
-                ...serverMode !== SERVER_MODE.EA_ONLY ? [(
-                    <Route
-                        key={URLS.GLOBAL_CONFIG_GIT}
-                        path={URLS.GLOBAL_CONFIG_GIT}
-                        render={(props) => {
-                            return <GitProvider {...props} isSuperAdmin={isSuperAdmin} />
-                        }}
-                    />
-                )] : [],
+                ...(serverMode !== SERVER_MODE.EA_ONLY
+                    ? [
+                          <Route
+                              key={URLS.GLOBAL_CONFIG_GIT}
+                              path={URLS.GLOBAL_CONFIG_GIT}
+                              render={(props) => {
+                                  return <GitProvider {...props} isSuperAdmin={isSuperAdmin} />
+                              }}
+                          />,
+                      ]
+                    : []),
                 <Route
                     key={URLS.GLOBAL_CONFIG_DOCKER}
                     path={`${URLS.GLOBAL_CONFIG_DOCKER}/:id?`}
@@ -647,14 +653,16 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                         return <ChartRepo {...props} isSuperAdmin={isSuperAdmin} />
                     }}
                 />,
-                ...serverMode !== SERVER_MODE.EA_ONLY ? [(
-                    <Route
-                        key={CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST}
-                        path={CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST}
-                    >
-                        <DeploymentChartsRouter />
-                    </Route>
-                )] : [],
+                ...(serverMode !== SERVER_MODE.EA_ONLY
+                    ? [
+                          <Route
+                              key={CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST}
+                              path={CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST}
+                          >
+                              <DeploymentChartsRouter />
+                          </Route>,
+                      ]
+                    : []),
                 <Route key={URLS.GLOBAL_CONFIG_AUTH} path={URLS.GLOBAL_CONFIG_AUTH} component={Authorization} />,
                 <Route
                     key={URLS.GLOBAL_CONFIG_NOTIFIER}
@@ -675,10 +683,10 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 </Route>,
                 ...(serverMode !== SERVER_MODE.EA_ONLY
                     ? [
-                        <Route key={URLS.GLOBAL_CONFIG_BUILD_INFRA} path={URLS.GLOBAL_CONFIG_BUILD_INFRA}>
-                            <BuildInfra isSuperAdmin={isSuperAdmin} />
-                        </Route>,
-                    ]
+                          <Route key={URLS.GLOBAL_CONFIG_BUILD_INFRA} path={URLS.GLOBAL_CONFIG_BUILD_INFRA}>
+                              <BuildInfra isSuperAdmin={isSuperAdmin} />
+                          </Route>,
+                      ]
                     : []),
             ]}
             {CatalogFramework && (
@@ -705,11 +713,17 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                         <ImagePromotion isSuperAdmin={isSuperAdmin} />
                     </Route>
                 ),
-                PluginsPolicy && (
-                    <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>
-                        <PluginsPolicy />
-                    </Route>
-                ),
+                window._env_.FEATURE_CD_MANDATORY_PLUGINS_ENABLE
+                    ? PluginsPolicy && (
+                          <Route path={URLS.GLOBAL_CONFIG_PLUGIN_POLICY}>
+                              <PluginsPolicy OfflinePipelineModalAppView={OffendingPipelineModalAppView} />
+                          </Route>
+                      )
+                    : PluginsPolicyV1 && (
+                          <Route path={URLS.GLOBAL_CONFIG_PLUGIN_POLICY}>
+                              <PluginsPolicyV1 />
+                          </Route>
+                      ),
                 PullImageDigest && (
                     <Route path={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}>
                         <PullImageDigest isSuperAdmin={isSuperAdmin} />
@@ -729,7 +743,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <Route path={URLS.GLOBAL_CONFIG_LOCK_DEPLOYMENT_CONFIGURATION}>
                         <LockDeploymentConfiguration />
                     </Route>
-                )
+                ),
             ]}
             <Redirect to={defaultRoute()} />
         </Switch>
