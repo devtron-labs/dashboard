@@ -8,7 +8,7 @@ import {
     stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICCross } from '@Icons/ic-cross.svg'
+import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { ReactComponent as ICSlidersVertical } from '@Icons/ic-sliders-vertical.svg'
 import { ReactComponent as ICDot } from '@Icons/ic-dot.svg'
 
@@ -93,7 +93,7 @@ export const VariableDataTablePopupMenu = ({
                                     size={ComponentSizeType.small}
                                     style={ButtonStyleType.negativeGrey}
                                     variant={ButtonVariantType.borderLess}
-                                    icon={<ICCross />}
+                                    icon={<ICClose />}
                                     dataTestId="popup-close-button"
                                     ariaLabel="Close Popup"
                                     showAriaLabelInTippy={false}
