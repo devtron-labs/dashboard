@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-    ACTION_STATE,
-    ApiResponseResultType,
-    ResponseType,
-    ServerErrors,
-    SeverityCount,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { ACTION_STATE, ResponseType, ScanResultDTO, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import { fetchAppDetailsInTime } from '@Components/app/service'
 import { AggregatedNodes, OptionType } from '../../types'
 import { SyncErrorType, AppDetails } from '../../../v2/appDetails/appDetails.type'
@@ -231,12 +225,10 @@ export interface IssuesCardType {
 }
 
 export interface SecurityVulnerabilityCardType {
-    cardLoading?: boolean
+    cardLoading: boolean
     appId?: string
     envId?: string
     installedAppId?: number
-    artifactId?: number
-    isExternalCI?: boolean
 }
 
 export interface DeployedCommitCardType {
@@ -268,17 +260,13 @@ export interface LastUpdatedCardType {
 
 export interface UseGetAppSecurityDetailsProps {
     appId: number
-    envId: number
+    envId?: number
     installedAppId?: number
     artifactId?: number
-    imageScanDeployInfoId?: number
-    isSecurityScanV2Enabled: boolean
 }
 export interface UseGetAppSecurityDetailsReturnType {
-    scanDetailsLoading: boolean
-    scanDetailsResponse: ResponseType<ApiResponseResultType>
-    scanDetailsError: ServerErrors
-    reloadScanDetails: () => void
-    severityCount: SeverityCount
-    totalCount: number
+    scanResultLoading: boolean
+    scanResultResponse: ResponseType<ScanResultDTO>
+    scanResultError: ServerErrors
+    reloadScanResult: () => void
 }

@@ -138,7 +138,6 @@ import {
 import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 import { VIEW_MODE } from '@Pages/Shared/ConfigMapSecret/constants'
 import IndexStore from '../../appDetails/index.store'
-import { AppDetails } from '../../appDetails/appDetails.type'
 import { AUTO_GENERATE_GITOPS_REPO, CHART_VALUE_ID } from './constant'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
@@ -1787,32 +1786,29 @@ const ChartValuesView = ({
                                 />
                             )}
                         </div>
-                            {window._env_.ENABLE_RESOURCE_SCAN_V2 &&
-                                !isExternalApp &&
-                                (isDeployChartView || isUpdateAppView) &&
-                                ToggleSecurityScan && (
-                                    <ToggleSecurityScan
-                                        isManifestScanEnabled={commonState.isManifestScanEnabled}
-                                        handleToggleSecurityScan={handleToggleSecurityScan}
-                                    />
-                                )}
-                            {!isDeployChartView &&
-                                chartValueId !== '0' &&
-                                !(
-                                    deployedAppDetail &&
-                                    checkIfDevtronOperatorHelmRelease(
-                                        deployedAppDetail[2],
-                                        deployedAppDetail[1],
-                                        deployedAppDetail[0],
-                                    )
-                                ) && (
-                                    <DeleteApplicationButton
-                                        type={isCreateValueView ? 'preset value' : 'Application'}
-                                        isUpdateInProgress={commonState.isUpdateInProgress}
-                                        isDeleteInProgress={commonState.isDeleteInProgress}
-                                        dispatch={dispatch}
-                                    />
-                                )}
+                        {!isExternalApp && (isDeployChartView || isUpdateAppView) && ToggleSecurityScan && (
+                            <ToggleSecurityScan
+                                isManifestScanEnabled={commonState.isManifestScanEnabled}
+                                handleToggleSecurityScan={handleToggleSecurityScan}
+                            />
+                        )}
+                        {!isDeployChartView &&
+                            chartValueId !== '0' &&
+                            !(
+                                deployedAppDetail &&
+                                checkIfDevtronOperatorHelmRelease(
+                                    deployedAppDetail[2],
+                                    deployedAppDetail[1],
+                                    deployedAppDetail[0],
+                                )
+                            ) && (
+                                <DeleteApplicationButton
+                                    type={isCreateValueView ? 'preset value' : 'Application'}
+                                    isUpdateInProgress={commonState.isUpdateInProgress}
+                                    isDeleteInProgress={commonState.isDeleteInProgress}
+                                    dispatch={dispatch}
+                                />
+                            )}
                     </div>
                     {commonState.openReadMe && (
                         <ActiveReadmeColumn
