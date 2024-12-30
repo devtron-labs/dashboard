@@ -56,7 +56,7 @@ import {
 } from '../../service'
 import { URLS, Routes } from '../../../../config'
 import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
-import { ScanDisabledView, ImageNotScannedView, CIRunningView } from './cIDetails.util'
+import { ImageNotScannedView, CIRunningView } from './cIDetails.util'
 import './ciDetails.scss'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
@@ -671,7 +671,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     const computedAppId = appId ?? appIdFromParent
 
     const { scanResultLoading, scanResultResponse, scanResultError, reloadScanResult } = useGetAppSecurityDetails({
-        appId: +appId,
+        appId: +computedAppId,
         artifactId,
     })
 
@@ -705,10 +705,12 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     if (scanResultError) {
         return <ErrorScreenManager code={scanResultError.code} reload={reloadScanResult} />
     }
-    if (scanResultResponse && !scanResultResponse.result.scanned) {
-        if (!scanResultResponse.result.isImageScanEnabled) {
-            return <ScanDisabledView redirectToCreate={redirectToCreate} />
-        }
+    if (
+        scanResultResponse &&
+        (!scanResultResponse.result.scanned ||
+            !scanResultResponse.result.isImageScanEnabled ||
+            !scanResultResponse.result.imageScan)
+    ) {
         return <ImageNotScannedView />
     }
 

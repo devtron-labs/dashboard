@@ -264,7 +264,7 @@ const CDMaterial = ({
             getPolicyConsequences ? getPolicyConsequences({ appId, envId }) : null,
         ])
 
-        if (getIsTriggerBlocked(response[2].cd)) {
+        if (getPolicyConsequences && getIsTriggerBlocked(response[2].cd)) {
             return [null, null, response[2]]
         }
         return response
