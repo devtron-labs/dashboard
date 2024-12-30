@@ -5144,6 +5144,25 @@ textarea::placeholder {
 .dc__grid-half {
     display: grid;
     grid-template-columns: 50% 50%;
+
+    &.show-divider {
+        position: relative;
+
+        > :first-child::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1px;
+            height: 100%;
+            background-color: var(--N200);
+        }
+
+        &--zi-5 > :first-child::after {
+            z-index: 5;
+        }
+    }
 }
 
 .dc__grid {
