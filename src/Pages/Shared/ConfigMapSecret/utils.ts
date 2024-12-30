@@ -14,27 +14,23 @@ import {
     DryRunEditorMode,
     ERROR_STATUS_CODE,
     getSelectPickerOptionByValue,
-    hasESO,
     OverrideMergeStrategyType,
     YAMLStringify,
     ConfigMapSecretUseFormProps,
-    CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA,
     CM_SECRET_STATE,
     configMapSecretMountDataMap,
     CMSecretConfigData,
     getConfigMapSecretFormInitialValues,
-    CMSecretYamlData,
+    getConfigMapSecretPayload,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ResourceConfigStage } from '@Pages/Applications/DevtronApps/service.types'
 
 import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
-import { CODE_EDITOR_RADIO_STATE, configMapDataTypeOptions, getSecretDataTypeOptions } from './constants'
+import { configMapDataTypeOptions, getSecretDataTypeOptions } from './constants'
 import {
     ConfigMapSecretFormProps,
     CMSecretDraftData,
-    CMSecretPayloadType,
-    ESOSecretData,
     ConfigMapSecretDecodedDataReturnType,
     ConfigMapSecretDecodedDataProps,
     ConfigMapSecretEncodedDataProps,
@@ -63,26 +59,6 @@ export const getConfigMapSecretStateLabel = (configStage: ResourceConfigStage, i
 // HELPERS UTILS ----------------------------------------------------------------
 
 // FORM UTILS ----------------------------------------------------------------
-export const convertYAMLToKeyValuePair = (yaml: string): CMSecretYamlData[] => {
-    try {
-        const obj = yaml && YAML.parse(yaml)
-        if (typeof obj !== 'object') {
-            throw new Error()
-        }
-        const keyValueArray: CMSecretYamlData[] = Object.keys(obj).reduce((agg, k, id) => {
-            if (!k && !obj[k]) {
-                return CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA
-            }
-            const v = obj[k] && typeof obj[k] === 'object' ? YAMLStringify(obj[k]) : obj[k].toString()
-
-            return [...agg, { k, v: v ?? '', id }]
-        }, [])
-        return keyValueArray
-    } catch {
-        return CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA
-    }
-}
-
 export const getLockedYamlString = (yaml: string) => {
     const obj = YAML.parse(yaml)
     const keyValueArray = Object.keys(obj).reduce((agg, k) => {
@@ -205,135 +181,6 @@ export const getConfigMapSecretReadOnlyValues = ({
 // FORM UTILS ----------------------------------------------------------------
 
 // PAYLOAD UTILS ----------------------------------------------------------------
-export const getESOSecretDataFromYAML = (yaml: string): ESOSecretData => {
-    try {
-        const json = YAML.parse(yaml)
-        if (typeof json === 'object') {
-            const payload = {
-                secretStore: json.secretStore,
-                secretStoreRef: json.secretStoreRef,
-                refreshInterval: json.refreshInterval,
-                // if null don't send these keys which is achieved by `undefined`
-                esoData: undefined,
-                esoDataFrom: undefined,
-                template: undefined,
-            }
-            if (Array.isArray(json?.esoData)) {
-                payload.esoData = json.esoData
-            }
-            if (Array.isArray(json?.esoDataFrom)) {
-                payload.esoDataFrom = json.esoDataFrom
-            }
-            if (typeof json?.template === 'object' && !Array.isArray(json.template)) {
-                payload.template = json.template
-            }
-            return payload
-        }
-        return null
-    } catch {
-        return null
-    }
-}
-
-export const getConfigMapSecretPayload = ({
-    isSecret,
-    external,
-    externalType,
-    externalSubpathValues,
-    yaml,
-    yamlMode,
-    currentData,
-    esoSecretYaml,
-    filePermission,
-    name,
-    selectedType,
-    isFilePermissionChecked,
-    roleARN,
-    volumeMountPath,
-    isSubPathChecked,
-    mergeStrategy,
-}: ConfigMapSecretUseFormProps) => {
-    const isESO = isSecret && hasESO(externalType)
-    const _currentData = yamlMode ? convertYAMLToKeyValuePair(yaml) : currentData
-    const data = _currentData.reduce((acc, curr) => {
-        if (!curr.k) {
-            return acc
-        }
-        const value = curr.v ?? ''
-
-        return {
-            ...acc,
-            [curr.k]: isSecret && externalType === '' ? btoa(value) : value,
-        }
-    }, {})
-
-    const payload: CMSecretPayloadType = {
-        name,
-        type: selectedType,
-        external,
-        data,
-        roleARN: null,
-        externalType: null,
-        esoSecretData: null,
-        mountPath: null,
-        subPath: null,
-        filePermission: null,
-        esoSubPath: null,
-        mergeStrategy,
-    }
-
-    if (
-        (isSecret && externalType === CMSecretExternalType.KubernetesSecret) ||
-        (!isSecret && external) ||
-        (isSecret && isESO)
-    ) {
-        delete payload[CODE_EDITOR_RADIO_STATE.DATA]
-    }
-    if (isSecret) {
-        payload.roleARN = ''
-        payload.externalType = externalType
-
-        if (isESO) {
-            const esoSecretData = getESOSecretDataFromYAML(esoSecretYaml)
-            if (esoSecretData) {
-                payload.esoSecretData = {
-                    secretStore: esoSecretData.secretStore,
-                    esoData: esoSecretData.esoData,
-                    secretStoreRef: esoSecretData.secretStoreRef,
-                    refreshInterval: esoSecretData.refreshInterval,
-                    esoDataFrom: esoSecretData.esoDataFrom,
-                    template: esoSecretData.template,
-                }
-                payload.roleARN = roleARN
-                if (isSubPathChecked && externalSubpathValues) {
-                    payload.esoSubPath = externalSubpathValues.replace(/\s+/g, '').split(',')
-                }
-            }
-        }
-    }
-    if (selectedType === configMapSecretMountDataMap.volume.value) {
-        payload.mountPath = volumeMountPath
-        payload.subPath = isSubPathChecked
-        if (isFilePermissionChecked) {
-            payload.filePermission = filePermission.length === 3 ? `0${filePermission}` : `${filePermission}`
-        }
-
-        if (
-            isSubPathChecked &&
-            ((isSecret && externalType === CMSecretExternalType.KubernetesSecret) || (!isSecret && external))
-        ) {
-            const externalSubpathKey = externalSubpathValues.replace(/\s+/g, '').split(',')
-            const secretKeys = {}
-            externalSubpathKey.forEach((key) => {
-                secretKeys[key] = ''
-            })
-            payload.data = secretKeys
-        }
-    }
-
-    return payload
-}
-
 const getConfigMapSecretDecodedData = <IsDraft extends boolean = false>({
     configMapSecretData,
     isDraft,

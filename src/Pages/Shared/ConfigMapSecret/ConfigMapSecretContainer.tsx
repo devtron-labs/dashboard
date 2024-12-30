@@ -30,6 +30,8 @@ import {
     CMSecretComponentType,
     CM_SECRET_STATE,
     getConfigMapSecretFormInitialValues,
+    getConfigMapSecretPayload,
+    CMSecretPayloadType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
@@ -52,7 +54,6 @@ import {
     getConfigMapSecretDraftAndPublishedData,
     getConfigMapSecretError,
     getConfigMapSecretInheritedData,
-    getConfigMapSecretPayload,
     getConfigMapSecretResolvedData,
     getConfigMapSecretResolvedDataPayload,
     getConfigMapSecretStateLabel,
@@ -63,7 +64,6 @@ import { CM_SECRET_COMPONENT_NAME, CONFIG_MAP_SECRET_NO_DATA_ERROR } from './con
 import {
     CMSecretDeleteModalType,
     CMSecretDraftPayloadType,
-    CMSecretPayloadType,
     ConfigMapSecretContainerProps,
     ConfigMapSecretFormProps,
     ConfigMapSecretQueryParamsType,

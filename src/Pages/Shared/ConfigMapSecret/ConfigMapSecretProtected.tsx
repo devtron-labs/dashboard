@@ -13,13 +13,14 @@ import {
     SelectPickerOptionType,
     CM_SECRET_STATE,
     CMSecretConfigData,
+    getConfigMapSecretPayload,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { CompareConfigView, CompareConfigViewProps, NoPublishedVersionEmptyState } from '@Pages/Applications'
 import { importComponentFromFELibrary } from '@Components/common'
 
 import { ConfigMapSecretProtectedProps } from './types'
-import { getConfigMapSecretPayload, getConfigMapSecretReadOnlyValues } from './utils'
+import { getConfigMapSecretReadOnlyValues } from './utils'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
 import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'

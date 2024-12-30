@@ -17,6 +17,7 @@ import {
     ConfigMapSecretDataType,
     CMSecretComponentType,
     CM_SECRET_STATE,
+    CMSecretPayloadType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ConfigToolbarProps } from '@Pages/Applications'
@@ -24,31 +25,6 @@ import { ConfigToolbarProps } from '@Pages/Applications'
 import { ComponentStates, EnvironmentOverrideComponentProps } from '../EnvironmentOverride/EnvironmentOverrides.types'
 
 // PAYLOAD PROPS
-export type CMSecretPayloadType = Pick<
-    CMSecretConfigData,
-    | 'data'
-    | 'name'
-    | 'type'
-    | 'externalType'
-    | 'external'
-    | 'roleARN'
-    | 'mountPath'
-    | 'subPath'
-    | 'esoSecretData'
-    | 'filePermission'
-    | 'esoSubPath'
-    | 'mergeStrategy'
->
-
-export interface ESOSecretData {
-    secretStore: Record<string, any>
-    secretStoreRef: Record<string, any>
-    refreshInterval: string
-    esoData: Record<string, any>[]
-    esoDataFrom: Record<string, any>[]
-    template: Record<string, any>
-}
-
 export interface CMSecretDraftPayloadType {
     id: number
     appId: number

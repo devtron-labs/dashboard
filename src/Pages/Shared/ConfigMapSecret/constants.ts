@@ -112,11 +112,6 @@ export const getSecretDataTypeOptions = (
     return isJob ? kubernetesOptions : [...kubernetesOptions, ...esoOptions, ...(isHashiOrAWS ? kesOptions : [])]
 }
 
-export enum CODE_EDITOR_RADIO_STATE {
-    DATA = 'data',
-    SAMPLE = 'sample',
-}
-
 export const CODE_EDITOR_RADIO_STATE_VALUE = { DATA: 'Data', SAMPLE: 'Sample' }
 
 export const DATA_HEADER_MAP = { DEFAULT: 'default' }
