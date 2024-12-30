@@ -22,9 +22,9 @@ import {
     ModuleNameMap,
     SecurityModal,
     ResponseType,
-    ApiResponseResultType,
     GetResourceScanDetailsPayloadType,
     useAsync,
+    ScanResultDTO,
 } from '@devtron-labs/devtron-fe-common-lib'
 import DeleteResourcePopup from './DeleteResourcePopup'
 import { importComponentFromFELibrary, getShowResourceScanModal } from '../../common'
@@ -39,8 +39,6 @@ import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-m
 import { NodeType } from '../../v2/appDetails/appDetails.type'
 
 const OpenSecurityModalButton = importComponentFromFELibrary('OpenSecurityModalButton', null, 'function')
-const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', false, 'function')
-const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const getResourceScanDetails: ({
     name,
     namespace,
@@ -52,7 +50,7 @@ const getResourceScanDetails: ({
     appType,
     deploymentType,
     isAppDetailView,
-}: GetResourceScanDetailsPayloadType) => Promise<ResponseType<ApiResponseResultType>> = importComponentFromFELibrary(
+}: GetResourceScanDetailsPayloadType) => Promise<ResponseType<ScanResultDTO>> = importComponentFromFELibrary(
     'getResourceScanDetails',
     null,
     'function',
@@ -69,8 +67,6 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
 }) => {
     const { installedModuleMap } = useMainContext()
 
-    const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && isFELibAvailable
-
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
     const [showVulnerabilityModal, setShowVulnerabilityModal] = useState(false)
 
@@ -85,7 +81,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
                 clusterId: +clusterId,
             }),
         [],
-        showVulnerabilityModal && getResourceScanDetails && isSecurityScanV2Enabled,
+        showVulnerabilityModal && !!getResourceScanDetails,
     )
 
     const toggleDeleteDialog = () => {
@@ -100,11 +96,10 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
         setShowVulnerabilityModal(false)
     }
 
-    const showResourceScanModal =
-        getShowResourceScanModal(
-            selectedResource?.gvk?.Kind as NodeType,
-            installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY],
-        ) && window._env_.ENABLE_RESOURCE_SCAN_V2
+    const showResourceScanModal = getShowResourceScanModal(
+        selectedResource?.gvk?.Kind as NodeType,
+        installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY],
+    )
 
     return (
         <>
@@ -193,12 +188,9 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
                 />
             )}
 
-            {showVulnerabilityModal && !!isFELibAvailable && (
+            {showVulnerabilityModal && !!getResourceScanDetails && (
                 <SecurityModal
-                    isResourceScan
                     handleModalClose={handleCloseVulnerabilityModal}
-                    Sidebar={SecurityModalSidebar}
-                    isSecurityScanV2Enabled={isSecurityScanV2Enabled}
                     isLoading={resourceScanLoading}
                     error={resourceScanError}
                     responseData={resourceScanResponse?.result}

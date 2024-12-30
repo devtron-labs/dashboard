@@ -17,7 +17,7 @@
 import React, { Component } from 'react'
 import { NavLink, RouteComponentProps } from 'react-router-dom'
 import ReactGA from 'react-ga4'
-import { URLS as CommonURLS } from '@devtron-labs/devtron-fe-common-lib'
+import { URLS as CommonURLS, MainContext } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ModuleNameMap,
     MODULE_STATUS_POLLING_INTERVAL,
@@ -46,7 +46,6 @@ import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.
 import { ReactComponent as ResourceWatcherIcon } from '../../../assets/icons/ic-monitoring.svg'
 import { importComponentFromFELibrary } from '../helpers/Helpers'
 import { OrganizationFrame, OrganizationTextLogo } from '../../../Pages/Shared'
-import { MainContext } from './types'
 
 const hideResourceWatcher = !importComponentFromFELibrary('ResourceWatcherRouter')
 const hideSoftwareDistributionHub = !importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')

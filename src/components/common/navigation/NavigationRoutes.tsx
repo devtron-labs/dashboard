@@ -29,6 +29,7 @@ import {
     AppListConstants,
     MODES,
     DEVTRON_BASE_MAIN_ID,
+    MainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -58,7 +59,6 @@ import { AppRouterType } from '../../../services/service.types'
 import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
 import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
 import { HelmAppListResponse } from '../../app/list-new/AppListType'
-import { MainContext } from './types'
 import { ExternalFluxAppDetailsRoute } from '../../../Pages/App/Details/ExternalFlux'
 
 // Monaco Editor worker dependency
@@ -128,6 +128,7 @@ export default function NavigationRoutes() {
     const [environmentId, setEnvironmentId] = useState(null)
     const contextValue = useMemo(() => ({ environmentId, setEnvironmentId }), [environmentId])
     const [isAirgapped, setIsAirGapped] = useState(false)
+    const [isManifestScanningEnabled, setIsManifestScanningEnabled] = useState<boolean>(false)
 
     const getInit = async (_serverMode: string) => {
         setLoginLoader(true)
@@ -267,20 +268,17 @@ export default function NavigationRoutes() {
         }
     }
 
-    async function getAirGapEnvironmentValue() {
-        if (typeof Storage === 'undefined' || !localStorage.getItem('isAirGapped')) {
-            try {
-                const { result } = await getEnvironmentData()
-                setIsAirGapped(result.isAirGapEnvironment)
-                if (typeof Storage !== 'undefined') {
-                    localStorage.setItem('isAirGapped', result.isAirGapEnvironment)
-                }
-            } catch (err) {
-                setIsAirGapped(false)
+    async function getEnvironmentDataValues() {
+        try {
+            const { result } = await getEnvironmentData()
+            setIsAirGapped(result.isAirGapEnvironment)
+            setIsManifestScanningEnabled(result.isManifestScanningEnabled)
+            if (typeof Storage !== 'undefined') {
+                localStorage.setItem('isAirGapped', result.isAirGapEnvironment)
             }
-        } else {
-            const isAirGap = JSON.parse(localStorage.getItem('isAirGapped'))
-            setIsAirGapped(isAirGap)
+        } catch {
+            setIsAirGapped(false)
+            setIsManifestScanningEnabled(false)
         }
     }
 
@@ -292,7 +290,7 @@ export default function NavigationRoutes() {
         } else {
             getServerMode()
             if (getEnvironmentData) {
-                getAirGapEnvironmentValue()
+                getEnvironmentDataValues()
             }
             getCurrentServerInfo()
         }
@@ -379,6 +377,7 @@ export default function NavigationRoutes() {
                 currentServerInfo,
                 isAirgapped,
                 isSuperAdmin,
+                isManifestScanningEnabled,
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
@@ -463,7 +462,7 @@ export default function NavigationRoutes() {
                                                       >
                                                           <SoftwareDistributionHubRenderProvider
                                                               renderers={{
-                                                                ReleaseConfigurations: Configurations,
+                                                                  ReleaseConfigurations: Configurations,
                                                               }}
                                                           >
                                                               <SoftwareDistributionHub />
@@ -484,13 +483,13 @@ export default function NavigationRoutes() {
                                             : []),
                                         ...(currentServerInfo.serverInfo?.installationType !== 'enterprise'
                                             ? [
-                                                <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
-                                                    <DevtronStackManager
-                                                        serverInfo={currentServerInfo.serverInfo}
-                                                        getCurrentServerInfo={getCurrentServerInfo}
-                                                        isSuperAdmin={isSuperAdmin}
-                                                    />
-                                                </Route>
+                                                  <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
+                                                      <DevtronStackManager
+                                                          serverInfo={currentServerInfo.serverInfo}
+                                                          getCurrentServerInfo={getCurrentServerInfo}
+                                                          isSuperAdmin={isSuperAdmin}
+                                                      />
+                                                  </Route>,
                                               ]
                                             : []),
                                         <Route key={URLS.GETTING_STARTED} exact path={`/${URLS.GETTING_STARTED}`}>
