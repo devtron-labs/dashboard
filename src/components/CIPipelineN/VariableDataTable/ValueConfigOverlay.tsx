@@ -14,6 +14,7 @@ import {
     SelectPicker,
     SelectPickerOptionType,
     Tooltip,
+    validateRequiredPositiveNumber,
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -116,10 +117,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
     }: Partial<Pick<typeof fileInfo, 'maxUploadSize' | 'sizeUnit'>>) => {
         setFileSize({
             value: maxUploadSize,
-            error:
-                maxUploadSize && !PATTERNS.POSITIVE_DECIMAL_NUMBERS.test(maxUploadSize)
-                    ? 'File size must be a valid number'
-                    : '',
+            error: maxUploadSize ? validateRequiredPositiveNumber(maxUploadSize).message : '',
         })
         handleRowUpdateAction({
             actionType: VariableDataTableActionType.UPDATE_FILE_MAX_SIZE,
@@ -186,30 +184,32 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
                             onChange={handleFileAllowedExtensionsChange}
                         />
                     </div>
-                    <div className="flexbox dc__align-items-center">
-                        <div className="flex-grow-1">
-                            <CustomInput
-                                name="fileMaxSize"
-                                onChange={handleFileMaxSizeChange}
-                                value={fileSize.value}
-                                label="Restrict file size"
-                                placeholder="Enter size"
-                                error={fileSize.error}
-                            />
+                    <div>
+                        <div className="flexbox dc__align-items-center">
+                            <div className="flex-grow-1">
+                                <CustomInput
+                                    name="fileMaxSize"
+                                    onChange={handleFileMaxSizeChange}
+                                    value={fileSize.value}
+                                    label="Restrict file size"
+                                    placeholder="Enter size"
+                                />
+                            </div>
+                            <div className="dc__align-self-end">
+                                <SelectPicker
+                                    inputId="file-max-size-unit-selector"
+                                    classNamePrefix="file-max-size-unit-selector"
+                                    value={fileInfo.sizeUnit}
+                                    onChange={handleFileSizeUnitChange}
+                                    options={FILE_UPLOAD_SIZE_UNIT_OPTIONS}
+                                    size={ComponentSizeType.large}
+                                    menuSize={ComponentSizeType.xs}
+                                    isDisabled={!!fileSize.error}
+                                    menuPortalTarget={document.getElementById('visible-modal')}
+                                />
+                            </div>
                         </div>
-                        <div className={`${fileSize.error ? 'mt-2 dc__align-self-center' : 'dc__align-self-end'}`}>
-                            <SelectPicker
-                                inputId="file-max-size-unit-selector"
-                                classNamePrefix="file-max-size-unit-selector"
-                                value={fileInfo.sizeUnit}
-                                onChange={handleFileSizeUnitChange}
-                                options={FILE_UPLOAD_SIZE_UNIT_OPTIONS}
-                                size={ComponentSizeType.large}
-                                menuSize={ComponentSizeType.xs}
-                                isDisabled={!!fileSize.error}
-                                menuPortalTarget={document.getElementById('visible-modal')}
-                            />
-                        </div>
+                        {!!fileSize.error && <div className="form__error">{fileSize.error}</div>}
                     </div>
                 </div>
             )
