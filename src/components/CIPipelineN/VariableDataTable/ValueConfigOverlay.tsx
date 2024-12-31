@@ -116,7 +116,10 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
     }: Partial<Pick<typeof fileInfo, 'maxUploadSize' | 'sizeUnit'>>) => {
         setFileSize({
             value: maxUploadSize,
-            error: maxUploadSize && !PATTERNS.DECIMAL_NUMBERS.test(maxUploadSize) ? 'File size must be a number' : '',
+            error:
+                maxUploadSize && !PATTERNS.POSITIVE_DECIMAL_NUMBERS.test(maxUploadSize)
+                    ? 'File size must be a valid number'
+                    : '',
         })
         handleRowUpdateAction({
             actionType: VariableDataTableActionType.UPDATE_FILE_MAX_SIZE,
