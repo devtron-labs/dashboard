@@ -64,7 +64,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
                           id: choiceId,
                           value: choiceValue,
                           error:
-                              isFormatNumber && !PATTERNS.NATURAL_NUMBERS.test(choiceValue)
+                              isFormatNumber && !PATTERNS.DECIMAL_NUMBERS.test(choiceValue)
                                   ? 'Choice is not a number'
                                   : '',
                       }
