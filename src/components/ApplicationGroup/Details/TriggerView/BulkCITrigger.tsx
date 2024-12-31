@@ -176,9 +176,7 @@ const BulkCITrigger = ({
     const getRuntimeParamsData = async (_materialListMap: Record<string, any[]>): Promise<void> => {
         const runtimeParamsServiceList = appList.map((appDetails) => {
             if (getIsAppUnorthodox(appDetails) || !_materialListMap[appDetails.appId]) {
-                return () => ({
-                    [appDetails.ciPipelineId]: [],
-                })
+                return () => ([])
             }
             return () => getRuntimeParams(appDetails.ciPipelineId)
         })
