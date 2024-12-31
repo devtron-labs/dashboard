@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 
 import {
     Button,
@@ -34,7 +34,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
     const { choices: initialChoices, askValueAtRuntime, blockCustomValue, fileInfo } = customState
 
     // STATES
-    const [choices, setChoices] = useState(initialChoices.map((choice, id) => ({ id, value: choice, error: '' })))
+    const [choices, setChoices] = useState([])
     const [fileSize, setFileSize] = useState({ value: fileInfo.maxUploadSize, error: '' })
 
     // CONSTANTS
@@ -45,6 +45,10 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
     const hasChoicesError = choices.some(({ error }) => !!error)
     const hasFileMountError = !fileInfo.fileMountDir
     const showIconDot = !!choices.length || askValueAtRuntime || blockCustomValue || isFormatFile
+
+    useEffect(() => {
+        setChoices(initialChoices.map((choice, id) => ({ id, value: choice, error: '' })))
+    }, [data.format.value])
 
     // METHODS
     const handleAddChoices = () => {

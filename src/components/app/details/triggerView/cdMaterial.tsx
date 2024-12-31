@@ -71,9 +71,6 @@ import {
     ToastVariantType,
     EnvResourceType,
     abortPreviousRequests,
-    AppDetailsPayload,
-    ResponseType,
-    ApiResponseResultType,
     CommonNodeAttr,
     getIsApprovalPolicyConfigured,
     ApprovalRuntimeStateType,
@@ -144,14 +141,6 @@ const MaintenanceWindowInfoBar = importComponentFromFELibrary('MaintenanceWindow
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
 const RuntimeParameters = importComponentFromFELibrary('RuntimeParameters', null, 'function')
-const getSecurityScan: ({
-    appId,
-    installedAppId,
-}: AppDetailsPayload) => Promise<ResponseType<ApiResponseResultType>> = importComponentFromFELibrary(
-    'getSecurityScan',
-    null,
-    'function',
-)
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
 const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
@@ -275,7 +264,7 @@ const CDMaterial = ({
             getPolicyConsequences ? getPolicyConsequences({ appId, envId }) : null,
         ])
 
-        if (getIsTriggerBlocked(response[2].cd)) {
+        if (getPolicyConsequences && getIsTriggerBlocked(response[2].cd)) {
             return [null, null, response[2]]
         }
         return response
@@ -1472,7 +1461,6 @@ const CDMaterial = ({
                                 isScanned={mat.scanned}
                                 isScanEnabled={mat.scanEnabled}
                                 SecurityModalSidebar={SecurityModalSidebar}
-                                getSecurityScan={getSecurityScan}
                             />
                         )}
                 </ImageCard>

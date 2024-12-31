@@ -1,0 +1,137 @@
+diff --git a/node_modules/react-select/.DS_Store b/node_modules/react-select/.DS_Store
+new file mode 100644
+index 0000000..5008ddf
+Binary files /dev/null and b/node_modules/react-select/.DS_Store differ
+diff --git a/node_modules/react-select/dist/declarations/src/components/Input.d.ts b/node_modules/react-select/dist/declarations/src/components/Input.d.ts
+index e5f6741..c78fd13 100644
+--- a/node_modules/react-select/dist/declarations/src/components/Input.d.ts
++++ b/node_modules/react-select/dist/declarations/src/components/Input.d.ts
+@@ -13,6 +13,8 @@ export interface InputSpecificProps<Option = unknown, IsMulti extends boolean =
+     form?: string;
+     /** Set className for the input element */
+     inputClassName?: string;
++    /** Whether the input is textarea */
++    isTextArea?: boolean;
+ }
+ export declare type InputProps<Option = unknown, IsMulti extends boolean = boolean, Group extends GroupBase<Option> = GroupBase<Option>> = InputSpecificProps<Option, IsMulti, Group>;
+ export declare const inputCSS: <Option, IsMulti extends boolean, Group extends GroupBase<Option>>({ isDisabled, value, theme: { spacing, colors }, }: InputProps<Option, IsMulti, Group>, unstyled: boolean) => CSSObjectWithLabel;
+diff --git a/node_modules/react-select/dist/index-665c4ed8.cjs.prod.js b/node_modules/react-select/dist/index-665c4ed8.cjs.prod.js
+index 96cd04f..0636ebe 100644
+--- a/node_modules/react-select/dist/index-665c4ed8.cjs.prod.js
++++ b/node_modules/react-select/dist/index-665c4ed8.cjs.prod.js
+@@ -1090,7 +1090,7 @@ var GroupHeading = function GroupHeading(props) {
+ };
+ var Group$1 = Group;
+ 
+-var _excluded = ["innerRef", "isDisabled", "isHidden", "inputClassName"];
++var _excluded = ["innerRef", "isDisabled", "isHidden", "isTextArea", "inputClassName"];
+ var inputCSS = function inputCSS(_ref, unstyled) {
+   var isDisabled = _ref.isDisabled,
+     value = _ref.value,
+@@ -1145,13 +1145,25 @@ var Input = function Input(props) {
+     innerRef = _cleanCommonProps.innerRef,
+     isDisabled = _cleanCommonProps.isDisabled,
+     isHidden = _cleanCommonProps.isHidden,
++    isTextArea = _cleanCommonProps.isTextArea,
+     inputClassName = _cleanCommonProps.inputClassName,
+     innerProps = _objectWithoutProperties(_cleanCommonProps, _excluded);
+   return react.jsx("div", _extends({}, getStyleProps(props, 'input', {
+     'input-container': true
+   }), {
+     "data-value": value || ''
+-  }), react.jsx("input", _extends({
++  }), isTextArea ? react.jsx("textarea", _extends({
++    className: cx({
++      input: true
++    }, inputClassName),
++    ref: innerRef,
++    style: _objectSpread(_objectSpread({}, inputStyle(isHidden)), {}, {
++      resize: 'none'
++    }),
++    disabled: isDisabled
++  }, innerProps, {
++    rows: 1
++  })) : react.jsx("input", _extends({
+     className: cx({
+       input: true
+     }, inputClassName),
+diff --git a/node_modules/react-select/dist/index-a301f526.esm.js b/node_modules/react-select/dist/index-a301f526.esm.js
+index 514ba81..40d005d 100644
+--- a/node_modules/react-select/dist/index-a301f526.esm.js
++++ b/node_modules/react-select/dist/index-a301f526.esm.js
+@@ -1090,7 +1090,7 @@ var GroupHeading = function GroupHeading(props) {
+ };
+ var Group$1 = Group;
+ 
+-var _excluded = ["innerRef", "isDisabled", "isHidden", "inputClassName"];
++var _excluded = ["innerRef", "isDisabled", "isHidden", "isTextArea", "inputClassName"];
+ var inputCSS = function inputCSS(_ref, unstyled) {
+   var isDisabled = _ref.isDisabled,
+     value = _ref.value,
+@@ -1145,13 +1145,25 @@ var Input = function Input(props) {
+     innerRef = _cleanCommonProps.innerRef,
+     isDisabled = _cleanCommonProps.isDisabled,
+     isHidden = _cleanCommonProps.isHidden,
++    isTextArea = _cleanCommonProps.isTextArea,
+     inputClassName = _cleanCommonProps.inputClassName,
+     innerProps = _objectWithoutProperties(_cleanCommonProps, _excluded);
+   return jsx("div", _extends({}, getStyleProps(props, 'input', {
+     'input-container': true
+   }), {
+     "data-value": value || ''
+-  }), jsx("input", _extends({
++  }), isTextArea ? jsx("textarea", _extends({
++    className: cx({
++      input: true
++    }, inputClassName),
++    ref: innerRef,
++    style: _objectSpread(_objectSpread({}, inputStyle(isHidden)), {}, {
++      resize: 'none'
++    }),
++    disabled: isDisabled
++  }, innerProps, {
++    rows: 1
++  })) : jsx("input", _extends({
+     className: cx({
+       input: true
+     }, inputClassName),
+diff --git a/node_modules/react-select/dist/index-d1cb43f3.cjs.dev.js b/node_modules/react-select/dist/index-d1cb43f3.cjs.dev.js
+index 7defcdc..c8d796b 100644
+--- a/node_modules/react-select/dist/index-d1cb43f3.cjs.dev.js
++++ b/node_modules/react-select/dist/index-d1cb43f3.cjs.dev.js
+@@ -1096,7 +1096,7 @@ var GroupHeading = function GroupHeading(props) {
+ };
+ var Group$1 = Group;
+ 
+-var _excluded = ["innerRef", "isDisabled", "isHidden", "inputClassName"];
++var _excluded = ["innerRef", "isDisabled", "isHidden", "isTextArea", "inputClassName"];
+ var inputCSS = function inputCSS(_ref, unstyled) {
+   var isDisabled = _ref.isDisabled,
+     value = _ref.value,
+@@ -1151,13 +1151,25 @@ var Input = function Input(props) {
+     innerRef = _cleanCommonProps.innerRef,
+     isDisabled = _cleanCommonProps.isDisabled,
+     isHidden = _cleanCommonProps.isHidden,
++    isTextArea = _cleanCommonProps.isTextArea,
+     inputClassName = _cleanCommonProps.inputClassName,
+     innerProps = _objectWithoutProperties(_cleanCommonProps, _excluded);
+   return react.jsx("div", _extends({}, getStyleProps(props, 'input', {
+     'input-container': true
+   }), {
+     "data-value": value || ''
+-  }), react.jsx("input", _extends({
++  }), isTextArea ? react.jsx("textarea", _extends({
++    className: cx({
++      input: true
++    }, inputClassName),
++    ref: innerRef,
++    style: _objectSpread(_objectSpread({}, inputStyle(isHidden)), {}, {
++      resize: 'none'
++    }),
++    disabled: isDisabled
++  }, innerProps, {
++    rows: 1
++  })) : react.jsx("input", _extends({
+     className: cx({
+       input: true
+     }, inputClassName),

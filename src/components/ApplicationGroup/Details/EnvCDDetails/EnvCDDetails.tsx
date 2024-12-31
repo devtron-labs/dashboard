@@ -33,6 +33,8 @@ import {
     getTriggerHistory,
     useScrollable,
     TRIGGER_STATUS_PROGRESSING,
+    STAGE_TYPE,
+    DeploymentStageType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams, generatePath, Route } from 'react-router-dom'
 import { useAppContext } from '../../../common'
@@ -40,7 +42,6 @@ import { ModuleNameMap } from '../../../../config'
 import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
 import { getAppsCDConfigMin } from '../../AppGroup.service'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
-import { DeploymentTemplateList } from '../../../app/details/cdDetails/cd.type'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
 import { AppGroupDetailDefaultType } from '../../AppGroup.types'
 import { APP_GROUP_CD_DETAILS } from '../../../../config/constantMessaging'
@@ -115,23 +116,44 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     }, [result?.[0]?.['value']?.result])
 
     useEffect(() => {
-        // check for more
-        if (loading || !deploymentHistoryResult) {
+        if (
+            loading ||
+            !deploymentHistoryResult ||
+            !deploymentHistoryResult.result?.cdWorkflows?.length ||
+            fetchTriggerIdData === FetchIdDataStatus.FETCHING ||
+            fetchTriggerIdData === FetchIdDataStatus.SUCCESS
+        ) {
             return
         }
-        if (!deploymentHistoryResult?.result?.cdWorkflows?.length) {
-            return
+
+        const cdWorkflows = deploymentHistoryResult.result.cdWorkflows
+
+        setHasMore(cdWorkflows.length === pagination.size)
+        setHasMoreLoading(cdWorkflows.length === pagination.size)
+
+        let triggerIdToSet = cdWorkflows[0].id
+        const queryString = new URLSearchParams(location.search)
+        const deploymentStageType =
+            queryString.get('type') === STAGE_TYPE.PRECD ? DeploymentStageType.PRE : DeploymentStageType.POST
+
+        const triggeredHistoryResult = cdWorkflows.find((obj) => obj.stage === deploymentStageType)
+
+        if (triggeredHistoryResult) {
+            triggerIdToSet = triggeredHistoryResult.id
         }
-        if (fetchTriggerIdData === FetchIdDataStatus.FETCHING || fetchTriggerIdData === FetchIdDataStatus.SUCCESS) {
-            return
+
+        if (!triggerId && appId && pipelineId) {
+            replace(
+                generatePath(path, {
+                    appId,
+                    envId,
+                    pipelineId,
+                    triggerId: triggerIdToSet,
+                }),
+            )
         }
-        if (deploymentHistoryResult.result?.cdWorkflows?.length !== pagination.size) {
-            setHasMore(false)
-        } else {
-            setHasMore(true)
-            setHasMoreLoading(true)
-        }
-        const newTriggerHistory = (deploymentHistoryResult.result?.cdWorkflows || []).reduce((agg, curr) => {
+
+        const newTriggerHistory = cdWorkflows.reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
         }, triggerHistory)
@@ -207,17 +229,6 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     }
     if (!result || (appId && dependencyState[1] !== appId)) {
         return null
-    }
-
-    if (!triggerId && appId && pipelineId && deploymentHistoryResult?.result?.cdWorkflows?.length) {
-        replace(
-            generatePath(path, {
-                appId,
-                envId,
-                pipelineId,
-                triggerId: deploymentHistoryResult.result.cdWorkflows?.[0].id,
-            }),
-        )
     }
 
     const envOptions: CICDSidebarFilterOptionType[] = pipelineList.map((item) => {

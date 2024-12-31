@@ -13,15 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-    ApiResponseResultType,
-    FetchIdDataStatus,
-    History,
-    ResponseType,
-    useScrollable,
-} from '@devtron-labs/devtron-fe-common-lib'
-import { getLastExecutionByAppArtifactId } from '@Services/service'
-import { UseGetAppSecurityDetailsProps, UseGetAppSecurityDetailsReturnType } from '../appDetails/appDetails.type'
+import { FetchIdDataStatus, History, useScrollable } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface CIPipeline {
     name: string
@@ -69,18 +61,4 @@ export interface SecurityTabType {
     artifactId: number
     status: string
     appIdFromParent?: string
-}
-
-export interface UseGetCISecurityDetailsProps
-    extends Pick<UseGetAppSecurityDetailsProps, 'appId' | 'isSecurityScanV2Enabled'> {
-    artifactId: number
-}
-
-export interface UseGetCISecurityDetailsReturnType
-    extends Pick<
-        UseGetAppSecurityDetailsReturnType,
-        'scanDetailsLoading' | 'scanDetailsError' | 'reloadScanDetails' | 'severityCount' | 'totalCount'
-    > {
-    scanResultResponse: ResponseType<ApiResponseResultType>
-    executionDetailsResponse: Awaited<ReturnType<typeof getLastExecutionByAppArtifactId>>
 }

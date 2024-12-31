@@ -67,13 +67,9 @@ export const SecurityScansTab = () => {
         updateSearchParams,
     } = urlFilters
 
-    const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && SecurityModalSidebar
-
-    const { scanDetailsLoading, scanDetailsResponse, scanDetailsError } = useGetAppSecurityDetails({
-        appId: scanDetails.uniqueId.appId,
-        envId: scanDetails.uniqueId.envId,
-        imageScanDeployInfoId: scanDetails.uniqueId.imageScanDeployInfoId,
-        isSecurityScanV2Enabled,
+    const { scanResultLoading, scanResultResponse, scanResultError } = useGetAppSecurityDetails({
+        appId: scanDetails.appId,
+        envId: scanDetails.envId,
     })
 
     const payload: ScanListPayloadType = {
@@ -133,6 +129,8 @@ export const SecurityScansTab = () => {
         [filterConfig],
     )
 
+    const isLoading = scanListLoading || getIsRequestAborted(scanListError)
+
     const updateSeverityFilters = (selectedOptions: SelectPickerOptionType[]) => {
         updateSearchParams({ severity: selectedOptions.map((severityOption) => String(severityOption.value)) })
     }
@@ -175,16 +173,12 @@ export const SecurityScansTab = () => {
     const handleOpenScanDetailsModal = (event: React.MouseEvent, scan: SecurityScanType) => {
         event.stopPropagation()
         setScanDetails({
-            name: scan.name,
-            uniqueId: {
-                imageScanDeployInfoId: scan.imageScanDeployInfoId,
-                appId: scan.appId,
-                envId: scan.envId,
-            },
+            appId: scan.appId,
+            envId: scan.envId,
         })
     }
 
-    if (!scanListLoading && scanListError && !getIsRequestAborted(scanListError)) {
+    if (!isLoading && scanListError) {
         return (
             <div className="flexbox-col flex-grow-1 dc__content-center">
                 <ErrorScreenManager code={scanListError.code} reload={reloadScansList} />
@@ -192,7 +186,7 @@ export const SecurityScansTab = () => {
         )
     }
 
-    const isScanListEmpty = !scanListLoading && !securityScansResult?.result.securityScans.length
+    const isScanListEmpty = !isLoading && !securityScansResult?.result.securityScans.length
 
     if (isScanListEmpty && !areFiltersActive) {
         return (
@@ -253,7 +247,7 @@ export const SecurityScansTab = () => {
                         name="search-type__select-picker"
                         size={ComponentSizeType.large}
                         onChange={updateSearchType}
-                        isDisabled={scanListLoading}
+                        isDisabled={isLoading}
                     />
                 </div>
                 <SearchBar
@@ -261,7 +255,7 @@ export const SecurityScansTab = () => {
                     initialSearchText={searchKey}
                     inputProps={{
                         placeholder: `Search ${getSearchLabelFromValue(searchType)}`,
-                        disabled: scanListLoading,
+                        disabled: isLoading,
                     }}
                     handleEnter={handleSearch}
                     size={ComponentSizeType.large}
@@ -316,7 +310,7 @@ export const SecurityScansTab = () => {
     )
 
     const renderScanList = () => {
-        if (scanListLoading || getIsRequestAborted(scanListError)) {
+        if (isLoading) {
             const arrayLoading = Array.from(Array(3)).map((index) => index)
             return (
                 <div>
@@ -374,16 +368,14 @@ export const SecurityScansTab = () => {
     }
 
     const renderScanDetailsModal = () => {
-        if (scanDetails.uniqueId.appId) {
+        if (scanDetails.appId && scanDetails.envId) {
             return (
                 <SecurityModal
                     handleModalClose={handleCloseScanDetailsModal}
                     Sidebar={SecurityModalSidebar}
-                    isSecurityScanV2Enabled={isSecurityScanV2Enabled}
-                    isHelmApp={false}
-                    isLoading={scanDetailsLoading}
-                    error={scanDetailsError}
-                    responseData={scanDetailsResponse?.result}
+                    isLoading={scanResultLoading}
+                    error={scanResultError}
+                    responseData={scanResultResponse?.result}
                 />
             )
         }
