@@ -40,6 +40,7 @@ import { TriggerViewContext } from '../config'
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
 const LinkedCDNode = importComponentFromFELibrary('LinkedCDNode')
 const ImagePromotionLink = importComponentFromFELibrary('ImagePromotionLink', null, 'function')
+const BulkDeployLink = importComponentFromFELibrary('BulkDeployLink', null, 'function')
 
 export class Workflow extends Component<WorkflowProps> {
     static contextType?: React.Context<TriggerViewContextType> = TriggerViewContext
@@ -378,15 +379,28 @@ export class Workflow extends Component<WorkflowProps> {
                                 {this.props.name}
                             </span>
 
-                            {ImagePromotionLink && (
-                                <ImagePromotionLink
-                                    isConfigured={this.props.artifactPromotionMetadata?.isConfigured ?? false}
-                                    isApprovalPendingForPromotion={
-                                        this.props.artifactPromotionMetadata?.isApprovalPendingForPromotion ?? false
-                                    }
-                                    workflowId={this.props.id}
-                                />
-                            )}
+                            <div className='flexbox dc__gap-8'>
+                                {BulkDeployLink && (
+                                    <>
+                                        <BulkDeployLink
+                                            workflowId={this.props.id}
+                                        />
+
+                                        <div className='dc__divider h-16' />
+                                    </>
+                                )}
+
+                                {ImagePromotionLink && (
+                                    <ImagePromotionLink
+                                        isConfigured={this.props.artifactPromotionMetadata?.isConfigured ?? false}
+                                        isApprovalPendingForPromotion={
+                                            this.props.artifactPromotionMetadata?.isApprovalPendingForPromotion ?? false
+                                        }
+                                        workflowId={this.props.id}
+                                    />
+                                )}
+                            </div>
+
                         </>
                     )}
                 </div>
