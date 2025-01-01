@@ -43,9 +43,8 @@ import {
     SecuritySummaryCard,
     TabGroup,
     TRIGGER_STATUS_PROGRESSING,
-    SCAN_TOOL_ID_TRIVY,
     ErrorScreenManager,
-    parseExecutionDetailResponse,
+    getScanToolAndSeverityCount,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, Redirect, useRouteMatch, useParams, useHistory, generatePath } from 'react-router-dom'
 import {
@@ -57,7 +56,7 @@ import {
 } from '../../service'
 import { URLS, Routes } from '../../../../config'
 import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
-import { ScanDisabledView, ImageNotScannedView, CIRunningView } from './cIDetails.util'
+import { ImageNotScannedView, CIRunningView } from './cIDetails.util'
 import './ciDetails.scss'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
@@ -66,9 +65,8 @@ import { ReactComponent as NoVulnerability } from '../../../../assets/img/ic-vul
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { renderCIListHeader, renderDeploymentHistoryTriggerMetaText } from '../cdDetails/utils'
 import { importComponentFromFELibrary } from '@Components/common'
-import { useGetCISecurityDetails } from './CISecurity.utils'
+import { useGetAppSecurityDetails } from '../appDetails/AppSecurity'
 
-const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 const statusSet = new Set(['starting', 'running', 'pending'])
@@ -669,16 +667,13 @@ export const NoVulnerabilityViewWithTool = ({ scanToolId }: { scanToolId: number
 const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: SecurityTabType) => {
     const { appId } = useParams<{ appId: string }>()
     const { push } = useHistory()
-    const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && !!isFELibAvailable
 
     const computedAppId = appId ?? appIdFromParent
 
-    const { scanDetailsLoading, scanResultResponse, executionDetailsResponse, scanDetailsError, reloadScanDetails, severityCount, totalCount } =
-        useGetCISecurityDetails({
-            appId: +computedAppId,
-            artifactId,
-            isSecurityScanV2Enabled,
-        })
+    const { scanResultLoading, scanResultResponse, scanResultError, reloadScanResult } = useGetAppSecurityDetails({
+        appId: +computedAppId,
+        artifactId,
+    })
 
     const redirectToCreate = () => {
         if (!ciPipelineId) {
@@ -704,39 +699,35 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
         )
     }
 
-    if (scanDetailsLoading) {
+    if (scanResultLoading) {
         return <Progressing pageLoader />
     }
-    if (scanDetailsError) {
-        return <ErrorScreenManager code={scanDetailsError.code} reload={reloadScanDetails} />
+    if (scanResultError) {
+        return <ErrorScreenManager code={scanResultError.code} reload={reloadScanResult} />
     }
     if (
-        (executionDetailsResponse && !executionDetailsResponse.result.scanned) ||
-        (scanResultResponse && !scanResultResponse.result.scanned)
+        scanResultResponse &&
+        (!scanResultResponse.result.scanned ||
+            !scanResultResponse.result.isImageScanEnabled ||
+            !scanResultResponse.result.imageScan)
     ) {
-        if (!executionDetailsResponse?.result.scanEnabled) {
-            return <ScanDisabledView redirectToCreate={redirectToCreate} />
-        }
         return <ImageNotScannedView />
     }
 
+    const { scanToolId, severityCount, totalCount } = getScanToolAndSeverityCount(scanResultResponse?.result)
+
     if (artifactId && !totalCount) {
-        return (
-            <NoVulnerabilityViewWithTool
-                scanToolId={isSecurityScanV2Enabled ? SCAN_TOOL_ID_TRIVY : executionDetailsResponse.result?.scanToolId} // Since v2 scan is via trivy only
-            />
-        )
+        return <NoVulnerabilityViewWithTool scanToolId={scanToolId} />
     }
 
     return (
         <div className="p-16">
             <SecuritySummaryCard
                 severityCount={severityCount}
-                scanToolId={executionDetailsResponse?.result.scanToolId ?? SCAN_TOOL_ID_TRIVY}
+                scanToolId={scanToolId}
                 rootClassName="w-500"
                 SecurityModalSidebar={SecurityModalSidebar}
-                isSecurityScanV2Enabled={isSecurityScanV2Enabled}
-                responseData={isSecurityScanV2Enabled ? scanResultResponse?.result : parseExecutionDetailResponse(executionDetailsResponse?.result)}
+                responseData={scanResultResponse?.result}
                 hidePolicy
             />
         </div>

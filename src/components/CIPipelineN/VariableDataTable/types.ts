@@ -83,7 +83,6 @@ type VariableDataTableActionPropsMap = {
     [VariableDataTableActionType.UPDATE_FILE_UPLOAD_INFO]: {
         actionValue: Pick<VariableType, 'fileReferenceId'> & {
             fileName: string
-            isLoading: boolean
         }
     }
 
@@ -148,16 +147,24 @@ export type GetValColumnRowPropsType = Pick<
     Pick<
         VariableType,
         'format' | 'value' | 'refVariableName' | 'refVariableStage' | 'valueConstraint' | 'description' | 'variableType'
-    > & { type: PluginVariableType }
+    > & { type: PluginVariableType; isFileUploading?: boolean }
 
 export interface GetVariableDataTableInitialRowsProps
     extends Omit<
         GetValColumnRowPropsType,
-        'description' | 'format' | 'variableType' | 'value' | 'refVariableName' | 'refVariableStage' | 'valueConstraint'
+        | 'description'
+        | 'format'
+        | 'variableType'
+        | 'value'
+        | 'refVariableName'
+        | 'refVariableStage'
+        | 'valueConstraint'
+        | 'isFileUploading'
     > {
     ioVariables: VariableType[]
     type: PluginVariableType
     isCustomTask: boolean
+    idToIsFileUploadingMap: Record<string | number, boolean>
 }
 
 export type GetValidateCellProps = {

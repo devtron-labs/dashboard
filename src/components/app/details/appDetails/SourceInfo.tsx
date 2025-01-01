@@ -25,7 +25,6 @@ import {
     ComponentSizeType,
     DATE_TIME_FORMATS,
     DeploymentAppTypes,
-    getIsManualApprovalConfigured,
     handleUTCTime,
     ReleaseMode,
     Tooltip,
@@ -121,19 +120,9 @@ export const SourceInfo = ({
         return <div className="flex left mb-16">{loadingCards}</div>
     }
 
-    const getIsApprovalConfigured = (): boolean => {
-        try {
-            const userApprovalConfig = appDetails?.userApprovalConfig || '{}'
-            const parsedUserApprovalConfig = JSON.parse(userApprovalConfig)
-            return getIsManualApprovalConfigured(parsedUserApprovalConfig)
-        } catch (error) {
-            return false
-        }
-    }
-
     const renderDevtronAppsEnvironmentSelector = (environment) => {
         // If moving to a component then move getIsApprovalConfigured with it as well with memoization.
-        const isApprovalConfigured = getIsApprovalConfigured()
+        const isApprovalConfigured = appDetails?.isApprovalPolicyApplicable ?? false
         const relativeSnapshotTime = appDetails?.resourceTree?.lastSnapshotTime
             ? handleUTCTime(appDetails.resourceTree.lastSnapshotTime, true)
             : ''
@@ -158,15 +147,18 @@ export const SourceInfo = ({
                         </div>
                     </Tooltip>
                 )}
-                {appDetails?.resourceTree && !isIsolatedEnv && window._env_.FEATURE_CONFIG_DRIFT_ENABLE && ConfigSyncStatusButton && (
-                    <div className="pl-8">
-                        <ConfigSyncStatusButton
-                            areConfigurationsDrifted={appDetails.resourceTree.hasDrift}
-                            appId={appDetails.appId}
-                            envId={envId}
-                        />
-                    </div>
-                )}
+                {appDetails?.resourceTree &&
+                    !isIsolatedEnv &&
+                    window._env_.FEATURE_CONFIG_DRIFT_ENABLE &&
+                    ConfigSyncStatusButton && (
+                        <div className="pl-8">
+                            <ConfigSyncStatusButton
+                                areConfigurationsDrifted={appDetails.resourceTree.hasDrift}
+                                appId={appDetails.appId}
+                                envId={envId}
+                            />
+                        </div>
+                    )}
                 {isdeploymentAppDeleting && (
                     <div data-testid="deleteing-argocd-pipeline" className="flex left">
                         <Trash className="icon-dim-16 mr-8 ml-12" />
@@ -364,8 +356,6 @@ export const SourceInfo = ({
                                   cardLoading={cardLoading}
                                   appId={params.appId}
                                   envId={params.envId}
-                                  artifactId={ciArtifactId}
-                                  isExternalCI={isExternalCI}
                               />
                           )}
                           <div className="flex right ml-auto">

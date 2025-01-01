@@ -104,7 +104,6 @@ src/components/app/details/appDetails/AppStatusCard.tsx
 src/components/app/details/appDetails/DeploymentStatusDetailModal.tsx
 src/components/app/details/appDetails/GraphsModal.tsx
 src/components/app/details/appDetails/IssuesCard.tsx
-src/components/app/details/appDetails/SecurityVulnerabilityCard.tsx
 src/components/app/details/appDetails/SourceInfo.tsx
 src/components/app/details/appDetails/__tests__/GenericInfo.test.tsx
 src/components/app/details/appDetails/index.tsx

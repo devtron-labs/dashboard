@@ -87,9 +87,7 @@ export const initState = (
             chartVersionId: selectedVersionFromParent,
             chartValuesId: chartValuesFromParent?.id,
         },
-        isManifestScanEnabled: window._env_.ENABLE_RESOURCE_SCAN_V2
-            ? installedConfigFromParent?.isManifestScanEnabled ?? false
-            : false,
+        isManifestScanEnabled: installedConfigFromParent?.isManifestScanEnabled ?? false,
     }
 }
 

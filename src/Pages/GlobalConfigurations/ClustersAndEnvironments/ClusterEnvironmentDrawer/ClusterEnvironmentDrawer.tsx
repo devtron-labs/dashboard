@@ -226,21 +226,21 @@ export const ClusterEnvironmentDrawer = ({
     return (
         <Drawer position="right" width="800px" onEscape={hideClusterDrawer} onClose={hideClusterDrawer}>
             <div className="h-100 bcn-0 flexbox-col" onClick={stopPropagation}>
+                <div className="flexbox dc__align-items-center dc__content-space dc__border-bottom bcn-0 py-12 px-20">
+                    <h3 className="m-0 fs-16 fw-6 lh-1-43">{id ? 'Edit Environment' : 'Add Environment'}</h3>
+                    <button
+                        type="button"
+                        aria-label="close-btn"
+                        className="dc__transparent flex icon-dim-24"
+                        onClick={hideClusterDrawer}
+                    >
+                        <Close className="icon-dim-24 dc__align-right cursor" />
+                    </button>
+                </div>
                 <form
-                    className="flex-grow-1 flexbox-col h-100 dc__overflow-scroll"
+                    className="flex-grow-1 flexbox-col"
                     onSubmit={handleSubmit(namespaceLabels.labels ? withLabelEditValidation : onValidation())}
                 >
-                    <div className="flexbox dc__align-items-center dc__content-space dc__border-bottom bcn-0 py-12 px-20">
-                        <h3 className="m-0 fs-16 fw-6 lh-1-43">{id ? 'Edit Environment' : 'Add Environment'}</h3>
-                        <button
-                            type="button"
-                            aria-label="close-btn"
-                            className="dc__transparent flex icon-dim-24"
-                            onClick={hideClusterDrawer}
-                        >
-                            <Close className="icon-dim-24 dc__align-right cursor" />
-                        </button>
-                    </div>
                     <div className="dc__overflow-scroll p-20 flex-grow-1">
                         <div className="mb-16">
                             <CustomInput
@@ -319,7 +319,7 @@ export const ClusterEnvironmentDrawer = ({
                             </div>
                         )}
                     </div>
-                    <div className="dc__border-top flexbox dc__align-items-center dc__content-space py-16 px-20 dc__position-sticky dc__bottom-0 bcn-0">
+                    <div className="dc__border-top flexbox dc__align-items-center dc__content-space py-16 px-20 dc__bottom-0 bcn-0">
                         {id && (
                             <Button
                                 variant={ButtonVariantType.secondary}
