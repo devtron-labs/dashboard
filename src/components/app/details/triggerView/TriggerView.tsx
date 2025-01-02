@@ -102,7 +102,7 @@ const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponent
     null,
     'function',
 )
-const TriggerRouter = importComponentFromFELibrary('TriggerRouter', null, 'function')
+const WorkflowActionRouter = importComponentFromFELibrary('WorkflowActionRouter', null, 'function')
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
 const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
 
@@ -1467,8 +1467,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         {this.renderApprovalMaterial()}
                     </TriggerViewContext.Provider>
                 </div>
-                {TriggerRouter && (
-                    <TriggerRouter
+                {WorkflowActionRouter && (
+                    <WorkflowActionRouter
                         basePath={this.props.match.path}
                         baseURL={this.props.match.url}
                         workflows={this.state.workflows}
