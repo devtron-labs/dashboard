@@ -5144,25 +5144,6 @@ textarea::placeholder {
 .dc__grid-half {
     display: grid;
     grid-template-columns: 50% 50%;
-
-    &.show-divider {
-        position: relative;
-
-        > :first-child::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 1px;
-            height: 100%;
-            background-color: var(--N200);
-        }
-
-        &--zi-5 > :first-child::after {
-            z-index: 5;
-        }
-    }
 }
 
 .dc__grid {
@@ -5362,4 +5343,23 @@ details[open] {
     background: rgba(0, 0, 0, 0.75);
     z-index: var(--modal-index);
     backdrop-filter: blur(1px);
+}
+
+.vertical-divider {
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        transform: translate(-50%, 0);
+        width: 1px;
+        background-color: var(--N200);
+    }
+
+    &.vertical-divider--zi-2::after {
+        z-index: 2;
+    }
 }
