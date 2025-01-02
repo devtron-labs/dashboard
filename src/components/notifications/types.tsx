@@ -162,3 +162,11 @@ export interface ConfigurationTabSwitcherProps {
     state: ConfigurationTabState
     setState: React.Dispatch<React.SetStateAction<ConfigurationTabState>>
 }
+
+export interface SESConfigModalProps {
+    sesConfigId: number
+    shouldBeDefault: boolean
+    selectSESFromChild?: (sesConfigId: number) => void
+    onSaveSuccess: () => void
+    closeSESConfigModal: (event) => void
+}

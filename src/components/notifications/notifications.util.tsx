@@ -164,25 +164,51 @@ export const renderPipelineTypeIcon = (row) => {
     return <CD className="icon-dim-20 dc__flip" />
 }
 
+export const getConfigTabIcons = (tab: ConfigurationsTabTypes, size: number = 20 ) => {
+    switch (tab) {
+        case ConfigurationsTabTypes.SES:
+            return <SES className={`icon-dim-${size}`}/>
+        case ConfigurationsTabTypes.SMTP:
+            return <SMTP />
+        case ConfigurationsTabTypes.SLACK:
+            return <Slack />
+        case ConfigurationsTabTypes.WEBHOOK:
+            return <Webhook />
+        default:
+            return SES
+    }
+}
+
 export const getConfigurationTabTextWithIcon = () => [
     {
         label: ConfigurationTabText.SES,
-        icon: SES,
+        icon: getConfigTabIcons(ConfigurationsTabTypes.SES),
         link: ConfigurationsTabTypes.SES,
     },
     {
         label: ConfigurationTabText.SMTP,
-        icon: SMTP,
+        icon: getConfigTabIcons(ConfigurationsTabTypes.SMTP),
         link: ConfigurationsTabTypes.SMTP,
     },
     {
         label: ConfigurationTabText.SLACK,
-        icon: Slack,
+        icon: getConfigTabIcons(ConfigurationsTabTypes.SLACK),
         link: ConfigurationsTabTypes.SLACK,
     },
     {
         label: ConfigurationTabText.WEBHOOK,
-        icon: Webhook,
+        icon: getConfigTabIcons(ConfigurationsTabTypes.WEBHOOK),
         link: ConfigurationsTabTypes.WEBHOOK,
     },
 ]
+
+export const getSESDefaultConfiguration = (shouldBeDefault: boolean) => ({
+    configName: '',
+    accessKey: '',
+    secretKey: '',
+    region: { label: '', value: '' },
+    fromEmail: '',
+    default: shouldBeDefault,
+    isLoading: false,
+    isError: true,
+})

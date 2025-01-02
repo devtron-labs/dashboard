@@ -42,7 +42,7 @@ export const ConfigurationTabSwitcher = ({ activeTab, setState, state }: Configu
                         onClick={() => handleTabClick(tab.link)}
                     >
                         <div className="flex left dc__gap-6 px-10 py-4">
-                            <tab.icon className="icon-dim-20" />
+                            {tab.icon}
                             <span className="lh-20 cn-9">{tab.label}</span>
                         </div>
                     </NavLink>

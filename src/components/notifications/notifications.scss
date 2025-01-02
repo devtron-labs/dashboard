@@ -181,6 +181,15 @@
     box-shadow: 0 1px 0 0 var(--N200);
 }
 
+// ses config table
+
+.ses-config-container {
+    .ses-config-grid {
+        display: grid;
+        grid-template-columns: 24px 250px 1fr 1fr 52px;
+    }
+}
+
 .ses-config-table__name {
     flex-basis: 25%;
     color: var(--N900);

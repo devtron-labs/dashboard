@@ -18,7 +18,7 @@ import { useEffect, useState } from 'react'
 import { showError, Progressing, ErrorScreenNotAuthorized, DeleteComponent } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom'
 import { SlackConfigModal } from './SlackConfigModal'
-import { SESConfigModal } from './SESConfigModal'
+import SESConfigModal from './SESConfigModal'
 import {
     deleteNotification,
     getSESConfiguration,
@@ -293,19 +293,28 @@ export const ConfigurationTab = () => {
         )
     }
     const payload = deleteConfigPayload()
-    return (
-        <div className="bcn-0 h-100 flexbox-col dc__gap-16 pt-16">
-            <ConfigurationTabSwitcher activeTab={state.activeTab} setState={setState} state={state} />
-            <Switch>
-                <Route path={`${path}/${ConfigurationsTabTypes.SES}`} component={renderSESConfigurationTable} />
-                <Route path={`${path}/${ConfigurationsTabTypes.SMTP}`} component={renderSMTPConfigurationTable} />
-                <Route path={`${path}/${ConfigurationsTabTypes.SLACK}`} component={renderSlackConfigurationTable} />
-                <Route path={`${path}/${ConfigurationsTabTypes.WEBHOOK}`} component={renderWebhookConfigurationTable} />
-            </Switch>
+
+    const renderContent = () => (
+        <div className="dc__overflow-auto">
             {renderSESConfigModal()}
             {renderSMTPConfigModal()}
             {renderSlackConfigModal()}
             {renderWebhookConfigModal()}
+        </div>
+    )
+    return (
+        <div className="bcn-0 h-100 flexbox-col dc__gap-16 pt-16">
+            <ConfigurationTabSwitcher activeTab={state.activeTab} setState={setState} state={state} />
+            <Switch>
+                <Route
+                    path={`${path}/${ConfigurationsTabTypes.SES}/:userId(\\d+)?`}
+                    component={renderSESConfigurationTable}
+                />
+                <Route path={`${path}/${ConfigurationsTabTypes.SMTP}`} component={renderSMTPConfigurationTable} />
+                <Route path={`${path}/${ConfigurationsTabTypes.SLACK}`} component={renderSlackConfigurationTable} />
+                <Route path={`${path}/${ConfigurationsTabTypes.WEBHOOK}`} component={renderWebhookConfigurationTable} />
+            </Switch>
+            {renderContent()}
 
             {state.confirmation && (
                 <DeleteComponent
