@@ -79,12 +79,12 @@
     display: grid;
     grid-template-columns: 50% 50%;
     height: calc(100vh - 48px);
-    background-color: white;
+    background-color: var(--N0);
 }
 
 .code-editor-body {
     height: calc(100vh - 97px);
-    background: white;
+    background: var(--N0);
     .react-monaco-editor-container {
         min-height: calc(60vh - 97px);
     }

@@ -453,7 +453,7 @@
 .trigger-modal__body .show-older-images-cta.cta.ghosted:hover,
 .trigger-modal__body .show-older-images-cta.cta.ghosted:active,
 .trigger-modal__body .show-older-images-cta.cta.ghosted:focus {
-    background: white;
+    background: var(--N0);
     color: var(--B500);
     border: 1px solid var(--B500);
 }

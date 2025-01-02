@@ -262,7 +262,7 @@
         }
 
         .grace-period-input-unit {
-            background-color: white;
+            background-color: var(--N0);
             border-left: none;
         }
     }
@@ -303,7 +303,7 @@
             font-size: 13px !important;
             line-height: 1.67;
             .mark-down-editor-preview {
-                background-color: white !important;
+                background-color: var(--N0) !important;
             }
             .mark-down-editor-textarea-wrapper {
                 border-radius: 3px !important;
@@ -311,14 +311,14 @@
                 background-color: var(--N50) !important;
             }
             .mde-textarea-wrapper {
-                background-color: white !important;
+                background-color: var(--N0) !important;
                 padding: 10px !important;
             }
             .mark-down-editor-toolbar {
                 justify-content: space-between !important;
                 padding-left: 16px !important;
                 padding-right: 16px !important;
-                background-color: white !important;
+                background-color: var(--N0) !important;
             }
             .mde-header {
                 height: 36px !important;

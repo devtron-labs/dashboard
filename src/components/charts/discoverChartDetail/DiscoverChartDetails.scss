@@ -72,7 +72,7 @@
                 color: var(--N700);
                 position: sticky;
                 top: 0;
-                background: white;
+                background: var(--N0);
                 z-index: 3;
             }
 
@@ -184,13 +184,13 @@
 
 .full-screen-modal {
     &.deploy-update {
-        background: white;
+        background: var(--N0);
     }
 }
 
 .discover__readme {
     &.discover__readme--horizontal {
-        background: white;
+        background: var(--N0);
         border-radius: 8px;
         overflow: hidden;
         border: solid 1px #d6dbdf;

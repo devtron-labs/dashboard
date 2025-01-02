@@ -27,7 +27,7 @@
 .select-button.default {
     height: 40px;
     padding: 12px 10px;
-    background-color: white;
+    background-color: var(--N0);
 }
 
 .select-button:disabled {

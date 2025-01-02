@@ -135,7 +135,7 @@
 
     .create-dockerfile-option {
         .code-editor__header {
-            background-color: white;
+            background-color: var(--N0);
         }
     }
 }
@@ -208,7 +208,7 @@
         }
 
         .config-override-diff__values {
-            background: white;
+            background: var(--N0);
             overflow-wrap: break-word;
             table-layout: fixed;
         }

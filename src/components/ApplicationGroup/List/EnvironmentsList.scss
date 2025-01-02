@@ -39,12 +39,12 @@
     display: grid;
     grid-template-columns: 255px 1fr;
     height: calc(100vh - 77px);
-    background: white;
+    background: var(--N0);
     overflow: hidden;
 
     .env-compose__nav {
         border-right: solid 1px #d6dbdf;
-        background: white;
+        background: var(--N0);
         height: 100%;
         overflow: hidden;
         display: grid;

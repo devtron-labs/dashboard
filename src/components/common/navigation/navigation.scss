@@ -122,7 +122,7 @@
                         display: inline-block;
                         width: 6px;
                         height: 32px;
-                        background-color: white;
+                        background-color: var(--N0);
                         border-radius: 3px;
                         margin-left: -3px;
                     }
@@ -191,7 +191,7 @@
 .logout-card {
     width: 260px;
     border-radius: 4px;
-    background-color: white;
+    background-color: var(--N0);
     position: fixed;
 
     border: 1px solid var(--N200);
@@ -260,7 +260,7 @@
 .help-card {
     width: 216px;
     border-radius: 4px;
-    background-color: white;
+    background-color: var(--N0);
     position: fixed;
     border: 1px solid var(--N200);
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);

@@ -24,7 +24,7 @@
 .test--list {
     border: 1px solid var(--N200);
     border-radius: 4px;
-    background: white;
+    background: var(--N0);
     cursor: pointer;
     margin-top: 16px;
     margin-left: 20px;
@@ -97,7 +97,7 @@ li.testcase {
     grid-column-gap: 8px;
     align-items: center;
     border: 1px solid var(--N200);
-    background: white;
+    background: var(--N0);
 
     &:not(:first-child) {
         margin-top: 16px;
@@ -140,7 +140,7 @@ ul.test--detail {
         padding: 0 20px;
         position: sticky;
         top: 0;
-        background-color: white;
+        background-color: var(--N0);
         h1 {
             margin: unset;
             line-height: unset;
@@ -222,7 +222,7 @@ table.properties-table {
         color: var(--N500);
         font-size: 12px;
         font-weight: 600px;
-        background-color: white;
+        background-color: var(--N0);
     }
     td {
         height: 48px;

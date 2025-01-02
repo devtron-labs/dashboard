@@ -103,7 +103,7 @@
 }
 
 .notification-page__header {
-    background: white;
+    background: var(--N0);
     padding: 16px 24px 0;
     border-bottom: 1px solid var(--N200);
 }
@@ -248,7 +248,7 @@
     position: absolute;
     width: 100%;
     z-index: 6;
-    background-color: white;
+    background-color: var(--N0);
     top: 44px;
     border-radius: 4px;
     box-shadow: 0 2px 4px 0 rgba(21, 21, 21, 0.3);
@@ -271,7 +271,7 @@
 .pipeline-filter__select-pipeline {
     position: relative;
     width: 100%;
-    background-color: white;
+    background-color: var(--N0);
     min-height: 44px;
     display: flex;
     align-items: center;

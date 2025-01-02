@@ -129,7 +129,7 @@
     display: grid;
     grid-template-columns: 24px 1fr 24px;
     align-items: center;
-    background: white;
+    background: var(--N0);
     grid-column-gap: 16px;
     cursor: pointer;
 
@@ -180,7 +180,7 @@
 .cluster-list {
     border: 1px solid #d6dbdf;
     margin-bottom: 16px;
-    background: white;
+    background: var(--N0);
     border-radius: 8px;
 
     & > .list {
@@ -243,7 +243,7 @@
         margin-bottom: 16px;
         border-radius: 8px;
         overflow: hidden;
-        background: white;
+        background: var(--N0);
     }
 }
 
@@ -254,7 +254,7 @@
         margin-bottom: 16px;
         border-radius: 8px;
         overflow: hidden;
-        background: white;
+        background: var(--N0);
     }
 
     &.collapsed-list--create {
@@ -365,7 +365,7 @@
 .environment-create-body {
     width: 450px;
     border-radius: 8px;
-    background: white;
+    background: var(--N0);
     padding: 24px;
     margin: 5% auto auto auto;
 

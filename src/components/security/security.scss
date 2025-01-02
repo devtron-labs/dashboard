@@ -223,7 +223,7 @@
     }
 
     .vulnerability-exp {
-        background-color: white;
+        background-color: var(--N0);
         min-height: calc(100vh - 80px);
     }
 
@@ -269,7 +269,7 @@
     .security-policy-cluster__table {
         width: 100%;
         min-width: 400px;
-        background-color: white;
+        background-color: var(--N0);
         border-radius: inherit;
     }
 

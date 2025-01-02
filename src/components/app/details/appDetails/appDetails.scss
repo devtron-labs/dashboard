@@ -98,7 +98,7 @@
 
 .expand-collapse-pf,
 #logs {
-    background: white;
+    background: var(--N0);
 }
 
 .app-details {
@@ -182,7 +182,7 @@
 }
 
 .event-block {
-    background-color: white;
+    background-color: var(--N0);
     padding: 8px;
     margin-bottom: 10px;
     border-radius: 3px;
@@ -195,7 +195,7 @@
 }
 
 .event-labels {
-    background-color: white;
+    background-color: var(--N0);
     padding: 8px;
     margin-bottom: 10px;
     border-radius: 3px;
@@ -298,7 +298,7 @@ table.pod__table td:last-child {
     border-radius: 8px;
     overflow: hidden;
     padding: 16px 20px;
-    background: white;
+    background: var(--N0);
 }
 
 .enable-app-metrics--button {
@@ -359,9 +359,9 @@ table.pod__table td:last-child {
         border-bottom: 1px solid var(--N100);
         position: sticky;
         top: 0;
-        background: white;
+        background: var(--N0);
         &:hover {
-            background: white;
+            background: var(--N0);
         }
     }
 
@@ -493,7 +493,7 @@ table.pod__table td:last-child {
 
 .pod-info {
     height: 100%;
-    background: white;
+    background: var(--N0);
 
     &:nth-child(2) {
         border-left: 1px solid var(--N200);
@@ -613,12 +613,12 @@ table.pod__table td:last-child {
                 font-weight: 600;
                 position: sticky;
                 top: 0px;
-                background: white;
+                background: var(--N0);
                 border-bottom: 1px solid var(--N100);
                 grid-template-rows: 36px;
 
                 &:hover {
-                    background: white;
+                    background: var(--N0);
                 }
 
                 .select-button {
@@ -637,7 +637,7 @@ table.pod__table td:last-child {
             font-weight: 600;
             height: 48px;
             line-height: 48px;
-            background: white;
+            background: var(--N0);
         }
 
         .pod-info__cpu-usage,
@@ -752,7 +752,7 @@ table.pod__table td:last-child {
         }
 
         .popup-button .select-button {
-            background: white;
+            background: var(--N0);
         }
     }
 
@@ -803,7 +803,7 @@ table.pod__table td:last-child {
     .time-range {
         .select-button {
             border: 1px solid transparent;
-            background: white;
+            background: var(--N0);
             padding: 4px 0px 4px 8px;
             width: 155px;
         }
@@ -821,7 +821,7 @@ table.pod__table td:last-child {
         grid-gap: 16px;
 
         .upgrade-chart-container {
-            background: white;
+            background: var(--N0);
             border: 1px solid #d6dbdf;
             border-radius: 8px;
             grid-column: 2 / span 2;
@@ -856,7 +856,7 @@ table.pod__table td:last-child {
         }
 
         .chart {
-            background: white;
+            background: var(--N0);
 
             &.material {
                 display: grid;
@@ -1250,7 +1250,7 @@ table.pod__table td:last-child {
         width: 80%;
         margin: 0 auto;
         border-radius: 4px;
-        background: white;
+        background: var(--N0);
         margin-top: 80px;
         overflow: hidden;
         position: relative;
@@ -1372,7 +1372,7 @@ table.pod__table td:last-child {
     .select-button {
         height: 40px;
         font-weight: 600;
-        background: white;
+        background: var(--N0);
         border: 1px solid var(--B500);
         border-radius: 4px;
         padding-left: 8px;
@@ -1391,7 +1391,7 @@ table.pod__table td:last-child {
 
 .visible-modal__body.app-status__material-modal {
     .app-status-detai {
-        background: white;
+        background: var(--N0);
         margin: 80px auto 120px auto;
         max-width: 1200px;
         min-width: 800px;
@@ -1432,7 +1432,7 @@ table.pod__table td:last-child {
                 height: 44px;
 
                 th {
-                    background: white;
+                    background: var(--N0);
                     position: sticky;
                     top: 0;
                 }

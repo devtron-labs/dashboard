@@ -28,7 +28,7 @@
         grid-template-columns: 100%;
 
         &.white-background {
-            background-color: white !important;
+            background-color: var(--N0) !important;
         }
     }
 
@@ -39,7 +39,7 @@
     .stack-manager__navigation {
         padding: 24px 12px;
         border-right: solid 1px #d6dbdf;
-        background-color: white;
+        background-color: var(--N0);
 
         a.stack-manager__navlink {
             font-size: 13px;
@@ -125,7 +125,7 @@
         max-height: 100%;
 
         &.about-devtron {
-            background-color: white;
+            background-color: var(--N0);
         }
     }
 }

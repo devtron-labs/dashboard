@@ -60,7 +60,7 @@
         line-height: 1.67;
 
         .mark-down-editor-preview {
-            background-color: white !important;
+            background-color: var(--N0) !important;
         }
 
         .mark-down-editor-textarea-wrapper {
@@ -70,7 +70,7 @@
         }
 
         .mde-textarea-wrapper {
-            background-color: white !important;
+            background-color: var(--N0) !important;
             padding: 10px !important;
         }
 
@@ -78,7 +78,7 @@
             justify-content: space-between !important;
             padding-left: 16px !important;
             padding-right: 16px !important;
-            background-color: white !important;
+            background-color: var(--N0) !important;
         }
 
         .mde-header {

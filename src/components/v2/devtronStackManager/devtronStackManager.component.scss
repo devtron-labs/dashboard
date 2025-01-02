@@ -17,7 +17,7 @@
 .module-details__card {
     width: 300px;
     height: 180px;
-    background-color: white;
+    background-color: var(--N0);
     border: 1px solid var(--N200);
     position: relative;
 
@@ -147,7 +147,7 @@
 
         &.upgrade.status-healthy {
             position: relative;
-            background-color: white;
+            background-color: var(--N0);
             border: 1px solid var(--N200);
             overflow: hidden;
             padding: 16px;
