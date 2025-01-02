@@ -5287,3 +5287,9 @@ textarea::placeholder {
     z-index: var(--modal-index);
     backdrop-filter: blur(1px);
 }
+
+.dc__unset-pre {
+    background: inherit;
+    border: none;
+    padding: inherit;
+}
