@@ -1473,6 +1473,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         baseURL={this.props.match.url}
                         workflows={this.state.workflows}
                         getModuleInfo={getModuleInfo}
+                        appName={this.props.appContext.currentAppName}
                     />
                 )}
             </>
