@@ -49,6 +49,8 @@ const Login = lazy(() => import('./components/login/Login'))
 const GenericDirectApprovalModal = importComponentFromFELibrary('GenericDirectApprovalModal')
 
 export default function App() {
+    const [currentTheme] = useState<'light' | 'dark'>('dark')
+
     const onlineToastRef = useRef(null)
     const updateToastRef = useRef(null)
     const [errorPage, setErrorPage] = useState<boolean>(false)
@@ -317,7 +319,7 @@ export default function App() {
     }, [bgUpdated])
 
     return (
-        <div className={customThemeClassName}>
+        <div className={`${customThemeClassName} theme__${currentTheme}`}>
             <Suspense fallback={null}>
                 {validating ? (
                     <div className="full-height-width">
