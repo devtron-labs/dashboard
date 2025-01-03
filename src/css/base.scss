@@ -1534,6 +1534,7 @@ button.anchor {
     line-height: 1.6;
     border: 1px solid rgba(255, 255, 255, 0.4);
     background-color: var(--N900);
+    color: var(--N0);
 
     &.no-content-padding {
         .tippy-content {

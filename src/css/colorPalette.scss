@@ -15,7 +15,7 @@
  */
 
 :root {
-    .theme {
+    &.theme {
         &__light {
             --V700: #4934b3;
             --V500: #664bee;

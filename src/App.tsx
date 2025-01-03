@@ -318,8 +318,17 @@ export default function App() {
         )
     }, [bgUpdated])
 
+    useEffect(() => {
+        // Need to update the html element since there are elements outside of the #root div as well
+        const html = document.querySelector('html')
+        if (html) {
+            html.removeAttribute('class')
+            html.classList.add(`theme__${currentTheme}`)
+        }
+    }, [currentTheme])
+
     return (
-        <div className={`${customThemeClassName} theme__${currentTheme}`}>
+        <div className={customThemeClassName}>
             <Suspense fallback={null}>
                 {validating ? (
                     <div className="full-height-width">
