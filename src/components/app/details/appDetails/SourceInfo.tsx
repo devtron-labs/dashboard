@@ -53,6 +53,7 @@ import HelmAppConfigApplyStatusCard from '@Components/v2/appDetails/sourceInfo/e
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
 const ConfigSyncStatusButton = importComponentFromFELibrary('ConfigSyncStatusButton', null, 'function')
+const SwapTraffic = importComponentFromFELibrary('SwapTraffic', null, 'function')
 
 export const SourceInfo = ({
     appDetails,
@@ -158,15 +159,18 @@ export const SourceInfo = ({
                         </div>
                     </Tooltip>
                 )}
-                {appDetails?.resourceTree && !isIsolatedEnv && window._env_.FEATURE_CONFIG_DRIFT_ENABLE && ConfigSyncStatusButton && (
-                    <div className="pl-8">
-                        <ConfigSyncStatusButton
-                            areConfigurationsDrifted={appDetails.resourceTree.hasDrift}
-                            appId={appDetails.appId}
-                            envId={envId}
-                        />
-                    </div>
-                )}
+                {appDetails?.resourceTree &&
+                    !isIsolatedEnv &&
+                    window._env_.FEATURE_CONFIG_DRIFT_ENABLE &&
+                    ConfigSyncStatusButton && (
+                        <div className="pl-8">
+                            <ConfigSyncStatusButton
+                                areConfigurationsDrifted={appDetails.resourceTree.hasDrift}
+                                appId={appDetails.appId}
+                                envId={envId}
+                            />
+                        </div>
+                    )}
                 {isdeploymentAppDeleting && (
                     <div data-testid="deleteing-argocd-pipeline" className="flex left">
                         <Trash className="icon-dim-16 mr-8 ml-12" />
@@ -214,6 +218,18 @@ export const SourceInfo = ({
                                         style={ButtonStyleType.neutral}
                                     />
                                 )}
+                                {window._env_.FEATURE_SWAP_TRAFFIC_ENABLE &&
+                                    SwapTraffic &&
+                                    !!appDetails.pcoId &&
+                                    !appDetails.trafficSwitched && (
+                                        <SwapTraffic
+                                            appName={appDetails.appName}
+                                            envName={appDetails.environmentName}
+                                            appId={appDetails.appId}
+                                            envId={appDetails.environmentId}
+                                            pcoId={appDetails.pcoId}
+                                        />
+                                    )}
                                 {!isVirtualEnvironment && showHibernateModal && (
                                     <Button
                                         dataTestId="app-details-hibernate-modal-button"
