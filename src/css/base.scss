@@ -865,7 +865,7 @@ button.anchor {
     &.f-inprogress,
     &.f-unknown,
     &.initiated {
-        color: var(--yellow);
+        color: var(--Y500);
     }
 
     &.f-updated {
@@ -1563,7 +1563,7 @@ button.anchor {
 
 .tippy-box.default-black {
     color: var(--N0);
-    background-color: var(--tippy-card-black-bg);
+    background-color: var(--N900);
 
     &.no-content-padding {
         .tippy-content {
@@ -1576,7 +1576,7 @@ button.anchor {
     }
 
     .tippy-arrow {
-        color: var(--tippy-card-black-bg);
+        color: var(--N900);
 
         &::before {
             scale: 1.4;
@@ -5085,7 +5085,7 @@ textarea::placeholder {
 }
 
 .dc__search-highlight-bg {
-    background-color: var(--search-highlight-text);
+    background-color: var(--Y200);
 }
 
 .severity-chip {

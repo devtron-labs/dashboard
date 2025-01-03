@@ -489,7 +489,7 @@ table.pod__table td:last-child {
 
     .pod-info__popup-row--red {
         justify-content: space-between;
-        color: red;
+        color: var(--R500);
     }
 }
 
@@ -772,25 +772,25 @@ table.pod__table td:last-child {
     .app-summary__status-name {
         &.f-healthy,
         &.f-scalingreplicasetdown {
-            color: var(--green);
+            color: var(--G500);
         }
 
         &.f-starting,
         &.f-initiating,
         &.f-suspended,
         &.f-switchedtoactiveservice {
-            color: var(--orange);
+            color: var(--O500);
         }
 
         &.f-degraded {
-            color: var(--red);
+            color: var(--R500);
         }
 
         &.f-progressing,
         &.f-inprogress,
         &.f-unknown,
         &.initiated {
-            color: var(--yellow);
+            color: var(--Y500);
         }
 
         .tooltip-button {
@@ -1843,7 +1843,7 @@ table.resource-tree {
     .app-summary__status-name {
         text-transform: none !important;
         &.f-succeeded {
-            color: var(--green);
+            color: var(--G500);
         }
         &.f-inprogress {
             color: var(--O500);
