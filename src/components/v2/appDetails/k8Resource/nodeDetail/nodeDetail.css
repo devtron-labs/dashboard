@@ -37,7 +37,7 @@
 }
 
 .summary-view__card {
-    background-color: #f2f4f7;
+    background-color: var(--window-bg);
 }
 
 .containers-select__group {
