@@ -7,6 +7,6 @@ export const EmptyConfigurationView = ({ configTabType, image }: EmptyConfigurat
         image={image}
         title={`Send Email notifications via ${configTabType}`}
         subTitle={EmptyConfigurationSubTitle[configTabType]}
-        imageClassName="dc__w-fit-content--imp dc__height-auto--imp"
+        imageClassName="w-160--imp dc__height-auto--imp"
     />
 )

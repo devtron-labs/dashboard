@@ -3207,6 +3207,10 @@ textarea,
 
 .w-160 {
     width: 160px;
+
+    &--imp {
+        width: 160px !important;
+    }
 }
 
 .w-180 {
