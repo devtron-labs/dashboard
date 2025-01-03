@@ -203,7 +203,7 @@ export const WebhookConfigModal = ({
     }
 
     const renderHeadersList = () => (
-        <div className="mb-8">
+        <div className="flexbox-col dc__gap-6">
             {form.header.map((header, index) => (
                 <CreateHeaderDetails
                     key={`header-${form.configName}`}
@@ -217,7 +217,7 @@ export const WebhookConfigModal = ({
     )
 
     const renderWebhookModal = () => (
-        <div className="flexbox h-100 cn-9">
+        <div className="flexbox h-100 cn-9 w-100">
             <div className="w-600 p-20 flex-grow-1 flexbox-col mh-0 dc__overflow-scroll dc__gap-16 dc__border-right">
                 <CustomInput
                     label="Configuration name"
@@ -240,8 +240,8 @@ export const WebhookConfigModal = ({
                     isRequiredField
                 />
                 <div>
-                    <div className="flexbox">
-                        <span className="form__label">Headers</span>
+                    <div className="flexbox dc__content-space">
+                        <span>Headers</span>
                         <span className="cb-5 fw-6 fs-13 cursor flex" onClick={addHeader}>
                             <Add className="icon-dim-20" /> Add
                         </span>
@@ -249,8 +249,16 @@ export const WebhookConfigModal = ({
                     {renderHeadersList()}
                 </div>
                 <div>
-                    <span className="form__label dc__required-field">Data to be shared through Webhook</span>
-                    <CodeEditor value={form.payload} mode="json" onChange={handlePayloadChange} inline height={200} />
+                    <span className="form__label dc__required-field">Data to be shared through webhook</span>
+                    <div className="en-2 bw-1 br-4 p-6">
+                        <CodeEditor
+                            value={form.payload}
+                            mode="json"
+                            onChange={handlePayloadChange}
+                            inline
+                            height={150}
+                        />
+                    </div>
                     {!isValid.payload && <span className="form__error">Invalid JSON</span>}
                 </div>
             </div>

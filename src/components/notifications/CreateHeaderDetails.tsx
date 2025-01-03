@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as DeleteCross } from '../../assets/icons/ic-cross.svg'
 import { CreateHeaderDetailsType } from './types'
@@ -37,7 +36,7 @@ export default function CreateHeaderDetails({
     }
 
     return (
-        <div className="flexbox mb-8">
+        <div className="flexbox">
             <CustomInput
                 rootClassName="tag-input pt-4-imp pb-4-imp fs-13 dc__no-right-radius"
                 value={headerData?.['key']}
