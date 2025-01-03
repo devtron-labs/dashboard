@@ -690,5 +690,5 @@
 
 .trigger-modal__config-diff-status svg.loader__svg path,
 .trigger-modal__config-diff-status svg.config-diff-found-icon path:nth-of-type(2) {
-    fill: white;
+    fill: var(--N0);
 }

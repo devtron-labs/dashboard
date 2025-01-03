@@ -312,7 +312,7 @@ li.suite-meta {
         min-width: 24px;
         margin-right: 8px;
         border-radius: 6px;
-        color: white;
+        color: var(--N0);
 
         &.failureCount {
             background-color: var(--R500);

@@ -236,7 +236,7 @@
 
         g {
             path:nth-child(2) {
-                fill: white;
+                fill: var(--N0);
             }
 
             path:nth-child(3) {
@@ -572,7 +572,7 @@
     width: 93%;
     padding: 8px 12px;
     background: var(--B500);
-    color: white;
+    color: var(--N0);
 }
 
 .filter-column-container {

@@ -67,7 +67,7 @@
     &.active {
         color: var(--B500);
         border-top: 2px solid var(--B500);
-        border-bottom: 1px solid white;
+        border-bottom: 1px solid var(--N0);
 
         &:last-child {
             border-right: 1px solid var(--N200);
@@ -200,7 +200,7 @@
     margin-bottom: 10px;
     border-radius: 3px;
     box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.1);
-    border-left: solid 6px white;
+    border-left: solid 6px var(--N0);
 }
 
 .event-labels > div {
@@ -766,7 +766,7 @@ table.pod__table td:last-child {
         font-size: 10px;
         display: flex;
         align-items: center;
-        color: white;
+        color: var(--N0);
     }
 
     .app-summary__status-name {
@@ -967,7 +967,7 @@ table.pod__table td:last-child {
     z-index: var(--events-logs);
 
     .event-logs__logs {
-        color: white;
+        color: var(--N0);
         padding-left: 20px;
     }
 
@@ -992,7 +992,7 @@ table.pod__table td:last-child {
 
     .events-logs__event,
     .events-logs__log {
-        color: white;
+        color: var(--N0);
         font-family: monospace;
         font-size: 12px;
         margin-bottom: 0px;
@@ -1044,7 +1044,7 @@ table.pod__table td:last-child {
 
     .events-logs__label {
         margin-right: 10px;
-        color: white;
+        color: var(--N0);
         opacity: 0.6;
     }
 
@@ -1067,7 +1067,7 @@ table.pod__table td:last-child {
                 border-radius: 4px;
                 padding: 8px 10px 8px 12px;
                 font-size: 12px;
-                color: white;
+                color: var(--N0);
                 text-align: left;
             }
         }
@@ -1215,7 +1215,7 @@ table.pod__table td:last-child {
                 font-size: 10px;
                 display: flex;
                 align-items: center;
-                color: white;
+                color: var(--N0);
             }
         }
     }
@@ -1481,7 +1481,7 @@ table.pod__table td:last-child {
     height: 100%;
     overflow: auto;
     background: #0b0f22;
-    color: white;
+    color: var(--N0);
     border: unset;
     resize: none;
     padding: 20px;

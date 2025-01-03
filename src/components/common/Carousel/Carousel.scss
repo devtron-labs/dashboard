@@ -43,7 +43,7 @@
         bottom: 0px;
         left: 0px;
         padding: 10px 0;
-        color: white;
+        color: var(--N0);
         background-color: #000000b3;
 
         .carousel-slide__action {
@@ -52,7 +52,7 @@
             .action-prev__icon,
             .action-next__icon {
                 path {
-                    fill: white;
+                    fill: var(--N0);
                 }
             }
 

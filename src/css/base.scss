@@ -569,7 +569,7 @@ a:focus {
 .dc__code-textarea {
     min-width: 100%;
     height: 550px;
-    color: white;
+    color: var(--N0);
     border: unset;
     white-space: nowrap;
     overflow: auto;
@@ -1041,7 +1041,7 @@ button.anchor {
         &:focus {
             svg path {
                 fill: var(--R500);
-                stroke: white;
+                stroke: var(--N0);
             }
         }
     }
@@ -1129,7 +1129,7 @@ button.anchor {
         }
 
         svg path {
-            fill: white;
+            fill: var(--N0);
         }
 
         &:disabled {

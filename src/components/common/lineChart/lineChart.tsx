@@ -111,7 +111,7 @@ export default class LineChart extends Component<LineChartProps> {
             .attr('width', width)
             .attr('height', height)
             .attr('stroke', '#d1d1d1')
-            .attr('fill', '#fafafa')
+            .attr('fill', 'var(--N50)')
         // grid lines
         gridGroup
             .selectAll('line')
