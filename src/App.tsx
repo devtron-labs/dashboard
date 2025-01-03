@@ -29,6 +29,10 @@ import {
     ToastVariantType,
     API_STATUS_CODES,
     logExceptionToSentry,
+    Button,
+    ButtonVariantType,
+    ButtonStyleType,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICSparkles } from '@Icons/ic-sparkles.svg'
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
@@ -43,13 +47,14 @@ import {
 import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG, URLS } from './config'
 import Hotjar from './components/Hotjar/Hotjar'
 import { validateToken } from './services/service'
+import { setCurrentClient } from '@sentry/browser'
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'))
 const Login = lazy(() => import('./components/login/Login'))
 const GenericDirectApprovalModal = importComponentFromFELibrary('GenericDirectApprovalModal')
 
 export default function App() {
-    const [currentTheme] = useState<'light' | 'dark'>('dark')
+    const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('dark')
 
     const onlineToastRef = useRef(null)
     const updateToastRef = useRef(null)
@@ -371,6 +376,20 @@ export default function App() {
                     </>
                 )}
             </Suspense>
+            <div className="dc__position-abs dc__bottom-30-imp dc__right-20">
+                <Button
+                    icon={<ICSparkles />}
+                    variant={ButtonVariantType.borderLess}
+                    style={ButtonStyleType.neutral}
+                    size={ComponentSizeType.small}
+                    ariaLabel="Toggle theme"
+                    showAriaLabelInTippy={false}
+                    onClick={() => {
+                        setCurrentTheme(currentTheme === 'light' ? 'dark' : 'light')
+                    }}
+                    dataTestId="toggle-theme"
+                />
+            </div>
         </div>
     )
 }
