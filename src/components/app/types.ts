@@ -137,6 +137,8 @@ export interface AppDetails extends CDModalProps {
     imageTag?: string
     isPipelineTriggered?: boolean
     releaseMode: ReleaseMode
+    trafficSwitched?: boolean
+    pcoId?: number
 }
 
 export interface LabelTag {
