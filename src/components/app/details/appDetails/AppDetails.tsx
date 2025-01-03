@@ -1287,9 +1287,9 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
                                 marginRight: '0',
                                 textAlign: 'left',
                                 direction: 'rtl',
-                                color: 'var(--N000)',
+                                color: 'var(--N0)',
                             }),
-                            input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
+                            input: (base, state) => ({ ...base, caretColor: 'var(--N0)', color: 'var(--N0)' }),
                             option: (base, state) => ({
                                 ...base,
                                 backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
@@ -1333,12 +1333,12 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
                                             ...base,
                                             direction: 'rtl',
                                             textAlign: 'left',
-                                            color: 'var(--N000)',
+                                            color: 'var(--N0)',
                                         }),
                                         input: (base, state) => ({
                                             ...base,
-                                            caretColor: 'var(--N000)',
-                                            color: 'var(--N000)',
+                                            caretColor: 'var(--N0)',
+                                            color: 'var(--N0)',
                                         }),
                                         option: (base, state) => ({
                                             ...base,
@@ -1386,12 +1386,12 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
                                 singleValue: (base, state) => ({
                                     ...base,
                                     textAlign: 'left',
-                                    color: 'var(--N000)',
+                                    color: 'var(--N0)',
                                 }),
-                                input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
+                                input: (base, state) => ({ ...base, caretColor: 'var(--N0)', color: 'var(--N0)' }),
                                 option: (base, state) => ({
                                     ...base,
-                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--N000)',
+                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--N0)',
                                     color: 'var(--N900)',
                                 }),
                             }}

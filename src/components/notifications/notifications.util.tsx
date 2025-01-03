@@ -61,7 +61,7 @@ export const multiSelectStyles = {
                 state.data.data.dest !== 'webhook' &&
                 !validateEmail(state.data.label)
                     ? 'var(--R100)'
-                    : 'var(--N000)',
+                    : 'var(--N0)',
             padding: `2px`,
             textTransform: `lowercase`,
             fontSize: `12px`,

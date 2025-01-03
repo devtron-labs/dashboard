@@ -38,7 +38,7 @@
     padding: 8px 8px 8px 10px;
     width: 100%;
     font-weight: 500;
-    background-color: var(--N000);
+    background-color: var(--N0);
 }
 
 .select__label-container {
@@ -79,7 +79,7 @@
     align-items: center;
     justify-content: flex-start;
     cursor: pointer;
-    background-color: var(--N000);
+    background-color: var(--N0);
 }
 
 .select__option.selected {

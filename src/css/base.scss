@@ -133,7 +133,7 @@ a:focus {
     display: grid;
     grid-template-columns: 1fr auto;
     grid-template-rows: 1fr;
-    background-color: var(--N000);
+    background-color: var(--N0);
     color: var(--N900);
     z-index: var(--page-header-index);
     border-bottom: 1px solid var(--N200);
@@ -207,7 +207,7 @@ a:focus {
 
         .dc__badge {
             background-color: var(--B500);
-            color: var(--N000);
+            color: var(--N0);
         }
     }
 }
@@ -953,7 +953,7 @@ button.anchor {
     user-select: none;
     display: inline-flex;
     align-items: center;
-    background-color: var(--N000);
+    background-color: var(--N0);
 }
 
 .dc__ses_config-table__tag {
@@ -1298,7 +1298,7 @@ button.anchor {
 
     .info {
         line-height: 1.43;
-        color: var(--N000);
+        color: var(--N0);
         font-size: 13px;
         text-transform: none;
     }
@@ -1548,7 +1548,7 @@ button.anchor {
     line-height: 1.6;
     color: var(--N900);
     border: 1px solid var(--N200);
-    background-color: var(--N000);
+    background-color: var(--N0);
 
     &.no-content-padding {
         .tippy-content {
@@ -1703,7 +1703,7 @@ button.anchor {
 
 .dc__app-commmit__body {
     border-radius: 4px;
-    background-color: var(--N000);
+    background-color: var(--N0);
     width: 400px;
     box-shadow: 0 4px 8px -2px rgba(0, 56, 112, 0.2);
     padding: 16px;
@@ -1873,7 +1873,7 @@ button.anchor {
     height: 100%;
     border-right: solid 1px var(--N200);
     padding: 16px;
-    background-color: var(--N000);
+    background-color: var(--N0);
 }
 
 .dc__secondary-nav__item {
@@ -2227,7 +2227,7 @@ button.anchor {
 }
 
 .dc__border-left-n0 {
-    border-left: solid 1px var(--N000);
+    border-left: solid 1px var(--N0);
 }
 
 .dc__border-left-n9 {
@@ -2761,7 +2761,7 @@ textarea,
     background-color: var(--N700);
     padding-bottom: 1px;
     padding-right: 30px;
-    color: var(--N000);
+    color: var(--N0);
     font-size: 12px;
     font-weight: 600;
     line-height: 20px;
@@ -4592,7 +4592,7 @@ textarea::placeholder {
     line-height: 1.9;
     text-align: center;
     border-radius: 50%;
-    color: var(--N000);
+    color: var(--N0);
     user-select: none;
     border: solid 1px transparent;
 }

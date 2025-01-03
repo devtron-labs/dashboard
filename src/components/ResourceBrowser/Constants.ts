@@ -66,7 +66,7 @@ export const KIND_SEARCH_COMMON_STYLES = {
     control: (base, state) => ({
         ...FILTER_SELECT_COMMON_STYLES.control(base, state),
         border: state.isFocused ? '1px solid var(--B500)' : 'none',
-        backgroundColor: state.isFocused ? 'var(--N50)' : 'var(--N000)',
+        backgroundColor: state.isFocused ? 'var(--N50)' : 'var(--N0)',
         cursor: 'text',
     }),
     input: (base) => ({
@@ -84,7 +84,7 @@ export const KIND_SEARCH_COMMON_STYLES = {
     }),
     option: (base, state) => ({
         ...base,
-        backgroundColor: state.isFocused ? 'var(--N50)' : 'var(--N000)',
+        backgroundColor: state.isFocused ? 'var(--N50)' : 'var(--N0)',
         color: 'var(--N900)',
         textOverflow: 'ellipsis',
         fontWeight: '500',

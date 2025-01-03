@@ -21,7 +21,7 @@
     width: 800px;
     z-index: 8;
     transform: translateX(-50%);
-    background-color: var(--N000);
+    background-color: var(--N0);
     border-radius: 8px;
     border: solid 1px var(--N200);
     box-shadow: 0 8px 16px -4px rgba(0, 56, 112, 0.3);
@@ -180,7 +180,7 @@
     padding: 0px 6px;
     border-radius: 2px;
     border: solid 1px var(--N200);
-    background-color: var(--N000);
+    background-color: var(--N0);
     color: var(--N700);
 }
 

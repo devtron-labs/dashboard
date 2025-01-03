@@ -19,7 +19,7 @@
     box-shadow: inset 0 -1px 0 0 var(--N100);
     position: sticky;
     top: 0;
-    background: var(--N000);
+    background: var(--N0);
 }
 
 .generic-body>.row:hover {
@@ -144,7 +144,7 @@
     position: sticky;
     top: 0;
     z-index: 2;
-    background-color: var(--N000);
+    background-color: var(--N0);
 }
 
 .resource-force-delete {
