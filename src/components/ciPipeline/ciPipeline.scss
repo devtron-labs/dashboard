@@ -179,7 +179,7 @@
 }
 
 .script-container {
-    border: 1px solid #d6dbdf;
+    border: 1px solid var(--N200);
     padding: 8px 0;
     border-radius: 4px;
     background: var(--N50);
@@ -521,13 +521,13 @@
 }
 
 .path-info {
-    path[fill='#06C'] {
+    path[fill='var(--B500)'] {
         fill: var(--N700);
     }
 }
 
 .container-image-info {
-    path[fill='#06C'] {
+    path[fill='var(--B500)'] {
         fill: var(--B500);
     }
 }

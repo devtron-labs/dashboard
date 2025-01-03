@@ -112,7 +112,7 @@
         }
 
         .rotate.not-available {
-            color: #f32e2e;
+            color: var(--R500);
             font-weight: 600;
         }
     }
@@ -277,7 +277,7 @@
     padding: 16px;
     align-items: center;
     background-color: #fff8eb;
-    border: solid 1px #ffcb5d;
+    border: solid 1px var(--Y400);
     border-radius: 4px;
     margin: 0 0 20px 0;
     width: 100%;

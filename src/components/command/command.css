@@ -196,7 +196,7 @@
     line-height: 1.43;
     letter-spacing: normal;
     text-align: center;
-    color: #404040;
+    color: var(--N700);
 }
 
 .command-empty-state__error {
@@ -205,5 +205,5 @@
     font-weight: normal;
     line-height: 1.33;
     letter-spacing: normal;
-    color: #f32e2e;
+    color: var(--R500);
 }

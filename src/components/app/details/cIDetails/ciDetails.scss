@@ -206,7 +206,7 @@
 .trigger-info__title {
     padding-left: 30px;
     text-transform: capitalize;
-    color: #262626;
+    color: var(--N900);
     font-size: 18px;
     font-weight: 600;
     letter-spacing: 0.005em;
@@ -231,7 +231,7 @@
 .info {
     width: 100%;
     font-size: 13px;
-    color: #262626;
+    color: var(--N900);
     text-transform: lowercase;
     font-weight: 500;
     margin-bottom: 0px;

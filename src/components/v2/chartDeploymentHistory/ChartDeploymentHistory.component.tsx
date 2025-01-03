@@ -461,7 +461,7 @@ const ChartDeploymentHistory = ({
                     onActionButtonClick={() => {
                         checkAndFetchDeploymentDetail(version, true)
                     }}
-                    actionButtonStyle={{ color: '#0066cc', textDecoration: 'none' }}
+                    actionButtonStyle={{ color: 'var(--B500)', textDecoration: 'none' }}
                 />
             )
         }

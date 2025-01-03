@@ -96,9 +96,9 @@
 }
 
 .icon-selected {
-    background-color: #0066cc;
+    background-color: var(--B500);
     border-radius: 4px;
     path {
-        stroke: #fff;
+        stroke: var(--N0);
     }
 }

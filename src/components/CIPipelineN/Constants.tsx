@@ -20,7 +20,13 @@ export const groupHeading = (props) => <GroupHeading {...props} />
 
 export const buildStageStyles = {
     ...groupStyle(),
-    control: (base) => ({ ...base, border: '1px solid #d6dbdf', minHeight: '20px', height: '30px', marginTop: '4px' }),
+    control: (base) => ({
+        ...base,
+        border: '1px solid var(--N200)',
+        minHeight: '20px',
+        height: '30px',
+        marginTop: '4px',
+    }),
     valueContainer: (base) => ({ ...base, height: '28px', padding: '0px 8px' }),
     indicatorsContainer: (base) => ({ ...base, height: '28px' }),
     menu: (base) => ({ ...base, width: '240px' }),
@@ -42,7 +48,7 @@ export const triggerStageStyles = {
     singleValue: (base) => ({
         ...base,
         fontWeight: 600,
-        color: '#0066cc',
+        color: 'var(--B500)',
     }),
 }
 

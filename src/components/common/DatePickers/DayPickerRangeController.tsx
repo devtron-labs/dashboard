@@ -95,7 +95,7 @@ const styless = {
         borderRadius: '4px',
     },
     PresetDateRangePicker_button__selected: {
-        color: '#06c',
+        color: 'var(--B500)',
         fontWeight: 600,
         background: 'var(--B100)',
         outline: 'none',

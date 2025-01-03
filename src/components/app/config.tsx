@@ -15,10 +15,10 @@
  */
 
 export const Colors = {
-    yellow: '#FF7E5B',
+    yellow: 'var(--O500)',
     red: '#FF3E3E',
-    green: '#1DAD70',
-    orange: '#FF7E5B',
+    green: 'var(--G500)',
+    orange: 'var(--O500)',
     gray: 'rgba(128, 128, 128, 1)',
 }
 

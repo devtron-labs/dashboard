@@ -45,7 +45,7 @@
         }
     }
     .error-icon-white {
-        path[fill='#F33E3E'] {
+        path[fill='var(--R500)'] {
             fill: var(--N0);
         }
         path[fill='#FFF'] {
@@ -61,7 +61,7 @@
         }
     }
     .no-data-icon {
-        path[fill='#06C'] {
+        path[fill='var(--B500)'] {
             fill: var(--N600);
         }
     }

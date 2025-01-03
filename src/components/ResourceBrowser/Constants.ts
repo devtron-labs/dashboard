@@ -33,7 +33,7 @@ export const FILTER_SELECT_COMMON_STYLES = {
         minHeight: '32px',
         borderColor: 'none',
         boxShadow: 'none',
-        border: state.isFocused && !state.isDisabled ? '1px solid var(--B500)' : '1px solid #d6dbdf',
+        border: state.isFocused && !state.isDisabled ? '1px solid var(--B500)' : '1px solid var(--N200)',
         backgroundColor: state.isDisabled ? 'var(--N100)' : 'var(--N50)',
         pointerEvents: 'auto',
         cursor: state.isDisabled ? 'not-allowed' : 'pointer',

@@ -108,8 +108,7 @@
 
 .app-instances {
     vertical-align: top;
-    // TODO:
-    border: 1px solid #eaeaea;
+    border: 1px solid var(--N100);
 }
 
 .app-info-title {
@@ -124,8 +123,7 @@
     line-height: 30px;
     padding: 0px 5px;
     background: var(--N0);
-    // TODO:
-    border-top: 1px solid #eaeaea;
+    border-top: 1px solid var(--N100);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -143,8 +141,7 @@
 }
 
 .info-block .heading {
-    // 
-    color: #262626;
+    color: var(--N900);
     font-size: 20px;
     text-transform: lowercase;
     margin-bottom: 15px;
@@ -155,8 +152,7 @@
 .info-block .dc__small-text {
     width: 100%;
     font-size: 13px;
-    // 
-    color: #262626;
+    color: var(--N900);
     text-transform: lowercase;
     font-weight: 500;
     margin-bottom: 0px;
@@ -487,8 +483,7 @@ table.pod__table td:last-child {
         padding: 0 12px;
 
         &:hover {
-            // 
-            background: #f5f5f5;
+            background: var(--N100);
         }
     }
 
@@ -829,7 +824,7 @@ table.pod__table td:last-child {
 
         .upgrade-chart-container {
             background: var(--N0);
-            border: 1px solid #d6dbdf;
+            border: 1px solid var(--N200);
             border-radius: 8px;
             grid-column: 2 / span 2;
 
@@ -1284,7 +1279,7 @@ table.pod__table td:last-child {
             }
 
             &:nth-child(even) {
-                background: #f5f5f5;
+                background: var(--N100);
             }
 
             &.app-summary__source-row--header {
@@ -1508,7 +1503,7 @@ table.trigger-history {
 
     tr {
         &:nth-child(2n + 2) {
-            background: #f5f5f5;
+            background: var(--N100);
         }
     }
 
@@ -1851,7 +1846,7 @@ table.resource-tree {
             color: var(--green);
         }
         &.f-inprogress {
-            color: #ff7e5b;
+            color: var(--O500);
         }
         &.f-failed,
         &.f-timed_out,
@@ -1888,8 +1883,8 @@ table.resource-tree {
     .pulse-highlight {
         width: 12px;
         height: 12px;
-        border: solid 4px rgba(255, 126, 91, 0.4);
-        background-color: #ff7e5b;
+        border: solid 4px var(--O200);
+        background-color: var(--O500);
         position: relative;
         top: 5px;
         right: -5px;

@@ -231,8 +231,8 @@ const EnvironmentSelectorComponent = ({
                             preserveAspectRatio="none"
                             style={{ width: '100%', height: '100%', display: 'flex' }}
                         >
-                            <path d="M0 20 L200 20 Z" strokeWidth="1" stroke="#0066cc" />
-                            <path d="M0 10 L0, 30" strokeWidth="2" stroke="#0066cc" />
+                            <path d="M0 20 L200 20 Z" strokeWidth="1" stroke="var(--B500)" />
+                            <path d="M0 10 L0, 30" strokeWidth="2" stroke="var(--B500)" />
                         </svg>
                         <div
                             className="bcb-5 br-10 cn-0 pl-8 pr-8"
@@ -278,7 +278,7 @@ const EnvironmentSelectorComponent = ({
                                             backgroundColor: 'transparent',
                                             minHeight: '24px !important',
                                         }),
-                                        singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
+                                        singleValue: (base) => ({ ...base, fontWeight: 600, color: 'var(--B500)' }),
                                         indicatorsContainer: (provided, state) => ({
                                             ...provided,
                                             height: '24px',
