@@ -15,8 +15,10 @@
  */
 
 import React from 'react'
-import { AppEnvironment } from '@devtron-labs/devtron-fe-common-lib'
-import { EnvConfigurationState } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
+import {
+    AppConfigState,
+    EnvConfigurationState,
+} from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 import { DOCUMENTATION, URLS } from '../../../config'
 import { ConfigAppList } from '../../../components/ApplicationGroup/AppGroup.types'
 
@@ -50,7 +52,7 @@ export const SECTION_HEADING_INFO: Record<string, SectionHeadingType> = {
 
 export interface EnvironmentOverrideComponentProps {
     appList?: ConfigAppList[]
-    environments: AppEnvironment[]
+    environments: AppConfigState['environmentList']
     reloadEnvironments: () => void
     envName?: string
     appName?: string
@@ -58,6 +60,7 @@ export interface EnvironmentOverrideComponentProps {
     onErrorRedirectURL: string
     envConfig: EnvConfigurationState
     fetchEnvConfig: (envId: number) => void
+    appOrEnvIdToResourceApprovalConfigurationMap: AppConfigState['envIdToEnvApprovalConfigurationMap']
 }
 
 export interface CommonEnvironmentOverridesProps {

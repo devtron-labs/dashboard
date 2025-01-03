@@ -23,12 +23,12 @@ import {
     useWindowSize,
     APPROVAL_MODAL_TYPE,
     YAMLStringify,
-    ACTION_STATE,
     DEFAULT_SECRET_PLACEHOLDER,
     ApiResourceGroupType,
     PluginDetailServiceParamsType,
     PipelineBuildStageType,
     SeverityCount,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link, PromptProps } from 'react-router-dom'
@@ -635,19 +635,6 @@ export function getRandomString() {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
 }
 
-export function sortBySelected(selectedArray: any[], availableArray: any[], matchKey: string) {
-    const selectedArrayMap = mapByKey(selectedArray, matchKey)
-
-    const actualSelectedArray = availableArray.filter((item) => selectedArrayMap.has(item[matchKey]))
-
-    const unselectedAvailableArray = availableArray.filter((item) => !selectedArrayMap.has(item[matchKey]))
-
-    return [
-        ...sortObjectArrayAlphabetically(actualSelectedArray, matchKey),
-        ...sortObjectArrayAlphabetically(unselectedAvailableArray, matchKey),
-    ]
-}
-
 export const sortObjectArrayAlphabetically = <T extends unknown>(arr: T[], compareKey: string) => {
     return arr.sort((a, b) => a[compareKey].localeCompare(b[compareKey]))
 }
@@ -1105,8 +1092,6 @@ export const getDeploymentAppType = (
     return allowedDeploymentTypes[0]
 }
 
-
-
 export const getNonEditableChartRepoText = (name: string): string => {
     return `Cannot edit chart repo "${name}". Some charts from this repository are being used by helm apps.`
 }
@@ -1121,10 +1106,11 @@ export const getAPIOptionsWithTriggerTimeout = (options?: APIOptions): APIOption
 }
 
 export const getShowResourceScanModal = (selectedResourceKind: NodeType, isTrivyInstalled: boolean): boolean => {
+    const { isManifestScanningEnabled } = useMainContext()
     const fromWorkloadOrRollout =
         getAppDetailsAggregator(selectedResourceKind) === AggregationKeys.Workloads ||
         selectedResourceKind === NodeType.Rollout
-    return window._env_.ENABLE_RESOURCE_SCAN && isTrivyInstalled && fromWorkloadOrRollout
+    return isManifestScanningEnabled && isTrivyInstalled && fromWorkloadOrRollout
 }
 
 export const getApprovalModalTypeFromURL = (url: string): APPROVAL_MODAL_TYPE => {
@@ -1137,18 +1123,6 @@ export const getApprovalModalTypeFromURL = (url: string): APPROVAL_MODAL_TYPE =>
     }
 
     return APPROVAL_MODAL_TYPE.CONFIG
-}
-
-export const getCTAClass = (userActionState: string, disableDeployButton?: boolean): string => {
-    let className = 'cta small flex ml-auto'
-    if (disableDeployButton) {
-        className += ' disabled-opacity'
-    } else if (userActionState === ACTION_STATE.BLOCKED) {
-        className += ' danger'
-    } else if (userActionState === ACTION_STATE.PARTIAL) {
-        className += ' warning'
-    }
-    return className
 }
 
 export const getPluginIdsFromBuildStage = (

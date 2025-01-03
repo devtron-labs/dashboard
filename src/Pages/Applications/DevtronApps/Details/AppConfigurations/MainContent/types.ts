@@ -5,6 +5,7 @@ import {
     ConfigToolbarPopupNodeType,
     DeploymentHistorySingleValue,
     DeploymentTemplateConfigState,
+    DraftMetadataDTO,
     OverrideMergeStrategyType,
     ProtectConfigTabsType,
     SelectPickerOptionType,
@@ -72,7 +73,10 @@ type ConfigToolbarReadMeProps =
           handleEnableReadmeView?: never
       }
 
-export type ConfigToolbarProps = {
+export type ConfigToolbarProps = Pick<
+    DraftMetadataDTO,
+    'draftId' | 'draftVersionId' | 'userApprovalMetadata' | 'requestedUserId'
+> & {
     configHeaderTab: ConfigHeaderTabType
     handleToggleScopedVariablesView: () => void
     resolveScopedVariables: boolean
@@ -113,13 +117,12 @@ export type ConfigToolbarProps = {
     /**
      * @default false
      */
-    isProtected?: boolean
+    isApprovalPolicyConfigured?: boolean
     /**
      * @default false
      */
     isApprovalPending?: boolean
     isDraftPresent?: boolean
-    approvalUsers: string[]
     /**
      * @default - false
      * If given would disable all the actions
@@ -135,6 +138,7 @@ export type ConfigToolbarProps = {
     isPublishedConfigPresent?: boolean
     headerMessage?: string
     showDeleteOverrideDraftEmptyState: boolean
+    handleReload: () => void
 } & ConfigToolbarReadMeProps
 
 interface ConfigToolbarPopupMenuLockedConfigDataType {
@@ -166,7 +170,7 @@ export interface GetConfigToolbarPopupConfigProps {
     isLoading: boolean
     isDraftAvailable: boolean
     handleShowEditHistory: () => void
-    isProtected?: boolean
+    isApprovalPolicyConfigured?: boolean
     isDeletable?: boolean
     isDeleteOverrideDraftPresent?: boolean
     isDeleteDisabled?: boolean

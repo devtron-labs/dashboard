@@ -22,15 +22,13 @@ import {
     sortCallback,
     TeamList,
     trash,
-    LastExecutionResponseType,
     EnvironmentListHelmResponse,
-    getSortedVulnerabilities,
     TemplateListDTO,
     getUrlWithSearchParams,
-    ROUTES,
     SERVER_MODE,
     ACCESS_TYPE_MAP,
     ModuleNameMap,
+    stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../config'
 import {
@@ -57,8 +55,9 @@ export function getAppConfigStatus(appId: number, isJobView?: boolean): Promise<
     return get(`${Routes.APP_CONFIG_STATUS}?app-id=${appId}${isJobView ? '&appType=2' : ''}`)
 }
 
-export const getSourceConfig = (id: string) => {
-    const URL = `${Routes.SOURCE_CONFIG_GET}/${id}`
+// NOTE: sending pipelineType to fetch workflowCacheConfig based on that
+export const getSourceConfig = (id: string, queryParams?: Record<'pipelineType', string>) => {
+    const URL = getUrlWithSearchParams<'pipelineType'>(`${Routes.SOURCE_CONFIG_GET}/${id}`, queryParams ?? {})
     return get(URL)
 }
 
@@ -139,12 +138,22 @@ export function getAppListMin(
     })
 }
 
-export function getProjectFilteredApps(
+export async function getProjectFilteredApps(
     projectIds: number[] | string[],
     accessType?: string,
 ): Promise<ProjectFilteredApps> {
     const chartOnlyQueryParam = accessType === ACCESS_TYPE_MAP.HELM_APPS ? '&appType=DevtronChart' : ''
-    return get(`app/min?teamIds=${projectIds.join(',')}${chartOnlyQueryParam}`)
+    const response = await get(`app/min?teamIds=${projectIds.join(',')}${chartOnlyQueryParam}`)
+    
+    return {
+        ...response,
+        result: (response.result || [])
+            .map((project) => ({
+                ...project,
+                appList: (project.appList ?? []).sort((a, b) => stringComparatorBySortOrder(a.name, b.name)),
+            }))
+            .sort((a, b) => stringComparatorBySortOrder(a.projectName, b.projectName)),
+    }
 }
 
 export function getAvailableCharts(
@@ -170,9 +179,16 @@ export function getAvailableCharts(
     })
 }
 
-export function getEnvironmentListMin(includeAllowedDeploymentTypes?: boolean): Promise<any> {
+export async function getEnvironmentListMin(includeAllowedDeploymentTypes?: boolean): Promise<any> {
     const url = `${Routes.ENVIRONMENT_LIST_MIN}${includeAllowedDeploymentTypes ? '?showDeploymentOptions=true' : ''}`
-    return get(url)
+    const response = await get(url)
+
+    return {
+        ...response,
+        result: (response?.result ?? []).sort((a, b) =>
+            stringComparatorBySortOrder(a.environment_name, b.environment_name),
+        ),
+    }
 }
 
 export const getCommonAppFilters = async (
@@ -303,48 +319,6 @@ export const validateToken = (): Promise<ResponseType<Record<'emailId' | 'isVeri
     return get(`devtron/auth/verify/v2`, { preventAutoLogout: true })
 }
 
-function parseLastExecutionResponse(response): LastExecutionResponseType {
-    const vulnerabilities = response.result.vulnerabilities || []
-    const groupedVulnerabilities = getSortedVulnerabilities(vulnerabilities)
-    return {
-        ...response,
-        result: {
-            ...response.result,
-            scanExecutionId: response.result.ScanExecutionId,
-            lastExecution: response.result.executionTime,
-            objectType: response.result.objectType,
-            severityCount: {
-                critical: response.result?.severityCount?.critical ?? 0,
-                high: response.result?.severityCount?.high ?? 0,
-                medium: response.result?.severityCount?.medium ?? 0,
-                low: response.result?.severityCount?.low ?? 0,
-                unknown: response.result?.severityCount?.unknown ?? 0,
-            },
-            vulnerabilities: groupedVulnerabilities.map((cve) => {
-                return {
-                    name: cve.cveName,
-                    severity: cve.severity,
-                    package: cve.package,
-                    version: cve.currentVersion,
-                    fixedVersion: cve.fixedVersion,
-                    policy: cve.permission,
-                }
-            }),
-            scanToolId: response.result.scanToolId,
-        },
-    }
-}
-
-export function getLastExecutionByAppArtifactId(
-    artifactId: string | number,
-    appId?: string | number,
-): Promise<LastExecutionResponseType> {
-    const url = getUrlWithSearchParams(ROUTES.SECURITY_SCAN_EXECUTION_DETAILS, { appId, artifactId })
-    return get(url).then((response) => {
-        return parseLastExecutionResponse(response)
-    })
-}
-
 export function getChartRepoList(): Promise<ResponseType> {
     const URL = `${Routes.CHART_REPO}/${Routes.CHART_LIST_SUBPATH}`
     return get(URL)
@@ -453,8 +427,20 @@ export function getWebhookDataMetaConfig(gitProviderId: string | number) {
     return get(URL)
 }
 
-export function getEnvironmentListHelmApps(): Promise<EnvironmentListHelmResponse> {
-    return get(Routes.ENVIRONMENT_LIST_MIN_HELM_PROJECTS)
+export async function getEnvironmentListHelmApps(): Promise<EnvironmentListHelmResponse> {
+    const response = await get(Routes.ENVIRONMENT_LIST_MIN_HELM_PROJECTS)
+
+    return {
+        ...response,
+        result: (response?.result ?? [])
+            .map((cluster) => ({
+                ...cluster,
+                environments: (cluster.environments ?? []).sort((a, b) =>
+                    stringComparatorBySortOrder(a.environmentName, b.environmentName),
+                ),
+            }))
+            .sort((a, b) => stringComparatorBySortOrder(a.clusterName, b.clusterName)),
+    }
 }
 
 export function getClusterNamespaceMapping(): Promise<ClusterEnvironmentDetailList> {

@@ -21,13 +21,13 @@ import {
     FilterConditionsListType,
     MODAL_TYPE,
     ResponseType,
-    UserApprovalConfigType,
     WorkflowNodeType,
     WorkflowType,
     AppInfoListType,
     GVKType,
     UseUrlFiltersReturnType,
     CommonNodeAttr,
+    ApprovalConfigDataType,
     RuntimePluginVariables,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDMaterialProps, RuntimeParamsErrorState } from '../app/details/triggerView/types'
@@ -35,7 +35,7 @@ import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
 import { MultiValue } from 'react-select'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
 import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
-import { EnvConfigurationState } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
+import { AppConfigState, EnvConfigurationState } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 import { WebhookPayloadType } from '@Components/app/details/triggerView/types'
 import { TIME_STAMP_ORDER } from '@Components/app/details/triggerView/Constants'
 
@@ -82,8 +82,7 @@ export interface BulkCDDetailType
     parentPipelineId?: string
     parentPipelineType?: WorkflowNodeType
     parentEnvironmentName?: string
-    approvalUsers?: string[]
-    userApprovalConfig?: UserApprovalConfigType
+    approvalConfigData?: ApprovalConfigDataType
     requestedUserId?: number
     appReleaseTags?: string[]
     tagsEditable?: boolean
@@ -206,7 +205,6 @@ export interface WorkflowAppSelectionType {
 export interface ConfigAppList {
     id: number
     name: string
-    isProtected?: boolean
 }
 
 export interface EnvApp {
@@ -256,6 +254,7 @@ export interface ApplicationRouteType {
     envAppList: ConfigAppList[]
     envConfig: EnvConfigurationState
     fetchEnvConfig: () => void
+    appIdToAppApprovalConfigMap: AppConfigState['envIdToEnvApprovalConfigurationMap']
 }
 
 export interface AppGroupFilterConfig

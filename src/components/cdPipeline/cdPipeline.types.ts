@@ -18,7 +18,6 @@ import {
     DeploymentStrategy,
     Environment,
     SavedDeploymentStrategy,
-    UserApprovalConfigType,
     VariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -70,7 +69,6 @@ export interface PipelineConfig {
     isClusterCdActive: boolean
     parentPipelineId: number
     parentPipelineType: string
-    userApprovalConfig?: UserApprovalConfigType
     isDigestEnforcedForEnv?: boolean
 }
 

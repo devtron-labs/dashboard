@@ -4,6 +4,7 @@ import Tippy from '@tippyjs/react'
 import { GroupBase, OptionsOrGroups } from 'react-select'
 
 import {
+    BASE_CONFIGURATION_ENV_ID,
     Button,
     ButtonComponentType,
     ButtonStyleType,
@@ -24,7 +25,6 @@ import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { ReactComponent as ICLocked } from '@Icons/ic-locked.svg'
 import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
 import { URLS } from '@Config/routes'
-import { ReactComponent as ProtectedIcon } from '@Icons/ic-shield-protect-fill.svg'
 import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
 import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
@@ -43,20 +43,21 @@ export const EnvConfigurationsNav = ({
     showDeploymentTemplate,
     envConfig,
     fetchEnvConfig,
-    isBaseConfigProtected,
-    environments,
+    environments: resourceList,
     goBackURL,
     paramToCheck = 'envId',
     showComparison,
     isCMSecretLocked,
     hideEnvSelector,
     compareWithURL,
+    appOrEnvIdToResourceApprovalConfigurationMap,
 }: EnvConfigurationsNavProps) => {
     // HOOKS
     const history = useHistory()
     const { pathname } = useLocation()
     const { path, params } = useRouteMatch<EnvConfigRouteParams>()
     const { envId } = params
+    const parsedResourceId = +params[paramToCheck]
 
     // STATES
     const [expandedIds, setExpandedIds] =
@@ -71,13 +72,12 @@ export const EnvConfigurationsNav = ({
     // CONSTANTS
     const { isLoading, config } = envConfig
     /** Current Environment Data. */
-    const environmentData =
-        environments.find((environment) => environment.id === +params[paramToCheck]) ||
+    const resourceData =
+        resourceList.find((resource) => resource.id === parsedResourceId) ||
         (showBaseConfigurations
             ? {
                   name: BASE_CONFIGURATIONS.name,
                   id: BASE_CONFIGURATIONS.id,
-                  isProtected: isBaseConfigProtected,
               }
             : null)
     const resourceType = resourceTypeBasedOnPath(pathname)
@@ -107,12 +107,12 @@ export const EnvConfigurationsNav = ({
     }
 
     useEffect(() => {
-        if (environmentData.id === BASE_CONFIGURATIONS.id && envId) {
+        if (resourceData.id === BASE_CONFIGURATIONS.id && envId) {
             // Removing `/env-override/:envId` from pathname, resulting path will be base configuration path.
             const [basePath, resourcePath] = pathname.split(`/${URLS.APP_ENV_OVERRIDE_CONFIG}/${envId}`)
             history.push(`${basePath}${resourcePath}`)
         }
-    }, [environmentData, envId])
+    }, [resourceData, envId])
 
     useEffect(() => {
         // Fetch the env configuration
@@ -125,10 +125,17 @@ export const EnvConfigurationsNav = ({
 
     useEffect(() => {
         if (!isLoading && config) {
-            const newEnvConfig = getEnvConfiguration(config, path, params, environmentData.isProtected)
+            const newEnvConfig = getEnvConfiguration(
+                config,
+                path,
+                params,
+                // For base configurations, the resource id is undefined
+                appOrEnvIdToResourceApprovalConfigurationMap?.[parsedResourceId || BASE_CONFIGURATION_ENV_ID]
+                    ?.approvalConfigurationMap,
+            )
             setUpdatedEnvConfig(isCreate ? addUnnamedNavLink(newEnvConfig) : newEnvConfig)
         }
-    }, [isLoading, config, pathname, isCreate])
+    }, [isLoading, config, pathname, isCreate, appOrEnvIdToResourceApprovalConfigurationMap])
 
     useEffect(() => {
         if (!isLoading && config) {
@@ -244,7 +251,6 @@ export const EnvConfigurationsNav = ({
               {
                   label: BASE_CONFIGURATIONS.name,
                   value: BASE_CONFIGURATIONS.id,
-                  endIcon: isBaseConfigProtected ? <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" /> : null,
               },
           ]
         : []
@@ -253,17 +259,16 @@ export const EnvConfigurationsNav = ({
         ...baseEnvOption,
         {
             label: paramToCheck === 'envId' ? 'Environments' : 'Applications',
-            options: environments.map(({ name, id, isProtected }) => ({
+            options: resourceList.map(({ name, id }) => ({
                 label: name,
                 value: id,
-                endIcon: isProtected ? <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" /> : null,
             })),
         },
     ]
 
     const onEnvSelect = ({ value }: SelectPickerOptionType<number>) => {
         // Exit early if the selected environment is the current one
-        if (environmentData.id === value) {
+        if (resourceData.id === value) {
             return
         }
 
@@ -309,19 +314,18 @@ export const EnvConfigurationsNav = ({
                     classNamePrefix="env-config-selector"
                     variant={SelectPickerVariantType.BORDER_LESS}
                     isClearable={false}
-                    value={getSelectPickerOptionByValue(envOptions, +params[paramToCheck], baseEnvOption[0])}
+                    value={getSelectPickerOptionByValue(envOptions, parsedResourceId, baseEnvOption[0])}
                     options={envOptions}
                     onChange={onEnvSelect}
                     placeholder="Select Environment"
                     showSelectedOptionIcon={false}
                 />
             </div>
-            {environmentData?.isProtected && <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" />}
         </div>
     )
 
     const renderCompareWithBtn = () => {
-        const { name: compareTo } = environmentData
+        const { name: compareTo } = resourceData
 
         // Extract the resource name from the current pathname based on resourceType
         const resourceName = pathname.split(`/${resourceType}/`)[1]
@@ -358,7 +362,7 @@ export const EnvConfigurationsNav = ({
             {!hideEnvSelector && renderEnvSelector()}
             {showComparison && renderCompareWithBtn()}
             <div className="mw-none p-8 flex-grow-1 dc__overflow-auto">
-                {isLoading || !environmentData ? (
+                {isLoading || !resourceData ? (
                     ['90', '70', '50'].map((item) => <ShimmerText key={item} width={item} />)
                 ) : (
                     <>

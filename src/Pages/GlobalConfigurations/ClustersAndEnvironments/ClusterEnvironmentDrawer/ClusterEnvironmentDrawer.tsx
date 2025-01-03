@@ -238,10 +238,10 @@ export const ClusterEnvironmentDrawer = ({
                     </button>
                 </div>
                 <form
-                    className="flex-grow-1 flexbox-col"
+                    className="flex-grow-1 flexbox-col mh-0"
                     onSubmit={handleSubmit(namespaceLabels.labels ? withLabelEditValidation : onValidation())}
                 >
-                    <div className="dc__overflow-scroll p-20 flex-grow-1">
+                    <div className="dc__overflow-auto p-20 flex-grow-1">
                         <div className="mb-16">
                             <CustomInput
                                 dataTestid="environment-name"
@@ -319,7 +319,7 @@ export const ClusterEnvironmentDrawer = ({
                             </div>
                         )}
                     </div>
-                    <div className="dc__border-top flexbox dc__align-items-center dc__content-space py-16 px-20 dc__position-sticky dc__bottom-0 bcn-0">
+                    <div className="dc__border-top flexbox dc__align-items-center dc__content-space py-16 px-20 dc__bottom-0 bcn-0">
                         {id && (
                             <Button
                                 variant={ButtonVariantType.secondary}
@@ -350,6 +350,7 @@ export const ClusterEnvironmentDrawer = ({
                         </div>
                     </div>
                 </form>
+
                 {showDeleteConfirmation && (
                     <DeleteComponent
                         deleteComponent={deleteEnvironment}

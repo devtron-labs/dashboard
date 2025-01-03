@@ -144,6 +144,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 showPluginWarning: false,
                 isTriggerBlocked: false,
                 pluginBlockState: getParsedPluginPolicyConsequenceData() || null,
+                approvalConfigData: null,
             })
         }
 
@@ -574,6 +575,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         ciPipelineId={workflowCIPipelineId}
                         workflowId={this.props.id}
                         isWebhookCD={isWebhookCD}
+                        showApprovalConfigInfoTippy
                     />
                 )
             }
@@ -633,6 +635,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         isParallelEdge
                         isWebhookCD={isWebhookCD}
                         leftTooltipContent={leftTooltipContent}
+                        showApprovalConfigInfoTippy
                     />,
                 )
             } else {

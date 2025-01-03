@@ -49,12 +49,6 @@ export const getPreviousDeploymentValue = (value: string) => {
 export const getEnvironmentIdByEnvironmentName = (environments: EnvironmentOptionType[], name: string) =>
     environments.find(({ name: _name }) => name === _name)?.id ?? BASE_CONFIGURATIONS.id
 
-export const isEnvProtected = (
-    environments: EnvironmentOptionType[],
-    envName: string,
-    isBaseConfigProtected?: boolean,
-) => environments.find(({ name }) => name === envName)?.isProtected ?? isBaseConfigProtected
-
 /**
  * Returns the application and environment IDs for comparison based on the given parameters.
  *
@@ -216,7 +210,7 @@ export const getCompareEnvironmentSelectorOptions = (
  */
 export const getEnvironmentConfigTypeOptions = (
     previousDeploymentsList: TemplateListDTO[] = [],
-    isProtected = false,
+    isApprovalPolicyConfigured = false,
     isManifestView = false,
 ): OptionsOrGroups<SelectPickerOptionType, GroupBase<SelectPickerOptionType>> => [
     {
@@ -224,7 +218,7 @@ export const getEnvironmentConfigTypeOptions = (
         value: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
         description: 'Configurations that will be deployed in the next deployment',
     },
-    ...(isProtected
+    ...(isApprovalPolicyConfigured
         ? [
               {
                   label: 'Drafts only',

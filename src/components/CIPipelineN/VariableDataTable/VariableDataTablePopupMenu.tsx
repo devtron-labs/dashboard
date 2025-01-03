@@ -6,9 +6,10 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     stopPropagation,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICCross } from '@Icons/ic-cross.svg'
+import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { ReactComponent as ICSlidersVertical } from '@Icons/ic-sliders-vertical.svg'
 import { ReactComponent as ICDot } from '@Icons/ic-dot.svg'
 
@@ -87,13 +88,15 @@ export const VariableDataTablePopupMenu = ({
                             <div className="px-12 py-8 flexbox dc__align-items-center dc__content-space dc__gap-8 dc__border-bottom-n1">
                                 <div className="flexbox dc__align-items-center dc__gap-8">
                                     {showHeaderIcon && <ICSlidersVertical className="icon-dim-16" />}
-                                    <p className="m-0 fw-6 fs-13 lh-20">{heading}</p>
+                                    <Tooltip content={heading}>
+                                        <p className="m-0 fw-6 fs-13 lh-20 dc__truncate">{heading}</p>
+                                    </Tooltip>
                                 </div>
                                 <Button
                                     size={ComponentSizeType.small}
                                     style={ButtonStyleType.negativeGrey}
                                     variant={ButtonVariantType.borderLess}
-                                    icon={<ICCross />}
+                                    icon={<ICClose />}
                                     dataTestId="popup-close-button"
                                     ariaLabel="Close Popup"
                                     showAriaLabelInTippy={false}

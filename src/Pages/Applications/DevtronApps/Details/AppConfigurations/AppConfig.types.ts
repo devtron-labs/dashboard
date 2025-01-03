@@ -20,6 +20,7 @@ import {
     AppEnvDeploymentConfigType,
     EnvResourceType,
     AppEnvironment,
+    ResourceIdToResourceApprovalPolicyConfigMapType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ViewType } from '@Config/constants'
@@ -43,7 +44,6 @@ export enum STAGE_NAME {
     SECRETS = 'SECRETS',
     ENV_OVERRIDE = 'ENV_OVERRIDE',
     EXTERNAL_LINKS = 'EXTERNAL_LINKS',
-    PROTECT_CONFIGURATION = 'PROTECT_CONFIGURATION',
     REDIRECT_ITEM = 'REDIRECT_ITEM',
 }
 
@@ -92,10 +92,7 @@ export interface AppConfigState {
     workflowsRes?: WorkflowResult
     /** Array containing environments data. */
     environmentList?: AppEnvironment[]
-    /** Boolean indicating if the base configuration is protected. */
-    isBaseConfigProtected?: boolean
-    /** Array of configuration protection data which denotes which env is in protected state. */
-    configProtectionData?: ConfigProtection[]
+    envIdToEnvApprovalConfigurationMap: ResourceIdToResourceApprovalPolicyConfigMapType
     /** The environment config containing the loading state, configState and title of deployment template, configmaps & secrets. */
     envConfig: EnvConfigurationState
 }
@@ -140,17 +137,6 @@ export interface NextButtonProps {
     isDisabled: boolean
 }
 
-export enum ProtectionState {
-    ENABLED = 1,
-    DISABLED = 2,
-}
-
-export type ConfigProtection = {
-    appId: number
-    envId: number
-    state: ProtectionState
-}
-
 interface CommonAppConfigurationProps {
     appId: string
     resourceKind: Extract<ResourceKindType, ResourceKindType.devtronApplication | ResourceKindType.job>
@@ -169,17 +155,18 @@ interface CommonAppConfigurationProps {
     fetchEnvConfig: (envId: number) => void
 }
 
-export interface AppConfigurationContextType extends CommonAppConfigurationProps {
+export interface AppConfigurationContextType
+    extends CommonAppConfigurationProps,
+        Pick<AppConfigState, 'envIdToEnvApprovalConfigurationMap'> {
     isUnlocked: AppStageUnlockedType
     navItems: CustomNavItemsType[]
     isCiPipeline: boolean
     isCDPipeline: boolean
-    environments: AppEnvironment[]
+    environments: AppConfigState['environmentList']
     workflowsRes: WorkflowResult
     setRepoState: React.Dispatch<React.SetStateAction<string>>
     isJobView: boolean
-    isBaseConfigProtected: boolean
-    configProtectionData: ConfigProtection[]
+    envIdToEnvApprovalConfigurationMap: ResourceIdToResourceApprovalPolicyConfigMapType
     lastUnlockedStage: string
     isWorkflowEditorUnlocked: boolean
     getRepo: string
@@ -214,13 +201,11 @@ export enum EnvConfigObjectKey {
 export interface EnvironmentOptionType {
     name: string
     id: number
-    isProtected?: boolean
 }
 
 export interface EnvConfigurationsNavProps {
     envConfig: EnvConfigurationState
     fetchEnvConfig: (envId: number) => void
-    isBaseConfigProtected?: boolean
     environments: EnvironmentOptionType[]
     paramToCheck?: 'appId' | 'envId'
     goBackURL: string
@@ -236,6 +221,7 @@ export interface EnvConfigurationsNavProps {
     showDeploymentTemplate?: boolean
     isCMSecretLocked?: boolean
     hideEnvSelector?: boolean
+    appOrEnvIdToResourceApprovalConfigurationMap: AppConfigState['envIdToEnvApprovalConfigurationMap']
 }
 
 export interface EnvConfigRouteParams {
@@ -259,9 +245,9 @@ export interface DeploymentConfigParams {
 }
 
 export type DeploymentConfigCompareProps = {
+    appOrEnvIdToResourceApprovalConfigurationMap: AppConfigState['envIdToEnvApprovalConfigurationMap']
     environments: EnvironmentOptionType[]
     goBackURL?: string
-    isBaseConfigProtected?: boolean
     getNavItemHref: (resourceType: EnvResourceType, resourceName: string) => string
     overwriteNavHeading?: string
 } & (

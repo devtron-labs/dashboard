@@ -24,7 +24,6 @@ import {
     SelectedNode,
     WorkflowType,
     PluginDataStoreType,
-    ValidationResponseType,
     PipelineFormType,
     MandatoryPluginDataType,
     CiPipeline,
@@ -253,7 +252,6 @@ export interface PipelineFormDataErrorType {
         message: string
         isValid: boolean
     }
-    userApprovalConfig?: ValidationResponseType
 }
 
 interface HandleValidateMandatoryPluginsParamsType {
@@ -338,6 +336,7 @@ export interface PipelineContext {
     handleDisableParentModalCloseUpdate?: (disableParentModalClose: boolean) => void
     handleValidateMandatoryPlugins: (params: HandleValidateMandatoryPluginsParamsType) => void
     mandatoryPluginData: MandatoryPluginDataType
+    isBlobStorageConfigured?: boolean
     uploadFile: (file: UploadFileProps) => Promise<UploadFileDTO>
 }
 

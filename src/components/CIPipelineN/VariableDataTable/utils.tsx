@@ -242,6 +242,7 @@ export const getValColumnRowProps = ({
     isCdPipeline,
     selectedTaskIndex,
     inputVariablesListFromPrevStep,
+    isFileUploading,
 }: GetValColumnRowPropsType): VariableDataRowType['data']['format'] => {
     if (type === PluginVariableType.INPUT) {
         if (format === VariableTypeFormat.FILE) {
@@ -249,6 +250,7 @@ export const getValColumnRowProps = ({
                 type: DynamicDataTableRowDataType.FILE_UPLOAD,
                 value,
                 props: {
+                    isLoading: isFileUploading,
                     fileTypes: valueConstraint?.constraint?.fileProperty?.allowedExtensions || [],
                 },
             }
@@ -281,13 +283,10 @@ export const getValColumnRowProps = ({
             props: {
                 placeholder: 'Enter value or variable',
                 options: optionsForValColumn,
-                selectPickerProps: {
-                    isCreatable:
-                        format !== VariableTypeFormat.BOOL &&
-                        (!valueConstraint?.choices?.length || !valueConstraint.blockCustomValue),
-                    formatCreateLabel: (inputValue) => `Use ${inputValue}`,
-                },
-                Icon:
+                isCreatable:
+                    format !== VariableTypeFormat.BOOL &&
+                    (!valueConstraint?.choices?.length || !valueConstraint.blockCustomValue),
+                icon:
                     refVariableStage || (variableType && variableType !== RefVariableType.NEW) ? (
                         <SystemVariableIcon />
                     ) : null,
@@ -374,6 +373,7 @@ export const getVariableDataTableRows = ({
     ioVariables,
     type,
     isCustomTask,
+    idToIsFileUploadingMap,
     ...restProps
 }: GetVariableDataTableInitialRowsProps): VariableDataRowType[] =>
     (ioVariables || []).map(
@@ -404,6 +404,7 @@ export const getVariableDataTableRows = ({
                 refVariableName,
                 refVariableStage,
                 valueConstraint,
+                isFileUploading: idToIsFileUploadingMap[id],
             })
 
             return {
