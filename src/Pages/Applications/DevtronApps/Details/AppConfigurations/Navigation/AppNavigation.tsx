@@ -143,7 +143,7 @@ export const AppNavigation = () => {
                         compareWithURL={`${path}/:envId(\\d+)?`}
                         showComparison={!isJobView && isUnlocked.workflowEditor}
                         isCMSecretLocked={!isUnlocked.workflowEditor}
-                        envIdToEnvApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                        appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
                     />
                 )}
             </Route>

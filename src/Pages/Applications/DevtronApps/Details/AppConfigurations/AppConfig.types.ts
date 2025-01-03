@@ -203,7 +203,7 @@ export interface EnvironmentOptionType {
     id: number
 }
 
-export interface EnvConfigurationsNavProps extends Pick<AppConfigState, 'envIdToEnvApprovalConfigurationMap'> {
+export interface EnvConfigurationsNavProps {
     envConfig: EnvConfigurationState
     fetchEnvConfig: (envId: number) => void
     environments: EnvironmentOptionType[]
@@ -221,6 +221,7 @@ export interface EnvConfigurationsNavProps extends Pick<AppConfigState, 'envIdTo
     showDeploymentTemplate?: boolean
     isCMSecretLocked?: boolean
     hideEnvSelector?: boolean
+    appOrEnvIdToResourceApprovalConfigurationMap: AppConfigState['envIdToEnvApprovalConfigurationMap']
 }
 
 export interface EnvConfigRouteParams {

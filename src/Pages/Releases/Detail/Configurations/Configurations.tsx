@@ -85,7 +85,7 @@ export const Configurations = () => {
                     showDeploymentTemplate
                     showComparison
                     hideEnvSelector
-                    envIdToEnvApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                    appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
                 />
             </Route>
         </Switch>
