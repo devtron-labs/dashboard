@@ -463,14 +463,6 @@ export interface ApplicationConditionResponse {
     message: string
 }
 
-export enum CIPipelineNodeType {
-    EXTERNAL_CI = 'EXTERNAL-CI',
-    CI = 'CI',
-    LINKED_CI = 'LINKED-CI',
-    JOB_CI = 'JOB-CI',
-    LINKED_CD = 'LINKED_CD',
-}
-
 export interface Task {
     name?: string
     type?: string

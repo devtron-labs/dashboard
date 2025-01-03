@@ -27,11 +27,11 @@ import {
     PipelineFormType,
     OptionType,
     DynamicDataTableCellValidationState,
+    ChangeCIPayloadType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router-dom'
 import { ValidateInputOutputVariableCellProps } from '@Components/CIPipelineN/VariableDataTable/types'
 import { HostURLConfig } from '../../services/service.types'
-import { ChangeCIPayloadType } from '../workflowEditor/types'
 
 export interface ExternalCIPipelineState {
     code: number

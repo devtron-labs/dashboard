@@ -306,11 +306,6 @@ export const PATTERNS = {
     ESCAPED_CHARACTERS: /[.*+?^${}()|[\]\\]/g,
 }
 
-export const TriggerType = {
-    Auto: 'AUTOMATIC',
-    Manual: 'MANUAL',
-} as const
-
 export const repoType = {
     DEFAULT: 'DEFAULT',
     CONFIGURE: 'CONFIGURE',

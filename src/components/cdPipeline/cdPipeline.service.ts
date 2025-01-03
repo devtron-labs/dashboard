@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { post, get, sortCallback, getEnvironmentListMinPublic } from '@devtron-labs/devtron-fe-common-lib'
-import { Routes, TriggerType } from '../../config'
+import { post, get, sortCallback, getEnvironmentListMinPublic, TriggerType } from '@devtron-labs/devtron-fe-common-lib'
+import { Routes } from '../../config'
 import { getEnvironmentSecrets, getEnvironmentConfigs } from '../../services/service'
 
 export function getCDPipelineNameSuggestion(appId: string | number): Promise<any> {
@@ -26,11 +26,6 @@ export function getCDPipelineNameSuggestion(appId: string | number): Promise<any
 export function getDeploymentStrategyList(appId) {
     const URL = `${Routes.DEPLOYMENT_STRATEGY}/${appId}`
     return get(URL)
-}
-
-export function saveCDPipeline(request) {
-    const URL = `${Routes.CD_CONFIG}`
-    return post(URL, request)
 }
 
 export function updateCDPipeline(request) {

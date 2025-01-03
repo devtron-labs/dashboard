@@ -15,8 +15,12 @@
  */
 
 import { Dispatch, MutableRefObject, SetStateAction } from 'react'
-import { PipelineFormType, PluginDetailPayloadType, ReleaseMode } from '@devtron-labs/devtron-fe-common-lib'
-import { ChangeCIPayloadType } from '../workflowEditor/types'
+import {
+    PipelineFormType,
+    PluginDetailPayloadType,
+    ReleaseMode,
+    ChangeCIPayloadType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 // Have added any type for most of these since they were legacy do not know the implications of changing them
 export interface CDPipelineProps {

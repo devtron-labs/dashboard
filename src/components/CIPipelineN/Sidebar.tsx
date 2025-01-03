@@ -23,9 +23,10 @@ import {
     SelectPicker,
     ResourceKindType,
     WORKFLOW_CACHE_CONFIG_ENUM,
+    TriggerType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { BuildStageVariable, DOCUMENTATION, TriggerType } from '../../config'
+import { BuildStageVariable, DOCUMENTATION } from '../../config'
 import { TaskList } from './TaskList'
 import { importComponentFromFELibrary } from '../common'
 import { CIPipelineSidebarType } from '../ciConfig/types'

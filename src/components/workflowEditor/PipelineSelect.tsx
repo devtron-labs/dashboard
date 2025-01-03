@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
-import { Modal, PipelineType } from '@devtron-labs/devtron-fe-common-lib'
+import { Component } from 'react'
+import { Modal, PipelineType, CIPipelineNodeType } from '@devtron-labs/devtron-fe-common-lib'
 import { PipelineSelectProps } from './types'
 // Not using this image anywhere when completely deprecated remove this image
 import ci from '../../assets/img/ic-pipeline-ci@2x.png'
@@ -23,7 +23,6 @@ import linkedPipeline from '../../assets/icons/ic-pipeline-linked.svg'
 // Not using this image anywhere when completely deprecated remove this image
 import webhook from '../../assets/img/webhook.svg'
 import ciJobIcon from '../../assets/icons/ic-job-node.svg'
-import { CIPipelineNodeType } from '../app/details/triggerView/types'
 
 /**
  * @deprecated
