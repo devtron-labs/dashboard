@@ -193,6 +193,7 @@ export const appGroupAppSelectorStyle = {
         fontSize: '12px',
         width: state.menuIsOpen ? '250px' : 'unset',
         cursor: state.isDisabled ? 'not-allowed' : 'normal',
+        backgroundColor: 'var(--N0)',
     }),
     singleValue: (base, state) => ({
         ...base,
@@ -237,6 +238,10 @@ export const appGroupAppSelectorStyle = {
         ...base,
         padding: '0 4px 0 4px',
     }),
+    menu: (base) => ({
+        ...base,
+        backgroundColor: 'var(--N0)',
+    }),
 }
 
 const getBGColor = (isSelected: boolean, isFocused: boolean): string => {
@@ -246,7 +251,7 @@ const getBGColor = (isSelected: boolean, isFocused: boolean): string => {
     if (isFocused) {
         return 'var(--N50)'
     }
-    return 'white'
+    return 'var(--N0)'
 }
 
 export const getOptionBGClass = (isSelected: boolean, isFocused: boolean): string => {
