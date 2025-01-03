@@ -380,7 +380,7 @@ export class Workflow extends Component<WorkflowProps> {
                                 {this.props.name}
                             </span>
 
-                            <div className='workflow-actions'>
+                            <div className="dc__separated-flexbox">
                                 {BulkDeployLink && !!this.props.nodes.some((node) => node.type === 'CD') && (
                                     <BulkDeployLink
                                         workflowId={this.props.id}

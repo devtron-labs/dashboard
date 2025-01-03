@@ -5344,3 +5344,24 @@ details[open] {
     z-index: var(--modal-index);
     backdrop-filter: blur(1px);
 }
+
+.dc__separated-flexbox {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+
+    & > :not(:first-child) {
+        position: relative;
+
+        &::before {
+            width: 1px;
+            height: 16px;
+            background-color: var(--N200);
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    }
+}
