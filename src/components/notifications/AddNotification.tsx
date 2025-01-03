@@ -35,7 +35,7 @@ import { RouteComponentProps, Link } from 'react-router-dom'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import CreatableSelect from 'react-select/creatable'
-import { SESConfigModal } from './SESConfigModal'
+import SESConfigModal from './SESConfigModal'
 import { SlackConfigModal } from './SlackConfigModal'
 import { Select, validateEmail, ErrorBoundary } from '../common'
 import { ReactComponent as Slack } from '../../assets/icons/slack-logo.svg'
@@ -985,7 +985,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                 showError(error)
                             })
                     }}
-                    closeSESConfigModal={(event) => {
+                    closeSESConfigModal={() => {
                         this.setState({ showSESConfigModal: false })
                     }}
                 />
@@ -1011,7 +1011,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                 showError(error)
                             })
                     }}
-                    closeSMTPConfigModal={(event) => {
+                    closeSMTPConfigModal={() => {
                         this.setState({ showSMTPConfigModal: false })
                     }}
                 />

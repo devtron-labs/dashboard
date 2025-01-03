@@ -30,7 +30,7 @@ interface NotificationsProps extends RouteComponentProps<{}> {
 export default class Notifications extends Component<NotificationsProps, {}> {
     renderNotificationHeader() {
         return (
-            <div className="notification-page bcn-0 h-100">
+            <div className="notification-page bcn-0 h-100 dc__overflow-hidden">
                 <div className="notification-page__header">
                     <FeatureTitleWithInfo
                         title={HEADER_TEXT.NOTIFICATIONS.title}
