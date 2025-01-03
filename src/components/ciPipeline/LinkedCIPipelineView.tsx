@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import {
     showError,
     Progressing,
@@ -28,11 +28,12 @@ import {
     noop,
     ToastVariantType,
     ToastManager,
+    TriggerType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { getInitDataWithCIPipeline, deleteCIPipeline } from './ciPipeline.service'
-import { TriggerType, ViewType, URLS } from '../../config'
+import { ViewType, URLS } from '../../config'
 import { CIPipelineProps, CIPipelineState } from './types'
 import { getCIPipelineURL, Info } from '../common'
 import { getWorkflowList } from '../../services/service'

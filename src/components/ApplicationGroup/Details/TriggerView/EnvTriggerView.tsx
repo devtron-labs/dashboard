@@ -49,6 +49,7 @@ import {
     getStageTitle,
     TriggerBlockType,
     RuntimePluginVariables,
+    CIPipelineNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -64,7 +65,6 @@ import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import {
     CIMaterialProps,
     CIMaterialRouterProps,
-    CIPipelineNodeType,
     MATERIAL_TYPE,
     RuntimeParamsErrorState,
 } from '../../../app/details/triggerView/types'

@@ -25,6 +25,7 @@ import {
     ButtonWithLoader,
     ToastVariantType,
     ToastManager,
+    TriggerType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { NavLink } from 'react-router-dom'
@@ -34,7 +35,7 @@ import {
     deleteCIPipeline,
     getPipelineMetaConfiguration,
 } from './ciPipeline.service'
-import { SourceTypeMap, TriggerType, ViewType, URLS } from '../../config'
+import { SourceTypeMap, ViewType, URLS } from '../../config'
 import { CIPipelineProps, ExternalCIPipelineState } from './types'
 import { CopyButton } from '../common'
 import error from '../../assets/icons/misc/errorInfo.svg'
