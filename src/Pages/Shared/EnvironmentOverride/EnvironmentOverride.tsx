@@ -59,7 +59,7 @@ const EnvironmentOverride = ({
     const environmentsMap = mapByKey(environments || [], 'environmentId')
     const appMap = mapByKey(appList || [], 'id')
     const approvalConfigMap =
-        appOrEnvIdToResourceApprovalConfigurationMap[+(isAppGroupView ? params.appId : params.envId)]
+        appOrEnvIdToResourceApprovalConfigurationMap?.[+(isAppGroupView ? params.appId : params.envId)]
             ?.approvalConfigurationMap
     const isDeploymentOverride = !!location.pathname.includes(URLS.APP_DEPLOYMENT_CONFIG)
 
