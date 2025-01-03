@@ -47,13 +47,15 @@ import {
 import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG, URLS } from './config'
 import Hotjar from './components/Hotjar/Hotjar'
 import { validateToken } from './services/service'
+import { getCurrentTheme, updateTheme } from './utils'
+import { ThemeType } from './constants'
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'))
 const Login = lazy(() => import('./components/login/Login'))
 const GenericDirectApprovalModal = importComponentFromFELibrary('GenericDirectApprovalModal')
 
 export default function App() {
-    const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('dark')
+    const [currentTheme, setCurrentTheme] = useState<ThemeType>(getCurrentTheme())
 
     const onlineToastRef = useRef(null)
     const updateToastRef = useRef(null)
@@ -331,6 +333,15 @@ export default function App() {
         }
     }, [currentTheme])
 
+    const handleThemeChange = () => {
+        setCurrentTheme((prevTheme) => {
+            const updatedTheme = prevTheme === ThemeType.light ? ThemeType.dark : ThemeType.light
+            updateTheme(updatedTheme)
+
+            return updatedTheme
+        })
+    }
+
     return (
         <div className={customThemeClassName}>
             <Suspense fallback={null}>
@@ -383,9 +394,7 @@ export default function App() {
                     size={ComponentSizeType.small}
                     ariaLabel="Toggle theme"
                     showAriaLabelInTippy={false}
-                    onClick={() => {
-                        setCurrentTheme(currentTheme === 'light' ? 'dark' : 'light')
-                    }}
+                    onClick={handleThemeChange}
                     dataTestId="toggle-theme"
                 />
             </div>
