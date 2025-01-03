@@ -48,7 +48,7 @@ const ApplicationRoute = ({
                     paramToCheck="appId"
                     compareWithURL={path}
                     showComparison
-                    envIdToEnvApprovalConfigurationMap={appIdToAppApprovalConfigMap}
+                    appOrEnvIdToResourceApprovalConfigurationMap={appIdToAppApprovalConfigMap}
                 />
             </Route>
             <Route key="default-navigation">

@@ -5345,6 +5345,17 @@ details[open] {
     backdrop-filter: blur(1px);
 }
 
+.dc__unset-pre {
+    background: inherit;
+    border: none;
+    padding: inherit;
+    white-space: pre-wrap;       /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
 .vertical-divider {
     position: relative;
 
