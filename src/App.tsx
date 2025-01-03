@@ -47,7 +47,6 @@ import {
 import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG, URLS } from './config'
 import Hotjar from './components/Hotjar/Hotjar'
 import { validateToken } from './services/service'
-import { setCurrentClient } from '@sentry/browser'
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'))
 const Login = lazy(() => import('./components/login/Login'))
