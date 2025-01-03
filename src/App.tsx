@@ -33,6 +33,7 @@ import {
     ButtonVariantType,
     ButtonStyleType,
     ComponentSizeType,
+    useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICSparkles } from '@Icons/ic-sparkles.svg'
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
@@ -47,15 +48,13 @@ import {
 import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG, URLS } from './config'
 import Hotjar from './components/Hotjar/Hotjar'
 import { validateToken } from './services/service'
-import { getCurrentTheme, updateTheme } from './utils'
-import { ThemeType } from './constants'
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'))
 const Login = lazy(() => import('./components/login/Login'))
 const GenericDirectApprovalModal = importComponentFromFELibrary('GenericDirectApprovalModal')
 
 export default function App() {
-    const [currentTheme, setCurrentTheme] = useState<ThemeType>(getCurrentTheme())
+    const {currentTheme, handleThemeChange} = useTheme()
 
     const onlineToastRef = useRef(null)
     const updateToastRef = useRef(null)
@@ -333,15 +332,6 @@ export default function App() {
         }
     }, [currentTheme])
 
-    const handleThemeChange = () => {
-        setCurrentTheme((prevTheme) => {
-            const updatedTheme = prevTheme === ThemeType.light ? ThemeType.dark : ThemeType.light
-            updateTheme(updatedTheme)
-
-            return updatedTheme
-        })
-    }
-
     return (
         <div className={customThemeClassName}>
             <Suspense fallback={null}>
@@ -386,18 +376,20 @@ export default function App() {
                     </>
                 )}
             </Suspense>
-            <div className="dc__position-abs dc__bottom-30-imp dc__right-20">
-                <Button
-                    icon={<ICSparkles />}
-                    variant={ButtonVariantType.borderLess}
-                    style={ButtonStyleType.neutral}
-                    size={ComponentSizeType.small}
-                    ariaLabel="Toggle theme"
-                    showAriaLabelInTippy={false}
-                    onClick={handleThemeChange}
-                    dataTestId="toggle-theme"
-                />
-            </div>
+            {window._env_.FEATURE_EXPERIMENTAL_THEMING_ENABLE && (
+                <div className="dc__position-abs dc__bottom-30-imp dc__right-20">
+                    <Button
+                        icon={<ICSparkles />}
+                        variant={ButtonVariantType.borderLess}
+                        style={ButtonStyleType.neutral}
+                        size={ComponentSizeType.small}
+                        ariaLabel="Toggle theme"
+                        showAriaLabelInTippy={false}
+                        onClick={handleThemeChange}
+                        dataTestId="toggle-theme"
+                    />
+                </div>
+            )}
         </div>
     )
 }

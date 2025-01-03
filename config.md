@@ -51,5 +51,6 @@
 | FEATURE_STEP_WISE_LOGS_ENABLE                      | true         | Would segregate logs into tasks     |
 | FEATURE_HIDE_USER_DIRECT_PERMISSIONS_FOR_NON_SUPER_ADMINS | "true" | Would hide the user direct permissions for non-super admin users in User Permissions |
 | FEATURE_ACTION_AUDIOS_ENABLE                 | true         | Would enable audios in dashboard   |
+| FEATURE_EXPERIMENTAL_THEMING_ENABLE                       | true         | Would enable theming in dashboard   |
 
 # DASHBOARD CONFIG SECRET
