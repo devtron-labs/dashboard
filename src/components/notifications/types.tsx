@@ -15,7 +15,7 @@
  */
 
 import { RouteComponentProps } from 'react-router-dom'
-import { ServerError, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { ServerError, ResponseType, DynamicDataTableRowType } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationsTabTypes } from './constants'
 
 export interface NotifierProps extends RouteComponentProps<{ id: string }> {}
@@ -99,12 +99,6 @@ export interface ConfigurationTableProps {
     deleteClickHandler: (id: number, name: string) => void
 }
 
-export interface WebhookConfigModalProps {
-    webhookConfigId: number
-    onSaveSuccess: () => void
-    closeWebhookConfigModal: (event) => void
-}
-
 export interface WebhhookConfigModalState {
     view: string
     form: {
@@ -176,4 +170,20 @@ export interface ConfigTableRowActionButtonProps {
     onClickDeleteRow: () => void
     rootClassName: string
     modal: ConfigurationsTabTypes
+}
+
+// ----------------------------Webhook Config Modal--------------------------------
+export interface WebhookConfigModalProps {
+    webhookConfigId: number
+    closeWebhookConfigModal?: () => void
+    onSaveSuccess: () => void
+}
+
+export type WebhookHeaderKeyType = 'key' | 'value'
+
+export type WebhookDataRowType = DynamicDataTableRowType<WebhookHeaderKeyType>
+
+export interface WebhookConfigDynamicDataTableProps {
+    rows: WebhookDataRowType[]
+    setRows: React.Dispatch<React.SetStateAction<WebhookDataRowType[]>>
 }

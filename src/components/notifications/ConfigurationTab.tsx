@@ -74,10 +74,6 @@ export const ConfigurationTab = () => {
         activeTab: ConfigurationsTabTypes.SES,
     })
 
-    const closeModal = () => {
-        history.push(path)
-    }
-
     const getAllChannelConfigs = async () => {
         try {
             const { result } = await getConfigs()
@@ -225,7 +221,7 @@ export const ConfigurationTab = () => {
             case ConfigurationsTabTypes.SES:
                 return (
                     <SESConfigModal
-                        sesConfigId={+configId}
+                        sesConfigId={configId}
                         shouldBeDefault={state.sesConfigurationList.length === 0}
                         onSaveSuccess={getAllChannelConfigs}
                     />
@@ -241,13 +237,7 @@ export const ConfigurationTab = () => {
             case ConfigurationsTabTypes.SLACK:
                 return <SlackConfigModal slackConfigId={configId} onSaveSuccess={getAllChannelConfigs} />
             case ConfigurationsTabTypes.WEBHOOK:
-                return (
-                    <WebhookConfigModal
-                        webhookConfigId={configId}
-                        onSaveSuccess={getAllChannelConfigs}
-                        closeWebhookConfigModal={closeModal}
-                    />
-                )
+                return <WebhookConfigModal webhookConfigId={configId} onSaveSuccess={getAllChannelConfigs} />
             default:
                 return null
         }

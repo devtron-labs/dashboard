@@ -318,7 +318,6 @@ src/components/notifications/CreateHeaderDetails.tsx
 src/components/notifications/ModifyRecipientsModal.tsx
 src/components/notifications/NotificationTab.tsx
 src/components/notifications/Notifications.tsx
-src/components/notifications/WebhookConfigModal.tsx
 src/components/notifications/notifications.service.ts
 src/components/notifications/notifications.util.tsx
 src/components/onboardingGuide/GuideCommonHeader.tsx
