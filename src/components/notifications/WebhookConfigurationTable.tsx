@@ -1,6 +1,5 @@
 import { DeleteComponentsName } from '@Config/constantMessaging'
-import { ViewType } from '@Config/constants'
-import { noop, Progressing, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
+import { noop, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import { ConfigurationTableProps } from './types'
 import { EmptyConfigurationView } from './EmptyConfigurationView'
@@ -9,17 +8,10 @@ import { ConfigTableRowActionButton } from './ConfigTableRowActionButton'
 import { getConfigTabIcons, renderText } from './notifications.util'
 
 export const WebhookConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTableProps) => {
-    const { view, webhookConfigurationList } = state
+    const { webhookConfigurationList } = state
     const { searchParams } = useSearchString()
     const history = useHistory()
 
-    if (view === ViewType.LOADING) {
-        return (
-            <div className="flex progressing-loader-height">
-                <Progressing pageLoader />
-            </div>
-        )
-    }
     if (webhookConfigurationList.length === 0) {
         return <EmptyConfigurationView configTabType={ConfigurationsTabTypes.WEBHOOK} />
     }
@@ -39,9 +31,9 @@ export const WebhookConfigurationTable = ({ state, deleteClickHandler }: Configu
         <div className="webhook-config-container">
             <div className="webhook-config-grid fs-12 fw-6 dc__uppercase cn-7 py-6 dc__gap-16 dc__border-bottom-n1 px-20">
                 <p className="icon-dim-24 m-0" />
-                <p className="slack-config-table__name flex left m-0">Name</p>
-                <p className="slack-config-table__webhook dc__truncate-text flex left m-0">Webhook URL</p>
-                <p className="slack-config-table__action m-0" />
+                <p className="webhook-config-table__name flex left m-0">Name</p>
+                <p className="webhook-config-table__webhook dc__truncate-text flex left m-0">Webhook URL</p>
+                <p className="webhook-config-table__action m-0" />
             </div>
             {webhookConfigurationList.map((webhookConfig) => (
                 <div
@@ -62,7 +54,7 @@ export const WebhookConfigurationTable = ({ state, deleteClickHandler }: Configu
                         onClickDeleteRow={() => {
                             deleteClickHandler(webhookConfig.id, DeleteComponentsName.WebhookConfigurationTab)
                         }}
-                        rootClassName="slack-config-table__action"
+                        rootClassName="webhook-config-table__action"
                         modal={ConfigurationsTabTypes.WEBHOOK}
                     />
                 </div>

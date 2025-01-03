@@ -32,11 +32,11 @@ export const SMTPConfigurationTable = ({ state, deleteClickHandler }: Configurat
         <div className="smtp-config-container">
             <div className="smtp-config-grid fs-12 fw-6 dc__uppercase cn-7 py-6 dc__gap-16 dc__border-bottom-n1 px-20">
                 <p className="icon-dim-24 m-0" />
-                <p className="ses-config-table__name dc__truncate-text flex left m-0">Name</p>
+                <p className="smtp-config-table__name dc__truncate-text flex left m-0">Name</p>
                 <p className="smtp-config-table__host dc__truncate-text flex left m-0">Host</p>
                 <p className="smtp-config-table__port dc__truncate-text flex left m-0">Port</p>
                 <p className="smtp-config-table__email dc__truncate-text flex left m-0">Sender&apos; Email</p>
-                <p className="ses-config-table__action" aria-label="Action" />
+                <p className="smtp-config-table__action" aria-label="Action" />
             </div>
             <div>
                 <div className="mb-8">
@@ -49,7 +49,7 @@ export const SMTPConfigurationTable = ({ state, deleteClickHandler }: Configurat
                             {getConfigTabIcons(ConfigurationsTabTypes.SMTP)}
                             <div
                                 data-testid={`smtp-config-name-${smtpConfig.name}`}
-                                className="ses-config-table__name dc__truncate-text flexbox dc__gap-8"
+                                className="smtp-config-table__name dc__truncate-text flexbox dc__gap-8"
                             >
                                 {renderText(smtpConfig.name, true, onClickEditRow(smtpConfig.id))}
                                 {renderDefaultTag(smtpConfig.isDefault)}
@@ -62,7 +62,7 @@ export const SMTPConfigurationTable = ({ state, deleteClickHandler }: Configurat
                                 onClickDeleteRow={() => {
                                     deleteClickHandler(smtpConfig.id, DeleteComponentsName.SMTPConfigurationTab)
                                 }}
-                                rootClassName="ses-config-table__action"
+                                rootClassName="smtp-config-table__action"
                                 modal={ConfigurationsTabTypes.SMTP}
                             />
                         </div>

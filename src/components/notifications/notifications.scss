@@ -183,40 +183,39 @@
 
 .configuration-tab__container {
     .ses-config-container {
-        .ses-config-grid {
-            display: grid;
-            grid-template-columns: 24px 250px 1fr 1fr 52px;
+            .ses-config-grid {
+                display: grid;
+                grid-template-columns: 24px 250px 1fr 1fr 52px;
+            }
+        }
+    
+        .slack-config-container {
+            .slack-config-grid {
+                display: grid;
+                grid-template-columns: 24px 250px 1fr 52px;
+            }
+        }
+    
+        .smtp-config-container {
+            .smtp-config-grid {
+                display: grid;
+                grid-template-columns: 24px 250px 1fr 60px 1fr 52px;
+            }
+        }
+    
+        .webhook-config-container {
+            .webhook-config-grid {
+                display: grid;
+                grid-template-columns: 24px 250px 1fr 52px;
+            }
         }
     }
 
-    .slack-config-container {
-        .slack-config-grid {
-            display: grid;
-            grid-template-columns: 24px 250px 1fr 52px;
-        }
-    }
-
-    .smtp-config-container {
-        .smtp-config-grid {
-            display: grid;
-            grid-template-columns: 24px 250px 1fr 60px 1fr 52px;
-        }
-    }
-}
-
-
-.slack-config-table__name {
-    flex-basis: 25%;
-    color: var(--N900);
-    font-weight: inherit;
-}
-
-.slack-config-table__webhook {
-    flex-basis: 60%;
-}
 
 .slack-config-table__action,
-.ses-config-table__action {
+.ses-config-table__action,
+.webhook-config-table__action,
+.smtp-config-table__action{
     display: none;
     margin: auto;
     margin-right: 0;
@@ -228,7 +227,9 @@
 }
 
 .configuration-tab__table-row:hover .slack-config-table__action,
-.configuration-tab__table-row:hover .ses-config-table__action {
+.configuration-tab__table-row:hover .ses-config-table__action,
+.configuration-tab__table-row:hover .webhook-config-table__action,
+.configuration-tab__table-row:hover .smtp-config-table__action {
     display: flex;
     background-color: var(--window-bg);
 }
@@ -397,12 +398,4 @@
             }
         }
     }
-}
-
-.empty-state-height {
-    height: 'calc(100% - 70px)';
-}
-
-.progressing-loader-height {
-    height: 'calc(100% - 68px)';
 }
