@@ -23,12 +23,12 @@ import {
     useWindowSize,
     APPROVAL_MODAL_TYPE,
     YAMLStringify,
-    ACTION_STATE,
     DEFAULT_SECRET_PLACEHOLDER,
     ApiResourceGroupType,
     PluginDetailServiceParamsType,
     PipelineBuildStageType,
     SeverityCount,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link, PromptProps } from 'react-router-dom'
@@ -44,7 +44,7 @@ import {
 import { getAggregator } from '../../app/details/appDetails/utils'
 import { JUMP_TO_KIND_SHORT_NAMES, SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
-import { PATTERNS, UNSAVED_CHANGES_PROMPT_MESSAGE } from '../../../config/constants'
+import { PATTERNS } from '../../../config/constants'
 import { ReactComponent as GitLab } from '../../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../../assets/icons/git/github.svg'
@@ -635,19 +635,6 @@ export function getRandomString() {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
 }
 
-export function sortBySelected(selectedArray: any[], availableArray: any[], matchKey: string) {
-    const selectedArrayMap = mapByKey(selectedArray, matchKey)
-
-    const actualSelectedArray = availableArray.filter((item) => selectedArrayMap.has(item[matchKey]))
-
-    const unselectedAvailableArray = availableArray.filter((item) => !selectedArrayMap.has(item[matchKey]))
-
-    return [
-        ...sortObjectArrayAlphabetically(actualSelectedArray, matchKey),
-        ...sortObjectArrayAlphabetically(unselectedAvailableArray, matchKey),
-    ]
-}
-
 export const sortObjectArrayAlphabetically = <T extends unknown>(arr: T[], compareKey: string) => {
     return arr.sort((a, b) => a[compareKey].localeCompare(b[compareKey]))
 }
@@ -1105,8 +1092,6 @@ export const getDeploymentAppType = (
     return allowedDeploymentTypes[0]
 }
 
-
-
 export const getNonEditableChartRepoText = (name: string): string => {
     return `Cannot edit chart repo "${name}". Some charts from this repository are being used by helm apps.`
 }
@@ -1121,10 +1106,11 @@ export const getAPIOptionsWithTriggerTimeout = (options?: APIOptions): APIOption
 }
 
 export const getShowResourceScanModal = (selectedResourceKind: NodeType, isTrivyInstalled: boolean): boolean => {
+    const { isManifestScanningEnabled } = useMainContext()
     const fromWorkloadOrRollout =
         getAppDetailsAggregator(selectedResourceKind) === AggregationKeys.Workloads ||
         selectedResourceKind === NodeType.Rollout
-    return window._env_.ENABLE_RESOURCE_SCAN && isTrivyInstalled && fromWorkloadOrRollout
+    return isManifestScanningEnabled && isTrivyInstalled && fromWorkloadOrRollout
 }
 
 export const getApprovalModalTypeFromURL = (url: string): APPROVAL_MODAL_TYPE => {
@@ -1137,18 +1123,6 @@ export const getApprovalModalTypeFromURL = (url: string): APPROVAL_MODAL_TYPE =>
     }
 
     return APPROVAL_MODAL_TYPE.CONFIG
-}
-
-export const getCTAClass = (userActionState: string, disableDeployButton?: boolean): string => {
-    let className = 'cta small flex ml-auto'
-    if (disableDeployButton) {
-        className += ' disabled-opacity'
-    } else if (userActionState === ACTION_STATE.BLOCKED) {
-        className += ' danger'
-    } else if (userActionState === ACTION_STATE.PARTIAL) {
-        className += ' warning'
-    }
-    return className
 }
 
 export const getPluginIdsFromBuildStage = (
@@ -1233,19 +1207,6 @@ export const getParsedBranchValuesForPlugin = (branchName: string): string => {
 
     return branchName
 }
-
-/**
- * Checks if the provided pathname matches the current path.
- * If the paths do not match, returns a custom message or a default unsaved changes prompt.
- *
- * @param currentPathName - The current path to compare against.
- * @param customMessage - Optional custom message to display when the path does not match.
- * @returns A function that takes an object with a `pathname` property and performs the path match check.
- */
-export const checkIfPathIsMatching =
-    (currentPathName: string, customMessage = ''): PromptProps['message'] =>
-    ({ pathname }: { pathname: string })  =>
-        currentPathName === pathname || customMessage || UNSAVED_CHANGES_PROMPT_MESSAGE
 
 export const getAppFilterLocalStorageKey = (filterParentType: FilterParentType): AppEnvLocalStorageKeyType =>
     filterParentType === FilterParentType.app ? ENV_GROUP_LOCAL_STORAGE_KEY : APP_GROUP_LOCAL_STORAGE_KEY

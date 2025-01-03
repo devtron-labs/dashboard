@@ -56,4 +56,16 @@ export interface PermissionConfigurationFormContext {
      * @default false
      */
     showStatus: boolean
+    /**
+     * State to control the saving of the permissions
+     *
+     * This is required since the any of the api call for parsing the permissions could fail
+     */
+    isSaveDisabled: boolean
+    setIsSaveDisabled: React.Dispatch<React.SetStateAction<boolean>>
 }
+
+export type AccessTypeToErrorMapType = Record<
+    PermissionConfigurationFormContext['directPermission'][number]['accessType'],
+    boolean
+>

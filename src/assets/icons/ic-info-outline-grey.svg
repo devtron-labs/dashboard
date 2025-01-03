@@ -14,7 +14,8 @@
   - limitations under the License.
   -->
 
-<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.9987" cy="7.99992" r="6.66667" stroke="#596168" stroke-width="1.5"/>
-<path d="M7.99496 5.38035C7.80688 5.38035 7.64568 5.31318 7.51133 5.17884C7.37699 5.0445 7.30982 4.87993 7.30982 4.68514C7.30982 4.49034 7.37699 4.32914 7.51133 4.20151C7.64568 4.06717 7.80688 4 7.99496 4C8.18976 4 8.35432 4.06717 8.48867 4.20151C8.62301 4.32914 8.69018 4.49034 8.69018 4.68514C8.69018 4.87993 8.62301 5.0445 8.48867 5.17884C8.35432 5.31318 8.18976 5.38035 7.99496 5.38035ZM8.57934 10.2267H10V11.2443H6V10.2267H7.42066V7.11335H6V6.09572H8.57934V10.2267Z" fill="#596168"/>
+<!-- NOTE: This is the ultimate version of this icon; don't change please! -->
+
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+  <path stroke="#3B444C" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 16v-6H9.5m2.5 6H9.5m2.5 0h2.5M12 6.5V7m0 15C6.48 22 2 17.52 2 12S6.48 2 12 2s10 4.48 10 10-4.48 10-10 10Z" vector-effect="non-scaling-stroke"/>
 </svg>

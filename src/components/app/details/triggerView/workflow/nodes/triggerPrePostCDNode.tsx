@@ -24,6 +24,7 @@ import { TriggerViewContext } from '../../config'
 import NoGitOpsRepoConfiguredWarning from '../../../../../workflowEditor/NoGitOpsRepoConfiguredWarning'
 import { gitOpsRepoNotConfiguredWithEnforcedEnv } from '../../../../../gitOps/constants'
 import { getNodeSideHeadingAndClass } from './workflow.utils'
+import { getAppGroupDeploymentHistoryLink } from '../../../../../ApplicationGroup/AppGroup.utils'
 
 export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, TriggerPrePostCDNodeState> {
     gitOpsRepoWarningCondition =
@@ -31,22 +32,28 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
 
     constructor(props) {
         super(props)
-        this.redirectToCDDetails = this.redirectToCDDetails.bind(this)
         this.state = {
             showGitOpsRepoConfiguredWarning: false,
         }
     }
 
     getCDDetailsURL(): string {
+        if (this.props.fromAppGrouping) {
+            return getAppGroupDeploymentHistoryLink(
+                this.props.appId,
+                this.props.environmentId,
+                this.props.id,
+                this.props.match.params.envId === this.props.environmentId.toString(),
+                '',
+                this.props.type
+            )
+        }
         return `${this.props.match.url.replace(URLS.APP_TRIGGER, URLS.APP_CD_DETAILS)}/${this.props.environmentId}/${
             this.props.id
         }?type=${this.props.type}`
     }
 
-    redirectToCDDetails(e) {
-        if (this.props.fromAppGrouping) {
-            return
-        }
+    redirectToCDDetails = () => {
         this.props.history.push(this.getCDDetailsURL())
     }
 
@@ -58,14 +65,12 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                     <span data-testid={`${this.props.title}-trigger-status-${this.props.index}`}>
                         {this.props.status}
                     </span>
-                    {!this.props.fromAppGrouping && (
-                        <>
-                            {this.props.status && <span className="mr-5 ml-5">/</span>}
-                            <Link onClick={stopPropagation} to={url} className="workflow-node__details-link">
-                                Details
-                            </Link>
-                        </>
-                    )}
+                    <>
+                        {this.props.status && <span className="mr-5 ml-5">/</span>}
+                        <Link onClick={stopPropagation} to={url} className="workflow-node__details-link">
+                            Details
+                        </Link>
+                    </>
                 </div>
             )
         }
@@ -111,7 +116,7 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                                 className={isClickable ? 'workflow-node cursor' : 'workflow-node'}
                                 onClick={(e) => {
                                     if (isClickable) {
-                                        this.redirectToCDDetails(e)
+                                        this.redirectToCDDetails()
                                     }
                                 }}
                             >

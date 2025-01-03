@@ -46,7 +46,7 @@ import {
     PermissionConfigurationFormProvider,
     usePermissionConfiguration,
 } from '../Shared/components/PermissionConfigurationForm'
-import { createUserPermissionPayload, isDirectPermissionFormComplete } from '../utils'
+import { createUserPermissionPayload, validateDirectPermissionForm } from '../utils'
 import { getDefaultUserStatusAndTimeout } from '../libUtils'
 import { importComponentFromFELibrary } from '../../../../components/common'
 
@@ -94,8 +94,15 @@ const CreateAPIToken = ({
         invalidDescription: false,
         invalidDescriptionMessage: '',
     })
-    const { permissionType, directPermission, setDirectPermission, chartPermission, k8sPermission, userRoleGroups } =
-        usePermissionConfiguration()
+    const {
+        permissionType,
+        directPermission,
+        setDirectPermission,
+        chartPermission,
+        k8sPermission,
+        userRoleGroups,
+        isSaveDisabled,
+    } = usePermissionConfiguration()
     const [customDate, setCustomDate] = useState<Moment>(null)
     const validationRules = new ValidationRules()
 
@@ -163,7 +170,7 @@ const CreateAPIToken = ({
     }
 
     const handleGenerateAPIToken = async () => {
-        if (!isDirectPermissionFormComplete(directPermission, setDirectPermission)) {
+        if (!validateDirectPermissionForm(directPermission, setDirectPermission).isValid) {
             return
         }
 
@@ -307,6 +314,7 @@ const CreateAPIToken = ({
                 }}
                 onSave={handleGenerateAPIToken}
                 buttonText="Generate token"
+                disabled={isSaveDisabled}
             />
             {showGenerateModal && (
                 <GenerateModal

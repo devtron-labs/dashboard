@@ -820,6 +820,7 @@ button.anchor {
 }
 
 .app-summary__status-name {
+
     &.f-healthy,
     &.f-synced,
     &.f-sync.ok,
@@ -1021,6 +1022,7 @@ button.anchor {
 }
 
 .override-button.cta {
+
     &.ghosted,
     &.delete {
         height: 32px;
@@ -1321,12 +1323,12 @@ button.anchor {
         overflow: hidden;
         border-radius: 4px;
 
-        input + .radio__item-label {
+        input+.radio__item-label {
             border-radius: 0;
             border: 1px solid var(--N200);
         }
 
-        input[type='checkbox']:checked + .radio__item-label {
+        input[type='checkbox']:checked+.radio__item-label {
             border-radius: 0;
             background-color: var(--N100);
             color: var(--N900);
@@ -1355,19 +1357,19 @@ button.anchor {
                 border-right: unset;
             }
 
-            &:first-child input + .radio__item-label {
+            &:first-child input+.radio__item-label {
                 border-top-left-radius: 4px !important;
                 border-bottom-left-radius: 4px !important;
             }
 
-            &:last-child input + .radio__item-label {
+            &:last-child input+.radio__item-label {
                 border-top-right-radius: 4px !important;
                 border-bottom-right-radius: 4px !important;
                 border: 1px solid var(--N200);
             }
         }
 
-        input[type='checkbox']:checked + .radio__item-label {
+        input[type='checkbox']:checked+.radio__item-label {
             border-radius: 0;
             background-color: var(--N100);
             color: var(--N900);
@@ -1386,12 +1388,12 @@ button.anchor {
         overflow: hidden;
         border-radius: 4px;
 
-        input + .radio__item-label {
+        input+.radio__item-label {
             border-radius: 0;
             border: 1px solid var(--N200);
         }
 
-        input[type='checkbox']:checked + .radio__item-label {
+        input[type='checkbox']:checked+.radio__item-label {
             border-radius: 0;
             color: var(--N900);
             background-color: var(--N0);
@@ -1421,12 +1423,12 @@ button.anchor {
                 border-right: unset;
             }
 
-            &:first-child input + .radio__item-label {
+            &:first-child input+.radio__item-label {
                 border-top-left-radius: 4px !important;
                 border-bottom-left-radius: 4px !important;
             }
 
-            &:last-child input + .radio__item-label {
+            &:last-child input+.radio__item-label {
                 border-top-right-radius: 4px !important;
                 border-bottom-right-radius: 4px !important;
                 border: 1px solid var(--N200);
@@ -1437,7 +1439,7 @@ button.anchor {
 
 .gui-yaml-switch {
     &.radio-group {
-        input[type='checkbox']:checked + .radio__item-label {
+        input[type='checkbox']:checked+.radio__item-label {
             color: var(--N900);
 
             svg path {
@@ -1466,7 +1468,7 @@ button.anchor {
         &.radio-group {
             height: 30px;
 
-            input + .radio__item-label {
+            input+.radio__item-label {
                 padding-inline: 8px;
             }
         }
@@ -1475,7 +1477,7 @@ button.anchor {
 
 .manual-approvals-switch {
     &.radio-group {
-        input[type='checkbox']:checked + .radio__item-label {
+        input[type='checkbox']:checked+.radio__item-label {
             color: var(--N900);
 
             svg path {
@@ -1483,7 +1485,7 @@ button.anchor {
             }
         }
 
-        input + .radio__item-label {
+        input+.radio__item-label {
             padding: 4px 8px;
         }
 
@@ -1494,12 +1496,12 @@ button.anchor {
                 fill: var(--N500);
             }
 
-            &:first-child input + .radio__item-label {
+            &:first-child input+.radio__item-label {
                 border-top-left-radius: 4px !important;
                 border-bottom-left-radius: 4px !important;
             }
 
-            &:last-child input + .radio__item-label {
+            &:last-child input+.radio__item-label {
                 border-top-right-radius: 4px !important;
                 border-bottom-right-radius: 4px !important;
             }
@@ -1740,6 +1742,7 @@ button.anchor {
 
     &.dc__visible-hover--parent:hover {
         .dc__visible-hover {
+
             // If we give this class then the element will be visible on hover
             &--child {
                 display: inherit;
@@ -1748,6 +1751,31 @@ button.anchor {
             // For hiding a child on hover on parent
             &--hide-child {
                 display: none;
+            }
+        }
+    }
+}
+
+.dc__opacity-hover {
+    .dc__opacity-hover--child {
+        opacity: 0;
+
+        &:focus {
+            opacity: 1;
+        }
+    }
+
+    &.dc__opacity-hover--parent:hover {
+        .dc__opacity-hover {
+
+            // If we give this class then the element will be visible on hover
+            &--child {
+                opacity: 1;
+            }
+
+            // For hiding a child on hover on parent
+            &--hide-child {
+                opacity: 0;
             }
         }
     }
@@ -1835,7 +1863,7 @@ button.anchor {
     vertical-align: bottom;
 }
 
-.dc__tertiary-tab__radio input:checked ~ .dc__tertiary-tab {
+.dc__tertiary-tab__radio input:checked~.dc__tertiary-tab {
     border: solid 1px var(--B500);
     background-color: var(--B100);
 }
@@ -2661,12 +2689,16 @@ button.anchor {
     border-radius: 50% !important;
 }
 
-.dc__border-radius-8-imp {
-    border-radius: 8px !important;
+.dc__border-radius-2 {
+    border-radius: 2px;
 }
 
 .dc__border-radius-4-imp {
     border-radius: 4px !important;
+}
+
+.dc__border-radius-8-imp {
+    border-radius: 8px !important;
 }
 
 .dc__border-radius-40 {
@@ -2742,7 +2774,7 @@ textarea,
     }
 }
 
-.basic-multi-select > .select__control--is-disabled {
+.basic-multi-select>.select__control--is-disabled {
     background-color: var(--N100) !important;
 }
 
@@ -2891,6 +2923,7 @@ textarea,
 }
 
 .icon-stroke-b5 {
+
     path,
     rect {
         stroke: var(--B500);
@@ -2898,6 +2931,7 @@ textarea,
 }
 
 .icon-stroke-n7 {
+
     path,
     rect {
         stroke: var(--N700);
@@ -3072,6 +3106,10 @@ textarea,
 
 .w-auto-imp {
     width: auto !important;
+}
+
+.w-4 {
+    width: 4px;
 }
 
 .w-8 {
@@ -3439,6 +3477,10 @@ textarea,
     height: fit-content !important;
 }
 
+.dc__h-min-content {
+    height: min-content;
+}
+
 .h-0 {
     height: 0px;
 }
@@ -3612,6 +3654,11 @@ textarea,
 }
 
 // Minimum Height
+
+.mh-0 {
+    min-height: 0px;
+}
+
 .mh-28 {
     min-height: 28px;
 }
@@ -4294,7 +4341,7 @@ textarea::placeholder {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
-    word-break: break-all;
+    word-break: break-word;
 }
 
 // opacity
@@ -5030,7 +5077,7 @@ textarea::placeholder {
 }
 
 .dc__fill-available-space {
-    > * {
+    >* {
         width: 100%;
         height: 100%;
     }
@@ -5050,6 +5097,7 @@ textarea::placeholder {
     font-style: normal;
     font-weight: 600;
     line-height: 20px;
+    text-transform: capitalize;
 
     &--passed {
         color: var(--G500);
@@ -5107,6 +5155,7 @@ textarea::placeholder {
 }
 
 .cd-material {
+
     // Replace bulk ci/cd sidebar css with this one when moving a common component
     &__container-with-sidebar {
         grid-template-columns: 234px auto;
@@ -5282,6 +5331,14 @@ textarea::placeholder {
     background: var(--R100);
 }
 
+details[open] {
+    .dc__accordion-summary {
+        &--icon-flip-neg-90 {
+            transform: rotate(-90deg);
+        }
+    }
+}
+
 .backdrop {
     background: rgba(0, 0, 0, 0.75);
     z-index: var(--modal-index);
@@ -5292,4 +5349,9 @@ textarea::placeholder {
     background: inherit;
     border: none;
     padding: inherit;
+    white-space: pre-wrap;       /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
 }

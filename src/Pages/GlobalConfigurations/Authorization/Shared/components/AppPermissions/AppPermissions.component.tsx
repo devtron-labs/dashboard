@@ -15,11 +15,10 @@
  */
 
 /* eslint-disable no-param-reassign */
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Switch, Route, Redirect, useLocation, useRouteMatch } from 'react-router-dom'
 import {
     GenericSectionErrorState,
-    OptionType,
     ReactSelectInputAction,
     showError,
     TabGroup,
@@ -28,7 +27,7 @@ import {
     ACCESS_TYPE_MAP,
     EntityTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ActionTypes } from '../../../constants'
+import { ActionTypes, DEFAULT_ACCESS_TYPE_TO_ERROR_MAP } from '../../../constants'
 import { HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
 import { importComponentFromFELibrary, mapByKey } from '../../../../../../components/common'
 import K8sPermissions from '../K8sObjectPermissions/K8sPermissions.component'
@@ -61,11 +60,12 @@ import {
     getEnvironmentOptions,
     getNavLinksConfig,
 } from './utils'
-import { getWorkflowOptions } from '../../../utils'
-import { AppPermissionsDetailType, DirectPermissionRow } from './types'
+import { getWorkflowOptions, validateDirectPermissionForm } from '../../../utils'
+import { AppPermissionsDetailType, DirectPermissionRowProps } from './types'
 import { APIRoleFilter, ChartGroupPermissionsFilter, DirectPermissionsRoleFilter } from '../../../types'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
 import { JobList } from '../../../../../../components/Jobs/Types'
+import { AccessTypeToErrorMapType } from '../PermissionConfigurationForm/types'
 
 const handleApprovalPermissionChange = importComponentFromFELibrary('handleApprovalPermissionChange', null, 'function')
 
@@ -78,6 +78,7 @@ const AppPermissions = () => {
         setK8sPermission,
         currentK8sPermissionRef,
         data,
+        setIsSaveDisabled,
     } = usePermissionConfiguration()
     const { customRoles } = useAuthorizationContext()
     const { isSuperAdmin: superAdmin } = useMainContext()
@@ -88,6 +89,9 @@ const AppPermissions = () => {
     const [appsList, setAppsList] = useState<AppPermissionsDetailType['appsList']>(new Map())
     const [appsListHelmApps, setAppsListHelmApps] = useState<AppPermissionsDetailType['appsListHelmApps']>(new Map())
     const [jobsList, setJobsList] = useState<AppPermissionsDetailType['jobsList']>(new Map())
+    const [accessTypeToErrorMap, setAccessTypeToErrorMap] = useState<AccessTypeToErrorMapType>(
+        structuredClone(DEFAULT_ACCESS_TYPE_TO_ERROR_MAP),
+    )
 
     // To store the mapping and minimize the number of API calls
     const projectToJobListRef = useRef<
@@ -99,7 +103,7 @@ const AppPermissions = () => {
         >
     >()
 
-    const [isDataLoading, configData, error, reload] = useAsync(() =>
+    const [isDataLoading, configData, configDataError, reload] = useAsync(() =>
         Promise.all([
             getProjectList(),
             getEnvironmentListMin(),
@@ -112,11 +116,17 @@ const AppPermissions = () => {
     const projectsList = configData?.[0]?.result ?? []
     const environmentsList = configData?.[1]?.result ?? []
     const chartGroupsList = configData?.[2]?.result?.groups ?? []
-    const envClustersList = configData?.[3]?.result ?? []
 
-    const environmentClusterOptions = getEnvironmentClusterOptions(envClustersList)
+    const { environmentClusterOptions, envClustersList } = useMemo(() => {
+        const _envClustersList = configData?.[3]?.result ?? []
 
-    const _getEnvironmentOptions = (entity: DirectPermissionRow['permission']['entity']) =>
+        return {
+            envClustersList: _envClustersList,
+            environmentClusterOptions: getEnvironmentClusterOptions(_envClustersList),
+        }
+    }, [configData])
+
+    const _getEnvironmentOptions = (entity: DirectPermissionRowProps['permission']['entity']) =>
         getEnvironmentOptions(environmentsList, entity)
 
     const appPermissionDetailConfig = getAppPermissionDetailConfig(path, serverMode)
@@ -303,7 +313,7 @@ const AppPermissions = () => {
                 ...workflowOptions.reduce((acc, option) => {
                     acc.push(...option.options)
                     return acc
-                }, [] as OptionType[]),
+                }, []),
             ]
         } catch (err) {
             showError(err)
@@ -861,6 +871,29 @@ const AppPermissions = () => {
         pathname: `${url}/${tabName}`,
     })
 
+    const handleNavLinkClick = () => {
+        // Validate the direct permission form on tab switch to show the error state
+        const { accessTypeToErrorMap: _accessTypeToErrorMap } = validateDirectPermissionForm(
+            directPermission,
+            setDirectPermission,
+            false,
+        )
+        setAccessTypeToErrorMap(_accessTypeToErrorMap)
+    }
+
+    useEffect(() => {
+        setIsSaveDisabled(!!configDataError || isDataLoading || isLoading)
+    }, [isDataLoading, isLoading, configDataError])
+
+    useEffect(
+        () => () => {
+            // Set the save to false since the component has unmounted
+            // This can happen when the user was already a super admin
+            setIsSaveDisabled(false)
+        },
+        [],
+    )
+
     useEffect(() => {
         if (!isDataLoading) {
             if (!data) {
@@ -887,7 +920,7 @@ const AppPermissions = () => {
         )
     }
 
-    if (error) {
+    if (configDataError) {
         return <GenericSectionErrorState withBorder reload={reload} />
     }
 
@@ -895,7 +928,7 @@ const AppPermissions = () => {
         <div className="flexbox-col dc__gap-12">
             <div className="dc__border-bottom-n1">
                 <TabGroup
-                    tabs={navLinksConfig.flatMap(({ isHidden, label, tabName }) =>
+                    tabs={navLinksConfig.flatMap(({ isHidden, label, tabName, accessType }) =>
                         !isHidden
                             ? {
                                   id: tabName,
@@ -904,7 +937,9 @@ const AppPermissions = () => {
                                   props: {
                                       to: _getNavLinkUrl(tabName),
                                       'data-testid': tabName,
+                                      onClick: handleNavLinkClick,
                                   },
+                                  showError: accessTypeToErrorMap[accessType],
                               }
                             : [],
                     )}

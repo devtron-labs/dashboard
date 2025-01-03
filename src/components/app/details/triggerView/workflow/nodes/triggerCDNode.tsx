@@ -23,21 +23,22 @@ import {
     triggerStatus,
     statusColor,
     statusIcon,
+    URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerCDNodeProps, TriggerCDNodeState } from '../../types'
 import { ReactComponent as Rollback } from '../../../../../../assets/icons/ic-rollback.svg'
-import { URLS, DEFAULT_STATUS } from '../../../../../../config'
+import { DEFAULT_STATUS } from '../../../../../../config'
 import { TriggerViewContext } from '../../config'
 import { envDescriptionTippy, getNodeSideHeadingAndClass } from './workflow.utils'
 import NoGitOpsRepoConfiguredWarning, {
     ReloadNoGitOpsRepoConfiguredModal,
 } from '../../../../../workflowEditor/NoGitOpsRepoConfiguredWarning'
 import { gitOpsRepoNotConfiguredWithEnforcedEnv } from '../../../../../gitOps/constants'
+import { getAppGroupDeploymentHistoryLink } from '@Components/ApplicationGroup/AppGroup.utils'
 
 export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeState> {
     constructor(props) {
         super(props)
-        this.redirectToCDDetails = this.redirectToCDDetails.bind(this)
         this.state = {
             showGitOpsRepoConfiguredWarning: false,
             gitopsConflictLoading: false,
@@ -47,17 +48,19 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
         }
     }
 
-    getCDNodeDetailsURL(): string {
-        return `${this.props.match.url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}/${
-            this.props.environmentId
-        }`
-    }
-
-    redirectToCDDetails() {
-        if (this.props.fromAppGrouping) {
-            return
-        }
-        this.props.history.push(this.getCDNodeDetailsURL())
+    getCDNodeDetailsURL = (): string => {
+         if (this.props.fromAppGrouping) {
+             return getAppGroupDeploymentHistoryLink(
+                 this.props.appId,
+                 this.props.environmentId,
+                 this.props.id,
+                 this.props.match.params.envId === this.props.environmentId.toString(),
+                 this.props.status,
+             )
+         }
+         return `${this.props.match.url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}/${
+             this.props.environmentId
+         }`
     }
 
     componentDidUpdate(prevProps: Readonly<TriggerCDNodeProps>, prevState: Readonly<TriggerCDNodeState>): void {
@@ -94,18 +97,16 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
             >
                 <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`} />
                 <span>{statusText}</span>
-                {!this.props.fromAppGrouping && (
-                    <>
-                        {statusText && <span className="mr-5 ml-5">/</span>}
-                        <Link
-                            data-testid={`cd-trigger-details-${this.props.environmentName}-link`}
-                            to={url}
-                            className="workflow-node__details-link"
-                        >
-                            Details
-                        </Link>
-                    </>
-                )}
+                <>
+                    {statusText && <span className="mr-5 ml-5">/</span>}
+                    <Link
+                        data-testid={`cd-trigger-details-${this.props.environmentName}-link`}
+                        to={url}
+                        className="workflow-node__details-link"
+                    >
+                        Details
+                    </Link>
+                </>
             </div>
         )
     }

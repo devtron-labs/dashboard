@@ -95,10 +95,14 @@ const ConfigToolbar = ({
     resolveScopedVariables,
 
     configHeaderTab,
-    isProtected = false,
+    isApprovalPolicyConfigured = false,
     isApprovalPending,
     isDraftPresent,
-    approvalUsers,
+    draftId,
+    draftVersionId,
+    requestedUserId,
+    handleReload,
+    userApprovalMetadata,
     disableAllActions = false,
     parsingError = '',
     restoreLastSavedYAML,
@@ -114,7 +118,7 @@ const ConfigToolbar = ({
     }
 
     const isCompareView = !!(
-        isProtected &&
+        isApprovalPolicyConfigured &&
         configHeaderTab === ConfigHeaderTabType.VALUES &&
         selectedProtectionViewTab === ProtectConfigTabsType.COMPARE
     )
@@ -122,23 +126,28 @@ const ConfigToolbar = ({
     const isPublishedValuesView = !!(
         configHeaderTab === ConfigHeaderTabType.VALUES &&
         selectedProtectionViewTab === ProtectConfigTabsType.PUBLISHED &&
-        isProtected &&
+        isApprovalPolicyConfigured &&
         isDraftPresent
     )
 
     const isEditView = !!(
         configHeaderTab === ConfigHeaderTabType.VALUES &&
-        (isProtected && isDraftPresent ? selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT : true)
+        (isApprovalPolicyConfigured && isDraftPresent
+            ? selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT
+            : true)
     )
 
     const showProtectedTabs =
-        isProtected && isDraftPresent && configHeaderTab === ConfigHeaderTabType.VALUES && !!ProtectionViewTabGroup
+        isApprovalPolicyConfigured &&
+        isDraftPresent &&
+        configHeaderTab === ConfigHeaderTabType.VALUES &&
+        !!ProtectionViewTabGroup
 
     const getLHSActionNodes = (): JSX.Element => {
         if (configHeaderTab === ConfigHeaderTabType.INHERITED) {
             return (
                 <div className="flexbox dc__align-items-center dc__gap-6">
-                    <ICInfoOutlineGrey className="p-2 icon-dim-20 dc__no-shrink" />
+                    <ICInfoOutlineGrey className="p-2 icon-dim-20 dc__no-shrink scn-6" />
                     <span className="cn-9 fs-12 fw-4 lh-20">Inherited from</span>
                     <BaseConfigurationNavigation baseConfigurationURL={baseConfigurationURL} />
                 </div>
@@ -149,7 +158,7 @@ const ConfigToolbar = ({
             <>
                 {headerMessage && configHeaderTab === ConfigHeaderTabType.VALUES && !showProtectedTabs && (
                     <div className="flexbox dc__align-items-center dc__gap-6">
-                        <ICInfoOutlineGrey className="p-2 icon-dim-20 dc__no-shrink" />
+                        <ICInfoOutlineGrey className="p-2 icon-dim-20 dc__no-shrink scn-6" />
                         <span className="cn-9 fs-12 fw-4 lh-20">{headerMessage}</span>
                     </div>
                 )}
@@ -199,13 +208,21 @@ const ConfigToolbar = ({
         const shouldRenderCommentsView = !!isDraftPresent
         const hasNothingToRender = !shouldRenderApproverInfoTippy && !shouldRenderCommentsView
 
-        if (!isProtected || hasNothingToRender) {
+        if (!isApprovalPolicyConfigured || hasNothingToRender) {
             return null
         }
 
         return (
             <>
-                {shouldRenderApproverInfoTippy && <ConfigApproversInfoTippy approvalUsers={approvalUsers} />}
+                {shouldRenderApproverInfoTippy && (
+                    <ConfigApproversInfoTippy
+                        requestedUserId={requestedUserId}
+                        userApprovalMetadata={userApprovalMetadata}
+                        draftId={draftId}
+                        draftVersionId={draftVersionId}
+                        handleReload={handleReload}
+                    />
+                )}
                 {shouldRenderCommentsView && (
                     <ProtectConfigShowCommentsButton
                         areCommentsPresent={areCommentsPresent}

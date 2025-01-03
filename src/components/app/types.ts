@@ -106,7 +106,7 @@ export interface AppDetails extends CDModalProps {
     appId: number
     deploymentAppType?: DeploymentAppTypes
     externalCi?: boolean
-    userApprovalConfig?: string
+    isApprovalPolicyApplicable?: boolean
     ciArtifactId?: number
     parentArtifactId?: number
     deprecated?: boolean
@@ -137,6 +137,8 @@ export interface AppDetails extends CDModalProps {
     imageTag?: string
     isPipelineTriggered?: boolean
     releaseMode: ReleaseMode
+    trafficSwitched?: boolean
+    pcoId?: number
 }
 
 export interface LabelTag {

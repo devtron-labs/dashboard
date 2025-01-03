@@ -17,8 +17,13 @@
 import { useState } from 'react'
 import {
     BulkSelectionEvents,
+    Button,
+    ButtonComponentType,
+    ButtonStyleType,
+    ButtonVariantType,
     Checkbox,
     CHECKBOX_VALUE,
+    ComponentSizeType,
     DeleteDialog,
     getRandomColor,
     showError,
@@ -85,7 +90,7 @@ const PermissionGroupRow = ({
     return (
         <>
             <div
-                className={`user-permission__row dc__visible-hover dc__visible-hover--parent pl-20 pr-20  dc__hover-n50 ${
+                className={`user-permission__row dc__visible-hover dc__visible-hover--parent dc__opacity-hover dc__opacity-hover--parent pl-20 pr-20  dc__hover-n50 ${
                     isChecked ? 'bc-b50' : ''
                 }`}
             >
@@ -114,24 +119,31 @@ const PermissionGroupRow = ({
                 </span>
                 <span className="dc__ellipsis-right">{description || '-'}</span>
                 <div className="flex dc__gap-4">
-                    <Link
-                        type="button"
-                        className="dc__visible-hover--child dc__transparent p-4 flex"
-                        data-testid={`user-permission__edit-button-${index}`}
-                        aria-label="Edit permission group"
-                        to={`${path}/${id}`}
-                    >
-                        <Edit className="scn-6 icon-dim-16 mw-16" />
-                    </Link>
-                    <button
-                        type="button"
-                        className="dc__visible-hover--child dc__transparent icon-delete p-4 flex"
-                        data-testid={`permission-group__delete-button-${index}`}
+                    <Button
+                        component={ButtonComponentType.link}
+                        icon={<Edit />}
+                        ariaLabel="Edit permission group"
+                        showAriaLabelInTippy={false}
+                        dataTestId={`user-permission__edit-button-${index}`}
+                        linkProps={{
+                            to: `${path}/${id}`,
+                        }}
+                        isOpacityHoverChild
+                        size={ComponentSizeType.xs}
+                        variant={ButtonVariantType.borderLess}
+                        style={ButtonStyleType.neutral}
+                    />
+                    <Button
+                        icon={<Trash />}
+                        ariaLabel="Delete permission group"
+                        showAriaLabelInTippy={false}
+                        dataTestId={`user-permission__delete-button-${index}`}
                         onClick={toggleDeleteModal}
-                        aria-label="Delete permission group"
-                    >
-                        <Trash className="scn-6 icon-dim-16 mw-16" />
-                    </button>
+                        isOpacityHoverChild
+                        size={ComponentSizeType.xs}
+                        variant={ButtonVariantType.borderLess}
+                        style={ButtonStyleType.negativeGrey}
+                    />
                 </div>
             </div>
             {isDeleteModalOpen && (

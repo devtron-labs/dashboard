@@ -29,13 +29,14 @@ import {
     SourceTypeMap,
     CommonNodeAttr,
     noop,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
-import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
+import { ReactComponent as ICInfoOutline } from '@Icons/ic-info-outline-grey.svg'
+import { ReactComponent as Play } from '@Icons/ic-play-outline.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
-import { ReactComponent as RunIcon } from '../../../../assets/icons/ic-play-media.svg'
 import { getCIPipelineURL, importComponentFromFELibrary } from '../../../common'
 import { DOCUMENTATION, SOURCE_NOT_CONFIGURED, DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../../config'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
@@ -168,8 +169,18 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 data-testid="set-clone-directory"
             >
                 <div className="mr-5">
-                    <div className="fs-13 fw-6">{IGNORE_CACHE_INFO.IgnoreCache.title}</div>
-                    <div className="fs-12 fw-4">{IGNORE_CACHE_INFO.IgnoreCache.infoText}</div>
+                    <div className="fs-13 fw-6 lh-20">{IGNORE_CACHE_INFO.IgnoreCache.title}</div>
+
+                    <div className='flex dc__gap-4'>
+                        <span className="fs-12 fw-4 lh-16">{IGNORE_CACHE_INFO.IgnoreCache.infoText}</span>
+
+                        <Tooltip content={IGNORE_CACHE_INFO.IgnoreCache.infoTooltipContent} alwaysShowTippyOnHover>
+                            {/* NOTE: need to wrap react elements with html elements when passing as children to tooltip */}
+                            <div>
+                                <ICInfoOutline className='dc__no-shrink icon-dim-16 flex scn-6' />
+                            </div>
+                        </Tooltip>
+                    </div>
                 </div>
             </Checkbox>
         )
@@ -224,7 +235,7 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             isLoading={this.props.isLoading}
             onClick={isCTAActionable ? this.handleStartBuildAction : noop}
             size={ComponentSizeType.large}
-            startIcon={this.props.isJobView || this.props.isJobCI ? <RunIcon /> : <Play />}
+            startIcon={<Play />}
         />
     )
 

@@ -26,6 +26,11 @@ import {
     BulkSelectionEvents,
     ToastVariantType,
     ToastManager,
+    Button,
+    ButtonComponentType,
+    ComponentSizeType,
+    ButtonVariantType,
+    ButtonStyleType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -102,10 +107,11 @@ const UserPermissionRow = ({
 
     return (
         <>
+            {/* dc__visible-hover is required for status cell and checkbox */}
             <div
                 className={`user-permission__row ${
                     showStatus ? 'user-permission__row--with-status' : ''
-                } dc__visible-hover dc__visible-hover--parent pl-20 pr-20 ${
+                } dc__visible-hover dc__visible-hover--parent dc__opacity-hover dc__opacity-hover--parent pl-20 pr-20 ${
                     isChecked && !isAdminOrSystemUser ? 'bc-b50' : ''
                 } dc__hover-n50`}
             >
@@ -189,24 +195,31 @@ const UserPermissionRow = ({
                     <span />
                 ) : (
                     <div className="flex dc__gap-4">
-                        <Link
-                            type="button"
-                            className="dc__visible-hover--child dc__transparent p-4 flex"
-                            data-testid={`user-permission__edit-button-${index}`}
-                            aria-label="Edit user"
-                            to={`${path}/${id}`}
-                        >
-                            <Edit className="scn-6 icon-dim-16 mw-16" />
-                        </Link>
-                        <button
-                            type="button"
-                            className="dc__visible-hover--child dc__transparent icon-delete p-4 flex"
-                            data-testid={`user-permission__delete-button-${index}`}
+                        <Button
+                            component={ButtonComponentType.link}
+                            icon={<Edit />}
+                            ariaLabel="Edit user"
+                            showAriaLabelInTippy={false}
+                            dataTestId={`user-permission__edit-button-${index}`}
+                            linkProps={{
+                                to: `${path}/${id}`,
+                            }}
+                            isOpacityHoverChild
+                            size={ComponentSizeType.xs}
+                            variant={ButtonVariantType.borderLess}
+                            style={ButtonStyleType.neutral}
+                        />
+                        <Button
+                            icon={<Trash />}
+                            ariaLabel="Delete user"
+                            showAriaLabelInTippy={false}
+                            dataTestId={`user-permission__delete-button-${index}`}
                             onClick={toggleDeleteModal}
-                            aria-label="Delete user"
-                        >
-                            <Trash className="scn-6 icon-dim-16 mw-16" />
-                        </button>
+                            isOpacityHoverChild
+                            size={ComponentSizeType.xs}
+                            variant={ButtonVariantType.borderLess}
+                            style={ButtonStyleType.negativeGrey}
+                        />
                     </div>
                 )}
             </div>
