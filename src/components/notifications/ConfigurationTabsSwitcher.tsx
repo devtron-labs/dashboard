@@ -53,7 +53,7 @@ export const ConfigurationTabSwitcher = () => {
                 variant={ButtonVariantType.primary}
                 size={ComponentSizeType.small}
                 dataTestId="add-configuration"
-                startIcon={<Add className="icon-dim-20" />}
+                startIcon={<Add />}
                 text={`Add ${activeTab}`}
             />
         </div>
