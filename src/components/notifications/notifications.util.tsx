@@ -15,7 +15,6 @@
  */
 
 import { components } from 'react-select'
-import { validateEmail } from '../common'
 import { ReactComponent as ArrowDown } from '@Icons/ic-chevron-down.svg'
 import { ReactComponent as Email } from '@Icons/ic-mail.svg'
 import { ReactComponent as RedWarning } from '@Icons/ic-error-medium.svg'
@@ -26,7 +25,9 @@ import { ReactComponent as Slack } from '@Icons/slack-logo.svg'
 import { ReactComponent as SES } from '@Icons/ic-aws-ses.svg'
 import { ReactComponent as Webhook } from '@Icons/ic-CIWebhook.svg'
 import { ReactComponent as SMTP } from '@Icons/ic-smtp.svg'
+import { Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationsTabTypes, ConfigurationTabText } from './constants'
+import { validateEmail } from '../common'
 
 export const multiSelectStyles = {
     control: (base, state) => ({
@@ -39,60 +40,48 @@ export const multiSelectStyles = {
         ...base,
         top: `38px`,
     }),
-    option: (base, state) => {
-        return {
-            ...base,
-            color: 'var(--N900)',
-            display: `flex`,
-            alignItems: `center`,
-            fontSize: '12px',
-            padding: '8px 24px',
-        }
-    },
-    multiValue: (base, state) => {
-        return {
-            ...base,
-            border:
-                state.data.data.dest !== 'slack' &&
-                state.data.data.dest !== 'webhook' &&
-                !validateEmail(state.data.label)
-                    ? `1px solid var(--R500)`
-                    : `1px solid var(--N200)`,
-            borderRadius: `4px`,
-            background:
-                state.data.data.dest !== 'slack' &&
-                state.data.data.dest !== 'webhook' &&
-                !validateEmail(state.data.label)
-                    ? 'var(--R100)'
-                    : 'var(--N000)',
-            padding: `2px`,
-            textTransform: `lowercase`,
-            fontSize: `12px`,
-            lineHeight: `1.5`,
-            letterSpacing: `normal`,
-            color: `var(--N900)`,
-            userSelect: `none`,
-            display: `inline-flex`,
-        }
-    },
-    multiValueLabel: (base, state) => {
-        return {
-            ...base,
-            display: `flex`,
-            alignItems: `center`,
-            fontSize: '12px',
-            padding: '0px',
-        }
-    },
+    option: (base, state) => ({
+        ...base,
+        color: 'var(--N900)',
+        display: `flex`,
+        alignItems: `center`,
+        fontSize: '12px',
+        padding: '8px 24px',
+    }),
+    multiValue: (base, state) => ({
+        ...base,
+        border:
+            state.data.data.dest !== 'slack' && state.data.data.dest !== 'webhook' && !validateEmail(state.data.label)
+                ? `1px solid var(--R500)`
+                : `1px solid var(--N200)`,
+        borderRadius: `4px`,
+        background:
+            state.data.data.dest !== 'slack' && state.data.data.dest !== 'webhook' && !validateEmail(state.data.label)
+                ? 'var(--R100)'
+                : 'var(--N000)',
+        padding: `2px`,
+        textTransform: `lowercase`,
+        fontSize: `12px`,
+        lineHeight: `1.5`,
+        letterSpacing: `normal`,
+        color: `var(--N900)`,
+        userSelect: `none`,
+        display: `inline-flex`,
+    }),
+    multiValueLabel: (base, state) => ({
+        ...base,
+        display: `flex`,
+        alignItems: `center`,
+        fontSize: '12px',
+        padding: '0px',
+    }),
 }
 
-export const DropdownIndicator = (props) => {
-    return (
-        <components.DropdownIndicator {...props}>
-            <ArrowDown className="icon-dim-20 icon-n5" />
-        </components.DropdownIndicator>
-    )
-}
+export const DropdownIndicator = (props) => (
+    <components.DropdownIndicator {...props}>
+        <ArrowDown className="icon-dim-20 icon-n5" />
+    </components.DropdownIndicator>
+)
 
 export const MultiValueLabel = (props) => {
     const item = props.data
@@ -164,16 +153,16 @@ export const renderPipelineTypeIcon = (row) => {
     return <CD className="icon-dim-20 dc__flip" />
 }
 
-export const getConfigTabIcons = (tab: ConfigurationsTabTypes, size: number = 20 ) => {
+export const getConfigTabIcons = (tab: ConfigurationsTabTypes, size: number = 20) => {
     switch (tab) {
         case ConfigurationsTabTypes.SES:
-            return <SES className={`icon-dim-${size}`}/>
+            return <SES className={`icon-dim-${size}`} />
         case ConfigurationsTabTypes.SMTP:
-            return <SMTP />
+            return <SMTP className={`icon-dim-${size}`} />
         case ConfigurationsTabTypes.SLACK:
-            return <Slack />
+            return <Slack className={`icon-dim-${size}`} />
         case ConfigurationsTabTypes.WEBHOOK:
-            return <Webhook />
+            return <Webhook className={`icon-dim-${size}`} />
         default:
             return SES
     }
@@ -212,3 +201,22 @@ export const getSESDefaultConfiguration = (shouldBeDefault: boolean) => ({
     isLoading: false,
     isError: true,
 })
+
+export const renderText = (text: string, isLink: boolean = false, linkTo?: () => void, dataTestId?: string,) => (
+    <Tooltip content={text} placement="bottom" showOnTruncate={!!text} className="mxh-210 dc__hscroll" interactive>
+        {isLink ? (
+            <a onClick={linkTo} className="lh-20 dc__ellipsis-right fs-13 cb-5 dc__no-decor cursor" data-testid={dataTestId}>
+                {text || '-'}
+            </a>
+        ) : (
+            <p className="lh-20 dc__ellipsis-right m-0 fs-13" data-testid={dataTestId}>{text || '-'}</p>
+        )}
+    </Tooltip>
+)
+
+export const renderDefaultTag = (isDefault: boolean) => {
+    if (isDefault) {
+        return <span className="en-2 bw-1 br-4 fs-12 px-6 lh-20 cn-7" >Default</span>
+    }
+    return null
+}

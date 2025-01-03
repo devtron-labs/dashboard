@@ -1,84 +1,61 @@
-import { Trash } from '@Components/common'
 import { DeleteComponentsName } from '@Config/constantMessaging'
-import { ViewType } from '@Config/constants'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
-import { ReactComponent as Edit } from '@Icons/ic-edit.svg'
+import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
+import { useHistory } from 'react-router-dom'
 import { ConfigurationTableProps } from './types'
 import { EmptyConfigurationView } from './EmptyConfigurationView'
 import { ConfigurationsTabTypes } from './constants'
+import { getConfigTabIcons, renderText } from './notifications.util'
+import './notifications.scss'
+import emptySlack from '../../assets/img/slack-empty.png'
+import { ConfigTableRowActionButton } from './ConfigTableRowActionButton'
 
-export const SlackConfigurationTable = ({ setState, state, deleteClickHandler }: ConfigurationTableProps) => {
-    const { slackConfigurationList, view } = state
-    if (view === ViewType.LOADING) {
-        return (
-            <div className="flex progressing-loader-height">
-                <Progressing pageLoader />
-            </div>
-        )
-    }
+const SlackConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTableProps) => {
+    const { searchParams } = useSearchString()
+    const history = useHistory()
+    const { slackConfigurationList } = state
+
     if (slackConfigurationList.length === 0) {
-        return <EmptyConfigurationView configTabType={ConfigurationsTabTypes.SLACK} />
+        return <EmptyConfigurationView configTabType={ConfigurationsTabTypes.SLACK} image={emptySlack} />
     }
+
+    const onClickSlackConfigEdit = (id: number) => () => {
+        const newParams = {
+            ...searchParams,
+            configId: id.toString(),
+            modal: ConfigurationsTabTypes.SLACK,
+        }
+        history.push({
+            search: new URLSearchParams(newParams).toString(),
+        })
+    }
+
     return (
-        <table className="w-100">
-            <thead>
-                <tr className="configuration-tab__table-header">
-                    <td className="slack-config-table__name dc__truncate-text ">Name</td>
-                    <td className="slack-config-table__webhook dc__truncate-text ">Webhook URL</td>
-                    <td className="slack-config-table__action" />
-                </tr>
-            </thead>
-            <tbody>
-                <tr className="mb-8">
-                    {slackConfigurationList.map((slackConfig) => (
-                        <td key={slackConfig.id} className="configuration-tab__table-row">
-                            <div className="slack-config-table__name dc__truncate-text ">
-                                {slackConfig.slackChannel}
-                            </div>
-                            <div className="slack-config-table__webhook dc__truncate-text ">
-                                {slackConfig.webhookUrl}
-                            </div>
-                            <div className="slack-config-table__action">
-                                <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
-                                    <button
-                                        type="button"
-                                        aria-label="Edit"
-                                        className="dc__transparent dc__align-right mr-16"
-                                        onClick={() => {
-                                            setState({
-                                                ...state,
-                                                showSlackConfigModal: true,
-                                                slackConfigId: slackConfig.id,
-                                            })
-                                        }}
-                                        data-testid="slack-configure-edit-button"
-                                    >
-                                        <Edit className="icon-dim-20" />
-                                    </button>
-                                </Tippy>
-                                <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
-                                    <button
-                                        type="button"
-                                        aria-label="Delete"
-                                        className="dc__transparent dc__align-right"
-                                        onClick={() => {
-                                            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                                            deleteClickHandler(
-                                                slackConfig.id,
-                                                DeleteComponentsName.SlackConfigurationTab,
-                                            )
-                                        }}
-                                        data-testid="slack-configure-delete-button"
-                                    >
-                                        <Trash className="scn-5 icon-dim-20" />
-                                    </button>
-                                </Tippy>
-                            </div>
-                        </td>
-                    ))}
-                </tr>
-            </tbody>
-        </table>
+        <div className="slack-config-container">
+            <div className="slack-config-grid fs-12 fw-6 dc__uppercase cn-7 py-6 dc__gap-16 dc__border-bottom-n1 px-20">
+                <div className="icon-dim-24" />
+                <p className="slack-config-table__name flex left m-0 ">Name</p>
+                <p className="slack-config-table__webhook flex left m-0 ">Webhook URL</p>
+                <p className="slack-config-table__action m-0" />
+            </div>
+            <div>
+                {slackConfigurationList.map((slackConfig) => (
+                    <div key={slackConfig.id} className="slack-config-grid configuration-tab__table-row dc__gap-16">
+                        {getConfigTabIcons(ConfigurationsTabTypes.SLACK)}
+                        {renderText(slackConfig.slackChannel)}
+                        {renderText(slackConfig.webhookUrl)}
+                        <ConfigTableRowActionButton
+                            onClickEditRow={onClickSlackConfigEdit(slackConfig.id)}
+                            onClickDeleteRow={() => {
+                                deleteClickHandler(slackConfig.id, DeleteComponentsName.SlackConfigurationTab)
+                            }}
+                            rootClassName="slack-config-table__action"
+                            modal={ConfigurationsTabTypes.SLACK}
+                        />
+                    </div>
+                ))}
+            </div>
+        </div>
     )
 }
+
+export default SlackConfigurationTable

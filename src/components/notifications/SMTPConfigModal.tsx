@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React, { Component } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
     showError,
     Progressing,
@@ -24,298 +23,236 @@ import {
     CHECKBOX_VALUE,
     ToastManager,
     ToastVariantType,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { useHistory } from 'react-router-dom'
 import { validateEmail } from '../common'
 import { getSMTPConfiguration, saveEmailConfiguration } from './notifications.service'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ViewType } from '../../config/constants'
 import { ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
-import { SMTPConfigModalProps, SMTPConfigModalState } from './types'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
+import { ConfigurationsTabTypes } from './constants'
+import { SMTPConfigModalProps } from './types'
 
-export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigModalState> {
-    constructor(props) {
-        super(props)
-        this.state = {
-            view: ViewType.LOADING,
-            form: {
-                configName: '',
-                port: null,
-                host: '',
-                authUser: '',
-                authPassword: '',
-                fromEmail: '',
-                default: this.props.shouldBeDefault,
-                isLoading: false,
-                isError: true,
-            },
-            isValid: {
-                configName: true,
-                port: true,
-                host: true,
-                authUser: true,
-                authPassword: true,
-                fromEmail: true,
-            },
-        }
-        this.handleCheckbox = this.handleCheckbox.bind(this)
-        this.handleBlur = this.handleBlur.bind(this)
-        this.handleInputChange = this.handleInputChange.bind(this)
-        this.onSaveClickHandler = this.onSaveClickHandler.bind(this)
+export const SMTPConfigModal = ({
+    smtpConfigId,
+    shouldBeDefault,
+    closeSMTPConfigModal,
+    onSaveSuccess,
+    selectSMTPFromChild,
+}: SMTPConfigModalProps) => {
+    const history = useHistory()
+
+    const [view, setView] = useState(ViewType.LOADING)
+    const [form, setForm] = useState({
+        configName: '',
+        port: null,
+        host: '',
+        authUser: '',
+        authPassword: '',
+        fromEmail: '',
+        default: shouldBeDefault,
+        isLoading: false,
+        isError: true,
+    })
+    const [isValid, setIsValid] = useState({
+        configName: true,
+        port: true,
+        host: true,
+        authUser: true,
+        authPassword: true,
+        fromEmail: true,
+    })
+
+    const resetValidation = () => {
+        setIsValid({
+            configName: true,
+            port: true,
+            host: true,
+            authUser: true,
+            authPassword: true,
+            fromEmail: true,
+        })
     }
-
-    componentDidMount() {
-        if (this.props.smtpConfigId) {
-            getSMTPConfiguration(this.props.smtpConfigId)
+    useEffect(() => {
+        if (smtpConfigId) {
+            getSMTPConfiguration(smtpConfigId)
                 .then((response) => {
-                    this.setState((prevState) => ({
-                        ...prevState,
-                        form: { ...response.result, isLoading: false, isError: true },
-                        view: ViewType.FORM,
-                        isValid: {
-                            configName: true,
-                            port: true,
-                            host: true,
-                            authUser: true,
-                            authPassword: true,
-                            fromEmail: true,
-                        },
-                    }))
+                    setForm({ ...response.result, isLoading: false, isError: true })
+                    setView(ViewType.FORM)
+                    resetValidation()
                 })
-                .catch((error) => {
-                    showError(error)
-                })
+                .catch(showError)
         } else {
-            this.setState((prevState) => ({
-                ...prevState,
-                form: { ...prevState.form, default: this.props.shouldBeDefault },
-                view: ViewType.FORM,
-            }))
+            setForm((prevForm) => ({ ...prevForm, default: shouldBeDefault }))
+            setView(ViewType.FORM)
+        }
+    }, [smtpConfigId, shouldBeDefault])
+
+    const handleBlur = (e) => {
+        const { name, value } = e.target
+        setIsValid((prevValid) => ({ ...prevValid, [name]: !!value.length }))
+    }
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target
+        setForm((prevForm) => ({ ...prevForm, [name]: value }))
+        setIsValid((prevValid) => ({ ...prevValid, [name]: !!value.length }))
+    }
+
+    const handleCheckbox = () => {
+        setForm((prevForm) => ({ ...prevForm, default: !prevForm.default }))
+    }
+
+    const validateForm = useCallback(() => {
+        const allValid = Object.keys(isValid).every((key) => isValid[key])
+        return allValid && validateEmail(form.fromEmail)
+    }, [isValid, form.fromEmail])
+
+    const closeSMTPConfig = () => {
+        if (typeof closeSMTPConfigModal === 'function') {
+            closeSMTPConfigModal()
+        } else {
+            const newParams = {
+                modal: ConfigurationsTabTypes.SMTP,
+            }
+            history.push({
+                search: new URLSearchParams(newParams).toString(),
+            })
         }
     }
 
-    handleBlur(event): void {
-        const { name, value } = event.target
-        this.setState((prevState) => ({
-            ...prevState,
-            isValid: { ...prevState.isValid, [name]: !!value.length },
-        }))
-    }
-
-    handleInputChange(event: React.ChangeEvent<HTMLInputElement>): void {
-        const { name, value } = event.target
-        this.setState((prevState) => ({
-            ...prevState,
-            form: { ...prevState.form, [name]: value },
-        }))
-    }
-
-    handleCheckbox(): void {
-        this.setState((prevState) => ({
-            ...prevState,
-            form: { ...prevState.form, default: !prevState.form.default },
-        }))
-    }
-
-    saveSMTPConfig(): void {
-        const keys = Object.keys(this.state.isValid)
-        let isFormValid = keys.reduce((isFormValid, key) => {
-            isFormValid = isFormValid && this.state.isValid[key]
-            return isFormValid
-        }, true)
-        isFormValid = isFormValid && validateEmail(this.state.form.fromEmail)
-        if (!isFormValid) {
-            this.setState((prevState) => ({
-                ...prevState,
-                form: { ...prevState.form, isLoading: false, isError: true },
-            }))
+    const saveSMTPConfig = () => {
+        if (!validateForm()) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: 'Some required fields are missing or Invalid',
             })
+            setForm((prevForm) => ({ ...prevForm, isLoading: false, isError: true }))
             return
         }
-        this.setState((prevState) => ({
-            ...prevState,
-            form: { ...prevState.form, isLoading: true, isError: false },
-        }))
 
-        saveEmailConfiguration(this.state.form, 'smtp')
+        setForm((prevForm) => ({ ...prevForm, isLoading: true, isError: false }))
+
+        saveEmailConfiguration(form, ConfigurationsTabTypes.SMTP)
             .then((response) => {
-                this.setState((prevState) => ({
-                    ...prevState,
-                    form: { ...prevState.form, isLoading: false },
-                }))
+                setForm((prevForm) => ({ ...prevForm, isLoading: false }))
                 ToastManager.showToast({
                     variant: ToastVariantType.success,
                     description: 'Saved Successfully',
                 })
-                this.props.onSaveSuccess()
-                if (this.props.selectSMTPFromChild) {
-                    this.props.selectSMTPFromChild(response?.result[0])
+                onSaveSuccess()
+                closeSMTPConfig()
+                if (selectSMTPFromChild) {
+                    selectSMTPFromChild(response?.result[0])
                 }
             })
             .catch((error) => {
                 showError(error)
-                this.setState((prevState) => ({
-                    ...prevState,
-                    form: { ...prevState.form, isLoading: false },
-                }))
+                setForm((prevForm) => ({ ...prevForm, isLoading: false }))
             })
     }
 
-    renderWithBackdrop(body) {
-        return (
-            <Drawer position="right">
-                <div className="h-100 modal__body modal__body--w-600 modal__body--p-0 dc__no-border-radius mt-0">
-                    <div className="h-48 flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
-                        <h1 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Configure SMTP</h1>
-                        <button type="button" className="dc__transparent" onClick={this.props.closeSMTPConfigModal}>
-                            <Close className="icon-dim-24" />
-                        </button>
-                    </div>
-                    {body}
+    const renderWithBackdrop = (body) => (
+        <Drawer position="right">
+            <div className="h-100 modal__body modal__body--w-600 modal__body--p-0 dc__no-border-radius mt-0 flex-grow-1 flexbox-col">
+                <div className="h-48 flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
+                    <h1 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Configure SMTP</h1>
+                    <Button
+                        ariaLabel="close-button"
+                        icon={<Close />}
+                        style={ButtonStyleType.negativeGrey}
+                        size={ComponentSizeType.small}
+                        onClick={closeSMTPConfig}
+                        dataTestId="add-ses-close-button"
+                        showAriaLabelInTippy={false}
+                        variant={ButtonVariantType.borderLess}
+                    />
                 </div>
-            </Drawer>
-        )
-    }
+                {body}
+            </div>
+        </Drawer>
+    )
 
-    onSaveClickHandler(event) {
-        event.preventDefault()
-        this.saveSMTPConfig()
-    }
+    const renderSMTPFooter = () => (
+        <div className="form__button-group-bottom flex right dc__gap-16">
+            <Button
+                dataTestId="ses-config-modal-close-button"
+                size={ComponentSizeType.medium}
+                onClick={closeSMTPConfig}
+                text="Cancel"
+                disabled={form.isLoading}
+                variant={ButtonVariantType.secondary}
+                style={ButtonStyleType.neutral}
+            />
+            <Button
+                dataTestId="add-ses-save-button"
+                size={ComponentSizeType.medium}
+                onClick={saveSMTPConfig}
+                text="Save"
+                isLoading={form.isLoading}
+            />
+        </div>
+    )
 
-    render() {
-        let body
-        if (this.state.view === ViewType.LOADING) {
-            body = (
-                <div style={{ height: '554px' }}>
-                    <Progressing pageLoader />
+    const renderForm = () => (
+        <div className="flexbox-col flex-grow-1 h-100 h-100">
+            <div className="dc__gap-16 flex-grow-1 flexbox-col mh-0 p-20 dc__overflow-auto">
+                {['configName', 'host', 'port', 'authUser'].map((field, index) => (
+                    <div key="field">
+                        <CustomInput
+                            name={field}
+                            label={field === 'configName' ? 'Configuration name' : `SMTP ${field}`}
+                            value={form[field]}
+                            onChange={handleInputChange}
+                            onBlur={handleBlur}
+                            placeholder={`Enter ${field}`}
+                            isRequiredField
+                            error={!isValid[field] && REQUIRED_FIELD_MSG}
+                            tabIndex={index + 1}
+                        />
+                    </div>
+                ))}
+                <div className="smtp-protected-input">
+                    <ProtectedInput
+                        dataTestid="add-smtp-password"
+                        name="authPassword"
+                        value={form.authPassword}
+                        onChange={handleInputChange}
+                        error={!isValid.authPassword}
+                        label="SMTP Password *"
+                        labelClassName="form__label--fs-13 mb-8 fw-5 fs-13"
+                        placeholder="Enter SMTP password"
+                    />
                 </div>
-            )
-        } else {
-            body = (
-                <>
-                    <div className="m-20" style={{ height: 'calc(100vh - 160px' }}>
-                        <label className="form__row">
-                            <CustomInput
-                                name="configName"
-                                label="Configuration name"
-                                data-testid="add-smtp-configuration-name"
-                                value={this.state.form.configName}
-                                onChange={this.handleInputChange}
-                                onBlur={this.handleBlur}
-                                placeholder="Configuration name"
-                                autoFocus
-                                tabIndex={1}
-                                isRequiredField
-                                error={!this.state.isValid.configName && REQUIRED_FIELD_MSG}
-                            />
-                        </label>
-                        <label className="form__row">
-                            <CustomInput
-                                data-testid="add-smtp-host"
-                                label="SMTP Host"
-                                name="host"
-                                value={this.state.form.host}
-                                onChange={this.handleInputChange}
-                                onBlur={this.handleBlur}
-                                placeholder="Eg. smtp.gmail.com"
-                                tabIndex={2}
-                                isRequiredField
-                                error={!this.state.isValid.host && REQUIRED_FIELD_MSG}
-                            />
-                        </label>
-                        <label className="form__row">
-                            <CustomInput
-                                label="SMTP Port"
-                                data-testid="add-smtp-port"
-                                name="port"
-                                value={this.state.form.port}
-                                onChange={this.handleInputChange}
-                                onBlur={this.handleBlur}
-                                placeholder="Enter SMTP port"
-                                tabIndex={3}
-                                isRequiredField
-                                error={!this.state.isValid.port && REQUIRED_FIELD_MSG}
-                            />
-                        </label>
-                        <div className="form__row">
-                            <CustomInput
-                                label="SMTP Username"
-                                data-testid="add-smtp-username"
-                                name="authUser"
-                                value={this.state.form.authUser}
-                                onChange={this.handleInputChange}
-                                onBlur={this.handleBlur}
-                                placeholder="Enter SMTP username"
-                                tabIndex={3}
-                                isRequiredField
-                                error={!this.state.isValid.authUser && REQUIRED_FIELD_MSG}
-                            />
-                        </div>
-                        <div className="form__row smtp-protected-input">
-                            <ProtectedInput
-                                dataTestid="add-smtp-password"
-                                value={this.state.form.authPassword}
-                                onChange={this.handleInputChange}
-                                name="authPassword"
-                                error={!this.state.isValid.authPassword}
-                                label="SMTP Password*"
-                                labelClassName="form__label--fs-13 mb-8 fw-5 fs-13"
-                                placeholder="Enter SMTP password"
-                            />
-                        </div>
-                        <label className="form__row">
-                            <CustomInput
-                                label="Send email from"
-                                data-testid="add-smtp-send-email"
-                                type="email"
-                                name="fromEmail"
-                                value={this.state.form.fromEmail}
-                                onChange={this.handleInputChange}
-                                onBlur={this.handleBlur}
-                                placeholder="Email"
-                                tabIndex={5}
-                                isRequiredField
-                                error={!this.state.isValid.fromEmail && REQUIRED_FIELD_MSG}
-                            />
-                        </label>
-                    </div>
-                    <div className="form__button-group-bottom flexbox flex-justify">
-                        <Checkbox
-                            isChecked={this.state.form.default}
-                            value={CHECKBOX_VALUE.CHECKED}
-                            tabIndex={6}
-                            disabled={this.props.shouldBeDefault}
-                            onChange={this.handleCheckbox}
-                        >
-                            Set as default configuration to send emails
-                        </Checkbox>
-                        <div className="flex right">
-                            <button
-                                type="button"
-                                className="cta cancel mr-16"
-                                tabIndex={8}
-                                onClick={this.props.closeSMTPConfigModal}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={this.onSaveClickHandler}
-                                data-testid="add-smtp-save-button"
-                                type="submit"
-                                className="cta"
-                                tabIndex={7}
-                                disabled={this.state.form.isLoading}
-                            >
-                                {this.state.form.isLoading ? <Progressing /> : 'Save'}
-                            </button>
-                        </div>
-                    </div>
-                </>
-            )
-        }
-        return this.renderWithBackdrop(body)
-    }
+
+                <CustomInput
+                    type="email"
+                    name="fromEmail"
+                    label="Send email from"
+                    value={form.fromEmail}
+                    onChange={handleInputChange}
+                    onBlur={handleBlur}
+                    placeholder="Email"
+                    isRequiredField
+                    error={!isValid.fromEmail && REQUIRED_FIELD_MSG}
+                />
+                <Checkbox
+                    isChecked={form.default}
+                    value={CHECKBOX_VALUE.CHECKED}
+                    disabled={shouldBeDefault}
+                    onChange={handleCheckbox}
+                >
+                    Set as default configuration to send emails
+                </Checkbox>
+            </div>
+            {renderSMTPFooter()}
+        </div>
+    )
+
+    return renderWithBackdrop(view === ViewType.LOADING ? <Progressing pageLoader /> : renderForm())
 }

@@ -15,8 +15,14 @@
  */
 
 import { useEffect, useState } from 'react'
-import { showError, Progressing, ErrorScreenNotAuthorized, DeleteComponent } from '@devtron-labs/devtron-fe-common-lib'
-import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom'
+import {
+    showError,
+    Progressing,
+    ErrorScreenNotAuthorized,
+    DeleteComponent,
+    useSearchString,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import { SlackConfigModal } from './SlackConfigModal'
 import SESConfigModal from './SESConfigModal'
 import {
@@ -32,9 +38,9 @@ import { DC_CONFIGURATION_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../
 import { SMTPConfigModal } from './SMTPConfigModal'
 import { WebhookConfigModal } from './WebhookConfigModal'
 import { ConfigurationTabState } from './types'
-import { SlackConfigurationTable } from './SlackConfigurationTable'
+import SlackConfigurationTable from './SlackConfigurationTable'
 import { WebhookConfigurationTable } from './WebhookConfigurationTable'
-import { SESConfigurationTable } from './SESConfigurationTable'
+import SESConfigurationTable from './SESConfigurationTable'
 import { SMTPConfigurationTable } from './SMTPConfigurationTable'
 import { ConfigurationTabSwitcher } from './ConfigurationTabsSwitcher'
 import { ConfigurationsTabTypes } from './constants'
@@ -42,12 +48,13 @@ import { ConfigurationsTabTypes } from './constants'
 export const ConfigurationTab = () => {
     const { path } = useRouteMatch()
     const history = useHistory()
+    const location = useLocation()
+    const { searchParams } = useSearchString()
+    const queryString = new URLSearchParams(location.search)
+    const modal = queryString.get('modal')
+
     const [state, setState] = useState<ConfigurationTabState>({
         view: ViewType.LOADING,
-        showSlackConfigModal: false,
-        showSESConfigModal: false,
-        showSMTPConfigModal: false,
-        showWebhookConfigModal: false,
         slackConfigId: 0,
         sesConfigId: 0,
         smtpConfigId: 0,
@@ -63,80 +70,84 @@ export const ConfigurationTab = () => {
         smtpConfig: {},
         slackConfig: {},
         webhookConfig: {},
-        showDeleteConfigModalType: '',
+        showDeleteConfigModalType: ConfigurationsTabTypes.SES,
         activeTab: ConfigurationsTabTypes.SES,
     })
 
-    const getAllChannelConfigs = (): void => {
-        getConfigs()
-            .then((response) => {
-                setState({
-                    ...state,
-                    slackConfigurationList: response.result.slackConfigurationList,
-                    sesConfigurationList: response.result.sesConfigurationList,
-                    smtpConfigurationList: response.result.smtpConfigurationList,
-                    webhookConfigurationList: response.result.webhookConfigurationList,
-                    view: ViewType.FORM,
-                })
-            })
-            .catch((error) => {
-                showError(error, true, true)
-                setState({ ...state, view: ViewType.ERROR })
-            })
+    const closeModal = () => {
+        history.push(path)
     }
+
+    const getAllChannelConfigs = async () => {
+        try {
+            const { result } = await getConfigs()
+            setState({
+                ...state,
+                slackConfigurationList: result.slackConfigurationList,
+                sesConfigurationList: result.sesConfigurationList,
+                smtpConfigurationList: result.smtpConfigurationList,
+                webhookConfigurationList: result.webhookConfigurationList,
+                view: ViewType.FORM,
+            })
+        } catch (error) {
+            showError(error, true, true)
+            setState({ ...state, view: ViewType.ERROR })
+        }
+    }
+
     useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         getAllChannelConfigs()
-        history.push(`${path}/ses`)
+
+        const newParams = {
+            ...searchParams,
+            modal: modal ?? ConfigurationsTabTypes.SES,
+        }
+
+        history.push({
+            search: new URLSearchParams(newParams).toString(),
+        })
     }, [])
 
-    const onSaveWebhook = () => {
-        setState({ ...state, showWebhookConfigModal: false, webhookConfigId: 0 })
-        getAllChannelConfigs()
-    }
-
-    const onCloseWebhookModal = () => {
-        setState({ ...state, showWebhookConfigModal: false, webhookConfigId: 0 })
-    }
-
-    const deleteClickHandler = async (configId, type) => {
+    const deleteClickHandler = async (configId, type: ConfigurationsTabTypes) => {
         try {
-            if (type === DeleteComponentsName.SlackConfigurationTab) {
+            if (type === ConfigurationsTabTypes.SLACK) {
                 const { result } = await getSlackConfiguration(configId, true)
                 setState({
                     ...state,
                     slackConfigId: configId,
                     slackConfig: {
                         ...result,
-                        channel: DeleteComponentsName.SlackConfigurationTab,
+                        channel: ConfigurationsTabTypes.SLACK,
                     },
                     confirmation: true,
-                    showDeleteConfigModalType: DeleteComponentsName.SlackConfigurationTab,
+                    showDeleteConfigModalType: ConfigurationsTabTypes.SLACK,
                 })
-            } else if (type === DeleteComponentsName.SesConfigurationTab) {
+            } else if (type === ConfigurationsTabTypes.SES) {
                 const { result } = await getSESConfiguration(configId)
                 setState({
                     ...state,
                     sesConfigId: configId,
                     sesConfig: {
                         ...result,
-                        channel: DeleteComponentsName.SesConfigurationTab,
+                        channel: ConfigurationsTabTypes.SES,
                     },
                     confirmation: true,
-                    showDeleteConfigModalType: DeleteComponentsName.SesConfigurationTab,
+                    showDeleteConfigModalType: ConfigurationsTabTypes.SES,
                 })
-            } else if (type === DeleteComponentsName.SMTPConfigurationTab) {
+            } else if (type === ConfigurationsTabTypes.SMTP) {
                 const { result } = await getSMTPConfiguration(configId)
                 setState({
                     ...state,
                     smtpConfigId: configId,
                     smtpConfig: {
                         ...result,
-                        channel: DeleteComponentsName.SMTPConfigurationTab,
+                        channel: ConfigurationsTabTypes.SMTP,
                     },
                     confirmation: true,
-                    showDeleteConfigModalType: DeleteComponentsName.SMTPConfigurationTab,
+                    showDeleteConfigModalType: ConfigurationsTabTypes.SMTP,
                 })
-            } else if (type === DeleteComponentsName.WebhookConfigurationTab) {
+            } else if (type === ConfigurationsTabTypes.WEBHOOK) {
                 const { result } = await getWebhookConfiguration(configId)
                 setState({
                     ...state,
@@ -146,7 +157,7 @@ export const ConfigurationTab = () => {
                         channel: DeleteComponentsName.WebhookConfigurationTab,
                     },
                     confirmation: true,
-                    showDeleteConfigModalType: DeleteComponentsName.WebhookConfigurationTab,
+                    showDeleteConfigModalType: ConfigurationsTabTypes.WEBHOOK,
                 })
             }
         } catch (e) {
@@ -154,111 +165,23 @@ export const ConfigurationTab = () => {
         }
     }
 
-    const renderSlackConfigurationTable = () => (
-        <SlackConfigurationTable state={state} setState={setState} deleteClickHandler={deleteClickHandler} />
-    )
-
-    const renderWebhookConfigurationTable = () => (
-        <WebhookConfigurationTable state={state} setState={setState} deleteClickHandler={deleteClickHandler} />
-    )
-
-    const renderSESConfigurationTable = () => (
-        <SESConfigurationTable state={state} setState={setState} deleteClickHandler={deleteClickHandler} />
-    )
-
-    const renderSMTPConfigurationTable = () => (
-        <SMTPConfigurationTable state={state} setState={setState} deleteClickHandler={deleteClickHandler} />
-    )
-
-    const setDeleting = () => {
-        setState({
-            ...state,
-            deleting: true,
-        })
-    }
-
     const toggleConfirmation = (confirmation) => {
         setState({
             ...state,
             confirmation,
-            ...(!confirmation && { showDeleteConfigModalType: '' }),
+            ...(!confirmation && { showDeleteConfigModalType: ConfigurationsTabTypes.SES }),
         })
-    }
-
-    const renderSESConfigModal = () => {
-        const { showSESConfigModal, sesConfigId, sesConfigurationList } = state
-        if (!showSESConfigModal) return null
-        return (
-            <SESConfigModal
-                sesConfigId={sesConfigId}
-                shouldBeDefault={sesConfigurationList.length === 0}
-                onSaveSuccess={() => {
-                    setState({ ...state, showSESConfigModal: false, sesConfigId: 0 })
-                    getAllChannelConfigs()
-                }}
-                closeSESConfigModal={() => {
-                    setState({ ...state, showSESConfigModal: false })
-                }}
-            />
-        )
-    }
-
-    const renderSMTPConfigModal = () => {
-        const { showSMTPConfigModal, smtpConfigId, smtpConfigurationList } = state
-        if (!showSMTPConfigModal) return null
-        return (
-            <SMTPConfigModal
-                smtpConfigId={smtpConfigId}
-                shouldBeDefault={smtpConfigurationList.length === 0}
-                onSaveSuccess={() => {
-                    setState({ ...state, showSMTPConfigModal: false, smtpConfigId: 0 })
-                    getAllChannelConfigs()
-                }}
-                closeSMTPConfigModal={() => {
-                    setState({ ...state, showSMTPConfigModal: false })
-                }}
-            />
-        )
-    }
-
-    const renderSlackConfigModal = () => {
-        const { showSlackConfigModal, slackConfigId } = state
-        if (!showSlackConfigModal) return null
-        return (
-            <SlackConfigModal
-                slackConfigId={slackConfigId}
-                onSaveSuccess={() => {
-                    setState({ ...state, showSlackConfigModal: false, slackConfigId: 0 })
-                    getAllChannelConfigs()
-                }}
-                closeSlackConfigModal={() => {
-                    setState({ ...state, showSlackConfigModal: false, slackConfigId: 0 })
-                }}
-            />
-        )
-    }
-
-    const renderWebhookConfigModal = () => {
-        const { showWebhookConfigModal, webhookConfigId } = state
-        if (!showWebhookConfigModal) return null
-        return (
-            <WebhookConfigModal
-                webhookConfigId={webhookConfigId}
-                onSaveSuccess={onSaveWebhook}
-                closeWebhookConfigModal={onCloseWebhookModal}
-            />
-        )
     }
 
     const deleteConfigPayload = (): any => {
         const { showDeleteConfigModalType, slackConfig, sesConfig, webhookConfig, smtpConfig } = state
-        if (showDeleteConfigModalType === DeleteComponentsName.SlackConfigurationTab) {
+        if (showDeleteConfigModalType === ConfigurationsTabTypes.SLACK) {
             return slackConfig
         }
-        if (showDeleteConfigModalType === DeleteComponentsName.SesConfigurationTab) {
+        if (showDeleteConfigModalType === ConfigurationsTabTypes.SES) {
             return sesConfig
         }
-        if (showDeleteConfigModalType === DeleteComponentsName.WebhookConfigurationTab) {
+        if (showDeleteConfigModalType === ConfigurationsTabTypes.WEBHOOK) {
             return webhookConfig
         }
         return smtpConfig
@@ -266,21 +189,21 @@ export const ConfigurationTab = () => {
 
     const deleteConfigComponent = (): string => {
         const { showDeleteConfigModalType } = state
-        if (showDeleteConfigModalType === DeleteComponentsName.SlackConfigurationTab) {
-            return DeleteComponentsName.SlackConfigurationTab
+        if (showDeleteConfigModalType === ConfigurationsTabTypes.SLACK) {
+            return ConfigurationsTabTypes.SLACK
         }
-        if (showDeleteConfigModalType === DeleteComponentsName.SesConfigurationTab) {
-            return DeleteComponentsName.SesConfigurationTab
+        if (showDeleteConfigModalType === ConfigurationsTabTypes.SES) {
+            return ConfigurationsTabTypes.SES
         }
-        if (showDeleteConfigModalType === DeleteComponentsName.WebhookConfigurationTab) {
-            return DeleteComponentsName.WebhookConfigurationTab
+        if (showDeleteConfigModalType === ConfigurationsTabTypes.WEBHOOK) {
+            return ConfigurationsTabTypes.WEBHOOK
         }
         return DeleteComponentsName.SMTPConfigurationTab
     }
 
     if (state.view === ViewType.LOADING) {
         return (
-            <div className="dc__height-reduce-172">
+            <div className="h-100">
                 <Progressing pageLoader />
             </div>
         )
@@ -294,38 +217,80 @@ export const ConfigurationTab = () => {
     }
     const payload = deleteConfigPayload()
 
-    const renderContent = () => (
-        <div className="dc__overflow-auto">
-            {renderSESConfigModal()}
-            {renderSMTPConfigModal()}
-            {renderSlackConfigModal()}
-            {renderWebhookConfigModal()}
-        </div>
-    )
+    const renderModal = () => {
+        if (queryString.get('configId') === null) return null
+        const configId = parseInt(queryString.get('configId') || '0', 10)
+
+        switch (modal) {
+            case ConfigurationsTabTypes.SES:
+                return (
+                    <SESConfigModal
+                        sesConfigId={+configId}
+                        shouldBeDefault={state.sesConfigurationList.length === 0}
+                        onSaveSuccess={getAllChannelConfigs}
+                    />
+                )
+            case ConfigurationsTabTypes.SMTP:
+                return (
+                    <SMTPConfigModal
+                        smtpConfigId={configId}
+                        shouldBeDefault={state.smtpConfigurationList.length === 0}
+                        onSaveSuccess={getAllChannelConfigs}
+                    />
+                )
+            case ConfigurationsTabTypes.SLACK:
+                return <SlackConfigModal slackConfigId={configId} onSaveSuccess={getAllChannelConfigs} />
+            case ConfigurationsTabTypes.WEBHOOK:
+                return (
+                    <WebhookConfigModal
+                        webhookConfigId={configId}
+                        onSaveSuccess={getAllChannelConfigs}
+                        closeWebhookConfigModal={closeModal}
+                    />
+                )
+            default:
+                return null
+        }
+    }
+
+    const reloadDeleteConfig = () => {
+        setState({ ...state, deleting: false })
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        getAllChannelConfigs()
+    }
+
+    const renderTableComponent = () => {
+        switch (modal) {
+            case ConfigurationsTabTypes.SES:
+                return <SESConfigurationTable state={state} deleteClickHandler={deleteClickHandler} />
+            case ConfigurationsTabTypes.SMTP:
+                return <SMTPConfigurationTable state={state} deleteClickHandler={deleteClickHandler} />
+            case ConfigurationsTabTypes.SLACK:
+                return <SlackConfigurationTable state={state} deleteClickHandler={deleteClickHandler} />
+            case ConfigurationsTabTypes.WEBHOOK:
+                return <WebhookConfigurationTable state={state} deleteClickHandler={deleteClickHandler} />
+            default:
+                return null
+        }
+    }
+
     return (
-        <div className="bcn-0 h-100 flexbox-col dc__gap-16 pt-16">
-            <ConfigurationTabSwitcher activeTab={state.activeTab} setState={setState} state={state} />
+        <div className="configuration-tab__container bcn-0 h-100 flexbox-col dc__gap-16 pt-16">
+            <ConfigurationTabSwitcher />
             <Switch>
-                <Route
-                    path={`${path}/${ConfigurationsTabTypes.SES}/:userId(\\d+)?`}
-                    component={renderSESConfigurationTable}
-                />
-                <Route path={`${path}/${ConfigurationsTabTypes.SMTP}`} component={renderSMTPConfigurationTable} />
-                <Route path={`${path}/${ConfigurationsTabTypes.SLACK}`} component={renderSlackConfigurationTable} />
-                <Route path={`${path}/${ConfigurationsTabTypes.WEBHOOK}`} component={renderWebhookConfigurationTable} />
+                <Route path={path} render={() => renderTableComponent()} />
             </Switch>
-            {renderContent()}
+            {renderModal()}
 
             {state.confirmation && (
                 <DeleteComponent
-                    setDeleting={setDeleting}
                     deleteComponent={deleteNotification}
                     payload={payload}
                     title={payload.configName}
                     toggleConfirmation={toggleConfirmation}
                     component={deleteConfigComponent()}
                     confirmationDialogDescription={DC_CONFIGURATION_CONFIRMATION_MESSAGE}
-                    reload={getAllChannelConfigs}
+                    reload={reloadDeleteConfig}
                     configuration="configuration"
                 />
             )}

@@ -181,45 +181,29 @@
     box-shadow: 0 1px 0 0 var(--N200);
 }
 
-// ses config table
+.configuration-tab__container {
+    .ses-config-container {
+        .ses-config-grid {
+            display: grid;
+            grid-template-columns: 24px 250px 1fr 1fr 52px;
+        }
+    }
 
-.ses-config-container {
-    .ses-config-grid {
-        display: grid;
-        grid-template-columns: 24px 250px 1fr 1fr 52px;
+    .slack-config-container {
+        .slack-config-grid {
+            display: grid;
+            grid-template-columns: 24px 250px 1fr 52px;
+        }
+    }
+
+    .smtp-config-container {
+        .smtp-config-grid {
+            display: grid;
+            grid-template-columns: 24px 250px 1fr 60px 1fr 52px;
+        }
     }
 }
 
-.ses-config-table__name {
-    flex-basis: 25%;
-    color: var(--N900);
-    font-weight: inherit;
-}
-
-.ses-config-table__access-key {
-    flex-basis: 20%;
-    font-weight: inherit;
-}
-
-.ses-config-table__email {
-    flex-basis: 40%;
-    font-weight: inherit;
-}
-
-.smtp-config-table__host {
-    flex-basis: 33%;
-    font-weight: inherit;
-}
-
-.smtp-config-table__port {
-    flex-basis: 5%;
-    font-weight: inherit;
-}
-
-.smtp-config-table__email {
-    flex-basis: 30%;
-    font-weight: inherit;
-}
 
 .slack-config-table__name {
     flex-basis: 25%;

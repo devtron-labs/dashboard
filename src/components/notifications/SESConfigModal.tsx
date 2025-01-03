@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -26,381 +26,290 @@ import {
     ToastVariantType,
     SelectPicker,
     ComponentSizeType,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import ReactSelect from 'react-select'
-import { validateEmail } from '../common'
+import { ReactComponent as Close } from '@Icons/ic-close.svg'
+import { ReactComponent as Error } from '@Icons/ic-warning.svg'
+import { useHistory } from 'react-router-dom'
 import { saveEmailConfiguration, getSESConfiguration } from './notifications.service'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
-import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
-import { ViewType } from '../../config/constants'
-import { multiSelectStyles, DropdownIndicator } from './notifications.util'
-import { Option } from '../v2/common/ReactSelect.utils'
+import { validateEmail } from '../common'
 import awsRegionList from '../common/awsRegionList.json'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
+import { SESConfigModalProps } from './types'
+import { getSESDefaultConfiguration } from './notifications.util'
+import { ConfigurationsTabTypes, DEFAULT_MASKED_SECRET_KEY, DefaultSESValidationKeys, SESFieldKeys } from './constants'
 
-export interface SESConfigModalProps {
-    sesConfigId: number
-    shouldBeDefault: boolean
-    selectSESFromChild?: (sesConfigId: number) => void
-    onSaveSuccess: () => void
-    closeSESConfigModal: (event) => void
-}
+const SESConfigModal = ({
+    sesConfigId,
+    shouldBeDefault,
+    selectSESFromChild,
+    onSaveSuccess,
+    closeSESConfigModal,
+}: SESConfigModalProps) => {
+    const awsRegionListParsed = awsRegionList.map((region) => ({ label: region.name, value: region.value }))
+    const history = useHistory()
 
-export interface SESConfigModalState {
-    view: string
-    form: {
-        configName: string
-        accessKey: string
-        secretKey: string
-        region: { label: string; value: string }
-        fromEmail: string
-        default: boolean
-        isLoading: boolean
-        isError: boolean
-    }
-    isValid: {
-        configName: boolean
-        accessKey: boolean
-        secretKey: boolean
-        region: boolean
-        fromEmail: boolean
-    }
-    secretKey: string
-}
+    const [form, setForm] = useState(getSESDefaultConfiguration(shouldBeDefault))
+    const [isValid, setValid] = useState(DefaultSESValidationKeys)
 
-export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModalState> {
-    awsRegionListParsed = awsRegionList.map((region) => {
-        return { label: region.name, value: region.value }
-    })
+    const fetchSESConfiguration = async () => {
+        setForm((prevForm) => ({ ...prevForm, isLoading: true }))
+        try {
+            const response = await getSESConfiguration(sesConfigId)
+            const { region } = response.result
+            const awsRegion = awsRegionListParsed.find((r) => r.value === region)
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            view: ViewType.LOADING,
-            form: {
-                configName: '',
-                accessKey: '',
-                secretKey: '',
-                region: { label: '', value: '' },
-                fromEmail: '',
-                default: this.props.shouldBeDefault,
+            setForm({
+                ...response.result,
                 isLoading: false,
                 isError: true,
-            },
-            isValid: {
-                configName: true,
-                accessKey: true,
-                secretKey: true,
-                region: true,
-                fromEmail: true,
-            },
-            secretKey: '',
+                region: awsRegion,
+                secretKey: DEFAULT_MASKED_SECRET_KEY, // Masked secretKey for security
+            })
+            setValid(DefaultSESValidationKeys)
+        } catch (error) {
+            showError(error)
+            setForm((prevForm) => ({ ...prevForm, isLoading: false }))
         }
-        this.handleConfigNameChange = this.handleConfigNameChange.bind(this)
-        this.handleAWSRegionChange = this.handleAWSRegionChange.bind(this)
-        this.handleAccessKeyIDChange = this.handleAccessKeyIDChange.bind(this)
-        this.handleSecretAccessKeyChange = this.handleSecretAccessKeyChange.bind(this)
-        this.handleEmailChange = this.handleEmailChange.bind(this)
-        this.handleCheckbox = this.handleCheckbox.bind(this)
-        this.handleBlur = this.handleBlur.bind(this)
-        this.onSaveClickHandler = this.onSaveClickHandler.bind(this)
     }
 
-    componentDidMount() {
-        if (this.props.sesConfigId) {
-            getSESConfiguration(this.props.sesConfigId)
-                .then((response) => {
-                    const state = { ...this.state }
-                    const { region } = response.result
-                    const awsRegion = this.awsRegionListParsed.find((r) => r.value === region)
-                    state.form = {
-                        ...response.result,
-                        isLoading: false,
-                        isError: true,
-                        region: awsRegion,
-                        secretKey: '*******',
-                    }
-                    state.view = ViewType.FORM
-                    state.isValid = {
-                        configName: true,
-                        accessKey: true,
-                        secretKey: true,
-                        region: true,
-                        fromEmail: true,
-                    }
-                    state.secretKey = response.result.secretKey
-                    this.setState(state)
-                })
-                .catch((error) => {
-                    showError(error)
-                })
+    useEffect(() => {
+        if (sesConfigId) {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            fetchSESConfiguration()
+        }
+    }, [sesConfigId])
+
+    const handleBlur = (event: React.ChangeEvent<HTMLInputElement>, key: keyof typeof form): void => {
+        const { value } = event.target
+        setValid((prevValid) => ({
+            ...prevValid,
+            [key]: key === SESFieldKeys.REGION ? !!form.region.value.length : !!value.length,
+        }))
+    }
+
+    const handleInputChange = (key, selected) => {
+        if (key === SESFieldKeys.REGION) {
+            setForm((prevForm) => ({
+                ...prevForm,
+                [key]: { label: selected.label, value: selected.value },
+            }))
+        }
+        setForm((prevForm) => ({
+            ...prevForm,
+            [key]: selected,
+        }))
+        setValid((prevValid) => ({
+            ...prevValid,
+            [key]: !!selected,
+        }))
+    }
+
+    const handleAWSRegionChange = (selected): void => {
+        handleInputChange(SESFieldKeys.REGION, selected)
+    }
+
+    const handleCheckbox = (): void => {
+        setForm((prevForm) => ({
+            ...prevForm,
+            default: !prevForm.default,
+        }))
+    }
+
+    const getPayload = () => ({
+        ...form,
+        region: form.region.value,
+    })
+
+    const closeSESConfig = () => {
+        if (typeof closeSESConfigModal === 'function') {
+            closeSESConfigModal()
         } else {
-            const state = { ...this.state }
-            state.form.default = this.props.shouldBeDefault
-            state.view = ViewType.FORM
-            this.setState(state)
+            const newParams = {
+                modal: ConfigurationsTabTypes.SES,
+            }
+            history.push({
+                search: new URLSearchParams(newParams).toString(),
+            })
         }
     }
 
-    handleBlur(event, key: string): void {
-        const { isValid } = { ...this.state }
-        if (key !== 'region') {
-            isValid[key] = !!event.target.value.length
-        } else {
-            isValid[key] = !!this.state.form.region.value
-        }
-        this.setState({ isValid })
+    const onSaveSES = () => {
+        onSaveSuccess()
+        closeSESConfig()
     }
 
-    handleConfigNameChange(event: React.ChangeEvent<HTMLInputElement>): void {
-        const { form } = { ...this.state }
-        form.configName = event.target.value
-        this.setState({ form })
-    }
+    const saveSESConfig = async () => {
+        setForm((prevForm) => ({
+            ...prevForm,
+            isLoading: true,
+            isError: false,
+        }))
+        const isFormValid = Object.keys(isValid).every((key) => isValid[key]) && validateEmail(form.fromEmail)
 
-    handleAccessKeyIDChange(event: React.ChangeEvent<HTMLInputElement>): void {
-        const { form, isValid } = { ...this.state }
-        form.accessKey = event.target.value
-        this.setState({ form, isValid })
-    }
-
-    handleSecretAccessKeyChange(event: React.ChangeEvent<HTMLInputElement>): void {
-        const { form, isValid } = { ...this.state }
-        let { secretKey } = this.state
-        form.secretKey = event.target.value
-        if (event.target.value.indexOf('*') < 0 && event.target.value.length > 0) {
-            secretKey = event.target.value
-        }
-        this.setState({ form, isValid, secretKey })
-    }
-
-    handleAWSRegionChange(event): void {
-        const { form, isValid } = { ...this.state }
-        form.region = event
-        isValid.region = !!event
-        this.setState({ form, isValid })
-    }
-
-    handleEmailChange(event: React.ChangeEvent<HTMLInputElement>): void {
-        const { form, isValid } = { ...this.state }
-        form.fromEmail = event.target.value
-        this.setState({ form, isValid })
-    }
-
-    handleCheckbox(event): void {
-        const { form, isValid } = { ...this.state }
-        form.default = !form.default
-        this.setState({ form, isValid })
-    }
-
-    getPayload = () => {
-        return {
-            ...this.state.form,
-            region: this.state.form.region.value,
-            secretKey: this.state.secretKey,
-        }
-    }
-
-    saveSESConfig(): void {
-        const keys = Object.keys(this.state.isValid)
-        let isFormValid = keys.reduce((isFormValid, key) => {
-            isFormValid = isFormValid && this.state.isValid[key]
-            return isFormValid
-        }, true)
-        isFormValid = isFormValid && validateEmail(this.state.form.fromEmail)
         if (!isFormValid) {
-            const state = { ...this.state }
-            state.form.isLoading = false
-            state.form.isError = true
-            this.setState(state)
+            setForm((prevForm) => ({
+                ...prevForm,
+                isLoading: false,
+                isError: true,
+            }))
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: 'Some required fields are missing or Invalid',
             })
             return
         }
-        const state = { ...this.state }
-        state.form.isLoading = true
-        state.form.isError = false
-        this.setState(state)
 
-        saveEmailConfiguration(this.getPayload(), 'ses')
-            .then((response) => {
-                const state = { ...this.state }
-                state.form.isLoading = false
-                this.setState(state)
-                ToastManager.showToast({
-                    variant: ToastVariantType.success,
-                    description: 'Saved Successfully',
-                })
-                this.props.onSaveSuccess()
-                if (this.props.selectSESFromChild) {
-                    this.props.selectSESFromChild(response?.result[0])
-                }
+        try {
+            const response = await saveEmailConfiguration(getPayload(), ConfigurationsTabTypes.SES)
+            onSaveSES()
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Saved Successfully',
             })
-            .catch((error) => {
-                showError(error)
-                const state = { ...this.state }
-                state.form.isLoading = false
-                this.setState(state)
-            })
-    }
-
-    renderWithBackdrop(body) {
-        return (
-            <Drawer position="right">
-                <div className="h-100 modal__body modal__body--w-600 modal__body--p-0 dc__no-border-radius mt-0">
-                    <div className="h-48 flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
-                        <h1 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Configure SES</h1>
-                        <button type="button" className="dc__transparent" onClick={this.props.closeSESConfigModal}>
-                            <Close className="icon-dim-24" />
-                        </button>
-                    </div>
-                    <form>{body}</form>
-                </div>
-            </Drawer>
-        )
-    }
-
-    onSaveClickHandler(event) {
-        event.preventDefault()
-        this.saveSESConfig()
-    }
-
-    render() {
-        let body
-        if (this.state.view === ViewType.LOADING) {
-            body = (
-                <div style={{ height: '554px' }}>
-                    <Progressing pageLoader />
-                </div>
-            )
-        } else {
-            body = (
-                <>
-                    <div className="m-20" style={{ height: 'calc(100vh - 160px' }}>
-                        <label className="form__row">
-                            <CustomInput
-                                label="Configuration Name"
-                                data-testid="add-ses-configuration-name"
-                                name="configname"
-                                value={this.state.form.configName}
-                                onChange={this.handleConfigNameChange}
-                                onBlur={(event) => this.handleBlur(event, 'configName')}
-                                placeholder="Configuration name"
-                                autoFocus
-                                tabIndex={1}
-                                isRequiredField
-                                error={!this.state.isValid.configName && REQUIRED_FIELD_MSG}
-                            />
-                        </label>
-                        <label className="form__row">
-                            <CustomInput
-                                data-testid="add-ses-access-key"
-                                label="Access Key ID"
-                                type="text"
-                                name="app-name"
-                                value={this.state.form.accessKey}
-                                onChange={this.handleAccessKeyIDChange}
-                                onBlur={(event) => this.handleBlur(event, 'accessKey')}
-                                placeholder="Access Key ID"
-                                tabIndex={2}
-                                isRequiredField
-                                error={!this.state.isValid.accessKey && REQUIRED_FIELD_MSG}
-                            />
-                        </label>
-                        <label className="form__row">
-                            <CustomInput
-                                label="Secret Access Key"
-                                data-testid="add-ses-secret-access-key"
-                                type="text"
-                                name="app-name"
-                                value={this.state.form.secretKey}
-                                onChange={this.handleSecretAccessKeyChange}
-                                onBlur={(event) => this.handleBlur(event, 'secretKey')}
-                                placeholder="Secret Access Key"
-                                tabIndex={3}
-                                isRequiredField
-                                error={!this.state.isValid.secretKey && REQUIRED_FIELD_MSG}
-                            />
-                        </label>
-                        <div className="form__row">
-                            <SelectPicker
-                                inputId="aws-region"
-                                label="AWS Region"
-                                classNamePrefix="add-ses-aws-region"
-                                required
-                                value={this.state.form.region}
-                                placeholder="Select AWS Region"
-                                onBlur={(event) => this.handleBlur(event, 'region')}
-                                onChange={(selected) => this.handleAWSRegionChange(selected)}
-                                options={this.awsRegionListParsed}
-                                size={ComponentSizeType.large}
-                            />
-                            <span className="form__error">
-                                {!this.state.isValid.region ? (
-                                    <>
-                                        <Error className="form__icon form__icon--error" />
-                                        This is a required field <br />
-                                    </>
-                                ) : null}
-                            </span>
-                        </div>
-                        <label className="form__row">
-                            <CustomInput
-                                label="Send email from"
-                                data-testid="add-ses-send-email"
-                                type="email"
-                                name="app-name"
-                                value={this.state.form.fromEmail}
-                                onBlur={(event) => this.handleBlur(event, 'fromEmail')}
-                                placeholder="Email"
-                                tabIndex={5}
-                                onChange={this.handleEmailChange}
-                                isRequiredField
-                                error={!this.state.isValid.fromEmail && REQUIRED_FIELD_MSG}
-                            />
-                            <span className="form__text-field-info">
-                                <Info className="form__icon form__icon--info" />
-                                This email must be verified with SES.
-                            </span>
-                        </label>
-                    </div>
-                    <div className="form__button-group-bottom flexbox flex-justify">
-                        <Checkbox
-                            isChecked={this.state.form.default}
-                            value={CHECKBOX_VALUE.CHECKED}
-                            tabIndex={6}
-                            disabled={this.props.shouldBeDefault}
-                            onChange={this.handleCheckbox}
-                        >
-                            Set as default configuration to send emails
-                        </Checkbox>
-                        <div className="flex right">
-                            <button
-                                type="button"
-                                className="cta cancel mr-16"
-                                tabIndex={8}
-                                onClick={this.props.closeSESConfigModal}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={this.onSaveClickHandler}
-                                data-testid="add-ses-save-button"
-                                type="submit"
-                                className="cta"
-                                tabIndex={7}
-                                disabled={this.state.form.isLoading}
-                            >
-                                {this.state.form.isLoading ? <Progressing /> : 'Save'}
-                            </button>
-                        </div>
-                    </div>
-                </>
-            )
+            if (selectSESFromChild) selectSESFromChild(response?.result[0])
+        } catch (error) {
+            showError(error)
+        } finally {
+            setForm((prevForm) => ({ ...prevForm, isLoading: false }))
         }
-        return this.renderWithBackdrop(body)
     }
+
+    const renderSESFooter = () => (
+        <div className="form__button-group-bottom flex right dc__gap-16">
+            <Button
+                dataTestId="ses-config-modal-close-button"
+                size={ComponentSizeType.medium}
+                onClick={closeSESConfig}
+                text="Cancel"
+                disabled={form.isLoading}
+                variant={ButtonVariantType.secondary}
+                style={ButtonStyleType.neutral}
+            />
+            <Button
+                dataTestId="add-ses-save-button"
+                size={ComponentSizeType.medium}
+                onClick={saveSESConfig}
+                text="Save"
+                isLoading={form.isLoading}
+            />
+        </div>
+    )
+
+    const renderSESContent = () => (
+        <div className="flexbox-col flex-grow-1 h-100">
+            <div className="dc__gap-16 flex-grow-1 flexbox-col mh-0 p-20 dc__overflow-auto">
+                <CustomInput
+                    label="Configuration Name"
+                    data-testid="add-ses-configuration-name"
+                    name="configName"
+                    value={form.configName}
+                    onChange={(e) => handleInputChange(SESFieldKeys.CONFIG_NAME, e.target.value)}
+                    onBlur={(event) => handleBlur(event, SESFieldKeys.CONFIG_NAME)}
+                    placeholder="Configuration name"
+                    autoFocus
+                    isRequiredField
+                    error={!isValid.configName && REQUIRED_FIELD_MSG}
+                />
+                <CustomInput
+                    data-testid="add-ses-access-key"
+                    label="Access Key ID"
+                    name="app-name"
+                    value={form.accessKey}
+                    onChange={(e) => handleInputChange(SESFieldKeys.ACCESS_KEY, e.target.value)}
+                    onBlur={(event) => handleBlur(event, SESFieldKeys.ACCESS_KEY)}
+                    placeholder="Access Key ID"
+                    isRequiredField
+                    error={!isValid.accessKey && REQUIRED_FIELD_MSG}
+                />
+                <CustomInput
+                    label="Secret Access Key"
+                    data-testid="add-ses-secret-access-key"
+                    name="app-name"
+                    value={form.secretKey}
+                    onChange={(e) => handleInputChange(SESFieldKeys.SECRET_KEY, e.target.value)}
+                    onBlur={(event) => handleBlur(event, SESFieldKeys.SECRET_KEY)}
+                    placeholder="Secret Access Key"
+                    isRequiredField
+                    error={!isValid.secretKey && REQUIRED_FIELD_MSG}
+                />
+                <div className="">
+                    <SelectPicker
+                        inputId="aws-region"
+                        label="AWS Region"
+                        classNamePrefix="add-ses-aws-region"
+                        required
+                        value={form.region}
+                        placeholder="Select AWS Region"
+                        onBlur={(event) => handleBlur(event, SESFieldKeys.REGION)}
+                        onChange={(selected) => handleAWSRegionChange(selected)}
+                        options={awsRegionListParsed}
+                        size={ComponentSizeType.large}
+                    />
+                    <span className="form__error">
+                        {!isValid.region ? (
+                            <>
+                                <Error className="form__icon form__icon--error" />
+                                {REQUIRED_FIELD_MSG} <br />
+                            </>
+                        ) : null}
+                    </span>
+                </div>
+                <CustomInput
+                    label="Send email from"
+                    data-testid="add-ses-send-email"
+                    type="email"
+                    name="app-name"
+                    value={form.fromEmail}
+                    onBlur={(event) => handleBlur(event, SESFieldKeys.FROM_EMAIL)}
+                    placeholder="Email"
+                    onChange={(e) => handleInputChange(SESFieldKeys.FROM_EMAIL, e.target.value)}
+                    isRequiredField
+                    error={!isValid.fromEmail && REQUIRED_FIELD_MSG}
+                    helperText="This email must be verified with SES."
+                />
+                <Checkbox
+                    isChecked={form.default}
+                    value={CHECKBOX_VALUE.CHECKED}
+                    disabled={shouldBeDefault}
+                    onChange={handleCheckbox}
+                >
+                    Set as default configuration to send emails
+                </Checkbox>
+            </div>
+
+            {renderSESFooter()}
+        </div>
+    )
+
+    const renderLoadingState = () => (
+        <div className="h-100">
+            <Progressing pageLoader />
+        </div>
+    )
+    return (
+        <Drawer position="right">
+            <div className="h-100 modal__body modal__body--w-600 modal__body--p-0 dc__no-border-radius mt-0 flex-grow-1 flexbox-col">
+                <div className="h-48 flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
+                    <h1 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Configure SES</h1>
+                    <Button
+                        ariaLabel="close-button"
+                        icon={<Close />}
+                        style={ButtonStyleType.negativeGrey}
+                        size={ComponentSizeType.small}
+                        onClick={closeSESConfig}
+                        dataTestId="add-ses-close-button"
+                        showAriaLabelInTippy={false}
+                        variant={ButtonVariantType.borderLess}
+                    />
+                </div>
+                {form.isLoading ? renderLoadingState() : renderSESContent()}
+            </div>
+        </Drawer>
+    )
 }
+
+export default SESConfigModal

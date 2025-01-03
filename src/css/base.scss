@@ -957,21 +957,6 @@ button.anchor {
     background-color: var(--N000);
 }
 
-.dc__ses_config-table__tag {
-    border-radius: 2px;
-    padding: 2px 8px;
-    font-size: 11px;
-    font-weight: 600;
-    font-stretch: normal;
-    line-height: 1.82;
-    text-transform: uppercase;
-    margin: 0 8px;
-    color: var(--B500);
-    border: solid 1px #b5d3f2;
-    background-blend-mode: multiply;
-    background-image: linear-gradient(to bottom, var(--B50), var(--B50));
-}
-
 .dc__saved-filter__clear-btn--dark {
     height: 36px;
     background-color: var(--white);
@@ -3458,6 +3443,10 @@ textarea,
 // width fix content
 .dc__w-fit-content {
     width: fit-content;
+
+    &--imp {
+        width: fit-content !important;
+    }
 }
 
 .dc__width-inherit {
@@ -3467,8 +3456,16 @@ textarea,
 // Height in pixels
 .dc__height-inherit {
     height: inherit;
-}
+    }
 
+.dc__height-auto {
+    height: auto;
+
+    &--imp {
+        height: auto !important;
+    }
+
+}
 .dc__min-width-fit-content {
     min-width: fit-content !important;
 }

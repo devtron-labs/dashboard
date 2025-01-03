@@ -985,7 +985,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                 showError(error)
                             })
                     }}
-                    closeSESConfigModal={(event) => {
+                    closeSESConfigModal={() => {
                         this.setState({ showSESConfigModal: false })
                     }}
                 />
@@ -1011,7 +1011,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                 showError(error)
                             })
                     }}
-                    closeSMTPConfigModal={(event) => {
+                    closeSMTPConfigModal={() => {
                         this.setState({ showSMTPConfigModal: false })
                     }}
                 />

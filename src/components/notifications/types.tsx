@@ -43,14 +43,6 @@ export enum EMAIL_AGENT {
     SMTP = 'SMTP',
 }
 
-export interface SMTPConfigModalProps {
-    smtpConfigId: number
-    shouldBeDefault: boolean
-    selectSMTPFromChild?: (smtpConfigId: number) => void
-    onSaveSuccess: () => void
-    closeSMTPConfigModal: (event) => void
-}
-
 export interface SMTPConfigModalState {
     view: string
     form: {
@@ -76,11 +68,8 @@ export interface SMTPConfigModalState {
 
 export interface ConfigurationTabState {
     view: string
-    showSlackConfigModal: boolean
-    showSESConfigModal: boolean
-    showSMTPConfigModal: boolean
-    slackConfigId: number
     sesConfigId: number
+    slackConfigId: number
     smtpConfigId: number
     webhookConfigId: number
     sesConfigurationList: Array<{ id: number; name: string; accessKeyId: string; email: string; isDefault: boolean }>
@@ -101,13 +90,11 @@ export interface ConfigurationTabState {
     smtpConfig: any
     slackConfig: any
     webhookConfig: any
-    showDeleteConfigModalType: string
-    showWebhookConfigModal: boolean
+    showDeleteConfigModalType: ConfigurationsTabTypes
     activeTab?: ConfigurationsTabTypes
 }
 
 export interface ConfigurationTableProps {
-    setState: React.Dispatch<React.SetStateAction<ConfigurationTabState>>
     state: ConfigurationTabState
     deleteClickHandler: (id: number, name: string) => void
 }
@@ -155,18 +142,38 @@ export interface WebhookAttributesResponseType extends ResponseType {
 
 export interface EmptyConfigurationViewProps {
     configTabType: ConfigurationsTabTypes
+    image?: any
 }
 
 export interface ConfigurationTabSwitcherProps {
     activeTab: ConfigurationsTabTypes
-    state: ConfigurationTabState
-    setState: React.Dispatch<React.SetStateAction<ConfigurationTabState>>
 }
 
 export interface SESConfigModalProps {
-    sesConfigId: number
     shouldBeDefault: boolean
     selectSESFromChild?: (sesConfigId: number) => void
     onSaveSuccess: () => void
-    closeSESConfigModal: (event) => void
+    closeSESConfigModal?: () => void
+    sesConfigId: number
+}
+
+export interface SlackConfigModalProps {
+    slackConfigId: number
+    onSaveSuccess: () => void
+    closeSlackConfigModal?: () => void
+}
+
+export interface SMTPConfigModalProps {
+    smtpConfigId: number
+    shouldBeDefault: boolean
+    selectSMTPFromChild?: (smtpConfigId: number) => void
+    onSaveSuccess: () => void
+    closeSMTPConfigModal?: () => void
+}
+
+export interface ConfigTableRowActionButtonProps {
+    onClickEditRow: () => void
+    onClickDeleteRow: () => void
+    rootClassName: string
+    modal: ConfigurationsTabTypes
 }

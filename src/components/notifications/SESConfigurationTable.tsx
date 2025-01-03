@@ -1,96 +1,69 @@
-import { Trash } from '@Components/common'
 import { DeleteComponentsName } from '@Config/constantMessaging'
-import { ViewType } from '@Config/constants'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
-import { ReactComponent as Edit } from '@Icons/ic-edit.svg'
+import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
+import { useHistory } from 'react-router-dom'
 import { ConfigurationTableProps } from './types'
 import { EmptyConfigurationView } from './EmptyConfigurationView'
 import { ConfigurationsTabTypes } from './constants'
+import { getConfigTabIcons, renderDefaultTag, renderText } from './notifications.util'
+import './notifications.scss'
+import emptySES from '../../assets/img/ses-empty.png'
+import { ConfigTableRowActionButton } from './ConfigTableRowActionButton'
 
-export const SESConfigurationTable = ({ setState, state, deleteClickHandler }: ConfigurationTableProps) => {
-    const { view, sesConfigurationList } = state
-    if (view === ViewType.LOADING) {
-        return (
-            <div className="flex progressing-loader-height">
-                <Progressing pageLoader />
-            </div>
-        )
-    }
+const SESConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTableProps) => {
+    const { searchParams } = useSearchString()
+    const history = useHistory()
+
+    const { sesConfigurationList } = state
+
     if (sesConfigurationList.length === 0) {
-        return <EmptyConfigurationView configTabType={ConfigurationsTabTypes.SES} />
+        return <EmptyConfigurationView configTabType={ConfigurationsTabTypes.SES} image={emptySES} />
     }
+
+    const onClickSESConfigEdit = (id: number) => () => {
+        const newParams = {
+            ...searchParams,
+            configId: id.toString(),
+            modal: ConfigurationsTabTypes.SES,
+        }
+        history.push({
+            search: new URLSearchParams(newParams).toString(),
+        })
+    }
+
     return (
-        <table className="w-100">
-            <thead>
-                <tr className="configuration-tab__table-header">
-                    <th className="ses-config-table__name dc__truncate-text ">Name</th>
-                    <th className="ses-config-table__access-key dc__truncate-text ">Access key Id</th>
-                    <th className="ses-config-table__email dc__truncate-text ">Sender&apos; Email</th>
-                    <th className="ses-config-table__action" aria-label="Actions" />
-                </tr>
-            </thead>
-            <tbody>
-                <tr className="mb-8">
-                    {sesConfigurationList.map((sesConfig) => (
-                        <td
-                            data-testid={`ses-container-${sesConfig.name}`}
-                            key={sesConfig.id}
-                            className="configuration-tab__table-row"
-                        >
-                            <div
-                                data-testid={`ses-config-name-${sesConfig.name}`}
-                                className="ses-config-table__name dc__truncate-text "
-                            >
-                                {sesConfig.name}
-                                {sesConfig.isDefault ? (
-                                    <span className="dc__ses_config-table__tag">Default</span>
-                                ) : null}
-                            </div>
-                            <div
-                                data-testid={`ses-access-key-${sesConfig.accessKeyId}`}
-                                className="ses-config-table__access-key dc__truncate-text "
-                            >
-                                {sesConfig.accessKeyId}
-                            </div>
-                            <div className="ses-config-table__email dc__truncate-text ">{sesConfig.email}</div>
-                            <div className="ses-config-table__action">
-                                <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
-                                    <button
-                                        type="button"
-                                        aria-label="Edit"
-                                        className="dc__transparent dc__align-right mr-16"
-                                        onClick={() => {
-                                            setState({
-                                                ...state,
-                                                showSESConfigModal: true,
-                                                sesConfigId: sesConfig.id,
-                                            })
-                                        }}
-                                        data-testid="ses-config-edit-button"
-                                    >
-                                        <Edit className="icon-dim-20" />
-                                    </button>
-                                </Tippy>
-                                <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
-                                    <button
-                                        type="button"
-                                        aria-label="Delete"
-                                        className="dc__transparent dc__align-right"
-                                        onClick={() => {
-                                            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                                            deleteClickHandler(sesConfig.id, DeleteComponentsName.SesConfigurationTab)
-                                        }}
-                                        data-testid="ses-config-delete-button"
-                                    >
-                                        <Trash className="scn-5 icon-dim-20" />
-                                    </button>
-                                </Tippy>
-                            </div>
-                        </td>
-                    ))}
-                </tr>
-            </tbody>
-        </table>
+        <div className="ses-config-container">
+            <div className="ses-config-grid fs-12 fw-6 dc__uppercase cn-7 py-6 dc__gap-16 dc__border-bottom-n1 px-20">
+                <p className="icon-dim-24 m-0" />
+                <p className="ses-config-item__name flex left m-0">Name</p>
+                <p className="ses-config-item__access-key flex left m-0">Access Key Id</p>
+                <p className="ses-config-item__email flex left m-0">Sender&apos;s Email</p>
+                <p className="m-0" />
+            </div>
+
+            {sesConfigurationList.map((sesConfig) => (
+                <div
+                    className="configuration-tab__table-row ses-config-grid fs-13 cn-9 dc__gap-16 py-6 px-20"
+                    key={sesConfig.id}
+                >
+                    {getConfigTabIcons(ConfigurationsTabTypes.SES)}
+                    <div className="ses-config-item__name flex left dc__gap-8">
+                        {renderText(sesConfig.name, true, onClickSESConfigEdit(sesConfig.id))}
+                        {renderDefaultTag(sesConfig.isDefault)}
+                    </div>
+                    {renderText(sesConfig.accessKeyId)}
+                    {renderText(sesConfig.email)}
+                    <ConfigTableRowActionButton
+                        onClickEditRow={onClickSESConfigEdit(sesConfig.id)}
+                        onClickDeleteRow={() => {
+                            deleteClickHandler(sesConfig.id, DeleteComponentsName.SesConfigurationTab)
+                        }}
+                        rootClassName="ses-config-table__action"
+                        modal={ConfigurationsTabTypes.SES}
+                    />
+                </div>
+            ))}
+        </div>
     )
 }
+
+export default SESConfigurationTable
