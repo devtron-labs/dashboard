@@ -44,6 +44,7 @@ import SESConfigurationTable from './SESConfigurationTable'
 import { SMTPConfigurationTable } from './SMTPConfigurationTable'
 import { ConfigurationTabSwitcher } from './ConfigurationTabsSwitcher'
 import { ConfigurationsTabTypes } from './constants'
+import { getDeleteConfigComponent } from './notifications.util'
 
 export const ConfigurationTab = () => {
     const { path } = useRouteMatch()
@@ -183,19 +184,7 @@ export const ConfigurationTab = () => {
         return smtpConfig
     }
 
-    const deleteConfigComponent = (): string => {
-        const { showDeleteConfigModalType } = state
-        if (showDeleteConfigModalType === ConfigurationsTabTypes.SLACK) {
-            return ConfigurationsTabTypes.SLACK
-        }
-        if (showDeleteConfigModalType === ConfigurationsTabTypes.SES) {
-            return ConfigurationsTabTypes.SES
-        }
-        if (showDeleteConfigModalType === ConfigurationsTabTypes.WEBHOOK) {
-            return ConfigurationsTabTypes.WEBHOOK
-        }
-        return DeleteComponentsName.SMTPConfigurationTab
-    }
+    const payload = deleteConfigPayload()
 
     if (state.view === ViewType.LOADING) {
         return (
@@ -211,7 +200,6 @@ export const ConfigurationTab = () => {
             </div>
         )
     }
-    const payload = deleteConfigPayload()
 
     const renderModal = () => {
         if (queryString.get('configId') === null) return null
@@ -268,7 +256,7 @@ export const ConfigurationTab = () => {
         <div className="configuration-tab__container bcn-0 h-100 flexbox-col dc__gap-16 pt-16">
             <ConfigurationTabSwitcher />
             <Switch>
-                <Route path={path} render={() => renderTableComponent()} />
+                <Route path={path} render={renderTableComponent} />
             </Switch>
             {renderModal()}
 
@@ -278,7 +266,7 @@ export const ConfigurationTab = () => {
                     payload={payload}
                     title={payload.configName}
                     toggleConfirmation={toggleConfirmation}
-                    component={deleteConfigComponent()}
+                    component={getDeleteConfigComponent(state.showDeleteConfigModalType)}
                     confirmationDialogDescription={DC_CONFIGURATION_CONFIRMATION_MESSAGE}
                     reload={reloadDeleteConfig}
                     configuration="configuration"

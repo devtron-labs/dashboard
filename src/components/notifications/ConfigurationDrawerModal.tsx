@@ -8,14 +8,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
 import { ConfigurationsTabTypes } from './constants'
-
-export interface ConfigurationTabDrawerModalProps {
-    renderContent: () => JSX.Element
-    closeModal: () => void
-    modal: ConfigurationsTabTypes
-    isLoading: boolean
-    saveConfigModal: () => void
-}
+import { ConfigurationTabDrawerModalProps } from './types'
 
 export const ConfigurationTabDrawerModal = ({
     renderContent,

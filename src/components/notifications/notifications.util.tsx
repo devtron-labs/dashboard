@@ -25,9 +25,10 @@ import { ReactComponent as Slack } from '@Icons/slack-logo.svg'
 import { ReactComponent as SES } from '@Icons/ic-aws-ses.svg'
 import { ReactComponent as Webhook } from '@Icons/ic-CIWebhook.svg'
 import { ReactComponent as SMTP } from '@Icons/ic-smtp.svg'
-import { Tooltip } from '@devtron-labs/devtron-fe-common-lib'
+import { DynamicDataTableRowDataType, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationsTabTypes, ConfigurationTabText } from './constants'
 import { validateEmail } from '../common'
+import { WebhookDataRowType } from './types'
 
 export const multiSelectStyles = {
     control: (base, state) => ({
@@ -202,21 +203,70 @@ export const getSESDefaultConfiguration = (shouldBeDefault: boolean) => ({
     isError: true,
 })
 
-export const renderText = (text: string, isLink: boolean = false, linkTo?: () => void, dataTestId?: string,) => (
+export const renderText = (text: string, isLink: boolean = false, linkTo?: () => void, dataTestId?: string) => (
     <Tooltip content={text} placement="bottom" showOnTruncate={!!text} className="mxh-210 dc__hscroll" interactive>
         {isLink ? (
-            <a onClick={linkTo} className="lh-20 dc__ellipsis-right fs-13 cb-5 dc__no-decor cursor" data-testid={dataTestId}>
+            <a
+                onClick={linkTo}
+                className="lh-20 dc__ellipsis-right fs-13 cb-5 dc__no-decor cursor"
+                data-testid={dataTestId}
+            >
                 {text || '-'}
             </a>
         ) : (
-            <p className="lh-20 dc__ellipsis-right m-0 fs-13" data-testid={dataTestId}>{text || '-'}</p>
+            <p className="lh-20 dc__ellipsis-right m-0 fs-13" data-testid={dataTestId}>
+                {text || '-'}
+            </p>
         )}
     </Tooltip>
 )
 
 export const renderDefaultTag = (isDefault: boolean) => {
     if (isDefault) {
-        return <span className="en-2 bw-1 br-4 fs-12 px-6 lh-20 cn-7" >Default</span>
+        return <span className="en-2 bw-1 br-4 fs-12 px-6 lh-20 cn-7">Default</span>
     }
     return null
+}
+
+export const getDeleteConfigComponent = (showDeleteConfigModalType: ConfigurationsTabTypes): string => {
+    if (showDeleteConfigModalType === ConfigurationsTabTypes.SLACK) {
+        return ConfigurationsTabTypes.SLACK
+    }
+    if (showDeleteConfigModalType === ConfigurationsTabTypes.SES) {
+        return ConfigurationsTabTypes.SES
+    }
+    if (showDeleteConfigModalType === ConfigurationsTabTypes.WEBHOOK) {
+        return ConfigurationsTabTypes.WEBHOOK
+    }
+    return ConfigurationsTabTypes.SMTP
+}
+
+export const getTableHeaders = () => [
+    { label: 'Header key', key: 'key', width: '1fr' },
+    { label: 'Value', key: 'value', width: '1fr' },
+]
+
+export const generate16DigitRandomNumber = () => Math.floor(Math.random() * 9e15) + 1e15
+
+export const getEmptyVariableDataRow = (): WebhookDataRowType => {
+    const id = generate16DigitRandomNumber()
+    return {
+        data: {
+            key: {
+                value: null,
+                type: DynamicDataTableRowDataType.TEXT,
+                props: {
+                    placeholder: 'Eg. owner-name',
+                },
+            },
+            value: {
+                value: '',
+                type: DynamicDataTableRowDataType.TEXT,
+                props: {
+                    placeholder: 'Enter value',
+                },
+            },
+        },
+        id,
+    }
 }

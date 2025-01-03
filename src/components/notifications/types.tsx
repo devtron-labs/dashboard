@@ -178,6 +178,13 @@ export interface WebhookConfigModalProps {
     closeWebhookConfigModal?: () => void
     onSaveSuccess: () => void
 }
+export interface ConfigurationTabDrawerModalProps {
+    renderContent: () => JSX.Element
+    closeModal: () => void
+    modal: ConfigurationsTabTypes
+    isLoading: boolean
+    saveConfigModal: () => void
+}
 
 export type WebhookHeaderKeyType = 'key' | 'value'
 
