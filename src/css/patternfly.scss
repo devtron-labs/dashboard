@@ -2820,7 +2820,7 @@ tbody.collapse.in {
 }
 .dropdown-menu .divider {
     margin: 9px 0;
-    background-color: #ededed;
+    background-color: var(--N100);
     height: 1px;
     margin: 4px 1px;
     overflow: hidden;
@@ -3283,7 +3283,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 .nav .nav-divider {
     margin: 9px 0;
     background-color: #e5e5e5;
-    background-color: #ededed;
+    background-color: var(--N100);
     height: 1px;
     margin: 4px 1px;
     overflow: hidden;
@@ -3292,7 +3292,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
     max-width: none;
 }
 .nav-tabs {
-    border-bottom: 1px solid #ededed;
+    border-bottom: 1px solid var(--N100);
 }
 .nav-tabs > li {
     float: left;
@@ -3305,7 +3305,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
     border-radius: 1px 1px 0 0;
 }
 .nav-tabs > li > a:hover {
-    border-color: transparent transparent #ededed;
+    border-color: transparent transparent var(--N100);
 }
 .nav-tabs > li.active > a,
 .nav-tabs > li.active > a:hover,
@@ -3347,17 +3347,17 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 .nav-tabs.nav-justified > .active > a,
 .nav-tabs.nav-justified > .active > a:hover,
 .nav-tabs.nav-justified > .active > a:focus {
-    border: 1px solid #ededed;
+    border: 1px solid var(--N100);
 }
 @media (min-width: 768px) {
     .nav-tabs.nav-justified > li > a {
-        border-bottom: 1px solid #ededed;
+        border-bottom: 1px solid var(--N100);
         border-radius: 1px 1px 0 0;
     }
     .nav-tabs.nav-justified > .active > a,
     .nav-tabs.nav-justified > .active > a:hover,
     .nav-tabs.nav-justified > .active > a:focus {
-        border-bottom-color: #fff;
+        border-bottom-color: var(--N0);
     }
 }
 .nav-pills > li {
@@ -3415,17 +3415,17 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 .nav-tabs-justified > .active > a,
 .nav-tabs-justified > .active > a:hover,
 .nav-tabs-justified > .active > a:focus {
-    border: 1px solid #ededed;
+    border: 1px solid var(--N100);
 }
 @media (min-width: 768px) {
     .nav-tabs-justified > li > a {
-        border-bottom: 1px solid #ededed;
+        border-bottom: 1px solid var(--N100);
         border-radius: 1px 1px 0 0;
     }
     .nav-tabs-justified > .active > a,
     .nav-tabs-justified > .active > a:hover,
     .nav-tabs-justified > .active > a:focus {
-        border-bottom-color: #fff;
+        border-bottom-color: var(--N0);
     }
 }
 .tab-content > .tab-pane {
@@ -4010,7 +4010,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .pagination > li > span:focus {
     z-index: 2;
     color: #00659c;
-    background-color: #ededed;
+    background-color: var(--N100);
     border-color: #ddd;
 }
 .pagination > li:first-child > a,
@@ -4099,7 +4099,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .pager li > a:hover,
 .pager li > a:focus {
     text-decoration: none;
-    background-color: #ededed;
+    background-color: var(--N100);
 }
 .pager .next > a,
 .pager .next > span {
@@ -4384,7 +4384,7 @@ a.thumbnail.active {
     height: 20px;
     margin-bottom: 20px;
     overflow: hidden;
-    background-color: #ededed;
+    background-color: var(--N100);
     border-radius: 1px;
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
@@ -5589,7 +5589,7 @@ fieldset[disabled] .btn-danger.active {
 }
 .btn-default {
     background-color: #f1f1f1;
-    background-image: linear-gradient(to bottom, #fafafa 0%, #ededed 100%);
+    background-image: linear-gradient(to bottom, #fafafa 0%, var(--N100) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffafafa', endColorstr='#ffededed', GradientType=0);
     background-repeat: repeat-x;
     border-color: #bbb;
@@ -5728,7 +5728,7 @@ fieldset[disabled] .btn-primary.active {
     outline-offset: -2px;
 }
 .dropdown-menu .divider {
-    background-color: #ededed;
+    background-color: var(--N100);
     height: 1px;
     margin: 4px 1px;
     overflow: hidden;
@@ -5903,7 +5903,7 @@ h6 .label {
     font-size: 75%;
 }
 .list-group {
-    border-top: 1px solid #ededed;
+    border-top: 1px solid var(--N100);
 }
 .list-group .list-group-item:first-child {
     border-top: 0;
@@ -5944,7 +5944,7 @@ h6 .label {
 .pager li > a,
 .pager li > span {
     background-color: #f1f1f1;
-    background-image: linear-gradient(to bottom, #fafafa 0%, #ededed 100%);
+    background-image: linear-gradient(to bottom, #fafafa 0%, var(--N100) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffafafa', endColorstr='#ffededed', GradientType=0);
     background-repeat: repeat-x;
     border-color: #bbb;
@@ -6072,7 +6072,7 @@ fieldset[disabled] .pager li > span.active {
 .pagination > li > a,
 .pagination > li > span {
     background-color: #f1f1f1;
-    background-image: linear-gradient(to bottom, #fafafa 0%, #ededed 100%);
+    background-image: linear-gradient(to bottom, #fafafa 0%, var(--N100) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffafafa', endColorstr='#ffededed', GradientType=0);
     background-repeat: repeat-x;
     border-color: #bbb;
@@ -6178,7 +6178,7 @@ fieldset[disabled] .pagination > li > span.active {
     border-color: #bbb;
     box-shadow: inset 0 2px 8px rgba(3, 3, 3, 0.2);
     color: #4d5258;
-    background-image: linear-gradient(to bottom, #fafafa 0%, #ededed 100%);
+    background-image: linear-gradient(to bottom, #fafafa 0%, var(--N100) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffafafa', endColorstr='#ffededed', GradientType=0);
     background-repeat: repeat-x;
 }
@@ -6190,7 +6190,7 @@ fieldset[disabled] .pagination > li > span.active {
 .pagination > .disabled > a:focus {
     box-shadow: none;
     cursor: not-allowed;
-    background-image: linear-gradient(to bottom, #fafafa 0%, #ededed 100%);
+    background-image: linear-gradient(to bottom, #fafafa 0%, var(--N100) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffafafa', endColorstr='#ffededed', GradientType=0);
     background-repeat: repeat-x;
 }
@@ -6366,7 +6366,7 @@ td > .progress:first-child:last-child {
 .table > thead {
     background-clip: padding-box;
     background-color: var(--N100);
-    background-image: linear-gradient(to bottom, #fafafa 0%, #ededed 100%);
+    background-image: linear-gradient(to bottom, #fafafa 0%, var(--N100) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffafafa', endColorstr='#ffededed', GradientType=0);
     background-repeat: repeat-x;
 }
@@ -6427,12 +6427,12 @@ td > .progress:first-child:last-child {
 .nav-tabs > li > a:focus,
 .nav-tabs > li > a:hover {
     background: transparent;
-    border-color: #ededed;
+    border-color: var(--N100);
     color: #252525;
 }
 .nav-tabs > li > .dropdown-menu {
     border-top: 0;
-    border-color: #ededed;
+    border-color: var(--N100);
 }
 .nav-tabs > li > .dropdown-menu.pull-right {
     right: -1px;
@@ -6441,7 +6441,7 @@ td > .progress:first-child:last-child {
 .nav-tabs .open > a:hover,
 .nav-tabs .open > a:focus {
     background-color: transparent;
-    border-color: #ededed;
+    border-color: var(--N100);
 }
 .tooltip {
     font-size: 12px;

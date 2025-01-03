@@ -422,8 +422,8 @@ p.sentence-case:first-letter {
 
 .typeahead__single-selection.disabled,
 .typeahead__selection.disabled {
-    background-color: #eeeeee;
-    border: solid 1px #d2d2d2;
+    background-color: var(--N100);
+    border: solid 1px var(--N200);
     cursor: not-allowed;
 }
 
@@ -460,7 +460,7 @@ p.sentence-case:first-letter {
 
 .typeahead__single-selection {
     border-radius: 4px;
-    border: solid 1px #d2d2d2;
+    border: solid 1px var(--N200);
     padding: 10px 12px;
     font-size: 12px;
     font-weight: 400;
@@ -472,7 +472,7 @@ p.sentence-case:first-letter {
 
 .typeahead__multi-selection {
     border-radius: 4px;
-    border: solid 1px #d2d2d2;
+    border: solid 1px var(--N200);
     padding: 10px 12px;
     font-size: 12px;
     line-height: 1.54;

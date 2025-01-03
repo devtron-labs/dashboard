@@ -199,7 +199,7 @@
 
 .trigger-info {
     flex: 1 1;
-    border: solid 1px #ededed;
+    border: solid 1px var(--N100);
     margin: 0px;
 }
 
@@ -211,7 +211,7 @@
     font-weight: 600;
     letter-spacing: 0.005em;
     background-color: rgba(0, 0, 0, 0.02);
-    border: solid 1px #ededed;
+    border: solid 1px var(--N100);
     padding: 12px 24px;
     margin: 0px;
 }
@@ -225,7 +225,7 @@
 .trigger-info__info {
     margin: 0px;
     padding: 12px 24px;
-    border-right: solid 1px #ededed;
+    border-right: solid 1px var(--N100);
 }
 
 .info {
@@ -255,7 +255,7 @@
 }
 
 .logs__title {
-    border: solid 1px #ededed;
+    border: solid 1px var(--N100);
     padding: 15px 30px;
     background-color: rgba(0, 0, 0, 0.02);
 }
