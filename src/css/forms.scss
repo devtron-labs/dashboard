@@ -440,7 +440,7 @@ p.sentence-case:first-letter {
 
 .selection-chip {
     border-radius: 4px;
-    border: solid 1px #72767a;
+    border: solid 1px var(--N500);
     background-color: var(--N0);
     text-transform: lowercase;
     font-size: 12px;
@@ -597,7 +597,7 @@ p.sentence-case:first-letter {
     z-index: 1;
     border: none;
     padding: 2px;
-    color: #72767a;
+    color: var(--N500);
     margin: 0px 5px;
 }
 

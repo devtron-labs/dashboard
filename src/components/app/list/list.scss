@@ -77,7 +77,7 @@
     align-items: center;
     border-radius: 4px;
     border: solid 1px var(--N200);
-    background-color: #f7fafc;
+    background-color: var(--N50);
     padding-left: 6px;
     padding-right: 6px;
     user-select: none;
@@ -89,10 +89,10 @@
     font-size: 14px;
     line-height: 1;
     margin-left: 10px;
-    color: #72767a;
+    color: var(--N500);
     border: none;
     padding: 1px;
-    background-color: #f7fafc;
+    background-color: var(--N50);
 }
 
 .saved-filters__clear-btn {
@@ -412,7 +412,7 @@
 
 .app-tabs-wrapper {
     position: relative;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--N200);
 }
 
 .app-tabs-wrapper .tab-list {

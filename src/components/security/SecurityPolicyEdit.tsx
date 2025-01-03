@@ -499,7 +499,7 @@ export class SecurityPolicyEdit extends Component<
         return (
             <div
                 className="br-4 en-1 bw-1 w-100 cn-5 flex mt-10"
-                style={{ height: '100px', backgroundColor: '#f7fafc' }}
+                style={{ height: '100px', backgroundColor: 'var(--N50)' }}
             >
                 No specific CVEs blocked or allowed.
             </div>

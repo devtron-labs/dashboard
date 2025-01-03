@@ -1934,7 +1934,7 @@ button.anchor {
 
 .saved-filter {
     border-radius: 4px;
-    border: solid 1px #72767a;
+    border: solid 1px var(--N500);
     background-color: var(--N0);
     font-size: 12px;
     font-weight: normal;
@@ -1953,10 +1953,10 @@ button.anchor {
     font-size: 14px;
     line-height: 1;
     margin-left: 10px;
-    color: #72767a;
+    color: var(--N500);
     border: none;
     padding: 1px;
-    background-color: #f7fafc;
+    background-color: var(--N50);
 }
 
 .saved-filter__clear-btn {
@@ -4563,7 +4563,7 @@ textarea::placeholder {
     width: 100% !important;
     min-height: 90px;
     padding: 8px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--N200);
     border-radius: 4px;
     font-size: 14px;
     line-height: 20px;
