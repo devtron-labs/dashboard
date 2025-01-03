@@ -178,7 +178,7 @@
 }
 
 .cluster-list {
-    border: 1px solid #d6dbdf;
+    border: 1px solid var(--N200);
     margin-bottom: 16px;
     background: var(--N0);
     border-radius: 8px;
@@ -220,11 +220,11 @@
 
         .list {
             border-radius: 4px;
-            border: 1px solid #d6dbdf;
+            border: 1px solid var(--N200);
         }
 
         .cluster-environment--create {
-            border: 1px #d6dbdf dashed;
+            border: 1px var(--N200) dashed;
         }
     }
 }
@@ -234,12 +234,12 @@
 }
 
 .cluster-icon path {
-    stroke: #06c;
+    stroke: var(--B500);
 }
 
 .collapsed-list {
     &.collapsed-list--chart {
-        border: 1px solid #d6dbdf;
+        border: 1px solid var(--N200);
         margin-bottom: 16px;
         border-radius: 8px;
         overflow: hidden;
@@ -250,7 +250,7 @@
 .collapsed-list {
     &.collapsed-list--git,
     &.collapsed-list--docker {
-        border: 1px solid #d6dbdf;
+        border: 1px solid var(--N200);
         margin-bottom: 16px;
         border-radius: 8px;
         overflow: hidden;
@@ -276,7 +276,7 @@
     display: grid;
     width: 100%;
     grid-template-columns: repeat(3, 1fr);
-    border: 1px solid #d6dbdf;
+    border: 1px solid var(--N200);
     height: 48px;
     border-radius: 4px;
     align-items: center;
@@ -286,7 +286,7 @@
         height: 100%;
 
         &:not(:first-child) {
-            border-left: 1px solid #d6dbdf;
+            border-left: 1px solid var(--N200);
         }
 
         input[type='radio'] {
@@ -383,7 +383,7 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         height: 48px;
-        border: 1px solid #d6dbdf;
+        border: 1px solid var(--N200);
         border-radius: 4px;
         cursor: pointer;
 
@@ -403,7 +403,7 @@
         }
 
         .environment--non-production {
-            border-left: 1px solid #d6dbdf;
+            border-left: 1px solid var(--N200);
         }
     }
 

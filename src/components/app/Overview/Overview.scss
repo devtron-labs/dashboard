@@ -18,7 +18,7 @@
     display: grid;
     grid-template-columns: 0 minmax(0, 1400px);
     justify-content: center;
-    background: linear-gradient(249deg, #d4e6f7 0%, var(--N50) 50.58%);
+    background: linear-gradient(249deg, var(--B100) 0%, var(--N50) 50.58%);
     overflow: auto;
     transition: grid-template-columns 0.2s ease-out;
 

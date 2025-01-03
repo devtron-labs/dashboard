@@ -1630,7 +1630,7 @@ th {
     border-bottom-width: 2px;
 }
 .table-striped > tbody > tr:nth-of-type(odd) {
-    background-color: #f5f5f5;
+    background-color: var(--N100);
 }
 .table-hover > tbody > tr:hover {
     background-color: #def3ff;
@@ -1914,7 +1914,7 @@ output {
 .form-control[disabled],
 .form-control[readonly],
 fieldset[disabled] .form-control {
-    background-color: #f5f5f5;
+    background-color: var(--N100);
     opacity: 1;
 }
 .form-control[disabled],
@@ -4001,7 +4001,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
     line-height: 1.66666667;
     color: #0088ce;
     text-decoration: none;
-    background-color: #f5f5f5;
+    background-color: var(--N100);
     border: 1px solid #bbb;
 }
 .pagination > li > a:hover,
@@ -4092,7 +4092,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .pager li > span {
     display: inline-block;
     padding: 5px 14px;
-    background-color: #f5f5f5;
+    background-color: var(--N100);
     border: 1px solid #bbb;
     border-radius: 0;
 }
@@ -4115,7 +4115,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .pager .disabled > span {
     color: #8b8d8f;
     cursor: not-allowed;
-    background-color: #f5f5f5;
+    background-color: var(--N100);
 }
 .label {
     display: inline;
@@ -4341,7 +4341,7 @@ a.thumbnail.active {
 }
 .alert-info {
     color: #363636;
-    background-color: #f5f5f5;
+    background-color: var(--N100);
     border-color: #8b8d8f;
 }
 .alert-info hr {
@@ -4606,7 +4606,7 @@ a.thumbnail.active {
     padding: 10px 15px;
     margin-bottom: -1px;
     background-color: #fff;
-    border: 1px solid #f5f5f5;
+    border: 1px solid var(--N100);
 }
 .list-group-item:first-child {
     border-top-left-radius: 0;
@@ -4832,7 +4832,7 @@ button.list-group-item-danger.active:focus {
     min-height: 20px;
     padding: 19px;
     margin-bottom: 20px;
-    background-color: #f5f5f5;
+    background-color: var(--N100);
     border: 1px solid #e3e3e3;
     border-radius: 1px;
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
@@ -5921,7 +5921,7 @@ h6 .label {
     font-weight: 600;
 }
 .modal-header {
-    background-color: #f5f5f5;
+    background-color: var(--N100);
     border-bottom: none;
     padding: 10px 18px;
 }
@@ -6046,7 +6046,7 @@ fieldset[disabled] .pager li > span.active {
 .pager .disabled > a:focus,
 .pager .disabled > a:active,
 .pager .disabled > span {
-    background: #f5f5f5;
+    background: var(--N100);
     box-shadow: none;
     color: #8b8d8f;
     cursor: not-allowed;
@@ -6365,7 +6365,7 @@ td > .progress:first-child:last-child {
 }
 .table > thead {
     background-clip: padding-box;
-    background-color: #f5f5f5;
+    background-color: var(--N100);
     background-image: linear-gradient(to bottom, #fafafa 0%, #ededed 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffafafa', endColorstr='#ffededed', GradientType=0);
     background-repeat: repeat-x;
@@ -6386,7 +6386,7 @@ td > .progress:first-child:last-child {
     border-bottom-width: 1px;
 }
 .table-striped > tbody > tr:nth-of-type(even) {
-    background-color: #f5f5f5;
+    background-color: var(--N100);
 }
 .table-striped > tbody > tr:nth-of-type(odd) {
     background-color: transparent;
@@ -6412,7 +6412,7 @@ td > .progress:first-child:last-child {
     cursor: pointer;
 }
 .table-treegrid > tbody > tr.odd {
-    background-color: #f5f5f5;
+    background-color: var(--N100);
 }
 .nav-tabs {
     font-size: 14px;
@@ -7397,7 +7397,7 @@ table.dataTable th:active {
     outline: none;
 }
 .inline-edit-buttons {
-    background: #f5f5f5;
+    background: var(--N100);
     border: 1px solid #7dc3e8;
     margin: 0;
     padding: 4px;

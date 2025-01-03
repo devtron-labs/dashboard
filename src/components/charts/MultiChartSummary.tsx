@@ -311,7 +311,7 @@ const SelectedChartWidget: React.FC<SelectedChartWidget> = ({
                                                             </span>
                                                             {environmentName && (
                                                                 <span
-                                                                    style={{ color: '#404040', fontSize: '12px' }}
+                                                                    style={{ color: 'var(--N700)', fontSize: '12px' }}
                                                                     className="values-option__env"
                                                                 >
                                                                     ENV: {environmentName}

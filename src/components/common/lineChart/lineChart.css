@@ -39,7 +39,7 @@
     padding: 6px 12px;
     border-radius: 2px;
     z-index: 10;
-    box-shadow: 0 0 6px 4px #f5f5f5;
+    box-shadow: 0 0 6px 4px var(--N100);
     font-size: 11px;
     pointer-events: none;
 }

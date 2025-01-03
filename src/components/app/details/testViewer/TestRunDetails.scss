@@ -70,7 +70,7 @@
 
     &.error,
     &.errors {
-        @include testcase-status(#ffcb5d, var(--Y100));
+        @include testcase-status(var(--Y400), var(--Y100));
     }
     &.failure,
     &.failed {
@@ -168,7 +168,7 @@ ul.test--detail {
                 margin-bottom: unset;
                 &.light {
                     font-size: 14px;
-                    color: #404040;
+                    color: var(--N700);
                     font-weight: normal;
                 }
             }

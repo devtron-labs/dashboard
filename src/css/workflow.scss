@@ -15,7 +15,7 @@
  */
 
 .workflow {
-    border: solid 1px #d6dbdf;
+    border: solid 1px var(--N200);
     border-radius: 8px;
     background-color: var(--N0);
     width: 100%;
@@ -54,7 +54,7 @@
 .workflow__header {
     padding: 8px 16px;
     border-radius: 8px 8px 0 0;
-    border-bottom: solid 1px #d6dbdf;
+    border-bottom: solid 1px var(--N200);
     display: flex;
     align-items: center;
 }

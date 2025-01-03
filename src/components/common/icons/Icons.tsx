@@ -16,7 +16,7 @@
 
 import React from 'react'
 
-export const NavigationArrow = ({ color = '#06c', style = {}, ...props }) => {
+export const NavigationArrow = ({ color = 'var(--B500)', style = {}, ...props }) => {
     return (
         <svg
             {...props}
@@ -32,7 +32,7 @@ export const NavigationArrow = ({ color = '#06c', style = {}, ...props }) => {
     )
 }
 
-export const Pod = ({ color = '#06c', style = {}, onClick = null }) => {
+export const Pod = ({ color = 'var(--B500)', style = {}, onClick = null }) => {
     return (
         <svg xmlns="http://www.w3.org/2000/svg" style={{ width: '24px', height: '24px', ...style }} viewBox="0 0 24 24">
             <g fill="none" fillRule="evenodd">
@@ -68,7 +68,7 @@ export const Clipboard = ({ color = 'black', rootClassName = '', style = {}, onC
     )
 }
 
-export const Trash = ({ color = '#F32E2E', style = {}, onClick = null, ...rest }) => {
+export const Trash = ({ color = 'var(--R500)', style = {}, onClick = null, ...rest }) => {
     return (
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
@@ -83,7 +83,7 @@ export const Trash = ({ color = '#F32E2E', style = {}, onClick = null, ...rest }
 }
 
 export const Branch: React.SFC<{ color: string; style?: any; onClick?: () => {} }> = ({
-    color = '#F32E2E',
+    color = 'var(--R500)',
     style = {},
     onClick = null,
 }) => {
@@ -141,7 +141,7 @@ export const Pencil = ({ color = 'var(--N700)', style = {}, ...props }) => {
         </svg>
     )
 }
-export const Page = ({ style = {}, color = '#06c', ...props }) => {
+export const Page = ({ style = {}, color = 'var(--B500)', ...props }) => {
     return (
         <svg
             {...props}
@@ -169,7 +169,7 @@ export const Page = ({ style = {}, color = '#06c', ...props }) => {
         </svg>
     )
 }
-export const DropdownIcon = ({ style = {}, color = '#06c', ...props }) => {
+export const DropdownIcon = ({ style = {}, color = 'var(--B500)', ...props }) => {
     return (
         <svg
             {...props}
@@ -191,7 +191,7 @@ export const DropdownIcon = ({ style = {}, color = '#06c', ...props }) => {
     )
 }
 
-export const Info = ({ color = '#06c', style = {}, ...rest }) => {
+export const Info = ({ color = 'var(--B500)', style = {}, ...rest }) => {
     return (
         <svg
             {...rest}

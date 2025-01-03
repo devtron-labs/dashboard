@@ -51,7 +51,7 @@
     }
 
     .table__row {
-        border-bottom: solid 1px #f5f5f5;
+        border-bottom: solid 1px var(--N100);
         cursor: pointer;
     }
 
@@ -100,7 +100,7 @@
         line-height: 1.5;
         letter-spacing: normal;
         color: var(--N500);
-        border-bottom: solid 1px #f5f5f5;
+        border-bottom: solid 1px var(--N100);
     }
 
     .security-policy__data-cell {
@@ -111,7 +111,7 @@
         letter-spacing: normal;
         color: var(--N600);
         text-transform: capitalize;
-        border-bottom: solid 1px #f5f5f5;
+        border-bottom: solid 1px var(--N100);
     }
 
     .security-policy__overriden {

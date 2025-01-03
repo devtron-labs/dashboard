@@ -294,7 +294,7 @@ export const groupStyle = () => {
     return {
         ...multiSelectStyles,
         menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
-        control: (base) => ({ ...base, border: '1px solid #d6dbdf', width: '450px' }),
+        control: (base) => ({ ...base, border: '1px solid var(--N200)', width: '450px' }),
         group: (base) => ({
             ...base,
             paddingTop: 0,

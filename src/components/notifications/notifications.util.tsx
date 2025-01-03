@@ -28,7 +28,7 @@ import { ReactComponent as Rocket } from '../../assets/icons/ic-paper-rocket.svg
 export const multiSelectStyles = {
     control: (base, state) => ({
         ...base,
-        border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
+        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
         boxShadow: 'none',
         height: '100%',
     }),

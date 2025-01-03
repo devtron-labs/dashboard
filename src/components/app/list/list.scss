@@ -180,7 +180,7 @@
 }
 
 .app-list__cell--name .value {
-    color: #0066cc;
+    color: var(--B500);
 }
 
 .app-list__cell--status {
@@ -439,10 +439,10 @@
 
 .helm-permission-message-strip {
     background-color: var(--Y100);
-    border: solid 1px #ffcb5d;
+    border: solid 1px var(--Y400);
 }
 
-.helm-permission-message-strip .icon path[fill='#F33E3E'] {
+.helm-permission-message-strip .icon path[fill='var(--R500)'] {
     fill: var(--Y700);
 }
 

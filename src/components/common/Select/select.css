@@ -137,7 +137,7 @@
     align-items: center;
     justify-content: flex-start;
     cursor: pointer;
-    background-color: #f5f5f5;
+    background-color: var(--N100);
 }
 
 .popup-button:disabled .select-button {
