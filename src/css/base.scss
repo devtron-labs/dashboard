@@ -1629,7 +1629,7 @@ button.anchor {
 
 .shimmer {
     background: #f6f7f8;
-    background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+    background-image: linear-gradient(90deg, var(--N100) 30%, var(--N0) 60%, var(--N100) 100%);
     background-repeat: no-repeat;
     background-size: 800px 104px;
     display: inline-block;
@@ -4648,7 +4648,7 @@ textarea::placeholder {
         animation-iteration-count: infinite;
         animation-name: shimmer-loading;
         animation-timing-function: linear;
-        background: linear-gradient(90deg, #edf1f5 30%, #ffffff 60%, #edf1f5 100%);
+        background: linear-gradient(90deg, var(--N100) 30%, var(--N0) 60%, var(--N100) 100%);
         background-size: 800px 104px;
         position: relative;
         height: 16px;
@@ -4663,7 +4663,7 @@ textarea::placeholder {
     animation-iteration-count: infinite;
     animation-name: shimmer-loading;
     animation-timing-function: linear;
-    background: linear-gradient(90deg, #edf1f5 30%, #ffffff 60%, #edf1f5 100%);
+    background: linear-gradient(90deg, var(--N100) 30%, var(--N0) 60%, var(--N100) 100%);
     background-size: 800px 104px;
     position: relative;
     border-radius: 2px;
