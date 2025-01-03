@@ -5144,25 +5144,6 @@ textarea::placeholder {
 .dc__grid-half {
     display: grid;
     grid-template-columns: 50% 50%;
-
-    &.show-divider {
-        position: relative;
-
-        > :first-child::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 1px;
-            height: 100%;
-            background-color: var(--N200);
-        }
-
-        &--zi-5 > :first-child::after {
-            z-index: 5;
-        }
-    }
 }
 
 .dc__grid {
@@ -5373,4 +5354,23 @@ details[open] {
     white-space: -pre-wrap;      /* Opera 4-6 */
     white-space: -o-pre-wrap;    /* Opera 7 */
     word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+.vertical-divider {
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        transform: translate(-50%, 0);
+        width: 1px;
+        background-color: var(--N200);
+    }
+
+    &.vertical-divider--zi-2::after {
+        z-index: 2;
+    }
 }
