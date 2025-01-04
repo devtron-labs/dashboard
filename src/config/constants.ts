@@ -53,7 +53,6 @@ export const Routes = {
     CD_CONFIG_PATCH: 'app/cd-pipeline/patch',
     WORKFLOW_EDITOR: 'edit/workflow',
 
-    CD_TRIGGER_POST: 'app/cd-pipeline/trigger',
     CD_TRIGGER_STATUS: 'app/vsm',
 
     DEPLOYMENT_TEMPLATE: 'app/template',

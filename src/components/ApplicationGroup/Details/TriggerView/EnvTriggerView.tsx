@@ -49,6 +49,7 @@ import {
     getStageTitle,
     TriggerBlockType,
     RuntimePluginVariables,
+    triggerCDNode,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -73,7 +74,6 @@ import {
     getCIMaterialList,
     getGitMaterialByCommitHash,
     refreshGitMaterial,
-    triggerCDNode,
     triggerCINode,
     triggerBranchChange,
 } from '../../../app/service'
@@ -1492,11 +1492,15 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             if (ciArtifact) {
                 _CDTriggerPromiseFunctionList.push(() =>
                     triggerCDNode({
-                        pipelineId: node.id,
-                        ciArtifactId: ciArtifact.id,
-                        appId: currentAppId,
+                        pipelineId: Number(node.id),
+                        ciArtifactId: Number(ciArtifact.id),
+                        appId: Number(currentAppId),
                         stageType: bulkTriggerType,
-                        runtimeParams: runtimeParams[currentAppId] || [],
+                        ...(
+                            getRuntimeParamsPayload && runtimeParams[currentAppId]
+                                ? { runtimeParamsPayload: getRuntimeParamsPayload(runtimeParams[currentAppId])}
+                                : {}
+                        ),
                     }),
                 )
             } else {

@@ -15,6 +15,7 @@
  */
 
 import { get, post, put, ResponseType, trash, APIOptions } from '@devtron-labs/devtron-fe-common-lib'
+import { MutableRefObject } from 'react'
 import { Routes } from '../../config'
 import {
     ClusterCapacityResponse,
@@ -63,8 +64,10 @@ export const cordonNodeCapacity = (requestPayload: NodeCordonRequest): Promise<R
 export const drainNodeCapacity = (requestPayload: NodeDrainRequest): Promise<ResponseType> =>
     put(`${Routes.NODE_CAPACITY}/drain`, requestPayload)
 
-export const deleteNodeCapacity = (requestPayload: NodeActionRequest, signal?: AbortSignal): Promise<ResponseType> =>
-    trash(Routes.NODE_CAPACITY, requestPayload, signal ? { signal } : {})
+export const deleteNodeCapacity = (
+    requestPayload: NodeActionRequest,
+    abortControllerRef?: MutableRefObject<AbortController>,
+): Promise<ResponseType> => trash(Routes.NODE_CAPACITY, requestPayload, { abortControllerRef })
 
 export const updateNodeManifest = (
     clusterId: string,

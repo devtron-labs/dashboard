@@ -83,6 +83,7 @@ import {
     ComponentSizeType,
     ButtonStyleType,
     AnimatedDeployButton,
+    triggerCDNode,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -108,7 +109,6 @@ import { ReactComponent as PlayIC } from '@Icons/ic-play-outline.svg'
 import noArtifact from '../../../../assets/img/no-artifact@2x.png'
 import { importComponentFromFELibrary, useAppContext } from '../../../common'
 import { CDButtonLabelMap, TriggerViewContext } from './config'
-import { triggerCDNode } from '../../service'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import {
     LAST_SAVED_CONFIG_OPTION,
@@ -147,6 +147,7 @@ const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlock
 const TriggerBlockEmptyState = importComponentFromFELibrary('TriggerBlockEmptyState', null, 'function')
 const getPolicyConsequences: ({ appId, envId }: GetPolicyConsequencesProps) => Promise<PolicyConsequencesDTO> =
     importComponentFromFELibrary('getPolicyConsequences', null, 'function')
+const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
 const validateRuntimeParameters = importComponentFromFELibrary(
     'validateRuntimeParameters',
     () => ({ isValid: true, cellError: {} }),
@@ -907,14 +908,18 @@ const CDMaterial = ({
 
         if (_appId && pipelineId && ciArtifactId) {
             triggerCDNode({
-                pipelineId,
-                ciArtifactId,
-                appId: _appId.toString(),
+                pipelineId: Number(pipelineId),
+                ciArtifactId: Number(ciArtifactId),
+                appId: Number(_appId),
                 stageType: nodeType,
                 deploymentWithConfig,
                 wfrId,
-                abortSignal: abortDeployRef.current.signal,
-                runtimeParams: runtimeParamsList,
+                abortControllerRef: abortDeployRef,
+                ...(
+                    getRuntimeParamsPayload && runtimeParamsList
+                        ? { runtimeParamsPayload: getRuntimeParamsPayload(runtimeParamsList) }
+                        : {}
+                )
             })
                 .then((response: any) => {
                     if (response.result) {

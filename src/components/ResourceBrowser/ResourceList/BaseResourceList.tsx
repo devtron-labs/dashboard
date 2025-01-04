@@ -318,7 +318,7 @@ const BaseResourceListContent = ({
         if (bulkOperationModalState === 'restart') {
             return selections?.map((selection) => ({
                 name: selection.name as string,
-                operation: async (signal: AbortSignal = null) => {
+                operation: async (abortControllerRef) => {
                     const payload = {
                         clusterId: Number(clusterId),
                         group: selectedResource?.gvk?.Group,
@@ -329,14 +329,14 @@ const BaseResourceListContent = ({
                         name: selection.name as string,
                     }
 
-                    await restartWorkload(payload, signal)
+                    await restartWorkload(payload, abortControllerRef)
                 },
             }))
         }
 
         return selections.map((selection) => ({
             name: selection.name as string,
-            operation: async (signal: AbortSignal, shouldForceDelete: boolean) => {
+            operation: async (abortControllerRef, shouldForceDelete: boolean) => {
                 if (isNodeListing) {
                     const nodeDeletePayload = {
                         clusterId: Number(clusterId),
@@ -345,7 +345,7 @@ const BaseResourceListContent = ({
                         kind: String(selection.kind),
                     }
 
-                    await deleteNodeCapacity(nodeDeletePayload, signal)
+                    await deleteNodeCapacity(nodeDeletePayload, abortControllerRef)
 
                     return
                 }
@@ -362,7 +362,7 @@ const BaseResourceListContent = ({
                     },
                 }
 
-                await deleteResource(resourceDeletePayload, signal)
+                await deleteResource(resourceDeletePayload, abortControllerRef)
             },
         }))
     }

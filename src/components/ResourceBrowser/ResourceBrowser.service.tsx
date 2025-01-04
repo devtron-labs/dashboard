@@ -34,7 +34,7 @@ import {
 import { applyOperation, escapePathComponent } from 'fast-json-patch'
 import { JSONPath } from 'jsonpath-plus'
 import { SelectedResourceType } from '@Components/v2/appDetails/appDetails.type'
-import { RefObject } from 'react'
+import { MutableRefObject, RefObject } from 'react'
 import { Routes } from '../../config'
 import { ClusterListResponse } from '../../services/service.types'
 import { ResourceListPayloadType, ResourceType, GetResourceDataType, NodeRowDetail, URLParams } from './Types'
@@ -66,15 +66,18 @@ export const getResourceGroupList = (clusterId: string, signal?: AbortSignal): P
 
 export const deleteResource = (
     resourceListPayload: ResourceListPayloadType,
-    signal?: AbortSignal,
-): Promise<ResponseType<ResourceType[]>> => post(Routes.DELETE_RESOURCE, resourceListPayload, signal ? { signal } : {})
+    abortControllerRef?: MutableRefObject<AbortController>,
+): Promise<ResponseType<ResourceType[]>> => post(Routes.DELETE_RESOURCE, resourceListPayload, { abortControllerRef })
 
-export const restartWorkload = async (resource: SelectedResourceType, signal: AbortSignal) => {
+export const restartWorkload = async (
+    resource: SelectedResourceType,
+    abortControllerRef?: MutableRefObject<AbortController>,
+) => {
     const {
         result: {
             manifestResponse: { manifest },
         },
-    } = await getManifestResource(null, '', '', true, resource, signal)
+    } = await getManifestResource(null, '', '', true, resource, abortControllerRef.current.signal)
 
     if (!manifest) {
         return
@@ -137,7 +140,15 @@ export const restartWorkload = async (resource: SelectedResourceType, signal: Ab
         )
     }
 
-    await updateManifestResourceHelmApps(null, '', '', JSON.stringify(manifest), true, resource, signal)
+    await updateManifestResourceHelmApps(
+        null,
+        '',
+        '',
+        JSON.stringify(manifest),
+        true,
+        resource,
+        abortControllerRef.current.signal,
+    )
 }
 
 export const getNodeList = (

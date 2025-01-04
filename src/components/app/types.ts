@@ -24,13 +24,10 @@ import {
     PodMetadatum,
     ReleaseMode,
     AppEnvironment,
-    DeploymentNodeType,
-    RuntimeParamsTriggerPayloadType,
     HelmReleaseStatus,
     DynamicDataTableRowType,
     TagsTableColumnsType,
     DynamicDataTableCellErrorType,
-    RuntimePluginVariables,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentStatusDetailsBreakdownDataType, ErrorItem } from './details/appDetails/appDetails.type'
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
@@ -641,26 +638,4 @@ export interface EditDescRequest {
     active: boolean
     default: boolean
     description: string
-}
-
-export interface TriggerCDNodeServiceProps {
-    pipelineId: any
-    ciArtifactId: any
-    appId: string
-    stageType: DeploymentNodeType
-    deploymentWithConfig?: string
-    wfrId?: number
-    abortSignal?: AbortSignal
-    /**
-     * Would be available only case of PRE/POST CD
-     */
-    runtimeParams?: RuntimePluginVariables[]
-}
-
-export interface TriggerCDPipelinePayloadType {
-    pipelineId: number
-    appId: number
-    ciArtifactId: number
-    cdWorkflowType: string
-    runtimeParamsPayload: RuntimeParamsTriggerPayloadType
 }
