@@ -150,6 +150,12 @@ $margins: (
     }
 }
 
+@for $i from 0 through 48 {
+    .dc__height-#{2 * $i} {
+        height: 0px + 2 * $i;
+    }
+}
+
 //color from B,N,G,Y,R and 100 to 900
 $colors: B, N, G, Y, R, V, O;
 $color-suffix: 00;
