@@ -3,7 +3,6 @@ import YAML from 'yaml'
 import {
     AppEnvDeploymentConfigDTO,
     applyCompareDiffOnUneditedDocument,
-    CMSecretExternalType,
     ConfigHeaderTabType,
     ConfigMapSecretDataType,
     decode,
@@ -13,21 +12,16 @@ import {
     DraftState,
     DryRunEditorMode,
     ERROR_STATUS_CODE,
-    getSelectPickerOptionByValue,
     OverrideMergeStrategyType,
     YAMLStringify,
     ConfigMapSecretUseFormProps,
     CM_SECRET_STATE,
-    configMapSecretMountDataMap,
     CMSecretConfigData,
-    getConfigMapSecretFormInitialValues,
     getConfigMapSecretPayload,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ResourceConfigStage } from '@Pages/Applications/DevtronApps/service.types'
 
-import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
-import { configMapDataTypeOptions, getSecretDataTypeOptions } from './constants'
 import {
     ConfigMapSecretFormProps,
     CMSecretDraftData,
@@ -83,101 +77,6 @@ export const getYAMLWithStringifiedNumbers = (yaml: string) => {
     return YAMLStringify(jsonWithStringifiedNumbers)
 }
 
-export const getConfigMapSecretReadOnlyValues = ({
-    configMapSecretData,
-    cmSecretStateLabel,
-    componentType,
-    isJob,
-}: Pick<ConfigMapSecretFormProps, 'componentType' | 'configMapSecretData' | 'cmSecretStateLabel' | 'isJob'>) => {
-    if (!configMapSecretData) {
-        return {
-            configData: [],
-            data: null,
-        }
-    }
-
-    const {
-        external,
-        externalType,
-        esoSecretYaml,
-        externalSubpathValues,
-        filePermission,
-        isSubPathChecked,
-        roleARN,
-        secretDataYaml,
-        selectedType,
-        volumeMountPath,
-        yaml,
-        currentData,
-        isSecret,
-    } = getConfigMapSecretFormInitialValues({
-        isJob,
-        configMapSecretData,
-        cmSecretStateLabel,
-        componentType,
-        fallbackMergeStrategy: DEFAULT_MERGE_STRATEGY,
-    })
-    const mountExistingExternal =
-        external && externalType === (isSecret ? CMSecretExternalType.KubernetesSecret : CMSecretExternalType.Internal)
-
-    let dataType = ''
-    if (!isSecret) {
-        dataType = configMapDataTypeOptions.find(({ value }) =>
-            external && externalType === ''
-                ? value === CMSecretExternalType.KubernetesConfigMap
-                : value === externalType,
-        ).label as string
-    } else {
-        dataType =
-            external && externalType === ''
-                ? CMSecretExternalType.KubernetesSecret
-                : (getSelectPickerOptionByValue(getSecretDataTypeOptions(isJob, true), externalType).label as string)
-    }
-
-    return {
-        configData: [
-            {
-                displayName: 'DataType',
-                value: dataType,
-                key: 'dataType',
-            },
-            {
-                displayName: 'Mount data as',
-                value: configMapSecretMountDataMap[selectedType].title,
-                key: 'mountDataAs',
-            },
-            {
-                displayName: 'Volume mount path',
-                value: volumeMountPath,
-                key: 'volumeMountPath',
-            },
-            {
-                displayName: 'Set Sub Path',
-                value:
-                    (configMapSecretMountDataMap[selectedType].value === 'volume' &&
-                        (isSubPathChecked ? 'True' : 'False')) ||
-                    '',
-                key: 'setSubPath',
-            },
-            {
-                displayName: 'Subpath Values',
-                value: externalSubpathValues,
-                key: 'externalSubpathValues',
-            },
-            {
-                displayName: 'File Permission',
-                value: filePermission,
-                key: 'filePermission',
-            },
-            {
-                displayName: 'Role ARN',
-                value: roleARN,
-                key: 'roleArn',
-            },
-        ],
-        data: !mountExistingExternal ? (currentData?.[0]?.k && yaml) || esoSecretYaml || secretDataYaml : null,
-    }
-}
 // FORM UTILS ----------------------------------------------------------------
 
 // PAYLOAD UTILS ----------------------------------------------------------------

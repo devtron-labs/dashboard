@@ -14,15 +14,16 @@ import {
     CM_SECRET_STATE,
     CMSecretConfigData,
     getConfigMapSecretPayload,
+    getConfigMapSecretReadOnlyValues,
+    ConfigMapSecretReadyOnly,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { CompareConfigView, CompareConfigViewProps, NoPublishedVersionEmptyState } from '@Pages/Applications'
 import { importComponentFromFELibrary } from '@Components/common'
 
+import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
 import { ConfigMapSecretProtectedProps } from './types'
-import { getConfigMapSecretReadOnlyValues } from './utils'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
-import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
 import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'
 
 const ConfigMapSecretApproveButton = importComponentFromFELibrary('ConfigMapSecretApproveButton', null, 'function')
@@ -123,6 +124,7 @@ export const ConfigMapSecretProtected = ({
             componentType,
             configMapSecretData: diffViewData,
             cmSecretStateLabel,
+            fallbackMergeStrategy: DEFAULT_MERGE_STRATEGY,
         })
 
         return {
@@ -174,6 +176,7 @@ export const ConfigMapSecretProtected = ({
                       }
                     : null,
             isJob,
+            fallbackMergeStrategy: DEFAULT_MERGE_STRATEGY,
         })
 
         return {
@@ -276,6 +279,7 @@ export const ConfigMapSecretProtected = ({
                         isJob={isJob}
                         configMapSecretData={publishedConfigMapSecretData}
                         areScopeVariablesResolving={areScopeVariablesResolving}
+                        fallbackMergeStrategy={DEFAULT_MERGE_STRATEGY}
                     />
                 )
             case ProtectConfigTabsType.EDIT_DRAFT:

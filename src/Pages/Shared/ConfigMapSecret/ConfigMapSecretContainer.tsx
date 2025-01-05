@@ -33,6 +33,7 @@ import {
     getConfigMapSecretPayload,
     CMSecretPayloadType,
     getConfigMapSecretFormValidations,
+    ConfigMapSecretReadyOnly,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
@@ -71,7 +72,6 @@ import {
 
 import { ConfigMapSecretDeleteModal } from './ConfigMapSecretDeleteModal'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
-import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
 import { ConfigMapSecretProtected } from './ConfigMapSecretProtected'
 import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'
 import { ConfigMapSecretDryRun } from './ConfigMapSecretDryRun'
@@ -869,6 +869,7 @@ export const ConfigMapSecretContainer = ({
                         isJob={isJob}
                         configMapSecretData={resolvedInheritedConfigMapSecretData ?? inheritedConfigMapSecretData}
                         areScopeVariablesResolving={resolvedScopeVariablesResLoading}
+                        fallbackMergeStrategy={DEFAULT_MERGE_STRATEGY}
                     />
                 )
             case ConfigHeaderTabType.DRY_RUN:

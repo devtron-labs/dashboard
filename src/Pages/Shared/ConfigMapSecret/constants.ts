@@ -1,7 +1,6 @@
-import { GroupBase, OptionsOrGroups } from 'react-select'
-import { CMSecretExternalType, CMSecretComponentType } from '@devtron-labs/devtron-fe-common-lib'
+import { CMSecretComponentType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ConfigMapSecretDataTypeOptionType, ConfigMapSecretNullStateProps } from './types'
+import { ConfigMapSecretNullStateProps } from './types'
 
 export const CM_SECRET_COMPONENT_NAME = {
     [CMSecretComponentType.ConfigMap]: 'ConfigMap',
@@ -57,60 +56,6 @@ export const getCMSecretNullStateText = (
         subTitle: CM_SECRET_EMPTY_STATE_TEXT[componentType].subtitle,
     },
 })
-
-export const configMapDataTypeOptions: ConfigMapSecretDataTypeOptionType[] = [
-    { value: '', label: 'Kubernetes ConfigMap' },
-    { value: CMSecretExternalType.KubernetesConfigMap, label: 'Kubernetes External ConfigMap' },
-]
-
-export const getSecretDataTypeOptions = (
-    isJob: boolean,
-    isHashiOrAWS: boolean,
-):
-    | ConfigMapSecretDataTypeOptionType[]
-    | OptionsOrGroups<ConfigMapSecretDataTypeOptionType, GroupBase<ConfigMapSecretDataTypeOptionType>> => {
-    const kubernetesOptions: ConfigMapSecretDataTypeOptionType[] = [
-        { value: '', label: 'Kubernetes Secret' },
-        { value: CMSecretExternalType.KubernetesSecret, label: 'Mount Existing Kubernetes Secret' },
-    ]
-
-    const esoOptions: GroupBase<ConfigMapSecretDataTypeOptionType>[] = [
-        {
-            label: 'External Secret Operator (ESO)',
-            options: [
-                { value: CMSecretExternalType.ESO_GoogleSecretsManager, label: 'Google Secrets Manager' },
-                { value: CMSecretExternalType.ESO_AWSSecretsManager, label: 'AWS Secrets Manager' },
-                { value: CMSecretExternalType.ESO_AzureSecretsManager, label: 'Azure Secrets Manager' },
-                { value: CMSecretExternalType.ESO_HashiCorpVault, label: 'Hashi Corp Vault' },
-            ],
-        },
-    ]
-
-    const kesOptions: GroupBase<ConfigMapSecretDataTypeOptionType>[] = [
-        {
-            label: 'Kubernetes External Secret (KES)',
-            options: [
-                {
-                    value: CMSecretExternalType.AWSSecretsManager,
-                    label: 'AWS Secrets Manager',
-                    description: 'Deprecated',
-                },
-                {
-                    value: CMSecretExternalType.AWSSystemManager,
-                    label: 'AWS System Manager',
-                    description: 'Deprecated',
-                },
-                {
-                    value: CMSecretExternalType.HashiCorpVault,
-                    label: 'Hashi Corp Vault',
-                    description: 'Deprecated',
-                },
-            ],
-        },
-    ]
-
-    return isJob ? kubernetesOptions : [...kubernetesOptions, ...esoOptions, ...(isHashiOrAWS ? kesOptions : [])]
-}
 
 export const CODE_EDITOR_RADIO_STATE_VALUE = { DATA: 'Data', SAMPLE: 'Sample' }
 

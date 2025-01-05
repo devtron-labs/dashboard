@@ -21,6 +21,11 @@ import {
     checkIfPathIsMatching,
     CM_SECRET_STATE,
     configMapSecretMountDataMap,
+    configMapDataTypeOptions,
+    ConfigMapSecretDataTypeOptionType,
+    renderHashiOrAwsDeprecatedInfo,
+    getSecretDataTypeOptions,
+    ConfigMapSecretReadyOnly,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ROLLOUT_DEPLOYMENT } from '@Config/constants'
@@ -30,16 +35,11 @@ import {
     isVersionLessThanOrEqualToTarget,
 } from '@Components/common'
 
-import { CM_SECRET_COMPONENT_NAME, configMapDataTypeOptions, getSecretDataTypeOptions } from './constants'
-import {
-    renderChartVersionBelow3090NotSupportedText,
-    renderESOInfo,
-    renderExternalInfo,
-    renderHashiOrAwsDeprecatedInfo,
-} from './helpers'
-import { ConfigMapSecretFormProps, ConfigMapSecretDataTypeOptionType } from './types'
+import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
+import { CM_SECRET_COMPONENT_NAME } from './constants'
+import { renderChartVersionBelow3090NotSupportedText, renderESOInfo, renderExternalInfo } from './helpers'
+import { ConfigMapSecretFormProps } from './types'
 import { ConfigMapSecretData } from './ConfigMapSecretData'
-import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
 
 const DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE = importComponentFromFELibrary(
     'DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE',
@@ -362,6 +362,7 @@ export const ConfigMapSecretForm = ({
                                     configMapSecretData={inheritedConfigMapSecretData}
                                     areScopeVariablesResolving={areScopeVariablesResolving}
                                     hideCodeEditor
+                                    fallbackMergeStrategy={DEFAULT_MERGE_STRATEGY}
                                 />
                             ) : (
                                 <>

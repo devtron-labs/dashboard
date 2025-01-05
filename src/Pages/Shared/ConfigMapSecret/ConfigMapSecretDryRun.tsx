@@ -18,6 +18,7 @@ import {
     checkIfPathIsMatching,
     usePrompt,
     CM_SECRET_STATE,
+    ConfigMapSecretReadyOnly,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
@@ -25,12 +26,12 @@ import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 import { NoPublishedVersionEmptyState, SelectMergeStrategy, ToggleResolveScopedVariables } from '@Pages/Applications'
 
+import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
 import { getConfigMapSecretManifest } from './ConfigMapSecret.service'
 import { ConfigMapSecretDryRunProps } from './types'
 import { renderExternalInfo } from './helpers'
 import { getDryRunConfigMapSecretData } from './utils'
 
-import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
 import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'
 
 const DryRunEditorModeSelect = importComponentFromFELibrary('DryRunEditorModeSelect', null, 'function')
@@ -178,6 +179,7 @@ export const ConfigMapSecretDryRun = ({
                     cmSecretStateLabel={CM_SECRET_STATE.BASE}
                     configMapSecretData={{ ...dryRunConfigMapSecretData, mergeStrategy: null }}
                     areScopeVariablesResolving={areScopeVariablesResolving}
+                    fallbackMergeStrategy={DEFAULT_MERGE_STRATEGY}
                 />
                 <div className="px-16 pb-16">
                     {renderExternalInfo(

@@ -6,7 +6,6 @@ import {
     DraftAction,
     DraftMetadataDTO,
     ProtectConfigTabsType,
-    SelectPickerOptionType,
     useForm,
     UseFormErrorHandler,
     UseFormSubmitHandler,
@@ -45,9 +44,6 @@ export interface GetConfigMapSecretConfigDataProps<IsJob extends boolean>
 export type GetConfigMapSecretConfigDataReturnType<IsJob extends boolean> = IsJob extends true
     ? ConfigMapSecretDataType
     : AppEnvDeploymentConfigDTO
-
-// SELECT PICKER OPTION TYPE
-export type ConfigMapSecretDataTypeOptionType = SelectPickerOptionType<string>
 
 // COMPONENT PROPS
 export interface CMSecretDraftData extends Omit<DraftMetadataDTO, 'data'> {
@@ -112,14 +108,6 @@ export interface ConfigMapSecretDataProps extends Pick<ConfigMapSecretFormProps,
     isUnAuthorized: boolean
     readOnly: boolean
     isPatchMode: boolean
-}
-
-export interface ConfigMapSecretReadyOnlyProps
-    extends Pick<
-        ConfigMapSecretFormProps,
-        'configMapSecretData' | 'componentType' | 'cmSecretStateLabel' | 'isJob' | 'areScopeVariablesResolving'
-    > {
-    hideCodeEditor?: boolean
 }
 
 export type CMSecretDeleteModalType = 'deleteModal' | 'protectedDeleteModal'
