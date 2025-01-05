@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import { validateCMVolumeMountPath } from '@devtron-labs/devtron-fe-common-lib';
 import { PATTERNS } from '../../config'
 import {
     CHARACTER_ERROR_MAX,
     CHARACTER_ERROR_MIN,
     ERROR_MESSAGE_FOR_VALIDATION,
-    INVALID_VOLUME_MOUNT_PATH_IN_CM_CS,
     REQUIRED_FIELD_MSG,
 } from '../../config/constantMessaging'
 
@@ -76,16 +76,5 @@ export class ValidationRules {
         return { isValid: true, message: null }
     }
 
-    cmVolumeMountPath = (value: string): { isValid: boolean; message: string } => {
-        const re = PATTERNS.ALPHANUMERIC_WITH_SPECIAL_CHAR_AND_SLASH
-        const regExp = new RegExp(re)
-        const test = regExp.test(value)
-        if (!test) {
-            return {
-                isValid: false,
-                message: INVALID_VOLUME_MOUNT_PATH_IN_CM_CS,
-            }
-        }
-        return { isValid: true, message: '' }
-    }
+    cmVolumeMountPath = (value: string): { isValid: boolean; message: string } => validateCMVolumeMountPath(value)
 }

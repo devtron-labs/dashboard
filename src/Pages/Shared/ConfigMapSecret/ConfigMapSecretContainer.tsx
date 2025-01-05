@@ -32,6 +32,7 @@ import {
     getConfigMapSecretFormInitialValues,
     getConfigMapSecretPayload,
     CMSecretPayloadType,
+    getConfigMapSecretFormValidations,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
@@ -59,7 +60,6 @@ import {
     getConfigMapSecretStateLabel,
     parseConfigMapSecretSearchParams,
 } from './utils'
-import { getConfigMapSecretFormValidations } from './validations'
 import { CM_SECRET_COMPONENT_NAME, CONFIG_MAP_SECRET_NO_DATA_ERROR } from './constants'
 import {
     CMSecretDeleteModalType,

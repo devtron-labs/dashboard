@@ -18,12 +18,12 @@ import {
     configMapSecretMountDataMap,
     convertYAMLToKeyValuePair,
     CODE_EDITOR_RADIO_STATE,
+    PATTERNS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { ReactComponent as HideIcon } from '@Icons/ic-visibility-off.svg'
 import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
-import { PATTERNS } from '@Config/constants'
 
 import {
     CODE_EDITOR_RADIO_STATE_VALUE,

@@ -52,15 +52,17 @@ export const ConfigMapSecretForm = ({
     configMapSecretData,
     inheritedConfigMapSecretData,
     cmSecretStateLabel,
+    // TODO: Rename
     isJob,
     appChartRef,
     isDraft,
     disableDataTypeChange,
     componentType,
-    isSubmitting,
+    isSubmitting = false,
     isApprovalPolicyConfigured,
     areScopeVariablesResolving,
     useFormProps,
+    isExternalSubmit,
     onSubmit,
     onError,
     onCancel,
@@ -89,7 +91,7 @@ export const ConfigMapSecretForm = ({
      * * This ensures the user is warned about losing data when navigating away during creation.
      * * Non-create mode is being handled by the parent component.
      */
-    const shouldPrompt = isCreateView && formState.isDirty
+    const shouldPrompt = !isExternalSubmit && isCreateView && formState.isDirty
 
     // PROMPT FOR UNSAVED CHANGES
     usePrompt({ shouldPrompt })
@@ -387,7 +389,7 @@ export const ConfigMapSecretForm = ({
                         </div>
                     </div>
                 )}
-                {!isHashiOrAWS && renderFormButtons()}
+                {!isHashiOrAWS && !isExternalSubmit && renderFormButtons()}
             </form>
         </>
     )
