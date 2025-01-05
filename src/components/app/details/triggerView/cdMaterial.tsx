@@ -84,6 +84,7 @@ import {
     ButtonStyleType,
     AnimatedDeployButton,
     triggerCDNode,
+    DEFAULT_ROUTE_PROMPT_MESSAGE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -118,7 +119,7 @@ import {
 import { TRIGGER_VIEW_GA_EVENTS, CD_MATERIAL_GA_EVENT, TRIGGER_VIEW_PARAMS } from './Constants'
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
 import { getInitialState, getWfrId } from './cdMaterials.utils'
-import { DEFAULT_ROUTE_PROMPT_MESSAGE, URLS } from '../../../../config'
+import { URLS } from '../../../../config'
 import { PipelineConfigDiff } from './PipelineConfigDiff'
 import { usePipelineDeploymentConfig } from './PipelineConfigDiff/usePipelineDeploymentConfig'
 import { PipelineConfigDiffStatusTile } from './PipelineConfigDiff/PipelineConfigDiffStatusTile'

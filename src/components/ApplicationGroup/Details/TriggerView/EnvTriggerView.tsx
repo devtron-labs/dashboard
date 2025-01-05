@@ -49,13 +49,13 @@ import {
     getStageTitle,
     TriggerBlockType,
     RuntimePluginVariables,
+    DEFAULT_ROUTE_PROMPT_MESSAGE,
     triggerCDNode,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
     BUILD_STATUS,
     DEFAULT_GIT_BRANCH_VALUE,
-    DEFAULT_ROUTE_PROMPT_MESSAGE,
     NO_COMMIT_SELECTED,
     URLS,
     ViewType,
