@@ -823,7 +823,7 @@ export const ConfigMapSecretContainer = ({
             />
         ) : (
             <ConfigMapSecretForm
-                id={id}
+                isCreateView={id === null}
                 cmSecretStateLabel={cmSecretStateLabel}
                 componentType={componentType}
                 configMapSecretData={configMapSecretData}

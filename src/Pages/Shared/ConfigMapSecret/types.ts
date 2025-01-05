@@ -92,7 +92,10 @@ export type ConfigMapSecretFormProps = Required<
     Pick<ConfigMapSecretContainerProps, 'isJob' | 'isApprovalPolicyConfigured' | 'componentType' | 'appChartRef'>
 > &
     CMCSFormBaseProps & {
-        id: number | string
+        /**
+         * @default false
+         */
+        isCreateView?: boolean
         configMapSecretData: CMSecretConfigData
         inheritedConfigMapSecretData: CMSecretConfigData
         cmSecretStateLabel: CM_SECRET_STATE
@@ -158,7 +161,6 @@ export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 
         | 'cmSecretStateLabel'
         | 'isJob'
         | 'disableDataTypeChange'
-        | 'id'
         | 'onError'
         | 'onSubmit'
         | 'areScopeVariablesResolving'
@@ -166,6 +168,7 @@ export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 
         | 'useFormProps'
     > &
     Pick<ConfigMapSecretDeleteModalProps, 'updateCMSecret'> & {
+        id: number
         componentName: string
         publishedConfigMapSecretData: ConfigMapSecretFormProps['configMapSecretData']
         inheritedConfigMapSecretData: ConfigMapSecretFormProps['configMapSecretData']

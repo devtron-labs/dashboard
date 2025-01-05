@@ -209,7 +209,7 @@ export const ConfigMapSecretProtected = ({
         <ConfigMapSecretForm
             configMapSecretData={configMapSecretData}
             inheritedConfigMapSecretData={inheritedConfigMapSecretData}
-            id={id}
+            isCreateView={id === null}
             componentType={componentType}
             cmSecretStateLabel={
                 selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT &&

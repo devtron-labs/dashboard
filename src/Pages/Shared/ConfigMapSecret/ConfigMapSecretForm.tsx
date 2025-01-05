@@ -48,7 +48,7 @@ const DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE = importComponentFromFELibrary(
 )
 
 export const ConfigMapSecretForm = ({
-    id = null,
+    isCreateView = false,
     configMapSecretData,
     inheritedConfigMapSecretData,
     cmSecretStateLabel,
@@ -74,7 +74,6 @@ export const ConfigMapSecretForm = ({
     const { data, errors, formState, setValue, register, handleSubmit } = useFormProps
 
     // CONSTANTS
-    const isCreateView = id === null
     const componentName = CM_SECRET_COMPONENT_NAME[componentType]
     const isUnAuthorized = configMapSecretData?.unAuthorized
     const isESO = data.isSecret && hasESO(data.externalType)

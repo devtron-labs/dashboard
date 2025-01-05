@@ -3,7 +3,7 @@ import { ConfigMapSecretForm } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecr
 
 const BuildInfraCMCSForm = ({ parsedData, useFormProps, componentType }: BuildInfraCMCSFormProps) => (
     <ConfigMapSecretForm
-        id={parsedData.id}
+        isCreateView={!parsedData.canOverride && parsedData.isOverridden}
         configMapSecretData={parsedData.initialResponse}
         inheritedConfigMapSecretData={parsedData.initialResponse}
         cmSecretStateLabel={CM_SECRET_STATE.BASE}
