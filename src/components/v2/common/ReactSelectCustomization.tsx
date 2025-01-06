@@ -128,7 +128,7 @@ export const multiSelectStyles = {
     option: (base, state) => {
         return {
             ...base,
-            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+            backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--N0)',
             color: 'var(--N900)',
             padding: '8px 12px',
         }

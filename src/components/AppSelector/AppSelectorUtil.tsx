@@ -63,7 +63,7 @@ export const appSelectorStyle = {
         ...base,
         borderRadius: '4px',
         color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
-        backgroundColor: state.isSelected ? 'var(--B100)' : state.isFocused ? 'var(--N100)' : 'white',
+        backgroundColor: state.isSelected ? 'var(--B100)' : state.isFocused ? 'var(--N100)' : 'var(--N0)',
         fontWeight: state.isSelected ? 600 : 'normal',
         marginRight: '8px',
     }),

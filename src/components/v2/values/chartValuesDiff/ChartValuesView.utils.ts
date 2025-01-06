@@ -36,7 +36,7 @@ export const getCompareValuesSelectStyles = () => ({
     option: (base, state) => ({
         ...base,
         color: 'var(--N900)',
-        backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+        backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--N0)',
     }),
     menu: (base) => ({
         ...base,

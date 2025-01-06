@@ -137,7 +137,7 @@ export default class LineChart extends Component<LineChartProps> {
             .text('Time')
             .attr('x', width / 2)
             .attr('y', offset * 0.7)
-            .attr('fill', 'black')
+            .attr('fill', 'var(--N900)')
 
         // Draw Y Axis
         svg.append('g')
@@ -148,7 +148,7 @@ export default class LineChart extends Component<LineChartProps> {
             .attr('transform', `rotate(${-90},${0} ${0})`)
             .attr('x', -height / 2)
             .attr('y', -offset * 0.7)
-            .attr('fill', 'black')
+            .attr('fill', 'var(--N900)')
 
         // Line function
         const line = d3
@@ -207,7 +207,7 @@ export default class LineChart extends Component<LineChartProps> {
                     .select('circle')
                     .attr('r', '5')
                     .attr('stroke-width', '2')
-                    .attr('stroke', 'white')
+                    .attr('stroke', 'var(--N0)')
                     .attr('fill', 'rgb(236, 122, 8)')
 
                 mouseLine

@@ -626,7 +626,7 @@ export const Details: React.FC<DetailsType> = ({
                         <EnvSelector
                             environments={environments}
                             disabled={params.envId && !showCommitInfo}
-                            controlStyleOverrides={{ backgroundColor: 'white' }}
+                            controlStyleOverrides={{ backgroundColor: 'var(--N0)' }}
                         />
                         {isAppDeleted && appDetails?.deploymentAppDeleteRequest && (
                             <div data-testid="deleteing-argocd-pipeline" className="flex left">
@@ -910,7 +910,7 @@ export const EnvSelector = ({
         control: (base, state) => ({
             ...base,
             border: '1px solid var(--B500)',
-            backgroundColor: 'white',
+            backgroundColor: 'var(--N0)',
             minHeight: '32px',
             height: '32px',
             cursor: state.isDisabled ? 'not-allowed' : 'pointer',
@@ -1292,7 +1292,7 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
                             input: (base, state) => ({ ...base, caretColor: 'var(--N0)', color: 'var(--N0)' }),
                             option: (base, state) => ({
                                 ...base,
-                                backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--N0)',
                                 color: 'var(--N900)',
                                 textOverflow: 'ellipsis',
                                 overflow: 'hidden',
@@ -1342,7 +1342,7 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
                                         }),
                                         option: (base, state) => ({
                                             ...base,
-                                            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                            backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--N0)',
                                             color: 'var(--N900)',
                                             textOverflow: 'ellipsis',
                                             overflow: 'hidden',

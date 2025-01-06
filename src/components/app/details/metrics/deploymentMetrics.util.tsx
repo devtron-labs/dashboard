@@ -33,7 +33,7 @@ export const styles = {
         return {
             ...base,
             top: `38px`,
-            backgroundColor: state.Selected ? 'white' : 'white',
+            backgroundColor: 'var(--N0)',
         }
     },
     singleValue: (base, state) => {
@@ -47,7 +47,7 @@ export const styles = {
         return {
             ...base,
             color: 'var(--N900)',
-            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+            backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--N0)',
         }
     },
 }

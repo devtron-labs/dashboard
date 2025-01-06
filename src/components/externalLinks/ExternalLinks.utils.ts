@@ -77,7 +77,7 @@ export const customMultiSelectStyles = {
     option: (base, state) => ({
         ...base,
         padding: '10px 12px',
-        backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+        backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--N0)',
         color: 'var(--N900)',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -128,7 +128,7 @@ export const ToolSelectStyles = {
         minHeight: '36px',
         width: '40px',
         border: 'none',
-        backgroundColor: 'white',
+        backgroundColor: 'var(--N0)',
         boxShadow: 'none',
     }),
     valueContainer: (base) => ({

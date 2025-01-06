@@ -221,7 +221,7 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                                 href="https://slack.com/intl/en-gb/help/articles/115005265063-Incoming-webhooks-for-Slack"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                style={{ color: 'white', textTransform: 'none' }}
+                                style={{ color: 'var(--N0)', textTransform: 'none' }}
                             >
                                 Learn how to setup slack webhooks
                             </a>

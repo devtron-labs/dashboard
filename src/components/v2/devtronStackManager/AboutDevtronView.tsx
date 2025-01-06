@@ -44,7 +44,7 @@ const AboutDevtronView = ({
 
     useEffect(() => {
         if (parentRef?.current) {
-            parentRef.current.style.backgroundColor = 'white'
+            parentRef.current.style.backgroundColor = 'var(--N0)'
         }
 
         return (): void => {

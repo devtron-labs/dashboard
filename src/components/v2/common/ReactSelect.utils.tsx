@@ -24,7 +24,7 @@ import { CLUSTER_TERMINAL_MESSAGING } from '../../ClusterNodes/constants'
 export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
     return (base, state) => ({
         ...base,
-        backgroundColor: state.isSelected ? 'var(--B100)' : state.isFocused ? 'var(--N50)' : 'white',
+        backgroundColor: state.isSelected ? 'var(--B100)' : state.isFocused ? 'var(--N50)' : 'var(--N0)',
         opacity: state.isDisabled ? 0.5 : 1,
         color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
         textOverflow: 'ellipsis',
@@ -56,7 +56,7 @@ export const getCommonSelectStyle = (styleOverrides = {}) => {
         option: (base, state) => ({
             ...base,
             color: 'var(--N900)',
-            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+            backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--N0)',
             padding: '10px 12px',
         }),
         dropdownIndicator: (base, state) => ({
@@ -93,7 +93,7 @@ export const styles = {
         return {
             ...base,
             top: `0px`,
-            backgroundColor: 'white',
+            backgroundColor: 'var(--N0)',
         }
     },
     singleValue: (base, state) => {
@@ -106,7 +106,7 @@ export const styles = {
         return {
             ...base,
             color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
-            backgroundColor: state.isFocused ? 'var(--N50)' : 'white',
+            backgroundColor: state.isFocused ? 'var(--N50)' : 'var(--N0)',
         }
     },
 }
