@@ -59,9 +59,10 @@ export const SMTPConfigurationTable = ({ state, deleteClickHandler }: Configurat
                             {renderText(smtpConfig.email)}
                             <ConfigTableRowActionButton
                                 onClickEditRow={onClickEditRow(smtpConfig.id)}
-                                onClickDeleteRow={() => {
-                                    deleteClickHandler(smtpConfig.id, DeleteComponentsName.SMTPConfigurationTab)
-                                }}
+                                onClickDeleteRow={deleteClickHandler(
+                                    smtpConfig.id,
+                                    DeleteComponentsName.SMTPConfigurationTab,
+                                )}
                                 rootClassName="smtp-config-table__action"
                                 modal={ConfigurationsTabTypes.SMTP}
                             />

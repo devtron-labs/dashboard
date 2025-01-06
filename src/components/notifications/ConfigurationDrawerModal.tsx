@@ -16,6 +16,7 @@ export const ConfigurationTabDrawerModal = ({
     modal,
     isLoading,
     saveConfigModal,
+    disableSave,
 }: ConfigurationTabDrawerModalProps) => {
     const renderLoadingState = () => (
         <div className="h-100">
@@ -24,7 +25,7 @@ export const ConfigurationTabDrawerModal = ({
     )
 
     const renderFooter = () => (
-        <div className="form__button-group-bottom flex right dc__gap-16">
+        <div className="form__button-group-bottom flex right dc__gap-16 dc__zi-1">
             <Button
                 dataTestId="ses-config-modal-close-button"
                 size={ComponentSizeType.medium}
@@ -40,13 +41,13 @@ export const ConfigurationTabDrawerModal = ({
                 onClick={saveConfigModal}
                 text="Save"
                 isLoading={isLoading}
-                disabled={isLoading}
+                disabled={disableSave}
             />
         </div>
     )
 
     const renderModalContent = () => (
-        <div className="flexbox-col flex-grow-1 h-100">
+        <div className="flexbox-col flex-grow-1 mh-0">
             {renderContent()}
             {renderFooter()}
         </div>
@@ -56,7 +57,7 @@ export const ConfigurationTabDrawerModal = ({
             <div
                 className={`h-100 modal__body modal__body--w-${modal === ConfigurationsTabTypes.WEBHOOK ? '800' : '600'} modal__body--p-0 dc__no-border-radius mt-0 flex-grow-1 flexbox-col`}
             >
-                <div className="h-48 flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
+                <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
                     <h1 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Configure {modal}</h1>
                     <Button
                         ariaLabel="close-button"

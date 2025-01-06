@@ -45,9 +45,10 @@ const SlackConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTab
                         {renderText(slackConfig.webhookUrl)}
                         <ConfigTableRowActionButton
                             onClickEditRow={onClickSlackConfigEdit(slackConfig.id)}
-                            onClickDeleteRow={() => {
-                                deleteClickHandler(slackConfig.id, DeleteComponentsName.SlackConfigurationTab)
-                            }}
+                            onClickDeleteRow={deleteClickHandler(
+                                slackConfig.id,
+                                DeleteComponentsName.SlackConfigurationTab,
+                            )}
                             rootClassName="slack-config-table__action"
                             modal={ConfigurationsTabTypes.SLACK}
                         />

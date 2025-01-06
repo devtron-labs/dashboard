@@ -16,6 +16,7 @@
 
 import { RouteComponentProps } from 'react-router-dom'
 import { ServerError, ResponseType, DynamicDataTableRowType } from '@devtron-labs/devtron-fe-common-lib'
+import { VariableDataTableActionType } from '@Components/CIPipelineN/VariableDataTable/types'
 import { ConfigurationsTabTypes } from './constants'
 
 export interface NotifierProps extends RouteComponentProps<{ id: string }> {}
@@ -167,7 +168,7 @@ export interface SMTPConfigModalProps {
 
 export interface ConfigTableRowActionButtonProps {
     onClickEditRow: () => void
-    onClickDeleteRow: () => void
+    onClickDeleteRow: any
     rootClassName: string
     modal: ConfigurationsTabTypes
 }
@@ -184,13 +185,36 @@ export interface ConfigurationTabDrawerModalProps {
     modal: ConfigurationsTabTypes
     isLoading: boolean
     saveConfigModal: () => void
+    disableSave?: boolean
 }
 
 export type WebhookHeaderKeyType = 'key' | 'value'
 
 export type WebhookDataRowType = DynamicDataTableRowType<WebhookHeaderKeyType>
 
+export interface WebhookRowCellType {
+    key: string
+    value: string
+    id?: number
+}
+
 export interface WebhookConfigDynamicDataTableProps {
     rows: WebhookDataRowType[]
     setRows: React.Dispatch<React.SetStateAction<WebhookDataRowType[]>>
+    headers: WebhookRowCellType[]
+}
+
+type VariableDataTableActionPropsMap = {
+    [VariableDataTableActionType.UPDATE_ROW]: string
+}
+
+export type VariableDataTableAction<
+    T extends keyof VariableDataTableActionPropsMap = keyof VariableDataTableActionPropsMap,
+> = T extends keyof VariableDataTableActionPropsMap
+    ? { actionType: T; actionValue: VariableDataTableActionPropsMap[T] }
+    : never
+
+export type HandleRowUpdateActionProps = VariableDataTableAction & {
+    headerKey: WebhookHeaderKeyType
+    rowId: string | number
 }

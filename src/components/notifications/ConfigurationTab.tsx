@@ -43,7 +43,7 @@ import { WebhookConfigurationTable } from './WebhookConfigurationTable'
 import SESConfigurationTable from './SESConfigurationTable'
 import { SMTPConfigurationTable } from './SMTPConfigurationTable'
 import { ConfigurationTabSwitcher } from './ConfigurationTabsSwitcher'
-import { ConfigurationsTabTypes } from './constants'
+import { ConfigurationsTabTypes, SlackRegion } from './constants'
 import { getDeleteConfigComponent } from './notifications.util'
 
 export const ConfigurationTab = () => {
@@ -106,7 +106,7 @@ export const ConfigurationTab = () => {
         })
     }, [])
 
-    const deleteClickHandler = async (configId, type: ConfigurationsTabTypes) => {
+    const deleteClickHandler = (configId, type: ConfigurationsTabTypes) => async () => {
         try {
             if (type === ConfigurationsTabTypes.SLACK) {
                 const { result } = await getSlackConfiguration(configId, true)
@@ -202,8 +202,8 @@ export const ConfigurationTab = () => {
     }
 
     const renderModal = () => {
-        if (queryString.get('configId') === null) return null
-        const configId = parseInt(queryString.get('configId') || '0', 10)
+        if (queryString.get(SlackRegion.CONFIG_ID) === null) return null
+        const configId = parseInt(queryString.get(SlackRegion.CONFIG_ID), 10)
 
         switch (modal) {
             case ConfigurationsTabTypes.SES:
@@ -232,9 +232,9 @@ export const ConfigurationTab = () => {
     }
 
     const reloadDeleteConfig = () => {
-        setState({ ...state, deleting: false })
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         getAllChannelConfigs()
+        setState({ ...state, deleting: false, confirmation: false })
     }
 
     const renderTableComponent = () => {

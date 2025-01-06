@@ -32,8 +32,8 @@ import { validateEmail } from '../common'
 import awsRegionList from '../common/awsRegionList.json'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 import { SESConfigModalProps } from './types'
-import { getSESDefaultConfiguration } from './notifications.util'
-import { ConfigurationsTabTypes, DEFAULT_MASKED_SECRET_KEY, DefaultSESValidationKeys, SESFieldKeys } from './constants'
+import { DefaultSESValidationKeys, getSESDefaultConfiguration, validateKeyValueConfig } from './notifications.util'
+import { ConfigurationsTabTypes, DEFAULT_MASKED_SECRET_KEY, SESFieldKeys } from './constants'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
 
 const SESConfigModal = ({
@@ -92,13 +92,13 @@ const SESConfigModal = ({
                 [key]: { label: selected.label, value: selected.value },
             }))
         }
+        setValid((prevValid) => ({
+            ...prevValid,
+            [key]: validateKeyValueConfig(selected),
+        }))
         setForm((prevForm) => ({
             ...prevForm,
             [key]: selected,
-        }))
-        setValid((prevValid) => ({
-            ...prevValid,
-            [key]: !!selected,
         }))
     }
 
@@ -135,6 +135,7 @@ const SESConfigModal = ({
         onSaveSuccess()
         closeSESConfig()
     }
+    const isFormValid = Object.keys(isValid).every((key) => isValid[key]) && validateEmail(form.fromEmail)
 
     const saveSESConfig = async () => {
         setForm((prevForm) => ({
@@ -142,7 +143,6 @@ const SESConfigModal = ({
             isLoading: true,
             isError: false,
         }))
-        const isFormValid = Object.keys(isValid).every((key) => isValid[key]) && validateEmail(form.fromEmail)
 
         if (!isFormValid) {
             setForm((prevForm) => ({
@@ -178,19 +178,19 @@ const SESConfigModal = ({
             <CustomInput
                 label="Configuration Name"
                 data-testid="add-ses-configuration-name"
-                name="configName"
+                name={SESFieldKeys.CONFIG_NAME}
                 value={form.configName}
                 onChange={(e) => handleInputChange(SESFieldKeys.CONFIG_NAME, e.target.value)}
                 onBlur={(event) => handleBlur(event, SESFieldKeys.CONFIG_NAME)}
                 placeholder="Configuration name"
                 autoFocus
                 isRequiredField
-                error={!isValid.configName && REQUIRED_FIELD_MSG}
+                error={isValid.configName.messages}
             />
             <CustomInput
-                data-testid="add-ses-access-key"
                 label="Access Key ID"
-                name="app-name"
+                data-testid="add-ses-access-key"
+                name={SESFieldKeys.ACCESS_KEY}
                 value={form.accessKey}
                 onChange={(e) => handleInputChange(SESFieldKeys.ACCESS_KEY, e.target.value)}
                 onBlur={(event) => handleBlur(event, SESFieldKeys.ACCESS_KEY)}
@@ -201,7 +201,7 @@ const SESConfigModal = ({
             <CustomInput
                 label="Secret Access Key"
                 data-testid="add-ses-secret-access-key"
-                name="app-name"
+                name={SESFieldKeys.SECRET_KEY}
                 value={form.secretKey}
                 onChange={(e) => handleInputChange(SESFieldKeys.SECRET_KEY, e.target.value)}
                 onBlur={(event) => handleBlur(event, SESFieldKeys.SECRET_KEY)}
@@ -209,7 +209,7 @@ const SESConfigModal = ({
                 isRequiredField
                 error={!isValid.secretKey && REQUIRED_FIELD_MSG}
             />
-            <div className="">
+            <div>
                 <SelectPicker
                     inputId="aws-region"
                     label="AWS Region"
@@ -221,6 +221,7 @@ const SESConfigModal = ({
                     onChange={(selected) => handleAWSRegionChange(selected)}
                     options={awsRegionListParsed}
                     size={ComponentSizeType.large}
+                    name={SESFieldKeys.REGION}
                 />
                 <span className="form__error">
                     {!isValid.region ? (
@@ -235,7 +236,7 @@ const SESConfigModal = ({
                 label="Send email from"
                 data-testid="add-ses-send-email"
                 type="email"
-                name="app-name"
+                name={SESFieldKeys.FROM_EMAIL}
                 value={form.fromEmail}
                 onBlur={(event) => handleBlur(event, SESFieldKeys.FROM_EMAIL)}
                 placeholder="Email"
@@ -249,6 +250,8 @@ const SESConfigModal = ({
                 value={CHECKBOX_VALUE.CHECKED}
                 disabled={shouldBeDefault}
                 onChange={handleCheckbox}
+                data-testid="add-ses-default-checkbox"
+                name="default"
             >
                 Set as default configuration to send emails
             </Checkbox>
@@ -262,6 +265,7 @@ const SESConfigModal = ({
             modal={ConfigurationsTabTypes.SES}
             isLoading={form.isLoading}
             saveConfigModal={saveSESConfig}
+            disableSave={!isFormValid}
         />
     )
 }

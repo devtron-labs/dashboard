@@ -33,18 +33,11 @@ export enum SESFieldKeys {
     FROM_EMAIL = 'fromEmail',
 }
 
-export const DefaultSESValidationKeys = {
-    [SESFieldKeys.CONFIG_NAME]: true,
-    [SESFieldKeys.ACCESS_KEY]: true,
-    [SESFieldKeys.SECRET_KEY]: true,
-    [SESFieldKeys.REGION]: true,
-    [SESFieldKeys.FROM_EMAIL]: true,
-}
-
 export enum SlackRegion {
     PROJECT_ID = 'project_id',
     CONFIG_NAME = 'configName',
     WEBHOOK_URL = 'webhookUrl',
+    CONFIG_ID = 'configId',
 }
 
 export const DefaultSlackKeys = {
@@ -58,4 +51,13 @@ export const DefaultSlackValidationKeys = {
     [SlackRegion.PROJECT_ID]: true,
     [SlackRegion.CONFIG_NAME]: true,
     [SlackRegion.WEBHOOK_URL]: true,
+}
+
+export const DefaultWebhookConfig = {
+    configName: '',
+    webhookUrl: '',
+    isLoading: false,
+    isError: false,
+    payload: '',
+    header: [{ key: '', value: '' }],
 }

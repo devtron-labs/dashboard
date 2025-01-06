@@ -26,26 +26,19 @@ import {
 import { useHistory } from 'react-router-dom'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
-import CreateHeaderDetails from './CreateHeaderDetails'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 import { getWebhookAttributes, getWebhookConfiguration, saveUpdateWebhookConfiguration } from './notifications.service'
-import { ConfigurationsTabTypes } from './constants'
+import { ConfigurationsTabTypes, DefaultWebhookConfig } from './constants'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
 import { WebhookConfigModalProps } from './types'
+import CreateHeaderDetails from './CreateHeaderDetails'
 
 export const WebhookConfigModal = ({
     webhookConfigId,
     closeWebhookConfigModal,
     onSaveSuccess,
 }: WebhookConfigModalProps) => {
-    const [form, setForm] = useState({
-        configName: '',
-        webhookUrl: '',
-        isLoading: false,
-        isError: false,
-        payload: '',
-        header: [{ key: '', value: '' }],
-    })
+    const [form, setForm] = useState(DefaultWebhookConfig)
     const [isValid, setIsValid] = useState({
         configName: true,
         webhookUrl: true,
@@ -55,30 +48,28 @@ export const WebhookConfigModal = ({
     const history = useHistory()
     const [webhookAttribute, setWebhookAttribute] = useState({})
 
-    useEffect(() => {
-        const fetchWebhookData = async () => {
-            setForm((prev) => ({ ...prev, isLoading: true }))
-            try {
-                if (webhookConfigId) {
-                    const response = await getWebhookConfiguration(webhookConfigId)
-                    const { header = {}, payload = '' } = response.result || {}
-                    const headers = Object.keys(header).map((key) => ({ key, value: header[key] }))
-                    setForm((prev) => ({ ...prev, ...response.result, header: headers, payload, isLoading: false }))
-                } else {
-                    await getProjectListMin()
-                    setForm((prev) => ({ ...prev, isLoading: false }))
-                }
+    const fetchWebhookData = async () => {
+        setForm((prev) => ({ ...prev, isLoading: true }))
+        try {
+            const response = await getWebhookConfiguration(webhookConfigId)
+            const { header = {}, payload = '' } = response.result || {}
+            const headers = Object.keys(header).map((key) => ({ key, value: header[key] }))
+            setForm((prev) => ({ ...prev, ...response.result, header: headers, payload, isLoading: false }))
+            await getProjectListMin()
 
-                const attributes = await getWebhookAttributes()
-                setWebhookAttribute(attributes.result || {})
-            } catch (error) {
-                showError(error)
-                setForm((prev) => ({ ...prev, isLoading: false }))
-            }
+            const attributes = await getWebhookAttributes()
+            setWebhookAttribute(attributes.result || {})
+        } catch (error) {
+            showError(error)
+            setForm((prev) => ({ ...prev, isLoading: false }))
         }
+    }
 
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        fetchWebhookData()
+    useEffect(() => {
+        if (webhookConfigId) {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            fetchWebhookData()
+        }
     }, [webhookConfigId])
 
     const closeWebhookConfig = () => {
@@ -217,8 +208,8 @@ export const WebhookConfigModal = ({
     )
 
     const renderWebhookModal = () => (
-        <div className="flexbox h-100 cn-9 w-100">
-            <div className="w-600 p-20 flex-grow-1 flexbox-col mh-0 dc__overflow-scroll dc__gap-16 dc__border-right">
+        <div className="flexbox h-100 cn-9 w-100 mh-0">
+            <div className="w-600 p-20 flex-grow-1 flexbox-col mh-0 dc__overflow-auto dc__gap-16 dc__border-right">
                 <CustomInput
                     label="Configuration name"
                     value={form.configName}
@@ -241,15 +232,15 @@ export const WebhookConfigModal = ({
                 />
                 <div>
                     <div className="flexbox dc__content-space">
-                        <span>Headers</span>
+                        <span className="fs-13 cn-7 lh-20">Headers</span>
                         <span className="cb-5 fw-6 fs-13 cursor flex" onClick={addHeader}>
-                            <Add className="icon-dim-20" /> Add
+                            <Add className="icon-dim-20 fcb-5" /> Add
                         </span>
                     </div>
                     {renderHeadersList()}
                 </div>
-                <div>
-                    <span className="form__label dc__required-field">Data to be shared through webhook</span>
+                <div className="flexbox-col dc__gap-6">
+                    <div className="fs-13 cn-7 lh-20 dc__required-field">Data to be shared through webhook</div>
                     <div className="en-2 bw-1 br-4 p-6">
                         <CodeEditor
                             value={form.payload}

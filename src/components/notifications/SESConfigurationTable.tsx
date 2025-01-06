@@ -54,9 +54,7 @@ const SESConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTable
                     {renderText(sesConfig.email)}
                     <ConfigTableRowActionButton
                         onClickEditRow={onClickSESConfigEdit(sesConfig.id)}
-                        onClickDeleteRow={() => {
-                            deleteClickHandler(sesConfig.id, DeleteComponentsName.SesConfigurationTab)
-                        }}
+                        onClickDeleteRow={deleteClickHandler(sesConfig.id, DeleteComponentsName.SesConfigurationTab)}
                         rootClassName="ses-config-table__action"
                         modal={ConfigurationsTabTypes.SES}
                     />

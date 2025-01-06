@@ -25,10 +25,17 @@ import { ReactComponent as Slack } from '@Icons/slack-logo.svg'
 import { ReactComponent as SES } from '@Icons/ic-aws-ses.svg'
 import { ReactComponent as Webhook } from '@Icons/ic-CIWebhook.svg'
 import { ReactComponent as SMTP } from '@Icons/ic-smtp.svg'
-import { DynamicDataTableRowDataType, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
-import { ConfigurationsTabTypes, ConfigurationTabText } from './constants'
+import {
+    DynamicDataTableHeaderType,
+    DynamicDataTableRowDataType,
+    DynamicDataTableRowType,
+    getUniqueId,
+    Tooltip,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { ConfigurationsTabTypes, ConfigurationTabText, SESFieldKeys } from './constants'
 import { validateEmail } from '../common'
-import { WebhookDataRowType } from './types'
+import { WebhookDataRowType, WebhookHeaderKeyType, WebhookRowCellType } from './types'
+import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
 
 export const multiSelectStyles = {
     control: (base, state) => ({
@@ -241,15 +248,45 @@ export const getDeleteConfigComponent = (showDeleteConfigModalType: Configuratio
     return ConfigurationsTabTypes.SMTP
 }
 
-export const getTableHeaders = () => [
+export const DefaultSESValidationKeys = {
+    configName: { isValid: true, messages: '' },
+    accessKey: { isValid: true, messages: '' },
+    secretKey: { isValid: true, messages: '' },
+    region: { isValid: true, messages: '' },
+    fromEmail: { isValid: true, messages: '' },
+}
+
+export const getTableHeaders = (): DynamicDataTableHeaderType<WebhookHeaderKeyType>[] => [
     { label: 'Header key', key: 'key', width: '1fr' },
     { label: 'Value', key: 'value', width: '1fr' },
 ]
 
-export const generate16DigitRandomNumber = () => Math.floor(Math.random() * 9e15) + 1e15
+export const getInitialWebhookKeyRow = (rows): DynamicDataTableRowType<WebhookHeaderKeyType>[] =>
+    rows?.map((row) => {
+        const id = row.id || getUniqueId()
+        return {
+            data: {
+                key: {
+                    value: row.key || null,
+                    type: DynamicDataTableRowDataType.TEXT,
+                    props: {
+                        placeholder: 'Eg. owner-name',
+                    },
+                },
+                value: {
+                    value: row.value || '',
+                    type: DynamicDataTableRowDataType.TEXT,
+                    props: {
+                        placeholder: 'Enter value',
+                    },
+                },
+            },
+            id,
+        }
+    })
 
 export const getEmptyVariableDataRow = (): WebhookDataRowType => {
-    const id = generate16DigitRandomNumber()
+    const id = getUniqueId()
     return {
         data: {
             key: {
@@ -269,4 +306,16 @@ export const getEmptyVariableDataRow = (): WebhookDataRowType => {
         },
         id,
     }
+}
+
+export const validateKeyValueConfig = (value: string): { isValid: boolean; messages: string } => {
+  if (!value) {
+    return { isValid: false, messages: REQUIRED_FIELD_MSG }
+  }
+}
+
+export enum ConfigTableRowActionType {
+    ADD_ROW = 'ADD_ROW',
+    UPDATE_ROW = 'UPDATE_ROW',
+    DELETE_ROW = 'DELETE_ROW',
 }

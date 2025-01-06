@@ -52,9 +52,10 @@ export const WebhookConfigurationTable = ({ state, deleteClickHandler }: Configu
                     {renderText(webhookConfig.name, false, noop, `webhook-url-${webhookConfig.webhookUrl}`)}
                     <ConfigTableRowActionButton
                         onClickEditRow={onClickWebhookConfigEdit(webhookConfig.id)}
-                        onClickDeleteRow={() => {
-                            deleteClickHandler(webhookConfig.id, DeleteComponentsName.WebhookConfigurationTab)
-                        }}
+                        onClickDeleteRow={deleteClickHandler(
+                            webhookConfig.id,
+                            DeleteComponentsName.WebhookConfigurationTab,
+                        )}
                         rootClassName="webhook-config-table__action"
                         modal={ConfigurationsTabTypes.WEBHOOK}
                     />
