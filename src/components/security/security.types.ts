@@ -259,6 +259,7 @@ export interface AddCveModalState extends Pick<CveNamePolicy, 'policy'> {
     view: string
     cve: string
     clusters: CveClusters[]
+    isCveError: boolean
 }
 
 export interface SecurityPolicyEditState {
@@ -268,8 +269,7 @@ export interface SecurityPolicyEditState {
     showLoadingOverlay: boolean
 }
 
-export interface AddCveModalProps extends Pick<SecurityPolicyEditState, 'isCveError'> {
+export interface AddCveModalProps {
     close: () => void
     saveCVE: (cve: string, policy: VulnerabilityAction) => void
-    setCVEErrorToTrue: () => void
 }

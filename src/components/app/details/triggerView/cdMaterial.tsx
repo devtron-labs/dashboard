@@ -915,6 +915,7 @@ const CDMaterial = ({
                 wfrId,
                 abortSignal: abortDeployRef.current.signal,
                 runtimeParams: runtimeParamsList,
+                isRollbackTrigger: state.isRollbackTrigger,
             })
                 .then((response: any) => {
                     if (response.result) {
@@ -1739,7 +1740,6 @@ const CDMaterial = ({
                             noLastDeploymentConfig={noLastDeploymentConfig}
                             canReviewConfig={canReviewConfig()}
                             urlFilters={urlFilters}
-                            showConfigNotAvailableTooltip={disableDeployButton}
                             renderConfigNotAvailableTooltip={renderTippyContent}
                         />
                     )}

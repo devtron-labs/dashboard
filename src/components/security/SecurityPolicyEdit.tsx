@@ -615,12 +615,7 @@ export class SecurityPolicyEdit extends Component<
                     })}
                 </ConditionalWrap>
                 {this.state.showWhitelistModal ? (
-                    <AddCveModal
-                        saveCVE={this.saveCVE}
-                        close={this.toggleAddCveModal}
-                        isCveError={this.state.isCveError}
-                        setCVEErrorToTrue={setCVEErrorToTrue}
-                    />
+                    <AddCveModal saveCVE={this.saveCVE} close={this.toggleAddCveModal} />
                 ) : null}
             </>
         )
