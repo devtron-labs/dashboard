@@ -371,7 +371,6 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                             <div className="dc__border pt-8 pb-8 br-4" data-field="payload" onBlur={this.onBlur}>
                                 <CodeEditor
                                     value={this.state.form.payload}
-                                    theme="vs-alice-blue"
                                     mode="json"
                                     onChange={this.handleWebhookPaylodChange}
                                     inline

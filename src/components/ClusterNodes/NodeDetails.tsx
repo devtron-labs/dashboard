@@ -35,6 +35,7 @@ import {
     ToastVariantType,
     TOAST_ACCESS_DENIED,
     ResourceDetail,
+    CodeEditorThemesKeys,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
 import YAML from 'yaml'
@@ -923,7 +924,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                     defaultValue={(nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || ''}
                     height={getCodeEditorHeight()}
                     readOnly={!isEdit}
-                    theme="vs-dark--dt"
+                    theme={CodeEditorThemesKeys.vsDarkDT}
                     diffView={isReviewState}
                     onChange={handleEditorValueChange}
                     mode={MODES.YAML}

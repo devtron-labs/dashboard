@@ -257,7 +257,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div className="code-editor-body">
                 <CodeEditor
-                    theme="vs-gray--dt"
                     height="calc(60vh - 97px)"
                     value={this.state.codeEditorPayload}
                     mode="yaml"
