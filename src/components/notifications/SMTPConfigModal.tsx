@@ -25,7 +25,7 @@ import {
 import { useHistory } from 'react-router-dom'
 import { getSMTPConfiguration, saveEmailConfiguration } from './notifications.service'
 import { ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
-import { ConfigurationsTabTypes, DefaultSMTPValidation, SESFieldKeys, SMTPFieldKeys } from './constants'
+import { ConfigurationFieldKeys, ConfigurationsTabTypes, DefaultSMTPValidation } from './constants'
 import { SMTPConfigModalProps } from './types'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
 import { getFormValidated, getSMTPDefaultConfiguration, validateKeyValueConfig } from './notifications.util'
@@ -121,27 +121,30 @@ export const SMTPConfigModal = ({
 
     const renderForm = () => (
         <div className="dc__gap-16 flex-grow-1 flexbox-col mh-0 p-20 dc__overflow-auto">
-            {[SMTPFieldKeys.CONFIG_NAME, SMTPFieldKeys.HOST, SMTPFieldKeys.PORT, SMTPFieldKeys.AUTH_USER].map(
-                (field, index) => (
-                    <div key={field}>
-                        <CustomInput
-                            name={field}
-                            label={field === SMTPFieldKeys.CONFIG_NAME ? 'Configuration name' : `SMTP ${field}`}
-                            value={form[field] as string}
-                            onChange={handleInputChange}
-                            onBlur={handleBlur}
-                            placeholder={`Enter ${field}`}
-                            isRequiredField
-                            error={isFormValid[field].message}
-                            tabIndex={index + 1}
-                        />
-                    </div>
-                ),
-            )}
+            {[
+                ConfigurationFieldKeys.CONFIG_NAME,
+                ConfigurationFieldKeys.HOST,
+                ConfigurationFieldKeys.PORT,
+                ConfigurationFieldKeys.AUTH_USER,
+            ].map((field, index) => (
+                <div key={field}>
+                    <CustomInput
+                        name={field}
+                        label={field === ConfigurationFieldKeys.CONFIG_NAME ? 'Configuration name' : `SMTP ${field}`}
+                        value={form[field] as string}
+                        onChange={handleInputChange}
+                        onBlur={handleBlur}
+                        placeholder={`Enter ${field}`}
+                        isRequiredField
+                        error={isFormValid[field].message}
+                        tabIndex={index + 1}
+                    />
+                </div>
+            ))}
             <div className="smtp-protected-input">
                 <ProtectedInput
                     dataTestid="add-smtp-password"
-                    name={SMTPFieldKeys.AUTH_PASSWORD}
+                    name={ConfigurationFieldKeys.AUTH_PASSWORD}
                     value={form.authPassword}
                     onChange={handleInputChange}
                     error={isFormValid.authPassword.message}
@@ -153,7 +156,7 @@ export const SMTPConfigModal = ({
 
             <CustomInput
                 type="email"
-                name={SESFieldKeys.FROM_EMAIL}
+                name={ConfigurationFieldKeys.FROM_EMAIL}
                 label="Send email from"
                 value={form.fromEmail}
                 onChange={handleInputChange}
@@ -167,7 +170,7 @@ export const SMTPConfigModal = ({
                 value={CHECKBOX_VALUE.CHECKED}
                 disabled={shouldBeDefault}
                 onChange={handleCheckbox}
-                name={SMTPFieldKeys.DEFAULT}
+                name={ConfigurationFieldKeys.DEFAULT}
             >
                 Set as default configuration to send emails
             </Checkbox>

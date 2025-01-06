@@ -16,7 +16,6 @@
 import { useState, useEffect } from 'react'
 import {
     showError,
-    getTeamListMin as getProjectListMin,
     CustomInput,
     ClipboardButton,
     CodeEditor,
@@ -24,14 +23,13 @@ import {
     ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 import { getWebhookAttributes, getWebhookConfiguration, saveUpdateWebhookConfiguration } from './notifications.service'
-import { ConfigurationsTabTypes, DefaultWebhookConfig } from './constants'
+import { ConfigurationFieldKeys, ConfigurationsTabTypes, DefaultWebhookConfig } from './constants'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
-import { WebhookConfigModalProps } from './types'
-import CreateHeaderDetails from './CreateHeaderDetails'
+import { WebhookConfigModalProps, WebhookDataRowType } from './types'
+import { WebhookConfigDynamicDataTable } from './WebhookConfigDynamicDataTable'
 
 export const WebhookConfigModal = ({
     webhookConfigId,
@@ -45,21 +43,37 @@ export const WebhookConfigModal = ({
         payload: true,
     })
 
+    const [rows, setRows] = useState<WebhookDataRowType[]>()
+
     const history = useHistory()
     const [webhookAttribute, setWebhookAttribute] = useState({})
 
     const fetchWebhookData = async () => {
         setForm((prev) => ({ ...prev, isLoading: true }))
         try {
-            const response = await getWebhookConfiguration(webhookConfigId)
-            const { header = {}, payload = '' } = response.result || {}
-            const headers = Object.keys(header).map((key) => ({ key, value: header[key] }))
-            setForm((prev) => ({ ...prev, ...response.result, header: headers, payload, isLoading: false }))
-            await getProjectListMin()
+            // Execute both API calls concurrently
+            const [webhookResponse, attributesResponse] = await Promise.all([
+                getWebhookConfiguration(webhookConfigId),
+                getWebhookAttributes(),
+            ])
 
-            const attributes = await getWebhookAttributes()
-            setWebhookAttribute(attributes.result || {})
+            // Extract and process webhook configuration data
+            const { header = {}, payload = '' } = webhookResponse?.result || {}
+            const headers = Object.entries(header).map(([key, value]) => ({ key, value }))
+
+            // Update form state with webhook configuration data
+            setForm((prev) => ({
+                ...prev,
+                ...webhookResponse?.result,
+                header: headers,
+                payload,
+                isLoading: false,
+            }))
+
+            // Set webhook attributes state
+            setWebhookAttribute(attributesResponse?.result || {})
         } catch (error) {
+            // Show error message and reset loading state
             showError(error)
             setForm((prev) => ({ ...prev, isLoading: false }))
         }
@@ -87,7 +101,7 @@ export const WebhookConfigModal = ({
 
     const validateField = (field, value) => {
         let isValidField = true
-        if (field !== 'payload') {
+        if (field !== ConfigurationFieldKeys.PAYLOAD) {
             isValidField = value.trim().length > 0
         } else {
             try {
@@ -102,34 +116,14 @@ export const WebhookConfigModal = ({
     const handleInputChange = (field) => (event) => {
         const { value } = event.target
         setForm((prev) => ({ ...prev, [field]: value }))
-        if (field !== 'payload') {
+        if (field !== ConfigurationFieldKeys.PAYLOAD) {
             validateField(field, value)
         }
     }
 
     const handlePayloadChange = (value) => {
         setForm((prev) => ({ ...prev, payload: value }))
-        validateField('payload', value)
-    }
-
-    const addHeader = () => {
-        setForm((prev) => ({ ...prev, header: [{ key: '', value: '' }, ...prev.header] }))
-    }
-
-    const updateHeader = (index, updatedHeader) => {
-        setForm((prev) => {
-            const headers = [...prev.header]
-            headers[index] = updatedHeader
-            return { ...prev, header: headers }
-        })
-    }
-
-    const removeHeader = (index) => {
-        setForm((prev) => {
-            const headers = [...prev.header]
-            headers.splice(index, 1)
-            return { ...prev, header: headers }
-        })
+        validateField(ConfigurationFieldKeys.PAYLOAD, value)
     }
 
     const renderDataList = () => (
@@ -193,20 +187,6 @@ export const WebhookConfigModal = ({
         }
     }
 
-    const renderHeadersList = () => (
-        <div className="flexbox-col dc__gap-6">
-            {form.header.map((header, index) => (
-                <CreateHeaderDetails
-                    key={`header-${form.configName}`}
-                    index={index}
-                    headerData={header}
-                    setHeaderData={updateHeader}
-                    removeHeader={removeHeader}
-                />
-            ))}
-        </div>
-    )
-
     const renderWebhookModal = () => (
         <div className="flexbox h-100 cn-9 w-100 mh-0">
             <div className="w-600 p-20 flex-grow-1 flexbox-col mh-0 dc__overflow-auto dc__gap-16 dc__border-right">
@@ -216,7 +196,7 @@ export const WebhookConfigModal = ({
                     onChange={handleInputChange('configName')}
                     placeholder="Enter name"
                     error={!isValid.configName && REQUIRED_FIELD_MSG}
-                    name="name"
+                    name={ConfigurationFieldKeys.CONFIG_NAME}
                     dataTestid="webhook-modal__name"
                     isRequiredField
                 />
@@ -226,19 +206,12 @@ export const WebhookConfigModal = ({
                     onChange={handleInputChange('webhookUrl')}
                     placeholder="Enter Incoming Webhook URL"
                     error={!isValid.webhookUrl && REQUIRED_FIELD_MSG}
-                    name="url"
+                    name={ConfigurationFieldKeys.WEBHOOK_URL}
                     dataTestid="webhook-modal__url"
                     isRequiredField
                 />
-                <div>
-                    <div className="flexbox dc__content-space">
-                        <span className="fs-13 cn-7 lh-20">Headers</span>
-                        <span className="cb-5 fw-6 fs-13 cursor flex" onClick={addHeader}>
-                            <Add className="icon-dim-20 fcb-5" /> Add
-                        </span>
-                    </div>
-                    {renderHeadersList()}
-                </div>
+                <WebhookConfigDynamicDataTable headers={form.header} rows={rows} setRows={setRows} />
+
                 <div className="flexbox-col dc__gap-6">
                     <div className="fs-13 cn-7 lh-20 dc__required-field">Data to be shared through webhook</div>
                     <div className="en-2 bw-1 br-4 p-6">

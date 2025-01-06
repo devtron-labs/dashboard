@@ -14,13 +14,7 @@ import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outl
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 import { SlackConfigModalProps } from './types'
-import {
-    ConfigurationsTabTypes,
-    DefaultSlackKeys,
-    DefaultSlackValidations,
-    SlackFieldKeys,
-    SlackRegion,
-} from './constants'
+import { ConfigurationFieldKeys, ConfigurationsTabTypes, DefaultSlackKeys, DefaultSlackValidations } from './constants'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
 import { validateKeyValueConfig } from './notifications.util'
 
@@ -176,7 +170,10 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target
         setForm((prevForm) => ({ ...prevForm, [name]: value }))
-        setValid((prevValid) => ({ ...prevValid, [name]: validateKeyValueConfig(name, value).isValid }))
+        setValid((prevValid) => ({
+            ...prevValid,
+            [name]: validateKeyValueConfig(name as ConfigurationFieldKeys, value).isValid,
+        }))
     }
 
     const handleBlur = (e) => {
@@ -189,7 +186,7 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
             <CustomInput
                 data-testid="add-slack-channel"
                 label="Slack Channel"
-                name={SlackFieldKeys.CONFIG_NAME}
+                name={ConfigurationFieldKeys.CONFIG_NAME}
                 value={form.configName}
                 onChange={handleInputChange}
                 onBlur={handleBlur}
@@ -201,7 +198,7 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
             <CustomInput
                 data-testid="add-webhook-url"
                 label={renderWebhookUrlLabel()}
-                name={SlackFieldKeys.WEBHOOK_URL}
+                name={ConfigurationFieldKeys.WEBHOOK_URL}
                 value={form.webhookUrl}
                 placeholder="Enter Incoming Webhook URL"
                 onChange={handleInputChange}
@@ -211,7 +208,7 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
             />
             <div>
                 <SelectPicker
-                    name={SlackFieldKeys.PROJECT_ID}
+                    name={ConfigurationFieldKeys.PROJECT_ID}
                     label={renderProjectLabel()}
                     inputId="slack-project"
                     value={selectedProject}
@@ -220,7 +217,7 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
                     options={projectList.map((p) => ({ label: p.name, value: p.id }))}
                 />
                 <span className="form__error">
-                    {!isValid[SlackRegion.PROJECT_ID] && (
+                    {!isValid[ConfigurationFieldKeys.PROJECT_ID] && (
                         <>
                             <Error className="form__icon form__icon--error" />
                             <span className="form__error-text">{REQUIRED_FIELD_MSG}</span>

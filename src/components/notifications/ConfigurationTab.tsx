@@ -43,7 +43,7 @@ import { WebhookConfigurationTable } from './WebhookConfigurationTable'
 import SESConfigurationTable from './SESConfigurationTable'
 import { SMTPConfigurationTable } from './SMTPConfigurationTable'
 import { ConfigurationTabSwitcher } from './ConfigurationTabsSwitcher'
-import { ConfigurationsTabTypes, SlackRegion } from './constants'
+import { ConfigurationFieldKeys, ConfigurationsTabTypes } from './constants'
 import { getDeleteConfigComponent } from './notifications.util'
 
 export const ConfigurationTab = () => {
@@ -202,8 +202,8 @@ export const ConfigurationTab = () => {
     }
 
     const renderModal = () => {
-        if (queryString.get(SlackRegion.CONFIG_ID) === null) return null
-        const configId = parseInt(queryString.get(SlackRegion.CONFIG_ID), 10)
+        if (queryString.get(ConfigurationFieldKeys.CONFIG_ID) === null) return null
+        const configId = parseInt(queryString.get(ConfigurationFieldKeys.CONFIG_ID), 10)
 
         switch (modal) {
             case ConfigurationsTabTypes.SES:

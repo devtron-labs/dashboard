@@ -32,7 +32,7 @@ import {
     getUniqueId,
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ConfigurationsTabTypes, ConfigurationTabText, SESFieldKeys } from './constants'
+import { ConfigurationFieldKeys, ConfigurationsTabTypes, ConfigurationTabText } from './constants'
 import { validateEmail } from '../common'
 import { WebhookDataRowType, WebhookHeaderKeyType, WebhookRowCellType } from './types'
 import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
@@ -266,7 +266,7 @@ export const getTableHeaders = (): DynamicDataTableHeaderType<WebhookHeaderKeyTy
 ]
 
 export const getInitialWebhookKeyRow = (rows): DynamicDataTableRowType<WebhookHeaderKeyType>[] =>
-    rows?.map((row) => {
+    rows.map((row) => {
         const id = row.id || getUniqueId()
         return {
             data: {
@@ -312,11 +312,11 @@ export const getEmptyVariableDataRow = (): WebhookDataRowType => {
     }
 }
 
-export const validateKeyValueConfig = (key, value: string): { isValid: boolean; message: string } => {
+export const validateKeyValueConfig = (key: ConfigurationFieldKeys, value: string): { isValid: boolean; message: string } => {
     if (!value) {
         return { isValid: false, message: REQUIRED_FIELD_MSG }
     }
-    if (key === SESFieldKeys.FROM_EMAIL) {
+    if (key === ConfigurationFieldKeys.FROM_EMAIL) {
         return { isValid: validateEmail(value), message: validateEmail(value) ? '' : 'Invalid email' }
     }
     return { isValid: true, message: '' }
