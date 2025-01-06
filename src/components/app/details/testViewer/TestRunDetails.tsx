@@ -564,7 +564,7 @@ const TestsChart = ({ testCount, disabledCount, errorCount, failureCount, skippe
     ]
 
     const colorMap = {
-        skipped: '#d0d4d9',
+        skipped: 'var(--N200)',
         error: '#f6573b',
         failures: '#ff9800',
         disabled: '#58508d',

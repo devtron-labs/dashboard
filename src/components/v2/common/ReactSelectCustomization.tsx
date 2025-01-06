@@ -170,7 +170,7 @@ export const podsDropdownStyles = {
     singleValue: (base) => ({
         ...base,
         fontWeight: 600,
-        color: '#000A14',
+        color: 'var(--N900)',
         marginLeft: '2px',
     }),
     dropdownIndicator: (base) => ({

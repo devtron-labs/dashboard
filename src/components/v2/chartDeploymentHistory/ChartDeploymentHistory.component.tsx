@@ -454,7 +454,7 @@ const ChartDeploymentHistory = ({
                     iconClassName="error-exclamation-icon"
                     theme="white"
                     msg="There was an error loading the file."
-                    msgStyle={{ color: '#767D84', marginTop: '0' }}
+                    msgStyle={{ color: 'var(--N500)', marginTop: '0' }}
                     size={24}
                     isShowActionButton
                     actionButtonText="Retry"

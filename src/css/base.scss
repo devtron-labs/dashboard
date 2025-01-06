@@ -1628,8 +1628,7 @@ button.anchor {
 }
 
 .shimmer {
-    background: #f6f7f8;
-    background-image: linear-gradient(90deg, var(--N100) 30%, var(--N0) 60%, var(--N100) 100%);
+    background: linear-gradient(90deg, var(--N100) 30%, var(--N0) 60%, var(--N100) 100%);
     background-repeat: no-repeat;
     background-size: 800px 104px;
     display: inline-block;
@@ -2510,7 +2509,7 @@ button.anchor {
 }
 
 .white-background {
-    background-color: #fff;
+    background-color: var(--N0);
 }
 
 .light-gray-background {
@@ -2875,7 +2874,7 @@ textarea,
 }
 
 .icon-color-grey {
-    fill: #5a5a5a;
+    fill: var(--N600);
 }
 
 .icon-color-n7 {
@@ -4717,13 +4716,13 @@ textarea::placeholder {
     text-transform: capitalize;
     line-height: 36px;
     text-align: center;
-    background: #fff;
+    background: var(--N0);
     color: var(--B500);
     border: 1px solid #bbb;
     cursor: pointer;
 
     &:hover {
-        background: #eee;
+        background: var(--N100);
         color: var(--B700);
     }
 }
@@ -4779,7 +4778,7 @@ textarea::placeholder {
 }
 
 .ci-cd-details__sidebar-typography {
-    color: var(--n-900, #000a14);
+    color: var(--N900);
     font-size: 13px;
     font-style: normal;
     font-weight: 600;

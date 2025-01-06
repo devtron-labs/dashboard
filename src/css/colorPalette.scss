@@ -72,7 +72,10 @@
             --O200: #ffbead;
             --O100: #ffe5de;
             --O50: #fcf3f0;
+
+            // Custom colors
             --window-bg: #f2f4f7;
+            --pipeline-trigger-type-bg: #a5a7bf;
         }
 
         &__dark {
@@ -129,6 +132,7 @@
             --O100: #331912;
             --O50: #1a0d09;
             --window-bg: #1b1d2a;
+            --pipeline-trigger-type-bg: #a5a7bf;
         }
     }
 }

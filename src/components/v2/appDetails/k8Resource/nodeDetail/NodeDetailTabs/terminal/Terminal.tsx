@@ -121,8 +121,8 @@ export default function TerminalView({
             fontFamily: 'Inconsolata',
             screenReaderMode: true,
             theme: {
-                background: '#0B0F22',
-                foreground: '#FFFFFF',
+                background: 'var(--terminal-bg)',
+                foreground: 'var(--white)',
             },
         })
         handleSelectionChange(terminalRef.current, setPopupText)

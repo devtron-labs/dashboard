@@ -585,7 +585,7 @@ const LogsComponent = ({
                                                     singleValue: (base, state) => ({
                                                         ...base,
                                                         fontWeight: 600,
-                                                        color: '#000A14',
+                                                        color: 'var(--N900)',
                                                         direction: 'rtl',
                                                         textAlign: 'left',
                                                         marginLeft: '2px',
@@ -662,7 +662,7 @@ const LogsComponent = ({
                                             singleValue: (base, state) => ({
                                                 ...base,
                                                 fontWeight: 600,
-                                                color: '#000A14',
+                                                color: 'var(--N900)',
                                                 direction: 'rtl',
                                                 textAlign: 'left',
                                                 marginLeft: '2px',
@@ -737,7 +737,7 @@ const LogsComponent = ({
                         className="w-30 flex flex-justify left bcn-1 flex-align-center "
                         onSubmit={handleLogSearchSubmit}
                     >
-                      {renderSearchText()}
+                        {renderSearchText()}
                         <div className="dc__border-right h-100" />
                         <Tippy
                             className="default-tt"
@@ -767,7 +767,7 @@ const LogsComponent = ({
                         data-testid="app-logs-container"
                         style={{
                             gridColumn: '1 / span 2',
-                            background: '#0b0f22',
+                            background: 'var(--terminal-bg)',
                             height:
                                 isResourceBrowserView || isLogAnalyzer ? 'calc(100vh - 152px)' : 'calc(100vh - 187px)',
                         }}

@@ -31,7 +31,7 @@
 .tooltip-graph {
     border: solid 1px #b5b5b5;
     background-color: var(--N0);
-    color: #363636;
+    color: var(--N700);
     display: none;
     position: absolute;
     top: 0;

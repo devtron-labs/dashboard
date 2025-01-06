@@ -108,8 +108,8 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
             cursorStyle: 'bar',
             cursorWidth: 1,
             theme: {
-                background: '#0b0f22',
-                foreground: '#FFFFFF',
+                background: 'var(--terminal-bg)',
+                foreground: 'var(--white)',
                 // selection: 'var(--B500)',
             },
         })

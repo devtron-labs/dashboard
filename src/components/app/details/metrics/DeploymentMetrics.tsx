@@ -43,7 +43,6 @@ import {
     EliteCategoryMessage,
     FailureLegendEmptyState,
 } from './deploymentMetrics.util'
-import { Option } from '../../../v2/common/ReactSelect.utils'
 import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
 import SelectEnvImage from '../../../../assets/img/ic-empty-dep-metrics@2x.png'
 import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'

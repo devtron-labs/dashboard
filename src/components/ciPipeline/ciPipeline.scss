@@ -68,7 +68,7 @@
 }
 
 .ci-artifact {
-    border: solid 1px #d5dbdf;
+    border: solid 1px var(--N200);
     margin-bottom: 12px;
     border-radius: 4px;
 
@@ -88,12 +88,12 @@
     display: flex;
     background-blend-mode: multiply;
     background-image: linear-gradient(to bottom, var(--window-bg), var(--window-bg));
-    border-top: solid 1px #d5dbdf;
+    border-top: solid 1px var(--N200);
     border-radius: 0 0 4px 4px;
 }
 
 .docker-build-args {
-    border: solid 1px #d5dbdf;
+    border: solid 1px var(--N200);
     border-radius: 4px;
     margin-bottom: 24px;
 }
@@ -106,7 +106,7 @@
 }
 
 .docker-build-args__wrapper {
-    border-top: solid 1px #d5dbdf;
+    border-top: solid 1px var(--N200);
 }
 
 .docker-build-args__text {

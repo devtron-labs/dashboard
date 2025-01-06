@@ -172,7 +172,7 @@ const TriggerList: React.FC<{ selectedNames: SelectedNames; startDate; endDate }
     })
 
     const colorMap = {
-        skippedCount: '#d0d4d9',
+        skippedCount: 'var(--N200)',
         errorCount: '#f6573b',
         failureCount: '#ff9800',
         disabledCount: '#58508d',

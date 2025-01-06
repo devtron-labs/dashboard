@@ -288,7 +288,7 @@ $color-suffix: 00;
 
         &:hover,
         &:focus {
-            @include cta(#004f9e, var(--N0), transparent);
+            @include cta(var(--B600), var(--N0), transparent);
         }
     }
 
@@ -297,7 +297,7 @@ $color-suffix: 00;
 
         &:hover,
         &:focus {
-            @include cta(#004f9e, var(--N0), transparent, pointer, false);
+            @include cta(var(--B600), var(--N0), transparent, pointer, false);
         }
     }
 

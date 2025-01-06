@@ -99,8 +99,7 @@
 
 .workflow-node__trigger-type {
     height: 16px;
-    opacity: 0.4;
-    background-color: var(--B700);
+    background-color: var(--pipeline-trigger-type-bg);
     color: var(--N0);
     margin: 0px;
     transform: rotate(-90deg);
