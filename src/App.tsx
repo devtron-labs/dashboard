@@ -327,8 +327,7 @@ export default function App() {
         // Need to update the html element since there are elements outside of the #root div as well
         const html = document.querySelector('html')
         if (html) {
-            html.removeAttribute('class')
-            html.classList.add(`theme__${currentTheme}`)
+            html.setAttribute('class', `theme__${currentTheme}`)
         }
     }, [currentTheme])
 
