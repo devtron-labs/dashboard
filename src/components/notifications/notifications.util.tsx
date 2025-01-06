@@ -294,7 +294,7 @@ export const getEmptyVariableDataRow = (): WebhookDataRowType => {
     return {
         data: {
             key: {
-                value: null,
+                value: '',
                 type: DynamicDataTableRowDataType.TEXT,
                 props: {
                     placeholder: 'Eg. owner-name',

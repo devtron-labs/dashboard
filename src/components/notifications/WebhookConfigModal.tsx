@@ -47,30 +47,27 @@ export const WebhookConfigModal = ({
 
     const history = useHistory()
     const [webhookAttribute, setWebhookAttribute] = useState({})
-
     const fetchWebhookData = async () => {
         setForm((prev) => ({ ...prev, isLoading: true }))
         try {
-            // Execute both API calls concurrently
-            const [webhookResponse, attributesResponse] = await Promise.all([
-                getWebhookConfiguration(webhookConfigId),
-                getWebhookAttributes(),
-            ])
-
-            // Extract and process webhook configuration data
-            const { header = {}, payload = '' } = webhookResponse?.result || {}
-            const headers = Object.entries(header).map(([key, value]) => ({ key, value }))
-
-            // Update form state with webhook configuration data
+            // Fetch webhook configuration
+            const response = await getWebhookConfiguration(webhookConfigId)
+            const { header = {}, payload = '' } = response?.result || {}
+            const headers = Object.entries(header || {}).map(([key, value]) => ({
+                key,
+                value,
+            }))
+            // Update form state with response data
             setForm((prev) => ({
                 ...prev,
-                ...webhookResponse?.result,
+                ...response?.result,
                 header: headers,
                 payload,
                 isLoading: false,
             }))
 
-            // Set webhook attributes state
+            // Fetch webhook attributes
+            const attributesResponse = await getWebhookAttributes()
             setWebhookAttribute(attributesResponse?.result || {})
         } catch (error) {
             // Show error message and reset loading state

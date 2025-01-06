@@ -82,11 +82,13 @@ export const DefaultSlackValidations = {
 
 // ------------ Slack Configuration Constants ------------
 
+export const DefaultHeaders = { key: '', value: '' }
+
 export const DefaultWebhookConfig = {
     configName: '',
     webhookUrl: '',
     isLoading: false,
     isError: false,
     payload: '',
-    header: [{ key: '', value: '' }],
+    header: [DefaultHeaders],
 }
