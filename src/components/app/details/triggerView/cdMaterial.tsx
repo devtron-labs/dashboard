@@ -131,7 +131,7 @@ const ApprovalEmptyState = importComponentFromFELibrary('ApprovalEmptyState')
 const FilterActionBar = importComponentFromFELibrary('FilterActionBar')
 const ConfiguredFilters = importComponentFromFELibrary('ConfiguredFilters')
 const CDMaterialInfo = importComponentFromFELibrary('CDMaterialInfo')
-const getDownloadManifestUrl = importComponentFromFELibrary('getDownloadManifestUrl', null, 'function')
+const downloadManifestForVirtualEnvironment = importComponentFromFELibrary('downloadManifestForVirtualEnvironment', null, 'function')
 const ImagePromotionInfoChip = importComponentFromFELibrary('ImagePromotionInfoChip', null, 'function')
 const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     'getDeploymentWindowProfileMetaData',
@@ -851,35 +851,6 @@ const CDMaterial = ({
         }
     }
 
-    const getHelmPackageName = (helmPackageName: string, cdWorkflowType: string) => {
-        // Not using WorkflowType enum since sending DeploymentNodeType
-        if (cdWorkflowType === DeploymentNodeType.PRECD) {
-            return `${helmPackageName} (Pre)`
-        }
-        if (cdWorkflowType === DeploymentNodeType.POSTCD) {
-            return `${helmPackageName} (Post)`
-        }
-        return helmPackageName
-    }
-
-    const onClickManifestDownload = (appId: number, envId: number, helmPackageName: string, cdWorkflowType: string) => {
-        if (!getDownloadManifestUrl) {
-            return
-        }
-        const downloadManifestDownload = {
-            appId,
-            envId,
-            appName: getHelmPackageName(helmPackageName, cdWorkflowType),
-            cdWorkflowType,
-        }
-        const downloadUrl = getDownloadManifestUrl(downloadManifestDownload)
-        handleDownload({
-            downloadUrl,
-            fileName: downloadManifestDownload.appName,
-            downloadSuccessToastContent: 'Manifest Downloaded Successfully',
-        })
-    }
-
     const showErrorIfNotAborted = (errors: ServerErrors) => {
         if (!getIsRequestAborted(errors)) {
             showError(errors)
@@ -924,9 +895,16 @@ const CDMaterial = ({
             })
                 .then((response: any) => {
                     if (response.result) {
-                        isVirtualEnvironment &&
-                            deploymentAppType == DeploymentAppTypes.MANIFEST_DOWNLOAD &&
-                            onClickManifestDownload(_appId, envId, response.result.helmPackageName, nodeType)
+                        if (isVirtualEnvironment && deploymentAppType == DeploymentAppTypes.MANIFEST_DOWNLOAD) {
+                            const { helmPackageName } = response.result
+                            downloadManifestForVirtualEnvironment?.({
+                                appId: _appId,
+                                envId,
+                                helmPackageName,
+                                cdWorkflowType: nodeType,
+                                handleDownload,
+                            })
+                        }
 
                         const msg =
                             materialType == MATERIAL_TYPE.rollbackMaterialList
