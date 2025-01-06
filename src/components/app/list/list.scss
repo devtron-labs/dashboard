@@ -68,7 +68,7 @@
     padding: 6px 20px;
     display: flex;
     flex-wrap: wrap;
-    background-color: var(--white);
+    background-color: var(--N0);
     z-index: var(--app-list-header-index);
 }
 
@@ -243,7 +243,7 @@
 .round-button {
     border-radius: 20px;
     background-color: var(--B500);
-    color: var(--white);
+    color: var(--N0);
     font-size: 14px;
 }
 
@@ -260,7 +260,7 @@
     font-stretch: normal;
     line-height: 1.5;
     letter-spacing: normal;
-    color: var(--white);
+    color: var(--N0);
     border: none;
 }
 
@@ -305,7 +305,7 @@
     font-stretch: normal;
     line-height: 1.4;
     letter-spacing: normal;
-    color: var(--white);
+    color: var(--N0);
     background-color: var(--N900);
     padding: 4px 8px;
     display: none;

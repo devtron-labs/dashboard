@@ -45,7 +45,7 @@
 .select-button--source-info {
     height: 40px;
     padding: 12px 10px;
-    background-color: var(--white);
+    background-color: var(--N0);
 }
 
 .disabled {
@@ -246,7 +246,7 @@
     display: grid;
     grid-template-columns: 280px 1fr;
     height: calc(100vh - 138px);
-    background: var(--white);
+    background: var(--N0);
     overflow: hidden;
 
     .sidebar-container {

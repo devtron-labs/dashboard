@@ -121,13 +121,13 @@
     &.show-with-bg {
         -webkit-backdrop-filter: blur(1px);
         backdrop-filter: blur(1px);
-        background-color: var(--white);
+        background-color: var(--N0);
         visibility: visible;
         opacity: 1;
     }
 
     &.show {
-        background-color: var(--white);
+        background-color: var(--N0);
         visibility: visible;
         opacity: 1;
     }
@@ -160,7 +160,7 @@
 
     &.notification-page-modal {
         display: block;
-        background-color: var(--white);
+        background-color: var(--N0);
         opacity: 1;
         margin: 50px auto;
         padding: 24px;

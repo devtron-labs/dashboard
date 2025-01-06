@@ -111,7 +111,7 @@
     padding: 6px 20px;
     display: flex;
     flex-wrap: wrap;
-    background-color: var(--white);
+    background-color: var(--N0);
     z-index: var(--app-list-header-index);
 
     .saved-env-filter {
@@ -145,7 +145,7 @@
     }
 
     .saved-env-filters__clear-btn {
-        background-color: var(--white);
+        background-color: var(--N0);
         height: 24px;
         text-transform: capitalize;
         font-size: 12px;

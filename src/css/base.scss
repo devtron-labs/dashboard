@@ -674,7 +674,7 @@ a:focus {
     .white-card {
         border-radius: 4px;
         border: solid 1px var(--N100);
-        background-color: var(--white);
+        background-color: var(--N0);
     }
 }
 
@@ -973,7 +973,7 @@ button.anchor {
 
 .dc__saved-filter__clear-btn--dark {
     height: 36px;
-    background-color: var(--white);
+    background-color: var(--N0);
     color: var(--B500);
     border: solid 1px var(--B500);
     border-radius: 4px;
@@ -983,7 +983,7 @@ button.anchor {
 
     &:hover {
         background-color: var(--B500);
-        color: var(--white);
+        color: var(--N0);
     }
 }
 
@@ -1967,11 +1967,11 @@ button.anchor {
     border: 1px solid var(--B500);
     padding: 6px 12px;
     margin: 2px;
-    background-color: var(--white);
+    background-color: var(--N0);
 }
 
 .saved-filters__clear-btn {
-    background-color: var(--white);
+    background-color: var(--N0);
     text-transform: capitalize;
     font-size: 12px;
     font-weight: 600;
@@ -5277,7 +5277,7 @@ textarea::placeholder {
     line-height: 1.4;
     letter-spacing: normal;
     text-align: center;
-    color: var(--white);
+    color: var(--N0);
     padding: 2px 10px;
     margin-left: 10px;
 }

@@ -229,7 +229,7 @@ p.sentence-case:first-letter {
 
 .form__add-parameter {
     border: none;
-    background-color: var(--white);
+    background-color: var(--N0);
     margin-left: auto;
     padding: 0 16px;
     font-size: 13px;
@@ -266,7 +266,7 @@ p.sentence-case:first-letter {
             }
 
             input:checked ~ .form__radio-item-content .radio__button {
-                background: radial-gradient(var(--B500) 0, var(--B500) 40%, var(--white) 45%, var(--white) 100%);
+                background: radial-gradient(var(--B500) 0, var(--B500) 40%, var(--N0) 45%, var(--N0) 100%);
                 border: 1.5px solid var(--B500);
             }
         }
@@ -406,7 +406,7 @@ p.sentence-case:first-letter {
 }
 
 .copy-button--icon path[fill='black'] {
-    fill: var(--white);
+    fill: var(--N0);
     display: inline-flex;
 }
 
@@ -498,7 +498,7 @@ p.sentence-case:first-letter {
     width: 100%;
     padding: 4px;
     list-style: none;
-    background-color: var(--white);
+    background-color: var(--N0);
     max-height: 300px;
     z-index: var(--filter-menu-index);
     border: solid 1px var(--N200);
@@ -606,7 +606,7 @@ p.sentence-case:first-letter {
 }
 
 .form__radio-item input:checked ~ .form__radio-item-content .radio__button {
-    background: radial-gradient(var(--B500) 0, var(--B500) 40%, var(--white) 45%, var(--white) 50%, var(--white) 100%);
+    background: radial-gradient(var(--B500) 0, var(--B500) 40%, var(--N0) 45%, var(--N0) 50%, var(--N0) 100%);
     border: 1px solid var(--B500);
 }
 
