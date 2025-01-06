@@ -53,16 +53,8 @@
     }
 }
 
-.border-shadow {
-    box-shadow: inset 0 -1px 0 0 var(--n-200);
-}
-
 .generic-row__base-align {
     align-items: baseline;
-}
-
-.row__cell-val {
-    padding-left: 0 !important;
 }
 
 .resource-row:hover {

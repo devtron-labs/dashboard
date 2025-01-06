@@ -579,7 +579,7 @@ const LogsComponent = ({
                                                         ...base,
                                                         fontWeight: 600,
                                                         fontSize: '10px',
-                                                        color: 'var(--n-700)',
+                                                        color: 'var(--N700)',
                                                         marginLeft: 0,
                                                     }),
                                                     singleValue: (base, state) => ({
