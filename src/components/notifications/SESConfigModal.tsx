@@ -182,7 +182,7 @@ const SESConfigModal = ({
                 placeholder="Configuration name"
                 autoFocus
                 isRequiredField
-                error={isFormValid.configName?.message}
+                error={isFormValid.configName.message}
             />
             <CustomInput
                 label="Access Key ID"
@@ -193,7 +193,7 @@ const SESConfigModal = ({
                 onBlur={(event) => handleBlur(event, SESFieldKeys.ACCESS_KEY)}
                 placeholder="Access Key ID"
                 isRequiredField
-                error={isFormValid.accessKey?.message}
+                error={isFormValid.accessKey.message}
             />
             <CustomInput
                 label="Secret Access Key"
@@ -204,7 +204,7 @@ const SESConfigModal = ({
                 onBlur={(event) => handleBlur(event, SESFieldKeys.SECRET_KEY)}
                 placeholder="Secret Access Key"
                 isRequiredField
-                error={isFormValid.secretKey?.message}
+                error={isFormValid.secretKey.message}
             />
             <div>
                 <SelectPicker
@@ -239,7 +239,7 @@ const SESConfigModal = ({
                 placeholder="Email"
                 onChange={(e) => handleInputChange(SESFieldKeys.FROM_EMAIL, e.target.value)}
                 isRequiredField
-                error={isFormValid.fromEmail?.message}
+                error={isFormValid.fromEmail.message}
                 helperText="This email must be verified with SES."
             />
             <Checkbox

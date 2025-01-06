@@ -14,8 +14,15 @@ import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outl
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 import { SlackConfigModalProps } from './types'
-import { ConfigurationsTabTypes, DefaultSlackKeys, DefaultSlackValidationKeys, SlackRegion } from './constants'
+import {
+    ConfigurationsTabTypes,
+    DefaultSlackKeys,
+    DefaultSlackValidations,
+    SlackFieldKeys,
+    SlackRegion,
+} from './constants'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
+import { validateKeyValueConfig } from './notifications.util'
 
 export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
     slackConfigId,
@@ -27,7 +34,7 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
     const [projectList, setProjectList] = useState<Array<{ id: number; name: string; active: boolean }>>([])
     const [selectedProject, setSelectedProject] = useState<{ label: string; value: number }>({ label: '', value: 0 })
     const [form, setForm] = useState(DefaultSlackKeys)
-    const [isValid, setIsValid] = useState(DefaultSlackValidationKeys)
+    const [isValid, setValid] = useState(DefaultSlackValidations)
 
     useEffect(() => {
         if (slackConfigId) {
@@ -36,7 +43,7 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
                 .then(([slackConfigRes, projectListRes]) => {
                     setProjectList(projectListRes.result || [])
                     setForm({ ...slackConfigRes.result, isLoading: false, isError: false })
-                    setIsValid(DefaultSlackValidationKeys)
+                    setValid(DefaultSlackValidations)
                     setSelectedProject({
                         label: projectListRes.result.find((p) => p.id === slackConfigRes.result.projectId).name,
                         value: slackConfigRes.result.projectId,
@@ -58,43 +65,20 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
         }
     }, [slackConfigId])
 
-    const checkIsValid = (event, key: 'configName' | 'webhookUrl' | 'projectId') => {
-        setIsValid((prevValid) => ({
-            ...prevValid,
-            [key]: !!event.target.value,
-        }))
-    }
-
-    const handleSlackChannelChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setForm((prevForm) => ({
-            ...prevForm,
-            configName: event.target.value,
-        }))
-        checkIsValid(event, 'configName')
-    }
-
-    const handleWebhookUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setForm((prevForm) => ({
-            ...prevForm,
-            webhookUrl: event.target.value,
-        }))
-        checkIsValid(event, 'webhookUrl')
-    }
-
     const handleProjectChange = (_selectedProject) => {
-        const projectId = Number(selectedProject.value)
+        const projectId = Number(_selectedProject.value)
         setSelectedProject(_selectedProject)
         setForm((prevForm) => ({
             ...prevForm,
             projectId,
         }))
-        setIsValid((prevValid) => ({
+        setValid((prevValid) => ({
             ...prevValid,
             projectId: !!_selectedProject.value,
         }))
     }
 
-    const isFormValid = () => Object.keys(isValid).every((key) => isValid[key])
+    const isFormValid = () => Object.values(isValid).every((value) => value)
 
     const closeSlackConfig = () => {
         if (typeof closeSlackConfigModal === 'function') {
@@ -115,7 +99,7 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
             return
         }
 
-        let requestBody
+        let requestBody = { ...form }
         if (slackConfigId) {
             requestBody = {
                 ...form,
@@ -189,16 +173,27 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
         </div>
     )
 
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = event.target
+        setForm((prevForm) => ({ ...prevForm, [name]: value }))
+        setValid((prevValid) => ({ ...prevValid, [name]: validateKeyValueConfig(name, value).isValid }))
+    }
+
+    const handleBlur = (e) => {
+        const { name, value } = e.target
+        setValid((prevValid) => ({ ...prevValid, [name]: validateKeyValueConfig(name, value).isValid }))
+    }
+
     const renderContent = () => (
         <div className="dc__gap-16 flex-grow-1 flexbox-col mh-0 p-20 dc__overflow-auto">
             <CustomInput
                 data-testid="add-slack-channel"
                 label="Slack Channel"
-                name="app-name"
+                name={SlackFieldKeys.CONFIG_NAME}
                 value={form.configName}
-                onChange={handleSlackChannelChange}
-                onBlur={(event) => checkIsValid(event, 'configName')}
-                placeholder="channel name"
+                onChange={handleInputChange}
+                onBlur={handleBlur}
+                placeholder="Channel name"
                 autoFocus
                 isRequiredField
                 error={!isValid.configName && REQUIRED_FIELD_MSG}
@@ -206,16 +201,17 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
             <CustomInput
                 data-testid="add-webhook-url"
                 label={renderWebhookUrlLabel()}
-                name="app-name"
+                name={SlackFieldKeys.WEBHOOK_URL}
                 value={form.webhookUrl}
                 placeholder="Enter Incoming Webhook URL"
-                onChange={handleWebhookUrlChange}
-                onBlur={(event) => checkIsValid(event, 'webhookUrl')}
+                onChange={handleInputChange}
+                onBlur={handleBlur}
                 isRequiredField
                 error={!isValid.webhookUrl && REQUIRED_FIELD_MSG}
             />
             <div>
                 <SelectPicker
+                    name={SlackFieldKeys.PROJECT_ID}
                     label={renderProjectLabel()}
                     inputId="slack-project"
                     value={selectedProject}

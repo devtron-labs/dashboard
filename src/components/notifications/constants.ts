@@ -73,17 +73,24 @@ export const DefaultSMTPValidation = {
 
 // ------------ Slack Configuration Constants ------------
 
+export enum SlackFieldKeys {
+    CONFIG_NAME = 'configName',
+    WEBHOOK_URL = 'webhookUrl',
+    PROJECT_ID = 'projectId',
+}
+
 export const DefaultSlackKeys = {
     [SlackRegion.PROJECT_ID]: 0,
     [SlackRegion.CONFIG_NAME]: '',
     [SlackRegion.WEBHOOK_URL]: '',
     isLoading: false,
     isError: false,
+    id: 0,
 }
-export const DefaultSlackValidationKeys = {
-    [SlackRegion.PROJECT_ID]: true,
-    [SlackRegion.CONFIG_NAME]: true,
-    [SlackRegion.WEBHOOK_URL]: true,
+export const DefaultSlackValidations = {
+    [SlackRegion.PROJECT_ID]: ConfigValidationKeys,
+    [SlackRegion.CONFIG_NAME]: ConfigValidationKeys,
+    [SlackRegion.WEBHOOK_URL]: ConfigValidationKeys,
 }
 
 export const DefaultWebhookConfig = {
