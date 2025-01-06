@@ -22,6 +22,7 @@ export const EmptyConfigurationSubTitle = {
     [ConfigurationsTabTypes.SLACK]: 'Configure slack webhook to send notifications to a slack channel',
     [ConfigurationsTabTypes.WEBHOOK]: 'Configure webhook to send event data to external tools',
 }
+
 // ------------ SES Configuration Constants ------------
 export const DEFAULT_MASKED_SECRET_KEY = '*******'
 
@@ -39,6 +40,38 @@ export enum SlackRegion {
     WEBHOOK_URL = 'webhookUrl',
     CONFIG_ID = 'configId',
 }
+
+export const ConfigValidationKeys = { isValid: true, message: '' }
+
+export const DefaultSESValidations = {
+    configName: ConfigValidationKeys,
+    accessKey: ConfigValidationKeys,
+    secretKey: ConfigValidationKeys,
+    region: ConfigValidationKeys,
+    fromEmail: ConfigValidationKeys,
+}
+
+// ------------ SMTP Configuration Constants ------------
+export enum SMTPFieldKeys {
+    CONFIG_NAME = 'configName',
+    HOST = 'host',
+    PORT = 'port',
+    AUTH_USER = 'authUser',
+    AUTH_PASSWORD = 'authPassword',
+    FROM_EMAIL = 'fromEmail',
+    DEFAULT = 'default',
+}
+
+export const DefaultSMTPValidation = {
+    configName: ConfigValidationKeys,
+    host: ConfigValidationKeys,
+    port: ConfigValidationKeys,
+    authUser: ConfigValidationKeys,
+    authPassword: ConfigValidationKeys,
+    fromEmail: ConfigValidationKeys,
+}
+
+// ------------ Slack Configuration Constants ------------
 
 export const DefaultSlackKeys = {
     [SlackRegion.PROJECT_ID]: 0,

@@ -28,12 +28,10 @@ import {
 import { ReactComponent as Error } from '@Icons/ic-warning.svg'
 import { useHistory } from 'react-router-dom'
 import { saveEmailConfiguration, getSESConfiguration } from './notifications.service'
-import { validateEmail } from '../common'
 import awsRegionList from '../common/awsRegionList.json'
-import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 import { SESConfigModalProps } from './types'
-import { DefaultSESValidationKeys, getSESDefaultConfiguration, validateKeyValueConfig } from './notifications.util'
-import { ConfigurationsTabTypes, DEFAULT_MASKED_SECRET_KEY, SESFieldKeys } from './constants'
+import { getFormValidated, getSESDefaultConfiguration, validateKeyValueConfig } from './notifications.util'
+import { ConfigurationsTabTypes, DEFAULT_MASKED_SECRET_KEY, DefaultSESValidations, SESFieldKeys } from './constants'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
 
 const SESConfigModal = ({
@@ -47,7 +45,7 @@ const SESConfigModal = ({
     const history = useHistory()
 
     const [form, setForm] = useState(getSESDefaultConfiguration(shouldBeDefault))
-    const [isValid, setValid] = useState(DefaultSESValidationKeys)
+    const [isFormValid, setFormValid] = useState(DefaultSESValidations)
 
     const fetchSESConfiguration = async () => {
         setForm((prevForm) => ({ ...prevForm, isLoading: true }))
@@ -63,7 +61,7 @@ const SESConfigModal = ({
                 region: awsRegion,
                 secretKey: DEFAULT_MASKED_SECRET_KEY, // Masked secretKey for security
             })
-            setValid(DefaultSESValidationKeys)
+            setFormValid(DefaultSESValidations)
         } catch (error) {
             showError(error)
             setForm((prevForm) => ({ ...prevForm, isLoading: false }))
@@ -79,26 +77,26 @@ const SESConfigModal = ({
 
     const handleBlur = (event: React.ChangeEvent<HTMLInputElement>, key: keyof typeof form): void => {
         const { value } = event.target
-        setValid((prevValid) => ({
+        setFormValid((prevValid) => ({
             ...prevValid,
-            [key]: key === SESFieldKeys.REGION ? !!form.region.value.length : !!value.length,
+            [key]: key === SESFieldKeys.REGION ? !!form.region.value.length : validateKeyValueConfig(key, value),
         }))
     }
 
-    const handleInputChange = (key, selected) => {
+    const handleInputChange = (key: SESFieldKeys, selected) => {
         if (key === SESFieldKeys.REGION) {
             setForm((prevForm) => ({
                 ...prevForm,
                 [key]: { label: selected.label, value: selected.value },
             }))
         }
-        setValid((prevValid) => ({
-            ...prevValid,
-            [key]: validateKeyValueConfig(selected),
-        }))
         setForm((prevForm) => ({
             ...prevForm,
             [key]: selected,
+        }))
+        setFormValid((prevValid) => ({
+            ...prevValid,
+            [key]: validateKeyValueConfig(key, selected),
         }))
     }
 
@@ -135,7 +133,6 @@ const SESConfigModal = ({
         onSaveSuccess()
         closeSESConfig()
     }
-    const isFormValid = Object.keys(isValid).every((key) => isValid[key]) && validateEmail(form.fromEmail)
 
     const saveSESConfig = async () => {
         setForm((prevForm) => ({
@@ -185,7 +182,7 @@ const SESConfigModal = ({
                 placeholder="Configuration name"
                 autoFocus
                 isRequiredField
-                error={isValid.configName.messages}
+                error={isFormValid.configName?.message}
             />
             <CustomInput
                 label="Access Key ID"
@@ -196,7 +193,7 @@ const SESConfigModal = ({
                 onBlur={(event) => handleBlur(event, SESFieldKeys.ACCESS_KEY)}
                 placeholder="Access Key ID"
                 isRequiredField
-                error={!isValid.accessKey && REQUIRED_FIELD_MSG}
+                error={isFormValid.accessKey?.message}
             />
             <CustomInput
                 label="Secret Access Key"
@@ -207,7 +204,7 @@ const SESConfigModal = ({
                 onBlur={(event) => handleBlur(event, SESFieldKeys.SECRET_KEY)}
                 placeholder="Secret Access Key"
                 isRequiredField
-                error={!isValid.secretKey && REQUIRED_FIELD_MSG}
+                error={isFormValid.secretKey?.message}
             />
             <div>
                 <SelectPicker
@@ -224,10 +221,10 @@ const SESConfigModal = ({
                     name={SESFieldKeys.REGION}
                 />
                 <span className="form__error">
-                    {!isValid.region ? (
+                    {isFormValid.region?.message ? (
                         <>
                             <Error className="form__icon form__icon--error" />
-                            {REQUIRED_FIELD_MSG} <br />
+                            {isFormValid.region.message}
                         </>
                     ) : null}
                 </span>
@@ -242,7 +239,7 @@ const SESConfigModal = ({
                 placeholder="Email"
                 onChange={(e) => handleInputChange(SESFieldKeys.FROM_EMAIL, e.target.value)}
                 isRequiredField
-                error={!isValid.fromEmail && REQUIRED_FIELD_MSG}
+                error={isFormValid.fromEmail?.message}
                 helperText="This email must be verified with SES."
             />
             <Checkbox
@@ -265,7 +262,7 @@ const SESConfigModal = ({
             modal={ConfigurationsTabTypes.SES}
             isLoading={form.isLoading}
             saveConfigModal={saveSESConfig}
-            disableSave={!isFormValid}
+            disableSave={!getFormValidated(isFormValid, form.fromEmail)}
         />
     )
 }

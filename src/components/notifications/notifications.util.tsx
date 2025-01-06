@@ -210,6 +210,18 @@ export const getSESDefaultConfiguration = (shouldBeDefault: boolean) => ({
     isError: true,
 })
 
+export const getSMTPDefaultConfiguration = (shouldBeDefault: boolean) => ({
+    configName: '',
+    host: '',
+    port: '',
+    authUser: '',
+    authPassword: '',
+    fromEmail: '',
+    default: shouldBeDefault,
+    isLoading: false,
+    isError: true,
+})
+
 export const renderText = (text: string, isLink: boolean = false, linkTo?: () => void, dataTestId?: string) => (
     <Tooltip content={text} placement="bottom" showOnTruncate={!!text} className="mxh-210 dc__hscroll" interactive>
         {isLink ? (
@@ -246,14 +258,6 @@ export const getDeleteConfigComponent = (showDeleteConfigModalType: Configuratio
         return ConfigurationsTabTypes.WEBHOOK
     }
     return ConfigurationsTabTypes.SMTP
-}
-
-export const DefaultSESValidationKeys = {
-    configName: { isValid: true, messages: '' },
-    accessKey: { isValid: true, messages: '' },
-    secretKey: { isValid: true, messages: '' },
-    region: { isValid: true, messages: '' },
-    fromEmail: { isValid: true, messages: '' },
 }
 
 export const getTableHeaders = (): DynamicDataTableHeaderType<WebhookHeaderKeyType>[] => [
@@ -308,12 +312,23 @@ export const getEmptyVariableDataRow = (): WebhookDataRowType => {
     }
 }
 
-export const validateKeyValueConfig = (value: string): { isValid: boolean; messages: string } => {
-  if (!value) {
-    return { isValid: false, messages: REQUIRED_FIELD_MSG }
-  }
+export const validateKeyValueConfig = (key, value: string): { isValid: boolean; message: string } => {
+    if (!value) {
+        return { isValid: false, message: REQUIRED_FIELD_MSG }
+    }
+    if (key === SESFieldKeys.FROM_EMAIL) {
+        return { isValid: validateEmail(value), message: validateEmail(value) ? '' : 'Invalid email' }
+    }
+    return { isValid: true, message: '' }
 }
 
+type FormValidation = {
+    [key: string]: { isValid: boolean; message: string }
+}
+
+export const getFormValidated = (isFormValid: FormValidation, fromEmail: string): boolean => {
+    return Object.values(isFormValid).every((field) => field.isValid && !field.message) && validateEmail(fromEmail)
+}
 export enum ConfigTableRowActionType {
     ADD_ROW = 'ADD_ROW',
     UPDATE_ROW = 'UPDATE_ROW',

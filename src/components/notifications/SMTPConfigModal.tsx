@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import {
     showError,
     Checkbox,
@@ -23,13 +23,12 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
-import { validateEmail } from '../common'
 import { getSMTPConfiguration, saveEmailConfiguration } from './notifications.service'
 import { ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
-import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
-import { ConfigurationsTabTypes } from './constants'
+import { ConfigurationsTabTypes, DefaultSMTPValidation, SESFieldKeys, SMTPFieldKeys } from './constants'
 import { SMTPConfigModalProps } from './types'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
+import { getFormValidated, getSMTPDefaultConfiguration, validateKeyValueConfig } from './notifications.util'
 
 export const SMTPConfigModal = ({
     smtpConfigId,
@@ -40,42 +39,20 @@ export const SMTPConfigModal = ({
 }: SMTPConfigModalProps) => {
     const history = useHistory()
 
-    const [form, setForm] = useState({
-        configName: '',
-        port: null,
-        host: '',
-        authUser: '',
-        authPassword: '',
-        fromEmail: '',
-        default: shouldBeDefault,
-        isLoading: false,
-        isError: true,
-    })
-    const [isValid, setIsValid] = useState({
-        configName: true,
-        port: true,
-        host: true,
-        authUser: true,
-        authPassword: true,
-        fromEmail: true,
-    })
+    const [form, setForm] = useState(getSMTPDefaultConfiguration(shouldBeDefault))
+    const [isFormValid, setFormValid] = useState(DefaultSMTPValidation)
 
-    const resetValidation = () => {
-        setIsValid({
-            configName: true,
-            port: true,
-            host: true,
-            authUser: true,
-            authPassword: true,
-            fromEmail: true,
-        })
-    }
     useEffect(() => {
         if (smtpConfigId) {
             getSMTPConfiguration(smtpConfigId)
                 .then((response) => {
-                    setForm({ ...response.result, isLoading: false, isError: true })
-                    resetValidation()
+                    setForm({
+                        ...response.result,
+                        isLoading: false,
+                        isError: true,
+                        port: response.result.port.toString(),
+                    })
+                    setFormValid(DefaultSMTPValidation)
                 })
                 .catch(showError)
         } else {
@@ -85,23 +62,18 @@ export const SMTPConfigModal = ({
 
     const handleBlur = (e) => {
         const { name, value } = e.target
-        setIsValid((prevValid) => ({ ...prevValid, [name]: !!value.length }))
+        setFormValid((prevValid) => ({ ...prevValid, [name]: validateKeyValueConfig(name, value) }))
     }
 
     const handleInputChange = (e) => {
         const { name, value } = e.target
         setForm((prevForm) => ({ ...prevForm, [name]: value }))
-        setIsValid((prevValid) => ({ ...prevValid, [name]: !!value.length }))
+        setFormValid((prevValid) => ({ ...prevValid, [name]: validateKeyValueConfig(name, value) }))
     }
 
     const handleCheckbox = () => {
         setForm((prevForm) => ({ ...prevForm, default: !prevForm.default }))
     }
-
-    const validateForm = useCallback(() => {
-        const allValid = Object.keys(isValid).every((key) => isValid[key])
-        return allValid && validateEmail(form.fromEmail)
-    }, [isValid, form.fromEmail])
 
     const closeSMTPConfig = () => {
         if (typeof closeSMTPConfigModal === 'function') {
@@ -117,7 +89,7 @@ export const SMTPConfigModal = ({
     }
 
     const saveSMTPConfig = () => {
-        if (!validateForm()) {
+        if (!getFormValidated(isFormValid, form.fromEmail)) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: 'Some required fields are missing or Invalid',
@@ -149,28 +121,30 @@ export const SMTPConfigModal = ({
 
     const renderForm = () => (
         <div className="dc__gap-16 flex-grow-1 flexbox-col mh-0 p-20 dc__overflow-auto">
-            {['configName', 'host', 'port', 'authUser'].map((field, index) => (
-                <div key="field">
-                    <CustomInput
-                        name={field}
-                        label={field === 'configName' ? 'Configuration name' : `SMTP ${field}`}
-                        value={form[field]}
-                        onChange={handleInputChange}
-                        onBlur={handleBlur}
-                        placeholder={`Enter ${field}`}
-                        isRequiredField
-                        error={!isValid[field] && REQUIRED_FIELD_MSG}
-                        tabIndex={index + 1}
-                    />
-                </div>
-            ))}
+            {[SMTPFieldKeys.CONFIG_NAME, SMTPFieldKeys.HOST, SMTPFieldKeys.PORT, SMTPFieldKeys.AUTH_USER].map(
+                (field, index) => (
+                    <div key={field}>
+                        <CustomInput
+                            name={field}
+                            label={field === SMTPFieldKeys.CONFIG_NAME ? 'Configuration name' : `SMTP ${field}`}
+                            value={form[field] as string}
+                            onChange={handleInputChange}
+                            onBlur={handleBlur}
+                            placeholder={`Enter ${field}`}
+                            isRequiredField
+                            error={isFormValid[field].message}
+                            tabIndex={index + 1}
+                        />
+                    </div>
+                ),
+            )}
             <div className="smtp-protected-input">
                 <ProtectedInput
                     dataTestid="add-smtp-password"
-                    name="authPassword"
+                    name={SMTPFieldKeys.AUTH_PASSWORD}
                     value={form.authPassword}
                     onChange={handleInputChange}
-                    error={!isValid.authPassword}
+                    error={isFormValid.authPassword.message}
                     label="SMTP Password *"
                     labelClassName="form__label--fs-13 mb-8 fw-5 fs-13"
                     placeholder="Enter SMTP password"
@@ -179,20 +153,21 @@ export const SMTPConfigModal = ({
 
             <CustomInput
                 type="email"
-                name="fromEmail"
+                name={SESFieldKeys.FROM_EMAIL}
                 label="Send email from"
                 value={form.fromEmail}
                 onChange={handleInputChange}
                 onBlur={handleBlur}
                 placeholder="Email"
                 isRequiredField
-                error={!isValid.fromEmail && REQUIRED_FIELD_MSG}
+                error={isFormValid.fromEmail.message}
             />
             <Checkbox
                 isChecked={form.default}
                 value={CHECKBOX_VALUE.CHECKED}
                 disabled={shouldBeDefault}
                 onChange={handleCheckbox}
+                name={SMTPFieldKeys.DEFAULT}
             >
                 Set as default configuration to send emails
             </Checkbox>
@@ -206,6 +181,7 @@ export const SMTPConfigModal = ({
             modal={ConfigurationsTabTypes.SMTP}
             isLoading={form.isLoading}
             saveConfigModal={saveSMTPConfig}
+            disableSave={!getFormValidated(isFormValid, form.fromEmail)}
         />
     )
 }
