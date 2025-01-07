@@ -40,11 +40,10 @@ import {
     LogsRenderer,
     ModuleNameMap,
     EMPTY_STATE_STATUS,
-    SecuritySummaryCard,
     TabGroup,
     TRIGGER_STATUS_PROGRESSING,
     ErrorScreenManager,
-    getScanToolAndSeverityCount,
+    SecurityDetailsCards,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, Redirect, useRouteMatch, useParams, useHistory, generatePath } from 'react-router-dom'
 import {
@@ -705,31 +704,13 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     if (scanResultError) {
         return <ErrorScreenManager code={scanResultError.code} reload={reloadScanResult} />
     }
-    if (
-        scanResultResponse &&
-        (!scanResultResponse.result.scanned ||
-            !scanResultResponse.result.isImageScanEnabled ||
-            !scanResultResponse.result.imageScan)
-    ) {
+    if (!scanResultResponse?.result.scanned) {
         return <ImageNotScannedView />
     }
 
-    const { scanToolId, severityCount, totalCount } = getScanToolAndSeverityCount(scanResultResponse?.result)
-
-    if (artifactId && !totalCount) {
-        return <NoVulnerabilityViewWithTool scanToolId={scanToolId} />
-    }
-
     return (
-        <div className="p-16">
-            <SecuritySummaryCard
-                severityCount={severityCount}
-                scanToolId={scanToolId}
-                rootClassName="w-500"
-                SecurityModalSidebar={SecurityModalSidebar}
-                responseData={scanResultResponse?.result}
-                hidePolicy
-            />
+        <div className="p-20 bcn-0 flex-grow-1">
+            <SecurityDetailsCards scanResult={scanResultResponse?.result} Sidebar={SecurityModalSidebar} />
         </div>
     )
 }
