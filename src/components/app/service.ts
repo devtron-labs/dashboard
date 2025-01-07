@@ -267,7 +267,7 @@ export const triggerCDNode = ({
     wfrId,
     abortSignal,
     runtimeParams = [],
-    isRollbackTrigger,
+    isRollbackTrigger = false,
 }: TriggerCDNodeServiceProps) => {
     const areRuntimeParamsConfigured =
         getRuntimeParamsPayload && (stageType === DeploymentNodeType.POSTCD || stageType === DeploymentNodeType.PRECD)
