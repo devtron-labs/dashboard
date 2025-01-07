@@ -169,7 +169,7 @@ p.sentence-case:first-letter {
     position: relative;
 }
 
-.form__icon--error path[fill='var(--Y400)'] {
+.form__icon--error path[fill='#FFCB5D'] {
     fill: var(--R500);
 }
 
@@ -177,7 +177,7 @@ p.sentence-case:first-letter {
     fill: var(--Y700);
 }
 
-.form__icon--info path[fill='var(--B500)'] {
+.form__icon--info path[fill='#06c'] {
     fill: gray;
 }
 
@@ -617,7 +617,7 @@ p.sentence-case:first-letter {
     color: var(--B500);
 }
 
-.form__input:focus ~ .form__text-field-info path[fill='var(--B500)'] {
+.form__input:focus ~ .form__text-field-info path[fill='#06c'] {
     fill: var(--B500);
 }
 
