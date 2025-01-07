@@ -44,7 +44,7 @@ export const SMTPConfigurationTable = ({ state, deleteClickHandler }: Configurat
                         <div
                             data-testid={`smtp-container-${smtpConfig.name}`}
                             key={smtpConfig.id}
-                            className="configuration-tab__table-row smtp-config-grid dc__gap-16 py-6 px-20"
+                            className="configuration-tab__table-row smtp-config-grid dc__gap-16 py-6 px-20 dc__hover-n50"
                         >
                             {getConfigTabIcons(ConfigurationsTabTypes.SMTP)}
                             <div

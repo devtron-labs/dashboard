@@ -871,7 +871,7 @@ export const ProtectedInput = ({
                     data-testid={dataTestid}
                     type={shown ? 'text' : 'password'}
                     tabIndex={tabIndex}
-                    className={error ? 'form__input form__input--error pl-42' : 'form__input pl-42'}
+                    className={error ? 'form__input form__input--error pl-42' : 'form__input pl-42 fs-13'}
                     name={name}
                     placeholder={placeholder}
                     onChange={(e) => {

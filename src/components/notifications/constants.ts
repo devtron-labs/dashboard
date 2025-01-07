@@ -41,7 +41,6 @@ export enum ConfigurationFieldKeys {
 }
 
 // ------------ SES Configuration Constants ------------
-export const DEFAULT_MASKED_SECRET_KEY = '*******'
 
 export const ConfigValidationKeys = { isValid: true, message: '' }
 

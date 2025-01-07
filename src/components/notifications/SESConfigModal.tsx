@@ -24,6 +24,7 @@ import {
     ToastVariantType,
     SelectPicker,
     ComponentSizeType,
+    DEFAULT_SECRET_PLACEHOLDER,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Error } from '@Icons/ic-warning.svg'
 import { useHistory } from 'react-router-dom'
@@ -31,12 +32,7 @@ import { saveEmailConfiguration, getSESConfiguration } from './notifications.ser
 import awsRegionList from '../common/awsRegionList.json'
 import { SESConfigModalProps } from './types'
 import { getFormValidated, getSESDefaultConfiguration, validateKeyValueConfig } from './notifications.util'
-import {
-    ConfigurationFieldKeys,
-    ConfigurationsTabTypes,
-    DEFAULT_MASKED_SECRET_KEY,
-    DefaultSESValidations,
-} from './constants'
+import { ConfigurationFieldKeys, ConfigurationsTabTypes, DefaultSESValidations } from './constants'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
 
 const SESConfigModal = ({
@@ -64,7 +60,7 @@ const SESConfigModal = ({
                 isLoading: false,
                 isError: true,
                 region: awsRegion,
-                secretKey: DEFAULT_MASKED_SECRET_KEY, // Masked secretKey for security
+                secretKey: DEFAULT_SECRET_PLACEHOLDER, // Masked secretKey for security
             })
             setFormValid(DefaultSESValidations)
         } catch (error) {

@@ -39,7 +39,10 @@ const SlackConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTab
             </div>
             <div>
                 {slackConfigurationList.map((slackConfig) => (
-                    <div key={slackConfig.id} className="slack-config-grid configuration-tab__table-row dc__gap-16">
+                    <div
+                        key={slackConfig.id}
+                        className="slack-config-grid configuration-tab__table-row dc__gap-16 dc__hover-n50"
+                    >
                         {getConfigTabIcons(ConfigurationsTabTypes.SLACK)}
                         {renderText(slackConfig.slackChannel)}
                         {renderText(slackConfig.webhookUrl)}

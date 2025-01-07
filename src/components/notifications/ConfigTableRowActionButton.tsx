@@ -1,5 +1,5 @@
 import { Trash } from '@Components/common'
-import { ReactComponent as Edit } from '@Icons/ic-edit.svg'
+import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
 import { Button, ButtonStyleType, ButtonVariantType, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigTableRowActionButtonProps } from './types'
 

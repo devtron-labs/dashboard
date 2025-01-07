@@ -148,9 +148,10 @@ export const SMTPConfigModal = ({
                     value={form.authPassword}
                     onChange={handleInputChange}
                     error={isFormValid.authPassword.message}
-                    label="SMTP Password *"
+                    label="SMTP Password"
                     labelClassName="form__label--fs-13 mb-8 fw-5 fs-13"
                     placeholder="Enter SMTP password"
+                    isRequiredField
                 />
             </div>
 

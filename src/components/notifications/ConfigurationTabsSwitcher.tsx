@@ -1,14 +1,14 @@
 import { useHistory } from 'react-router-dom'
 import { Button, ButtonVariantType, ComponentSizeType, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Add } from '@Icons/ic-add.svg'
-import { getConfigurationTabTextWithIcon } from './notifications.util'
+import { getConfigurationTabTextWithIcon, getTabText } from './notifications.util'
 import { ConfigurationsTabTypes } from './constants'
 
 export const ConfigurationTabSwitcher = () => {
     const history = useHistory()
     const { searchParams } = useSearchString()
     const queryParams = new URLSearchParams(history.location.search)
-    const activeTab = queryParams.get('modal')
+    const activeTab = queryParams.get('modal') as ConfigurationsTabTypes
 
     const handleTabClick = (tab: ConfigurationsTabTypes) => () => {
         const newParams = {
@@ -54,7 +54,7 @@ export const ConfigurationTabSwitcher = () => {
                 size={ComponentSizeType.small}
                 dataTestId="add-configuration"
                 startIcon={<Add />}
-                text={`Add ${activeTab}`}
+                text={`Add ${getTabText(activeTab)}`}
             />
         </div>
     )

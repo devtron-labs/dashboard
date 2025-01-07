@@ -39,7 +39,7 @@ export const WebhookConfigurationTable = ({ state, deleteClickHandler }: Configu
             {webhookConfigurationList.map((webhookConfig) => (
                 <div
                     key={webhookConfig.id}
-                    className="configuration-tab__table-row webhook-config-grid fs-13 cn-9 dc__gap-16 py-6 px-20"
+                    className="configuration-tab__table-row webhook-config-grid fs-13 cn-9 dc__gap-16 py-6 px-20 dc__hover-n50"
                     data-testid={`webhook-container-${webhookConfig.name}`}
                 >
                     {getConfigTabIcons(ConfigurationsTabTypes.WEBHOOK)}

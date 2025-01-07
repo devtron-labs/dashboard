@@ -34,7 +34,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, ConfigurationTabText } from './constants'
 import { validateEmail } from '../common'
-import { WebhookDataRowType, WebhookHeaderKeyType, WebhookRowCellType } from './types'
+import { FormValidation, WebhookDataRowType, WebhookHeaderKeyType, WebhookRowCellType } from './types'
 import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
 
 export const multiSelectStyles = {
@@ -265,9 +265,8 @@ export const getTableHeaders = (): DynamicDataTableHeaderType<WebhookHeaderKeyTy
     { label: 'Value', key: 'value', width: '1fr' },
 ]
 
-export const getInitialWebhookKeyRow = (rows): DynamicDataTableRowType<WebhookHeaderKeyType>[] =>
+export const getInitialWebhookKeyRow = (rows: WebhookRowCellType[]): DynamicDataTableRowType<WebhookHeaderKeyType>[] =>
     rows.map((row) => {
-        const id = row.id || getUniqueId()
         return {
             data: {
                 key: {
@@ -285,7 +284,7 @@ export const getInitialWebhookKeyRow = (rows): DynamicDataTableRowType<WebhookHe
                     },
                 },
             },
-            id,
+            id: row.id,
         }
     })
 
@@ -312,7 +311,10 @@ export const getEmptyVariableDataRow = (): WebhookDataRowType => {
     }
 }
 
-export const validateKeyValueConfig = (key: ConfigurationFieldKeys, value: string): { isValid: boolean; message: string } => {
+export const validateKeyValueConfig = (
+    key: ConfigurationFieldKeys,
+    value: string,
+): { isValid: boolean; message: string } => {
     if (!value) {
         return { isValid: false, message: REQUIRED_FIELD_MSG }
     }
@@ -322,10 +324,6 @@ export const validateKeyValueConfig = (key: ConfigurationFieldKeys, value: strin
     return { isValid: true, message: '' }
 }
 
-type FormValidation = {
-    [key: string]: { isValid: boolean; message: string }
-}
-
 export const getFormValidated = (isFormValid: FormValidation, fromEmail: string): boolean => {
     return Object.values(isFormValid).every((field) => field.isValid && !field.message) && validateEmail(fromEmail)
 }
@@ -333,4 +331,19 @@ export enum ConfigTableRowActionType {
     ADD_ROW = 'ADD_ROW',
     UPDATE_ROW = 'UPDATE_ROW',
     DELETE_ROW = 'DELETE_ROW',
+}
+
+export const getTabText = (tab: ConfigurationsTabTypes) => {
+    switch (tab) {
+        case ConfigurationsTabTypes.SES:
+            return 'SES'
+        case ConfigurationsTabTypes.SLACK:
+            return 'Slack'
+        case ConfigurationsTabTypes.WEBHOOK:
+            return 'Webhook'
+        case ConfigurationsTabTypes.SMTP:
+            return 'SMTP'
+        default:
+            return ''
+    }
 }

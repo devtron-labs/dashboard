@@ -218,3 +218,7 @@ export type HandleRowUpdateActionProps = VariableDataTableAction & {
     headerKey: WebhookHeaderKeyType
     rowId: string | number
 }
+
+export type FormValidation = {
+    [key: string]: { isValid: boolean; message: string }
+}

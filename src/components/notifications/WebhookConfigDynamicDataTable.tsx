@@ -15,7 +15,6 @@ export const WebhookConfigDynamicDataTable = ({ rows, setRows, headers }: Webhoo
     }, [])
 
     const handleRowUpdateAction = ({ actionType, actionValue, rowId, headerKey }: HandleRowUpdateActionProps) => {
-        if (!rowId || !headerKey) return
         let updatedRows: WebhookDataRowType[] = [...rows]
         switch (actionType) {
             case VariableDataTableActionType.UPDATE_ROW:

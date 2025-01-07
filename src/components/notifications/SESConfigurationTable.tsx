@@ -42,7 +42,7 @@ const SESConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTable
 
             {sesConfigurationList.map((sesConfig) => (
                 <div
-                    className="configuration-tab__table-row ses-config-grid fs-13 cn-9 dc__gap-16 py-6 px-20"
+                    className="configuration-tab__table-row ses-config-grid fs-13 cn-9 dc__gap-16 py-6 px-20 dc__hover-n50"
                     key={sesConfig.id}
                 >
                     {getConfigTabIcons(ConfigurationsTabTypes.SES)}
