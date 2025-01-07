@@ -29,7 +29,7 @@ export const _multiSelectStyles = {
         ...base,
         cursor: state.isDisabled ? 'not-allowed' : 'normal',
         border: state.isDisabled ? '1px solid var(--N200)' : state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-        backgroundColor: state.isDisabled ? 'var(--N50)' : 'var(--N0)',
+        backgroundColor: state.isDisabled ? 'var(--bg-secondary)' : 'var(--bg-primary)',
         boxShadow: 'none',
     }),
     menu: (base) => ({

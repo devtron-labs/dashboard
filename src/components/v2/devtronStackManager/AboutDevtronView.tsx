@@ -49,7 +49,7 @@ const AboutDevtronView = ({
 
         return (): void => {
             if (parentRef?.current) {
-                parentRef.current.style.backgroundColor = 'var(--window-bg)'
+                parentRef.current.style.backgroundColor = 'var(--bg-tertiary)'
             }
         }
     }, [])

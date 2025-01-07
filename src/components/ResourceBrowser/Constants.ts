@@ -34,7 +34,7 @@ export const FILTER_SELECT_COMMON_STYLES = {
         borderColor: 'none',
         boxShadow: 'none',
         border: state.isFocused && !state.isDisabled ? '1px solid var(--B500)' : '1px solid var(--N200)',
-        backgroundColor: state.isDisabled ? 'var(--N100)' : 'var(--N50)',
+        backgroundColor: state.isDisabled ? 'var(--N100)' : 'var(--bg-secondary)',
         pointerEvents: 'auto',
         cursor: state.isDisabled ? 'not-allowed' : 'pointer',
     }),
@@ -66,7 +66,7 @@ export const KIND_SEARCH_COMMON_STYLES = {
     control: (base, state) => ({
         ...FILTER_SELECT_COMMON_STYLES.control(base, state),
         border: state.isFocused ? '1px solid var(--B500)' : 'none',
-        backgroundColor: state.isFocused ? 'var(--N50)' : 'var(--N0)',
+        backgroundColor: state.isFocused ? 'var(--bg-secondary)' : 'var(--bg-primary)',
         cursor: 'text',
     }),
     input: (base) => ({
@@ -84,7 +84,7 @@ export const KIND_SEARCH_COMMON_STYLES = {
     }),
     option: (base, state) => ({
         ...base,
-        backgroundColor: state.isFocused ? 'var(--N50)' : 'var(--N0)',
+        backgroundColor: state.isFocused ? 'var(--bg-secondary)' : 'var(--bg-primary)',
         color: 'var(--N900)',
         textOverflow: 'ellipsis',
         fontWeight: '500',

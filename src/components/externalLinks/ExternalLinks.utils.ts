@@ -77,7 +77,7 @@ export const customMultiSelectStyles = {
     option: (base, state) => ({
         ...base,
         padding: '10px 12px',
-        backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--N0)',
+        backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--bg-primary)',
         color: 'var(--N900)',
         overflow: 'hidden',
         textOverflow: 'ellipsis',

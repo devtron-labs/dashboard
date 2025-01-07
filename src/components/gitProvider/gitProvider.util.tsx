@@ -37,7 +37,7 @@ export const styles = {
         return {
             ...base,
             color: 'var(--N900)',
-            backgroundColor: state.isFocused ? 'var(--B100)' : 'var(--N0)',
+            backgroundColor: state.isFocused ? 'var(--B100)' : 'var(--bg-primary)',
         }
     },
 }

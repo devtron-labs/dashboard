@@ -1292,7 +1292,7 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
                             input: (base, state) => ({ ...base, caretColor: 'var(--N0)', color: 'var(--N0)' }),
                             option: (base, state) => ({
                                 ...base,
-                                backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--N0)',
+                                backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--bg-primary)',
                                 color: 'var(--N900)',
                                 textOverflow: 'ellipsis',
                                 overflow: 'hidden',
@@ -1342,7 +1342,7 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
                                         }),
                                         option: (base, state) => ({
                                             ...base,
-                                            backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--N0)',
+                                            backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--bg-primary)',
                                             color: 'var(--N900)',
                                             textOverflow: 'ellipsis',
                                             overflow: 'hidden',
@@ -1391,7 +1391,7 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
                                 input: (base, state) => ({ ...base, caretColor: 'var(--N0)', color: 'var(--N0)' }),
                                 option: (base, state) => ({
                                     ...base,
-                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--N0)',
+                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--bg-primary)',
                                     color: 'var(--N900)',
                                 }),
                             }}

@@ -249,9 +249,9 @@ const getBGColor = (isSelected: boolean, isFocused: boolean): string => {
         return 'var(--B100)'
     }
     if (isFocused) {
-        return 'var(--N50)'
+        return 'var(--bg-secondary)'
     }
-    return 'var(--N0)'
+    return 'var(--bg-primary)'
 }
 
 export const getOptionBGClass = (isSelected: boolean, isFocused: boolean): string => {

@@ -117,7 +117,7 @@ export default function HyperionEnvironmentSelect({ selectEnvironment, environme
                 option: (base, state) => ({
                     ...base,
                     padding: '4px 12px',
-                    backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--N0)',
+                    backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--bg-primary)',
                     color: 'var(--N900)',
                 }),
             }}
