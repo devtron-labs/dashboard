@@ -23,16 +23,10 @@ import { ReactComponent as ICInfoFilled } from '../../../../assets/icons/ic-info
 import { BulkResponseStatus } from '../../Constants'
 import { importComponentFromFELibrary } from '../../../common'
 
-const downloadManifestForVirtualEnvironment = importComponentFromFELibrary('downloadManifestForVirtualEnvironment', null, 'function')
 const DownloadManifestForVirtualEnvironmentButton = importComponentFromFELibrary('DownloadManifestForVirtualEnvironmentButton', null, 'function')
 
 export const TriggerModalRow = ({ rowData, index, isVirtualEnv, envName }: TriggerModalRowType) => {
     const { handleDownload } = useDownload()
-    const params = {
-        appId: rowData.appId,
-        envId: rowData.envId,
-        appName: `${rowData.appName}-${envName}`,
-    }
 
     const renderStatusIcon = (rowData: ResponseRowType): JSX.Element => {
         if (rowData.status === BulkResponseStatus.SKIP) {
@@ -47,13 +41,9 @@ export const TriggerModalRow = ({ rowData, index, isVirtualEnv, envName }: Trigg
         return <Error className="mr-8 icon-dim-18" />
     }
 
-    const downloadPackage = async () => {
-        await downloadManifestForVirtualEnvironment({ ...params, handleDownload })
-    }
-
     return (
         <div
-            className={`response-row  pt-8 pb-8 ${isVirtualEnv ? 'is-virtual' : ''}`}
+            className={`response-row  py-8 ${isVirtualEnv ? 'is-virtual' : ''}`}
             key={`response-${rowData.appId}`}
         >
             <div className="fs-13 fw-4 cn-9">{rowData.appName}</div>
@@ -63,7 +53,13 @@ export const TriggerModalRow = ({ rowData, index, isVirtualEnv, envName }: Trigg
             </div>
             <div className="fs-13 fw-4 cn-9">{rowData.message}</div>
             {isVirtualEnv && rowData.status === BulkResponseStatus.PASS && (
-                <DownloadManifestForVirtualEnvironmentButton handleDownload={downloadPackage} />
+                <DownloadManifestForVirtualEnvironmentButton {...{
+                    appId: rowData.appId,
+                    envId: rowData.envId,
+                    appName: `${rowData.appName}-${envName}`,
+                    handleDownload,
+                    showSuccessfulToast: false,
+                }} />
             )}
         </div>
     )
