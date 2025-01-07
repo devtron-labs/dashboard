@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
     showError,
     getTeamListMin as getProjectListMin,
@@ -6,17 +6,16 @@ import {
     ToastManager,
     ToastVariantType,
     SelectPicker,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { useHistory } from 'react-router-dom'
 import { saveSlackConfiguration, updateSlackConfiguration, getSlackConfiguration } from './notifications.service'
 import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
-import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 import { SlackConfigModalProps } from './types'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, DefaultSlackKeys, DefaultSlackValidations } from './constants'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
-import { validateKeyValueConfig } from './notifications.util'
+import { getFormValidated, validateKeyValueConfig } from './notifications.util'
 
 export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
     slackConfigId,
@@ -24,11 +23,12 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
     closeSlackConfigModal,
 }: SlackConfigModalProps) => {
     const history = useHistory()
+    const projectRef = useRef(null)
 
     const [projectList, setProjectList] = useState<Array<{ id: number; name: string; active: boolean }>>([])
-    const [selectedProject, setSelectedProject] = useState<{ label: string; value: number }>({ label: '', value: 0 })
+    const [selectedProject, setSelectedProject] = useState<{ label: string; value: string }>()
     const [form, setForm] = useState(DefaultSlackKeys)
-    const [isValid, setValid] = useState(DefaultSlackValidations)
+    const [isFormValid, setFormValid] = useState(DefaultSlackValidations)
 
     useEffect(() => {
         if (slackConfigId) {
@@ -37,7 +37,7 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
                 .then(([slackConfigRes, projectListRes]) => {
                     setProjectList(projectListRes.result || [])
                     setForm({ ...slackConfigRes.result, isLoading: false, isError: false })
-                    setValid(DefaultSlackValidations)
+                    setFormValid(DefaultSlackValidations)
                     setSelectedProject({
                         label: projectListRes.result.find((p) => p.id === slackConfigRes.result.projectId).name,
                         value: slackConfigRes.result.projectId,
@@ -59,21 +59,6 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
         }
     }, [slackConfigId])
 
-    const handleProjectChange = (_selectedProject) => {
-        const projectId = Number(_selectedProject.value)
-        setSelectedProject(_selectedProject)
-        setForm((prevForm) => ({
-            ...prevForm,
-            projectId,
-        }))
-        setValid((prevValid) => ({
-            ...prevValid,
-            projectId: !!_selectedProject.value,
-        }))
-    }
-
-    const isFormValid = () => Object.values(isValid).every((value) => value)
-
     const closeSlackConfig = () => {
         if (typeof closeSlackConfigModal === 'function') {
             closeSlackConfigModal()
@@ -88,7 +73,7 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
     }
 
     const saveSlackConfig = () => {
-        if (!isFormValid()) {
+        if (!getFormValidated(isFormValid)) {
             setForm((prevForm) => ({ ...prevForm, isLoading: false, isError: true }))
             return
         }
@@ -150,7 +135,7 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
     )
 
     const renderProjectLabel = () => (
-        <div className="flexbox-imp">
+        <div className="flex dc__gap-6 left">
             <span className="dc__required-field">Project</span>
             <Tippy
                 className="default-tt"
@@ -160,9 +145,9 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
                 placement="top"
                 content="Required to control user Access"
             >
-                <div>
-                    <ICHelpOutline className="ml-5 dc__vertical-align-middle icon-dim-16 cursor" />
-                </div>
+                <span>
+                    <ICHelpOutline className="icon-dim-16 cursor flex" />
+                </span>
             </Tippy>
         </div>
     )
@@ -170,15 +155,38 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target
         setForm((prevForm) => ({ ...prevForm, [name]: value }))
-        setValid((prevValid) => ({
+        setFormValid((prevValid) => ({
             ...prevValid,
-            [name]: validateKeyValueConfig(name as ConfigurationFieldKeys, value).isValid,
+            [name]: validateKeyValueConfig(name as ConfigurationFieldKeys, value),
         }))
     }
 
     const handleBlur = (e) => {
         const { name, value } = e.target
-        setValid((prevValid) => ({ ...prevValid, [name]: validateKeyValueConfig(name, value).isValid }))
+        setFormValid((prevValid) => ({ ...prevValid, [name]: validateKeyValueConfig(name, value) }))
+    }
+
+    const handleProjectChange = (_selectedProject) => {
+        setSelectedProject(_selectedProject)
+        setForm((prevForm) => ({
+            ...prevForm,
+            projectId: Number(_selectedProject.value),
+        }))
+        setFormValid((prevValid) => ({
+            ...prevValid,
+            projectId: validateKeyValueConfig(ConfigurationFieldKeys.PROJECT_ID, _selectedProject.value),
+        }))
+    }
+
+    const handleProjectBlur = () => {
+        const selectedValue = projectRef.current?.getValue()[0] || {}
+        setFormValid((prevValid) => ({
+            ...prevValid,
+            [ConfigurationFieldKeys.PROJECT_ID]: validateKeyValueConfig(
+                ConfigurationFieldKeys.PROJECT_ID,
+                selectedValue.value,
+            ),
+        }))
     }
 
     const renderContent = () => (
@@ -193,7 +201,7 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
                 placeholder="Channel name"
                 autoFocus
                 isRequiredField
-                error={!isValid.configName && REQUIRED_FIELD_MSG}
+                error={isFormValid[ConfigurationFieldKeys.CONFIG_NAME].message}
             />
             <CustomInput
                 data-testid="add-webhook-url"
@@ -204,27 +212,21 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
                 onChange={handleInputChange}
                 onBlur={handleBlur}
                 isRequiredField
-                error={!isValid.webhookUrl && REQUIRED_FIELD_MSG}
+                error={isFormValid[ConfigurationFieldKeys.WEBHOOK_URL].message}
             />
-            <div>
-                <SelectPicker
-                    name={ConfigurationFieldKeys.PROJECT_ID}
-                    label={renderProjectLabel()}
-                    inputId="slack-project"
-                    value={selectedProject}
-                    onChange={handleProjectChange}
-                    placeholder="Select Project"
-                    options={projectList.map((p) => ({ label: p.name, value: p.id }))}
-                />
-                <span className="form__error">
-                    {!isValid[ConfigurationFieldKeys.PROJECT_ID] && (
-                        <>
-                            <Error className="form__icon form__icon--error" />
-                            <span className="form__error-text">{REQUIRED_FIELD_MSG}</span>
-                        </>
-                    )}
-                </span>
-            </div>
+            <SelectPicker
+                name={ConfigurationFieldKeys.PROJECT_ID}
+                label={renderProjectLabel()}
+                inputId="slack-project"
+                value={selectedProject}
+                onChange={handleProjectChange}
+                placeholder="Select Project"
+                options={projectList.map((p) => ({ label: p.name, value: p.id.toString() }))}
+                size={ComponentSizeType.large}
+                error={isFormValid[ConfigurationFieldKeys.PROJECT_ID].message}
+                onBlur={handleProjectBlur}
+                selectRef={projectRef}
+            />
         </div>
     )
 
@@ -235,6 +237,7 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
             modal={ConfigurationsTabTypes.SLACK}
             isLoading={form.isLoading}
             saveConfigModal={saveSlackConfig}
+            disableSave={!getFormValidated(isFormValid)}
         />
     )
 }

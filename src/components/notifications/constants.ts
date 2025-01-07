@@ -74,12 +74,12 @@ export const DefaultSlackKeys = {
     id: 0,
 }
 export const DefaultSlackValidations = {
-    [ConfigurationFieldKeys.PROJECT_ID]: ConfigValidationKeys,
-    [ConfigurationFieldKeys.CONFIG_NAME]: ConfigValidationKeys,
-    [ConfigurationFieldKeys.WEBHOOK_URL]: ConfigValidationKeys,
+    project_id: ConfigValidationKeys,
+    configName: ConfigValidationKeys,
+    webhookUrl: ConfigValidationKeys,
 }
 
-// ------------ Slack Configuration Constants ------------
+// ------------ Webhook Configuration Constants ------------
 
 export const DefaultHeaders = { key: '', value: '' }
 

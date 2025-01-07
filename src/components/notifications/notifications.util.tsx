@@ -203,7 +203,7 @@ export const getSESDefaultConfiguration = (shouldBeDefault: boolean) => ({
     configName: '',
     accessKey: '',
     secretKey: '',
-    region: { label: '', value: '' },
+    region: null,
     fromEmail: '',
     default: shouldBeDefault,
     isLoading: false,
@@ -324,8 +324,12 @@ export const validateKeyValueConfig = (
     return { isValid: true, message: '' }
 }
 
-export const getFormValidated = (isFormValid: FormValidation, fromEmail: string): boolean => {
-    return Object.values(isFormValid).every((field) => field.isValid && !field.message) && validateEmail(fromEmail)
+export const getFormValidated = (isFormValid: FormValidation, fromEmail?: string): boolean => {
+    const isKeysValid = Object.values(isFormValid).every((field) => field.isValid && !field.message)
+    if (fromEmail) {
+        return isKeysValid && validateEmail(fromEmail)
+    }
+    return isKeysValid
 }
 export enum ConfigTableRowActionType {
     ADD_ROW = 'ADD_ROW',

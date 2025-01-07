@@ -253,7 +253,7 @@ export const ConfigurationTab = () => {
     }
 
     return (
-        <div className="configuration-tab__container bcn-0 h-100 flexbox-col dc__gap-16 pt-16">
+        <div className="configuration-tab__container bcn-0 h-100 flexbox-col dc__gap-16 dc__overflow-auto">
             <ConfigurationTabSwitcher />
             <Switch>
                 <Route path={path} render={renderTableComponent} />

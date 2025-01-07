@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
     showError,
     Checkbox,
@@ -25,8 +25,10 @@ import {
     SelectPicker,
     ComponentSizeType,
     DEFAULT_SECRET_PLACEHOLDER,
+    stringComparatorBySortOrder,
+    OptionType,
+    SelectPickerProps,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Error } from '@Icons/ic-warning.svg'
 import { useHistory } from 'react-router-dom'
 import { saveEmailConfiguration, getSESConfiguration } from './notifications.service'
 import awsRegionList from '../common/awsRegionList.json'
@@ -42,11 +44,15 @@ const SESConfigModal = ({
     onSaveSuccess,
     closeSESConfigModal,
 }: SESConfigModalProps) => {
-    const awsRegionListParsed = awsRegionList.map((region) => ({ label: region.name, value: region.value }))
     const history = useHistory()
+    const selectRef = useRef(null)
 
     const [form, setForm] = useState(getSESDefaultConfiguration(shouldBeDefault))
     const [isFormValid, setFormValid] = useState(DefaultSESValidations)
+
+    const awsRegionListParsed = awsRegionList
+        .sort((a, b) => stringComparatorBySortOrder(a.name, b.name))
+        .map((region) => ({ label: region.name, value: region.value }))
 
     const fetchSESConfiguration = async () => {
         setForm((prevForm) => ({ ...prevForm, isLoading: true }))
@@ -76,34 +82,42 @@ const SESConfigModal = ({
         }
     }, [sesConfigId])
 
-    const handleBlur = (event: React.ChangeEvent<HTMLInputElement>, key: ConfigurationFieldKeys): void => {
-        const { value } = event.target
-        setFormValid((prevValid) => ({
-            ...prevValid,
-            [key]:
-                key === ConfigurationFieldKeys.REGION ? !!form.region.value.length : validateKeyValueConfig(key, value),
-        }))
-    }
-
-    const handleInputChange = (key: ConfigurationFieldKeys, selected) => {
-        if (key === ConfigurationFieldKeys.REGION) {
-            setForm((prevForm) => ({
-                ...prevForm,
-                [key]: { label: selected.label, value: selected.value },
-            }))
-        }
+    const handleInputChange = (e) => {
+        const { name, value } = e.target
         setForm((prevForm) => ({
             ...prevForm,
-            [key]: selected,
+            [name]: value,
         }))
         setFormValid((prevValid) => ({
             ...prevValid,
-            [key]: validateKeyValueConfig(key, selected),
+            [name]: validateKeyValueConfig(name, value),
+        }))
+    }
+    const handleBlur = (event): void => {
+        const { name, value } = event.target
+        setFormValid((prevValid) => ({
+            ...prevValid,
+            [name]: validateKeyValueConfig(name as ConfigurationFieldKeys, value),
         }))
     }
 
-    const handleAWSRegionChange = (selected): void => {
-        handleInputChange(ConfigurationFieldKeys.REGION, selected)
+    const handleAWSRegionChange = (selected: OptionType): void => {
+        setFormValid((prevValid) => ({
+            ...prevValid,
+            region: validateKeyValueConfig(ConfigurationFieldKeys.REGION, selected.value),
+        }))
+        setForm((prevForm) => ({
+            ...prevForm,
+            region: selected,
+        }))
+    }
+
+    const handleAWSBlur: SelectPickerProps['onBlur'] = (): void => {
+        const selectedValue = selectRef.current?.getValue()[0] || {}
+        setFormValid((prevValid) => ({
+            ...prevValid,
+            region: validateKeyValueConfig(ConfigurationFieldKeys.REGION, selectedValue.value),
+        }))
     }
 
     const handleCheckbox = (): void => {
@@ -131,18 +145,7 @@ const SESConfigModal = ({
         }
     }
 
-    const onSaveSES = () => {
-        onSaveSuccess()
-        closeSESConfig()
-    }
-
     const saveSESConfig = async () => {
-        setForm((prevForm) => ({
-            ...prevForm,
-            isLoading: true,
-            isError: false,
-        }))
-
         if (!isFormValid) {
             setForm((prevForm) => ({
                 ...prevForm,
@@ -164,7 +167,8 @@ const SESConfigModal = ({
                 description: 'Saved Successfully',
             })
             if (selectSESFromChild) selectSESFromChild(response?.result[0])
-            onSaveSES()
+            onSaveSuccess()
+            closeSESConfig()
         } catch (error) {
             showError(error)
         } finally {
@@ -173,14 +177,14 @@ const SESConfigModal = ({
     }
 
     const renderSESContent = () => (
-        <div className="dc__gap-16 flex-grow-1 flexbox-col mh-0 p-20 dc__overflow-auto">
+        <div className="dc__gap-16 flex-grow-1 flexbox-col mh-0 p-20 dc__overflow-auto h-100 mh-0">
             <CustomInput
                 label="Configuration Name"
-                data-testid="add-ses-configuration-name"
+                dataTestid="add-ses-configuration-name"
                 name={ConfigurationFieldKeys.CONFIG_NAME}
                 value={form.configName}
-                onChange={(e) => handleInputChange(ConfigurationFieldKeys.CONFIG_NAME, e.target.value)}
-                onBlur={(event) => handleBlur(event, ConfigurationFieldKeys.CONFIG_NAME)}
+                onChange={handleInputChange}
+                onBlur={handleBlur}
                 placeholder="Configuration name"
                 autoFocus
                 isRequiredField
@@ -188,58 +192,51 @@ const SESConfigModal = ({
             />
             <CustomInput
                 label="Access Key ID"
-                data-testid="add-ses-access-key"
+                dataTestid="add-ses-access-key"
                 name={ConfigurationFieldKeys.ACCESS_KEY}
                 value={form.accessKey}
-                onChange={(e) => handleInputChange(ConfigurationFieldKeys.ACCESS_KEY, e.target.value)}
-                onBlur={(event) => handleBlur(event, ConfigurationFieldKeys.ACCESS_KEY)}
+                onChange={handleInputChange}
+                onBlur={handleBlur}
                 placeholder="Access Key ID"
                 isRequiredField
                 error={isFormValid.accessKey.message}
             />
             <CustomInput
                 label="Secret Access Key"
-                data-testid="add-ses-secret-access-key"
+                dataTestid="add-ses-secret-access-key"
                 name={ConfigurationFieldKeys.SECRET_KEY}
                 value={form.secretKey}
-                onChange={(e) => handleInputChange(ConfigurationFieldKeys.SECRET_KEY, e.target.value)}
-                onBlur={(event) => handleBlur(event, ConfigurationFieldKeys.SECRET_KEY)}
+                onChange={handleInputChange}
+                onBlur={handleBlur}
                 placeholder="Secret Access Key"
                 isRequiredField
                 error={isFormValid.secretKey.message}
             />
-            <div>
-                <SelectPicker
-                    inputId="aws-region"
-                    label="AWS Region"
-                    classNamePrefix="add-ses-aws-region"
-                    required
-                    value={form.region}
-                    placeholder="Select AWS Region"
-                    onBlur={(event) => handleBlur(event, ConfigurationFieldKeys.REGION)}
-                    onChange={(selected) => handleAWSRegionChange(selected)}
-                    options={awsRegionListParsed}
-                    size={ComponentSizeType.large}
-                    name={ConfigurationFieldKeys.REGION}
-                />
-                <span className="form__error">
-                    {isFormValid.region?.message ? (
-                        <>
-                            <Error className="form__icon form__icon--error" />
-                            {isFormValid.region.message}
-                        </>
-                    ) : null}
-                </span>
-            </div>
+            <SelectPicker
+                inputId="aws-region"
+                label="AWS Region"
+                classNamePrefix="add-ses-aws-region"
+                required
+                value={form.region}
+                placeholder="Select AWS Region"
+                onBlur={handleAWSBlur}
+                onChange={handleAWSRegionChange}
+                options={awsRegionListParsed}
+                size={ComponentSizeType.large}
+                name={ConfigurationFieldKeys.REGION}
+                error={isFormValid.region.message}
+                selectRef={selectRef}
+            />
+
             <CustomInput
                 label="Send email from"
-                data-testid="add-ses-send-email"
+                dataTestid="add-ses-send-email"
                 type="email"
                 name={ConfigurationFieldKeys.FROM_EMAIL}
                 value={form.fromEmail}
-                onBlur={(event) => handleBlur(event, ConfigurationFieldKeys.FROM_EMAIL)}
+                onBlur={handleBlur}
                 placeholder="Email"
-                onChange={(e) => handleInputChange(ConfigurationFieldKeys.FROM_EMAIL, e.target.value)}
+                onChange={handleInputChange}
                 isRequiredField
                 error={isFormValid.fromEmail.message}
                 helperText="This email must be verified with SES."
@@ -249,7 +246,7 @@ const SESConfigModal = ({
                 value={CHECKBOX_VALUE.CHECKED}
                 disabled={shouldBeDefault}
                 onChange={handleCheckbox}
-                data-testid="add-ses-default-checkbox"
+                dataTestId="add-ses-default-checkbox"
                 name="default"
             >
                 Set as default configuration to send emails

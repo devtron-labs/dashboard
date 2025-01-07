@@ -31,7 +31,7 @@ export const ConfigurationTabSwitcher = () => {
         })
     }
     return (
-        <div className="px-20 flex dc__content-space">
+        <div className="px-20 flex dc__content-space pt-16">
             <div className="flex left en-2 bw-1 br-4 fs-12 dc__w-fit-content cn-9 bcn-2 dc__gap-1">
                 {getConfigurationTabTextWithIcon().map((tab, index) => (
                     <button

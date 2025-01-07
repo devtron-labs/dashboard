@@ -7,6 +7,7 @@ import {
     Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
+import { useEffect, useRef } from 'react'
 import { ConfigurationsTabTypes } from './constants'
 import { ConfigurationTabDrawerModalProps } from './types'
 import { getTabText } from './notifications.util'
@@ -19,6 +20,22 @@ export const ConfigurationTabDrawerModal = ({
     saveConfigModal,
     disableSave,
 }: ConfigurationTabDrawerModalProps) => {
+    const configRef = useRef<HTMLDivElement>(null)
+
+    const escKeyPressHandler = (evt): void => {
+        if (evt && evt.key === 'Escape') {
+            evt.preventDefault()
+            closeModal()
+        }
+    }
+
+    useEffect(() => {
+        document.addEventListener('keydown', escKeyPressHandler)
+        return (): void => {
+            document.removeEventListener('keydown', escKeyPressHandler)
+        }
+    }, [escKeyPressHandler])
+
     const renderLoadingState = () => (
         <div className="h-100">
             <Progressing pageLoader />
@@ -57,6 +74,7 @@ export const ConfigurationTabDrawerModal = ({
         <Drawer position="right">
             <div
                 className={`h-100 modal__body w-${modal === ConfigurationsTabTypes.WEBHOOK ? '1024' : '600'} modal__body--p-0 dc__no-border-radius mt-0 flex-grow-1 flexbox-col`}
+                ref={configRef}
             >
                 <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
                     <h1 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Configure {getTabText(modal)}</h1>

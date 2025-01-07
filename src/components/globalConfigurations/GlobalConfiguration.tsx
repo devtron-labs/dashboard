@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { lazy, useState, useEffect, Suspense, isValidElement } from 'react'
+import { lazy, useState, useEffect, Suspense, isValidElement, useRef } from 'react'
 import { Route, NavLink, Router, Switch, Redirect, useHistory, useLocation } from 'react-router-dom'
 import {
     showError,
@@ -852,7 +852,19 @@ export const ProtectedInput = ({
     dataTestid = '',
     onBlur = (e) => { },
     isRequiredField = false,
+    autoFocus = false,
 }: ProtectedInputType) => {
+    const inputRef = useRef<HTMLInputElement>()
+
+    useEffect(() => {
+        setTimeout(() => {
+            // Added timeout to ensure the autofocus code is executed post the re-renders
+            if (inputRef.current && autoFocus) {
+                inputRef.current.focus()
+            }
+        }, 100)
+    }, [autoFocus])
+    
     const [shown, toggleShown] = useState(false)
     useEffect(() => {
         toggleShown(!hidden)
@@ -881,6 +893,8 @@ export const ProtectedInput = ({
                     value={value}
                     disabled={disabled}
                     onBlur={onBlur}
+                    autoFocus={autoFocus}
+                    ref={inputRef}
                 />
                 <ShowHide
                     className="protected-input__toggle"
