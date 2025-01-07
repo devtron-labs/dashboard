@@ -160,8 +160,10 @@ $color-suffix: 00;
             color: var(--#{$color}#{$i * 100});
         }
 
-        .bc#{to-lower-case($color)}-#{$i} {
-            background-color: var(--#{$color}#{$i * 100});
+        @if $i != 0 {
+            .bc#{to-lower-case($color)}-#{$i} {
+                background-color: var(--#{$color}#{$i * 100});
+            }
         }
 
         .e#{to-lower-case($color)}-#{$i} {
@@ -194,8 +196,10 @@ $color-suffix: 00;
             color: var(--#{$color}#{$i});
         }
 
-        .bc#{to-lower-case($color)}-#{$i} {
-            background-color: var(--#{$color}#{$i});
+        @if $i !=0 {
+            .bc#{to-lower-case($color)}-#{$i} {
+                background-color: var(--#{$color}#{$i});
+            }
         }
 
         .e#{to-lower-case($color)}-#{$i} {
@@ -219,15 +223,6 @@ $color-suffix: 00;
             }
         }
     }
-}
-
-// TODO: Update these
-.bcn-0 {
-    background-color: var(--bg-primary);
-}
-
-.bcn-50 {
-    background-color: var(--bg-secondary);
 }
 
 // border-radius
