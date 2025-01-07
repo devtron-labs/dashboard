@@ -4377,6 +4377,10 @@ textarea::placeholder {
     filter: blur(12px);
 }
 
+.dc__bg-transparent {
+    background-color: transparent;
+}
+
 .dc__hover-n50:hover,
 .dc__bg-n50 {
     background-color: var(--N50);
@@ -4384,14 +4388,6 @@ textarea::placeholder {
 
 .dc__bg-g5 {
     background-color: var(--G500) !important;
-}
-
-.dc__bg-n0--opacity-0_5 {
-    background-color: rgba(255, 255, 255, 0.5);
-
-    &:hover {
-        background-color: var(--N0);
-    }
 }
 
 .dc__bg-n0--opacity-0_2:hover {
