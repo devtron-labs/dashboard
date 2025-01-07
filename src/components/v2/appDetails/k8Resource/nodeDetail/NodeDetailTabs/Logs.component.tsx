@@ -484,7 +484,7 @@ const LogsComponent = ({
     const renderSearchText = (): JSX.Element => (
         <SearchBar
             initialSearchText={tempSearch}
-            containerClassName='w-100 bcn-0'
+            containerClassName='w-100 bg__primary'
             handleEnter={handleLogsSearch}
             inputProps={{
                 placeholder: `grep -A 10 -B 20 "Server Error" | grep 500`,
@@ -502,7 +502,7 @@ const LogsComponent = ({
         />
     ) : (
         <>
-            <div className="node-container-fluid bcn-0">
+            <div className="node-container-fluid bg__primary">
                 <div data-testid="logs-container-header" className="pl-16 h-32 flexbox">
                     <div className="w-70 flexbox flex-align-center pt-2 pb-2">
                         <Tippy
@@ -754,7 +754,7 @@ const LogsComponent = ({
                                 </div>
                             }
                         >
-                            <div className="w-16 bcn-0 h-100 flexbox flex-align-center">
+                            <div className="w-16 bg__primary h-100 flexbox flex-align-center">
                                 <QuestionIcon className="icon-dim-18 cursor ml-8 mr-8" />
                             </div>
                         </Tippy>

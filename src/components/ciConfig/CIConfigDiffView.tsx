@@ -121,7 +121,7 @@ export default function CIConfigDiffView({
 
     const renderConfigDiffModalTitle = (): JSX.Element => {
         return (
-            <div className="flex flex-align-center flex-justify bcn-0 pr-20 dc__border-bottom">
+            <div className="flex flex-align-center flex-justify bg__primary pr-20 dc__border-bottom">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0 pt-16 pb-16 pl-20 pr-20">Override Details</h2>
                 <button
                     type="button"

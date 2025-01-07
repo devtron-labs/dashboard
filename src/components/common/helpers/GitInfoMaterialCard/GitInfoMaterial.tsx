@@ -106,7 +106,7 @@ export const GitInfoMaterial = ({
     function renderMaterialHeader() {
         return (
             <div
-                className={`ci-webhook-header flex dc__content-space pl-20 pr-16 py-12 dc__border-bottom ${fromBulkCITrigger ? 'bcn-0' : ''}`}
+                className={`ci-webhook-header flex dc__content-space pl-20 pr-16 py-12 dc__border-bottom ${fromBulkCITrigger ? 'bg__primary' : ''}`}
             >
                 <h2
                     data-testid="build-deploy-pipeline-name-heading"
@@ -267,7 +267,7 @@ export const GitInfoMaterial = ({
                 </div>
                 {showExcludePopUp && (
                     <div
-                        className="flex left p-10 pointer dc__position-abs dc__top-26 dc__right-0 h-40 w-182 bcn-0 br-4 dc__zi-20"
+                        className="flex left p-10 pointer dc__position-abs dc__top-26 dc__right-0 h-40 w-182 bg__primary br-4 dc__zi-20"
                         style={{
                             boxShadow: '0 2px 4px 0 rgba(21, 21, 21, 0.3)',
                         }}
@@ -406,7 +406,7 @@ export const GitInfoMaterial = ({
     const nodeType: CommonNodeAttr['type'] = 'CI'
 
     const renderWebhookContent = () => (
-        <div className={` ${fromBulkCITrigger ? 'dc__position-fixed bcn-0 env-modal-width full-height' : ''}`}>
+        <div className={` ${fromBulkCITrigger ? 'dc__position-fixed bg__primary env-modal-width full-height' : ''}`}>
             <CiWebhookModal
                 webhookPayloads={webhookPayloads}
                 ciPipelineMaterialId={material[0].id}

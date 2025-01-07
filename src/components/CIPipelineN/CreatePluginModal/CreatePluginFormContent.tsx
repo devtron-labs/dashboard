@@ -157,7 +157,7 @@ const CreatePluginFormContent = ({
                 <button
                     type="button"
                     onClick={handleSelectNewOption}
-                    className="dc__position-sticky dc__transparent p-8 dc__bottom-0 dc__border-top-n1 bcn-0 dc__bottom-radius-4 w-100 dc__hover-n50 flexbox dc__align-items-center w-100 dc__gap-4"
+                    className="dc__position-sticky dc__transparent p-8 dc__bottom-0 dc__border-top-n1 bg__primary dc__bottom-radius-4 w-100 dc__hover-n50 flexbox dc__align-items-center w-100 dc__gap-4"
                 >
                     <ICAdd className="fcb-5 icon-dim-16 dc__no-shrink" />
                     <span className="cb-5 fs-13 fw-6 dc__truncate">Create `{data.value}`</span>

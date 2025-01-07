@@ -466,7 +466,7 @@ const ChartDeploymentHistory = ({
             )
         }
         return (
-            <div className="bcn-0 border-btm h-100">
+            <div className="bg__primary border-btm h-100">
                 <CodeEditor
                     value={
                         selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
@@ -515,7 +515,7 @@ const ChartDeploymentHistory = ({
                 )}
                 {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SOURCE && (
                     <div
-                        className="ml-20 w-100 p-16 bcn-0 br-4 en-2 bw-1 pb-12 mb-12"
+                        className="ml-20 w-100 p-16 bg__primary br-4 en-2 bw-1 pb-12 mb-12"
                         style={{ width: 'min( 100%, 800px )' }}
                     >
                         <div className="fw-6 fs-14 cn-9 pb-10" data-testid="source-details-heading">

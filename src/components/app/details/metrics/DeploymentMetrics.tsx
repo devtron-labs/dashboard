@@ -254,7 +254,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
 
     renderInputs() {
         return (
-            <div className="deployment-metrics__inputs bcn-0">
+            <div className="deployment-metrics__inputs bg__primary">
                 <div className="w-180" data-testid="select-environment">
                     <SelectPicker
                         inputId="deployment-metrics-select-environment"

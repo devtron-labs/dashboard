@@ -1323,7 +1323,7 @@ export default function CDPipeline({
                     isAdvanced ? 'advanced-option-container' : 'bottom-border-radius'
                 }`}
             >
-                <div className="flex flex-align-center flex-justify bcn-0 px-20 py-12">
+                <div className="flex flex-align-center flex-justify bg__primary px-20 py-12">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
                         {title}
                     </h2>
@@ -1341,7 +1341,7 @@ export default function CDPipeline({
                 {renderCDPipelineBody()}
                 {pageState !== ViewType.LOADING && pageState !== ViewType.ERROR && (
                     <div
-                        className={`ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
+                        className={`ci-button-container bg__primary pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
                             !isWebhookCD &&
                             !(formData.releaseMode === ReleaseMode.MIGRATE_HELM && !isAdvanced) &&
                             (cdPipelineId || !isAdvanced)

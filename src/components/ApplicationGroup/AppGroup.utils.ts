@@ -261,7 +261,7 @@ export const getOptionBGClass = (isSelected: boolean, isFocused: boolean): strin
     if (isFocused) {
         return 'bc-n50'
     }
-    return 'bcn-0'
+    return 'bg__primary'
 }
 
 export const getBranchValues = (ciNodeId: string, workflows: WorkflowType[], filteredCIPipelines) => {

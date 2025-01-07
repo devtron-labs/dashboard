@@ -336,7 +336,7 @@ export default function App() {
             <Suspense fallback={null}>
                 {validating ? (
                     <div className="full-height-width">
-                        <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
+                        <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />
                     </div>
                 ) : (
                     <>

@@ -54,7 +54,7 @@ const Suggestions = ({ handleDeActivation, loading, variables, reloadVariables, 
 
     const renderClearSearchButton = (): JSX.Element => (
         <button
-            className="dc__outline-none-imp flexbox mw-56 pt-5 pb-5 pl-12 pr-12 dc__gap-8 dc__align-items-center dc__border-radius-4-imp dc__border bcn-0 cb-5 fs-12 fw-6 lh-18 dc__align-center dc__hover-cn1 dc__hover-b500"
+            className="dc__outline-none-imp flexbox mw-56 pt-5 pb-5 pl-12 pr-12 dc__gap-8 dc__align-items-center dc__border-radius-4-imp dc__border bg__primary cb-5 fs-12 fw-6 lh-18 dc__align-center dc__hover-cn1 dc__hover-b500"
             onClick={handleClearSearch}
             type="button"
         >
@@ -94,7 +94,7 @@ const Suggestions = ({ handleDeActivation, loading, variables, reloadVariables, 
                             e.preventDefault()
                         }
                     }}
-                    className="flexbox dc__align-self-stretch pt-8 pb-8 pl-12 pr-12 bcn-0"
+                    className="flexbox dc__align-self-stretch pt-8 pb-8 pl-12 pr-12 bg__primary"
                 >
                     <DebouncedSearch
                         onSearch={onSearch}
@@ -112,7 +112,7 @@ const Suggestions = ({ handleDeActivation, loading, variables, reloadVariables, 
 
     const renderSuggestions = (): JSX.Element => (
         <>
-            <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bcn-0 flex-grow-1">
+            <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bg__primary flex-grow-1">
                 {suggestions.length ? (
                     suggestions.map((variable) => (
                         <SuggestionItem
@@ -144,7 +144,7 @@ const Suggestions = ({ handleDeActivation, loading, variables, reloadVariables, 
     const renderBody = (): JSX.Element => {
         if (loading) {
             return (
-                <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bcn-0 flex-grow-1 h-200">
+                <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bg__primary flex-grow-1 h-200">
                     <Progressing pageLoader size={32} />
                 </div>
             )
@@ -153,7 +153,7 @@ const Suggestions = ({ handleDeActivation, loading, variables, reloadVariables, 
         if (variables?.length === 0) {
             return (
                 <>
-                    <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bcn-0 flex-grow-1 h-200 bcn-0">
+                    <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bg__primary flex-grow-1 h-200 bg__primary">
                         <GenericEmptyState title="No variables found" image={NoVariables} />
                     </div>
 
@@ -163,7 +163,7 @@ const Suggestions = ({ handleDeActivation, loading, variables, reloadVariables, 
         }
 
         if (!enableSearch) {
-            return <Reload reload={reloadVariables} className="bcn-0 pb-16" />
+            return <Reload reload={reloadVariables} className="bg__primary pb-16" />
         }
 
         return renderSuggestions()

@@ -823,7 +823,7 @@ const Cluster = ({
                 )}
                 {editMode && (
                     <Drawer position="right" width="1000px" onEscape={DisableEditMode}>
-                        <div className="h-100 bcn-0" ref={drawerRef}>
+                        <div className="h-100 bg__primary" ref={drawerRef}>
                             <ClusterForm
                                 {...getSSHConfig(sshTunnelConfig)}
                                 id={clusterId}

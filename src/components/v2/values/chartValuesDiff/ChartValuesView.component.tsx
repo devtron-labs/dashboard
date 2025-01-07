@@ -366,8 +366,8 @@ export const GitOpsDrawer = ({
             {(isDeploymentAllowed || isDrawerOpen) && (
                 <div>
                     <Drawer onEscape={handleCloseButton} position="right" width="800px">
-                        <div className="cluster-form dc__position-rel h-100 bcn-0">
-                            <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
+                        <div className="cluster-form dc__position-rel h-100 bg__primary">
+                            <div className="flex flex-align-center dc__border-bottom flex-justify bg__primary pb-12 pt-12 pl-20 pr-20">
                                 <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
                                     <span className="fw-6 fs-16 cn-9">Git Repository</span>
                                 </h2>
@@ -391,7 +391,7 @@ export const GitOpsDrawer = ({
                                 />
                             </div>
                         </div>
-                        <div className="w-100 dc__border-top flex right pb-12 pt-12 pl-20 pr-20 dc__position-fixed dc__position-abs bcn-0 dc__bottom-0">
+                        <div className="w-100 dc__border-top flex right pb-12 pt-12 pl-20 pr-20 dc__position-fixed dc__position-abs bg__primary dc__bottom-0">
                             <button
                                 data-testid="cancel_button"
                                 className="cta cancel h-36 lh-36 mr-10"

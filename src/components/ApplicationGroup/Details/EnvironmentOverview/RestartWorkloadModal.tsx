@@ -347,7 +347,9 @@ export const RestartWorkloadModal = ({
                             className="flex left dc__border-left cursor"
                             onClick={() => handleWorkloadSelection(appId, kindName, APP_DETAILS_TEXT.KIND_NAME)}
                         >
-                            <div className={`p-8 flex left w-100 ml-8 dc__hover-n50 ${isChecked ? 'bc-b50' : 'bcn-0'}`}>
+                            <div
+                                className={`p-8 flex left w-100 ml-8 dc__hover-n50 ${isChecked ? 'bc-b50' : 'bg__primary'}`}
+                            >
                                 <Checkbox
                                     rootClassName="mt-3 mb-3 w-28"
                                     dataTestId="enforce-policy"
@@ -368,7 +370,7 @@ export const RestartWorkloadModal = ({
     }
 
     const renderRestartWorkloadModalListItems = () => (
-        <div className="drawer-body-section__list-drawer dc__overflow-auto bcn-0">
+        <div className="drawer-body-section__list-drawer dc__overflow-auto bg__primary">
             {Object.keys(bulkRotatePodsMap).map((appId) => (
                 <div className="pl-16 pr-16" key={appId}>
                     <div key={appId} className="flex dc__content-space cursor dc__hover-n50">
@@ -623,7 +625,7 @@ export const RestartWorkloadModal = ({
                     <button
                         type="button"
                         onClick={closeDrawer}
-                        className="flex bcn-0 dc__border-radius-4-imp h-36 pl-16 pr-16 pt-8 pb-8 dc__border"
+                        className="flex bg__primary dc__border-radius-4-imp h-36 pl-16 pr-16 pt-8 pb-8 dc__border"
                     >
                         Close
                     </button>
@@ -665,7 +667,7 @@ export const RestartWorkloadModal = ({
             <Drawer onEscape={closeDrawer} position="right" width="800" parentClassName="h-100">
                 <div
                     onClick={stopPropagation}
-                    className="bulk-restart-workload-wrapper bcn-0 cn-9 w-800 h-100 fs-13 lh-20"
+                    className="bulk-restart-workload-wrapper bg__primary cn-9 w-800 h-100 fs-13 lh-20"
                 >
                     {renderHeaderSection()}
                     {renderBodySection()}

@@ -1007,7 +1007,7 @@ export const ConfigMapSecretContainer = ({
             <div
                 className={`configmap-secret-container p-8 h-100 dc__position-rel ${showComments ? 'with-comment-drawer' : ''}`}
             >
-                <div className="dc__border br-4 dc__overflow-hidden h-100 bcn-0">{renderContent()}</div>
+                <div className="dc__border br-4 dc__overflow-hidden h-100 bg__primary">{renderContent()}</div>
                 {openDeleteModal && renderDeleteModal()}
                 {SaveChangesModal && showDraftSaveModal && (
                     <SaveChangesModal

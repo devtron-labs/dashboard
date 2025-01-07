@@ -271,7 +271,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
             return
         }
         return (
-            <div className="mb-16 dc__border br-4 pt-12 bcn-0">
+            <div className="mb-16 dc__border br-4 pt-12 bg__primary">
                 <div className="flexbox pointer mb-12 pl-16 pr-16">
                     <Error className="mt-2 mb-2 mr-8 icon-dim-20" />
                     <span className="fw-6 fs-13 cn-9 mr-16">
@@ -327,7 +327,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
                 {/* Commented to be used in future */}
                 {/* {cardDetailsInBar()} */}
                 <div className="dc__grid-row-one-half dc__gap-16 pb-16">
-                    <div className="flexbox dc__gap-12 dc__content-space dc__overflow-scroll bcn-0 br-4 en-2 bw-1 pt-16 pl-16 pb-16 pr-16">
+                    <div className="flexbox dc__gap-12 dc__content-space dc__overflow-scroll bg__primary br-4 en-2 bw-1 pt-16 pl-16 pb-16 pr-16">
                         <div>
                             <div className="dc__align-left fs-13 fw-4 cn-7 dc__ellipsis-right">CPU Usage</div>
                             <div className="dc__align-left fs-24 fw-4 cn-9">
@@ -354,7 +354,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
                         </div>
                     </div>
 
-                    <div className="flexbox dc__gap-12 dc__content-space dc__overflow-scroll bcn-0 br-4 en-2 bw-1 pt-16 pl-16 pb-16 pr-16">
+                    <div className="flexbox dc__gap-12 dc__content-space dc__overflow-scroll bg__primary br-4 en-2 bw-1 pt-16 pl-16 pb-16 pr-16">
                         <div>
                             <div className="dc__align-left fs-13 fw-4 cn-7 dc__ellipsis-right">Memory Usage</div>
                             <div className="dc__align-left fs-24 fw-4 cn-9">
@@ -527,7 +527,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
     const renderClusterSummary = (): JSX.Element => {
         return (
             <div
-                className={`dc__border-left resource-details-container bcn-0 dc__overflow-scroll ${
+                className={`dc__border-left resource-details-container bg__primary dc__overflow-scroll ${
                     errorStatusCode || errorCode ? 'flex' : ''
                 }`}
             >

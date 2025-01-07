@@ -23,7 +23,7 @@ import './checklist.scss'
 export class GlobalChartsCheck extends Component {
     render() {
         return (
-            <div className="bcn-0 mb-20 br-4">
+            <div className="bg__primary mb-20 br-4">
                 <img className="img-width pt-12 pl-16" src={img} />
                 <div className="pl-16 pr-16 pt-12 pb-12 fs-13">
                     <div className="cn-9"> Deploy charts using Devtron.</div>

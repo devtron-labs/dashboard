@@ -883,7 +883,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             )
         }
         return (
-            <div className="bcn-0 pt-16" style={{ minHeight: 'calc(100vh - 215px)' }}>
+            <div className="bg__primary pt-16" style={{ minHeight: 'calc(100vh - 215px)' }}>
                 {this.renderHostErrorMessage()}
                 {this.renderBody()}
                 {this.renderDeleteDialog()}

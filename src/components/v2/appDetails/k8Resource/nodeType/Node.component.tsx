@@ -386,7 +386,7 @@ const NodeComponent = ({
                                                                 data-name={kind}
                                                                 data-testid={`${kind.toLowerCase()}-tab`}
                                                                 onClick={onClickNodeDetailsTab}
-                                                                className={`dc__capitalize flex cn-7 fw-6 cursor bcn-0 ${
+                                                                className={`dc__capitalize flex cn-7 fw-6 cursor bg__primary ${
                                                                     node.kind === NodeType.Containers
                                                                         ? ''
                                                                         : 'resource-action-tabs__active'

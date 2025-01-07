@@ -475,7 +475,7 @@ const ResourceList = () => {
         }
 
         if (loading || !tabs.length) {
-            return <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
+            return <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />
         }
 
         return (
@@ -533,7 +533,7 @@ const ResourceList = () => {
     }
 
     return (
-        <div className="resource-browser-container flexbox-col h-100 bcn-0" ref={resourceBrowserRef}>
+        <div className="resource-browser-container flexbox-col h-100 bg__primary" ref={resourceBrowserRef}>
             <PageHeader
                 isBreadcrumbs
                 breadCrumbs={renderBreadcrumbs}

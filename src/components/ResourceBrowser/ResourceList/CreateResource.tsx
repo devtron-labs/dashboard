@@ -238,8 +238,8 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
 
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            <div className="create-resource-container bcn-0 h-100" ref={appStatusDetailRef}>
-                <div className="flex flex-align-center flex-justify bcn-0 pt-16 pr-20 pb-16 pl-20 dc__border-bottom">
+            <div className="create-resource-container bg__primary h-100" ref={appStatusDetailRef}>
+                <div className="flex flex-align-center flex-justify bg__primary pt-16 pr-20 pb-16 pl-20 dc__border-bottom">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0">{CREATE_RESOURCE_MODAL_MESSAGING.title}</h2>
                     <button
                         type="button"

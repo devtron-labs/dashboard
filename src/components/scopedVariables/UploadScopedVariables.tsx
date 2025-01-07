@@ -64,7 +64,7 @@ export default function UploadScopedVariables({
             setScopedVariables={setScopedVariables}
         />
     ) : (
-        <div className="flex column center bcn-0 h-100">
+        <div className="flex column center bg__primary h-100">
             <div className="flex column center dc__gap-20 w-320 dc__no-shrink">
                 <div className="flex column center dc__gap-8">
                     <p className="cn-9 fs-16 m-0 fw-6">{HEADER_TEXT.SCOPED_VARIABLES.title}</p>

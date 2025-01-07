@@ -362,7 +362,7 @@ export class Workflow extends Component<WorkflowProps> {
 
         return (
             <div className="workflow--trigger flexbox-col mb-16 dc__gap-6" style={{ minWidth: 'auto' }}>
-                <div className="bcn-0 cn-9 fs-13 fw-6 lh-20 flexbox dc__align-items-center dc__content-space">
+                <div className="bg__primary cn-9 fs-13 fw-6 lh-20 flexbox dc__align-items-center dc__content-space">
                     {this.props.fromAppGrouping ? (
                         <Checkbox
                             rootClassName="mb-0 app-group-checkbox"

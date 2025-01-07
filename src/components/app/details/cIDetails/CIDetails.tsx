@@ -447,7 +447,7 @@ export const Details = ({
                         workerPodName={triggerDetails.podName}
                         renderDeploymentHistoryTriggerMetaText={renderDeploymentHistoryTriggerMetaText}
                     />
-                    <div className="dc__border-bottom pl-50 pr-20 dc__position-sticky dc__top-0 bcn-0 dc__zi-3">
+                    <div className="dc__border-bottom pl-50 pr-20 dc__position-sticky dc__top-0 bg__primary dc__zi-3">
                         <TabGroup
                             tabs={[
                                 {
@@ -655,7 +655,7 @@ export const NoVulnerabilityViewWithTool = ({ scanToolId }: { scanToolId: number
                 title={EMPTY_STATE_STATUS.CI_DEATILS_NO_VULNERABILITY_FOUND.TITLE}
                 subTitle={EMPTY_STATE_STATUS.CI_DEATILS_NO_VULNERABILITY_FOUND.SUBTITLE}
                 children={
-                    <span className="flex dc__border-radius-24 bcn-0 pl-16 pr-16 pt-8 pb-8 en-1 bw-1">
+                    <span className="flex dc__border-radius-24 bg__primary pl-16 pr-16 pt-8 pb-8 en-1 bw-1">
                         <ScannedByToolModal scanToolId={scanToolId} />
                     </span>
                 }

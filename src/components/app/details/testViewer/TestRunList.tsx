@@ -199,7 +199,7 @@ const TriggerList: React.FC<{ selectedNames: SelectedNames; startDate; endDate }
     }
     return (
         <>
-            <div className="mt-24 w-100 flex left column pt-16 pl-24 pb-16 pr-24 bcn-0 br-8 en-2 bw-1">
+            <div className="mt-24 w-100 flex left column pt-16 pl-24 pb-16 pr-24 bg__primary br-8 en-2 bw-1">
                 <div className="flex left mb-24">
                     <span className="fs-14 cn-9 fw-6">Last 30 executions</span>
                 </div>

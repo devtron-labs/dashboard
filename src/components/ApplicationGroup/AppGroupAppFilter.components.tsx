@@ -192,7 +192,7 @@ export const MenuList = (props: any): JSX.Element => {
     const selectedType = filterParentType === FilterParentType.env ? 'applications' : 'environments'
     return (
         <components.MenuList {...props}>
-            <div className="dc__position-sticky dc__top-0 bcn-0">
+            <div className="dc__position-sticky dc__top-0 bg__primary">
                 <div className="px-8 env-header-tab">
                     <TabGroup
                         tabs={[
@@ -246,7 +246,7 @@ export const MenuList = (props: any): JSX.Element => {
                 selectedAppList?.length > 0 &&
                 !selectedGroupFilter[0] && (
                     <div
-                        className="dc__react-select__bottom dc__no-top-radius dc__align-right bcn-0 fw-6 fs-13 cb-5 pt-8 pr-12 pb-8 pl-12 cursor"
+                        className="dc__react-select__bottom dc__no-top-radius dc__align-right bg__primary fw-6 fs-13 cb-5 pt-8 pr-12 pb-8 pl-12 cursor"
                         style={{ boxShadow: '0px 0px 4px rgba(0, 0, 0, 0.25)' }}
                     >
                         <span onClick={openCreateGroup}>Save selection as filter</span>

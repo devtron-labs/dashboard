@@ -771,7 +771,7 @@ const ManifestComponent = ({
             {!error && (
                 <div
                     className={`${
-                        manifestFormConfigurationType === ConfigurationType.GUI ? 'bcn-0' : ''
+                        manifestFormConfigurationType === ConfigurationType.GUI ? 'bg__primary' : ''
                     } flexbox-col flex-grow-1 dc__overflow-scroll h-100`}
                 >
                     {isResourceMissing && !loading && !showManifestCompareView ? (

@@ -321,7 +321,7 @@ const BulkCITrigger = ({
             return null
         }
         return (
-            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
+            <div className="flex flex-align-center flex-justify dc__border-bottom bg__primary pt-16 pr-20 pb-16 pl-20">
                 <div className="flex left dc__gap-12">
                     {isWebhookBulkCI && (
                         <Button
@@ -718,9 +718,9 @@ const BulkCITrigger = ({
                 {isWebhookBulkCI ? (
                     renderWebhookModal(selectedMaterialList)
                 ) : (
-                    <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
+                    <div className="sidebar bg__primary dc__height-inherit dc__overflow-auto">
                         <div
-                            className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom fw-6 fs-13 cn-9 p-12 "
+                            className="dc__position-sticky dc__top-0 bg__primary dc__border-bottom fw-6 fs-13 cn-9 p-12 "
                             style={{ zIndex: 1 }}
                         >
                             {RuntimeParamTabs ? (
@@ -784,7 +784,7 @@ const BulkCITrigger = ({
     const renderFooterSection = (): JSX.Element => {
         return (
             <div
-                className={`dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width ${
+                className={`dc__border-top flex right bg__primary pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width ${
                     !blobStorageConfigurationLoading && !blobStorageConfiguration?.result?.enabled
                         ? 'dc__content-space'
                         : ''

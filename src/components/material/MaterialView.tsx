@@ -167,7 +167,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
 
     regexInfoSteps = (): JSX.Element => {
         return (
-            <div data-testid="exclude-include-use-regex-info" className="w-500 h-380 fs-13 bcn-0">
+            <div data-testid="exclude-include-use-regex-info" className="w-500 h-380 fs-13 bg__primary">
                 <div className="h-365 dc__align-start p-12 dc__gap-12 dc__position-sticky dc__overflow-scroll">
                     <div className="w-476 h-112 flex column dc__align-start p-0 dc__gap-4">
                         {USE_REGEX_TIPPY_CONTENT.insructionsList.regexInfo.map((item, index) => (
@@ -621,7 +621,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
     renderGitProviderOptionsFooter = () => (
         <NavLink
             to={URLS.GLOBAL_CONFIG_GIT}
-            className="flex left dc__gap-8 dc__border-top bcn-0 px-8 py-10 cb-5 dc__block fw-6 fs-13 lh-20 anchor cursor dc__no-decor dc__hover-n50"
+            className="flex left dc__gap-8 dc__border-top bg__primary px-8 py-10 cb-5 dc__block fw-6 fs-13 lh-20 anchor cursor dc__no-decor dc__hover-n50"
         >
             <Add className="icon-dim-20 dc__no-shrink fcb-5" data-testid="add-git-account-option" />
             <span>Add Git Account</span>
@@ -712,7 +712,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 <TippyCustomized
                                     theme={TippyTheme.white}
                                     iconClass="fcv-5"
-                                    className="bcn-0 deafult-tt"
+                                    className="bg__primary deafult-tt"
                                     placement="bottom"
                                     Icon={Help}
                                     heading="Exclude file/folders"
@@ -784,7 +784,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 <TippyCustomized
                                                     theme={TippyTheme.white}
                                                     iconClass="fcv-5"
-                                                    className="dc__mxw-none w-505 bcn-0 dc__border-radius-8-imp tippy-box default-white tippy-shadow"
+                                                    className="dc__mxw-none w-505 bg__primary dc__border-radius-8-imp tippy-box default-white tippy-shadow"
                                                     heading={USE_REGEX_TIPPY_CONTENT.insructionsList.heading}
                                                     placement="bottom"
                                                     Icon={Help}

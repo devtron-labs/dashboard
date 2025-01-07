@@ -503,7 +503,7 @@ export class Command extends Component<CommandProps, CommandState> {
                                         className={
                                             this.state.focussedArgument === index
                                                 ? 'pl-20 pr-20 pt-6 pb-6 flexbox suggested-arguments__arg bcn-1 cursor'
-                                                : 'pl-20 pr-20 pt-6 pb-6 flexbox suggested-arguments__arg bcn-0 cursor'
+                                                : 'pl-20 pr-20 pt-6 pb-6 flexbox suggested-arguments__arg bg__primary cursor'
                                         }
                                     >
                                         <span>{a.value}</span>

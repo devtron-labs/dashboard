@@ -350,7 +350,7 @@ export default function BulkCDTrigger({
 
     const renderHeaderSection = (): JSX.Element => {
         return (
-            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
+            <div className="flex flex-align-center flex-justify dc__border-bottom bg__primary pt-16 pr-20 pb-16 pl-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">Deploy to {appList[0].envName}</h2>
                 <button
                     type="button"
@@ -715,8 +715,8 @@ export default function BulkCDTrigger({
 
         return (
             <div className="bulk-ci-trigger">
-                <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
-                    <div className="dc__position-sticky dc__top-0 pt-12 bcn-0 dc__zi-1">
+                <div className="sidebar bg__primary dc__height-inherit dc__overflow-auto">
+                    <div className="dc__position-sticky dc__top-0 pt-12 bg__primary dc__zi-1">
                         {showRuntimeParams && (
                             <div className="px-16 pb-8">
                                 <RuntimeParamTabs
@@ -751,7 +751,7 @@ export default function BulkCDTrigger({
                             </>
                         )}
                         <div
-                            className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom fw-6 fs-13 cn-7 py-8 px-16"
+                            className="dc__position-sticky dc__top-0 bg__primary dc__border-bottom fw-6 fs-13 cn-7 py-8 px-16"
                             style={{ zIndex: 0 }}
                         >
                             APPLICATIONS
@@ -849,7 +849,7 @@ export default function BulkCDTrigger({
     const renderFooterSection = (): JSX.Element => {
         const isDeployButtonDisabled: boolean = isDeployDisabled()
         return (
-            <div className="dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width">
+            <div className="dc__border-top flex right bg__primary pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width">
                 <div className="dc__position-rel tippy-over">
                     {!isDeployButtonDisabled && stage === DeploymentNodeType.CD && !isLoading ? (
                         <AnimatedDeployButton onButtonClick={onClickStartDeploy} isVirtualEnvironment={false} />

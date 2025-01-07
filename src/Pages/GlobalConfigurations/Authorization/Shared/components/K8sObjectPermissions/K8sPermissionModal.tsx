@@ -149,7 +149,7 @@ const K8sPermissionModal = ({
     return (
         <Drawer onEscape={close} position="right" width="800px">
             <div onClick={stopPropagation} className="h-100 h-100 flexbox-col flex-grow-1 dc__content-space">
-                <div className="flex pt-12 pb-12 pl-20 pr-20 dc__content-space bcn-0 dc__border-bottom">
+                <div className="flex pt-12 pb-12 pl-20 pr-20 dc__content-space bg__primary dc__border-bottom">
                     <span className="flex left fw-6 lh-24 fs-16">Kubernetes resource permission</span>
                     <span
                         className="icon-dim-20 cursor icon-use-fill-n6 flex"
@@ -187,7 +187,7 @@ const K8sPermissionModal = ({
                         />
                     ))}
                 </div>
-                <div className="w-100 pt-16 pb-16 pl-20 pr-20 flex right dc__gap-16 bcn-0 dc__border-top">
+                <div className="w-100 pt-16 pb-16 pl-20 pr-20 flex right dc__gap-16 bg__primary dc__border-top">
                     <Button
                         text="Cancel"
                         onClick={close}

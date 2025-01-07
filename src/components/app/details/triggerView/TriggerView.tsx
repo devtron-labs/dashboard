@@ -1441,7 +1441,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
         return (
             <>
-                <div className="svg-wrapper-trigger bcn-0">
+                <div className="svg-wrapper-trigger bg__primary">
                     <TriggerViewContext.Provider
                         value={{
                             invalidateCache: this.state.invalidateCache,

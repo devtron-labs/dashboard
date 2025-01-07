@@ -624,7 +624,7 @@ const GitForm = ({
     const renderGitHostBottom = () => {
         return (
             <button
-                className="flex left dc__gap-8 px-10 py-8 cb-5 cursor bcn-0 dc__react-select__bottom dc__border-top dc__transparent fw-6"
+                className="flex left dc__gap-8 px-10 py-8 cb-5 cursor bg__primary dc__react-select__bottom dc__border-top dc__transparent fw-6"
                 onClick={onClickAddGitAccountHandler}
             >
                 <Add className="icon-dim-20 fcb-5 dc__vertical-align-bottom" /> <span>Add Git Host</span>

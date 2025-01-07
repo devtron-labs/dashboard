@@ -802,7 +802,7 @@ export const Details: React.FC<DetailsType> = ({
                 </>
             )}
             {loadingResourceTree ? (
-                <div className="bcn-0 h-100">
+                <div className="bg__primary h-100">
                     <Progressing pageLoader fullHeight size={32} fillColor="var(--N500)" />
                 </div>
             ) : (

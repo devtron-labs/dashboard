@@ -574,7 +574,7 @@ const TestsChart = ({ testCount, disabledCount, errorCount, failureCount, skippe
 
     const passPercentage = (passedCount * 100) / testCount
     return (
-        <div className="bcn-0 br-8 en-2 bw-1 p-20 flex left top">
+        <div className="bg__primary br-8 en-2 bw-1 p-20 flex left top">
             <div className="flex left column top" style={{ width: '200px', height: '250px' }}>
                 <span className="fs-32 cg-5">{passPercentage.toFixed(2)}%</span>
                 <span className="cn-9 fw-3 fs-16">Pass percentage</span>
@@ -630,7 +630,7 @@ const TestsDuration: React.FC<{ timeAggregation: any }> = ({ timeAggregation }) 
         'number of tests': freq,
     }))
     return (
-        <div className="w-100 bcn-0 br-8 en-2 bw-1 p-20" style={{ height: '300px' }}>
+        <div className="w-100 bg__primary br-8 en-2 bw-1 p-20" style={{ height: '300px' }}>
             <ResponsiveContainer>
                 <BarChart data={data}>
                     <CartesianGrid strokeDasharray="3 3" />

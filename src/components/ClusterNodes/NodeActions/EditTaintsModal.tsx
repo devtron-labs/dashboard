@@ -180,8 +180,8 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
 
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            <div className="bcn-0 h-100">
-                <div className="flex flex-align-center flex-justify bcn-0 pt-16 pr-20 pb-16 pl-20 dc__border-bottom">
+            <div className="bg__primary h-100">
+                <div className="flex flex-align-center flex-justify bg__primary pt-16 pr-20 pb-16 pl-20 dc__border-bottom">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0">{`${EDIT_TAINTS_MODAL_MESSAGING.titlePrefix} '${name}'`}</h2>
                     <button type="button" className="dc__transparent flex icon-dim-24" onClick={onClose}>
                         <Close className="icon-dim-24" />

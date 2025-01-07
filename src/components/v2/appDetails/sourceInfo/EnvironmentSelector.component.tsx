@@ -284,7 +284,7 @@ const EnvironmentSelectorComponent = ({
                                             height: '24px',
                                         }),
                                     }}
-                                    className="bw-1 eb-2 br-4 bcn-0"
+                                    className="bw-1 eb-2 br-4 bg__primary"
                                     components={{
                                         IndicatorSeparator: null,
                                     }}
@@ -292,7 +292,7 @@ const EnvironmentSelectorComponent = ({
                             )}
                             {(!environments || environments.length === 0) && appDetails && (
                                 <div
-                                    className="bw-1 eb-2 br-4 bcn-0 pl-12 pr-12 pt-4 pb-4"
+                                    className="bw-1 eb-2 br-4 bg__primary pl-12 pr-12 pt-4 pb-4"
                                     style={{ minWidth: '200px' }}
                                     data-testid="env-name-app-details"
                                 >
@@ -378,7 +378,7 @@ const EnvironmentSelectorComponent = ({
                                     <Dots className="pod-info__dots icon-dim-20 icon-color-n6" />
                                 </PopupMenu.Button>
                                 <PopupMenu.Body>
-                                    <div className="helm-delete-pop-up bcn-0 br-4">
+                                    <div className="helm-delete-pop-up bg__primary br-4">
                                         {' '}
                                         <Popup />
                                     </div>

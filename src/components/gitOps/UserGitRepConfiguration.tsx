@@ -130,7 +130,7 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
     }
 
     return (
-        <div className="w-100 h-100 bcn-0 pt-16 flexbox-col">
+        <div className="w-100 h-100 bg__primary pt-16 flexbox-col">
             <div className="w-960">
                 <div className="fs-16 fcn-9 fw-6 ml-20 mb-8" data-testid="gitops-config-heading">
                     GitOps Configuration

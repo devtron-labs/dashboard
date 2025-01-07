@@ -104,7 +104,7 @@ export default function SavedVariablesView({
 
     return status?.status == null ? (
         <div
-            className="flex column h-100 dc__content-space bcn-0 saved-variables__default-view"
+            className="flex column h-100 dc__content-space bg__primary saved-variables__default-view"
             style={{
                 overflowY: 'hidden',
             }}

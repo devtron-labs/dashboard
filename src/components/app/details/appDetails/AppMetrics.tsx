@@ -279,7 +279,7 @@ export const AppMetrics: React.FC<{
     return (
         <section
             data-testid="app-metrices-wrapper"
-            className="app-summary bcn-0 pl-24 pr-24 pb-20 w-100 dc__border-bottom-n1"
+            className="app-summary bg__primary pl-24 pr-24 pb-20 w-100 dc__border-bottom-n1"
         >
             {(appMetrics || infraMetrics) && (
                 <div className="flex" style={{ justifyContent: 'space-between', height: '68px' }}>
@@ -523,7 +523,7 @@ const AppMetricsEmptyState = ({ isLoading, isConfigured, isHealthy, hostURLConfi
             'Datasource configuration is incorrect or prometheus is not healthy. Please review configuration and try reloading this page.'
     }
     return (
-        <div className="app-metrics-graph__empty-state-wrapper bcn-0 w-100 pt-18 pb-18 pl-20 pr-20 cursor">
+        <div className="app-metrics-graph__empty-state-wrapper bg__primary w-100 pt-18 pb-18 pl-20 pr-20 cursor">
             <div onClick={toggleHeader} className="flex left w-100 lh-20">
                 <span className="fs-14 fw-6 cn-7 flex left mr-16">
                     <GraphIcon className="mr-8 fcn-7 icon-dim-20" />

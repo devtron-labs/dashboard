@@ -124,7 +124,7 @@ export const ChartRepoSelector = ({
         return (
             <components.MenuList {...props}>
                 {props.children}
-                <div className="flex dc__react-select__bottom bcn-0">
+                <div className="flex dc__react-select__bottom bg__primary">
                     <div className="sticky-information__bottom">
                         <div className="sticky-information__icon mt-2">
                             <Info className="icon-dim-16" />

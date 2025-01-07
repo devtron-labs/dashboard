@@ -1827,7 +1827,7 @@ const DeploymentTemplate = ({
         }
 
         return (
-            <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-scroll bcn-0">
+            <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-scroll bg__primary">
                 {renderBody()}
 
                 {showDeleteOverrideDialog && (

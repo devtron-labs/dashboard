@@ -1239,7 +1239,7 @@ const CDMaterial = ({
                         _gitCommit.Message ||
                         _gitCommit.Date ||
                         _gitCommit.Commit) && (
-                        <div className="bcn-0 br-4 en-2 bw-1 m-12">
+                        <div className="bg__primary br-4 en-2 bw-1 m-12">
                             <GitCommitInfoGeneric
                                 index={index}
                                 materialUrl={mat.url}
@@ -1491,7 +1491,7 @@ const CDMaterial = ({
         }
 
         return (
-            <div className="flexbox-col bcn-0">
+            <div className="flexbox-col bg__primary">
                 {RuntimeParamTabs && (
                     <div className={`px-16 py-12 flex ${areTabsDisabled ? 'dc__disabled' : ''}`}>
                         <RuntimeParamTabs

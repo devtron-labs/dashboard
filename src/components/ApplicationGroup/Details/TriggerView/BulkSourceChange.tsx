@@ -83,7 +83,7 @@ export default function BulkSourceChange({
 
     const renderHeaderSection = (): JSX.Element | null => {
         return (
-            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
+            <div className="flex flex-align-center flex-justify dc__border-bottom bg__primary pt-16 pr-20 pb-16 pl-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">Change branch for {selectedAppCount} applications</h2>
                 <button
                     type="button"
@@ -162,7 +162,7 @@ export default function BulkSourceChange({
             minWidth={showResponseModal ? '1024px' : '600px'}
             maxWidth={showResponseModal ? '1200px' : '600px'}
         >
-            <div className="dc__window-bg h-100 bcn-0 bulk-ci-trigger-container" ref={sourceChangeDetailRef}>
+            <div className="dc__window-bg h-100 bg__primary bulk-ci-trigger-container" ref={sourceChangeDetailRef}>
                 {renderHeaderSection()}
                 {showResponseModal ? (
                     <SourceUpdateResponseModal
