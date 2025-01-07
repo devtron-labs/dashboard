@@ -1509,7 +1509,7 @@ const CDMaterial = ({
                     <span className="dc__uppercase cn-7 fs-12 fw-6 lh-20">Application</span>
                 </div>
 
-                <div className="flexbox dc__align-items-center px-16 py-12 dc__window-bg dc__border-bottom-n1">
+                <div className="flexbox dc__align-items-center px-16 py-12 bg__tertiary dc__border-bottom-n1">
                     <span className="cn-9 fs-13 fw-6 lh-16">{appName}</span>
                 </div>
             </div>

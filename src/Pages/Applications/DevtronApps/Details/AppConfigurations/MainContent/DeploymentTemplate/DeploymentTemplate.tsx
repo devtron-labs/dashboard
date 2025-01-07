@@ -1891,7 +1891,7 @@ const DeploymentTemplate = ({
     return (
         <>
             <div
-                className={`h-100 dc__window-bg ${showDraftComments ? 'deployment-template__comments-view' : 'flexbox'}`}
+                className={`h-100 bg__tertiary ${showDraftComments ? 'deployment-template__comments-view' : 'flexbox'}`}
             >
                 {renderDeploymentTemplate()}
 

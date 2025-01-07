@@ -761,7 +761,7 @@ export default function BulkCDTrigger({
                         <div
                             key={`app-${app.appId}`}
                             className={`p-16 cn-9 fw-6 fs-13 dc__border-bottom-n1 cursor w-100 ${
-                                app.appId === selectedApp.appId ? 'dc__window-bg' : ''
+                                app.appId === selectedApp.appId ? 'bg__tertiary' : ''
                             }`}
                             data-index={index}
                             onClick={changeApp}
@@ -771,7 +771,7 @@ export default function BulkCDTrigger({
                         </div>
                     ))}
                 </div>
-                <div className="main-content dc__window-bg dc__height-inherit w-100">
+                <div className="main-content bg__tertiary dc__height-inherit w-100">
                     {selectedApp.warningMessage || unauthorizedAppList[selectedApp.appId] ? (
                         renderEmptyView()
                     ) : (
@@ -871,7 +871,7 @@ export default function BulkCDTrigger({
 
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            <div className="dc__window-bg h-100 bulk-ci-trigger-container">
+            <div className="bg__tertiary h-100 bulk-ci-trigger-container">
                 {renderHeaderSection()}
                 {responseList.length ? (
                     <TriggerResponseModal

@@ -193,7 +193,7 @@ const WorkflowOptionsModal = ({
         >
             <div className="workflow-options-modal br-8 flexbox h-500 dc__overflow-scroll" onClick={stopPropagation}>
                 {/* Sidebar */}
-                <div className="flexbox-col w-250 pt-32 dc__window-bg dc__content-space">
+                <div className="flexbox-col w-250 pt-32 bg__tertiary dc__content-space">
                     {/* Info */}
                     <div className="flexbox-col dc__gap-6 dc__align-self-stretch pt-0 pb-0 pl-24 pr-24">
                         <h2 className="m-0 cn-9 fs-16 fw-6 lh-24">

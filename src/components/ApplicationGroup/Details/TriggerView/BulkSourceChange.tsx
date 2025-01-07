@@ -162,7 +162,7 @@ export default function BulkSourceChange({
             minWidth={showResponseModal ? '1024px' : '600px'}
             maxWidth={showResponseModal ? '1200px' : '600px'}
         >
-            <div className="dc__window-bg h-100 bg__primary bulk-ci-trigger-container" ref={sourceChangeDetailRef}>
+            <div className="bg__tertiary h-100 bg__primary bulk-ci-trigger-container" ref={sourceChangeDetailRef}>
                 {renderHeaderSection()}
                 {showResponseModal ? (
                     <SourceUpdateResponseModal

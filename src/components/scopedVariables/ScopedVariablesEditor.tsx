@@ -149,7 +149,7 @@ export default function ScopedVariablesEditor({
     return (
         <div className="flex column dc__content-space h-100 bg__primary saved-variables-editor">
             <Descriptor />
-            <div className="flexbox-col p-8 dc__align-start dc__gap-16 dc__align-self-stretch dc__window-bg flex-grow-1 dc__no-shrink">
+            <div className="flexbox-col p-8 dc__align-start dc__gap-16 dc__align-self-stretch bg__tertiary flex-grow-1 dc__no-shrink">
                 <div className="flexbox-col dc__content-space dc__align-start flex-grow-1 dc__no-shrink dc__align-self-stretch dc__border-radius-4-imp dc__border">
                     <div className="flexbox pt-8 pb-8 pl-12 pr-12 bg__primary dc__border-bottom dc__gap-16 dc__align-self-stretch dc__align-start dc__top-radius-4">
                         {setShowEditView ? (

@@ -294,7 +294,7 @@ export const GitInfoMaterial = ({
         const excludeIncludeEnv = !window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS
 
         return (
-            <div className="flex dc__content-space dc__position-sticky py-8 px-16 dc__top-0 dc__window-bg">
+            <div className="flex dc__content-space dc__position-sticky py-8 px-16 dc__top-0 bg__tertiary">
                 {renderBranchChangeHeader(_selectedMaterial)}
                 {!_selectedMaterial.isRepoError && !_selectedMaterial.isBranchError && (
                     <div className="flex right dc__gap-8">
@@ -314,7 +314,7 @@ export const GitInfoMaterial = ({
 
     const renderWebhookHeader = () =>
         selectedMaterial.type === SourceTypeMap.WEBHOOK && (
-            <div className="flex left cn-7 fs-13 fw-6 px-20 py-14 dc__gap-8 dc__window-bg dc__position-sticky dc__top-0">
+            <div className="flex left cn-7 fs-13 fw-6 px-20 py-14 dc__gap-8 bg__tertiary dc__position-sticky dc__top-0">
                 <Info className="icon-dim-16" />
                 <div className="flex left dc__gap-4 cn-9">
                     <span className="lh-20 cn-9">Showing results matching</span>

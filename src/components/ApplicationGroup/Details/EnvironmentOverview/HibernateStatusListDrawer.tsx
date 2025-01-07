@@ -128,7 +128,7 @@ export default function HibernateStatusListDrawer({
 
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            <div className="dc__window-bg h-100 bulk-ci-trigger-container">
+            <div className="bg__tertiary h-100 bulk-ci-trigger-container">
                 {renderHeaderSection()}
                 {renderBody()}
             </div>

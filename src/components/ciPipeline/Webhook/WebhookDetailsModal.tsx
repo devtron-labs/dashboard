@@ -944,7 +944,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
 
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            <div className="dc__window-bg h-100 webhook-details-container" ref={appStatusDetailRef}>
+            <div className="bg__tertiary h-100 webhook-details-container" ref={appStatusDetailRef}>
                 {renderHeaderSection()}
                 {renderPageDetails()}
             </div>

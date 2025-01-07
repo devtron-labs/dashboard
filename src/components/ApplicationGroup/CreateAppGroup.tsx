@@ -491,7 +491,7 @@ export default function CreateAppGroup({
 
     return (
         <Drawer position="right" width="800px" onEscape={closePopup}>
-            <div className="dc__window-bg h-100 flexbox-col" ref={CreateGroupRef}>
+            <div className="bg__tertiary h-100 flexbox-col" ref={CreateGroupRef}>
                 {renderHeaderSection()}
                 {renderBodySection()}
                 {renderFooterSection()}

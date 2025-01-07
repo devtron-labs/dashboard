@@ -363,7 +363,7 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
 
     return (
         <Drawer position="right" width="1024px">
-            <div className="dc__window-bg h-100 rotate-pods-container">{renderRotateModal()}</div>
+            <div className="bg__tertiary h-100 rotate-pods-container">{renderRotateModal()}</div>
         </Drawer>
     )
 }

@@ -742,7 +742,7 @@ const BulkCITrigger = ({
                         {appList.map((app, index) => (
                             <div
                                 className={`material-list pr-12 pl-12 pb-12 ${
-                                    app.appId === selectedApp.appId ? 'dc__window-bg' : 'dc__border-bottom-n1 cursor'
+                                    app.appId === selectedApp.appId ? 'bg__tertiary' : 'dc__border-bottom-n1 cursor'
                                 }`}
                                 key={`app-${app.appId}`}
                             >
@@ -752,7 +752,7 @@ const BulkCITrigger = ({
                         ))}
                     </div>
                 )}
-                <div className="main-content dc__window-bg dc__height-inherit">
+                <div className="main-content bg__tertiary dc__height-inherit">
                     {renderMainContent(selectedMaterialList)}
                 </div>
             </div>
@@ -832,7 +832,7 @@ const BulkCITrigger = ({
 
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            <div className="dc__window-bg h-100 bulk-ci-trigger-container">
+            <div className="bg__tertiary h-100 bulk-ci-trigger-container">
                 {renderHeaderSection()}
                 {responseList.length ? (
                     <TriggerResponseModal

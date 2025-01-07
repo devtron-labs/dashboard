@@ -220,7 +220,7 @@ export const MenuList = (props: any): JSX.Element => {
                         size={ComponentSizeType.medium}
                     />
                 </div>
-                <div className="flex flex-justify dc__window-bg w-100 pt-6 pr-8 pb-6 pl-8">
+                <div className="flex flex-justify bg__tertiary w-100 pt-6 pr-8 pb-6 pl-8">
                     <span className="fs-12 fw-6 cn-9">
                         Working with {selectedAppList?.length > 0 ? selectedAppList.length : appListOptions.length}/
                         {appListOptions?.length} {selectedType}
