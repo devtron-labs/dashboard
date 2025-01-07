@@ -37,7 +37,7 @@ export const ConfigurationTabSwitcher = () => {
                     <button
                         type="button"
                         data-testid={`tab-${tab.link}`}
-                        className={`tab-group__tab dc__unset-button-styles flexbox dc__gap-1 ${index === 0 ? 'dc__left-radius-4 ' : ''} ${index === getConfigurationTabTextWithIcon().length - 1 ? 'dc__right-radius-4' : ''} } ${activeTab === tab.link ? 'bcn-1' : 'bcn-0'}`}
+                        className={`tab-group__tab dc__unset-button-styles flexbox dc__gap-1 ${index === 0 ? 'dc__left-radius-4 ' : ''} ${index === getConfigurationTabTextWithIcon().length - 1 ? 'dc__right-radius-4' : ''} } ${activeTab === tab.link ? 'bcn-1 fw-6' : 'bcn-0'}`}
                         key={tab.link}
                         onClick={handleTabClick(tab.link)}
                     >

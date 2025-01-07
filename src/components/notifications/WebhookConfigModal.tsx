@@ -131,7 +131,7 @@ export const WebhookConfigModal = ({
                     data-testid={`${webhookAttribute[attribute]}-${index}`}
                     key={`${attribute}`}
                 >
-                    <p className="bcn-1 br-6 fs-14 lh-20 px-4 dc__ff-monospace m-0">{webhookAttribute[attribute]}</p>
+                    <p className="bcn-1 br-6 fs-14 lh-20 px-4 mono m-0">{webhookAttribute[attribute]}</p>
                     <div className="flex dc__visible-hover--child">
                         <ClipboardButton content={webhookAttribute[attribute]} />
                     </div>
