@@ -18,7 +18,7 @@
     display: flex;
     height: 100vh;
     min-height: 600px;
-    background-color: var(--N0);
+    background-color: var(--white);
 }
 
 .login__bg {
@@ -83,7 +83,7 @@
     background-color: var(--B500);
 
     &:hover {
-        background-color: #0558af;
+        background-color: var(--B600);
     }
 
     &:disabled {

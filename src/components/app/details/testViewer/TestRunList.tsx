@@ -175,7 +175,7 @@ const TriggerList: React.FC<{ selectedNames: SelectedNames; startDate; endDate }
         skippedCount: 'var(--N200)',
         errorCount: 'var(--R500)',
         failureCount: 'var(--Y500)',
-        disabledCount: '#58508d',
+        disabledCount: 'var(--B700)',
         unknownCount: 'var(--Y500)',
         successCount: 'var(--G500)',
     }

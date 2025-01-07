@@ -181,10 +181,10 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     className="color-path"
                     d="M520 56 L 580 56"
                     fill="transparent"
-                    stroke="rgba(150,150,150)"
+                    stroke="var(--N400)"
                     strokeWidth="2"
                 />
-                <path d="M575 56 L 555 46 L 565 56 L 555 66 Z" fill="rgba(100,100,100)" />
+                <path d="M575 56 L 555 46 L 565 56 L 555 66 Z" fill="var(--N600)" />
             </g>
         )
     }

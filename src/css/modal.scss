@@ -138,7 +138,7 @@
     &.show-with-bg {
         -webkit-backdrop-filter: blur(1px);
         backdrop-filter: blur(1px);
-        background-color: rgba(0, 6, 13, 0.8);
+        background-color: var(--backdrop-bg);
         visibility: visible;
         opacity: 1;
     }

@@ -100,7 +100,7 @@
 }
 
 .SingleDatePickerInput__withBorder .DayPicker .CalendarDay[aria-disabled='true'] {
-    border: 1px solid rgb(228, 231, 231) !important;
-    color: rgb(202, 204, 205) !important;
-    background: rgb(255, 255, 255) !important;
+    border: 1px solid var(--N100) !important;
+    color: var(--N200) !important;
+    background: var(--N0) !important;
 }

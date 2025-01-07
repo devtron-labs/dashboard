@@ -39,7 +39,7 @@
     .tag {
         height: 20px;
         border-radius: 2px;
-        border: solid 1px #b5d3f2;
+        border: solid 1px var(--B200);
         background-blend-mode: multiply;
         background-image: linear-gradient(to bottom, var(--B50), var(--B50));
         color: var(--B500);

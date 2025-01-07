@@ -983,10 +983,6 @@ table.pod__table td:last-child {
         }
     }
 
-    .events-logs__events-table-row {
-        width: 100%;
-    }
-
     .events-logs__event,
     .events-logs__log {
         color: var(--N0);
@@ -994,30 +990,7 @@ table.pod__table td:last-child {
         font-size: 12px;
         margin-bottom: 0px;
     }
-
-    .events-logs__events-table {
-        width: 100%;
-        padding: 0 20px;
-
-        .events-logs__events-table-row {
-            display: grid;
-            grid-template-columns: 180px auto 50px 140px;
-            grid-column-gap: 60px;
-            grid-auto-rows: minmax(56px, max-content);
-            justify-items: start;
-            align-items: center;
-
-            // margin: 12px 0;
-            &.header {
-                font-weight: 600;
-                position: sticky;
-                top: 0;
-                background: #0b0f22;
-                grid-template-rows: 32px;
-            }
-        }
-    }
-
+    
     .events-logs__title-container {
         display: flex;
         justify-content: space-between;
@@ -1473,17 +1446,6 @@ table.pod__table td:last-child {
     }
 }
 
-.pod-manifest-status {
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background: #0b0f22;
-    color: var(--N0);
-    border: unset;
-    resize: none;
-    padding: 20px;
-}
-
 table.trigger-history {
     width: 100%;
     margin: unset;
@@ -1493,7 +1455,7 @@ table.trigger-history {
             th {
                 position: sticky;
                 top: 0;
-                background: #e5e5e5;
+                background: var(--N100);
             }
         }
     }

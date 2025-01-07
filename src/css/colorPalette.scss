@@ -17,6 +17,7 @@
 :root {
     --white: #fff;
     --terminal-bg: #0b0f22;
+    --backdrop-bg: #000000bf;
 
     &.theme {
         &__light {
@@ -68,6 +69,7 @@
             --R100: #fde7e7;
             --R50: #fdf0f0;
             --O700: #b23412;
+            --O600: #e55e39;
             --O500: #ff7e5b;
             --O200: #ffbead;
             --O100: #ffe5de;
@@ -76,6 +78,7 @@
             // Custom colors
             --window-bg: #f2f4f7;
             --pipeline-trigger-type-bg: #a5a7bf;
+            --bulk-selection-widget-bg: #f0f7ffb8;
         }
 
         &__dark {
@@ -127,12 +130,16 @@
             --R100: #331313;
             --R50: #1a090a;
             --O700: #ffb29d;
+            --O600: #ff987c;
             --O500: #ff7e5b;
             --O200: #663224;
             --O100: #331912;
             --O50: #1a0d09;
+
+            // Custom colors
             --window-bg: #1b1d2a;
             --pipeline-trigger-type-bg: #44465A;
+            --bulk-selection-widget-bg: #1f212452;
         }
     }
 }

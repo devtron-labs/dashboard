@@ -165,8 +165,8 @@ export default class LineChart extends Component<LineChartProps> {
             .datum(dataset)
             .attr('class', 'line')
             .attr('d', line)
-            .attr('stroke', '#363636')
-            .attr('stroke', 'rgb(236, 122, 8)')
+            .attr('stroke', 'var(--N700)')
+            .attr('stroke', 'var(--O600)')
             .attr('stroke-width', '2')
             .attr('fill', 'none')
 
@@ -198,8 +198,8 @@ export default class LineChart extends Component<LineChartProps> {
             })
             .attr('r', '3')
             .attr('stroke-width', '1')
-            .attr('stroke', 'rgb(236, 122, 8)')
-            .attr('fill', 'rgb(236, 122, 8)')
+            .attr('stroke', 'var(--O600)')
+            .attr('fill', 'var(--O600)')
 
         hoverElement
             .on('mouseover', function (d) {
@@ -208,7 +208,7 @@ export default class LineChart extends Component<LineChartProps> {
                     .attr('r', '5')
                     .attr('stroke-width', '2')
                     .attr('stroke', 'var(--N0)')
-                    .attr('fill', 'rgb(236, 122, 8)')
+                    .attr('fill', 'var(--O600)')
 
                 mouseLine
                     .attr('x1', `${xScale(d.time)}`)
@@ -235,8 +235,8 @@ export default class LineChart extends Component<LineChartProps> {
                     .select('circle')
                     .attr('r', '3')
                     .attr('stroke-width', '1')
-                    .attr('stroke', 'rgb(236, 122, 8)')
-                    .attr('fill', 'rgb(236, 122, 8)')
+                    .attr('stroke', 'var(--O600)')
+                    .attr('fill', 'var(--O600)')
             })
     }
 

@@ -55,10 +55,6 @@
     display: table-row;
 }
 
-.events-logs__events-table-row {
-    width: 100%;
-}
-
 .events-logs__event,
 .events-logs__log {
     color: var(--N0);
@@ -67,28 +63,6 @@
     margin-bottom: 0px;
 }
 
-.events-logs__events-table {
-    width: 100%;
-    padding: 0 20px;
-
-    .events-logs__events-table-row {
-        display: grid;
-        grid-template-columns: 180px auto 50px 180px;
-        grid-auto-rows: minmax(56px, max-content);
-        justify-items: start;
-        align-items: center;
-
-        &.event-header {
-            background: #0b0f22;
-            grid-template-rows: 20px;
-            box-shadow: inset 0 -1px 0 0 #2c3354;
-        }
-
-        &.event__row-bc {
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-    }
-}
 .log-viewer__prev-container {
     font-size: 12px;
     color: var(--N900);
@@ -186,7 +160,7 @@
         }
     }
     &.alternate-row {
-        background: #171b2d;
+        background: var(--N800);
     }
 }
 

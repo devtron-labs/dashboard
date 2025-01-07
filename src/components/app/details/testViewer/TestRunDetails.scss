@@ -318,13 +318,13 @@ li.suite-meta {
             background-color: var(--R500);
         }
         &.skippedCount {
-            background-color: #d8d8d8;
+            background-color: var(--N200);
         }
         &.errorCount {
             background-color: var(--Y500);
         }
         &.unknownCount {
-            background-color: #58508d;
+            background-color: var(--B700);
         }
 
         &.disabledCount {

@@ -397,19 +397,6 @@ p.sentence-case:first-letter {
     color: var(--N400);
 }
 
-.copy-button {
-    background-color: #2c3354;
-    border: none;
-    padding: 6px;
-    border-radius: 2px;
-    display: inline-flex;
-}
-
-.copy-button--icon path[fill='black'] {
-    fill: var(--N0);
-    display: inline-flex;
-}
-
 .typeahead {
     position: relative;
 }
@@ -565,7 +552,7 @@ p.sentence-case:first-letter {
 .search__icon {
     position: absolute;
     z-index: 1;
-    color: #9c9c9c;
+    color: var(--N400);
     top: 50%;
     left: 8px;
     transform: translateY(-50%);
@@ -638,10 +625,6 @@ p.sentence-case:first-letter {
     background-color: var(--N100);
     border: solid 1px var(--N200);
     cursor: not-allowed;
-}
-
-.copy-button:hover {
-    background-color: #0b0f22;
 }
 
 .form__label.form__label--sentence {

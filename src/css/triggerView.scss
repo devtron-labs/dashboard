@@ -44,7 +44,7 @@
 }
 
 .material-list__title--border-bottom {
-    border-bottom: solid 1px #dedede;
+    border-bottom: solid 1px var(--N200);
 }
 
 .material-list__item {
@@ -409,7 +409,7 @@
 
 .trigger-btn {
     &:hover {
-        background-color: #0558af;
+        background-color: var(--B600);
     }
 }
 

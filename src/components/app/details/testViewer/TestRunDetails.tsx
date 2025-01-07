@@ -567,7 +567,7 @@ const TestsChart = ({ testCount, disabledCount, errorCount, failureCount, skippe
         skipped: 'var(--N200)',
         error: 'var(--R500)',
         failures: 'var(--Y500)',
-        disabled: '#58508d',
+        disabled: 'var(--B700)',
         unknown: 'var(--Y500)',
         passed: 'var(--G500)',
     }

@@ -150,12 +150,6 @@
     margin-bottom: 24px;
 }
 
-.copy-button--ext-ci {
-    position: absolute;
-    top: 32px;
-    right: 5px;
-}
-
 .ci-stage__title {
     font-size: 16px;
     font-weight: 600;
@@ -193,7 +187,7 @@
     }
 
     .code-editor__shebang {
-        color: #e00000;
+        color: var(--R500);
         opacity: 1;
     }
 }
