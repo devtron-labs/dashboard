@@ -1497,8 +1497,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         appId: Number(currentAppId),
                         stageType: bulkTriggerType,
                         ...(
-                            getRuntimeParamsPayload && runtimeParams[currentAppId]
-                                ? { runtimeParamsPayload: getRuntimeParamsPayload(runtimeParams[currentAppId])}
+                            getRuntimeParamsPayload
+                                ? { runtimeParamsPayload: getRuntimeParamsPayload(runtimeParams[currentAppId] ?? [])}
                                 : {}
                         ),
                     }),

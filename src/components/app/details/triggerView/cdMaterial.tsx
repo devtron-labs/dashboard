@@ -888,8 +888,8 @@ const CDMaterial = ({
                 wfrId,
                 abortControllerRef: abortDeployRef,
                 ...(
-                    getRuntimeParamsPayload && runtimeParamsList
-                        ? { runtimeParamsPayload: getRuntimeParamsPayload(runtimeParamsList) }
+                    getRuntimeParamsPayload
+                        ? { runtimeParamsPayload: getRuntimeParamsPayload(runtimeParamsList ?? []) }
                         : {}
                 )
             })
