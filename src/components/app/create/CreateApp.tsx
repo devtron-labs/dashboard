@@ -319,11 +319,11 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     _multiSelectStyles = {
         ...multiSelectStyles,
         control: (base, state) => ({
-            ...base,
+            ...multiSelectStyles.control(base, state),
             cursor: 'pointer',
         }),
         menu: (base, state) => ({
-            ...base,
+            ...multiSelectStyles.menu(base, state),
             marginTop: 'auto',
         }),
         menuList: (base) => {
