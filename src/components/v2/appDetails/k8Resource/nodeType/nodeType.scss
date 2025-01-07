@@ -19,7 +19,7 @@
     box-shadow: inset 0 -1px 0 0 var(--N100);
     position: sticky;
     top: 0;
-    background: var(--N0);
+    background: var(--bg-primary);
 }
 
 .generic-body>.row:hover {
@@ -62,7 +62,7 @@
         color: var(--B500);
     }
 
-    background-color: var(--N50);
+    background-color: var(--bg-secondary);
 
     .node__tabs {
         width: 100%;
@@ -107,7 +107,7 @@
 }
 
 .resource-tree__nodes:hover {
-    background-color: var(--N50);
+    background-color: var(--bg-secondary);
     color: var(--N900);
 }
 
@@ -136,7 +136,7 @@
     position: sticky;
     top: 0;
     z-index: 2;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
 }
 
 .resource-force-delete {

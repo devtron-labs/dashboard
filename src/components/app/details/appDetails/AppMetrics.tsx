@@ -466,7 +466,7 @@ const EnableAppMetrics = () => {
         <div
             data-testid="app-metrices-not-enabled"
             className="flex column br-4"
-            style={{ gridColumn: '3 / span 2', background: 'var(--window-bg)' }}
+            style={{ gridColumn: '3 / span 2', background: 'var(--bg-tertiary)' }}
         >
             <b className="mb-12 fs-12 fw-6 cn-9">Throughput & Latency</b>
             <span className="mb-12 fs-12 cn-7" style={{ width: '200px' }}>

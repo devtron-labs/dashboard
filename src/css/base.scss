@@ -46,7 +46,7 @@ body {
         Cantarell,
         'Helvetica Neue',
         sans-serif;
-    background: var(--window-bg);
+    background: var(--bg-tertiary);
 
     a {
         color: var(--B500);
@@ -133,7 +133,7 @@ a:focus {
     display: grid;
     grid-template-columns: 1fr auto;
     grid-template-rows: 1fr;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     color: var(--N900);
     z-index: var(--page-header-index);
     border-bottom: 1px solid var(--N200);
@@ -545,7 +545,7 @@ a:focus {
 //remove
 .form {
     margin: 0px;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
 }
 
 .form__row--two-third {
@@ -592,7 +592,7 @@ a:focus {
 .popup {
     position: fixed;
     z-index: var(--modal-index);
-    background: var(--N0);
+    background: var(--bg-primary);
     border-radius: 4px;
     box-shadow: 0 2px 4px 0 rgba(21, 21, 21, 0.3);
 
@@ -674,7 +674,7 @@ a:focus {
     .white-card {
         border-radius: 4px;
         border: solid 1px var(--N100);
-        background-color: var(--N0);
+        background-color: var(--bg-primary);
     }
 }
 
@@ -879,13 +879,13 @@ button.anchor {
 }
 
 .dc__no-apps {
-    background-color: var(--window-bg);
+    background-color: var(--bg-tertiary);
     min-height: calc(100vh - 160px);
     padding-top: 70px;
 }
 
 .no-results {
-    background-color: var(--window-bg);
+    background-color: var(--bg-tertiary);
     height: calc(100vh - 250px);
     padding-top: 50px;
 }
@@ -953,7 +953,7 @@ button.anchor {
     user-select: none;
     display: inline-flex;
     align-items: center;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
 }
 
 .dc__ses_config-table__tag {
@@ -973,7 +973,7 @@ button.anchor {
 
 .dc__saved-filter__clear-btn--dark {
     height: 36px;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     color: var(--B500);
     border: solid 1px var(--B500);
     border-radius: 4px;
@@ -1395,7 +1395,7 @@ button.anchor {
         input[type='checkbox']:checked+.radio__item-label {
             border-radius: 0;
             color: var(--N900);
-            background-color: var(--N0);
+            background-color: var(--bg-primary);
 
             svg path {
                 stroke: var(--N900);
@@ -1403,7 +1403,7 @@ button.anchor {
         }
 
         .radio {
-            background: var(--window-bg);
+            background: var(--bg-tertiary);
             color: var(--N500);
 
             svg path {
@@ -1548,7 +1548,7 @@ button.anchor {
     line-height: 1.6;
     color: var(--N900);
     border: 1px solid var(--N200);
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
 
     &.no-content-padding {
         .tippy-content {
@@ -1702,7 +1702,7 @@ button.anchor {
 
 .dc__app-commmit__body {
     border-radius: 4px;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     width: 400px;
     box-shadow: 0 4px 8px -2px rgba(0, 56, 112, 0.2);
     padding: 16px;
@@ -1872,7 +1872,7 @@ button.anchor {
     height: 100%;
     border-right: solid 1px var(--N200);
     padding: 16px;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
 }
 
 .dc__secondary-nav__item {
@@ -1934,7 +1934,7 @@ button.anchor {
 .saved-filter {
     border-radius: 4px;
     border: solid 1px var(--N500);
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     font-size: 12px;
     font-weight: normal;
     font-style: normal;
@@ -1955,7 +1955,7 @@ button.anchor {
     color: var(--N500);
     border: none;
     padding: 1px;
-    background-color: var(--N50);
+    background-color: var(--bg-secondary);
 }
 
 .saved-filter__clear-btn {
@@ -1966,11 +1966,11 @@ button.anchor {
     border: 1px solid var(--B500);
     padding: 6px 12px;
     margin: 2px;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
 }
 
 .saved-filters__clear-btn {
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     text-transform: capitalize;
     font-size: 12px;
     font-weight: 600;
@@ -2509,7 +2509,7 @@ button.anchor {
 }
 
 .white-background {
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
 }
 
 .light-gray-background {
@@ -2739,7 +2739,7 @@ button.anchor {
 input,
 textarea,
 .bc-n50 {
-    background-color: var(--N50);
+    background-color: var(--bg-secondary);
 }
 
 .bc-b50 {
@@ -4109,7 +4109,7 @@ textarea,
 
 // background
 .dc__window-bg {
-    background: var(--window-bg);
+    background: var(--bg-tertiary);
 }
 
 .dc__no-background {
@@ -4383,7 +4383,7 @@ textarea::placeholder {
 
 .dc__hover-n50:hover,
 .dc__bg-n50 {
-    background-color: var(--N50);
+    background-color: var(--bg-secondary);
 }
 
 .dc__bg-g5 {
@@ -4395,7 +4395,7 @@ textarea::placeholder {
 }
 
 .dc__hover-n0:hover {
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
 }
 
 .dc__hover-b500:hover {
@@ -4712,7 +4712,7 @@ textarea::placeholder {
     text-transform: capitalize;
     line-height: 36px;
     text-align: center;
-    background: var(--N0);
+    background: var(--bg-primary);
     color: var(--B500);
     border: 1px solid var(--N200);
     cursor: pointer;
@@ -4915,7 +4915,7 @@ textarea::placeholder {
 .dc__even-child {
     &--bcn-50 {
         > :nth-child(even) {
-            background-color: var(--N50);
+            background-color: var(--bg-secondary);
         }
     }
 }
@@ -4937,7 +4937,7 @@ textarea::placeholder {
 .dc__even-child {
     &--bcn-50 {
         > :nth-child(even) {
-            background-color: var(--N50);
+            background-color: var(--bg-secondary);
         }
     }
 }
@@ -4945,7 +4945,7 @@ textarea::placeholder {
 .dc__odd-child {
     &--sibling-bcn-50 {
         &:nth-child(odd) {
-            background-color: var(--N50);
+            background-color: var(--bg-secondary);
         }
     }
 }
@@ -5049,7 +5049,7 @@ textarea::placeholder {
     &:hover {
         color: var(--N700);
         text-decoration: none;
-        background: var(--N50);
+        background: var(--bg-secondary);
     }
 
     &__text {

@@ -46,7 +46,7 @@
         }
 
         .tab-search-select__open-tabs {
-            background-color: var(--window-bg);
+            background-color: var(--bg-tertiary);
         }
 
         .tab-search-select__control {
@@ -129,7 +129,7 @@
             border-bottom: 2px solid var(--N0);
             border-left: 1px solid var(--N200);
             border-right: 1px solid var(--N200);
-            background-color: var(--N0);
+            background-color: var(--bg-primary);
 
             + .dynamic-tab__border {
                 display: none;

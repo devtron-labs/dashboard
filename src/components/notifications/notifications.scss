@@ -103,21 +103,21 @@
 }
 
 .notification-page__header {
-    background: var(--N0);
+    background: var(--bg-primary);
     padding: 16px 24px 0;
     border-bottom: 1px solid var(--N200);
 }
 
 .notification-tab {
     padding: 0px 20px 16px 20px;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     height: 100%;
     width: 100%;
 }
 
 .kebab-menu__sticky-bottom {
     padding: 16px 20px;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     height: 100%;
     box-shadow: 0 -1px 0 0 var(--N200);
 }
@@ -163,7 +163,7 @@
     box-shadow: inset 0 -1px 0 0 var(--N100);
 
     &:hover {
-        background-color: var(--window-bg);
+        background-color: var(--bg-tertiary);
     }
 }
 
@@ -237,7 +237,7 @@
 .configuration-tab__table-row:hover .slack-config-table__action,
 .configuration-tab__table-row:hover .ses-config-table__action {
     display: flex;
-    background-color: var(--window-bg);
+    background-color: var(--bg-tertiary);
 }
 
 .kebab-menu__list--notification-tab {
@@ -248,7 +248,7 @@
     position: absolute;
     width: 100%;
     z-index: 6;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     top: 44px;
     border-radius: 4px;
     box-shadow: 0 2px 4px 0 rgba(21, 21, 21, 0.3);
@@ -262,7 +262,7 @@
     align-items: center;
     padding-left: 12px;
     padding-right: 12px;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     position: sticky;
     bottom: 0px;
     box-shadow: 0 -1px 0 0 var(--N200);
@@ -271,7 +271,7 @@
 .pipeline-filter__select-pipeline {
     position: relative;
     width: 100%;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     min-height: 44px;
     display: flex;
     align-items: center;

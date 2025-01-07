@@ -231,7 +231,7 @@ const ManageRegistry = ({
                         ...base,
                         border: `1px solid var(--N200)`,
                         borderRadius: `4px`,
-                        background: 'var(--N0)',
+                        background: 'var(--bg-primary)',
                         height: '30px',
                         margin: '0 8px 0 0',
                         padding: '1px',
@@ -277,7 +277,7 @@ const ManageRegistry = ({
                             ...base,
                             border: `1px solid var(--N200)`,
                             borderRadius: `4px`,
-                            background: 'var(--N0)',
+                            background: 'var(--bg-primary)',
                             height: '30px',
                             margin: '0 8px 0 0',
                             padding: '1px',
@@ -335,7 +335,7 @@ const ManageRegistry = ({
         <div className="en-2 bw-1 br-4 fs-13 mb-20">
             <div
                 className="p-16 dc__border-bottom flex dc__content-space"
-                style={{ backgroundColor: 'var(--N50)' }}
+                style={{ backgroundColor: 'var(--bg-secondary)' }}
                 onClick={onClickHideManageModal}
             >
                 <div className="flex left">

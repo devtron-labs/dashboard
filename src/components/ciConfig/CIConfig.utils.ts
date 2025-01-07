@@ -53,7 +53,7 @@ export const tempMultiSelectStyles = {
             ...base,
             border: `1px solid var(--N200)`,
             borderRadius: `4px`,
-            background: 'var(--N0)',
+            background: 'var(--bg-primary)',
             height: '28px',
             marginRight: '8px',
             padding: '2px',

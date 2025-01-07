@@ -30,7 +30,7 @@
 
 .tooltip-graph {
     border: solid 1px var(--N200);
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     color: var(--N700);
     display: none;
     position: absolute;

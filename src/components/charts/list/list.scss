@@ -147,7 +147,7 @@
     display: grid;
     grid-row-gap: 16px;
     overflow: auto;
-    background: var(--N0);
+    background: var(--bg-primary);
     width: 100%;
     padding: 16px;
     height: 100%;
@@ -312,7 +312,7 @@
     width: 100%;
     margin: 0 auto;
     padding: 24px 87px;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
 
     .half {
         width: 50%;
@@ -391,7 +391,7 @@
         max-height: 100%;
         display: grid;
         grid-template-rows: 1fr auto;
-        background: var(--N0);
+        background: var(--bg-primary);
         flex-shrink: 0;
         flex-basis: 320px;
         border-left: 1px solid var(--N200);
@@ -440,7 +440,7 @@
     height: calc(100vh - 100px);
     width: calc(100vw - 100px);
     margin: 40px 50px 60px 50px;
-    background: var(--N0);
+    background: var(--bg-primary);
     border-radius: 8px;
     padding: 24px 24px 12px 24px;
     display: grid;
@@ -577,7 +577,7 @@
 
 .filter-column-container {
     max-height: 100%;
-    background: var(--N0);
+    background: var(--bg-primary);
     flex-shrink: 0;
     flex-basis: 240px;
     border-right: 1px solid var(--N200);
@@ -632,7 +632,7 @@
 
 .add-repo-row:hover,
 .list:hover {
-    background-color: var(--N50);
+    background-color: var(--bg-secondary);
 }
 
 .accordian-add-position {

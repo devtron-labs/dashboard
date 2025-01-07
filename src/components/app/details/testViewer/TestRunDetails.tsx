@@ -324,7 +324,7 @@ const Properties = ({ testSuiteId, testSuitesId, hideDrawer }) => {
         return <Progressing pageLoader />
     }
     return (
-        <div className="testcase--detail" style={{ width: '800px', background: 'var(--N0)', height: '100%' }}>
+        <div className="testcase--detail" style={{ width: '800px', background: 'var(--bg-primary)', height: '100%' }}>
             {loading ? (
                 <Progressing pageLoader />
             ) : (
@@ -368,7 +368,7 @@ const SystemOutput = ({ testSuiteId, testSuitesId, hideDrawer }) => {
         hideDrawer()
     }
     return (
-        <div className="testcase--detail testsuite" style={{ width: '800px', background: 'var(--N0)', height: '100%' }}>
+        <div className="testcase--detail testsuite" style={{ width: '800px', background: 'var(--bg-primary)', height: '100%' }}>
             {loading ? (
                 <Progressing pageLoader />
             ) : (
@@ -395,7 +395,7 @@ const SystemError = ({ testSuiteId, testSuitesId, hideDrawer }) => {
         hideDrawer()
     }
     return (
-        <div className="testcase--detail testsuite" style={{ width: '800px', background: 'var(--N0)', height: '100%' }}>
+        <div className="testcase--detail testsuite" style={{ width: '800px', background: 'var(--bg-primary)', height: '100%' }}>
             {loading ? (
                 <Progressing pageLoader />
             ) : (
@@ -475,7 +475,7 @@ const TestCaseStatus = ({ testcaseId = 0, testSuitesId, testSuiteId, hideDrawer 
     }, [loading])
 
     return (
-        <div className="testcase--detail" style={{ width: '800px', background: 'var(--N0)', height: '100%' }}>
+        <div className="testcase--detail" style={{ width: '800px', background: 'var(--bg-primary)', height: '100%' }}>
             {loading ? (
                 <Progressing pageLoader />
             ) : (

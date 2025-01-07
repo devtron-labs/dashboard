@@ -626,7 +626,7 @@ export const Details: React.FC<DetailsType> = ({
                         <EnvSelector
                             environments={environments}
                             disabled={params.envId && !showCommitInfo}
-                            controlStyleOverrides={{ backgroundColor: 'var(--N0)' }}
+                            controlStyleOverrides={{ backgroundColor: 'var(--bg-primary)' }}
                         />
                         {isAppDeleted && appDetails?.deploymentAppDeleteRequest && (
                             <div data-testid="deleteing-argocd-pipeline" className="flex left">
@@ -910,7 +910,7 @@ export const EnvSelector = ({
         control: (base, state) => ({
             ...base,
             border: '1px solid var(--B500)',
-            backgroundColor: 'var(--N0)',
+            backgroundColor: 'var(--bg-primary)',
             minHeight: '32px',
             height: '32px',
             cursor: state.isDisabled ? 'not-allowed' : 'pointer',

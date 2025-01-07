@@ -32,7 +32,7 @@ export const appSelectorStyle = {
         minWidth: state.menuIsOpen ? '300px' : 'unset',
         justifyContent: state.menuIsOpen ? 'space-between' : 'flex-start',
         cursor: 'pointer',
-        backgroundColor: 'var(--N0)',
+        backgroundColor: 'var(--bg-primary)',
     }),
     valueContainer: (base, state) => ({
         ...base,
@@ -50,7 +50,7 @@ export const appSelectorStyle = {
     }),
     menu: (base, state) => ({
         ...base,
-        backgroundColor: 'var(--N0)',
+        backgroundColor: 'var(--bg-primary)',
         minWidth: '300px',
         fontSize: '14px',
         fontWeight: 'normal',

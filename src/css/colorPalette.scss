@@ -79,6 +79,11 @@
             --window-bg: #f2f4f7;
             --pipeline-trigger-type-bg: #a5a7bf;
             --bulk-selection-widget-bg: #f0f7ffb8;
+
+            // Color Tokens
+            --bg-primary: var(--N0);
+            --bg-secondary: var(--N50);
+            --bg-tertiary: var(--window-bg);
         }
 
         &__dark {
@@ -140,6 +145,11 @@
             --window-bg: #1b1d2a;
             --pipeline-trigger-type-bg: #44465A;
             --bulk-selection-widget-bg: #141c26b8;
+
+            // Color Tokens
+            --bg-primary: var(--window-bg);
+            --bg-secondary: var(--N50);
+            --bg-tertiary: var(--N0);
         }
     }
 }

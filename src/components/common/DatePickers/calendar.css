@@ -83,7 +83,7 @@
     font-size: 13px;
     border-bottom: none;
     cursor: pointer;
-    background-color: var(--N50);
+    background-color: var(--bg-secondary);
 }
 
 .SingleDatePickerInput__withBorder .DateInput_input__focused#single_date_picker {
@@ -102,5 +102,5 @@
 .SingleDatePickerInput__withBorder .DayPicker .CalendarDay[aria-disabled='true'] {
     border: 1px solid var(--N100) !important;
     color: var(--N200) !important;
-    background: var(--N0) !important;
+    background: var(--bg-primary) !important;
 }

@@ -29,7 +29,7 @@
 
 .benchmark-table__row {
     font-weight: 400;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
 }
 
 .benchmark-table__cell {
@@ -102,7 +102,7 @@
     padding: 16px 24px;
     width: 100%;
     height: 326px;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     border-bottom: solid 1px var(--N200);
 }
 
@@ -119,7 +119,7 @@
 }
 
 .deployment-metrics__body {
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     min-height: calc(100vh - 293px);
     padding: 16px 24px;
     padding-bottom: 0px;

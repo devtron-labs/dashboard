@@ -605,7 +605,7 @@ export class Command extends Component<CommandProps, CommandState> {
                                 Press <span className="command__control command__control--tab">Tab</span> to switch
                             </span>
                         </div>
-                        <div className="flex column pl-20 pr-20" style={{ backgroundColor: 'var(--window-bg)' }}>
+                        <div className="flex column pl-20 pr-20" style={{ backgroundColor: 'var(--bg-tertiary)' }}>
                             <div className="command-arg flex top w-100">
                                 <div className="flex-1 flex left flex-wrap">
                                     {this.state.arguments.map((arg, index) => {

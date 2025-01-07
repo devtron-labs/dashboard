@@ -241,7 +241,7 @@ body {
     font-size: 12px;
     line-height: 1.66666667;
     color: var(--N700);
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
 }
 input,
 button,
@@ -285,7 +285,7 @@ img {
 .img-thumbnail {
     padding: 4px;
     line-height: 1.66666667;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     border: 1px solid var(--N200);
     border-radius: 1px;
     transition: all 0.2s ease-in-out;
@@ -649,7 +649,7 @@ pre {
     color: var(--N700);
     word-break: break-all;
     word-wrap: break-word;
-    background-color: var(--N50);
+    background-color: var(--bg-secondary);
     border: 1px solid var(--N200);
     border-radius: 1px;
 }
@@ -753,7 +753,7 @@ th {
     border-top: 2px solid #d1d1d1;
 }
 .table .table {
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
 }
 .table-striped > tbody > tr:nth-of-type(odd) {
     background-color: var(--N100);
@@ -927,7 +927,7 @@ output {
     font-size: 12px;
     line-height: 1.66666667;
     color: var(--N700);
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     background-image: none;
     border: 1px solid var(--N200);
     border-radius: 1px;
@@ -1474,7 +1474,7 @@ tbody.collapse.in {
     font-size: 12px;
     text-align: left;
     list-style: none;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     background-clip: padding-box;
     border: 1px solid var(--N200);
     border-radius: 1px;
@@ -1651,7 +1651,7 @@ tbody.collapse.in {
 .nav-tabs > li.active > a:focus {
     color: #0088ce;
     cursor: default;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     border: 1px solid var(--N200);
     border-bottom-color: transparent;
 }
@@ -2257,7 +2257,7 @@ fieldset[disabled] .navbar-default .btn-link:focus {
     background-color: var(--N800);
 }
 .navbar-inverse .navbar-toggle .icon-bar {
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
 }
 .navbar-inverse .navbar-collapse,
 .navbar-inverse .navbar-form {
@@ -2361,7 +2361,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .pagination > .disabled > a:focus {
     color: var(--N400);
     cursor: not-allowed;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     border-color: var(--N200);
 }
 .pagination-lg > li > a,
@@ -2536,7 +2536,7 @@ a.badge:focus {
 .list-group-item.active > .badge,
 .nav-pills > .active > a > .badge {
     color: #0088ce;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
 }
 .list-group-item > .badge {
     float: right;
@@ -2589,7 +2589,7 @@ a.badge:focus {
     padding: 4px;
     margin-bottom: 20px;
     line-height: 1.66666667;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     border: 1px solid var(--N200);
     border-radius: 1px;
     transition: border 0.2s ease-in-out;
@@ -2861,7 +2861,7 @@ a.thumbnail.active {
     display: block;
     padding: 10px 15px;
     margin-bottom: -1px;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     border: 1px solid var(--N100);
 }
 .list-group-item:first-child {
@@ -2878,7 +2878,7 @@ a.thumbnail.active {
 .list-group-item.disabled:focus {
     color: var(--N400);
     cursor: not-allowed;
-    background-color: var(--N50);
+    background-color: var(--bg-secondary);
 }
 .list-group-item.disabled .list-group-item-heading,
 .list-group-item.disabled:hover .list-group-item-heading,
@@ -3167,7 +3167,7 @@ button.close {
 }
 .modal-content {
     position: relative;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     background-clip: padding-box;
     border: 1px solid #999;
     border: 1px solid rgba(0, 0, 0, 0.2);
@@ -3766,7 +3766,7 @@ button.close {
 .btn.disabled,
 .btn[disabled],
 fieldset[disabled] .btn {
-    background-color: var(--N50) !important;
+    background-color: var(--bg-secondary) !important;
     background-image: none !important;
     border-color: #d1d1d1 !important;
     color: #8b8d8f !important;
@@ -4162,7 +4162,7 @@ h6 .label {
 .list-group-item.disabled,
 .list-group-item.disabled:hover,
 .list-group-item.disabled:focus {
-    background-color: var(--N50);
+    background-color: var(--bg-secondary);
 }
 .list-group-item-heading {
     font-weight: 600;
@@ -5190,7 +5190,7 @@ fieldset[disabled] .datepicker table tr td.selected.highlighted.focus {
 .datepicker table tr td.selected .badge,
 .datepicker table tr td.selected.highlighted .badge {
     color: var(--N400);
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
 }
 .datepicker table tr td.active,
 .datepicker table tr td.active.highlighted {
@@ -5270,7 +5270,7 @@ fieldset[disabled] .datepicker table tr td.active.highlighted.focus {
 .datepicker table tr td.active .badge,
 .datepicker table tr td.active.highlighted .badge {
     color: #0088ce;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
 }
 .datepicker table tr td span {
     display: block;
@@ -5422,7 +5422,7 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
 .datepicker table tr td span.active.disabled .badge,
 .datepicker table tr td span.active.disabled:hover .badge {
     color: #0088ce;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
 }
 .datepicker table tr td span.old,
 .datepicker table tr td span.new {

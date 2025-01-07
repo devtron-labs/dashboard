@@ -49,7 +49,7 @@ export const getCommonSelectStyle = (styleOverrides = {}) => {
             ...base,
             minHeight: '32px',
             boxShadow: 'none',
-            backgroundColor: 'var(--N50)',
+            backgroundColor: 'var(--bg-secondary)',
             border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
             cursor: 'pointer',
         }),
@@ -93,7 +93,7 @@ export const styles = {
         return {
             ...base,
             top: `0px`,
-            backgroundColor: 'var(--N0)',
+            backgroundColor: 'var(--bg-primary)',
         }
     },
     singleValue: (base, state) => {

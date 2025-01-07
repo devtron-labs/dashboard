@@ -399,7 +399,7 @@ const TestsFilter: React.FC<{ component }> = ({ component: Component }) => {
                         ...base,
                         border: `1px solid var(--N200)`,
                         borderRadius: `4px`,
-                        background: 'var(--N0)',
+                        background: 'var(--bg-primary)',
                         height: '30px',
                         margin: '0 8px 0 0',
                         padding: '1px',

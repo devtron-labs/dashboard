@@ -193,7 +193,7 @@ export const appGroupAppSelectorStyle = {
         fontSize: '12px',
         width: state.menuIsOpen ? '250px' : 'unset',
         cursor: state.isDisabled ? 'not-allowed' : 'normal',
-        backgroundColor: 'var(--N0)',
+        backgroundColor: 'var(--bg-primary)',
     }),
     singleValue: (base, state) => ({
         ...base,
@@ -240,7 +240,7 @@ export const appGroupAppSelectorStyle = {
     }),
     menu: (base) => ({
         ...base,
-        backgroundColor: 'var(--N0)',
+        backgroundColor: 'var(--bg-primary)',
     }),
 }
 

@@ -75,7 +75,7 @@
     grid-template-columns: repeat(3, 20px);
     place-items: center;
     grid-column-gap: 0px;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     cursor: default;
 }
 
@@ -200,7 +200,7 @@
     letter-spacing: normal;
     text-align: center;
     color: var(--N700);
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
 }
 
 .deploy-selected-charts__applications-edit {
@@ -264,7 +264,7 @@
 .deploy-selected-charts__bottom {
     padding: 16px 24px;
     box-shadow: 0 -1px 0 0 var(--N200);
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
 }
 
 .chart-group-deployment__row {
@@ -289,7 +289,7 @@
 
     .chart-group-deployment__row {
         &:hover {
-            background-color: var(--window-bg);
+            background-color: var(--bg-tertiary);
         }
     }
 

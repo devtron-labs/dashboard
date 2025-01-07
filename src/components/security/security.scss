@@ -83,7 +83,7 @@
         min-width: 750px;
         width: calc(100% - 48px);
         border: solid 1px var(--N200);
-        background-color: var(--N0);
+        background-color: var(--bg-primary);
     }
 
     .security-policy__table {
@@ -223,7 +223,7 @@
     }
 
     .vulnerability-exp {
-        background-color: var(--N0);
+        background-color: var(--bg-primary);
         min-height: calc(100vh - 80px);
     }
 
@@ -269,7 +269,7 @@
     .security-policy-cluster__table {
         width: 100%;
         min-width: 400px;
-        background-color: var(--N0);
+        background-color: var(--bg-primary);
         border-radius: inherit;
     }
 

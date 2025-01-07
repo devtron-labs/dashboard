@@ -27,7 +27,7 @@
     .global-configuration__navigation {
         padding: 16px 12px;
         border-right: solid 1px var(--N200);
-        background: var(--N0);
+        background: var(--bg-primary);
         height: 100%;
         overflow: scroll;
 
@@ -42,7 +42,7 @@
 
             &:hover {
                 text-decoration: none;
-                background: var(--N50);
+                background: var(--bg-secondary);
             }
 
             &.active-route {
@@ -129,7 +129,7 @@
     display: grid;
     grid-template-columns: 24px 1fr 24px;
     align-items: center;
-    background: var(--N0);
+    background: var(--bg-primary);
     grid-column-gap: 16px;
     cursor: pointer;
 
@@ -180,7 +180,7 @@
 .cluster-list {
     border: 1px solid var(--N200);
     margin-bottom: 16px;
-    background: var(--N0);
+    background: var(--bg-primary);
     border-radius: 8px;
 
     & > .list {
@@ -243,7 +243,7 @@
         margin-bottom: 16px;
         border-radius: 8px;
         overflow: hidden;
-        background: var(--N0);
+        background: var(--bg-primary);
     }
 }
 
@@ -254,7 +254,7 @@
         margin-bottom: 16px;
         border-radius: 8px;
         overflow: hidden;
-        background: var(--N0);
+        background: var(--bg-primary);
     }
 
     &.collapsed-list--create {
@@ -365,7 +365,7 @@
 .environment-create-body {
     width: 450px;
     border-radius: 8px;
-    background: var(--N0);
+    background: var(--bg-primary);
     padding: 24px;
     margin: 5% auto auto auto;
 

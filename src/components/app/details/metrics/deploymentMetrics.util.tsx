@@ -33,7 +33,7 @@ export const styles = {
         return {
             ...base,
             top: `38px`,
-            backgroundColor: 'var(--N0)',
+            backgroundColor: 'var(--bg-primary)',
         }
     },
     singleValue: (base, state) => {

@@ -19,7 +19,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     z-index: var(--filter-menu-index);
 }
 
@@ -67,7 +67,7 @@
     padding: 6px 20px;
     display: flex;
     flex-wrap: wrap;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     z-index: var(--app-list-header-index);
 }
 
@@ -76,7 +76,7 @@
     align-items: center;
     border-radius: 4px;
     border: solid 1px var(--N200);
-    background-color: var(--N50);
+    background-color: var(--bg-secondary);
     padding-left: 6px;
     padding-right: 6px;
     user-select: none;
@@ -91,7 +91,7 @@
     color: var(--N500);
     border: none;
     padding: 1px;
-    background-color: var(--N50);
+    background-color: var(--bg-secondary);
 }
 
 .saved-filters__clear-btn {
@@ -112,7 +112,7 @@
     line-height: 1.5;
     letter-spacing: normal;
     padding-left: 20px;
-    background: var(--N0);
+    background: var(--bg-primary);
     z-index: var(--app-list-header-index);
 
     &__fluxcd {
@@ -140,7 +140,7 @@
     align-items: center;
     padding-left: 20px;
     cursor: pointer;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     border-bottom: 1px solid var(--N100);
 
     &__fluxcd {
@@ -358,7 +358,7 @@
 .app-list__row:hover {
     text-decoration: none;
     color: var(--N900);
-    background-color: var(--N50);
+    background-color: var(--bg-secondary);
 }
 
 .app-list__row:hover .app-list__cell--status .bg {
@@ -371,7 +371,7 @@
 }
 
 .app-list__row:hover .dc__app-commit__hash {
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     color: var(--N700);
 }
 
@@ -416,7 +416,7 @@
 
 .app-tabs-wrapper .tab-list {
     padding-left: 20px;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
 }
 
 .filter-divider {

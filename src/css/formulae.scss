@@ -221,6 +221,15 @@ $color-suffix: 00;
     }
 }
 
+// TODO: Update these
+.bcn-0 {
+    background-color: var(--bg-primary);
+}
+
+.bcn-50 {
+    background-color: var(--bg-secondary);
+}
+
 // border-radius
 @for $i from 0 through 16 {
     .br-#{$i} {

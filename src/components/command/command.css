@@ -21,7 +21,7 @@
     width: 800px;
     z-index: 8;
     transform: translateX(-50%);
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     border-radius: 8px;
     border: solid 1px var(--N200);
     box-shadow: 0 8px 16px -4px rgba(0, 56, 112, 0.3);
@@ -72,7 +72,7 @@
     flex-wrap: wrap;
     align-items: center;
     position: relative;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     margin: 16px 20px;
     border: solid 1px var(--B500);
     box-shadow: 0 3px 0 0 rgba(0, 102, 204, 0.2);
@@ -128,7 +128,7 @@
 }
 
 .suggested-arguments {
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
 }
 
 .suggested-arguments__arg {
@@ -180,7 +180,7 @@
     padding: 0px 6px;
     border-radius: 2px;
     border: solid 1px var(--N200);
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     color: var(--N700);
 }
 

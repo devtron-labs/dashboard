@@ -17,7 +17,7 @@
 .module-details__card {
     width: 300px;
     height: 180px;
-    background-color: var(--N0);
+    background-color: var(--bg-primary);
     border: 1px solid var(--N200);
     position: relative;
 
@@ -52,7 +52,7 @@
     }
 
     &.more-integrations__card {
-        background-color: var(--window-bg);
+        background-color: var(--bg-tertiary);
         border: 1px dashed var(--N300);
         padding-top: 4px;
 
@@ -147,7 +147,7 @@
 
         &.upgrade.status-healthy {
             position: relative;
-            background-color: var(--N0);
+            background-color: var(--bg-primary);
             border: 1px solid var(--N200);
             overflow: hidden;
             padding: 16px;
@@ -276,7 +276,7 @@
             border: 1px solid var(--N200);
             padding: 8px 16px;
             margin: 2px;
-            background-color: var(--N0);
+            background-color: var(--bg-primary);
 
             .discover-icon {
                 width: 16px;

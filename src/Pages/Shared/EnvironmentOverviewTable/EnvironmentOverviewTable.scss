@@ -9,10 +9,10 @@
         min-width: fit-content;
 
         &:hover:not(.no-hover) {
-            background-color: var(--N50);
+            background-color: var(--bg-secondary);
 
             #{$parent-selector}__fixed-cell:not(.no-hover) {
-                background-color: var(--N50);
+                background-color: var(--bg-secondary);
             }
         }
     }

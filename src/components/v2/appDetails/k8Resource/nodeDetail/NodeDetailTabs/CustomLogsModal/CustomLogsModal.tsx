@@ -253,7 +253,7 @@ export const InputForSelectedOption = ({
                                         control: (base) => ({
                                             ...base,
                                             border: '1px solid var(--N200)',
-                                            backgroundColor: 'var(--N50)',
+                                            backgroundColor: 'var(--bg-secondary)',
                                             borderRadius: '4px',
                                             display: 'flex',
                                             flexDirection: 'row-reverse',
