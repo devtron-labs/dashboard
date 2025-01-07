@@ -98,7 +98,7 @@
             margin-top: 4px;
 
             &.form__error--info {
-                color: #6b778c;
+                color: var(--N700);
 
                 &:before {
                     content: '';

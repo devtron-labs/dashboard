@@ -859,7 +859,7 @@ const GitForm = ({
                     </div>
                 ))}
             </div>
-            <div className="flex fs-12 left pt-4 mb-16" style={{ color: '#6b778c' }}>
+            <div className="flex fs-12 left pt-4 mb-16" style={{ color: 'var(--N700)' }}>
                 <Warn className="icon-dim-16 mr-4 " />
                 Once configured, authentication type cannot be switched from HTTPS (user auth/anonymous) to SSH or vice
                 versa.
@@ -896,7 +896,7 @@ const GitForm = ({
                             isRequiredField
                             onBlur={id && handleOnBlur}
                         />
-                        <div className="flex fs-12 left pt-4 mb-20" style={{ color: '#6b778c' }}>
+                        <div className="flex fs-12 left pt-4 mb-20" style={{ color: 'var(--N700)' }}>
                             <Warn className="icon-dim-16 mr-4 " />
                             If using Github, use token instead of password.
                         </div>
