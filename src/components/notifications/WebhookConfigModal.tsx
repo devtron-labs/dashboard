@@ -24,12 +24,17 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
-import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 import { getWebhookAttributes, getWebhookConfiguration, saveUpdateWebhookConfiguration } from './notifications.service'
-import { ConfigurationFieldKeys, ConfigurationsTabTypes, DefaultWebhookConfig } from './constants'
+import {
+    ConfigurationFieldKeys,
+    ConfigurationsTabTypes,
+    DefaultWebhookConfig,
+    DefaultWebhookValidations,
+} from './constants'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
 import { WebhookConfigModalProps, WebhookDataRowType } from './types'
 import { WebhookConfigDynamicDataTable } from './WebhookConfigDynamicDataTable'
+import { getFormValidated, validateKeyValueConfig } from './notifications.util'
 
 export const WebhookConfigModal = ({
     webhookConfigId,
@@ -37,16 +42,13 @@ export const WebhookConfigModal = ({
     onSaveSuccess,
 }: WebhookConfigModalProps) => {
     const [form, setForm] = useState(DefaultWebhookConfig)
-    const [isValid, setIsValid] = useState({
-        configName: true,
-        webhookUrl: true,
-        payload: true,
-    })
+    const [isFormValid, setFormValid] = useState(DefaultWebhookValidations)
 
     const [rows, setRows] = useState<WebhookDataRowType[]>()
 
     const history = useHistory()
     const [webhookAttribute, setWebhookAttribute] = useState({})
+
     const fetchWebhookData = async () => {
         setForm((prev) => ({ ...prev, isLoading: true }))
         try {
@@ -65,16 +67,31 @@ export const WebhookConfigModal = ({
                 payload,
                 isLoading: false,
             }))
-
-            // Fetch webhook attributes
-            const attributesResponse = await getWebhookAttributes()
-            setWebhookAttribute(attributesResponse?.result || {})
         } catch (error) {
             // Show error message and reset loading state
             showError(error)
             setForm((prev) => ({ ...prev, isLoading: false }))
         }
     }
+
+    const fetchAttribute = async () => {
+        setForm((prev) => ({ ...prev, isLoading: true }))
+        try {
+            // Fetch webhook attributes
+            const attributesResponse = await getWebhookAttributes()
+            setWebhookAttribute(attributesResponse?.result || {})
+            setForm((prev) => ({ ...prev, isLoading: false }))
+        } catch (error) {
+            showError(error)
+            setForm((prev) => ({ ...prev, isLoading: false }))
+        }
+    }
+
+    useEffect(() => {
+        // Fetch webhook attributes
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        fetchAttribute()
+    }, [])
 
     useEffect(() => {
         if (webhookConfigId) {
@@ -96,26 +113,23 @@ export const WebhookConfigModal = ({
         }
     }
 
-    const validateField = (field, value) => {
+    const validateField = (field, value: string) => {
         let isValidField = true
-        if (field !== ConfigurationFieldKeys.PAYLOAD) {
-            isValidField = value.trim().length > 0
-        } else {
-            try {
-                JSON.parse(value)
-            } catch {
-                isValidField = false
-            }
+        let errorMessage = ''
+        // Validate if the value is a valid JSON string
+        try {
+            JSON.parse(value)
+        } catch {
+            isValidField = false
+            errorMessage = 'Invalid JSON format.'
         }
-        setIsValid((prev) => ({ ...prev, [field]: isValidField }))
+        setFormValid((prev) => ({ ...prev, [field]: { isValid: isValidField, message: errorMessage } }))
     }
 
-    const handleInputChange = (field) => (event) => {
-        const { value } = event.target
-        setForm((prev) => ({ ...prev, [field]: value }))
-        if (field !== ConfigurationFieldKeys.PAYLOAD) {
-            validateField(field, value)
-        }
+    const handleInputChange = (event) => {
+        const { name, value } = event.target
+        setForm((prev) => ({ ...prev, [name]: value }))
+        setFormValid((prev) => ({ ...prev, [name]: validateKeyValueConfig(name, value) }))
     }
 
     const handlePayloadChange = (value) => {
@@ -156,16 +170,11 @@ export const WebhookConfigModal = ({
         </div>
     )
 
-    const onSaveSES = () => {
-        onSaveSuccess()
-        closeWebhookConfig()
-    }
-
     const saveWebhookConfig = async () => {
         setForm((prev) => ({ ...prev, isLoading: true }))
 
-        if (!Object.values(isValid).every((v) => v)) {
-            setForm((prev) => ({ ...prev, isLoading: false, isError: true }))
+        if (!Object.values(isFormValid).every((field) => field)) {
+            setForm((prev) => ({ ...prev, isLoading: false }))
             return
         }
 
@@ -176,7 +185,8 @@ export const WebhookConfigModal = ({
             }
             await saveUpdateWebhookConfiguration(requestBody)
             ToastManager.showToast({ variant: ToastVariantType.success, description: 'Saved Successfully' })
-            onSaveSES()
+            onSaveSuccess()
+            closeWebhookConfig()
         } catch (error) {
             showError(error)
         } finally {
@@ -184,28 +194,35 @@ export const WebhookConfigModal = ({
         }
     }
 
+    const handleBlur = (event) => {
+        const { name, value } = event.target
+        setFormValid((prev) => ({ ...prev, [name]: validateKeyValueConfig(name, value) }))
+    }
     const renderWebhookModal = () => (
         <div className="flexbox h-100 cn-9 w-100 mh-0">
             <div className="w-600 p-20 flex-grow-1 flexbox-col mh-0 dc__overflow-auto dc__gap-16 dc__border-right">
                 <CustomInput
                     label="Configuration name"
                     value={form.configName}
-                    onChange={handleInputChange('configName')}
+                    onChange={handleInputChange}
                     placeholder="Enter name"
-                    error={!isValid.configName && REQUIRED_FIELD_MSG}
+                    error={isFormValid.configName.message}
                     name={ConfigurationFieldKeys.CONFIG_NAME}
                     dataTestid="webhook-modal__name"
                     isRequiredField
+                    autoFocus
+                    onBlur={handleBlur}
                 />
                 <CustomInput
                     label="Webhook URL"
                     value={form.webhookUrl}
-                    onChange={handleInputChange('webhookUrl')}
+                    onChange={handleInputChange}
                     placeholder="Enter Incoming Webhook URL"
-                    error={!isValid.webhookUrl && REQUIRED_FIELD_MSG}
+                    error={isFormValid.webhookUrl.message}
                     name={ConfigurationFieldKeys.WEBHOOK_URL}
                     dataTestid="webhook-modal__url"
                     isRequiredField
+                    onBlur={handleBlur}
                 />
                 <WebhookConfigDynamicDataTable headers={form.header} rows={rows} setRows={setRows} />
 
@@ -220,7 +237,7 @@ export const WebhookConfigModal = ({
                             height={150}
                         />
                     </div>
-                    {!isValid.payload && <span className="form__error">Invalid JSON</span>}
+                    <span className="form__error">{isFormValid.payload.message}</span>
                 </div>
             </div>
             {renderConfigureLinkInfoColumn()}
@@ -234,6 +251,7 @@ export const WebhookConfigModal = ({
             modal={ConfigurationsTabTypes.WEBHOOK}
             isLoading={form.isLoading}
             saveConfigModal={saveWebhookConfig}
+            disableSave={!getFormValidated(isFormValid)}
         />
     )
 }

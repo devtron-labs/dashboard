@@ -73,6 +73,7 @@ export const DefaultSlackKeys = {
     isError: false,
     id: 0,
 }
+
 export const DefaultSlackValidations = {
     project_id: ConfigValidationKeys,
     configName: ConfigValidationKeys,
@@ -90,4 +91,10 @@ export const DefaultWebhookConfig = {
     isError: false,
     payload: '',
     header: [DefaultHeaders],
+}
+
+export const DefaultWebhookValidations = {
+    configName: ConfigValidationKeys,
+    webhookUrl: ConfigValidationKeys,
+    payload: ConfigValidationKeys,
 }
