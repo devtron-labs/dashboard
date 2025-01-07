@@ -140,7 +140,7 @@ export const BenchmarkLine = (props) => {
         case 'ELITE':
             return (
                 <svg height="10" width="30">
-                    <line stroke="#8930e8" strokeWidth="2" x1="0" y1="5" x2="30" y2="5" />
+                    <line stroke="var(--V500)" strokeWidth="2" x1="0" y1="5" x2="30" y2="5" />
                 </svg>
             )
         default:

@@ -565,11 +565,11 @@ const TestsChart = ({ testCount, disabledCount, errorCount, failureCount, skippe
 
     const colorMap = {
         skipped: 'var(--N200)',
-        error: '#f6573b',
-        failures: '#ff9800',
+        error: 'var(--R500)',
+        failures: 'var(--Y500)',
         disabled: '#58508d',
-        unknown: '#ff9800',
-        passed: '#00be61',
+        unknown: 'var(--Y500)',
+        passed: 'var(--G500)',
     }
 
     const passPercentage = (passedCount * 100) / testCount

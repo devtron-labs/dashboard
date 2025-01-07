@@ -840,7 +840,7 @@ const GitForm = ({
                         data-testid={`git-account-auth-type-${index}`}
                         className={` ${canSelectAuth(value) ? 'pointer' : 'wrapper-pointer-disabled'}`}
                         onChange={handleOnChange}
-                        style={{ borderRight: '1px solid #d6d4d9', height: '48px' }}
+                        style={{ borderRight: '1px solid var(--N200)', height: '48px' }}
                     >
                         <Tippy
                             className={` default-tt ${canSelectAuth(value) ? 'w-0 h-0' : 'w-200'}`}

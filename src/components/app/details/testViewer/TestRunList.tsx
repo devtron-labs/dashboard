@@ -173,11 +173,11 @@ const TriggerList: React.FC<{ selectedNames: SelectedNames; startDate; endDate }
 
     const colorMap = {
         skippedCount: 'var(--N200)',
-        errorCount: '#f6573b',
-        failureCount: '#ff9800',
+        errorCount: 'var(--R500)',
+        failureCount: 'var(--Y500)',
         disabledCount: '#58508d',
-        unknownCount: '#ff9800',
-        successCount: '#00be61',
+        unknownCount: 'var(--Y500)',
+        successCount: 'var(--G500)',
     }
     if (triggerListLoading) {
         return (
