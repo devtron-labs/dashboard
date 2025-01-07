@@ -76,7 +76,7 @@ const ConfigHeader = ({
     const activeTabIndex = tabKeys.indexOf(configHeaderTab)
 
     return (
-        <div className="flexbox w-100 dc__align-items-center bc-n50 dc__box-shadow-bottom-n2">
+        <div className="flexbox w-100 dc__align-items-center bg__secondary dc__box-shadow-bottom-n2">
             {tabKeys.map((currentTab: ConfigHeaderTabType, index: number) => (
                 <InvalidYAMLTippyWrapper
                     key={currentTab}

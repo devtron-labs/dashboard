@@ -393,7 +393,7 @@ export class Workflow extends Component<WorkflowProps> {
                 </div>
                 {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
                 <div
-                    className={`workflow__body bc-n50 dc__overflow-scroll dc__border-n1 br-4 ${this.props.isSelected ? 'eb-2' : ''}`}
+                    className={`workflow__body bg__secondary dc__overflow-scroll dc__border-n1 br-4 ${this.props.isSelected ? 'eb-2' : ''}`}
                 >
                     <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
                         {this.renderEdgeList()}

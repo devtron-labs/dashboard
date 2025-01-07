@@ -135,7 +135,7 @@ export default function SavedVariablesView({
             <Descriptor />
             <div className="flex center flex-grow-1">
                 <div className="flex column center dc__gap-20 w-320 dc__no-shrink">
-                    <div className="flex column center dc__gap-8 bc-n50 dc__align-self-stretch dc__border-dashed w-320 h-128 br-4">
+                    <div className="flex column center dc__gap-8 bg__secondary dc__align-self-stretch dc__border-dashed w-320 h-128 br-4">
                         <ScopedVariablesLoader
                             status={status}
                             progress={progress}

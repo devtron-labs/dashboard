@@ -488,7 +488,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                         )}
                                     </div>
                                 ) : (
-                                    <div className="discover-charts__body-details bcn-50">
+                                    <div className="discover-charts__body-details bg__secondary">
                                         {typeof state.configureChartIndex === 'number' ? (
                                             <AdvancedConfig
                                                 chart={state.charts[state.configureChartIndex]}

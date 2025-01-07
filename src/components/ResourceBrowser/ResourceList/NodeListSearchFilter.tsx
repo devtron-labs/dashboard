@@ -214,7 +214,7 @@ const NodeListSearchFilter = ({
         const placeholderText = NODE_SEARCH_KEY_PLACEHOLDER[searchTextType]
 
         return (
-            <div className="dc__position-rel bc-n50">
+            <div className="dc__position-rel bg__secondary">
                 <button
                     type="button"
                     className=" h-32 br-4 en-2 bw-1 w-100 fw-4 pt-6 pb-6 pr-10 flexbox flex-align-center dc__content-start dc__transparent"

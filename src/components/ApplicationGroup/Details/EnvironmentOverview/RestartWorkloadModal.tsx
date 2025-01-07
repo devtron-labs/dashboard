@@ -309,7 +309,7 @@ export const RestartWorkloadModal = ({
         if (errorResponse?.length > 0) {
             return (
                 <div className="dc__border-left cn-7 p-8 ml-8">
-                    <div className="dc__border-dashed p-20 flex center bc-n50">
+                    <div className="dc__border-dashed p-20 flex center bg__secondary">
                         <div className="w-300 dc__align-center">
                             <div className="fw-6">Restarting workloads is not allowed</div>
                             <div>
@@ -324,7 +324,7 @@ export const RestartWorkloadModal = ({
         if (resourceKeys.length === 0) {
             return (
                 <div className="dc__border-left cn-7 p-8 ml-8">
-                    <div className="dc__border-dashed p-20 flex center bc-n50">
+                    <div className="dc__border-dashed p-20 flex center bg__secondary">
                         <div className="w-300 dc__align-center">
                             <div className="fw-6"> No workloads found.</div>
                             <div>

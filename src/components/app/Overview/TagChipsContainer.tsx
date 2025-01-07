@@ -33,7 +33,7 @@ export default function TagChipsContainer({
                     <div key={tag.id} className="display-grid grid-auto-flow-column">
                         <div
                             className={`flex ${
-                                whiteBackground ? 'bg__primary' : 'bc-n50'
+                                whiteBackground ? 'bg__primary' : 'bg__secondary'
                             } cn-9 fw-4 fs-12 lh-16 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 dc__ellipsis-right ${
                                 !tag.value ? ' br-4' : ' dc__left-radius-4'
                             }`}

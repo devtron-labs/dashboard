@@ -99,8 +99,8 @@ const Suggestions = ({ handleDeActivation, loading, variables, reloadVariables, 
                     <DebouncedSearch
                         onSearch={onSearch}
                         placeholder="Search variables"
-                        containerClass="flexbox flex-grow-1 pt-8 pb-8 pl-10 pr-10 dc__gap-8 dc__align-self-stretch dc__align-items-center bc-n50 dc__border dc__border-radius-4-imp focus-within-border-b5 dc__hover-border-n300"
-                        inputClass="flex-grow-1 dc__no-border dc__outline-none-imp bc-n50 lh-20 fs-13 cn-9 fw-4 p-0 placeholder-cn5"
+                        containerClass="flexbox flex-grow-1 pt-8 pb-8 pl-10 pr-10 dc__gap-8 dc__align-self-stretch dc__align-items-center bg__secondary dc__border dc__border-radius-4-imp focus-within-border-b5 dc__hover-border-n300"
+                        inputClass="flex-grow-1 dc__no-border dc__outline-none-imp bg__secondary lh-20 fs-13 cn-9 fw-4 p-0 placeholder-cn5"
                         Icon={ICSearch}
                         iconClass="icon-dim-16"
                         clearSearch={clearSearch}

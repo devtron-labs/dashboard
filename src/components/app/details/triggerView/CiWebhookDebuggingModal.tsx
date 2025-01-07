@@ -248,7 +248,7 @@ export const CiWebhookModal = ({
 
     const renderReceivedPayloadCodeEditor = () => (
         <div className="dc__border br-4">
-            <div className="flex dc__content-space dc__gap-6 px-16 py-10 flexbox dc__align-items-center dc__gap-8 w-100 br-4 bcn-50 dc__position-sticky dc__top-0 dc__zi-10">
+            <div className="flex dc__content-space dc__gap-6 px-16 py-10 flexbox dc__align-items-center dc__gap-8 w-100 br-4 bg__secondary dc__position-sticky dc__top-0 dc__zi-10">
                 <div className="fw-6">Payload</div>
                 <ClipboardButton content={_value} rootClassName="p-4 dc__visible-hover--child" />
             </div>

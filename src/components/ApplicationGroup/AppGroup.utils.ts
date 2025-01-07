@@ -259,7 +259,7 @@ export const getOptionBGClass = (isSelected: boolean, isFocused: boolean): strin
         return 'bcb-1'
     }
     if (isFocused) {
-        return 'bc-n50'
+        return 'bg__secondary'
     }
     return 'bg__primary'
 }
