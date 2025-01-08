@@ -177,7 +177,6 @@
     .configuration-tab__table-row:hover .webhook-config-table__action,
     .configuration-tab__table-row:hover .smtp-config-table__action {
         display: flex;
-        background-color: var(--window-bg);
     }
 
     .slack-config-table__action,

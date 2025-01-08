@@ -22,10 +22,8 @@ import {
     ConfirmationModal,
     ConfirmationModalVariantType,
     ServerErrors,
-    ConfirmationDialog,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
-import info from '@Icons/ic-info-filled.svg'
 import { SlackConfigModal } from './SlackConfigModal'
 import SESConfigModal from './SESConfigModal'
 import {
@@ -45,8 +43,7 @@ import { WebhookConfigurationTable } from './WebhookConfigurationTable'
 import SESConfigurationTable from './SESConfigurationTable'
 import { SMTPConfigurationTable } from './SMTPConfigurationTable'
 import { ConfigurationTabSwitcher } from './ConfigurationTabsSwitcher'
-import { ConfigurationFieldKeys, ConfigurationsTabTypes } from './constants'
-import { getTabText } from './notifications.util'
+import { ConfigurationFieldKeys, ConfigurationsTabTypes, ConfigurationTabText } from './constants'
 
 export const ConfigurationTab = () => {
     const { path } = useRouteMatch()
@@ -258,16 +255,19 @@ export const ConfigurationTab = () => {
     }
 
     const renderCannotDeleteDialogModal = () => (
-        <ConfirmationDialog className="confirmation-dialog__body--w-360">
-            <ConfirmationDialog.Icon src={info} />
-            <ConfirmationDialog.Body title={`Cannot delete ${getTabText(state.activeTab)}'`} />
-            <p className="fs-13 cn-7 ">{DC_CONFIGURATION_CONFIRMATION_MESSAGE}</p>
-            <ConfirmationDialog.ButtonGroup>
-                <button type="button" className="cta" onClick={handleConfirmation}>
-                    Okay
-                </button>
-            </ConfirmationDialog.ButtonGroup>
-        </ConfirmationDialog>
+        <ConfirmationModal
+            variant={ConfirmationModalVariantType.info}
+            title={`Cannot delete ${ConfigurationTabText[state.activeTab.toUpperCase()]} '${payload.configName}'`}
+            subtitle={DC_CONFIGURATION_CONFIRMATION_MESSAGE}
+            buttonConfig={{
+                primaryButtonConfig: {
+                    text: 'Okay',
+                    onClick: handleConfirmation,
+                },
+            }}
+            showConfirmationModal={state.showCannotDeleteDialogModal}
+            handleClose={handleConfirmation}
+        />
     )
 
     if (state.isLoading) {
@@ -284,7 +284,7 @@ export const ConfigurationTab = () => {
 
             <ConfirmationModal
                 variant={ConfirmationModalVariantType.delete}
-                title={payload.configName}
+                title={`Delete ${ConfigurationTabText[state.activeTab.toUpperCase()]} '${payload.configName}'`}
                 subtitle="Are you sure you want to delete this configuration?"
                 buttonConfig={{
                     secondaryButtonConfig: {

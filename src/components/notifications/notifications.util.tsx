@@ -161,7 +161,7 @@ export const renderPipelineTypeIcon = (row) => {
     return <CD className="icon-dim-20 dc__flip" />
 }
 
-export const getConfigTabIcons = (tab: ConfigurationsTabTypes, size: number = 20) => {
+export const getConfigTabIcons = (tab: ConfigurationsTabTypes, size: number = 24) => {
     switch (tab) {
         case ConfigurationsTabTypes.SES:
             return <SES className={`icon-dim-${size}`} />
@@ -179,22 +179,22 @@ export const getConfigTabIcons = (tab: ConfigurationsTabTypes, size: number = 20
 export const getConfigurationTabTextWithIcon = () => [
     {
         label: ConfigurationTabText.SES,
-        icon: getConfigTabIcons(ConfigurationsTabTypes.SES),
+        icon: getConfigTabIcons(ConfigurationsTabTypes.SES, 20),
         link: ConfigurationsTabTypes.SES,
     },
     {
         label: ConfigurationTabText.SMTP,
-        icon: getConfigTabIcons(ConfigurationsTabTypes.SMTP),
+        icon: getConfigTabIcons(ConfigurationsTabTypes.SMTP, 20),
         link: ConfigurationsTabTypes.SMTP,
     },
     {
         label: ConfigurationTabText.SLACK,
-        icon: getConfigTabIcons(ConfigurationsTabTypes.SLACK),
+        icon: getConfigTabIcons(ConfigurationsTabTypes.SLACK, 20),
         link: ConfigurationsTabTypes.SLACK,
     },
     {
         label: ConfigurationTabText.WEBHOOK,
-        icon: getConfigTabIcons(ConfigurationsTabTypes.WEBHOOK),
+        icon: getConfigTabIcons(ConfigurationsTabTypes.WEBHOOK, 20),
         link: ConfigurationsTabTypes.WEBHOOK,
     },
 ]
@@ -242,7 +242,7 @@ export const renderText = (text: string, isLink: boolean = false, linkTo?: () =>
 
 export const renderDefaultTag = (isDefault: boolean) => {
     if (isDefault) {
-        return <span className="br-4 fs-12 px-6 lh-20 cb-7 bcb-1 py-2">Default</span>
+        return <span className="br-4 fs-12 px-6 fw-5 lh-16 cb-7 bcb-1 py-2">Default</span>
     }
     return null
 }

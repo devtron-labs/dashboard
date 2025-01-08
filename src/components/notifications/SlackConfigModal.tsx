@@ -7,8 +7,6 @@ import {
     ToastVariantType,
     SelectPicker,
     ComponentSizeType,
-    TippyCustomized,
-    TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { useHistory } from 'react-router-dom'
@@ -113,26 +111,14 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
             target="_blank"
             rel="noopener noreferrer"
         >
-            <span className="dc__link">Learn how to setup slack webhooks</span>
+            <span className="dc__link">How to setup slack webhooks?</span>
         </a>
     )
 
     const renderWebhookUrlLabel = () => (
-        <div className="flex left">
+        <div className="flex left dc__gap-6">
             <div className="dc__required-field">Webhook URL </div>
-            <TippyCustomized
-                trigger="click"
-                theme={TippyTheme.white}
-                interactive
-                heading="Incoming Webhook URL"
-                placement="top"
-                showCloseButton
-                infoText={renderInfoText()}
-            >
-                <div className="flex">
-                    <ICHelpOutline className="ml-5 dc__vertical-align-middle icon-dim-16 cursor" />
-                </div>
-            </TippyCustomized>
+            {renderInfoText()}
         </div>
     )
 
