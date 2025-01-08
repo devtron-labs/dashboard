@@ -30,6 +30,8 @@ import {
     DynamicDataTableRowDataType,
     DynamicDataTableRowType,
     getUniqueId,
+    ToastManager,
+    ToastVariantType,
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, ConfigurationTabText } from './constants'
@@ -305,6 +307,9 @@ export const validateKeyValueConfig = (
     if (!value) {
         return { isValid: false, message: REQUIRED_FIELD_MSG }
     }
+    if (value.length > 250) {
+        return { isValid: false, message: 'Value should be less than 250 characters' }
+    }
     if (key === ConfigurationFieldKeys.FROM_EMAIL) {
         return { isValid: validateEmail(value), message: validateEmail(value) ? '' : 'Invalid email' }
     }
@@ -339,7 +344,7 @@ export const getTabText = (tab: ConfigurationsTabTypes) => {
     }
 }
 
-export const validatePayloadField = (value: string): FormError  => {
+export const validatePayloadField = (value: string): FormError => {
     let isValid = true
     let errorMessage = ''
     // Validate if the value is a valid JSON string
@@ -351,3 +356,9 @@ export const validatePayloadField = (value: string): FormError  => {
     }
     return { isValid, message: errorMessage }
 }
+
+export const renderErrorToast = () =>
+    ToastManager.showToast({
+        variant: ToastVariantType.error,
+        description: 'Some required fields are missing or Invalid',
+    })

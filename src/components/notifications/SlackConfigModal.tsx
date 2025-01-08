@@ -15,7 +15,7 @@ import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outl
 import { SlackConfigModalProps } from './types'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, DefaultSlackKeys, DefaultSlackValidations } from './constants'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
-import { getFormValidated, validateKeyValueConfig } from './notifications.util'
+import { renderErrorToast, validateKeyValueConfig } from './notifications.util'
 
 export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
     slackConfigId,
@@ -72,9 +72,21 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
         }
     }
 
+    const getAllFieldsValidated = (): boolean => {
+        const { configName, webhookUrl } = form
+        return !!configName && !!webhookUrl && !!selectedProject.value
+    }
+
     const saveSlackConfig = () => {
-        if (!getFormValidated(isFormValid)) {
+        if (!getAllFieldsValidated()) {
             setForm((prevForm) => ({ ...prevForm, isLoading: false, isError: true }))
+            setFormValid((prevValid) => ({
+                ...prevValid,
+                configName: validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, form.configName),
+                webhookUrl: validateKeyValueConfig(ConfigurationFieldKeys.WEBHOOK_URL, form.webhookUrl),
+                projectId: validateKeyValueConfig(ConfigurationFieldKeys.PROJECT_ID, selectedProject?.value),
+            }))
+            renderErrorToast()
             return
         }
 
@@ -85,11 +97,9 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
                 id: slackConfigId,
             }
         }
-
         setForm((prevForm) => ({ ...prevForm, isLoading: true }))
 
         const promise = slackConfigId ? updateSlackConfiguration(requestBody) : saveSlackConfiguration(requestBody)
-
         promise
             .then(() => {
                 setForm((prevForm) => ({ ...prevForm, isLoading: false, isError: false }))
@@ -102,6 +112,7 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
             })
             .catch((error) => {
                 showError(error)
+                setForm((prevForm) => ({ ...prevForm, isLoading: false }))
             })
     }
 

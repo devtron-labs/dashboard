@@ -4,7 +4,6 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     Drawer,
-    Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
 import { useEffect, useRef } from 'react'
@@ -35,12 +34,6 @@ export const ConfigurationTabDrawerModal = ({
             document.removeEventListener('keydown', escKeyPressHandler)
         }
     }, [escKeyPressHandler])
-
-    const renderLoadingState = () => (
-        <div className="h-100">
-            <Progressing pageLoader />
-        </div>
-    )
 
     const renderFooter = () => (
         <div className="px-20 py-16 flex right dc__gap-12 dc__zi-1 dc__border-top bcn-0">
@@ -89,7 +82,7 @@ export const ConfigurationTabDrawerModal = ({
                         variant={ButtonVariantType.borderLess}
                     />
                 </div>
-                {isLoading ? renderLoadingState() : renderModalContent()}
+                {renderModalContent()}
             </div>
         </Drawer>
     )
