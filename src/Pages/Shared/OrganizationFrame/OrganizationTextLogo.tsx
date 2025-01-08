@@ -15,7 +15,7 @@
  */
 
 const OrganizationTextLogo = () => (
-    <span className="text-white fs-12 fw-7 lh-16 font-merriweather dc__capitalize dc__truncate">
+    <span className="text__white fs-12 fw-7 lh-16 font-merriweather dc__capitalize dc__truncate">
         {window._env_.ORGANIZATION_NAME}
     </span>
 )
