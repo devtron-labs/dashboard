@@ -885,18 +885,18 @@ table.pod__table td:last-child {
 
                 .b-suspended,
                 .b-switchedtoactiveservice {
-                    background-color: #fff0cf;
+                    background-color: var(--Y100);
                 }
 
                 .b-degraded {
-                    background-color: #ffebeb;
+                    background-color: var(--R100);
                 }
 
                 .b-progressing,
                 .b-inprogress,
                 .b-unknown,
                 .initiated {
-                    background-color: #fff0cf;
+                    background-color: var(--Y100);
                 }
 
                 b,
@@ -1473,7 +1473,7 @@ table.trigger-history {
     }
 
     td.trigger-history__cell.trigger-history__cell--artifact span {
-        background-color: #f2f2f2;
+        background-color: var(--N100);
         border-radius: 2px;
         padding: 2px 4px;
 

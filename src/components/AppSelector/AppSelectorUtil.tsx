@@ -41,7 +41,7 @@ export const appSelectorStyle = {
         flexBasis: '0px',
         justifyContent: 'flex-end',
         padding: state.selectProps.menuIsOpen ? '0 0 0 4px' : '0',
-        color: state.selectProps.menuIsOpen ? 'var(--N500)' : base.color,
+        color: state.selectProps.menuIsOpen ? 'var(--N500)' : 'var(--N900)',
         height: '30px',
     }),
     singleValue: (base, state) => ({
