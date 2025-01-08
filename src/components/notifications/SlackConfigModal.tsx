@@ -84,7 +84,7 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
                 ...prevValid,
                 configName: validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, form.configName),
                 webhookUrl: validateKeyValueConfig(ConfigurationFieldKeys.WEBHOOK_URL, form.webhookUrl),
-                projectId: validateKeyValueConfig(ConfigurationFieldKeys.PROJECT_ID, selectedProject?.value),
+                project_id: validateKeyValueConfig(ConfigurationFieldKeys.PROJECT_ID, form.id || ''),
             }))
             renderErrorToast()
             return
@@ -169,21 +169,21 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
         setSelectedProject(_selectedProject)
         setForm((prevForm) => ({
             ...prevForm,
-            projectId: Number(_selectedProject.value),
+            projectId: Number(_selectedProject?.value),
         }))
         setFormValid((prevValid) => ({
             ...prevValid,
-            projectId: validateKeyValueConfig(ConfigurationFieldKeys.PROJECT_ID, _selectedProject.value),
+            project_id: validateKeyValueConfig(ConfigurationFieldKeys.PROJECT_ID, _selectedProject?.value ?? ''),
         }))
     }
 
     const handleProjectBlur = () => {
-        const selectedValue = projectRef.current?.getValue()[0] || {}
+        const selectedValue = selectedProject
         setFormValid((prevValid) => ({
             ...prevValid,
             [ConfigurationFieldKeys.PROJECT_ID]: validateKeyValueConfig(
                 ConfigurationFieldKeys.PROJECT_ID,
-                selectedValue.value,
+                selectedValue?.value ?? '',
             ),
         }))
     }

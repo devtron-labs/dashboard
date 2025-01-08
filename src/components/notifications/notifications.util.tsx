@@ -227,13 +227,14 @@ export const getSMTPDefaultConfiguration = (shouldBeDefault: boolean) => ({
 export const renderText = (text: string, isLink: boolean = false, linkTo?: () => void, dataTestId?: string) => (
     <Tooltip content={text} placement="bottom" showOnTruncate={!!text} className="mxh-210 dc__hscroll" interactive>
         {isLink ? (
-            <a
+            <button
+                type="button"
                 onClick={linkTo}
-                className="lh-20 dc__ellipsis-right fs-13 cb-5 dc__no-decor cursor"
+                className="dc__unset-button-styles lh-20 dc__ellipsis-right fs-13 cb-5 dc__no-decor cursor"
                 data-testid={dataTestId}
             >
                 {text || '-'}
-            </a>
+            </button>
         ) : (
             <p className="lh-20 dc__ellipsis-right m-0 fs-13" data-testid={dataTestId}>
                 {text || '-'}
@@ -300,15 +301,9 @@ export const getEmptyVariableDataRow = (): WebhookDataRowType => {
     }
 }
 
-export const validateKeyValueConfig = (
-    key: ConfigurationFieldKeys,
-    value: string,
-): FormError  => {
+export const validateKeyValueConfig = (key: ConfigurationFieldKeys, value: string): FormError => {
     if (!value) {
         return { isValid: false, message: REQUIRED_FIELD_MSG }
-    }
-    if (value.length > 250) {
-        return { isValid: false, message: 'Value should be less than 250 characters' }
     }
     if (key === ConfigurationFieldKeys.FROM_EMAIL) {
         return { isValid: validateEmail(value), message: validateEmail(value) ? '' : 'Invalid email' }
