@@ -30,8 +30,13 @@ import {
 import { useHistory } from 'react-router-dom'
 import { saveEmailConfiguration, getSESConfiguration } from './notifications.service'
 import awsRegionList from '../common/awsRegionList.json'
-import { SESConfigModalProps } from './types'
-import { getFormValidated, getSESDefaultConfiguration, validateKeyValueConfig } from './notifications.util'
+import { SESConfigModalProps, SESFormType } from './types'
+import {
+    getFormValidated,
+    getSESDefaultConfiguration,
+    renderErrorToast,
+    validateKeyValueConfig,
+} from './notifications.util'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, DefaultSESValidations } from './constants'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
 import { DefaultCheckbox } from './DefaultCheckbox'
@@ -46,7 +51,7 @@ const SESConfigModal = ({
     const history = useHistory()
     const selectRef = useRef(null)
 
-    const [form, setForm] = useState(getSESDefaultConfiguration(shouldBeDefault))
+    const [form, setForm] = useState<SESFormType>(getSESDefaultConfiguration(shouldBeDefault))
     const [isFormValid, setFormValid] = useState(DefaultSESValidations)
 
     const awsRegionListParsed = awsRegionList
@@ -63,7 +68,6 @@ const SESConfigModal = ({
             setForm({
                 ...response.result,
                 isLoading: false,
-                isError: true,
                 region: awsRegion,
                 secretKey: DEFAULT_SECRET_PLACEHOLDER, // Masked secretKey for security
             })
@@ -167,15 +171,10 @@ const SESConfigModal = ({
                 configName: validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, form.configName),
                 accessKey: validateKeyValueConfig(ConfigurationFieldKeys.ACCESS_KEY, form.accessKey),
                 secretKey: validateKeyValueConfig(ConfigurationFieldKeys.SECRET_KEY, form.secretKey),
-                region: validateKeyValueConfig(ConfigurationFieldKeys.REGION, form.region?.value),
+                region: validateKeyValueConfig(ConfigurationFieldKeys.REGION, form.region?.value?.toString()),
                 fromEmail: validateKeyValueConfig(ConfigurationFieldKeys.FROM_EMAIL, form.fromEmail),
             })
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Some required fields are missing or Invalid',
-            })
-
+            renderErrorToast()
             return
         }
 
@@ -207,7 +206,7 @@ const SESConfigModal = ({
                 placeholder="Configuration name"
                 autoFocus
                 isRequiredField
-                error={isFormValid.configName.message}
+                error={isFormValid[ConfigurationFieldKeys.CONFIG_NAME].message}
             />
             <CustomInput
                 label="Access Key ID"
@@ -218,7 +217,7 @@ const SESConfigModal = ({
                 onBlur={handleBlur}
                 placeholder="Enter access key ID"
                 isRequiredField
-                error={isFormValid.accessKey.message}
+                error={isFormValid[ConfigurationFieldKeys.ACCESS_KEY].message}
             />
             <CustomInput
                 label="Secret Access Key"
@@ -229,7 +228,7 @@ const SESConfigModal = ({
                 onBlur={handleBlur}
                 placeholder="Enter Secret access Key"
                 isRequiredField
-                error={isFormValid.secretKey.message}
+                error={isFormValid[ConfigurationFieldKeys.SECRET_KEY].message}
             />
             <SelectPicker
                 inputId="aws-region"
@@ -243,7 +242,7 @@ const SESConfigModal = ({
                 options={awsRegionListParsed}
                 size={ComponentSizeType.large}
                 name={ConfigurationFieldKeys.REGION}
-                error={isFormValid.region.message}
+                error={isFormValid[ConfigurationFieldKeys.REGION].message}
                 selectRef={selectRef}
             />
 
@@ -257,7 +256,7 @@ const SESConfigModal = ({
                 placeholder="Enter sender's email"
                 onChange={handleInputChange}
                 isRequiredField
-                error={isFormValid.fromEmail.message}
+                error={isFormValid[ConfigurationFieldKeys.FROM_EMAIL].message}
                 helperText="This email must be verified with SES."
             />
             <DefaultCheckbox

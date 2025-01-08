@@ -4,6 +4,7 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     Drawer,
+    Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
 import { ConfigurationsTabTypes } from './constants'
@@ -40,12 +41,18 @@ export const ConfigurationTabDrawerModal = ({
         </div>
     )
 
-    const renderModalContent = () => (
-        <div className="flexbox-col flex-grow-1 mh-0">
-            {renderContent()}
-            {renderFooter()}
-        </div>
-    )
+    const renderModalContent = () => {
+        if (isLoading) {
+            return <Progressing pageLoader />
+        }
+        return (
+            <div className="flexbox-col flex-grow-1 mh-0">
+                {renderContent()}
+                {renderFooter()}
+            </div>
+        )
+    }
+
     return (
         <Drawer position="right" onEscape={closeModal}>
             <div

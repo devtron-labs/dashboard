@@ -23,6 +23,7 @@ import {
     ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
+import { ReactComponent as ErrorIcon } from '@Icons/ic-warning.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { getWebhookAttributes, getWebhookConfiguration, saveUpdateWebhookConfiguration } from './notifications.service'
 import {
@@ -32,19 +33,18 @@ import {
     DefaultWebhookValidations,
 } from './constants'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
-import { WebhookConfigModalProps, WebhookDataRowType } from './types'
+import { WebhookConfigModalProps, WebhookDataRowType, WebhookFormTypes, WebhookValidations } from './types'
 import { WebhookConfigDynamicDataTable } from './WebhookConfigDynamicDataTable'
-import { validateKeyValueConfig, validatePayloadField } from './notifications.util'
+import { renderErrorToast, validateKeyValueConfig, validatePayloadField } from './notifications.util'
 
 export const WebhookConfigModal = ({
     webhookConfigId,
     closeWebhookConfigModal,
     onSaveSuccess,
 }: WebhookConfigModalProps) => {
-    const [form, setForm] = useState(DefaultWebhookConfig)
-    const [isFormValid, setFormValid] = useState(DefaultWebhookValidations)
-
+    const [form, setForm] = useState<WebhookFormTypes>(DefaultWebhookConfig)
     const [rows, setRows] = useState<WebhookDataRowType[]>()
+    const [isFormValid, setFormValid] = useState<WebhookValidations>(DefaultWebhookValidations)
 
     const history = useHistory()
     const [webhookAttribute, setWebhookAttribute] = useState({})
@@ -170,11 +170,7 @@ export const WebhookConfigModal = ({
                 webhookUrl: validateKeyValueConfig(ConfigurationFieldKeys.WEBHOOK_URL, form.webhookUrl),
                 payload: validatePayloadField(form.payload),
             })
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Some required fields are missing or Invalid',
-            })
+            renderErrorToast()
         }
 
         if (!getAllFieldsValidated()) {
@@ -216,7 +212,7 @@ export const WebhookConfigModal = ({
                     value={form.configName}
                     onChange={handleInputChange}
                     placeholder="Enter name"
-                    error={isFormValid.configName.message}
+                    error={isFormValid[ConfigurationFieldKeys.CONFIG_NAME].message}
                     name={ConfigurationFieldKeys.CONFIG_NAME}
                     dataTestid="webhook-modal__name"
                     isRequiredField
@@ -228,7 +224,7 @@ export const WebhookConfigModal = ({
                     value={form.webhookUrl}
                     onChange={handleInputChange}
                     placeholder="Enter Incoming Webhook URL"
-                    error={isFormValid.webhookUrl.message}
+                    error={isFormValid[ConfigurationFieldKeys.WEBHOOK_URL].message}
                     name={ConfigurationFieldKeys.WEBHOOK_URL}
                     dataTestid="webhook-modal__url"
                     isRequiredField
@@ -247,7 +243,12 @@ export const WebhookConfigModal = ({
                             height={150}
                         />
                     </div>
-                    <span className="form__error">{isFormValid.payload.message}</span>
+                    {isFormValid[ConfigurationFieldKeys.PAYLOAD].message && (
+                        <div className="flex left dc__gap-4 cr-5 fs-11 lh-16 fw-4">
+                            <ErrorIcon className="icon-dim-16 p-1 form__icon--error dc__no-shrink dc__align-self-start" />
+                            <span>{isFormValid[ConfigurationFieldKeys.PAYLOAD].message}</span>
+                        </div>
+                    )}
                 </div>
             </div>
             {renderConfigureLinkInfoColumn()}

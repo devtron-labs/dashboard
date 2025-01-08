@@ -7,12 +7,13 @@ import {
     ToastVariantType,
     SelectPicker,
     ComponentSizeType,
+    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { useHistory } from 'react-router-dom'
 import { saveSlackConfiguration, updateSlackConfiguration, getSlackConfiguration } from './notifications.service'
 import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
-import { SlackConfigModalProps } from './types'
+import { ProjectListTypes, SlackConfigModalProps, SlackFormType } from './types'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, DefaultSlackKeys, DefaultSlackValidations } from './constants'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
 import { renderErrorToast, validateKeyValueConfig } from './notifications.util'
@@ -25,27 +26,33 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
     const history = useHistory()
     const projectRef = useRef(null)
 
-    const [projectList, setProjectList] = useState<Array<{ id: number; name: string; active: boolean }>>([])
-    const [selectedProject, setSelectedProject] = useState<{ label: string; value: string }>()
-    const [form, setForm] = useState(DefaultSlackKeys)
+    const [projectList, setProjectList] = useState<ProjectListTypes[]>([])
+    const [selectedProject, setSelectedProject] = useState<OptionType>()
+    const [form, setForm] = useState<SlackFormType>(DefaultSlackKeys)
     const [isFormValid, setFormValid] = useState(DefaultSlackValidations)
+
+    const fetchSlackConfig = async () => {
+        setForm((prevForm) => ({ ...prevForm, isLoading: true }))
+        Promise.all([getSlackConfiguration(slackConfigId), getProjectListMin()])
+            .then(([slackConfigRes, projectListRes]) => {
+                setProjectList(projectListRes.result || [])
+                setForm({ ...slackConfigRes.result, isLoading: false })
+                setFormValid(DefaultSlackValidations)
+                setSelectedProject({
+                    label: projectListRes.result.find((p) => p.id === slackConfigRes.result.projectId).name,
+                    value: slackConfigRes.result.projectId,
+                })
+            })
+            .catch((error) => {
+                showError(error)
+                setForm((prevForm) => ({ ...prevForm, isLoading: false }))
+            })
+    }
 
     useEffect(() => {
         if (slackConfigId) {
-            setForm((prevForm) => ({ ...prevForm, isLoading: true }))
-            Promise.all([getSlackConfiguration(slackConfigId), getProjectListMin()])
-                .then(([slackConfigRes, projectListRes]) => {
-                    setProjectList(projectListRes.result || [])
-                    setForm({ ...slackConfigRes.result, isLoading: false, isError: false })
-                    setFormValid(DefaultSlackValidations)
-                    setSelectedProject({
-                        label: projectListRes.result.find((p) => p.id === slackConfigRes.result.projectId).name,
-                        value: slackConfigRes.result.projectId,
-                    })
-                })
-                .catch((error) => {
-                    showError(error)
-                })
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            fetchSlackConfig()
         } else {
             getProjectListMin()
                 .then((response) => {
@@ -74,17 +81,17 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
 
     const getAllFieldsValidated = (): boolean => {
         const { configName, webhookUrl } = form
-        return !!configName && !!webhookUrl && !!selectedProject.value
+        return !!configName && !!webhookUrl && !!selectedProject?.value
     }
 
     const saveSlackConfig = () => {
         if (!getAllFieldsValidated()) {
-            setForm((prevForm) => ({ ...prevForm, isLoading: false, isError: true }))
+            setForm((prevForm) => ({ ...prevForm, isLoading: false }))
             setFormValid((prevValid) => ({
                 ...prevValid,
                 configName: validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, form.configName),
                 webhookUrl: validateKeyValueConfig(ConfigurationFieldKeys.WEBHOOK_URL, form.webhookUrl),
-                project_id: validateKeyValueConfig(ConfigurationFieldKeys.PROJECT_ID, form.id || ''),
+                projectId: validateKeyValueConfig(ConfigurationFieldKeys.PROJECT_ID, selectedProject?.value ?? ''),
             }))
             renderErrorToast()
             return
@@ -102,7 +109,7 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
         const promise = slackConfigId ? updateSlackConfiguration(requestBody) : saveSlackConfiguration(requestBody)
         promise
             .then(() => {
-                setForm((prevForm) => ({ ...prevForm, isLoading: false, isError: false }))
+                setForm((prevForm) => ({ ...prevForm, isLoading: false }))
                 ToastManager.showToast({
                     variant: ToastVariantType.success,
                     description: 'Saved Successfully',
@@ -173,7 +180,7 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
         }))
         setFormValid((prevValid) => ({
             ...prevValid,
-            project_id: validateKeyValueConfig(ConfigurationFieldKeys.PROJECT_ID, _selectedProject?.value ?? ''),
+            projectId: validateKeyValueConfig(ConfigurationFieldKeys.PROJECT_ID, _selectedProject?.value ?? ''),
         }))
     }
 

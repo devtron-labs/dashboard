@@ -1,5 +1,7 @@
 // ------------ Configuration Constants ------------
 
+import { SlackFormType } from './types'
+
 export enum ConfigurationsTabTypes {
     SES = 'ses',
     SMTP = 'smtp',
@@ -29,7 +31,7 @@ export enum ConfigurationFieldKeys {
     SECRET_KEY = 'secretKey',
     REGION = 'region',
     FROM_EMAIL = 'fromEmail',
-    PROJECT_ID = 'project_id',
+    PROJECT_ID = 'projectId',
     WEBHOOK_URL = 'webhookUrl',
     CONFIG_ID = 'configId',
     HOST = 'host',
@@ -52,6 +54,18 @@ export const DefaultSESValidations = {
     fromEmail: ConfigValidationKeys,
 }
 
+export enum SESSortableHeaderKeys {
+    CONFIG_NAME = ConfigurationFieldKeys.CONFIG_NAME,
+    ACCESS_KEY = ConfigurationFieldKeys.ACCESS_KEY,
+    EMAIL = ConfigurationFieldKeys.FROM_EMAIL,
+}
+
+export const SESSortableHeaderTitle = {
+    CONFIG_NAME: 'Name',
+    ACCESS_KEY: 'Access Key Id',
+    EMAIL: "Sender's Email",
+}
+
 // ------------ SMTP Configuration Constants ------------
 
 export const DefaultSMTPValidation = {
@@ -65,17 +79,16 @@ export const DefaultSMTPValidation = {
 
 // ------------ Slack Configuration Constants ------------
 
-export const DefaultSlackKeys = {
+export const DefaultSlackKeys: SlackFormType = {
     [ConfigurationFieldKeys.PROJECT_ID]: 0,
     [ConfigurationFieldKeys.CONFIG_NAME]: '',
     [ConfigurationFieldKeys.WEBHOOK_URL]: '',
     isLoading: false,
-    isError: false,
-    id: 0,
+    id: null,
 }
 
 export const DefaultSlackValidations = {
-    project_id: ConfigValidationKeys,
+    projectId: ConfigValidationKeys,
     configName: ConfigValidationKeys,
     webhookUrl: ConfigValidationKeys,
 }
@@ -88,7 +101,6 @@ export const DefaultWebhookConfig = {
     configName: '',
     webhookUrl: '',
     isLoading: false,
-    isError: false,
     payload: '',
     header: [DefaultHeaders],
 }

@@ -36,7 +36,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, ConfigurationTabText } from './constants'
 import { validateEmail } from '../common'
-import { FormError, FormValidation, WebhookDataRowType, WebhookHeaderKeyType, WebhookRowCellType } from './types'
+import { FormError, FormValidation, SESFormType, SMTPFormType, WebhookDataRowType, WebhookHeaderKeyType, WebhookRowCellType } from './types'
 import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
 
 export const multiSelectStyles = {
@@ -201,7 +201,7 @@ export const getConfigurationTabTextWithIcon = () => [
     },
 ]
 
-export const getSESDefaultConfiguration = (shouldBeDefault: boolean) => ({
+export const getSESDefaultConfiguration = (shouldBeDefault: boolean): SESFormType => ({
     configName: '',
     accessKey: '',
     secretKey: '',
@@ -209,10 +209,9 @@ export const getSESDefaultConfiguration = (shouldBeDefault: boolean) => ({
     fromEmail: '',
     default: shouldBeDefault,
     isLoading: false,
-    isError: true,
 })
 
-export const getSMTPDefaultConfiguration = (shouldBeDefault: boolean) => ({
+export const getSMTPDefaultConfiguration = (shouldBeDefault: boolean): SMTPFormType => ({
     configName: '',
     host: '',
     port: '',
@@ -221,7 +220,6 @@ export const getSMTPDefaultConfiguration = (shouldBeDefault: boolean) => ({
     fromEmail: '',
     default: shouldBeDefault,
     isLoading: false,
-    isError: true,
 })
 
 export const renderText = (text: string, isLink: boolean = false, linkTo?: () => void, dataTestId?: string) => (
@@ -343,6 +341,9 @@ export const validatePayloadField = (value: string): FormError => {
     let isValid = true
     let errorMessage = ''
     // Validate if the value is a valid JSON string
+    if (!value) {
+        return { isValid: false, message: REQUIRED_FIELD_MSG }
+    }
     try {
         JSON.parse(value)
     } catch {
