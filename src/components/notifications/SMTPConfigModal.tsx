@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 import { useState, useEffect } from 'react'
-import {
-    showError,
-    Checkbox,
-    CustomInput,
-    CHECKBOX_VALUE,
-    ToastManager,
-    ToastVariantType,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { showError, CustomInput, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import { getSMTPConfiguration, saveEmailConfiguration } from './notifications.service'
 import { ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
@@ -29,6 +22,7 @@ import { ConfigurationFieldKeys, ConfigurationsTabTypes, DefaultSMTPValidation }
 import { SMTPConfigModalProps } from './types'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
 import { getFormValidated, getSMTPDefaultConfiguration, validateKeyValueConfig } from './notifications.util'
+import { DefaultCheckbox } from './DefaultCheckbox'
 
 export const SMTPConfigModal = ({
     smtpConfigId,
@@ -193,15 +187,11 @@ export const SMTPConfigModal = ({
                 isRequiredField
                 error={isFormValid.fromEmail.message}
             />
-            <Checkbox
-                isChecked={form.default}
-                value={CHECKBOX_VALUE.CHECKED}
-                disabled={shouldBeDefault}
-                onChange={handleCheckbox}
-                name={ConfigurationFieldKeys.DEFAULT}
-            >
-                Set as default configuration to send emails
-            </Checkbox>
+            <DefaultCheckbox
+                shouldBeDefault={shouldBeDefault}
+                handleCheckbox={handleCheckbox}
+                isDefault={form.default}
+            />
         </div>
     )
 

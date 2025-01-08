@@ -17,9 +17,7 @@
 import { useEffect, useRef, useState } from 'react'
 import {
     showError,
-    Checkbox,
     CustomInput,
-    CHECKBOX_VALUE,
     ToastManager,
     ToastVariantType,
     SelectPicker,
@@ -36,6 +34,7 @@ import { SESConfigModalProps } from './types'
 import { getFormValidated, getSESDefaultConfiguration, validateKeyValueConfig } from './notifications.util'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, DefaultSESValidations } from './constants'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
+import { DefaultCheckbox } from './DefaultCheckbox'
 
 const SESConfigModal = ({
     sesConfigId,
@@ -241,16 +240,11 @@ const SESConfigModal = ({
                 error={isFormValid.fromEmail.message}
                 helperText="This email must be verified with SES."
             />
-            <Checkbox
-                isChecked={form.default}
-                value={CHECKBOX_VALUE.CHECKED}
-                disabled={shouldBeDefault}
-                onChange={handleCheckbox}
-                dataTestId="add-ses-default-checkbox"
-                name="default"
-            >
-                Set as default configuration to send emails
-            </Checkbox>
+            <DefaultCheckbox
+                shouldBeDefault={shouldBeDefault}
+                handleCheckbox={handleCheckbox}
+                isDefault={form.default}
+            />
         </div>
     )
 

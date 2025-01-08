@@ -44,7 +44,9 @@ const SlackConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTab
                         className="slack-config-grid configuration-tab__table-row dc__gap-16 dc__hover-n50"
                     >
                         {getConfigTabIcons(ConfigurationsTabTypes.SLACK)}
-                        {renderText(slackConfig.slackChannel)}
+                        <div className="slack-config-item__name flex left dc__gap-8">
+                            {renderText(slackConfig.slackChannel, true, onClickSlackConfigEdit(slackConfig.id))}
+                        </div>
                         {renderText(slackConfig.webhookUrl)}
                         <ConfigTableRowActionButton
                             onClickEditRow={onClickSlackConfigEdit(slackConfig.id)}

@@ -217,3 +217,9 @@ export type HandleRowUpdateActionProps = VariableDataTableAction & {
 export type FormValidation = {
     [key: string]: { isValid: boolean; message: string }
 }
+
+export interface DefaultCheckboxProps {
+    shouldBeDefault: boolean
+    handleCheckbox: () => void
+    isDefault: boolean
+}
