@@ -1532,7 +1532,7 @@ button.anchor {
 .tippy-box.default-tt {
     font-size: 12px;
     line-height: 1.6;
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    border: 1px solid var(--white-40);
     background-color: var(--N900);
     color: var(--N0);
 
@@ -4385,7 +4385,7 @@ textarea::placeholder {
 }
 
 .dc__bg-n0--opacity-0_2:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: var(--white-20);
 }
 
 .dc__hover-n0:hover {
