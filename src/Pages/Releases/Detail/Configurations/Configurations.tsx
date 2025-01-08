@@ -69,7 +69,7 @@ export const Configurations = () => {
         () => (environments ? environments.find(({ id }) => +envId === id) : null),
         [environments, envId, isEnvListLoading],
     )
-    const approvalConfigForEnv = envIdToEnvApprovalConfigurationMap[selectedEnv?.id]?.approvalConfigurationMap
+    const approvalConfigForEnv = envIdToEnvApprovalConfigurationMap?.[selectedEnv?.id]?.approvalConfigurationMap
     const showConfig = !!selectedApp && !!selectedEnv
 
     // RENDERERS
@@ -85,7 +85,7 @@ export const Configurations = () => {
                     showDeploymentTemplate
                     showComparison
                     hideEnvSelector
-                    envIdToEnvApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                    appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
                 />
             </Route>
         </Switch>
