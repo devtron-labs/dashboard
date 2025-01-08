@@ -154,7 +154,7 @@ export const InputPluginSelection = ({
                 data-key={tag?.label || ''}
                 className={
                     isHighlighted
-                        ? 'dc__bg-n50 dc__ellipsis-right lh-20 fs-13 fw-4 pt-6 pr-8 pb-6 pl-8'
+                        ? 'bg__secondary dc__ellipsis-right lh-20 fs-13 fw-4 pt-6 pr-8 pb-6 pl-8'
                         : 'dc__hover-n50 dc__ellipsis-right lh-20 fs-13 fw-4 pt-6 pr-8 pb-6 pl-8 cursor'
                 }
                 onClick={(e) => onSelectValue(e, tag)}
@@ -219,7 +219,7 @@ export const InputPluginSelection = ({
     const popupMenuBody = activeElement === `tag-${selectedVariableIndex}` ? renderSuggestions() : null
     return (
         <PopupMenu autoClose autoPosition>
-            <PopupMenu.Button rootClassName="dc__bg-n50 flex top dc__no-border-imp flexbox dc__align-items-center dc__content-start">
+            <PopupMenu.Button rootClassName="bg__secondary flex top dc__no-border-imp flexbox dc__align-items-center dc__content-start">
                 <ResizableTagTextArea
                     className={`dc__position-rel ${
                         variableData.refVariableStage ||

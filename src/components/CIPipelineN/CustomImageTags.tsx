@@ -151,7 +151,7 @@ function CustomImageTags({
                     ) : (
                         <div className="flexbox">
                             Tag Preview:
-                            <div className="ml-4 dc__bg-n50 dc__ff-monospace flexbox dc__w-fit-content pl-4 pr-4 br-4">
+                            <div className="ml-4 bg__secondary dc__ff-monospace flexbox dc__w-fit-content pl-4 pr-4 br-4">
                                 <div className="dc__registry-icon docker mr-5" />
                                 {formData.customTag?.tagPattern?.replace(
                                     '{x}',
@@ -174,7 +174,7 @@ function CustomImageTags({
                     <input
                         tabIndex={2}
                         type="number"
-                        className="form__input form__input-pl-8 w-80px-imp ml-8 mr-8 dc__bg-n50"
+                        className="form__input form__input-pl-8 w-80px-imp ml-8 mr-8 bg__secondary"
                         name="image_counter"
                         autoComplete="off"
                         value={formData.customTag?.counterX}
