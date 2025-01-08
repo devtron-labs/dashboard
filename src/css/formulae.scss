@@ -393,12 +393,12 @@ $color-suffix: 00;
     }
 
     &.warning {
-        @include cta(var(--Y500), var(--N900), transparent);
+        @include cta(var(--Y500), var(--black), transparent);
 
         &:hover,
         &:active,
         &:focus {
-            @include cta(var(--Y600), var(--N900), transparent);
+            @include cta(var(--Y600), var(--black), transparent);
         }
     }
 

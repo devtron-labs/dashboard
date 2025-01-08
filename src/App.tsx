@@ -323,14 +323,6 @@ export default function App() {
         )
     }, [bgUpdated])
 
-    useEffect(() => {
-        // Need to update the html element since there are elements outside of the #root div as well
-        const html = document.querySelector('html')
-        if (html) {
-            html.setAttribute('class', `theme__${currentTheme}`)
-        }
-    }, [currentTheme])
-
     return (
         <div className={customThemeClassName}>
             <Suspense fallback={null}>
