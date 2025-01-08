@@ -242,7 +242,7 @@ export const renderText = (text: string, isLink: boolean = false, linkTo?: () =>
 
 export const renderDefaultTag = (isDefault: boolean) => {
     if (isDefault) {
-        return <span className="en-2 bw-1 br-4 fs-12 px-6 lh-20 cn-7">Default</span>
+        return <span className="br-4 fs-12 px-6 lh-20 cb-7 bcb-1 py-2">Default</span>
     }
     return null
 }
