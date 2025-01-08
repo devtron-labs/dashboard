@@ -83,6 +83,18 @@ export const getCommonSelectStyle = (styleOverrides = {}) => {
             ...base,
             color: 'var(--N600)',
         }),
+        singleValue: (base) => ({
+            ...base,
+            color: 'var(--N900)',
+        }),
+        input: (base) => ({
+            ...base,
+            color: 'var(--N900)',
+        }),
+        menu: (base) => ({
+            ...base,
+            backgroundColor: 'var(--bg-menu)',
+        }),
         ...styleOverrides,
     }
 }

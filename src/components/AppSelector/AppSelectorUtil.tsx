@@ -46,7 +46,7 @@ export const appSelectorStyle = {
     }),
     singleValue: (base, state) => ({
         ...state,
-        color: state.selectProps.menuIsOpen ? 'var(--N500)' : base.color,
+        color: state.selectProps.menuIsOpen ? 'var(--N500)' : 'var(--N900)',
     }),
     menu: (base, state) => ({
         ...base,
@@ -71,6 +71,7 @@ export const appSelectorStyle = {
         ...base,
         margin: '0',
         flex: 'unset',
+        color: 'var(--N900)',
     }),
     dropdownIndicator: (base, state) => ({
         ...base,

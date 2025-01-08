@@ -197,6 +197,7 @@ export const appGroupAppSelectorStyle = {
     }),
     singleValue: (base, state) => ({
         ...base,
+        color: 'var(--N900)',
         fontWeight: '500',
     }),
     placeholder: (base, state) => ({
@@ -241,6 +242,10 @@ export const appGroupAppSelectorStyle = {
     menu: (base) => ({
         ...base,
         backgroundColor: 'var(--bg-primary)',
+    }),
+    input: (base) => ({
+        ...base,
+        color: 'var(--N900)',
     }),
 }
 
