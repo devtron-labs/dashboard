@@ -66,6 +66,7 @@ export const customMultiSelectStyles = {
         ...base,
         top: 'auto',
         width: '100%',
+        backgroundColor: 'var(--bg-menu)',
     }),
     menuList: (base, state) => ({
         ...base,
