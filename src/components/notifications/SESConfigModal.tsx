@@ -197,7 +197,7 @@ const SESConfigModal = ({
                 value={form.accessKey}
                 onChange={handleInputChange}
                 onBlur={handleBlur}
-                placeholder="Access Key ID"
+                placeholder="Enter access key ID"
                 isRequiredField
                 error={isFormValid.accessKey.message}
             />
@@ -208,7 +208,7 @@ const SESConfigModal = ({
                 value={form.secretKey}
                 onChange={handleInputChange}
                 onBlur={handleBlur}
-                placeholder="Secret Access Key"
+                placeholder="Enter Secret access Key"
                 isRequiredField
                 error={isFormValid.secretKey.message}
             />
@@ -218,7 +218,7 @@ const SESConfigModal = ({
                 classNamePrefix="add-ses-aws-region"
                 required
                 value={form.region}
-                placeholder="Select AWS Region"
+                placeholder="Select region"
                 onBlur={handleAWSBlur}
                 onChange={handleAWSRegionChange}
                 options={awsRegionListParsed}
@@ -235,7 +235,7 @@ const SESConfigModal = ({
                 name={ConfigurationFieldKeys.FROM_EMAIL}
                 value={form.fromEmail}
                 onBlur={handleBlur}
-                placeholder="Email"
+                placeholder="Enter sender's email"
                 onChange={handleInputChange}
                 isRequiredField
                 error={isFormValid.fromEmail.message}

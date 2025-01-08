@@ -3460,7 +3460,7 @@ textarea,
 // Height in pixels
 .dc__height-inherit {
     height: inherit;
-    }
+}
 
 .dc__height-auto {
     height: auto;
@@ -3470,6 +3470,7 @@ textarea,
     }
 
 }
+
 .dc__min-width-fit-content {
     min-width: fit-content !important;
 }
@@ -4382,6 +4383,10 @@ textarea::placeholder {
 .dc__hover-n50:hover,
 .dc__bg-n50 {
     background-color: var(--N50);
+}
+
+.dc__hover-text-n90:hover {
+    color: var(--N900) !important;
 }
 
 .dc__bg-g5 {
@@ -5350,9 +5355,14 @@ details[open] {
     background: inherit;
     border: none;
     padding: inherit;
-    white-space: pre-wrap;       /* Since CSS 2.1 */
-    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
-    white-space: -pre-wrap;      /* Opera 4-6 */
-    white-space: -o-pre-wrap;    /* Opera 7 */
-    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    white-space: pre-wrap;
+    /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;
+    /* Mozilla, since 1999 */
+    white-space: -pre-wrap;
+    /* Opera 4-6 */
+    white-space: -o-pre-wrap;
+    /* Opera 7 */
+    word-wrap: break-word;
+    /* Internet Explorer 5.5+ */
 }

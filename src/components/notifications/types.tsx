@@ -68,7 +68,7 @@ export interface SMTPConfigModalState {
 }
 
 export interface ConfigurationTabState {
-    view: string
+    isLoading: boolean
     sesConfigId: number
     slackConfigId: number
     smtpConfigId: number
@@ -85,14 +85,13 @@ export interface ConfigurationTabState {
     slackConfigurationList: Array<{ id: number; slackChannel: string; projectId: number; webhookUrl: string }>
     webhookConfigurationList: Array<{ id: number; name: string; webhookUrl: string }>
     abortAPI: boolean
-    deleting: boolean
     confirmation: boolean
     sesConfig: any
     smtpConfig: any
     slackConfig: any
     webhookConfig: any
-    showDeleteConfigModalType: ConfigurationsTabTypes
     activeTab?: ConfigurationsTabTypes
+    showCannotDeleteDialogModal: boolean
 }
 
 export interface ConfigurationTableProps {

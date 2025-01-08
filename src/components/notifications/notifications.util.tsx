@@ -247,19 +247,6 @@ export const renderDefaultTag = (isDefault: boolean) => {
     return null
 }
 
-export const getDeleteConfigComponent = (showDeleteConfigModalType: ConfigurationsTabTypes): string => {
-    if (showDeleteConfigModalType === ConfigurationsTabTypes.SLACK) {
-        return ConfigurationsTabTypes.SLACK
-    }
-    if (showDeleteConfigModalType === ConfigurationsTabTypes.SES) {
-        return ConfigurationsTabTypes.SES
-    }
-    if (showDeleteConfigModalType === ConfigurationsTabTypes.WEBHOOK) {
-        return ConfigurationsTabTypes.WEBHOOK
-    }
-    return ConfigurationsTabTypes.SMTP
-}
-
 export const getTableHeaders = (): DynamicDataTableHeaderType<WebhookHeaderKeyType>[] => [
     { label: 'Header key', key: 'key', width: '1fr' },
     { label: 'Value', key: 'value', width: '1fr' },

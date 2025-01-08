@@ -38,7 +38,7 @@ export const SMTPConfigurationTable = ({ state, deleteClickHandler }: Configurat
                 <p className="smtp-config-table__email dc__truncate-text flex left m-0">Sender&apos; Email</p>
                 <p className="smtp-config-table__action" aria-label="Action" />
             </div>
-            <div className="h-100">
+            <div className="flex-grow-1">
                 {smtpConfigurationList.map((smtpConfig) => (
                     <div
                         data-testid={`smtp-container-${smtpConfig.name}`}
