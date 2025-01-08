@@ -15,9 +15,14 @@
  */
 
 import { RouteComponentProps } from 'react-router-dom'
-import { ServerError, ResponseType, DynamicDataTableRowType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ServerError,
+    ResponseType,
+    DynamicDataTableRowType,
+    SelectPickerOptionType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { VariableDataTableActionType } from '@Components/CIPipelineN/VariableDataTable/types'
-import { ConfigurationsTabTypes } from './constants'
+import { ConfigurationFieldKeys, ConfigurationsTabTypes } from './constants'
 
 export interface NotifierProps extends RouteComponentProps<{ id: string }> {}
 
@@ -27,6 +32,7 @@ export interface NotifierState {
     successMessage: string | null
     channel: string
 }
+
 export interface SMTPConfigResponseType extends ResponseType {
     result?: {
         configName: string
@@ -44,35 +50,18 @@ export enum EMAIL_AGENT {
     SMTP = 'SMTP',
 }
 
-export interface SMTPConfigModalState {
-    view: string
-    form: {
-        configName: string
-        port: number
-        host: string
-        authUser: string
-        authPassword: string
-        fromEmail: string
-        default: boolean
-        isLoading: boolean
-        isError: boolean
-    }
-    isValid: {
-        configName: boolean
-        port: boolean
-        host: boolean
-        authUser: boolean
-        authPassword: boolean
-        fromEmail: boolean
-    }
+export interface SMTPConfigModalProps {
+    smtpConfigId: number
+    shouldBeDefault: boolean
+    selectSMTPFromChild?: (smtpConfigId: number) => void
+    onSaveSuccess: () => void
+    closeSMTPConfigModal?: () => void
 }
 
+// ----------------------------Configuration Tab Types----------------------------
+
 export interface ConfigurationTabState {
-    view: string
-    sesConfigId: number
-    slackConfigId: number
-    smtpConfigId: number
-    webhookConfigId: number
+    isLoading: boolean
     sesConfigurationList: Array<{ id: number; name: string; accessKeyId: string; email: string; isDefault: boolean }>
     smtpConfigurationList: Array<{
         id: number
@@ -85,14 +74,13 @@ export interface ConfigurationTabState {
     slackConfigurationList: Array<{ id: number; slackChannel: string; projectId: number; webhookUrl: string }>
     webhookConfigurationList: Array<{ id: number; name: string; webhookUrl: string }>
     abortAPI: boolean
-    deleting: boolean
     confirmation: boolean
     sesConfig: any
     smtpConfig: any
     slackConfig: any
     webhookConfig: any
-    showDeleteConfigModalType: ConfigurationsTabTypes
     activeTab?: ConfigurationsTabTypes
+    showCannotDeleteDialogModal: boolean
 }
 
 export interface ConfigurationTableProps {
@@ -100,40 +88,31 @@ export interface ConfigurationTableProps {
     deleteClickHandler: (id: number, name: string) => void
 }
 
-export interface WebhhookConfigModalState {
-    view: string
-    form: {
-        configName: string
-        webhookUrl: string
-        isLoading: boolean
-        isError: boolean
-        payload: string
-        header: HeaderType[]
-    }
-    isValid: {
-        configName: boolean
-        webhookUrl: boolean
-        payload: boolean
-    }
-    webhookAttribute: Record<string, string>
-    copyAttribute: boolean
+export interface FormError {
+    isValid: boolean
+    message: string
 }
 
-export interface HeaderType {
-    key: string
-    value: string
+export interface ConfigurationTabDrawerModalProps {
+    renderContent: () => JSX.Element
+    closeModal: () => void
+    modal: ConfigurationsTabTypes
+    isLoading: boolean
+    saveConfigModal: () => void
+    disableSave?: boolean
 }
 
-export interface CreateHeaderDetailsType {
-    index: number
-    headerData: HeaderType
-    setHeaderData: (index: number, headerData: HeaderType) => void
-    removeHeader?: (index: number) => void
+export type FormValidation = {
+    [key: string]: FormError
 }
 
-export interface WebhookAttributesResponseType extends ResponseType {
-    result?: Record<string, string>
+export interface DefaultCheckboxProps {
+    shouldBeDefault: boolean
+    handleCheckbox: () => void
+    isDefault: boolean
 }
+
+// ----------------------------Configuration Tab----------------------------
 
 export interface EmptyConfigurationViewProps {
     configTabType: ConfigurationsTabTypes
@@ -144,6 +123,15 @@ export interface ConfigurationTabSwitcherProps {
     activeTab: ConfigurationsTabTypes
 }
 
+export interface ConfigTableRowActionButtonProps {
+    onClickEditRow: () => void
+    onClickDeleteRow: any
+    rootClassName: string
+    modal: ConfigurationsTabTypes
+}
+
+// ----------------------------SES Config Modal----------------------------
+
 export interface SESConfigModalProps {
     shouldBeDefault: boolean
     selectSESFromChild?: (sesConfigId: number) => void
@@ -152,40 +140,60 @@ export interface SESConfigModalProps {
     sesConfigId: number
 }
 
+export interface SESFormType {
+    configName: string
+    accessKey: string
+    secretKey: string
+    region: SelectPickerOptionType
+    default: boolean
+    isLoading: boolean
+    fromEmail: string
+}
+
+// ----------------------------Slack Config Modal----------------------------
+
+export interface ProjectListTypes {
+    id: number
+    name: string
+    active: boolean
+}
+
 export interface SlackConfigModalProps {
     slackConfigId: number
     onSaveSuccess: () => void
     closeSlackConfigModal?: () => void
 }
 
-export interface SMTPConfigModalProps {
-    smtpConfigId: number
-    shouldBeDefault: boolean
-    selectSMTPFromChild?: (smtpConfigId: number) => void
-    onSaveSuccess: () => void
-    closeSMTPConfigModal?: () => void
+export interface SlackFormType {
+    configName: string
+    projectId: number
+    webhookUrl: string
+    isLoading: boolean
+    id: number | null
 }
 
-export interface ConfigTableRowActionButtonProps {
-    onClickEditRow: () => void
-    onClickDeleteRow: any
-    rootClassName: string
-    modal: ConfigurationsTabTypes
+// ----------------------------SMTP Config Modal----------------------------
+export interface SMTPFormType {
+    configName: string
+    port: string
+    host: string
+    authUser: string
+    authPassword: string
+    fromEmail: string
+    default: boolean
+    isLoading: boolean
 }
 
 // ----------------------------Webhook Config Modal--------------------------------
+
+export interface WebhookAttributesResponseType extends ResponseType {
+    result?: Record<string, string>
+}
+
 export interface WebhookConfigModalProps {
     webhookConfigId: number
     closeWebhookConfigModal?: () => void
     onSaveSuccess: () => void
-}
-export interface ConfigurationTabDrawerModalProps {
-    renderContent: () => JSX.Element
-    closeModal: () => void
-    modal: ConfigurationsTabTypes
-    isLoading: boolean
-    saveConfigModal: () => void
-    disableSave?: boolean
 }
 
 export type WebhookHeaderKeyType = 'key' | 'value'
@@ -219,6 +227,21 @@ export type HandleRowUpdateActionProps = VariableDataTableAction & {
     rowId: string | number
 }
 
-export type FormValidation = {
-    [key: string]: { isValid: boolean; message: string }
+export type WebhookValidations = {
+    [ConfigurationFieldKeys.CONFIG_NAME]: FormError
+    [ConfigurationFieldKeys.WEBHOOK_URL]: FormError
+    [ConfigurationFieldKeys.PAYLOAD]: FormError
+}
+
+export interface HeaderType {
+    key: string
+    value: string
+}
+
+export interface WebhookFormTypes {
+    configName: string
+    webhookUrl: string
+    isLoading: boolean
+    payload: string
+    header: HeaderType[]
 }

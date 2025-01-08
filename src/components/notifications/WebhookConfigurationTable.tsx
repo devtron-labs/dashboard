@@ -36,31 +36,33 @@ export const WebhookConfigurationTable = ({ state, deleteClickHandler }: Configu
                 <p className="webhook-config-table__webhook dc__truncate-text flex left m-0">Webhook URL</p>
                 <p className="webhook-config-table__action m-0" />
             </div>
-            {webhookConfigurationList.map((webhookConfig) => (
-                <div
-                    key={webhookConfig.id}
-                    className="configuration-tab__table-row webhook-config-grid fs-13 cn-9 dc__gap-16 py-6 px-20 dc__hover-n50"
-                    data-testid={`webhook-container-${webhookConfig.name}`}
-                >
-                    {getConfigTabIcons(ConfigurationsTabTypes.WEBHOOK)}
-                    {renderText(
-                        webhookConfig.webhookUrl,
-                        true,
-                        onClickWebhookConfigEdit(webhookConfig.id),
-                        `webhook-config-name-${webhookConfig.name}`,
-                    )}
-                    {renderText(webhookConfig.name, false, noop, `webhook-url-${webhookConfig.webhookUrl}`)}
-                    <ConfigTableRowActionButton
-                        onClickEditRow={onClickWebhookConfigEdit(webhookConfig.id)}
-                        onClickDeleteRow={deleteClickHandler(
-                            webhookConfig.id,
-                            DeleteComponentsName.WebhookConfigurationTab,
+            <div className="flex-grow-1">
+                {webhookConfigurationList.map((webhookConfig) => (
+                    <div
+                        key={webhookConfig.id}
+                        className="configuration-tab__table-row webhook-config-grid fs-13 cn-9 dc__gap-16 py-6 px-20 dc__hover-n50"
+                        data-testid={`webhook-container-${webhookConfig.name}`}
+                    >
+                        {getConfigTabIcons(ConfigurationsTabTypes.WEBHOOK)}
+                        {renderText(
+                            webhookConfig.name,
+                            true,
+                            onClickWebhookConfigEdit(webhookConfig.id),
+                            `webhook-config-name-${webhookConfig.name}`,
                         )}
-                        rootClassName="webhook-config-table__action"
-                        modal={ConfigurationsTabTypes.WEBHOOK}
-                    />
-                </div>
-            ))}
+                        {renderText(webhookConfig.name, false, noop, `webhook-url-${webhookConfig.webhookUrl}`)}
+                        <ConfigTableRowActionButton
+                            onClickEditRow={onClickWebhookConfigEdit(webhookConfig.id)}
+                            onClickDeleteRow={deleteClickHandler(
+                                webhookConfig.id,
+                                DeleteComponentsName.WebhookConfigurationTab,
+                            )}
+                            rootClassName="webhook-config-table__action"
+                            modal={ConfigurationsTabTypes.WEBHOOK}
+                        />
+                    </div>
+                ))}
+            </div>
         </div>
     )
 }

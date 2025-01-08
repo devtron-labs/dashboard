@@ -30,11 +30,13 @@ import {
     DynamicDataTableRowDataType,
     DynamicDataTableRowType,
     getUniqueId,
+    ToastManager,
+    ToastVariantType,
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, ConfigurationTabText } from './constants'
 import { validateEmail } from '../common'
-import { FormValidation, WebhookDataRowType, WebhookHeaderKeyType, WebhookRowCellType } from './types'
+import { FormError, FormValidation, SESFormType, SMTPFormType, WebhookDataRowType, WebhookHeaderKeyType, WebhookRowCellType } from './types'
 import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
 
 export const multiSelectStyles = {
@@ -161,7 +163,7 @@ export const renderPipelineTypeIcon = (row) => {
     return <CD className="icon-dim-20 dc__flip" />
 }
 
-export const getConfigTabIcons = (tab: ConfigurationsTabTypes, size: number = 20) => {
+export const getConfigTabIcons = (tab: ConfigurationsTabTypes, size: number = 24) => {
     switch (tab) {
         case ConfigurationsTabTypes.SES:
             return <SES className={`icon-dim-${size}`} />
@@ -179,38 +181,37 @@ export const getConfigTabIcons = (tab: ConfigurationsTabTypes, size: number = 20
 export const getConfigurationTabTextWithIcon = () => [
     {
         label: ConfigurationTabText.SES,
-        icon: getConfigTabIcons(ConfigurationsTabTypes.SES),
+        icon: getConfigTabIcons(ConfigurationsTabTypes.SES, 20),
         link: ConfigurationsTabTypes.SES,
     },
     {
         label: ConfigurationTabText.SMTP,
-        icon: getConfigTabIcons(ConfigurationsTabTypes.SMTP),
+        icon: getConfigTabIcons(ConfigurationsTabTypes.SMTP, 20),
         link: ConfigurationsTabTypes.SMTP,
     },
     {
         label: ConfigurationTabText.SLACK,
-        icon: getConfigTabIcons(ConfigurationsTabTypes.SLACK),
+        icon: getConfigTabIcons(ConfigurationsTabTypes.SLACK, 20),
         link: ConfigurationsTabTypes.SLACK,
     },
     {
         label: ConfigurationTabText.WEBHOOK,
-        icon: getConfigTabIcons(ConfigurationsTabTypes.WEBHOOK),
+        icon: getConfigTabIcons(ConfigurationsTabTypes.WEBHOOK, 20),
         link: ConfigurationsTabTypes.WEBHOOK,
     },
 ]
 
-export const getSESDefaultConfiguration = (shouldBeDefault: boolean) => ({
+export const getSESDefaultConfiguration = (shouldBeDefault: boolean): SESFormType => ({
     configName: '',
     accessKey: '',
     secretKey: '',
-    region: { label: '', value: '' },
+    region: null,
     fromEmail: '',
     default: shouldBeDefault,
     isLoading: false,
-    isError: true,
 })
 
-export const getSMTPDefaultConfiguration = (shouldBeDefault: boolean) => ({
+export const getSMTPDefaultConfiguration = (shouldBeDefault: boolean): SMTPFormType => ({
     configName: '',
     host: '',
     port: '',
@@ -219,19 +220,19 @@ export const getSMTPDefaultConfiguration = (shouldBeDefault: boolean) => ({
     fromEmail: '',
     default: shouldBeDefault,
     isLoading: false,
-    isError: true,
 })
 
 export const renderText = (text: string, isLink: boolean = false, linkTo?: () => void, dataTestId?: string) => (
     <Tooltip content={text} placement="bottom" showOnTruncate={!!text} className="mxh-210 dc__hscroll" interactive>
         {isLink ? (
-            <a
+            <button
+                type="button"
                 onClick={linkTo}
-                className="lh-20 dc__ellipsis-right fs-13 cb-5 dc__no-decor cursor"
+                className="flex left dc__unset-button-styles lh-20 dc__ellipsis-right fs-13 cb-5 dc__no-decor cursor"
                 data-testid={dataTestId}
             >
                 {text || '-'}
-            </a>
+            </button>
         ) : (
             <p className="lh-20 dc__ellipsis-right m-0 fs-13" data-testid={dataTestId}>
                 {text || '-'}
@@ -242,26 +243,13 @@ export const renderText = (text: string, isLink: boolean = false, linkTo?: () =>
 
 export const renderDefaultTag = (isDefault: boolean) => {
     if (isDefault) {
-        return <span className="en-2 bw-1 br-4 fs-12 px-6 lh-20 cn-7">Default</span>
+        return <span className="br-4 fs-12 px-6 fw-5 lh-16 cb-7 bcb-1 py-2">Default</span>
     }
     return null
 }
 
-export const getDeleteConfigComponent = (showDeleteConfigModalType: ConfigurationsTabTypes): string => {
-    if (showDeleteConfigModalType === ConfigurationsTabTypes.SLACK) {
-        return ConfigurationsTabTypes.SLACK
-    }
-    if (showDeleteConfigModalType === ConfigurationsTabTypes.SES) {
-        return ConfigurationsTabTypes.SES
-    }
-    if (showDeleteConfigModalType === ConfigurationsTabTypes.WEBHOOK) {
-        return ConfigurationsTabTypes.WEBHOOK
-    }
-    return ConfigurationsTabTypes.SMTP
-}
-
 export const getTableHeaders = (): DynamicDataTableHeaderType<WebhookHeaderKeyType>[] => [
-    { label: 'Header key', key: 'key', width: '1fr' },
+    { label: 'Header key', key: 'key', width: '300px' },
     { label: 'Value', key: 'value', width: '1fr' },
 ]
 
@@ -311,10 +299,7 @@ export const getEmptyVariableDataRow = (): WebhookDataRowType => {
     }
 }
 
-export const validateKeyValueConfig = (
-    key: ConfigurationFieldKeys,
-    value: string,
-): { isValid: boolean; message: string } => {
+export const validateKeyValueConfig = (key: ConfigurationFieldKeys, value: string): FormError => {
     if (!value) {
         return { isValid: false, message: REQUIRED_FIELD_MSG }
     }
@@ -324,8 +309,12 @@ export const validateKeyValueConfig = (
     return { isValid: true, message: '' }
 }
 
-export const getFormValidated = (isFormValid: FormValidation, fromEmail: string): boolean => {
-    return Object.values(isFormValid).every((field) => field.isValid && !field.message) && validateEmail(fromEmail)
+export const getFormValidated = (isFormValid: FormValidation, fromEmail?: string): boolean => {
+    const isKeysValid = Object.values(isFormValid).every((field) => field.isValid && !field.message)
+    if (fromEmail) {
+        return isKeysValid && validateEmail(fromEmail)
+    }
+    return isKeysValid
 }
 export enum ConfigTableRowActionType {
     ADD_ROW = 'ADD_ROW',
@@ -347,3 +336,25 @@ export const getTabText = (tab: ConfigurationsTabTypes) => {
             return ''
     }
 }
+
+export const validatePayloadField = (value: string): FormError => {
+    let isValid = true
+    let errorMessage = ''
+    // Validate if the value is a valid JSON string
+    if (!value) {
+        return { isValid: false, message: REQUIRED_FIELD_MSG }
+    }
+    try {
+        JSON.parse(value)
+    } catch {
+        isValid = false
+        errorMessage = 'Invalid JSON format.'
+    }
+    return { isValid, message: errorMessage }
+}
+
+export const renderErrorToast = () =>
+    ToastManager.showToast({
+        variant: ToastVariantType.error,
+        description: 'Some required fields are missing or Invalid',
+    })
