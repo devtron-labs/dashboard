@@ -26,6 +26,7 @@ export const COMMON_TABS_SELECT_STYLES = {
         borderBottom: 'none',
         boxShadow: 'none',
         cursor: 'text',
+        backgroundColor: 'var(--bg-secondary)',
     }),
     valueContainer: (base) => ({
         ...base,
@@ -38,6 +39,7 @@ export const COMMON_TABS_SELECT_STYLES = {
         width: '298px',
         marginLeft: '1px',
         overflow: 'hidden',
+        backgroundColor: 'var(--bg-menu)',
     }),
     menuList: (base) => ({
         ...base,
@@ -47,6 +49,14 @@ export const COMMON_TABS_SELECT_STYLES = {
     noOptionsMessage: (base) => ({
         ...base,
         color: 'var(--N600)',
+    }),
+    input: (base) => ({
+        ...base,
+        color: 'var(--N900)',
+    }),
+    singleValue: (base) => ({
+        ...base,
+        color: 'var(--N900)',
     }),
 }
 
