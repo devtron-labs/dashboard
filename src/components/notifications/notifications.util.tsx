@@ -251,7 +251,7 @@ export const renderDefaultTag = (isDefault: boolean) => {
 }
 
 export const getTableHeaders = (): DynamicDataTableHeaderType<WebhookHeaderKeyType>[] => [
-    { label: 'Header key', key: 'key', width: '1fr' },
+    { label: 'Header key', key: 'key', width: '300px' },
     { label: 'Value', key: 'value', width: '1fr' },
 ]
 
