@@ -343,12 +343,12 @@ $color-suffix: 00;
     }
 
     &.text {
-        @include cta(var(--N0), var(--B500), var(--N0));
+        @include cta(var(--transparent), var(--B500), var(--transparent));
 
         &:hover,
         &:active,
         &:focus {
-            @include cta(var(--N0), var(--B500), var(--N0));
+            @include cta(var(--transparent), var(--B500), var(--transparent));
         }
     }
 

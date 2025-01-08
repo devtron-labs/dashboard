@@ -377,7 +377,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                 Chart Store
                                 {isSuperAdmin && (
                                     <button
-                                        className="en-2 bw-1 br-4 cb-5 fw-6 bg__primary ml-16"
+                                        className="en-2 bw-1 br-4 cb-5 fw-6 bg__primary ml-16 scb-5"
                                         onClick={onChangeShowSourcePopup}
                                     >
                                         <SourceIcon className="mr-4" />

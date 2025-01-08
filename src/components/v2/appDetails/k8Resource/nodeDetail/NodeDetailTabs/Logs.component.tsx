@@ -557,6 +557,7 @@ const LogsComponent = ({
                                                     menu: (base) => ({
                                                         ...base,
                                                         zIndex: 9999,
+                                                        backgroundColor: 'var(--bg-menu)',
                                                         textAlign: 'left',
                                                     }),
                                                     control: (base, state) => ({
@@ -574,6 +575,7 @@ const LogsComponent = ({
                                                         ...base,
                                                         margin: '0',
                                                         paddingTop: '0',
+                                                        color: 'var(--N900)',
                                                     }),
                                                     groupHeading: (base) => ({
                                                         ...base,
@@ -638,6 +640,7 @@ const LogsComponent = ({
                                                 zIndex: 9999,
                                                 textAlign: 'left',
                                                 width: '150px',
+                                                backgroundColor: 'var(--bg-menu)',
                                             }),
                                             menuList: (base) => ({
                                                 ...base,
@@ -658,6 +661,7 @@ const LogsComponent = ({
                                                 ...base,
                                                 margin: '0',
                                                 paddingTop: '0',
+                                                color: 'var(--N900)',
                                             }),
                                             singleValue: (base, state) => ({
                                                 ...base,

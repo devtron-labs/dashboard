@@ -961,7 +961,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             ToastManager.showToast({
                                 variant: ToastVariantType.error,
                                 title: 'Nothing to execute',
-                                description: 'error.userMessage',
+                                description: error.userMessage,
                                 buttonProps: {
                                     text: 'Edit Pipeline',
                                     dataTestId: 'edit-pipeline-btn',
