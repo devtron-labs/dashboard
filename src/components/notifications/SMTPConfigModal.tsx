@@ -82,12 +82,34 @@ export const SMTPConfigModal = ({
         }
     }
 
+    const getAllFieldsValidated = () => {
+        const { configName, host, port, authUser, authPassword, fromEmail } = form
+        return (
+            !!configName &&
+            !!host &&
+            !!port &&
+            !!authUser &&
+            !!authPassword &&
+            !!fromEmail &&
+            getFormValidated(isFormValid, fromEmail)
+        )
+    }
+
     const saveSMTPConfig = () => {
-        if (!getFormValidated(isFormValid, form.fromEmail)) {
+        if (!getAllFieldsValidated()) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: 'Some required fields are missing or Invalid',
             })
+            setFormValid((prevValid) => ({
+                ...prevValid,
+                configName: validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, form.configName),
+                host: validateKeyValueConfig(ConfigurationFieldKeys.HOST, form.host),
+                port: validateKeyValueConfig(ConfigurationFieldKeys.PORT, form.port),
+                authUser: validateKeyValueConfig(ConfigurationFieldKeys.AUTH_USER, form.authUser),
+                authPassword: validateKeyValueConfig(ConfigurationFieldKeys.AUTH_PASSWORD, form.authPassword),
+                fromEmail: validateKeyValueConfig(ConfigurationFieldKeys.FROM_EMAIL, form.fromEmail),
+            }))
             setForm((prevForm) => ({ ...prevForm, isLoading: false, isError: true }))
             return
         }
@@ -202,7 +224,6 @@ export const SMTPConfigModal = ({
             modal={ConfigurationsTabTypes.SMTP}
             isLoading={form.isLoading}
             saveConfigModal={saveSMTPConfig}
-            disableSave={!getFormValidated(isFormValid, form.fromEmail)}
         />
     )
 }
