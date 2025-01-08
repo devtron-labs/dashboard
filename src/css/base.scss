@@ -1532,9 +1532,8 @@ button.anchor {
 .tippy-box.default-tt {
     font-size: 12px;
     line-height: 1.6;
-    border: 1px solid var(--white-40);
-    background-color: var(--N900);
-    color: var(--N0);
+    background-color: var(--tooltip-black-bg);
+    color: var(--white);
 
     &.no-content-padding {
         .tippy-content {

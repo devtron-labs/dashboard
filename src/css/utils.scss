@@ -11,3 +11,9 @@
         background: var(--bg-primary);
     }
 }
+
+.text {
+    &__white {
+        color: var(--text-white);
+    }
+}

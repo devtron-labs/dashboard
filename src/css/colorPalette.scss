@@ -97,6 +97,8 @@
             --bg-primary: var(--N0);
             --bg-secondary: var(--N50);
             --bg-tertiary: var(--window-bg);
+
+            --tooltip-black-bg: var(--N900);
         }
 
         &__dark {
@@ -163,6 +165,8 @@
             --bg-primary: var(--window-bg);
             --bg-secondary: var(--N50);
             --bg-tertiary: var(--N0);
+
+            --tooltip-black-bg: var(--N200);
         }
     }
 }
