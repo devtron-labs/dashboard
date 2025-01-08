@@ -957,21 +957,6 @@ button.anchor {
     background-color: var(--N000);
 }
 
-.dc__ses_config-table__tag {
-    border-radius: 2px;
-    padding: 2px 8px;
-    font-size: 11px;
-    font-weight: 600;
-    font-stretch: normal;
-    line-height: 1.82;
-    text-transform: uppercase;
-    margin: 0 8px;
-    color: var(--B500);
-    border: solid 1px #b5d3f2;
-    background-blend-mode: multiply;
-    background-image: linear-gradient(to bottom, var(--B50), var(--B50));
-}
-
 .dc__saved-filter__clear-btn--dark {
     height: 36px;
     background-color: var(--white);
@@ -3222,6 +3207,10 @@ textarea,
 
 .w-160 {
     width: 160px;
+
+    &--imp {
+        width: 160px !important;
+    }
 }
 
 .w-180 {
@@ -3458,6 +3447,10 @@ textarea,
 // width fix content
 .dc__w-fit-content {
     width: fit-content;
+
+    &--imp {
+        width: fit-content !important;
+    }
 }
 
 .dc__width-inherit {
@@ -3467,6 +3460,15 @@ textarea,
 // Height in pixels
 .dc__height-inherit {
     height: inherit;
+}
+
+.dc__height-auto {
+    height: auto;
+
+    &--imp {
+        height: auto !important;
+    }
+
 }
 
 .dc__min-width-fit-content {
@@ -4381,6 +4383,10 @@ textarea::placeholder {
 .dc__hover-n50:hover,
 .dc__bg-n50 {
     background-color: var(--N50);
+}
+
+.dc__hover-text-n90:hover {
+    color: var(--N900) !important;
 }
 
 .dc__bg-g5 {
@@ -5349,9 +5355,14 @@ details[open] {
     background: inherit;
     border: none;
     padding: inherit;
-    white-space: pre-wrap;       /* Since CSS 2.1 */
-    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
-    white-space: -pre-wrap;      /* Opera 4-6 */
-    white-space: -o-pre-wrap;    /* Opera 7 */
-    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    white-space: pre-wrap;
+    /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;
+    /* Mozilla, since 1999 */
+    white-space: -pre-wrap;
+    /* Opera 4-6 */
+    white-space: -o-pre-wrap;
+    /* Opera 7 */
+    word-wrap: break-word;
+    /* Internet Explorer 5.5+ */
 }

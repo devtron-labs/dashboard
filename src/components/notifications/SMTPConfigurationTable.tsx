@@ -1,98 +1,73 @@
-import { Trash } from '@Components/common'
 import { DeleteComponentsName } from '@Config/constantMessaging'
-import { ViewType } from '@Config/constants'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
-import { ReactComponent as Edit } from '@Icons/ic-edit.svg'
+import { noop, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
+import { useHistory } from 'react-router-dom'
 import { ConfigurationTableProps } from './types'
 import { ConfigurationsTabTypes } from './constants'
 import { EmptyConfigurationView } from './EmptyConfigurationView'
+import emptySmtp from '../../assets/img/smtp-empty.png'
+import { getConfigTabIcons, renderDefaultTag, renderText } from './notifications.util'
+import { ConfigTableRowActionButton } from './ConfigTableRowActionButton'
 
-export const SMTPConfigurationTable = ({ setState, state, deleteClickHandler }: ConfigurationTableProps) => {
-    const { smtpConfigurationList, view } = state
-    if (view === ViewType.LOADING) {
-        return (
-            <div className="flex progressing-loader-height">
-                <Progressing pageLoader />
-            </div>
-        )
+export const SMTPConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTableProps) => {
+    const { smtpConfigurationList } = state
+    const { searchParams } = useSearchString()
+    const history = useHistory()
+
+    const onClickEditRow = (configId) => () => {
+        const newParams = {
+            ...searchParams,
+            configId: configId.toString(),
+            modal: ConfigurationsTabTypes.SMTP,
+        }
+        history.push({
+            search: new URLSearchParams(newParams).toString(),
+        })
     }
+
     if (smtpConfigurationList.length === 0) {
-        return <EmptyConfigurationView configTabType={ConfigurationsTabTypes.SMTP} />
+        return <EmptyConfigurationView configTabType={ConfigurationsTabTypes.SMTP} image={emptySmtp} />
     }
+
     return (
-        <table className="w-100">
-            <thead>
-                <tr className="configuration-tab__table-header">
-                    <th className="ses-config-table__name dc__truncate-text ">Name</th>
-                    <th className="smtp-config-table__host dc__truncate-text ">Host</th>
-                    <th className="smtp-config-table__port dc__truncate-text ">Port</th>
-                    <th className="smtp-config-table__email dc__truncate-text ">Sender&apos; Email</th>
-                    <th className="ses-config-table__action" aria-label="Action" />
-                </tr>
-            </thead>
-            <tbody>
-                <tr className="mb-8">
-                    {smtpConfigurationList.map((smtpConfig) => (
-                        <td
-                            data-testid={`smtp-container-${smtpConfig.name}`}
-                            key={smtpConfig.id}
-                            className="configuration-tab__table-row"
+        <div className="smtp-config-container flex-grow-1">
+            <div className="smtp-config-grid fs-12 fw-6 dc__uppercase cn-7 py-6 dc__gap-16 dc__border-bottom-n1 px-20 dc__position-sticky dc__top-0 bcn-0">
+                <p className="icon-dim-24 m-0" />
+                <p className="smtp-config-table__name dc__truncate-text flex left m-0">Name</p>
+                <p className="smtp-config-table__host dc__truncate-text flex left m-0">Host</p>
+                <p className="smtp-config-table__port dc__truncate-text flex left m-0">Port</p>
+                <p className="smtp-config-table__email dc__truncate-text flex left m-0">Sender&apos; Email</p>
+                <p className="smtp-config-table__action" aria-label="Action" />
+            </div>
+            <div className="flex-grow-1">
+                {smtpConfigurationList.map((smtpConfig) => (
+                    <div
+                        data-testid={`smtp-container-${smtpConfig.name}`}
+                        key={smtpConfig.id}
+                        className="configuration-tab__table-row smtp-config-grid dc__gap-16 py-6 px-20 dc__hover-n50 h-100"
+                    >
+                        {getConfigTabIcons(ConfigurationsTabTypes.SMTP)}
+                        <div
+                            data-testid={`smtp-config-name-${smtpConfig.name}`}
+                            className="smtp-config-table__name dc__truncate-text flexbox dc__gap-8"
                         >
-                            <div
-                                data-testid={`smtp-config-name-${smtpConfig.name}`}
-                                className="ses-config-table__name dc__truncate-text "
-                            >
-                                {smtpConfig.name}
-                                {smtpConfig.isDefault ? (
-                                    <span className="dc__ses_config-table__tag">Default</span>
-                                ) : null}
-                            </div>
-                            <div
-                                data-testid={`smtp-config-host-${smtpConfig.host}`}
-                                className="smtp-config-table__host dc__truncate-text "
-                            >
-                                {smtpConfig.host}
-                            </div>
-                            <div className="smtp-config-table__port dc__truncate-text ">{smtpConfig.port}</div>
-                            <div className="smtp-config-table__email dc__truncate-text ">{smtpConfig.email}</div>
-                            <div className="ses-config-table__action">
-                                <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
-                                    <button
-                                        type="button"
-                                        aria-label="Edit"
-                                        className="dc__transparent dc__align-right mr-16"
-                                        onClick={() => {
-                                            setState({
-                                                ...state,
-                                                showSMTPConfigModal: true,
-                                                smtpConfigId: smtpConfig.id,
-                                            })
-                                        }}
-                                        data-testid="smtp-config-edit-button"
-                                    >
-                                        <Edit className="icon-dim-20" />
-                                    </button>
-                                </Tippy>
-                                <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
-                                    <button
-                                        type="button"
-                                        aria-label="Delete"
-                                        className="dc__transparent dc__align-right"
-                                        onClick={() => {
-                                            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                                            deleteClickHandler(smtpConfig.id, DeleteComponentsName.SMTPConfigurationTab)
-                                        }}
-                                        data-testid="smtp-config-delete-button"
-                                    >
-                                        <Trash className="scn-5 icon-dim-20" />
-                                    </button>
-                                </Tippy>
-                            </div>
-                        </td>
-                    ))}
-                </tr>
-            </tbody>
-        </table>
+                            {renderText(smtpConfig.name, true, onClickEditRow(smtpConfig.id))}
+                            {renderDefaultTag(smtpConfig.isDefault)}
+                        </div>
+                        {renderText(smtpConfig.host, false, noop, `smtp-config-host-${smtpConfig.host}`)}
+                        {renderText(smtpConfig.port)}
+                        {renderText(smtpConfig.email)}
+                        <ConfigTableRowActionButton
+                            onClickEditRow={onClickEditRow(smtpConfig.id)}
+                            onClickDeleteRow={deleteClickHandler(
+                                smtpConfig.id,
+                                DeleteComponentsName.SMTPConfigurationTab,
+                            )}
+                            rootClassName="smtp-config-table__action"
+                            modal={ConfigurationsTabTypes.SMTP}
+                        />
+                    </div>
+                ))}
+            </div>
+        </div>
     )
 }

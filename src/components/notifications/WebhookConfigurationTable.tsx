@@ -1,94 +1,68 @@
-import { Trash } from '@Components/common'
 import { DeleteComponentsName } from '@Config/constantMessaging'
-import { ViewType } from '@Config/constants'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
-import { ReactComponent as Edit } from '@Icons/ic-edit.svg'
+import { noop, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
+import { useHistory } from 'react-router-dom'
 import { ConfigurationTableProps } from './types'
 import { EmptyConfigurationView } from './EmptyConfigurationView'
 import { ConfigurationsTabTypes } from './constants'
+import { ConfigTableRowActionButton } from './ConfigTableRowActionButton'
+import { getConfigTabIcons, renderText } from './notifications.util'
+import webhookEmpty from '../../assets/img/webhook-empty.png'
 
-export const WebhookConfigurationTable = ({ setState, state, deleteClickHandler }: ConfigurationTableProps) => {
-    const { view, webhookConfigurationList } = state
-    if (view === ViewType.LOADING) {
-        return (
-            <div className="flex progressing-loader-height">
-                <Progressing pageLoader />
-            </div>
-        )
-    }
+export const WebhookConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTableProps) => {
+    const { webhookConfigurationList } = state
+    const { searchParams } = useSearchString()
+    const history = useHistory()
+
     if (webhookConfigurationList.length === 0) {
-        return <EmptyConfigurationView configTabType={ConfigurationsTabTypes.WEBHOOK} />
+        return <EmptyConfigurationView configTabType={ConfigurationsTabTypes.WEBHOOK} image={webhookEmpty} />
     }
 
-    const editWebhookHandler = (e) => {
-        setState({ ...state, showWebhookConfigModal: true, webhookConfigId: e.currentTarget.dataset.webhookid })
+    const onClickWebhookConfigEdit = (id: number) => () => {
+        const newParams = {
+            ...searchParams,
+            configId: id.toString(),
+            modal: ConfigurationsTabTypes.WEBHOOK,
+        }
+        history.push({
+            search: new URLSearchParams(newParams).toString(),
+        })
     }
 
     return (
-        <table className="w-100">
-            <thead>
-                <tr className="configuration-tab__table-header">
-                    <td className="slack-config-table__name dc__truncate-text ">Name</td>
-                    <td className="slack-config-table__webhook dc__truncate-text ">Webhook URL</td>
-                    <td className="slack-config-table__action" />
-                </tr>
-            </thead>
-            <tbody>
-                <tr className="mb-8">
-                    {webhookConfigurationList.map((webhookConfig) => (
-                        <td
-                            key={webhookConfig.id}
-                            className="configuration-tab__table-row"
-                            data-testid={`webhook-container-${webhookConfig.name}`}
-                        >
-                            <div
-                                className="slack-config-table__name dc__truncate-text"
-                                data-testid={`webhook-config-name-${webhookConfig.name}`}
-                            >
-                                {webhookConfig.name}
-                            </div>
-                            <div
-                                className="slack-config-table__webhook dc__truncate-text"
-                                data-testid={`webhook-url-${webhookConfig.webhookUrl}`}
-                            >
-                                {webhookConfig.webhookUrl}
-                            </div>
-                            <div className="slack-config-table__action">
-                                <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
-                                    <button
-                                        type="button"
-                                        aria-label="Edit"
-                                        className="dc__transparent dc__align-right mr-16"
-                                        data-webhookid={webhookConfig.id}
-                                        onClick={editWebhookHandler}
-                                        data-testid={`webhook-configure-edit-button-${webhookConfig.name}`}
-                                    >
-                                        <Edit className="icon-dim-20" />
-                                    </button>
-                                </Tippy>
-                                <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
-                                    <button
-                                        type="button"
-                                        aria-label="Delete"
-                                        className="dc__transparent dc__align-right"
-                                        onClick={() => {
-                                            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                                            deleteClickHandler(
-                                                webhookConfig.id,
-                                                DeleteComponentsName.WebhookConfigurationTab,
-                                            )
-                                        }}
-                                        data-testid={`webhook-configure-delete-button-${webhookConfig.name}`}
-                                    >
-                                        <Trash className="scn-5 icon-dim-20" />
-                                    </button>
-                                </Tippy>
-                            </div>
-                        </td>
-                    ))}
-                </tr>
-            </tbody>
-        </table>
+        <div className="webhook-config-container">
+            <div className="webhook-config-grid fs-12 fw-6 dc__uppercase cn-7 py-6 dc__gap-16 dc__border-bottom-n1 px-20">
+                <p className="icon-dim-24 m-0" />
+                <p className="webhook-config-table__name flex left m-0">Name</p>
+                <p className="webhook-config-table__webhook dc__truncate-text flex left m-0">Webhook URL</p>
+                <p className="webhook-config-table__action m-0" />
+            </div>
+            <div className="flex-grow-1">
+                {webhookConfigurationList.map((webhookConfig) => (
+                    <div
+                        key={webhookConfig.id}
+                        className="configuration-tab__table-row webhook-config-grid fs-13 cn-9 dc__gap-16 py-6 px-20 dc__hover-n50"
+                        data-testid={`webhook-container-${webhookConfig.name}`}
+                    >
+                        {getConfigTabIcons(ConfigurationsTabTypes.WEBHOOK)}
+                        {renderText(
+                            webhookConfig.name,
+                            true,
+                            onClickWebhookConfigEdit(webhookConfig.id),
+                            `webhook-config-name-${webhookConfig.name}`,
+                        )}
+                        {renderText(webhookConfig.name, false, noop, `webhook-url-${webhookConfig.webhookUrl}`)}
+                        <ConfigTableRowActionButton
+                            onClickEditRow={onClickWebhookConfigEdit(webhookConfig.id)}
+                            onClickDeleteRow={deleteClickHandler(
+                                webhookConfig.id,
+                                DeleteComponentsName.WebhookConfigurationTab,
+                            )}
+                            rootClassName="webhook-config-table__action"
+                            modal={ConfigurationsTabTypes.WEBHOOK}
+                        />
+                    </div>
+                ))}
+            </div>
+        </div>
     )
 }
