@@ -47,17 +47,11 @@ export enum ConfigurationFieldKeys {
 export const ConfigValidationKeys = { isValid: true, message: '' }
 
 export const DefaultSESValidations = {
-    configName: ConfigValidationKeys,
-    accessKey: ConfigValidationKeys,
-    secretKey: ConfigValidationKeys,
-    region: ConfigValidationKeys,
-    fromEmail: ConfigValidationKeys,
-}
-
-export enum SESSortableHeaderKeys {
-    CONFIG_NAME = ConfigurationFieldKeys.CONFIG_NAME,
-    ACCESS_KEY = ConfigurationFieldKeys.ACCESS_KEY,
-    EMAIL = ConfigurationFieldKeys.FROM_EMAIL,
+    [ConfigurationFieldKeys.CONFIG_NAME]: ConfigValidationKeys,
+    [ConfigurationFieldKeys.ACCESS_KEY]: ConfigValidationKeys,
+    [ConfigurationFieldKeys.SECRET_KEY]: ConfigValidationKeys,
+    [ConfigurationFieldKeys.REGION]: ConfigValidationKeys,
+    [ConfigurationFieldKeys.FROM_EMAIL]: ConfigValidationKeys,
 }
 
 export const SESSortableHeaderTitle = {
@@ -69,12 +63,12 @@ export const SESSortableHeaderTitle = {
 // ------------ SMTP Configuration Constants ------------
 
 export const DefaultSMTPValidation = {
-    configName: ConfigValidationKeys,
-    host: ConfigValidationKeys,
-    port: ConfigValidationKeys,
-    authUser: ConfigValidationKeys,
-    authPassword: ConfigValidationKeys,
-    fromEmail: ConfigValidationKeys,
+    [ConfigurationFieldKeys.CONFIG_NAME]: ConfigValidationKeys,
+    [ConfigurationFieldKeys.HOST]: ConfigValidationKeys,
+    [ConfigurationFieldKeys.PORT]: ConfigValidationKeys,
+    [ConfigurationFieldKeys.AUTH_USER]: ConfigValidationKeys,
+    [ConfigurationFieldKeys.AUTH_PASSWORD]: ConfigValidationKeys,
+    [ConfigurationFieldKeys.FROM_EMAIL]: ConfigValidationKeys,
 }
 
 // ------------ Slack Configuration Constants ------------
@@ -88,9 +82,9 @@ export const DefaultSlackKeys: SlackFormType = {
 }
 
 export const DefaultSlackValidations = {
-    projectId: ConfigValidationKeys,
-    configName: ConfigValidationKeys,
-    webhookUrl: ConfigValidationKeys,
+    [ConfigurationFieldKeys.PROJECT_ID]: ConfigValidationKeys,
+    [ConfigurationFieldKeys.CONFIG_NAME]: ConfigValidationKeys,
+    [ConfigurationFieldKeys.WEBHOOK_URL]: ConfigValidationKeys,
 }
 
 // ------------ Webhook Configuration Constants ------------
@@ -98,15 +92,17 @@ export const DefaultSlackValidations = {
 export const DefaultHeaders = { key: '', value: '' }
 
 export const DefaultWebhookConfig = {
-    configName: '',
-    webhookUrl: '',
+    [ConfigurationFieldKeys.CONFIG_NAME]: '',
+    [ConfigurationFieldKeys.WEBHOOK_URL]: '',
+    [ConfigurationFieldKeys.PAYLOAD]: '',
     isLoading: false,
-    payload: '',
     header: [DefaultHeaders],
 }
 
 export const DefaultWebhookValidations = {
-    configName: ConfigValidationKeys,
-    webhookUrl: ConfigValidationKeys,
-    payload: ConfigValidationKeys,
+    [ConfigurationFieldKeys.CONFIG_NAME]: ConfigValidationKeys,
+    [ConfigurationFieldKeys.WEBHOOK_URL]: ConfigValidationKeys,
+    [ConfigurationFieldKeys.PAYLOAD]: ConfigValidationKeys,
 }
+
+export const SlackIncomingWebhookUrl = 'https://slack.com/marketplace/A0F7XDUAZ-incoming-webhooks'
