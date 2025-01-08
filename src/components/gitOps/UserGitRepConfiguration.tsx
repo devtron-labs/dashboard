@@ -83,7 +83,7 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
                         <div className="fs-13 fw-4 flexbox-col mt-16 mb-16">
                             <div className="">Configurations for this application will be committed to:</div>
                             <a
-                                className="dc__ff-monospace dc__link dc_max-width__max-content"
+                                className="mono dc__link dc_max-width__max-content"
                                 href={repoURL}
                                 target="_blank"
                                 rel="noreferrer noopener"

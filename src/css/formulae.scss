@@ -110,6 +110,12 @@
     grid-auto-flow: column;
 }
 
+.mono {
+    font-size: 14px;
+    line-height: 20px;
+    font-family: Inconsolata, monospace;
+}
+
 // margins and paddings from 0-40
 $margins: (
     mb: margin-bottom,
@@ -234,10 +240,6 @@ $color-suffix: 00;
     .bw-#{$i} {
         border-width: 0px + $i;
     }
-}
-
-.mono {
-    font-family: Inconsolata, monospace;
 }
 
 .font-merriweather {

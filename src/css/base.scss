@@ -2984,10 +2984,6 @@ textarea {
     word-wrap: anywhere;
 }
 
-.dc__ff-monospace {
-    font-family: 'Source Code Pro', monospace;
-}
-
 @mixin tab-container($bgColor, $color) {
     .tab {
         border-radius: 4px;

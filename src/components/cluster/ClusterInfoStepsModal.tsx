@@ -45,7 +45,7 @@ const ClusterInfoSteps = ({ command, clusterName }: ClusterStepModal) => {
             additionalInfo: (
                 <div className="dc__position-rel cluster-modal-container dc__align-left bcn-1 lh-20 mt-2 br-4">
                     <div
-                        className="fs-13 fw-4 h-100 dc__overflow-scroll dc__ff-monospace pl-10 pt-10 pb-10 pr-36"
+                        className="fs-13 fw-4 h-100 dc__overflow-scroll mono pl-10 pt-10 pb-10 pr-36"
                         id="command-code"
                     >
                         {command}

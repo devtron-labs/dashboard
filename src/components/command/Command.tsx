@@ -453,7 +453,7 @@ export class Command extends Component<CommandProps, CommandState> {
                         className="command__suggested-args-container mt-8 flex column"
                     >
                         <h4
-                            className="dc__ff-monospace command__control command__control--tab cursor"
+                            className="mono command__control command__control--tab cursor"
                             onClick={this.runCommand}
                         >
                             &crarr; Enter
@@ -508,7 +508,7 @@ export class Command extends Component<CommandProps, CommandState> {
                                     >
                                         <span>{a.value}</span>
                                         <span
-                                            className="dc__ff-monospace command__control ml-20"
+                                            className="mono command__control ml-20"
                                             style={{
                                                 display:
                                                     this.state.focussedArgument === index ? 'dc__inline-block' : 'none',
@@ -601,7 +601,7 @@ export class Command extends Component<CommandProps, CommandState> {
                                     Jump To
                                 </label>
                             </div>
-                            <span className="command__press-tab dc__ff-monospace">
+                            <span className="command__press-tab mono">
                                 Press <span className="command__control command__control--tab">Tab</span> to switch
                             </span>
                         </div>
@@ -646,7 +646,7 @@ export class Command extends Component<CommandProps, CommandState> {
                                 </div>
                                 {this.state.arguments?.find((a) => a?.data?.url) && (
                                     <span
-                                        className="dc__ff-monospace command__control p-0 fs-16 mt-4 mb-4 cursor"
+                                        className="mono command__control p-0 fs-16 mt-4 mb-4 cursor"
                                         style={{ lineHeight: '1.1', backgroundColor: 'var(--N100)' }}
                                         onClick={this.runCommand}
                                     >

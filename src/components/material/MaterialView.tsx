@@ -175,7 +175,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 key={item.info}
                                 className={`${index === 2 ? 'h-24' : 'h-40'} dc__gap-12 w-476 fs-13 fw-4 flex dc__align-start p-0`}
                             >
-                                <div className="w-28 h-24 flex column dc__content-center dc__align-items-center p-10 dc__gap-10 bcn-1 br-4 dc__ff-monospace dc__no-border">
+                                <div className="w-28 h-24 flex column dc__content-center dc__align-items-center p-10 dc__gap-10 bcn-1 br-4 mono dc__no-border">
                                     {item.regex}
                                 </div>
                                 <span className={`${index === 2 ? 'h-20' : 'h-40'} w-436 lh-20`}>{item.info}</span>
@@ -193,7 +193,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         </div>
                         <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
                             <div className="flex left">
-                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 cn-7">
                                     {
                                         USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
                                             .regexExample1
@@ -270,7 +270,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         </div>
                         <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
                             <div className="flex left">
-                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 cn-7">
                                     {
                                         USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
                                             .regexExample2
@@ -347,7 +347,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         </div>
                         <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
                             <div className="flex left">
-                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 cn-7">
                                     {
                                         USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
                                             .regexExample3.partOne
@@ -359,7 +359,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                             .regexExample3.partTwo
                                     }
                                 </span>
-                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                     {
                                         USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
                                             .regexExample3.partThree
@@ -418,7 +418,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         </div>
                         <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
                             <div className="flex left">
-                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 cn-7">
                                     {
                                         USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
                                             .regexExample4
@@ -483,7 +483,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                             .regexExample5.partOne
                                     }
                                 </span>
-                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                     {
                                         USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
                                             .regexExample5.partTwo
@@ -495,7 +495,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                             .regexExample5.partThree
                                     }
                                 </span>
-                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                     {
                                         USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
                                             .regexExample5.partFour
@@ -533,7 +533,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                             .regexExample6.partOne
                                     }
                                 </span>
-                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                     {
                                         USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
                                             .regexExample6.partTwo
@@ -754,13 +754,13 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 <span className="fs-13 fw-4">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partOne}
                                                 </span>
-                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partTwo}
                                                 </span>
                                                 <span className="ml-4 fs-13 fw-4">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partThree}
                                                 </span>
-                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partFour}
                                                 </span>
                                                 <br />
@@ -770,15 +770,15 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 <span className="fs-13 fw-4">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partOne}
                                                 </span>
-                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partTwo}
                                                 </span>
                                                 <span className="fs-13 fw-4 ml-2">,</span>
-                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partThree}
                                                 </span>
                                                 <span className="fs-13 fw-4 ml-2">,</span>
-                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFour}
                                                 </span>
                                                 <TippyCustomized
@@ -810,7 +810,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 </span>
                                                 <br />
                                             </div>
-                                            <div className="ml-10 mt-4 dc__ff-monospace fs-13 fw-4">
+                                            <div className="ml-10 mt-4 mono fs-13 fw-4">
                                                 {INCLUDE_EXCLUDE_COMMIT_INFO.example.lineOne}
                                                 <br />
                                                 {INCLUDE_EXCLUDE_COMMIT_INFO.example.lineTwo}

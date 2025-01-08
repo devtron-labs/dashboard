@@ -151,7 +151,7 @@ function CustomImageTags({
                     ) : (
                         <div className="flexbox">
                             Tag Preview:
-                            <div className="ml-4 bg__secondary dc__ff-monospace flexbox dc__w-fit-content pl-4 pr-4 br-4">
+                            <div className="ml-4 bg__secondary mono flexbox dc__w-fit-content pl-4 pr-4 br-4">
                                 <div className="dc__registry-icon docker mr-5" />
                                 {formData.customTag?.tagPattern?.replace(
                                     '{x}',
@@ -205,7 +205,7 @@ function CustomImageTags({
     const renderCustomTagCollapsedValue = () => {
         return (
             <div className="white-card pl-12 pr-12 pt-8 pb-8 mt-12 mb-12 ml-54">
-                <div className="flex dc__content-space dc__ff-monospace">
+                <div className="flex dc__content-space mono">
                     <div className="bcn-1 pl-8 pr-8 br-4 mb-4">{formData.customTag?.tagPattern}</div>
                     <Edit className="icon-dim-20" onClick={toggleEditToShowCreateImageView} />
                 </div>
