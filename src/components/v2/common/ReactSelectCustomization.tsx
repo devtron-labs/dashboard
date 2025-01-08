@@ -126,6 +126,7 @@ export const multiSelectStyles = {
         ...base,
         top: `40px`,
         backgroundColor: 'var(--bg-menu)',
+        border: '1px solid var(--N200)',
     }),
     option: (base, state) => {
         return {
@@ -151,7 +152,7 @@ export const multiSelectStyles = {
     input: (base) => ({
         ...base,
         color: 'var(--N900)',
-    })
+    }),
 }
 
 export const podsDropdownStyles = {

@@ -592,7 +592,7 @@ a:focus {
 .popup {
     position: fixed;
     z-index: var(--modal-index);
-    background: var(--bg-primary);
+    background: var(--bg-menu);
     border-radius: 4px;
     box-shadow: 0 2px 4px 0 rgba(21, 21, 21, 0.3);
 
@@ -1894,7 +1894,7 @@ button.anchor {
     &.active {
         color: var(--B500);
         font-weight: 600;
-        background: var(--B50);
+        background: var(--B100);
     }
 }
 
@@ -2123,6 +2123,10 @@ button.anchor {
 
     &--n9 {
         border: 1px solid var(--N900);
+    }
+
+    &--white {
+        border: 1px solid var(--white);
     }
 }
 

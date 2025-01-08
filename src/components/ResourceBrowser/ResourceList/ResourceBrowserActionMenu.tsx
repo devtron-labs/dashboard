@@ -118,7 +118,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
                             onClick={handleResourceClick}
                             data-testid="manifest-option-link"
                         >
-                            <ManifestIcon className="icon-dim-16 scn-8 mr-8 dc__no-shrink" />
+                            <ManifestIcon className="icon-dim-16 scn-6 mr-8 dc__no-shrink" />
                             <span className="cn-9">{RESOURCE_ACTION_MENU.manifest}</span>
                         </span>
                         <span
@@ -130,7 +130,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
                             onClick={handleResourceClick}
                             data-testid="events-option-link"
                         >
-                            <CalendarIcon className="icon-dim-16 mr-8" />
+                            <CalendarIcon className="icon-dim-16 mr-8 fcn-6" />
                             <span className="cn-9">{RESOURCE_ACTION_MENU.Events}</span>
                         </span>
                         {selectedResource?.gvk?.Kind === Nodes.Pod && (
@@ -144,7 +144,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
                                     onClick={handleResourceClick}
                                     data-testid="logs-option-link"
                                 >
-                                    <LogAnalyzerIcon className="icon-dim-16 mr-8" />
+                                    <LogAnalyzerIcon className="icon-dim-16 mr-8 fcn-6" />
                                     <span className="cn-9">{RESOURCE_ACTION_MENU.logs}</span>
                                 </span>
                                 <span
@@ -156,7 +156,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
                                     onClick={handleResourceClick}
                                     data-testid="terminal-option-link"
                                 >
-                                    <TerminalIcon className="icon-dim-16 mr-8" />
+                                    <TerminalIcon className="icon-dim-16 mr-8 fcn-6" />
                                     <span className="cn-9">{RESOURCE_ACTION_MENU.terminal}</span>
                                 </span>
                             </>
