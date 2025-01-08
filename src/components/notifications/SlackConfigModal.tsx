@@ -14,7 +14,13 @@ import { useHistory } from 'react-router-dom'
 import { saveSlackConfiguration, updateSlackConfiguration, getSlackConfiguration } from './notifications.service'
 import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { ProjectListTypes, SlackConfigModalProps, SlackFormType } from './types'
-import { ConfigurationFieldKeys, ConfigurationsTabTypes, DefaultSlackKeys, DefaultSlackValidations } from './constants'
+import {
+    ConfigurationFieldKeys,
+    ConfigurationsTabTypes,
+    DefaultSlackKeys,
+    DefaultSlackValidations,
+    SlackIncomingWebhookUrl,
+} from './constants'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
 import { renderErrorToast, validateKeyValueConfig } from './notifications.util'
 
@@ -124,12 +130,8 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
     }
 
     const renderInfoText = () => (
-        <a
-            href="https://slack.com/intl/en-gb/help/articles/115005265063-Incoming-webhooks-for-Slack"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            <span className="dc__link">How to setup slack webhooks?</span>
+        <a href={SlackIncomingWebhookUrl} target="_blank" rel="noopener noreferrer">
+            <span className="dc__link">How to setup slack webhook?</span>
         </a>
     )
 
