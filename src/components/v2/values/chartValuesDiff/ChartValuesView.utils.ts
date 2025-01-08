@@ -42,6 +42,7 @@ export const getCompareValuesSelectStyles = () => ({
         ...base,
         marginTop: '2px',
         minWidth: '240px',
+        backgroundColor: 'var(--bg-menu)',
     }),
     menuList: (base) => ({
         ...base,

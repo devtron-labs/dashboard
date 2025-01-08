@@ -161,6 +161,7 @@ export const podsDropdownStyles = {
         zIndex: 9999,
         width: '120px',
         borderRadius: '4px',
+        backgroundColor: 'var(--bg-menu)',
     }),
     control: (base) => ({
         ...base,
@@ -173,6 +174,7 @@ export const podsDropdownStyles = {
         ...base,
         margin: '0',
         paddingTop: '0',
+        color: 'var(--N900)',
     }),
     singleValue: (base) => ({
         ...base,
