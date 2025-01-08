@@ -69,10 +69,6 @@ export interface SMTPConfigModalState {
 
 export interface ConfigurationTabState {
     isLoading: boolean
-    sesConfigId: number
-    slackConfigId: number
-    smtpConfigId: number
-    webhookConfigId: number
     sesConfigurationList: Array<{ id: number; name: string; accessKeyId: string; email: string; isDefault: boolean }>
     smtpConfigurationList: Array<{
         id: number

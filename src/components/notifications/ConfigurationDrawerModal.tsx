@@ -43,7 +43,7 @@ export const ConfigurationTabDrawerModal = ({
     )
 
     const renderFooter = () => (
-        <div className="px-20 py-16 flex right dc__gap-12 dc__zi-1 dc__border-top">
+        <div className="px-20 py-16 flex right dc__gap-12 dc__zi-1 dc__border-top bcn-0">
             <Button
                 dataTestId="ses-config-modal-close-button"
                 size={ComponentSizeType.large}

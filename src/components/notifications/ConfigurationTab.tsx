@@ -57,10 +57,6 @@ export const ConfigurationTab = () => {
     const modal = queryString.get('modal')
 
     const [state, setState] = useState<ConfigurationTabState>({
-        slackConfigId: 0,
-        sesConfigId: 0,
-        smtpConfigId: 0,
-        webhookConfigId: 0,
         sesConfigurationList: [],
         smtpConfigurationList: [],
         slackConfigurationList: [],
@@ -77,6 +73,7 @@ export const ConfigurationTab = () => {
     })
 
     const getAllChannelConfigs = async () => {
+        setState({ ...state, isLoading: true })
         try {
             const { result } = await getConfigs()
             setState({
@@ -114,7 +111,6 @@ export const ConfigurationTab = () => {
                 const { result } = await getSlackConfiguration(configId, true)
                 setState({
                     ...state,
-                    slackConfigId: configId,
                     slackConfig: {
                         ...result,
                         channel: ConfigurationsTabTypes.SLACK,
@@ -126,7 +122,6 @@ export const ConfigurationTab = () => {
                 const { result } = await getSESConfiguration(configId)
                 setState({
                     ...state,
-                    sesConfigId: configId,
                     sesConfig: {
                         ...result,
                         channel: ConfigurationsTabTypes.SES,
@@ -138,7 +133,6 @@ export const ConfigurationTab = () => {
                 const { result } = await getSMTPConfiguration(configId)
                 setState({
                     ...state,
-                    smtpConfigId: configId,
                     smtpConfig: {
                         ...result,
                         channel: ConfigurationsTabTypes.SMTP,
@@ -150,7 +144,6 @@ export const ConfigurationTab = () => {
                 const { result } = await getWebhookConfiguration(configId)
                 setState({
                     ...state,
-                    webhookConfigId: configId,
                     webhookConfig: {
                         ...result,
                         channel: DeleteComponentsName.WebhookConfigurationTab,
@@ -276,6 +269,10 @@ export const ConfigurationTab = () => {
             </ConfirmationDialog.ButtonGroup>
         </ConfirmationDialog>
     )
+
+    if (state.isLoading) {
+        return <Progressing pageLoader />
+    }
 
     return (
         <div className="configuration-tab__container bcn-0 h-100 flexbox-col dc__gap-16 dc__overflow-auto">
