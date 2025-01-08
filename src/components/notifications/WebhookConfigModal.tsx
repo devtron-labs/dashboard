@@ -199,8 +199,8 @@ export const WebhookConfigModal = ({
         setFormValid((prev) => ({ ...prev, [name]: validateKeyValueConfig(name, value) }))
     }
     const renderWebhookModal = () => (
-        <div className="flexbox h-100 cn-9 w-100 mh-0">
-            <div className="w-600 p-20 flex-grow-1 flexbox-col mh-0 dc__overflow-auto dc__gap-16 dc__border-right">
+        <div className="webhook-config-modal webhook-config-modal h-100 cn-9 w-100 mh-0">
+            <div className="p-20 flex-grow-1 flexbox-col mh-0 dc__overflow-auto dc__gap-16 dc__border-right">
                 <CustomInput
                     label="Configuration name"
                     value={form.configName}

@@ -144,18 +144,38 @@ const SESConfigModal = ({
         }
     }
 
+    const getAllFieldsValidated = () => {
+        const { configName, accessKey, secretKey, region, fromEmail } = form
+        return (
+            !!configName &&
+            !!accessKey &&
+            !!secretKey &&
+            !!region &&
+            !!fromEmail &&
+            getFormValidated(isFormValid, fromEmail)
+        )
+    }
     const saveSESConfig = async () => {
-        if (!isFormValid) {
+        if (!getAllFieldsValidated()) {
             setForm((prevForm) => ({
                 ...prevForm,
                 isLoading: false,
                 isError: true,
             }))
+            setFormValid({
+                ...isFormValid,
+                configName: validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, form.configName),
+                accessKey: validateKeyValueConfig(ConfigurationFieldKeys.ACCESS_KEY, form.accessKey),
+                secretKey: validateKeyValueConfig(ConfigurationFieldKeys.SECRET_KEY, form.secretKey),
+                region: validateKeyValueConfig(ConfigurationFieldKeys.REGION, form.region?.value),
+                fromEmail: validateKeyValueConfig(ConfigurationFieldKeys.FROM_EMAIL, form.fromEmail),
+            })
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: 'Some required fields are missing or Invalid',
             })
+
             return
         }
 
@@ -255,7 +275,6 @@ const SESConfigModal = ({
             modal={ConfigurationsTabTypes.SES}
             isLoading={form.isLoading}
             saveConfigModal={saveSESConfig}
-            disableSave={!getFormValidated(isFormValid, form.fromEmail)}
         />
     )
 }

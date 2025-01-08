@@ -130,6 +130,13 @@
     height: 100%;
 }
 
+
+.configuration-drawer{
+    .webhook-config-modal{
+        display: grid;
+        grid-template-columns: 1fr 280px;
+    }
+}
 // --------------Configuration Tab----------------
 .configuration-tab__container {
     .configuration-tab__table-row {
