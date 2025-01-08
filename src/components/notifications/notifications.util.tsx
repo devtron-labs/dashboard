@@ -230,7 +230,7 @@ export const renderText = (text: string, isLink: boolean = false, linkTo?: () =>
             <button
                 type="button"
                 onClick={linkTo}
-                className="dc__unset-button-styles lh-20 dc__ellipsis-right fs-13 cb-5 dc__no-decor cursor"
+                className="flex left dc__unset-button-styles lh-20 dc__ellipsis-right fs-13 cb-5 dc__no-decor cursor"
                 data-testid={dataTestId}
             >
                 {text || '-'}
