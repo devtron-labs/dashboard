@@ -120,10 +120,12 @@ export const multiSelectStyles = {
         border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
         boxShadow: 'none',
         minheight: '24px !important',
+        backgroundColor: 'var(--bg-secondary)',
     }),
     menu: (base, state) => ({
         ...base,
         top: `40px`,
+        backgroundColor: 'var(--bg-menu)',
     }),
     option: (base, state) => {
         return {
@@ -146,6 +148,10 @@ export const multiSelectStyles = {
         color: 'var(--N900)',
         fontSize: '13px',
     }),
+    input: (base) => ({
+        ...base,
+        color: 'var(--N900)',
+    })
 }
 
 export const podsDropdownStyles = {

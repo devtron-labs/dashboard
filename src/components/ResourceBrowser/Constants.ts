@@ -26,6 +26,7 @@ export const FILTER_SELECT_COMMON_STYLES = {
         ...base,
         zIndex: 5,
         textAlign: 'left',
+        backgroundColor: 'var(--bg-menu)',
     }),
     control: (base, state) => ({
         ...base,
@@ -58,6 +59,7 @@ export const FILTER_SELECT_COMMON_STYLES = {
     input: (base) => ({
         ...base,
         paddingLeft: '24px',
+        color: 'var(--N900)',
     }),
 }
 
@@ -71,6 +73,7 @@ export const KIND_SEARCH_COMMON_STYLES = {
     }),
     input: (base) => ({
         ...base,
+        color: 'var(--N900)',
         paddingLeft: '24px',
         maxWidth: '135px',
     }),
