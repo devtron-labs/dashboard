@@ -225,7 +225,6 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
             modal={ConfigurationsTabTypes.SLACK}
             isLoading={form.isLoading}
             saveConfigModal={saveSlackConfig}
-            disableSave={!getFormValidated(isFormValid)}
         />
     )
 }

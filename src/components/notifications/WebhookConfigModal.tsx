@@ -34,7 +34,7 @@ import {
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
 import { WebhookConfigModalProps, WebhookDataRowType } from './types'
 import { WebhookConfigDynamicDataTable } from './WebhookConfigDynamicDataTable'
-import { getFormValidated, validateKeyValueConfig } from './notifications.util'
+import { validateKeyValueConfig, validatePayloadField } from './notifications.util'
 
 export const WebhookConfigModal = ({
     webhookConfigId,
@@ -113,19 +113,6 @@ export const WebhookConfigModal = ({
         }
     }
 
-    const validateField = (field, value: string) => {
-        let isValidField = true
-        let errorMessage = ''
-        // Validate if the value is a valid JSON string
-        try {
-            JSON.parse(value)
-        } catch {
-            isValidField = false
-            errorMessage = 'Invalid JSON format.'
-        }
-        setFormValid((prev) => ({ ...prev, [field]: { isValid: isValidField, message: errorMessage } }))
-    }
-
     const handleInputChange = (event) => {
         const { name, value } = event.target
         setForm((prev) => ({ ...prev, [name]: value }))
@@ -134,7 +121,7 @@ export const WebhookConfigModal = ({
 
     const handlePayloadChange = (value) => {
         setForm((prev) => ({ ...prev, payload: value }))
-        validateField(ConfigurationFieldKeys.PAYLOAD, value)
+        setFormValid((prev) => ({ ...prev, payload: validatePayloadField(value) }))
     }
 
     const renderDataList = () => (
@@ -170,11 +157,34 @@ export const WebhookConfigModal = ({
         </div>
     )
 
-    const saveWebhookConfig = async () => {
-        setForm((prev) => ({ ...prev, isLoading: true }))
+    const getAllFieldsValidated = (): boolean => {
+        const { configName, webhookUrl, payload } = form
+        return !!configName && !!webhookUrl && validatePayloadField(payload).isValid
+    }
 
-        if (!Object.values(isFormValid).every((field) => field)) {
+    const saveWebhookConfig = async () => {
+        if (!getAllFieldsValidated()) {
+            setFormValid({
+                ...isFormValid,
+                configName: validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, form.configName),
+                webhookUrl: validateKeyValueConfig(ConfigurationFieldKeys.WEBHOOK_URL, form.webhookUrl),
+                payload: validatePayloadField(form.payload),
+            })
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Some required fields are missing or Invalid',
+            })
+        }
+
+        if (!getAllFieldsValidated()) {
             setForm((prev) => ({ ...prev, isLoading: false }))
+            setFormValid({
+                ...isFormValid,
+                configName: validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, form.configName),
+                webhookUrl: validateKeyValueConfig(ConfigurationFieldKeys.WEBHOOK_URL, form.webhookUrl),
+                payload: validatePayloadField(form.payload),
+            })
             return
         }
 
@@ -251,7 +261,6 @@ export const WebhookConfigModal = ({
             modal={ConfigurationsTabTypes.WEBHOOK}
             isLoading={form.isLoading}
             saveConfigModal={saveWebhookConfig}
-            disableSave={!getFormValidated(isFormValid)}
         />
     )
 }

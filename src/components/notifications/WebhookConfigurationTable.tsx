@@ -45,7 +45,7 @@ export const WebhookConfigurationTable = ({ state, deleteClickHandler }: Configu
                     >
                         {getConfigTabIcons(ConfigurationsTabTypes.WEBHOOK)}
                         {renderText(
-                            webhookConfig.webhookUrl,
+                            webhookConfig.name,
                             true,
                             onClickWebhookConfigEdit(webhookConfig.id),
                             `webhook-config-name-${webhookConfig.name}`,

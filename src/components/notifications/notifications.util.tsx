@@ -34,7 +34,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, ConfigurationTabText } from './constants'
 import { validateEmail } from '../common'
-import { FormValidation, WebhookDataRowType, WebhookHeaderKeyType, WebhookRowCellType } from './types'
+import { FormError, FormValidation, WebhookDataRowType, WebhookHeaderKeyType, WebhookRowCellType } from './types'
 import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
 
 export const multiSelectStyles = {
@@ -301,7 +301,7 @@ export const getEmptyVariableDataRow = (): WebhookDataRowType => {
 export const validateKeyValueConfig = (
     key: ConfigurationFieldKeys,
     value: string,
-): { isValid: boolean; message: string } => {
+): FormError  => {
     if (!value) {
         return { isValid: false, message: REQUIRED_FIELD_MSG }
     }
@@ -337,4 +337,17 @@ export const getTabText = (tab: ConfigurationsTabTypes) => {
         default:
             return ''
     }
+}
+
+export const validatePayloadField = (value: string): FormError  => {
+    let isValid = true
+    let errorMessage = ''
+    // Validate if the value is a valid JSON string
+    try {
+        JSON.parse(value)
+    } catch {
+        isValid = false
+        errorMessage = 'Invalid JSON format.'
+    }
+    return { isValid, message: errorMessage }
 }

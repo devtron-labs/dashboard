@@ -214,8 +214,13 @@ export type HandleRowUpdateActionProps = VariableDataTableAction & {
     rowId: string | number
 }
 
+export interface FormError {
+    isValid: boolean
+    message: string
+}
+
 export type FormValidation = {
-    [key: string]: { isValid: boolean; message: string }
+    [key: string]: FormError
 }
 
 export interface DefaultCheckboxProps {
