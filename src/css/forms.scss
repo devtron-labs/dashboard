@@ -129,6 +129,10 @@
 .form__textarea {
     min-height: 36px;
     resize: vertical;
+
+    &:focus-visible {
+        outline: 1px solid var(--B500);
+    }
 }
 
 .form__input--error {
