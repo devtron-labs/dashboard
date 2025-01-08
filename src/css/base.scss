@@ -1532,7 +1532,7 @@ button.anchor {
 .tippy-box.default-tt {
     font-size: 12px;
     line-height: 1.6;
-    background-color: var(--tooltip-black-bg);
+    background-color: var(--bg-tooltip-black);
     color: var(--white);
 
     &.no-content-padding {

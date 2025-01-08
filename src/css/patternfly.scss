@@ -622,8 +622,8 @@ samp {
 code {
     padding: 2px 4px;
     font-size: 90%;
-    color: #004368;
-    background-color: #def3ff;
+    color: var(--B700);
+    background-color: var(--N100);
     border-radius: 1px;
 }
 kbd {

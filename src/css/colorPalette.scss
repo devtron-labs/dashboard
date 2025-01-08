@@ -101,8 +101,8 @@
             --bg-menu: var(--N0);
             --bg-modal: var(--N0);
 
-            --tooltip-black-bg: var(--N900);
-            --toast-bg: var(--N800);
+            --bg-tooltip-black: var(--N900);
+            --bg-toast: var(--N800);
         }
 
         &__dark {
@@ -173,8 +173,8 @@
             --bg-menu: #2d303b;
             --bg-modal: #2d303b;
 
-            --tooltip-black-bg: var(--N200);
-            --toast-bg: var(--N300);
+            --bg-tooltip-black: var(--N200);
+            --bg-toast: var(--N300);
         }
     }
 }
