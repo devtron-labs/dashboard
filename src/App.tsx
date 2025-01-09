@@ -29,11 +29,6 @@ import {
     ToastVariantType,
     API_STATUS_CODES,
     logExceptionToSentry,
-    Button,
-    ButtonVariantType,
-    ButtonStyleType,
-    ComponentSizeType,
-    useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICSparkles } from '@Icons/ic-sparkles.svg'
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
@@ -54,8 +49,6 @@ const Login = lazy(() => import('./components/login/Login'))
 const GenericDirectApprovalModal = importComponentFromFELibrary('GenericDirectApprovalModal')
 
 export default function App() {
-    const { handleThemeChange } = useTheme()
-
     const onlineToastRef = useRef(null)
     const updateToastRef = useRef(null)
     const [errorPage, setErrorPage] = useState<boolean>(false)
@@ -367,20 +360,6 @@ export default function App() {
                     </>
                 )}
             </Suspense>
-            {window._env_.FEATURE_EXPERIMENTAL_THEMING_ENABLE && (
-                <div className="dc__position-abs dc__bottom-30-imp dc__right-20">
-                    <Button
-                        icon={<ICSparkles />}
-                        variant={ButtonVariantType.borderLess}
-                        style={ButtonStyleType.neutral}
-                        size={ComponentSizeType.small}
-                        ariaLabel="Toggle theme"
-                        showAriaLabelInTippy={false}
-                        onClick={handleThemeChange}
-                        dataTestId="toggle-theme"
-                    />
-                </div>
-            )}
         </div>
     )
 }
