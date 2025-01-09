@@ -967,6 +967,14 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         )
     }
 
+    onClickCloseSESModal = () => {
+        this.setState({ showSESConfigModal: false })
+    }
+
+    onClickCloseSMTPModal = () => {
+        this.setState({ showSMTPConfigModal: false })
+    }
+
     renderSESConfigModal() {
         if (this.state.showSESConfigModal) {
             return (
@@ -985,9 +993,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                 showError(error)
                             })
                     }}
-                    closeSESConfigModal={() => {
-                        this.setState({ showSESConfigModal: false })
-                    }}
+                    closeSESConfigModal={this.onClickCloseSESModal}
                 />
             )
         }
@@ -1011,9 +1017,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                 showError(error)
                             })
                     }}
-                    closeSMTPConfigModal={() => {
-                        this.setState({ showSMTPConfigModal: false })
-                    }}
+                    closeSMTPConfigModal={this.onClickCloseSMTPModal}
                 />
             )
         }
