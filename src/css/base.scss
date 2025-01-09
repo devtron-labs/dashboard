@@ -4965,23 +4965,6 @@ textarea::placeholder {
     line-height: inherit;
 }
 
-.dc__unset-button-styles {
-    background: none;
-    color: inherit;
-    border: none;
-    padding: 0;
-    font: inherit;
-    cursor: pointer;
-    outline: inherit;
-
-    &:focus,
-    &:active,
-    &:hover {
-        outline: unset;
-        border: unset;
-    }
-}
-
 /* NOTE: if the border width is smaller than border-radius curve;
  * the border around the curved edges will get clipped;
  * Eg: dc__border & dc__border-radius-4-imp */
