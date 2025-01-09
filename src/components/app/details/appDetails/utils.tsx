@@ -97,6 +97,7 @@ export const ThroughputSelect = (props) => {
             onChange={props.handleStatusChange}
             onCreateOption={onCreateOption}
             variant={SelectPickerVariantType.BORDER_LESS}
+            menuPosition="absolute"
         />
     )
 }
@@ -121,6 +122,7 @@ export const LatencySelect = (props) => {
             onChange={props.handleLatencyChange}
             onCreateOption={onCreateOption}
             variant={SelectPickerVariantType.BORDER_LESS}
+            menuPosition="absolute"
         />
     )
 }
