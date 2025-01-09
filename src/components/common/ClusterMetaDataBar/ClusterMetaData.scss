@@ -17,12 +17,12 @@
 .dark-theme {
     border-top: 1px solid #2c3354;
     background: #0c0f21;
-    color: var(--N0);
+    color: var(--white);
     z-index: 19;
 
     .resource-link__dark-theme:hover,
     .resource-link__dark-theme:focus {
-        color: var(--N0);
+        color: var(--white);
         text-decoration: none;
     }
 }
