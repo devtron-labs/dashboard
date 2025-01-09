@@ -190,7 +190,7 @@ export const InputPluginSelection = ({
                                             arrow={false}
                                             placement="right"
                                             content={
-                                                <span className="fs-12 fw-6 cn-0 dc__break-word">
+                                                <span className="fs-12 fw-6 dc__break-word">
                                                     <div className="mb-10">{option.description}</div>
                                                 </span>
                                             }
