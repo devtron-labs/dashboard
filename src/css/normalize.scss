@@ -22,3 +22,11 @@ summary::-webkit-details-marker {
         border: unset;
     }
 }
+
+.theme {
+    &__dark {
+        input {
+            color-scheme: dark;
+        }
+    }
+}
