@@ -203,7 +203,7 @@ const SESConfigModal = ({
                 value={form.configName}
                 onChange={handleInputChange}
                 onBlur={handleBlur}
-                placeholder="Configuration name"
+                placeholder="Enter a name"
                 autoFocus
                 isRequiredField
                 error={isFormValid[ConfigurationFieldKeys.CONFIG_NAME].message}

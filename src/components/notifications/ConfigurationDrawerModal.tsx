@@ -22,7 +22,7 @@ export const ConfigurationTabDrawerModal = ({
     const renderFooter = () => (
         <div className="px-20 py-16 flex right dc__gap-12 dc__zi-1 dc__border-top bcn-0">
             <Button
-                dataTestId="ses-config-modal-close-button"
+                dataTestId={`${modal}-config-modal-close-button`}
                 size={ComponentSizeType.large}
                 onClick={closeModal}
                 text="Cancel"
@@ -31,7 +31,7 @@ export const ConfigurationTabDrawerModal = ({
                 style={ButtonStyleType.neutral}
             />
             <Button
-                dataTestId="add-ses-save-button"
+                dataTestId={`add-${modal}-save-button`}
                 size={ComponentSizeType.large}
                 onClick={saveConfigModal}
                 text="Save"

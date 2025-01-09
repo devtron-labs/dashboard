@@ -204,7 +204,7 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
                 value={form.configName}
                 onChange={handleInputChange}
                 onBlur={handleBlur}
-                placeholder="Channel name"
+                placeholder="Enter channel name"
                 autoFocus
                 isRequiredField
                 error={isFormValid[ConfigurationFieldKeys.CONFIG_NAME].message}
@@ -214,7 +214,7 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
                 label={renderWebhookUrlLabel()}
                 name={ConfigurationFieldKeys.WEBHOOK_URL}
                 value={form.webhookUrl}
-                placeholder="Enter Incoming Webhook URL"
+                placeholder="Enter incoming webhook URL"
                 onChange={handleInputChange}
                 onBlur={handleBlur}
                 isRequiredField
