@@ -36,7 +36,7 @@ export const ConfigurationTabSwitcher = () => {
                 {getConfigurationTabTextWithIcon().map((tab, index) => (
                     <button
                         type="button"
-                        data-testid={`tab-${tab.link}`}
+                        data-testid={`${tab.link}-tab-title`}
                         className={`tab-group__tab dc__unset-button-styles flexbox dc__gap-1 dc__hover-text-n90 dc__gap-6 px-10 py-4 fw-6 ${index === 0 ? 'dc__left-radius-4 ' : ''}
                          ${index === getConfigurationTabTextWithIcon().length - 1 ? 'dc__right-radius-4' : ''} ${activeTab === tab.link ? 'bcn-1 fw-6 cn-9' : 'bcn-0'} cn-7`}
                         key={tab.link}
@@ -51,7 +51,7 @@ export const ConfigurationTabSwitcher = () => {
                 onClick={handleAddClick}
                 variant={ButtonVariantType.primary}
                 size={ComponentSizeType.small}
-                dataTestId="add-configuration"
+                dataTestId={`${activeTab}-add-button`}
                 startIcon={<Add />}
                 text={`Add ${getTabText(activeTab)}`}
             />
