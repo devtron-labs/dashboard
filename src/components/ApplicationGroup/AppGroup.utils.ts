@@ -241,6 +241,7 @@ export const appGroupAppSelectorStyle = {
     }),
     menu: (base) => ({
         ...base,
+        border: '1px solid var(--N200)',
         backgroundColor: 'var(--bg-primary)',
     }),
     input: (base) => ({
