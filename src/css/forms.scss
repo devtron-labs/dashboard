@@ -182,7 +182,7 @@ p.sentence-case:first-letter {
 }
 
 .form__icon--info path[fill='#06c'] {
-    fill: gray;
+    fill: var(--N600);
 }
 
 .form__key-value-file {
@@ -247,8 +247,6 @@ p.sentence-case:first-letter {
     display: flex;
     border: solid 1px var(--N200);
     border-radius: 4px;
-    // TODO: Should be transparent?
-    // background-color: var(--bg-primary);
     background-color: transparent;
 
     &.permission-type__radio-group,
