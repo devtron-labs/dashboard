@@ -71,7 +71,7 @@ const MessageUI: React.FC<MsgUIProps> = ({
                     switch (icon) {
                         case MsgUIType.LOADING:
                             return (
-                                <div className={`fcn-0 ${iconClassName || ''}`}>
+                                <div className={`icon-fill__white ${iconClassName || ''}`}>
                                     <Progressing size={size} />
                                 </div>
                             )
@@ -89,7 +89,7 @@ const MessageUI: React.FC<MsgUIProps> = ({
                         case MsgUIType.INFO:
                             return <FilledInfoIcon className={iconClassName || ''} width={size} height={size} />
                         default:
-                            return <InfoIcon className={`fcn-0 ${iconClassName || ''}`} width={size} height={size} />
+                            return <InfoIcon className={`icon-fill__white ${iconClassName || ''}`} width={size} height={size} />
                     }
                 })()}
             </div>
