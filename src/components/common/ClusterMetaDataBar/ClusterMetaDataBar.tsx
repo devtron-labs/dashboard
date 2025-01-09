@@ -44,7 +44,7 @@ export const ClusterMetaDataBar = ({
 
     const renderNavigationToAllResources = () => (
         <a
-            className={`${darkTheme ? 'scn-0 resource-link__dark-theme' : 'scn-9 cn-9 resource-link__white-theme'} fw-6 flex left dc__gap-6 cursor cn-0`}
+            className={`${darkTheme ? 'icon-stroke__white resource-link__dark-theme text__white' : 'scn-9 cn-9 resource-link__white-theme'} fw-6 flex left dc__gap-6 cursor`}
             target="_blank"
             href={`${window.__BASE_URL__}${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${K8S_EMPTY_GROUP}`}
             rel="noreferrer"
@@ -56,12 +56,12 @@ export const ClusterMetaDataBar = ({
 
     const renderNavigationToAClusterTerminal = () => (
         <a
-            className={`${darkTheme ? 'resource-link__dark-theme' : 'cn-9 resource-link__white-theme'} fw-6 flex left dc__gap-6 cursor cn-0`}
+            className={`${darkTheme ? 'resource-link__dark-theme text__white' : 'cn-9 resource-link__white-theme'} fw-6 flex left dc__gap-6 cursor`}
             target="_blank"
             href={`${window.__BASE_URL__}${URLS.RESOURCE_BROWSER}/${clusterId}/all/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}?namespace=${namespace}`}
             rel="noreferrer"
         >
-            <TerminalIcon className={`${darkTheme ? 'fcn-0' : ''} icon-dim-16`} />
+            <TerminalIcon className={`${darkTheme ? 'icon-fill__white' : ''} icon-dim-16`} />
             Cluster terminal
         </a>
     )

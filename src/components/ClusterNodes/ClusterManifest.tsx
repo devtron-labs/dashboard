@@ -139,15 +139,15 @@ export default function ClusterManifest({
         return (
             <div className="h-100 flexbox-col">
                 {manifestMode === EditModeType.REVIEW && (
-                    <div className="cluster-manifest-header pt-4 pb-4 cn-0 flex">
+                    <div className="cluster-manifest-header pt-4 pb-4 text__white flex">
                         <div className="pl-12 flex dc__content-space">
                             Pod manifest
                             <span className="flex" data-testid="close-to-edit-manifest" onClick={switchToEditMode}>
-                                <Close className="icon-dim-16 cursor fcn-0" />
+                                <Close className="icon-dim-16 cursor icon-fill__white" />
                             </span>
                         </div>
                         <div className="pl-12 flex left">
-                            <Pencil className="icon-dim-16 mr-10 scn-0" /> Manifest (Editing)
+                            <Pencil className="icon-dim-16 mr-10 icon-stroke__white" /> Manifest (Editing)
                         </div>
                     </div>
                 )}

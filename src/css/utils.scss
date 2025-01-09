@@ -29,3 +29,19 @@
         color: var(--white);
     }
 }
+
+svg.icon-fill {
+    &__white {
+        *[fill^="#"] {
+            fill: var(--white);
+        }
+    }
+}
+
+.icon-stroke {
+    &__white {
+        *[stroke^="#"] {
+            stroke: var(--white);
+        }
+    }
+}

@@ -730,11 +730,11 @@ th {
     padding: 10px;
     line-height: 1.66666667;
     vertical-align: top;
-    border-top: 1px solid #d1d1d1;
+    border-top: 1px solid var(--N100);
 }
 .table > thead > tr > th {
     vertical-align: bottom;
-    border-bottom: 2px solid #d1d1d1;
+    border-bottom: 2px solid var(--N100);
 }
 .table > caption + thead > tr:first-child > th,
 .table > colgroup + thead > tr:first-child > th,
@@ -745,7 +745,7 @@ th {
     border-top: 0;
 }
 .table > tbody + tbody {
-    border-top: 2px solid #d1d1d1;
+    border-top: 2px solid var(--N100);
 }
 .table .table {
     background-color: var(--bg-primary);
@@ -833,7 +833,7 @@ th {
         margin-bottom: 15px;
         overflow-y: hidden;
         -ms-overflow-style: -ms-autohiding-scrollbar;
-        border: 1px solid #d1d1d1;
+        border: 1px solid var(--N100);
     }
     .table-responsive > .table {
         margin-bottom: 0;
