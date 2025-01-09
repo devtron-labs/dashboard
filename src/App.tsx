@@ -54,7 +54,7 @@ const Login = lazy(() => import('./components/login/Login'))
 const GenericDirectApprovalModal = importComponentFromFELibrary('GenericDirectApprovalModal')
 
 export default function App() {
-    const {currentTheme, handleThemeChange} = useTheme()
+    const { handleThemeChange } = useTheme()
 
     const onlineToastRef = useRef(null)
     const updateToastRef = useRef(null)
