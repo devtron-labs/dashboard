@@ -238,20 +238,6 @@
     color: var(--N700);
 }
 
-.logout-card__logout {
-    padding: 14px 16px;
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 1.43;
-    letter-spacing: normal;
-    color: var(--N900);
-    border-top: solid 1px var(--N100);
-}
-
-.logout-card__logout:hover {
-    background-color: var(--N100);
-}
-
 .logout-card__initial--nav {
     border-color: var(--N0);
 }
