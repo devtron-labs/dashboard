@@ -104,6 +104,10 @@
     height: 326px;
     background-color: var(--bg-primary);
     border-bottom: solid 1px var(--N200);
+
+    text {
+        fill: var(--N700);
+    }
 }
 
 .deployment-metrics__frequency-graph {
@@ -218,7 +222,7 @@
     text-transform: uppercase;
     padding: 12px 10px;
     white-space: nowrap;
-    color: var(--N500);
+    color: var(--N700);
 }
 
 .deployment-table__cell-deployed {
