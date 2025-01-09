@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import { get, post, put, ResponseType, trash, APIOptions } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    get,
+    post,
+    put,
+    ResponseType,
+    trash,
+    APIOptions,
+    ROUTES as COMMON_ROUTES,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import {
     ClusterCapacityResponse,
@@ -45,7 +53,8 @@ export const patchApplicationNote = (requestPayload: ClusteNotePatchRequest): Pr
 export const getClusterList = (signal: AbortSignal): Promise<ClusterListResponse> =>
     get(Routes.CLUSTER_LIST, { signal })
 
-export const getClusterListMin = (): Promise<ClusterListResponse> => get(Routes.CLUSTER_LIST_MIN)
+/** @deprecated - use `getClusterListRaw` from fe-common-lib */
+export const getClusterListMin = (): Promise<ClusterListResponse> => get(COMMON_ROUTES.CLUSTER_LIST_RAW)
 
 export const getClusterCapacity = (clusterId: string, signal?): Promise<ClusterCapacityResponse> =>
     get(`${Routes.CLUSTER_CAPACITY}/${clusterId}`, { signal })
