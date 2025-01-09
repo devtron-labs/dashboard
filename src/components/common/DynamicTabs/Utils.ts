@@ -36,10 +36,11 @@ export const COMMON_TABS_SELECT_STYLES = {
         ...base,
         marginTop: 0,
         borderRadius: '0 0 4px 4px',
-        width: '298px',
-        marginLeft: '1px',
+        width: '300px',
         overflow: 'hidden',
         backgroundColor: 'var(--bg-menu)',
+        boxShadow: 'none',
+        border: '1px solid var(--N200)',
     }),
     menuList: (base) => ({
         ...base,
