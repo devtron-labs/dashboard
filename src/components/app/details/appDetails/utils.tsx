@@ -19,10 +19,8 @@ import React from 'react'
 import { components } from 'react-select'
 import { AggregationKeys } from '../../types'
 import { getVersionArr, isVersionLessThanOrEqualToTarget, DayPickerRangeControllerPresets } from '../../../common'
-import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron-down.svg'
 import { ChartTypes, AppMetricsTabType, StatusType, StatusTypes } from './appDetails.type'
-import { ZERO_TIME_STRING, Nodes, NodeType, ACTION_STATE, ButtonStyleType } from '@devtron-labs/devtron-fe-common-lib'
-import CreatableSelect from 'react-select/creatable'
+import { ZERO_TIME_STRING, Nodes, NodeType, ACTION_STATE, ButtonStyleType, SelectPicker, SelectPickerProps, SelectPickerVariantType } from '@devtron-labs/devtron-fe-common-lib'
 
 export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: boolean): AggregationKeys {
     switch (nodeType) {
@@ -76,52 +74,14 @@ export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: bool
     }
 }
 
-export const DropdownIndicator = (props) => {
-    return (
-        <components.DropdownIndicator {...props}>
-            <ArrowDown className="icon-dim-20 fcn-6" />
-        </components.DropdownIndicator>
-    )
-}
-
-const throughputAndLatencySelectStyle = {
-    container: (base, state) => ({
-        ...base,
-        outline: 'unset',
-        height: '100%',
-    }),
-    control: (base, state) => ({
-        ...base,
-        backgroundColor: 'transparent',
-        borderColor: 'transparent',
-        minHeight: '20px',
-        height: '100%',
-    }),
-    menu: (base, state) => ({
-        ...base,
-        width: 'auto',
-    }),
-    valueContainer: (base) => ({
-        ...base,
-        padding: '0',
-        height: '100%',
-        fontWeight: 600,
-    }),
-    singleValue: (base) => ({
-        ...base,
-        maxWidth: '77px',
-    }),
-    dropdownIndicator: (base) => ({
-        ...base,
-        padding: '0',
-        height: '20px',
-    }),
-}
-
 export const ThroughputSelect = (props) => {
+    const onCreateOption: SelectPickerProps['onCreateOption'] = (inputValue) => { 
+        props.handleStatusChange({ label: inputValue, value: inputValue })
+    }
+
     return (
-        <CreatableSelect
-            className=""
+        <SelectPicker
+            isCreatable
             inputId="throughput-select"
             placeholder="Status Code"
             value={{ label: props.status, value: props.status }}
@@ -135,19 +95,21 @@ export const ThroughputSelect = (props) => {
                 { label: 'Throughput', value: 'Throughput' },
             ]}
             onChange={props.handleStatusChange}
-            styles={throughputAndLatencySelectStyle}
-            components={{
-                IndicatorSeparator: null,
-                DropdownIndicator,
-            }}
+            onCreateOption={onCreateOption}
+            variant={SelectPickerVariantType.BORDER_LESS}
         />
     )
 }
 
 export const LatencySelect = (props) => {
+    const onCreateOption: SelectPickerProps['onCreateOption'] = (inputValue) => {
+        props.handleLatencyChange({ label: inputValue, value: inputValue })
+    }
+
     return (
-        <CreatableSelect
-            className=""
+        <SelectPicker
+            isCreatable
+            inputId="latency-select"
             placeholder="Latency"
             value={{ label: props.latency, value: props.latency }}
             options={[
@@ -157,12 +119,8 @@ export const LatencySelect = (props) => {
                 { label: '95', value: '95' },
             ]}
             onChange={props.handleLatencyChange}
-            styles={throughputAndLatencySelectStyle}
-            components={{
-                IndicatorSeparator: null,
-                DropdownIndicator,
-            }}
-            formatCreateLabel={(inputValue) => inputValue}
+            onCreateOption={onCreateOption}
+            variant={SelectPickerVariantType.BORDER_LESS}
         />
     )
 }
