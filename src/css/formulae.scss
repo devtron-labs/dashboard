@@ -406,28 +406,28 @@ $color-suffix: 00;
 
     &.cancel {
         &:not(.cta__no-svg-override) {
-            @include cta(var(--N0), var(--N700), var(--N200));
+            @include cta(var(--transparent), var(--N700), var(--N200));
 
             &:hover {
-                @include cta(var(--N0), var(--N700), var(--N300));
+                @include cta(var(--transparent), var(--N700), var(--N300));
             }
 
             &:active,
             &:focus {
-                @include cta(var(--N700), var(--N0), transparent);
+                @include cta(var(--transparent), var(--N0), transparent);
             }
         }
 
         &.cta__no-svg-override {
-            @include cta(var(--N0), var(--N700), var(--N200), pointer, false);
+            @include cta(var(--transparent), var(--N700), var(--N200), pointer, false);
 
             &:hover {
-                @include cta(var(--N0), var(--N700), var(--N300), pointer, false);
+                @include cta(var(--transparent), var(--N700), var(--N300), pointer, false);
             }
 
             &:active,
             &:focus {
-                @include cta(var(--N700), var(--N0), transparent, pointer, false);
+                @include cta(var(--transparent), var(--N0), transparent, pointer, false);
             }
         }
     }
