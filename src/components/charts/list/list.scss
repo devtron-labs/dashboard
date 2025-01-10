@@ -251,7 +251,7 @@
 
         .select-button {
             font-size: 12px;
-            color: #797777;
+            color: var(--N700);
         }
     }
 
@@ -303,7 +303,7 @@
     }
 
     .version-values-label {
-        color: #797777;
+        color: var(--N700);
         font-size: 12px;
     }
 }

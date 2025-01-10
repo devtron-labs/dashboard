@@ -82,7 +82,7 @@
     }
 
     &.unknown {
-        @include testcase-status(var(--N900), white);
+        @include testcase-status(var(--N900), var(--N0));
         background-image: unset;
     }
 }
