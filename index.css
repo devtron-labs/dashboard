@@ -1,0 +1,20 @@
+/*
+ * Although this is duplicated but this would help us with consistent loader in case
+ * the theme is same as the system theme.
+ */
+:root {
+    --bg-loading-screen: #f2f4f7;
+    --bg-devtron-loader: #e5f2ff;
+    --fill-devtron-loader: #0066cc;
+
+
+    @media (prefers-color-scheme: dark) {
+        --bg-loading-screen: #0d0f1c;
+        --bg-devtron-loader: #172433;
+        --fill-devtron-loader: #74B5FF;
+    }
+}
+
+body {
+    background: var(--bg-loading-screen);
+}
