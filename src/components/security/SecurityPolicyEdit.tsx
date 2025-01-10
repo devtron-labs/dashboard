@@ -98,7 +98,7 @@ export class SecurityPolicyEdit extends Component<
         super(props)
         this.state = {
             view: ViewType.LOADING,
-            showWhitelistModal: false,
+            whitelistModalEnvId: null,
             result: {
                 level: this.props.level,
                 policies: [],
@@ -106,7 +106,7 @@ export class SecurityPolicyEdit extends Component<
             isCveError: false,
             showLoadingOverlay: false,
         }
-        this.toggleAddCveModal = this.toggleAddCveModal.bind(this)
+        this.handleCloseAddCveModal = this.handleCloseAddCveModal.bind(this)
         this.updateSeverity = this.updateSeverity.bind(this)
         this.saveCVE = this.saveCVE.bind(this)
         this.updateCVE = this.updateCVE.bind(this)
@@ -123,7 +123,7 @@ export class SecurityPolicyEdit extends Component<
             this.setState({
                 view: ViewType.FORM,
                 result: response.result,
-                showWhitelistModal: false,
+                whitelistModalEnvId: null,
             })
         } catch (error) {
             if (error.code === 404) {
@@ -257,8 +257,8 @@ export class SecurityPolicyEdit extends Component<
         }
     }
 
-    toggleAddCveModal(): void {
-        this.setState({ showWhitelistModal: !this.state.showWhitelistModal })
+    handleCloseAddCveModal(): void {
+        this.setState({ whitelistModalEnvId: null })
     }
 
     createCVEPayload(
@@ -399,7 +399,7 @@ export class SecurityPolicyEdit extends Component<
         )
     }
 
-    renderPolicyListHeader = () => {
+    renderPolicyListHeader = (envId: number) => {
         return (
             <div className="flexbox flex-justify mt-20">
                 <div>
@@ -417,7 +417,11 @@ export class SecurityPolicyEdit extends Component<
                         </a>
                     </p>
                 </div>
-                <button type="button" className="cta small flex" onClick={() => this.toggleAddCveModal()}>
+                <button
+                    type="button"
+                    className="cta small flex"
+                    onClick={() => this.setState({ whitelistModalEnvId: envId })}
+                >
                     <Add className="icon-dim-16 mr-5" />
                     Add CVE Policy
                 </button>
@@ -496,9 +500,6 @@ export class SecurityPolicyEdit extends Component<
                         </tbody>
                     </table>
                 </div>
-                {this.state.showWhitelistModal ? (
-                    <AddCveModal saveCVE={this.saveCVE} close={this.toggleAddCveModal} envId={envId} />
-                ) : null}
             </>
         )
     }
@@ -609,7 +610,7 @@ export class SecurityPolicyEdit extends Component<
                                     <>
                                         {isCollapsible ? <div className="mb-20" /> : null}
                                         {this.renderVulnerabilitiesCard(v, v.severities)}
-                                        {this.renderPolicyListHeader()}
+                                        {this.renderPolicyListHeader(v.envId)}
                                         {v.cves.length
                                             ? this.renderPolicyList(v.cves, v.envId)
                                             : this.renderEmptyPolicyList()}
@@ -619,6 +620,13 @@ export class SecurityPolicyEdit extends Component<
                         )
                     })}
                 </ConditionalWrap>
+                {this.state.whitelistModalEnvId ? (
+                    <AddCveModal
+                        saveCVE={this.saveCVE}
+                        close={this.handleCloseAddCveModal}
+                        envId={this.state.whitelistModalEnvId}
+                    />
+                ) : null}
             </>
         )
     }
