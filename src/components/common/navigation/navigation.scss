@@ -113,7 +113,7 @@
 
                 &:hover {
                     .svg-container {
-                        background: #00000059;
+                        background: var(--black-40);
                     }
                 }
 
@@ -148,7 +148,7 @@
 
         .active-nav {
             .svg-container {
-                background: #00000059;
+                background: var(--black-40);
             }
         }
 
