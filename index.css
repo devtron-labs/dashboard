@@ -9,11 +9,12 @@
     --fill-devtron-loader: #0066cc;
 
 
-    @media (prefers-color-scheme: dark) {
+    /* TODO: Comment when theming goes live on production */
+    /* @media (prefers-color-scheme: dark) {
         --bg-tertiary: #0d0f1c;
         --bg-devtron-loader: #172433;
         --fill-devtron-loader: #74B5FF;
-    }
+    } */
 }
 
 body {
