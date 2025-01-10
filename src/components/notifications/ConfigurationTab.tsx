@@ -23,35 +23,29 @@ import {
     ConfirmationModalVariantType,
     ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
-import { SlackConfigModal } from './SlackConfigModal'
-import SESConfigModal from './SESConfigModal'
-import {
-    deleteNotification,
-    getSESConfiguration,
-    getConfigs,
-    getSlackConfiguration,
-    getSMTPConfiguration,
-    getWebhookConfiguration,
-} from './notifications.service'
-import { DC_CONFIGURATION_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
-import { SMTPConfigModal } from './SMTPConfigModal'
-import { WebhookConfigModal } from './WebhookConfigModal'
+import { useHistory, useLocation } from 'react-router-dom'
+import { deleteNotification, getConfigs } from './notifications.service'
+import { DC_CONFIGURATION_CONFIRMATION_MESSAGE } from '../../config/constantMessaging'
 import { ConfigurationTabState } from './types'
-import SlackConfigurationTable from './SlackConfigurationTable'
-import { WebhookConfigurationTable } from './WebhookConfigurationTable'
-import SESConfigurationTable from './SESConfigurationTable'
-import { SMTPConfigurationTable } from './SMTPConfigurationTable'
 import { ConfigurationTabSwitcher } from './ConfigurationTabsSwitcher'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, ConfigurationTabText } from './constants'
+import { EmptyConfigurationView } from './EmptyConfigurationView'
+import emptySES from '../../assets/img/ses-empty.png'
+import emptyWebhook from '../../assets/img/webhook-empty.png'
+import emptySmtp from '../../assets/img/smtp-empty.png'
+import emptySlack from '../../assets/img/slack-empty.png'
+import { ConfigurationTables } from './ConfigurationTables'
+import SESConfigModal from './SESConfigModal'
+import { SlackConfigModal } from './SlackConfigModal'
+import { SMTPConfigModal } from './SMTPConfigModal'
+import { WebhookConfigModal } from './WebhookConfigModal'
 
 export const ConfigurationTab = () => {
-    const { path } = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
     const { searchParams } = useSearchString()
     const queryString = new URLSearchParams(location.search)
-    const modal = queryString.get('modal')
+    const modal = (queryString.get('modal') as ConfigurationsTabTypes) ?? ConfigurationsTabTypes.SES
 
     const [state, setState] = useState<ConfigurationTabState>({
         sesConfigurationList: [],
@@ -102,58 +96,6 @@ export const ConfigurationTab = () => {
         })
     }, [])
 
-    const deleteClickHandler = (configId, type: ConfigurationsTabTypes) => async () => {
-        try {
-            if (type === ConfigurationsTabTypes.SLACK) {
-                const { result } = await getSlackConfiguration(configId, true)
-                setState({
-                    ...state,
-                    slackConfig: {
-                        ...result,
-                        channel: ConfigurationsTabTypes.SLACK,
-                    },
-                    confirmation: true,
-                    activeTab: ConfigurationsTabTypes.SLACK,
-                })
-            } else if (type === ConfigurationsTabTypes.SES) {
-                const { result } = await getSESConfiguration(configId)
-                setState({
-                    ...state,
-                    sesConfig: {
-                        ...result,
-                        channel: ConfigurationsTabTypes.SES,
-                    },
-                    confirmation: true,
-                    activeTab: ConfigurationsTabTypes.SES,
-                })
-            } else if (type === ConfigurationsTabTypes.SMTP) {
-                const { result } = await getSMTPConfiguration(configId)
-                setState({
-                    ...state,
-                    smtpConfig: {
-                        ...result,
-                        channel: ConfigurationsTabTypes.SMTP,
-                    },
-                    confirmation: true,
-                    activeTab: ConfigurationsTabTypes.SMTP,
-                })
-            } else if (type === ConfigurationsTabTypes.WEBHOOK) {
-                const { result } = await getWebhookConfiguration(configId)
-                setState({
-                    ...state,
-                    webhookConfig: {
-                        ...result,
-                        channel: DeleteComponentsName.WebhookConfigurationTab,
-                    },
-                    confirmation: true,
-                    activeTab: ConfigurationsTabTypes.WEBHOOK,
-                })
-            }
-        } catch (e) {
-            showError(e)
-        }
-    }
-
     const hideDeleteModal = () => {
         setState({
             ...state,
@@ -175,7 +117,7 @@ export const ConfigurationTab = () => {
         return smtpConfig
     }
 
-    const payload = deleteConfigPayload()
+    const deletePayload = deleteConfigPayload()
 
     if (state.isLoading) {
         return (
@@ -184,6 +126,77 @@ export const ConfigurationTab = () => {
             </div>
         )
     }
+
+    const renderEmptyState = () => {
+        switch (modal) {
+            case ConfigurationsTabTypes.SMTP:
+                return <EmptyConfigurationView activeTab={ConfigurationsTabTypes.SMTP} image={emptySmtp} />
+            case ConfigurationsTabTypes.SLACK:
+                return <EmptyConfigurationView activeTab={ConfigurationsTabTypes.SLACK} image={emptySlack} />
+            case ConfigurationsTabTypes.WEBHOOK:
+                return <EmptyConfigurationView activeTab={ConfigurationsTabTypes.WEBHOOK} image={emptyWebhook} />
+            case ConfigurationsTabTypes.SES:
+            default:
+                return <EmptyConfigurationView activeTab={ConfigurationsTabTypes.SES} image={emptySES} />
+        }
+    }
+
+    const onClickDelete = async () => {
+        try {
+            await deleteNotification(deletePayload)
+            await getAllChannelConfigs()
+            setState({ ...state, confirmation: false })
+        } catch (serverError) {
+            if (serverError instanceof ServerErrors && serverError.code !== 500) {
+                showError(serverError)
+            }
+            setState({ ...state, confirmation: false, showCannotDeleteDialogModal: true })
+        }
+    }
+
+    const handleConfirmation = () => {
+        setState({ ...state, showCannotDeleteDialogModal: false })
+    }
+
+    const renderDeleteModal = () => (
+        <ConfirmationModal
+            variant={ConfirmationModalVariantType.delete}
+            title={`Delete ${ConfigurationTabText[state.activeTab.toUpperCase()]} '${deletePayload.configName}'`}
+            subtitle="Are you sure you want to delete this configuration?"
+            buttonConfig={{
+                secondaryButtonConfig: {
+                    text: 'Cancel',
+                    onClick: hideDeleteModal,
+                    disabled: state.isLoading,
+                },
+                primaryButtonConfig: {
+                    text: 'Delete',
+                    onClick: onClickDelete,
+                    isLoading: state.isLoading,
+                },
+            }}
+            showConfirmationModal={state.confirmation}
+            handleClose={hideDeleteModal}
+        />
+    )
+
+    const renderCannotDeleteDialogModal = () => (
+        <ConfirmationModal
+            variant={ConfirmationModalVariantType.info}
+            title={`Cannot delete ${ConfigurationTabText[state.activeTab.toUpperCase()]} '${deletePayload.configName}'`}
+            subtitle={DC_CONFIGURATION_CONFIRMATION_MESSAGE}
+            buttonConfig={{
+                primaryButtonConfig: {
+                    text: 'Okay',
+                    onClick: handleConfirmation,
+                },
+            }}
+            showConfirmationModal={state.showCannotDeleteDialogModal}
+            handleClose={handleConfirmation}
+        />
+    )
+
+    const renderTableComponent = () => <ConfigurationTables activeTab={modal} state={state} setState={setState} />
 
     const renderModal = () => {
         if (queryString.get(ConfigurationFieldKeys.CONFIG_ID) === null) return null
@@ -215,94 +228,13 @@ export const ConfigurationTab = () => {
         }
     }
 
-    const reloadDeleteConfig = () => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        getAllChannelConfigs()
-    }
-
-    const renderTableComponent = () => {
-        switch (modal) {
-            case ConfigurationsTabTypes.SES:
-                return <SESConfigurationTable state={state} deleteClickHandler={deleteClickHandler} />
-            case ConfigurationsTabTypes.SMTP:
-                return <SMTPConfigurationTable state={state} deleteClickHandler={deleteClickHandler} />
-            case ConfigurationsTabTypes.SLACK:
-                return <SlackConfigurationTable state={state} deleteClickHandler={deleteClickHandler} />
-            case ConfigurationsTabTypes.WEBHOOK:
-                return <WebhookConfigurationTable state={state} deleteClickHandler={deleteClickHandler} />
-            default:
-                return null
-        }
-    }
-
-    const onClickDelete = async () => {
-        try {
-            await deleteNotification(payload)
-            reloadDeleteConfig()
-            setState({ ...state, confirmation: false })
-        } catch (serverError) {
-            if (serverError instanceof ServerErrors && serverError.code === 500) {
-                setState({ ...state, showCannotDeleteDialogModal: true })
-            } else {
-                showError(serverError)
-            }
-            setState({ ...state, confirmation: false, showCannotDeleteDialogModal: true })
-        }
-    }
-
-    const handleConfirmation = () => {
-        setState({ ...state, showCannotDeleteDialogModal: false })
-    }
-
-    const renderCannotDeleteDialogModal = () => (
-        <ConfirmationModal
-            variant={ConfirmationModalVariantType.info}
-            title={`Cannot delete ${ConfigurationTabText[state.activeTab.toUpperCase()]} '${payload.configName}'`}
-            subtitle={DC_CONFIGURATION_CONFIRMATION_MESSAGE}
-            buttonConfig={{
-                primaryButtonConfig: {
-                    text: 'Okay',
-                    onClick: handleConfirmation,
-                },
-            }}
-            showConfirmationModal={state.showCannotDeleteDialogModal}
-            handleClose={handleConfirmation}
-        />
-    )
-
-    if (state.isLoading) {
-        return <Progressing pageLoader />
-    }
-
     return (
         <div className="configuration-tab__container bcn-0 h-100 flexbox-col dc__gap-16 dc__overflow-auto">
             <ConfigurationTabSwitcher />
-            <Switch>
-                <Route path={path} render={renderTableComponent} />
-            </Switch>
+            {state[`${modal.toLowerCase()}ConfigurationList`].length ? renderTableComponent() : renderEmptyState()}
             {renderModal()}
-
-            <ConfirmationModal
-                variant={ConfirmationModalVariantType.delete}
-                title={`Delete ${ConfigurationTabText[state.activeTab.toUpperCase()]} '${payload.configName}'`}
-                subtitle="Are you sure you want to delete this configuration?"
-                buttonConfig={{
-                    secondaryButtonConfig: {
-                        text: 'Cancel',
-                        onClick: hideDeleteModal,
-                        disabled: state.isLoading,
-                    },
-                    primaryButtonConfig: {
-                        text: 'Delete',
-                        onClick: onClickDelete,
-                        isLoading: state.isLoading,
-                    },
-                }}
-                showConfirmationModal={state.confirmation}
-                handleClose={hideDeleteModal}
-            />
-
-            {state.showCannotDeleteDialogModal && renderCannotDeleteDialogModal()}
+            {renderDeleteModal()}
+            {renderCannotDeleteDialogModal()}
         </div>
     )
 }

@@ -3,8 +3,6 @@ import { noop, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import { ConfigurationTableProps } from './types'
 import { ConfigurationsTabTypes } from './constants'
-import { EmptyConfigurationView } from './EmptyConfigurationView'
-import emptySmtp from '../../assets/img/smtp-empty.png'
 import { getConfigTabIcons, renderDefaultTag, renderText } from './notifications.util'
 import { ConfigTableRowActionButton } from './ConfigTableRowActionButton'
 
@@ -22,10 +20,6 @@ export const SMTPConfigurationTable = ({ state, deleteClickHandler }: Configurat
         history.push({
             search: new URLSearchParams(newParams).toString(),
         })
-    }
-
-    if (smtpConfigurationList.length === 0) {
-        return <EmptyConfigurationView configTabType={ConfigurationsTabTypes.SMTP} image={emptySmtp} />
     }
 
     return (

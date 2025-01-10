@@ -387,13 +387,6 @@ export function getWebhookConfiguration(webhookConfigId: number): Promise<Respon
 }
 
 export function saveUpdateWebhookConfiguration(data): Promise<UpdateConfigResponseType> {
-    const headerObj = {}
-    const headerPayload = data.payload !== '' ? data.payload : ''
-    data.header.forEach((element) => {
-        if (element.key != '') {
-            headerObj[element.key] = element.value
-        }
-    })
 
     const payload = {
         channel: 'webhook',
@@ -402,8 +395,8 @@ export function saveUpdateWebhookConfiguration(data): Promise<UpdateConfigRespon
                 id: Number(data.id),
                 configName: data.configName,
                 webhookUrl: data.webhookUrl,
-                header: headerObj,
-                payload: headerPayload,
+                header: data.header,
+                payload: data.payload,
             },
         ],
     }

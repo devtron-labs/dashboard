@@ -2,21 +2,15 @@ import { DeleteComponentsName } from '@Config/constantMessaging'
 import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import { ConfigurationTableProps } from './types'
-import { EmptyConfigurationView } from './EmptyConfigurationView'
 import { ConfigurationsTabTypes } from './constants'
 import { getConfigTabIcons, renderText } from './notifications.util'
 import './notifications.scss'
-import emptySlack from '../../assets/img/slack-empty.png'
 import { ConfigTableRowActionButton } from './ConfigTableRowActionButton'
 
 const SlackConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTableProps) => {
     const { searchParams } = useSearchString()
     const history = useHistory()
     const { slackConfigurationList } = state
-
-    if (slackConfigurationList.length === 0) {
-        return <EmptyConfigurationView configTabType={ConfigurationsTabTypes.SLACK} image={emptySlack} />
-    }
 
     const onClickSlackConfigEdit = (id: number) => () => {
         const newParams = {

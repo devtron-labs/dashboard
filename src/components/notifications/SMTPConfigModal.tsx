@@ -202,6 +202,7 @@ export const SMTPConfigModal = ({
                     placeholder="Enter SMTP password"
                     isRequiredField
                     tabIndex={0}
+                    onBlur={handleBlur}
                 />
             </div>
             <CustomInput

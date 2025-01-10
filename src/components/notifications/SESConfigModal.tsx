@@ -23,7 +23,6 @@ import {
     SelectPicker,
     ComponentSizeType,
     DEFAULT_SECRET_PLACEHOLDER,
-    stringComparatorBySortOrder,
     OptionType,
     SelectPickerProps,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -32,6 +31,7 @@ import { saveEmailConfiguration, getSESConfiguration } from './notifications.ser
 import awsRegionList from '../common/awsRegionList.json'
 import { SESConfigModalProps, SESFormType } from './types'
 import {
+    getAwsRegionListParsed,
     getFormValidated,
     getSESDefaultConfiguration,
     renderErrorToast,
@@ -53,17 +53,14 @@ const SESConfigModal = ({
 
     const [form, setForm] = useState<SESFormType>(getSESDefaultConfiguration(shouldBeDefault))
     const [isFormValid, setFormValid] = useState(DefaultSESValidations)
-
-    const awsRegionListParsed = awsRegionList
-        .sort((a, b) => stringComparatorBySortOrder(a.name, b.name))
-        .map((region) => ({ label: region.name, value: region.value }))
+    const [unMaskedSecretKey, setUnMaskedSecretKey] = useState('')
 
     const fetchSESConfiguration = async () => {
         setForm((prevForm) => ({ ...prevForm, isLoading: true }))
         try {
             const response = await getSESConfiguration(sesConfigId)
             const { region } = response.result
-            const awsRegion = awsRegionListParsed.find((r) => r.value === region)
+            const awsRegion = getAwsRegionListParsed(awsRegionList).find((r) => r.value === region)
 
             setForm({
                 ...response.result,
@@ -71,6 +68,7 @@ const SESConfigModal = ({
                 region: awsRegion,
                 secretKey: DEFAULT_SECRET_PLACEHOLDER, // Masked secretKey for security
             })
+            setUnMaskedSecretKey(response.result.secretKey)
             setFormValid(DefaultSESValidations)
         } catch (error) {
             showError(error)
@@ -87,6 +85,9 @@ const SESConfigModal = ({
 
     const handleInputChange = (e) => {
         const { name, value } = e.target
+        if (name === ConfigurationFieldKeys.SECRET_KEY) {
+            setUnMaskedSecretKey(value)
+        }
         setForm((prevForm) => ({
             ...prevForm,
             [name]: value,
@@ -131,8 +132,13 @@ const SESConfigModal = ({
     }
 
     const getPayload = () => ({
-        ...form,
-        region: form.region.value,
+        configName: form.configName,
+        accessKey: form.accessKey,
+        secretKey: unMaskedSecretKey,
+        region: form.region?.value,
+        fromEmail: form.fromEmail,
+        default: form.default,
+        id: sesConfigId,
     })
 
     const closeSESConfig = () => {
@@ -239,7 +245,7 @@ const SESConfigModal = ({
                 placeholder="Select region"
                 onBlur={handleAWSBlur}
                 onChange={handleAWSRegionChange}
-                options={awsRegionListParsed}
+                options={getAwsRegionListParsed(awsRegionList)}
                 size={ComponentSizeType.large}
                 name={ConfigurationFieldKeys.REGION}
                 error={isFormValid[ConfigurationFieldKeys.REGION].message}

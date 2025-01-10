@@ -30,13 +30,14 @@ import {
     DynamicDataTableRowDataType,
     DynamicDataTableRowType,
     getUniqueId,
+    stringComparatorBySortOrder,
     ToastManager,
     ToastVariantType,
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, ConfigurationTabText } from './constants'
 import { validateEmail } from '../common'
-import { FormError, FormValidation, SESFormType, SMTPFormType, WebhookDataRowType, WebhookHeaderKeyType, WebhookRowCellType } from './types'
+import { FormError, FormValidation, SESFormType, SMTPFormType, WebhookDataRowType, WebhookHeaderKeyType } from './types'
 import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
 
 export const multiSelectStyles = {
@@ -165,16 +166,15 @@ export const renderPipelineTypeIcon = (row) => {
 
 export const getConfigTabIcons = (tab: ConfigurationsTabTypes, size: number = 24) => {
     switch (tab) {
-        case ConfigurationsTabTypes.SES:
-            return <SES className={`icon-dim-${size}`} />
         case ConfigurationsTabTypes.SMTP:
             return <SMTP className={`icon-dim-${size}`} />
         case ConfigurationsTabTypes.SLACK:
             return <Slack className={`icon-dim-${size}`} />
         case ConfigurationsTabTypes.WEBHOOK:
             return <Webhook className={`icon-dim-${size}`} />
+        case ConfigurationsTabTypes.SES:
         default:
-            return SES
+            return <SES className={`icon-dim-${size}`} />
     }
 }
 
@@ -253,28 +253,30 @@ export const getTableHeaders = (): DynamicDataTableHeaderType<WebhookHeaderKeyTy
     { label: 'Value', key: 'value', width: '1fr' },
 ]
 
-export const getInitialWebhookKeyRow = (rows: WebhookRowCellType[]): DynamicDataTableRowType<WebhookHeaderKeyType>[] =>
-    rows.map((row) => {
+export const getInitialWebhookKeyRow = (headers: {key: string, value: string}): WebhookDataRowType[] => {
+    return Object.entries(headers).map(([key, value]) => {
         return {
             data: {
                 key: {
-                    value: row.key || null,
+                    value: key || null,
                     type: DynamicDataTableRowDataType.TEXT,
                     props: {
                         placeholder: 'Eg. owner-name',
                     },
                 },
                 value: {
-                    value: row.value || '',
+                    value: value || '',
                     type: DynamicDataTableRowDataType.TEXT,
                     props: {
                         placeholder: 'Enter value',
                     },
                 },
             },
-            id: row.id,
+
+            id: getUniqueId(),
         }
     })
+}
 
 export const getEmptyVariableDataRow = (): WebhookDataRowType => {
     const id = getUniqueId()
@@ -358,3 +360,8 @@ export const renderErrorToast = () =>
         variant: ToastVariantType.error,
         description: 'Some required fields are missing or Invalid',
     })
+
+export const getAwsRegionListParsed = (awsRegionList) =>
+    awsRegionList
+        .sort((a, b) => stringComparatorBySortOrder(a.name, b.name))
+        .map((region) => ({ label: region.name, value: region.value }))
