@@ -312,21 +312,6 @@ a:focus {
     min-width: 0px;
 }
 
-.dc__transparent {
-    background: transparent;
-    border: none;
-    padding: 2px;
-
-    &--imp {
-        background: transparent !important;
-        border: none !important;
-    }
-
-    &--unstyled {
-        background: transparent;
-    }
-}
-
 .dc__position-fixed {
     position: fixed;
 }
@@ -5182,20 +5167,6 @@ textarea::placeholder {
 .security-policy--block {
     color: var(--R500);
     text-transform: capitalize;
-}
-
-.dc__transparent-div {
-    position: fixed;
-    background: transparent;
-    top: 0px;
-    left: 0px;
-    right: 0;
-    height: 100vh;
-    z-index: var(--transparent-div-index);
-
-    &--command-bar {
-        z-index: 24;
-    }
 }
 
 @-webkit-keyframes pulse {
