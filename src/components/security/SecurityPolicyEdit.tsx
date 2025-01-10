@@ -262,7 +262,7 @@ export class SecurityPolicyEdit extends Component<
     }
 
     closeWhitelistModal = () => {
-        this.setState({showWhitelistModal: true, addCVEEnvId: null})
+        this.setState({showWhitelistModal: false, addCVEEnvId: null})
     }
 
     createCVEPayload(
