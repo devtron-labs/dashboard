@@ -99,7 +99,7 @@ export default class LineChart extends Component<LineChartProps> {
             .attr('y1', 0)
             .attr('x2', 0)
             .attr('y2', height)
-            .attr('stroke', '#d1d1d1')
+            .attr('stroke', 'var(--N200)')
             .attr('stroke-width', 1)
             .attr('opacity', 0)
 
@@ -110,7 +110,7 @@ export default class LineChart extends Component<LineChartProps> {
             .attr('y', '0')
             .attr('width', width)
             .attr('height', height)
-            .attr('stroke', '#d1d1d1')
+            .attr('stroke', 'var(--N200)')
             .attr('fill', 'var(--N50)')
         // grid lines
         gridGroup
@@ -126,7 +126,7 @@ export default class LineChart extends Component<LineChartProps> {
             .attr('y2', function (d) {
                 return yScale(d)
             })
-            .attr('stroke', '#d1d1d1')
+            .attr('stroke', 'var(--N200)')
 
         // Draw X axis
         svg.append('g')

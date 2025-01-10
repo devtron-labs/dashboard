@@ -3763,7 +3763,7 @@ button.close {
 fieldset[disabled] .btn {
     background-color: var(--bg-secondary) !important;
     background-image: none !important;
-    border-color: #d1d1d1 !important;
+    border-color: var(--N200) !important;
     color: #8b8d8f !important;
     opacity: 1;
 }
