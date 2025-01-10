@@ -21,7 +21,7 @@ import { ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, DefaultSMTPValidation } from './constants'
 import { SMTPConfigModalProps, SMTPFormType } from './types'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
-import { getFormValidated, getSMTPDefaultConfiguration, validateKeyValueConfig } from './notifications.util'
+import { getSMTPDefaultConfiguration, renderErrorToast, validateKeyValueConfig } from './notifications.util'
 import { DefaultCheckbox } from './DefaultCheckbox'
 
 export const SMTPConfigModal = ({
@@ -59,7 +59,7 @@ export const SMTPConfigModal = ({
         } else {
             setForm((prevForm) => ({ ...prevForm, default: shouldBeDefault }))
         }
-    }, [smtpConfigId, shouldBeDefault])
+    }, [smtpConfigId])
 
     const handleBlur = (e) => {
         const { name, value } = e.target
@@ -89,41 +89,50 @@ export const SMTPConfigModal = ({
         }
     }
 
-    const getAllFieldsValidated = () => {
+    const validateSave = () => {
         const { configName, host, port, authUser, authPassword, fromEmail } = form
+        setFormValid((prevValid) => ({
+            ...prevValid,
+            configName: validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, form.configName),
+            host: validateKeyValueConfig(ConfigurationFieldKeys.HOST, form.host),
+            port: validateKeyValueConfig(ConfigurationFieldKeys.PORT, form.port),
+            authUser: validateKeyValueConfig(ConfigurationFieldKeys.AUTH_USER, form.authUser),
+            authPassword: validateKeyValueConfig(ConfigurationFieldKeys.AUTH_PASSWORD, form.authPassword),
+            fromEmail: validateKeyValueConfig(ConfigurationFieldKeys.FROM_EMAIL, form.fromEmail),
+        }))
+        setForm((prevForm) => ({ ...prevForm, isLoading: false }))
         return (
-            !!configName &&
-            !!host &&
-            !!port &&
-            !!authUser &&
-            !!authPassword &&
-            !!fromEmail &&
-            getFormValidated(isFormValid, fromEmail)
+            validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, configName).isValid &&
+            validateKeyValueConfig(ConfigurationFieldKeys.HOST, host).isValid &&
+            validateKeyValueConfig(ConfigurationFieldKeys.PORT, port).isValid &&
+            validateKeyValueConfig(ConfigurationFieldKeys.AUTH_USER, authUser).isValid &&
+            validateKeyValueConfig(ConfigurationFieldKeys.AUTH_PASSWORD, authPassword).isValid &&
+            validateKeyValueConfig(ConfigurationFieldKeys.FROM_EMAIL, fromEmail).isValid
         )
     }
 
+    const getPayload = () => {
+        const { configName, host, port, authUser, authPassword, fromEmail } = form
+        return {
+            configName,
+            host,
+            port,
+            authUser,
+            authPassword,
+            fromEmail,
+            default: form.default,
+            id: smtpConfigId,
+        }
+    }
+
     const saveSMTPConfig = () => {
-        if (!getAllFieldsValidated()) {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Some required fields are missing or Invalid',
-            })
-            setFormValid((prevValid) => ({
-                ...prevValid,
-                configName: validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, form.configName),
-                host: validateKeyValueConfig(ConfigurationFieldKeys.HOST, form.host),
-                port: validateKeyValueConfig(ConfigurationFieldKeys.PORT, form.port),
-                authUser: validateKeyValueConfig(ConfigurationFieldKeys.AUTH_USER, form.authUser),
-                authPassword: validateKeyValueConfig(ConfigurationFieldKeys.AUTH_PASSWORD, form.authPassword),
-                fromEmail: validateKeyValueConfig(ConfigurationFieldKeys.FROM_EMAIL, form.fromEmail),
-            }))
-            setForm((prevForm) => ({ ...prevForm, isLoading: false }))
+        if (!validateSave()) {
+            renderErrorToast()
             return
         }
-
         setForm((prevForm) => ({ ...prevForm, isLoading: true }))
 
-        saveEmailConfiguration(form, ConfigurationsTabTypes.SMTP)
+        saveEmailConfiguration(getPayload(), ConfigurationsTabTypes.SMTP)
             .then((response) => {
                 setForm((prevForm) => ({ ...prevForm, isLoading: false }))
                 ToastManager.showToast({
@@ -218,7 +227,7 @@ export const SMTPConfigModal = ({
                 error={isFormValid[ConfigurationFieldKeys.FROM_EMAIL].message}
             />
             <DefaultCheckbox
-                shouldBeDefault={shouldBeDefault}
+                isDefaultDisable={shouldBeDefault}
                 handleCheckbox={handleCheckbox}
                 isDefault={form.default}
             />

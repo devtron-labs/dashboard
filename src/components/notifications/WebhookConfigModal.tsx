@@ -162,27 +162,30 @@ export const WebhookConfigModal = ({
         </div>
     )
 
-    const getAllFieldsValidated = (): boolean => {
+    const validateSave = (): boolean => {
         const { configName, webhookUrl, payload } = form
-        return !!configName && !!webhookUrl && validatePayloadField(payload).isValid
+        setFormValid({
+            ...isFormValid,
+            configName: validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, configName),
+            webhookUrl: validateKeyValueConfig(ConfigurationFieldKeys.WEBHOOK_URL, webhookUrl),
+            payload: validatePayloadField(payload),
+        })
+        setFormValid({
+            ...isFormValid,
+            configName: validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, configName),
+            webhookUrl: validateKeyValueConfig(ConfigurationFieldKeys.WEBHOOK_URL, webhookUrl),
+            payload: validatePayloadField(payload),
+        })
+        return (
+            validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, configName).isValid &&
+            validateKeyValueConfig(ConfigurationFieldKeys.WEBHOOK_URL, webhookUrl).isValid &&
+            validatePayloadField(payload).isValid
+        )
     }
 
     const saveWebhookConfig = async () => {
-        if (!getAllFieldsValidated()) {
-            setFormValid({
-                ...isFormValid,
-                configName: validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, form.configName),
-                webhookUrl: validateKeyValueConfig(ConfigurationFieldKeys.WEBHOOK_URL, form.webhookUrl),
-                payload: validatePayloadField(form.payload),
-            })
+        if (!validateSave()) {
             renderErrorToast()
-            setForm((prev) => ({ ...prev, isLoading: false }))
-            setFormValid({
-                ...isFormValid,
-                configName: validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, form.configName),
-                webhookUrl: validateKeyValueConfig(ConfigurationFieldKeys.WEBHOOK_URL, form.webhookUrl),
-                payload: validatePayloadField(form.payload),
-            })
             return
         }
 

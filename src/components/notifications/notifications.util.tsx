@@ -311,13 +311,6 @@ export const validateKeyValueConfig = (key: ConfigurationFieldKeys, value: strin
     return { isValid: true, message: '' }
 }
 
-export const getFormValidated = (isFormValid: FormValidation, fromEmail?: string): boolean => {
-    const isKeysValid = Object.values(isFormValid).every((field) => field.isValid && !field.message)
-    if (fromEmail) {
-        return isKeysValid && validateEmail(fromEmail)
-    }
-    return isKeysValid
-}
 export enum ConfigTableRowActionType {
     ADD_ROW = 'ADD_ROW',
     UPDATE_ROW = 'UPDATE_ROW',

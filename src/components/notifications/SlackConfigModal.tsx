@@ -79,20 +79,23 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
         }
     }
 
-    const getAllFieldsValidated = (): boolean => {
+    const validateSave = (): boolean => {
         const { configName, webhookUrl } = form
-        return !!configName && !!webhookUrl && !!selectedProject?.value
+        setFormValid((prevValid) => ({
+            ...prevValid,
+            configName: validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, configName),
+            webhookUrl: validateKeyValueConfig(ConfigurationFieldKeys.WEBHOOK_URL, webhookUrl),
+            projectId: validateKeyValueConfig(ConfigurationFieldKeys.PROJECT_ID, selectedProject?.value ?? ''),
+        }))
+        return (
+            validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, configName).isValid &&
+            validateKeyValueConfig(ConfigurationFieldKeys.WEBHOOK_URL, webhookUrl).isValid &&
+            validateKeyValueConfig(ConfigurationFieldKeys.PROJECT_ID, selectedProject?.value).isValid
+        )
     }
 
     const saveSlackConfig = () => {
-        if (!getAllFieldsValidated()) {
-            setForm((prevForm) => ({ ...prevForm, isLoading: false }))
-            setFormValid((prevValid) => ({
-                ...prevValid,
-                configName: validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, form.configName),
-                webhookUrl: validateKeyValueConfig(ConfigurationFieldKeys.WEBHOOK_URL, form.webhookUrl),
-                projectId: validateKeyValueConfig(ConfigurationFieldKeys.PROJECT_ID, selectedProject?.value ?? ''),
-            }))
+        if (!validateSave()) {
             renderErrorToast()
             return
         }

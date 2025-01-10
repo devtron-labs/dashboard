@@ -113,7 +113,7 @@ export type FormValidation = {
 }
 
 export interface DefaultCheckboxProps {
-    shouldBeDefault: boolean
+    isDefaultDisable: boolean
     handleCheckbox: () => void
     isDefault: boolean
 }
@@ -132,7 +132,6 @@ export interface ConfigurationTabSwitcherProps {
 export interface ConfigTableRowActionButtonProps {
     onClickEditRow: () => void
     onClickDeleteRow: any
-    rootClassName: string
     modal: ConfigurationsTabTypes
 }
 

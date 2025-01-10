@@ -34,7 +34,7 @@ const SESConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTable
             <div className="flex-grow-1">
                 {state.sesConfigurationList.map((sesConfig) => (
                     <div
-                        className="configuration-tab__table-row ses-config-grid fs-13 cn-9 dc__gap-16 py-6 px-20 dc__hover-n50"
+                        className="configuration-tab__table-row ses-config-grid fs-13 cn-9 dc__gap-16 py-6 px-20 dc__hover-n50 dc__visible-hover dc__visible-hover--parent"
                         key={sesConfig.id}
                     >
                         {getConfigTabIcons(ConfigurationsTabTypes.SES)}
@@ -50,7 +50,6 @@ const SESConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTable
                                 sesConfig.id,
                                 DeleteComponentsName.SesConfigurationTab,
                             )}
-                            rootClassName="ses-config-table__action"
                             modal={ConfigurationsTabTypes.SES}
                         />
                     </div>

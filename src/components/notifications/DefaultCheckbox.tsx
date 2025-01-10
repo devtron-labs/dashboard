@@ -1,11 +1,11 @@
 import { Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
 import { DefaultCheckboxProps } from './types'
 
-export const DefaultCheckbox = ({ shouldBeDefault, handleCheckbox, isDefault }: DefaultCheckboxProps) => (
+export const DefaultCheckbox = ({ isDefaultDisable, handleCheckbox, isDefault }: DefaultCheckboxProps) => (
     <Checkbox
         isChecked={isDefault}
         value={CHECKBOX_VALUE.CHECKED}
-        disabled={shouldBeDefault}
+        disabled={isDefaultDisable}
         onChange={handleCheckbox}
         dataTestId="add-ses-default-checkbox"
         name="default"

@@ -32,7 +32,6 @@ import awsRegionList from '../common/awsRegionList.json'
 import { SESConfigModalProps, SESFormType } from './types'
 import {
     getAwsRegionListParsed,
-    getFormValidated,
     getSESDefaultConfiguration,
     renderErrorToast,
     validateKeyValueConfig,
@@ -154,36 +153,34 @@ const SESConfigModal = ({
         }
     }
 
-    const getAllFieldsValidated = () => {
+    const validateSave = () => {
         const { configName, accessKey, secretKey, region, fromEmail } = form
+
+        setFormValid({
+            ...isFormValid,
+            configName: validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, configName),
+            accessKey: validateKeyValueConfig(ConfigurationFieldKeys.ACCESS_KEY, accessKey),
+            secretKey: validateKeyValueConfig(ConfigurationFieldKeys.SECRET_KEY, secretKey),
+            region: validateKeyValueConfig(ConfigurationFieldKeys.REGION, region?.value?.toString()),
+            fromEmail: validateKeyValueConfig(ConfigurationFieldKeys.FROM_EMAIL, fromEmail),
+        })
         return (
-            !!configName &&
-            !!accessKey &&
-            !!secretKey &&
-            !!region &&
-            !!fromEmail &&
-            getFormValidated(isFormValid, fromEmail)
+            validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, configName).isValid &&
+            validateKeyValueConfig(ConfigurationFieldKeys.ACCESS_KEY, accessKey).isValid &&
+            validateKeyValueConfig(ConfigurationFieldKeys.SECRET_KEY, secretKey).isValid &&
+            validateKeyValueConfig(ConfigurationFieldKeys.REGION, region?.value?.toString()).isValid &&
+            validateKeyValueConfig(ConfigurationFieldKeys.FROM_EMAIL, fromEmail).isValid
         )
     }
     const saveSESConfig = async () => {
-        if (!getAllFieldsValidated()) {
-            setForm((prevForm) => ({
-                ...prevForm,
-                isLoading: false,
-                isError: true,
-            }))
-            setFormValid({
-                ...isFormValid,
-                configName: validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, form.configName),
-                accessKey: validateKeyValueConfig(ConfigurationFieldKeys.ACCESS_KEY, form.accessKey),
-                secretKey: validateKeyValueConfig(ConfigurationFieldKeys.SECRET_KEY, form.secretKey),
-                region: validateKeyValueConfig(ConfigurationFieldKeys.REGION, form.region?.value?.toString()),
-                fromEmail: validateKeyValueConfig(ConfigurationFieldKeys.FROM_EMAIL, form.fromEmail),
-            })
+        if (!validateSave()) {
             renderErrorToast()
             return
         }
-
+        setForm((prevForm) => ({
+            ...prevForm,
+            isLoading: true,
+        }))
         try {
             const response = await saveEmailConfiguration(getPayload(), ConfigurationsTabTypes.SES)
             ToastManager.showToast({
@@ -266,7 +263,7 @@ const SESConfigModal = ({
                 helperText="This email must be verified with SES."
             />
             <DefaultCheckbox
-                shouldBeDefault={shouldBeDefault}
+                isDefaultDisable={shouldBeDefault}
                 handleCheckbox={handleCheckbox}
                 isDefault={form.default}
             />

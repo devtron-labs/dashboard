@@ -144,7 +144,8 @@ export const ConfigurationTab = () => {
     const onClickDelete = async () => {
         try {
             await deleteNotification(deletePayload)
-            await getAllChannelConfigs()
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            getAllChannelConfigs()
             setState({ ...state, confirmation: false })
         } catch (serverError) {
             if (serverError instanceof ServerErrors && serverError.code !== 500) {
@@ -207,7 +208,12 @@ export const ConfigurationTab = () => {
                 return (
                     <SESConfigModal
                         sesConfigId={configId}
-                        shouldBeDefault={state.sesConfigurationList.length === 0}
+                        shouldBeDefault={
+                            state.sesConfigurationList.length === 0 ||
+                            (state.sesConfigurationList.length === 1 &&
+                                state.sesConfigurationList[0].isDefault &&
+                                !!configId)
+                        }
                         onSaveSuccess={getAllChannelConfigs}
                     />
                 )
@@ -215,7 +221,12 @@ export const ConfigurationTab = () => {
                 return (
                     <SMTPConfigModal
                         smtpConfigId={configId}
-                        shouldBeDefault={state.smtpConfigurationList.length === 0}
+                        shouldBeDefault={
+                            state.smtpConfigurationList.length === 0 ||
+                            (state.smtpConfigurationList.length === 1 &&
+                                state.smtpConfigurationList[0].isDefault &&
+                                !!configId)
+                        }
                         onSaveSuccess={getAllChannelConfigs}
                     />
                 )
