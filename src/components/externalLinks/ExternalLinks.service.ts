@@ -60,7 +60,7 @@ export const getExternalLinks = async (
                     const linkUrl = new URL(link.url)
                     const openInNewTab: boolean = linkUrl.searchParams.get(DEVTRON_IFRAME_PRIMARY) === 'false'
                     linkUrl.searchParams.delete(DEVTRON_IFRAME_PRIMARY)
-                    const sanitizedUrl = linkUrl.href
+                    const sanitizedUrl = decodeURIComponent(linkUrl.href)
                     return {
                         ...link,
                         url: sanitizedUrl,
