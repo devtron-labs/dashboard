@@ -3,8 +3,9 @@ import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import { getConfigurationTabTextWithIcon } from './notifications.util'
 import { ConfigurationsTabTypes } from './constants'
 import { AddConfigurationButton } from './AddConfigurationButton'
+import { ConfigurationTabSwitcherType } from './types'
 
-export const ConfigurationTabSwitcher = () => {
+export const ConfigurationTabSwitcher = ({ isEmptyView }: ConfigurationTabSwitcherType) => {
     const history = useHistory()
     const { searchParams } = useSearchString()
     const queryParams = new URLSearchParams(history.location.search)
@@ -37,7 +38,7 @@ export const ConfigurationTabSwitcher = () => {
                     </button>
                 ))}
             </div>
-            <AddConfigurationButton activeTab={activeTab} />
+            {!isEmptyView && <AddConfigurationButton activeTab={activeTab} />}
         </div>
     )
 }

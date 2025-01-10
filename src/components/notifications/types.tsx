@@ -247,3 +247,7 @@ export interface WebhookFormTypes {
 export interface AddConfigurationButtonProps {
     activeTab: ConfigurationsTabTypes
 }
+
+export interface ConfigurationTabSwitcherType {
+    isEmptyView: boolean
+}
