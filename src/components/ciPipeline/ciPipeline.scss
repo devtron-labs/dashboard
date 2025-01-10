@@ -87,7 +87,7 @@
     padding: 14px 16px;
     display: flex;
     background-blend-mode: multiply;
-    background-image: linear-gradient(to bottom, var(--window-bg), var(--window-bg));
+    background-image: linear-gradient(to bottom, var(--bg-window), var(--bg-window));
     border-top: solid 1px var(--N200);
     border-radius: 0 0 4px 4px;
 }

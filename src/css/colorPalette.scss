@@ -29,7 +29,6 @@
 
     --terminal-bg: #0b0f22;
     --backdrop-bg: #000000bf;
-    --sidebar-bg: #0066cc;
     --transparent: transparent;
 
     &.theme {
@@ -89,20 +88,21 @@
             --O50: #fcf3f0;
 
             // Custom colors
-            --window-bg: #f2f4f7;
-            --pipeline-trigger-type-bg: #a5a7bf;
-            --bulk-selection-widget-bg: #f0f7ffb8;
+            --bg-window: #f2f4f7;
+            --bg-pipeline-trigger-type: #a5a7bf;
+            --bg-bulk-selection-widget: #f0f7ffb8;
 
             // Color Tokens
             --bg-primary: var(--N0);
             --bg-secondary: var(--N50);
-            --bg-tertiary: var(--window-bg);
+            --bg-tertiary: var(--bg-window);
             --bg-overlay: var(--N0);
             --bg-menu: var(--N0);
             --bg-modal: var(--N0);
 
             --bg-tooltip-black: var(--N900);
             --bg-toast: var(--N800);
+            --bg-sidebar: #0066cc;
         }
 
         &__dark {
@@ -163,12 +163,12 @@
             --O50: #1a0d09;
 
             // Custom colors
-            --window-bg: #1d1f2c;
-            --pipeline-trigger-type-bg: #44465a;
-            --bulk-selection-widget-bg: #141c26b8;
+            --bg-window: #1d1f2c;
+            --bg-pipeline-trigger-type: #44465a;
+            --bg-bulk-selection-widget: #141c26b8;
 
             // Color Tokens
-            --bg-primary: var(--window-bg);
+            --bg-primary: var(--bg-window);
             --bg-secondary: var(--N50);
             --bg-tertiary: var(--N0);
             --bg-overlay: #2d303b;
@@ -177,6 +177,7 @@
 
             --bg-tooltip-black: var(--N200);
             --bg-toast: var(--N300);
+            --bg-sidebar: #303240;
         }
     }
 }
