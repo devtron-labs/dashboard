@@ -30,7 +30,7 @@
     }
 }
 
-svg.icon-fill {
+.icon-fill {
     &__white {
         *[fill^="#"] {
             fill: var(--white);
