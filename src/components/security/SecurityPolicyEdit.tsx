@@ -98,7 +98,8 @@ export class SecurityPolicyEdit extends Component<
         super(props)
         this.state = {
             view: ViewType.LOADING,
-            whitelistModalEnvId: null,
+            showWhitelistModal: false,
+            addCVEEnvId: null,
             result: {
                 level: this.props.level,
                 policies: [],
@@ -106,7 +107,6 @@ export class SecurityPolicyEdit extends Component<
             isCveError: false,
             showLoadingOverlay: false,
         }
-        this.handleCloseAddCveModal = this.handleCloseAddCveModal.bind(this)
         this.updateSeverity = this.updateSeverity.bind(this)
         this.saveCVE = this.saveCVE.bind(this)
         this.updateCVE = this.updateCVE.bind(this)
@@ -123,7 +123,7 @@ export class SecurityPolicyEdit extends Component<
             this.setState({
                 view: ViewType.FORM,
                 result: response.result,
-                whitelistModalEnvId: null,
+                showWhitelistModal: false,
             })
         } catch (error) {
             if (error.code === 404) {
@@ -257,8 +257,12 @@ export class SecurityPolicyEdit extends Component<
         }
     }
 
-    handleCloseAddCveModal(): void {
-        this.setState({ whitelistModalEnvId: null })
+    openWhitelistModal = (envId?: number) => {
+        this.setState({showWhitelistModal: true, addCVEEnvId: envId ?? null})
+    }
+
+    closeWhitelistModal = () => {
+        this.setState({showWhitelistModal: true, addCVEEnvId: null})
     }
 
     createCVEPayload(
@@ -400,6 +404,9 @@ export class SecurityPolicyEdit extends Component<
     }
 
     renderPolicyListHeader = (envId: number) => {
+        const handleAddCVE = () => {
+            this.openWhitelistModal(envId)
+        }
         return (
             <div className="flexbox flex-justify mt-20">
                 <div>
@@ -420,7 +427,7 @@ export class SecurityPolicyEdit extends Component<
                 <button
                     type="button"
                     className="cta small flex"
-                    onClick={() => this.setState({ whitelistModalEnvId: envId })}
+                    onClick={handleAddCVE}
                 >
                     <Add className="icon-dim-16 mr-5" />
                     Add CVE Policy
@@ -620,11 +627,11 @@ export class SecurityPolicyEdit extends Component<
                         )
                     })}
                 </ConditionalWrap>
-                {this.state.whitelistModalEnvId ? (
+                {this.state.showWhitelistModal ? (
                     <AddCveModal
                         saveCVE={this.saveCVE}
-                        close={this.handleCloseAddCveModal}
-                        envId={this.state.whitelistModalEnvId}
+                        close={this.closeWhitelistModal}
+                        envId={this.state.addCVEEnvId}
                     />
                 ) : null}
             </>

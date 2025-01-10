@@ -263,7 +263,8 @@ export interface AddCveModalState extends Pick<CveNamePolicy, 'policy'> {
 }
 
 export interface SecurityPolicyEditState {
-    whitelistModalEnvId: number
+    showWhitelistModal: boolean
+    addCVEEnvId: number
     view: string
     isCveError: boolean
     showLoadingOverlay: boolean
@@ -272,5 +273,5 @@ export interface SecurityPolicyEditState {
 export interface AddCveModalProps {
     close: () => void
     saveCVE: (cve: string, policy: VulnerabilityAction, envId?: number) => void
-    envId: number
+    envId?: number
 }
