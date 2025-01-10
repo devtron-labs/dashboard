@@ -271,5 +271,6 @@ export interface SecurityPolicyEditState {
 
 export interface AddCveModalProps {
     close: () => void
-    saveCVE: (cve: string, policy: VulnerabilityAction) => void
+    saveCVE: (cve: string, policy: VulnerabilityAction, envId?: number) => void
+    envId: number
 }
