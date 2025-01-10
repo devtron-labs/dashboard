@@ -41,15 +41,15 @@ export default function SuggestionItem({
             return <i className="cn-3 fs-12 fw-6 lh-18 m-0">is sensitive & hidden</i>
         }
         if (value === '') {
-            return <p className="cn-0 fs-12 fw-6 lh-18 m-0">&apos;&quot;&quot;&apos;</p>
+            return <p className="text__white fs-12 fw-6 lh-18 m-0">&apos;&quot;&quot;&apos;</p>
         }
         if (typeof value === 'boolean') {
-            return <p className="cn-0 fs-12 fw-6 lh-18 m-0">{value ? 'true' : 'false'}</p>
+            return <p className="text__white fs-12 fw-6 lh-18 m-0">{value ? 'true' : 'false'}</p>
         }
         if (typeof value === 'object') {
-            return <pre className="cn-0 fs-12 fw-6 lh-18 m-0 bcn-9">{YAMLStringify(value)}</pre>
+            return <pre className="text__white fs-12 fw-6 lh-18 m-0 bcn-9">{YAMLStringify(value)}</pre>
         }
-        return <p className="cn-0 fs-12 fw-6 lh-18 m-0">{value}</p>
+        return <p className="text__white fs-12 fw-6 lh-18 m-0">{value}</p>
     }
 
     const highlightedText = (text: string): string => {

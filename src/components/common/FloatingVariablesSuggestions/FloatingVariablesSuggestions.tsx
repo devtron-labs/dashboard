@@ -209,7 +209,7 @@ const FloatingVariablesSuggestions = ({
             onDrag={handleExpandedDrag}
         >
             <div
-                className="flex column dc__no-shrink w-356 dc__content-space dc__border-radius-8-imp dc__border-n7 dc__overflow-hidden dc__position-abs mxh-504"
+                className="flex column dc__no-shrink w-356 dc__content-space dc__border-radius-8-imp dc__border dc__overflow-hidden dc__position-abs mxh-504 bg__overlay"
                 style={{
                     zIndex,
                     boxShadow: '0px 4px 8px 0px rgba(0, 0, 0, 0.25)',
