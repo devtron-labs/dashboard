@@ -34,12 +34,13 @@ import {
     CMSecretPayloadType,
     getConfigMapSecretFormValidations,
     ConfigMapSecretReadyOnly,
+    FloatingVariablesSuggestions,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
 import { ConfigHeader, ConfigToolbar, ConfigToolbarProps, NoOverrideEmptyState } from '@Pages/Applications'
 import { getConfigToolbarPopupConfig } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/utils'
-import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
+import { importComponentFromFELibrary } from '@Components/common'
 import { EnvConfigObjectKey } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 
 import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'

@@ -1,5 +1,5 @@
 import { Toggle, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICViewVariableToggle } from '@Icons/ic-view-variable-toggle.svg'
+import { ReactComponent as ICVariable } from '@Icons/ic-variable.svg'
 import { ToggleResolveScopedVariablesProps } from './types'
 
 const ToggleResolveScopedVariables = ({
@@ -17,7 +17,7 @@ const ToggleResolveScopedVariables = ({
                 selected={resolveScopedVariables}
                 color={resolveScopedVariables ? 'var(--B300)' : 'var(--N200)'}
                 onSelect={handleToggleScopedVariablesView}
-                Icon={ICViewVariableToggle}
+                Icon={ICVariable}
                 disabled={isDisabled}
                 rootClassName="dc__toggle-square-toggle"
                 iconClass={resolveScopedVariables ? 'scb-5' : 'scn-6'}
