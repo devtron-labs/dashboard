@@ -1893,7 +1893,8 @@ table.resource-tree {
     align-items: flex-start;
     flex-direction: column;
     overflow: hidden;
-    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 4px 0 var(--black-20);
+    border: 1px solid var(--N200);
 
     &__top-container {
         align-items: flex-start;
