@@ -20,16 +20,16 @@ import {
     DeploymentAppTypes,
     K8sResourcePayloadAppType,
     YAMLStringify,
+    OptionsBase,
+    SelectedResourceType
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     AppType,
     EnvType,
     LogState,
     Options,
-    OptionsBase,
     PodContainerOptions,
     PodMetaData,
-    SelectedResourceType,
     NodeType,
     K8sResourcePayloadDeploymentType,
 } from '../../appDetails.type'

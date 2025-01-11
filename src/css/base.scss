@@ -3581,6 +3581,10 @@ textarea,
     height: 66px !important;
 }
 
+.h-68 {
+    height: 68px;
+}
+
 .h-72 {
     height: 72px !important;
 }
@@ -5345,6 +5349,31 @@ details[open] {
     backdrop-filter: blur(1px);
 }
 
+// NOTE: used for divider separated flexbox row lists
+// the individual items are 24px apart
+// but in between is a divider at 12px away from each element
+// This is useful when the list is dynamic
+.dc__separated-flexbox {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+
+    & > :not(:first-child) {
+        position: relative;
+
+        &::before {
+            width: 1px;
+            height: 16px;
+            background-color: var(--N200);
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    }
+}
+
 .dc__unset-pre {
     background: inherit;
     border: none;
@@ -5355,3 +5384,4 @@ details[open] {
     white-space: -o-pre-wrap;    /* Opera 7 */
     word-wrap: break-word;       /* Internet Explorer 5.5+ */
 }
+

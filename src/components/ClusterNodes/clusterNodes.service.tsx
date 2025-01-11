@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { get, post, put, ResponseType, trash, APIOptions } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, put, ResponseType, APIOptions, ROUTES } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import {
     ClusterCapacityResponse,
     ClusterListResponse,
     NodeCordonRequest,
-    NodeActionRequest,
     NodeDetailResponse,
     NodeDrainRequest,
     UpdateNodeRequestBody,
@@ -55,22 +54,19 @@ export const updateClusterShortDescription = (
 ): Promise<ResponseType> => put(`${Routes.CLUSTER_DESCRIPTION}`, requestPayload)
 
 export const getNodeCapacity = (clusterId: string, nodeName: string): Promise<NodeDetailResponse> =>
-    get(`${Routes.NODE_CAPACITY}?clusterId=${clusterId}&name=${nodeName}`)
+    get(`${ROUTES.NODE_CAPACITY}?clusterId=${clusterId}&name=${nodeName}`)
 
 export const cordonNodeCapacity = (requestPayload: NodeCordonRequest): Promise<ResponseType> =>
-    put(`${Routes.NODE_CAPACITY}/cordon`, requestPayload)
+    put(`${ROUTES.NODE_CAPACITY}/cordon`, requestPayload)
 
 export const drainNodeCapacity = (requestPayload: NodeDrainRequest): Promise<ResponseType> =>
-    put(`${Routes.NODE_CAPACITY}/drain`, requestPayload)
-
-export const deleteNodeCapacity = (requestPayload: NodeActionRequest, signal?: AbortSignal): Promise<ResponseType> =>
-    trash(Routes.NODE_CAPACITY, requestPayload, signal ? { signal } : {})
+    put(`${ROUTES.NODE_CAPACITY}/drain`, requestPayload)
 
 export const updateNodeManifest = (
     clusterId: string,
     nodeName: string,
     nodeData: UpdateNodeRequestBody,
-): Promise<ResponseType> => put(`${Routes.NODE_CAPACITY}?clusterId=${clusterId}&name=${nodeName}`, nodeData)
+): Promise<ResponseType> => put(`${ROUTES.NODE_CAPACITY}?clusterId=${clusterId}&name=${nodeName}`, nodeData)
 
 export const clusterTerminalStart = (data: TerminalDataType, option: APIOptions): Promise<ResponseType> =>
     post(`${Routes.CLUSTER_TERMINAL}/${Routes.START}`, data, option)

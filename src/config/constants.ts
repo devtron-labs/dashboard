@@ -53,7 +53,6 @@ export const Routes = {
     CD_CONFIG_PATCH: 'app/cd-pipeline/patch',
     WORKFLOW_EDITOR: 'edit/workflow',
 
-    CD_TRIGGER_POST: 'app/cd-pipeline/trigger',
     CD_TRIGGER_STATUS: 'app/vsm',
 
     DEPLOYMENT_TEMPLATE: 'app/template',
@@ -177,7 +176,6 @@ export const Routes = {
     LOGS: 'k8s/pods/logs',
     NONCASCADE_DELETE_HELM_APP: 'app-store/installed-app/delete',
     NONCASCADE_DELETE_DEVTRON_APP: 'app/delete',
-    DELETE_RESOURCE: 'k8s/resource/delete',
     CREATE_RESOURCE: COMMON_ROUTES.CREATE_RESOURCE,
     HELM_RELEASE_APP_DELETE_API: 'application/delete',
     HELM_RELEASE_APP_UPDATE_WITHOUT_LINKING_API: 'application/update',
@@ -208,7 +206,6 @@ export const Routes = {
     CLUSTER_LIST_MIN: 'k8s/capacity/cluster/list/raw',
     CLUSTER_CAPACITY: 'k8s/capacity/cluster',
     NODE_LIST: 'k8s/capacity/node/list',
-    NODE_CAPACITY: 'k8s/capacity/node',
     TAINTS_EDIT: 'k8s/capacity/node/taints/edit',
     HELM_APP_TEMPLATE_CHART: 'application/template-chart',
     TELEMETRY_EVENT: 'telemetry/event',
@@ -912,8 +909,6 @@ export const REQUIRED_FIELDS_MISSING = 'Some required fields are missing'
  * Value for select all identifier
  */
 export const SELECT_ALL_VALUE = '*'
-export const DEFAULT_ROUTE_PROMPT_MESSAGE =
-    "Please don't wander off! Reloading or going back might disrupt the ongoing operation."
 
 export const SwitchItemValues = {
     Sample: 'sample',
