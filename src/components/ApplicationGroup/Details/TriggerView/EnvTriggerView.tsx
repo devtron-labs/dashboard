@@ -52,6 +52,10 @@ import {
     CIPipelineNodeType,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     triggerCDNode,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -79,7 +83,7 @@ import {
 } from '../../../app/service'
 import { getCDPipelineURL, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../../common'
 import { ReactComponent as Pencil } from '../../../../assets/icons/ic-pencil.svg'
-import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
+import { getCDConfig, getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
 import {
     CI_MATERIAL_EMPTY_STATE_MESSAGING,
     TIME_STAMP_ORDER,
@@ -147,6 +151,7 @@ const validateRuntimeParameters = importComponentFromFELibrary(
     () => ({ isValid: true, cellError: {} }),
     'function',
 )
+const ChangeImageSource = importComponentFromFELibrary('ChangeImageSource', null, 'function')
 
 // FIXME: IN CIMaterials we are sending isCDLoading while in CD materials we are sending isCILoading
 let inprogressStatusTimer
@@ -328,7 +333,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         })
         _workflows.forEach((wf) => {
             wf.isSelected = workflowMap.get(wf.id)
-        })
+        })  
     }
 
     const getWorkflowsData = async (): Promise<void> => {
@@ -2285,7 +2290,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             <PopupMenu autoClose>
                 <PopupMenu.Button
                     isKebab
-                    rootClassName="h-36 popup-button-kebab dc__border-left-b4 pl-8 pr-8 dc__no-left-radius flex bcb-5"
+                    rootClassName="h-32 popup-button-kebab dc__border-left-b4 pl-8 pr-8 dc__no-left-radius flex bcb-5"
                     dataTestId="deploy-popup"
                 >
                     <Dropdown className="icon-dim-20 fcn-0" />
@@ -2326,43 +2331,45 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
     const renderBulkTriggerActionButtons = (): JSX.Element => {
         const _showPopupMenu = showPreDeployment || showPostDeployment
+        const selectedWorkflows = workflows.filter((wf) => wf.isSelected)
         return (
-            <div className="flex dc__min-width-fit-content">
-                <button
-                    className="dc__edit_button h-36 lh-36"
-                    type="button"
-                    style={{ marginRight: 'auto' }}
+            <div className="flex dc__min-width-fit-content dc__gap-12">
+                <ChangeImageSource selectedWorkflows={selectedWorkflows} />
+                <Button
+                    dataTestId="change-branch-bulk"
+                    text="Change branch"
+                    startIcon={<Pencil />}
                     onClick={onShowChangeSourceModal}
-                >
-                    <span className="flex dc__align-items-center">
-                        <Pencil className="icon-dim-16 scb-5 mr-4" />
-                        Change branch
-                    </span>
-                </button>
+                    size={ComponentSizeType.medium}
+                    style={ButtonStyleType.neutral}
+                    variant={ButtonVariantType.secondary}
+                />
                 <span className="filter-divider-env" />
-                <button
-                    className="cta flex h-36 mr-12"
-                    data-testid="bulk-build-image-button"
+                <Button
+                    dataTestId="bulk-build-image-button"
+                    text="Build image"
                     onClick={onShowBulkCIModal}
-                >
-                    {isCILoading ? <Progressing /> : 'Build image'}
-                </button>
-                <button
-                    className={`cta flex h-36 ${_showPopupMenu ? 'dc__no-right-radius' : ''}`}
-                    data-trigger-type="CD"
-                    data-testid="bulk-deploy-button"
-                    onClick={onShowBulkCDModal}
-                >
-                    {isCDLoading ? (
-                        <Progressing />
-                    ) : (
-                        <>
-                            <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
-                            Deploy
-                        </>
-                    )}
-                </button>
-                {_showPopupMenu && renderDeployPopupMenu()}
+                    size={ComponentSizeType.medium}
+                    isLoading={isCILoading}
+                />
+                <div className="flex">
+                    <button
+                        className={`cta flex h-32 ${_showPopupMenu ? 'dc__no-right-radius' : ''}`}
+                        data-trigger-type="CD"
+                        data-testid="bulk-deploy-button"
+                        onClick={onShowBulkCDModal}
+                    >
+                        {isCDLoading ? (
+                            <Progressing />
+                        ) : (
+                            <>
+                                <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
+                                Deploy
+                            </>
+                        )}
+                    </button>
+                    {_showPopupMenu && renderDeployPopupMenu()}
+                </div>
             </div>
         )
     }
