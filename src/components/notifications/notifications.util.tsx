@@ -24,21 +24,25 @@ import { ReactComponent as RedWarning } from '../../assets/icons/ic-error-medium
 import { ReactComponent as CI } from '../../assets/icons/ic-CI.svg'
 import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg'
 import { ReactComponent as Rocket } from '../../assets/icons/ic-paper-rocket.svg'
+import { commonSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 
 export const multiSelectStyles = {
+    ...commonSelectStyles,
     control: (base, state) => ({
         ...base,
         border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
         boxShadow: 'none',
         height: '100%',
+        backgroundColor: 'var(--bg-secondary)',
     }),
     menu: (base, state) => ({
         ...base,
         top: `38px`,
+        backgroundColor: 'var(--bg-menu)',
     }),
     option: (base, state) => {
         return {
-            ...base,
+            ...commonSelectStyles.option(base, state),
             color: 'var(--N900)',
             display: `flex`,
             alignItems: `center`,
