@@ -58,13 +58,7 @@ import {
     ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import {
-    BUILD_STATUS,
-    DEFAULT_GIT_BRANCH_VALUE,
-    NO_COMMIT_SELECTED,
-    URLS,
-    ViewType,
-} from '../../../../config'
+import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, NO_COMMIT_SELECTED, URLS, ViewType } from '../../../../config'
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import {
@@ -83,7 +77,7 @@ import {
 } from '../../../app/service'
 import { getCDPipelineURL, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../../common'
 import { ReactComponent as Pencil } from '../../../../assets/icons/ic-pencil.svg'
-import { getCDConfig, getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
+import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
 import {
     CI_MATERIAL_EMPTY_STATE_MESSAGING,
     TIME_STAMP_ORDER,
@@ -201,6 +195,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [runtimeParams, setRuntimeParams] = useState<Record<string, RuntimePluginVariables[]>>({})
     const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<Record<string, RuntimeParamsErrorState>>({})
     const [isBulkTriggerLoading, setIsBulkTriggerLoading] = useState<boolean>(false)
+
+    const selectedWorkflows = filteredWorkflows.filter((wf) => wf.isSelected)
 
     const enableRoutePrompt = isBranchChangeLoading || isBulkTriggerLoading
     usePrompt({ shouldPrompt: enableRoutePrompt })
@@ -333,7 +329,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         })
         _workflows.forEach((wf) => {
             wf.isSelected = workflowMap.get(wf.id)
-        })  
+        })
     }
 
     const getWorkflowsData = async (): Promise<void> => {
@@ -1309,12 +1305,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         preventBodyScroll(false)
     }
 
-    const hideWebhookModal = (e?) => {
-        if (e) {
-            stopPropagation(e)
-        }
-    }
-
     const onClickWebhookTimeStamp = () => {
         if (webhookTimeStampOrder === TIME_STAMP_ORDER.DESCENDING) {
             setWebhookTimeStampOrder(TIME_STAMP_ORDER.ASCENDING)
@@ -1388,6 +1378,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setIsBranchChangeLoading(false)
         setShowBulkSourceChangeModal(false)
         setResponseList([])
+        preventBodyScroll(false)
+    }
+
+    const handleCloseChangeImageSource = () => {
+        setPageViewType(ViewType.LOADING)
+        getWorkflowsData()
         preventBodyScroll(false)
     }
 
@@ -1501,11 +1497,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         ciArtifactId: Number(ciArtifact.id),
                         appId: Number(currentAppId),
                         stageType: bulkTriggerType,
-                        ...(
-                            getRuntimeParamsPayload
-                                ? { runtimeParamsPayload: getRuntimeParamsPayload(runtimeParams[currentAppId] ?? [])}
-                                : {}
-                        ),
+                        ...(getRuntimeParamsPayload
+                            ? { runtimeParamsPayload: getRuntimeParamsPayload(runtimeParams[currentAppId] ?? []) }
+                            : {}),
                     }),
                 )
             } else {
@@ -2331,10 +2325,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
     const renderBulkTriggerActionButtons = (): JSX.Element => {
         const _showPopupMenu = showPreDeployment || showPostDeployment
-        const selectedWorkflows = workflows.filter((wf) => wf.isSelected)
         return (
             <div className="flex dc__min-width-fit-content dc__gap-12">
-                <ChangeImageSource selectedWorkflows={selectedWorkflows} />
+                <ChangeImageSource
+                    selectedWorkflows={selectedWorkflows}
+                    handleCloseChangeImageSource={handleCloseChangeImageSource}
+                />
                 <Button
                     dataTestId="change-branch-bulk"
                     text="Change branch"
