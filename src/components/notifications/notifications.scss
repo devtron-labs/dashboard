@@ -179,21 +179,6 @@
         }
     }
 
-    .configuration-tab__table-row:hover .slack-config-table__action,
-    .configuration-tab__table-row:hover .ses-config-table__action,
-    .configuration-tab__table-row:hover .webhook-config-table__action,
-    .configuration-tab__table-row:hover .smtp-config-table__action {
-        display: flex;
-    }
-
-    .slack-config-table__action,
-    .ses-config-table__action,
-    .webhook-config-table__action,
-    .smtp-config-table__action {
-        display: none;
-        margin: auto;
-        margin-right: 0;
-    }
 
 }
 

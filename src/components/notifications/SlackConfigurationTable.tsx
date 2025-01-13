@@ -2,21 +2,15 @@ import { DeleteComponentsName } from '@Config/constantMessaging'
 import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import { ConfigurationTableProps } from './types'
-import { EmptyConfigurationView } from './EmptyConfigurationView'
 import { ConfigurationsTabTypes } from './constants'
 import { getConfigTabIcons, renderText } from './notifications.util'
 import './notifications.scss'
-import emptySlack from '../../assets/img/slack-empty.png'
 import { ConfigTableRowActionButton } from './ConfigTableRowActionButton'
 
 const SlackConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTableProps) => {
     const { searchParams } = useSearchString()
     const history = useHistory()
     const { slackConfigurationList } = state
-
-    if (slackConfigurationList.length === 0) {
-        return <EmptyConfigurationView configTabType={ConfigurationsTabTypes.SLACK} image={emptySlack} />
-    }
 
     const onClickSlackConfigEdit = (id: number) => () => {
         const newParams = {
@@ -33,18 +27,18 @@ const SlackConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTab
         <div className="slack-config-container h-100">
             <div className="slack-config-grid fs-12 fw-6 dc__uppercase cn-7 py-6 dc__gap-16 dc__border-bottom-n1 px-20  dc__position-sticky dc__top-0 bcn-0">
                 <div className="icon-dim-24" />
-                <p className="slack-config-table__name flex left m-0 ">Name</p>
-                <p className="slack-config-table__webhook flex left m-0 ">Webhook URL</p>
-                <p className="slack-config-table__action m-0" />
+                <p className="flex left m-0 ">Name</p>
+                <p className="flex left m-0 ">Webhook URL</p>
+                <p className="m-0" />
             </div>
             <div className="flex-grow-1">
                 {slackConfigurationList.map((slackConfig) => (
                     <div
                         key={slackConfig.id}
-                        className="slack-config-grid configuration-tab__table-row dc__gap-16 dc__hover-n50"
+                        className="slack-config-grid configuration-tab__table-row dc__gap-16 dc__hover-n50 dc__visible-hover dc__visible-hover--parent"
                     >
                         {getConfigTabIcons(ConfigurationsTabTypes.SLACK)}
-                        <div className="slack-config-item__name flex left dc__gap-8">
+                        <div className="flex left dc__gap-8">
                             {renderText(slackConfig.slackChannel, true, onClickSlackConfigEdit(slackConfig.id))}
                         </div>
                         {renderText(slackConfig.webhookUrl)}
@@ -54,7 +48,6 @@ const SlackConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTab
                                 slackConfig.id,
                                 DeleteComponentsName.SlackConfigurationTab,
                             )}
-                            rootClassName="slack-config-table__action"
                             modal={ConfigurationsTabTypes.SLACK}
                         />
                     </div>

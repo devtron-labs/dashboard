@@ -28,7 +28,6 @@ import { ReactComponent as SMTP } from '@Icons/ic-smtp.svg'
 import {
     DynamicDataTableHeaderType,
     DynamicDataTableRowDataType,
-    DynamicDataTableRowType,
     getUniqueId,
     ToastManager,
     ToastVariantType,
@@ -36,7 +35,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, ConfigurationTabText } from './constants'
 import { validateEmail } from '../common'
-import { FormError, FormValidation, SESFormType, SMTPFormType, WebhookDataRowType, WebhookHeaderKeyType, WebhookRowCellType } from './types'
+import { FormError, SESFormType, SMTPFormType, WebhookDataRowType, WebhookHeaderKeyType } from './types'
 import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
 
 export const multiSelectStyles = {
@@ -165,16 +164,15 @@ export const renderPipelineTypeIcon = (row) => {
 
 export const getConfigTabIcons = (tab: ConfigurationsTabTypes, size: number = 24) => {
     switch (tab) {
-        case ConfigurationsTabTypes.SES:
-            return <SES className={`icon-dim-${size}`} />
         case ConfigurationsTabTypes.SMTP:
             return <SMTP className={`icon-dim-${size}`} />
         case ConfigurationsTabTypes.SLACK:
             return <Slack className={`icon-dim-${size}`} />
         case ConfigurationsTabTypes.WEBHOOK:
             return <Webhook className={`icon-dim-${size}`} />
+        case ConfigurationsTabTypes.SES:
         default:
-            return SES
+            return <SES className={`icon-dim-${size}`} />
     }
 }
 
@@ -253,28 +251,30 @@ export const getTableHeaders = (): DynamicDataTableHeaderType<WebhookHeaderKeyTy
     { label: 'Value', key: 'value', width: '1fr' },
 ]
 
-export const getInitialWebhookKeyRow = (rows: WebhookRowCellType[]): DynamicDataTableRowType<WebhookHeaderKeyType>[] =>
-    rows.map((row) => {
+export const getInitialWebhookKeyRow = (headers: { key: string; value: string }): WebhookDataRowType[] => {
+    return Object.entries(headers).map(([key, value]) => {
         return {
             data: {
                 key: {
-                    value: row.key || null,
+                    value: key || null,
                     type: DynamicDataTableRowDataType.TEXT,
                     props: {
                         placeholder: 'Eg. owner-name',
                     },
                 },
                 value: {
-                    value: row.value || '',
+                    value: value || '',
                     type: DynamicDataTableRowDataType.TEXT,
                     props: {
                         placeholder: 'Enter value',
                     },
                 },
             },
-            id: row.id,
+
+            id: getUniqueId(),
         }
     })
+}
 
 export const getEmptyVariableDataRow = (): WebhookDataRowType => {
     const id = getUniqueId()
@@ -309,13 +309,6 @@ export const validateKeyValueConfig = (key: ConfigurationFieldKeys, value: strin
     return { isValid: true, message: '' }
 }
 
-export const getFormValidated = (isFormValid: FormValidation, fromEmail?: string): boolean => {
-    const isKeysValid = Object.values(isFormValid).every((field) => field.isValid && !field.message)
-    if (fromEmail) {
-        return isKeysValid && validateEmail(fromEmail)
-    }
-    return isKeysValid
-}
 export enum ConfigTableRowActionType {
     ADD_ROW = 'ADD_ROW',
     UPDATE_ROW = 'UPDATE_ROW',
@@ -358,3 +351,18 @@ export const renderErrorToast = () =>
         variant: ToastVariantType.error,
         description: 'Some required fields are missing or Invalid',
     })
+
+export const getValidationFormConfig = (formConfig) => {
+    const { allValid, formValidations } = formConfig.reduce(
+        (acc, { key, value }) => {
+            const validation = validateKeyValueConfig(key, value)
+            acc.formValidations[key] = validation
+            if (!validation.isValid) {
+                acc.allValid = false
+            }
+            return acc
+        },
+        { allValid: true, formValidations: {} },
+    )
+    return { allValid, formValidations }
+}

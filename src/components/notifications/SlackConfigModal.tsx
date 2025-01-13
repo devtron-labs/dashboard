@@ -11,12 +11,18 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { useHistory } from 'react-router-dom'
-import { saveSlackConfiguration, updateSlackConfiguration, getSlackConfiguration } from './notifications.service'
+import { saveSlackConfiguration, getSlackConfiguration } from './notifications.service'
 import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { ProjectListTypes, SlackConfigModalProps, SlackFormType } from './types'
-import { ConfigurationFieldKeys, ConfigurationsTabTypes, DefaultSlackKeys, DefaultSlackValidations } from './constants'
+import {
+    ConfigurationFieldKeys,
+    ConfigurationsTabTypes,
+    DefaultSlackKeys,
+    DefaultSlackValidations,
+    SlackIncomingWebhookUrl,
+} from './constants'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
-import { renderErrorToast, validateKeyValueConfig } from './notifications.util'
+import { getValidationFormConfig, renderErrorToast, validateKeyValueConfig } from './notifications.util'
 
 export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
     slackConfigId,
@@ -79,56 +85,53 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
         }
     }
 
-    const getAllFieldsValidated = (): boolean => {
-        const { configName, webhookUrl } = form
-        return !!configName && !!webhookUrl && !!selectedProject?.value
+    const validateSave = (): boolean => {
+        const formConfig = [
+            { key: ConfigurationFieldKeys.CONFIG_NAME, value: form.configName },
+            { key: ConfigurationFieldKeys.WEBHOOK_URL, value: form.webhookUrl },
+            { key: ConfigurationFieldKeys.PROJECT_ID, value: selectedProject?.value ?? '' },
+        ]
+        const { allValid, formValidations } = getValidationFormConfig(formConfig)
+        setFormValid((prevValid) => ({ ...prevValid, ...formValidations }))
+        return allValid
     }
 
-    const saveSlackConfig = () => {
-        if (!getAllFieldsValidated()) {
-            setForm((prevForm) => ({ ...prevForm, isLoading: false }))
-            setFormValid((prevValid) => ({
-                ...prevValid,
-                configName: validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, form.configName),
-                webhookUrl: validateKeyValueConfig(ConfigurationFieldKeys.WEBHOOK_URL, form.webhookUrl),
-                projectId: validateKeyValueConfig(ConfigurationFieldKeys.PROJECT_ID, selectedProject?.value ?? ''),
-            }))
+    const saveSlackConfig = async () => {
+        if (!validateSave()) {
             renderErrorToast()
             return
         }
 
-        let requestBody = { ...form }
-        if (slackConfigId) {
-            requestBody = {
-                ...form,
-                id: slackConfigId,
-            }
+        const requestBody = {
+            channel: ConfigurationsTabTypes.SLACK,
+            configs: [
+                {
+                    id: slackConfigId,
+                    configName: form.configName,
+                    webhookUrl: form.webhookUrl,
+                    teamId: form.projectId,
+                },
+            ],
         }
         setForm((prevForm) => ({ ...prevForm, isLoading: true }))
 
-        const promise = slackConfigId ? updateSlackConfiguration(requestBody) : saveSlackConfiguration(requestBody)
-        promise
-            .then(() => {
-                setForm((prevForm) => ({ ...prevForm, isLoading: false }))
-                ToastManager.showToast({
-                    variant: ToastVariantType.success,
-                    description: 'Saved Successfully',
-                })
-                onSaveSuccess()
-                closeSlackConfig()
+        try {
+            await saveSlackConfiguration(requestBody)
+            setForm((prevForm) => ({ ...prevForm, isLoading: false }))
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Saved Successfully',
             })
-            .catch((error) => {
-                showError(error)
-                setForm((prevForm) => ({ ...prevForm, isLoading: false }))
-            })
+            onSaveSuccess()
+            closeSlackConfig()
+        } catch (error) {
+            showError(error)
+            setForm((prevForm) => ({ ...prevForm, isLoading: false }))
+        }
     }
 
     const renderInfoText = () => (
-        <a
-            href="https://slack.com/intl/en-gb/help/articles/115005265063-Incoming-webhooks-for-Slack"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
+        <a href={SlackIncomingWebhookUrl} target="_blank" rel="noopener noreferrer">
             <span className="dc__link">How to setup slack webhooks?</span>
         </a>
     )

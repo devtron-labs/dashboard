@@ -88,6 +88,12 @@ export interface ConfigurationTableProps {
     deleteClickHandler: (id: number, name: string) => void
 }
 
+export interface ConfigurationTablesTypes {
+    activeTab: ConfigurationsTabTypes
+    state: ConfigurationTabState
+    setState: React.Dispatch<React.SetStateAction<ConfigurationTabState>>
+}
+
 export interface FormError {
     isValid: boolean
     message: string
@@ -102,12 +108,8 @@ export interface ConfigurationTabDrawerModalProps {
     disableSave?: boolean
 }
 
-export type FormValidation = {
-    [key: string]: FormError
-}
-
 export interface DefaultCheckboxProps {
-    shouldBeDefault: boolean
+    isDefaultDisable: boolean
     handleCheckbox: () => void
     isDefault: boolean
 }
@@ -115,7 +117,7 @@ export interface DefaultCheckboxProps {
 // ----------------------------Configuration Tab----------------------------
 
 export interface EmptyConfigurationViewProps {
-    configTabType: ConfigurationsTabTypes
+    activeTab: ConfigurationsTabTypes
     image?: any
 }
 
@@ -126,7 +128,6 @@ export interface ConfigurationTabSwitcherProps {
 export interface ConfigTableRowActionButtonProps {
     onClickEditRow: () => void
     onClickDeleteRow: any
-    rootClassName: string
     modal: ConfigurationsTabTypes
 }
 
@@ -200,16 +201,14 @@ export type WebhookHeaderKeyType = 'key' | 'value'
 
 export type WebhookDataRowType = DynamicDataTableRowType<WebhookHeaderKeyType>
 
-export interface WebhookRowCellType {
+export interface WebhookHeadersType {
     key: string
     value: string
-    id?: number
 }
 
 export interface WebhookConfigDynamicDataTableProps {
     rows: WebhookDataRowType[]
     setRows: React.Dispatch<React.SetStateAction<WebhookDataRowType[]>>
-    headers: WebhookRowCellType[]
 }
 
 type VariableDataTableActionPropsMap = {
@@ -233,15 +232,18 @@ export type WebhookValidations = {
     [ConfigurationFieldKeys.PAYLOAD]: FormError
 }
 
-export interface HeaderType {
-    key: string
-    value: string
-}
-
 export interface WebhookFormTypes {
     configName: string
     webhookUrl: string
     isLoading: boolean
     payload: string
-    header: HeaderType[]
+    header: Object
+}
+
+export interface AddConfigurationButtonProps {
+    activeTab: ConfigurationsTabTypes
+}
+
+export interface ConfigurationTabSwitcherType {
+    isEmptyView: boolean
 }
