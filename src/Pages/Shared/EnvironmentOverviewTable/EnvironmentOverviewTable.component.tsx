@@ -158,9 +158,9 @@ export const EnvironmentOverviewTable = ({
     }
 
     const renderHeaderRow = () => (
-        <div className="environment-overview-table__row bcn-0 dc__border-bottom-n1 no-hover">
+        <div className="environment-overview-table__row bg__primary dc__border-bottom-n1 no-hover">
             <div
-                className={`environment-overview-table__fixed-cell bcn-0 pl-16 pr-15 py-8 cn-7 fw-6 fs-12 lh-20 ${isVirtualEnvRowClassName}`}
+                className={`environment-overview-table__fixed-cell bg__primary pl-16 pr-15 py-8 cn-7 fw-6 fs-12 lh-20 ${isVirtualEnvRowClassName}`}
             >
                 <Checkbox
                     isChecked={isPartialChecked}
@@ -197,7 +197,7 @@ export const EnvironmentOverviewTable = ({
         return (
             <div className={`environment-overview-table__row ${isChecked ? isCheckedRowClassName : ''}`}>
                 <div
-                    className={`environment-overview-table__fixed-cell pl-16 pr-7 py-8 cn-9 fs-13 lh-20 dc__visible-hover dc__visible-hover--parent ${isVirtualEnvRowClassName} ${isChecked ? isCheckedRowClassName : 'bcn-0'}`}
+                    className={`environment-overview-table__fixed-cell pl-16 pr-7 py-8 cn-9 fs-13 lh-20 dc__visible-hover dc__visible-hover--parent ${isVirtualEnvRowClassName} ${isChecked ? isCheckedRowClassName : 'bg__primary'}`}
                 >
                     {!isPartialChecked && <DevtronIcon className="icon-dim-24 dc__visible-hover--hide-child" />}
                     <Checkbox
@@ -268,7 +268,7 @@ export const EnvironmentOverviewTable = ({
     }
 
     return (
-        <div className="environment-overview-table dc__border br-4 bcn-0 w-100">
+        <div className="environment-overview-table dc__border br-4 bg__primary w-100">
             {renderHeaderRow()}
             {sortedRows.map((row) => (
                 <Fragment key={row.environment.id}>{renderRow(row)}</Fragment>

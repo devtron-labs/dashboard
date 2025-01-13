@@ -52,8 +52,8 @@ const NotesDrawer = ({ notes, close }: NotesDrawerType) => {
 
     return (
         <Drawer position="right" width="50%">
-            <div className="app-notes__modal bcn-0" ref={appNotesRef}>
-                <div className="app-notes__header dc__box-shadow pb-12 pt-12 mb-20 bcn-0">
+            <div className="app-notes__modal bg__primary" ref={appNotesRef}>
+                <div className="app-notes__header dc__box-shadow pb-12 pt-12 mb-20 bg__primary">
                     <div
                         className="title flex dc__content-space cn-9 fs-16 fw-6 pl-20 pr-20 "
                         data-testid="notes-heading-after-click"

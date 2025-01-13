@@ -19,7 +19,7 @@
     display: flex;
     flex-direction: column;
     margin-top: 40px;
-    background-color: white;
+    background-color: var(--bg-primary);
 }
 
 .custom-logs-radio-group {
@@ -47,7 +47,7 @@
     }
 
     .form__radio-item-content:hover {
-        background-color: var(--N50);
+        background-color: var(--bg-secondary);
     }
 }
 
@@ -83,7 +83,7 @@
     border-radius: 4px;
     height: 38px;
     border: 1px solid var(--N200);
-    background-color: var(--N50);
+    background-color: var(--bg-secondary);
 }
 
 .SingleDatePickerInput {
@@ -92,7 +92,7 @@
     height: 38px;
     padding: 8px 11px 4px;
     border: 1px solid var(--N200);
-    background: var(--N50);
+    background: var(--bg-secondary);
     margin-right: 8px;
 }
 
@@ -104,14 +104,14 @@
 
 .SingleDatePickerInput__withBorder .DateInput {
     height: max-content;
-    background: var(--N50);
+    background: var(--bg-secondary);
 }
 
 .DateInput_input {
     font-size: 13px;
     color: var(--N900);
     padding: 0px;
-    background: var(--N50);
+    background: var(--bg-secondary);
 
     &.DateInput_input__focused {
         border: none;

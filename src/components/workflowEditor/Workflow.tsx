@@ -182,10 +182,10 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     className="color-path"
                     d="M520 56 L 580 56"
                     fill="transparent"
-                    stroke="rgba(150,150,150)"
+                    stroke="var(--N400)"
                     strokeWidth="2"
                 />
-                <path d="M575 56 L 555 46 L 565 56 L 555 66 Z" fill="rgba(100,100,100)" />
+                <path d="M575 56 L 555 46 L 565 56 L 555 66 Z" fill="var(--N600)" />
             </g>
         )
     }
@@ -701,7 +701,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     emptyWorkflow = () => (
         <div className="fs-12 cn-7 pt-16 pb-16 pr-16 pl-16">
             <div
-                className="text-center lh-18 bc-n50 flexbox-col dc__align-items-center bw-1 en-2 dashed h-100 dc__content-center br-4 pt-16 pb-16 cursor"
+                className="text-center lh-18 bg__secondary flexbox-col dc__align-items-center bw-1 en-2 dashed h-100 dc__content-center br-4 pt-16 pb-16 cursor"
                 onClick={this.handleNewJobRedirection}
             >
                 <div className="fw-6 mb-4 w-300">Add job pipeline to this workflow</div>
@@ -868,7 +868,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         className={
                             configDiffView
                                 ? 'workflow__body'
-                                : 'workflow__body dc__border-n1 bc-n50 dc__overflow-scroll br-4'
+                                : 'workflow__body dc__border-n1 bg__secondary dc__overflow-scroll br-4'
                         }
                     >
                         {nodesWithBufferHeight.length === 0 && this.props.isJobView ? (

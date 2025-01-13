@@ -38,7 +38,7 @@ export default function ToggleCDSelectButton({
             }
         >
             <button
-                className="flex h-100 pl-6 pr-6 pt-0 pb-0 dc__outline-none-imp bcn-0 dc__no-border dc__hover-b500 pt-4 pb-4 pl-6 pr-6 dc__border-left-n1--important workflow-node__title--top-right-rad-8 workflow-node__title--bottom-right-rad-8 workflow-node__title--add-cd-icon"
+                className="flex h-100 pl-6 pr-6 pt-0 pb-0 dc__outline-none-imp bg__primary dc__no-border dc__hover-b500 pt-4 pb-4 pl-6 pr-6 dc__border-left-n1--important workflow-node__title--top-right-rad-8 workflow-node__title--bottom-right-rad-8 workflow-node__title--add-cd-icon"
                 data-testid={testId}
                 type="button"
                 onClick={onClickAddNode}

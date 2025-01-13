@@ -111,7 +111,7 @@ const BranchRegexModal = ({
                     const _regexValue = regexValue[mat.gitMaterialId] || {}
                     return (
                         mat.regex && (
-                            <div className="flex left column dc__gap-6 pt-16 pb-16 bcn-0" key={`regex_${mat.id}`}>
+                            <div className="flex left column dc__gap-6 pt-16 pb-16 bg__primary" key={`regex_${mat.id}`}>
                                 <div className="flex left dc__gap-14">
                                     {getGitProviderIcon(mat.gitMaterialUrl, 'icon-dim-24')}
                                     <div>

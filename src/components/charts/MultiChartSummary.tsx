@@ -72,7 +72,7 @@ const MultiChartSummary: React.FC<MultiChartSummaryProps> = ({
                     <div className="flexbox mb-12">
                         {typeof configureChartIndex === 'number' && (
                             <div
-                                className="cb-5 fcb-5 bcn-0 en-2 bw-1 cursor fw-6 fs-13 br-4 pr-12 pl-12 flex h-32 lh-n w-100 mr-10"
+                                className="cb-5 fcb-5 bg__primary en-2 bw-1 cursor fw-6 fs-13 br-4 pr-12 pl-12 flex h-32 lh-n w-100 mr-10"
                                 onClick={chartListing}
                             >
                                 <Add className="icon-dim-16 mr-8" />
@@ -81,7 +81,7 @@ const MultiChartSummary: React.FC<MultiChartSummaryProps> = ({
                         )}
                         {charts.length > 0 && (
                             <div
-                                className="cr-5 scr-5 bcn-0 en-2 bw-1 cursor fw-6 fs-13 br-4 pr-12 pl-12 flex h-32 lh-n w-100"
+                                className="cr-5 scr-5 bg__primary en-2 bw-1 cursor fw-6 fs-13 br-4 pr-12 pl-12 flex h-32 lh-n w-100"
                                 onClick={removeAllCharts}
                                 data-testid="chart-group-remove-all-charts"
                             >
@@ -311,7 +311,7 @@ const SelectedChartWidget: React.FC<SelectedChartWidget> = ({
                                                             </span>
                                                             {environmentName && (
                                                                 <span
-                                                                    style={{ color: '#404040', fontSize: '12px' }}
+                                                                    style={{ color: 'var(--N700)', fontSize: '12px' }}
                                                                     className="values-option__env"
                                                                 >
                                                                     ENV: {environmentName}

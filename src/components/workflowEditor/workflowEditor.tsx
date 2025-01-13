@@ -751,7 +751,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
                     <button
                         type="button"
-                        className="pt-6 pb-6 pl-12 pr-12 flex dc__gap-4 bcn-0 h-100 cn-9 fs-13 fw-4 lh-20 dc__hover-n50 dc__no-border dc__outline-none-imp dc__right-radius-4"
+                        className="pt-6 pb-6 pl-12 pr-12 flex dc__gap-4 bg__primary h-100 cn-9 fs-13 fw-4 lh-20 dc__hover-n50 dc__no-border dc__outline-none-imp dc__right-radius-4"
                         onClick={this.handleClearSelectedNode}
                     >
                         <ICClose className="icon-dim-12 fcn-9" />
@@ -907,7 +907,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
         return (
             <div
-                className="workflow-editor bcn-0"
+                className="workflow-editor bg__primary"
                 data-testid="workflow-editor-page"
                 // Added for showing the tippy on ApprovalNode
                 id={TARGET_IDS.WORKFLOW_EDITOR_CONTAINER}

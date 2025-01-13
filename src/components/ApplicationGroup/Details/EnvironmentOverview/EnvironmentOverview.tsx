@@ -486,7 +486,7 @@ export default function EnvironmentOverview({
     }
 
     return appListData?.appInfoList?.length > 0 ? (
-        <div className="env-overview-container flex-grow-1 dc__overflow-auto dc__content-center bcn-0 p-20">
+        <div className="env-overview-container flex-grow-1 dc__overflow-auto dc__content-center bg__primary p-20">
             <div>{renderSideInfoColumn()}</div>
             <div className="mw-none">
                 <div className="dc__align-self-stretch flex dc__content-space left fs-14 h-30 fw-6 lh-20 cn-9 mb-12">
@@ -503,21 +503,21 @@ export default function EnvironmentOverview({
                             )}
                             <button
                                 onClick={openHibernateModalPopup}
-                                className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
+                                className="bg__primary fs-12 dc__border dc__border-radius-4-imp flex h-28"
                             >
                                 <HibernateIcon className="icon-dim-12 mr-4" />
                                 Hibernate
                             </button>
                             <button
                                 onClick={openUnHibernateModalPopup}
-                                className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
+                                className="bg__primary fs-12 dc__border dc__border-radius-4-imp flex h-28"
                             >
                                 <UnHibernateIcon className="icon-dim-12 mr-4" />
                                 Unhibernate
                             </button>
                             <button
                                 onClick={onClickShowBulkRestartModal}
-                                className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
+                                className="bg__primary fs-12 dc__border dc__border-radius-4-imp flex h-28"
                             >
                                 <RotateIcon className="icon-dim-12 mr-4 scn-9" />
                                 Restart Workload

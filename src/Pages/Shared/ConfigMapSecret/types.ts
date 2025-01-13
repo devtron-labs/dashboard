@@ -8,8 +8,6 @@ import {
     ProtectConfigTabsType,
     SelectPickerOptionType,
     useForm,
-    UseFormErrorHandler,
-    UseFormSubmitHandler,
     AppEnvDeploymentConfigDTO,
     DryRunEditorMode,
     ConfigHeaderTabType,
@@ -156,8 +154,7 @@ export interface ConfigMapSecretFormProps
     areScopeVariablesResolving: boolean
     isDraft?: boolean
     disableDataTypeChange: boolean
-    onSubmit: UseFormSubmitHandler<ConfigMapSecretUseFormProps>
-    onError: UseFormErrorHandler<ConfigMapSecretUseFormProps>
+    onSubmit: () => void
     onCancel: () => void
     useFormProps: ReturnType<typeof useForm<ConfigMapSecretUseFormProps>>
 }
@@ -217,7 +214,6 @@ export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 
         | 'isJob'
         | 'disableDataTypeChange'
         | 'id'
-        | 'onError'
         | 'onSubmit'
         | 'areScopeVariablesResolving'
         | 'appChartRef'

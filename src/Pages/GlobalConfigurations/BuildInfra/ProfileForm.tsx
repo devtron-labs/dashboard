@@ -61,7 +61,7 @@ const ProfileForm: FunctionComponent = () => {
 
     return (
         <form
-            className="h-100 flexbox-col build-infra pl pr pt pb dc__content-space bcn-0"
+            className="h-100 flexbox-col build-infra pl pr pt pb dc__content-space bg__primary"
             onKeyDown={handleKeyDown}
             onSubmit={handleSubmit}
         >

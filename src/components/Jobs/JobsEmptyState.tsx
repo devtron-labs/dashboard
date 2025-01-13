@@ -47,7 +47,7 @@ export default function JobsEmptyState(props: JobsEmptyProps) {
 
     return (
         <div
-            className="bcn-0"
+            className="bg__primary"
             style={{ height: `calc(100vh - ${props.view === JobListViewType.NO_RESULT ? '146px' : '48px'})` }}
         >
             {props.view === JobListViewType.NO_RESULT ? renderNoResultsView() : renderNoJobsView()}

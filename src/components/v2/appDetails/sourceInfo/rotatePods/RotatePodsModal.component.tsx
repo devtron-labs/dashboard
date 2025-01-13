@@ -122,8 +122,8 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
 
     const renderRestartModalHeader = (): JSX.Element => {
         return (
-            <div className="bcn-0">
-                <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12">
+            <div className="bg__primary">
+                <div className="flex flex-align-center flex-justify dc__border-bottom bg__primary pt-12 pr-20 pb-12">
                     <div className="lh-1-43 ml-20 flex left">
                         <h1 className="cn-9 fw-6 fs-16 m-0" data-testid="restart-workload-heading-onclick">
                             Restart workloads
@@ -266,12 +266,12 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
         const isWorkloadPresent = podsToRotate && podsToRotate.size > 0
         const isAnySelected = podsToRotate && Array.from(podsToRotate.values()).some((workload) => workload.isChecked)
         return (
-            <div className="scale-worklists-container bcn-0 dc__height-inherit dc__overflow-auto">
+            <div className="scale-worklists-container bg__primary dc__height-inherit dc__overflow-auto">
                 {isWorkloadPresent && (
                     <div className="dc__overflow-scroll p-20">
                         <div className="check-all-workloads cn-7 fw-6">
                             <Checkbox
-                                rootClassName="mb-0 fs-13 cursor bcn-0 p"
+                                rootClassName="mb-0 fs-13 cursor bg__primary p"
                                 isChecked={_nameSelection.isChecked}
                                 value={_nameSelection.value}
                                 onChange={handleSelectAll}
@@ -285,7 +285,7 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
                             {Array.from(podsToRotate.values()).map((item) => (
                                 <div key={`${item.kind}/${item.name}`} className="check-single-workload mt-16">
                                     <Checkbox
-                                        rootClassName={`mb-0 fs-13 cursor bcn-0 p${
+                                        rootClassName={`mb-0 fs-13 cursor bg__primary p${
                                             item.errorMessage ? ' dc__align-baseline' : ''
                                         }`}
                                         isChecked={item.isChecked}
@@ -308,7 +308,7 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
                         </div>
                     </div>
                 )}
-                <div className="w-100 dc__border-top flex right pb-16 pt-16 dc__position-fixed dc__position-abs dc__bottom-0 bcn-0 scale-workload-modal ">
+                <div className="w-100 dc__border-top flex right pb-16 pt-16 dc__position-fixed dc__position-abs dc__bottom-0 bg__primary scale-workload-modal ">
                     <button
                         className={`cta flex h-36 mr-20  ${
                             rotatingInProgress || !isWorkloadPresent || !isAnySelected ? 'not-allowed' : ''
@@ -363,7 +363,7 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
 
     return (
         <Drawer position="right" width="1024px">
-            <div className="dc__window-bg h-100 rotate-pods-container">{renderRotateModal()}</div>
+            <div className="bg__tertiary h-100 rotate-pods-container">{renderRotateModal()}</div>
         </Drawer>
     )
 }

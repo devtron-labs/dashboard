@@ -199,7 +199,7 @@ export const SecurityScansTab = () => {
     }
 
     const renderHeader = () => (
-        <div className="table__row-grid display-grid dc__align-items-center dc__border-bottom dc__gap-16 px-20 w-100-imp py-4 dc__position-sticky dc__top-77 bcn-0">
+        <div className="table__row-grid display-grid dc__align-items-center dc__border-bottom dc__gap-16 px-20 w-100-imp py-4 dc__position-sticky dc__top-77 bg__primary">
             <div className="icon-dim-24" />
             <div className="fs-12 lh-20 fw-6 cn-7">
                 <SortableTableHeaderCell

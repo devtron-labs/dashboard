@@ -127,7 +127,7 @@ const ConnectingToClusterState: React.FC<ConnectingToClusterStateProps> = ({
 
     return (
         <div
-            className="flex column bcn-0"
+            className="flex column bg__primary"
             style={{
                 height: 'calc(100vh - 84px)',
             }}

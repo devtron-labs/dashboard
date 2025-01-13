@@ -88,7 +88,7 @@ const DeploymentChartsList = () => {
                 <DeploymentChartsListHeader handleOpenUploadChartModal={handleOpenUploadChartModal} />
                 <div
                     data-testid="custom-chart-list"
-                    className="en-2 bw-1 bcn-0 br-8 h-100 dc__overflow-hidden flexbox-col"
+                    className="en-2 bw-1 bg__primary br-8 h-100 dc__overflow-hidden flexbox-col"
                 >
                     <InfoColourBar
                         message={

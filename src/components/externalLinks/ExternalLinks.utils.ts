@@ -66,6 +66,7 @@ export const customMultiSelectStyles = {
         ...base,
         top: 'auto',
         width: '100%',
+        backgroundColor: 'var(--bg-menu)',
     }),
     menuList: (base, state) => ({
         ...base,
@@ -77,7 +78,7 @@ export const customMultiSelectStyles = {
     option: (base, state) => ({
         ...base,
         padding: '10px 12px',
-        backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+        backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--bg-primary)',
         color: 'var(--N900)',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -89,7 +90,7 @@ export const customMultiSelectStyles = {
         width: '160px',
         minHeight: '36px',
         border: `solid 1px ${state.isFocused ? 'var(--N400)' : 'var(--N200)'}`,
-        backgroundColor: 'var(--N50)',
+        backgroundColor: 'var(--bg-secondary)',
         justifyContent: 'flex-start',
         cursor: 'pointer',
         boxShadow: 'none',
@@ -128,7 +129,7 @@ export const ToolSelectStyles = {
         minHeight: '36px',
         width: '40px',
         border: 'none',
-        backgroundColor: 'white',
+        backgroundColor: 'var(--bg-primary)',
         boxShadow: 'none',
     }),
     valueContainer: (base) => ({
@@ -160,7 +161,7 @@ export const NodeLevelSelectStyles = {
         minWidth: '67px',
         maxWidth: '112px',
         minHeight: '24px',
-        backgroundColor: 'var(--N50)',
+        backgroundColor: 'var(--bg-secondary)',
         border: '1px solid var(--N200)',
         cursor: 'pointer',
     }),
@@ -199,7 +200,7 @@ export const IdentifierSelectStyles = {
         ...tempMultiSelectStyles.control(base, state),
         minHeight: '36px',
         border: `solid 1px ${state.isFocused ? 'var(--N400)' : 'var(--N200)'}`,
-        backgroundColor: 'var(--N50)',
+        backgroundColor: 'var(--bg-secondary)',
         cursor: 'pointer',
     }),
 }

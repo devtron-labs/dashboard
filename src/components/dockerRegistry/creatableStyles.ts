@@ -24,7 +24,7 @@ export const creatableSelectStyles = {
         ...base,
         border: '1px solid var(--N200)',
         borderRadius: '4px',
-        background: 'white',
+        background: 'var(--bg-primary)',
         height: '28px',
         margin: 0,
     }),

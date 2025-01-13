@@ -73,7 +73,7 @@ const TLSInputField = ({
 
                 {showClearButton && !!sanitizedValue && (
                     <button
-                        className="dc__outline-none-imp dc__no-border p-0 bc-n50 flex dc__position-abs dc__right-10 dc__top-8"
+                        className="dc__outline-none-imp dc__no-border p-0 bg__secondary flex dc__position-abs dc__right-10 dc__top-8"
                         type="button"
                         onClick={handleClearInput}
                         aria-label="Clear input"

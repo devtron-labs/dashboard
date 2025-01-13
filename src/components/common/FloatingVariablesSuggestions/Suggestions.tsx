@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 
-import React, { useState, memo, useEffect } from 'react'
-import { GenericEmptyState, Progressing, Reload, DebouncedSearch } from '@devtron-labs/devtron-fe-common-lib'
+import { useState, memo, useEffect } from 'react'
+import {
+    GenericEmptyState,
+    Progressing,
+    Reload,
+    DebouncedSearch,
+    Button,
+    ComponentSizeType,
+    ButtonVariantType,
+    ButtonStyleType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import SuggestionItem from './SuggestionItem'
 import { ReactComponent as ICClose } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as ICSearch } from '../../../assets/icons/ic-search.svg'
@@ -54,7 +63,7 @@ const Suggestions = ({ handleDeActivation, loading, variables, reloadVariables, 
 
     const renderClearSearchButton = (): JSX.Element => (
         <button
-            className="dc__outline-none-imp flexbox mw-56 pt-5 pb-5 pl-12 pr-12 dc__gap-8 dc__align-items-center dc__border-radius-4-imp dc__border bcn-0 cb-5 fs-12 fw-6 lh-18 dc__align-center dc__hover-cn1 dc__hover-b500"
+            className="dc__outline-none-imp flexbox mw-56 pt-5 pb-5 pl-12 pr-12 dc__gap-8 dc__align-items-center dc__border-radius-4-imp dc__border bg__primary cb-5 fs-12 fw-6 lh-18 dc__align-center dc__hover-cn1 dc__hover-b500"
             onClick={handleClearSearch}
             type="button"
         >
@@ -64,26 +73,28 @@ const Suggestions = ({ handleDeActivation, loading, variables, reloadVariables, 
 
     const renderHeader = (): JSX.Element => (
         <div className="flexbox-col dc__align-self-stretch">
-            <div className="handle-drag flexbox pt-8 pl-12 pr-12 dc__gap-16 dc__align-start dc__align-self-stretch bcn-7 dc__grabbable">
+            <div className="handle-drag flexbox pt-8 pl-12 pr-12 dc__gap-16 dc__align-start dc__align-self-stretch dc__grabbable dc__border-bottom">
                 <div className="flexbox-col dc__content-center dc__align-start flex-grow-1 dc__no-shrink">
                     <div className="flex center dc__gap-4">
-                        <p className="m-0 cn-0 fs-13 fw-6 lh-20 dc__align-self-stretch">Scoped variables</p>
+                        <p className="m-0 cn-7 fs-13 fw-6 lh-20 dc__align-self-stretch">Scoped variables</p>
 
-                        <ICVariable className="icon-dim-16 scn-0" />
+                        <ICVariable className="icon-dim-16 scn-7" />
                     </div>
 
-                    <p className="dc__align-self-stretch c-n50 fs-12 fw-1 lh-20">Use variable to set dynamic value</p>
+                    <p className="dc__align-self-stretch cn-7 fs-12 fw-1 lh-20">Use variable to set dynamic value</p>
                 </div>
 
                 <div className="h-100">
-                    <button
-                        type="button"
-                        className="dc__outline-none-imp dc__no-border p-0 bcn-7 h-20"
+                    <Button
+                        icon={<ICClose />}
+                        ariaLabel="Close suggestions"
+                        showAriaLabelInTippy={false}
+                        dataTestId="deactivate-suggestions"
                         onClick={handleDeActivation}
-                        data-testid="deactivate-suggestions"
-                    >
-                        <ICClose className="fcn-0 icon-dim-20 cursor" />
-                    </button>
+                        size={ComponentSizeType.xs}
+                        variant={ButtonVariantType.borderLess}
+                        style={ButtonStyleType.negativeGrey}
+                    />
                 </div>
             </div>
 
@@ -94,13 +105,13 @@ const Suggestions = ({ handleDeActivation, loading, variables, reloadVariables, 
                             e.preventDefault()
                         }
                     }}
-                    className="flexbox dc__align-self-stretch pt-8 pb-8 pl-12 pr-12 bcn-0"
+                    className="flexbox dc__align-self-stretch pt-8 pb-8 pl-12 pr-12 bg__primary"
                 >
                     <DebouncedSearch
                         onSearch={onSearch}
                         placeholder="Search variables"
-                        containerClass="flexbox flex-grow-1 pt-8 pb-8 pl-10 pr-10 dc__gap-8 dc__align-self-stretch dc__align-items-center bc-n50 dc__border dc__border-radius-4-imp focus-within-border-b5 dc__hover-border-n300"
-                        inputClass="flex-grow-1 dc__no-border dc__outline-none-imp bc-n50 lh-20 fs-13 cn-9 fw-4 p-0 placeholder-cn5"
+                        containerClass="flexbox flex-grow-1 pt-8 pb-8 pl-10 pr-10 dc__gap-8 dc__align-self-stretch dc__align-items-center bg__secondary dc__border dc__border-radius-4-imp focus-within-border-b5 dc__hover-border-n300"
+                        inputClass="flex-grow-1 dc__no-border dc__outline-none-imp bg__secondary lh-20 fs-13 cn-9 fw-4 p-0 placeholder-cn5"
                         Icon={ICSearch}
                         iconClass="icon-dim-16"
                         clearSearch={clearSearch}
@@ -112,7 +123,7 @@ const Suggestions = ({ handleDeActivation, loading, variables, reloadVariables, 
 
     const renderSuggestions = (): JSX.Element => (
         <>
-            <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bcn-0 flex-grow-1">
+            <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bg__primary flex-grow-1">
                 {suggestions.length ? (
                     suggestions.map((variable) => (
                         <SuggestionItem
@@ -144,7 +155,7 @@ const Suggestions = ({ handleDeActivation, loading, variables, reloadVariables, 
     const renderBody = (): JSX.Element => {
         if (loading) {
             return (
-                <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bcn-0 flex-grow-1 h-200">
+                <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bg__primary flex-grow-1 h-200">
                     <Progressing pageLoader size={32} />
                 </div>
             )
@@ -153,7 +164,7 @@ const Suggestions = ({ handleDeActivation, loading, variables, reloadVariables, 
         if (variables?.length === 0) {
             return (
                 <>
-                    <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bcn-0 flex-grow-1 h-200 bcn-0">
+                    <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll flex-grow-1 h-200">
                         <GenericEmptyState title="No variables found" image={NoVariables} />
                     </div>
 
@@ -163,7 +174,7 @@ const Suggestions = ({ handleDeActivation, loading, variables, reloadVariables, 
         }
 
         if (!enableSearch) {
-            return <Reload reload={reloadVariables} className="bcn-0 pb-16" />
+            return <Reload reload={reloadVariables} className="bg__primary pb-16" />
         }
 
         return renderSuggestions()

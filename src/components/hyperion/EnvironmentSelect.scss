@@ -20,7 +20,7 @@
     .select__group-heading {
         font-size: 12px;
         font-weight: 600;
-        color: #596168;
+        color: var(--N600);
         text-transform: initial;
     }
 }
@@ -28,7 +28,7 @@
 .select__option {
     mark {
         padding: 0;
-        background-color: #ffd597;
+        background-color: var(--Y300);
         font-weight: 600;
     }
 }
@@ -40,7 +40,7 @@
 .cluster-label-all {
     font-size: 13px;
     font-weight: 600;
-    color: var(--n-900);
+    color: var(--N900);
 }
 
 .margin-top-6px {

@@ -341,7 +341,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                         {this.renderCIPipelineBody()}
                     </div>
                     {this.state.view !== ViewType.LOADING && (
-                        <div className="ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex flex-justify">
+                        <div className="ci-button-container bg__primary pt-12 pb-12 pl-20 pr-20 flex flex-justify">
                             {this.renderSecondaryButtton()}
                             <Link
                                 to={this.state.sourcePipelineURL}

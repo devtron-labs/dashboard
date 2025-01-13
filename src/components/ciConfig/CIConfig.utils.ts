@@ -28,8 +28,8 @@ export const _multiSelectStyles = {
     control: (base, state) => ({
         ...base,
         cursor: state.isDisabled ? 'not-allowed' : 'normal',
-        border: state.isDisabled ? '1px solid var(--N200)' : state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
-        backgroundColor: state.isDisabled ? 'var(--N50)' : 'white',
+        border: state.isDisabled ? '1px solid var(--N200)' : state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
+        backgroundColor: state.isDisabled ? 'var(--bg-secondary)' : 'var(--bg-primary)',
         boxShadow: 'none',
     }),
     menu: (base) => ({
@@ -53,7 +53,7 @@ export const tempMultiSelectStyles = {
             ...base,
             border: `1px solid var(--N200)`,
             borderRadius: `4px`,
-            background: 'white',
+            background: 'var(--bg-primary)',
             height: '28px',
             marginRight: '8px',
             padding: '2px',

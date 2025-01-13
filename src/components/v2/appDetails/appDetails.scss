@@ -41,9 +41,9 @@
 }
 
 .app-info-bg {
-    background: var(--window-bg);
+    background: var(--bg-tertiary);
 }
 
 .app-info-bg-gradient {
-    background: linear-gradient(to top, #ffffff 0, #ffffff 50px, var(--window-bg) 50px);
+    background: linear-gradient(to top, var(--bg-primary) 0, var(--bg-primary) 50px, var(--bg-tertiary) 50px);
 }

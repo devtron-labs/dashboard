@@ -261,7 +261,7 @@ export default function SavedValuesList() {
                     Preset values
                 </div>
                 {renderSubtitleAndNewButton('Customize, Dry Run and Save values so they’re ready to be used later.')}
-                <div className="mt-16 en-2 bw-1 bcn-0 br-8" style={{ minHeight: 'calc(100vh - 235px)' }}>
+                <div className="mt-16 en-2 bw-1 bg__primary br-8" style={{ minHeight: 'calc(100vh - 235px)' }}>
                     {savedValueList.length === 0 ? (
                         renderEmptyState()
                     ) : filteredSavedValueList.length === 0 ? (

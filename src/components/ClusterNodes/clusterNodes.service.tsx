@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { get, post, put, ResponseType, APIOptions, ROUTES } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, put, ResponseType, APIOptions, ROUTES as COMMON_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import {
     ClusterCapacityResponse,
@@ -44,7 +44,8 @@ export const patchApplicationNote = (requestPayload: ClusteNotePatchRequest): Pr
 export const getClusterList = (signal: AbortSignal): Promise<ClusterListResponse> =>
     get(Routes.CLUSTER_LIST, { signal })
 
-export const getClusterListMin = (): Promise<ClusterListResponse> => get(Routes.CLUSTER_LIST_MIN)
+/** @deprecated - use `getClusterListRaw` from fe-common-lib */
+export const getClusterListMin = (): Promise<ClusterListResponse> => get(COMMON_ROUTES.CLUSTER_LIST_RAW)
 
 export const getClusterCapacity = (clusterId: string, signal?): Promise<ClusterCapacityResponse> =>
     get(`${Routes.CLUSTER_CAPACITY}/${clusterId}`, { signal })
@@ -54,19 +55,19 @@ export const updateClusterShortDescription = (
 ): Promise<ResponseType> => put(`${Routes.CLUSTER_DESCRIPTION}`, requestPayload)
 
 export const getNodeCapacity = (clusterId: string, nodeName: string): Promise<NodeDetailResponse> =>
-    get(`${ROUTES.NODE_CAPACITY}?clusterId=${clusterId}&name=${nodeName}`)
+    get(`${COMMON_ROUTES.NODE_CAPACITY}?clusterId=${clusterId}&name=${nodeName}`)
 
 export const cordonNodeCapacity = (requestPayload: NodeCordonRequest): Promise<ResponseType> =>
-    put(`${ROUTES.NODE_CAPACITY}/cordon`, requestPayload)
+    put(`${COMMON_ROUTES.NODE_CAPACITY}/cordon`, requestPayload)
 
 export const drainNodeCapacity = (requestPayload: NodeDrainRequest): Promise<ResponseType> =>
-    put(`${ROUTES.NODE_CAPACITY}/drain`, requestPayload)
+    put(`${COMMON_ROUTES.NODE_CAPACITY}/drain`, requestPayload)
 
 export const updateNodeManifest = (
     clusterId: string,
     nodeName: string,
     nodeData: UpdateNodeRequestBody,
-): Promise<ResponseType> => put(`${ROUTES.NODE_CAPACITY}?clusterId=${clusterId}&name=${nodeName}`, nodeData)
+): Promise<ResponseType> => put(`${COMMON_ROUTES.NODE_CAPACITY}?clusterId=${clusterId}&name=${nodeName}`, nodeData)
 
 export const clusterTerminalStart = (data: TerminalDataType, option: APIOptions): Promise<ResponseType> =>
     post(`${Routes.CLUSTER_TERMINAL}/${Routes.START}`, data, option)
