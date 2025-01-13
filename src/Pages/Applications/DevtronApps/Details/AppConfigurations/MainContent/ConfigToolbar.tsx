@@ -9,6 +9,7 @@ import {
     BaseURLParams,
     ComponentSizeType,
     InvalidYAMLTippyWrapper,
+    ToggleResolveScopedVariables,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -16,7 +17,6 @@ import { ReactComponent as ICMore } from '@Icons/ic-more-option.svg'
 import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
 import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
 import BaseConfigurationNavigation from './BaseConfigurationNavigation'
-import ToggleResolveScopedVariables from './ToggleResolveScopedVariables'
 import { PopupMenuItem } from './utils'
 import { ConfigToolbarProps } from './types'
 import SelectMergeStrategy from './SelectMergeStrategy'

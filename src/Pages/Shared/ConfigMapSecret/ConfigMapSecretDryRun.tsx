@@ -19,12 +19,13 @@ import {
     usePrompt,
     CM_SECRET_STATE,
     ConfigMapSecretReadyOnly,
+    ToggleResolveScopedVariables,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
 import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
 import { importComponentFromFELibrary } from '@Components/common'
-import { NoPublishedVersionEmptyState, SelectMergeStrategy, ToggleResolveScopedVariables } from '@Pages/Applications'
+import { NoPublishedVersionEmptyState, SelectMergeStrategy } from '@Pages/Applications'
 
 import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
 import { getConfigMapSecretManifest } from './ConfigMapSecret.service'
