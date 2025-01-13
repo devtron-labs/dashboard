@@ -65,14 +65,13 @@ export const ConfigMapSecretForm = ({
     areScopeVariablesResolving,
     useFormProps,
     onSubmit,
-    onError,
     onCancel,
 }: ConfigMapSecretFormProps) => {
     // HOOKS
     const location = useLocation()
 
     // FORM PROPS
-    const { data, errors, formState, setValue, register, handleSubmit } = useFormProps
+    const { data, errors, formState, setValue, register } = useFormProps
 
     // CONSTANTS
     const isCreateView = id === null
@@ -329,7 +328,7 @@ export const ConfigMapSecretForm = ({
                 dataTestId="cm-secret-form-submit-btn"
                 text={`Save${!isCreateView ? ' Changes' : ''}${isApprovalPolicyConfigured ? '...' : ''}`}
                 size={ComponentSizeType.medium}
-                onClick={handleSubmit(onSubmit, onError)}
+                onClick={onSubmit}
                 isLoading={isSubmitting}
                 disabled={isSubmitting || areScopeVariablesResolving || isFormDisabled}
             />
