@@ -57,3 +57,7 @@ export interface ClusterUpgradeCompatibilityInfoProps
 export interface ResourceListUrlFiltersType {
     targetK8sVersion: string
 }
+
+export type BulkOperationType = 'restart' | 'delete'
+
+export type BulkOperationsModalState = BulkOperationType | 'closed'

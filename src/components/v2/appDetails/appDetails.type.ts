@@ -20,9 +20,10 @@ import {
     AppDetails as CommonAppDetails,
     Node as CommonNode,
     iNode as CommoniNode,
-    ApiResourceGroupType,
     ConfigurationType,
     FormProps,
+    OptionsBase,
+    SelectedResourceType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { iLink } from '../utils/tabUtils/link.type'
@@ -408,13 +409,6 @@ export interface NodeTreeTabListProps extends LogSearchTermType {
     isExternalApp?: boolean
 }
 
-export interface OptionsBase {
-    name: string
-    isInitContainer?: boolean
-    isEphemeralContainer?: boolean
-    isExternal?: boolean
-}
-
 export interface Options extends OptionsBase {
     selected: boolean
 }
@@ -446,17 +440,6 @@ export interface StatusFilterButtonType {
 
 export interface SyncErrorType {
     showApplicationDetailedModal?: () => void
-}
-
-export interface SelectedResourceType extends Pick<NodeDetailPropsType, 'clusterName'> {
-    clusterId: number
-    group: string
-    version: string
-    kind: string
-    namespace: string
-    name: string
-    containers: OptionsBase[]
-    selectedContainer?: string
 }
 
 export interface ResourceInfoActionPropsType {

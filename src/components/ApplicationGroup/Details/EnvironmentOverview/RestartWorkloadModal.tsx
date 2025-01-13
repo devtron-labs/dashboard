@@ -27,6 +27,7 @@ import {
     stopPropagation,
     usePrompt,
     useSearchString,
+    DEFAULT_ROUTE_PROMPT_MESSAGE,
     ApiQueuingWithBatch,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt, useHistory, useLocation } from 'react-router-dom'
@@ -51,7 +52,6 @@ import { RestartStatusListDrawer } from './RestartStatusListDrawer'
 import { importComponentFromFELibrary } from '../../../common'
 import { AllExpandableDropdown } from './AllExpandableDropdown'
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
-import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../../config'
 
 const BulkDeployResistanceTippy = importComponentFromFELibrary('BulkDeployResistanceTippy')
 

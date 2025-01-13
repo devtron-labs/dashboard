@@ -21,10 +21,8 @@ import {
     ServerErrors,
     ResponseType,
     sortCallback,
-    DeploymentNodeType,
     put,
     DATE_TIME_FORMAT_STRING,
-    DeploymentWithConfigType,
     History,
     noop,
     handleUTCTime,
@@ -35,25 +33,13 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { Routes, Moment12HourFormat, NO_COMMIT_SELECTED } from '../../config'
-import { getAPIOptionsWithTriggerTimeout, importComponentFromFELibrary } from '../common'
 import {
     AppDetails,
     ArtifactsCiJob,
     EditAppRequest,
     AppMetaInfo,
-    TriggerCDNodeServiceProps,
-    TriggerCDPipelinePayloadType,
 } from './types'
 import { BulkResponseStatus, BULK_VIRTUAL_RESPONSE_STATUS } from '../ApplicationGroup/Constants'
-
-const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
-
-const stageMap = {
-    PRECD: 'PRE',
-    CD: 'DEPLOY',
-    POSTCD: 'POST',
-    APPROVAL: 'APPROVAL',
-}
 
 export const getAppList = (request, options?: APIOptions) => post(Routes.APP_LIST, request, options)
 
@@ -256,46 +242,6 @@ export const triggerCINode = (request, abortSignal?: AbortSignal) => {
         signal: abortSignal,
     }
     return post(URL, request, options)
-}
-
-export const triggerCDNode = ({
-    pipelineId,
-    ciArtifactId,
-    appId,
-    stageType,
-    deploymentWithConfig,
-    wfrId,
-    abortSignal,
-    runtimeParams = [],
-    isRollbackTrigger = false,
-}: TriggerCDNodeServiceProps) => {
-    const areRuntimeParamsConfigured =
-        getRuntimeParamsPayload && (stageType === DeploymentNodeType.POSTCD || stageType === DeploymentNodeType.PRECD)
-    const runtimeParamsPayload = areRuntimeParamsConfigured ? getRuntimeParamsPayload(runtimeParams) : null
-
-    const request: TriggerCDPipelinePayloadType = {
-        pipelineId: parseInt(pipelineId),
-        appId: parseInt(appId),
-        ciArtifactId: parseInt(ciArtifactId),
-        cdWorkflowType: stageMap[stageType],
-        isRollbackDeployment: isRollbackTrigger,
-        ...(areRuntimeParamsConfigured && runtimeParamsPayload),
-    }
-
-    if (deploymentWithConfig) {
-        request['deploymentWithConfig'] =
-            deploymentWithConfig === DeploymentWithConfigType.LAST_SAVED_CONFIG
-                ? deploymentWithConfig
-                : DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG
-
-        if (deploymentWithConfig !== DeploymentWithConfigType.LAST_SAVED_CONFIG) {
-            request['wfrIdForDeploymentWithSpecificTrigger'] = wfrId
-        }
-    }
-    const options = getAPIOptionsWithTriggerTimeout()
-    options.signal = abortSignal
-
-    return post(Routes.CD_TRIGGER_POST, request, options)
 }
 
 export const triggerBranchChange = (appIds: number[], envId: number, value: string) => {
