@@ -48,7 +48,7 @@
 
 .bulk-desciription {
     box-shadow: inset 0 -1px 0 0 var(--N200);
-    background-color: #f3f0ff;
+    background-color: var(--V100);
 }
 
 .border-top {
@@ -79,12 +79,12 @@
     display: grid;
     grid-template-columns: 50% 50%;
     height: calc(100vh - 48px);
-    background-color: white;
+    background-color: var(--bg-primary);
 }
 
 .code-editor-body {
     height: calc(100vh - 97px);
-    background: white;
+    background: var(--bg-primary);
     .react-monaco-editor-container {
         min-height: calc(60vh - 97px);
     }

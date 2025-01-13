@@ -30,7 +30,6 @@ export interface PipelineConfigDiffStatusTileProps
     noLastDeploymentConfig?: boolean
     onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
     canReviewConfig: boolean
-    showConfigNotAvailableTooltip: boolean
     renderConfigNotAvailableTooltip: () => JSX.Element
 }
 

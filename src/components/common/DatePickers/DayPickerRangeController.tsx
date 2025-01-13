@@ -47,7 +47,7 @@ const selectedStyles = {
     color: 'var(--B500)',
     hover: {
         background: 'var(--B500)',
-        color: '#fff',
+        color: 'var(--N0)',
     },
 }
 
@@ -57,7 +57,7 @@ const selectedSpanStyles = {
 
     hover: {
         background: 'var(--B500)',
-        color: '#fff',
+        color: 'var(--N0)',
     },
 }
 
@@ -78,9 +78,9 @@ const styless = {
     },
     PresetDateRangePicker_button: {
         width: '188px',
-        background: 'white',
+        background: 'var(--bg-primary)',
         border: 'none',
-        color: 'black',
+        color: 'var(--N900)',
         padding: '8px',
         font: 'inherit',
         fontWeight: 500,
@@ -95,7 +95,7 @@ const styless = {
         borderRadius: '4px',
     },
     PresetDateRangePicker_button__selected: {
-        color: '#06c',
+        color: 'var(--B500)',
         fontWeight: 600,
         background: 'var(--B100)',
         outline: 'none',

@@ -36,12 +36,13 @@ export const getCompareValuesSelectStyles = () => ({
     option: (base, state) => ({
         ...base,
         color: 'var(--N900)',
-        backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+        backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--bg-primary)',
     }),
     menu: (base) => ({
         ...base,
         marginTop: '2px',
         minWidth: '240px',
+        backgroundColor: 'var(--bg-menu)',
     }),
     menuList: (base) => ({
         ...base,

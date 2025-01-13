@@ -193,9 +193,11 @@ export const appGroupAppSelectorStyle = {
         fontSize: '12px',
         width: state.menuIsOpen ? '250px' : 'unset',
         cursor: state.isDisabled ? 'not-allowed' : 'normal',
+        backgroundColor: 'var(--bg-primary)',
     }),
     singleValue: (base, state) => ({
         ...base,
+        color: 'var(--N900)',
         fontWeight: '500',
     }),
     placeholder: (base, state) => ({
@@ -237,6 +239,15 @@ export const appGroupAppSelectorStyle = {
         ...base,
         padding: '0 4px 0 4px',
     }),
+    menu: (base) => ({
+        ...base,
+        border: '1px solid var(--N200)',
+        backgroundColor: 'var(--bg-primary)',
+    }),
+    input: (base) => ({
+        ...base,
+        color: 'var(--N900)',
+    }),
 }
 
 const getBGColor = (isSelected: boolean, isFocused: boolean): string => {
@@ -244,9 +255,9 @@ const getBGColor = (isSelected: boolean, isFocused: boolean): string => {
         return 'var(--B100)'
     }
     if (isFocused) {
-        return 'var(--N50)'
+        return 'var(--bg-secondary)'
     }
-    return 'white'
+    return 'var(--bg-primary)'
 }
 
 export const getOptionBGClass = (isSelected: boolean, isFocused: boolean): string => {
@@ -254,9 +265,9 @@ export const getOptionBGClass = (isSelected: boolean, isFocused: boolean): strin
         return 'bcb-1'
     }
     if (isFocused) {
-        return 'bc-n50'
+        return 'bg__secondary'
     }
-    return 'bcn-0'
+    return 'bg__primary'
 }
 
 export const getBranchValues = (ciNodeId: string, workflows: WorkflowType[], filteredCIPipelines) => {

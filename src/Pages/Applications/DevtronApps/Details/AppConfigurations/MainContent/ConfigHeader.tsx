@@ -40,7 +40,7 @@ const ConfigHeaderTab = ({
             onClick={handleChange}
             type="button"
             disabled={isDisabled}
-            className={`dc__transparent flexbox dc__align-items-center dc__gap-6 py-8 px-12 ${buttonContainerClass} ${isDisabled && !hasError ? 'dc__disabled' : ''} ${isActive ? 'bcn-0 cn-9' : 'cn-7'} ${isNextTabActive ? 'dc__border-right' : ''} ${isPreviousTabActive ? 'dc__border-left' : ''} fs-12 fw-6 lh-20`}
+            className={`dc__transparent flexbox dc__align-items-center dc__gap-6 py-8 px-12 ${buttonContainerClass} ${isDisabled && !hasError ? 'dc__disabled' : ''} ${isActive ? 'bg__primary cn-9' : 'cn-7'} ${isNextTabActive ? 'dc__border-right' : ''} ${isPreviousTabActive ? 'dc__border-left' : ''} fs-12 fw-6 lh-20`}
             role="tab"
         >
             {hasError ? (
@@ -76,7 +76,7 @@ const ConfigHeader = ({
     const activeTabIndex = tabKeys.indexOf(configHeaderTab)
 
     return (
-        <div className="flexbox w-100 dc__align-items-center bc-n50 dc__box-shadow-bottom-n2">
+        <div className="flexbox w-100 dc__align-items-center bg__secondary dc__box-shadow-bottom-n2">
             {tabKeys.map((currentTab: ConfigHeaderTabType, index: number) => (
                 <InvalidYAMLTippyWrapper
                     key={currentTab}

@@ -89,8 +89,8 @@ const AppStatusDetailModal = ({
 
     return (
         <Drawer position="right" width="1024px" onClose={close}>
-            <div className="app-status-detail-modal bcn-0" onClick={stopPropagation}>
-                <div className="app-status-detail__header dc__box-shadow pt-12 pr-20 pb-12 pl-20 bcn-0 flex dc__content-space">
+            <div className="app-status-detail-modal bg__primary" onClick={stopPropagation}>
+                <div className="app-status-detail__header dc__box-shadow pt-12 pr-20 pb-12 pl-20 bg__primary flex dc__content-space">
                     <div>
                         <div data-testid="app-status-details-title" className="title cn-9 fs-16 fw-6 mb-4">
                             {title || 'App status detail'}

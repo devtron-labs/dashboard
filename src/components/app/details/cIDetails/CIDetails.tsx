@@ -22,7 +22,6 @@ import {
     GenericEmptyState,
     useAsync,
     PipelineType,
-    ScannedByToolModal,
     Sidebar,
     LogResizeButton,
     CICDSidebarFilterOptionType,
@@ -40,11 +39,10 @@ import {
     LogsRenderer,
     ModuleNameMap,
     EMPTY_STATE_STATUS,
-    SecuritySummaryCard,
     TabGroup,
     TRIGGER_STATUS_PROGRESSING,
     ErrorScreenManager,
-    getScanToolAndSeverityCount,
+    SecurityDetailsCards,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, Redirect, useRouteMatch, useParams, useHistory, generatePath } from 'react-router-dom'
 import {
@@ -61,7 +59,6 @@ import './ciDetails.scss'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
-import { ReactComponent as NoVulnerability } from '../../../../assets/img/ic-vulnerability-not-found.svg'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { renderCIListHeader, renderDeploymentHistoryTriggerMetaText } from '../cdDetails/utils'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -447,7 +444,7 @@ export const Details = ({
                         workerPodName={triggerDetails.podName}
                         renderDeploymentHistoryTriggerMetaText={renderDeploymentHistoryTriggerMetaText}
                     />
-                    <div className="dc__border-bottom pl-50 pr-20 dc__position-sticky dc__top-0 bcn-0 dc__zi-3">
+                    <div className="dc__border-bottom pl-50 pr-20 dc__position-sticky dc__top-0 bg__primary dc__zi-3">
                         <TabGroup
                             tabs={[
                                 {
@@ -647,22 +644,6 @@ const HistoryLogs = ({
         </div>
     )
 }
-export const NoVulnerabilityViewWithTool = ({ scanToolId }: { scanToolId: number }) => {
-    return (
-        <div className="flex h-100 dc__position-rel">
-            <GenericEmptyState
-                SvgImage={NoVulnerability}
-                title={EMPTY_STATE_STATUS.CI_DEATILS_NO_VULNERABILITY_FOUND.TITLE}
-                subTitle={EMPTY_STATE_STATUS.CI_DEATILS_NO_VULNERABILITY_FOUND.SUBTITLE}
-                children={
-                    <span className="flex dc__border-radius-24 bcn-0 pl-16 pr-16 pt-8 pb-8 en-1 bw-1">
-                        <ScannedByToolModal scanToolId={scanToolId} />
-                    </span>
-                }
-            />
-        </div>
-    )
-}
 
 const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: SecurityTabType) => {
     const { appId } = useParams<{ appId: string }>()
@@ -700,36 +681,18 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     }
 
     if (scanResultLoading) {
-        return <Progressing pageLoader />
+        return <div className='bg__primary flex-grow-1'><Progressing pageLoader /></div>
     }
     if (scanResultError) {
         return <ErrorScreenManager code={scanResultError.code} reload={reloadScanResult} />
     }
-    if (
-        scanResultResponse &&
-        (!scanResultResponse.result.scanned ||
-            !scanResultResponse.result.isImageScanEnabled ||
-            !scanResultResponse.result.imageScan)
-    ) {
+    if (!scanResultResponse?.result.scanned) {
         return <ImageNotScannedView />
     }
 
-    const { scanToolId, severityCount, totalCount } = getScanToolAndSeverityCount(scanResultResponse?.result)
-
-    if (artifactId && !totalCount) {
-        return <NoVulnerabilityViewWithTool scanToolId={scanToolId} />
-    }
-
     return (
-        <div className="p-16">
-            <SecuritySummaryCard
-                severityCount={severityCount}
-                scanToolId={scanToolId}
-                rootClassName="w-500"
-                SecurityModalSidebar={SecurityModalSidebar}
-                responseData={scanResultResponse?.result}
-                hidePolicy
-            />
+        <div className="p-20 bg__primary flex-grow-1">
+            <SecurityDetailsCards scanResult={scanResultResponse?.result} Sidebar={SecurityModalSidebar} />
         </div>
     )
 }

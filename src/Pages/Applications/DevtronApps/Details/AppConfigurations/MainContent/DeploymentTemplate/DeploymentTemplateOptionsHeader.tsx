@@ -39,7 +39,7 @@ const DeploymentTemplateOptionsHeader = ({
     }
 
     return (
-        <div className="flexbox dc__align-items-center dc__content-space bcn-0 dc__gap-8">
+        <div className="flexbox dc__align-items-center dc__content-space bg__primary dc__gap-8">
             {isGuiSupported && (
                 <>
                     <InvalidYAMLTippyWrapper

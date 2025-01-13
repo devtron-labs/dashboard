@@ -319,11 +319,11 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     _multiSelectStyles = {
         ...multiSelectStyles,
         control: (base, state) => ({
-            ...base,
+            ...multiSelectStyles.control(base, state),
             cursor: 'pointer',
         }),
         menu: (base, state) => ({
-            ...base,
+            ...multiSelectStyles.menu(base, state),
             marginTop: 'auto',
         }),
         menuList: (base) => {
@@ -338,7 +338,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
 
     renderHeaderSection = (): JSX.Element => {
         return (
-            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12 pl-20">
+            <div className="flex flex-align-center flex-justify dc__border-bottom bg__primary pt-12 pr-20 pb-12 pl-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">Create {this.props.isJobView ? 'job' : 'application'}</h2>
                 <button
                     type="button"
@@ -560,7 +560,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     render() {
         return (
             <Drawer position="right" width="800px">
-                <div className="h-100 bcn-0 create-app-container" ref={this.createAppRef}>
+                <div className="h-100 bg__primary create-app-container" ref={this.createAppRef}>
                     {this.renderHeaderSection()}
                     {this.renderPageDetails()}
                 </div>

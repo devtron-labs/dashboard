@@ -42,7 +42,7 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
     renderCIMenu() {
         return (
             <div className="white-card pipeline-select-container br-4 p-0">
-                <div className="dc__window-bg dc__top-radius-4 pt-4 pr-10 pb-4 pl-10 fs-12 fw-6 cn-9">
+                <div className="bg__tertiary dc__top-radius-4 pt-4 pr-10 pb-4 pl-10 fs-12 fw-6 cn-9">
                     Build container image
                 </div>
                 <div
@@ -73,7 +73,7 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
                         </p>
                     </div>
                 </div>
-                <div className="dc__window-bg pt-4 pr-10 pb-4 pl-10 fs-12 fw-6 cn-9">Receive container image</div>
+                <div className="bg__tertiary pt-4 pr-10 pb-4 pl-10 fs-12 fw-6 cn-9">Receive container image</div>
                 <div
                     className="pipeline-select-item flexbox p-12 pointer"
                     data-testid="deploy-image-external-service-link"
@@ -91,7 +91,7 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
                 </div>
                 {window._env_.ENABLE_CI_JOB && (
                     <>
-                        <div className="dc__window-bg pt-4 pr-10 pb-4 pl-10 fs-12 fw-6 cn-9">Create job pipeline</div>
+                        <div className="bg__tertiary pt-4 pr-10 pb-4 pl-10 fs-12 fw-6 cn-9">Create job pipeline</div>
                         <div
                             className="pipeline-select-item flexbox p-12 pointer"
                             data-testid="job-ci-pipeline-button"

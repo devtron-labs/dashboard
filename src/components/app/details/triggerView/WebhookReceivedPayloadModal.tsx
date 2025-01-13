@@ -55,7 +55,7 @@ export const WebhookReceivedPayloadModal = ({
     function renderWebhookMaterialHeader() {
         return (
             <div
-                className={`ci-webhook-header flex dc__content-space px-20 py-12 dc__border-bottom ${fromBulkCITrigger ? 'bcn-0' : ''}`}
+                className={`ci-webhook-header flex dc__content-space px-20 py-12 dc__border-bottom ${fromBulkCITrigger ? 'bg__primary' : ''}`}
             >
                 <h2
                     data-testid="build-deploy-pipeline-name-heading"
@@ -117,7 +117,9 @@ export const WebhookReceivedPayloadModal = ({
             )
         }
         return (
-            <div className={`h-100 ${fromBulkCITrigger ? 'dc__position-fixed bcn-0 env-modal-width full-height' : ''}`}>
+            <div
+                className={`h-100 ${fromBulkCITrigger ? 'dc__position-fixed bg__primary env-modal-width full-height' : ''}`}
+            >
                 <CiWebhookModal
                     webhookPayloads={webhookPayloads}
                     ciPipelineMaterialId={+material[0].id}

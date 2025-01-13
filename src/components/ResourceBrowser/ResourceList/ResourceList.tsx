@@ -462,12 +462,18 @@ const ResourceList = () => {
             : []),
     ]
 
-    const renderPageHeaderActionButtons = () => (
-        <div className="flexbox dc__align-items-center dc__gap-8">
-            {CompareClusterButton && !!clusterId && <CompareClusterButton sourceClusterId={clusterId} />}
-            {renderCreateResourceButton(clusterId, closeResourceModal)()}
-        </div>
-    )
+    const renderPageHeaderActionButtons = () => {
+        const clusterConnectionFailed = !!clusterList?.find(({ id }) => clusterId === String(id))?.errorInNodeListing
+
+        return (
+            <div className="flexbox dc__align-items-center dc__gap-8">
+                {CompareClusterButton && !!clusterId && !clusterConnectionFailed && (
+                    <CompareClusterButton sourceClusterId={clusterId} />
+                )}
+                {renderCreateResourceButton(clusterId, closeResourceModal)()}
+            </div>
+        )
+    }
 
     const renderMainBody = () => {
         if (error) {
@@ -475,13 +481,13 @@ const ResourceList = () => {
         }
 
         if (loading || !tabs.length) {
-            return <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
+            return <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />
         }
 
         return (
             <>
                 <div
-                    className="h-36 resource-browser-tab flex left w-100 dc__window-bg"
+                    className="h-36 resource-browser-tab flex left w-100 bg__tertiary"
                     style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}
                 >
                     <DynamicTabs
@@ -533,7 +539,7 @@ const ResourceList = () => {
     }
 
     return (
-        <div className="resource-browser-container flexbox-col h-100 bcn-0" ref={resourceBrowserRef}>
+        <div className="resource-browser-container flexbox-col h-100 bg__primary" ref={resourceBrowserRef}>
             <PageHeader
                 isBreadcrumbs
                 breadCrumbs={renderBreadcrumbs}

@@ -117,18 +117,21 @@ export const multiSelectStyles = {
     control: (base, state) => ({
         ...base,
         cursor: state.isDisabled ? 'not-allowed' : 'normal',
-        border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
+        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
         boxShadow: 'none',
         minheight: '24px !important',
+        backgroundColor: 'var(--bg-secondary)',
     }),
     menu: (base, state) => ({
         ...base,
         top: `40px`,
+        backgroundColor: 'var(--bg-menu)',
+        border: '1px solid var(--N200)',
     }),
     option: (base, state) => {
         return {
             ...base,
-            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+            backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--bg-primary)',
             color: 'var(--N900)',
             padding: '8px 12px',
         }
@@ -146,6 +149,10 @@ export const multiSelectStyles = {
         color: 'var(--N900)',
         fontSize: '13px',
     }),
+    input: (base) => ({
+        ...base,
+        color: 'var(--N900)',
+    }),
 }
 
 export const podsDropdownStyles = {
@@ -154,6 +161,7 @@ export const podsDropdownStyles = {
         zIndex: 9999,
         width: '120px',
         borderRadius: '4px',
+        backgroundColor: 'var(--bg-menu)',
     }),
     control: (base) => ({
         ...base,
@@ -166,11 +174,12 @@ export const podsDropdownStyles = {
         ...base,
         margin: '0',
         paddingTop: '0',
+        color: 'var(--N900)',
     }),
     singleValue: (base) => ({
         ...base,
         fontWeight: 600,
-        color: '#000A14',
+        color: 'var(--N900)',
         marginLeft: '2px',
     }),
     dropdownIndicator: (base) => ({

@@ -24,7 +24,7 @@
 .test--list {
     border: 1px solid var(--N200);
     border-radius: 4px;
-    background: white;
+    background: var(--bg-primary);
     cursor: pointer;
     margin-top: 16px;
     margin-left: 20px;
@@ -70,7 +70,7 @@
 
     &.error,
     &.errors {
-        @include testcase-status(#ffcb5d, var(--Y100));
+        @include testcase-status(var(--Y400), var(--Y100));
     }
     &.failure,
     &.failed {
@@ -82,7 +82,7 @@
     }
 
     &.unknown {
-        @include testcase-status(var(--N900), white);
+        @include testcase-status(var(--N900), var(--N0));
         background-image: unset;
     }
 }
@@ -97,7 +97,7 @@ li.testcase {
     grid-column-gap: 8px;
     align-items: center;
     border: 1px solid var(--N200);
-    background: white;
+    background: var(--bg-primary);
 
     &:not(:first-child) {
         margin-top: 16px;
@@ -117,7 +117,7 @@ li.testcase {
 
     svg.folder-icon {
         path {
-            fill: #959ba1;
+            fill: var(--N400);
         }
     }
 }
@@ -140,7 +140,7 @@ ul.test--detail {
         padding: 0 20px;
         position: sticky;
         top: 0;
-        background-color: white;
+        background-color: var(--bg-primary);
         h1 {
             margin: unset;
             line-height: unset;
@@ -168,7 +168,7 @@ ul.test--detail {
                 margin-bottom: unset;
                 &.light {
                     font-size: 14px;
-                    color: #404040;
+                    color: var(--N700);
                     font-weight: normal;
                 }
             }
@@ -222,7 +222,7 @@ table.properties-table {
         color: var(--N500);
         font-size: 12px;
         font-weight: 600px;
-        background-color: white;
+        background-color: var(--bg-primary);
     }
     td {
         height: 48px;
@@ -270,7 +270,7 @@ li.suite-meta {
 .trigger-table-container {
     border: 1px solid var(--N200);
     width: 100%;
-    background: var(--N000);
+    background: var(--bg-primary);
     border-radius: 8px;
 }
 .trigger-table {
@@ -301,7 +301,7 @@ li.suite-meta {
     tbody {
         tr {
             &:hover {
-                background: var(--window-bg);
+                background: var(--bg-tertiary);
             }
         }
     }
@@ -312,19 +312,19 @@ li.suite-meta {
         min-width: 24px;
         margin-right: 8px;
         border-radius: 6px;
-        color: white;
+        color: var(--N0);
 
         &.failureCount {
             background-color: var(--R500);
         }
         &.skippedCount {
-            background-color: #d8d8d8;
+            background-color: var(--N200);
         }
         &.errorCount {
             background-color: var(--Y500);
         }
         &.unknownCount {
-            background-color: #58508d;
+            background-color: var(--B700);
         }
 
         &.disabledCount {

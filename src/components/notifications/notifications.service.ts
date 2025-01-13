@@ -342,12 +342,8 @@ export function deleteNotifications(requestBody, singleDeletedId): Promise<Delet
     return trash(URL, payload)
 }
 
-export function saveEmailConfiguration(data, channel: string): Promise<UpdateConfigResponseType> {
+export function saveEmailConfiguration(payload): Promise<UpdateConfigResponseType> {
     const URL = `${Routes.NOTIFIER}/channel`
-    const payload = {
-        channel,
-        configs: [data],
-    }
     return post(URL, payload)
 }
 
@@ -386,58 +382,12 @@ export function getWebhookConfiguration(webhookConfigId: number): Promise<Respon
     return get(`${Routes.NOTIFIER}/channel/webhook/${webhookConfigId}`)
 }
 
-export function saveUpdateWebhookConfiguration(data): Promise<UpdateConfigResponseType> {
-    const headerObj = {}
-    const headerPayload = data.payload !== '' ? data.payload : ''
-    data.header.forEach((element) => {
-        if (element.key != '') {
-            headerObj[element.key] = element.value
-        }
-    })
-
-    const payload = {
-        channel: 'webhook',
-        configs: [
-            {
-                id: Number(data.id),
-                configName: data.configName,
-                webhookUrl: data.webhookUrl,
-                header: headerObj,
-                payload: headerPayload,
-            },
-        ],
-    }
+export function saveUpdateWebhookConfiguration(payload): Promise<UpdateConfigResponseType> {
     return post(`${Routes.NOTIFIER}/channel`, payload)
 }
 
-export function saveSlackConfiguration(data): Promise<UpdateConfigResponseType> {
+export function saveSlackConfiguration(payload): Promise<UpdateConfigResponseType> {
     const URL = `${Routes.NOTIFIER}/channel`
-    const payload = {
-        channel: 'slack',
-        configs: [
-            {
-                configName: data.configName,
-                webhookUrl: data.webhookUrl,
-                teamId: data.projectId,
-            },
-        ],
-    }
-    return post(URL, payload)
-}
-
-export function updateSlackConfiguration(data): Promise<UpdateConfigResponseType> {
-    const URL = `${Routes.NOTIFIER}/channel`
-    const payload = {
-        channel: 'slack',
-        configs: [
-            {
-                id: data.id,
-                configName: data.configName,
-                webhookUrl: data.webhookUrl,
-                teamId: data.projectId,
-            },
-        ],
-    }
     return post(URL, payload)
 }
 

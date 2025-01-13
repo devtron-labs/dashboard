@@ -43,7 +43,7 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Delete, ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import { ReactComponent as Bell } from '../../assets/icons/ic-bell.svg'
 import { ReactComponent as User } from '../../assets/icons/ic-users.svg'
-import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg'
+import { ReactComponent as Slack } from '../../assets/icons/slack-logo.svg'
 import { ReactComponent as Email } from '../../assets/icons/ic-mail.svg'
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
 import { ReactComponent as Play } from '../../assets/icons/ic-play.svg'
@@ -883,7 +883,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             )
         }
         return (
-            <div className="bcn-0 pt-16" style={{ minHeight: 'calc(100vh - 215px)' }}>
+            <div className="bg__primary pt-16" style={{ minHeight: 'calc(100vh - 215px)' }}>
                 {this.renderHostErrorMessage()}
                 {this.renderBody()}
                 {this.renderDeleteDialog()}

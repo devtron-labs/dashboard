@@ -200,7 +200,7 @@ export default function JobListView(props: JobListViewProps) {
         if (props.size > DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
-                    rootClassName="flex dc__content-space px-20 bcn-0"
+                    rootClassName="flex dc__content-space px-20 bg__primary"
                     size={props.size}
                     pageSize={props.pageSize}
                     offset={props.offset}
