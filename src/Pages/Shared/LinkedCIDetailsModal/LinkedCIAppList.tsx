@@ -63,7 +63,7 @@ const LinkedCIAppList = ({ appList, totalCount, isLoading, urlFilters }: LinkedC
     return (
         <div className="flexbox-col dc__content-space flex-grow-1">
             <div className="flexbox-col flex-grow-1">
-                <div className="display-grid dc__align-items-center linked-ci-detail__table-row dc__uppercase pl-20 pr-20 pt-6 pb-6 dc__border-bottom-n1 fs-12 fw-6 cn-7 dc__position-sticky dc__top-88 bcn-0 dc__zi-4">
+                <div className="display-grid dc__align-items-center linked-ci-detail__table-row dc__uppercase pl-20 pr-20 pt-6 pb-6 dc__border-bottom-n1 fs-12 fw-6 cn-7 dc__position-sticky dc__top-88 bg__primary dc__zi-4">
                     <SortableTableHeaderCell
                         title="Application"
                         sortOrder={sortOrder}

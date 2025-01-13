@@ -152,7 +152,7 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
                 <PopupMenu.Button rootClassName="flex ml-auto p-4" isKebab>
                     <MenuDots className="node-actions-menu-icon icon-dim-16" />
                 </PopupMenu.Button>
-                <PopupMenu.Body>
+                <PopupMenu.Body rootClassName="dc__border">
                     <div className="fs-13 fw-4 lh-20 pt-8 pb-8 w-160">
                         <button
                             type="button"

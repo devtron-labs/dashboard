@@ -35,6 +35,7 @@ import {
     YAMLStringify,
     InfoColourBar,
     logExceptionToSentry,
+    CodeEditorThemesKeys,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
@@ -696,7 +697,7 @@ const ManifestComponent = ({
                 defaultValue={showManifestCompareView && desiredManifest}
                 cleanData={showManifestCompareView}
                 diffView={showManifestCompareView}
-                theme="vs-dark--dt"
+                theme={CodeEditorThemesKeys.vsDarkDT}
                 height={isResourceBrowserView ? 'calc(100vh - 119px)' : 'calc(100vh - 77px)'}
                 value={getCodeEditorValue()}
                 mode={MODES.YAML}
@@ -770,7 +771,7 @@ const ManifestComponent = ({
             {!error && (
                 <div
                     className={`${
-                        manifestFormConfigurationType === ConfigurationType.GUI ? 'bcn-0' : ''
+                        manifestFormConfigurationType === ConfigurationType.GUI ? 'bg__primary' : ''
                     } flexbox-col flex-grow-1 dc__overflow-scroll h-100`}
                 >
                     {isResourceMissing && !loading && !showManifestCompareView ? (

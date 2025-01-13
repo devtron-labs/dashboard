@@ -156,10 +156,10 @@ const JobsList = () => {
     }
 
     return (
-        <div className="jobs-view-container h-100 bcn-0">
+        <div className="jobs-view-container h-100 bg__primary">
             {dataStateType === JobListViewType.LOADING && (
                 <div className="w-100 h-100vh">
-                    <DevtronProgressing parentClasses="h-100 w-100 flex bcn-0" classes="icon-dim-80" />
+                    <DevtronProgressing parentClasses="h-100 w-100 flex bg__primary" classes="icon-dim-80" />
                 </div>
             )}
             {dataStateType === JobListViewType.LIST && (

@@ -35,10 +35,10 @@ import { RouteComponentProps, Link } from 'react-router-dom'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import CreatableSelect from 'react-select/creatable'
-import { SESConfigModal } from './SESConfigModal'
+import SESConfigModal from './SESConfigModal'
 import { SlackConfigModal } from './SlackConfigModal'
 import { Select, validateEmail, ErrorBoundary } from '../common'
-import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg'
+import { ReactComponent as Slack } from '../../assets/icons/slack-logo.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Filter } from '../../assets/icons/ic-filter.svg'
 import { ReactComponent as Folder } from '../../assets/icons/img-folder-empty.svg'
@@ -967,6 +967,14 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         )
     }
 
+    onClickCloseSESModal = () => {
+        this.setState({ showSESConfigModal: false })
+    }
+
+    onClickCloseSMTPModal = () => {
+        this.setState({ showSMTPConfigModal: false })
+    }
+
     renderSESConfigModal() {
         if (this.state.showSESConfigModal) {
             return (
@@ -985,9 +993,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                 showError(error)
                             })
                     }}
-                    closeSESConfigModal={(event) => {
-                        this.setState({ showSESConfigModal: false })
-                    }}
+                    closeSESConfigModal={this.onClickCloseSESModal}
                 />
             )
         }
@@ -1011,9 +1017,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                 showError(error)
                             })
                     }}
-                    closeSMTPConfigModal={(event) => {
-                        this.setState({ showSMTPConfigModal: false })
-                    }}
+                    closeSMTPConfigModal={this.onClickCloseSMTPModal}
                 />
             )
         }

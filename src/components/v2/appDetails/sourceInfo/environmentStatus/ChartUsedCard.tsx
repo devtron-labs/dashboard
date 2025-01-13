@@ -48,7 +48,7 @@ const ChartUsedCard = ({ appDetails, notes, onClickShowNotes, cardLoading, onCli
     return (
         <div
             data-testid="chart-used-card"
-            className="app-details-info-card flex left bcn-0 br-8 mr-12 lh-20 w-200"
+            className="app-details-info-card flex left bg__primary br-8 mr-12 lh-20 w-200"
             ref={chartRef}
         >
             <div className="app-details-info-card__top-container flex">

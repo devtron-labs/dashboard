@@ -47,7 +47,7 @@ const PermissionGroupTable = ({
 
     return (
         <div className="flexbox-col flex-grow-1 show-shimmer-loading">
-            <div className="user-permission__header cn-7 fs-12 fw-6 lh-20 dc__uppercase pl-20 pr-20 dc__border-bottom dc__position-sticky dc__top-0 bcn-0 dc__zi-1">
+            <div className="user-permission__header cn-7 fs-12 fw-6 lh-20 dc__uppercase pl-20 pr-20 dc__border-bottom dc__position-sticky dc__top-0 bg__primary dc__zi-1">
                 {isLoading ? (
                     <span className="child child-shimmer-loading" />
                 ) : (

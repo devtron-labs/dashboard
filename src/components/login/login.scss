@@ -18,7 +18,7 @@
     display: flex;
     height: 100vh;
     min-height: 600px;
-    background-color: var(--N000);
+    background-color: var(--white);
 }
 
 .login__bg {
@@ -55,7 +55,7 @@
     line-height: 1.5;
     letter-spacing: normal;
     text-align: center;
-    color: var(--N900);
+    color: var(--black);
     margin: auto;
     margin-bottom: 48px;
 }
@@ -64,31 +64,6 @@
     display: block;
     margin: auto;
     margin-bottom: 24px;
-}
-
-.login__button {
-    width: 100%;
-    height: 48px;
-    border-radius: 4px;
-    border: none;
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.43;
-    letter-spacing: normal;
-    text-align: center;
-    color: var(--white);
-    margin-top: 24px;
-    user-select: none;
-    text-transform: capitalize;
-    background-color: var(--B500);
-
-    &:hover {
-        background-color: #0558af;
-    }
-
-    &:disabled {
-        background-color: var(--N200);
-    }
 }
 
 .login__know-password {
@@ -104,15 +79,6 @@
     line-height: 1.67;
 }
 
-.login__link {
-    margin: 20px 0 40px 0;
-    font-size: 14px;
-    display: flex;
-    justify-content: center;
-    color: var(--B500);
-    text-decoration: none !important;
-}
-
 .login__google {
     width: 300px;
     height: 48px;
@@ -123,14 +89,14 @@
     font-weight: 600;
     line-height: 3.5;
     letter-spacing: normal;
-    color: var(--N900);
+    color: var(--black);
     user-select: none;
     margin: auto;
     box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.5);
 
     &:hover {
         text-decoration: none;
-        color: var(--N900);
+        color: var(--black-80);
     }
 }
 
@@ -177,10 +143,6 @@
     .text-input {
         margin-bottom: 32px;
     }
-
-    .login__button {
-        margin-top: 32px;
-    }
 }
 
 .login__title {
@@ -189,7 +151,7 @@
     font-weight: 600;
     font-size: 16px;
     height: 64px;
-    background-color: var(--N000);
+    background-color: var(--bg-primary);
 }
 
 .login__sso-flex {
@@ -264,5 +226,15 @@
 
     &:focus {
         outline: 0;
+    }
+}
+
+// This is intended to be removed once login page is revamped before shipping dark mode
+.login-dt__form {
+    & .form__input {
+        color-scheme: light;
+        background: #f7fafc;
+        border-color: #d0d4d9;
+        color: #3b444c;
     }
 }

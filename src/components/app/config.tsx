@@ -15,11 +15,11 @@
  */
 
 export const Colors = {
-    yellow: '#FF7E5B',
-    red: '#FF3E3E',
-    green: '#1DAD70',
-    orange: '#FF7E5B',
-    gray: 'rgba(128, 128, 128, 1)',
+    yellow: 'var(--O500)',
+    red: 'var(--R500)',
+    green: 'var(--G500)',
+    orange: 'var(--O500)',
+    gray: 'var(--N500)',
 }
 
 export const AppListViewType = {

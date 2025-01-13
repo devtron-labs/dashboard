@@ -398,7 +398,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
     return (
         <VisibleModal2 close={handleCloseModal}>
             <div
-                className="bcn-0 dc__position-fixed dc__right-0 dc__top-0 h-100 flexbox-col dc__content-space w-800"
+                className="bg__primary dc__position-fixed dc__right-0 dc__top-0 h-100 flexbox-col dc__content-space w-800"
                 onClick={stopPropagation}
             >
                 <div className="flexbox-col flex-grow-1 dc__overflow-scroll">

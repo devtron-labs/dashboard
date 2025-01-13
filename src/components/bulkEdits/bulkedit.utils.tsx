@@ -26,7 +26,7 @@ export const multiSelectStyles = {
     option: (base, state) => {
         return {
             ...base,
-            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+            backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--bg-primary)',
             color: 'var(--N900)',
         }
     },

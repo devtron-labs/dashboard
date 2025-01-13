@@ -585,7 +585,7 @@ const Cluster = ({
 
     const renderNoEnvironmentTab = () => {
         return (
-            <div className="br-4 dashed dc__border flex bc-n50 pb-16 pt-16 m-16 fs-12 fw-4">
+            <div className="br-4 dashed dc__border flex bg__secondary pb-16 pt-16 m-16 fs-12 fw-4">
                 <div className="dc__align-center">
                     <div className="fw-6">No Environments Added</div>
                     <div>This cluster doesn't have any environments yet</div>
@@ -760,7 +760,7 @@ const Cluster = ({
                                                 {environment_name}
 
                                                 {isProduction && (
-                                                    <div className="bc-n50 dc__border pr-6 pl-6 fs-12 h-20 ml-8 flex cn-7 br-4 ">
+                                                    <div className="bg__secondary dc__border pr-6 pl-6 fs-12 h-20 ml-8 flex cn-7 br-4 ">
                                                         Prod
                                                     </div>
                                                 )}
@@ -823,7 +823,7 @@ const Cluster = ({
                 )}
                 {editMode && (
                     <Drawer position="right" width="1000px" onEscape={DisableEditMode}>
-                        <div className="h-100 bcn-0" ref={drawerRef}>
+                        <div className="h-100 bg__primary" ref={drawerRef}>
                             <ClusterForm
                                 {...getSSHConfig(sshTunnelConfig)}
                                 id={clusterId}

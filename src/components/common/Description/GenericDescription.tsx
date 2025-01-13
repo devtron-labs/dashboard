@@ -345,8 +345,8 @@ export default function GenericDescription({
                 className={!isEditDescriptionView ? 'dc__overflow-auto' : 'dc__overflow-hidden'}
             >
                 {isEditDescriptionView ? (
-                    <div className="min-w-500 bcn-0 br-4 dc__border-top dc__border-left dc__border-right w-100 dc__border-bottom">
-                        <div className="pt-8 pb-8 pl-16 pr-16 dc__top-radius-4 flex bc-n50 dc__border-bottom h-36 fs-13">
+                    <div className="min-w-500 bg__primary br-4 dc__border-top dc__border-left dc__border-right w-100 dc__border-bottom">
+                        <div className="pt-8 pb-8 pl-16 pr-16 dc__top-radius-4 flex bg__secondary dc__border-bottom h-36 fs-13">
                             <div className="fw-6 lh-20 cn-9">Readme</div>
                             {descriptionUpdatedBy && descriptionUpdatedOn && (
                                 <div className="flex left fw-4 cn-7 ml-8">

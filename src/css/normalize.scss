@@ -5,3 +5,53 @@ summary {
 summary::-webkit-details-marker {
     display: none;
 }
+
+dialog {
+    border: none;
+}
+
+.dc__unset-button-styles {
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+
+    &:focus,
+    &:active,
+    &:hover {
+        outline: unset;
+        border: unset;
+    }
+}
+
+.dc__transparent {
+    background: transparent;
+    border: none;
+    padding: 2px;
+
+    &--imp {
+        background: transparent !important;
+        border: none !important;
+    }
+
+    &--unstyled {
+        background: transparent;
+    }
+}
+
+.dc__transparent-div {
+    position: fixed;
+    background: transparent;
+    top: 0px;
+    left: 0px;
+    right: 0;
+    height: 100vh;
+    z-index: var(--transparent-div-index);
+
+    &--command-bar {
+        z-index: 24;
+    }
+}

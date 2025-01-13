@@ -40,7 +40,7 @@ const CurrentSyncStatus = ({ status, loadingResourceTree }: CurrentSyncStatusTyp
     )
 
     return (
-        <div className="app-status-card bcn-0 mr-12 br-8 p-16 cursor">
+        <div className="app-status-card bg__primary mr-12 br-8 p-16 cursor">
             <div className="cn-9 flex left">
                 <span data-testid="application-status-heading">Application status</span>
                 <Tippy

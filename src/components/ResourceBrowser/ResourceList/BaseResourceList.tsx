@@ -13,8 +13,6 @@ import {
     GVKType,
     useBulkSelection,
     BulkSelectionEvents,
-    BulkOperationModalState,
-    BulkOperationModalProps,
     BulkSelection,
     Checkbox,
     CHECKBOX_VALUE,
@@ -32,9 +30,12 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import WebWorker from '@Components/app/WebWorker'
 import searchWorker from '@Config/searchWorker'
 import { URLS } from '@Config/routes'
-import { deleteNodeCapacity } from '@Components/ClusterNodes/clusterNodes.service'
 import NodeActionsMenu from '@Components/ResourceBrowser/ResourceList/NodeActionsMenu'
 import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
+import {
+    getManifestResource,
+    updateManifestResourceHelmApps,
+} from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import {
     DEFAULT_K8SLIST_PAGE_SIZE,
@@ -53,11 +54,9 @@ import {
 import { getScrollableResourceClass, getRenderNodeButton, renderResourceValue, updateQueryString } from '../Utils'
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
-import { ResourceListPayloadType } from '../Types'
 import { EventList } from './EventList'
 import ResourceFilterOptions from './ResourceFilterOptions'
-import { BaseResourceListProps } from './types'
-import { deleteResource, restartWorkload } from '../ResourceBrowser.service'
+import { BaseResourceListProps, BulkOperationsModalState } from './types'
 import { getAppliedColumnsFromLocalStorage } from './utils'
 import NodeListSearchFilter from './NodeListSearchFilter'
 
@@ -97,7 +96,7 @@ const BaseResourceListContent = ({
     const [filteredResourceList, setFilteredResourceList] = useState<K8sResourceDetailType['data']>(null)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
     const [resourceListOffset, setResourceListOffset] = useState(0)
-    const [bulkOperationModalState, setBulkOperationModalState] = useState<BulkOperationModalState>('closed')
+    const [bulkOperationModalState, setBulkOperationModalState] = useState<BulkOperationsModalState>('closed')
 
     // NOTE: this is to re-mount node filters component & avoid useEffects inside it
     const [lastTimeStringSinceClearAllFilters, setLastTimeStringSinceClearAllFilters] = useState(null)
@@ -293,8 +292,16 @@ const BaseResourceListContent = ({
         }
     }
 
-    const getBulkOperationModalStateSetter = (state: BulkOperationModalState) => () => {
-        setBulkOperationModalState(state)
+    const handleCloseRBBulkOperationsModal = () => {
+        setBulkOperationModalState('closed')
+    }
+
+    const handleOpenRestartBulkOperationsModal = () => {
+        setBulkOperationModalState('restart')
+    }
+
+    const handleOpenDeleteBulkOperationsModal = () => {
+        setBulkOperationModalState('delete')
     }
 
     const handleClearBulkSelection = () => {
@@ -306,65 +313,6 @@ const BaseResourceListContent = ({
     const handleReloadDataAfterBulkDelete = () => {
         handleClearBulkSelection()
         reloadResourceListData()
-    }
-
-    const getBulkOperations = (): BulkOperationModalProps['operations'] => {
-        if (bulkOperationModalState === 'closed') {
-            return []
-        }
-
-        const selections = (isBulkSelectionApplied ? filteredResourceList : Object.values(bulkSelectionState)) ?? []
-
-        if (bulkOperationModalState === 'restart') {
-            return selections?.map((selection) => ({
-                name: selection.name as string,
-                operation: async (signal: AbortSignal = null) => {
-                    const payload = {
-                        clusterId: Number(clusterId),
-                        group: selectedResource?.gvk?.Group,
-                        kind: selectedResource?.gvk?.Kind,
-                        version: selectedResource?.gvk?.Version,
-                        namespace: selection.namespace as string,
-                        containers: [],
-                        name: selection.name as string,
-                    }
-
-                    await restartWorkload(payload, signal)
-                },
-            }))
-        }
-
-        return selections.map((selection) => ({
-            name: selection.name as string,
-            operation: async (signal: AbortSignal, shouldForceDelete: boolean) => {
-                if (isNodeListing) {
-                    const nodeDeletePayload = {
-                        clusterId: Number(clusterId),
-                        name: String(selection.name),
-                        version: String(selection.version),
-                        kind: String(selection.kind),
-                    }
-
-                    await deleteNodeCapacity(nodeDeletePayload, signal)
-
-                    return
-                }
-
-                const resourceDeletePayload: ResourceListPayloadType = {
-                    clusterId: Number(clusterId),
-                    k8sRequest: {
-                        resourceIdentifier: {
-                            groupVersionKind: selectedResource.gvk as GVKType,
-                            namespace: String(selection.namespace),
-                            name: String(selection.name),
-                        },
-                        forceDelete: shouldForceDelete,
-                    },
-                }
-
-                await deleteResource(resourceDeletePayload, signal)
-            },
-        }))
     }
 
     const setSearchText = (text: string) => {
@@ -630,7 +578,7 @@ const BaseResourceListContent = ({
                         )} dc__overflow-scroll`}
                     >
                         <div
-                            className="scrollable-resource-list__row no-hover-bg h-36 fw-6 cn-7 fs-12 dc__gap-16 dc__zi-2 dc__position-sticky dc__border-bottom dc__uppercase bcn-0 dc__top-0"
+                            className="scrollable-resource-list__row no-hover-bg h-36 fw-6 cn-7 fs-12 dc__gap-16 dc__zi-2 dc__position-sticky dc__border-bottom dc__uppercase bg__primary dc__top-0"
                             style={{ gridTemplateColumns }}
                         >
                             {headers.map((columnName, index) => (
@@ -718,8 +666,8 @@ const BaseResourceListContent = ({
                                     : getSelectedIdentifiersCount()
                             }
                             handleClearBulkSelection={handleClearBulkSelection}
-                            handleOpenBulkDeleteModal={getBulkOperationModalStateSetter('delete')}
-                            handleOpenRestartWorkloadModal={getBulkOperationModalStateSetter('restart')}
+                            handleOpenBulkDeleteModal={handleOpenDeleteBulkOperationsModal}
+                            handleOpenRestartWorkloadModal={handleOpenRestartBulkOperationsModal}
                             showBulkRestartOption={
                                 window._env_.FEATURE_BULK_RESTART_WORKLOADS_FROM_RB.split(',')
                                     .map((feat: string) => feat.trim().toUpperCase())
@@ -730,13 +678,18 @@ const BaseResourceListContent = ({
 
                     {RBBulkOperations && bulkOperationModalState !== 'closed' && (
                         <RBBulkOperations
-                            clusterName={clusterName}
-                            operationType={bulkOperationModalState}
-                            handleModalClose={getBulkOperationModalStateSetter('closed')}
+                            handleModalClose={handleCloseRBBulkOperationsModal}
                             handleReloadDataAfterBulkOperation={handleReloadDataAfterBulkDelete}
-                            operations={getBulkOperations()}
-                            resourceKind={selectedResource.gvk.Kind.toLowerCase()}
-                            {...(bulkOperationModalState === 'delete' ? { shouldAllowForceOperation: true } : {})}
+                            operationType={bulkOperationModalState}
+                            allResources={filteredResourceList}
+                            isBulkSelectionApplied={isBulkSelectionApplied}
+                            selectedIdentifiers={bulkSelectionState}
+                            selectedResource={selectedResource}
+                            clusterName={clusterName}
+                            clusterId={clusterId}
+                            isNodeListing={isNodeListing}
+                            getManifestResource={getManifestResource}
+                            updateManifestResourceHelmApps={updateManifestResourceHelmApps}
                         />
                     )}
                 </>

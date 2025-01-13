@@ -110,6 +110,12 @@
     grid-auto-flow: column;
 }
 
+.mono {
+    font-size: 14px;
+    line-height: 20px;
+    font-family: Inconsolata, monospace;
+}
+
 // margins and paddings from 0-40
 $margins: (
     mb: margin-bottom,
@@ -160,8 +166,10 @@ $color-suffix: 00;
             color: var(--#{$color}#{$i * 100});
         }
 
-        .bc#{to-lower-case($color)}-#{$i} {
-            background-color: var(--#{$color}#{$i * 100});
+        @if $i != 0 {
+            .bc#{to-lower-case($color)}-#{$i} {
+                background-color: var(--#{$color}#{$i * 100});
+            }
         }
 
         .e#{to-lower-case($color)}-#{$i} {
@@ -194,8 +202,10 @@ $color-suffix: 00;
             color: var(--#{$color}#{$i});
         }
 
-        .bc#{to-lower-case($color)}-#{$i} {
-            background-color: var(--#{$color}#{$i});
+        @if $i != 50 {
+            .bc#{to-lower-case($color)}-#{$i} {
+                background-color: var(--#{$color}#{$i});
+            }
         }
 
         .e#{to-lower-case($color)}-#{$i} {
@@ -230,10 +240,6 @@ $color-suffix: 00;
     .bw-#{$i} {
         border-width: 0px + $i;
     }
-}
-
-.mono {
-    font-family: Inconsolata, monospace;
 }
 
 .font-merriweather {
@@ -284,25 +290,25 @@ $color-suffix: 00;
     text-align: center;
 
     &:not(&__no-svg-override) {
-        @include cta(var(--B500), var(--white), transparent);
+        @include cta(var(--B500), var(--N0), transparent);
 
         &:hover,
         &:focus {
-            @include cta(#004f9e, var(--white), transparent);
+            @include cta(var(--B600), var(--N0), transparent);
         }
     }
 
     &__no-svg-override {
-        @include cta(var(--B500), var(--white), transparent, pointer, false);
+        @include cta(var(--B500), var(--N0), transparent, pointer, false);
 
         &:hover,
         &:focus {
-            @include cta(#004f9e, var(--white), transparent, pointer, false);
+            @include cta(var(--B600), var(--N0), transparent, pointer, false);
         }
     }
 
     &.disabled-opacity {
-        @include cta-disabled-opacity(var(--B500), var(--white), transparent);
+        @include cta-disabled-opacity(var(--B500), var(--N0), transparent);
     }
 
     &.small {
@@ -313,15 +319,15 @@ $color-suffix: 00;
     }
 
     &.ghosted {
-        @include cta(var(--white), var(--B500), var(--B500));
+        @include cta(var(--N0), var(--B500), var(--B500));
 
         &:hover {
-            @include cta(var(--B500), var(--white), var(--B500));
+            @include cta(var(--B500), var(--N0), var(--B500));
         }
     }
 
     &.secondary {
-        @include cta(var(--white), var(--B500), var(--N200));
+        @include cta(var(--N0), var(--B500), var(--N200));
 
         &:hover {
             @include cta(var(--B100), var(--B500), var(--N200));
@@ -329,20 +335,20 @@ $color-suffix: 00;
     }
 
     &.tertiary {
-        @include cta(var(--white), var(--N400), var(--white));
+        @include cta(var(--N0), var(--N400), var(--N0));
 
         &:hover {
-            @include cta(var(--white), var(--N400), var(--white));
+            @include cta(var(--N0), var(--N400), var(--N0));
         }
     }
 
     &.text {
-        @include cta(white, var(--B500), white);
+        @include cta(var(--transparent), var(--B500), var(--transparent));
 
         &:hover,
         &:active,
         &:focus {
-            @include cta(white, var(--B500), white);
+            @include cta(var(--transparent), var(--B500), var(--transparent));
         }
     }
 
@@ -358,15 +364,15 @@ $color-suffix: 00;
 
     /// Button with red border and text
     &.delete {
-        @include cta(white, var(--R500), var(--R500));
+        @include cta(var(--N0), var(--R500), var(--R500));
 
         &:hover {
-            @include cta(var(--R500), white, white);
+            @include cta(var(--R500), var(--N0), var(--N0));
         }
 
         &:active,
         &:focus {
-            @include cta(var(--R600), white, white);
+            @include cta(var(--R600), var(--N0), var(--N0));
         }
     }
 
@@ -389,39 +395,39 @@ $color-suffix: 00;
     }
 
     &.warning {
-        @include cta(var(--Y500), var(--N900), transparent);
+        @include cta(var(--Y500), var(--black), transparent);
 
         &:hover,
         &:active,
         &:focus {
-            @include cta(var(--Y600), var(--N900), transparent);
+            @include cta(var(--Y600), var(--black), transparent);
         }
     }
 
     &.cancel {
         &:not(.cta__no-svg-override) {
-            @include cta(white, var(--N700), var(--N200));
+            @include cta(var(--transparent), var(--N700), var(--N200));
 
             &:hover {
-                @include cta(white, var(--N700), var(--N300));
+                @include cta(var(--transparent), var(--N700), var(--N300));
             }
 
             &:active,
             &:focus {
-                @include cta(var(--N700), white, transparent);
+                @include cta(var(--transparent), var(--N0), transparent);
             }
         }
 
         &.cta__no-svg-override {
-            @include cta(white, var(--N700), var(--N200), pointer, false);
+            @include cta(var(--transparent), var(--N700), var(--N200), pointer, false);
 
             &:hover {
-                @include cta(white, var(--N700), var(--N300), pointer, false);
+                @include cta(var(--transparent), var(--N700), var(--N300), pointer, false);
             }
 
             &:active,
             &:focus {
-                @include cta(var(--N700), white, transparent, pointer, false);
+                @include cta(var(--transparent), var(--N0), transparent, pointer, false);
             }
         }
     }

@@ -326,7 +326,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({
                                                         {name} ({chartVersion})
                                                     </span>
                                                     {environmentName && (
-                                                        <span style={{ color: '#404040', fontSize: '12px' }}>
+                                                        <span style={{ color: 'var(--N700)', fontSize: '12px' }}>
                                                             {environmentName}
                                                         </span>
                                                     )}

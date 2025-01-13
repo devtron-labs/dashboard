@@ -62,7 +62,7 @@ const SummaryComponent = ({ selectedTab }) => {
     // }
 
     return (
-        <div className="p-20 bcn-0 flex-grow-1" style={{ gridColumn: '1 / span 2', overflowY: 'scroll' }}>
+        <div className="p-20 bg__primary flex-grow-1" style={{ gridColumn: '1 / span 2', overflowY: 'scroll' }}>
             <div className="w-100" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div className="summary-view__card pt-16 pb-16 pl-16 pr-16 br-4">
                     <div className=" fw-6 fs-14">Configuration</div>

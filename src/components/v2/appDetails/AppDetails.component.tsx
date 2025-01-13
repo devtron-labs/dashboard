@@ -215,7 +215,7 @@ const AppDetailsComponent = ({
                 />
             )}
             {loadingResourceTree ? (
-                <div className="bcn-0 dc__border-top h-100">
+                <div className="bg__primary dc__border-top h-100">
                     <Progressing pageLoader fullHeight size={32} fillColor="var(--N500)" />
                 </div>
             ) : (

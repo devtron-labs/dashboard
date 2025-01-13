@@ -624,7 +624,7 @@ const GitForm = ({
     const renderGitHostBottom = () => {
         return (
             <button
-                className="flex left dc__gap-8 px-10 py-8 cb-5 cursor bcn-0 dc__react-select__bottom dc__border-top dc__transparent fw-6"
+                className="flex left dc__gap-8 px-10 py-8 cb-5 cursor bg__primary dc__react-select__bottom dc__border-top dc__transparent fw-6"
                 onClick={onClickAddGitAccountHandler}
             >
                 <Add className="icon-dim-20 fcb-5 dc__vertical-align-bottom" /> <span>Add Git Host</span>
@@ -840,7 +840,7 @@ const GitForm = ({
                         data-testid={`git-account-auth-type-${index}`}
                         className={` ${canSelectAuth(value) ? 'pointer' : 'wrapper-pointer-disabled'}`}
                         onChange={handleOnChange}
-                        style={{ borderRight: '1px solid #d6d4d9', height: '48px' }}
+                        style={{ borderRight: '1px solid var(--N200)', height: '48px' }}
                     >
                         <Tippy
                             className={` default-tt ${canSelectAuth(value) ? 'w-0 h-0' : 'w-200'}`}
@@ -859,7 +859,7 @@ const GitForm = ({
                     </div>
                 ))}
             </div>
-            <div className="flex fs-12 left pt-4 mb-16" style={{ color: '#6b778c' }}>
+            <div className="flex fs-12 left pt-4 mb-16" style={{ color: 'var(--N700)' }}>
                 <Warn className="icon-dim-16 mr-4 " />
                 Once configured, authentication type cannot be switched from HTTPS (user auth/anonymous) to SSH or vice
                 versa.
@@ -896,7 +896,7 @@ const GitForm = ({
                             isRequiredField
                             onBlur={id && handleOnBlur}
                         />
-                        <div className="flex fs-12 left pt-4 mb-20" style={{ color: '#6b778c' }}>
+                        <div className="flex fs-12 left pt-4 mb-20" style={{ color: 'var(--N700)' }}>
                             <Warn className="icon-dim-16 mr-4 " />
                             If using Github, use token instead of password.
                         </div>
@@ -910,7 +910,7 @@ const GitForm = ({
                         data-testid="git-account-ssh-key-textbox"
                         placeholder="Enter key text"
                         className="form__input w-100"
-                        style={{ height: '100px', backgroundColor: '#f7fafc' }}
+                        style={{ height: '100px', backgroundColor: 'var(--bg-secondary)' }}
                         onChange={customHandleChange}
                         onBlur={id && handleOnBlur}
                         onFocus={handleOnFocus}
