@@ -681,7 +681,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     }
 
     if (scanResultLoading) {
-        return <div className='bcn-0 flex-grow-1'><Progressing pageLoader /></div>
+        return <div className='bg__primary flex-grow-1'><Progressing pageLoader /></div>
     }
     if (scanResultError) {
         return <ErrorScreenManager code={scanResultError.code} reload={reloadScanResult} />
@@ -691,7 +691,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     }
 
     return (
-        <div className="p-20 bcn-0 flex-grow-1">
+        <div className="p-20 bg__primary flex-grow-1">
             <SecurityDetailsCards scanResult={scanResultResponse?.result} Sidebar={SecurityModalSidebar} />
         </div>
     )
