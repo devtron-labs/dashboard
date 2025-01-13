@@ -60,13 +60,13 @@ test('Get Frequency Benchmark', () => {
         name: 'HIGH',
         targetName: 'ELITE',
         targetValue: 1,
-        color: '#8930e8',
+        color: 'var(--V500)',
     })
     expect(getFrequencyBenchmark(0.14)).toStrictEqual({
         name: 'HIGH',
         targetName: 'ELITE',
         targetValue: 1,
-        color: '#8930e8',
+        color: 'var(--V500)',
     })
     expect(getFrequencyBenchmark(1)).toStrictEqual({
         name: 'ELITE',
@@ -100,7 +100,7 @@ test('Get Failure Benchmark', () => {
         name: 'HIGH',
         targetName: 'ELITE',
         targetValue: 15,
-        color: '#8930e8',
+        color: 'var(--V500)',
     })
     expect(getFailureRateBenchmark(46)).toStrictEqual({
         name: 'MEDIUM',
@@ -161,7 +161,7 @@ test('Get Recovery Time Benchmark', () => {
         targetName: 'ELITE',
         targetValue: 1 * 60,
         targetLabel: '1h',
-        color: '#8930e8',
+        color: 'var(--V500)',
     })
     expect(getRecoveryTimeBenchmark(8 * 60)).toStrictEqual({
         name: 'MEDIUM',

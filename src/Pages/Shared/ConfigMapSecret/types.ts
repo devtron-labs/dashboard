@@ -7,8 +7,6 @@ import {
     DraftMetadataDTO,
     ProtectConfigTabsType,
     useForm,
-    UseFormErrorHandler,
-    UseFormSubmitHandler,
     AppEnvDeploymentConfigDTO,
     DryRunEditorMode,
     ConfigHeaderTabType,
@@ -79,8 +77,7 @@ type CMCSFormBaseProps =
       }
     | {
           isExternalSubmit?: never
-          onSubmit: UseFormSubmitHandler<ConfigMapSecretUseFormProps>
-          onError: UseFormErrorHandler<ConfigMapSecretUseFormProps>
+          onSubmit: () => void
           onCancel: () => void
       }
 
@@ -149,7 +146,6 @@ export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 
         | 'cmSecretStateLabel'
         | 'isJob'
         | 'disableDataTypeChange'
-        | 'onError'
         | 'onSubmit'
         | 'areScopeVariablesResolving'
         | 'appChartRef'

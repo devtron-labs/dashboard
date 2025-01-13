@@ -98,7 +98,7 @@
             margin-top: 4px;
 
             &.form__error--info {
-                color: #6b778c;
+                color: var(--N700);
 
                 &:before {
                     content: '';
@@ -135,7 +135,7 @@
 
     .create-dockerfile-option {
         .code-editor__header {
-            background-color: white;
+            background-color: var(--bg-primary);
         }
     }
 }
@@ -208,7 +208,7 @@
         }
 
         .config-override-diff__values {
-            background: white;
+            background: var(--bg-primary);
             overflow-wrap: break-word;
             table-layout: fixed;
         }

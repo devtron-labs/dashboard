@@ -190,7 +190,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
             )
         }
         if (this.state.view === ViewType.LOADING) {
-            return <div className='bcn-0 h-100'><Progressing pageLoader /></div>
+            return <div className='bg__primary h-100'><Progressing pageLoader /></div>
         }
         if (this.state.view === ViewType.ERROR) {
             return (
@@ -200,7 +200,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
             )
         }
         return (
-            <section className="flex column left top bcn-0 h-100 dc__gap-24 px-20 py-16" data-testid="section-host-url">
+            <section className="flex column left top bg__primary h-100 dc__gap-24 px-20 py-16" data-testid="section-host-url">
                 <FeatureTitleWithInfo
                     title={HEADER_TEXT.HOST_URL.title}
                     renderDescriptionContent={() => HEADER_TEXT.HOST_URL.description}
@@ -209,7 +209,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                     dataTestId="host-url-heading"
                 />
                 <form
-                    className="flex left column dc__gap-16 bcn-0 br-8 bw-1 en-2 p-20"
+                    className="flex left column dc__gap-16 bg__primary br-8 bw-1 en-2 p-20"
                     data-testid="form-host-url"
                     onSubmit={this.onSave}
                 >

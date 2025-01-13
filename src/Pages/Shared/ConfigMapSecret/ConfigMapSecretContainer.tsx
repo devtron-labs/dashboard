@@ -35,6 +35,8 @@ import {
     getConfigMapSecretFormValidations,
     ConfigMapSecretReadyOnly,
     FloatingVariablesSuggestions,
+    UseFormErrorHandler,
+    UseFormSubmitHandler,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
@@ -689,7 +691,7 @@ export const ConfigMapSecretContainer = ({
         }
     }
 
-    const onSubmit: ConfigMapSecretFormProps['onSubmit'] = async (data) => {
+    const onSubmit: UseFormSubmitHandler<ConfigMapSecretUseFormProps> = async (data) => {
         const payloadData = getConfigMapSecretPayload(data)
 
         if (isApprovalPolicyConfigured) {
@@ -746,7 +748,7 @@ export const ConfigMapSecretContainer = ({
         }
     }
 
-    const onError: ConfigMapSecretFormProps['onError'] = (errors) => {
+    const onError: UseFormErrorHandler<ConfigMapSecretUseFormProps> = (errors) => {
         if (errors.currentData?.[0] === CONFIG_MAP_SECRET_NO_DATA_ERROR) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
@@ -761,6 +763,19 @@ export const ConfigMapSecretContainer = ({
             })
         }
     }
+
+    const onDryRunError: UseFormErrorHandler<ConfigMapSecretUseFormProps> = (errors) => {
+        const hasErrors = Object.keys(errors).some((key) => !!errors[key])
+        if (hasErrors) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Please resolve form errors before saving.',
+            })
+        }
+    }
+
+    const formSubmitHandler = handleSubmit(onSubmit, onError)
+    const dryRunSubmitHandler = handleSubmit(onSubmit, onDryRunError)
 
     // CONFIG TOOLBAR POPUP MENU
     const toolbarPopupConfig: ConfigToolbarProps['popupConfig'] = {
@@ -809,8 +824,7 @@ export const ConfigMapSecretContainer = ({
                 draftData={resolvedDraftData ?? draftData}
                 inheritedConfigMapSecretData={resolvedInheritedConfigMapSecretData ?? inheritedConfigMapSecretData}
                 id={id}
-                onError={onError}
-                onSubmit={onSubmit}
+                onSubmit={formSubmitHandler}
                 selectedProtectionViewTab={selectedProtectionViewTab}
                 updateCMSecret={updateCMSecret}
                 componentType={componentType}
@@ -833,8 +847,7 @@ export const ConfigMapSecretContainer = ({
                 isApprovalPolicyConfigured={isApprovalPolicyConfigured}
                 isSubmitting={isSubmitting}
                 disableDataTypeChange={isDeleteDisabled}
-                onSubmit={onSubmit}
-                onError={onError}
+                onSubmit={formSubmitHandler}
                 onCancel={onCancel}
                 areScopeVariablesResolving={resolvedScopeVariablesResLoading}
                 appChartRef={appChartRef}
@@ -894,7 +907,7 @@ export const ConfigMapSecretContainer = ({
                         handleChangeDryRunEditorMode={setDryRunEditorMode}
                         showCrudButtons={!showNoOverride}
                         isSubmitting={isSubmitting}
-                        onSubmit={onSubmit}
+                        onSubmit={dryRunSubmitHandler}
                         parentName={parentName}
                         updateCMSecret={updateCMSecret}
                         formData={resolvedFormData ?? formData}
@@ -1015,7 +1028,7 @@ export const ConfigMapSecretContainer = ({
             <div
                 className={`configmap-secret-container p-8 h-100 dc__position-rel ${showComments ? 'with-comment-drawer' : ''}`}
             >
-                <div className="dc__border br-4 dc__overflow-hidden h-100 bcn-0">{renderContent()}</div>
+                <div className="dc__border br-4 dc__overflow-hidden h-100 bg__primary">{renderContent()}</div>
                 {openDeleteModal && renderDeleteModal()}
                 {SaveChangesModal && showDraftSaveModal && (
                     <SaveChangesModal

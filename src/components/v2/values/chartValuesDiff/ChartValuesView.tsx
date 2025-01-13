@@ -39,6 +39,7 @@ import {
     ToastManager,
     ToastVariantType,
     UNSAVED_CHANGES_PROMPT_MESSAGE,
+    DEFAULT_ROUTE_PROMPT_MESSAGE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -65,7 +66,6 @@ import {
     updateChartValues,
 } from '../../../charts/charts.service'
 import {
-    DEFAULT_ROUTE_PROMPT_MESSAGE,
     DELETE_ACTION,
     SERVER_MODE,
     URLS,
@@ -1616,7 +1616,7 @@ const ChartValuesView = ({
             !appDetails?.isVirtualEnvironment
         return (
             <div
-                className={`chart-values-view__container flexbox-col h-100 bcn-0 dc__overflow-hidden ${
+                className={`chart-values-view__container flexbox-col h-100 bg__primary dc__overflow-hidden ${
                     isDeployChartView || isCreateValueView ? 'chart-values-view__deploy-chart' : ''
                 } ${commonState.openReadMe ? 'readmeOpened' : ''} ${
                     commonState.openComparison ? 'comparisonOpened' : ''
@@ -1664,7 +1664,7 @@ const ChartValuesView = ({
                                 </div>
                             )}
                             {!isDeployChartView && showUpdateAppModal && !isCreateValueView && (
-                                <div className="app-overview-container display-grid bcn-0 dc__overflow-hidden">
+                                <div className="app-overview-container display-grid bg__primary dc__overflow-hidden">
                                     <ProjectUpdateModal
                                         appId={appId}
                                         appMetaInfo={appMetaInfo}

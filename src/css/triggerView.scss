@@ -30,7 +30,7 @@
 
 .material-list {
     width: 234px;
-    background-color: var(--white);
+    background-color: var(--bg-primary);
 }
 
 .material-list__title {
@@ -44,7 +44,7 @@
 }
 
 .material-list__title--border-bottom {
-    border-bottom: solid 1px #dedede;
+    border-bottom: solid 1px var(--N200);
 }
 
 .material-list__item {
@@ -58,7 +58,7 @@
 
 .material-selected {
     box-shadow: inset 4px 0 0 0 var(--B500);
-    background-color: var(--window-bg);
+    background-color: var(--bg-tertiary);
 }
 
 .material-refresh {
@@ -87,7 +87,7 @@
 }
 
 .select-material {
-    background-color: var(--window-bg);
+    background-color: var(--bg-tertiary);
     overflow: auto;
     flex: 1;
 }
@@ -107,7 +107,7 @@
 .material-history {
     width: 530px;
     border: solid 1px var(--N200);
-    background-color: var(--white);
+    background-color: var(--bg-primary);
     border-radius: 4px;
 }
 
@@ -125,7 +125,7 @@
         box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 
         .approval-text {
-            color: #0066cc;
+            color: var(--B500);
         }
     }
 }
@@ -144,7 +144,7 @@
     grid-column-gap: 10px;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--white);
+    background-color: var(--bg-primary);
     border-radius: 4px;
     cursor: pointer;
 
@@ -188,7 +188,7 @@
 }
 
 .material-history-selected {
-    box-shadow: 0px 2px 2px rgb(217, 236, 255);
+    box-shadow: 0px 2px 2px var(--B100);
     border: solid 1px var(--B400);
 }
 
@@ -199,7 +199,7 @@
 }
 
 .material-history__source-info {
-    background-color: var(--white);
+    background-color: var(--bg-primary);
     padding: 12px 16px;
     margin: 16px;
     border-radius: 4px;
@@ -217,7 +217,7 @@
     text-align: right;
     width: 100%;
     margin: 5px 0;
-    background-color: var(--white);
+    background-color: var(--bg-primary);
     border: none;
     font-family: 'Open Sans', sans-serif;
     display: flex;
@@ -281,27 +281,13 @@
     margin-right: 4px;
 }
 
-.trigger-modal {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 5;
-    display: block;
-    overflow: hidden;
-    outline: 0;
-    background-color: rgb(0, 0, 0);
-    background-color: rgba(0, 0, 0, 0.4);
-}
-
 .trigger-modal__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
     color: var(--N900);
-    border-bottom: solid 1px #d6dbdf;
+    border-bottom: solid 1px var(--N200);
     margin: 0px;
 
     .modal__title {
@@ -318,7 +304,7 @@
         height: 50px;
         border-radius: 4px;
         background-color: var(--B500);
-        color: var(--white);
+        color: var(--N0);
         font-size: 13px;
         font-weight: 600;
         line-height: 1.43;
@@ -333,7 +319,7 @@
         height: 36px;
         border-radius: 4px;
         background-color: var(--B500);
-        color: var(--white);
+        color: var(--N0);
         font-size: 13px;
         font-weight: 600;
         line-height: 20px;
@@ -423,19 +409,19 @@
 
 .trigger-btn {
     &:hover {
-        background-color: #0558af;
+        background-color: var(--B600);
     }
 }
 
 .material-detail {
-    border-bottom: solid 1px silver;
+    border-bottom: solid 1px var(--N200);
     margin: 10px;
     display: flex;
 }
 
 .trigger-modal__body {
     display: flex;
-    background-color: var(--window-bg);
+    background-color: var(--bg-tertiary);
     height: calc(100vh - 49px);
     overflow: auto;
     flex-direction: column;
@@ -453,7 +439,7 @@
 .trigger-modal__body .show-older-images-cta.cta.ghosted:hover,
 .trigger-modal__body .show-older-images-cta.cta.ghosted:active,
 .trigger-modal__body .show-older-images-cta.cta.ghosted:focus {
-    background: white;
+    background: var(--bg-primary);
     color: var(--B500);
     border: 1px solid var(--B500);
 }
@@ -487,7 +473,7 @@
     width: 800px;
     position: fixed;
     right: 0;
-    background: var(--N000);
+    background: var(--bg-primary);
     top: 0;
 
     &.contains-diff-view {
@@ -506,12 +492,12 @@
     min-width: 800px;
     max-width: 1024px;
     right: 0;
-    background: var(--N000);
+    background: var(--bg-primary);
     top: 0;
 }
 
 .trigger-modal__empty-state {
-    background-color: var(--window-bg);
+    background-color: var(--bg-tertiary);
     font-family: 'Open Sans', sans-serif;
     display: flex;
     flex-direction: column;
@@ -543,18 +529,18 @@
 
 .security-tab {
     padding: 1px 20px 20px 20px;
-    background-color: var(--N000);
+    background-color: var(--bg-primary);
     overflow: auto;
     max-height: 292px;
 }
 
 .security-tab-empty {
-    height: 192px;
+    height: 162px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: var(--N000);
+    background-color: var(--bg-primary);
     border-radius: 0 0 4px 4px;
 }
 
@@ -568,19 +554,10 @@
     color: var(--N900);
 }
 
-.security-tab-empty__subtitle {
-    font-size: 12px;
-    font-weight: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    text-align: center;
-    color: #404040;
-}
-
 .tab-list {
     &.tab-list--vulnerability {
         padding: 0 0 0 20px;
-        background-color: var(--N000);
+        background-color: var(--bg-primary);
         border: solid 1px var(--N200);
         border-left: none;
         border-right: none;
@@ -634,7 +611,7 @@
     align-items: center;
     padding: 16px 20px;
     box-shadow: inset 0 1px 0 0 var(--N200);
-    background-color: var(--white);
+    background-color: var(--bg-primary);
     position: absolute;
     width: 100%;
     bottom: 0px;
@@ -655,7 +632,7 @@
             font-weight: 600;
             text-transform: none;
             color: var(--N900);
-            background-color: var(--window-bg);
+            background-color: var(--bg-tertiary);
             padding: 4px 10px;
             border-top-left-radius: 4px;
             border-top-right-radius: 4px;
@@ -690,5 +667,5 @@
 
 .trigger-modal__config-diff-status svg.loader__svg path,
 .trigger-modal__config-diff-status svg.config-diff-found-icon path:nth-of-type(2) {
-    fill: white;
+    fill: var(--N0);
 }

@@ -292,7 +292,7 @@ export const ConfigMapSecretData = ({
                         readOnly || isHashiOrAWS || isLocked || codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE
                     }
                 >
-                    <CodeEditor.Header className="configmap-secret-form__code-editor flex right dc__gap-6 py-6 px-12 bcn-50 dc__border-bottom fs-13 lh-20">
+                    <CodeEditor.Header className="configmap-secret-form__code-editor flex right dc__gap-6 py-6 px-12 bg__secondary dc__border-bottom fs-13 lh-20">
                         {!isHashiOrAWS && data.external ? (
                             <StyledRadioGroup
                                 name="code-editor-radio"

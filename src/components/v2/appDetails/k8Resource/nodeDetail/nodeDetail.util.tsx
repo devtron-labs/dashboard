@@ -20,16 +20,16 @@ import {
     DeploymentAppTypes,
     K8sResourcePayloadAppType,
     YAMLStringify,
+    OptionsBase,
+    SelectedResourceType
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     AppType,
     EnvType,
     LogState,
     Options,
-    OptionsBase,
     PodContainerOptions,
     PodMetaData,
-    SelectedResourceType,
     NodeType,
     K8sResourcePayloadDeploymentType,
 } from '../../appDetails.type'
@@ -367,7 +367,7 @@ export const selectStyles = {
         ...base,
         minHeight: '36px',
         fontWeight: '400',
-        backgroundColor: 'var(--N50)',
+        backgroundColor: 'var(--bg-secondary)',
         cursor: 'pointer',
     }),
     dropdownIndicator: (base) => ({

@@ -147,9 +147,6 @@ export const ConfigMapSecretDryRun = ({
         isDryRunDataPresent && !hideManifest,
     )
 
-    // METHODS
-    const handleSubmit = () => onSubmit(formData)
-
     // RENDERERS
     const renderLHSContent = () => {
         if (publishedVersionDoesNotExist) {
@@ -268,7 +265,7 @@ export const ConfigMapSecretDryRun = ({
                     dataTestId="cm-secret-form-submit-btn"
                     text={`Save${!isCreateView ? ' Changes' : ''}${isApprovalPolicyConfigured ? '...' : ''}`}
                     size={ComponentSizeType.medium}
-                    onClick={handleSubmit}
+                    onClick={onSubmit}
                     isLoading={isSubmitting}
                     disabled={isSaveButtonDisabled}
                 />

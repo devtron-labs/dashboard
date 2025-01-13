@@ -172,12 +172,12 @@ const TriggerList: React.FC<{ selectedNames: SelectedNames; startDate; endDate }
     })
 
     const colorMap = {
-        skippedCount: '#d0d4d9',
-        errorCount: '#f6573b',
-        failureCount: '#ff9800',
-        disabledCount: '#58508d',
-        unknownCount: '#ff9800',
-        successCount: '#00be61',
+        skippedCount: 'var(--N200)',
+        errorCount: 'var(--R500)',
+        failureCount: 'var(--Y500)',
+        disabledCount: 'var(--B700)',
+        unknownCount: 'var(--Y500)',
+        successCount: 'var(--G500)',
     }
     if (triggerListLoading) {
         return (
@@ -199,7 +199,7 @@ const TriggerList: React.FC<{ selectedNames: SelectedNames; startDate; endDate }
     }
     return (
         <>
-            <div className="mt-24 w-100 flex left column pt-16 pl-24 pb-16 pr-24 bcn-0 br-8 en-2 bw-1">
+            <div className="mt-24 w-100 flex left column pt-16 pl-24 pb-16 pr-24 bg__primary br-8 en-2 bw-1">
                 <div className="flex left mb-24">
                     <span className="fs-14 cn-9 fw-6">Last 30 executions</span>
                 </div>
@@ -399,7 +399,7 @@ const TestsFilter: React.FC<{ component }> = ({ component: Component }) => {
                         ...base,
                         border: `1px solid var(--N200)`,
                         borderRadius: `4px`,
-                        background: 'white',
+                        background: 'var(--bg-primary)',
                         height: '30px',
                         margin: '0 8px 0 0',
                         padding: '1px',

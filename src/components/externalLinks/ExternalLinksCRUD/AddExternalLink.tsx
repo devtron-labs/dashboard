@@ -425,7 +425,7 @@ export default function AddExternalLink({
         if (!openInNewTab) return urlTemplate
         const linkURL = new URL(urlTemplate)
         linkURL.searchParams.append(DEVTRON_IFRAME_PRIMARY, 'false')
-        return linkURL.href
+        return decodeURIComponent(linkURL.href)
     }
 
     const saveLinks = async (): Promise<void> => {

@@ -17,9 +17,7 @@
 import {
     ApiResourceType,
     get,
-    post,
     ResponseType,
-    convertJSONPointerToJSONPath,
     getK8sResourceList,
     getIsRequestAborted,
     showError,
@@ -27,17 +25,10 @@ import {
     getK8sResourceListPayload,
     stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
-import {
-    getManifestResource,
-    updateManifestResourceHelmApps,
-} from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
-import { applyOperation, escapePathComponent } from 'fast-json-patch'
-import { JSONPath } from 'jsonpath-plus'
-import { SelectedResourceType } from '@Components/v2/appDetails/appDetails.type'
 import { RefObject } from 'react'
 import { Routes } from '../../config'
 import { ClusterListResponse } from '../../services/service.types'
-import { ResourceListPayloadType, ResourceType, GetResourceDataType, NodeRowDetail, URLParams } from './Types'
+import { GetResourceDataType, NodeRowDetail, URLParams } from './Types'
 import { SIDEBAR_KEYS } from './Constants'
 import { parseNodeList } from './Utils'
 
@@ -63,82 +54,6 @@ export const getResourceGroupList = (clusterId: string, signal?: AbortSignal): P
     get(`${Routes.API_RESOURCE}/${clusterId}`, {
         signal,
     })
-
-export const deleteResource = (
-    resourceListPayload: ResourceListPayloadType,
-    signal?: AbortSignal,
-): Promise<ResponseType<ResourceType[]>> => post(Routes.DELETE_RESOURCE, resourceListPayload, signal ? { signal } : {})
-
-export const restartWorkload = async (resource: SelectedResourceType, signal: AbortSignal) => {
-    const {
-        result: {
-            manifestResponse: { manifest },
-        },
-    } = await getManifestResource(null, '', '', true, resource, signal)
-
-    if (!manifest) {
-        return
-    }
-
-    const metadataPath = '/spec/template/metadata'
-    const annotationsPath = `${metadataPath}/annotations`
-    const restartLabel = 'devtron/restart'
-
-    const jsonpathProps = {
-        json: manifest,
-        wrap: false,
-        resultType: 'value',
-    } as const
-
-    const dateString = new Date().toISOString()
-
-    if (!JSONPath({ path: convertJSONPointerToJSONPath(metadataPath), ...jsonpathProps })) {
-        applyOperation(
-            manifest,
-            {
-                op: 'add',
-                path: metadataPath,
-                value: {
-                    annotations: {
-                        [restartLabel]: dateString,
-                    },
-                },
-            },
-            false,
-            true,
-        )
-    } else if (
-        !JSONPath({
-            path: convertJSONPointerToJSONPath(annotationsPath),
-            ...jsonpathProps,
-        })
-    ) {
-        applyOperation(
-            manifest,
-            {
-                op: 'add',
-                path: annotationsPath,
-                value: { [restartLabel]: dateString },
-            },
-            false,
-            true,
-        )
-    } else {
-        applyOperation(
-            manifest,
-            {
-                op: 'add',
-                // NOTE: we only need to escape / in restartLabel when making a path out of it
-                path: `${annotationsPath}/${escapePathComponent(restartLabel)}t`,
-                value: dateString,
-            },
-            false,
-            true,
-        )
-    }
-
-    await updateManifestResourceHelmApps(null, '', '', JSON.stringify(manifest), true, resource, signal)
-}
 
 export const getNodeList = (
     clusterId: string,

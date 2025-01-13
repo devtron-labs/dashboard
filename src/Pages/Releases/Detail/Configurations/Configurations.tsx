@@ -27,7 +27,7 @@ const useReleaseConfigurationContext = importComponentFromFELibrary('useReleaseC
 const ConfigurationsAppEnvSelector = importComponentFromFELibrary('ConfigurationsAppEnvSelector', null, 'function')
 
 const renderNullState = () => (
-    <div className="bcn-0">
+    <div className="bg__primary">
         <GenericEmptyState
             title="No application x environment selected"
             subTitle="Select application and environment to view configurations"
@@ -179,7 +179,7 @@ export const Configurations = () => {
             </Route>
             <Route>
                 <div className="release-configurations dc__grid h-100 dc__overflow-hidden">
-                    <div className="flexbox-col min-h-100 bcn-0 dc__border-right">
+                    <div className="flexbox-col min-h-100 bg__primary dc__border-right">
                         <ConfigurationsAppEnvSelector />
                         {showConfig ? renderConfigSideNav() : null}
                     </div>

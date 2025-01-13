@@ -49,12 +49,13 @@ import {
     getStageTitle,
     TriggerBlockType,
     RuntimePluginVariables,
+    DEFAULT_ROUTE_PROMPT_MESSAGE,
+    triggerCDNode,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
     BUILD_STATUS,
     DEFAULT_GIT_BRANCH_VALUE,
-    DEFAULT_ROUTE_PROMPT_MESSAGE,
     NO_COMMIT_SELECTED,
     URLS,
     ViewType,
@@ -73,7 +74,6 @@ import {
     getCIMaterialList,
     getGitMaterialByCommitHash,
     refreshGitMaterial,
-    triggerCDNode,
     triggerCINode,
     triggerBranchChange,
 } from '../../../app/service'
@@ -1492,11 +1492,15 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             if (ciArtifact) {
                 _CDTriggerPromiseFunctionList.push(() =>
                     triggerCDNode({
-                        pipelineId: node.id,
-                        ciArtifactId: ciArtifact.id,
-                        appId: currentAppId,
+                        pipelineId: Number(node.id),
+                        ciArtifactId: Number(ciArtifact.id),
+                        appId: Number(currentAppId),
                         stageType: bulkTriggerType,
-                        runtimeParams: runtimeParams[currentAppId] || [],
+                        ...(
+                            getRuntimeParamsPayload
+                                ? { runtimeParamsPayload: getRuntimeParamsPayload(runtimeParams[currentAppId] ?? [])}
+                                : {}
+                        ),
                     }),
                 )
             } else {
@@ -2419,7 +2423,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 })}
                 {!!selectedAppList.length && (
                     <div
-                        className="flexbox dc__content-space dc__position-fixed dc__bottom-0 dc__border-top w-100 bcn-0 pt-12 pr-20 pb-12 pl-20 dc__right-0"
+                        className="flexbox dc__content-space dc__position-fixed dc__bottom-0 dc__border-top w-100 bg__primary pt-12 pr-20 pb-12 pl-20 dc__right-0"
                         style={{ width: 'calc(100vw - 56px)' }}
                     >
                         {renderSelectedApps()}
@@ -2433,7 +2437,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
     return (
         <div
-            className="svg-wrapper-trigger app-group-trigger-view-container bcn-0"
+            className="svg-wrapper-trigger app-group-trigger-view-container bg__primary"
             style={{ paddingBottom: selectedAppList.length ? '68px' : '16px' }}
         >
             <div className="flex left mb-14">

@@ -1096,15 +1096,6 @@ export const getNonEditableChartRepoText = (name: string): string => {
     return `Cannot edit chart repo "${name}". Some charts from this repository are being used by helm apps.`
 }
 
-export const getAPIOptionsWithTriggerTimeout = (options?: APIOptions): APIOptions => {
-    const _options: APIOptions = options ? JSON.parse(JSON.stringify(options)) : {}
-    if (window._env_.TRIGGER_API_TIMEOUT) {
-        _options.timeout = window._env_.TRIGGER_API_TIMEOUT
-    }
-
-    return _options
-}
-
 export const getShowResourceScanModal = (selectedResourceKind: NodeType, isTrivyInstalled: boolean): boolean => {
     const { isManifestScanningEnabled } = useMainContext()
     const fromWorkloadOrRollout =
@@ -1152,7 +1143,7 @@ export const renderMaterialIcon = (url: string = '') => {
     }
 
     if (url.includes('github')) {
-        return <GitHub className="dc__vertical-align-middle icon-dim-20" />
+        return <GitHub className="dc__vertical-align-middle icon-dim-20 fcn-8" />
     }
 
     if (url.includes('bitbucket')) {

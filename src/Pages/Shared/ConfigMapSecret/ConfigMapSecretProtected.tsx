@@ -42,7 +42,6 @@ export const ConfigMapSecretProtected = ({
     parentName,
     inheritedConfigMapSecretData,
     areScopeVariablesResolving,
-    onError,
     onSubmit,
     updateCMSecret,
     shouldMergeTemplateWithPatches,
@@ -228,7 +227,6 @@ export const ConfigMapSecretProtected = ({
             disableDataTypeChange={disableDataTypeChange}
             isSubmitting={false}
             onCancel={noop}
-            onError={onError}
             onSubmit={onSubmit}
             areScopeVariablesResolving={areScopeVariablesResolving}
             useFormProps={useFormProps}

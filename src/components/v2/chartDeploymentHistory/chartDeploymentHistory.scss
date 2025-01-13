@@ -46,7 +46,7 @@
 }
 
 .error-exclamation-icon path {
-    fill: #767d84;
+    fill: var(--N600);
 }
 
 .ci-details {
@@ -94,7 +94,7 @@
 }
 
 .docker-wrapper {
-    background-color: white;
+    background-color: var(--bg-primary);
     width: 600px;
     max-height: 500px;
     margin: auto;

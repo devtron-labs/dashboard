@@ -23,11 +23,12 @@ import {
     noop,
     ToastManager,
     ToastVariantType,
+    ResourceListPayloadType,
+    deleteResource,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import { DELETE_MODAL_MESSAGING } from '../Constants'
-import { DeleteResourcePopupType, ResourceListPayloadType } from '../Types'
-import { deleteResource } from '../ResourceBrowser.service'
+import { DeleteResourcePopupType } from '../Types'
 
 const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
     clusterId,

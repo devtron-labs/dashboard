@@ -307,15 +307,9 @@ src/components/material/MaterialList.tsx
 src/components/material/MaterialView.tsx
 src/components/material/UpdateMaterial.tsx
 src/components/notifications/AddNotification.tsx
-src/components/notifications/ConfigurationTab.tsx
-src/components/notifications/CreateHeaderDetails.tsx
 src/components/notifications/ModifyRecipientsModal.tsx
 src/components/notifications/NotificationTab.tsx
 src/components/notifications/Notifications.tsx
-src/components/notifications/SESConfigModal.tsx
-src/components/notifications/SMTPConfigModal.tsx
-src/components/notifications/SlackConfigModal.tsx
-src/components/notifications/WebhookConfigModal.tsx
 src/components/notifications/notifications.service.ts
 src/components/notifications/notifications.util.tsx
 src/components/onboardingGuide/GuideCommonHeader.tsx

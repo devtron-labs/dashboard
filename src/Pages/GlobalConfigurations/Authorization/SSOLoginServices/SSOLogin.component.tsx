@@ -727,7 +727,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     render() {
         if (this.state.view === ViewType.LOADING) {
             return (
-                <div className="bcn-0 h-100">
+                <div className="bg__primary h-100">
                     <Progressing pageLoader />
                 </div>
             )
@@ -838,7 +838,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     />
                     {renderSSOBody()}
                 </div>
-                <div className="px-20 py-16 dc__border-top-n1 w-100 dc__position-fixed bcn-0 dc__bottom-0">
+                <div className="px-20 py-16 dc__border-top-n1 w-100 dc__position-fixed bg__primary dc__bottom-0">
                     <button
                         onClick={this.onLoginConfigSave}
                         tabIndex={5}
@@ -853,7 +853,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             </div>
         )
         return (
-            <section className="bcn-0 sso-login__wrapper">
+            <section className="bg__primary sso-login__wrapper">
                 {renderSSOContent()}
                 {/* Confirmation Modal for SSO Change */}
                 {showSSOChangeConfirmationModal && (

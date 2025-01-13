@@ -27,8 +27,9 @@ import {
     ALL_NAMESPACE_OPTION,
     ClusterDetail,
     ResourceDetail,
+    SelectedResourceType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
+import { LogSearchTermType } from '../v2/appDetails/appDetails.type'
 import { ClusterListType } from '../ClusterNodes/types'
 import { useTabs } from '../common/DynamicTabs'
 import { BaseResourceListProps } from './ResourceList/types'
@@ -45,19 +46,6 @@ export interface K8SObjectChildMapType {
 
 export interface K8SObjectMapType extends K8SObjectBaseType {
     child: Map<string, K8SObjectChildMapType>
-}
-
-export interface ResourceListPayloadType {
-    clusterId: number
-    k8sRequest: {
-        resourceIdentifier: {
-            groupVersionKind: GVKType
-            namespace?: string
-            name?: string
-        }
-        patch?: string
-        forceDelete?: boolean
-    }
 }
 
 export interface URLParams {
@@ -77,13 +65,6 @@ export enum CreateResourceStatus {
     failed = 'Failed',
     created = 'Created',
     updated = 'Updated',
-}
-
-export interface ResourceType {
-    kind: string
-    name: string
-    isUpdate: boolean
-    error: string
 }
 
 export interface ResourceDetailsPropType extends LogSearchTermType {

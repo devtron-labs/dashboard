@@ -30,6 +30,7 @@ import {
     FormProps,
     ToastManager,
     ToastVariantType,
+    OptionsBase
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
@@ -48,7 +49,6 @@ import {
     NodeDetailPropsType,
     NodeType,
     Options,
-    OptionsBase,
 } from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
 import { useSharedState } from '../../../utils/useSharedState'
@@ -523,7 +523,7 @@ const NodeDetailComponent = ({
     return (
         <>
             <div
-                className={`w-100 pr-20 pl-20 bcn-0 flex dc__border-bottom dc__content-space ${!isResourceBrowserView ? 'node-detail__sticky' : ''}`}
+                className={`w-100 pr-20 pl-20 bg__primary flex dc__border-bottom dc__content-space ${!isResourceBrowserView ? 'node-detail__sticky' : ''}`}
             >
                 <div className="flex left">
                     <TabGroup tabs={TAB_GROUP_CONFIG} size={ComponentSizeType.medium} alignActiveBorderWithContainer />

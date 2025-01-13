@@ -35,7 +35,7 @@ export const EventList = ({
 }: EventListType) => (
     <div className="dc__overflow-scroll">
         <div
-            className={`event-list-row${ExplainEventButton ? '__explain' : ''} dc__zi-1 dc__min-width-fit-content dc__position-sticky bcn-0 dc__top-0 fw-6 cn-7 fs-13 dc__border-bottom px-20 py-8 dc__uppercase h-36`}
+            className={`event-list-row${ExplainEventButton ? '__explain' : ''} dc__zi-1 dc__min-width-fit-content dc__position-sticky bg__primary dc__top-0 fw-6 cn-7 fs-13 dc__border-bottom px-20 py-8 dc__uppercase h-36`}
         >
             {Object.values(EVENT_LIST.headerKeys).map((title) => (
                 <div>

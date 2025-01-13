@@ -48,7 +48,7 @@ export const environmentFilterDropdownStyles = {
         minHeight: 32,
     }),
     menu: (base) => ({
-        ...base,
+        ...commonStyles.menu(base),
         zIndex: 5,
     }),
 }

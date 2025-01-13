@@ -38,7 +38,7 @@ function renderOnClickValidate(onClickValidate) {
 
 const ValidateDryRun = ({ onClickValidate, configName }) => {
     return (
-        <div className="eb-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col w-100">
+        <div className="eb-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bg__primary flexbox-col w-100">
             <div className="flex flex-justify">
                 <div className="flex">
                     <img src={Help} className="icon-dim-20" />
@@ -56,7 +56,7 @@ const ValidateDryRun = ({ onClickValidate, configName }) => {
 
 const ValidateLoading = ({ message }) => {
     return (
-        <div className="eb-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col w-100">
+        <div className="eb-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bg__primary flexbox-col w-100">
             <div className="flex left">
                 <div>
                     <Progressing />
@@ -73,7 +73,7 @@ const ValidateSuccess = ({ onClickValidate, warning }) => {
     return (
         <div className="w-100">
             <div
-                className={`${warning ? 'success-no-border' : 'success-border_rad'} git_success pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col bcg-1`}
+                className={`${warning ? 'success-no-border' : 'success-border_rad'} git_success pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bg__primary flexbox-col bcg-1`}
             >
                 <div className="flex flex-justify">
                     <div className="flex">
@@ -104,7 +104,7 @@ const ValidateFailure = ({
     showValidate,
 }) => {
     return (
-        <div className=" br-4 bw-1 bcn-0 flexbox-col w-100">
+        <div className=" br-4 bw-1 bg__primary flexbox-col w-100">
             <div className="flex config_failure er-2 bcr-1 pt-10 pb-10 pl-13 pr-16 br-4 bw-1 flex-justify">
                 <div className="flex">
                     <Error className="icon-dim-20 ml--3 stroke_width" />
