@@ -85,19 +85,25 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
         }
     }
 
-    const validateSave = (): boolean => {
-        const { configName, webhookUrl } = form
-        setFormValid((prevValid) => ({
-            ...prevValid,
-            configName: validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, configName),
-            webhookUrl: validateKeyValueConfig(ConfigurationFieldKeys.WEBHOOK_URL, webhookUrl),
-            projectId: validateKeyValueConfig(ConfigurationFieldKeys.PROJECT_ID, selectedProject?.value ?? ''),
-        }))
-        return (
-            validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, configName).isValid &&
-            validateKeyValueConfig(ConfigurationFieldKeys.WEBHOOK_URL, webhookUrl).isValid &&
-            validateKeyValueConfig(ConfigurationFieldKeys.PROJECT_ID, selectedProject?.value).isValid
+    const validateSave = () => {
+        const validationFields = [
+            { key: ConfigurationFieldKeys.CONFIG_NAME, value: form.configName },
+            { key: ConfigurationFieldKeys.WEBHOOK_URL, value: form.webhookUrl },
+            { key: ConfigurationFieldKeys.PROJECT_ID, value: selectedProject?.value ?? '' },
+        ]
+        const { allValid, formValidations } = validationFields.reduce(
+            (acc, { key, value }) => {
+                const validation = validateKeyValueConfig(key, value)
+                acc.formValidations[key] = validation
+                if (!validation.isValid) {
+                    acc.allValid = false
+                }
+                return acc
+            },
+            { allValid: true, formValidations: {} },
         )
+        setFormValid((prevValid) => ({ ...prevValid, ...formValidations }))
+        return allValid
     }
 
     const saveSlackConfig = () => {

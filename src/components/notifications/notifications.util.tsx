@@ -37,8 +37,9 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, ConfigurationTabText } from './constants'
 import { validateEmail } from '../common'
-import { FormError, FormValidation, SESFormType, SMTPFormType, WebhookDataRowType, WebhookHeaderKeyType } from './types'
+import { FormError, SESFormType, SMTPFormType, WebhookDataRowType, WebhookHeaderKeyType } from './types'
 import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
+import awsRegionList from '../common/awsRegionList.json'
 
 export const multiSelectStyles = {
     control: (base, state) => ({
@@ -354,7 +355,7 @@ export const renderErrorToast = () =>
         description: 'Some required fields are missing or Invalid',
     })
 
-export const getAwsRegionListParsed = (awsRegionList) =>
+export const getAwsRegionListParsed = () =>
     awsRegionList
         .sort((a, b) => stringComparatorBySortOrder(a.name, b.name))
         .map((region) => ({ label: region.name, value: region.value }))

@@ -90,25 +90,28 @@ export const SMTPConfigModal = ({
     }
 
     const validateSave = () => {
-        const { configName, host, port, authUser, authPassword, fromEmail } = form
-        setFormValid((prevValid) => ({
-            ...prevValid,
-            configName: validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, form.configName),
-            host: validateKeyValueConfig(ConfigurationFieldKeys.HOST, form.host),
-            port: validateKeyValueConfig(ConfigurationFieldKeys.PORT, form.port),
-            authUser: validateKeyValueConfig(ConfigurationFieldKeys.AUTH_USER, form.authUser),
-            authPassword: validateKeyValueConfig(ConfigurationFieldKeys.AUTH_PASSWORD, form.authPassword),
-            fromEmail: validateKeyValueConfig(ConfigurationFieldKeys.FROM_EMAIL, form.fromEmail),
-        }))
-        setForm((prevForm) => ({ ...prevForm, isLoading: false }))
-        return (
-            validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, configName).isValid &&
-            validateKeyValueConfig(ConfigurationFieldKeys.HOST, host).isValid &&
-            validateKeyValueConfig(ConfigurationFieldKeys.PORT, port).isValid &&
-            validateKeyValueConfig(ConfigurationFieldKeys.AUTH_USER, authUser).isValid &&
-            validateKeyValueConfig(ConfigurationFieldKeys.AUTH_PASSWORD, authPassword).isValid &&
-            validateKeyValueConfig(ConfigurationFieldKeys.FROM_EMAIL, fromEmail).isValid
+        const validationSave = [
+            { key: ConfigurationFieldKeys.CONFIG_NAME, value: form.configName },
+            { key: ConfigurationFieldKeys.HOST, value: form.host },
+            { key: ConfigurationFieldKeys.PORT, value: form.port },
+            { key: ConfigurationFieldKeys.AUTH_USER, value: form.authUser },
+            { key: ConfigurationFieldKeys.AUTH_PASSWORD, value: form.authPassword },
+            { key: ConfigurationFieldKeys.FROM_EMAIL, value: form.fromEmail },
+        ]
+
+        const { allValid, formValidations } = validationSave.reduce(
+            (acc, { key, value }) => {
+                const validation = validateKeyValueConfig(key, value)
+                acc.formValidations[key] = validation
+                if (!validation.isValid) {
+                    acc.allValid = false
+                }
+                return acc
+            },
+            { allValid: true, formValidations: {} },
         )
+        setFormValid((prevValid) => ({ ...prevValid, ...formValidations }))
+        return allValid
     }
 
     const getPayload = () => {

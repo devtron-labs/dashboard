@@ -28,7 +28,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import { saveEmailConfiguration, getSESConfiguration } from './notifications.service'
-import awsRegionList from '../common/awsRegionList.json'
 import { SESConfigModalProps, SESFormType } from './types'
 import {
     getAwsRegionListParsed,
@@ -39,6 +38,8 @@ import {
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, DefaultSESValidations } from './constants'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
 import { DefaultCheckbox } from './DefaultCheckbox'
+
+const awsRegionList = getAwsRegionListParsed()
 
 const SESConfigModal = ({
     sesConfigId,
@@ -59,7 +60,7 @@ const SESConfigModal = ({
         try {
             const response = await getSESConfiguration(sesConfigId)
             const { region } = response.result
-            const awsRegion = getAwsRegionListParsed(awsRegionList).find((r) => r.value === region)
+            const awsRegion = awsRegionList.find((r) => r.value === region)
 
             setForm({
                 ...response.result,
@@ -154,24 +155,30 @@ const SESConfigModal = ({
     }
 
     const validateSave = () => {
-        const { configName, accessKey, secretKey, region, fromEmail } = form
+        const validationFields = [
+            { key: ConfigurationFieldKeys.CONFIG_NAME, value: form.configName },
+            { key: ConfigurationFieldKeys.ACCESS_KEY, value: form.accessKey },
+            { key: ConfigurationFieldKeys.SECRET_KEY, value: form.secretKey },
+            { key: ConfigurationFieldKeys.REGION, value: form.region?.value?.toString() },
+            { key: ConfigurationFieldKeys.FROM_EMAIL, value: form.fromEmail },
+        ]
 
-        setFormValid({
-            ...isFormValid,
-            configName: validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, configName),
-            accessKey: validateKeyValueConfig(ConfigurationFieldKeys.ACCESS_KEY, accessKey),
-            secretKey: validateKeyValueConfig(ConfigurationFieldKeys.SECRET_KEY, secretKey),
-            region: validateKeyValueConfig(ConfigurationFieldKeys.REGION, region?.value?.toString()),
-            fromEmail: validateKeyValueConfig(ConfigurationFieldKeys.FROM_EMAIL, fromEmail),
-        })
-        return (
-            validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, configName).isValid &&
-            validateKeyValueConfig(ConfigurationFieldKeys.ACCESS_KEY, accessKey).isValid &&
-            validateKeyValueConfig(ConfigurationFieldKeys.SECRET_KEY, secretKey).isValid &&
-            validateKeyValueConfig(ConfigurationFieldKeys.REGION, region?.value?.toString()).isValid &&
-            validateKeyValueConfig(ConfigurationFieldKeys.FROM_EMAIL, fromEmail).isValid
+        const { allValid, formValidations } = validationFields.reduce(
+            (acc, { key, value }) => {
+                const validation = validateKeyValueConfig(key, value)
+                acc.formValidations[key] = validation
+                if (!validation.isValid) {
+                    acc.allValid = false
+                }
+                return acc
+            },
+            { allValid: true, formValidations: {} }, // Initial accumulator
         )
+
+        setFormValid((prevValid) => ({ ...prevValid, ...formValidations }))
+        return allValid
     }
+
     const saveSESConfig = async () => {
         if (!validateSave()) {
             renderErrorToast()
@@ -242,7 +249,7 @@ const SESConfigModal = ({
                 placeholder="Select region"
                 onBlur={handleAWSBlur}
                 onChange={handleAWSRegionChange}
-                options={getAwsRegionListParsed(awsRegionList)}
+                options={awsRegionList}
                 size={ComponentSizeType.large}
                 name={ConfigurationFieldKeys.REGION}
                 error={isFormValid[ConfigurationFieldKeys.REGION].message}

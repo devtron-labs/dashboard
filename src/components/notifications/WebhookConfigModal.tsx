@@ -163,24 +163,24 @@ export const WebhookConfigModal = ({
     )
 
     const validateSave = (): boolean => {
-        const { configName, webhookUrl, payload } = form
-        setFormValid({
-            ...isFormValid,
-            configName: validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, configName),
-            webhookUrl: validateKeyValueConfig(ConfigurationFieldKeys.WEBHOOK_URL, webhookUrl),
-            payload: validatePayloadField(payload),
-        })
-        setFormValid({
-            ...isFormValid,
-            configName: validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, configName),
-            webhookUrl: validateKeyValueConfig(ConfigurationFieldKeys.WEBHOOK_URL, webhookUrl),
-            payload: validatePayloadField(payload),
-        })
-        return (
-            validateKeyValueConfig(ConfigurationFieldKeys.CONFIG_NAME, configName).isValid &&
-            validateKeyValueConfig(ConfigurationFieldKeys.WEBHOOK_URL, webhookUrl).isValid &&
-            validatePayloadField(payload).isValid
+        const validationFields = [
+            { key: ConfigurationFieldKeys.CONFIG_NAME, value: form.configName },
+            { key: ConfigurationFieldKeys.WEBHOOK_URL, value: form.webhookUrl },
+            { key: ConfigurationFieldKeys.PAYLOAD, value: form.payload },
+        ]
+        const { allValid, formValidations } = validationFields.reduce(
+            (acc, { key, value }) => {
+                const validation = validateKeyValueConfig(key, value)
+                acc.formValidations[key] = validation
+                if (!validation.isValid) {
+                    acc.allValid = false
+                }
+                return acc
+            },
+            { allValid: true, formValidations: {} },
         )
+        setFormValid((prevValid) => ({ ...prevValid, ...formValidations }))
+        return allValid
     }
 
     const saveWebhookConfig = async () => {

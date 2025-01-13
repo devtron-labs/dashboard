@@ -108,10 +108,6 @@ export interface ConfigurationTabDrawerModalProps {
     disableSave?: boolean
 }
 
-export type FormValidation = {
-    [key: string]: FormError
-}
-
 export interface DefaultCheckboxProps {
     isDefaultDisable: boolean
     handleCheckbox: () => void
