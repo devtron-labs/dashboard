@@ -248,10 +248,6 @@ export const EMPTY_STATE_STATUS = {
         TITLE: 'No pipeline selected',
         SUBTITLE: 'Please select a pipeline',
     },
-    CI_DEATILS_NO_VULNERABILITY_FOUND: {
-        TITLE: 'You’re secure!',
-        SUBTITLE: 'No security vulnerability found for this image.',
-    },
     CI_DETAILS_IMAGE_SCANNED_DISABLED: 'Go to build pipeline configurations and enable ’Scan for vulnerabilities’',
     CI_DETAILS_IMAGE_NOT_SCANNED: {
         TITLE: 'Image not scanned',

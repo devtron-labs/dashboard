@@ -33,7 +33,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { Routes, Moment12HourFormat, NO_COMMIT_SELECTED } from '../../config'
-import { importComponentFromFELibrary } from '../common'
 import {
     AppDetails,
     ArtifactsCiJob,
@@ -74,7 +73,10 @@ export function fetchAppDetailsInTime(
     reloadTimeOut: APIOptions['timeout'],
     abortControllerRef: APIOptions['abortControllerRef'],
 ): Promise<AppDetailsResponse> {
-    return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut, abortControllerRef })
+    return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, {
+        timeout: reloadTimeOut,
+        abortControllerRef,
+    })
 }
 
 export function fetchResourceTreeInTime(

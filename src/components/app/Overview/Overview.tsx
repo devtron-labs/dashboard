@@ -334,8 +334,12 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                     )}
                     {PartOfReleaseTrack && appType === 'app' && <PartOfReleaseTrack appId={+appId} />}
                 </div>
-                <div className="dc__border-top-n1" />
-                {renderLabelTags()}
+                {!isHelmChart && (
+                    <>
+                        <div className="dc__border-top-n1" />
+                        {renderLabelTags()}
+                    </>
+                )}
             </aside>
         )
     }
