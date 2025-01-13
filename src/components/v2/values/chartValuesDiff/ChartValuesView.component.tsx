@@ -531,7 +531,6 @@ export const ChartValuesSelector = ({
         {
             label: 'Default',
             options: filteredChartValues.defaultChartValues
-                .sort((a, b) => versionComparatorBySortOrder(a.chartVersion, b.chartVersion))
                 .map((chartValue) => ({
                     value: chartValue,
                     label: `${chartValue.name} ${chartValue.chartVersion}`,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import { ToastManager, ToastVariantType, versionComparatorBySortOrder } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { ChartGroupDeployResponse, ChartValuesType } from './charts.types'
 
@@ -70,6 +70,8 @@ export function getChartValuesFiltered(chartValuesList: ChartValuesType[]): {
             chartValues.existingChartValues.push(chartValuesList[i])
         }
     }
+    chartValues.defaultChartValues.sort((a, b) => versionComparatorBySortOrder(a.chartVersion, b.chartVersion))
+
     return chartValues
 }
 
