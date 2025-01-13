@@ -1,7 +1,6 @@
 import { DynamicDataTable } from '@devtron-labs/devtron-fe-common-lib'
 import { VariableDataTableActionType } from '@Components/CIPipelineN/VariableDataTable/types'
-import { useEffect } from 'react'
-import { getEmptyVariableDataRow, getInitialWebhookKeyRow, getTableHeaders } from './notifications.util'
+import { getEmptyVariableDataRow, getTableHeaders } from './notifications.util'
 import {
     HandleRowUpdateActionProps,
     WebhookConfigDynamicDataTableProps,
@@ -9,11 +8,7 @@ import {
     WebhookHeaderKeyType,
 } from './types'
 
-export const WebhookConfigDynamicDataTable = ({ rows, setRows, headers }: WebhookConfigDynamicDataTableProps) => {
-    useEffect(() => {
-        setRows(getInitialWebhookKeyRow(headers))
-    }, [])
-
+export const WebhookConfigDynamicDataTable = ({ rows, setRows }: WebhookConfigDynamicDataTableProps) => {
     const handleRowUpdateAction = ({ actionType, actionValue, rowId, headerKey }: HandleRowUpdateActionProps) => {
         let updatedRows: WebhookDataRowType[] = [...rows]
         switch (actionType) {
@@ -42,7 +37,6 @@ export const WebhookConfigDynamicDataTable = ({ rows, setRows, headers }: Webhoo
     }
 
     const dataTableHandleChange = (updatedRow: WebhookDataRowType, headerKey: WebhookHeaderKeyType, value: string) => {
-        if (!updatedRow || !updatedRow.id) return
         handleRowUpdateAction({
             actionType: VariableDataTableActionType.UPDATE_ROW,
             actionValue: value,
