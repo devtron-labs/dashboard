@@ -18,6 +18,7 @@ import {
     showError,
     getCompareSecretsData,
     useMainContext,
+    DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
@@ -54,6 +55,7 @@ export const usePipelineDeploymentConfig = ({
 
     // SEARCH PARAMS & SORTING
     const urlFilters = useUrlFilters<string, PipelineConfigDiffQueryParamsType>({
+        initialSortKey: DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
         parseSearchParams: parseCompareWithSearchParams(isRollbackTriggerSelected),
     })
     const { deploy, mode, updateSearchParams, handleSorting } = urlFilters
