@@ -104,9 +104,7 @@ const CompareWithDropdown = ({
                     label: GROUPED_OPTION_LABELS.DefaultValues,
                     options:
                         defaultChartValues?.length > 0
-                            ? [...(defaultChartValues)].sort((a, b) =>
-                                  versionComparatorBySortOrder(a.version, b.version),
-                              )
+                            ? [...defaultChartValues].sort((a, b) => versionComparatorBySortOrder(a.version, b.version))
                             : noOptions,
                 },
             )
