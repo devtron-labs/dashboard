@@ -30,6 +30,7 @@ import {
     SelectPicker,
     ButtonVariantType,
     ButtonStyleType,
+    ResourceListPayloadType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
 import {
@@ -44,7 +45,7 @@ import {
     getResourceGroupList,
     namespaceListByClusterId,
 } from '../../../../../../components/ResourceBrowser/ResourceBrowser.service'
-import { K8SObjectType, ResourceListPayloadType } from '../../../../../../components/ResourceBrowser/Types'
+import { K8SObjectType } from '../../../../../../components/ResourceBrowser/Types'
 import { formatOptionLabel } from '../../../../../../components/v2/common/ReactSelect.utils'
 import { ReactComponent as Clone } from '../../../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Delete } from '../../../../../../assets/icons/ic-delete-interactive.svg'

@@ -1,354 +1,251 @@
-/*
- * Copyright (c) 2024. Devtron Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import React, { Component } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
     showError,
-    Progressing,
     getTeamListMin as getProjectListMin,
-    Drawer,
     CustomInput,
     ToastManager,
     ToastVariantType,
+    SelectPicker,
+    ComponentSizeType,
+    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { Select } from '../common'
-import { ViewType } from '../../config/constants'
-import { saveSlackConfiguration, updateSlackConfiguration, getSlackConfiguration } from './notifications.service'
+import { useHistory } from 'react-router-dom'
+import { saveSlackConfiguration, getSlackConfiguration } from './notifications.service'
 import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
-import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
+import { ProjectListTypes, SlackConfigModalProps, SlackFormType } from './types'
+import {
+    ConfigurationFieldKeys,
+    ConfigurationsTabTypes,
+    DefaultSlackKeys,
+    DefaultSlackValidations,
+    SlackIncomingWebhookUrl,
+} from './constants'
+import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
+import { getValidationFormConfig, renderErrorToast, validateKeyValueConfig } from './notifications.util'
 
-export interface SlackConfigModalProps {
-    slackConfigId: number
-    onSaveSuccess: () => void
-    closeSlackConfigModal: (event) => void
-}
+export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
+    slackConfigId,
+    onSaveSuccess,
+    closeSlackConfigModal,
+}: SlackConfigModalProps) => {
+    const history = useHistory()
+    const projectRef = useRef(null)
 
-export interface SlackConfigModalState {
-    view: string
-    projectList: Array<{ id: number; name: string; active: boolean }>
-    form: {
-        projectId: number
-        configName: string
-        webhookUrl: string
-        isLoading: boolean
-        isError: boolean
-    }
-    isValid: {
-        projectId: boolean
-        configName: boolean
-        webhookUrl: boolean
-    }
-}
+    const [projectList, setProjectList] = useState<ProjectListTypes[]>([])
+    const [selectedProject, setSelectedProject] = useState<OptionType>()
+    const [form, setForm] = useState<SlackFormType>(DefaultSlackKeys)
+    const [isFormValid, setFormValid] = useState(DefaultSlackValidations)
 
-export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConfigModalState> {
-    constructor(props) {
-        super(props)
-        this.state = {
-            view: ViewType.LOADING,
-            projectList: [],
-            form: {
-                projectId: 0,
-                configName: '',
-                webhookUrl: '',
-                isLoading: false,
-                isError: false,
-            },
-            isValid: {
-                projectId: true,
-                configName: true,
-                webhookUrl: true,
-            },
-        }
-        this.handleSlackChannelChange = this.handleSlackChannelChange.bind(this)
-        this.handleWebhookUrlChange = this.handleWebhookUrlChange.bind(this)
-        this.handleProjectChange = this.handleProjectChange.bind(this)
-        this.isValid = this.isValid.bind(this)
-        this.onSaveClickHandler = this.onSaveClickHandler.bind(this)
-    }
-
-    componentDidMount() {
-        if (this.props.slackConfigId) {
-            Promise.all([getSlackConfiguration(this.props.slackConfigId), getProjectListMin()])
-                .then(([slackConfigRes, projectListRes]) => {
-                    const state = { ...this.state }
-                    state.view = ViewType.FORM
-                    state.projectList = projectListRes.result || []
-                    state.form = { ...slackConfigRes.result }
-                    state.isValid = {
-                        projectId: true,
-                        configName: true,
-                        webhookUrl: true,
-                    }
-                    this.setState(state)
+    const fetchSlackConfig = async () => {
+        setForm((prevForm) => ({ ...prevForm, isLoading: true }))
+        Promise.all([getSlackConfiguration(slackConfigId), getProjectListMin()])
+            .then(([slackConfigRes, projectListRes]) => {
+                setProjectList(projectListRes.result || [])
+                setForm({ ...slackConfigRes.result, isLoading: false })
+                setFormValid(DefaultSlackValidations)
+                setSelectedProject({
+                    label: projectListRes.result.find((p) => p.id === slackConfigRes.result.projectId).name,
+                    value: slackConfigRes.result.projectId,
                 })
-                .catch((error) => {
-                    showError(error)
-                })
-        } else {
-            getProjectListMin()
-                .then((response) => {
-                    this.setState({
-                        projectList: response.result || [],
-                        view: ViewType.FORM,
-                    })
-                })
-                .catch((error) => {
-                    showError(error)
-                })
-        }
-    }
-
-    handleSlackChannelChange(event: React.ChangeEvent<HTMLInputElement>): void {
-        const { form } = { ...this.state }
-        form.configName = event.target.value
-        this.setState({ form })
-    }
-
-    isValid(event, key: 'configName' | 'webhookUrl' | 'projectId'): void {
-        const { form, isValid } = { ...this.state }
-        if (key === 'projectId') {
-            isValid[key] = event.target.value
-        } else {
-            isValid[key] = event.target.value.length !== 0
-        }
-        this.setState({ form, isValid })
-    }
-
-    handleWebhookUrlChange(event: React.ChangeEvent<HTMLInputElement>): void {
-        const { form } = { ...this.state }
-        form.webhookUrl = event.target.value
-        this.setState({ form })
-    }
-
-    handleProjectChange(event: React.ChangeEvent<HTMLInputElement>): void {
-        const { form, isValid } = { ...this.state }
-        form.projectId = Number(event.target.value)
-        isValid.projectId = !!event.target.value
-        this.setState({ form, isValid })
-    }
-
-    saveSlackConfig(): void {
-        const state = { ...this.state }
-        state.form.isLoading = true
-        state.isValid.projectId = !!state.form.projectId
-        this.setState(state)
-        const keys = Object.keys(this.state.isValid)
-        const isFormValid = keys.reduce((isFormValid, key) => {
-            isFormValid = isFormValid && this.state.isValid[key]
-            return isFormValid
-        }, true)
-
-        if (!isFormValid) {
-            state.form.isLoading = false
-            state.form.isError = true
-            this.setState(state)
-            return
-        }
-        const requestBody = this.state.form
-        if (this.props.slackConfigId) {
-            requestBody['id'] = this.props.slackConfigId
-        }
-        const promise = this.props.slackConfigId
-            ? updateSlackConfiguration(requestBody)
-            : saveSlackConfiguration(requestBody)
-        promise
-            .then((response) => {
-                const state = { ...this.state }
-                state.form.isLoading = false
-                state.form.isError = false
-                this.setState(state)
-                ToastManager.showToast({
-                    variant: ToastVariantType.success,
-                    description: 'Saved Successfully',
-                })
-                this.props.onSaveSuccess()
             })
             .catch((error) => {
                 showError(error)
+                setForm((prevForm) => ({ ...prevForm, isLoading: false }))
             })
     }
 
-    renderWithBackdrop(body) {
-        return (
-            <Drawer position="right">
-                <div className="h-100 modal__body modal__body--w-600 modal__body--p-0 dc__no-border-radius mt-0">
-                    <div className="h-48 flex flex-align-center dc__border-bottom flex-justify bg__primary pb-12 pt-12 pl-20 pr-20">
-                        <h1 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Configure Slack</h1>
-                        <button type="button" className="dc__transparent" onClick={this.props.closeSlackConfigModal}>
-                            <Close className="icon-dim-24" />
-                        </button>
-                    </div>
-                    {body}
-                </div>
-            </Drawer>
-        )
-    }
-
-    onSaveClickHandler(event) {
-        event.preventDefault()
-        this.saveSlackConfig()
-    }
-
-    renderWebhookUrlLabel = () => {
-        return (
-            <div className="flex">
-                <div className="dc__required-field">Webhook URL </div>
-                <div>
-                    <Tippy
-                        className="default-tt"
-                        arrow
-                        trigger="click"
-                        interactive
-                        placement="top"
-                        content={
-                            <a
-                                href="https://slack.com/intl/en-gb/help/articles/115005265063-Incoming-webhooks-for-Slack"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text__white"
-                                style={{ textTransform: 'none' }}
-                            >
-                                Learn how to setup slack webhooks
-                            </a>
-                        }
-                    >
-                        <div className="flex">
-                            <ICHelpOutline className="ml-5 dc__vertical-align-middle icon-dim-16 cursor" />
-                        </div>
-                    </Tippy>
-                </div>
-            </div>
-        )
-    }
-
-    render() {
-        const project = this.state.projectList.find((p) => p.id === this.state.form.projectId)
-        let body
-        if (this.state.view === ViewType.LOADING) {
-            body = (
-                <div style={{ height: '350px' }}>
-                    <Progressing pageLoader />
-                </div>
-            )
+    useEffect(() => {
+        if (slackConfigId) {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            fetchSlackConfig()
         } else {
-            body = (
-                <>
-                    <div className="m-20" style={{ height: 'calc(100vh - 160px' }}>
-                        <label className="form__row">
-                            <CustomInput
-                                data-testid="add-slack-channel"
-                                label="Slack Channel"
-                                name="app-name"
-                                value={this.state.form.configName}
-                                onChange={this.handleSlackChannelChange}
-                                onBlur={(event) => this.isValid(event, 'configName')}
-                                placeholder="channel name"
-                                autoFocus
-                                tabIndex={1}
-                                isRequiredField
-                                error={!this.state.isValid.configName && REQUIRED_FIELD_MSG}
-                            />
-                        </label>
-                        <label className="form__row">
-                            <CustomInput
-                                data-testid="add-webhook-url"
-                                label={this.renderWebhookUrlLabel()}
-                                type="text"
-                                name="app-name"
-                                value={this.state.form.webhookUrl}
-                                placeholder="Enter Incoming Webhook URL"
-                                tabIndex={2}
-                                onChange={this.handleWebhookUrlChange}
-                                onBlur={(event) => this.isValid(event, 'webhookUrl')}
-                                isRequiredField
-                                error={!this.state.isValid.webhookUrl && REQUIRED_FIELD_MSG}
-                            />
-                        </label>
-                        <div>
-                            <label className="form__label flexbox-imp">
-                                <span className="dc__required-field">Project</span>
-                                <Tippy
-                                    className="default-tt"
-                                    arrow
-                                    trigger="click"
-                                    interactive
-                                    placement="top"
-                                    content="Required to control user Acccess"
-                                >
-                                    <div>
-                                        <ICHelpOutline className="ml-5 dc__vertical-align-middle icon-dim-16 cursor" />
-                                    </div>
-                                </Tippy>
-                            </label>
-                            <Select
-                                value={this.state.form.projectId}
-                                onChange={this.handleProjectChange}
-                                tabIndex={3}
-                                rootClassName="select-button--default"
-                            >
-                                <Select.Button dataTestIdDropdown="slack-select-project-button">
-                                    {project ? project.name : 'Select Project'}
-                                </Select.Button>
-                                {this.state.projectList.map((p) => {
-                                    return (
-                                        <Select.Option dataTestIdMenuList={p.name} key={p.id} value={p.id}>
-                                            {p.name}
-                                        </Select.Option>
-                                    )
-                                })}
-                            </Select>
-                            <span className="form__error">
-                                {!this.state.isValid.projectId ? (
-                                    <>
-                                        <Error className="form__icon form__icon--error" />
-                                        This is as required field. <br />
-                                    </>
-                                ) : null}
-                            </span>
-                        </div>
-                    </div>
-                    <div className="form__button-group-bottom flex right">
-                        <div className="flex right">
-                            <button
-                                type="button"
-                                className="cta cancel mr-16"
-                                tabIndex={5}
-                                onClick={this.props.closeSlackConfigModal}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={this.onSaveClickHandler}
-                                data-testid="add-slack-save-button"
-                                type="submit"
-                                className="cta"
-                                tabIndex={4}
-                                disabled={this.state.form.isLoading}
-                            >
-                                {this.state.form.isLoading ? <Progressing /> : 'Save'}
-                            </button>
-                        </div>
-                    </div>
-                </>
-            )
+            getProjectListMin()
+                .then((response) => {
+                    setProjectList(response.result || [])
+                    setForm((prevForm) => ({ ...prevForm, isLoading: false }))
+                })
+                .catch((error) => {
+                    showError(error)
+                    setForm((prevForm) => ({ ...prevForm, isLoading: false }))
+                })
+        }
+    }, [slackConfigId])
+
+    const closeSlackConfig = () => {
+        if (typeof closeSlackConfigModal === 'function') {
+            closeSlackConfigModal()
+        } else {
+            const newParams = {
+                modal: ConfigurationsTabTypes.SLACK,
+            }
+            history.push({
+                search: new URLSearchParams(newParams).toString(),
+            })
+        }
+    }
+
+    const validateSave = (): boolean => {
+        const formConfig = [
+            { key: ConfigurationFieldKeys.CONFIG_NAME, value: form.configName },
+            { key: ConfigurationFieldKeys.WEBHOOK_URL, value: form.webhookUrl },
+            { key: ConfigurationFieldKeys.PROJECT_ID, value: selectedProject?.value ?? '' },
+        ]
+        const { allValid, formValidations } = getValidationFormConfig(formConfig)
+        setFormValid((prevValid) => ({ ...prevValid, ...formValidations }))
+        return allValid
+    }
+
+    const saveSlackConfig = async () => {
+        if (!validateSave()) {
+            renderErrorToast()
+            return
         }
 
-        return this.renderWithBackdrop(body)
+        const requestBody = {
+            channel: ConfigurationsTabTypes.SLACK,
+            configs: [
+                {
+                    id: slackConfigId,
+                    configName: form.configName,
+                    webhookUrl: form.webhookUrl,
+                    teamId: form.projectId,
+                },
+            ],
+        }
+        setForm((prevForm) => ({ ...prevForm, isLoading: true }))
+
+        try {
+            await saveSlackConfiguration(requestBody)
+            setForm((prevForm) => ({ ...prevForm, isLoading: false }))
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Saved Successfully',
+            })
+            onSaveSuccess()
+            closeSlackConfig()
+        } catch (error) {
+            showError(error)
+            setForm((prevForm) => ({ ...prevForm, isLoading: false }))
+        }
     }
+
+    const renderInfoText = () => (
+        <a href={SlackIncomingWebhookUrl} target="_blank" rel="noopener noreferrer">
+            <span className="dc__link">How to setup slack webhooks?</span>
+        </a>
+    )
+
+    const renderWebhookUrlLabel = () => (
+        <div className="flex left dc__gap-6">
+            <div className="dc__required-field">Webhook URL </div>
+            {renderInfoText()}
+        </div>
+    )
+
+    const renderProjectLabel = () => (
+        <div className="flex dc__gap-6 left">
+            <span className="dc__required-field">Project</span>
+            <Tippy
+                className="default-tt"
+                arrow
+                trigger="click"
+                interactive
+                placement="top"
+                content="Required to control user Access"
+            >
+                <span>
+                    <ICHelpOutline className="icon-dim-16 cursor flex" />
+                </span>
+            </Tippy>
+        </div>
+    )
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = event.target
+        setForm((prevForm) => ({ ...prevForm, [name]: value }))
+        setFormValid((prevValid) => ({
+            ...prevValid,
+            [name]: validateKeyValueConfig(name as ConfigurationFieldKeys, value),
+        }))
+    }
+
+    const handleBlur = (e) => {
+        const { name, value } = e.target
+        setFormValid((prevValid) => ({ ...prevValid, [name]: validateKeyValueConfig(name, value) }))
+    }
+
+    const handleProjectChange = (_selectedProject) => {
+        setSelectedProject(_selectedProject)
+        setForm((prevForm) => ({
+            ...prevForm,
+            projectId: Number(_selectedProject?.value),
+        }))
+        setFormValid((prevValid) => ({
+            ...prevValid,
+            projectId: validateKeyValueConfig(ConfigurationFieldKeys.PROJECT_ID, _selectedProject?.value ?? ''),
+        }))
+    }
+
+    const handleProjectBlur = () => {
+        const selectedValue = selectedProject
+        setFormValid((prevValid) => ({
+            ...prevValid,
+            [ConfigurationFieldKeys.PROJECT_ID]: validateKeyValueConfig(
+                ConfigurationFieldKeys.PROJECT_ID,
+                selectedValue?.value ?? '',
+            ),
+        }))
+    }
+
+    const renderContent = () => (
+        <div className="dc__gap-16 flex-grow-1 flexbox-col mh-0 p-20 dc__overflow-auto">
+            <CustomInput
+                data-testid="add-slack-channel"
+                label="Slack Channel"
+                name={ConfigurationFieldKeys.CONFIG_NAME}
+                value={form.configName}
+                onChange={handleInputChange}
+                onBlur={handleBlur}
+                placeholder="Enter channel name"
+                autoFocus
+                isRequiredField
+                error={isFormValid[ConfigurationFieldKeys.CONFIG_NAME].message}
+            />
+            <CustomInput
+                data-testid="add-webhook-url"
+                label={renderWebhookUrlLabel()}
+                name={ConfigurationFieldKeys.WEBHOOK_URL}
+                value={form.webhookUrl}
+                placeholder="Enter incoming webhook URL"
+                onChange={handleInputChange}
+                onBlur={handleBlur}
+                isRequiredField
+                error={isFormValid[ConfigurationFieldKeys.WEBHOOK_URL].message}
+            />
+            <SelectPicker
+                name={ConfigurationFieldKeys.PROJECT_ID}
+                label={renderProjectLabel()}
+                inputId="slack-project"
+                value={selectedProject}
+                onChange={handleProjectChange}
+                placeholder="Select Project"
+                options={projectList.map((p) => ({ label: p.name, value: p.id.toString() }))}
+                size={ComponentSizeType.large}
+                error={isFormValid[ConfigurationFieldKeys.PROJECT_ID].message}
+                onBlur={handleProjectBlur}
+                selectRef={projectRef}
+            />
+        </div>
+    )
+
+    return (
+        <ConfigurationTabDrawerModal
+            renderContent={renderContent}
+            closeModal={closeSlackConfig}
+            modal={ConfigurationsTabTypes.SLACK}
+            isLoading={form.isLoading}
+            saveConfigModal={saveSlackConfig}
+        />
+    )
 }

@@ -83,6 +83,8 @@ import {
     ComponentSizeType,
     ButtonStyleType,
     AnimatedDeployButton,
+    triggerCDNode,
+    DEFAULT_ROUTE_PROMPT_MESSAGE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -108,7 +110,6 @@ import { ReactComponent as PlayIC } from '@Icons/ic-play-outline.svg'
 import noArtifact from '../../../../assets/img/no-artifact@2x.png'
 import { importComponentFromFELibrary, useAppContext } from '../../../common'
 import { CDButtonLabelMap, TriggerViewContext } from './config'
-import { triggerCDNode } from '../../service'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import {
     LAST_SAVED_CONFIG_OPTION,
@@ -118,7 +119,7 @@ import {
 import { TRIGGER_VIEW_GA_EVENTS, CD_MATERIAL_GA_EVENT, TRIGGER_VIEW_PARAMS } from './Constants'
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
 import { getInitialState, getWfrId } from './cdMaterials.utils'
-import { DEFAULT_ROUTE_PROMPT_MESSAGE, URLS } from '../../../../config'
+import { URLS } from '../../../../config'
 import { PipelineConfigDiff } from './PipelineConfigDiff'
 import { usePipelineDeploymentConfig } from './PipelineConfigDiff/usePipelineDeploymentConfig'
 import { PipelineConfigDiffStatusTile } from './PipelineConfigDiff/PipelineConfigDiffStatusTile'
@@ -130,7 +131,7 @@ const ApprovalEmptyState = importComponentFromFELibrary('ApprovalEmptyState')
 const FilterActionBar = importComponentFromFELibrary('FilterActionBar')
 const ConfiguredFilters = importComponentFromFELibrary('ConfiguredFilters')
 const CDMaterialInfo = importComponentFromFELibrary('CDMaterialInfo')
-const getDownloadManifestUrl = importComponentFromFELibrary('getDownloadManifestUrl', null, 'function')
+const downloadManifestForVirtualEnvironment = importComponentFromFELibrary('downloadManifestForVirtualEnvironment', null, 'function')
 const ImagePromotionInfoChip = importComponentFromFELibrary('ImagePromotionInfoChip', null, 'function')
 const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     'getDeploymentWindowProfileMetaData',
@@ -147,6 +148,7 @@ const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlock
 const TriggerBlockEmptyState = importComponentFromFELibrary('TriggerBlockEmptyState', null, 'function')
 const getPolicyConsequences: ({ appId, envId }: GetPolicyConsequencesProps) => Promise<PolicyConsequencesDTO> =
     importComponentFromFELibrary('getPolicyConsequences', null, 'function')
+const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
 const validateRuntimeParameters = importComponentFromFELibrary(
     'validateRuntimeParameters',
     () => ({ isValid: true, cellError: {} }),
@@ -849,35 +851,6 @@ const CDMaterial = ({
         }
     }
 
-    const getHelmPackageName = (helmPackageName: string, cdWorkflowType: string) => {
-        // Not using WorkflowType enum since sending DeploymentNodeType
-        if (cdWorkflowType === DeploymentNodeType.PRECD) {
-            return `${helmPackageName} (Pre)`
-        }
-        if (cdWorkflowType === DeploymentNodeType.POSTCD) {
-            return `${helmPackageName} (Post)`
-        }
-        return helmPackageName
-    }
-
-    const onClickManifestDownload = (appId: number, envId: number, helmPackageName: string, cdWorkflowType: string) => {
-        if (!getDownloadManifestUrl) {
-            return
-        }
-        const downloadManifestDownload = {
-            appId,
-            envId,
-            appName: getHelmPackageName(helmPackageName, cdWorkflowType),
-            cdWorkflowType,
-        }
-        const downloadUrl = getDownloadManifestUrl(downloadManifestDownload)
-        handleDownload({
-            downloadUrl,
-            fileName: downloadManifestDownload.appName,
-            downloadSuccessToastContent: 'Manifest Downloaded Successfully',
-        })
-    }
-
     const showErrorIfNotAborted = (errors: ServerErrors) => {
         if (!getIsRequestAborted(errors)) {
             showError(errors)
@@ -907,20 +880,32 @@ const CDMaterial = ({
 
         if (_appId && pipelineId && ciArtifactId) {
             triggerCDNode({
-                pipelineId,
-                ciArtifactId,
-                appId: _appId.toString(),
+                pipelineId: Number(pipelineId),
+                ciArtifactId: Number(ciArtifactId),
+                appId: Number(_appId),
                 stageType: nodeType,
                 deploymentWithConfig,
                 wfrId,
-                abortSignal: abortDeployRef.current.signal,
-                runtimeParams: runtimeParamsList,
+                abortControllerRef: abortDeployRef,
+                isRollbackTrigger: state.isRollbackTrigger,
+                ...(
+                    getRuntimeParamsPayload
+                        ? { runtimeParamsPayload: getRuntimeParamsPayload(runtimeParamsList ?? []) }
+                        : {}
+                ),
             })
                 .then((response: any) => {
                     if (response.result) {
-                        isVirtualEnvironment &&
-                            deploymentAppType == DeploymentAppTypes.MANIFEST_DOWNLOAD &&
-                            onClickManifestDownload(_appId, envId, response.result.helmPackageName, nodeType)
+                        if (isVirtualEnvironment && deploymentAppType == DeploymentAppTypes.MANIFEST_DOWNLOAD) {
+                            const { helmPackageName } = response.result
+                            downloadManifestForVirtualEnvironment?.({
+                                appId: _appId,
+                                envId,
+                                helmPackageName,
+                                cdWorkflowType: nodeType,
+                                handleDownload,
+                            })
+                        }
 
                         const msg =
                             materialType == MATERIAL_TYPE.rollbackMaterialList
@@ -1739,7 +1724,6 @@ const CDMaterial = ({
                             noLastDeploymentConfig={noLastDeploymentConfig}
                             canReviewConfig={canReviewConfig()}
                             urlFilters={urlFilters}
-                            showConfigNotAvailableTooltip={disableDeployButton}
                             renderConfigNotAvailableTooltip={renderTippyContent}
                         />
                     )}

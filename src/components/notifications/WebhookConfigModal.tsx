@@ -13,418 +13,265 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React, { Component } from 'react'
+import { useState, useEffect } from 'react'
 import {
     showError,
-    Progressing,
-    getTeamListMin as getProjectListMin,
-    Drawer,
     CustomInput,
     ClipboardButton,
     CodeEditor,
     ToastVariantType,
     ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ViewType } from '../../config/constants'
-import { getWebhookAttributes, getWebhookConfiguration, saveUpdateWebhookConfiguration } from './notifications.service'
-import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import { useHistory } from 'react-router-dom'
+import { ReactComponent as ErrorIcon } from '@Icons/ic-warning.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
-import { WebhhookConfigModalState, WebhookConfigModalProps } from './types'
-import CreateHeaderDetails from './CreateHeaderDetails'
-import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
+import { getWebhookAttributes, getWebhookConfiguration, saveUpdateWebhookConfiguration } from './notifications.service'
+import {
+    ConfigurationFieldKeys,
+    ConfigurationsTabTypes,
+    DefaultWebhookConfig,
+    DefaultWebhookValidations,
+} from './constants'
+import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
+import { WebhookConfigModalProps, WebhookDataRowType, WebhookFormTypes, WebhookValidations } from './types'
+import { WebhookConfigDynamicDataTable } from './WebhookConfigDynamicDataTable'
+import {
+    getEmptyVariableDataRow,
+    getInitialWebhookKeyRow,
+    getValidationFormConfig,
+    renderErrorToast,
+    validateKeyValueConfig,
+    validatePayloadField,
+} from './notifications.util'
 
-export class WebhookConfigModal extends Component<WebhookConfigModalProps, WebhhookConfigModalState> {
-    constructor(props) {
-        super(props)
-        this.state = {
-            view: ViewType.LOADING,
-            form: {
-                configName: '',
-                webhookUrl: '',
+export const WebhookConfigModal = ({
+    webhookConfigId,
+    closeWebhookConfigModal,
+    onSaveSuccess,
+}: WebhookConfigModalProps) => {
+    const [form, setForm] = useState<WebhookFormTypes>(DefaultWebhookConfig)
+    const [rows, setRows] = useState<WebhookDataRowType[]>()
+    const [isFormValid, setFormValid] = useState<WebhookValidations>(DefaultWebhookValidations)
+
+    const history = useHistory()
+    const [webhookAttribute, setWebhookAttribute] = useState({})
+
+    const fetchWebhookData = async () => {
+        setForm((prev) => ({ ...prev, isLoading: true }))
+        try {
+            // Fetch webhook configuration
+            const response = await getWebhookConfiguration(webhookConfigId)
+            const { header = {}, payload = '' } = response?.result || {}
+            // Update form state with response data
+            setForm((prev) => ({
+                ...prev,
+                ...response?.result,
+                header,
+                payload,
                 isLoading: false,
-                isError: false,
-                payload: '',
-                header: [{ key: '', value: '' }],
-            },
-            isValid: {
-                configName: true,
-                webhookUrl: true,
-                payload: true,
-            },
-            webhookAttribute: {},
-            copyAttribute: false,
+            }))
+            setRows(getInitialWebhookKeyRow(header))
+        } catch (error) {
+            // Show error message and reset loading state
+            showError(error)
+            setForm((prev) => ({ ...prev, isLoading: false }))
         }
-        this.handleWebhookConfigNameChange = this.handleWebhookConfigNameChange.bind(this)
-        this.handleWebhookUrlChange = this.handleWebhookUrlChange.bind(this)
-        this.handleWebhookPaylodChange = this.handleWebhookPaylodChange.bind(this)
-        this.addNewHeader = this.addNewHeader.bind(this)
-        this.renderHeadersList = this.renderHeadersList.bind(this)
-        this.setHeaderData = this.setHeaderData.bind(this)
-        this.removeHeader = this.removeHeader.bind(this)
-        this.renderHeadersList = this.renderHeadersList.bind(this)
-        this.setCopied = this.setCopied.bind(this)
-        this.isValid = this.isValid.bind(this)
-        this.onSaveClickHandler = this.onSaveClickHandler.bind(this)
-        this.onClickSave = this.onClickSave.bind(this)
-        this.onBlur = this.onBlur.bind(this)
     }
 
-    componentDidMount() {
-        if (this.props.webhookConfigId) {
-            getWebhookConfiguration(this.props.webhookConfigId)
-                .then((response) => {
-                    const state = { ...this.state }
-                    const _headers = [...this.state.form.header]
-                    state.view = ViewType.FORM
-                    const _responseKeys = response.result?.header ? Object.keys(response.result.header) : []
-                    _responseKeys.forEach((_key) => {
-                        _headers.push({ key: _key, value: response.result.header[_key] })
-                    })
-                    const _responsePayload = response.result?.payload ?? ''
-                    state.form = {
-                        ...response.result,
-                        header: _headers,
-                        payload: _responsePayload,
-                    }
-                    state.isValid = {
-                        configName: true,
-                        webhookUrl: true,
-                        payload: true,
-                    }
-                    this.setState(state)
-                })
-                .catch((error) => {
-                    showError(error)
-                })
+    const fetchAttribute = async () => {
+        setForm((prev) => ({ ...prev, isLoading: true }))
+        try {
+            // Fetch webhook attributes
+            const attributesResponse = await getWebhookAttributes()
+            setWebhookAttribute(attributesResponse?.result || {})
+            setForm((prev) => ({ ...prev, isLoading: false }))
+        } catch (error) {
+            showError(error)
+            setForm((prev) => ({ ...prev, isLoading: false }))
+        }
+    }
+
+    useEffect(() => {
+        // Fetch webhook attributes
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        fetchAttribute()
+    }, [])
+
+    useEffect(() => {
+        if (webhookConfigId) {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            fetchWebhookData()
         } else {
-            getProjectListMin()
-                .then((response) => {
-                    this.setState({
-                        view: ViewType.FORM,
-                    })
-                })
-                .catch((error) => {
-                    showError(error)
-                })
+            setRows([getEmptyVariableDataRow()])
         }
-        getWebhookAttributes()
-            .then((response) => {
-                const state = { ...this.state }
-                state.webhookAttribute = { ...response.result }
-                this.setState(state)
-            })
-            .catch((error) => {
-                showError(error)
-            })
-    }
+    }, [webhookConfigId])
 
-    handleWebhookConfigNameChange(event: React.ChangeEvent<HTMLInputElement>): void {
-        const { form } = { ...this.state }
-        form.configName = event.target.value
-        this.setState({ form })
-    }
-
-    isValid(event, key: 'configName' | 'webhookUrl' | 'payload'): void {
-        const { form, isValid } = { ...this.state }
-        if (key != 'payload') {
-            isValid[key] = event.target.value.length !== 0
-        } else if (this.state.form.payload != '') {
-            try {
-                isValid[key] = event.target.value.length !== 0
-                if (isValid[key]) {
-                    isValid[key] = true
-                }
-            } catch (err) {
-                isValid[key] = false
+    const closeWebhookConfig = () => {
+        if (typeof closeWebhookConfigModal === 'function') {
+            closeWebhookConfigModal()
+        } else {
+            const newParams = {
+                modal: ConfigurationsTabTypes.WEBHOOK,
             }
+            history.push({
+                search: new URLSearchParams(newParams).toString(),
+            })
         }
-        this.setState({ form, isValid })
     }
 
-    handleWebhookUrlChange(event: React.ChangeEvent<HTMLInputElement>): void {
-        const { form } = { ...this.state }
-        form.webhookUrl = event.target.value
-        this.setState({ form })
+    const handleInputChange = (event) => {
+        const { name, value } = event.target
+        setForm((prev) => ({ ...prev, [name]: value }))
+        setFormValid((prev) => ({ ...prev, [name]: validateKeyValueConfig(name, value) }))
     }
 
-    handleWebhookPaylodChange(value): void {
-        const { form } = { ...this.state }
-        form.payload = value
-        this.setState({ form })
+    const handleIncomingPayloadChange = (value) => {
+        setForm((prev) => ({ ...prev, payload: value }))
+        setFormValid((prev) => ({ ...prev, payload: validatePayloadField(value) }))
     }
 
-    saveWebhookConfig(): void {
-        const state = { ...this.state }
-        state.form.isLoading = true
-        this.setState(state)
-        const keys = Object.keys(this.state.isValid)
-        const isFormValid = keys.reduce((isFormValid, key) => {
-            isFormValid = isFormValid && this.state.isValid[key]
-            return isFormValid
-        }, true)
-        if (!isFormValid) {
-            state.form.isLoading = false
-            state.form.isError = true
-            this.setState(state)
+    const renderDataList = () => (
+        <div className="flexbox-col flex-grow-1 dc__overflow-auto dc__gap-8">
+            {Object.keys(webhookAttribute).map((attribute, index) => (
+                <div
+                    className="dc__visible-hover dc__visible-hover--parent w-100-imp cn-8 flexbox data-container hover-trigger dc__gap-6"
+                    data-testid={`${webhookAttribute[attribute]}-${index}`}
+                    key={`${attribute}`}
+                >
+                    <p className="bcn-1 br-6 fs-14 lh-20 px-4 mono m-0">{webhookAttribute[attribute]}</p>
+                    <div className="flex dc__visible-hover--child">
+                        <ClipboardButton content={webhookAttribute[attribute]} />
+                    </div>
+                </div>
+            ))}
+        </div>
+    )
+
+    const renderConfigureLinkInfoColumn = () => (
+        <div
+            className="h-100 w-280 flexbox-col left mh-0 p-16 dc__overflow-scroll dc__gap-16 fs-13"
+            data-testid="available-webhook-data"
+        >
+            <div className="flexbox lh-20 fw-6">
+                <Help className="icon-dim-18 fcv-5" />
+                <span className="ml-8 fw-6 fs-13 lh-20"> Available data</span>
+            </div>
+            <p className="lh-20 m-0">
+                Following data are available to be shared through Webhook. Use Payload to configure.
+            </p>
+            {renderDataList()}
+        </div>
+    )
+
+    const validateSave = (): boolean => {
+        const formConfig = [
+            { key: ConfigurationFieldKeys.CONFIG_NAME, value: form.configName },
+            { key: ConfigurationFieldKeys.WEBHOOK_URL, value: form.webhookUrl },
+            { key: ConfigurationFieldKeys.PAYLOAD, value: form.payload },
+        ]
+        const { allValid, formValidations } = getValidationFormConfig(formConfig)
+        setFormValid((prevValid) => ({ ...prevValid, ...formValidations }))
+        return allValid
+    }
+
+    const saveWebhookConfig = async () => {
+        if (!validateSave()) {
+            renderErrorToast()
             return
         }
-        const requestBody = this.state.form
-        if (this.props.webhookConfigId) {
-            requestBody['id'] = this.props.webhookConfigId
-        } else {
-            requestBody['id'] = 0
+
+        const headers = rows?.reduce((acc, row) => {
+            acc[row.data.key.value] = row.data.value.value
+            return acc
+        }, {})
+        setForm((prev) => ({ ...prev, isLoading: true }))
+
+        try {
+            const requestBody = {
+                channel: ConfigurationsTabTypes.WEBHOOK,
+                configs: [
+                    {
+                        configName: form.configName,
+                        webhookUrl: form.webhookUrl,
+                        payload: form.payload,
+                        id: webhookConfigId,
+                        header: headers,
+                    },
+                ],
+            }
+            await saveUpdateWebhookConfiguration(requestBody)
+            ToastManager.showToast({ variant: ToastVariantType.success, description: 'Saved Successfully' })
+            onSaveSuccess()
+            closeWebhookConfig()
+        } catch (error) {
+            showError(error)
+        } finally {
+            setForm((prev) => ({ ...prev, isLoading: false }))
         }
-        saveUpdateWebhookConfiguration(requestBody)
-            .then((response) => {
-                const state = { ...this.state }
-                state.form.isLoading = false
-                state.form.isError = false
-                this.setState(state)
-                ToastManager.showToast({
-                    variant: ToastVariantType.success,
-                    description: 'Saved Successfully',
-                })
-                this.props.onSaveSuccess()
-            })
-            .catch((error) => {
-                showError(error)
-            })
     }
 
-    setHeaderData(index, _headerData) {
-        const _headers = [...this.state.form.header]
-        _headers[index] = _headerData
-        const { form } = { ...this.state }
-        form.header = _headers
-        this.setState({ form })
+    const handleBlur = (event) => {
+        const { name, value } = event.target
+        setFormValid((prev) => ({ ...prev, [name]: validateKeyValueConfig(name, value) }))
     }
+    const renderWebhookModal = () => (
+        <div className="webhook-config-modal webhook-config-modal h-100 cn-9 w-100 mh-0">
+            <div className="p-20 flex-grow-1 flexbox-col mh-0 dc__overflow-auto dc__gap-16 dc__border-right">
+                <CustomInput
+                    label="Configuration name"
+                    value={form.configName}
+                    onChange={handleInputChange}
+                    placeholder="Enter a name"
+                    error={isFormValid[ConfigurationFieldKeys.CONFIG_NAME].message}
+                    name={ConfigurationFieldKeys.CONFIG_NAME}
+                    dataTestid="webhook-modal__name"
+                    isRequiredField
+                    autoFocus
+                    onBlur={handleBlur}
+                />
+                <CustomInput
+                    label="Webhook URL"
+                    value={form.webhookUrl}
+                    onChange={handleInputChange}
+                    placeholder="Enter incoming webhook URL"
+                    error={isFormValid[ConfigurationFieldKeys.WEBHOOK_URL].message}
+                    name={ConfigurationFieldKeys.WEBHOOK_URL}
+                    dataTestid="webhook-modal__url"
+                    isRequiredField
+                    onBlur={handleBlur}
+                />
+                <WebhookConfigDynamicDataTable rows={rows} setRows={setRows} />
 
-    addNewHeader() {
-        const _headers = [...this.state.form.header]
-        _headers.splice(0, 0, {
-            key: '',
-            value: '',
-        })
-        const { form } = { ...this.state }
-        form.header = _headers
-        this.setState({ form })
-    }
-
-    removeHeader(index) {
-        const _headers = [...this.state.form.header]
-        _headers.splice(index, 1)
-        const { form } = { ...this.state }
-        form.header = _headers
-        this.setState({ form })
-    }
-
-    setCopied(value: boolean) {
-        this.setState({ copyAttribute: value })
-    }
-
-    renderDataList(attribute, index) {
-        return (
-            <div
-                className="dc__visible-hover dc__visible-hover--parent w-100-imp cn-7 fs-12 mb-8 flex left data-conatiner hover-trigger"
-                data-testid={`${this.state.webhookAttribute[attribute]}-${index}`}
-                key={`${index}-${attribute}`}
-            >
-                <span className="bcn-1 br-4 fs-12 fw-4 lh-16 p-4">{this.state.webhookAttribute[attribute]}</span>
-                <div className="flex dc__visible-hover--child pl-4">
-                    <ClipboardButton content={this.state.webhookAttribute[attribute]} />
-                </div>
-            </div>
-        )
-    }
-
-    renderConfigureLinkInfoColumn() {
-        const keys = Object.keys(this.state.webhookAttribute)
-        return (
-            <div
-                className="h-100 w-280 flex column dc__border-left dc__align-start dc__content-start p-16 dc__overflow-scroll"
-                data-testid="available-webhook-data"
-            >
-                <div className="flex dc__align-items-center p-0 mb-16">
-                    <Help className="icon-dim-18 fcv-5" />
-                    <span className="ml-8 fw-6 fs-13 lh-20"> Available data</span>
-                </div>
-                <span className="fw-4 fs-13 lh-20 mb-16">
-                    Following data are available to be shared through Webhook. Use Payload to configure.
-                </span>
-                {keys.map((attribute, index) => this.renderDataList(attribute, index))}
-            </div>
-        )
-    }
-
-    renderHeadersList() {
-        return (
-            <div className="mb-8">
-                {this.state.form.header?.map((headerData, index) => (
-                    <CreateHeaderDetails
-                        key={`tag-${index}`}
-                        index={index}
-                        headerData={headerData}
-                        setHeaderData={this.setHeaderData}
-                        removeHeader={this.removeHeader}
-                    />
-                ))}
-            </div>
-        )
-    }
-
-    renderWithBackdrop(body) {
-        return (
-            <Drawer position="right">
-                <div className="h-100 modal__body w-885 modal__body--p-0 dc__no-border-radius mt-0 dc__position-rel">
-                    <div className="h-48 flex flex-align-center dc__border-bottom flex-justify bg__primary pb-12 pt-12 pl-20 pr-20">
-                        <h1 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Configure Webhook</h1>
-                        <button type="button" className="dc__transparent" onClick={this.props.closeWebhookConfigModal}>
-                            <Close className="icon-dim-24" />
-                        </button>
+                <div className="flexbox-col dc__gap-6">
+                    <div className="fs-13 cn-7 lh-20 dc__required-field">Data to be shared through webhook</div>
+                    <div className="en-2 bw-1 br-4 p-6">
+                        <CodeEditor
+                            value={form.payload}
+                            mode="json"
+                            onChange={handleIncomingPayloadChange}
+                            inline
+                            height={150}
+                        />
                     </div>
-                    {body}
-                </div>
-            </Drawer>
-        )
-    }
-
-    onSaveClickHandler(event) {
-        event.preventDefault()
-        this.saveWebhookConfig()
-    }
-
-    onClickSave(event) {
-        event.preventDefault()
-        this.saveWebhookConfig()
-    }
-
-    onBlur(event) {
-        this.isValid(event, event.currentTarget.dataset.field)
-    }
-
-    renderWebhookModal = () => {
-        if (this.state.view === ViewType.LOADING) {
-            return (
-                <div style={{ height: '350px' }}>
-                    <Progressing pageLoader />
-                </div>
-            )
-        }
-        return (
-            <>
-                <div className="flex" style={{ height: 'calc(100vh - 120px' }}>
-                    <div
-                        className="w-600 p-20 flex column dc__align-start dc__content-start dc__overflow-scroll"
-                        style={{ height: 'calc(100vh - 120px)' }}
-                    >
-                        <label className="form__row w-100-imp">
-                            <CustomInput
-                                label="Configuration name"
-                                data-testid="add-webhook-config-name"
-                                name="app-name"
-                                value={this.state.form.configName}
-                                onChange={this.handleWebhookConfigNameChange}
-                                data-field="configName"
-                                onBlur={this.onBlur}
-                                placeholder="Enter name"
-                                autoFocus
-                                tabIndex={1}
-                                error={!this.state.isValid.configName && REQUIRED_FIELD_MSG}
-                                isRequiredField
-                            />
-                        </label>
-                        <label className="form__row w-100-imp">
-                            <CustomInput
-                                label="Webhook URL"
-                                type="text"
-                                name="app-name"
-                                value={this.state.form.webhookUrl}
-                                autoFocus
-                                placeholder="Enter Incoming Webhook URL"
-                                tabIndex={2}
-                                onChange={this.handleWebhookUrlChange}
-                                data-field="webhookUrl"
-                                onBlur={this.onBlur}
-                                isRequiredField
-                                error={!this.state.isValid.webhookUrl && REQUIRED_FIELD_MSG}
-                                data-testid="webhook-url-error"
-                            />
-                        </label>
-                        <div className="form__row w-100-imp">
-                            <div className="flex ml-0 dc__content-space">
-                                <span className="form__label">Headers</span>
-                                <span
-                                    className="flex dc__align-end dc__content-end cb-5 fw-6 fs-13 flex right mb-4 cursor"
-                                    data-testid="add-new-header-button"
-                                    onClick={this.addNewHeader}
-                                >
-                                    <Add className="icon-dim-20 fcb-5" /> Add
-                                </span>
-                            </div>
-                            {this.renderHeadersList()}
+                    {isFormValid[ConfigurationFieldKeys.PAYLOAD].message && (
+                        <div className="flex left dc__gap-4 cr-5 fs-11 lh-16 fw-4">
+                            <ErrorIcon className="icon-dim-16 p-1 form__icon--error dc__no-shrink dc__align-self-start" />
+                            <span>{isFormValid[ConfigurationFieldKeys.PAYLOAD].message}</span>
                         </div>
-                        <label className="form__row w-100-imp">
-                            <span className="form__label dc__required-field">Data to be shared through Webhook</span>
-                            <div className="dc__border pt-8 pb-8 br-4" data-field="payload" onBlur={this.onBlur}>
-                                <CodeEditor
-                                    value={this.state.form.payload}
-                                    mode="json"
-                                    onChange={this.handleWebhookPaylodChange}
-                                    inline
-                                    height={200}
-                                />
-                            </div>
-                            <span className="form__error">
-                                {!this.state.isValid.payload ? (
-                                    this.state.form.payload !== '' && (
-                                        <>
-                                            <Error className="form__icon form__icon--error" />
-                                            Write valid JSON.
-                                            <br />
-                                        </>
-                                    )
-                                ) : (
-                                    <>
-                                        <Error className="form__icon form__icon--error" />
-                                        This is a required field.
-                                        <br />
-                                    </>
-                                )}
-                            </span>
-                        </label>
-                    </div>
-                    {this.renderConfigureLinkInfoColumn()}
+                    )}
                 </div>
-                <div className="pt-16 pb-16 pl-24 pr-24 flex right dc__border-top">
-                    <div className="flex right">
-                        <button
-                            type="button"
-                            className="cta cancel mr-16"
-                            tabIndex={5}
-                            onClick={this.props.closeWebhookConfigModal}
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={this.onClickSave}
-                            data-testid="add-webhook-save-button"
-                            type="submit"
-                            className="cta"
-                            tabIndex={4}
-                            disabled={this.state.form.isLoading}
-                        >
-                            {this.state.form.isLoading ? <Progressing /> : 'Save'}
-                        </button>
-                    </div>
-                </div>
-            </>
-        )
-    }
+            </div>
+            {renderConfigureLinkInfoColumn()}
+        </div>
+    )
 
-    render() {
-        return this.renderWithBackdrop(this.renderWebhookModal())
-    }
+    return (
+        <ConfigurationTabDrawerModal
+            renderContent={renderWebhookModal}
+            closeModal={closeWebhookConfig}
+            modal={ConfigurationsTabTypes.WEBHOOK}
+            isLoading={form.isLoading}
+            saveConfigModal={saveWebhookConfig}
+        />
+    )
 }

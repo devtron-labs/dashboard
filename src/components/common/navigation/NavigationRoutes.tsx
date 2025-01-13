@@ -208,11 +208,7 @@ export default function NavigationRoutes() {
             }
             if (window._env_.GA_ENABLED) {
                 const path = location.pathname
-                ReactGA.initialize(window._env_.GA_TRACKING_ID, {
-                    gaOptions: {
-                        userId: email,
-                    },
-                })
+                ReactGA.initialize(window._env_.GA_TRACKING_ID)
                 ReactGA.send({ hitType: 'pageview', page: path })
                 ReactGA.event({
                     category: `Page ${path}`,

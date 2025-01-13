@@ -29,6 +29,7 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
             cve: '',
             policy: VulnerabilityAction.allow,
             clusters: [],
+            isCveError: false,
         }
         this.handleCveChange = this.handleCveChange.bind(this)
         this.handlePolicyChange = this.handlePolicyChange.bind(this)
@@ -47,9 +48,9 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
         const regex = new RegExp(/^CVE-\d{4}-\d{4,7}/)
         const cve = this.state.cve.toUpperCase()
         if (regex.test(cve)) {
-            this.props.saveCVE(this.state.cve, this.state.policy)
+            this.props.saveCVE(this.state.cve, this.state.policy, this.props.envId)
         } else {
-            this.props.setCVEErrorToTrue()
+            this.setState({ isCveError: true })
         }
     }
 
@@ -64,8 +65,7 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
                 })
             })
             .catch((error) => {
-                this.props.setCVEErrorToTrue()
-                this.setState({ view: ViewType.FORM })
+                this.setState({ view: ViewType.FORM, isCveError: true })
             })
     }
 
@@ -168,10 +168,9 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
                                     value={this.state.cve}
                                     onChange={this.handleCveChange}
                                     isRequiredField
-                                    error={this.props.isCveError && CVE_ID_NOT_FOUND}
+                                    error={this.state.isCveError && CVE_ID_NOT_FOUND}
                                 />
                             </label>
-                            {/* <button type="submit" className="cta mb-5" tabIndex={2} onClick={this.searchCVE}>Search</button> */}
                         </div>
                         <div className="ml-24 mr-24 flexbox" tabIndex={2}>
                             <label className="form__label form__label--flex cursor mr-8">
@@ -182,7 +181,8 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
                                     tabIndex={1}
                                     onClick={this.handlePolicyChange}
                                     checked={this.state.policy === VulnerabilityAction.allow}
-                                />&nbsp;
+                                />
+                                &nbsp;
                                 <span className="ml-10 mr-5">Allow</span>
                             </label>
                             <label className="form__label form__label--flex cursor ml-10">

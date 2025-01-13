@@ -13,309 +13,233 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React, { Component } from 'react'
-import {
-    showError,
-    Progressing,
-    Checkbox,
-    Drawer,
-    CustomInput,
-    CHECKBOX_VALUE,
-    ToastManager,
-    ToastVariantType,
-} from '@devtron-labs/devtron-fe-common-lib'
-import { validateEmail } from '../common'
+import { useState, useEffect } from 'react'
+import { showError, CustomInput, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import { useHistory } from 'react-router-dom'
 import { getSMTPConfiguration, saveEmailConfiguration } from './notifications.service'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ViewType } from '../../config/constants'
 import { ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
-import { SMTPConfigModalProps, SMTPConfigModalState } from './types'
-import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
+import { ConfigurationFieldKeys, ConfigurationsTabTypes, DefaultSMTPValidation } from './constants'
+import { SMTPConfigModalProps, SMTPFormType } from './types'
+import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
+import {
+    getSMTPDefaultConfiguration,
+    getValidationFormConfig,
+    renderErrorToast,
+    validateKeyValueConfig,
+} from './notifications.util'
+import { DefaultCheckbox } from './DefaultCheckbox'
 
-export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigModalState> {
-    constructor(props) {
-        super(props)
-        this.state = {
-            view: ViewType.LOADING,
-            form: {
-                configName: '',
-                port: null,
-                host: '',
-                authUser: '',
-                authPassword: '',
-                fromEmail: '',
-                default: this.props.shouldBeDefault,
+export const SMTPConfigModal = ({
+    smtpConfigId,
+    shouldBeDefault,
+    closeSMTPConfigModal,
+    onSaveSuccess,
+    selectSMTPFromChild,
+}: SMTPConfigModalProps) => {
+    const history = useHistory()
+
+    const [form, setForm] = useState<SMTPFormType>(getSMTPDefaultConfiguration(shouldBeDefault))
+    const [isFormValid, setFormValid] = useState(DefaultSMTPValidation)
+
+    const fetchSMTPConfig = async () => {
+        setForm((prevForm) => ({ ...prevForm, isLoading: true }))
+        try {
+            const response = await getSMTPConfiguration(smtpConfigId)
+            setForm({
+                ...response.result,
                 isLoading: false,
-                isError: true,
-            },
-            isValid: {
-                configName: true,
-                port: true,
-                host: true,
-                authUser: true,
-                authPassword: true,
-                fromEmail: true,
-            },
-        }
-        this.handleCheckbox = this.handleCheckbox.bind(this)
-        this.handleBlur = this.handleBlur.bind(this)
-        this.handleInputChange = this.handleInputChange.bind(this)
-        this.onSaveClickHandler = this.onSaveClickHandler.bind(this)
-    }
-
-    componentDidMount() {
-        if (this.props.smtpConfigId) {
-            getSMTPConfiguration(this.props.smtpConfigId)
-                .then((response) => {
-                    this.setState((prevState) => ({
-                        ...prevState,
-                        form: { ...response.result, isLoading: false, isError: true },
-                        view: ViewType.FORM,
-                        isValid: {
-                            configName: true,
-                            port: true,
-                            host: true,
-                            authUser: true,
-                            authPassword: true,
-                            fromEmail: true,
-                        },
-                    }))
-                })
-                .catch((error) => {
-                    showError(error)
-                })
-        } else {
-            this.setState((prevState) => ({
-                ...prevState,
-                form: { ...prevState.form, default: this.props.shouldBeDefault },
-                view: ViewType.FORM,
-            }))
-        }
-    }
-
-    handleBlur(event): void {
-        const { name, value } = event.target
-        this.setState((prevState) => ({
-            ...prevState,
-            isValid: { ...prevState.isValid, [name]: !!value.length },
-        }))
-    }
-
-    handleInputChange(event: React.ChangeEvent<HTMLInputElement>): void {
-        const { name, value } = event.target
-        this.setState((prevState) => ({
-            ...prevState,
-            form: { ...prevState.form, [name]: value },
-        }))
-    }
-
-    handleCheckbox(): void {
-        this.setState((prevState) => ({
-            ...prevState,
-            form: { ...prevState.form, default: !prevState.form.default },
-        }))
-    }
-
-    saveSMTPConfig(): void {
-        const keys = Object.keys(this.state.isValid)
-        let isFormValid = keys.reduce((isFormValid, key) => {
-            isFormValid = isFormValid && this.state.isValid[key]
-            return isFormValid
-        }, true)
-        isFormValid = isFormValid && validateEmail(this.state.form.fromEmail)
-        if (!isFormValid) {
-            this.setState((prevState) => ({
-                ...prevState,
-                form: { ...prevState.form, isLoading: false, isError: true },
-            }))
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Some required fields are missing or Invalid',
+                port: response.result.port.toString(),
             })
+            setFormValid(DefaultSMTPValidation)
+        } catch (error) {
+            showError(error)
+            setForm((prevForm) => ({ ...prevForm, isLoading: false }))
+        }
+    }
+
+    useEffect(() => {
+        if (smtpConfigId) {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            fetchSMTPConfig()
+        } else {
+            setForm((prevForm) => ({ ...prevForm, default: shouldBeDefault }))
+        }
+    }, [smtpConfigId])
+
+    const handleBlur = (e) => {
+        const { name, value } = e.target
+        setFormValid((prevValid) => ({ ...prevValid, [name]: validateKeyValueConfig(name, value) }))
+    }
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target
+        setForm((prevForm) => ({ ...prevForm, [name]: value }))
+        setFormValid((prevValid) => ({ ...prevValid, [name]: validateKeyValueConfig(name, value) }))
+    }
+
+    const handleCheckbox = () => {
+        setForm((prevForm) => ({ ...prevForm, default: !prevForm.default }))
+    }
+
+    const closeSMTPConfig = () => {
+        if (typeof closeSMTPConfigModal === 'function') {
+            closeSMTPConfigModal()
+        } else {
+            const newParams = {
+                modal: ConfigurationsTabTypes.SMTP,
+            }
+            history.push({
+                search: new URLSearchParams(newParams).toString(),
+            })
+        }
+    }
+
+    const validateSave = (): boolean => {
+        const formConfig = [
+            { key: ConfigurationFieldKeys.CONFIG_NAME, value: form.configName },
+            { key: ConfigurationFieldKeys.HOST, value: form.host },
+            { key: ConfigurationFieldKeys.PORT, value: form.port },
+            { key: ConfigurationFieldKeys.AUTH_USER, value: form.authUser },
+            { key: ConfigurationFieldKeys.AUTH_PASSWORD, value: form.authPassword },
+            { key: ConfigurationFieldKeys.FROM_EMAIL, value: form.fromEmail },
+        ]
+
+        const { allValid, formValidations } = getValidationFormConfig(formConfig)
+        setFormValid((prevValid) => ({ ...prevValid, ...formValidations }))
+        return allValid
+    }
+
+    const saveSMTPConfig = async () => {
+        if (!validateSave()) {
+            renderErrorToast()
             return
         }
-        this.setState((prevState) => ({
-            ...prevState,
-            form: { ...prevState.form, isLoading: true, isError: false },
-        }))
+        setForm((prevForm) => ({ ...prevForm, isLoading: true }))
 
-        saveEmailConfiguration(this.state.form, 'smtp')
-            .then((response) => {
-                this.setState((prevState) => ({
-                    ...prevState,
-                    form: { ...prevState.form, isLoading: false },
-                }))
-                ToastManager.showToast({
-                    variant: ToastVariantType.success,
-                    description: 'Saved Successfully',
-                })
-                this.props.onSaveSuccess()
-                if (this.props.selectSMTPFromChild) {
-                    this.props.selectSMTPFromChild(response?.result[0])
-                }
-            })
-            .catch((error) => {
-                showError(error)
-                this.setState((prevState) => ({
-                    ...prevState,
-                    form: { ...prevState.form, isLoading: false },
-                }))
-            })
-    }
-
-    renderWithBackdrop(body) {
-        return (
-            <Drawer position="right">
-                <div className="h-100 modal__body modal__body--w-600 modal__body--p-0 dc__no-border-radius mt-0">
-                    <div className="h-48 flex flex-align-center dc__border-bottom flex-justify bg__primary pb-12 pt-12 pl-20 pr-20">
-                        <h1 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Configure SMTP</h1>
-                        <button type="button" className="dc__transparent" onClick={this.props.closeSMTPConfigModal}>
-                            <Close className="icon-dim-24" />
-                        </button>
-                    </div>
-                    {body}
-                </div>
-            </Drawer>
-        )
-    }
-
-    onSaveClickHandler(event) {
-        event.preventDefault()
-        this.saveSMTPConfig()
-    }
-
-    render() {
-        let body
-        if (this.state.view === ViewType.LOADING) {
-            body = (
-                <div style={{ height: '554px' }}>
-                    <Progressing pageLoader />
-                </div>
-            )
-        } else {
-            body = (
-                <>
-                    <div className="m-20" style={{ height: 'calc(100vh - 160px' }}>
-                        <label className="form__row">
-                            <CustomInput
-                                name="configName"
-                                label="Configuration name"
-                                data-testid="add-smtp-configuration-name"
-                                value={this.state.form.configName}
-                                onChange={this.handleInputChange}
-                                onBlur={this.handleBlur}
-                                placeholder="Configuration name"
-                                autoFocus
-                                tabIndex={1}
-                                isRequiredField
-                                error={!this.state.isValid.configName && REQUIRED_FIELD_MSG}
-                            />
-                        </label>
-                        <label className="form__row">
-                            <CustomInput
-                                data-testid="add-smtp-host"
-                                label="SMTP Host"
-                                name="host"
-                                value={this.state.form.host}
-                                onChange={this.handleInputChange}
-                                onBlur={this.handleBlur}
-                                placeholder="Eg. smtp.gmail.com"
-                                tabIndex={2}
-                                isRequiredField
-                                error={!this.state.isValid.host && REQUIRED_FIELD_MSG}
-                            />
-                        </label>
-                        <label className="form__row">
-                            <CustomInput
-                                label="SMTP Port"
-                                data-testid="add-smtp-port"
-                                name="port"
-                                value={this.state.form.port}
-                                onChange={this.handleInputChange}
-                                onBlur={this.handleBlur}
-                                placeholder="Enter SMTP port"
-                                tabIndex={3}
-                                isRequiredField
-                                error={!this.state.isValid.port && REQUIRED_FIELD_MSG}
-                            />
-                        </label>
-                        <div className="form__row">
-                            <CustomInput
-                                label="SMTP Username"
-                                data-testid="add-smtp-username"
-                                name="authUser"
-                                value={this.state.form.authUser}
-                                onChange={this.handleInputChange}
-                                onBlur={this.handleBlur}
-                                placeholder="Enter SMTP username"
-                                tabIndex={3}
-                                isRequiredField
-                                error={!this.state.isValid.authUser && REQUIRED_FIELD_MSG}
-                            />
-                        </div>
-                        <div className="form__row smtp-protected-input">
-                            <ProtectedInput
-                                dataTestid="add-smtp-password"
-                                value={this.state.form.authPassword}
-                                onChange={this.handleInputChange}
-                                name="authPassword"
-                                error={!this.state.isValid.authPassword}
-                                label="SMTP Password*"
-                                labelClassName="form__label--fs-13 mb-8 fw-5 fs-13"
-                                placeholder="Enter SMTP password"
-                            />
-                        </div>
-                        <label className="form__row">
-                            <CustomInput
-                                label="Send email from"
-                                data-testid="add-smtp-send-email"
-                                type="email"
-                                name="fromEmail"
-                                value={this.state.form.fromEmail}
-                                onChange={this.handleInputChange}
-                                onBlur={this.handleBlur}
-                                placeholder="Email"
-                                tabIndex={5}
-                                isRequiredField
-                                error={!this.state.isValid.fromEmail && REQUIRED_FIELD_MSG}
-                            />
-                        </label>
-                    </div>
-                    <div className="form__button-group-bottom flexbox flex-justify">
-                        <Checkbox
-                            isChecked={this.state.form.default}
-                            value={CHECKBOX_VALUE.CHECKED}
-                            tabIndex={6}
-                            disabled={this.props.shouldBeDefault}
-                            onChange={this.handleCheckbox}
-                        >
-                            Set as default configuration to send emails
-                        </Checkbox>
-                        <div className="flex right">
-                            <button
-                                type="button"
-                                className="cta cancel mr-16"
-                                tabIndex={8}
-                                onClick={this.props.closeSMTPConfigModal}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={this.onSaveClickHandler}
-                                data-testid="add-smtp-save-button"
-                                type="submit"
-                                className="cta"
-                                tabIndex={7}
-                                disabled={this.state.form.isLoading}
-                            >
-                                {this.state.form.isLoading ? <Progressing /> : 'Save'}
-                            </button>
-                        </div>
-                    </div>
-                </>
-            )
+        const payload = {
+            channel: ConfigurationsTabTypes.SES,
+            configs: [
+                {
+                    configName: form.configName,
+                    host: form.host,
+                    port: form.port,
+                    authUser: form.authUser,
+                    authPassword: form.authPassword,
+                    fromEmail: form.fromEmail,
+                    default: form.default,
+                    id: smtpConfigId,
+                },
+            ],
         }
-        return this.renderWithBackdrop(body)
+
+        try {
+            const response = await saveEmailConfiguration(payload)
+            setForm((prevForm) => ({ ...prevForm, isLoading: false }))
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Saved Successfully',
+            })
+            onSaveSuccess()
+            closeSMTPConfig()
+            if (selectSMTPFromChild) {
+                selectSMTPFromChild(response?.result[0])
+            }
+        } catch (error) {
+            showError(error)
+            setForm((prevForm) => ({ ...prevForm, isLoading: false }))
+        }
     }
+
+    const renderForm = () => (
+        <div className="dc__gap-16 flex-grow-1 flexbox-col mh-0 p-20 dc__overflow-auto mh-0">
+            <CustomInput
+                dataTestid={`add-smtp-${ConfigurationFieldKeys.CONFIG_NAME}`}
+                name={ConfigurationFieldKeys.CONFIG_NAME}
+                label="Configuration name"
+                value={form.configName}
+                onChange={handleInputChange}
+                onBlur={handleBlur}
+                placeholder="Enter a name"
+                isRequiredField
+                error={isFormValid[ConfigurationFieldKeys.CONFIG_NAME].message}
+                autoFocus
+            />
+            <CustomInput
+                dataTestid={`add-smtp-${ConfigurationFieldKeys.PORT}`}
+                name={ConfigurationFieldKeys.PORT}
+                label="SMTP Port"
+                value={form.port}
+                onChange={handleInputChange}
+                onBlur={handleBlur}
+                placeholder="Enter SMTP port"
+                isRequiredField
+                error={isFormValid[ConfigurationFieldKeys.PORT].message}
+            />
+            <CustomInput
+                dataTestid={`add-smtp-${ConfigurationFieldKeys.HOST}`}
+                name={ConfigurationFieldKeys.HOST}
+                label="SMTP Host address/Server"
+                value={form.host}
+                onChange={handleInputChange}
+                onBlur={handleBlur}
+                placeholder="Eg. smtp.gmail.com"
+                isRequiredField
+                error={isFormValid[ConfigurationFieldKeys.HOST].message}
+            />
+
+            <CustomInput
+                dataTestid={`add-smtp-${ConfigurationFieldKeys.AUTH_USER}`}
+                name={ConfigurationFieldKeys.AUTH_USER}
+                label="SMTP Username"
+                value={form.authUser}
+                onChange={handleInputChange}
+                onBlur={handleBlur}
+                placeholder="Enter SMTP username"
+                isRequiredField
+                error={isFormValid[ConfigurationFieldKeys.AUTH_USER].message}
+            />
+            <div className="smtp-protected-input">
+                <ProtectedInput
+                    dataTestid="add-smtp-password"
+                    name={ConfigurationFieldKeys.AUTH_PASSWORD}
+                    value={form.authPassword}
+                    onChange={handleInputChange}
+                    error={isFormValid[ConfigurationFieldKeys.AUTH_PASSWORD].message}
+                    label="SMTP Password"
+                    labelClassName="form__label--fs-13 mb-8 fw-5 fs-13"
+                    placeholder="Enter SMTP password"
+                    isRequiredField
+                    tabIndex={0}
+                    onBlur={handleBlur}
+                />
+            </div>
+            <CustomInput
+                dataTestid="add-smtp-from-email"
+                type="email"
+                name={ConfigurationFieldKeys.FROM_EMAIL}
+                label="Send email from"
+                value={form.fromEmail}
+                onChange={handleInputChange}
+                onBlur={handleBlur}
+                placeholder="Enter sender’s email"
+                isRequiredField
+                error={isFormValid[ConfigurationFieldKeys.FROM_EMAIL].message}
+            />
+            <DefaultCheckbox
+                isDefaultDisable={shouldBeDefault}
+                handleCheckbox={handleCheckbox}
+                isDefault={form.default}
+            />
+        </div>
+    )
+
+    return (
+        <ConfigurationTabDrawerModal
+            renderContent={renderForm}
+            closeModal={closeSMTPConfig}
+            modal={ConfigurationsTabTypes.SMTP}
+            isLoading={form.isLoading}
+            saveConfigModal={saveSMTPConfig}
+        />
+    )
 }
