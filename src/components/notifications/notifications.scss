@@ -122,17 +122,6 @@
     box-shadow: 0 -1px 0 0 var(--N200);
 }
 
-.configuration-tab__header {
-    display: flex;
-    justify-content: space-between;
-    padding: 18px 24px;
-}
-
-.configuration-tab__title {
-    font-size: 14px;
-    font-weight: 600;
-    margin: 0px;
-}
 
 .white-card--configuration-tab {
     overflow-y: auto;
@@ -141,103 +130,61 @@
     height: 100%;
 }
 
-.configuration-tab {
-    display: grid;
-    grid-template-rows: 1fr 1fr 1fr 1fr;
-    padding: 16px 24px;
-    grid-gap: 16px;
-    height: calc(100vh - 220px);
-}
 
-.configuration-tab__table-row {
-    display: flex;
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 1.43;
-    letter-spacing: normal;
-    color: var(--N600);
-    align-items: center;
-    padding: 10px 24px;
-    height: 48px;
-    cursor: default;
-    box-shadow: inset 0 -1px 0 0 var(--N100);
-
-    &:hover {
-        background-color: var(--window-bg);
+.configuration-drawer{
+    .webhook-config-modal{
+        display: grid;
+        grid-template-columns: 1fr 280px;
     }
 }
+// --------------Configuration Tab----------------
+.configuration-tab__container {
+    .configuration-tab__table-row {
+        display: flex;
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 1.43;
+        letter-spacing: normal;
+        color: var(--N900);
+        align-items: center;
+        padding: 10px 20px;
+        height: 48px;
+    }
 
-.configuration-tab__table-header {
-    display: flex;
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: var(--N500);
-    text-transform: uppercase;
-    align-items: center;
-    padding: 9px 24px;
-    cursor: default;
-    box-shadow: 0 1px 0 0 var(--N200);
-}
+    .ses-config-container {
+        .ses-config-grid {
+            display: grid;
+            grid-template-columns: 24px 250px 1fr 1fr 52px;
+        }
+    }
 
-.ses-config-table__name {
-    flex-basis: 25%;
-    color: var(--N900);
-    font-weight: inherit;
-}
+    .slack-config-container {
+        .slack-config-grid {
+            display: grid;
+            grid-template-columns: 24px 250px 1fr 52px;
+        }
+    }
 
-.ses-config-table__access-key {
-    flex-basis: 20%;
-    font-weight: inherit;
-}
+    .smtp-config-container {
+        .smtp-config-grid {
+            display: grid;
+            grid-template-columns: 24px 250px 1fr 60px 1fr 52px;
+        }
+    }
 
-.ses-config-table__email {
-    flex-basis: 40%;
-    font-weight: inherit;
-}
+    .webhook-config-container {
+        .webhook-config-grid {
+            display: grid;
+            grid-template-columns: 24px 250px 1fr 52px;
+        }
+    }
 
-.smtp-config-table__host {
-    flex-basis: 33%;
-    font-weight: inherit;
-}
 
-.smtp-config-table__port {
-    flex-basis: 5%;
-    font-weight: inherit;
-}
-
-.smtp-config-table__email {
-    flex-basis: 30%;
-    font-weight: inherit;
-}
-
-.slack-config-table__name {
-    flex-basis: 25%;
-    color: var(--N900);
-    font-weight: inherit;
-}
-
-.slack-config-table__webhook {
-    flex-basis: 60%;
-}
-
-.slack-config-table__action,
-.ses-config-table__action {
-    display: none;
-    margin: auto;
-    margin-right: 0;
 }
 
 .form__row--ses-account {
     width: 45%;
     min-width: 300px;
-}
-
-.configuration-tab__table-row:hover .slack-config-table__action,
-.configuration-tab__table-row:hover .ses-config-table__action {
-    display: flex;
-    background-color: var(--window-bg);
 }
 
 .kebab-menu__list--notification-tab {
@@ -384,7 +331,7 @@
     }
 }
 
-.data-conatiner {
+.data-container {
     .hover-only {
         display: none;
     }
@@ -404,12 +351,4 @@
             }
         }
     }
-}
-
-.empty-state-height {
-    height: 'calc(100% - 70px)';
-}
-
-.progressing-loader-height {
-    height: 'calc(100% - 68px)';
 }
