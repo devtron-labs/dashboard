@@ -8,7 +8,6 @@ import {
     useAsync,
     DeploymentConfigDiff,
     DeploymentConfigDiffProps,
-    SortingOrder,
     AppEnvDeploymentConfigType,
     getDefaultVersionAndPreviousDeploymentOptions,
     getAppEnvDeploymentConfigList,
@@ -18,6 +17,7 @@ import {
     useMainContext,
     getCompareSecretsData,
     getAppEnvDeploymentConfig,
+    DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getTemplateOptions, getChartReferencesForAppAndEnv } from '@Services/service'
@@ -89,6 +89,7 @@ export const DeploymentConfigCompare = ({
         sortOrder,
         handleSorting,
     } = useUrlFilters<string, AppEnvDeploymentConfigQueryParamsType>({
+        initialSortKey: DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
         parseSearchParams: parseCompareWithSearchParams({ type, compareTo, environments }),
     })
 
@@ -629,7 +630,7 @@ export const DeploymentConfigCompare = ({
         onClick: onTabClick,
     }
 
-    const onSorting = () => handleSorting(sortOrder !== SortingOrder.DESC ? 'sort-config' : '')
+    const onSorting = () => handleSorting(DEPLOYMENT_CONFIG_DIFF_SORT_KEY)
 
     const sortingConfig: DeploymentConfigDiffProps['sortingConfig'] = {
         handleSorting: onSorting,
