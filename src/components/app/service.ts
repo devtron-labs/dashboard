@@ -87,7 +87,10 @@ export function fetchAppDetailsInTime(
     reloadTimeOut: APIOptions['timeout'],
     abortControllerRef: APIOptions['abortControllerRef'],
 ): Promise<AppDetailsResponse> {
-    return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut, abortControllerRef })
+    return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, {
+        timeout: reloadTimeOut,
+        abortControllerRef,
+    })
 }
 
 export function fetchResourceTreeInTime(
@@ -264,6 +267,7 @@ export const triggerCDNode = ({
     wfrId,
     abortSignal,
     runtimeParams = [],
+    isRollbackTrigger = false,
 }: TriggerCDNodeServiceProps) => {
     const areRuntimeParamsConfigured =
         getRuntimeParamsPayload && (stageType === DeploymentNodeType.POSTCD || stageType === DeploymentNodeType.PRECD)
@@ -274,6 +278,7 @@ export const triggerCDNode = ({
         appId: parseInt(appId),
         ciArtifactId: parseInt(ciArtifactId),
         cdWorkflowType: stageMap[stageType],
+        isRollbackDeployment: isRollbackTrigger,
         ...(areRuntimeParamsConfigured && runtimeParamsPayload),
     }
 

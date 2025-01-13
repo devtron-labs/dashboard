@@ -657,6 +657,7 @@ export interface TriggerCDNodeServiceProps {
      * Would be available only case of PRE/POST CD
      */
     runtimeParams?: RuntimePluginVariables[]
+    isRollbackTrigger: boolean
 }
 
 export interface TriggerCDPipelinePayloadType {
@@ -665,4 +666,5 @@ export interface TriggerCDPipelinePayloadType {
     ciArtifactId: number
     cdWorkflowType: string
     runtimeParamsPayload: RuntimeParamsTriggerPayloadType
+    isRollbackDeployment: boolean
 }
