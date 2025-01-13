@@ -124,13 +124,13 @@ export const AppNavigation = () => {
         <Switch>
             <Route
                 path={[
-                    `${path}/:resourceType(${Object.values(EnvResourceType).join('|')})/:envId(\\d+)?`,
+                    `${path}/:resourceType(${Object.values(EnvResourceType).join('|')})`,
                     `${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)/:resourceType(${Object.values(EnvResourceType).join('|')})`,
                 ]}
             >
                 {({ match }) => (
                     <EnvConfigurationsNav
-                        key={`env-configurations-nav-${match.params.envId}`}
+                        key={`env-configurations-nav-${'envId' in match.params ? match.params.envId : ''}`}
                         envConfig={envConfig}
                         fetchEnvConfig={fetchEnvConfig}
                         environments={environments.map(({ environmentName, environmentId }) => ({

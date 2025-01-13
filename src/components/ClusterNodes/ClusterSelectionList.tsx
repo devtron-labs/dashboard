@@ -25,6 +25,7 @@ import {
     ALL_NAMESPACE_OPTION,
     SortableTableHeaderCell,
     ClusterDetail,
+    ClusterStatusType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import dayjs, { Dayjs } from 'dayjs'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -160,7 +161,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                                 </Tooltip>
                             )}
 
-                            {CompareClusterButton && (
+                            {CompareClusterButton && clusterData.status !== ClusterStatusType.CONNECTION_FAILED && (
                                 <CompareClusterButton sourceClusterId={clusterData.id} isIconButton />
                             )}
 

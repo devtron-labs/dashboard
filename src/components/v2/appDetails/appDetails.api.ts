@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { get, post } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, ROUTES } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../../config/constants'
 import { AppType } from './appDetails.type'
 import { getAppId, generateDevtronAppIdentiferForK8sRequest } from './k8Resource/nodeDetail/nodeDetail.api'
@@ -72,7 +72,7 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
         appType: getK8sResourcePayloadAppType(appType),
         deploymentType: getDeploymentType(deploymentAppType),
     }
-    return post(Routes.DELETE_RESOURCE, data)
+    return post(ROUTES.DELETE_RESOURCE, data)
 }
 
 export const getAppOtherEnvironment = (appId) => {

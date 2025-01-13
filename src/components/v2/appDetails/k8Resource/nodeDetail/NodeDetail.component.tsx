@@ -30,6 +30,7 @@ import {
     FormProps,
     ToastManager,
     ToastVariantType,
+    OptionsBase
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
@@ -48,7 +49,6 @@ import {
     NodeDetailPropsType,
     NodeType,
     Options,
-    OptionsBase,
 } from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
 import { useSharedState } from '../../../utils/useSharedState'

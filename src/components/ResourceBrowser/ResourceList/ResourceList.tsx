@@ -462,12 +462,18 @@ const ResourceList = () => {
             : []),
     ]
 
-    const renderPageHeaderActionButtons = () => (
-        <div className="flexbox dc__align-items-center dc__gap-8">
-            {CompareClusterButton && !!clusterId && <CompareClusterButton sourceClusterId={clusterId} />}
-            {renderCreateResourceButton(clusterId, closeResourceModal)()}
-        </div>
-    )
+    const renderPageHeaderActionButtons = () => {
+        const clusterConnectionFailed = !!clusterList?.find(({ id }) => clusterId === String(id))?.errorInNodeListing
+
+        return (
+            <div className="flexbox dc__align-items-center dc__gap-8">
+                {CompareClusterButton && !!clusterId && !clusterConnectionFailed && (
+                    <CompareClusterButton sourceClusterId={clusterId} />
+                )}
+                {renderCreateResourceButton(clusterId, closeResourceModal)()}
+            </div>
+        )
+    }
 
     const renderMainBody = () => {
         if (error) {

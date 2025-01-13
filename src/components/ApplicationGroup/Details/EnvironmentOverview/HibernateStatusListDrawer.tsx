@@ -22,10 +22,10 @@ import {
     InfoColourBar,
     Progressing,
     usePrompt,
+    DEFAULT_ROUTE_PROMPT_MESSAGE
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt } from 'react-router-dom'
 import { HibernateStatusRow } from './HibernateStatusRow'
-import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../../config'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'

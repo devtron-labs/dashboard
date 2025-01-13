@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
-import { ComponentSizeType, CustomInput, DialogForm, DialogFormSubmit, SelectPicker, showError } from '@devtron-labs/devtron-fe-common-lib'
-import ReactSelect from 'react-select'
+import { Component } from 'react'
+import { ComponentSizeType, CustomInput, DialogForm, DialogFormSubmit, SelectPicker, showError, DEFAULT_ROUTE_PROMPT_MESSAGE } from '@devtron-labs/devtron-fe-common-lib'
 import { ProjectType, ChartGroupEntry, EnvironmentType } from '../charts.types'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-edit.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
@@ -24,7 +23,6 @@ import { renderAdditionalErrorInfo } from '../charts.util'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import { getEnvironmentListMin } from '../../../services/service'
 import { Prompt } from 'react-router-dom'
-import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../config'
 
 interface ChartGroupBasicDeployProps {
     projects: ProjectType[]
