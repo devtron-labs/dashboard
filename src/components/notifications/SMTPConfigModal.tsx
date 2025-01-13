@@ -21,7 +21,12 @@ import { ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, DefaultSMTPValidation } from './constants'
 import { SMTPConfigModalProps, SMTPFormType } from './types'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
-import { getSMTPDefaultConfiguration, renderErrorToast, validateKeyValueConfig } from './notifications.util'
+import {
+    getSMTPDefaultConfiguration,
+    getValidationFormConfig,
+    renderErrorToast,
+    validateKeyValueConfig,
+} from './notifications.util'
 import { DefaultCheckbox } from './DefaultCheckbox'
 
 export const SMTPConfigModal = ({
@@ -89,8 +94,8 @@ export const SMTPConfigModal = ({
         }
     }
 
-    const validateSave = () => {
-        const validationSave = [
+    const validateSave = (): boolean => {
+        const formConfig = [
             { key: ConfigurationFieldKeys.CONFIG_NAME, value: form.configName },
             { key: ConfigurationFieldKeys.HOST, value: form.host },
             { key: ConfigurationFieldKeys.PORT, value: form.port },
@@ -99,59 +104,50 @@ export const SMTPConfigModal = ({
             { key: ConfigurationFieldKeys.FROM_EMAIL, value: form.fromEmail },
         ]
 
-        const { allValid, formValidations } = validationSave.reduce(
-            (acc, { key, value }) => {
-                const validation = validateKeyValueConfig(key, value)
-                acc.formValidations[key] = validation
-                if (!validation.isValid) {
-                    acc.allValid = false
-                }
-                return acc
-            },
-            { allValid: true, formValidations: {} },
-        )
+        const { allValid, formValidations } = getValidationFormConfig(formConfig)
         setFormValid((prevValid) => ({ ...prevValid, ...formValidations }))
         return allValid
     }
 
-    const getPayload = () => {
-        const { configName, host, port, authUser, authPassword, fromEmail } = form
-        return {
-            configName,
-            host,
-            port,
-            authUser,
-            authPassword,
-            fromEmail,
-            default: form.default,
-            id: smtpConfigId,
-        }
-    }
-
-    const saveSMTPConfig = () => {
+    const saveSMTPConfig = async () => {
         if (!validateSave()) {
             renderErrorToast()
             return
         }
         setForm((prevForm) => ({ ...prevForm, isLoading: true }))
 
-        saveEmailConfiguration(getPayload(), ConfigurationsTabTypes.SMTP)
-            .then((response) => {
-                setForm((prevForm) => ({ ...prevForm, isLoading: false }))
-                ToastManager.showToast({
-                    variant: ToastVariantType.success,
-                    description: 'Saved Successfully',
-                })
-                onSaveSuccess()
-                closeSMTPConfig()
-                if (selectSMTPFromChild) {
-                    selectSMTPFromChild(response?.result[0])
-                }
+        const payload = {
+            channel: ConfigurationsTabTypes.SES,
+            configs: [
+                {
+                    configName: form.configName,
+                    host: form.host,
+                    port: form.port,
+                    authUser: form.authUser,
+                    authPassword: form.authPassword,
+                    fromEmail: form.fromEmail,
+                    default: form.default,
+                    id: smtpConfigId,
+                },
+            ],
+        }
+
+        try {
+            const response = await saveEmailConfiguration(payload)
+            setForm((prevForm) => ({ ...prevForm, isLoading: false }))
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Saved Successfully',
             })
-            .catch((error) => {
-                showError(error)
-                setForm((prevForm) => ({ ...prevForm, isLoading: false }))
-            })
+            onSaveSuccess()
+            closeSMTPConfig()
+            if (selectSMTPFromChild) {
+                selectSMTPFromChild(response?.result[0])
+            }
+        } catch (error) {
+            showError(error)
+            setForm((prevForm) => ({ ...prevForm, isLoading: false }))
+        }
     }
 
     const renderForm = () => (

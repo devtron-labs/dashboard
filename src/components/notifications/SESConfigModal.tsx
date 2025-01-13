@@ -30,7 +30,12 @@ import {
 import { useHistory } from 'react-router-dom'
 import { saveEmailConfiguration, getSESConfiguration } from './notifications.service'
 import { SESConfigModalProps, SESFormType } from './types'
-import { getSESDefaultConfiguration, renderErrorToast, validateKeyValueConfig } from './notifications.util'
+import {
+    getSESDefaultConfiguration,
+    getValidationFormConfig,
+    renderErrorToast,
+    validateKeyValueConfig,
+} from './notifications.util'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, DefaultSESValidations } from './constants'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
 import { DefaultCheckbox } from './DefaultCheckbox'
@@ -130,16 +135,6 @@ const SESConfigModal = ({
         }))
     }
 
-    const getPayload = () => ({
-        configName: form.configName,
-        accessKey: form.accessKey,
-        secretKey: unMaskedSecretKey,
-        region: form.region?.value,
-        fromEmail: form.fromEmail,
-        default: form.default,
-        id: sesConfigId,
-    })
-
     const closeSESConfig = () => {
         if (typeof closeSESConfigModal === 'function') {
             closeSESConfigModal()
@@ -153,8 +148,8 @@ const SESConfigModal = ({
         }
     }
 
-    const validateSave = () => {
-        const validationFields = [
+    const validateSave = (): boolean => {
+        const formConfig = [
             { key: ConfigurationFieldKeys.CONFIG_NAME, value: form.configName },
             { key: ConfigurationFieldKeys.ACCESS_KEY, value: form.accessKey },
             { key: ConfigurationFieldKeys.SECRET_KEY, value: form.secretKey },
@@ -162,18 +157,7 @@ const SESConfigModal = ({
             { key: ConfigurationFieldKeys.FROM_EMAIL, value: form.fromEmail },
         ]
 
-        const { allValid, formValidations } = validationFields.reduce(
-            (acc, { key, value }) => {
-                const validation = validateKeyValueConfig(key, value)
-                acc.formValidations[key] = validation
-                if (!validation.isValid) {
-                    acc.allValid = false
-                }
-                return acc
-            },
-            { allValid: true, formValidations: {} }, // Initial accumulator
-        )
-
+        const { allValid, formValidations } = getValidationFormConfig(formConfig)
         setFormValid((prevValid) => ({ ...prevValid, ...formValidations }))
         return allValid
     }
@@ -187,8 +171,24 @@ const SESConfigModal = ({
             ...prevForm,
             isLoading: true,
         }))
+
+        const payload = {
+            channel: ConfigurationsTabTypes.SES,
+            configs: [
+                {
+                    configName: form.configName,
+                    accessKey: form.accessKey,
+                    secretKey: unMaskedSecretKey,
+                    region: form.region?.value,
+                    fromEmail: form.fromEmail,
+                    default: form.default,
+                    id: sesConfigId,
+                },
+            ],
+        }
+
         try {
-            const response = await saveEmailConfiguration(getPayload(), ConfigurationsTabTypes.SES)
+            const response = await saveEmailConfiguration(payload)
             ToastManager.showToast({
                 variant: ToastVariantType.success,
                 description: 'Saved Successfully',

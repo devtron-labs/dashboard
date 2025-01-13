@@ -11,7 +11,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { useHistory } from 'react-router-dom'
-import { saveSlackConfiguration, updateSlackConfiguration, getSlackConfiguration } from './notifications.service'
+import { saveSlackConfiguration, getSlackConfiguration } from './notifications.service'
 import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { ProjectListTypes, SlackConfigModalProps, SlackFormType } from './types'
 import {
@@ -22,7 +22,7 @@ import {
     SlackIncomingWebhookUrl,
 } from './constants'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
-import { renderErrorToast, validateKeyValueConfig } from './notifications.util'
+import { getValidationFormConfig, renderErrorToast, validateKeyValueConfig } from './notifications.util'
 
 export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
     slackConfigId,
@@ -85,57 +85,49 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
         }
     }
 
-    const validateSave = () => {
-        const validationFields = [
+    const validateSave = (): boolean => {
+        const formConfig = [
             { key: ConfigurationFieldKeys.CONFIG_NAME, value: form.configName },
             { key: ConfigurationFieldKeys.WEBHOOK_URL, value: form.webhookUrl },
             { key: ConfigurationFieldKeys.PROJECT_ID, value: selectedProject?.value ?? '' },
         ]
-        const { allValid, formValidations } = validationFields.reduce(
-            (acc, { key, value }) => {
-                const validation = validateKeyValueConfig(key, value)
-                acc.formValidations[key] = validation
-                if (!validation.isValid) {
-                    acc.allValid = false
-                }
-                return acc
-            },
-            { allValid: true, formValidations: {} },
-        )
+        const { allValid, formValidations } = getValidationFormConfig(formConfig)
         setFormValid((prevValid) => ({ ...prevValid, ...formValidations }))
         return allValid
     }
 
-    const saveSlackConfig = () => {
+    const saveSlackConfig = async () => {
         if (!validateSave()) {
             renderErrorToast()
             return
         }
 
-        let requestBody = { ...form }
-        if (slackConfigId) {
-            requestBody = {
-                ...form,
-                id: slackConfigId,
-            }
+        const requestBody = {
+            channel: ConfigurationsTabTypes.SLACK,
+            configs: [
+                {
+                    id: slackConfigId,
+                    configName: form.configName,
+                    webhookUrl: form.webhookUrl,
+                    teamId: form.projectId,
+                },
+            ],
         }
         setForm((prevForm) => ({ ...prevForm, isLoading: true }))
 
-        const promise = slackConfigId ? updateSlackConfiguration(requestBody) : saveSlackConfiguration(requestBody)
-        promise
-            .then(() => {
-                setForm((prevForm) => ({ ...prevForm, isLoading: false }))
-                ToastManager.showToast({
-                    variant: ToastVariantType.success,
-                    description: 'Saved Successfully',
-                })
-                onSaveSuccess()
-                closeSlackConfig()
+        try {
+            await saveSlackConfiguration(requestBody)
+            setForm((prevForm) => ({ ...prevForm, isLoading: false }))
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Saved Successfully',
             })
-            .catch((error) => {
-                showError(error)
-                setForm((prevForm) => ({ ...prevForm, isLoading: false }))
-            })
+            onSaveSuccess()
+            closeSlackConfig()
+        } catch (error) {
+            showError(error)
+            setForm((prevForm) => ({ ...prevForm, isLoading: false }))
+        }
     }
 
     const renderInfoText = () => (

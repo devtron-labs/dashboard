@@ -38,6 +38,7 @@ import { WebhookConfigDynamicDataTable } from './WebhookConfigDynamicDataTable'
 import {
     getEmptyVariableDataRow,
     getInitialWebhookKeyRow,
+    getValidationFormConfig,
     renderErrorToast,
     validateKeyValueConfig,
     validatePayloadField,
@@ -163,22 +164,12 @@ export const WebhookConfigModal = ({
     )
 
     const validateSave = (): boolean => {
-        const validationFields = [
+        const formConfig = [
             { key: ConfigurationFieldKeys.CONFIG_NAME, value: form.configName },
             { key: ConfigurationFieldKeys.WEBHOOK_URL, value: form.webhookUrl },
             { key: ConfigurationFieldKeys.PAYLOAD, value: form.payload },
         ]
-        const { allValid, formValidations } = validationFields.reduce(
-            (acc, { key, value }) => {
-                const validation = validateKeyValueConfig(key, value)
-                acc.formValidations[key] = validation
-                if (!validation.isValid) {
-                    acc.allValid = false
-                }
-                return acc
-            },
-            { allValid: true, formValidations: {} },
-        )
+        const { allValid, formValidations } = getValidationFormConfig(formConfig)
         setFormValid((prevValid) => ({ ...prevValid, ...formValidations }))
         return allValid
     }

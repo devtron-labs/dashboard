@@ -351,3 +351,18 @@ export const renderErrorToast = () =>
         variant: ToastVariantType.error,
         description: 'Some required fields are missing or Invalid',
     })
+
+export const getValidationFormConfig = (formConfig) => {
+    const { allValid, formValidations } = formConfig.reduce(
+        (acc, { key, value }) => {
+            const validation = validateKeyValueConfig(key, value)
+            acc.formValidations[key] = validation
+            if (!validation.isValid) {
+                acc.allValid = false
+            }
+            return acc
+        },
+        { allValid: true, formValidations: {} },
+    )
+    return { allValid, formValidations }
+}
