@@ -99,6 +99,7 @@ export class SecurityPolicyEdit extends Component<
         this.state = {
             view: ViewType.LOADING,
             showWhitelistModal: false,
+            addCVEEnvId: null,
             result: {
                 level: this.props.level,
                 policies: [],
@@ -106,7 +107,6 @@ export class SecurityPolicyEdit extends Component<
             isCveError: false,
             showLoadingOverlay: false,
         }
-        this.toggleAddCveModal = this.toggleAddCveModal.bind(this)
         this.updateSeverity = this.updateSeverity.bind(this)
         this.saveCVE = this.saveCVE.bind(this)
         this.updateCVE = this.updateCVE.bind(this)
@@ -210,6 +210,7 @@ export class SecurityPolicyEdit extends Component<
             (policy.policy.isOverriden && actionLowerCase === policy.policy.action.toLowerCase()) ||
             (policy.policy.inherited && actionLowerCase === VulnerabilityAction.inherit)
         ) {
+            this.setState({ showLoadingOverlay: false })
             return
         }
 
@@ -256,8 +257,12 @@ export class SecurityPolicyEdit extends Component<
         }
     }
 
-    toggleAddCveModal(): void {
-        this.setState({ showWhitelistModal: !this.state.showWhitelistModal })
+    openWhitelistModal = (envId?: number) => {
+        this.setState({ showWhitelistModal: true, addCVEEnvId: envId ?? null })
+    }
+
+    closeWhitelistModal = () => {
+        this.setState({ showWhitelistModal: false, addCVEEnvId: null })
     }
 
     createCVEPayload(
@@ -398,7 +403,10 @@ export class SecurityPolicyEdit extends Component<
         )
     }
 
-    renderPolicyListHeader = () => {
+    renderPolicyListHeader = (envId: number) => {
+        const handleAddCVE = () => {
+            this.openWhitelistModal(envId)
+        }
         return (
             <div className="flexbox flex-justify mt-20">
                 <div>
@@ -416,7 +424,7 @@ export class SecurityPolicyEdit extends Component<
                         </a>
                     </p>
                 </div>
-                <button type="button" className="cta small flex" onClick={() => this.toggleAddCveModal()}>
+                <button type="button" className="cta small flex" onClick={handleAddCVE}>
                     <Add className="icon-dim-16 mr-5" />
                     Add CVE Policy
                 </button>
@@ -563,9 +571,6 @@ export class SecurityPolicyEdit extends Component<
         }
 
         const isCollapsible = this.props.level === 'application'
-        const setCVEErrorToTrue = () => {
-            this.setState({ isCveError: true })
-        }
 
         const wrapWithLoadingOverlay = (children) => (
             <div className="dc__position-rel">
@@ -604,7 +609,7 @@ export class SecurityPolicyEdit extends Component<
                                     <>
                                         {isCollapsible ? <div className="mb-20" /> : null}
                                         {this.renderVulnerabilitiesCard(v, v.severities)}
-                                        {this.renderPolicyListHeader()}
+                                        {this.renderPolicyListHeader(v.envId)}
                                         {v.cves.length
                                             ? this.renderPolicyList(v.cves, v.envId)
                                             : this.renderEmptyPolicyList()}
@@ -615,7 +620,11 @@ export class SecurityPolicyEdit extends Component<
                     })}
                 </ConditionalWrap>
                 {this.state.showWhitelistModal ? (
-                    <AddCveModal saveCVE={this.saveCVE} close={this.toggleAddCveModal} />
+                    <AddCveModal
+                        saveCVE={this.saveCVE}
+                        close={this.closeWhitelistModal}
+                        envId={this.state.addCVEEnvId}
+                    />
                 ) : null}
             </>
         )

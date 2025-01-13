@@ -48,7 +48,7 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
         const regex = new RegExp(/^CVE-\d{4}-\d{4,7}/)
         const cve = this.state.cve.toUpperCase()
         if (regex.test(cve)) {
-            this.props.saveCVE(this.state.cve, this.state.policy)
+            this.props.saveCVE(this.state.cve, this.state.policy, this.props.envId)
         } else {
             this.setState({ isCveError: true })
         }
