@@ -1497,6 +1497,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         appId: currentAppId,
                         stageType: bulkTriggerType,
                         runtimeParams: runtimeParams[currentAppId] || [],
+                        isRollbackTrigger: false,
                     }),
                 )
             } else {
