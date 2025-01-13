@@ -32,6 +32,7 @@ import {
     SelectPickerOptionType,
     SelectPickerProps,
     MarkDown,
+    versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
@@ -529,10 +530,12 @@ export const ChartValuesSelector = ({
         },
         {
             label: 'Default',
-            options: filteredChartValues.defaultChartValues.map((chartValue) => ({
-                value: chartValue,
-                label: `${chartValue.name} ${chartValue.chartVersion}`,
-            })),
+            options: filteredChartValues.defaultChartValues
+                .sort((a, b) => versionComparatorBySortOrder(a.chartVersion, b.chartVersion))
+                .map((chartValue) => ({
+                    value: chartValue,
+                    label: `${chartValue.name} ${chartValue.chartVersion}`,
+                })),
         },
     ]
 
