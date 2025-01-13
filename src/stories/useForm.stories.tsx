@@ -34,11 +34,11 @@ const validations: UseFormValidations<FormData> = {
     },
 }
 
-const FormComponent = ({ validationMode }: { validationMode: 'onChange' | 'onBlur' }) => {
+const FormComponent = ({ validationModes }: { validationModes: ('onChange' | 'onBlur')[] }) => {
     const { data, errors, register, handleSubmit, formState } = useForm<FormData>({
         initialValues: { email: '', password: '' },
         validations,
-        validationMode,
+        validationModes,
     })
 
     const onSubmit: UseFormSubmitHandler<FormData> = (formData, e) => {
@@ -82,12 +82,12 @@ type Story = StoryObj<typeof meta>
 // Stories
 export const FormWithOnChangeValidationMode: Story = {
     args: {
-        validationMode: 'onChange',
+        validationModes: ['onChange'],
     },
 }
 
 export const FormWithOnBlurValidationMode: Story = {
     args: {
-        validationMode: 'onBlur',
+        validationModes: ['onBlur'],
     },
 }
