@@ -1034,7 +1034,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
         if (this.state.view === ViewType.LOADING) {
             return (
-                <div className="bcn-0 h-100">
+                <div className="bg__primary h-100">
                     <Progressing pageLoader />
                 </div>
             )
@@ -1426,7 +1426,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
         const renderGitOpsFooter = () => {
             return (
-                <div className="form__buttons flex left dc__position-fixed bcn-0 w-100 dc__bottom-0 px-20 py-16 dc__border-top-n1">
+                <div className="form__buttons flex left dc__position-fixed bg__primary w-100 dc__bottom-0 px-20 py-16 dc__border-top-n1">
                     <button
                         type="submit"
                         disabled={this.state.saveLoading}
@@ -1450,8 +1450,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
 
         return (
-            <div className="bcn-0 flex-grow-1 w-100 h-100">
-                <section className="flex-1 bcn-0 flex left column">
+            <div className="bg__primary flex-grow-1 w-100 h-100">
+                <section className="flex-1 bg__primary flex left column">
                     <div className="flex left column px-20 py-16 dc__gap-24 w-100">
                         <FeatureTitleWithInfo
                             title={HEADER_TEXT.GITOPS.title}

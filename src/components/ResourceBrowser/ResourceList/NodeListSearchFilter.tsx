@@ -214,7 +214,7 @@ const NodeListSearchFilter = ({
         const placeholderText = NODE_SEARCH_KEY_PLACEHOLDER[searchTextType]
 
         return (
-            <div className="dc__position-rel bc-n50">
+            <div className="dc__position-rel bg__secondary">
                 <button
                     type="button"
                     className=" h-32 br-4 en-2 bw-1 w-100 fw-4 pt-6 pb-6 pr-10 flexbox flex-align-center dc__content-start dc__transparent"
@@ -260,8 +260,8 @@ const NodeListSearchFilter = ({
                         />
 
                         {!searchTextType && (
-                            <div className="dc__zi-6 w-100 bcn-0 dc__position-abs  br-4 en-2 bw-1">
-                                <div className="dc__window-bg pt-4 pb-4 pl-10 pr-10">Search by</div>
+                            <div className="dc__zi-6 w-100 bg__primary dc__position-abs  br-4 en-2 bw-1">
+                                <div className="bg__tertiary pt-4 pb-4 pl-10 pr-10">Search by</div>
 
                                 {NODE_SEARCH_KEY_OPTIONS.map((option) => (
                                     <button

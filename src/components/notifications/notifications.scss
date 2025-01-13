@@ -29,7 +29,7 @@
     box-shadow: inset 0 -1px 0 0 var(--N100);
 
     &:hover {
-        background-color: #edf1f5;
+        background-color: var(--N100);
 
         .pipeline-list__hover {
             visibility: visible;
@@ -103,21 +103,21 @@
 }
 
 .notification-page__header {
-    background: white;
+    background: var(--bg-primary);
     padding: 16px 24px 0;
     border-bottom: 1px solid var(--N200);
 }
 
 .notification-tab {
     padding: 0px 20px 16px 20px;
-    background-color: var(--N000);
+    background-color: var(--bg-primary);
     height: 100%;
     width: 100%;
 }
 
 .kebab-menu__sticky-bottom {
     padding: 16px 20px;
-    background-color: var(--N000);
+    background-color: var(--bg-primary);
     height: 100%;
     box-shadow: 0 -1px 0 0 var(--N200);
 }
@@ -195,7 +195,7 @@
     position: absolute;
     width: 100%;
     z-index: 6;
-    background-color: white;
+    background-color: var(--bg-primary);
     top: 44px;
     border-radius: 4px;
     box-shadow: 0 2px 4px 0 rgba(21, 21, 21, 0.3);
@@ -209,7 +209,7 @@
     align-items: center;
     padding-left: 12px;
     padding-right: 12px;
-    background-color: var(--N000);
+    background-color: var(--bg-primary);
     position: sticky;
     bottom: 0px;
     box-shadow: 0 -1px 0 0 var(--N200);
@@ -218,7 +218,7 @@
 .pipeline-filter__select-pipeline {
     position: relative;
     width: 100%;
-    background-color: white;
+    background-color: var(--bg-primary);
     min-height: 44px;
     display: flex;
     align-items: center;

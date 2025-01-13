@@ -27,10 +27,12 @@
             href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&display=swap"
             rel="stylesheet"
         />
+        <link rel="stylesheet" href="./index.css" />
         <link rel="shortcut icon" href="/favicon.ico" />
         <script src="/dashboard/env-config.js"></script>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="theme-color" content="#0066cc" />
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#0066cc" />
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#74B5FF" />
         <meta name="robots" content="noindex, nofollow" />
         <meta name="description" content="Easily containerize your application to move it to Kubernetes in the cloud or in your own data center. Build, test, secure, deploy, and manage your applications on Kubernetes using open-source software." />
         <title>Devtron</title>
@@ -45,7 +47,6 @@
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    background-color: #fff;
                 "
             >
                 <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -73,19 +74,18 @@
 
                         @keyframes path-fill {
                             0% {
-                                fill: #3989d9;
+                                opacity: 1;
                             }
                             30% {
-                                fill: #3989d9;
+                                opacity: 1;
                             }
                             45% {
-                                fill: #abcff3;
+                                opacity: 0.4;
                             }
                             100% {
-                                fill: #3989d9;
+                                opacity: 1;
                             }
                         }
-
                         @keyframes top-shape {
                             0% {
                                 transform: translateX(0px) translateY(0px) rotate(0deg);
@@ -105,7 +105,6 @@
                                 transform-origin: center center;
                             }
                         }
-
                         @keyframes bottom-shape {
                             0% {
                                 transform: translateX(0px) translateY(0px) rotate(0deg);
@@ -119,13 +118,11 @@
                                 transform: translateX(6px) translateY(6px) rotate(15deg);
                                 transform-origin: center center;
                             }
-
                             100% {
                                 transform: translateX(0px) translateY(0px) rotate(0deg);
                                 transform-origin: center center;
                             }
                         }
-
                         @keyframes rotate-group {
                             0% {
                                 transform: rotate(0deg);
@@ -139,21 +136,18 @@
                             }
                         }
                     </style>
-                    <rect width="100" height="100" rx="20" fill="#E5F2FF" />
+                    <!-- Using variables for consistent theming -->
+                    <rect width="100" height="100" rx="20" fill="var(--bg-devtron-loader)" />
                     <g class="svg__loader_rotating-group">
                         <g class="svg__loader_group-top">
-                            <path
-                                class="svg__loader_shapepath-top"
+                            <path class="svg__loader_shapepath-top"
                                 d="M59.8584 21.95L38.6084 21.875C36.8042 21.8667 35.1292 22.8125 34.1792 24.3667L19.4625 48.5167C18.9899 49.293 18.7427 50.1855 18.7486 51.0943C18.7545 52.0031 19.0132 52.8924 19.4958 53.6625L30.9125 71.8792C31.2183 72.533 31.7308 73.0679 32.3709 73.4015C33.011 73.7351 33.7431 73.8488 34.4542 73.725C35.141 73.5973 35.7703 73.2572 36.2533 72.7525C36.7362 72.2478 37.0485 71.6042 37.1459 70.9125C37.2338 70.2725 37.143 69.6207 36.8834 69.0292L36.8334 68.9458C36.7375 68.7458 36.6167 68.5583 36.4875 68.3833L35.1958 66.3083L28.3458 55.3583C27.9912 54.8612 27.7883 54.2719 27.7617 53.6618C27.735 53.0517 27.8858 52.447 28.1958 51.9208C30.175 48.5958 34.5125 41.5042 35.4875 40.3458C35.854 40.0077 36.2862 39.7489 36.7572 39.5854C37.2282 39.4219 37.7279 39.3574 38.225 39.3958L43.6208 39.8125C43.8939 39.8472 44.1535 39.951 44.3752 40.1142C44.5969 40.2773 44.7733 40.4943 44.8876 40.7447C45.0019 40.9951 45.0504 41.2705 45.0286 41.5448C45.0067 41.8192 44.9151 42.0834 44.7625 42.3125L42.5125 45.7917C42.3947 45.9427 42.2915 46.1045 42.2042 46.275V46.2792C41.8913 46.8936 41.8029 47.5981 41.9542 48.2708C42.0838 48.8505 42.391 49.3753 42.833 49.7721C43.275 50.1689 43.8298 50.4179 44.4201 50.4844C45.0103 50.5509 45.6066 50.4316 46.1259 50.1431C46.6451 49.8546 47.0614 49.4113 47.3167 48.875L62.0625 26.225C63.2084 24.4667 62.0709 22.0625 60 21.9542C59.9528 21.9515 59.9056 21.9501 59.8584 21.95Z"
-                                fill="#3989D9"
-                            />
+                                fill="var(--fill-devtron-loader)" />
                         </g>
                         <g class="svg__loader_group-bottom">
-                            <path
-                                class="svg__loader_shapepath-bottom"
+                            <path class="svg__loader_shapepath-bottom"
                                 d="M65.4458 26.2375C66.1567 26.1108 66.8896 26.2217 67.5313 26.553C68.1729 26.8844 68.6876 27.4178 68.9958 28.0709L80.4875 46.2334C81.4833 47.7959 81.5041 49.7959 80.55 51.3792L65.9375 75.5917C65.4801 76.3555 64.8332 76.9882 64.0594 77.4284C63.2855 77.8686 62.4111 78.1014 61.5208 78.1042L40.2708 78.125C40.2236 78.1263 40.1764 78.1263 40.1291 78.125C38.0583 78.025 36.9125 75.625 38.0458 73.8625L52.6916 51.1459C52.9442 50.6078 53.3584 50.162 53.8765 49.8707C54.3946 49.5794 54.9907 49.4571 55.5816 49.5209C56.1725 49.5847 56.7288 49.8313 57.1728 50.2265C57.6168 50.6216 57.9264 51.1455 58.0583 51.725C58.2135 52.3963 58.1295 53.1007 57.8208 53.7167C57.7327 53.8889 57.628 54.0564 57.5083 54.2084L55.2791 57.6959C55.1264 57.9255 55.035 58.1904 55.0135 58.4654C54.9921 58.7403 55.0413 59.0162 55.1566 59.2667C55.2718 59.5173 55.4493 59.7342 55.672 59.8968C55.8947 60.0595 56.1554 60.1624 56.4291 60.1959L61.8291 60.5875C62.3261 60.6226 62.8249 60.5548 63.2944 60.3885C63.764 60.2222 64.1942 59.9609 64.5583 59.6209C65.1 58.975 66.6666 56.4959 68.2916 53.8417L69.2666 52.2459C70.2333 50.6542 71.1458 49.1209 71.8041 48.0125C72.1109 47.4853 72.2584 46.8805 72.2288 46.2712C72.1992 45.6619 71.9938 45.0743 71.6375 44.5792L71.6583 44.5667L64.7375 33.6584L63.4416 31.5875C63.3053 31.4122 63.1866 31.2238 63.0875 31.025L63.0375 30.95C62.7742 30.3581 62.6805 29.7046 62.7666 29.0625C62.8608 28.3703 63.1702 27.7251 63.6509 27.2182C64.1317 26.7113 64.7595 26.3682 65.4458 26.2375Z"
-                                fill="#3989D9"
-                            />
+                                fill="var(--fill-devtron-loader)" />
                         </g>
                     </g>
                 </svg>

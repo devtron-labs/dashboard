@@ -26,6 +26,7 @@ import { ReactComponent as SES } from '@Icons/ic-aws-ses.svg'
 import { ReactComponent as Webhook } from '@Icons/ic-CIWebhook.svg'
 import { ReactComponent as SMTP } from '@Icons/ic-smtp.svg'
 import {
+    commonSelectStyles,
     DynamicDataTableHeaderType,
     DynamicDataTableRowDataType,
     getUniqueId,
@@ -39,18 +40,21 @@ import { FormError, SESFormType, SMTPFormType, WebhookDataRowType, WebhookHeader
 import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
 
 export const multiSelectStyles = {
+    ...commonSelectStyles,
     control: (base, state) => ({
         ...base,
-        border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
+        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
         boxShadow: 'none',
         height: '100%',
+        backgroundColor: 'var(--bg-secondary)',
     }),
     menu: (base, state) => ({
         ...base,
         top: `38px`,
+        backgroundColor: 'var(--bg-menu)',
     }),
     option: (base, state) => ({
-        ...base,
+        ...commonSelectStyles.option(base, state),
         color: 'var(--N900)',
         display: `flex`,
         alignItems: `center`,
@@ -67,7 +71,7 @@ export const multiSelectStyles = {
         background:
             state.data.data.dest !== 'slack' && state.data.data.dest !== 'webhook' && !validateEmail(state.data.label)
                 ? 'var(--R100)'
-                : 'var(--N000)',
+                : 'var(--bg-primary)',
         padding: `2px`,
         textTransform: `lowercase`,
         fontSize: `12px`,

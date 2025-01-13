@@ -345,7 +345,7 @@ export default function NavigationRoutes() {
     if (pageState === ViewType.LOADING || loginLoader) {
         return (
             <div className="full-height-width">
-                <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
+                <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />
             </div>
         )
     }
@@ -392,12 +392,12 @@ export default function NavigationRoutes() {
                 )}
                 {serverMode && (
                     <div
-                        className={`main ${location.pathname.startsWith('/app/list') || location.pathname.startsWith('/application-group/list') ? 'bcn-0' : ''} ${
+                        className={`main ${location.pathname.startsWith('/app/list') || location.pathname.startsWith('/application-group/list') ? 'bg__primary' : ''} ${
                             pageOverflowEnabled ? '' : 'main__overflow-disabled'
                         }`}
                     >
                         <Suspense
-                            fallback={<DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />}
+                            fallback={<DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />}
                         >
                             <ErrorBoundary>
                                 <Switch>

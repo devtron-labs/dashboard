@@ -63,7 +63,7 @@ const DeploymentTemplateForm = ({
         if (showReadMe) {
             return (
                 <CodeEditor.Header className="flex left p-0-imp dc__border-bottom-n1" hideDefaultSplitHeader>
-                    <div className="flexbox px-16 py-6 dc__content-space fs-12 fw-6 cn-9 bcn-0">
+                    <div className="flexbox px-16 py-6 dc__content-space fs-12 fw-6 cn-9 bg__primary">
                         <div className="flexbox w-100 dc__gap-8 dc__align-items-center">
                             <div className="flexbox dc__gap-8 dc__align-items-center">
                                 {!readOnly && <ICPencil className="icon-dim-16 dc__no-shrink" />}
@@ -90,7 +90,7 @@ const DeploymentTemplateForm = ({
         <div className={`dc__overflow-scroll flex-grow-1 ${showReadMe ? 'dc__grid-half' : 'flexbox-col'}`}>
             {showReadMe && (
                 <div className="flexbox-col dc__border-right dc__overflow-scroll">
-                    <div className="flexbox dc__gap-8 bcn-0 px-12 py-6 dc__border-bottom-n1 flex left py-6">
+                    <div className="flexbox dc__gap-8 bg__primary px-12 py-6 dc__border-bottom-n1 flex left py-6">
                         <ICBookOpen className="icon-dim-16 dc__no-shrink scn-9" />
                         <span className="fs-12 fw-6 cn-9 lh-20">{`Readme ${selectedChart ? `(v${selectedChart.version})` : ''}`}</span>
                     </div>

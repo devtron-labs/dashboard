@@ -45,7 +45,7 @@
 .select-button--source-info {
     height: 40px;
     padding: 12px 10px;
-    background-color: var(--white);
+    background-color: var(--bg-primary);
 }
 
 .disabled {
@@ -68,7 +68,7 @@
 }
 
 .ci-artifact {
-    border: solid 1px #d5dbdf;
+    border: solid 1px var(--N200);
     margin-bottom: 12px;
     border-radius: 4px;
 
@@ -87,13 +87,13 @@
     padding: 14px 16px;
     display: flex;
     background-blend-mode: multiply;
-    background-image: linear-gradient(to bottom, #f2f4f7, #f2f4f7);
-    border-top: solid 1px #d5dbdf;
+    background-image: linear-gradient(to bottom, var(--bg-window), var(--bg-window));
+    border-top: solid 1px var(--N200);
     border-radius: 0 0 4px 4px;
 }
 
 .docker-build-args {
-    border: solid 1px #d5dbdf;
+    border: solid 1px var(--N200);
     border-radius: 4px;
     margin-bottom: 24px;
 }
@@ -106,7 +106,7 @@
 }
 
 .docker-build-args__wrapper {
-    border-top: solid 1px #d5dbdf;
+    border-top: solid 1px var(--N200);
 }
 
 .docker-build-args__text {
@@ -124,7 +124,7 @@
 .ext-ci-config {
     border-radius: 8px;
     border: solid 1px var(--N200);
-    background-color: var(--window-bg);
+    background-color: var(--bg-tertiary);
     padding: 16px 20px;
     border-style: dashed;
 }
@@ -150,12 +150,6 @@
     margin-bottom: 24px;
 }
 
-.copy-button--ext-ci {
-    position: absolute;
-    top: 32px;
-    right: 5px;
-}
-
 .ci-stage__title {
     font-size: 16px;
     font-weight: 600;
@@ -179,10 +173,10 @@
 }
 
 .script-container {
-    border: 1px solid #d6dbdf;
+    border: 1px solid var(--N200);
     padding: 8px 0;
     border-radius: 4px;
-    background: var(--N50);
+    background: var(--bg-secondary);
 
     &.no-padding-script-container {
         padding: 0px;
@@ -193,7 +187,7 @@
     }
 
     .code-editor__shebang {
-        color: #e00000;
+        color: var(--R500);
         opacity: 1;
     }
 }
@@ -246,7 +240,7 @@
     display: grid;
     grid-template-columns: 280px 1fr;
     height: calc(100vh - 138px);
-    background: var(--white);
+    background: var(--bg-primary);
     overflow: hidden;
 
     .sidebar-container {
@@ -355,7 +349,7 @@
             text-align: center;
             display: table;
             padding: 2px 8px;
-            background: var(--N0);
+            background: var(--bg-primary);
             border: 1px solid var(--N200);
             color: var(--N400);
         }
@@ -505,13 +499,13 @@
     font-size: 12px;
     font-weight: 600;
     color: var(--N900);
-    background: var(--window-bg);
+    background: var(--bg-tertiary);
     padding: 4px 10px;
     text-transform: none;
 }
 
 .build__value {
-    background-color: var(--N50);
+    background-color: var(--bg-secondary);
 }
 
 .format-grid {

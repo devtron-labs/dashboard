@@ -484,7 +484,7 @@ const LogsComponent = ({
     const renderSearchText = (): JSX.Element => (
         <SearchBar
             initialSearchText={tempSearch}
-            containerClassName='w-100 bcn-0'
+            containerClassName='w-100 bg__primary'
             handleEnter={handleLogsSearch}
             inputProps={{
                 placeholder: `grep -A 10 -B 20 "Server Error" | grep 500`,
@@ -502,7 +502,7 @@ const LogsComponent = ({
         />
     ) : (
         <>
-            <div className="node-container-fluid bcn-0">
+            <div className="node-container-fluid bg__primary">
                 <div data-testid="logs-container-header" className="pl-16 h-32 flexbox">
                     <div className="w-70 flexbox flex-align-center pt-2 pb-2">
                         <Tippy
@@ -557,6 +557,7 @@ const LogsComponent = ({
                                                     menu: (base) => ({
                                                         ...base,
                                                         zIndex: 9999,
+                                                        backgroundColor: 'var(--bg-menu)',
                                                         textAlign: 'left',
                                                     }),
                                                     control: (base, state) => ({
@@ -574,18 +575,19 @@ const LogsComponent = ({
                                                         ...base,
                                                         margin: '0',
                                                         paddingTop: '0',
+                                                        color: 'var(--N900)',
                                                     }),
                                                     groupHeading: (base) => ({
                                                         ...base,
                                                         fontWeight: 600,
                                                         fontSize: '10px',
-                                                        color: 'var(--n-700)',
+                                                        color: 'var(--N700)',
                                                         marginLeft: 0,
                                                     }),
                                                     singleValue: (base, state) => ({
                                                         ...base,
                                                         fontWeight: 600,
-                                                        color: '#000A14',
+                                                        color: 'var(--N900)',
                                                         direction: 'rtl',
                                                         textAlign: 'left',
                                                         marginLeft: '2px',
@@ -638,6 +640,7 @@ const LogsComponent = ({
                                                 zIndex: 9999,
                                                 textAlign: 'left',
                                                 width: '150px',
+                                                backgroundColor: 'var(--bg-menu)',
                                             }),
                                             menuList: (base) => ({
                                                 ...base,
@@ -658,11 +661,12 @@ const LogsComponent = ({
                                                 ...base,
                                                 margin: '0',
                                                 paddingTop: '0',
+                                                color: 'var(--N900)',
                                             }),
                                             singleValue: (base, state) => ({
                                                 ...base,
                                                 fontWeight: 600,
-                                                color: '#000A14',
+                                                color: 'var(--N900)',
                                                 direction: 'rtl',
                                                 textAlign: 'left',
                                                 marginLeft: '2px',
@@ -737,7 +741,7 @@ const LogsComponent = ({
                         className="w-30 flex flex-justify left bcn-1 flex-align-center "
                         onSubmit={handleLogSearchSubmit}
                     >
-                      {renderSearchText()}
+                        {renderSearchText()}
                         <div className="dc__border-right h-100" />
                         <Tippy
                             className="default-tt"
@@ -754,7 +758,7 @@ const LogsComponent = ({
                                 </div>
                             }
                         >
-                            <div className="w-16 bcn-0 h-100 flexbox flex-align-center">
+                            <div className="w-16 bg__primary h-100 flexbox flex-align-center">
                                 <QuestionIcon className="icon-dim-18 cursor ml-8 mr-8" />
                             </div>
                         </Tippy>
@@ -767,7 +771,7 @@ const LogsComponent = ({
                         data-testid="app-logs-container"
                         style={{
                             gridColumn: '1 / span 2',
-                            background: '#0b0f22',
+                            background: 'var(--terminal-bg)',
                             height:
                                 isResourceBrowserView || isLogAnalyzer ? 'calc(100vh - 152px)' : 'calc(100vh - 187px)',
                         }}

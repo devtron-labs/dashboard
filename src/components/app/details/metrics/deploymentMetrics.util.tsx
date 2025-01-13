@@ -33,7 +33,7 @@ export const styles = {
         return {
             ...base,
             top: `38px`,
-            backgroundColor: state.Selected ? 'white' : 'white',
+            backgroundColor: 'var(--bg-primary)',
         }
     },
     singleValue: (base, state) => {
@@ -47,7 +47,7 @@ export const styles = {
         return {
             ...base,
             color: 'var(--N900)',
-            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+            backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--bg-primary)',
         }
     },
 }
@@ -140,7 +140,7 @@ export const BenchmarkLine = (props) => {
         case 'ELITE':
             return (
                 <svg height="10" width="30">
-                    <line stroke="#8930e8" strokeWidth="2" x1="0" y1="5" x2="30" y2="5" />
+                    <line stroke="var(--V500)" strokeWidth="2" x1="0" y1="5" x2="30" y2="5" />
                 </svg>
             )
         default:

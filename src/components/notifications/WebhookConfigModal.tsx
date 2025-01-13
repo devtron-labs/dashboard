@@ -244,7 +244,7 @@ export const WebhookConfigModal = ({
 
                 <div className="flexbox-col dc__gap-6">
                     <div className="fs-13 cn-7 lh-20 dc__required-field">Data to be shared through webhook</div>
-                    <div className="en-2 bw-1 br-4 p-6">
+                    <div className="en-2 bw-1 br-4 dc__overflow-hidden">
                         <CodeEditor
                             value={form.payload}
                             mode="json"

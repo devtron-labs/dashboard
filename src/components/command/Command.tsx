@@ -453,7 +453,7 @@ export class Command extends Component<CommandProps, CommandState> {
                         className="command__suggested-args-container mt-8 flex column"
                     >
                         <h4
-                            className="dc__ff-monospace command__control command__control--tab cursor"
+                            className="mono command__control command__control--tab cursor"
                             onClick={this.runCommand}
                         >
                             &crarr; Enter
@@ -503,12 +503,12 @@ export class Command extends Component<CommandProps, CommandState> {
                                         className={
                                             this.state.focussedArgument === index
                                                 ? 'pl-20 pr-20 pt-6 pb-6 flexbox suggested-arguments__arg bcn-1 cursor'
-                                                : 'pl-20 pr-20 pt-6 pb-6 flexbox suggested-arguments__arg bcn-0 cursor'
+                                                : 'pl-20 pr-20 pt-6 pb-6 flexbox suggested-arguments__arg bg__primary cursor'
                                         }
                                     >
                                         <span>{a.value}</span>
                                         <span
-                                            className="dc__ff-monospace command__control ml-20"
+                                            className="mono command__control ml-20"
                                             style={{
                                                 display:
                                                     this.state.focussedArgument === index ? 'dc__inline-block' : 'none',
@@ -601,11 +601,11 @@ export class Command extends Component<CommandProps, CommandState> {
                                     Jump To
                                 </label>
                             </div>
-                            <span className="command__press-tab dc__ff-monospace">
+                            <span className="command__press-tab mono">
                                 Press <span className="command__control command__control--tab">Tab</span> to switch
                             </span>
                         </div>
-                        <div className="flex column pl-20 pr-20" style={{ backgroundColor: 'var(--window-bg)' }}>
+                        <div className="flex column pl-20 pr-20" style={{ backgroundColor: 'var(--bg-tertiary)' }}>
                             <div className="command-arg flex top w-100">
                                 <div className="flex-1 flex left flex-wrap">
                                     {this.state.arguments.map((arg, index) => {
@@ -646,7 +646,7 @@ export class Command extends Component<CommandProps, CommandState> {
                                 </div>
                                 {this.state.arguments?.find((a) => a?.data?.url) && (
                                     <span
-                                        className="dc__ff-monospace command__control p-0 fs-16 mt-4 mb-4 cursor"
+                                        className="mono command__control p-0 fs-16 mt-4 mb-4 cursor"
                                         style={{ lineHeight: '1.1', backgroundColor: 'var(--N100)' }}
                                         onClick={this.runCommand}
                                     >

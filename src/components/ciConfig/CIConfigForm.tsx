@@ -385,7 +385,7 @@ export default function CIConfigForm({
                 />
             </div>
             {!configOverrideView && (
-                <div className="save-build-configuration form__buttons dc__position-abs bcn-0 dc__border-top">
+                <div className="save-build-configuration form__buttons dc__position-abs bg__primary dc__border-top">
                     <button
                         data-testid="build_config_save_and_next_button"
                         tabIndex={5}

@@ -80,8 +80,8 @@ export const VariableConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOver
                             placement="bottom-start"
                             content={
                                 <div className="fs-12 lh-18 flexbox-col dc__gap-2">
-                                    <p className="m-0 fw-6 cn-0">Value is required</p>
-                                    <p className="m-0 cn-50">
+                                    <p className="m-0 fw-6">Value is required</p>
+                                    <p className="m-0">
                                         Value for required variables must be provided for pipeline execution
                                     </p>
                                 </div>

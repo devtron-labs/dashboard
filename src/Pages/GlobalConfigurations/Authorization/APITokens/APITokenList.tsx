@@ -58,7 +58,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
     const noMatchingResults = () => <GenericFilterEmptyState />
 
     return (
-        <div className="bcn-0">
+        <div className="bg__primary">
             <div data-testid="api-token-page-header" className="flex dc__content-space pl-20 pr-20 pb-16">
                 <FeatureTitleWithInfo
                     title={HEADER_TEXT.API_TOKEN.title}

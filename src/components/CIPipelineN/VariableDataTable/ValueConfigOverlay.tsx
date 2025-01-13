@@ -326,10 +326,8 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
                                     placement="bottom-start"
                                     content={
                                         <div className="fs-12 lh-18 flexbox-col dc__gap-2">
-                                            <p className="m-0 fw-6 cn-0">Allow custom input</p>
-                                            <p className="m-0 cn-50">
-                                                Allow entering any value other than provided choices
-                                            </p>
+                                            <p className="m-0 fw-6">Allow custom input</p>
+                                            <p className="m-0">Allow entering any value other than provided choices</p>
                                         </div>
                                     }
                                 >

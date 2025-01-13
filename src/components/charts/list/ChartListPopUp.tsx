@@ -255,7 +255,7 @@ const ChartListPopUp = ({
     return (
         <div className="dc__transparent-div" onClick={closeChartPopUpModalOnBlur}>
             <div
-                className="chart-store__list h-100 w-400 br-4 bcn-0 en-2 bw-1 fw-4 fs-13 dc__overflow-hidden"
+                className="chart-store__list h-100 w-400 br-4 bg__primary en-2 bw-1 fw-4 fs-13 dc__overflow-hidden"
                 onClick={onClickChartListPopUp}
             >
                 {renderChartListHeaders()}

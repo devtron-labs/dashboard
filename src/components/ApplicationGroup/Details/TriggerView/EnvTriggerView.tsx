@@ -2423,7 +2423,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 })}
                 {!!selectedAppList.length && (
                     <div
-                        className="flexbox dc__content-space dc__position-fixed dc__bottom-0 dc__border-top w-100 bcn-0 pt-12 pr-20 pb-12 pl-20 dc__right-0"
+                        className="flexbox dc__content-space dc__position-fixed dc__bottom-0 dc__border-top w-100 bg__primary pt-12 pr-20 pb-12 pl-20 dc__right-0"
                         style={{ width: 'calc(100vw - 56px)' }}
                     >
                         {renderSelectedApps()}
@@ -2437,7 +2437,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
     return (
         <div
-            className="svg-wrapper-trigger app-group-trigger-view-container bcn-0"
+            className="svg-wrapper-trigger app-group-trigger-view-container bg__primary"
             style={{ paddingBottom: selectedAppList.length ? '68px' : '16px' }}
         >
             <div className="flex left mb-14">

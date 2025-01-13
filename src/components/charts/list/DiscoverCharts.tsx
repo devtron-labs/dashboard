@@ -329,7 +329,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                 {chartList.length > 0 && serverMode == SERVER_MODE.FULL && state.charts.length === 0 && (
                     <button
                         type="button"
-                        className="bcn-0 en-2 bw-1 cursor cb-5 fw-6 fs-13 br-4 pr-12 pl-12 fcb-5 flex h-32 lh-n cta small dc__gap-6"
+                        className="bg__primary en-2 bw-1 cursor cb-5 fw-6 fs-13 br-4 pr-12 pl-12 fcb-5 flex h-32 lh-n cta small dc__gap-6"
                         onClick={(e) => toggleChartGroupModal(!showChartGroupModal)}
                         data-testid="create-button-group-present"
                     >
@@ -361,7 +361,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
         }
 
         return (
-            <div className="bcn-0">
+            <div className="bg__primary">
                 <div className="m-0 flex left">
                     {state.charts.length > 0 && (
                         <>
@@ -377,7 +377,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                 Chart Store
                                 {isSuperAdmin && (
                                     <button
-                                        className="en-2 bw-1 br-4 cb-5 fw-6 bcn-0 ml-16"
+                                        className="en-2 bw-1 br-4 cb-5 fw-6 bg__primary ml-16 scb-5"
                                         onClick={onChangeShowSourcePopup}
                                     >
                                         <SourceIcon className="mr-4" />
@@ -441,7 +441,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     return (
         <>
             <div
-                className={`discover-charts bcn-0 ${state.charts.length > 0 ? 'summary-show' : ''} chart-store-header`}
+                className={`discover-charts bg__primary ${state.charts.length > 0 ? 'summary-show' : ''} chart-store-header`}
             >
                 <ConditionalWrap condition={state.charts.length > 0} wrap={(children) => <div>{children}</div>}>
                     <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
@@ -488,7 +488,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                         )}
                                     </div>
                                 ) : (
-                                    <div className="discover-charts__body-details bcn-50">
+                                    <div className="discover-charts__body-details bg__secondary">
                                         {typeof state.configureChartIndex === 'number' ? (
                                             <AdvancedConfig
                                                 chart={state.charts[state.configureChartIndex]}
@@ -678,7 +678,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                         </aside>
                     </div>
                 ) : (
-                    <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
+                    <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />
                 )}
             </div>
             {showDeployModal ? (
@@ -771,7 +771,7 @@ export const EmptyChartGroup = ({
 }: EmptyCharts) => {
     const { url } = useRouteMatch()
     return (
-        <div className="bcn-0 flex left br-8 mt-20 ml-20 mr-20" style={{ gridColumn: '1 / span 4', ...styles }}>
+        <div className="bg__primary flex left br-8 mt-20 ml-20 mr-20" style={{ gridColumn: '1 / span 4', ...styles }}>
             <img src={image || empty} style={{ width: '200px', margin: '20px 42px' }} />
             <div>
                 <div className="fs-16 fw-6" data-testid="chart-group-heading">
@@ -798,7 +798,7 @@ export const EmptyChartGroup = ({
                 ) : (
                     <button
                         type="button"
-                        className="en-2 br-4 bw-1 mt-16 cursor flex fw-6 cn-7 pt-6 pr-10 pb-6 pl-10 bcn-0 h-32"
+                        className="en-2 br-4 bw-1 mt-16 cursor flex fw-6 cn-7 pt-6 pr-10 pb-6 pl-10 bg__primary h-32"
                         onClick={(e) => toggleChartGroupModal(!showChartGroupModal)}
                         data-testid="chart-group-create-button"
                     >
@@ -851,7 +851,7 @@ export const ChartGroupListMin = ({
                     />
                     <div className="flex dc__content-space dc__gap-8 h-32">
                         <button
-                            className="cb-5 fw-6 fs-13 flex fcb-5 cursor dc__transparent dc__gap-6 en-2 bw-1 px-10 py-6 br-4 bcn-0"
+                            className="cb-5 fw-6 fs-13 flex fcb-5 cursor dc__transparent dc__gap-6 en-2 bw-1 px-10 py-6 br-4 bg__primary"
                             onClick={redirectToGroup}
                         >
                             <span className="lh-20">View all chart groups</span>

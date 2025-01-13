@@ -119,7 +119,7 @@ const ChartSelectorDropdown = ({
                 <>
                     {customCharts.length > 0 && (
                         <div
-                            className="pt-12 pr-12 pb-8 pl-12 dc__position-sticky bcn-0 top-0 dc__top-radius-4"
+                            className="pt-12 pr-12 pb-8 pl-12 dc__position-sticky bg__primary top-0 dc__top-radius-4"
                             onClick={stopPropagation}
                         >
                             <RadioGroup

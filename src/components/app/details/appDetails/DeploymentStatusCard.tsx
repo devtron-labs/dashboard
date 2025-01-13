@@ -121,7 +121,7 @@ const DeploymentStatusCard = ({
         <div
             data-testid="deployment-status-card"
             onClick={onClickLastDeploymentStatus}
-            className={`app-details-info-card flex left bcn-0 br-8 mr-12 lh-20 w-250 ${hideDetails ? '' : 'cursor'}`}
+            className={`app-details-info-card flex left bg__primary br-8 mr-12 lh-20 w-250 ${hideDetails ? '' : 'cursor'}`}
         >
             {renderDeploymentStatus()}
         </div>
