@@ -97,6 +97,10 @@ export type ConfigMapSecretFormProps = Required<
         isDraft?: boolean
         disableDataTypeChange: boolean
         useFormProps: ReturnType<typeof useForm<ConfigMapSecretUseFormProps>>
+        /**
+         * @default false
+         */
+        noContainerPadding?: boolean
     }
 
 export interface ConfigMapSecretDataProps extends Pick<ConfigMapSecretFormProps, 'useFormProps'> {

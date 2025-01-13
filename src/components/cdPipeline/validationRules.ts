@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { validateCMVolumeMountPath } from '@devtron-labs/devtron-fe-common-lib';
+import { validateCMVolumeMountPath } from '@devtron-labs/devtron-fe-common-lib'
 import { PATTERNS } from '../../config'
 import {
     CHARACTER_ERROR_MAX,

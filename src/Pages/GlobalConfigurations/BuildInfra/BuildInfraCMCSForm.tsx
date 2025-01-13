@@ -16,6 +16,7 @@ const BuildInfraCMCSForm = ({ parsedData, useFormProps, componentType }: BuildIn
         // TODO: Check if isSubmitting is required here?
         useFormProps={useFormProps}
         isExternalSubmit
+        noContainerPadding
     />
 )
 

@@ -65,6 +65,7 @@ export const ConfigMapSecretForm = ({
     isExternalSubmit,
     onSubmit,
     onCancel,
+    noContainerPadding = false,
 }: ConfigMapSecretFormProps) => {
     // HOOKS
     const location = useLocation()
@@ -351,7 +352,7 @@ export const ConfigMapSecretForm = ({
                 {areScopeVariablesResolving ? (
                     <Progressing fullHeight pageLoader />
                 ) : (
-                    <div className="p-16 flex-grow-1 dc__overflow-auto">
+                    <div className={`${!noContainerPadding ? 'p-16' : ''} flex-grow-1 dc__overflow-auto`}>
                         <div className="flexbox-col dc__gap-16 dc__mxw-1200">
                             {isPatchMode ? (
                                 <ConfigMapSecretReadyOnly
