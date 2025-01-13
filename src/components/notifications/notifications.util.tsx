@@ -28,9 +28,7 @@ import { ReactComponent as SMTP } from '@Icons/ic-smtp.svg'
 import {
     DynamicDataTableHeaderType,
     DynamicDataTableRowDataType,
-    DynamicDataTableRowType,
     getUniqueId,
-    stringComparatorBySortOrder,
     ToastManager,
     ToastVariantType,
     Tooltip,
@@ -39,7 +37,6 @@ import { ConfigurationFieldKeys, ConfigurationsTabTypes, ConfigurationTabText } 
 import { validateEmail } from '../common'
 import { FormError, SESFormType, SMTPFormType, WebhookDataRowType, WebhookHeaderKeyType } from './types'
 import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
-import awsRegionList from '../common/awsRegionList.json'
 
 export const multiSelectStyles = {
     control: (base, state) => ({
@@ -254,7 +251,7 @@ export const getTableHeaders = (): DynamicDataTableHeaderType<WebhookHeaderKeyTy
     { label: 'Value', key: 'value', width: '1fr' },
 ]
 
-export const getInitialWebhookKeyRow = (headers: {key: string, value: string}): WebhookDataRowType[] => {
+export const getInitialWebhookKeyRow = (headers: { key: string; value: string }): WebhookDataRowType[] => {
     return Object.entries(headers).map(([key, value]) => {
         return {
             data: {
@@ -354,8 +351,3 @@ export const renderErrorToast = () =>
         variant: ToastVariantType.error,
         description: 'Some required fields are missing or Invalid',
     })
-
-export const getAwsRegionListParsed = () =>
-    awsRegionList
-        .sort((a, b) => stringComparatorBySortOrder(a.name, b.name))
-        .map((region) => ({ label: region.name, value: region.value }))

@@ -25,21 +25,20 @@ import {
     DEFAULT_SECRET_PLACEHOLDER,
     OptionType,
     SelectPickerProps,
+    stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import { saveEmailConfiguration, getSESConfiguration } from './notifications.service'
 import { SESConfigModalProps, SESFormType } from './types'
-import {
-    getAwsRegionListParsed,
-    getSESDefaultConfiguration,
-    renderErrorToast,
-    validateKeyValueConfig,
-} from './notifications.util'
+import { getSESDefaultConfiguration, renderErrorToast, validateKeyValueConfig } from './notifications.util'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, DefaultSESValidations } from './constants'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
 import { DefaultCheckbox } from './DefaultCheckbox'
+import awsRegionList from '../common/awsRegionList.json'
 
-const awsRegionList = getAwsRegionListParsed()
+const awsRegionListOption = awsRegionList
+    .sort((a, b) => stringComparatorBySortOrder(a.name, b.name))
+    .map((region) => ({ label: region.name, value: region.value }))
 
 const SESConfigModal = ({
     sesConfigId,
@@ -60,7 +59,7 @@ const SESConfigModal = ({
         try {
             const response = await getSESConfiguration(sesConfigId)
             const { region } = response.result
-            const awsRegion = awsRegionList.find((r) => r.value === region)
+            const awsRegion = awsRegionListOption.find((r) => r.value === region)
 
             setForm({
                 ...response.result,
@@ -249,7 +248,7 @@ const SESConfigModal = ({
                 placeholder="Select region"
                 onBlur={handleAWSBlur}
                 onChange={handleAWSRegionChange}
-                options={awsRegionList}
+                options={awsRegionListOption}
                 size={ComponentSizeType.large}
                 name={ConfigurationFieldKeys.REGION}
                 error={isFormValid[ConfigurationFieldKeys.REGION].message}

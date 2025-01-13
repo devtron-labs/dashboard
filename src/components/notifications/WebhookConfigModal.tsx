@@ -197,11 +197,16 @@ export const WebhookConfigModal = ({
 
         try {
             const requestBody = {
-                configName: form.configName,
-                webhookUrl: form.webhookUrl,
-                payload: form.payload,
-                id: webhookConfigId,
-                header: headers,
+                channel: ConfigurationsTabTypes.WEBHOOK,
+                configs: [
+                    {
+                        configName: form.configName,
+                        webhookUrl: form.webhookUrl,
+                        payload: form.payload,
+                        id: webhookConfigId,
+                        header: headers,
+                    },
+                ],
             }
             await saveUpdateWebhookConfiguration(requestBody)
             ToastManager.showToast({ variant: ToastVariantType.success, description: 'Saved Successfully' })
