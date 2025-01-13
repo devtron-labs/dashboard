@@ -30,17 +30,11 @@ export interface DynamicTabsProps {
     hideTimer: boolean
 }
 
-export interface TabsDataType {
-    fixedTabs: DynamicTabType[]
-    dynamicTabs: DynamicTabType[]
-}
-
 export interface MoreButtonWrapperProps {
     children?: ReactNode
     readonly isMenuOpen: boolean
     readonly onClose: () => void
     readonly toggleMenu: () => void
-    tabPopupMenuRef: React.MutableRefObject<HTMLButtonElement>
 }
 
 export interface TimerType {

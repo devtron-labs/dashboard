@@ -15,8 +15,7 @@
  */
 
 import { Dayjs } from 'dayjs'
-import { OptionType, DynamicTabType } from '@devtron-labs/devtron-fe-common-lib'
-import { TabsDataType } from './Types'
+import { DynamicTabType } from '@devtron-labs/devtron-fe-common-lib'
 import { MARK_AS_STALE_DATA_CUT_OFF_MINS } from '../../ResourceBrowser/Constants'
 
 export const COMMON_TABS_SELECT_STYLES = {
@@ -50,46 +49,7 @@ export const COMMON_TABS_SELECT_STYLES = {
     }),
 }
 
-export const EMPTY_TABS_DATA = {
-    fixedTabs: [],
-    dynamicTabs: [],
-}
-
-export const initTabsData = (
-    tabs: DynamicTabType[],
-    setTabsData: React.Dispatch<React.SetStateAction<TabsDataType>>,
-    setSelectedTab: React.Dispatch<React.SetStateAction<OptionType & DynamicTabType>>,
-    updateMenuState: () => void,
-): void => {
-    const fixedTabs = []
-    const dynamicTabs = []
-    tabs.forEach((tab) => {
-        const tabOption = {
-            ...tab,
-            label: tab.dynamicTitle || tab.title,
-            value: tab.id,
-        }
-        if (tab.type === 'fixed') {
-            fixedTabs.push(tabOption)
-        } else {
-            dynamicTabs.push(tabOption)
-        }
-
-        if (tabOption.isSelected) {
-            setSelectedTab(tabOption)
-        }
-    })
-
-    setTabsData({
-        fixedTabs,
-        dynamicTabs,
-    })
-
-    // Update menu state when dynamicTabs are not present
-    if (dynamicTabs.length === 0) {
-        updateMenuState()
-    }
-}
-
 export const checkIfDataIsStale = (start: Dayjs, now: Dayjs): boolean =>
     now.diff(start, 'minutes') > MARK_AS_STALE_DATA_CUT_OFF_MINS
+
+export const getOptionLabel = (tab: DynamicTabType) => tab.dynamicTitle || tab.title
