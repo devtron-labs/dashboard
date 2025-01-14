@@ -16,6 +16,7 @@
 
 .dynamic-tabs-section {
     z-index: 11;
+
     .dynamic-tabs-container {
         overflow-x: auto;
         -ms-overflow-style: none;
@@ -103,8 +104,8 @@
 
     .dynamic-tab__close {
         &:hover {
-            background-color: var(--R100);
-
+            background-color: var(--R200);
+            
             svg {
                 path {
                     fill: var(--R500);
@@ -114,45 +115,62 @@
         }
     }
 
-    .dynamic-tab__border:not(:first-of-type) {
-        height: 16px;
-        border-left: 1px solid var(--N200);
-    }
-
-    .dynamic-tabs-container,
-    .fixed-tabs-container {
-        display: flex;
-        align-items: center;
-        height: 36px;
-
-        .dynamic-tab-selected {
-            border-bottom: 2px solid var(--bg-primary);
-            border-left: 1px solid var(--N200);
-            border-right: 1px solid var(--N200);
-            background-color: var(--bg-primary);
-
-            + .dynamic-tab__border {
-                display: none;
+    &.variant {
+        &__rectangular {
+            [data-is-selected="true"] {
+                position: relative;
+                
+                &::before,&::after {
+                    position: absolute;
+                    content: '';
+                    display: block;
+                    height: 100%;
+                    width: 1px;
+                    background-color: var(--N200);
+                    z-index: 1;
+                }
+        
+                &::before {
+                    left: -1px,
+                }
+        
+                &::after {
+                    right: -1px;
+                }
             }
         }
 
-        .dynamic-tab__resource {
-            user-select: none;
-            text-align: center;
-            color: var(--N900);
-            padding: 8px 12px;
+        &__rounded {
+            [data-is-selected="true"] {
+                position: relative;
+                border-radius: 8px 8px 0 0;
+                                
+                &::before,&::after {
+                    position: absolute;
+                    content: '';
+                    display: block;
+                }
 
-            &:hover {
-                color: var(--B500) !important;
-            }
+                &::before {
+                    height: 100%;
+                    width: calc(100% + 1px);
+                    background-color: transparent;
+                    z-index: 1;
+                    border: 1px solid var(--N200);
+                    border-radius: 8px 8px 0 0;
+                    left: 0;
+                }
 
-            .dynamic-tab__deleted {
-                text-decoration: line-through;
-            }
-
-            &--no-title {
-                padding: 10px 12px;
+                &::after {
+                    height: 1px;
+                    width: calc(100% - 1px);
+                    background-color: var(--bg-primary);
+                    z-index: 2;
+                    bottom: 0;
+                    left: 1px;
+                }
             }
         }
     }
+
 }

@@ -20,8 +20,14 @@ import { DynamicTabType } from '@devtron-labs/devtron-fe-common-lib'
 import { useTabs } from './useTabs'
 import { TAB_DATA_VERSION } from './constants'
 
+export enum DynamicTabsVariantType {
+    ROUNDED = 'rounded',
+    RECTANGULAR = 'rectangular',
+}
+
 export interface DynamicTabsProps {
     tabs: DynamicTabType[]
+    variant: DynamicTabsVariantType
     removeTabByIdentifier: ReturnType<typeof useTabs>['removeTabByIdentifier']
     markTabActiveById: ReturnType<typeof useTabs>['markTabActiveById']
     stopTabByIdentifier: ReturnType<typeof useTabs>['stopTabByIdentifier']

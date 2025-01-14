@@ -17,6 +17,7 @@
 import { Dayjs } from 'dayjs'
 import { DynamicTabType } from '@devtron-labs/devtron-fe-common-lib'
 import { MARK_AS_STALE_DATA_CUT_OFF_MINS } from '../../ResourceBrowser/Constants'
+import { DynamicTabsVariantType } from './types'
 
 export const COMMON_TABS_SELECT_STYLES = {
     control: (base) => ({
@@ -64,3 +65,16 @@ export const checkIfDataIsStale = (start: Dayjs, now: Dayjs): boolean =>
     now.diff(start, 'minutes') > MARK_AS_STALE_DATA_CUT_OFF_MINS
 
 export const getOptionLabel = (tab: DynamicTabType) => tab.dynamicTitle || tab.title
+
+export const getClassNameForVariant = (variant: DynamicTabsVariantType) => {
+    const prefix = 'variant__'
+
+    switch (variant) {
+        case DynamicTabsVariantType.ROUNDED:
+            return `${prefix}rounded bg__primary`
+        case DynamicTabsVariantType.RECTANGULAR:
+            return `${prefix}rectangular bg__tertiary`
+        default:
+            return ''
+    }
+}

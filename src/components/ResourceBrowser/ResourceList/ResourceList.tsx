@@ -33,7 +33,7 @@ import {
     useUrlFilters,
     DynamicTabType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/Types'
+import { UpdateTabUrlParamsType, DynamicTabsVariantType } from '@Components/common/DynamicTabs/types'
 import { ClusterListType } from '@Components/ClusterNodes/types'
 import { ClusterOptionType, K8SResourceListType, URLParams } from '../Types'
 import {
@@ -486,20 +486,16 @@ const ResourceList = () => {
 
         return (
             <>
-                <div
-                    className="h-36 resource-browser-tab flex left w-100 bg__tertiary"
-                    style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}
-                >
-                    <DynamicTabs
-                        tabs={tabs}
-                        removeTabByIdentifier={removeTabByIdentifier}
-                        markTabActiveById={markTabActiveById}
-                        stopTabByIdentifier={stopTabByIdentifier}
-                        refreshData={refreshData}
-                        setIsDataStale={setIsDataStale}
-                        hideTimer={isOverviewNodeType || isMonitoringNodeType || isUpgradeClusterNodeType}
-                    />
-                </div>
+                <DynamicTabs
+                    tabs={tabs}
+                    variant={DynamicTabsVariantType.RECTANGULAR}
+                    removeTabByIdentifier={removeTabByIdentifier}
+                    markTabActiveById={markTabActiveById}
+                    stopTabByIdentifier={stopTabByIdentifier}
+                    refreshData={refreshData}
+                    setIsDataStale={setIsDataStale}
+                    hideTimer={isOverviewNodeType || isMonitoringNodeType || isUpgradeClusterNodeType}
+                />
                 {/* NOTE: since the terminal is only visibly hidden; we need to make sure it is rendered at the end of the page */}
                 {dynamicActiveTab && renderDynamicTabComponent(dynamicActiveTab.id)}
                 {tabs.length > 0 &&

@@ -17,7 +17,7 @@
 import { components, MenuProps } from 'react-select'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-arrow-left.svg'
-import { MoreButtonWrapperProps } from './Types'
+import { MoreButtonWrapperProps } from './types'
 
 export const TabsMenu = (props: MenuProps<unknown>) => {
     const { options, children } = props
@@ -36,7 +36,7 @@ export const MoreButtonWrapper = ({ children, isMenuOpen, onClose, toggleMenu }:
     <div className="more-tabs-wrapper dc__position-rel flex">
         <button
             type="button"
-            className="more-tabs-option p-0 flexbox dc__overflow-hidden flex-align-center ml-8 bg__primary dc__border br-4"
+            className="more-tabs-option p-0 flexbox dc__overflow-hidden flex-align-center bg__primary dc__border br-4"
             onClick={toggleMenu}
             aria-label="More tabs"
         >
@@ -59,7 +59,7 @@ export const MoreButtonWrapper = ({ children, isMenuOpen, onClose, toggleMenu }:
 export const noMatchingTabs = () => 'No matching tabs'
 
 export const timerTransition = (): JSX.Element => (
-    <div className="ml-12 mr-4 flex dc__gap-8">
+    <div className="flex dc__gap-8">
         <Progressing size={18} />
         <span>Syncing...</span>
     </div>

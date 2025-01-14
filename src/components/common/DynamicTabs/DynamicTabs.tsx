@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Fragment, RefCallback, useRef, useState } from 'react'
+import React, { RefCallback, useRef, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { Dayjs } from 'dayjs'
@@ -25,8 +25,8 @@ import { ReactComponent as SearchIcon } from '@Icons/ic-search.svg'
 import { ReactComponent as ClearIcon } from '@Icons/ic-error.svg'
 import { ReactComponent as RefreshIcon } from '@Icons/ic-arrow-clockwise.svg'
 import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
-import { COMMON_TABS_SELECT_STYLES, checkIfDataIsStale, getOptionLabel } from './Utils'
-import { DynamicTabsProps } from './Types'
+import { COMMON_TABS_SELECT_STYLES, checkIfDataIsStale, getClassNameForVariant, getOptionLabel } from './utils'
+import { DynamicTabsProps } from './types'
 import { MoreButtonWrapper, noMatchingTabs, TabsMenu, timerTransition } from './DynamicTabs.component'
 import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 import Timer from './DynamicTabs.timer'
@@ -43,6 +43,7 @@ import './DynamicTabs.scss'
  */
 const DynamicTabs = ({
     tabs = [],
+    variant,
     removeTabByIdentifier,
     markTabActiveById,
     stopTabByIdentifier,
@@ -79,7 +80,7 @@ const DynamicTabs = ({
                 aria-label={`Select tab ${_title}`}
             >
                 <div
-                    className={`dynamic-tab__resource dc__ellipsis-right flex dc__gap-8 ${isDeleted ? 'dynamic-tab__deleted cr-5' : ''} ${!shouldRenderTitle ? 'dynamic-tab__resource--no-title' : ''}`}
+                    className={`px-12 dc__ellipsis-right flex dc__gap-8 ${isDeleted ? 'dc__strike-through cr-5' : ''} ${!shouldRenderTitle ? 'py-10' : 'py-8'}`}
                 >
                     {iconPath && <img className="icon-dim-16" src={iconPath} alt={name} />}
                     {shouldRenderTitle && (
@@ -142,8 +143,9 @@ const DynamicTabs = ({
         </div>
     )
 
-    const renderTab = (tab: DynamicTabType, idx: number, isFixed: boolean, tippyConfig?: any) => {
+    const renderTab = (tab: DynamicTabType, tippyConfig?: any) => {
         const _showNameOnSelect = tab.showNameOnSelect && tab.isAlive && !tab.hideName
+        const isFixed = tab.type === 'fixed'
 
         const renderWithTippy: (children: JSX.Element) => React.ReactNode = (children) => (
             <Tippy
@@ -157,48 +159,44 @@ const DynamicTabs = ({
                 {children}
             </Tippy>
         )
+
         return (
-            <Fragment key={`${idx}-tab`}>
-                <div className={!tab.isSelected ? 'dynamic-tab__border' : ''} />
-                <ConditionalWrap condition={!isFixed} wrap={renderWithTippy}>
-                    <div
-                        ref={selectedTabRefCallback}
-                        data-is-selected={tab.isSelected}
-                        id={tab.name}
-                        className={`${isFixed ? 'fixed-tab' : 'dynamic-tab'} flex dc__gap-5 cn-9 ${
-                            tab.isSelected ? 'dynamic-tab-selected' : ''
-                        }`}
-                    >
-                        {getTabNavLink(tab)}
-                        {_showNameOnSelect && (
-                            <button
-                                type="button"
-                                className="dc__unset-button-styles pr-12"
-                                aria-label={`Stop tab ${tab.name}`}
-                                onClick={handleTabStopAction}
-                                data-id={tab.id}
-                            >
-                                <div className="dynamic-tab__close flex br-4">
-                                    <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
-                                </div>
-                            </button>
-                        )}
-                        {!isFixed && (
-                            <button
-                                type="button"
-                                className="dc__unset-button-styles pr-12"
-                                aria-label={`Close tab ${tab.name}`}
-                                onClick={handleTabCloseAction}
-                                data-id={tab.id}
-                            >
-                                <div className="dynamic-tab__close flex br-4">
-                                    <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
-                                </div>
-                            </button>
-                        )}
-                    </div>
-                </ConditionalWrap>
-            </Fragment>
+            <ConditionalWrap key={tab.id} condition={!isFixed} wrap={renderWithTippy}>
+                <div
+                    ref={selectedTabRefCallback}
+                    data-is-selected={tab.isSelected}
+                    id={tab.name}
+                    className={`${isFixed ? 'fixed-tab' : 'dynamic-tab'} flex dc__gap-5 cn-9 ${tab.isSelected ? 'dynamic-tab-selected bg__primary' : ''}`}
+                >
+                    {getTabNavLink(tab)}
+                    {_showNameOnSelect && (
+                        <button
+                            type="button"
+                            className="dc__unset-button-styles pr-12"
+                            aria-label={`Stop tab ${tab.name}`}
+                            onClick={handleTabStopAction}
+                            data-id={tab.id}
+                        >
+                            <div className="dynamic-tab__close flex br-4">
+                                <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
+                            </div>
+                        </button>
+                    )}
+                    {!isFixed && (
+                        <button
+                            type="button"
+                            className="dc__unset-button-styles pr-12"
+                            aria-label={`Close tab ${tab.name}`}
+                            onClick={handleTabCloseAction}
+                            data-id={tab.id}
+                        >
+                            <div className="dynamic-tab__close flex br-4">
+                                <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
+                            </div>
+                        </button>
+                    )}
+                </div>
+            </ConditionalWrap>
         )
     }
 
@@ -303,23 +301,18 @@ const DynamicTabs = ({
     const isOptionSelected = (tab: DynamicTabType) => tab.id === selectedTab.id
 
     const timerTranspose = (output: string) => (
-        <>
+        <div className="flexbox dc__gap-6 dc__align-items-center">
             <Tippy className="default-tt" arrow={false} placement="top" content="Sync Now">
                 <span>
                     <RefreshIcon
                         data-testid="refresh-icon"
-                        className="icon-dim-16 scn-6 flexbox mr-6 cursor ml-12"
+                        className="icon-dim-16 scn-6 flexbox cursor"
                         onClick={refreshData}
                     />
                 </span>
             </Tippy>
-            {selectedTab?.name === AppDetailsTabs.k8s_Resources && (
-                <div className="flex">
-                    {output}
-                    <span className="ml-2">ago</span>
-                </div>
-            )}
-        </>
+            {selectedTab?.name === AppDetailsTabs.k8s_Resources && <span>{output}&nbsp;ago</span>}
+        </div>
     )
 
     const timerForSync = () =>
@@ -334,22 +327,21 @@ const DynamicTabs = ({
         )
 
     return (
-        <div className="dynamic-tabs-section flexbox pl-12 pr-12 w-100 dc__outline-none-imp">
-            {fixedTabs.length > 0 && (
-                <div className="fixed-tabs-container">{fixedTabs.map((tab, idx) => renderTab(tab, idx, true))}</div>
-            )}
-            {dynamicTabs.length > 0 && (
-                <div
-                    className={`dynamic-tabs-container ${dynamicTabs[0].isSelected || fixedTabs[fixedTabs.length - 1].isSelected ? '' : 'dc__border-left'}`}
-                >
-                    {dynamicTabs.map((tab, idx) => renderTab(tab, idx, false, tab.tippyConfig))}
-                </div>
-            )}
+        <div
+            className={`dynamic-tabs-section ${getClassNameForVariant(variant)} flexbox pl-12 pr-12 w-100 dc__outline-none-imp h-36 w-100`}
+            style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}
+        >
+            <div
+                className={`dc__separated-flexbox dc__separated-flexbox--no-gap ${dynamicTabs.length ? 'dc__border-right' : ''}`}
+            >
+                {fixedTabs.map((tab) => renderTab(tab, fixedTabs.length))}
+            </div>
+            <div className="flex-grow-1 dynamic-tabs-container dc__separated-flexbox dc__separated-flexbox--no-gap">
+                {dynamicTabs.map((tab) => renderTab(tab, tab.tippyConfig))}
+            </div>
             {(dynamicTabs.length > 0 || !hideTimer) && (
-                <div
-                    className={`ml-auto flexbox dc__no-shrink dc__align-self-stretch ${dynamicTabs[(dynamicTabs?.length || 0) - 1]?.isSelected ? '' : 'dc__border-left'}`}
-                >
-                    {!hideTimer && <div className="flexbox fw-6 cn-7 dc__align-items-center">{timerForSync()}</div>}
+                <div className="flexbox dc__no-shrink dc__gap-12 pl-12 dc__border-left">
+                    {!hideTimer && <div className="fw-6 cn-7 flex">{timerForSync()}</div>}
 
                     {dynamicTabs.length > 0 && (
                         <MoreButtonWrapper isMenuOpen={isMenuOpen} onClose={handleCloseMenu} toggleMenu={toggleMenu}>

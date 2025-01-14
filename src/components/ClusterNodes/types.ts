@@ -23,7 +23,7 @@ import {
     NodeTaintType,
     NodeActionRequest,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/Types'
+import { UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/types'
 import { LabelTag, OptionType } from '../app/types'
 import { CLUSTER_PAGE_TAB } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'

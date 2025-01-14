@@ -523,7 +523,7 @@ const NodeDetailComponent = ({
     return (
         <>
             <div
-                className={`w-100 pr-20 pl-20 bg__primary flex dc__border-bottom dc__content-space ${!isResourceBrowserView ? 'node-detail__sticky' : ''}`}
+                className={`w-100 pr-20 pl-20 bg__primary flex dc__border-bottom dc__content-space h-32 ${!isResourceBrowserView ? 'node-detail__sticky' : ''}`}
             >
                 <div className="flex left">
                     <TabGroup tabs={TAB_GROUP_CONFIG} size={ComponentSizeType.medium} alignActiveBorderWithContainer />
