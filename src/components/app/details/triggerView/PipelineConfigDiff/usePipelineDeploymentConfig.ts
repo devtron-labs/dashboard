@@ -55,10 +55,14 @@ export const usePipelineDeploymentConfig = ({
 
     // SEARCH PARAMS & SORTING
     const urlFilters = useUrlFilters<string, PipelineConfigDiffQueryParamsType>({
-        initialSortKey: DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
         parseSearchParams: parseCompareWithSearchParams(isRollbackTriggerSelected),
     })
-    const { deploy, mode, updateSearchParams, handleSorting } = urlFilters
+    const { sortBy, sortOrder, deploy, mode, updateSearchParams, handleSorting } = urlFilters
+
+    useEffect(() => {
+        // INITIAL DEFAULT SORTING
+        handleSorting(DEPLOYMENT_CONFIG_DIFF_SORT_KEY)
+    }, [])
 
     // FETCH PREVIOUS DEPLOYMENTS
     const [previousDeploymentsLoader, previousDeployments, previousDeploymentsErr, reloadPreviousDeployments] =
@@ -251,11 +255,20 @@ export const usePipelineDeploymentConfig = ({
                 },
                 getNavItemHref,
                 convertVariables,
+                sortingConfig: { sortBy, sortOrder },
             })
         }
 
         return null
-    }, [pipelineDeploymentConfigLoading, pipelineDeploymentConfigRes, deploy, mode, convertVariables])
+    }, [
+        pipelineDeploymentConfigLoading,
+        pipelineDeploymentConfigRes,
+        deploy,
+        mode,
+        convertVariables,
+        sortBy,
+        sortOrder,
+    ])
 
     const reload = () => {
         reloadPreviousDeployments()

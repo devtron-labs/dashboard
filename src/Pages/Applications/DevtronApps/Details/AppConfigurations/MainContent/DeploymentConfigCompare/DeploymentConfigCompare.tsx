@@ -18,6 +18,7 @@ import {
     getCompareSecretsData,
     getAppEnvDeploymentConfig,
     DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
+    SortingOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getTemplateOptions, getChartReferencesForAppAndEnv } from '@Services/service'
@@ -89,12 +90,18 @@ export const DeploymentConfigCompare = ({
         sortOrder,
         handleSorting,
     } = useUrlFilters<string, AppEnvDeploymentConfigQueryParamsType>({
-        initialSortKey: DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
         parseSearchParams: parseCompareWithSearchParams({ type, compareTo, environments }),
     })
 
-    // Set default query parameters
     useEffect(() => {
+        // Set default initial sorting
+        if (!isManifestView) {
+            handleSorting(DEPLOYMENT_CONFIG_DIFF_SORT_KEY)
+        }
+    }, [])
+
+    useEffect(() => {
+        // Set default query parameters
         updateSearchParams({
             configType,
             compareWith,
@@ -339,12 +346,13 @@ export const DeploymentConfigCompare = ({
                     convertVariables,
                     compareToTemplateOptions: options[0].result,
                     compareWithTemplateOptions: options[1].result,
+                    sortingConfig: { sortBy, sortOrder },
                 })
             }
         }
 
         return null
-    }, [comparisonDataLoader, comparisonData, isManifestView, convertVariables, options])
+    }, [comparisonDataLoader, comparisonData, isManifestView, convertVariables, options, sortBy, sortOrder])
 
     // SELECT PICKER OPTIONS
     /** Compare Environment Select Picker Options  */
@@ -630,7 +638,7 @@ export const DeploymentConfigCompare = ({
         onClick: onTabClick,
     }
 
-    const onSorting = () => handleSorting(DEPLOYMENT_CONFIG_DIFF_SORT_KEY)
+    const onSorting = () => handleSorting(sortOrder !== SortingOrder.DESC ? DEPLOYMENT_CONFIG_DIFF_SORT_KEY : '')
 
     const sortingConfig: DeploymentConfigDiffProps['sortingConfig'] = {
         handleSorting: onSorting,
