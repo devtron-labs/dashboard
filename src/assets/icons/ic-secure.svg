@@ -14,8 +14,7 @@
   - limitations under the License.
   -->
 
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="24" height="24" fill="white"/>
+<svg class="svg__no-override" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M11.995 1L3.3501 4.69935V13.3165C3.3501 15.7424 3.74178 18.8509 11.995 23C20.2487 18.8509 20.6407 15.7424 20.6407 13.3167V4.69935L11.995 1Z" fill="url(#paint0_linear_2341_3673)"/>
 <path d="M10.9847 16.1446L6.70166 11.9358L8.36869 10.2393L10.9833 12.8086L15.6199 8.24396L17.2883 9.93904L10.9847 16.1446Z" fill="white"/>
 <path d="M20.6403 4.69908V13.3162C20.6403 15.7424 20.2486 18.8509 11.9951 23V1L20.6403 4.69908Z" fill="url(#paint1_linear_2341_3673)"/>
