@@ -1384,7 +1384,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const handleCloseChangeImageSource = () => {
         setPageViewType(ViewType.LOADING)
         getWorkflowsData()
-        preventBodyScroll(false)
     }
 
     const onShowChangeSourceModal = () => {
@@ -2327,10 +2326,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         const _showPopupMenu = showPreDeployment || showPostDeployment
         return (
             <div className="flex dc__min-width-fit-content dc__gap-12">
-                <ChangeImageSource
+                {ChangeImageSource && <ChangeImageSource
                     selectedWorkflows={selectedWorkflows}
                     handleCloseChangeImageSource={handleCloseChangeImageSource}
-                />
+                />}
                 <Button
                     dataTestId="change-branch-bulk"
                     text="Change branch"
