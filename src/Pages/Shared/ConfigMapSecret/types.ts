@@ -72,7 +72,6 @@ type CMCSFormBaseProps =
     | {
           isExternalSubmit: true
           onSubmit?: never
-          onError?: never
           onCancel?: never
       }
     | {

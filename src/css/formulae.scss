@@ -161,6 +161,10 @@ $colors: B, N, G, Y, R, V, O;
 $color-suffix: 00;
 
 @each $color in $colors {
+    .bc#{to-lower-case($color)}-50 {
+        background-color: var(--#{$color}50);
+    }
+
     @for $i from 0 through 9 {
         .c#{to-lower-case($color)}-#{$i} {
             color: var(--#{$color}#{$i * 100});
