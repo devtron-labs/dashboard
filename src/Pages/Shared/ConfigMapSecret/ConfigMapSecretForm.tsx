@@ -52,7 +52,6 @@ export const ConfigMapSecretForm = ({
     configMapSecretData,
     inheritedConfigMapSecretData,
     cmSecretStateLabel,
-    // TODO: Rename
     isJob,
     appChartRef,
     isDraft,

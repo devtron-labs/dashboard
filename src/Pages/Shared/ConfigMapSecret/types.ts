@@ -82,7 +82,7 @@ type CMCSFormBaseProps =
       }
 
 export type ConfigMapSecretFormProps = Required<
-    Pick<ConfigMapSecretContainerProps, 'isJob' | 'isApprovalPolicyConfigured' | 'componentType' | 'appChartRef'>
+    Pick<ConfigMapSecretContainerProps, 'isApprovalPolicyConfigured' | 'componentType' | 'appChartRef'>
 > &
     CMCSFormBaseProps & {
         /**
@@ -101,6 +101,10 @@ export type ConfigMapSecretFormProps = Required<
          * @default false
          */
         noContainerPadding?: boolean
+        /**
+         * This is also being used in BuildInfra
+         */
+        isJob?: boolean
     }
 
 export interface ConfigMapSecretDataProps extends Pick<ConfigMapSecretFormProps, 'useFormProps'> {

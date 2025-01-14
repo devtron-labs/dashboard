@@ -34,7 +34,7 @@ const validations: UseFormValidations<FormData> = {
     },
 }
 
-const FormComponent = ({ validationModes }: { validationModes: ('onChange' | 'onBlur')[] }) => {
+const FormComponent = ({ validationModes }: Pick<Parameters<typeof useForm>[0], 'validationModes'>) => {
     const { data, errors, register, handleSubmit, formState } = useForm<FormData>({
         initialValues: { email: '', password: '' },
         validations,
