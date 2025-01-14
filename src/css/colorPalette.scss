@@ -103,6 +103,7 @@
             --bg-tooltip-black: var(--N900);
             --bg-toast: var(--N800);
             --bg-sidebar: #0066cc;
+            --bg-shimmer-loader: linear-gradient(90deg, var(--N200) 0%, var(--N50) 50%, var(--N200) 80%);
         }
 
         &__dark {
@@ -178,6 +179,7 @@
             --bg-tooltip-black: var(--N200);
             --bg-toast: var(--N300);
             --bg-sidebar: #2E3142;
+            --bg-shimmer-loader: linear-gradient(90deg, var(--N50) 0%, var(--N200) 50%, var(--N50) 80%);
         }
     }
 }
