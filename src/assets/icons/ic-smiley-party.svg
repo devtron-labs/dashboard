@@ -14,7 +14,7 @@
   - limitations under the License.
   -->
 
-<svg viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg class="svg__no-override" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <title>ic-smiley-party</title>
     <defs>
         <circle id="path-1" cx="14" cy="14" r="14"></circle>
