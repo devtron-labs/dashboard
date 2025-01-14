@@ -32,7 +32,6 @@ import {
     SelectPickerOptionType,
     SelectPickerProps,
     MarkDown,
-    versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
