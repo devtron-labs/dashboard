@@ -527,7 +527,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
     const renderClusterSummary = (): JSX.Element => {
         return (
             <div
-                className={`dc__border-left resource-details-container bg__primary dc__overflow-scroll ${
+                className={`dc__border-left resource-details-container bg__primary dc__overflow-auto ${
                     errorStatusCode || errorCode ? 'flex' : ''
                 }`}
             >
