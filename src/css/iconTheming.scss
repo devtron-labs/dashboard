@@ -41,7 +41,7 @@ $svg-stroke-hex-to-var: (
 );
 
 $svg-fill-hex-to-var: (
-    "#0F1689": --V700,
+    "#0F1689": --B700,
     "#1A1919": --N800,
     "#D0D4D9": --N200,
     "#E5F2FF": --B100,
@@ -77,13 +77,13 @@ $svg-fill-hex-to-var: (
 
 :where(svg:not([data-style-override="false"])) {
     @each $hex, $var in $svg-stroke-hex-to-var {
-        [stroke="#{$hex}" i] {
+        :where([stroke="#{$hex}" i]) {
             stroke: var($var);
         }
     }
 
     @each $hex, $var in $svg-fill-hex-to-var {
-        [fill="#{$hex}" i] {
+        :where([fill="#{$hex}" i]) {
             fill: var($var);
         }
     }
