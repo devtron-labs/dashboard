@@ -79,7 +79,6 @@ export const roleSelectStyles: StylesConfig = {
         ...authorizationSelectStyles.valueContainer(base, state),
         display: 'flex',
         flexWrap: 'nowrap',
-        // flexWrap: 'nowrap',
         textOverflow: 'ellipsis',
         overflow: 'hidden',
         whiteSpace: 'nowrap',
