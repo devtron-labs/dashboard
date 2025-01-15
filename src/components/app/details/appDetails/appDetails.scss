@@ -1774,7 +1774,7 @@ table.resource-tree {
     .dc__app-summary__icon {
         &.healthy {
             background-size: contain, contain;
-            background: url(../../../../assets/icons/appstatus/ic-heart-green.svg), transparent;
+            background: url('../../../../assets/icons/appstatus/ic-heart-green.svg'), transparent;
         }
     }
 
