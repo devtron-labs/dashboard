@@ -180,7 +180,7 @@ $color-suffix: 00;
         .sc#{to-lower-case($color)}-#{$i} {
             stroke: var(--#{$color}#{$i * 100});
 
-            path, path[stroke] {
+            path {
                 stroke: var(--#{$color}#{$i * 100});
             }
         }
@@ -188,7 +188,7 @@ $color-suffix: 00;
         .fc#{to-lower-case($color)}-#{$i} {
             fill: var(--#{$color}#{$i * 100});
 
-            path, path[fill] {
+            path {
                 fill: var(--#{$color}#{$i * 100});
             }
         }
