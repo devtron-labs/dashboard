@@ -108,7 +108,7 @@
 }
 
 .CalendarMonthGrid__horizontal, .CalendarMonth {
-    background: transparent;
+    background: var(--transparent);
 }
 
 .CalendarMonth_caption {
@@ -117,7 +117,7 @@
 
 .DayPickerNavigation_button__default {
     border: 1px solid var(--N200);
-    background-color: transparent;
+    background-color: var(--transparent);
     color: var(--N200);
 
     &:hover {
@@ -132,7 +132,7 @@
 .CalendarDay {
     border: 1px solid var(--N200) !important;
     color: var(--N700) !important;
-    background: transparent !important;
+    background: var(--transparent) !important;
 
     &:hover {
         color: var(--B500) !important;
