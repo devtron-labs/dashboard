@@ -131,7 +131,11 @@ const ApprovalEmptyState = importComponentFromFELibrary('ApprovalEmptyState')
 const FilterActionBar = importComponentFromFELibrary('FilterActionBar')
 const ConfiguredFilters = importComponentFromFELibrary('ConfiguredFilters')
 const CDMaterialInfo = importComponentFromFELibrary('CDMaterialInfo')
-const downloadManifestForVirtualEnvironment = importComponentFromFELibrary('downloadManifestForVirtualEnvironment', null, 'function')
+const downloadManifestForVirtualEnvironment = importComponentFromFELibrary(
+    'downloadManifestForVirtualEnvironment',
+    null,
+    'function',
+)
 const ImagePromotionInfoChip = importComponentFromFELibrary('ImagePromotionInfoChip', null, 'function')
 const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     'getDeploymentWindowProfileMetaData',
@@ -627,7 +631,8 @@ const CDMaterial = ({
     const getIsApprovalRequester = (userApprovalMetadata?: UserApprovalMetadataType) =>
         userApprovalMetadata?.requestedUserData && userApprovalMetadata.requestedUserData.userId === requestedUserId
 
-    const getIsImageApprover = (userApprovalMetadata?: UserApprovalMetadataType): boolean => userApprovalMetadata?.hasCurrentUserApproved
+    const getIsImageApprover = (userApprovalMetadata?: UserApprovalMetadataType): boolean =>
+        userApprovalMetadata?.hasCurrentUserApproved
 
     // NOTE: Pure
     const getApprovedImageClass = (disableSelection: boolean, isApprovalConfigured: boolean) => {
@@ -795,7 +800,8 @@ const CDMaterial = ({
         history.push({
             pathname:
                 modeParamValue === 'review-config'
-                    ? `${pathname}/${URLS.APP_DIFF_VIEW}/${EnvResourceType.DeploymentTemplate}`
+                    ? // Replace consecutive trailing single slashes
+                      `${pathname.replace(/\/+$/g, '')}/${URLS.APP_DIFF_VIEW}/${EnvResourceType.DeploymentTemplate}`
                     : `${pathname.split(`/${URLS.APP_DIFF_VIEW}`)[0]}`,
             search: newParams.toString(),
         })
@@ -888,11 +894,9 @@ const CDMaterial = ({
                 wfrId,
                 abortControllerRef: abortDeployRef,
                 isRollbackTrigger: state.isRollbackTrigger,
-                ...(
-                    getRuntimeParamsPayload
-                        ? { runtimeParamsPayload: getRuntimeParamsPayload(runtimeParamsList ?? []) }
-                        : {}
-                ),
+                ...(getRuntimeParamsPayload
+                    ? { runtimeParamsPayload: getRuntimeParamsPayload(runtimeParamsList ?? []) }
+                    : {}),
             })
                 .then((response: any) => {
                     if (response.result) {

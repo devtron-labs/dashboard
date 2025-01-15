@@ -4,6 +4,7 @@ import {
     DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
     DeploymentConfigDiff,
     DeploymentConfigDiffProps,
+    SortingOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
@@ -27,7 +28,7 @@ export const PipelineConfigDiff = ({
     const [resourceType, resourceName] = pathname.split(`${URLS.APP_DIFF_VIEW}/`)[1].split('/')
 
     // METHODS
-    const onSorting = () => handleSorting(DEPLOYMENT_CONFIG_DIFF_SORT_KEY)
+    const onSorting = () => handleSorting(sortOrder !== SortingOrder.DESC ? DEPLOYMENT_CONFIG_DIFF_SORT_KEY : '')
 
     // SELECTORS CONFIG
     const pipelineConfigDiffSelectors: DeploymentConfigDiffProps['selectorsConfig'] = {
