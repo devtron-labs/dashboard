@@ -89,10 +89,31 @@ $svg-fill-hex-to-var: (
     }
 }
 
+// These are just hack, not to be further extended
 .theme {
     &__dark {
         .github {
-            background-image: url('../assets/icons/git/ic-github-dark.svg') !important;
+            background-image: url('../assets/icons/dark/ic-github.svg') !important;
+        }
+
+        .form__checkbox-container {
+            background-image: url('../assets/icons/dark/ic-checkbox-unselected.svg');
+
+            &:hover {
+                background-image: url('../assets/icons/dark/ic-checkbox-hover.svg');
+            }
+        }
+
+        .form__checkbox:checked[value='INTERMEDIATE']~.form__checkbox-container {
+            background-image: url('../assets/icons/dark/ic-checkbox-intermediate.svg');
+        }
+
+        .form__checkbox:checked[value='CHECKED']~.form__checkbox-container {
+            background-image: url('../assets/icons/dark/ic-checkbox-selected.svg');
+        }
+
+        .form__checkbox:checked[value='BULK_CHECKED']~.form__checkbox-container {
+            background-image: url('../assets/icons/dark/ic-bulk-check.svg');
         }
     }
 }
