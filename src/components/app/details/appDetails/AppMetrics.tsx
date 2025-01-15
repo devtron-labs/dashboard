@@ -288,7 +288,6 @@ export const AppMetrics: React.FC<{
         getNewGraphs(tab)
     }, [datasource, calendarValue, appTheme])
 
-    // @ts-ignore
     if (grafanaModuleStatus?.result?.status !== ModuleStatus.INSTALLED) {
         return <MonitoringModuleNotInstalled addSpace={addSpace} />
     }
