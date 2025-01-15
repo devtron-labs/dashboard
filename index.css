@@ -6,7 +6,7 @@
     /* Using the same name as in color palette to ensure this is applied when styles are loading */
     --bg-tertiary: #f2f4f7;
     --bg-devtron-loader: #e5f2ff;
-    --fill-devtron-loader: #0066cc;
+    --fill-devtron-loader: #3989d9;
 
 
     /* TODO: Comment when theming goes live on production */
