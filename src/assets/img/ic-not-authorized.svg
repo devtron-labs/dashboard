@@ -14,7 +14,7 @@
   - limitations under the License.
   -->
 
-<svg class="svg__no-override" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="250" height="200" viewBox="0 0 250 200">
+<svg data-style-override="false" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="250" height="200" viewBox="0 0 250 200">
     <defs>
         <linearGradient id="ho9etwod5c" x1="55.01%" x2="40.976%" y1="0%" y2="100%">
             <stop offset="0%" stop-color="#2A318C"/>

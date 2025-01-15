@@ -75,7 +75,7 @@ $svg-fill-hex-to-var: (
     "#080A2D": --N800,
 );
 
-:where(svg:not(.svg__no-override)) {
+:where(svg:not([data-style-override="false"])) {
     @each $hex, $var in $svg-stroke-hex-to-var {
         [stroke="#{$hex}" i] {
             stroke: var($var);
