@@ -33,7 +33,7 @@ import {
     useUrlFilters,
     DynamicTabType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { UpdateTabUrlParamsType, DynamicTabsVariantType } from '@Components/common/DynamicTabs/types'
+import { UpdateTabUrlParamsType, DynamicTabsVariantType, DynamicTabsProps } from '@Components/common/DynamicTabs/types'
 import { ClusterListType } from '@Components/ClusterNodes/types'
 import { ClusterOptionType, K8SResourceListType, URLParams } from '../Types'
 import {
@@ -320,14 +320,14 @@ const ResourceList = () => {
         [clusterId, clusterOptions],
     )
 
-    const refreshData = (): void => {
+    const refreshData = () => {
         const activeTab = tabs.find((tab) => tab.isSelected)
         updateTabComponentKey(activeTab.id)
         updateTabLastSyncMoment(activeTab.id)
         setIsDataStale(false)
     }
 
-    const closeResourceModal = (_refreshData: boolean): void => {
+    const closeResourceModal = (_refreshData: boolean) => {
         if (_refreshData) {
             refreshData()
         }
@@ -492,9 +492,18 @@ const ResourceList = () => {
                     removeTabByIdentifier={removeTabByIdentifier}
                     markTabActiveById={markTabActiveById}
                     stopTabByIdentifier={stopTabByIdentifier}
-                    refreshData={refreshData}
                     setIsDataStale={setIsDataStale}
-                    hideTimer={isOverviewNodeType || isMonitoringNodeType || isUpgradeClusterNodeType}
+                    timerConfig={tabs.reduce(
+                        (acc, tab) => {
+                            acc[tab.id] = {
+                                reload: refreshData,
+                                showTimeSinceLastSync: tab.id === ResourceBrowserTabsId.k8s_Resources,
+                            }
+
+                            return acc
+                        },
+                        {} as DynamicTabsProps['timerConfig'],
+                    )}
                 />
                 {/* NOTE: since the terminal is only visibly hidden; we need to make sure it is rendered at the end of the page */}
                 {dynamicActiveTab && renderDynamicTabComponent(dynamicActiveTab.id)}

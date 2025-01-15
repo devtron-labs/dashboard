@@ -25,6 +25,12 @@ export enum DynamicTabsVariantType {
     RECTANGULAR = 'rectangular',
 }
 
+interface TimerConfigType {
+    reload?: () => void
+    showTimeSinceLastSync?: boolean
+    isLoading?: boolean
+}
+
 export interface DynamicTabsProps {
     tabs: DynamicTabType[]
     variant: DynamicTabsVariantType
@@ -32,8 +38,7 @@ export interface DynamicTabsProps {
     markTabActiveById: ReturnType<typeof useTabs>['markTabActiveById']
     stopTabByIdentifier: ReturnType<typeof useTabs>['stopTabByIdentifier']
     setIsDataStale: React.Dispatch<React.SetStateAction<boolean>>
-    refreshData: () => void
-    hideTimer: boolean
+    timerConfig: Record<DynamicTabType['id'], TimerConfigType>
 }
 
 export interface MoreButtonWrapperProps {

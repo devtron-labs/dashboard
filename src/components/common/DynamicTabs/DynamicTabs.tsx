@@ -18,7 +18,16 @@ import React, { RefCallback, useRef, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { Dayjs } from 'dayjs'
-import { stopPropagation, ConditionalWrap, noop, DynamicTabType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    stopPropagation,
+    ConditionalWrap,
+    noop,
+    DynamicTabType,
+    Button,
+    ButtonVariantType,
+    ComponentSizeType,
+    ButtonStyleType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components, InputActionMeta, OptionProps } from 'react-select'
 import { ReactComponent as Cross } from '@Icons/ic-cross.svg'
 import { ReactComponent as SearchIcon } from '@Icons/ic-search.svg'
@@ -28,7 +37,6 @@ import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils
 import { COMMON_TABS_SELECT_STYLES, checkIfDataIsStale, getClassNameForVariant, getOptionLabel } from './utils'
 import { DynamicTabsProps } from './types'
 import { MoreButtonWrapper, noMatchingTabs, TabsMenu, timerTransition } from './DynamicTabs.component'
-import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 import Timer from './DynamicTabs.timer'
 import './DynamicTabs.scss'
 
@@ -47,9 +55,8 @@ const DynamicTabs = ({
     removeTabByIdentifier,
     markTabActiveById,
     stopTabByIdentifier,
-    refreshData,
     setIsDataStale,
-    hideTimer,
+    timerConfig,
 }: DynamicTabsProps) => {
     const { push } = useHistory()
     const moreButtonRef = useRef(null)
@@ -59,6 +66,7 @@ const DynamicTabs = ({
     const fixedTabs = tabs.filter((tab) => tab.type === 'fixed')
     const dynamicTabs = tabs.filter((tab) => tab.type === 'dynamic')
     const selectedTab = tabs.find((tab) => tab.isSelected) ?? null
+    const selectedTabTimerConfig = selectedTab && timerConfig ? timerConfig[selectedTab.id] : null
 
     const getMarkTabActiveHandler = (tab: DynamicTabType) => () => {
         markTabActiveById(tab.id)
@@ -302,29 +310,20 @@ const DynamicTabs = ({
 
     const timerTranspose = (output: string) => (
         <div className="flexbox dc__gap-6 dc__align-items-center">
-            <Tippy className="default-tt" arrow={false} placement="top" content="Sync Now">
-                <span>
-                    <RefreshIcon
-                        data-testid="refresh-icon"
-                        className="icon-dim-16 scn-6 flexbox cursor"
-                        onClick={refreshData}
-                    />
-                </span>
-            </Tippy>
-            {selectedTab?.name === AppDetailsTabs.k8s_Resources && <span>{output}&nbsp;ago</span>}
+            {selectedTabTimerConfig.reload && (
+                <Button
+                    variant={ButtonVariantType.borderLess}
+                    size={ComponentSizeType.xs}
+                    style={ButtonStyleType.neutral}
+                    icon={<RefreshIcon />}
+                    dataTestId="refresh-icon"
+                    onClick={selectedTabTimerConfig.reload}
+                    ariaLabel="Sync now"
+                />
+            )}
+            {selectedTabTimerConfig.showTimeSinceLastSync && <span>{output}&nbsp;ago</span>}
         </div>
     )
-
-    const timerForSync = () =>
-        selectedTab && (
-            <Timer
-                key={selectedTab.componentKey}
-                start={selectedTab.lastSyncMoment}
-                callback={updateOnStaleData}
-                transition={timerTransition}
-                transpose={timerTranspose}
-            />
-        )
 
     return (
         <div
@@ -339,9 +338,17 @@ const DynamicTabs = ({
             <div className="flex-grow-1 dynamic-tabs-container dc__separated-flexbox dc__separated-flexbox--no-gap">
                 {dynamicTabs.map((tab) => renderTab(tab, tab.tippyConfig))}
             </div>
-            {(dynamicTabs.length > 0 || !hideTimer) && (
-                <div className="flexbox dc__no-shrink dc__gap-12 pl-12 dc__border-left">
-                    {!hideTimer && <div className="fw-6 cn-7 flex">{timerForSync()}</div>}
+            {(dynamicTabs.length > 0 || selectedTabTimerConfig) && (
+                <div className="flexbox dc__no-shrink dc__gap-12 pl-12 dc__border-left dc__align-items-center">
+                    {selectedTabTimerConfig && (
+                        <Timer
+                            key={selectedTab.componentKey}
+                            start={selectedTab.lastSyncMoment}
+                            callback={updateOnStaleData}
+                            transition={timerTransition}
+                            transpose={timerTranspose}
+                        />
+                    )}
 
                     {dynamicTabs.length > 0 && (
                         <MoreButtonWrapper isMenuOpen={isMenuOpen} onClose={handleCloseMenu} toggleMenu={toggleMenu}>
