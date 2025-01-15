@@ -757,7 +757,7 @@ const ManifestComponent = ({
         </div>
     ) : (
         <div
-            className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ' '} manifest-container flexbox-col flex-grow-1 dc__overflow-scroll`}
+            className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ' '} manifest-container flexbox-col flex-grow-1 dc__overflow-auto`}
             data-testid="app-manifest-container"
             style={{ background: '#0B0F22' }}
         >
@@ -772,7 +772,7 @@ const ManifestComponent = ({
                 <div
                     className={`${
                         manifestFormConfigurationType === ConfigurationType.GUI ? 'bg__primary' : ''
-                    } flexbox-col flex-grow-1 dc__overflow-scroll h-100`}
+                    } flexbox-col flex-grow-1 dc__overflow-auto h-100`}
                 >
                     {isResourceMissing && !loading && !showManifestCompareView ? (
                         <MessageUI

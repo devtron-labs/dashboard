@@ -268,7 +268,7 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
         return (
             <div className="scale-worklists-container bg__primary dc__height-inherit dc__overflow-auto">
                 {isWorkloadPresent && (
-                    <div className="dc__overflow-scroll p-20">
+                    <div className="dc__overflow-auto p-20">
                         <div className="check-all-workloads cn-7 fw-6">
                             <Checkbox
                                 rootClassName="mb-0 fs-13 cursor bg__primary p"
