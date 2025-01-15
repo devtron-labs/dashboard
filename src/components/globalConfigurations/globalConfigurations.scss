@@ -29,7 +29,7 @@
         border-right: solid 1px var(--N200);
         background: var(--bg-primary);
         height: 100%;
-        overflow: scroll;
+        overflow: auto;
 
         a {
             font-size: 13px;
@@ -59,7 +59,7 @@
 
     .global-configuration__component-wrapper {
         padding: 0;
-        overflow-y: auto;
+        overflow: auto;
         position: relative;
         max-height: 100%;
     }

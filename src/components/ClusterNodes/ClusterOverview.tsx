@@ -327,7 +327,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
                 {/* Commented to be used in future */}
                 {/* {cardDetailsInBar()} */}
                 <div className="dc__grid-row-one-half dc__gap-16 pb-16">
-                    <div className="flexbox dc__gap-12 dc__content-space dc__overflow-scroll bg__primary br-4 en-2 bw-1 pt-16 pl-16 pb-16 pr-16">
+                    <div className="flexbox dc__gap-12 dc__content-space dc__overflow-auto bg__primary br-4 en-2 bw-1 pt-16 pl-16 pb-16 pr-16">
                         <div>
                             <div className="dc__align-left fs-13 fw-4 cn-7 dc__ellipsis-right">CPU Usage</div>
                             <div className="dc__align-left fs-24 fw-4 cn-9">
@@ -354,7 +354,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
                         </div>
                     </div>
 
-                    <div className="flexbox dc__gap-12 dc__content-space dc__overflow-scroll bg__primary br-4 en-2 bw-1 pt-16 pl-16 pb-16 pr-16">
+                    <div className="flexbox dc__gap-12 dc__content-space dc__overflow-auto bg__primary br-4 en-2 bw-1 pt-16 pl-16 pb-16 pr-16">
                         <div>
                             <div className="dc__align-left fs-13 fw-4 cn-7 dc__ellipsis-right">Memory Usage</div>
                             <div className="dc__align-left fs-24 fw-4 cn-9">
