@@ -848,8 +848,11 @@ button.anchor {
 
     &.f-progressing,
     &.f-inprogress,
-    &.f-unknown,
     &.initiated {
+        color: var(--O500);
+    }
+
+    &.f-unknown {
         color: var(--Y500);
     }
 
