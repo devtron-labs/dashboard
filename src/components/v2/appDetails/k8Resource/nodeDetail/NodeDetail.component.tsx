@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useRef, useState, useMemo } from 'react'
-import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router-dom'
+import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router-dom'
 import {
     showError,
     Checkbox,
@@ -50,8 +50,6 @@ import {
     NodeType,
     Options,
 } from '../../appDetails.type'
-import AppDetailsStore from '../../appDetails.store'
-import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
 import { getManifestResource } from './nodeDetail.api'
 import MessageUI, { MsgUIType } from '../../../common/message.ui'
@@ -83,12 +81,9 @@ const NodeDetailComponent = ({
     updateTabUrl,
     isExternalApp,
     clusterName = '',
+    tabs: dynamicTabs,
 }: NodeDetailPropsType) => {
     const location = useLocation()
-    const [applicationObjectTabs] = useSharedState(
-        AppDetailsStore.getAppDetailsTabs(),
-        AppDetailsStore.getAppDetailsTabsObservable(),
-    )
     const appDetails = IndexStore.getAppDetails()
     const params = useParams<ParamsType>()
     const [tabs, setTabs] = useState([])
@@ -304,37 +299,13 @@ const NodeDetailComponent = ({
         updateTabUrl?.({
             url: _url
         })
-
-        /**
-         * NOTE: resource browser handles creation of missing tabs;
-         * Need to remove this whole function and not keep missing tab creation
-         * logic here. Instead it should be the concern on this component & should
-         * only be done on component mount */
-        if (isResourceBrowserView) {
-            return
-        }
-
-        /* NOTE: this setTimeout is dangerous; Need to refactor later */
-        if (!AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)) {
-            setTimeout(() => {
-                let _urlToCreate = _url
-
-                const query = new URLSearchParams(window.location.search)
-
-                if (query.get('container')) {
-                    _urlToCreate = `${_urlToCreate}?container=${query.get('container')}`
-                }
-
-                AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, _urlToCreate)
-            }, 500)
-        }
     }
 
-    const currentTab = applicationObjectTabs.filter((tab) => {
+    const currentTab = dynamicTabs.find((tab) => {
         return tab.name.toLowerCase() === `${params.nodeType}/...${resourceName?.slice(-6)}`
     })
     const isDeleted =
-        (currentTab?.[0] ? currentTab[0].isDeleted : false) ||
+        (currentTab ? currentTab.isDeleted : false) ||
         (isResourceBrowserView && isResourceDeleted) ||
         (!isResourceBrowserView &&
             !(

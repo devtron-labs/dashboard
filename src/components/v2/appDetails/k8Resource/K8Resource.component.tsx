@@ -30,7 +30,7 @@ import { ReactComponent as Info } from '@Icons/ic-info-outline.svg'
 import { useSharedState } from '@Components/v2/utils/useSharedState'
 import { URLS } from '@Config/routes'
 import IndexStore from '../index.store'
-import AppDetailsStore, { AppDetailsTabs } from '../appDetails.store'
+import { AppDetailsTabs } from '../appDetails.store'
 import { K8ResourceComponentProps } from '../appDetails.type'
 import NodeTreeComponent from './nodeType/NodeTree.component'
 import NodeComponent from './nodeType/Node.component'
@@ -40,13 +40,16 @@ import { doesNodeSatisfiesFilter } from './utils'
 export const K8ResourceComponent = ({
     clickedNodes,
     registerNodeClick,
-    handleFocusTabs,
     externalLinks,
     monitoringTools,
     isDevtronApp,
     clusterId,
     isDeploymentBlocked,
     isExternalApp,
+    handleMarkK8sResourceTabSelected,
+    addTab,
+    removeTabByIdentifier,
+    tabs,
 }: K8ResourceComponentProps) => {
     const history = useHistory()
     const location = useLocation()
@@ -55,7 +58,7 @@ export const K8ResourceComponent = ({
     const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
     const { isSuperAdmin } = useMainContext()
     useEffect(() => {
-        AppDetailsStore.markAppDetailsTabActiveByIdentifier(AppDetailsTabs.k8s_Resources)
+        handleMarkK8sResourceTabSelected()
     }, [])
 
     useEffect(() => {
@@ -153,13 +156,15 @@ export const K8ResourceComponent = ({
                     </div>
                     <div className="flex-grow-1-imp p-0" data-testid="k8-resources-node-details">
                         <NodeComponent
-                            handleFocusTabs={handleFocusTabs}
                             externalLinks={externalLinks}
                             monitoringTools={monitoringTools}
                             isDevtronApp={isDevtronApp}
                             clusterId={clusterId}
                             isDeploymentBlocked={isDeploymentBlocked}
                             isExternalApp={isExternalApp}
+                            addTab={addTab}
+                            tabs={tabs}
+                            removeTabByIdentifier={removeTabByIdentifier}
                         />
                     </div>
                 </div>

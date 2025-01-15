@@ -27,6 +27,7 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     ButtonStyleType,
+    logExceptionToSentry,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components, InputActionMeta, OptionProps } from 'react-select'
 import { ReactComponent as Cross } from '@Icons/ic-cross.svg'
@@ -55,7 +56,7 @@ const DynamicTabs = ({
     removeTabByIdentifier,
     markTabActiveById,
     stopTabByIdentifier,
-    setIsDataStale,
+    setIsDataStale = noop,
     timerConfig,
 }: DynamicTabsProps) => {
     const { push } = useHistory()
@@ -70,7 +71,15 @@ const DynamicTabs = ({
 
     const getMarkTabActiveHandler = (tab: DynamicTabType) => () => {
         markTabActiveById(tab.id)
-        push(tab.url)
+            .then((isFound) => {
+                if (isFound) {
+                    push(tab.url)
+                    return
+                }
+
+                logExceptionToSentry('Tried to mark a tab active which was not found!')
+            })
+            .catch(noop)
     }
 
     const getTabNavLink = (tab: DynamicTabType) => {
@@ -278,8 +287,7 @@ const DynamicTabs = ({
     const onChangeTab = (option: DynamicTabType): void => {
         if (option) {
             setIsMenuOpen(false)
-            markTabActiveById(option.id)
-            push(option.url)
+            getMarkTabActiveHandler(option)()
         }
     }
 

@@ -16,8 +16,7 @@
 
 import { ReactNode } from 'react'
 import { Dayjs } from 'dayjs'
-import { DynamicTabType } from '@devtron-labs/devtron-fe-common-lib'
-import { useTabs } from './useTabs'
+import { DynamicTabType, InitTabType } from '@devtron-labs/devtron-fe-common-lib'
 import { TAB_DATA_VERSION } from './constants'
 
 export enum DynamicTabsVariantType {
@@ -31,13 +30,31 @@ interface TimerConfigType {
     isLoading?: boolean
 }
 
+export interface UseTabsReturnType {
+    tabs: DynamicTabType[]
+    initTabs: (initTabsData: InitTabType[], reInit?: boolean, tabsToRemove?: string[]) => void
+    addTab: (props: AddTabParamsType) => Promise<boolean>
+    removeTabByIdentifier: (id: DynamicTabType['id']) => Promise<string>
+    stopTabByIdentifier: (id: DynamicTabType['id']) => Promise<string>
+    markTabActiveById: (id: DynamicTabType['id'], url?: DynamicTabType['url']) => Promise<boolean>
+    getTabId: (
+        idPrefix: AddTabParamsType['idPrefix'],
+        name: DynamicTabType['name'],
+        kind: AddTabParamsType['kind'],
+    ) => string
+    getTabById: (id: DynamicTabType['id']) => DynamicTabType | null
+    updateTabUrl: (props: UpdateTabUrlParamsType) => void
+    updateTabComponentKey: (id: DynamicTabType['id']) => void
+    updateTabLastSyncMoment: (id: DynamicTabType['id']) => void
+}
+
 export interface DynamicTabsProps {
     tabs: DynamicTabType[]
     variant: DynamicTabsVariantType
-    removeTabByIdentifier: ReturnType<typeof useTabs>['removeTabByIdentifier']
-    markTabActiveById: ReturnType<typeof useTabs>['markTabActiveById']
-    stopTabByIdentifier: ReturnType<typeof useTabs>['stopTabByIdentifier']
-    setIsDataStale: React.Dispatch<React.SetStateAction<boolean>>
+    removeTabByIdentifier: UseTabsReturnType['removeTabByIdentifier']
+    markTabActiveById: UseTabsReturnType['markTabActiveById']
+    stopTabByIdentifier: UseTabsReturnType['stopTabByIdentifier']
+    setIsDataStale?: React.Dispatch<React.SetStateAction<boolean>>
     timerConfig: Record<DynamicTabType['id'], TimerConfigType>
 }
 

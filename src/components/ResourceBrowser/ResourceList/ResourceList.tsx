@@ -231,7 +231,7 @@ const ResourceList = () => {
             const match = getTabById(tabId)
             if (match) {
                 if (!match.isSelected) {
-                    markTabActiveById(match.id)
+                    markTabActiveById(match.id).then(noop).catch(noop)
                 }
                 return
             }
@@ -260,13 +260,13 @@ const ResourceList = () => {
             const selectedTabFromNodeType = getTabById(nodeTypeToTabIdMap[nodeType]) ?? ({} as DynamicTabType)
             // Explicitly not using optional chaining to ensure to check the tab exists
             if (selectedTabFromNodeType && !selectedTabFromNodeType.isSelected) {
-                markTabActiveById(selectedTabFromNodeType.id)
+                markTabActiveById(selectedTabFromNodeType.id).then(noop).catch(noop)
             }
 
             return
         }
 
-        markTabActiveById(ResourceBrowserTabsId.k8s_Resources)
+        markTabActiveById(ResourceBrowserTabsId.k8s_Resources).then(noop).catch(noop)
     }, [location.pathname])
 
     const onClusterChange = (selected) => {
@@ -430,6 +430,7 @@ const ResourceList = () => {
                     removeTabByIdentifier={getRemoveTabByIdentifierForId(tabId)}
                     updateTabUrl={getUpdateTabUrlForId(tabId)}
                     clusterName={selectedCluster.label}
+                    tabs={tabs}
                 />
             </div>
         )

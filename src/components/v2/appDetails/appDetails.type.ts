@@ -28,8 +28,8 @@ import {
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { iLink } from '../utils/tabUtils/link.type'
 import { EphemeralForm, EphemeralFormAdvancedType } from './k8Resource/nodeDetail/nodeDetail.type'
-import { useTabs } from '../../common/DynamicTabs/useTabs'
 import { ClusterListType } from '@Components/ClusterNodes/types'
+import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 
 export interface ApplicationObject extends iLink {
     selectedNode: string
@@ -367,16 +367,20 @@ export interface LogSearchTermType {
     isExternalApp?: boolean
 }
 
-export interface NodeDetailPropsType extends LogSearchTermType, Pick<ClusterListType, 'lowercaseKindToResourceGroupMap' | 'updateTabUrl'> {
+export interface LogAnalyzerProps extends LogSearchTermType {
+    handleMarkLogAnalyzerTabSelected: () => void
+}
+
+export interface NodeDetailPropsType extends LogSearchTermType, Pick<ClusterListType, 'lowercaseKindToResourceGroupMap' | 'updateTabUrl'>, Pick<UseTabsReturnType, 'tabs'> {
     loadingResources?: boolean
     isResourceBrowserView?: boolean
     selectedResource?: SelectedResourceType
-    removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
+    removeTabByIdentifier?: UseTabsReturnType['removeTabByIdentifier']
     isExternalApp?: boolean
     clusterName?: string
 }
 
-export interface LogsComponentProps extends Omit<NodeDetailPropsType, 'lowercaseKindToResourceGroupMap' | 'updateTabUrl'> {
+export interface LogsComponentProps extends Omit<NodeDetailPropsType, 'lowercaseKindToResourceGroupMap' | 'updateTabUrl' | 'tabs'> {
     selectedTab: (_tabName: string, _url?: string) => void
     isDeleted: boolean
     ephemeralContainerType?: string
@@ -406,7 +410,6 @@ export interface NodeTreeTabListProps extends LogSearchTermType {
     handleReloadResourceTree: () => void
     tabRef?: MutableRefObject<HTMLDivElement>
     appType?: string
-    isExternalApp?: boolean
 }
 
 export interface Options extends OptionsBase {
@@ -501,10 +504,7 @@ export interface NodeTreeDetailTabProps extends
     isVirtualEnvironment: boolean
 }
 
-export interface K8ResourceComponentProps {
-    clickedNodes: Map<string, string>
-    registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>
-    handleFocusTabs: () => void
+export interface NodeComponentProps extends Pick<UseTabsReturnType, 'addTab'>, Pick<NodeDeleteComponentType, 'removeTabByIdentifier' | 'tabs'> {
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
     isDevtronApp?: boolean
@@ -513,15 +513,18 @@ export interface K8ResourceComponentProps {
     isExternalApp: boolean
 }
 
-export interface NodeComponentProps {
-    handleFocusTabs: () => void
+export interface K8ResourceComponentProps extends Pick<NodeComponentProps, 'addTab'>, Pick<NodeDeleteComponentType, 'removeTabByIdentifier' | 'tabs'>  {
+    clickedNodes: Map<string, string>
+    registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
     isDevtronApp?: boolean
     clusterId?: number
     isDeploymentBlocked?: boolean
     isExternalApp: boolean
+    handleMarkK8sResourceTabSelected: () => void
 }
+
 export interface AppDetailsComponentType extends
     Pick<NodeTreeTabListProps, 'handleReloadResourceTree' | 'isReloadResourceTreeInProgress'> {
     externalLinks?: ExternalLink[]
@@ -532,8 +535,12 @@ export interface AppDetailsComponentType extends
     loadingResourceTree: boolean
 }
 
-export interface NodeDeleteComponentType {
+export interface NodeDeleteComponentType extends Pick<UseTabsReturnType, 'tabs' | 'removeTabByIdentifier'> {
     nodeDetails: Node
     appDetails: AppDetails
     isDeploymentBlocked: boolean
+}
+
+export interface NodeDetailComponentWrapperProps extends Pick<UseTabsReturnType, 'addTab' | 'markTabActiveById' | 'getTabId'> {
+    nodeDetailComponentProps: NodeDetailPropsType
 }
