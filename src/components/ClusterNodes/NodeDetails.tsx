@@ -257,16 +257,14 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         return (
             <div className="dc__visible-hover dc__visible-hover--parent flexbox mb-8 hover-trigger dc__position-rel dc__align-items-center">
                 <div
-                    className={`cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
+                    className={`cn-9 bg__secondary fw-6 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
                         !value ? ' br-4' : ' dc__left-radius-4 dc__no-right-border'
                     }`}
                 >
                     {key}
                 </div>
                 {value && (
-                    <div className="bcn-7 cn-0 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 dc__right-radius-4 dc__no-left-border">
-                        {value}
-                    </div>
+                    <div className="cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 dc__right-radius-4">{value}</div>
                 )}
                 <div className="ml-8 dc__visible-hover--child">
                     <ClipboardButton content={keyValue} />
@@ -438,7 +436,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         }
         return (
             <div className="mb-12 en-2 bw-1 br-4 bg__primary">
-                <div className="flexbox bcy-5 pt-12 pb-12 pr-16 pl-16 dc__top-radius-4">
+                <div className="flexbox bcy-2 pt-12 pb-12 pr-16 pl-16 dc__top-radius-4">
                     <AlertTriangle className="alert-icon-white mt-2 mb-2 mr-8 icon-dim-18" />
                     <span className="fw-6 fs-14 cn-9">
                         {`${issueCount} Probable issue${issueCount > 1 ? 's' : ''}`}
