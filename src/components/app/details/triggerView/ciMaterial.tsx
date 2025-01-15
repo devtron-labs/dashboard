@@ -392,7 +392,6 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             const response = await savePipeline(payload, true)
             if (response) {
                 await this.props.getWorkflows()
-                this.context.onClickCIMaterial(this.props.pipelineId.toString(), this.props.pipelineName)
             }
         } catch (error) {
             showError(error)
