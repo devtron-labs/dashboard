@@ -64,47 +64,49 @@ const MessageUI: React.FC<MsgUIProps> = ({
     return (
         <div
             data-testid={dataTestId}
-            className={`dc__text-center w-100 h-100 flexbox-col dc__content-center ${theme || 'dark'}-background`}
+            className={`dc__text-center w-100 h-100 ${theme || 'dark'}-background`}
         >
-            <div>
-                {(() => {
-                    switch (icon) {
-                        case MsgUIType.LOADING:
-                            return (
-                                <div className={`icon-fill__white ${iconClassName || ''}`}>
-                                    <Progressing size={size} />
-                                </div>
-                            )
-                        case MsgUIType.POD:
-                            return (
-                                <PodIcon
-                                    color="var(--N400)"
-                                    style={{ width: '48px', height: '48px', marginBottom: '12px' }}
-                                />
-                            )
-                        case MsgUIType.MULTI_CONTAINER:
-                            return <MultipleContainer className={iconClassName || ''} />
-                        case MsgUIType.ERROR:
-                            return <ErrorIcon className={iconClassName || ''} width={size} height={size} />
-                        case MsgUIType.INFO:
-                            return <FilledInfoIcon className={iconClassName || ''} width={size} height={size} />
-                        default:
-                            return <InfoIcon className={`icon-fill__white ${iconClassName || ''}`} width={size} height={size} />
-                    }
-                })()}
-            </div>
-            <div className="fs-14 text__white">{msg}</div>
-            {isShowActionButton && (
-                <div
-                    className="cursor dc__underline fs-14 cb-3"
-                    onClick={onActionButtonClick}
-                    style={{
-                        ...actionButtonStyle,
-                    }}
-                >
-                    {actionButtonText}
+            <div className='flexbox-col dc__align-items-center dc__content-center' style={{ paddingTop: '168px' }}>
+                <div>
+                    {(() => {
+                        switch (icon) {
+                            case MsgUIType.LOADING:
+                                return (
+                                    <div className={`icon-fill__white ${iconClassName || ''}`}>
+                                        <Progressing size={size} />
+                                    </div>
+                                )
+                            case MsgUIType.POD:
+                                return (
+                                    <PodIcon
+                                        color="var(--N400)"
+                                        style={{ width: '48px', height: '48px', marginBottom: '12px' }}
+                                    />
+                                )
+                            case MsgUIType.MULTI_CONTAINER:
+                                return <MultipleContainer className={iconClassName || ''} />
+                            case MsgUIType.ERROR:
+                                return <ErrorIcon className={iconClassName || ''} width={size} height={size} />
+                            case MsgUIType.INFO:
+                                return <FilledInfoIcon className={iconClassName || ''} width={size} height={size} />
+                            default:
+                                return <InfoIcon className={`icon-fill__white ${iconClassName || ''}`} width={size} height={size} />
+                        }
+                    })()}
                 </div>
-            )}
+                <div className="fs-14 text__white">{msg}</div>
+                {isShowActionButton && (
+                    <div
+                        className="cursor dc__underline fs-14 cb-3"
+                        onClick={onActionButtonClick}
+                        style={{
+                            ...actionButtonStyle,
+                        }}
+                    >
+                        {actionButtonText}
+                    </div>
+                )}
+            </div>
         </div>
     )
 }

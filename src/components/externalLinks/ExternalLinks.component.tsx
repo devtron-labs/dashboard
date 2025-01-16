@@ -318,7 +318,7 @@ export const AppLevelExternalLinks = ({
             {appLevelExternalLinks.length > 0 && (
                 <div
                     data-testid="external-links-wrapper"
-                    className="app-level__external-links flex left w-100 bg__primary"
+                    className="app-level__external-links flex left w-100 bg__primary dc__no-shrink dc__border-top-n1"
                 >
                     {!isOverviewPage && (
                         <div className="app-level__external-links-icon icon-dim-20">

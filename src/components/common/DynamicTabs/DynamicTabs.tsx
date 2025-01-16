@@ -64,6 +64,8 @@ const DynamicTabs = ({
     const [tabSearchText, setTabSearchText] = useState('')
     const [isMenuOpen, setIsMenuOpen] = useState(false)
 
+    const dynamicTabsContainerRef = useRef<HTMLDivElement>(null)
+
     const fixedTabs = tabs.filter((tab) => tab.type === 'fixed')
     const dynamicTabs = tabs.filter((tab) => tab.type === 'dynamic')
     const selectedTab = tabs.find((tab) => tab.isSelected) ?? null
@@ -130,11 +132,20 @@ const DynamicTabs = ({
     }
 
     const selectedTabRefCallback: RefCallback<HTMLDivElement> = (node) => {
-        if (!node || node.dataset.isSelected !== 'true') {
+        if (!node || node.dataset.isSelected !== 'true' || !dynamicTabsContainerRef.current) {
             return
         }
 
-        node.scrollIntoView()
+        const { right, left } = node.getBoundingClientRect()
+        const { right: parentRight, left: parentLeft } = dynamicTabsContainerRef.current.getBoundingClientRect()
+
+        if (left < parentLeft) {
+            dynamicTabsContainerRef.current.scrollLeft += left - parentLeft
+        }
+
+        if (right > parentRight) {
+            dynamicTabsContainerRef.current.scrollLeft += right - parentRight
+        }
     }
 
     const getTabTippyContent = (title: string) => {
@@ -189,7 +200,9 @@ const DynamicTabs = ({
                     {_showNameOnSelect && (
                         <button
                             type="button"
-                            className="dc__unset-button-styles pr-12"
+                            // NOTE: need dc__zi-2 because the before pseudo class renders
+                            // the rounded corners and it has a z-index of 1
+                            className="dc__unset-button-styles pr-12 dc__zi-2"
                             aria-label={`Stop tab ${tab.name}`}
                             onClick={handleTabStopAction}
                             data-id={tab.id}
@@ -202,7 +215,9 @@ const DynamicTabs = ({
                     {!isFixed && (
                         <button
                             type="button"
-                            className="dc__unset-button-styles pr-12"
+                            // NOTE: need dc__zi-2 because the before pseudo class renders
+                            // the rounded corners and it has a z-index of 1
+                            className="dc__unset-button-styles pr-12 dc__zi-2"
                             aria-label={`Close tab ${tab.name}`}
                             onClick={handleTabCloseAction}
                             data-id={tab.id}
@@ -339,15 +354,18 @@ const DynamicTabs = ({
             style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}
         >
             <div
-                className={`dc__separated-flexbox dc__separated-flexbox--no-gap ${dynamicTabs.length ? 'dc__border-right' : ''}`}
+                className={`dc__separated-flexbox dc__separated-flexbox--no-gap ${dynamicTabs.length ? 'separator-right' : ''}`}
             >
                 {fixedTabs.map((tab) => renderTab(tab, fixedTabs.length))}
             </div>
-            <div className="flex-grow-1 dynamic-tabs-container dc__separated-flexbox dc__separated-flexbox--no-gap">
+            <div
+                className="flex-grow-1 dynamic-tabs-container dc__separated-flexbox dc__separated-flexbox--no-gap"
+                ref={dynamicTabsContainerRef}
+            >
                 {dynamicTabs.map((tab) => renderTab(tab, tab.tippyConfig))}
             </div>
             {(dynamicTabs.length > 0 || selectedTabTimerConfig) && (
-                <div className="flexbox dc__no-shrink dc__gap-12 pl-12 dc__border-left dc__align-items-center">
+                <div className="flexbox dc__no-shrink dc__gap-12 pl-12 separator-left dc__align-items-center">
                     {selectedTabTimerConfig && (
                         <Timer
                             key={selectedTab.componentKey}

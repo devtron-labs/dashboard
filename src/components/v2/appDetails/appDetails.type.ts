@@ -29,7 +29,7 @@ import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLi
 import { iLink } from '../utils/tabUtils/link.type'
 import { EphemeralForm, EphemeralFormAdvancedType } from './k8Resource/nodeDetail/nodeDetail.type'
 import { ClusterListType } from '@Components/ClusterNodes/types'
-import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
+import { UpdateTabUrlParamsType, UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 
 export interface ApplicationObject extends iLink {
     selectedNode: string
@@ -523,6 +523,7 @@ export interface K8ResourceComponentProps extends Pick<NodeComponentProps, 'addT
     isDeploymentBlocked?: boolean
     isExternalApp: boolean
     handleMarkK8sResourceTabSelected: () => void
+    handleUpdateK8sResourceTabUrl: (props: Omit<UpdateTabUrlParamsType, 'id'>) => void
 }
 
 export interface AppDetailsComponentType extends
@@ -541,6 +542,6 @@ export interface NodeDeleteComponentType extends Pick<UseTabsReturnType, 'tabs' 
     isDeploymentBlocked: boolean
 }
 
-export interface NodeDetailComponentWrapperProps extends Pick<UseTabsReturnType, 'addTab' | 'markTabActiveById' | 'getTabId'> {
-    nodeDetailComponentProps: NodeDetailPropsType
+export interface NodeDetailComponentWrapperProps extends Pick<UseTabsReturnType, 'addTab' | 'markTabActiveById' | 'getTabId' | 'updateTabUrl'> {
+    nodeDetailComponentProps: Omit<NodeDetailPropsType, 'updateTabUrl'>
 }

@@ -483,7 +483,7 @@ const MonitoringModuleNotInstalled = ({ addSpace }: { addSpace: string }) => {
     return (
         <div
             data-testid="app-metrices-wrapper"
-            className={`app-metrics-graph__empty-state-wrapper bcv-1 w-100 pt-18 pb-18 pl-20 pr-20 ${addSpace}`}
+            className={`bcv-1 w-100 pt-18 pb-18 pl-20 pr-20 ${addSpace}`}
         >
             <div className="flex left w-100 lh-20">
                 <span className="fs-14 fw-6 cv-5 flex left mr-16">
@@ -523,7 +523,7 @@ const AppMetricsEmptyState = ({ isLoading, isConfigured, isHealthy, hostURLConfi
             'Datasource configuration is incorrect or prometheus is not healthy. Please review configuration and try reloading this page.'
     }
     return (
-        <div className="app-metrics-graph__empty-state-wrapper bg__primary w-100 pt-18 pb-18 pl-20 pr-20 cursor">
+        <div className="bg__primary w-100 pt-18 pb-18 pl-20 pr-20 cursor">
             <div onClick={toggleHeader} className="flex left w-100 lh-20">
                 <span className="fs-14 fw-6 cn-7 flex left mr-16">
                     <GraphIcon className="mr-8 fcn-7 icon-dim-20" />

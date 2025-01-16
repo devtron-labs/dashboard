@@ -131,10 +131,10 @@ export const K8ResourceComponent = ({
     }
 
     return (
-        <div className="bg__primary" style={{ justifyContent: 'space-between' }}>
+        <div className="bg__primary flexbox flex-grow-1" style={{ justifyContent: 'space-between' }}>
             {nodes.length > 0 ? (
                 <div
-                    className={`resource-node-wrapper flexbox ${isSuperAdmin ? 'pb-28' : ''}`}
+                    className={`flex-grow-1 flexbox ${isSuperAdmin ? 'pb-28' : ''}`}
                     data-testid="resource-node-wrapper"
                 >
                     <div

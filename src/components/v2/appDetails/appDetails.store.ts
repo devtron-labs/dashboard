@@ -48,7 +48,7 @@ export const getInitialTabs = (
                       name: AppDetailsTabs.log_analyzer,
                       isSelected: isLogAnalyzerTabSelected,
                       type: 'fixed',
-                      id: AppDetailsTabs.k8s_Resources,
+                      id: AppDetailsTabs.log_analyzer,
                       url: `${pathWithTrailingSlash}${URLS.APP_DETAILS_LOG}`,
                   },
               ] as const)),

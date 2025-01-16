@@ -759,7 +759,7 @@ const ManifestComponent = ({
         <div
             className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ' '} manifest-container flexbox-col flex-grow-1 dc__overflow-scroll`}
             data-testid="app-manifest-container"
-            style={{ background: '#0B0F22' }}
+            style={{ background: '#0B0F22', ...(!isResourceBrowserView ? { minHeight: 'calc(100vh - 152px)' } : {}) }}
         >
             {error && !loading && (
                 <MessageUI
