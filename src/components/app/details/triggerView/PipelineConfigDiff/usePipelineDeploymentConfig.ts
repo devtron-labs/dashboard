@@ -18,6 +18,7 @@ import {
     showError,
     getCompareSecretsData,
     useMainContext,
+    DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
@@ -56,7 +57,12 @@ export const usePipelineDeploymentConfig = ({
     const urlFilters = useUrlFilters<string, PipelineConfigDiffQueryParamsType>({
         parseSearchParams: parseCompareWithSearchParams(isRollbackTriggerSelected),
     })
-    const { deploy, mode, updateSearchParams, handleSorting } = urlFilters
+    const { sortBy, sortOrder, deploy, mode, updateSearchParams, handleSorting } = urlFilters
+
+    useEffect(() => {
+        // INITIAL DEFAULT SORTING
+        handleSorting(DEPLOYMENT_CONFIG_DIFF_SORT_KEY)
+    }, [])
 
     // FETCH PREVIOUS DEPLOYMENTS
     const [previousDeploymentsLoader, previousDeployments, previousDeploymentsErr, reloadPreviousDeployments] =
@@ -249,11 +255,20 @@ export const usePipelineDeploymentConfig = ({
                 },
                 getNavItemHref,
                 convertVariables,
+                sortingConfig: { sortBy, sortOrder },
             })
         }
 
         return null
-    }, [pipelineDeploymentConfigLoading, pipelineDeploymentConfigRes, deploy, mode, convertVariables])
+    }, [
+        pipelineDeploymentConfigLoading,
+        pipelineDeploymentConfigRes,
+        deploy,
+        mode,
+        convertVariables,
+        sortBy,
+        sortOrder,
+    ])
 
     const reload = () => {
         reloadPreviousDeployments()
