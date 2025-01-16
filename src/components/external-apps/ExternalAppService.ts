@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { get, put, trash, ResponseType, AppType, getUrlWithSearchParams } from '@devtron-labs/devtron-fe-common-lib'
+import { get, put, trash, ResponseType, AppType, getUrlWithSearchParams, getAPIOptionsWithTriggerTimeout } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { HelmApp, AppEnvironmentDetail } from '../app/list-new/AppListType'
 import { ResourceTree } from '../v2/appDetails/appDetails.type'
-import { getAPIOptionsWithTriggerTimeout } from '../common'
 import { getK8sResourcePayloadAppType } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.util'
 
 export interface ReleaseInfoResponse extends ResponseType {

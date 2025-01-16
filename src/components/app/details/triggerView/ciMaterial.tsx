@@ -30,6 +30,7 @@ import {
     CommonNodeAttr,
     noop,
     Tooltip,
+    DEFAULT_ROUTE_PROMPT_MESSAGE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as ICInfoOutline } from '@Icons/ic-info-outline-grey.svg'
@@ -38,7 +39,7 @@ import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { getCIPipelineURL, importComponentFromFELibrary } from '../../../common'
-import { DOCUMENTATION, SOURCE_NOT_CONFIGURED, DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../../config'
+import { DOCUMENTATION, SOURCE_NOT_CONFIGURED } from '../../../../config'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { TriggerViewContext } from './config'
 import { IGNORE_CACHE_INFO } from './Constants'

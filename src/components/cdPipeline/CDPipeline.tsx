@@ -20,7 +20,6 @@ import {
     Drawer,
     ErrorScreenManager,
     OptionType,
-    RefVariableType,
     ServerErrors,
     showError,
     VariableType,
