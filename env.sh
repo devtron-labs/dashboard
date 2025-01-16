@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #
 # Copyright (c) 2024. Devtron Inc.
@@ -17,8 +17,12 @@
 #
 
 # Recreate config file
+
+
 rm -rf ./env-config.js
 touch ./env-config.js
+
+chmod +x env-config.js
 
 # Add assignment 
 echo "window._env_ = {" >> ./env-config.js
