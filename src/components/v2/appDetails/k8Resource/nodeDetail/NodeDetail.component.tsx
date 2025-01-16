@@ -254,7 +254,7 @@ const NodeDetailComponent = ({
                 }
             }
 
-            if (result?.manifestResponse.ephemeralContainers) {
+            if (result?.manifestResponse?.ephemeralContainers) {
                 _resourceContainers.push(
                     ...result.manifestResponse.ephemeralContainers.map((_container) => ({
                         name: _container.name,
@@ -646,7 +646,7 @@ const NodeDetailComponent = ({
                     setContainers={setContainers}
                     switchSelectedContainer={switchSelectedContainer}
                     selectedNamespaceByClickingPod={selectedResource?.namespace}
-                    handleSuccess={getContainersFromManifest}
+                     {...isResourceBrowserView ? {handleSuccess: getContainersFromManifest} : {}}
                 />
             )}
             {isResourceBrowserView && showDeleteDialog && (
