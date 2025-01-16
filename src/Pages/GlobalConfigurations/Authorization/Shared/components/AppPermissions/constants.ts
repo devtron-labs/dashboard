@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { ACCESS_TYPE_MAP, EntityTypes, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
-import { StylesConfig } from 'react-select'
+import { ACCESS_TYPE_MAP, EntityTypes, SelectPickerOptionType, StylesConfig } from '@devtron-labs/devtron-fe-common-lib'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
 import { ActionTypes, authorizationSelectStyles } from '../../../constants'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'

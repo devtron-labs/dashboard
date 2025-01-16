@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { MultiValue } from 'react-select'
-import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
+import { multiSelectStyles, MultiValue } from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetails } from '../app/types'
 import { AppDetails as HelmAppDetails } from '../v2/appDetails/appDetails.type'
 import { ExternalLink, OptionTypeWithIcon } from './ExternalLinks.type'

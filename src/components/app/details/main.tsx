@@ -26,8 +26,8 @@ import {
     ResourceKindType,
     ToastManager,
     ToastVariantType,
+    MultiValue,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { MultiValue } from 'react-select'
 import {
     ErrorBoundary,
     getAndSetAppGroupFilters,

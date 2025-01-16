@@ -1,4 +1,3 @@
-import { GroupBase, OptionsOrGroups } from 'react-select'
 import moment from 'moment'
 
 import {
@@ -8,6 +7,8 @@ import {
     SelectPickerOptionType,
     TemplateListDTO,
     YAMLStringify,
+    GroupBase,
+    OptionsOrGroups,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Moment12HourFormat } from '@Config/constants'

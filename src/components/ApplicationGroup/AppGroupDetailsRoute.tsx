@@ -39,9 +39,9 @@ import {
     TabProps,
     ToastManager,
     ToastVariantType,
+    MultiValue,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
-import { MultiValue } from 'react-select'
 import {
     ErrorBoundary,
     getAndSetAppGroupFilters,

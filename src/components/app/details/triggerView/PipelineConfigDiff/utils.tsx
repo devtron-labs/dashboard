@@ -1,11 +1,11 @@
-import { OptionsOrGroups, GroupBase } from 'react-select'
-
 import {
     AppEnvDeploymentConfigDTO,
     DeploymentWithConfigType,
     ERROR_STATUS_CODE,
     ResponseType,
     SelectPickerOptionType,
+    OptionsOrGroups,
+    GroupBase,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { PipelineConfigDiffQueryParams, PipelineConfigDiffQueryParamsType } from './types'

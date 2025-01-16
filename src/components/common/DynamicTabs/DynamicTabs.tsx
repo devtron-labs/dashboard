@@ -18,8 +18,15 @@ import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { Dayjs } from 'dayjs'
-import { stopPropagation, ConditionalWrap, noop, OptionType, DynamicTabType } from '@devtron-labs/devtron-fe-common-lib'
-import ReactSelect, { components, InputActionMeta, OptionProps } from 'react-select'
+import {
+    stopPropagation,
+    ConditionalWrap,
+    noop,
+    OptionType,
+    DynamicTabType,
+    InputActionMeta,
+} from '@devtron-labs/devtron-fe-common-lib'
+import ReactSelect, { components, OptionProps } from 'react-select'
 import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
 import { COMMON_TABS_SELECT_STYLES, EMPTY_TABS_DATA, initTabsData, checkIfDataIsStale } from './Utils'
 import { DynamicTabsProps, TabsDataType } from './Types'

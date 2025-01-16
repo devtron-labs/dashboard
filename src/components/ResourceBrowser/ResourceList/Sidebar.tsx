@@ -16,7 +16,7 @@
 
 import React, { Fragment, useEffect, useRef, useState, useMemo } from 'react'
 import { useLocation, useParams, useHistory } from 'react-router-dom'
-import ReactSelect, { InputActionMeta, GroupBase } from 'react-select'
+import ReactSelect from 'react-select'
 import Select, { FormatOptionLabelMeta } from 'react-select/base'
 import DOMPurify from 'dompurify'
 import {
@@ -25,6 +25,8 @@ import {
     useRegisterShortcut,
     Nodes,
     ApiResourceGroupType,
+    InputActionMeta,
+    GroupBase,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import { ReactComponent as ICExpand } from '../../../assets/icons/ic-expand.svg'

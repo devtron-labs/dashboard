@@ -29,10 +29,10 @@ import {
     CommonNodeAttr,
     ApprovalConfigDataType,
     RuntimePluginVariables,
+    MultiValue,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDMaterialProps, RuntimeParamsErrorState } from '../app/details/triggerView/types'
 import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
-import { MultiValue } from 'react-select'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
 import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
 import { AppConfigState, EnvConfigurationState } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'

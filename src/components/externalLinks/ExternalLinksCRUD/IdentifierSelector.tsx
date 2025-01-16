@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react'
-import { components, InputActionMeta } from 'react-select'
+import { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
 import {
     Checkbox,
@@ -24,6 +24,7 @@ import {
     MultiValueRemove,
     noop,
     ReactSelectInputAction,
+    InputActionMeta,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ExternalLinkIdentifierType, ExternalLinkScopeType, IdentifierSelectorProps } from '../ExternalLinks.type'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'

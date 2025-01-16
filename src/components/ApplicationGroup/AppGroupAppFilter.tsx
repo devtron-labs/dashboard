@@ -15,13 +15,18 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
-import ReactSelect, { SelectInstance } from 'react-select'
+import ReactSelect from 'react-select'
 import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
 import { appGroupAppSelectorStyle } from './AppGroup.utils'
 import { AppGroupAppFilterContextType, FilterParentType } from './AppGroup.types'
 import { AppFilterTabs } from './Constants'
 import { MenuList, Option, ValueContainer } from './AppGroupAppFilter.components'
-import { OptionType, ReactSelectInputAction, useRegisterShortcut } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    OptionType,
+    ReactSelectInputAction,
+    useRegisterShortcut,
+    SelectInstance,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { setAppGroupFilterInLocalStorage } from '@Components/common'
 
 export default function AppGroupAppFilter() {

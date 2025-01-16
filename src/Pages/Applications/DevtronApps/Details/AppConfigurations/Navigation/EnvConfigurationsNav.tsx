@@ -1,7 +1,6 @@
 import { MouseEvent, useEffect, useMemo, useState } from 'react'
 import { useRouteMatch, useLocation, NavLink, useHistory, generatePath } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { GroupBase, OptionsOrGroups } from 'react-select'
 
 import {
     BASE_CONFIGURATION_ENV_ID,
@@ -17,6 +16,8 @@ import {
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerVariantType,
+    GroupBase,
+    OptionsOrGroups,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'

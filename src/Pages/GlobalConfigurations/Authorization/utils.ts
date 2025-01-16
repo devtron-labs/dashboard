@@ -31,8 +31,8 @@ import {
     MetaPossibleRoles,
     SelectPickerOptionType,
     stringComparatorBySortOrder,
+    GroupBase,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { GroupBase } from 'react-select'
 import { Moment12HourFormat, REQUIRED_FIELDS_MISSING, SELECT_ALL_VALUE, SERVER_MODE } from '../../../config'
 import {
     APIRoleFilter,

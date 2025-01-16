@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { MultiValue } from 'react-select'
+import { MultiValue } from '@devtron-labs/devtron-fe-common-lib'
 import { OptionType } from '../../../../app/types'
 import { AppGroupListType, EnvDeploymentStatus, EnvDeploymentStatusType } from '../../../AppGroup.types'
 

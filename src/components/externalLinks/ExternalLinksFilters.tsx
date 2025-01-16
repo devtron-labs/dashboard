@@ -15,8 +15,8 @@
  */
 
 import React, { useEffect, useState } from 'react'
-import ReactSelect, { InputActionMeta } from 'react-select'
-import { Option, ReactSelectInputAction, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
+import ReactSelect from 'react-select'
+import { Option, ReactSelectInputAction, SearchBar, InputActionMeta } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import {
     ApplicationFilterType,

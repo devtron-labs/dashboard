@@ -15,8 +15,7 @@
  */
 
 import { Dispatch, SetStateAction } from 'react'
-import { GroupBase } from 'react-select'
-import { ServerError, ACCESS_TYPE_MAP, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { ServerError, ACCESS_TYPE_MAP, SelectPickerOptionType, GroupBase } from '@devtron-labs/devtron-fe-common-lib'
 import { JobList } from '../../../../../../components/Jobs/Types'
 import { DirectPermissionsRoleFilter } from '../../../types'
 

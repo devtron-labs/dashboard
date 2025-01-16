@@ -15,8 +15,14 @@
  */
 
 import { useState, useMemo, useRef } from 'react'
-import { MultiValue, SelectInstance } from 'react-select'
-import { Button, ButtonVariantType, SelectPicker, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Button,
+    ButtonVariantType,
+    SelectPicker,
+    SelectPickerOptionType,
+    MultiValue,
+    SelectInstance,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICGears } from '@Icons/ic-nav-gear.svg'
 import { OPTIONAL_NODE_LIST_HEADERS } from '../Constants'
 import { ColumnSelectorType } from '../Types'

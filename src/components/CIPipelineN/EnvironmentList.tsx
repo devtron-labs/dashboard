@@ -18,12 +18,11 @@ import {
     ComponentSizeType,
     Environment,
     SelectPicker,
-    SelectPickerOptionType,
     SelectPickerVariantType,
+    GroupBase,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { createClusterEnvGroup } from '../common'
 import { EnvironmentListType, EnvironmentWithSelectPickerType } from './types'
-import { GroupBase } from 'react-select'
 
 export const EnvironmentList = ({
     isBuildStage,

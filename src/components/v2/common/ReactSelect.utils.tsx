@@ -21,6 +21,9 @@ import { multiSelectStyles, noop, stopPropagation, Environment } from '@devtron-
 import { ReactComponent as ArrowDown } from '../assets/icons/ic-chevron-down.svg'
 import { CLUSTER_TERMINAL_MESSAGING } from '../../ClusterNodes/constants'
 
+/**
+ * @deprecated
+ */
 export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
     return (base, state) => ({
         ...base,
@@ -42,6 +45,9 @@ export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
     })
 }
 
+/**
+ * @deprecated
+ */
 export const getCommonSelectStyle = (styleOverrides = {}) => {
     return {
         menuList: (base) => ({

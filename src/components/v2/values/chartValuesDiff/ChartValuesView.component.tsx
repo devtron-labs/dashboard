@@ -15,7 +15,6 @@
  */
 
 import { useEffect, useState } from 'react'
-import { GroupBase } from 'react-select'
 import { useParams } from 'react-router-dom'
 import {
     Progressing,
@@ -32,6 +31,7 @@ import {
     SelectPickerOptionType,
     SelectPickerProps,
     MarkDown,
+    GroupBase,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'

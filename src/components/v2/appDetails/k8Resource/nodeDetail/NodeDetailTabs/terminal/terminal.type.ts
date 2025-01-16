@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { OptionsOrGroups, GroupBase, ActionMeta, StylesConfig } from 'react-select'
 import { SelectComponents } from 'react-select/dist/declarations/src/components'
 import { SocketConnectionType } from '../../../../../../ClusterNodes/constants'

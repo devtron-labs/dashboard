@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-import { OptionType, ACCESS_TYPE_MAP, EntityTypes, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
-import { OptionsOrGroups, GroupBase } from 'react-select'
+import {
+    OptionType,
+    ACCESS_TYPE_MAP,
+    EntityTypes,
+    SelectPickerOptionType,
+    OptionsOrGroups,
+    GroupBase,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { DEFAULT_ENV } from '../../../../../../components/app/details/triggerView/Constants'
 import { createClusterEnvGroup } from '../../../../../../components/common'
 import { SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
