@@ -37,7 +37,7 @@ export default function WebhookTippyCard({ link, hideTippy }: WebhookTippyType) 
                             to: link
                         }}
                         component={ButtonComponentType.link}
-                        text=" Show webhook details"
+                        text="Show webhook details"
                         dataTestId='hide-tooltip'
                         style={ButtonStyleType.neutral}
                         size={ComponentSizeType.xs}
