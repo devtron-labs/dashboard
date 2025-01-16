@@ -13,7 +13,9 @@ RUN echo `git rev-parse --short HEAD` > health.html && \
 	echo "SENTRY_RELEASE_VERSION=dashboard@$(git rev-parse --short HEAD)" >> .env && \
 	yarn build
 
-FROM nginx:stable
+FROM nginx:stable-alpine
+
+RUN apk add --no-cache shadow
 
 RUN useradd -ms /bin/bash devtron
 
@@ -32,4 +34,4 @@ RUN chmod +x env.sh
 
 USER devtron
 
-CMD ["/bin/bash", "-c", "/usr/share/nginx/html/env.sh && nginx -g \"daemon off;\""]
+CMD ["/bin/sh", "-c", "/usr/share/nginx/html/env.sh && nginx -g \"daemon off;\""]
