@@ -43,6 +43,7 @@ import {
     TRIGGER_STATUS_PROGRESSING,
     ErrorScreenManager,
     SecurityDetailsCards,
+    sanitizeTargetPlatforms,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, Redirect, useRouteMatch, useParams, useHistory, generatePath } from 'react-router-dom'
 import {
@@ -535,12 +536,15 @@ const HistoryLogs = ({
     const [ciJobArtifact, setciJobArtifact] = useState<string[]>([])
     const [loading, setLoading] = useState<boolean>(false)
     const downloadArtifactUrl = `${Routes.CI_CONFIG_GET}/${pipelineId}/artifacts/${buildId}`
+    const targetPlatforms = sanitizeTargetPlatforms(triggerDetails.targetPlatforms)
+
     useEffect(() => {
         if (isJobCI) {
             setLoading(true)
             getArtifactsForCiJobRes()
         }
     }, [triggerDetails])
+
     const getArtifactsForCiJobRes = async () => {
         try {
             const { result } = await getArtifactForJobCi(pipelineId, buildId)
@@ -572,6 +576,7 @@ const HistoryLogs = ({
                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                 rootClassName="pb-0-imp"
                 renderCIListHeader={renderCIListHeader}
+                targetPlatforms={targetPlatforms}
             />
         )
     })
@@ -597,6 +602,8 @@ const HistoryLogs = ({
                         gitTriggers={triggerDetails.gitTriggers}
                         ciMaterials={triggerDetails.ciMaterials}
                         renderCIListHeader={renderCIListHeader}
+                        // TODO: Confirm if needed
+                        targetPlatforms={targetPlatforms}
                     />
                 </Route>
                 <Route path={`${path}/artifacts`}>
@@ -619,6 +626,7 @@ const HistoryLogs = ({
                                 appReleaseTagNames={appReleaseTags}
                                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                                 renderCIListHeader={renderCIListHeader}
+                                targetPlatforms={targetPlatforms}
                             />
                         </div>
                     )}
