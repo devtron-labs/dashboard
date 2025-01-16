@@ -981,10 +981,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@1.5.1":
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.5.1.tgz#b05c4e7e4110042c89b55604ef79f00d95b35bb4"
-  integrity sha512-oYXL8L1CZO56uYEwCNx7h36D05Lg/zkAmqllV11YUZI7rAK5SGx8lByVOAKajWJccItUjfz6r1133n1Gj4IvSw==
+"@devtron-labs/devtron-fe-common-lib@1.5.1-beta-1":
+  version "1.5.1-beta-1"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.5.1-beta-1.tgz#3b2475920eacc63abbc50c0fb5b43522aec4c7af"
+  integrity sha512-YOrbpp+7KukiptMyAv5ocTEdRvomg+9QSqQ8uSk2j5c6YpyYyOT5tMu4W3fe2futAPJ9+XRJOw4ArrL1ueRxkQ==
   dependencies:
     "@types/react-dates" "^21.8.6"
     ansi_up "^5.2.1"
@@ -996,6 +996,7 @@
     nanoid "^3.3.8"
     react-dates "^21.8.0"
     react-diff-viewer-continued "^3.4.0"
+    react-draggable "^4.4.5"
     react-monaco-editor "^0.54.0"
     react-virtualized-sticky-tree "^3.0.0-beta18"
     sass "^1.69.7"
@@ -3603,9 +3604,9 @@ cli-truncate@^3.1.0:
     slice-ansi "^5.0.0"
     string-width "^5.0.0"
 
-clsx@^1.0.4:
+clsx@^1.0.4, clsx@^1.1.1:
   version "1.2.1"
-  resolved "https://registry.npmjs.org/clsx/-/clsx-1.2.1.tgz"
+  resolved "https://registry.yarnpkg.com/clsx/-/clsx-1.2.1.tgz#0ddc4a20a549b59c93a4116bb26f5294ca17dc12"
   integrity sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg==
 
 clsx@^2.0.0:
@@ -6700,6 +6701,14 @@ react-docgen@^7.0.0:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     scheduler "^0.20.2"
+
+react-draggable@^4.4.5:
+  version "4.4.6"
+  resolved "https://registry.yarnpkg.com/react-draggable/-/react-draggable-4.4.6.tgz#63343ee945770881ca1256a5b6fa5c9f5983fe1e"
+  integrity sha512-LtY5Xw1zTPqHkVmtM3X8MUOxNDOUhv/khTgBgrUvwaS064bwVvxT+q5El0uUFNx5IEPKXuRejr7UqLwBIg5pdw==
+  dependencies:
+    clsx "^1.1.1"
+    prop-types "^15.8.1"
 
 react-ga4@^1.4.1:
   version "1.4.1"
