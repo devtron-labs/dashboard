@@ -1432,6 +1432,7 @@ const CDMaterial = ({
                     rootClassName={imageCardRootClassName}
                     materialInfoRootClassName={approvedImageClass}
                     key={`material-history-${mat.index}`}
+                    targetPlatforms={mat.targetPlatforms}
                 >
                     {mat.materialInfo.length > 0 &&
                         !hideInfoTabsContainer &&
