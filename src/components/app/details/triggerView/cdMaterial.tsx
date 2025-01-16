@@ -1390,6 +1390,7 @@ const CDMaterial = ({
             stageType,
             showLatestTag: +mat.index === 0 && materialType !== MATERIAL_TYPE.rollbackMaterialList && !searchImageTag,
             isVirtualEnvironment,
+            targetPlatforms: mat.targetPlatforms,
             additionalInfo:
                 ImagePromotionInfoChip && promotionApprovalMetadata?.promotedFromType ? (
                     <ImagePromotionInfoChip
@@ -1432,7 +1433,6 @@ const CDMaterial = ({
                     rootClassName={imageCardRootClassName}
                     materialInfoRootClassName={approvedImageClass}
                     key={`material-history-${mat.index}`}
-                    targetPlatforms={mat.targetPlatforms}
                 >
                     {mat.materialInfo.length > 0 &&
                         !hideInfoTabsContainer &&
