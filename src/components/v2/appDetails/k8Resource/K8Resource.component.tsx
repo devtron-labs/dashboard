@@ -50,6 +50,7 @@ export const K8ResourceComponent = ({
     addTab,
     removeTabByIdentifier,
     tabs,
+    handleUpdateK8sResourceTabUrl,
 }: K8ResourceComponentProps) => {
     const history = useHistory()
     const location = useLocation()
@@ -80,9 +81,13 @@ export const K8ResourceComponent = ({
             return
         }
         if (!currentFilteredNodes.length) {
-            history.push({ pathname: location.pathname, search: `filterType=${ALL_RESOURCE_KIND_FILTER}` })
+            history.push({ pathname: location.pathname, search: '' })
         }
     }, [nodes])
+
+    useEffect(() => {
+        handleUpdateK8sResourceTabUrl({ url: `${location.pathname}${location.search}` })
+    }, [location.pathname, location.search])
 
     const getPodNameForSelectedFilter = (selectedFilter: string) => {
         const podParents = getPodsRootParentNameAndStatus(nodes)
@@ -112,7 +117,7 @@ export const K8ResourceComponent = ({
         const searchParams = new URLSearchParams([['filterType', selectedFilter]])
         IndexStore.updateFilterType(selectedFilter.toUpperCase())
         if (selectedFilter === ALL_RESOURCE_KIND_FILTER) {
-            history.push({ search: `${searchParams}` })
+            history.push({ search: '' })
             return
         }
         // current selected node exist in new selected filter or not
