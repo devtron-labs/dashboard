@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/sh
 
 #
 # Copyright (c) 2024. Devtron Inc.
@@ -17,35 +17,32 @@
 #
 
 # Recreate config file
-rm -f ./env-config.js
+rm -rf ./env-config.js
 touch ./env-config.js
 
-# Add assignment
+# Add assignment 
 echo "window._env_ = {" >> ./env-config.js
 
 # Read each line in .env file
 # Each line represents key=value pairs
-while IFS= read -r line || [ -n "$line" ]; do
+while read -r line || [[ -n "$line" ]];
+do
   # Split env variables by character `=`
-  if echo "$line" | grep -q '='; then
-    varname=$(echo "$line" | sed 's/=.*//')
-    varvalue=$(echo "$line" | sed 's/^[^=]*=//')
+  if printf '%s\n' "$line" | grep -q -e '='; then
+    varname=$(printf '%s\n' "$line" | sed -e 's/=.*//')
+    varvalue=$(printf '%s\n' "$line" | sed -e 's/^[^=]*=//')
   fi
 
   # Read value of current variable if exists as Environment variable
-  value=$(eval echo "\$$varname")
-
+  value=$(printf '%s\n' "${!varname}")
   # Otherwise use value from .env file
-  if [ -z "$value" ]; then
-    value="$varvalue"
-  fi
-
+  [[ -z $value ]] && value=${varvalue}
+  
   # Append configuration property to JS file
-  if [ "$value" = "true" ] || [ "$value" = "false" ]; then
+  if [[ "$value" == "true" ]] || [[ "$value" == "false" ]]; then
     echo "  $varname: $value," >> ./env-config.js
   else
     echo "  $varname: \"$value\"," >> ./env-config.js
   fi
 done < .env
-
 echo "}" >> ./env-config.js
