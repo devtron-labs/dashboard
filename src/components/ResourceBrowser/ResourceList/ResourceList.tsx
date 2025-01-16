@@ -128,6 +128,7 @@ const ResourceList = () => {
         () =>
             (k8SObjectMapRaw?.result.apiResources ?? []).reduce<K8SResourceListType['lowercaseKindToResourceGroupMap']>(
                 (acc, resourceGroup) => {
+                    // Using Group-Kind as key, but we need to move to using map instead
                     acc[`${resourceGroup.gvk.Group.toLowerCase()}-${resourceGroup.gvk.Kind.toLowerCase()}`] =
                         resourceGroup
 

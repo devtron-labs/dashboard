@@ -133,8 +133,6 @@ const NodeDetailComponent = ({
         clusterName,
         kind: _selectedResource?.gvk.Kind as string,
         version: _selectedResource?.gvk.Version,
-        // Note: Using the group from the url if available
-        // since kind is mapped to only one group while it doesn't hold true always
         group: _selectedResource?.gvk.Group,
         namespace: params.namespace,
         name: resourceName,
@@ -650,6 +648,7 @@ const NodeDetailComponent = ({
                     setContainers={setContainers}
                     switchSelectedContainer={switchSelectedContainer}
                     selectedNamespaceByClickingPod={selectedResource?.namespace}
+                    // getContainersFromManifest can only be used from resource browser
                     handleSuccess={isResourceBrowserView ? getContainersFromManifest : noop}
                 />
             )}
