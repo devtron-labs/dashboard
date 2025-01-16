@@ -405,7 +405,7 @@ export interface NodeTreeTabListProps extends LogSearchTermType {
     isReloadResourceTreeInProgress: boolean
     handleReloadResourceTree: () => void
     tabRef?: MutableRefObject<HTMLDivElement>
-    appType?: string
+    appType?: AppType
     isExternalApp?: boolean
 }
 

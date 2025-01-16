@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { NavLink, useHistory, useParams } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { useSharedState } from '../../utils/useSharedState'
@@ -36,6 +35,7 @@ import {
     ButtonComponentType
 } from '@devtron-labs/devtron-fe-common-lib'
 import './NodeTreeTabList.scss'
+import { getApplicationsGAEvent } from './utils'
 
 export default function NodeTreeTabList({
     logSearchTerms,
@@ -43,6 +43,7 @@ export default function NodeTreeTabList({
     tabRef,
     handleReloadResourceTree,
     isReloadResourceTreeInProgress,
+    appType
 }: NodeTreeTabListProps) {
     const { nodeType } = useParams<{ nodeType: string }>()
     const { push } = useHistory()
@@ -132,6 +133,15 @@ export default function NodeTreeTabList({
         handleCloseTab(e, e.currentTarget.dataset.title)
     }
 
+
+    const onClickReloadResourceTree = () => {
+        handleReloadResourceTree()
+        ReactGA.event({
+            category: getApplicationsGAEvent(appType),
+            action: getApplicationsGAEvent(appType),
+        })
+    }
+
     return (
         <div
             data-testid="resource-tree-wrapper"
@@ -201,7 +211,7 @@ export default function NodeTreeTabList({
                 <Button
                     dataTestId="reload-resource-tree-button"
                     icon={<ICArrowClockwise className="scn-6" />}
-                    onClick={handleReloadResourceTree}
+                    onClick={onClickReloadResourceTree}
                     variant={ButtonVariantType.borderLess}
                     size={ComponentSizeType.small}
                     style={ButtonStyleType.neutral}
