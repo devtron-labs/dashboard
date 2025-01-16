@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/bin/sh
 
 #
 # Copyright (c) 2024. Devtron Inc.
