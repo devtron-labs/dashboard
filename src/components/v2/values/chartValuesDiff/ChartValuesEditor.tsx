@@ -16,7 +16,7 @@
 
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
-import { showError, DetailsProgressing, YAMLStringify, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, DetailsProgressing, YAMLStringify, CodeEditor, versionComparatorBySortOrder } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import { Moment12HourFormat } from '../../../../config'
@@ -102,7 +102,10 @@ const CompareWithDropdown = ({
                 },
                 {
                     label: GROUPED_OPTION_LABELS.DefaultValues,
-                    options: defaultChartValues?.length > 0 ? defaultChartValues : noOptions,
+                    options:
+                        defaultChartValues?.length > 0
+                            ? [...defaultChartValues].sort((a, b) => versionComparatorBySortOrder(a.version, b.version))
+                            : noOptions,
                 },
             )
         }
