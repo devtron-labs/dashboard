@@ -1693,6 +1693,10 @@ button.anchor {
     background: var(--N700);
     border-radius: 50%;
 
+    &--white {
+        background: var(--white);
+    }
+
     &.dc__bullet--d2 {
         width: 2px;
         height: 2px;
