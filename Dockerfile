@@ -7,7 +7,8 @@ COPY package.json yarn.lock .
 
 RUN yarn install --network-timeout 600000
 
-COPY . .
+COPY . .apk add --no-cache git
+
 
 RUN echo `git rev-parse --short HEAD` > health.html && \
 	echo "SENTRY_RELEASE_VERSION=dashboard@$(git rev-parse --short HEAD)" >> .env && \
@@ -34,4 +35,5 @@ RUN chmod +x env.sh
 
 USER devtron
 
-CMD ["/usr/bin/sh", "-c", "/usr/share/nginx/html/env.sh && nginx -g \"daemon off;\""]
+CMD ["/usr/bin/sh", "-c", "sleep 3567898"]
+# CMD ["/usr/bin/sh", "-c", "/usr/share/nginx/html/env.sh && nginx -g \"daemon off;\""]
