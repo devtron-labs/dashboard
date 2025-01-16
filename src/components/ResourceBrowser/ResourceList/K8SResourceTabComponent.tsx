@@ -55,7 +55,7 @@ const K8SResourceTabComponent = ({
 
     if (error?.code === 403) {
         return (
-            <div className="resource-browser bcn-0 flex">
+            <div className="resource-browser bg__primary flex">
                 <ErrorScreenManager code={403} />
             </div>
         )
@@ -74,7 +74,7 @@ const K8SResourceTabComponent = ({
     }
 
     return (
-        <div className="resource-browser bcn-0">
+        <div className="resource-browser bg__primary">
             <Sidebar
                 apiResources={k8SObjectMap?.result.apiResources || null}
                 selectedResource={selectedResource}

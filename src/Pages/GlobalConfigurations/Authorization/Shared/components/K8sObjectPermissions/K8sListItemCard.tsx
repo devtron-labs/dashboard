@@ -390,7 +390,7 @@ const K8sListItemCard = ({
     }
 
     return (
-        <div className="mt-16 mb-16 flexbox-col dc__gap-12 dc__border br-4 p-16 bcn-0">
+        <div className="mt-16 mb-16 flexbox-col dc__gap-12 dc__border br-4 p-16 bg__primary">
             <div className="cn-7 fs-13 fw-4 lh-20 flex dc__content-space">
                 <span>Cluster</span>
                 {!selectedPermissionAction && (

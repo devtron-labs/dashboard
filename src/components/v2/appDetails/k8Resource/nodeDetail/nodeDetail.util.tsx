@@ -367,7 +367,7 @@ export const selectStyles = {
         ...base,
         minHeight: '36px',
         fontWeight: '400',
-        backgroundColor: 'var(--N50)',
+        backgroundColor: 'var(--bg-secondary)',
         cursor: 'pointer',
     }),
     dropdownIndicator: (base) => ({

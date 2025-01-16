@@ -172,7 +172,7 @@ export default function ProjectUpdateModal({
 
     return (
         <VisibleModal className="app-status__material-modal">
-            <div className="modal__body br-8 bcn-0 mt-0-imp p-0 dc__no-top-radius">
+            <div className="modal__body br-8 bg__primary mt-0-imp p-0 dc__no-top-radius">
                 {renderAboutModalInfoHeader()}
                 {renderProjectInfo()}
             </div>

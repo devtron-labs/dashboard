@@ -51,7 +51,7 @@ const DeploymentTemplateCTA = ({
     }
 
     return (
-        <footer className="flexbox dc__content-space p-12 bcn-0 dc__border-top dc__align-items-center">
+        <footer className="flexbox dc__content-space p-12 bg__primary dc__border-top dc__align-items-center">
             <div
                 className={`flexbox ${showApplicationMetrics ? 'dc__content-space' : 'dc__content-end'} dc__align-items-center flex-grow-1`}
             >

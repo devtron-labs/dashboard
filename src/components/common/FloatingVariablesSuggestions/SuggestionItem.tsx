@@ -41,15 +41,15 @@ export default function SuggestionItem({
             return <i className="cn-3 fs-12 fw-6 lh-18 m-0">is sensitive & hidden</i>
         }
         if (value === '') {
-            return <p className="cn-0 fs-12 fw-6 lh-18 m-0">&apos;&quot;&quot;&apos;</p>
+            return <p className="text__white fs-12 fw-6 lh-18 m-0">&apos;&quot;&quot;&apos;</p>
         }
         if (typeof value === 'boolean') {
-            return <p className="cn-0 fs-12 fw-6 lh-18 m-0">{value ? 'true' : 'false'}</p>
+            return <p className="text__white fs-12 fw-6 lh-18 m-0">{value ? 'true' : 'false'}</p>
         }
         if (typeof value === 'object') {
-            return <pre className="cn-0 fs-12 fw-6 lh-18 m-0 bcn-9">{YAMLStringify(value)}</pre>
+            return <pre className="text__white fs-12 fw-6 lh-18 m-0 bcn-9">{YAMLStringify(value)}</pre>
         }
-        return <p className="cn-0 fs-12 fw-6 lh-18 m-0">{value}</p>
+        return <p className="text__white fs-12 fw-6 lh-18 m-0">{value}</p>
     }
 
     const highlightedText = (text: string): string => {
@@ -102,7 +102,7 @@ export default function SuggestionItem({
             appendTo={document.body}
         >
             <div
-                className="flexbox-col pt-8 pb-8 pl-12 pr-12 dc__align-self-stretch bcn-0 dc__border-bottom-n1 dc__hover-n50"
+                className="flexbox-col pt-8 pb-8 pl-12 pr-12 dc__align-self-stretch bg__primary dc__border-bottom-n1 dc__hover-n50"
                 onClick={handleCopyTrigger}
                 data-testid="suggestion-item"
             >

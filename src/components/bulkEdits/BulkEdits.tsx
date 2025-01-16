@@ -197,7 +197,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderCodeEditorHeader = () => {
         return (
-            <div className="flex left pt-8 pb-8 bcn-0 pl-20 pr-20 dc__border-bottom">
+            <div className="flex left pt-8 pb-8 bg__primary pl-20 pr-20 dc__border-bottom">
                 <button
                     type="button"
                     className="bulk-run-button cta dc__ellipsis-right pl-12 pr-12 flex mr-12 "
@@ -210,7 +210,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     <div>Run</div>
                 </button>
                 <button
-                    className="fs-12 en-2 bw-1 cb-5 fw-6 bcn-0 br-4 pt-6 pb-6 pl-12 pr-12"
+                    className="fs-12 en-2 bw-1 cb-5 fw-6 bg__primary br-4 pt-6 pb-6 pl-12 pr-12"
                     style={{ maxHeight: '32px' }}
                     onClick={() => this.handleShowImpactedObjectButton()}
                     data-testid="show-impacted-objects-button"
@@ -257,7 +257,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div className="code-editor-body">
                 <CodeEditor
-                    theme="vs-gray--dt"
                     height="calc(60vh - 97px)"
                     value={this.state.codeEditorPayload}
                     mode="yaml"
@@ -266,8 +265,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     }}
                     data-testid="code-editor"
                 />
-                <div className="bulk-output-drawer bcn-0 fs-13">
-                    <div className="bulk-output-header flex left pl-20 pr-20 pt-6 dc__border-top dc__border-bottom bcn-0">
+                <div className="bulk-output-drawer bg__primary fs-13">
+                    <div className="bulk-output-header flex left pl-20 pr-20 pt-6 dc__border-top dc__border-bottom bg__primary">
                         <OutputTabs
                             handleOutputTabs={(e) => this.handleOutputTab(e, 'output')}
                             outputName={this.state.outputName}
@@ -631,7 +630,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderSampleTemplateHeader = () => {
         return (
-            <div className="dc__border-bottom bcn-0 py-8 px-20 flex  h-48 dc__content-space">
+            <div className="dc__border-bottom bg__primary py-8 px-20 flex  h-48 dc__content-space">
                 <div className="flex left dc__gap-16">
                     <div className="fw-6 cn-9" data-testid="sample-application">
                         Sample:
@@ -657,7 +656,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderSampleTemplateBody = () => {
         const readmeJson = this.state.readmeResult.toString()
         return this.state.isReadmeLoading ? (
-            <div className="bcn-0" style={{ height: 'calc(100vh - 150px)' }}>
+            <div className="bg__primary" style={{ height: 'calc(100vh - 150px)' }}>
                 <Progressing pageLoader />
             </div>
         ) : (

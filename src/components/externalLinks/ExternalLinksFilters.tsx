@@ -350,7 +350,7 @@ export const AppliedFilterChips = ({
     const renderFilterChip = (type: string, filter: IdentifierOptionType, showORDivider: boolean) => {
         return (
             <>
-                <div key={filter.label} className="saved-filter flex left dc__border bc-n50 pl-6 pr-6">
+                <div key={filter.label} className="saved-filter flex left dc__border bg__secondary pl-6 pr-6">
                     <span className="fw-6">{type}</span>
                     <span className="saved-filter-divider bcn-2 ml-6 mr-6" />
                     <span>{filter.label}</span>

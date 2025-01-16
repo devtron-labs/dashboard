@@ -25,7 +25,7 @@ const SlackConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTab
 
     return (
         <div className="slack-config-container h-100">
-            <div className="slack-config-grid fs-12 fw-6 dc__uppercase cn-7 py-6 dc__gap-16 dc__border-bottom-n1 px-20  dc__position-sticky dc__top-0 bcn-0">
+            <div className="slack-config-grid fs-12 fw-6 dc__uppercase cn-7 py-6 dc__gap-16 dc__border-bottom-n1 px-20  dc__position-sticky dc__top-0 bg__primary">
                 <div className="icon-dim-24" />
                 <p className="flex left m-0 ">Name</p>
                 <p className="flex left m-0 ">Webhook URL</p>

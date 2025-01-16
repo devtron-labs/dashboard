@@ -24,7 +24,11 @@ import { CLUSTER_TERMINAL_MESSAGING } from '../../ClusterNodes/constants'
 export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
     return (base, state) => ({
         ...base,
-        backgroundColor: state.isSelected ? 'var(--B100)' : state.isFocused ? 'var(--N50)' : 'white',
+        backgroundColor: state.isSelected
+            ? 'var(--B100)'
+            : state.isFocused
+              ? 'var(--bg-secondary)'
+              : 'var(--bg-primary)',
         opacity: state.isDisabled ? 0.5 : 1,
         color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
         textOverflow: 'ellipsis',
@@ -49,14 +53,14 @@ export const getCommonSelectStyle = (styleOverrides = {}) => {
             ...base,
             minHeight: '32px',
             boxShadow: 'none',
-            backgroundColor: 'var(--N50)',
+            backgroundColor: 'var(--bg-secondary)',
             border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
             cursor: 'pointer',
         }),
         option: (base, state) => ({
             ...base,
             color: 'var(--N900)',
-            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+            backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--bg-primary)',
             padding: '10px 12px',
         }),
         dropdownIndicator: (base, state) => ({
@@ -79,6 +83,18 @@ export const getCommonSelectStyle = (styleOverrides = {}) => {
             ...base,
             color: 'var(--N600)',
         }),
+        singleValue: (base) => ({
+            ...base,
+            color: 'var(--N900)',
+        }),
+        input: (base) => ({
+            ...base,
+            color: 'var(--N900)',
+        }),
+        menu: (base) => ({
+            ...base,
+            backgroundColor: 'var(--bg-menu)',
+        }),
         ...styleOverrides,
     }
 }
@@ -93,7 +109,7 @@ export const styles = {
         return {
             ...base,
             top: `0px`,
-            backgroundColor: 'white',
+            backgroundColor: 'var(--bg-primary)',
         }
     },
     singleValue: (base, state) => {
@@ -106,7 +122,7 @@ export const styles = {
         return {
             ...base,
             color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
-            backgroundColor: state.isFocused ? 'var(--N50)' : 'white',
+            backgroundColor: state.isFocused ? 'var(--bg-secondary)' : 'var(--bg-primary)',
         }
     },
 }
@@ -294,7 +310,7 @@ export const groupStyle = () => {
     return {
         ...multiSelectStyles,
         menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
-        control: (base) => ({ ...base, border: '1px solid #d6dbdf', width: '450px' }),
+        control: (base) => ({ ...base, border: '1px solid var(--N200)', width: '450px' }),
         group: (base) => ({
             ...base,
             paddingTop: 0,

@@ -1678,7 +1678,7 @@ const DeploymentTemplate = ({
         }
 
         return (
-            <div className="flexbox dc__gap-6 dc__align-items-center dc__border-top-n1 bc-n50 py-6 px-10">
+            <div className="flexbox dc__gap-6 dc__align-items-center dc__border-top-n1 bg__secondary py-6 px-10">
                 <ICInfoOutlineGrey className="flex icon-dim-16 dc__no-shrink scn-6" />
                 <div className="flexbox">
                     <span className="cn-8 fs-12 fw-4 lh-20 dc__truncate">
@@ -1827,7 +1827,7 @@ const DeploymentTemplate = ({
         }
 
         return (
-            <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-scroll bcn-0">
+            <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-scroll bg__primary">
                 {renderBody()}
 
                 {showDeleteOverrideDialog && (
@@ -1891,7 +1891,7 @@ const DeploymentTemplate = ({
     return (
         <>
             <div
-                className={`h-100 dc__window-bg ${showDraftComments ? 'deployment-template__comments-view' : 'flexbox'}`}
+                className={`h-100 bg__tertiary ${showDraftComments ? 'deployment-template__comments-view' : 'flexbox'}`}
             >
                 {renderDeploymentTemplate()}
 

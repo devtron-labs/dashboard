@@ -140,7 +140,7 @@ export class Typeahead extends Component<
                 <span className="form__label">{this.props.label}</span>
                 <span
                     className="typeahead__multi-selection"
-                    style={{ border: this.props.multi ? 'solid 1px #d2d2d2' : 'none', display: 'block' }}
+                    style={{ border: this.props.multi ? 'solid 1px var(--N200)' : 'none', display: 'block' }}
                     onClick={() => {
                         this.setState({ showMenu: true })
                     }}

@@ -1,0 +1,47 @@
+.bg {
+    &__primary {
+        background: var(--bg-primary);
+    }
+
+    &__secondary {
+        background: var(--bg-secondary);
+    }
+
+    &__tertiary {
+        background: var(--bg-tertiary);
+    }
+
+    &__overlay {
+        background: var(--bg-overlay);
+    }
+
+    &__menu {
+        background: var(--bg-menu);
+    }
+
+    &__modal {
+        background: var(--bg-modal);
+    }
+}
+
+.text {
+    &__white {
+        color: var(--white);
+    }
+}
+
+.icon-fill {
+    &__white {
+        *[fill^="#"] {
+            fill: var(--white);
+        }
+    }
+}
+
+.icon-stroke {
+    &__white {
+        *[stroke^="#"] {
+            stroke: var(--white);
+        }
+    }
+}

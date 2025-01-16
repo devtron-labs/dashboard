@@ -1,15 +1,9 @@
-import CreatableSelect from 'react-select/creatable'
 import {
     APIResponseHandler,
     ComponentSizeType,
     EditImageFormField,
-    GenericSectionErrorState,
     getIsRequestAborted,
-    LoadingIndicator,
     logExceptionToSentry,
-    MultiValueChipContainer,
-    MultiValueRemove,
-    Option,
     OptionType,
     SelectPicker,
     SelectPickerOptionType,
@@ -21,21 +15,14 @@ import {
     TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICLegoBlock } from '@Icons/ic-lego-block.svg'
-import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
 import { ReactComponent as ICVisibilityOn } from '@Icons/ic-visibility-on.svg'
 import { ReactComponent as ICHelp } from '@Icons/ic-help.svg'
-import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { ReactComponent as ICTag } from '@Icons/ic-tag.svg'
 import { ReactNode } from 'react'
 import { CreatePluginActionType, CreatePluginFormContentProps, CreatePluginFormViewType } from './types'
 import CreatePluginFormField from './CreatePluginFormField'
 import CreatePluginInputVariableContainer from './CreatePluginInputVariableContainer'
-import {
-    getIsTagValid,
-    getSelectPickerOptionsFromParentPluginList,
-    PluginCreatableTagClearIndicator,
-    pluginCreatableTagSelectStyles,
-} from './utils'
+import { getIsTagValid, getSelectPickerOptionsFromParentPluginList } from './utils'
 
 const CreatePluginFormContent = ({
     isLoadingParentPluginList,
@@ -130,42 +117,11 @@ const CreatePluginFormContent = ({
         value: tag,
     }))
 
-    const renderNoOptionsMessage = () => {
-        if (availableTagsError) {
-            return <GenericSectionErrorState reload={reloadAvailableTags} />
-        }
-
-        return <p className="m-0 cn-7 fs-13 fw-4 lh-20 py-6 px-8">No options</p>
-    }
-
     const handleTagsUpdate = (options: OptionType[]) => {
         handleChange({
             action: CreatePluginActionType.UPDATE_TAGS,
             payload: { tags: options.map((option) => option.value) },
         })
-    }
-
-    const renderOption = (props) => {
-        const { data, selectOption } = props
-
-        const handleSelectNewOption = () => {
-            selectOption(data)
-        }
-
-        if (data.__isNew__) {
-            return (
-                <button
-                    type="button"
-                    onClick={handleSelectNewOption}
-                    className="dc__position-sticky dc__transparent p-8 dc__bottom-0 dc__border-top-n1 bcn-0 dc__bottom-radius-4 w-100 dc__hover-n50 flexbox dc__align-items-center w-100 dc__gap-4"
-                >
-                    <ICAdd className="fcb-5 icon-dim-16 dc__no-shrink" />
-                    <span className="cb-5 fs-13 fw-6 dc__truncate">Create `{data.value}`</span>
-                </button>
-            )
-        }
-
-        return <Option {...props} />
     }
 
     const handleURLChange = (url: string) => {
@@ -182,7 +138,12 @@ const CreatePluginFormContent = ({
         await prefillFormOnPluginSelection(clonedPluginForm)
     }
 
-    const renderMultiValueChip = (props) => <MultiValueChipContainer validator={getIsTagValid} {...props} />
+    const getIsOptionValid: SelectPickerProps<string, true>['multiSelectProps']['getIsOptionValid'] = (option) =>
+        getIsTagValid(option.value)
+
+    const onCreateOption: SelectPickerProps<string, true>['onCreateOption'] = (inputValue) => {
+        handleTagsUpdate([...selectedTags, { label: inputValue, value: inputValue }])
+    }
 
     const renderExistingPluginVersionList = () => (
         <div className="flexbox-col dc__gap-4 p-12 mxh-350 dc__overflow-scroll">
@@ -339,45 +300,28 @@ const CreatePluginFormContent = ({
 
                     {/* Tags */}
                     <div className="flexbox-col dc__gap-6">
-                        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                        <label
-                            htmlFor="select-tags-for-plugin"
-                            className="m-0 fs-13 fw-4 lh-20 cn-7 dc_width-max-content"
-                        >
-                            Tags
-                        </label>
-
-                        <CreatableSelect
+                        <SelectPicker
+                            isCreatable
+                            label="Tags"
                             value={selectedTags}
                             isMulti
                             isClearable
-                            closeMenuOnSelect={false}
                             options={tagOptions}
                             placeholder="Type to select or create"
                             name="select-tags-for-plugin"
                             hideSelectedOptions={false}
                             isLoading={areTagsLoading}
-                            components={{
-                                Option: renderOption,
-                                MultiValueContainer: renderMultiValueChip,
-                                NoOptionsMessage: renderNoOptionsMessage,
-                                MultiValueRemove,
-                                LoadingIndicator,
-                                ClearIndicator: PluginCreatableTagClearIndicator,
-                            }}
+                            optionListError={availableTagsError}
+                            reloadOptionList={reloadAvailableTags}
                             onChange={handleTagsUpdate}
-                            styles={pluginCreatableTagSelectStyles}
                             inputId="select-tags-for-plugin"
                             onKeyDown={stopPropagation}
-                            menuPosition="fixed"
+                            error={pluginFormError.tags}
+                            multiSelectProps={{
+                                getIsOptionValid,
+                            }}
+                            onCreateOption={onCreateOption}
                         />
-
-                        {pluginFormError.tags && (
-                            <div className="form__error">
-                                <ICWarning className="form__icon form__icon--error" />
-                                {pluginFormError.tags}
-                            </div>
-                        )}
                     </div>
 
                     {/* Input variable container */}

@@ -37,7 +37,7 @@ const LastUpdatedCard = ({ deploymentTriggerTime, triggeredBy, cardLoading }: La
     return (
         <div
             data-testid="last-updated-card"
-            className="app-details-info-card cursor flex left bcn-0 br-8 mr-12 lh-20 w-200"
+            className="app-details-info-card cursor flex left bg__primary br-8 mr-12 lh-20 w-200"
             onClick={goToDeploymentHistory}
         >
             <div className="app-details-info-card__top-container flex">

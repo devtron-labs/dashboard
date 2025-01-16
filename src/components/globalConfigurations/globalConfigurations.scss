@@ -27,7 +27,7 @@
     .global-configuration__navigation {
         padding: 16px 12px;
         border-right: solid 1px var(--N200);
-        background: var(--N0);
+        background: var(--bg-primary);
         height: 100%;
         overflow: scroll;
 
@@ -42,7 +42,7 @@
 
             &:hover {
                 text-decoration: none;
-                background: var(--N50);
+                background: var(--bg-secondary);
             }
 
             &.active-route {
@@ -129,7 +129,7 @@
     display: grid;
     grid-template-columns: 24px 1fr 24px;
     align-items: center;
-    background: white;
+    background: var(--bg-primary);
     grid-column-gap: 16px;
     cursor: pointer;
 
@@ -154,7 +154,7 @@
     .tag {
         height: 20px;
         border-radius: 2px;
-        border: solid 1px #b5d3f2;
+        border: solid 1px var(--B200);
         background-blend-mode: multiply;
         background-image: linear-gradient(to bottom, var(--B50), var(--B50));
         color: var(--B500);
@@ -178,9 +178,9 @@
 }
 
 .cluster-list {
-    border: 1px solid #d6dbdf;
+    border: 1px solid var(--N200);
     margin-bottom: 16px;
-    background: white;
+    background: var(--bg-primary);
     border-radius: 8px;
 
     & > .list {
@@ -220,11 +220,11 @@
 
         .list {
             border-radius: 4px;
-            border: 1px solid #d6dbdf;
+            border: 1px solid var(--N200);
         }
 
         .cluster-environment--create {
-            border: 1px #d6dbdf dashed;
+            border: 1px var(--N200) dashed;
         }
     }
 }
@@ -234,27 +234,27 @@
 }
 
 .cluster-icon path {
-    stroke: #06c;
+    stroke: var(--B500);
 }
 
 .collapsed-list {
     &.collapsed-list--chart {
-        border: 1px solid #d6dbdf;
+        border: 1px solid var(--N200);
         margin-bottom: 16px;
         border-radius: 8px;
         overflow: hidden;
-        background: white;
+        background: var(--bg-primary);
     }
 }
 
 .collapsed-list {
     &.collapsed-list--git,
     &.collapsed-list--docker {
-        border: 1px solid #d6dbdf;
+        border: 1px solid var(--N200);
         margin-bottom: 16px;
         border-radius: 8px;
         overflow: hidden;
-        background: white;
+        background: var(--bg-primary);
     }
 
     &.collapsed-list--create {
@@ -276,7 +276,7 @@
     display: grid;
     width: 100%;
     grid-template-columns: repeat(3, 1fr);
-    border: 1px solid #d6dbdf;
+    border: 1px solid var(--N200);
     height: 48px;
     border-radius: 4px;
     align-items: center;
@@ -286,7 +286,7 @@
         height: 100%;
 
         &:not(:first-child) {
-            border-left: 1px solid #d6dbdf;
+            border-left: 1px solid var(--N200);
         }
 
         input[type='radio'] {
@@ -365,7 +365,7 @@
 .environment-create-body {
     width: 450px;
     border-radius: 8px;
-    background: white;
+    background: var(--bg-primary);
     padding: 24px;
     margin: 5% auto auto auto;
 
@@ -383,7 +383,7 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         height: 48px;
-        border: 1px solid #d6dbdf;
+        border: 1px solid var(--N200);
         border-radius: 4px;
         cursor: pointer;
 
@@ -403,7 +403,7 @@
         }
 
         .environment--non-production {
-            border-left: 1px solid #d6dbdf;
+            border-left: 1px solid var(--N200);
         }
     }
 
@@ -465,7 +465,7 @@
 
 .cluster-create-status__status-installing {
     path {
-        fill: var(--orange);
+        fill: var(--O500);
     }
 }
 

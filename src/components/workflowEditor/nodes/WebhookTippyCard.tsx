@@ -33,7 +33,7 @@ export default function WebhookTippyCard({ link, hideTippy }: WebhookTippyType) 
                 <div>Get webhook url and sample JSON to be used in external CI service.</div>
                 <div className="mt-12 lh-18">
                     <Link onClick={hideTippy} to={link} className="dc__no-decor">
-                        <div className="bcn-0 bw-0 cn-9 fw-6 br-4 mr-12 pt-4 pb-4 pl-8 pr-8 pl-8 pr-8 dc__inline-block ">
+                        <div className="bg__primary bw-0 cn-9 fw-6 br-4 mr-12 pt-4 pb-4 pl-8 pr-8 pl-8 pr-8 dc__inline-block ">
                             Show webhook details
                         </div>
                     </Link>

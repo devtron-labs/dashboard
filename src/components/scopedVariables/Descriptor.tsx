@@ -37,7 +37,7 @@ export default function Descriptor({ children, showUploadButton, readFile, searc
     return (
         <>
             <div
-                className={`scoped-variables-descriptor flex column dc__align-self-stretch bcn-0 dc__content-space dc__align-start pl-20 pr-20 pt-16 ${
+                className={`scoped-variables-descriptor flex column dc__align-self-stretch bg__primary dc__content-space dc__align-start pl-20 pr-20 pt-16 ${
                     children ? ' dc__no-bottom-border pb-8' : ' dc__border-bottom pb-16 '
                 }}`}
             >
