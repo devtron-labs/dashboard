@@ -233,7 +233,13 @@ export const ConfigMapSecretDryRun = ({
                 }}
             >
                 <div className="flex-grow-1 dc__overflow-scroll">
-                    <CodeEditor value={configMapSecretManifest?.manifest} height="100%" mode={MODES.YAML} readOnly />
+                    <CodeEditor
+                        isCodeMirror
+                        value={configMapSecretManifest?.manifest}
+                        height="100%"
+                        mode={MODES.YAML}
+                        readOnly
+                    />
                 </div>
             </APIResponseHandler>
         </div>

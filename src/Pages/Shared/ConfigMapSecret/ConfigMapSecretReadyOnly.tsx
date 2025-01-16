@@ -1,4 +1,4 @@
-import { ClipboardButton, CodeEditor, hasHashiOrAWS, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { ClipboardButton, CodeEditor, hasHashiOrAWS, MODES, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getConfigMapSecretReadOnlyValues } from './utils'
 import { ConfigMapSecretReadyOnlyProps } from './types'
@@ -41,7 +41,7 @@ export const ConfigMapSecretReadyOnly = ({
                         <ClipboardButton content={displayValues.data} />
                     </div>
                     <div className="dc__overflow-hidden br-4">
-                        <CodeEditor value={displayValues.data} mode="yaml" inline height={350} readOnly />
+                        <CodeEditor isCodeMirror value={displayValues.data} mode={MODES.YAML} height={350} readOnly />
                     </div>
                 </div>
             )}

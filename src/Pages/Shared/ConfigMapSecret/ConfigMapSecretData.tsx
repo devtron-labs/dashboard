@@ -9,6 +9,7 @@ import {
     ComponentSizeType,
     KeyValueConfig,
     KeyValueTable,
+    MODES,
     noop,
     StyledRadioGroup,
     ToastManager,
@@ -277,13 +278,13 @@ export const ConfigMapSecretData = ({
         return (
             <div className="dc__border br-4 dc__overflow-hidden">
                 <CodeEditor
+                    isCodeMirror
                     key={codeEditorRadio}
                     value={getCodeEditorValue()}
                     // Skip calling onChange if resolvedData exists
                     onChange={!isLocked && !data.isResolvedData ? onChange : noop}
                     onFocus={onFocus}
-                    mode="yaml"
-                    inline
+                    mode={MODES.YAML}
                     height={350}
                     shebang={sheBangText}
                     readOnly={
