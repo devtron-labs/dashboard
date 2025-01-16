@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement } from 'react'
 import { Dayjs } from 'dayjs'
 import { DynamicTabType, InitTabType } from '@devtron-labs/devtron-fe-common-lib'
 import { TAB_DATA_VERSION } from './constants'
@@ -57,13 +57,6 @@ export interface DynamicTabsProps {
     setIsDataStale?: React.Dispatch<React.SetStateAction<boolean>>
     timerConfig: Record<DynamicTabType['id'], TimerConfigType>
     iconsConfig?: Record<DynamicTabType['id'], ReactElement>
-}
-
-export interface MoreButtonWrapperProps {
-    children?: ReactNode
-    readonly isMenuOpen: boolean
-    readonly onClose: () => void
-    readonly toggleMenu: () => void
 }
 
 export interface TimerType {

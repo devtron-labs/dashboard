@@ -19,7 +19,6 @@ import { useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { Dayjs } from 'dayjs'
 import {
-    stopPropagation,
     ConditionalWrap,
     noop,
     DynamicTabType,
@@ -28,16 +27,22 @@ import {
     ComponentSizeType,
     ButtonStyleType,
     logExceptionToSentry,
+    PopupMenu,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components, InputActionMeta, OptionProps } from 'react-select'
-import { ReactComponent as Cross } from '@Icons/ic-cross.svg'
-import { ReactComponent as SearchIcon } from '@Icons/ic-search.svg'
-import { ReactComponent as ClearIcon } from '@Icons/ic-error.svg'
-import { ReactComponent as RefreshIcon } from '@Icons/ic-arrow-clockwise.svg'
-import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
+import { ReactComponent as ICCross } from '@Icons/ic-cross.svg'
+import { ReactComponent as ICArrowLeft } from '@Icons/ic-arrow-left.svg'
+import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
 import { COMMON_TABS_SELECT_STYLES, checkIfDataIsStale, getClassNameForVariant, getOptionLabel } from './utils'
 import { DynamicTabsProps } from './types'
-import { MoreButtonWrapper, noMatchingTabs, TabsMenu, timerTransition } from './DynamicTabs.component'
+import {
+    noMatchingTabs,
+    SearchClearIndicator,
+    SearchControl,
+    SearchValueContainer,
+    TabsMenu,
+    timerTransition,
+} from './DynamicTabs.component'
 import Timer from './DynamicTabs.timer'
 import './DynamicTabs.scss'
 
@@ -212,7 +217,7 @@ const DynamicTabs = ({
                             data-id={tab.id}
                         >
                             <div className="dynamic-tab__close flex br-4">
-                                <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
+                                <ICCross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
                             </div>
                         </button>
                     )}
@@ -227,7 +232,7 @@ const DynamicTabs = ({
                             data-id={tab.id}
                         >
                             <div className="dynamic-tab__close flex br-4">
-                                <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
+                                <ICCross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
                             </div>
                         </button>
                     )}
@@ -239,50 +244,44 @@ const DynamicTabs = ({
     const highLightText = (highlighted: string) => `<mark>${highlighted}</mark>`
 
     const tabsOption = (props: OptionProps<DynamicTabType>) => {
-        const { selectProps, data } = props
-        selectProps.styles.option = getCustomOptionSelectionStyle({
-            display: 'flex',
-            alignItems: 'center',
-        })
+        const { data } = props
 
         const label = getOptionLabel(data)
         const splittedLabel = label.split('/')
         const regex = new RegExp(tabSearchText, 'gi')
 
         return (
-            <div onClick={stopPropagation}>
-                <components.Option {...props}>
-                    <div className="tab-option__select dc__highlight-text">
-                        <small
-                            className="cn-7"
+            <components.Option {...props}>
+                <div className="dc__highlight-text flexbox-col dc__overflow-hidden flex-grow-1 dc__gap-6">
+                    <small
+                        className="cn-7"
+                        // eslint-disable-next-line react/no-danger
+                        dangerouslySetInnerHTML={{
+                            __html: splittedLabel[0].replace(regex, highLightText),
+                        }}
+                    />
+                    {splittedLabel[1] && (
+                        <div
+                            className="dc__ellipsis-right"
                             // eslint-disable-next-line react/no-danger
                             dangerouslySetInnerHTML={{
-                                __html: splittedLabel[0].replace(regex, highLightText),
+                                __html: splittedLabel[1].replace(regex, highLightText),
                             }}
                         />
-                        {splittedLabel[1] && (
-                            <div
-                                className="w-100 dc__ellipsis-right"
-                                // eslint-disable-next-line react/no-danger
-                                dangerouslySetInnerHTML={{
-                                    __html: splittedLabel[1].replace(regex, highLightText),
-                                }}
-                            />
-                        )}
-                    </div>
-                    <button
-                        type="button"
-                        className="dc__unset-button-styles"
-                        aria-label={`Close tab ${data.name}`}
-                        onClick={handleTabCloseAction}
-                        data-id={data.id}
-                    >
-                        <div className="dynamic-tab__close icon-dim-16 flex br-5 ml-auto">
-                            <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
-                        </div>
-                    </button>
-                </components.Option>
-            </div>
+                    )}
+                </div>
+                <Button
+                    dataTestId="close-dynamic-tab-option"
+                    icon={<ICCross />}
+                    variant={ButtonVariantType.borderLess}
+                    style={ButtonStyleType.negativeGrey}
+                    data-id={data.id}
+                    onClick={handleTabCloseAction}
+                    size={ComponentSizeType.xs}
+                    ariaLabel={`Close dynamic tab ${label}`}
+                    showAriaLabelInTippy={false}
+                />
+            </components.Option>
         )
     }
 
@@ -310,8 +309,8 @@ const DynamicTabs = ({
         }
     }
 
-    const toggleMenu = () => {
-        setIsMenuOpen((isOpen) => !isOpen)
+    const toggleMenu = (isOpen: boolean) => {
+        setIsMenuOpen(isOpen)
         setTabSearchText('')
     }
 
@@ -342,7 +341,7 @@ const DynamicTabs = ({
                     variant={ButtonVariantType.borderLess}
                     size={ComponentSizeType.xs}
                     style={ButtonStyleType.neutral}
-                    icon={<RefreshIcon />}
+                    icon={<ICArrowClockwise />}
                     dataTestId="refresh-icon"
                     onClick={selectedTabTimerConfig.reload}
                     ariaLabel="Sync now"
@@ -358,7 +357,7 @@ const DynamicTabs = ({
             style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}
         >
             <div
-                className={`dc__separated-flexbox dc__separated-flexbox--no-gap ${dynamicTabs.length ? 'separator-right' : ''}`}
+                className={`dc__separated-flexbox dc__separated-flexbox--no-gap ${dynamicTabs.length ? 'separator separator-right' : ''}`}
             >
                 {fixedTabs.map((tab) => renderTab(tab, fixedTabs.length))}
             </div>
@@ -369,7 +368,7 @@ const DynamicTabs = ({
                 {dynamicTabs.map((tab) => renderTab(tab, tab.tippyConfig))}
             </div>
             {(dynamicTabs.length > 0 || selectedTabTimerConfig) && (
-                <div className="flexbox dc__no-shrink dc__gap-12 pl-12 separator-left dc__align-items-center">
+                <div className="flexbox dc__no-shrink dc__gap-12 pl-12 separator-left separator dc__align-items-center">
                     {selectedTabTimerConfig && (
                         <Timer
                             key={selectedTab.componentKey}
@@ -381,49 +380,49 @@ const DynamicTabs = ({
                     )}
 
                     {dynamicTabs.length > 0 && (
-                        <MoreButtonWrapper isMenuOpen={isMenuOpen} onClose={handleCloseMenu} toggleMenu={toggleMenu}>
-                            <div
-                                className="more-tabs__search-icon icon-dim-16 cursor-text"
-                                onClick={focusSearchTabInput}
-                            >
-                                <SearchIcon className="icon-dim-16" />
-                            </div>
-                            <ReactSelect<DynamicTabType>
-                                ref={moreButtonRef}
-                                placeholder="Search tabs"
-                                classNamePrefix="tab-search-select"
-                                options={dynamicTabs}
-                                value={selectedTab}
-                                inputValue={tabSearchText}
-                                onChange={onChangeTab}
-                                isOptionSelected={isOptionSelected}
-                                onKeyDown={escHandler}
-                                onInputChange={handleOnChangeSearchText}
-                                tabSelectsValue={false}
-                                getOptionLabel={getOptionLabel}
-                                backspaceRemovesValue={false}
-                                controlShouldRenderValue={false}
-                                hideSelectedOptions={false}
-                                menuIsOpen
-                                autoFocus
-                                noOptionsMessage={noMatchingTabs}
-                                components={{
-                                    IndicatorSeparator: null,
-                                    DropdownIndicator: null,
-                                    Option: tabsOption,
-                                    Menu: TabsMenu,
-                                }}
-                                styles={COMMON_TABS_SELECT_STYLES}
-                            />
-                            <div className="more-tabs__clear-tab-search icon-dim-16 cursor">
-                                {tabSearchText && (
-                                    <ClearIcon
-                                        className="clear-tab-search-icon icon-dim-16"
-                                        onClick={clearSearchInput}
-                                    />
-                                )}
-                            </div>
-                        </MoreButtonWrapper>
+                        <PopupMenu autoClose autoPosition onToggleCallback={toggleMenu}>
+                            <PopupMenu.Button rootClassName="flex">
+                                <ICArrowLeft
+                                    className={`rotate icon-dim-18 ${isMenuOpen ? 'fcn-9' : 'fcn-7'}`}
+                                    style={{ ['--rotateBy' as string]: isMenuOpen ? '90deg' : '-90deg' }}
+                                />
+                            </PopupMenu.Button>
+                            <PopupMenu.Body rootClassName="w-300">
+                                <ReactSelect<DynamicTabType>
+                                    ref={moreButtonRef}
+                                    placeholder="Search tabs"
+                                    classNamePrefix="tab-search-select"
+                                    options={dynamicTabs}
+                                    value={selectedTab}
+                                    onChange={onChangeTab}
+                                    isOptionSelected={isOptionSelected}
+                                    inputValue={tabSearchText}
+                                    onInputChange={handleOnChangeSearchText}
+                                    onKeyDown={escHandler}
+                                    tabSelectsValue={false}
+                                    getOptionLabel={getOptionLabel}
+                                    backspaceRemovesValue={false}
+                                    controlShouldRenderValue={false}
+                                    hideSelectedOptions={false}
+                                    onBlur={clearSearchInput}
+                                    isClearable
+                                    isSearchable
+                                    menuIsOpen
+                                    autoFocus
+                                    noOptionsMessage={noMatchingTabs}
+                                    components={{
+                                        IndicatorSeparator: null,
+                                        DropdownIndicator: null,
+                                        ClearIndicator: SearchClearIndicator,
+                                        Option: tabsOption,
+                                        Menu: TabsMenu,
+                                        ValueContainer: SearchValueContainer,
+                                        Control: SearchControl,
+                                    }}
+                                    styles={COMMON_TABS_SELECT_STYLES}
+                                />
+                            </PopupMenu.Body>
+                        </PopupMenu>
                     )}
                 </div>
             )}

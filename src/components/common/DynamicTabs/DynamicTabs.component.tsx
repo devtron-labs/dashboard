@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
-import { components, MenuProps } from 'react-select'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as DropDown } from '../../../assets/icons/ic-arrow-left.svg'
-import { MoreButtonWrapperProps } from './types'
+import { components, MenuProps, ValueContainerProps, ClearIndicatorProps, ControlProps } from 'react-select'
+import { ReactComponent as SearchIcon } from '@Icons/ic-search.svg'
+import { ReactComponent as ICCross } from '@Icons/ic-cross.svg'
+import {
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    Progressing,
+    stopPropagation,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { cloneElement } from 'react'
 
 export const TabsMenu = (props: MenuProps<unknown>) => {
     const { options, children } = props
@@ -32,30 +40,6 @@ export const TabsMenu = (props: MenuProps<unknown>) => {
     )
 }
 
-export const MoreButtonWrapper = ({ children, isMenuOpen, onClose, toggleMenu }: MoreButtonWrapperProps) => (
-    <div className="more-tabs-wrapper dc__position-rel flex">
-        <button
-            type="button"
-            className="more-tabs-option p-0 flexbox dc__overflow-hidden flex-align-center bg__primary dc__border br-4"
-            onClick={toggleMenu}
-            aria-label="More tabs"
-        >
-            <DropDown
-                className={`rotate icon-dim-20 p-2 pointer ${isMenuOpen ? 'fcn-9' : 'fcn-7'}`}
-                style={{ ['--rotateBy' as string]: isMenuOpen ? '90deg' : '-90deg' }}
-            />
-        </button>
-        {isMenuOpen && (
-            <>
-                <div className="more-tabs__menu-wrapper bg__primary mt-12 dc__position-abs w-300 dc__top-26">
-                    {children}
-                </div>
-                <div className="more-tabs__blanket dc__position-fixed" onClick={onClose} />
-            </>
-        )}
-    </div>
-)
-
 export const noMatchingTabs = () => 'No matching tabs'
 
 export const timerTransition = (): JSX.Element => (
@@ -64,3 +48,58 @@ export const timerTransition = (): JSX.Element => (
         <span>Syncing...</span>
     </div>
 )
+
+export const SearchValueContainer = (props: ValueContainerProps) => {
+    const { selectProps, children } = props
+
+    return (
+        <components.ValueContainer {...props}>
+            <div className="flex left dc__position-abs w-100 pl-12">
+                <span className="flex icon-dim-20">
+                    <SearchIcon className="kind-search-icon icon-dim-16" />
+                </span>
+                {!selectProps.inputValue && (
+                    <span className="cn-5 dc__ellipsis-right ml-8">{selectProps.placeholder}</span>
+                )}
+            </div>
+            {cloneElement(children[1])}
+        </components.ValueContainer>
+    )
+}
+
+export const SearchClearIndicator = (props: ClearIndicatorProps) => {
+    const {
+        selectProps: { onBlur },
+    } = props
+
+    const handleButtonClick = () => {
+        onBlur(null)
+    }
+
+    return (
+        <components.ClearIndicator {...props}>
+            <Button
+                icon={<ICCross />}
+                onClick={handleButtonClick}
+                dataTestId="clear-dynamic-tabs-menu-search"
+                size={ComponentSizeType.xs}
+                variant={ButtonVariantType.borderLess}
+                showAriaLabelInTippy={false}
+                ariaLabel=""
+                style={ButtonStyleType.negativeGrey}
+            />
+        </components.ClearIndicator>
+    )
+}
+
+export const SearchControl = (props: ControlProps) => {
+    const { children } = props
+
+    return (
+        <components.Control {...props}>
+            <div className="w-100 flexbox" onClick={stopPropagation}>
+                {children}
+            </div>
+        </components.Control>
+    )
+}

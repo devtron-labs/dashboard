@@ -27,7 +27,7 @@ export const KindSearchValueContainer = (props) => {
     const { selectProps } = props
     return (
         <components.ValueContainer {...props}>
-            <div className="flex left dc__position-abs w-100">
+            <div className="flex left dc__position-abs w-100 pl-12">
                 <span className="flex icon-dim-20">
                     <SearchIcon className="kind-search-icon icon-dim-16" />
                 </span>

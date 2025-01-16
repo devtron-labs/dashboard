@@ -105,7 +105,7 @@
     .dynamic-tab__close {
         &:hover {
             background-color: var(--R200);
-            
+
             svg {
                 path {
                     fill: var(--R500);
@@ -117,10 +117,11 @@
 
     &.variant {
         &__rectangular {
-            [data-is-selected="true"] {
+            [data-is-selected='true'] {
                 position: relative;
-                
-                &::before,&::after {
+
+                &::before,
+                &::after {
                     position: absolute;
                     content: '';
                     display: block;
@@ -129,21 +130,20 @@
                     background-color: var(--N200);
                     z-index: 1;
                 }
-        
+
                 &::before {
-                    left: -1px,
+                    left: -1px;
                 }
-        
+
                 &::after {
                     right: -1px;
                 }
             }
 
-            .separator-right {
+            .separator {
                 position: relative;
-                
+
                 &::after {
-                    right: -1px;
                     width: 1px;
                     height: 100%;
                     position: absolute;
@@ -152,28 +152,26 @@
                     z-index: 1;
                 }
             }
-    
-            .separator-left {
-                position: relative;
-                
+
+            .separator.separator-right {
+                &::after {
+                    right: -1px;
+                }
+            }
+            .separator.separator-left {
                 &::after {
                     left: -1px;
-                    width: 1px;
-                    height: 100%;
-                    position: absolute;
-                    content: '';
-                    background-color: var(--N200);
-                    z-index: 1;
                 }
             }
         }
 
         &__rounded {
-            [data-is-selected="true"] {
+            [data-is-selected='true'] {
                 position: relative;
                 border-radius: 8px 8px 0 0;
-                                
-                &::before,&::after {
+
+                &::before,
+                &::after {
                     position: absolute;
                     content: '';
                     display: block;
@@ -199,11 +197,10 @@
                 }
             }
 
-            .separator-right {
+            .separator {
                 position: relative;
-                
+
                 &::after {
-                    right: -1px;
                     width: 1px;
                     height: 16px;
                     top: 50%;
@@ -213,22 +210,17 @@
                     background-color: var(--N200);
                 }
             }
-    
-            .separator-left {
-                position: relative;
-                
+
+            .separator.separator-right {
+                &::after {
+                    right: -1px;
+                }
+            }
+            .separator.separator-left {
                 &::after {
                     left: -1px;
-                    width: 1px;
-                    height: 16px;
-                    top: 50%;
-                    transform: translateY(-50%);
-                    content: '';
-                    position: absolute;
-                    background-color: var(--N200);
                 }
             }
         }
     }
-
 }

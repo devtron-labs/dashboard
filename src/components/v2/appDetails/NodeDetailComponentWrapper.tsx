@@ -14,28 +14,26 @@ const NodeDetailComponentWrapper = ({
     nodeDetailComponentProps,
     updateTabUrl,
 }: NodeDetailComponentWrapperProps) => {
-    const params = useParams<ParamsType>()
+    const { podName, nodeType } = useParams<ParamsType>()
     const location = useLocation()
 
     const handleUpdateTabUrl = (props: Omit<UpdateTabUrlParamsType, 'id'>) => {
         updateTabUrl({
-            id: getTabId(AppDetailsTabs.k8s_Resources, params.podName.toLowerCase(), params.nodeType.toLowerCase()),
+            id: getTabId(AppDetailsTabs.k8s_Resources, podName.toLowerCase(), nodeType.toLowerCase()),
             ...props,
         })
     }
 
     useEffect(() => {
-        markTabActiveById(
-            getTabId(AppDetailsTabs.k8s_Resources, params.podName.toLowerCase(), params.nodeType.toLowerCase()),
-        )
+        markTabActiveById(getTabId(AppDetailsTabs.k8s_Resources, podName.toLowerCase(), nodeType.toLowerCase()))
             .then((isFound) => {
                 if (!isFound) {
                     const newUrl = `${location.pathname}?${location.search}`
 
                     addTab({
                         idPrefix: AppDetailsTabs.k8s_Resources,
-                        kind: params.nodeType.toLowerCase(),
-                        name: params.podName.toLowerCase(),
+                        kind: nodeType.toLowerCase(),
+                        name: podName.toLowerCase(),
                         url: newUrl,
                     })
                         .then(noop)
@@ -43,7 +41,7 @@ const NodeDetailComponentWrapper = ({
                 }
             })
             .catch(noop)
-    }, [params.podName, params.nodeType])
+    }, [podName, nodeType])
 
     return <NodeDetailComponent {...nodeDetailComponentProps} updateTabUrl={handleUpdateTabUrl} />
 }

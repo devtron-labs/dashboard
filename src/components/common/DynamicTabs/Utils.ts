@@ -27,6 +27,7 @@ export const COMMON_TABS_SELECT_STYLES = {
         boxShadow: 'none',
         cursor: 'text',
         backgroundColor: 'var(--bg-secondary)',
+        border: '1px solid var(--N200)',
     }),
     valueContainer: (base) => ({
         ...base,
@@ -54,10 +55,20 @@ export const COMMON_TABS_SELECT_STYLES = {
     input: (base) => ({
         ...base,
         color: 'var(--N900)',
+        marginLeft: '5px',
     }),
     singleValue: (base) => ({
         ...base,
         color: 'var(--N900)',
+    }),
+    option: (base, state) => ({
+        ...base,
+        backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--bg-primary)',
+        color: 'var(--N900)',
+        padding: '8px 12px',
+        display: 'flex',
+        gap: '6px',
+        alignItems: 'center',
     }),
 }
 
