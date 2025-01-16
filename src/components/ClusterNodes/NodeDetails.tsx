@@ -171,7 +171,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     }, [location.search])
 
     const selectedResource = useMemo((): { gvk: GVKType; namespaced: boolean } => {
-        const resourceGroupData = lowercaseKindToResourceGroupMap[Nodes.Pod.toLowerCase()]
+        const resourceGroupData = lowercaseKindToResourceGroupMap[`-${Nodes.Pod.toLowerCase()}`]
         if (!resourceGroupData) {
             return { gvk: { Kind: Nodes.Pod, Group: '', Version: 'v1' }, namespaced: true }
         }
