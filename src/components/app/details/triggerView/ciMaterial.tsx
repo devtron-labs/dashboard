@@ -394,7 +394,7 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             if (response) {
                 await this.props.getWorkflows()
 
-                if(this.props.fromAppGrouping) {
+                if (this.props.fromAppGrouping) {
                     this.context.onClickCIMaterial(this.props.pipelineId.toString(), this.props.pipelineName)
                 }
             }
