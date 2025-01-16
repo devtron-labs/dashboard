@@ -19,6 +19,8 @@ import { Route, Switch, useRouteMatch, Redirect, useLocation, useParams } from '
 import { DynamicTabs, useTabs } from '@Components/common/DynamicTabs'
 import { EnvResourceType, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { DynamicTabsProps, DynamicTabsVariantType } from '@Components/common/DynamicTabs/types'
+import { ReactComponent as ICObject } from '@Icons/ic-object.svg'
+import { ReactComponent as ICLogs } from '@Icons/ic-logs.svg'
 import { K8ResourceComponent } from './k8Resource/K8Resource.component'
 import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component'
 import { URLS } from '../../../config'
@@ -49,7 +51,8 @@ const NodeTreeDetailTab = ({
         addTab,
         getTabId,
         updateTabUrl,
-    } = useTabs(`${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}`)
+        // NOTE: fallback to 0th index since that is the k8s_resource tab
+    } = useTabs(`${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}`, 0)
     const { url: routeMatchUrl, path: routeMatchPath } = useRouteMatch()
     const location = useLocation()
     const [clickedNodes, registerNodeClick] = useState<Map<string, string>>(new Map<string, string>())
@@ -105,6 +108,10 @@ const NodeTreeDetailTab = ({
                             },
                             {} as DynamicTabsProps['timerConfig'],
                         )}
+                        iconsConfig={{
+                            [AppDetailsTabs.k8s_Resources]: <ICObject className="fcn-7" />,
+                            [AppDetailsTabs.log_analyzer]: <ICLogs className="fcn-7" />,
+                        }}
                     />
                 </div>
                 <div className="node-tree-detail-tab__content flexbox-col w-100">

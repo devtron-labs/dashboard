@@ -20,7 +20,7 @@ import { noop, InitTabType, DynamicTabType } from '@devtron-labs/devtron-fe-comm
 import { AddTabParamsType, ParsedTabsData, PopulateTabDataPropsType, UseTabsReturnType } from './types'
 import { FALLBACK_TAB, TAB_DATA_LOCAL_STORAGE_KEY, TAB_DATA_VERSION } from './constants'
 
-export function useTabs(persistenceKey: string): UseTabsReturnType {
+export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB): UseTabsReturnType {
     const [tabs, setTabs] = useState<DynamicTabType[]>([])
 
     const tabIdToTabMap = useMemo(
@@ -62,7 +62,6 @@ export function useTabs(persistenceKey: string): UseTabsReturnType {
         title,
         type,
         showNameOnSelect,
-        iconPath = '',
         dynamicTitle = '',
         isAlive = false,
         hideName = false,
@@ -77,7 +76,6 @@ export function useTabs(persistenceKey: string): UseTabsReturnType {
         title: title || name,
         isDeleted: false,
         type,
-        iconPath,
         dynamicTitle,
         showNameOnSelect,
         hideName,
@@ -152,7 +150,6 @@ export function useTabs(persistenceKey: string): UseTabsReturnType {
             title,
             type: _initTab.type,
             showNameOnSelect: _initTab.showNameOnSelect,
-            iconPath: _initTab.iconPath,
             dynamicTitle: _initTab.dynamicTitle,
             isAlive: !!_initTab.isAlive,
             hideName: _initTab.hideName,
@@ -229,7 +226,7 @@ export function useTabs(persistenceKey: string): UseTabsReturnType {
                 })
             }
             if (!_tabs.some((_tab) => _tab.isSelected)) {
-                _tabs[FALLBACK_TAB].isSelected = true
+                _tabs[fallbackTabIndex].isSelected = true
             }
 
             _tabs.sort((a, b) => {
@@ -261,7 +258,6 @@ export function useTabs(persistenceKey: string): UseTabsReturnType {
         url,
         showNameOnSelect = false,
         type = 'dynamic',
-        iconPath = '',
         dynamicTitle = '',
         tippyConfig = null,
     }) => {
@@ -289,7 +285,6 @@ export function useTabs(persistenceKey: string): UseTabsReturnType {
                               ...tab,
                               dynamicTitle,
                               tippyConfig,
-                              iconPath,
                               url,
                               isSelected: true,
                           }
@@ -309,7 +304,6 @@ export function useTabs(persistenceKey: string): UseTabsReturnType {
                             title,
                             type,
                             showNameOnSelect,
-                            iconPath,
                             dynamicTitle,
                             tippyConfig,
                             lastActiveTabId: getLastActiveTabIdFromTabs(prevTabs, _id),
@@ -331,15 +325,15 @@ export function useTabs(persistenceKey: string): UseTabsReturnType {
 
                 if (tabToBeRemoved.isSelected) {
                     const switchFromTabIndex = tabs.findIndex((tab) => tab.id === tabToBeRemoved.lastActiveTabId)
-                    const fallbackTabIndex =
+                    const newSelectedTabIndex =
                         // The id and lastActiveTabId can be same when the same tab is clicked again
                         switchFromTabIndex > -1 && tabToBeRemoved.id !== tabToBeRemoved.lastActiveTabId
                             ? switchFromTabIndex
-                            : FALLBACK_TAB
+                            : fallbackTabIndex
                     // Cannot use structured clone since using it reloads the whole data
                     // eslint-disable-next-line no-param-reassign
-                    prevTabs[fallbackTabIndex].isSelected = true
-                    resolve(prevTabs[fallbackTabIndex].url)
+                    prevTabs[newSelectedTabIndex].isSelected = true
+                    resolve(prevTabs[newSelectedTabIndex].url)
                 } else {
                     resolve('')
                 }

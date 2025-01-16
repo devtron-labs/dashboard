@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ReactNode } from 'react'
+import { ReactElement, ReactNode } from 'react'
 import { Dayjs } from 'dayjs'
 import { DynamicTabType, InitTabType } from '@devtron-labs/devtron-fe-common-lib'
 import { TAB_DATA_VERSION } from './constants'
@@ -56,6 +56,7 @@ export interface DynamicTabsProps {
     stopTabByIdentifier: UseTabsReturnType['stopTabByIdentifier']
     setIsDataStale?: React.Dispatch<React.SetStateAction<boolean>>
     timerConfig: Record<DynamicTabType['id'], TimerConfigType>
+    iconsConfig?: Record<DynamicTabType['id'], ReactElement>
 }
 
 export interface MoreButtonWrapperProps {
@@ -88,7 +89,6 @@ export interface PopulateTabDataPropsType
             | 'isSelected'
             | 'url'
             | 'name'
-            | 'iconPath'
             | 'dynamicTitle'
             | 'isAlive'
             | 'hideName'
@@ -98,7 +98,7 @@ export interface PopulateTabDataPropsType
 
 export interface AddTabParamsType
     extends Pick<PopulateTabDataPropsType, 'name' | 'url' | 'tippyConfig'>,
-        Partial<Pick<PopulateTabDataPropsType, 'type' | 'iconPath' | 'dynamicTitle' | 'showNameOnSelect'>>,
+        Partial<Pick<PopulateTabDataPropsType, 'type' | 'dynamicTitle' | 'showNameOnSelect'>>,
         Required<Pick<DynamicTabType, 'kind'>> {
     /**
      * Prefix for generating tab IDs

@@ -35,6 +35,11 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { UpdateTabUrlParamsType, DynamicTabsVariantType, DynamicTabsProps } from '@Components/common/DynamicTabs/types'
 import { ClusterListType } from '@Components/ClusterNodes/types'
+import { ReactComponent as ICArrowUpCircle } from '@Icons/ic-arrow-up-circle.svg'
+import { ReactComponent as ICTerminalFill } from '@Icons/ic-terminal-fill.svg'
+import { ReactComponent as ICObject } from '@Icons/ic-object.svg'
+import { ReactComponent as ICWorldBlack } from '@Icons/ic-world-black.svg'
+import { ReactComponent as ICChartLineUp } from '@Icons/ic-chart-line-up.svg'
 import { ClusterOptionType, K8SResourceListType, URLParams } from '../Types'
 import {
     K8S_EMPTY_GROUP,
@@ -505,6 +510,17 @@ const ResourceList = () => {
                         },
                         {} as DynamicTabsProps['timerConfig'],
                     )}
+                    iconsConfig={{
+                        [getTabId(
+                            UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX,
+                            UPGRADE_CLUSTER_CONSTANTS.NAME,
+                            SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase(),
+                        )]: <ICArrowUpCircle className="scn-7" />,
+                        [ResourceBrowserTabsId.terminal]: <ICTerminalFill className="fcn-7" />,
+                        [ResourceBrowserTabsId.cluster_overview]: <ICWorldBlack className="scn-7" />,
+                        [ResourceBrowserTabsId.k8s_Resources]: <ICObject className="fcn-7" />,
+                        [MONITORING_DASHBOARD_TAB_ID]: <ICChartLineUp className="scn-7" />,
+                    }}
                 />
                 {/* NOTE: since the terminal is only visibly hidden; we need to make sure it is rendered at the end of the page */}
                 {dynamicActiveTab && renderDynamicTabComponent(dynamicActiveTab.id)}

@@ -47,9 +47,6 @@ import {
     K8sObjectOptionType,
     NodeRowDetail,
 } from './Types'
-import TerminalIcon from '../../assets/icons/ic-terminal-fill.svg'
-import K8ResourceIcon from '../../assets/icons/ic-object.svg'
-import ClusterIcon from '../../assets/icons/ic-world-black.svg'
 
 const getMonitoringDashboardTabConfig = importComponentFromFELibrary(
     'getMonitoringDashboardTabConfig',
@@ -305,7 +302,6 @@ export const getTabsBasedOnRole = ({
             name: AppDetailsTabs.cluster_overview,
             url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.overviewGVK.Kind, clusterId, namespace),
             isSelected: isOverviewSelected,
-            iconPath: ClusterIcon,
             showNameOnSelect: false,
             type: 'fixed',
         },
@@ -315,7 +311,6 @@ export const getTabsBasedOnRole = ({
             url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.nodeGVK.Kind, clusterId, namespace),
             isSelected: !isTerminalSelected && !dynamicTabData && !isOverviewSelected && !isMonitoringDashBoardSelected,
             type: 'fixed',
-            iconPath: K8ResourceIcon,
             showNameOnSelect: false,
             dynamicTitle: SIDEBAR_KEYS.nodeGVK.Kind,
             shouldRemainMounted: true,
@@ -335,7 +330,6 @@ export const getTabsBasedOnRole = ({
             url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
             isSelected: isTerminalSelected,
             type: 'fixed',
-            iconPath: TerminalIcon,
             showNameOnSelect: true,
             isAlive: isTerminalSelected,
             dynamicTitle: `${AppDetailsTabs.terminal} '${selectedCluster.label}'`,

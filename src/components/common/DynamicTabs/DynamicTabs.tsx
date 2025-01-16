@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { RefCallback, useRef, useState } from 'react'
+import React, { cloneElement, RefCallback, useRef, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { Dayjs } from 'dayjs'
@@ -58,6 +58,7 @@ const DynamicTabs = ({
     stopTabByIdentifier,
     setIsDataStale = noop,
     timerConfig,
+    iconsConfig = {},
 }: DynamicTabsProps) => {
     const { push } = useHistory()
     const moreButtonRef = useRef(null)
@@ -85,7 +86,7 @@ const DynamicTabs = ({
     }
 
     const getTabNavLink = (tab: DynamicTabType) => {
-        const { name, isDeleted, isSelected, iconPath, dynamicTitle, title, showNameOnSelect, isAlive, hideName } = tab
+        const { name, isDeleted, isSelected, dynamicTitle, title, showNameOnSelect, isAlive, hideName } = tab
         const shouldRenderTitle = (!showNameOnSelect || isAlive || isSelected) && !hideName
 
         const _title = dynamicTitle || title
@@ -101,7 +102,10 @@ const DynamicTabs = ({
                 <div
                     className={`px-12 dc__ellipsis-right flex dc__gap-8 ${isDeleted ? 'dc__strike-through cr-5' : ''} ${!shouldRenderTitle ? 'py-10' : 'py-8'}`}
                 >
-                    {iconPath && <img className="icon-dim-16" src={iconPath} alt={name} />}
+                    {iconsConfig[tab.id] &&
+                        cloneElement(iconsConfig[tab.id], {
+                            className: `icon-dim-16 ${iconsConfig[tab.id].props.className}`,
+                        })}
                     {shouldRenderTitle && (
                         <span className="fs-12 fw-6 lh-20 dc__ellipsis-right" data-testid={name}>
                             {_title}

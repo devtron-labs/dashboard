@@ -400,7 +400,6 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
             kind: upgradeClusterLowerCaseKind,
             name: UPGRADE_CLUSTER_CONSTANTS.NAME,
             url: URL,
-            iconPath: UPGRADE_CLUSTER_CONSTANTS.ICON_PATH,
             dynamicTitle: `${UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE} to v${selectedVersion}`,
             tippyConfig: getUpgradeCompatibilityTippyConfig({
                 targetK8sVersion: selectedVersion
