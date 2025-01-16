@@ -45,6 +45,7 @@ export interface ParamsType {
     envId?: string
     namespace?: string
     clusterId?: string
+    group?: string
 }
 export interface EphemeralForm {
     basicData: {

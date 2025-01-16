@@ -131,7 +131,9 @@ const NodeDetailComponent = ({
         clusterName,
         kind: _selectedResource?.gvk.Kind as string,
         version: _selectedResource?.gvk.Version,
-        group: _selectedResource?.gvk.Group,
+        // Note: Using the group from the url if available
+        // since kind is mapped to only one group while it doesn't hold true always
+        group: params.group || _selectedResource?.gvk.Group,
         namespace: params.namespace,
         name: resourceName,
         containers: [],
