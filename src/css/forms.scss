@@ -324,6 +324,11 @@ p.sentence-case:first-letter {
     background-size: contain;
     background-repeat: no-repeat;
     background-image: url('../assets/icons/ic-checkbox-unselected.svg');
+    transition: background-image 0.17s;
+
+    &:hover {
+        background-image: url('../assets/icons/ic-checkbox-hover.svg');
+    }
 }
 
 .form__checkbox:checked[value='INTERMEDIATE'] ~ .form__checkbox-container {

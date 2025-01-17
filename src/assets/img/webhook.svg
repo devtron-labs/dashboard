@@ -14,7 +14,7 @@
   - limitations under the License.
   -->
 
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="60" height="60" viewBox="0 0 60 60">
+<svg data-style-override="false" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="60" height="60" viewBox="0 0 60 60">
     <defs>
         <path id="a" d="M0 0h24v24H0z"/>
     </defs>
