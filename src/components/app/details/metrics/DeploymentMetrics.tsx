@@ -29,8 +29,6 @@ import { getAppOtherEnvironmentMin } from '../../../../services/service'
 import { DeploymentTableModal } from './DeploymentTableModal'
 import { BenchmarkModal } from './BenchmarkModal'
 import {
-    DropdownIndicator,
-    styles,
     BenchmarkLine,
     frequencyXAxisLabel,
     leadTimeXAxisLabel,
