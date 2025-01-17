@@ -14,7 +14,9 @@
   - limitations under the License.
   -->
 
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect x="3" y="3" width="18" height="18" rx="4" fill="#0066CC"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M7 12C7 11.4477 7.44772 11 8 11H16C16.5523 11 17 11.4477 17 12C17 12.5523 16.5523 13 16 13H8C7.44772 13 7 12.5523 7 12Z" fill="white"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+  <rect width="18" height="18" x="3" y="3" fill="#fff" rx="4"/>
+  <rect width="18" height="18" x="3" y="3" stroke="#ABCFF3" rx="4" vector-effect="non-scaling-stroke"/>
+  <rect width="18" height="18" x="3" y="3" fill="#06C" rx="4"/>
+  <path stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h8" vector-effect="non-scaling-stroke"/>
 </svg>
