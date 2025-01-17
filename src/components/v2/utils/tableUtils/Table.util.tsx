@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import './table.scss'
+
+// TODO: Need to check if this component using anywhere
 
 const TableUtil = ({ table, bodyFont = '' }) => {
     return (
