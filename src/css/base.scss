@@ -1621,7 +1621,7 @@ button.anchor {
     }
 }
 
-.shimmer, .child-shimmer-loading, .shimmer-loading {
+.shimmer, .show-shimmer-loading .child-shimmer-loading, .shimmer-loading {
     background: var(--bg-shimmer-loader);
     border-radius: 4px;
     opacity: 0.5;

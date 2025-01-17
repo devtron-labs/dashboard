@@ -59,7 +59,7 @@ import AdminTerminal from './AdminTerminal'
 import { renderRefreshBar } from './ResourceList.component'
 import { renderCreateResourceButton } from '../PageHeader.buttons'
 import ClusterUpgradeCompatibilityInfo from './ClusterUpgradeCompatibilityInfo'
-import { getUpgradeCompatibilityTippyConfig, parseSearchParams } from './utils'
+import { getFirstResourceFromKindResourceMap, getUpgradeCompatibilityTippyConfig, parseSearchParams } from './utils'
 import { ResourceListUrlFiltersType } from './types'
 
 const EventsAIResponseWidget = importComponentFromFELibrary('EventsAIResponseWidget', null, 'function')
@@ -123,11 +123,14 @@ const ResourceList = () => {
         [clusterId, clusterOptions],
     )
 
+    // This needs to rename, not doing due to time constraints
     const lowercaseKindToResourceGroupMap = useMemo(
         () =>
             (k8SObjectMapRaw?.result.apiResources ?? []).reduce<K8SResourceListType['lowercaseKindToResourceGroupMap']>(
                 (acc, resourceGroup) => {
-                    acc[resourceGroup.gvk.Kind.toLowerCase()] = resourceGroup
+                    // Using Group-Kind as key, but we need to move to using map instead
+                    acc[`${resourceGroup.gvk.Group.toLowerCase()}-${resourceGroup.gvk.Kind.toLowerCase()}`] =
+                        resourceGroup
 
                     return acc
                 },
@@ -358,7 +361,10 @@ const ResourceList = () => {
         const lowercaseKindFromResource = shouldOverrideSelectedResourceKind ? kindFromResource.toLowerCase() : null
         let _group: string =
             (shouldOverrideSelectedResourceKind
-                ? lowercaseKindToResourceGroupMap[lowercaseKindFromResource]?.gvk?.Group?.toLowerCase()
+                ? getFirstResourceFromKindResourceMap(
+                      lowercaseKindToResourceGroupMap,
+                      lowercaseKindFromResource,
+                  )?.gvk?.Group?.toLowerCase()
                 : selectedResource.gvk.Group.toLowerCase()) || K8S_EMPTY_GROUP
         const _namespace = currentNamespace ?? ALL_NAMESPACE_OPTION.value
 
@@ -370,7 +376,10 @@ const ResourceList = () => {
             const [_kind, _resourceName] = name.split('/')
             const eventKind = shouldOverrideSelectedResourceKind ? lowercaseKindFromResource : _kind
             // For event, we should read the group for kind from the resource group map else fallback to empty group
-            _group = lowercaseKindToResourceGroupMap[eventKind]?.gvk?.Group || K8S_EMPTY_GROUP
+
+            _group =
+                getFirstResourceFromKindResourceMap(lowercaseKindToResourceGroupMap, eventKind)?.gvk?.Group ||
+                K8S_EMPTY_GROUP
 
             resourceParam = `${eventKind}/${_group}/${_resourceName}`
             kind = eventKind
