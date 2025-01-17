@@ -146,39 +146,6 @@ export const DropdownIndicator = (props) => {
     )
 }
 
-export function customOption(label: string, icon: string, className = '', onImageLoadError = noop) {
-    return (
-        <div className={`flex left ${className}`}>
-            {icon && <img src={icon} alt={label} className="icon-dim-20 mr-8" onError={onImageLoadError} />}
-            <span className="dc__ellipsis-right">{label}</span>
-        </div>
-    )
-}
-
-export const OptionWithIcon = (props) => {
-    const { selectProps, data, style } = props
-    selectProps.styles.option = getCustomOptionSelectionStyle(style)
-    return <components.Option {...props}>{customOption(data.label, data.icon)}</components.Option>
-}
-
-export const ValueContainerWithIcon = (props) => {
-    const { selectProps } = props
-    return (
-        <components.ValueContainer {...props}>
-            {selectProps.value ? (
-                <>
-                    {customOption(selectProps.value.label, selectProps.value.icon)}
-                    {React.cloneElement(props.children[1], {
-                        style: { position: 'absolute' },
-                    })}
-                </>
-            ) : (
-                <>{props.children}</>
-            )}
-        </components.ValueContainer>
-    )
-}
-
 export const noMatchingOptions = () => 'No matching results'
 
 export const formatOptionLabel = (option): JSX.Element => {
