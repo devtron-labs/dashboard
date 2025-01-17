@@ -72,6 +72,7 @@
             --Y300: #ffd597;
             --Y200: #ffe5be;
             --Y100: #fff5e5;
+            --Y50: #fff8ed;
             --R700: #b21212;
             --R600: #c73232;
             --R500: #f33e3e;
@@ -88,14 +89,13 @@
             --O50: #fcf3f0;
 
             // Custom colors
-            --bg-window: #f2f4f7;
             --bg-pipeline-trigger-type: #a5a7bf;
             --bg-bulk-selection-widget: #f0f7ffb8;
 
             // Color Tokens
             --bg-primary: var(--N0);
             --bg-secondary: var(--N50);
-            --bg-tertiary: var(--bg-window);
+            --bg-tertiary: #f2f4f7;
             --bg-overlay: var(--N0);
             --bg-menu: var(--N0);
             --bg-modal: var(--N0);
@@ -103,6 +103,7 @@
             --bg-tooltip-black: var(--N900);
             --bg-toast: var(--N800);
             --bg-sidebar: #0066cc;
+            --bg-shimmer-loader: linear-gradient(90deg, var(--N200) 0%, var(--N50) 50%, var(--N200) 80%);
         }
 
         &__dark {
@@ -110,74 +111,76 @@
 
             --V700: #CABFFF;
             --V500: #a695ff;
-            --V200: #423c66;
-            --V100: #211e33;
+            --V200: #4f4979;
+            --V100: #322f4c;
             --B700: #acd3ff;
             --B600: #90c4ff;
             --B500: #74B5FF;
-            --B400: #5d91cc;
-            --B300: #466d99;
-            --B200: #2e4866;
-            --B100: #172433;
-            --B50: #0c121a;
+            --B400: #6195d2;
+            --B300: #4e76a5;
+            --B200: #3b5679;
+            --B100: #28364c;
+            --B50: #1e2635;
             --N900: #f8f8f9;
             --N800: #e4e5e6;
             --N700: #c8cbce;
             --N600: #9fa4a9;
             --N500: #767d84;
-            --N400: #61676f;
-            --N300: #4c515a;
-            --N200: #373b46;
-            --N100: #222531;
-            --N50: #181a26;
-            --N0: #0d0f1c;
+            --N400: #636870;
+            --N300: #4f545c;
+            --N200: #3c3f47;
+            --N100: #282b33;
+            --N50: #1f2029;
+            --N0: #15161f;
             --G700: #afddb3;
             --G600: #95d199;
             --G500: #7ac680;
-            --G400: #629e66;
-            --G300: #49774d;
-            --G200: #314f33;
-            --G100: #18281a;
-            --G50: #0c140d;
-            --Y800: #ffe1b6;
-            --Y700: #ffd392;
-            --Y600: #ffc46d;
-            --Y500: #ffb549;
-            --Y400: #cc913a;
-            --Y300: #996d2c;
-            --Y200: #66481d;
-            --Y100: #33240f;
+            --G400: #66a36d;
+            --G300: #528059;
+            --G200: #3d5c46;
+            --G100: #293932;
+            --G50: #212b2b;
+            --Y800: #fbe3c1;
+            --Y700: #f8d6a1;
+            --Y600: #f6c882;
+            --Y500: #f4ba63;
+            --Y400: #c79955;
+            --Y300: #9b7848;
+            --Y200: #6e5838;
+            --Y100: #42372d;
+            --Y50: #2b2626;
             --R700: #ff9ea0;
             --R600: #ff7d80;
             --R500: #ff5d60;
-            --R400: #cc4a4d;
-            --R300: #99383a;
-            --R200: #662526;
-            --R100: #331313;
-            --R50: #1a090a;
+            --R400: #d04f53;
+            --R300: #a14146;
+            --R200: #733239;
+            --R100: #44242c;
+            --R50: #311f27;
             --O700: #ffb29d;
             --O600: #ff987c;
             --O500: #ff7e5b;
-            --O200: #663224;
-            --O100: #331912;
-            --O50: #1a0d09;
+            --O200: #734037;
+            --O100: #442b2b;
+            --O50: #2c2025;
 
             // Custom colors
-            --bg-window: #1d1f2c;
             --bg-pipeline-trigger-type: #44465a;
             --bg-bulk-selection-widget: #141c26b8;
 
             // Color Tokens
-            --bg-primary: var(--bg-window);
-            --bg-secondary: var(--N50);
-            --bg-tertiary: var(--N0);
-            --bg-overlay: #2d303b;
-            --bg-menu: #2d303b;
-            --bg-modal: #2d303b;
+            --bg-primary: #1E1F28;
+            --bg-secondary: #1A1B23;
+            // Ensure to update in index.css at the root level as well
+            --bg-tertiary: #15161F;
+            --bg-overlay: #31323a;
+            --bg-menu: #31323a;
+            --bg-modal: #31323a;
 
             --bg-tooltip-black: var(--N200);
             --bg-toast: var(--N300);
             --bg-sidebar: #2E3142;
+            --bg-shimmer-loader: linear-gradient(90deg, var(--N50) 0%, var(--N200) 50%, var(--N50) 80%);
         }
     }
 }

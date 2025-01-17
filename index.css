@@ -6,14 +6,14 @@
     /* Using the same name as in color palette to ensure this is applied when styles are loading */
     --bg-tertiary: #f2f4f7;
     --bg-devtron-loader: #e5f2ff;
-    --fill-devtron-loader: #0066cc;
+    --fill-devtron-loader: #3989d9;
 
 
     /* TODO: Comment when theming goes live on production */
     /* @media (prefers-color-scheme: dark) {
-        --bg-tertiary: #0d0f1c;
-        --bg-devtron-loader: #172433;
-        --fill-devtron-loader: #74B5FF;
+        --bg-tertiary: #15161F;
+        --bg-devtron-loader: #28364c;
+        --fill-devtron-loader: #6195d2;
     } */
 }
 

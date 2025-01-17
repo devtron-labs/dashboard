@@ -653,7 +653,8 @@ const Cluster = ({
             <article
                 data-testid={`${cluster_name ?? 'create'}-cluster-container`}
                 className={`cluster-list ${
-                    clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list collapsed-list--create'
+                    // FIXME: clusterId is always truthy, so the below condition is always true
+                    clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list'
                 }`}
             >
                 <List className="dc__border dc__position-sticky dc__top-0" key={clusterId} onClick={editModeToggle}>

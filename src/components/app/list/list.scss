@@ -182,15 +182,6 @@
     color: var(--B500);
 }
 
-.app-list__cell--status {
-    position: relative;
-    overflow: visible;
-}
-
-.app-list__cell--status .bg {
-    background-image: url('../../../assets/icons/appstatus/bg-white.svg');
-}
-
 .app-list__cell--env,
 .app-list__cell--cluster,
 .app-list__cell--namespace,
@@ -359,10 +350,6 @@
     text-decoration: none;
     color: var(--N900);
     background-color: var(--bg-secondary);
-}
-
-.app-list__row:hover .app-list__cell--status .bg {
-    background-image: url('../../../assets/icons/appstatus/bg-gray.svg');
 }
 
 .app-list__row:hover .cell__link {
