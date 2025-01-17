@@ -30,7 +30,8 @@ import {
     FormProps,
     ToastManager,
     ToastVariantType,
-    OptionsBase
+    OptionsBase,
+    noop
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
@@ -65,6 +66,7 @@ import { CLUSTER_NODE_ACTIONS_LABELS } from '../../../../ClusterNodes/constants'
 import DeleteResourcePopup from '../../../../ResourceBrowser/ResourceList/DeleteResourcePopup'
 import { EDITOR_VIEW } from '@Config/constants'
 import { importComponentFromFELibrary } from '@Components/common'
+import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
 
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', false, 'function')
 const ToggleManifestConfigurationMode = importComponentFromFELibrary(
@@ -120,8 +122,8 @@ const NodeDetailComponent = ({
     }
 
     const _selectedResource = useMemo(
-        () => lowercaseKindToResourceGroupMap[params.nodeType.toLowerCase()],
-        [lowercaseKindToResourceGroupMap, params.nodeType],
+        () => lowercaseKindToResourceGroupMap[`${params.group === K8S_EMPTY_GROUP ? '' : params.group?.toLowerCase()}-${params.nodeType.toLowerCase()}`],
+        [lowercaseKindToResourceGroupMap, params.nodeType, params.group],
     )
 
     const resourceName = isResourceBrowserView ? params.node : params.podName
@@ -646,7 +648,10 @@ const NodeDetailComponent = ({
                     setContainers={setContainers}
                     switchSelectedContainer={switchSelectedContainer}
                     selectedNamespaceByClickingPod={selectedResource?.namespace}
-                     {...isResourceBrowserView ? {handleSuccess: getContainersFromManifest} : {}}
+                    // getContainersFromManifest can only be used from resource browser
+                    {...isResourceBrowserView ? {
+                        handleSuccess: getContainersFromManifest
+                    } : {}}
                 />
             )}
             {isResourceBrowserView && showDeleteDialog && (
