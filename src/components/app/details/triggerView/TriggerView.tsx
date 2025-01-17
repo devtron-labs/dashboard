@@ -1473,7 +1473,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         baseURL={this.props.match.url}
                         workflows={this.state.workflows}
                         getModuleInfo={getModuleInfo}
-                        reloadTriggerView={this.closeCDModal}
+                        reloadWorkflowStatus={this.closeCDModal}
                         appName={this.props.appContext.currentAppName}
                     />
                 )}
