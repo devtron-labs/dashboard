@@ -29,9 +29,9 @@ export default function SourceUpdateResponseModal({
             return <Progressing pageLoader />
         }
         return (
-            <div className="response-list-container bcn-0 dc__height-inherit dc__overflow-auto pr-20 pb-16 pl-20">
+            <div className="response-list-container bg__primary dc__height-inherit dc__overflow-auto pr-20 pb-16 pl-20">
                 <div
-                    className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom response-row dc__border-bottom pt-24 pb-8 dc__uppercase"
+                    className="dc__position-sticky dc__top-0 bg__primary dc__border-bottom response-row dc__border-bottom pt-24 pb-8 dc__uppercase"
                     style={{ zIndex: 1 }}
                 >
                     <div className="fs-12 fw-6 cn-7 ">Application</div>
@@ -48,7 +48,7 @@ export default function SourceUpdateResponseModal({
     // ASK: Why there is no retry button for failed request?
     const renderFooterSection = (): JSX.Element => {
         return (
-            <div className="dc__border-top flex bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width right">
+            <div className="dc__border-top flex bg__primary pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width right">
                 <button className="cta cancel flex h-36" data-testid="close-popup" onClick={closePopup}>
                     Close
                 </button>

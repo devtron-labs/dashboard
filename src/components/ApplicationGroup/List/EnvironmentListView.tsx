@@ -170,7 +170,7 @@ const EnvironmentsListView = ({
     ) : (
         <>
             <div data-testid="app-group-container">
-                <div className="env-list-row fw-6 cn-7 fs-12 py-8 px-20 dc__uppercase dc__position-sticky dc__top-48 bcn-0 dc__border-bottom">
+                <div className="env-list-row fw-6 cn-7 fs-12 py-8 px-20 dc__uppercase dc__position-sticky dc__top-48 bg__primary dc__border-bottom">
                     <div />
                     <div>{GROUP_LIST_HEADER.ENVIRONMENT}</div>
                     <div>{GROUP_LIST_HEADER.NAMESPACE}</div>

@@ -89,7 +89,7 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
                 subtitle={isFirstLogin ? '' : GUIDE_COMMON_HEADER.subtitle}
                 isGettingStartedClicked={isGettingStartedClicked}
             />
-            <div className="bcn-0 onboarding__bottom flex dc__position-rel cn-9">
+            <div className="bg__primary onboarding__bottom flex dc__position-rel cn-9">
                 <div className="onboarding__abs">
                     <div className="onboarding-cards__wrap">
                         <ContentCard

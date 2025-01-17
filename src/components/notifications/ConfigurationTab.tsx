@@ -242,7 +242,7 @@ export const ConfigurationTab = () => {
     const isEmptyView = !state[`${modal.toLowerCase()}ConfigurationList`].length
 
     return (
-        <div className="configuration-tab__container bcn-0 h-100 flexbox-col dc__gap-16 dc__overflow-auto">
+        <div className="configuration-tab__container bg__primary h-100 flexbox-col dc__gap-16 dc__overflow-auto">
             <ConfigurationTabSwitcher isEmptyView={isEmptyView} />
             {isEmptyView ? renderEmptyState() : renderTableComponent()}
             {renderModal()}

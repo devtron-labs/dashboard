@@ -53,7 +53,7 @@ const AdminTerminal: React.FC<AdminTerminalProps> = ({ updateTerminalTabUrl }: A
 
     if (loading) {
         return (
-            <div className="h-100 node-data-container bcn-0">
+            <div className="h-100 node-data-container bg__primary">
                 <Progressing pageLoader size={32} />
             </div>
         )
@@ -64,7 +64,7 @@ const AdminTerminal: React.FC<AdminTerminalProps> = ({ updateTerminalTabUrl }: A
         /* NOTE: the above happens in case of bad cluster setup */
         const errCode = error?.code || 403
         return (
-            <div className="bcn-0 node-data-container flex">
+            <div className="bg__primary node-data-container flex">
                 <ErrorScreenManager code={errCode} />
             </div>
         )

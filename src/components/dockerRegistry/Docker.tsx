@@ -1973,7 +1973,7 @@ const DockerForm = ({
                                                 name="certInput"
                                                 placeholder="Begins with -----BEGIN CERTIFICATE-----"
                                                 className="form__input"
-                                                style={{ height: '100px', backgroundColor: '#f7fafc' }}
+                                                style={{ height: '100px', backgroundColor: 'var(--bg-secondary)' }}
                                                 onChange={handleOnChange}
                                                 value={state.certInput.value}
                                             />

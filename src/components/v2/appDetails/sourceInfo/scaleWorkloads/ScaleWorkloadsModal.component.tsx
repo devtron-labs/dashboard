@@ -375,7 +375,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                             <>
                                 <div className="check-all-workloads cn-7 fw-6 dc__border-bottom">
                                     <Checkbox
-                                        rootClassName="mb-0 fs-13 cursor bcn-0 p"
+                                        rootClassName="mb-0 fs-13 cursor bg__primary p"
                                         isChecked={_nameSelection.isChecked}
                                         value={_nameSelection.value}
                                         onChange={(e) => {
@@ -392,7 +392,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                                     {Array.from(_workloadsList.values()).map((item) => (
                                         <div key={`${item.kind}/${item.name}`} className="check-single-workload">
                                             <Checkbox
-                                                rootClassName={`mb-0 fs-13 cursor bcn-0 p${
+                                                rootClassName={`mb-0 fs-13 cursor bg__primary p${
                                                     item.errorMessage ? ' dc__align-baseline' : ''
                                                 }`}
                                                 isChecked={item.isChecked}

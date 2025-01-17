@@ -230,7 +230,7 @@ export function getFrequencyBenchmark(frequencyInDays: number): BenchmarkType {
             name: 'HIGH',
             targetName: 'ELITE',
             targetValue: 1,
-            color: '#8930e8',
+            color: 'var(--V500)',
         }
     }
 
@@ -273,7 +273,7 @@ export function getFailureRateBenchmark(failureRate: number): BenchmarkType {
             name: 'HIGH',
             targetName: 'ELITE',
             targetValue: 15,
-            color: '#8930e8',
+            color: 'var(--V500)',
         }
     }
 
@@ -321,7 +321,7 @@ export function getLeadTimeBenchmark(leadTimeInMinutes: number): BenchmarkType {
             targetName: 'ELITE',
             targetValue: 2 * 60 * 24,
             targetLabel: createTimestamp(2 * 60 * 24),
-            color: '#8930e8',
+            color: 'var(--V500)',
         }
     }
 
@@ -360,7 +360,7 @@ export function getRecoveryTimeBenchmark(recoveryTimeInMinutes: number): Benchma
             targetName: 'ELITE',
             targetValue: 1 * 60,
             targetLabel: createTimestamp(1 * 60),
-            color: '#8930e8',
+            color: 'var(--V500)',
         }
     }
 

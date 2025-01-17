@@ -268,7 +268,7 @@ export const EnvironmentList = ({
                     </div>
                 </div>
             ) : (
-                <div className="w-100 mh-500 bcn-0 flex en-2 bw-1 br-4">
+                <div className="w-100 mh-500 bg__primary flex en-2 bw-1 br-4">
                     <GenericEmptyState
                         layout="row"
                         title={DEPLOYMENT_TITLE}

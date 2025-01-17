@@ -148,7 +148,7 @@ const ExternalLinkFallbackImage = ({ dimension, src, alt }: ExternalLinkFallback
 const ExternalLinkIframeModal = ({ selectedExternalLink, handleCloseModal }) => (
     <VisibleModal2 close={handleCloseModal}>
         <div
-            className="flexbox-col dc__position-abs br-8 dc__top-12 dc__bottom-12 dc__right-12 dc__left-12 bcn-0"
+            className="flexbox-col dc__position-abs br-8 dc__top-12 dc__bottom-12 dc__right-12 dc__left-12 bg__primary"
             onClick={stopPropagation}
         >
             <div className="flexbox dc__content-space px-20 py-12 dc__align-items-center dc__border-bottom">
@@ -318,7 +318,7 @@ export const AppLevelExternalLinks = ({
             {appLevelExternalLinks.length > 0 && (
                 <div
                     data-testid="external-links-wrapper"
-                    className="app-level__external-links flex left w-100 dc__border-bottom-n1 bcn-0"
+                    className="app-level__external-links flex left w-100 dc__border-bottom-n1 bg__primary"
                 >
                     {!isOverviewPage && (
                         <div className="app-level__external-links-icon icon-dim-20">
@@ -422,7 +422,7 @@ export const FilterMenuList = (props): JSX.Element => {
     return (
         <components.MenuList {...props}>
             {props.children}
-            <div className="flex dc__react-select__bottom bcn-0 p-8">
+            <div className="flex dc__react-select__bottom bg__primary p-8">
                 <button
                     data-testid="external-link-filter-button"
                     className="flex cta apply-filter"

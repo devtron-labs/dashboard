@@ -76,14 +76,14 @@ export const authorizationSelectStyles = {
         ..._selectStyles.control(base, state),
         height: '36px',
     }),
-    valueContainer: (base) => ({
-        ..._selectStyles.valueContainer(base),
+    valueContainer: (base, state) => ({
+        ..._selectStyles.valueContainer(base, state),
         maxHeight: '100%',
     }),
     option: (base, state) => ({
         ..._selectStyles.option(base, state),
         ...(state.isSelected && {
-            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+            backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--bg-primary)',
         }),
     }),
 }

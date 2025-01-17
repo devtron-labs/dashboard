@@ -83,7 +83,7 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
                         <div className="fs-13 fw-4 flexbox-col mt-16 mb-16">
                             <div className="">Configurations for this application will be committed to:</div>
                             <a
-                                className="dc__ff-monospace dc__link dc_max-width__max-content"
+                                className="mono dc__link dc_max-width__max-content"
                                 href={repoURL}
                                 target="_blank"
                                 rel="noreferrer noopener"
@@ -130,7 +130,7 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
     }
 
     return (
-        <div className="w-100 h-100 bcn-0 pt-16 flexbox-col">
+        <div className="w-100 h-100 bg__primary pt-16 flexbox-col">
             <div className="w-960">
                 <div className="fs-16 fcn-9 fw-6 ml-20 mb-8" data-testid="gitops-config-heading">
                     GitOps Configuration

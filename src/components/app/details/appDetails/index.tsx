@@ -55,8 +55,8 @@ export const EnvSelector = ({ environments, disabled }) => {
                     preserveAspectRatio="none"
                     style={{ width: '100%', height: '100%', display: 'flex' }}
                 >
-                    <path d="M0 20 L200 20 Z" strokeWidth="1" stroke="#0066cc" />
-                    <path d="M0 10 L0, 30" strokeWidth="2" stroke="#0066cc" />
+                    <path d="M0 20 L200 20 Z" strokeWidth="1" stroke="var(--B500)" />
+                    <path d="M0 10 L0, 30" strokeWidth="2" stroke="var(--B500)" />
                 </svg>
                 <div
                     className="bcb-5 br-10 cn-0 pl-8 pr-8"
@@ -85,10 +85,10 @@ export const EnvSelector = ({ environments, disabled }) => {
                         ...multiSelectStyles,
                         control: (base, state) => ({
                             ...base,
-                            border: '1px solid #0066cc',
+                            border: '1px solid var(--B500)',
                             backgroundColor: 'transparent',
                         }),
-                        singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
+                        singleValue: (base, state) => ({ ...base, fontWeight: 600, color: 'var(--B500)' }),
                     }}
                     isDisabled={disabled}
                     isSearchable={false}

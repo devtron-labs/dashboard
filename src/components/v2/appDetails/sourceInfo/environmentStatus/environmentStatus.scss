@@ -45,14 +45,14 @@
 .f-sync.ok,
 .f-running,
 .f-scalingreplicasetdown {
-    color: var(--green);
+    color: var(--G500);
 }
 
 .f-starting,
 .f-initiating,
 .f-suspended,
 .f-switchedtoactiveservice {
-    color: var(--orange);
+    color: var(--O500);
 }
 
 .f-degraded,
@@ -79,7 +79,7 @@
 .f-pending-upgrade,
 .f-pending-rollback,
 .initiated {
-    color: var(--yellow);
+    color: var(--O500);
 }
 
 .f-queued,
@@ -151,7 +151,7 @@ svg.app-notes__icon {
         }
         .app-status-row {
             &:hover {
-                background-color: var(--N50);
+                background-color: var(--bg-secondary);
             }
         }
     }

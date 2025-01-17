@@ -131,7 +131,7 @@ export const HibernateModal = ({
                         <div className="pt-40 flexbox dc__content-end w-100 dc__align-end dc__gap-12">
                             <button
                                 onClick={closeModal}
-                                className="flex bcn-0 dc__border-radius-4-imp h-36 pl-16 pr-16 pt-8 pb-8 dc__border"
+                                className="flex bg__primary dc__border-radius-4-imp h-36 pl-16 pr-16 pt-8 pb-8 dc__border"
                             >
                                 Cancel
                             </button>

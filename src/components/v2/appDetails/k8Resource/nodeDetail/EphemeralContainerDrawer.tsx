@@ -181,7 +181,7 @@ const EphemeralContainerDrawer = ({
 
     const renderEphemeralHeaders = (): JSX.Element => {
         return (
-            <div className="flex flex-align-center flex-justify bcn-0 py-12 px-20">
+            <div className="flex flex-align-center flex-justify bg__primary py-12 px-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding flex left w-90">
                     <span style={{ minWidth: '290px' }}>Launch ephemeral container on pod:</span>
                     <span className="dc__ellipsis-left">{isResourceBrowserView ? params.node : params.podName}</span>
@@ -517,7 +517,7 @@ const EphemeralContainerDrawer = ({
     const renderEphemeralFooter = (): JSX.Element => {
         return (
             <div className="">
-                <div className="dc__border-top w-100 bcn-0 pt-12 pb-12 pl-20 pr-20 flex right bottom-border-radius dc__position-abs dc__right-0 dc__bottom-0">
+                <div className="dc__border-top w-100 bg__primary pt-12 pb-12 pl-20 pr-20 flex right bottom-border-radius dc__position-abs dc__right-0 dc__bottom-0">
                     <ButtonWithLoader
                         rootClassName="flex cta cancel h-36 "
                         onClick={onClickShowLaunchEphemeral}
@@ -546,7 +546,7 @@ const EphemeralContainerDrawer = ({
 
     return (
         <Drawer position="right" width="50%">
-            <div className="bcn-0 h-100 dc__position-rel">
+            <div className="bg__primary h-100 dc__position-rel">
                 {renderEphemeralHeaders()}
                 {renderEphemeralContainerType()}
                 {ephemeralContainerType === EDITOR_VIEW.BASIC ? renderBasicEphemeral() : renderAdvancedEphemeral()}

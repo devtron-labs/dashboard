@@ -1,6 +1,9 @@
 // @TODO: Patternfly styles files need to be removed in future
+@import './colorPalette.scss';
 @import './patternfly.scss';
 @import './normalize.scss';
+@import 'iconTheming.scss';
+@import './themeUtils.scss';
 @import './base.scss';
 @import './formulae.scss';
 @import './forms.scss';

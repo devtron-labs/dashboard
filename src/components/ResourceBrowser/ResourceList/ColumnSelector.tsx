@@ -64,7 +64,7 @@ const ColumnSelector = ({ setVisibleColumns, visibleColumns }: ColumnSelectorTyp
     }
 
     const renderMenuListFooter = () => (
-        <div className="bcn-0 p-8 dc__border-top-n1 w-100">
+        <div className="bg__primary p-8 dc__border-top-n1 w-100">
             <Button
                 text="Apply"
                 onClick={handleApplySelectedColumns}
@@ -78,7 +78,6 @@ const ColumnSelector = ({ setVisibleColumns, visibleColumns }: ColumnSelectorTyp
     return (
         <SelectPicker
             selectRef={selectRef}
-            classNamePrefix="node-column-list-filter"
             inputId="node-column-list-filter"
             closeMenuOnSelect={false}
             controlShouldRenderValue={false}
@@ -96,6 +95,7 @@ const ColumnSelector = ({ setVisibleColumns, visibleColumns }: ColumnSelectorTyp
             value={selectedColumns}
             renderMenuListFooter={renderMenuListFooter}
             isClearable={false}
+            shouldMenuAlignRight
         />
     )
 }

@@ -104,7 +104,11 @@ export const ChartRepoSelector = ({
                 style={{
                     padding: '12px 16px',
                     cursor: 'pointer',
-                    backgroundColor: isCurrentlySelected ? 'var(--B100)' : props.isFocused ? 'var(--N100)' : 'white',
+                    backgroundColor: isCurrentlySelected
+                        ? 'var(--B100)'
+                        : props.isFocused
+                          ? 'var(--N100)'
+                          : 'var(--bg-primary)',
                     color: isCurrentlySelected ? 'var(--B500)' : 'var(--N900)',
                 }}
             >
@@ -124,7 +128,7 @@ export const ChartRepoSelector = ({
         return (
             <components.MenuList {...props}>
                 {props.children}
-                <div className="flex dc__react-select__bottom bcn-0">
+                <div className="flex dc__react-select__bottom bg__primary">
                     <div className="sticky-information__bottom">
                         <div className="sticky-information__icon mt-2">
                             <Info className="icon-dim-16" />

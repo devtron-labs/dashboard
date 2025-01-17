@@ -67,7 +67,7 @@
     &.active {
         color: var(--B500);
         border-top: 2px solid var(--B500);
-        border-bottom: 1px solid white;
+        border-bottom: 1px solid var(--N0);
 
         &:last-child {
             border-right: 1px solid var(--N200);
@@ -89,7 +89,7 @@
     justify-content: space-between;
 
     .material-sync-card--message {
-        background-color: var(--window-bg);
+        background-color: var(--bg-tertiary);
         padding: 12px;
         border-radius: 2px;
         width: 100%;
@@ -98,7 +98,7 @@
 
 .expand-collapse-pf,
 #logs {
-    background: white;
+    background: var(--bg-primary);
 }
 
 .app-details {
@@ -108,7 +108,7 @@
 
 .app-instances {
     vertical-align: top;
-    border: 1px solid #eaeaea;
+    border: 1px solid var(--N100);
 }
 
 .app-info-title {
@@ -122,8 +122,8 @@
     height: 30px;
     line-height: 30px;
     padding: 0px 5px;
-    background: var(--white);
-    border-top: 1px solid #eaeaea;
+    background: var(--bg-primary);
+    border-top: 1px solid var(--N100);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -141,7 +141,7 @@
 }
 
 .info-block .heading {
-    color: #262626;
+    color: var(--N900);
     font-size: 20px;
     text-transform: lowercase;
     margin-bottom: 15px;
@@ -152,7 +152,7 @@
 .info-block .dc__small-text {
     width: 100%;
     font-size: 13px;
-    color: #262626;
+    color: var(--N900);
     text-transform: lowercase;
     font-weight: 500;
     margin-bottom: 0px;
@@ -182,7 +182,7 @@
 }
 
 .event-block {
-    background-color: white;
+    background-color: var(--bg-primary);
     padding: 8px;
     margin-bottom: 10px;
     border-radius: 3px;
@@ -195,12 +195,12 @@
 }
 
 .event-labels {
-    background-color: white;
+    background-color: var(--bg-primary);
     padding: 8px;
     margin-bottom: 10px;
     border-radius: 3px;
     box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.1);
-    border-left: solid 6px white;
+    border-left: solid 6px var(--N0);
 }
 
 .event-labels > div {
@@ -298,7 +298,7 @@ table.pod__table td:last-child {
     border-radius: 8px;
     overflow: hidden;
     padding: 16px 20px;
-    background: white;
+    background: var(--bg-primary);
 }
 
 .enable-app-metrics--button {
@@ -359,9 +359,9 @@ table.pod__table td:last-child {
         border-bottom: 1px solid var(--N100);
         position: sticky;
         top: 0;
-        background: white;
+        background: var(--bg-primary);
         &:hover {
-            background: white;
+            background: var(--bg-primary);
         }
     }
 
@@ -443,7 +443,7 @@ table.pod__table td:last-child {
         box-shadow: inset 0 -1px 0 0 var(--N100);
         position: sticky;
         top: 0;
-        background: var(--N000);
+        background: var(--bg-primary);
     }
 }
 
@@ -481,19 +481,19 @@ table.pod__table td:last-child {
         padding: 0 12px;
 
         &:hover {
-            background: #f5f5f5;
+            background: var(--N100);
         }
     }
 
     .pod-info__popup-row--red {
         justify-content: space-between;
-        color: red;
+        color: var(--R500);
     }
 }
 
 .pod-info {
     height: 100%;
-    background: white;
+    background: var(--bg-primary);
 
     &:nth-child(2) {
         border-left: 1px solid var(--N200);
@@ -613,12 +613,12 @@ table.pod__table td:last-child {
                 font-weight: 600;
                 position: sticky;
                 top: 0px;
-                background: white;
+                background: var(--bg-primary);
                 border-bottom: 1px solid var(--N100);
                 grid-template-rows: 36px;
 
                 &:hover {
-                    background: white;
+                    background: var(--bg-primary);
                 }
 
                 .select-button {
@@ -637,7 +637,7 @@ table.pod__table td:last-child {
             font-weight: 600;
             height: 48px;
             line-height: 48px;
-            background: white;
+            background: var(--bg-primary);
         }
 
         .pod-info__cpu-usage,
@@ -752,7 +752,7 @@ table.pod__table td:last-child {
         }
 
         .popup-button .select-button {
-            background: white;
+            background: var(--bg-primary);
         }
     }
 
@@ -764,31 +764,34 @@ table.pod__table td:last-child {
         font-size: 10px;
         display: flex;
         align-items: center;
-        color: white;
+        color: var(--N0);
     }
 
     .app-summary__status-name {
         &.f-healthy,
         &.f-scalingreplicasetdown {
-            color: var(--green);
+            color: var(--G500);
         }
 
         &.f-starting,
         &.f-initiating,
         &.f-suspended,
         &.f-switchedtoactiveservice {
-            color: var(--orange);
+            color: var(--O500);
         }
 
         &.f-degraded {
-            color: var(--red);
+            color: var(--R500);
         }
 
         &.f-progressing,
         &.f-inprogress,
-        &.f-unknown,
         &.initiated {
-            color: var(--yellow);
+            color: var(--O500);
+        }
+
+        &.f-unknown {
+            color: var(--Y500);
         }
 
         .tooltip-button {
@@ -803,7 +806,7 @@ table.pod__table td:last-child {
     .time-range {
         .select-button {
             border: 1px solid transparent;
-            background: white;
+            background: var(--bg-primary);
             padding: 4px 0px 4px 8px;
             width: 155px;
         }
@@ -821,8 +824,8 @@ table.pod__table td:last-child {
         grid-gap: 16px;
 
         .upgrade-chart-container {
-            background: white;
-            border: 1px solid #d6dbdf;
+            background: var(--bg-primary);
+            border: 1px solid var(--N200);
             border-radius: 8px;
             grid-column: 2 / span 2;
 
@@ -856,7 +859,7 @@ table.pod__table td:last-child {
         }
 
         .chart {
-            background: white;
+            background: var(--bg-primary);
 
             &.material {
                 display: grid;
@@ -880,23 +883,23 @@ table.pod__table td:last-child {
 
                 .b-healthy,
                 .b-scalingreplicasetdown {
-                    background-color: #ebfff6;
+                    background-color: var(--G100);
                 }
 
                 .b-suspended,
                 .b-switchedtoactiveservice {
-                    background-color: #fff0cf;
+                    background-color: var(--Y100);
                 }
 
                 .b-degraded {
-                    background-color: #ffebeb;
+                    background-color: var(--R100);
                 }
 
                 .b-progressing,
                 .b-inprogress,
                 .b-unknown,
                 .initiated {
-                    background-color: #fff0cf;
+                    background-color: var(--Y100);
                 }
 
                 b,
@@ -922,7 +925,7 @@ table.pod__table td:last-child {
 
                 .deployment-summary {
                     height: 53px;
-                    background: var(--window-bg);
+                    background: var(--bg-tertiary);
                     padding: 0 16px;
                     display: grid;
                     grid-template-columns: 20px 1fr auto;
@@ -953,7 +956,7 @@ table.pod__table td:last-child {
     bottom: 0;
     left: 64px;
     width: calc(100vw - 64px);
-    background: #0b0f22;
+    background: var(--terminal-bg);
     display: grid;
     grid-template-rows: 36px 40px 1fr;
     grid-template-columns: 1fr 1fr;
@@ -961,7 +964,7 @@ table.pod__table td:last-child {
     z-index: var(--events-logs);
 
     .event-logs__logs {
-        color: white;
+        color: var(--N0);
         padding-left: 20px;
     }
 
@@ -979,41 +982,14 @@ table.pod__table td:last-child {
         }
     }
 
-    .events-logs__events-table-row {
-        width: 100%;
-    }
-
     .events-logs__event,
     .events-logs__log {
-        color: white;
+        color: var(--N0);
         font-family: monospace;
         font-size: 12px;
         margin-bottom: 0px;
     }
-
-    .events-logs__events-table {
-        width: 100%;
-        padding: 0 20px;
-
-        .events-logs__events-table-row {
-            display: grid;
-            grid-template-columns: 180px auto 50px 140px;
-            grid-column-gap: 60px;
-            grid-auto-rows: minmax(56px, max-content);
-            justify-items: start;
-            align-items: center;
-
-            // margin: 12px 0;
-            &.header {
-                font-weight: 600;
-                position: sticky;
-                top: 0;
-                background: #0b0f22;
-                grid-template-rows: 32px;
-            }
-        }
-    }
-
+    
     .events-logs__title-container {
         display: flex;
         justify-content: space-between;
@@ -1037,7 +1013,7 @@ table.pod__table td:last-child {
 
     .events-logs__label {
         margin-right: 10px;
-        color: white;
+        color: var(--N0);
         opacity: 0.6;
     }
 
@@ -1060,7 +1036,7 @@ table.pod__table td:last-child {
                 border-radius: 4px;
                 padding: 8px 10px 8px 12px;
                 font-size: 12px;
-                color: white;
+                color: var(--N0);
                 text-align: left;
             }
         }
@@ -1208,7 +1184,7 @@ table.pod__table td:last-child {
                 font-size: 10px;
                 display: flex;
                 align-items: center;
-                color: white;
+                color: var(--N0);
             }
         }
     }
@@ -1250,7 +1226,7 @@ table.pod__table td:last-child {
         width: 80%;
         margin: 0 auto;
         border-radius: 4px;
-        background: white;
+        background: var(--bg-primary);
         margin-top: 80px;
         overflow: hidden;
         position: relative;
@@ -1272,7 +1248,7 @@ table.pod__table td:last-child {
             }
 
             &:nth-child(even) {
-                background: #f5f5f5;
+                background: var(--N100);
             }
 
             &.app-summary__source-row--header {
@@ -1372,7 +1348,7 @@ table.pod__table td:last-child {
     .select-button {
         height: 40px;
         font-weight: 600;
-        background: white;
+        background: var(--bg-primary);
         border: 1px solid var(--B500);
         border-radius: 4px;
         padding-left: 8px;
@@ -1391,7 +1367,7 @@ table.pod__table td:last-child {
 
 .visible-modal__body.app-status__material-modal {
     .app-status-detai {
-        background: white;
+        background: var(--bg-primary);
         margin: 80px auto 120px auto;
         max-width: 1200px;
         min-width: 800px;
@@ -1432,7 +1408,7 @@ table.pod__table td:last-child {
                 height: 44px;
 
                 th {
-                    background: white;
+                    background: var(--bg-primary);
                     position: sticky;
                     top: 0;
                 }
@@ -1469,17 +1445,6 @@ table.pod__table td:last-child {
     }
 }
 
-.pod-manifest-status {
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background: #0b0f22;
-    color: white;
-    border: unset;
-    resize: none;
-    padding: 20px;
-}
-
 table.trigger-history {
     width: 100%;
     margin: unset;
@@ -1489,14 +1454,14 @@ table.trigger-history {
             th {
                 position: sticky;
                 top: 0;
-                background: #e5e5e5;
+                background: var(--N100);
             }
         }
     }
 
     tr {
         &:nth-child(2n + 2) {
-            background: #f5f5f5;
+            background: var(--N100);
         }
     }
 
@@ -1511,7 +1476,7 @@ table.trigger-history {
     }
 
     td.trigger-history__cell.trigger-history__cell--artifact span {
-        background-color: #f2f2f2;
+        background-color: var(--N100);
         border-radius: 2px;
         padding: 2px 4px;
 
@@ -1573,7 +1538,7 @@ table.resource-tree {
     height: 1px;
 
     thead {
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid var(--N100);
     }
 
     th {
@@ -1812,7 +1777,7 @@ table.resource-tree {
     .dc__app-summary__icon {
         &.healthy {
             background-size: contain, contain;
-            background: url(../../../../assets/icons/appstatus/ic-heart-green.svg), transparent;
+            background: url('../../../../assets/icons/appstatus/ic-heart-green.svg'), transparent;
         }
     }
 
@@ -1836,10 +1801,10 @@ table.resource-tree {
     .app-summary__status-name {
         text-transform: none !important;
         &.f-succeeded {
-            color: var(--green);
+            color: var(--G500);
         }
         &.f-inprogress {
-            color: #ff7e5b;
+            color: var(--O500);
         }
         &.f-failed,
         &.f-timed_out,
@@ -1876,8 +1841,8 @@ table.resource-tree {
     .pulse-highlight {
         width: 12px;
         height: 12px;
-        border: solid 4px rgba(255, 126, 91, 0.4);
-        background-color: #ff7e5b;
+        border: solid 4px var(--O200);
+        background-color: var(--O500);
         position: relative;
         top: 5px;
         right: -5px;
@@ -1902,7 +1867,7 @@ table.resource-tree {
     .resource-list {
         .app-status-row {
             &:hover {
-                background-color: var(--N50);
+                background-color: var(--bg-secondary);
             }
         }
     }
@@ -1931,7 +1896,8 @@ table.resource-tree {
     align-items: flex-start;
     flex-direction: column;
     overflow: hidden;
-    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 4px 0 var(--black-20);
+    border: 1px solid var(--N200);
 
     &__top-container {
         align-items: flex-start;

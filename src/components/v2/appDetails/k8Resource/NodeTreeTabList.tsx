@@ -175,7 +175,7 @@ export default function NodeTreeTabList({
                                 <div className="flex">
                                     <div
                                         className={`${
-                                            tab.isSelected ? 'resource-tree-tab bcn-0 cn-9' : ''
+                                            tab.isSelected ? 'resource-tree-tab bg__primary cn-9' : ''
                                         } flex left pl-12 pt-8 pb-8 pr-12`}
                                     >
                                         {getTabNavLink(tab)}

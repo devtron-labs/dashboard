@@ -18,7 +18,7 @@
     display: grid;
     grid-template-columns: 0 minmax(0, 1400px);
     justify-content: center;
-    background: linear-gradient(249deg, #d4e6f7 0%, var(--N50) 50.58%);
+    background: linear-gradient(249deg, var(--B100) 0%, var(--N50) 50.58%);
     overflow: auto;
     transition: grid-template-columns 0.2s ease-out;
 
@@ -31,7 +31,7 @@
         .env-deployments-info-wrapper {
             border-radius: 4px;
             border: 1px solid var(--N200);
-            background: var(--N0);
+            background: var(--bg-primary);
 
             .env-deployments-info-header,
             .env-deployments-info-row {

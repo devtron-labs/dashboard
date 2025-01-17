@@ -42,7 +42,7 @@ export const MoreButtonWrapper = ({
     <div className="more-tabs-wrapper dc__position-rel flex">
         <button
             type="button"
-            className="more-tabs-option p-0 flexbox dc__overflow-hidden flex-align-center ml-8 bcn-0 dc__border br-4"
+            className="more-tabs-option p-0 flexbox dc__overflow-hidden flex-align-center ml-8 bg__primary dc__border br-4"
             onClick={toggleMenu}
             ref={tabPopupMenuRef}
             aria-label="More tabs"
@@ -54,7 +54,9 @@ export const MoreButtonWrapper = ({
         </button>
         {isMenuOpen && (
             <>
-                <div className="more-tabs__menu-wrapper bcn-0 mt-12 dc__position-abs w-300 dc__top-26">{children}</div>
+                <div className="more-tabs__menu-wrapper bg__primary mt-12 dc__position-abs w-300 dc__top-26">
+                    {children}
+                </div>
                 <div className="more-tabs__blanket dc__position-fixed" onClick={onClose} />
             </>
         )}

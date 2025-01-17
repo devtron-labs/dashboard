@@ -244,7 +244,7 @@ export default function CIDockerFileConfig({
                                     className={`flex top left flex-1 ${
                                         configOverrideView ? 'h-40' : 'h-80'
                                     } dc__position-rel pt-10 pb-10 pl-12 pr-12 br-4 cursor bw-1 ${
-                                        isCurrentlySelected ? 'bcb-1 eb-2' : 'bcn-0 en-2'
+                                        isCurrentlySelected ? 'bcb-1 eb-2' : 'bg__primary en-2'
                                     }
                                     ${isDisabled ? 'dockerfile-select__option--is-disabled' : ''}`}
                                     onClick={() => {

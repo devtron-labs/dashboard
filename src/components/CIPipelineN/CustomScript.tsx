@@ -46,7 +46,6 @@ const CustomScript = ({ handleScriptChange }: CustomScriptType) => {
                 )}
                 <div className="script-container no-padding-script-container">
                     <CodeEditor
-                        theme="vs-alice-blue"
                         mode="shell"
                         noParsing
                         onChange={(value) => handleScriptChange({ target: { value } })}

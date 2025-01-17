@@ -35,6 +35,7 @@ import {
     ToastVariantType,
     TOAST_ACCESS_DENIED,
     ResourceDetail,
+    CodeEditorThemesKeys,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
 import YAML from 'yaml'
@@ -257,16 +258,14 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         return (
             <div className="dc__visible-hover dc__visible-hover--parent flexbox mb-8 hover-trigger dc__position-rel dc__align-items-center">
                 <div
-                    className={`cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
+                    className={`cn-9 bg__secondary fw-6 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
                         !value ? ' br-4' : ' dc__left-radius-4 dc__no-right-border'
                     }`}
                 >
                     {key}
                 </div>
                 {value && (
-                    <div className="bcn-7 cn-0 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 dc__right-radius-4 dc__no-left-border">
-                        {value}
-                    </div>
+                    <div className="cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 dc__right-radius-4">{value}</div>
                 )}
                 <div className="ml-8 dc__visible-hover--child">
                     <ClipboardButton content={keyValue} />
@@ -393,7 +392,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         ]
 
         return (
-            <div className="en-2 bw-1 br-4 bcn-0 mt-12">
+            <div className="en-2 bw-1 br-4 bg__primary mt-12">
                 <div className="dc__border-bottom px-20">
                     <TabGroup tabs={tabs} alignActiveBorderWithContainer />
                 </div>
@@ -411,7 +410,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
             return null
         }
         return (
-            <div className="mb-12 en-2 bw-1 br-4 bcn-0">
+            <div className="mb-12 en-2 bw-1 br-4 bg__primary">
                 <div className="flexbox bcr-5 pt-12 pb-12 pr-16 pl-16 dc__top-radius-4">
                     <Error className="error-icon-white mt-2 mb-2 mr-8 icon-dim-18" />
                     <span className="fw-6 fs-14 cn-0">
@@ -437,8 +436,8 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
             return null
         }
         return (
-            <div className="mb-12 en-2 bw-1 br-4 bcn-0">
-                <div className="flexbox bcy-5 pt-12 pb-12 pr-16 pl-16 dc__top-radius-4">
+            <div className="mb-12 en-2 bw-1 br-4 bg__primary">
+                <div className="flexbox bcy-2 pt-12 pb-12 pr-16 pl-16 dc__top-radius-4">
                     <AlertTriangle className="alert-icon-white mt-2 mb-2 mr-8 icon-dim-18" />
                     <span className="fw-6 fs-14 cn-9">
                         {`${issueCount} Probable issue${issueCount > 1 ? 's' : ''}`}
@@ -488,7 +487,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
 
     const renderNodeOverviewCard = (): JSX.Element => {
         return (
-            <div className="en-2 bw-1 br-4 bcn-0 dc__position-sticky  top-10">
+            <div className="en-2 bw-1 br-4 bg__primary dc__position-sticky  top-10">
                 <div className="flexbox pt-12 pb-12 pr-16 pl-16 dc__top-radius-4">
                     <span className="fw-6 fs-14 cn-9">Node overview</span>
                 </div>
@@ -537,7 +536,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
             return null
         }
         return (
-            <div className="en-2 bw-1 br-4 bcn-0">
+            <div className="en-2 bw-1 br-4 bg__primary">
                 <div className="resource-row dc__border-bottom fw-6 fs-13 pt-8 pb-8 pr-20 pl-20 cn-7">
                     <div />
                     <div>Resource</div>
@@ -669,13 +668,13 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         return (
             <div className="pod-container">
                 <div className="dc__position-sticky  pod-container-header">
-                    <div className="en-2 bw-1 dc__top-radius-4 bcn-0 dc__no-bottom-border">
+                    <div className="en-2 bw-1 dc__top-radius-4 bg__primary dc__no-bottom-border">
                         <div className="fw-6 fs-14 cn-9 pr-20 pl-20 pt-12">Pods</div>
                     </div>
                 </div>
-                <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bcn-0 mb-20">
+                <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20">
                     <div className="pods-grid fw-4 fs-13 cn-9">
-                        <header className="bcn-0 dc__border-bottom-n1 fw-6">
+                        <header className="bg__primary dc__border-bottom-n1 fw-6">
                             {renderPodHeaderCell('Namespace', 'namespace', 'string')}
                             {renderPodHeaderCell('Pod', 'name', 'string')}
                             {renderPodHeaderCell('CPU Requests', 'cpu.requestPercentage', 'number')}
@@ -924,7 +923,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                     defaultValue={(nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || ''}
                     height={getCodeEditorHeight()}
                     readOnly={!isEdit}
-                    theme="vs-dark--dt"
+                    theme={CodeEditorThemesKeys.vsDarkDT}
                     diffView={isReviewState}
                     onChange={handleEditorValueChange}
                     mode={MODES.YAML}
@@ -955,7 +954,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     const renderConditions = (): JSX.Element => {
         return (
             <div className="node-details-container">
-                <div className="ml-20 mr-20 mb-12 mt-16 bcn-0 br-8 en-2 bw-1">
+                <div className="ml-20 mr-20 mb-12 mt-16 bg__primary br-8 en-2 bw-1">
                     <div className="condition-grid cn-7 fw-6 fs-13 dc__border-bottom pt-8 pl-20 pb-8 pr-20">
                         <div>Type</div>
                         <div>Status</div>
@@ -1036,7 +1035,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
 
     if (errorResponseCode) {
         return (
-            <div className="bcn-0 node-data-container flex">
+            <div className="bg__primary node-data-container flex">
                 <ErrorScreenManager
                     code={errorResponseCode}
                     subtitle={
@@ -1048,7 +1047,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     }
 
     return (
-        <div className="bcn-0 node-data-container">
+        <div className="bg__primary node-data-container">
             {loader ? (
                 <Progressing pageLoader size={32} />
             ) : (
