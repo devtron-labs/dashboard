@@ -4136,6 +4136,10 @@ textarea {
     overflow: auto !important;
 }
 
+.dc__hide-hscroll {
+    overflow-x: hidden;
+}
+
 .dc__overflow-initial {
     overflow: initial;
 
