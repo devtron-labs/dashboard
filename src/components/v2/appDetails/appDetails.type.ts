@@ -371,7 +371,9 @@ export interface LogAnalyzerProps extends LogSearchTermType {
     handleMarkLogAnalyzerTabSelected: () => void
 }
 
-export interface NodeDetailPropsType extends LogSearchTermType, Pick<ClusterListType, 'lowercaseKindToResourceGroupMap' | 'updateTabUrl'>, Pick<UseTabsReturnType, 'tabs'> {
+export interface NodeDetailPropsType
+    extends LogSearchTermType,
+        Pick<ClusterListType, 'lowercaseKindToResourceGroupMap' | 'updateTabUrl'> {
     loadingResources?: boolean
     isResourceBrowserView?: boolean
     selectedResource?: SelectedResourceType
@@ -403,13 +405,6 @@ export interface TerminalComponentProps {
     setSelectedContainerName: React.Dispatch<React.SetStateAction<OptionType>>
     switchSelectedContainer: (string) => void
     showTerminal: boolean
-}
-
-export interface NodeTreeTabListProps extends LogSearchTermType {
-    isReloadResourceTreeInProgress: boolean
-    handleReloadResourceTree: () => void
-    tabRef?: MutableRefObject<HTMLDivElement>
-    appType?: string
 }
 
 export interface Options extends OptionsBase {
@@ -493,9 +488,10 @@ export interface ManifestActionPropsType extends ResourceInfoActionPropsType, Pi
     manifestGUIFormRef: FormProps['ref']
 }
 
-export interface NodeTreeDetailTabProps extends
-    Pick<NodeTreeTabListProps, 'handleReloadResourceTree' | 'isReloadResourceTreeInProgress'> {
+export interface NodeTreeDetailTabProps {
     appDetails: AppDetails
+    isReloadResourceTreeInProgress: boolean
+    handleReloadResourceTree: () => void
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
     isDevtronApp?: boolean
@@ -527,7 +523,7 @@ export interface K8ResourceComponentProps extends Pick<NodeComponentProps, 'addT
 }
 
 export interface AppDetailsComponentType extends
-    Pick<NodeTreeTabListProps, 'handleReloadResourceTree' | 'isReloadResourceTreeInProgress'> {
+    Pick<NodeTreeDetailTabProps, 'handleReloadResourceTree' | 'isReloadResourceTreeInProgress'> {
     externalLinks?: ExternalLink[]
     monitoringTools?: OptionTypeWithIcon[]
     isExternalApp: boolean

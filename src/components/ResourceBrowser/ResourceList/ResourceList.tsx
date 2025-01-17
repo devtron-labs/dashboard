@@ -435,7 +435,6 @@ const ResourceList = () => {
                     removeTabByIdentifier={getRemoveTabByIdentifierForId(tabId)}
                     updateTabUrl={getUpdateTabUrlForId(tabId)}
                     clusterName={selectedCluster.label}
-                    tabs={tabs}
                 />
             </div>
         )

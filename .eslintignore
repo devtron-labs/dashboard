@@ -364,7 +364,6 @@ src/components/v2/appDetails/appDetails.api.ts
 src/components/v2/appDetails/appDetails.type.ts
 src/components/v2/appDetails/ea/EAAppDetail.component.tsx
 src/components/v2/appDetails/k8Resource/FilterResource.tsx
-src/components/v2/appDetails/k8Resource/NodeTreeTabList.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/EphemeralContainerDrawer.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetail.component.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/CustomLogsModal/CustomLogsModal.tsx

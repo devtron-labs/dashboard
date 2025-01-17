@@ -81,7 +81,6 @@ const NodeDetailComponent = ({
     updateTabUrl,
     isExternalApp,
     clusterName = '',
-    tabs: dynamicTabs,
 }: NodeDetailPropsType) => {
     const location = useLocation()
     const appDetails = IndexStore.getAppDetails()
@@ -296,16 +295,12 @@ const NodeDetailComponent = ({
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
         setSelectedTabName(_tabName)
-        updateTabUrl?.({
+        updateTabUrl({
             url: _url
         })
     }
 
-    const currentTab = dynamicTabs.find((tab) => {
-        return tab.name.toLowerCase() === `${params.nodeType}/...${resourceName?.slice(-6)}`
-    })
     const isDeleted =
-        (currentTab ? currentTab.isDeleted : false) ||
         (isResourceBrowserView && isResourceDeleted) ||
         (!isResourceBrowserView &&
             !(

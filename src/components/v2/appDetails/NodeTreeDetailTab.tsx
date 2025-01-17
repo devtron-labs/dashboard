@@ -153,7 +153,6 @@ const NodeTreeDetailTab = ({
                                         setLogSearchTerms,
                                         isExternalApp,
                                         lowercaseKindToResourceGroupMap: {},
-                                        tabs,
                                     }}
                                 />
                             )}
