@@ -529,10 +529,11 @@ export const ChartValuesSelector = ({
         },
         {
             label: 'Default',
-            options: filteredChartValues.defaultChartValues.map((chartValue) => ({
-                value: chartValue,
-                label: `${chartValue.name} ${chartValue.chartVersion}`,
-            })),
+            options: filteredChartValues.defaultChartValues
+                .map((chartValue) => ({
+                    value: chartValue,
+                    label: `${chartValue.name} ${chartValue.chartVersion}`,
+                })),
         },
     ]
 

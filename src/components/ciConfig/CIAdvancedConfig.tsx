@@ -112,7 +112,7 @@ export default function CIAdvancedConfig({
                 className="flex left cursor mb-20"
                 data-testid="advanced-option-drop-down-button"
             >
-                <div className="icon-dim-40 mr-16">
+                <div className="icon-dim-40 mr-16 p-7 dc__border br-4">
                     <PluginIcon />
                 </div>
                 <div>
