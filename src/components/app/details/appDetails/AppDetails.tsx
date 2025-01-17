@@ -612,8 +612,6 @@ export const Details: React.FC<DetailsType> = ({
                     <div className="flex left ml-20 mt-16">
                         <EnvSelector
                             environments={environments}
-                            disabled={params.envId && !showCommitInfo}
-                            controlStyleOverrides={{ backgroundColor: 'var(--bg-primary)' }}
                         />
                         {isAppDeleted && appDetails?.deploymentAppDeleteRequest && (
                             <div data-testid="deleteing-argocd-pipeline" className="flex left">
@@ -869,12 +867,8 @@ const DeletedAppComponent: React.FC<DeletedAppComponentType> = ({
 
 export const EnvSelector = ({
     environments,
-    disabled,
-    controlStyleOverrides,
 }: {
     environments: any
-    disabled: boolean
-    controlStyleOverrides?: React.CSSProperties
 }) => {
     const { push } = useHistory()
     const { path } = useRouteMatch()
@@ -891,22 +885,6 @@ export const EnvSelector = ({
           }, {})
         : {}
     const environmentName = environmentsMap[+envId]
-    const envSelectorStyle = {
-        ...multiSelectStyles,
-        ...groupHeaderStyle,
-        control: (base, state) => ({
-            ...base,
-            border: '1px solid var(--B500)',
-            backgroundColor: 'var(--bg-primary)',
-            minHeight: '32px',
-            height: '32px',
-            cursor: state.isDisabled ? 'not-allowed' : 'pointer',
-            ...controlStyleOverrides,
-        }),
-        singleValue: (base, state) => ({ ...base, textAlign: 'left', fontWeight: 600, color: 'var(--B500)' }),
-        indicatorsContainer: (base, state) => ({ ...base, height: '32px' }),
-        menu: (base) => ({ ...base, width: '280px', zIndex: 12 }),
-    }
 
     const sortedEnvironments =
         environments && !environments.deploymentAppDeleteRequest
