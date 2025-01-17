@@ -341,16 +341,6 @@ export function addQueryParamToGrafanaURL(
     return url
 }
 
-export const ValueContainer = (props) => {
-    const { children, ...rest } = props
-    return (
-        <components.ValueContainer {...rest}>
-            {`${props.getValue()[0].value}`}
-            {React.cloneElement(children[1])}
-        </components.ValueContainer>
-    )
-}
-
 export const ValueContainerImage = (props) => {
     const value = props.selectProps?.value?.value
     return (
