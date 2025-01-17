@@ -335,7 +335,7 @@ const DynamicTabs = ({
     const isOptionSelected = (tab: DynamicTabType) => tab.id === selectedTab.id
 
     const timerTranspose = (output: string) => (
-        <div className="flexbox dc__gap-6 dc__align-items-center">
+        <div className="flexbox dc__gap-6 dc__align-items-center dc__no-shrink">
             {selectedTabTimerConfig.reload && (
                 <Button
                     variant={ButtonVariantType.borderLess}
