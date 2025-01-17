@@ -21,6 +21,9 @@ import { multiSelectStyles, noop, stopPropagation, Environment } from '@devtron-
 import { ReactComponent as ArrowDown } from '../assets/icons/ic-chevron-down.svg'
 import { CLUSTER_TERMINAL_MESSAGING } from '../../ClusterNodes/constants'
 
+/**
+ * @deprecated
+ */
 export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
     return (base, state) => ({
         ...base,
@@ -42,6 +45,9 @@ export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
     })
 }
 
+/**
+ * @deprecated
+ */
 export const getCommonSelectStyle = (styleOverrides = {}) => {
     return {
         menuList: (base) => ({
@@ -97,34 +103,6 @@ export const getCommonSelectStyle = (styleOverrides = {}) => {
         }),
         ...styleOverrides,
     }
-}
-
-export const styles = {
-    control: (base, state) => ({
-        ...base,
-        boxShadow: 'none',
-        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-    }),
-    menu: (base, state) => {
-        return {
-            ...base,
-            top: `0px`,
-            backgroundColor: 'var(--bg-primary)',
-        }
-    },
-    singleValue: (base, state) => {
-        return {
-            ...base,
-            color: 'var(--N900)',
-        }
-    },
-    option: (base, state) => {
-        return {
-            ...base,
-            color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
-            backgroundColor: state.isFocused ? 'var(--bg-secondary)' : 'var(--bg-primary)',
-        }
-    },
 }
 
 /**
@@ -237,54 +215,6 @@ export const GroupHeading = (props) => {
                 </span>
             </div>
         </components.GroupHeading>
-    )
-}
-
-export const EnvFormatOptions = (props) => {
-    const { data, environmentfieldName } = props
-    return <components.SingleValue {...props}>{data[environmentfieldName]}</components.SingleValue>
-}
-
-export function formatHighlightedText(option: Environment, inputValue: string, environmentfieldName: string) {
-    const highLightText = (highlighted) => `<mark>${highlighted}</mark>`
-    const regex = new RegExp(inputValue, 'gi')
-    return (
-        <div className="flex left column dc__highlight-text" data-testid={option[environmentfieldName]}>
-            <span
-                className="w-100 dc__ellipsis-right"
-                dangerouslySetInnerHTML={{
-                    __html: option[environmentfieldName].replace(regex, highLightText),
-                }}
-            />
-            <small className="w-100 dc__truncate-text fs-12 cn-7">{option.description}</small>
-        </div>
-    )
-}
-
-export function formatHighlightedTextDescription(
-    option: Environment,
-    inputValue: string,
-    environmentfieldName: string,
-) {
-    const highLightText = (highlighted) => `<mark>${highlighted}</mark>`
-    const regex = new RegExp(inputValue, 'gi')
-    return (
-        <div className="flex left column dc__highlight-text">
-            <span
-                className="w-100 dc__ellipsis-right"
-                dangerouslySetInnerHTML={{
-                    __html: option[environmentfieldName].replace(regex, highLightText),
-                }}
-            />
-            {option.description && (
-                <small
-                    className="cn-6"
-                    dangerouslySetInnerHTML={{
-                        __html: `${option.description}`.replace(regex, highLightText),
-                    }}
-                />
-            )}
-        </div>
     )
 }
 
