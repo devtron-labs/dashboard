@@ -32,7 +32,7 @@ export const TabsMenu = (props: MenuProps<unknown>) => {
 
     return (
         <components.Menu {...props}>
-            <div className="tab-search-select__open-tabs fs-12 fw-6 dc__no-text-transform cn-9 m-0 pt-4 pb-4 pr-10 pl-10">
+            <div className="tab-search-select__open-tabs fs-12 fw-6 dc__no-text-transform cn-9 m-0 pt-4 pb-4 pr-10 pl-10 bg__tertiary">
                 Open tabs ({options.length})
             </div>
             {children}
@@ -54,7 +54,7 @@ export const SearchValueContainer = (props: ValueContainerProps) => {
 
     return (
         <components.ValueContainer {...props}>
-            <div className="flex left dc__position-abs w-100 pl-12">
+            <div className="flex left dc__position-abs w-100">
                 <span className="flex icon-dim-20">
                     <SearchIcon className="kind-search-icon icon-dim-16" />
                 </span>
@@ -69,7 +69,7 @@ export const SearchValueContainer = (props: ValueContainerProps) => {
 
 export const SearchClearIndicator = (props: ClearIndicatorProps) => {
     const {
-        selectProps: { onBlur },
+        selectProps: { onBlur, inputValue },
     } = props
 
     const handleButtonClick = () => {
@@ -77,18 +77,20 @@ export const SearchClearIndicator = (props: ClearIndicatorProps) => {
     }
 
     return (
-        <components.ClearIndicator {...props}>
-            <Button
-                icon={<ICCross />}
-                onClick={handleButtonClick}
-                dataTestId="clear-dynamic-tabs-menu-search"
-                size={ComponentSizeType.xs}
-                variant={ButtonVariantType.borderLess}
-                showAriaLabelInTippy={false}
-                ariaLabel=""
-                style={ButtonStyleType.negativeGrey}
-            />
-        </components.ClearIndicator>
+        !!inputValue && (
+            <components.ClearIndicator {...props}>
+                <Button
+                    icon={<ICCross />}
+                    onClick={handleButtonClick}
+                    dataTestId="clear-dynamic-tabs-menu-search"
+                    size={ComponentSizeType.xs}
+                    variant={ButtonVariantType.borderLess}
+                    showAriaLabelInTippy={false}
+                    ariaLabel="Clear search"
+                    style={ButtonStyleType.negativeGrey}
+                />
+            </components.ClearIndicator>
+        )
     )
 }
 

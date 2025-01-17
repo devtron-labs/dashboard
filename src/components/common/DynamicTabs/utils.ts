@@ -24,11 +24,12 @@ export const COMMON_TABS_SELECT_STYLES: StylesConfig = {
     control: (base, state) => ({
         ...base,
         borderRadius: '4px 4px 0 0',
-        borderBottom: 'none',
         boxShadow: 'none',
+        padding: '0 12px',
         cursor: 'text',
         backgroundColor: 'var(--bg-secondary)',
         border: '1px solid var(--N200)',
+        fontSize: '13px',
         '&:hover': {
             borderColor: state.isDisabled ? 'var(--N200)' : 'var(--N300)',
         },
@@ -41,6 +42,10 @@ export const COMMON_TABS_SELECT_STYLES: StylesConfig = {
         ...base,
         padding: '2px 32px',
     }),
+    clearIndicator: (base) => ({
+        ...base,
+        padding: 0,
+    }),
     menu: (base) => ({
         ...base,
         marginTop: 0,
@@ -50,6 +55,7 @@ export const COMMON_TABS_SELECT_STYLES: StylesConfig = {
         backgroundColor: 'var(--bg-menu)',
         boxShadow: 'none',
         border: '1px solid var(--N200)',
+        borderTop: 'none',
     }),
     menuList: (base) => ({
         ...base,
@@ -63,7 +69,7 @@ export const COMMON_TABS_SELECT_STYLES: StylesConfig = {
     input: (base) => ({
         ...base,
         color: 'var(--N900)',
-        marginLeft: '5px',
+        marginLeft: '-6px',
     }),
     singleValue: (base) => ({
         ...base,

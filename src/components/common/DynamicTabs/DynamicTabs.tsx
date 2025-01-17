@@ -387,7 +387,7 @@ const DynamicTabs = ({
                                     style={{ ['--rotateBy' as string]: isMenuOpen ? '90deg' : '-90deg' }}
                                 />
                             </PopupMenu.Button>
-                            <PopupMenu.Body rootClassName="w-300">
+                            <PopupMenu.Body rootClassName="w-300 mt-8" style={{ right: '12px' }}>
                                 <ReactSelect<DynamicTabType>
                                     ref={moreButtonRef}
                                     placeholder="Search tabs"
