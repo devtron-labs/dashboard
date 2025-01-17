@@ -31,7 +31,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
-import ReactSelect from 'react-select'
 import Tippy from '@tippyjs/react'
 import CreatableSelect from 'react-select/creatable'
 import {
