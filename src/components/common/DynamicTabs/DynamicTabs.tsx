@@ -339,6 +339,7 @@ const DynamicTabs = ({
                     variant={ButtonVariantType.borderLess}
                     size={ComponentSizeType.xs}
                     style={ButtonStyleType.neutral}
+                    isLoading={selectedTabTimerConfig.isLoading ?? false}
                     icon={<ICArrowClockwise />}
                     dataTestId="refresh-icon"
                     onClick={selectedTabTimerConfig.reload}
