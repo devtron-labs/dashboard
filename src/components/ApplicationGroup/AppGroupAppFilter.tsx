@@ -15,7 +15,6 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
-import ReactSelect from 'react-select'
 import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
 import { appGroupAppSelectorStyle } from './AppGroup.utils'
 import { AppGroupAppFilterContextType, FilterParentType } from './AppGroup.types'
@@ -26,6 +25,7 @@ import {
     ReactSelectInputAction,
     useRegisterShortcut,
     SelectInstance,
+    ReactSelect,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { setAppGroupFilterInLocalStorage } from '@Components/common'
 
@@ -160,7 +160,7 @@ export default function AppGroupAppFilter() {
                 MenuList,
             }}
             placeholder={getPlaceHolder()}
-            styles={appGroupAppSelectorStyle}
+            styleOverrides={appGroupAppSelectorStyle}
             onKeyDown={escHandler}
         />
     )

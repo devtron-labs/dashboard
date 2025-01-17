@@ -15,8 +15,7 @@
  */
 
 import React from 'react'
-import { components } from 'react-select'
-import { ComponentSizeType, ConditionalWrap, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
+import { ComponentSizeType, ConditionalWrap, TabGroup, components } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
 import { getOptionBGClass } from './AppGroup.utils'

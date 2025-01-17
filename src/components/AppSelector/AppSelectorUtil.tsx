@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { components } from 'react-select'
-import { getIsRequestAborted, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { getIsRequestAborted, ServerErrors, showError, components, ReactSelectProps } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as DropDownIcon } from '../../assets/icons/ic-chevron-down.svg'
 import { getAppListMin } from '../../services/service'
 
 let timeoutId
 
-export const appSelectorStyle = {
+export const appSelectorStyle: ReactSelectProps['styleOverrides'] = {
     control: (base, state) => ({
         ...base,
         border: state.menuIsOpen ? '1px solid var(--B500)' : 'unset',
@@ -44,18 +42,13 @@ export const appSelectorStyle = {
         color: state.selectProps.menuIsOpen ? 'var(--N500)' : 'var(--N900)',
         height: '30px',
     }),
-    singleValue: (base, state) => ({
-        ...state,
-        color: state.selectProps.menuIsOpen ? 'var(--N500)' : 'var(--N900)',
-    }),
-    menu: (base, state) => ({
+    menu: (base) => ({
         ...base,
-        backgroundColor: 'var(--bg-primary)',
         minWidth: '300px',
         fontSize: '14px',
         fontWeight: 'normal',
     }),
-    menuList: (base, state) => ({
+    menuList: (base) => ({
         ...base,
         padding: '8px',
     }),
@@ -67,13 +60,13 @@ export const appSelectorStyle = {
         fontWeight: state.isSelected ? 600 : 'normal',
         marginRight: '8px',
     }),
-    input: (base, state) => ({
+    input: (base) => ({
         ...base,
         margin: '0',
         flex: 'unset',
         color: 'var(--N900)',
     }),
-    dropdownIndicator: (base, state) => ({
+    dropdownIndicator: (base) => ({
         ...base,
         padding: '0 4px 0 4px',
     }),

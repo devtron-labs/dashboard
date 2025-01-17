@@ -25,6 +25,7 @@ import {
     CIMaterialType,
     SourceTypeMap,
     DEPLOYMENT_STATUS,
+    ReactSelectProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getParsedBranchValuesForPlugin } from '@Components/common'
 import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED, URLS } from '../../config'
@@ -182,7 +183,7 @@ export const envListOptions = (inputValue: string, signal?: AbortSignal): Promis
         }, 300)
     })
 
-export const appGroupAppSelectorStyle = {
+export const appGroupAppSelectorStyle: ReactSelectProps['styleOverrides'] = {
     control: (base, state) => ({
         ...base,
         border: state.menuIsOpen ? '1px solid var(--B500)' : 'unset',
@@ -195,17 +196,7 @@ export const appGroupAppSelectorStyle = {
         cursor: state.isDisabled ? 'not-allowed' : 'normal',
         backgroundColor: 'var(--bg-primary)',
     }),
-    singleValue: (base, state) => ({
-        ...base,
-        color: 'var(--N900)',
-        fontWeight: '500',
-    }),
-    placeholder: (base, state) => ({
-        ...base,
-        fontWeight: '500',
-    }),
-    option: (base, state) => ({
-        ...base,
+    option: (_, state) => ({
         fontWeight: '500',
         fontSize: '13px',
         padding: '6px 8px 6px 0',
@@ -225,28 +216,17 @@ export const appGroupAppSelectorStyle = {
         fontSize: '13px',
         cursor: state.isDisabled ? 'not-allowed' : 'pointer',
         pointerEvents: 'all',
-        width: state.menuIsOpen ? '250px' : 'max-content',
+        width: 'menuIsOpen' in state && state.menuIsOpen ? '250px' : 'max-content',
         whiteSpace: 'nowrap',
     }),
-    menuList: (base) => ({
-        ...base,
+    menuList: () => ({
         paddingTop: '0',
         paddingBottom: '0',
         marginBottom: '0',
         borderRadius: '4px',
     }),
-    dropdownIndicator: (base, state) => ({
-        ...base,
+    dropdownIndicator: () => ({
         padding: '0 4px 0 4px',
-    }),
-    menu: (base) => ({
-        ...base,
-        border: '1px solid var(--N200)',
-        backgroundColor: 'var(--bg-primary)',
-    }),
-    input: (base) => ({
-        ...base,
-        color: 'var(--N900)',
     }),
 }
 
