@@ -76,7 +76,7 @@ export interface EphemeralContainerDrawerType {
     switchSelectedContainer: (string) => void
     onClickShowLaunchEphemeral: () => void
     selectedNamespaceByClickingPod?: string
-    handleSuccess: () => void
+    handleSuccess?: () => void
 }
 
 export interface ResponsePayload {
