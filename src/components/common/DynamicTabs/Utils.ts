@@ -15,12 +15,13 @@
  */
 
 import { Dayjs } from 'dayjs'
+import { StylesConfig } from 'react-select'
 import { DynamicTabType } from '@devtron-labs/devtron-fe-common-lib'
 import { MARK_AS_STALE_DATA_CUT_OFF_MINS } from '../../ResourceBrowser/Constants'
 import { DynamicTabsVariantType } from './types'
 
-export const COMMON_TABS_SELECT_STYLES = {
-    control: (base) => ({
+export const COMMON_TABS_SELECT_STYLES: StylesConfig = {
+    control: (base, state) => ({
         ...base,
         borderRadius: '4px 4px 0 0',
         borderBottom: 'none',
@@ -28,6 +29,13 @@ export const COMMON_TABS_SELECT_STYLES = {
         cursor: 'text',
         backgroundColor: 'var(--bg-secondary)',
         border: '1px solid var(--N200)',
+        '&:hover': {
+            borderColor: state.isDisabled ? 'var(--N200)' : 'var(--N300)',
+        },
+        '&:focus, &:focus-within': {
+            borderColor: state.isDisabled ? 'var(--N200)' : 'var(--B500)',
+            outline: 'none',
+        },
     }),
     valueContainer: (base) => ({
         ...base,
@@ -61,14 +69,29 @@ export const COMMON_TABS_SELECT_STYLES = {
         ...base,
         color: 'var(--N900)',
     }),
-    option: (base, state) => ({
-        ...base,
-        backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--bg-primary)',
-        color: 'var(--N900)',
-        padding: '8px 12px',
+    option: (_, state) => ({
         display: 'flex',
-        gap: '6px',
         alignItems: 'center',
+        gap: '6px',
+        color: 'var(--N900)',
+        padding: '6px 8px',
+        cursor: 'pointer',
+        fontSize: '13px',
+        lineHeight: '20px',
+        fontWeight: 400,
+
+        ':active': {
+            backgroundColor: 'var(--N100)',
+        },
+
+        ':hover': {
+            backgroundColor: 'var(--bg-secondary)',
+        },
+
+        ...(state.isDisabled && {
+            cursor: 'not-allowed',
+            opacity: 0.5,
+        }),
     }),
 }
 
