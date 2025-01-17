@@ -91,7 +91,7 @@ const DynamicTabs = ({
     }
 
     const getTabNavLink = (tab: DynamicTabType) => {
-        const { name, isDeleted, isSelected, dynamicTitle, title, showNameOnSelect, isAlive, hideName } = tab
+        const { name, isSelected, dynamicTitle, title, showNameOnSelect, isAlive, hideName } = tab
         const shouldRenderTitle = (!showNameOnSelect || isAlive || isSelected) && !hideName
 
         const _title = dynamicTitle || title
@@ -104,9 +104,7 @@ const DynamicTabs = ({
                 onClick={getMarkTabActiveHandler(tab)}
                 aria-label={`Select tab ${_title}`}
             >
-                <div
-                    className={`px-12 dc__ellipsis-right flex dc__gap-8 ${isDeleted ? 'dc__strike-through cr-5' : ''} ${!shouldRenderTitle ? 'py-10' : 'py-8'}`}
-                >
+                <div className={`px-12 dc__ellipsis-right flex dc__gap-8 ${!shouldRenderTitle ? 'py-10' : 'py-8'}`}>
                     {iconsConfig[tab.id] &&
                         cloneElement(iconsConfig[tab.id], {
                             className: `icon-dim-16 ${iconsConfig[tab.id].props.className}`,

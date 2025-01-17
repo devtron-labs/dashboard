@@ -74,7 +74,6 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
         url,
         isSelected,
         title: title || name,
-        isDeleted: false,
         type,
         dynamicTitle,
         showNameOnSelect,
