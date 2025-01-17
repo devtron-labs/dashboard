@@ -745,20 +745,22 @@ export const Details: React.FC<DetailsType> = ({
         )
     }
 
+    const onClickRotatePodClose = () => setRotateModal(false)
+
     const renderRestartWorkload = () => {
         return (
             <RotatePodsModal
-                onClose={() => setRotateModal(false)}
+                onClose={onClickRotatePodClose}
                 callAppDetailsAPI={callAppDetailsAPI}
                 isDeploymentBlocked={isDeploymentBlocked}
             />
         )
     }
-    const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
+    const isDeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     return (
         <>
             <div
-                className={`w-100 pt-16 pr-20 pb-16 pl-20 dc__gap-16 ${isdeploymentAppDeleting ? 'app-info-bg' : 'app-info-bg-gradient'}`}
+                className={`w-100 pt-16 pr-20 pb-16 pl-20 dc__gap-16 ${isDeploymentAppDeleting ? 'app-info-bg' : 'app-info-bg-gradient'}`}
             >
                 <SourceInfo
                     appDetails={appDetails}

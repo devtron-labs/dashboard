@@ -62,7 +62,7 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showHelp, setShowHelp] = useState(false)
     const [strategy, setStrategy] = useState('')
-    const [deploymentWindowConfimationValue, setDeploymentWindowConfimationValue] = useState('')
+    const [deploymentWindowConfirmationValue, setDeploymentWindowConfirmationValue] = useState('')
     const [showDeploymentWindowConfirmationModal, setShowDeploymentWindowConfirmationModal] = useState(false)
     useEffect(() => {
         getStrategy()
@@ -238,8 +238,8 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
         DeploymentWindowConfirmationDialog && (
             <DeploymentWindowConfirmationDialog
                 onClose={onClose}
-                value={deploymentWindowConfimationValue}
-                setValue={setDeploymentWindowConfimationValue}
+                value={deploymentWindowConfirmationValue}
+                setValue={setDeploymentWindowConfirmationValue}
                 isLoading={rotatingInProgress}
                 type={MODAL_TYPE.RESTART}
                 onClickActionButton={handlePodsRotation}
@@ -281,7 +281,7 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
                                 </div>
                             </Checkbox>
                         </div>
-                        <div style={{ height: '192px', overflow: 'scroll' }}>
+                        <div className='dc__overflow-auto h-192'>
                             {Array.from(podsToRotate.values()).map((item) => (
                                 <div key={`${item.kind}/${item.name}`} className="check-single-workload mt-16">
                                     <Checkbox
