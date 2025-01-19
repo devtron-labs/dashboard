@@ -559,7 +559,7 @@ const HistoryLogs = ({
     }
 
     const CiArtifactsArrayCards = Array.from({ length: ciJobArtifact?.length }, (_, index) => {
-        // TargetPlatforms are not supported for Artifacts
+        // TargetPlatforms are not supported for Artifacts in case of JobCI
         return (
             <Artifacts
                 status={triggerDetails.status}
@@ -577,7 +577,6 @@ const HistoryLogs = ({
                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                 rootClassName="pb-0-imp"
                 renderCIListHeader={renderCIListHeader}
-                // TargetPlatforms are not supported for Artifacts
                 targetPlatforms={[]}
             />
         )
