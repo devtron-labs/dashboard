@@ -57,7 +57,6 @@ export interface HistoryLogsType
 }
 
 export interface SecurityTabType {
-    ciPipelineId: number
     artifactId: number
     status: string
     appIdFromParent?: string
