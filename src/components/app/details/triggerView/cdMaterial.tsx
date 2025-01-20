@@ -107,7 +107,7 @@ import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search
 import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as PlayIC } from '@Icons/ic-play-outline.svg'
 
-import noArtifact from '../../../../assets/img/no-artifact@2x.png'
+import noArtifact from '../../../../assets/img/no-artifact.webp'
 import { importComponentFromFELibrary, useAppContext } from '../../../common'
 import { CDButtonLabelMap, TriggerViewContext } from './config'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
