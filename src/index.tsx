@@ -149,7 +149,7 @@ if (!window || !window._env_) {
         SERVICE_WORKER_TIMEOUT: '3',
         FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE: false,
         HIDE_RELEASES: false,
-        HIDE_RESOURCE_WATCHER: true,
+        HIDE_RESOURCE_WATCHER: false,
         ORGANIZATION_NAME: '',
         FEATURE_EXTERNAL_FLUX_CD_ENABLE: false,
         FEATURE_SCOPED_VARIABLE_ENVIRONMENT_LIST_ENABLE: true,
