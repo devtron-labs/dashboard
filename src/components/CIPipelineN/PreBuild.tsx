@@ -33,7 +33,7 @@ import CustomScriptCard from './CustomScriptCard'
 import { BuildStageVariable, ViewType } from '../../config'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { TaskDetailComponent } from './TaskDetailComponent'
-import nojobs from '../../assets/img/empty-joblist@2x.png'
+import nojobs from '../../assets/img/empty-joblist.webp'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 export const PreBuild: React.FC<PreBuildType> = ({ isJobView }) => {
