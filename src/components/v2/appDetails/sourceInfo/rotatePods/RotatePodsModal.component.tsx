@@ -281,7 +281,7 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
                                 </div>
                             </Checkbox>
                         </div>
-                        <div className='dc__overflow-auto h-192'>
+                        <div className="dc__overflow-auto h-192">
                             {Array.from(podsToRotate.values()).map((item) => (
                                 <div key={`${item.kind}/${item.name}`} className="check-single-workload mt-16">
                                     <Checkbox
