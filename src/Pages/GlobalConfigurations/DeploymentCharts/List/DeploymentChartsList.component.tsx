@@ -25,7 +25,7 @@ import {
     URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '@Config/constants'
-import emptyCustomChart from '@Images/ic-empty-custom-charts.png'
+import emptyCustomChart from '@Images/ic-empty-custom-charts.webp'
 import { ReactComponent as DevtronIcon } from '@Icons/ic-devtron-app.svg'
 import { ReactComponent as HelpIcon } from '@Icons/ic-help.svg'
 import { importComponentFromFELibrary } from '@Components/common'
