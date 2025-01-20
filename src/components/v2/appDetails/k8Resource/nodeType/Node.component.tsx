@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { useRouteMatch, useParams, useHistory, useLocation } from 'react-router-dom'
 import {
     TippyCustomized,
@@ -40,10 +40,9 @@ import { getExternalLinkIcon, NodeLevelExternalLinks } from '../../../../externa
 import { OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type'
 import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils'
 import { getPodRestartRBACPayload } from '../nodeDetail/nodeDetail.api'
-import './nodeType.scss'
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { AppDetailsTabs } from '../../appDetails.store'
 import { NoPodProps } from './types'
+import './nodeType.scss'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const PodRestart = importComponentFromFELibrary('PodRestart')
@@ -241,7 +240,7 @@ const NodeComponent = ({
 
                         if (idx > 0) {
                             return (
-                                <div className="flex left cn-9 m-0 dc__no-decore">
+                                <div className="flex left cn-9 m-0 dc__no-decore" key={node.name}>
                                     <div>{text}</div>
                                     <div className="ml-0 fs-13 dc__truncate-text pt-4 pl-4">
                                         <ClipboardButton content={text} />
@@ -324,7 +323,8 @@ const NodeComponent = ({
             }
 
             return (
-                <>
+                // eslint-disable-next-line react/no-array-index-key
+                <Fragment key={`grt${index}`}>
                     {showHeader && !!_currentNodeHeader && (
                         <div className="node-row dc__border-bottom-n1 pt-6 pb-5 pl-18 pr-16">
                             <div className="fw-6">
@@ -379,6 +379,8 @@ const NodeComponent = ({
                                                 >
                                                     {getNodeDetailTabs(node.kind as NodeType).map((kind, idx) => (
                                                         <div
+                                                            // eslint-disable-next-line react/no-array-index-key
+                                                            key={`tab__${idx}`}
                                                             data-name={kind}
                                                             data-testid={`${kind.toLowerCase()}-tab`}
                                                             onClick={onClickNodeDetailsTab}
@@ -510,7 +512,7 @@ const NodeComponent = ({
                             <div>{makeNodeTree(node.childNodes, true)}</div>
                         </div>
                     )}
-                </>
+                </Fragment>
             )
         })
     }
@@ -544,6 +546,8 @@ const NodeComponent = ({
                     <div className={`node-row dc__border-bottom-n1 pt-6 pb-5 pl-8 pr-16 ${nodeRowClassModifier}`}>
                         {tableHeader.map((cell, index) => (
                             <div
+                                // eslint-disable-next-line react/no-array-index-key
+                                key={`${cell}-${index}`} // NOTE: cell can be empty string therefore need to put index in key
                                 className={`fw-6 ${index === 0 && selectedNodes[0]?.childNodes?.length ? 'pl-28' : ''} ${index === 0 && !selectedNodes[0]?.childNodes?.length ? 'pl-10' : ''}`}
                             >
                                 <SortableTableHeaderCell isSortable={false} title={cell} />

@@ -5318,7 +5318,7 @@ details[open] {
         }
     }
 
-    &--no-gap {
+    &--tight {
         gap: 1px;
 
         & > :not(:first-child)::before {

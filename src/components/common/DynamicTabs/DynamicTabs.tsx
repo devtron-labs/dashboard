@@ -143,9 +143,13 @@ const DynamicTabs = ({
             return
         }
 
+        // NOTE: we can't use scrollIntoView since that will also scroll it vertically
+        // therefore we need to conditionally scroll and that too in the horizontal direction only
         const { right, left } = node.getBoundingClientRect()
         const { right: parentRight, left: parentLeft } = dynamicTabsContainerRef.current.getBoundingClientRect()
 
+        // NOTE: please look into https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
+        // for more information what left and right pertain to
         if (left < parentLeft) {
             dynamicTabsContainerRef.current.scrollLeft += left - parentLeft
         }
@@ -352,16 +356,15 @@ const DynamicTabs = ({
 
     return (
         <div
-            className={`dynamic-tabs-section ${getClassNameForVariant(variant)} flexbox pl-12 pr-12 w-100 dc__outline-none-imp h-36 w-100`}
-            style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}
+            className={`dynamic-tabs-section ${getClassNameForVariant(variant)} flexbox pl-12 pr-12 w-100 dc__outline-none-imp h-36 w-100 dc__box-shadow`}
         >
             <div
-                className={`dc__separated-flexbox dc__separated-flexbox--no-gap ${dynamicTabs.length ? 'separator separator-right' : ''}`}
+                className={`dc__separated-flexbox dc__separated-flexbox--tight ${dynamicTabs.length ? 'separator separator-right' : ''}`}
             >
                 {fixedTabs.map((tab) => renderTab(tab, fixedTabs.length))}
             </div>
             <div
-                className="flex-grow-1 dynamic-tabs-container dc__separated-flexbox dc__separated-flexbox--no-gap"
+                className="flex-grow-1 dynamic-tabs-container dc__separated-flexbox dc__separated-flexbox--tight"
                 ref={dynamicTabsContainerRef}
             >
                 {dynamicTabs.map((tab) => renderTab(tab, tab.tippyConfig))}

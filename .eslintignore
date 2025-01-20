@@ -400,7 +400,6 @@ src/components/v2/chartDeploymentHistory/DockerListModal.tsx
 src/components/v2/chartDeploymentHistory/chartDeploymentHistory.service.ts
 src/components/v2/common/ReactSelect.utils.tsx
 src/components/v2/common/ReactSelectCustomization.tsx
-src/components/v2/common/message.ui.tsx
 src/components/v2/devtronStackManager/AboutDevtronView.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.component.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.service.tsx

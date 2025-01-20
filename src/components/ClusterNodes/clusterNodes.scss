@@ -199,6 +199,9 @@
 }
 
 .cluster-terminal-view-container {
+    // NOTE: this component is only visible in resource browser
+    // and at the time of writing this only the page header and dynamic tabs
+    // appear above it which amount to 48px and 36px respectively (48 + 36 = 84)
     height: calc(100vh - 84px);
 }
 

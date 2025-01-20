@@ -68,7 +68,7 @@ const NodeTreeDetailTab = ({
     }, [displayLogAnalyzer])
 
     const handleMarkK8sResourceTabSelected = () => {
-        markTabActiveById(AppDetailsTabs.k8s_Resources).then(noop).catch(noop)
+        markTabActiveById(AppDetailsTabs.k8s_Resources).catch(noop)
     }
 
     const handleUpdateK8sResourceTabUrl: K8ResourceComponentProps['handleUpdateK8sResourceTabUrl'] = (props) => {
@@ -76,7 +76,7 @@ const NodeTreeDetailTab = ({
     }
 
     const handleMarkLogAnalyzerTabSelected = () => {
-        markTabActiveById(AppDetailsTabs.log_analyzer).then(noop).catch(noop)
+        markTabActiveById(AppDetailsTabs.log_analyzer).catch(noop)
     }
 
     // NOTE: don't render any of the components before tabs are initialized
@@ -85,10 +85,7 @@ const NodeTreeDetailTab = ({
         appDetails?.resourceTree?.nodes?.length > 0 &&
         tabs.length && (
             <>
-                <div
-                    className="dc__position-sticky dc__left-0 bg__primary dc__top-0"
-                    style={{ paddingTop: '7px', zIndex: 10 }}
-                >
+                <div className="dc__position-sticky dc__left-0 bg__primary dc__top-0 pt-7 dc__zi-10">
                     <DynamicTabs
                         variant={DynamicTabsVariantType.ROUNDED}
                         markTabActiveById={markTabActiveById}

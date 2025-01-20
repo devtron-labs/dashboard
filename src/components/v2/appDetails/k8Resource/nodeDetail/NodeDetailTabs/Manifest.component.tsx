@@ -709,7 +709,6 @@ const ManifestComponent = ({
                         msg={loadingMsg}
                         icon={MsgUIType.LOADING}
                         size={24}
-                        minHeight={isResourceBrowserView ? 'calc(100vh - 151px)' : ''}
                     />
                 }
                 focus={isEditMode}
@@ -752,7 +751,6 @@ const ManifestComponent = ({
             <MessageUI
                 msg="This resource no longer exists"
                 size={32}
-                minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
             />
         </div>
     ) : (
@@ -765,7 +763,6 @@ const ManifestComponent = ({
                 <MessageUI
                     msg="Manifest not available"
                     size={24}
-                    minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
                 />
             )}
             {!error && (

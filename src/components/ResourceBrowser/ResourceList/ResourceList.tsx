@@ -236,7 +236,7 @@ const ResourceList = () => {
             const match = getTabById(tabId)
             if (match) {
                 if (!match.isSelected) {
-                    markTabActiveById(match.id).then(noop).catch(noop)
+                    markTabActiveById(match.id).catch(noop)
                 }
                 return
             }
@@ -265,13 +265,13 @@ const ResourceList = () => {
             const selectedTabFromNodeType = getTabById(nodeTypeToTabIdMap[nodeType]) ?? ({} as DynamicTabType)
             // Explicitly not using optional chaining to ensure to check the tab exists
             if (selectedTabFromNodeType && !selectedTabFromNodeType.isSelected) {
-                markTabActiveById(selectedTabFromNodeType.id).then(noop).catch(noop)
+                markTabActiveById(selectedTabFromNodeType.id).catch(noop)
             }
 
             return
         }
 
-        markTabActiveById(ResourceBrowserTabsId.k8s_Resources).then(noop).catch(noop)
+        markTabActiveById(ResourceBrowserTabsId.k8s_Resources).catch(noop)
     }, [location.pathname])
 
     const onClusterChange = (selected) => {
@@ -331,6 +331,22 @@ const ResourceList = () => {
         updateTabLastSyncMoment(activeTab.id)
         setIsDataStale(false)
     }
+
+    const dynamicTabsTimerConfig = useMemo(
+        () =>
+            tabs.reduce(
+                (acc, tab) => {
+                    acc[tab.id] = {
+                        reload: refreshData,
+                        showTimeSinceLastSync: tab.id === ResourceBrowserTabsId.k8s_Resources,
+                    }
+
+                    return acc
+                },
+                {} as DynamicTabsProps['timerConfig'],
+            ),
+        [tabs],
+    )
 
     const closeResourceModal = (_refreshData: boolean) => {
         if (_refreshData) {
@@ -498,17 +514,7 @@ const ResourceList = () => {
                     markTabActiveById={markTabActiveById}
                     stopTabByIdentifier={stopTabByIdentifier}
                     setIsDataStale={setIsDataStale}
-                    timerConfig={tabs.reduce(
-                        (acc, tab) => {
-                            acc[tab.id] = {
-                                reload: refreshData,
-                                showTimeSinceLastSync: tab.id === ResourceBrowserTabsId.k8s_Resources,
-                            }
-
-                            return acc
-                        },
-                        {} as DynamicTabsProps['timerConfig'],
-                    )}
+                    timerConfig={dynamicTabsTimerConfig}
                     iconsConfig={{
                         [getTabId(
                             UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX,
