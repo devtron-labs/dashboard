@@ -105,3 +105,10 @@ export interface UpdateTabUrlParamsType extends Pick<DynamicTabType, 'id' | 'url
      */
     retainSearchParams?: boolean
 }
+
+export interface DynamicTabsSelectProps {
+    tabs: DynamicTabType[]
+    getMarkTabActiveHandler: (tab: DynamicTabType) => () => void
+    selectedTab: DynamicTabType
+    handleTabCloseAction: React.MouseEventHandler<HTMLButtonElement>
+}
