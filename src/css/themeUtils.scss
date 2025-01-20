@@ -53,3 +53,21 @@
         }
     }
 }
+
+.shadow {
+    &__menu {
+        box-shadow: var(--shadow-menu);
+    }
+
+    &__modal {
+        box-shadow: var(--shadow-modal);
+    }
+
+    &__overlay {
+        box-shadow: var(--shadow-overlay);
+    }
+
+    &__drawer {
+        box-shadow: var(--shadow-drawer);
+    }
+}
