@@ -22,6 +22,10 @@
     &__modal {
         background: var(--bg-modal);
     }
+
+    &__white {
+        background: var(--white);
+    }
 }
 
 .text {
@@ -69,5 +73,11 @@
 
     &__drawer {
         box-shadow: var(--shadow-drawer);
+    }
+}
+
+.border {
+    &__white {
+        border: 1px solid var(--white);
     }
 }
