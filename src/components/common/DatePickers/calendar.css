@@ -120,8 +120,9 @@
     background-color: var(--transparent);
     color: var(--N200);
 
-    &:hover {
+    &:hover,&:active,&:focus-visible,&:focus {
         border-color: var(--N300);
+        background-color: var(--transparent);
     }
 }
 
