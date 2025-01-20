@@ -55,7 +55,7 @@ import {
 import { NavigationArrow, useAppContext, FragmentHOC } from '../../../common'
 import { groupHeaderStyle, Option } from '../../../v2/common/ReactSelect.utils'
 import { getAppConfigStatus, getAppOtherEnvironmentMin, stopStartApp } from '../../../../services/service'
-import AppNotDeployedIcon from '@Images/app-not-deployed.png'
+import AppNotDeployedIcon from '@Images/app-not-deployed.svg'
 import AppNotConfiguredIcon from '@Images/app-not-configured.png'
 import { ReactComponent as ICHibernate } from '@Icons/ic-medium-hibernate.svg'
 import { ReactComponent as ICUnhibernate } from '@Icons/ic-medium-unhibernate.svg'
