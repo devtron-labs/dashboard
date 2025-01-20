@@ -39,7 +39,7 @@ const SourceTypeCard = ({
         <ConditionalWrap wrap={renderTippy} condition={!!disableInfo}>
             <div className={disableInfo ? 'cursor-not-allowed dc__position-rel' : ''}>
                 <div
-                    className={`flexbox p-12 dc__gap-12 dc__align-self-stretch br-4 dc__border-n1 bcn-0 dc__hover-n50  ${
+                    className={`flexbox p-12 dc__gap-12 dc__align-self-stretch br-4 dc__border-n1 bg__primary dc__hover-n50  ${
                         disableInfo ? 'dc__disable-click dc__opacity-0_5' : ''
                     }`}
                     role="button"

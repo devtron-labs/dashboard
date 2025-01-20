@@ -172,7 +172,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                             className="flex left dc__link mr-16"
                             href={AppListConstants.SAMPLE_NODE_REPO_URL}
                         >
-                            <Folder className="icon-dim-16 mr-4" />
+                            <Folder className="icon-dim-16 mr-4 scb-5" />
                             View sample app git repository
                         </a>
                         <a

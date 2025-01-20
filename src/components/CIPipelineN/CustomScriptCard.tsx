@@ -24,7 +24,7 @@ const CustomScriptCard = () => (
         data-testid="execute-custom-script-button"
         className="p-12 cursor flexbox dc__gap-16 plugin-card dc__visible-hover dc__visible-hover--parent dc__border-transparent dc__hover-border-n1 br-4"
     >
-        <ICCDStage className="dc__no-shrink icon-dim-40 p-8 bcn-50 br-8" />
+        <ICCDStage className="dc__no-shrink icon-dim-40 p-8 bg__secondary br-8" />
 
         <div className="flexbox-col dc__gap-2 w-100">
             <div className="flexbox dc__gap-6 w-100 dc__align-start dc__content-space">

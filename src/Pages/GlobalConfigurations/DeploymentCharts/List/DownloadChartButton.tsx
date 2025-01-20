@@ -56,7 +56,7 @@ const DownloadChartButton = ({ name, versions }: DownloadChartButtonProps) => {
             content={
                 <>
                     <div
-                        className="fs-12 fw-6 cn-9 bc-n50 pt-4 pb-4 pl-8 pr-8 dc__top-radius-4 dc__text-center"
+                        className="fs-12 fw-6 cn-9 bg__secondary pt-4 pb-4 pl-8 pr-8 dc__top-radius-4 dc__text-center"
                         data-testid="chart-versions-modal"
                     >
                         Select Version

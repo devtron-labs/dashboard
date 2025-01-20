@@ -125,12 +125,12 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
         if (error) {
             if (error.code === API_STATUS_CODES.PERMISSION_DENIED) {
                 return (
-                    <div className="bcn-0 h-100 flex">
+                    <div className="bg__primary h-100 flex">
                         <ErrorScreenNotAuthorized />
                     </div>
                 )
             }
-            return <Reload reload={reload} className="flex-grow-1 bcn-0" />
+            return <Reload reload={reload} className="flex-grow-1 bg__primary" />
         }
 
         const areFiltersApplied = searchKey || (environment && environment !== SELECT_ALL_VALUE)
@@ -146,7 +146,7 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
             return (
                 <GenericEmptyState
                     title="The requested resource doesn't exist"
-                    classname="flex-grow-1 bcn-0"
+                    classname="flex-grow-1 bg__primary"
                     isButtonAvailable
                     renderButton={renderBackButton}
                 />
@@ -155,9 +155,9 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
     }
 
     return (
-        <div className="bcn-0 h-100 flexbox-col show-shimmer-loading">
+        <div className="bg__primary h-100 flexbox-col show-shimmer-loading">
             <div className="flexbox-col flex-grow-1 dc__overflow-scroll">
-                <div className="dc__position-sticky dc__top-0 bcn-0 dc__zi-20">
+                <div className="dc__position-sticky dc__top-0 bg__primary dc__zi-20">
                     <div className="flex flex-justify dc__border-bottom pt-10 pr-20 pb-10 pl-20">
                         <h2 className="fs-16 fw-6 lh-24 m-0 dc__ellipsis-right">{ciPipelineName}</h2>
                         <button

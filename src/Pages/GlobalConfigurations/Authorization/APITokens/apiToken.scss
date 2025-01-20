@@ -43,7 +43,7 @@
 
     .api-list-row {
         &:hover {
-            background-color: var(--N50);
+            background-color: var(--bg-secondary);
             .api__row-actions {
                 display: flex;
 
@@ -85,7 +85,7 @@
     .search {
         margin-right: 0;
         margin-bottom: 0 !important;
-        background-color: white;
+        background-color: var(--bg-primary);
 
         .search__input {
             &.search-applied {

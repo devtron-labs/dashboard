@@ -26,6 +26,7 @@ import {
     UseRegisterShortcutProvider,
     UserEmailProvider,
     customEnv,
+    ThemeProvider,
 } from '@devtron-labs/devtron-fe-common-lib'
 import App from './App'
 
@@ -168,20 +169,23 @@ if (!window || !window._env_) {
         FEATURE_DEFAULT_LANDING_RB_ENABLE: false,
         FEATURE_CLUSTER_MAP_ENABLE: true,
         FEATURE_ACTION_AUDIOS_ENABLE: true,
+        FEATURE_EXPERIMENTAL_THEMING_ENABLE: true,
     }
 }
 
 ReactDOM.render(
     <React.StrictMode>
         {window.top === window.self ? (
-            <BrowserRouter basename={window.__BASE_URL__}>
-                <UseRegisterShortcutProvider>
-                    <UserEmailProvider>
-                        <App />
-                    </UserEmailProvider>
-                </UseRegisterShortcutProvider>
-                <ToastManagerContainer />
-            </BrowserRouter>
+            <ThemeProvider>
+                <BrowserRouter basename={window.__BASE_URL__}>
+                    <UseRegisterShortcutProvider>
+                        <UserEmailProvider>
+                            <App />
+                        </UserEmailProvider>
+                    </UseRegisterShortcutProvider>
+                    <ToastManagerContainer />
+                </BrowserRouter>
+            </ThemeProvider>
         ) : null}
     </React.StrictMode>,
     root,

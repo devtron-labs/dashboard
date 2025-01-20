@@ -1,0 +1,23 @@
+/*
+ * Although this is duplicated but this would help us with consistent loader in case
+ * the theme is same as the system theme.
+ */
+:root {
+    /* Using the same name as in color palette to ensure this is applied when styles are loading */
+    --bg-tertiary: #f2f4f7;
+    --bg-devtron-loader: #e5f2ff;
+    --fill-devtron-loader: #3989d9;
+
+
+    /* TODO: Comment when theming goes live on production */
+    /* @media (prefers-color-scheme: dark) {
+        --bg-tertiary: #15161F;
+        --bg-devtron-loader: #28364c;
+        --fill-devtron-loader: #6195d2;
+    } */
+}
+
+body {
+    margin: 0;
+    background: var(--bg-tertiary);
+}

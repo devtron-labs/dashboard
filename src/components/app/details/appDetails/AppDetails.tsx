@@ -626,7 +626,7 @@ export const Details: React.FC<DetailsType> = ({
                         <EnvSelector
                             environments={environments}
                             disabled={params.envId && !showCommitInfo}
-                            controlStyleOverrides={{ backgroundColor: 'white' }}
+                            controlStyleOverrides={{ backgroundColor: 'var(--bg-primary)' }}
                         />
                         {isAppDeleted && appDetails?.deploymentAppDeleteRequest && (
                             <div data-testid="deleteing-argocd-pipeline" className="flex left">
@@ -802,7 +802,7 @@ export const Details: React.FC<DetailsType> = ({
                 </>
             )}
             {loadingResourceTree ? (
-                <div className="bcn-0 h-100">
+                <div className="bg__primary h-100">
                     <Progressing pageLoader fullHeight size={32} fillColor="var(--N500)" />
                 </div>
             ) : (
@@ -910,7 +910,7 @@ export const EnvSelector = ({
         control: (base, state) => ({
             ...base,
             border: '1px solid var(--B500)',
-            backgroundColor: 'white',
+            backgroundColor: 'var(--bg-primary)',
             minHeight: '32px',
             height: '32px',
             cursor: state.isDisabled ? 'not-allowed' : 'pointer',
@@ -972,8 +972,8 @@ export const EnvSelector = ({
                     preserveAspectRatio="none"
                     style={{ width: '100%', height: '100%', display: 'flex' }}
                 >
-                    <path d="M0 20 L200 20 Z" strokeWidth="1" stroke="#0066cc" />
-                    <path d="M0 10 L0, 30" strokeWidth="2" stroke="#0066cc" />
+                    <path d="M0 20 L200 20 Z" strokeWidth="1" stroke="var(--B500)" />
+                    <path d="M0 10 L0, 30" strokeWidth="2" stroke="var(--B500)" />
                 </svg>
                 <div
                     className="bcb-5 br-10 cn-0 pl-8 pr-8"
@@ -1287,12 +1287,12 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
                                 marginRight: '0',
                                 textAlign: 'left',
                                 direction: 'rtl',
-                                color: 'var(--N000)',
+                                color: 'var(--N0)',
                             }),
-                            input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
+                            input: (base, state) => ({ ...base, caretColor: 'var(--N0)', color: 'var(--N0)' }),
                             option: (base, state) => ({
                                 ...base,
-                                backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--bg-primary)',
                                 color: 'var(--N900)',
                                 textOverflow: 'ellipsis',
                                 overflow: 'hidden',
@@ -1333,16 +1333,16 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
                                             ...base,
                                             direction: 'rtl',
                                             textAlign: 'left',
-                                            color: 'var(--N000)',
+                                            color: 'var(--N0)',
                                         }),
                                         input: (base, state) => ({
                                             ...base,
-                                            caretColor: 'var(--N000)',
-                                            color: 'var(--N000)',
+                                            caretColor: 'var(--N0)',
+                                            color: 'var(--N0)',
                                         }),
                                         option: (base, state) => ({
                                             ...base,
-                                            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                            backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--bg-primary)',
                                             color: 'var(--N900)',
                                             textOverflow: 'ellipsis',
                                             overflow: 'hidden',
@@ -1386,12 +1386,12 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
                                 singleValue: (base, state) => ({
                                     ...base,
                                     textAlign: 'left',
-                                    color: 'var(--N000)',
+                                    color: 'var(--N0)',
                                 }),
-                                input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
+                                input: (base, state) => ({ ...base, caretColor: 'var(--N0)', color: 'var(--N0)' }),
                                 option: (base, state) => ({
                                     ...base,
-                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--N000)',
+                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--bg-primary)',
                                     color: 'var(--N900)',
                                 }),
                             }}

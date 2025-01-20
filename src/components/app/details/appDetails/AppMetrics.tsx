@@ -15,11 +15,17 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { not, Progressing, ToastManager, ToastVariantType, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { not, Progressing, ToastManager, ToastVariantType, useAsync, useTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, Link, NavLink } from 'react-router-dom'
 import moment, { Moment } from 'moment'
 import Tippy from '@tippyjs/react'
-import { getIframeSrc, ThroughputSelect, getCalendarValue, isK8sVersionValid, LatencySelect } from './utils'
+import {
+    getIframeSrc,
+    ThroughputSelect,
+    getCalendarValue,
+    isK8sVersionValid,
+    LatencySelect,
+} from './utils'
 import {
     ChartTypes,
     AppMetricsTab,
@@ -31,7 +37,7 @@ import {
     CalendarFocusInputType,
     AppDetailsPathParams,
 } from './appDetails.type'
-import { GraphModal } from './GraphsModal'
+import { GraphModal, GraphModalProps } from './GraphsModal'
 import { DatePickerType2 as DateRangePicker } from '../../../common'
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg'
 import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullscreen-2.svg'
@@ -59,6 +65,7 @@ export const AppMetrics: React.FC<{
     k8sVersion
     addExtraSpace: boolean
 }> = ({ appName, environment, podMap, k8sVersion, addExtraSpace }) => {
+    const { appTheme } = useTheme()
     const { appMetrics, environmentName, infraMetrics } = environment
     const [calendar, setDateRange] = useState<{ startDate: Moment; endDate: Moment }>({
         startDate: moment().subtract(5, 'minute'),
@@ -162,6 +169,11 @@ export const AppMetrics: React.FC<{
         setCalendarValue(str)
     }
 
+    const getIframeSrcWrapper: GraphModalProps['getIframeSrcWrapper'] = (params) => getIframeSrc({
+        ...params,
+        grafanaTheme: appTheme,
+    })
+
     function handleStatusChange(selected): void {
         if (!isK8sVersionValid(k8sVersion)) {
             k8sVersion = DEFAULTK8SVERSION
@@ -173,7 +185,14 @@ export const AppMetrics: React.FC<{
             newPodHash,
             k8sVersion,
         }
-        const throughput = getIframeSrc(appInfo, ChartType.Status, calendarInputs, tab, true, selected.value)
+        const throughput = getIframeSrcWrapper({
+            appInfo,
+            chartName: ChartType.Status,
+            calendarInputs,
+            tab,
+            isLegendRequired: true,
+            statusCode: selected.value
+        })
         setStatusCode(selected.value)
         setGraphs({
             ...graphs,
@@ -192,7 +211,9 @@ export const AppMetrics: React.FC<{
             newPodHash,
             k8sVersion,
         }
-        const latency = getIframeSrc(appInfo, ChartType.Latency, calendarInputs, tab, true, undefined, selected.value)
+        const latency = getIframeSrcWrapper({
+            appInfo, chartName: ChartType.Latency, calendarInputs, tab, isLegendRequired: true, statusCode: undefined, latency: selected.value
+        })
         setLatency(selected.value)
         setGraphs({
             ...graphs,
@@ -222,18 +243,29 @@ export const AppMetrics: React.FC<{
             newPodHash,
             k8sVersion,
         }
-        const cpu = getIframeSrc(appInfo, ChartType.Cpu, calendarInputs, newTab, true)
-        const ram = getIframeSrc(appInfo, ChartType.Ram, calendarInputs, newTab, true)
-        const latency = getIframeSrc(
+        const cpu = getIframeSrcWrapper({
+            appInfo, chartName: ChartType.Cpu, calendarInputs, tab: newTab, isLegendRequired: true
+        })
+        const ram = getIframeSrcWrapper({
+            appInfo, chartName: ChartType.Ram, calendarInputs, tab: newTab, isLegendRequired: true
+        })
+        const latency = getIframeSrcWrapper({
             appInfo,
-            ChartType.Latency,
+            chartName: ChartType.Latency,
             calendarInputs,
-            newTab,
-            true,
-            undefined,
-            selectedLatency,
-        )
-        const throughput = getIframeSrc(appInfo, ChartType.Status, calendarInputs, newTab, true, StatusType.Throughput)
+            tab: newTab,
+            isLegendRequired: true,
+            statusCode: undefined,
+            latency: selectedLatency,
+        })
+        const throughput = getIframeSrcWrapper({
+            appInfo,
+            chartName: ChartType.Status,
+            calendarInputs,
+            tab: newTab,
+            isLegendRequired: true,
+            statusCode: StatusType.Throughput
+        })
         setGraphs({
             cpu,
             ram,
@@ -254,9 +286,8 @@ export const AppMetrics: React.FC<{
 
     useEffect(() => {
         getNewGraphs(tab)
-    }, [datasource, calendarValue])
+    }, [datasource, calendarValue, appTheme])
 
-    // @ts-ignore
     if (grafanaModuleStatus?.result?.status !== ModuleStatus.INSTALLED) {
         return <MonitoringModuleNotInstalled addSpace={addSpace} />
     }
@@ -279,7 +310,7 @@ export const AppMetrics: React.FC<{
     return (
         <section
             data-testid="app-metrices-wrapper"
-            className="app-summary bcn-0 pl-24 pr-24 pb-20 w-100 dc__border-bottom-n1"
+            className="app-summary bg__primary pl-24 pr-24 pb-20 w-100 dc__border-bottom-n1"
         >
             {(appMetrics || infraMetrics) && (
                 <div className="flex" style={{ justifyContent: 'space-between', height: '68px' }}>
@@ -325,6 +356,7 @@ export const AppMetrics: React.FC<{
                                     k8sVersion={k8sVersion}
                                     selectedLatency={selectedLatency}
                                     close={() => setChartName(null)}
+                                    getIframeSrcWrapper={getIframeSrcWrapper}
                                 />
                             ) : null}
                         </div>
@@ -466,7 +498,7 @@ const EnableAppMetrics = () => {
         <div
             data-testid="app-metrices-not-enabled"
             className="flex column br-4"
-            style={{ gridColumn: '3 / span 2', background: 'var(--window-bg)' }}
+            style={{ gridColumn: '3 / span 2', background: 'var(--bg-tertiary)' }}
         >
             <b className="mb-12 fs-12 fw-6 cn-9">Throughput & Latency</b>
             <span className="mb-12 fs-12 cn-7" style={{ width: '200px' }}>
@@ -523,7 +555,7 @@ const AppMetricsEmptyState = ({ isLoading, isConfigured, isHealthy, hostURLConfi
             'Datasource configuration is incorrect or prometheus is not healthy. Please review configuration and try reloading this page.'
     }
     return (
-        <div className="app-metrics-graph__empty-state-wrapper bcn-0 w-100 pt-18 pb-18 pl-20 pr-20 cursor">
+        <div className="app-metrics-graph__empty-state-wrapper bg__primary w-100 pt-18 pb-18 pl-20 pr-20 cursor">
             <div onClick={toggleHeader} className="flex left w-100 lh-20">
                 <span className="fs-14 fw-6 cn-7 flex left mr-16">
                     <GraphIcon className="mr-8 fcn-7 icon-dim-20" />

@@ -28,7 +28,7 @@ const HelmAppConfigApplyStatusCard = ({ releaseStatus, cardLoading }: HelmAppCon
     return releaseStatus ? (
         <div
             data-testid="helm-config-apply-status-card"
-            className="app-details-info-card flex left bcn-0 br-8 mr-12 w-200"
+            className="app-details-info-card flex left bg__primary br-8 mr-12 w-200"
         >
             <div className="app-details-info-card__top-container flexbox dc__gap-12">
                 <div className="app-details-info-card__top-container__content">

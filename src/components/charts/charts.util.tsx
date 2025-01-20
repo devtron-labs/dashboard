@@ -21,7 +21,7 @@ import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.
 export const styles = {
     control: (base, state) => ({
         ...base,
-        border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
+        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
         boxShadow: 'none',
     }),
     singleValue: (base, state) => ({

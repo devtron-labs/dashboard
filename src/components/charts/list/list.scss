@@ -77,7 +77,7 @@
 }
 
 .chart-grid-item__title-repo {
-    color: #969696;
+    color: var(--N400);
 }
 
 .chart-grid-item__chart-version {
@@ -147,7 +147,7 @@
     display: grid;
     grid-row-gap: 16px;
     overflow: auto;
-    background: white;
+    background: var(--bg-primary);
     width: 100%;
     padding: 16px;
     height: 100%;
@@ -236,7 +236,7 @@
 
         g {
             path:nth-child(2) {
-                fill: white;
+                fill: var(--N0);
             }
 
             path:nth-child(3) {
@@ -251,7 +251,7 @@
 
         .select-button {
             font-size: 12px;
-            color: #797777;
+            color: var(--N700);
         }
     }
 
@@ -303,7 +303,7 @@
     }
 
     .version-values-label {
-        color: #797777;
+        color: var(--N700);
         font-size: 12px;
     }
 }
@@ -312,7 +312,7 @@
     width: 100%;
     margin: 0 auto;
     padding: 24px 87px;
-    background-color: var(--N000);
+    background-color: var(--bg-primary);
 
     .half {
         width: 50%;
@@ -391,7 +391,7 @@
         max-height: 100%;
         display: grid;
         grid-template-rows: 1fr auto;
-        background: white;
+        background: var(--bg-primary);
         flex-shrink: 0;
         flex-basis: 320px;
         border-left: 1px solid var(--N200);
@@ -440,7 +440,7 @@
     height: calc(100vh - 100px);
     width: calc(100vw - 100px);
     margin: 40px 50px 60px 50px;
-    background: white;
+    background: var(--bg-primary);
     border-radius: 8px;
     padding: 24px 24px 12px 24px;
     display: grid;
@@ -459,7 +459,7 @@
         overflow: auto;
 
         &.right {
-            border-left: 1px solid #d6dbdf;
+            border-left: 1px solid var(--N200);
         }
     }
 
@@ -468,7 +468,7 @@
         min-height: 0;
         display: grid;
         grid-template-rows: 40px 1fr;
-        border: 1px solid #d6dbdf;
+        border: 1px solid var(--N200);
         border-radius: 4px;
     }
 
@@ -487,7 +487,7 @@
             color: var(--N700);
 
             &:nth-child(2) {
-                border-left: 1px solid #d6dbdf;
+                border-left: 1px solid var(--N200);
             }
         }
     }
@@ -517,6 +517,7 @@
     .chart-group-list-page__body {
         height: 100%;
         overflow: auto;
+        background-color: var(--bg-secondary);
     }
 }
 
@@ -571,13 +572,13 @@
 .cta--chart-store {
     width: 93%;
     padding: 8px 12px;
-    background: #0066cc;
-    color: white;
+    background: var(--B500);
+    color: var(--N0);
 }
 
 .filter-column-container {
     max-height: 100%;
-    background: white;
+    background: var(--bg-primary);
     flex-shrink: 0;
     flex-basis: 240px;
     border-right: 1px solid var(--N200);
@@ -632,7 +633,7 @@
 
 .add-repo-row:hover,
 .list:hover {
-    background-color: var(--N50);
+    background-color: var(--bg-secondary);
 }
 
 .accordian-add-position {

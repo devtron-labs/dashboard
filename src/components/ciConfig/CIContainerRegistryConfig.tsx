@@ -111,7 +111,7 @@ export default function CIContainerRegistryConfig({
     const renderContainerRegistryMenuList = (): JSX.Element => (
         <NavLink
             to={URLS.GLOBAL_CONFIG_DOCKER}
-            className="flex left dc__gap-8 dc__border-top bcn-0 px-8 py-10 cb-5 dc__block fw-6 fs-13 lh-20 anchor cursor dc__no-decor dc__hover-n50"
+            className="flex left dc__gap-8 dc__border-top bg__primary px-8 py-10 cb-5 dc__block fw-6 fs-13 lh-20 anchor cursor dc__no-decor dc__hover-n50"
             data-testid="add-container-registry-button"
         >
             <Add className="icon-dim-20 dc__no-shrink fcb-5" />

@@ -87,7 +87,7 @@ export default function ContentCard({
         )
     }
     return (
-        <div className={`content-card-container bcn-0 br-4 en-2 bw-1 cursor ${rootClassName || ''}`}>
+        <div className={`content-card-container bg__primary br-4 en-2 bw-1 cursor ${rootClassName || ''}`}>
             {isExternalRedirect ? (
                 <a
                     href={redirectTo}

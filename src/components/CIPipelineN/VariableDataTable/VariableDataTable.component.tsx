@@ -550,7 +550,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                         : {})}
                 />
             ) : (
-                <div className="p-8 bcn-50 dc__border-dashed--n3 br-4">
+                <div className="p-8 bg__secondary dc__border-dashed--n3 br-4">
                     <p className="m-0 fs-12 lh-18 cn-7">{VARIABLE_DATA_TABLE_EMPTY_ROW_MESSAGE[type]}</p>
                 </div>
             )}
