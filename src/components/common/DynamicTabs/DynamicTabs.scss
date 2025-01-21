@@ -151,17 +151,19 @@
 }
 
 .dynamic-tabs-select-popup-body {
-    .dynamic-tabs-select__menu {
-        margin-top: 0px;
+    .dynamic-tabs-select {
+        &__menu {
+            margin-top: 0px;
 
-        border-radius: 0 0 4px 4px;
-    }
+            border-radius: 0 0 4px 4px;
+        }
 
-    .dynamic-tabs-select__control {
-        border-radius: 4px 4px 0 0;
-    }
+        &__control {
+            border-radius: 4px 4px 0 0;
+        }
 
-    .dynamic-tabs-select__indicator {
-        display: none;
+        &__indicator {
+            display: none;
+        }
     }
 }

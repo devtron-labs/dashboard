@@ -10,7 +10,6 @@ import {
     SelectPickerProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICArrowLeft } from '@Icons/ic-arrow-left.svg'
-import { InputActionMeta } from 'react-select'
 import { useMemo, useState } from 'react'
 import { ReactComponent as ICCross } from '@Icons/ic-cross.svg'
 import { DynamicTabsSelectProps } from './types'
@@ -22,7 +21,6 @@ const DynamicTabsSelect = ({
     handleTabCloseAction,
 }: DynamicTabsSelectProps) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
-    const [tabSearchText, setTabSearchText] = useState('')
 
     const handleToggleOpenMenuState = (isOpen: boolean) => {
         setIsMenuOpen(isOpen)
@@ -57,10 +55,6 @@ const DynamicTabsSelect = ({
         [tabs],
     )
 
-    const clearSearchInput = () => {
-        setTabSearchText('')
-    }
-
     const onChangeTab = (option: SelectPickerOptionType<DynamicTabType>): void => {
         if (option) {
             setIsMenuOpen(false)
@@ -70,15 +64,6 @@ const DynamicTabsSelect = ({
 
     const handleCloseMenu = () => {
         setIsMenuOpen(false)
-        setTabSearchText('')
-    }
-
-    const handleOnChangeSearchText = (newValue: string, actionMeta: InputActionMeta) => {
-        if ((actionMeta.action === 'input-blur' || actionMeta.action === 'menu-close') && actionMeta.prevInputValue) {
-            setTabSearchText(actionMeta.prevInputValue)
-        } else {
-            setTabSearchText(newValue)
-        }
     }
 
     // NOTE: by default react select compares option references
@@ -97,29 +82,31 @@ const DynamicTabsSelect = ({
         option.data.value.id.toLowerCase().includes(searchText.toLowerCase())
 
     return (
-        <PopupMenu autoClose autoPosition onToggleCallback={handleToggleOpenMenuState} closeOnEscape>
+        <PopupMenu autoClose autoPosition onToggleCallback={handleToggleOpenMenuState}>
             <PopupMenu.Button rootClassName="flex">
                 <ICArrowLeft
                     className={`rotate icon-dim-18 ${isMenuOpen ? 'fcn-9' : 'fcn-7'}`}
                     style={{ ['--rotateBy' as string]: isMenuOpen ? '90deg' : '-90deg' }}
                 />
             </PopupMenu.Button>
-            <PopupMenu.Body rootClassName="w-300 mt-8 dynamic-tabs-select-popup-body" style={{ right: '12px' }}>
-                <SelectPicker<DynamicTabType, false>
-                    inputId="dynamic-tabs-select"
-                    placeholder="Search tabs"
-                    options={options}
-                    onChange={onChangeTab}
-                    isOptionSelected={isOptionSelected}
-                    filterOption={selectFilter}
-                    inputValue={tabSearchText}
-                    onInputChange={handleOnChangeSearchText}
-                    onKeyDown={handleOnEscPress}
-                    onBlur={clearSearchInput}
-                    menuIsOpen={isMenuOpen}
-                    autoFocus
-                />
-            </PopupMenu.Body>
+            {/* NOTE: Since we can't control open state of popup menu through prop we can control it by simply
+            hooking a state using onToggleCallback and rendering the PopupMenu.Body conditionally through that state */}
+            {isMenuOpen && (
+                <PopupMenu.Body rootClassName="w-300 mt-8 dynamic-tabs-select-popup-body" style={{ right: '12px' }}>
+                    <SelectPicker<DynamicTabType, false>
+                        inputId="dynamic-tabs-select"
+                        placeholder="Search tabs"
+                        options={options}
+                        onChange={onChangeTab}
+                        isOptionSelected={isOptionSelected}
+                        filterOption={selectFilter}
+                        onKeyDown={handleOnEscPress}
+                        shouldMenuAlignRight
+                        menuIsOpen
+                        autoFocus
+                    />
+                </PopupMenu.Body>
+            )}
         </PopupMenu>
     )
 }
