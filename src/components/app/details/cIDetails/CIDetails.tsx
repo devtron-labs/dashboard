@@ -440,10 +440,12 @@ export const Details = ({
                         podStatus={triggerDetails.podStatus}
                         stage={triggerDetails.stage}
                         artifact={triggerDetails.artifact}
+                        namespace={triggerDetails.namespace}
                         environmentName={triggerDetails.environmentName}
                         isJobView={isJobView}
                         workerPodName={triggerDetails.podName}
                         renderDeploymentHistoryTriggerMetaText={renderDeploymentHistoryTriggerMetaText}
+                        workflowExecutionStages={triggerDetails.workflowExecutionStages}
                     />
                     <div className="dc__border-bottom pl-50 pr-20 dc__position-sticky dc__top-0 bg__primary dc__zi-3">
                         <TabGroup

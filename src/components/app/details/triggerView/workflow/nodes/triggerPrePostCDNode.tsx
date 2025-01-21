@@ -23,7 +23,7 @@ import { BUILD_STATUS, URLS, DEFAULT_STATUS } from '../../../../../../config'
 import { TriggerViewContext } from '../../config'
 import NoGitOpsRepoConfiguredWarning from '../../../../../workflowEditor/NoGitOpsRepoConfiguredWarning'
 import { gitOpsRepoNotConfiguredWithEnforcedEnv } from '../../../../../gitOps/constants'
-import { getNodeSideHeadingAndClass } from './workflow.utils'
+import { getNodeSideHeadingAndClass, getWorkflowNodeStatusTitle } from './workflow.utils'
 import { getAppGroupDeploymentHistoryLink } from '../../../../../ApplicationGroup/AppGroup.utils'
 
 export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, TriggerPrePostCDNodeState> {
@@ -63,7 +63,7 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
             return (
                 <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
                     <span data-testid={`${this.props.title}-trigger-status-${this.props.index}`}>
-                        {this.props.status}
+                        {getWorkflowNodeStatusTitle(this.props.status)}
                     </span>
                     <>
                         {this.props.status && <span className="mr-5 ml-5">/</span>}

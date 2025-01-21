@@ -24,6 +24,7 @@ import { ReactComponent as IcLink } from '../../../../../../assets/icons/ic-link
 import { TriggerViewContext } from '../../config'
 import { DEFAULT_ENV } from '../../Constants'
 import { getLinkedCITippyContent } from '../../../../../../Pages/Shared/LinkedCIDetailsModal/utils'
+import { getWorkflowNodeStatusTitle } from './workflow.utils'
 
 export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string }> {
     x: number
@@ -106,7 +107,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                 className="dc__cd-trigger-status mb-6"
                 style={{ color: TriggerStatus[status] }}
             >
-                {this.props.status && this.props.status.toLowerCase() === 'cancelled' ? 'ABORTED' : this.props.status}
+                {getWorkflowNodeStatusTitle(this.props.status)}
                 {this.props.status && <span className="mr-5 ml-5">/</span>}
                 <Link
                     data-testid={`ci-trigger-select-details-button-${this.props.title}`}

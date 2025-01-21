@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { RouteComponentProps, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import link from '../../../../../../assets/icons/ic-link.svg'
-import { ReactComponent as ICLinkedCINode } from '../../../../../../assets/icons/ic-node-build-linked.svg'
+import link from '@Icons/ic-link.svg'
+import { ReactComponent as ICLinkedCINode } from '@Icons/ic-node-build-linked.svg'
 import { TriggerStatus } from '../../../../config'
 import { DEFAULT_STATUS, URLS } from '../../../../../../config'
+import { getWorkflowNodeStatusTitle } from './workflow.utils'
 
 export interface CINodeProps extends RouteComponentProps<{}> {
     x: number
@@ -78,7 +79,7 @@ export class TriggerLinkedCINode extends Component<CINodeProps> {
                 className="dc__cd-trigger-status"
                 style={{ color: TriggerStatus[status] }}
             >
-                {this.props.status}
+                {getWorkflowNodeStatusTitle(this.props.status)}
                 {!this.props.fromAppGrouping && (
                     <>
                         {this.props.status && <span className="mr-5 ml-5">/</span>}

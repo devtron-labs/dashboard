@@ -16,6 +16,7 @@
 
 import Tippy from '@tippyjs/react'
 import { DO_NOT_DEPLOY } from '../../Constants'
+import { WorkflowStatusEnum } from '@Components/ApplicationGroup/AppGroup.types'
 
 export const envDescriptionTippy = (environmentName: string, description: string) => {
     return (
@@ -52,4 +53,20 @@ export const getNodeSideHeadingAndClass = (
     }
 
     return { heading: triggerType, className: '' }
+}
+
+export const getWorkflowNodeStatusTitle = (status: string) => {
+    if (!status) {
+        return null
+    }
+
+    if (status.toLowerCase() === 'cancelled') {
+        return 'ABORTED'
+    }
+
+    if (status === WorkflowStatusEnum.WAITING_TO_START) {
+        return 'Waiting to start'
+    }
+
+    return status
 }

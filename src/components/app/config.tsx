@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-export const Colors = {
-    yellow: 'var(--O500)',
+import { WorkflowStatusEnum } from '@Components/ApplicationGroup/AppGroup.types'
+
+const Colors = {
     red: 'var(--R500)',
     green: 'var(--G500)',
     orange: 'var(--O500)',
@@ -36,12 +37,13 @@ export const CI_PIPELINE_VIEW = {
 
 export const TriggerStatus = {
     pending: Colors.orange,
-    starting: Colors.yellow,
-    running: Colors.yellow,
+    starting: Colors.orange,
+    running: Colors.orange,
     succeeded: Colors.green,
     failed: Colors.red,
     error: Colors.red,
     cancelled: Colors.gray,
     notbuilt: Colors.gray,
     nottriggered: Colors.gray,
+    [WorkflowStatusEnum.WAITING_TO_START.toLowerCase()]: Colors.orange,
 }
