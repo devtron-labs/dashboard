@@ -64,7 +64,7 @@ describe('EnvironmentOverview', () => {
         expect(component.getByText('devtron-ns')).toBeInTheDocument()
         expect(component.getByText('default_cluster')).toBeInTheDocument()
         //right side component
-        const rightInfoComponent = component.container.querySelector('.dc__overflow-scroll')
+        const rightInfoComponent = component.container.querySelector('.dc__overflow-auto')
         expect(rightInfoComponent).toBeInTheDocument()
         const infoRightRowComponent = rightInfoComponent.querySelector('.app-deployments-info-body')
         expect(infoRightRowComponent).toBeInTheDocument()

@@ -130,10 +130,7 @@ export const SourceInfo = ({
 
         return (
             <div className="flex left w-100">
-                <EnvSelector
-                    environments={environments}
-                    disabled={loadingDetails || loadingResourceTree || (params.envId && !showCommitInfo)}
-                />
+                <EnvSelector environments={environments} />
                 {appDetails?.deploymentAppType && (
                     <Tooltip
                         placement="top"

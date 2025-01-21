@@ -15,8 +15,6 @@
  */
 
 import moment from 'moment'
-import React from 'react'
-import { components } from 'react-select'
 import { AggregationKeys } from '../../types'
 import { getVersionArr, isVersionLessThanOrEqualToTarget, DayPickerRangeControllerPresets } from '../../../common'
 import { ChartTypes, AppMetricsTabType, StatusType, StatusTypes } from './appDetails.type'
@@ -221,17 +219,6 @@ export function getGrafanaBaseURL(chartName: ChartTypes): string {
     return url
 }
 
-export function getPodNameSuffix(nodeName: string, isAppDeployment: boolean, nodesMap: any, kind: string): string {
-    if (Nodes.Pod !== kind || !isAppDeployment) {
-        return ''
-    }
-    if (!nodesMap.has(nodeName)) {
-        return ''
-    }
-    const pod = nodesMap.get(nodeName)
-    return pod.isNew ? '(new)' : '(old)'
-}
-
 interface NodeItems {
     label: string
     value: string
@@ -240,33 +227,6 @@ interface NodeItems {
 interface SelectedNodeItems {
     label: string
     value: string
-}
-
-export function getSelectedNodeItems(
-    selectedNodes: string,
-    nodeItems: NodeItems[],
-    isAppDeployment: boolean,
-    nodesMap: any,
-    kind: string,
-): SelectedNodeItems[] {
-    let selectedNodeItems = []
-    if (selectedNodes == 'All pods') {
-        selectedNodeItems = nodeItems
-    } else if (selectedNodes == 'All new pods') {
-        const result = nodeItems.filter((item) => item.label.includes('(new)'))
-        selectedNodeItems = result
-    } else if (selectedNodes == 'All old pods') {
-        const result = nodeItems.filter((item) => item.label.includes('(old)'))
-        selectedNodeItems = result
-    } else {
-        const initialNode = {
-            label: selectedNodes + getPodNameSuffix(selectedNodes, isAppDeployment, nodesMap, kind),
-            value: selectedNodes,
-        }
-        selectedNodeItems.push(initialNode)
-    }
-
-    return selectedNodeItems
 }
 
 export function addChartNameExtensionToBaseURL(
@@ -348,16 +308,6 @@ export function addQueryParamToGrafanaURL(
     url += `&from=${startTime}&to=${endTime}`
     url += `&panelId=${panelId}&theme=${grafanaTheme}`
     return url
-}
-
-export const ValueContainer = (props) => {
-    const { children, ...rest } = props
-    return (
-        <components.ValueContainer {...rest}>
-            {`${props.getValue()[0].value}`}
-            {React.cloneElement(children[1])}
-        </components.ValueContainer>
-    )
 }
 
 export const validateMomentDate = (date: string, format: string): string => {

@@ -577,7 +577,7 @@ const BaseResourceListContent = ({
                             'scrollable-resource-list',
                             showPaginatedView,
                             showStaleDataWarning,
-                        )} dc__overflow-scroll`}
+                        )} dc__overflow-auto`}
                     >
                         <div
                             className="scrollable-resource-list__row no-hover-bg h-36 fw-6 cn-7 fs-12 dc__gap-16 dc__zi-2 dc__position-sticky dc__border-bottom dc__uppercase bg__primary dc__top-0"

@@ -107,7 +107,7 @@ import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search
 import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as PlayIC } from '@Icons/ic-play-outline.svg'
 
-import noArtifact from '../../../../assets/img/no-artifact@2x.png'
+import noArtifact from '../../../../assets/img/no-artifact.webp'
 import { importComponentFromFELibrary, useAppContext } from '../../../common'
 import { CDButtonLabelMap, TriggerViewContext } from './config'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
@@ -1470,7 +1470,7 @@ const CDMaterial = ({
     )
 
     const renderMaterialListBodyWrapper = (children: JSX.Element) => (
-        <div className="flexbox-col py-16 px-20 dc__overflow-scroll">{children}</div>
+        <div className="flexbox-col py-16 px-20 dc__overflow-auto">{children}</div>
     )
 
     const renderRuntimeParamsSidebar = (areTabsDisabled: boolean = false) => {
@@ -1515,7 +1515,7 @@ const CDMaterial = ({
 
         return (
             <div
-                className={`flex-grow-1 dc__overflow-scroll ${isPreOrPostCD && !isFromBulkCD ? 'display-grid cd-material__container-with-sidebar' : 'flexbox-col py-16 px-20'}`}
+                className={`flex-grow-1 dc__overflow-auto ${isPreOrPostCD && !isFromBulkCD ? 'display-grid cd-material__container-with-sidebar' : 'flexbox-col py-16 px-20'}`}
             >
                 {renderRuntimeParamsSidebar()}
 
@@ -1910,11 +1910,11 @@ const CDMaterial = ({
                 )}
 
                 <div
-                    className={`flexbox-col h-100 dc__overflow-scroll ${isPreOrPostCD && !isFromBulkCD ? 'display-grid cd-material__container-with-sidebar' : ''}`}
+                    className={`flexbox-col h-100 dc__overflow-auto ${isPreOrPostCD && !isFromBulkCD ? 'display-grid cd-material__container-with-sidebar' : ''}`}
                 >
                     {renderRuntimeParamsSidebar(true)}
 
-                    <div className="flexbox-col dc__overflow-scroll dc__gap-12 dc__align-items-center h-100 w-100 pl-20 pr-20">
+                    <div className="flexbox-col dc__overflow-auto dc__gap-12 dc__align-items-center h-100 w-100 pl-20 pr-20">
                         <div className="flexbox dc__align-items-center dc__content-space pt-20 pb-16 w-100">
                             <div className="shimmer-loading" style={{ width: '100px', height: '20px' }} />
                         </div>

@@ -37,7 +37,7 @@ import {
     SeverityFilterValues,
 } from './types'
 import { getSearchLabelFromValue, getSeverityFilterLabelFromValue, parseSearchParams } from './utils'
-import AppNotDeployed from '../../../assets/img/app-not-deployed.png'
+import AppNotDeployed from '../../../assets/img/app-not-deployed.svg'
 import { INITIAL_SCAN_DETAILS, SEARCH_TYPE_OPTIONS } from './constants'
 import { SecurityScanType } from '../security.types'
 

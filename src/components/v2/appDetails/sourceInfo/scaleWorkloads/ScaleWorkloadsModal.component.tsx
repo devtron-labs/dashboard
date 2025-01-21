@@ -388,7 +388,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                                         </div>
                                     </Checkbox>
                                 </div>
-                                <div style={{ height: '192px', overflow: 'scroll' }}>
+                                <div  className="h-192 dc__overflow-auto">
                                     {Array.from(_workloadsList.values()).map((item) => (
                                         <div key={`${item.kind}/${item.name}`} className="check-single-workload">
                                             <Checkbox

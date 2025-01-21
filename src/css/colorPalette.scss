@@ -31,6 +31,11 @@
     --backdrop-bg: #000000bf;
     --transparent: transparent;
 
+    --shadow-menu: 0px 1px 1px 0px rgba(0, 0, 0, 0.07), 0px 2px 5px 0px rgba(0, 0, 0, 0.07), 0px 3px 8px 0px rgba(0, 0, 0, 0.07);
+    --shadow-modal: 0px 1px 1px 0px rgba(0, 0, 0, 0.04), 0px 2px 8px 0px rgba(0, 0, 0, 0.04), 0px 3px 17px 0px rgba(0, 0, 0, 0.04), 0px 4px 30px 0px rgba(0, 0, 0, 0.13);
+    --shadow-overlay: 0px 1px 1px 0px rgba(0, 0, 0, 0.04), 0px 2px 6px 0px rgba(0, 0, 0, 0.04), 0px 4px 12px 0px rgba(0, 0, 0, 0.10);
+    --shadow-drawer: 0px 1px 1px 0px rgba(0, 0, 0, 0.04), 0px 2px 8px 0px rgba(0, 0, 0, 0.04), 0px 3px 17px 0px rgba(0, 0, 0, 0.04), 0px 4px 30px 0px rgba(0, 0, 0, 0.13);
+
     &.theme {
         &__light {
             --V700: #4934b3;
@@ -104,6 +109,12 @@
             --bg-toast: var(--N800);
             --bg-sidebar: #0066cc;
             --bg-shimmer-loader: linear-gradient(90deg, var(--N200) 0%, var(--N50) 50%, var(--N200) 80%);
+
+            --border-primary: var(--N200);
+            --border-secondary: var(--N100);
+
+            --divider-primary: var(--N200);
+            --divider-secondary: var(--N100);
         }
 
         &__dark {
@@ -181,6 +192,12 @@
             --bg-toast: var(--N300);
             --bg-sidebar: #2E3142;
             --bg-shimmer-loader: linear-gradient(90deg, var(--N50) 0%, var(--N200) 50%, var(--N50) 80%);
+
+            --border-primary: #FFFFFF33;
+            --border-secondary: #FFFFFF1A;
+
+            --divider-primary: #FFFFFF33;
+            --divider-secondary: #FFFFFF1A;
         }
     }
 }

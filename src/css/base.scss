@@ -1630,7 +1630,7 @@ button.anchor {
     display: inline-block;
     position: relative;
     animation: shimmer-loading 1s infinite linear;
-    min-height: 16px;
+    height: 16px;
 }
 
 .dc__resizable-textarea {
@@ -3615,6 +3615,10 @@ textarea {
     height: 132px;
 }
 
+.h-192 {
+    height: 192px;
+}
+
 .h-200 {
     height: 200px;
 }
@@ -4119,6 +4123,10 @@ textarea {
     background: none !important;
 }
 
+.dc__bs-contains {
+    background-size: contain;
+}
+
 //Overflow
 .dc__overflow-hidden {
     overflow: hidden !important;
@@ -4128,20 +4136,8 @@ textarea {
     overflow: auto !important;
 }
 
-.dc__overflow-y-auto {
-    overflow: auto !important;
-}
-
-.dc__overflow-scroll {
-    overflow: scroll !important;
-}
-
 .dc__hide-hscroll {
     overflow-x: hidden;
-}
-
-.dc__hscroll {
-    overflow-x: scroll;
 }
 
 .dc__overflow-initial {

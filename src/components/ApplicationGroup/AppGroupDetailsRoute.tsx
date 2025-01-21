@@ -54,7 +54,7 @@ import EnvTriggerView from './Details/TriggerView/EnvTriggerView'
 import EnvConfig from './Details/EnvironmentConfig/EnvConfig'
 import EnvironmentOverview from './Details/EnvironmentOverview/EnvironmentOverview'
 import { EnvSelector } from './EnvSelector'
-import EmptyFolder from '../../assets/img/Empty-folder.png'
+import EmptyFolder from '../../assets/img/empty-folder.webp'
 import { AppFilterTabs, EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS, NO_ACCESS_TOAST_MESSAGE } from './Constants'
 import { ReactComponent as Settings } from '../../assets/icons/ic-settings.svg'
 import {
