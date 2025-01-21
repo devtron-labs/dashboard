@@ -77,7 +77,29 @@
 }
 
 .border {
+    &__primary {
+        border: 1px solid var(--border-primary);
+    }
+
+    &__secondary {
+        border: 1px solid var(--border-secondary);
+    }
+
     &__white {
         border: 1px solid var(--white);
+    }
+}
+
+.divider {
+    &__primary {
+        width: 1px;
+        min-height: 16px;
+        background-color: var(--divider-primary);
+    }
+
+    &__secondary {
+        width: 1px;
+        min-height: 16px;
+        background-color: var(--divider-secondary);
     }
 }

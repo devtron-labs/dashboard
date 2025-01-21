@@ -109,6 +109,12 @@
             --bg-toast: var(--N800);
             --bg-sidebar: #0066cc;
             --bg-shimmer-loader: linear-gradient(90deg, var(--N200) 0%, var(--N50) 50%, var(--N200) 80%);
+
+            --border-primary: var(--N200);
+            --border-secondary: var(--N100);
+
+            --divider-primary: var(--N200);
+            --divider-secondary: var(--N100);
         }
 
         &__dark {
@@ -186,6 +192,12 @@
             --bg-toast: var(--N300);
             --bg-sidebar: #2E3142;
             --bg-shimmer-loader: linear-gradient(90deg, var(--N50) 0%, var(--N200) 50%, var(--N50) 80%);
+
+            --border-primary: #FFFFFF33;
+            --border-secondary: #FFFFFF1A;
+
+            --divider-primary: #FFFFFF33;
+            --divider-secondary: #FFFFFF1A;
         }
     }
 }
