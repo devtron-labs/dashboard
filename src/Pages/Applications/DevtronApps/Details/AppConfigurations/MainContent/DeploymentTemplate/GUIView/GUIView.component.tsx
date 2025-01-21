@@ -30,7 +30,7 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { JSONPath } from 'jsonpath-plus'
-import EmptyFolderImage from '@Images/Empty-folder.png'
+import EmptyFolderImage from '@Images/empty-folder.webp'
 import { ReactComponent as Help } from '@Icons/ic-help.svg'
 import { ReactComponent as ICWarningY5 } from '@Icons/ic-warning-y5.svg'
 import { ReactComponent as ICArrow } from '@Icons/ic-arrow-forward.svg'

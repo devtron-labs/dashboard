@@ -20,6 +20,9 @@ import { ReactComponent as ClearIcon } from '../../../assets/icons/ic-appstatus-
 import { ReactComponent as Check } from '../../../assets/icons/appstatus/ic-check.svg'
 import { ReactComponent as RedWarning } from '../../../assets/icons/ic-error-medium.svg'
 
+/**
+ * @deprecated
+ */
 export const Option = (props) => {
     const { selectOption, data } = props
     return (
@@ -36,6 +39,9 @@ export const Option = (props) => {
     )
 }
 
+/**
+ * @deprecated
+ */
 export const SingleSelectOption = (props) => {
     const { selectOption, data } = props
     const style = { height: '16px', width: '16px', flex: '0 0 16px' }
@@ -56,7 +62,6 @@ export const SingleSelectOption = (props) => {
  *
  * @deprecated Use `MultiValueContainer` from common library
  */
-
 export const MultiValueContainer = (props) => {
     const { children, data, innerProps, selectProps } = props
     const { label, value } = data
@@ -68,6 +73,9 @@ export const MultiValueContainer = (props) => {
     )
 }
 
+/**
+ * @deprecated
+ */
 export const ClearIndicator = (props) => {
     const {
         children = <ClearIcon className="icon-dim-24" />,
@@ -81,6 +89,9 @@ export const ClearIndicator = (props) => {
     )
 }
 
+/**
+ * @deprecated
+ */
 export const MultiValueRemove = (props) => {
     const {
         data,
@@ -98,6 +109,9 @@ export const MultiValueRemove = (props) => {
     )
 }
 
+/**
+ * @deprecated
+ */
 export const MultiValueChipContainer = ({ validator, ...props }) => {
     const { children, data, innerProps, selectProps } = props
     const { label, value } = data
@@ -113,6 +127,9 @@ export const MultiValueChipContainer = ({ validator, ...props }) => {
     )
 }
 
+/**
+ * @deprecated
+ */
 export const multiSelectStyles = {
     control: (base, state) => ({
         ...base,
@@ -155,6 +172,9 @@ export const multiSelectStyles = {
     }),
 }
 
+/**
+ * @deprecated
+ */
 export const podsDropdownStyles = {
     menu: (base) => ({
         ...base,
@@ -197,6 +217,9 @@ export const podsDropdownStyles = {
     }),
 }
 
+/**
+ * @deprecated
+ */
 interface CustomSelect {
     sortSelected?: boolean
 
@@ -217,6 +240,9 @@ interface CustomSelect {
     formatOptionLabel?: (...args) => any
 }
 
+/**
+ * @deprecated
+ */
 export const CustomSelect: React.FC<CustomSelect> = (props) => {
     return <Select {...props} />
 }
