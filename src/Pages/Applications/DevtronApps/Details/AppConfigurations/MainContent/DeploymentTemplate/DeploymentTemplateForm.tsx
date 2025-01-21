@@ -101,7 +101,6 @@ const DeploymentTemplateForm = ({
 
             <div className="flexbox-col dc__overflow-scroll flex-grow-1">
                 <CodeEditor
-                    isCodeMirror
                     value={editedDocument}
                     schemaURI={getEditorSchemaURIFromChartNameAndVersion(selectedChart?.name, selectedChart?.version)}
                     onChange={readOnly ? noop : editorOnChange}

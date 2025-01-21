@@ -28,6 +28,7 @@ import {
     ToastVariantType,
     TabGroup,
     SelectPicker,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
@@ -74,7 +75,7 @@ const EphemeralContainerDrawer = ({
     switchSelectedContainer,
     onClickShowLaunchEphemeral,
     selectedNamespaceByClickingPod,
-    handleSuccess
+    handleSuccess,
 }: EphemeralContainerDrawerType) => {
     const [switchManifest, setSwitchManifest] = useState<string>(SwitchItemValues.Configuration)
     const [loader, setLoader] = useState<boolean>(false)
@@ -408,7 +409,7 @@ const EphemeralContainerDrawer = ({
             <div className="mr-24 mb-24 code-editor-container">
                 <CodeEditor
                     value={codeEditorBody}
-                    mode="yaml"
+                    mode={MODES.YAML}
                     onChange={handleManifestAdvanceConfiguration}
                     readOnly={switchManifest === SwitchItemValues.Sample}
                 >
@@ -417,9 +418,6 @@ const EphemeralContainerDrawer = ({
                             <SwitchItem value={SwitchItemValues.Configuration}> Manifest </SwitchItem>
                             <SwitchItem value={SwitchItemValues.Sample}> Sample manifest</SwitchItem>
                         </Switch>
-                        <div className="w-70 ml-8">
-                            <CodeEditor.ValidationError />
-                        </div>
                     </CodeEditor.Header>
                 </CodeEditor>
             </div>

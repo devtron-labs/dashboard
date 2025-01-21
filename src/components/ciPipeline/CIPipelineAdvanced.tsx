@@ -15,7 +15,7 @@
  */
 
 import { Component } from 'react'
-import { CustomInput, RadioGroup, RadioGroupItem, Toggle, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, RadioGroup, RadioGroupItem, Toggle, CodeEditor, MODES } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerType, SourceTypeMap } from '../../config'
 import { Trash, Page } from '../common'
 import { ReactComponent as Docker } from '../../assets/icons/misc/docker.svg'
@@ -190,7 +190,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                                     <div className="script-container">
                                         <CodeEditor
                                             value={stage.script}
-                                            mode="shell"
+                                            mode={MODES.SHELL}
                                             onChange={(value) =>
                                                 this.props.handleChange(
                                                     { target: { value } },
@@ -201,7 +201,6 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                                                 )
                                             }
                                             shebang="#!/bin/sh"
-                                            inline
                                             height={300}
                                         />
                                     </div>
@@ -266,7 +265,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                                     <div className="script-container">
                                         <CodeEditor
                                             value={stage.script}
-                                            mode="shell"
+                                            mode={MODES.SHELL}
                                             onChange={(value) =>
                                                 this.props.handleChange(
                                                     { target: { value } },
@@ -277,7 +276,6 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                                                 )
                                             }
                                             shebang="#!/bin/sh"
-                                            inline
                                             height={300}
                                         />
                                     </div>

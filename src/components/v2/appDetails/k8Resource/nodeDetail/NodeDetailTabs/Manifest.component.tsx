@@ -35,7 +35,6 @@ import {
     YAMLStringify,
     InfoColourBar,
     logExceptionToSentry,
-    CodeEditorThemesKeys,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
@@ -693,57 +692,58 @@ const ManifestComponent = ({
         }
 
         return (
-            <CodeEditor
-                defaultValue={showManifestCompareView && desiredManifest}
-                cleanData={showManifestCompareView}
-                diffView={showManifestCompareView}
-                theme={CodeEditorThemesKeys.vsDarkDT}
-                height={isResourceBrowserView ? 'calc(100vh - 119px)' : 'calc(100vh - 77px)'}
-                value={getCodeEditorValue()}
-                mode={MODES.YAML}
-                readOnly={isReadOnlyView}
-                onChange={handleEditorValueChange}
-                loading={loading}
-                customLoader={
-                    <MessageUI
-                        msg={loadingMsg}
-                        icon={MsgUIType.LOADING}
-                        size={24}
-                        minHeight={isResourceBrowserView ? 'calc(100vh - 151px)' : ''}
-                    />
-                }
-                focus={isEditMode}
-            >
-                {renderEditorInfo(true)}
+            <div style={{ height: isResourceBrowserView ? 'calc(100vh - 119px)' : 'calc(100vh - 77px)' }}>
+                <CodeEditor
+                    {...(showManifestCompareView
+                        ? {
+                              diffView: true,
+                              originalValue: desiredManifest,
+                              modifiedValue: getCodeEditorValue(),
+                              onModifiedValueChange: handleEditorValueChange,
+                          }
+                        : {
+                              diffView: false,
+                              value: getCodeEditorValue(),
+                              onChange: handleEditorValueChange,
+                              autoFocus: isEditMode,
+                          })}
+                    cleanData={showManifestCompareView}
+                    mode={MODES.YAML}
+                    readOnly={isReadOnlyView}
+                    loading={loading}
+                    height="100%"
+                >
+                    {renderEditorInfo(true)}
 
-                {!loading &&
-                    !error &&
-                    isConfigDriftEnabled &&
-                    'hasDrift' in _selectedResource &&
-                    _selectedResource.hasDrift &&
-                    !showManifestCompareView &&
-                    renderOutOfSyncWarning &&
-                    renderOutOfSyncWarning(handleDesiredManifestOpen)}
-                {showManifestCompareView && (
-                    <CodeEditor.Header hideDefaultSplitHeader className="p-0">
-                        <div className="dc__split-header">
-                            <div className="dc__split-header__pane flexbox dc__align-items-center dc__content-space dc__gap-8">
-                                <span>Desired manifest</span>
-                                <button
-                                    className="dc__unset-button-styles flex"
-                                    aria-label="Close Desired Manifest"
-                                    onClick={handleDesiredManifestClose}
-                                >
-                                    <ICClose className="icon-dim-16 scn-0" />
-                                </button>
+                    {!loading &&
+                        !error &&
+                        isConfigDriftEnabled &&
+                        'hasDrift' in _selectedResource &&
+                        _selectedResource.hasDrift &&
+                        !showManifestCompareView &&
+                        renderOutOfSyncWarning &&
+                        renderOutOfSyncWarning(handleDesiredManifestOpen)}
+                    {showManifestCompareView && (
+                        <CodeEditor.Header hideDefaultSplitHeader className="p-0">
+                            <div className="dc__split-header">
+                                <div className="dc__split-header__pane flexbox dc__align-items-center dc__content-space dc__gap-8">
+                                    <span>Desired manifest</span>
+                                    <button
+                                        className="dc__unset-button-styles flex"
+                                        aria-label="Close Desired Manifest"
+                                        onClick={handleDesiredManifestClose}
+                                    >
+                                        <ICClose className="icon-dim-16 scn-0" />
+                                    </button>
+                                </div>
+                                <div className="dc__split-header__pane">Live manifest</div>
                             </div>
-                            <div className="dc__split-header__pane">Live manifest</div>
-                        </div>
-                    </CodeEditor.Header>
-                )}
+                        </CodeEditor.Header>
+                    )}
 
-                {renderErrorBar(true)}
-            </CodeEditor>
+                    {renderErrorBar(true)}
+                </CodeEditor>
+            </div>
         )
     }
 

@@ -276,16 +276,15 @@ export const ConfigMapSecretData = ({
         })
 
         return (
-            <div className="dc__border br-4 dc__overflow-hidden">
+            <CodeEditor.Container>
                 <CodeEditor
-                    isCodeMirror
                     key={codeEditorRadio}
                     value={getCodeEditorValue()}
                     // Skip calling onChange if resolvedData exists
                     onChange={!isLocked && !data.isResolvedData ? onChange : noop}
                     onFocus={onFocus}
                     mode={MODES.YAML}
-                    height={350}
+                    height="100%"
                     shebang={sheBangText}
                     readOnly={
                         readOnly || isHashiOrAWS || isLocked || codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE
@@ -321,7 +320,7 @@ export const ConfigMapSecretData = ({
                     )}
                 </CodeEditor>
                 {!data.external && data.yamlMode && renderYamlInfoText()}
-            </div>
+            </CodeEditor.Container>
         )
     }
 

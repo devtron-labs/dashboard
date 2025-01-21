@@ -298,10 +298,6 @@ export type CompareConfigViewProps = {
     publishedEditorConfig: CompareConfigViewEditorConfigType
     draftChartVersion?: string
     selectedChartVersion?: string
-    /**
-     * @default ${compareFromSelectedOptionValue}-"draft-editor-key"
-     */
-    editorKey?: string
     className?: string
     /**
      * @default 'Data'

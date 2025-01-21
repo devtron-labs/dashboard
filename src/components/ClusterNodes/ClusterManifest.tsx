@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import YAML from 'yaml'
-import { VisibleModal2, YAMLStringify, CodeEditor, CodeEditorThemesKeys } from '@devtron-labs/devtron-fe-common-lib'
+import { VisibleModal2, YAMLStringify, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
 import MessageUI, { MsgUIType } from '../v2/common/message.ui'
 import { getClusterManifest } from './clusterNodes.service'
 import { ManifestMessaging, MESSAGING_UI, MODES } from '../../config'
@@ -139,31 +139,37 @@ export default function ClusterManifest({
         return (
             <div className="h-100 flexbox-col">
                 {manifestMode === EditModeType.REVIEW && (
-                    <div className="cluster-manifest-header pt-4 pb-4 text__white flex">
-                        <div className="pl-12 flex dc__content-space">
-                            Pod manifest
+                    <div className="dc__grid-half py-4 text__white vertical-divider">
+                        <div className="flex dc__content-space px-12">
+                            <span>Pod manifest</span>
                             <span className="flex" data-testid="close-to-edit-manifest" onClick={switchToEditMode}>
                                 <Close className="icon-dim-16 cursor icon-fill__white" />
                             </span>
                         </div>
-                        <div className="pl-12 flex left">
-                            <Pencil className="icon-dim-16 mr-10 icon-stroke__white" /> Manifest (Editing)
+                        <div className="flex left px-12">
+                            <Pencil className="icon-dim-16 mr-10 icon-stroke__white" />
+                            <span>Manifest (Editing)</span>
                         </div>
                     </div>
                 )}
-                <div className="pt-8 pb-8 flex-1 dc__overflow-hidden">
-                    <CodeEditor
-                        defaultValue={defaultManifest}
-                        theme={CodeEditorThemesKeys.vsDarkDT}
-                        height="100%"
-                        value={manifestValue}
-                        mode={MODES.YAML}
-                        noParsing
-                        onChange={setManifest}
-                        readOnly={manifestMode !== EditModeType.EDIT && manifestMode !== EditModeType.REVIEW}
-                        diffView={manifestMode === EditModeType.REVIEW}
-                    />
-                </div>
+                <CodeEditor
+                    height="100%"
+                    mode={MODES.YAML}
+                    noParsing
+                    readOnly={manifestMode !== EditModeType.EDIT && manifestMode !== EditModeType.REVIEW}
+                    diffView={manifestMode === EditModeType.REVIEW}
+                    {...(manifestMode === EditModeType.REVIEW
+                        ? {
+                              diffView: true,
+                              originalValue: defaultManifest,
+                              modifiedValue: manifestValue,
+                          }
+                        : {
+                              diffView: false,
+                              value: manifestValue,
+                              onChange: setManifest,
+                          })}
+                />
             </div>
         )
     }

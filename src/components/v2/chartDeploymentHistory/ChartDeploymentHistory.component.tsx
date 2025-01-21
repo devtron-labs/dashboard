@@ -32,6 +32,7 @@ import {
     ShowMoreText,
     DEPLOYMENT_STATUS,
     EMPTY_STATE_STATUS,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -474,7 +475,7 @@ const ChartDeploymentHistory = ({
                             : getEditorValue(selectedDeploymentManifestDetail.manifest)
                     }
                     noParsing
-                    mode="yaml"
+                    mode={MODES.YAML}
                     height="100%"
                     readOnly
                 />
