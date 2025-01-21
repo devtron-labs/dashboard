@@ -55,6 +55,8 @@ import { EnvironmentList } from './EnvironmentList'
 import { MAX_LENGTH_350 } from '../../../config/constantMessaging'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { MODAL_STATE, OVERVIEW_TABS, TAB_SEARCH_KEY } from './constants'
+import { getWorkflowNodeStatusTitle } from '../details/triggerView/workflow/nodes/workflow.utils'
+import { WorkflowStatusEnum } from '@Components/ApplicationGroup/AppGroup.types'
 
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 const Catalog = importComponentFromFELibrary('Catalog', null, 'function')
@@ -382,6 +384,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                 return <FailedIcon className="dc__app-summary__icon icon-dim-16 mr-6" />
             case 'InProgress':
                 return <InProgressIcon className="dc__app-summary__icon icon-dim-16 mr-6" />
+            case WorkflowStatusEnum.WAITING_TO_START:
             case 'Starting':
                 return <div className="dc__app-summary__icon icon-dim-16 mr-6 progressing" />
             case 'Running':
@@ -436,11 +439,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                                 className="mr-16 w-150 h-20 m-tb-8 fs-13 cn-9 flex dc__content-start"
                             >
                                 {getStatusIcon(jobPipeline.status)}
-                                {jobPipeline.status === 'CANCELLED' ? (
-                                    <div>Aborted</div>
-                                ) : (
-                                    <div>{jobPipeline.status}</div>
-                                )}
+                                {getWorkflowNodeStatusTitle(jobPipeline.status)}
                             </div>
                             <div
                                 data-testid={`${jobPipeline.environmentName}-${index}`}
