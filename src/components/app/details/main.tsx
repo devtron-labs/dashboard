@@ -333,6 +333,17 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         getPermissionCheck({ resourceIds: selectedGroupId.appIds, groupType: FilterParentType.app }, false, true)
     }
 
+    const clearEnvListSelection = () => {
+        setSelectedAppList([])
+        setGroupFilterOptions([])
+        setAppGroupFilterInLocalStorage({
+            filterParentType: FilterParentType.app,
+            resourceId: appId,
+            resourceList: [],
+            groupList: [],
+        })
+    }
+
     if (appListLoading || initLoading) {
         return <Progressing pageLoader />
     }
@@ -390,7 +401,12 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                         ) : (
                             <Route
                                 path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`}
-                                render={(props) => <AppDetails filteredEnvIds={_filteredEnvIds} />}
+                                render={(props) => (
+                                    <AppDetails
+                                        selectedEnvList={selectedAppList}
+                                        clearEnvListSelection={clearEnvListSelection}
+                                    />
+                                )}
                             />
                         )}
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>

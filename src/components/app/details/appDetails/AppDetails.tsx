@@ -56,7 +56,7 @@ import {
     DEFAULT_STATUS_TEXT,
 } from '../../../../config'
 import { NavigationArrow, useAppContext, FragmentHOC } from '../../../common'
-import { groupHeaderStyle, Option } from '../../../v2/common/ReactSelect.utils'
+import { Option } from '../../../v2/common/ReactSelect.utils'
 import { getAppConfigStatus, getAppOtherEnvironmentMin, stopStartApp } from '../../../../services/service'
 // @ts-check
 import AppNotDeployedIcon from '@Images/app-not-deployed.png'
@@ -70,18 +70,9 @@ import { ReactComponent as Abort } from '@Icons/ic-abort.svg'
 import { ReactComponent as StopButton } from '@Icons/ic-stop.svg'
 import { ReactComponent as ForwardArrow } from '@Icons/ic-arrow-forward.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
-
 import { SourceInfo } from './SourceInfo'
 import { Application, Nodes, AggregatedNodes, NodeDetailTabs } from '../../types'
-import {
-    getSelectedNodeItems,
-    getPodNameSuffix,
-    ValueContainer,
-    NoParamsNoEnvContext,
-    NoParamsWithEnvContext,
-    ParamsNoEnvContext,
-    ParamsAndEnvContext,
-} from './utils'
+import { getSelectedNodeItems, getPodNameSuffix, ValueContainer } from './utils'
 import { AppMetrics } from './AppMetrics'
 import IndexStore from '../../../v2/appDetails/index.store'
 import {
@@ -99,6 +90,7 @@ import { AppType, EnvType } from '../../../v2/appDetails/appDetails.type'
 import DeploymentStatusDetailModal from './DeploymentStatusDetailModal'
 import { getDeploymentStatusDetail } from './appDetails.service'
 import {
+    AppDetailsProps,
     DeletedAppComponentType,
     DeploymentStatusDetailsBreakdownDataType,
     DeploymentStatusDetailsType,
@@ -134,10 +126,11 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     'function',
 )
 
-export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string }) {
+export default function AppDetail({ selectedEnvList, clearEnvListSelection }: AppDetailsProps) {
     const params = useParams<{ appId: string; envId?: string }>()
-    const { push } = useHistory()
+    const { replace } = useHistory()
     const { path } = useRouteMatch()
+    const isMounted = useRef<boolean>(false)
     const { environmentId, setEnvironmentId } = useAppContext() // global state for app to synchronise environments
     const [isAppDeleted, setIsAppDeleted] = useState(false)
     const [otherEnvsLoading, otherEnvsResult] = useAsync(() => getAppOtherEnvironmentMin(params.appId), [params.appId])
@@ -146,45 +139,63 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
     const isVirtualEnvRef = useRef(false)
     const [showDeploymentWindowConfirmation, setShowDeploymentWindowConfirmation] = useState(false)
 
-    const envList = useMemo(() => {
-        if (otherEnvsResult?.result?.length > 0) {
-            const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
-            const _envList =
-                otherEnvsResult.result
-                    .filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
-                    ?.sort((a, b) => (a.environmentName > b.environmentName ? 1 : -1)) || []
+    const selectedEnvsMap = new Map(selectedEnvList.map((env) => [+env.value, true]))
+    const envList = (
+        (selectedEnvList.length
+            ? otherEnvsResult?.result?.filter((env) => selectedEnvsMap.get(env.environmentId))
+            : otherEnvsResult?.result) || []
+    ).sort((a, b) => (a.environmentName > b.environmentName ? 1 : -1))
 
-            if (_envList.length > 0) {
-                let selector
-                if (!params.envId && !environmentId) {
-                    selector = new NoParamsNoEnvContext()
-                } else if (!params.envId && environmentId) {
-                    selector = new NoParamsWithEnvContext()
-                } else if (params.envId && !environmentId) {
-                    selector = new ParamsNoEnvContext()
-                } else if (params.envId && environmentId) {
-                    selector = new ParamsAndEnvContext()
-                }
-
-                const selectedEnvId = selector.resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId)
-
-                // Set the URL and push to navigation stack
-                if (selectedEnvId) {
-                    if (String(selectedEnvId) !== String(params.envId)) {
-                        const newUrl = getAppDetailsURL(params.appId, selectedEnvId)
-                        push(newUrl)
+    useEffect(() => {
+        if (params.envId && isMounted.current) {
+            clearEnvListSelection()
+        }
+        isMounted.current = true
+        if (envList.length > 0) {
+            let selectedEnvId: number
+            if (!params.envId) {
+                if (environmentId) {
+                    if (envList.some((env) => env.environmentId === environmentId)) {
+                        selectedEnvId = environmentId
+                    } else {
+                        selectedEnvId = envList[0].environmentId
                     }
                 } else {
-                    setEnvironmentId(null)
+                    selectedEnvId = envList[0].environmentId
+                }
+            } else {
+                if (environmentId) {
+                    if (envList.some((env) => env.environmentId === +params.envId)) {
+                        // If environmentId is present and different from params.envContext, set environmentId
+                        if (+environmentId !== +params.envId) {
+                            setEnvironmentId(+params.envId)
+                        }
+                        selectedEnvId = +params.envId
+                    } else {
+                        selectedEnvId = envList[0].environmentId
+                    }
+                } else {
+                    if (envList.some((env) => env.environmentId === +params.envId)) {
+                        selectedEnvId = +params.envId
+                    } else {
+                        selectedEnvId = envList[0].environmentId
+                    }
+                }
+            }
+
+            // Set the URL and push to navigation stack
+            if (selectedEnvId) {
+                if (String(selectedEnvId) !== String(params.envId)) {
+                    const newUrl = getAppDetailsURL(params.appId, selectedEnvId)
+                    replace(newUrl)
                 }
             } else {
                 setEnvironmentId(null)
             }
-            // Return the filtered and sorted environment list
-            return _envList
+        } else {
+            setEnvironmentId(null)
         }
-        return []
-    }, [filteredEnvIds, otherEnvsResult])
+    }, [selectedEnvList, otherEnvsResult])
 
     useEffect(() => {
         if (!params.envId) {
@@ -248,7 +259,6 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
                     isAppDeleted={isAppDeleted}
                     isVirtualEnvRef={isVirtualEnvRef}
                     isDeploymentBlocked={showDeploymentWindowConfirmation}
-                    filteredEnvIds={filteredEnvIds}
                     deploymentUserActionState={deploymentUserActionState}
                 />
             </Route>
@@ -392,10 +402,13 @@ export const Details: React.FC<DetailsType> = ({
         ],
     )
 
-    useEffect(() => () => {
-        clearPollingInterval()
-        IndexStore.clearAppDetails()
-    }, [])
+    useEffect(
+        () => () => {
+            clearPollingInterval()
+            IndexStore.clearAppDetails()
+        },
+        [],
+    )
 
     useEffect(() => {
         appDetailsAbortRef.current = new AbortController()
@@ -409,8 +422,11 @@ export const Details: React.FC<DetailsType> = ({
             if (setIsAppDeleted) {
                 setIsAppDeleted(true)
             }
-            // NOTE: BE sends  string representation of 7000 instead of number 7000 
-            if (getIsRequestAborted(error) || (error instanceof ServerErrors && String(error.errors?.[0]?.code ?? '') === "7000")) {
+            // NOTE: BE sends  string representation of 7000 instead of number 7000
+            if (
+                getIsRequestAborted(error) ||
+                (error instanceof ServerErrors && String(error.errors?.[0]?.code ?? '') === '7000')
+            ) {
                 setResourceTreeFetchTimeOut(true)
             } else {
                 setResourceTreeFetchTimeOut(false)
@@ -904,38 +920,11 @@ export const EnvSelector = ({
           }, {})
         : {}
     const environmentName = environmentsMap[+envId]
-    const envSelectorStyle = {
-        ...multiSelectStyles,
-        ...groupHeaderStyle,
-        control: (base, state) => ({
-            ...base,
-            border: '1px solid var(--B500)',
-            backgroundColor: 'var(--bg-primary)',
-            minHeight: '32px',
-            height: '32px',
-            cursor: state.isDisabled ? 'not-allowed' : 'pointer',
-            ...controlStyleOverrides,
-        }),
-        singleValue: (base, state) => ({ ...base, textAlign: 'left', fontWeight: 600, color: 'var(--B500)' }),
-        indicatorsContainer: (base, state) => ({ ...base, height: '32px' }),
-        menu: (base) => ({ ...base, width: '280px', zIndex: 12 }),
-    }
 
     const sortedEnvironments =
         environments && !environments.deploymentAppDeleteRequest
             ? sortObjectArrayAlphabetically(environments, 'environmentName')
             : environments
-
-    const formatOptionLabel = (option): JSX.Element => {
-        return (
-            <div>
-                <div className="w-100 dc__ellipsis-right">{option.label}</div>
-                {option.description && (
-                    <small className="dc__word-break-all dc__white-space-normal fs-12 cn-7">{option.description}</small>
-                )}
-            </div>
-        )
-    }
 
     const groupList =
         sortedEnvironments?.reduce((acc, env) => {

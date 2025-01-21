@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { generatePath, Route, useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import {
     Progressing,
@@ -44,12 +44,15 @@ import { getCIConfigList } from '../../AppGroup.service'
 import { AppGroupDetailDefaultType } from '../../AppGroup.types'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 
-export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultType) {
+export default function EnvCIDetails({ filteredAppIds, clearAppListSelection }: AppGroupDetailDefaultType) {
     const { envId, pipelineId, buildId } = useParams<{
         pipelineId: string
         buildId: string
         envId: string
     }>()
+    const { path } = useRouteMatch()
+    const { replace } = useHistory()
+    const isMounted = useRef<boolean>(false)
     const [pagination, setPagination] = useState<{ offset: number; size: number }>({ offset: 0, size: 20 })
     const [hasMore, setHasMore] = useState<boolean>(false)
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
@@ -71,8 +74,11 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         autoBottomScroll: triggerDetails && TRIGGER_STATUS_PROGRESSING.includes(triggerDetails.status.toLowerCase()),
     })
 
-
     useEffect(() => {
+        if (pipelineId && !isMounted.current) {
+            clearAppListSelection()
+        }
+        isMounted.current = true
         try {
             setCiGroupLoading(true)
             getCIConfigList(envId, filteredAppIds).then((result) => {
@@ -120,8 +126,6 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         [pipelineId, pagination],
         !!pipelineId,
     )
-    const { path } = useRouteMatch()
-    const { replace } = useHistory()
     useInterval(pollHistory, 30000)
 
     useEffect(() => {

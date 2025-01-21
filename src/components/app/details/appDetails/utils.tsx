@@ -20,7 +20,16 @@ import { components } from 'react-select'
 import { AggregationKeys } from '../../types'
 import { getVersionArr, isVersionLessThanOrEqualToTarget, DayPickerRangeControllerPresets } from '../../../common'
 import { ChartTypes, AppMetricsTabType, StatusType, StatusTypes } from './appDetails.type'
-import { ZERO_TIME_STRING, Nodes, NodeType, ACTION_STATE, ButtonStyleType, SelectPicker, SelectPickerProps, SelectPickerVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ZERO_TIME_STRING,
+    Nodes,
+    NodeType,
+    ACTION_STATE,
+    ButtonStyleType,
+    SelectPicker,
+    SelectPickerProps,
+    SelectPickerVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { GetIFrameSrcParamsType } from './types'
 
 export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: boolean): AggregationKeys {
@@ -76,7 +85,7 @@ export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: bool
 }
 
 export const ThroughputSelect = (props) => {
-    const onCreateOption: SelectPickerProps['onCreateOption'] = (inputValue) => { 
+    const onCreateOption: SelectPickerProps['onCreateOption'] = (inputValue) => {
         props.handleStatusChange({ label: inputValue, value: inputValue })
     }
 
@@ -351,71 +360,11 @@ export const ValueContainer = (props) => {
     )
 }
 
-export const ValueContainerImage = (props) => {
-    const value = props.selectProps?.value?.value
-    return (
-        <components.ValueContainer {...props}>
-            <>
-                {!props.selectProps.menuIsOpen &&
-                    (value ? (
-                        <div className="cn-7 fs-12 flex left">{value}</div>
-                    ) : (
-                        <span className="cn-5">Select or enter image</span>
-                    ))}
-                {React.cloneElement(props.children[1])}
-            </>
-        </components.ValueContainer>
-    )
-}
-
 export const validateMomentDate = (date: string, format: string): string => {
     if (!date || date === ZERO_TIME_STRING) {
         return '--'
     }
     return moment(date, format).fromNow()
-}
-
-class EnvironmentSelection {
-    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
-        throw new Error('This method should be overridden by concrete classes.')
-    }
-}
-
-export class NoParamsNoEnvContext extends EnvironmentSelection {
-    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
-        return _envList[0].environmentId
-    }
-}
-
-export class NoParamsWithEnvContext extends EnvironmentSelection {
-    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
-        if (environmentId && _envList.map((env) => env.environmentId).includes(environmentId)) {
-            return environmentId
-        }
-        return _envList[0].environmentId
-    }
-}
-
-export class ParamsNoEnvContext extends EnvironmentSelection {
-    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
-        if (params.envId && _envList.map((env) => env.environmentId).includes(+params.envId)) {
-            return +params.envId
-        }
-        return _envList[0].environmentId
-    }
-}
-
-export class ParamsAndEnvContext extends EnvironmentSelection {
-    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
-        if (params.envId && _envList.map((env) => env.environmentId).includes(+params.envId)) {
-            // If environmentId is present and different from params.envContext, set environmentId
-            if (environmentId && +environmentId !== +params.envId) {
-                setEnvironmentId(+params.envId)
-            }
-            return +params.envId
-        }
-        return _envList[0].environmentId
-    }
 }
 
 export const getDeployButtonStyle = (actionState: ACTION_STATE): ButtonStyleType => {
