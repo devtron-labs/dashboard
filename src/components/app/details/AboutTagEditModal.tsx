@@ -132,7 +132,7 @@ export default function AboutTagEditModal({
         return (
             <>
                 <div
-                    className="cn-7 p-20 dc__overflow-scroll"
+                    className="cn-7 p-20 dc__overflow-auto"
                     data-testid="tag-input-form"
                     style={{ height: 'calc(100vh - 122px)' }}
                 >

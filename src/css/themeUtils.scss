@@ -28,6 +28,14 @@
     &__white {
         color: var(--white);
     }
+
+    &__black {
+        color: var(--black);
+
+        &--imp {
+            color: var(--black) !important;
+        }
+    }
 }
 
 .icon-fill {

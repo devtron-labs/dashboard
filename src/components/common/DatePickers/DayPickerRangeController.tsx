@@ -78,7 +78,7 @@ const styless = {
     },
     PresetDateRangePicker_button: {
         width: '188px',
-        background: 'var(--bg-primary)',
+        background: 'var(--transparent)',
         border: 'none',
         color: 'var(--N900)',
         padding: '8px',
@@ -152,13 +152,13 @@ export class DatePickerType2 extends Component<DatePickerType2Props, any> {
                 }}
             >
                 <div style={{ width: '312px', borderLeft: 'solid 1px var(--N200)', height: '304px', padding: '16px' }}>
-                    <p className="mb-16 fw-6">Pick timerange</p>
+                    <p className="mb-16 fw-6">Pick time range</p>
                     <div>
                         <label className="w-100 mb-16">
                             From
                             <input
                                 type="text"
-                                className="dc__block w-100"
+                                className="dc__block w-100 dc__border"
                                 value={this.props.calendarInputs.startDate}
                                 onChange={(event) => {
                                     this.props.handleDateInput('startDate', event.target.value)
@@ -169,7 +169,7 @@ export class DatePickerType2 extends Component<DatePickerType2Props, any> {
                             To
                             <input
                                 type="text"
-                                className="dc__block w-100"
+                                className="dc__block w-100 dc__border"
                                 value={this.props.calendarInputs.endDate}
                                 onChange={(event) => {
                                     this.props.handleDateInput('endDate', event.target.value)

@@ -87,7 +87,7 @@ const ClusterUpgradeCompatibilityInfo = ({
 
     return (
         <div className="resource-browser">
-            <div className="dc__overflow-scroll p-8">
+            <div className="dc__overflow-auto p-8">
                 <CollapsibleList tabType="navLink" config={sidebarConfig} onCollapseBtnClick={onCollapseBtnClick} />
             </div>
             <BaseResourceList

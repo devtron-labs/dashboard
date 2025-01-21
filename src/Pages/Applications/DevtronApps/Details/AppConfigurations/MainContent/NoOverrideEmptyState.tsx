@@ -48,7 +48,7 @@ const NoOverrideEmptyState = ({
     handleCreateOverride,
     handleViewInheritedConfig,
 }: NoOverrideEmptyStateProps) => (
-    <div className="no-override-empty-state-container flexbox-col flex-grow-1 dc__overflow-scroll">
+    <div className="no-override-empty-state-container flexbox-col flex-grow-1 dc__overflow-auto">
         <GenericEmptyState
             image={cmCsEmptyState}
             title={getNoOverrideEmptyStateTitle({ componentType, environmentName, configName })}

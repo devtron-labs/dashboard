@@ -700,7 +700,7 @@ node-details-full-screen
                 {connectTerminal && terminalView}
             </div>
             {selectedTabIndex === 1 && (
-                <div className="h-100 dc__overflow-scroll">
+                <div className="h-100 dc__overflow-auto">
                     <ClusterEvents terminalAccessId={terminalAccessIdRef.current} reconnectStart={reconnectStart} />
                 </div>
             )}

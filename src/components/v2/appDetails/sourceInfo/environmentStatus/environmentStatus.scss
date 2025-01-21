@@ -24,7 +24,7 @@
     margin: auto;
     margin-right: 0;
     height: 100%;
-    overflow: scroll;
+    overflow: auto;
 }
 
 .config-error-wrap {
@@ -79,7 +79,7 @@
 .f-pending-upgrade,
 .f-pending-rollback,
 .initiated {
-    color: var(--Y500);
+    color: var(--O500);
 }
 
 .f-queued,

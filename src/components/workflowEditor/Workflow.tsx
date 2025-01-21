@@ -867,7 +867,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         className={
                             configDiffView
                                 ? 'workflow__body'
-                                : 'workflow__body dc__border-n1 bg__secondary dc__overflow-scroll br-4'
+                                : 'workflow__body dc__border-n1 bg__secondary dc__overflow-auto br-4'
                         }
                     >
                         {nodesWithBufferHeight.length === 0 && this.props.isJobView ? (

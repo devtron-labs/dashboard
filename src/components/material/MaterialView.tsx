@@ -168,7 +168,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
     regexInfoSteps = (): JSX.Element => {
         return (
             <div data-testid="exclude-include-use-regex-info" className="w-500 h-380 fs-13 bg__primary">
-                <div className="h-365 dc__align-start p-12 dc__gap-12 dc__position-sticky dc__overflow-scroll">
+                <div className="h-365 dc__align-start p-12 dc__gap-12 dc__position-sticky dc__overflow-auto">
                     <div className="w-476 h-112 flex column dc__align-start p-0 dc__gap-4">
                         {USE_REGEX_TIPPY_CONTENT.insructionsList.regexInfo.map((item, index) => (
                             <div

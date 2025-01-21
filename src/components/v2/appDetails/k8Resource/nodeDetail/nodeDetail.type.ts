@@ -45,6 +45,7 @@ export interface ParamsType {
     envId?: string
     namespace?: string
     clusterId?: string
+    group?: string
 }
 export interface EphemeralForm {
     basicData: {
@@ -75,7 +76,7 @@ export interface EphemeralContainerDrawerType {
     switchSelectedContainer: (string) => void
     onClickShowLaunchEphemeral: () => void
     selectedNamespaceByClickingPod?: string
-    handleSuccess: () => void
+    handleSuccess?: () => void
 }
 
 export interface ResponsePayload {

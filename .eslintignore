@@ -410,7 +410,6 @@ src/components/v2/headers/ChartHeader.component.tsx
 src/components/v2/headers/EAHeader.component.tsx
 src/components/v2/index.tsx
 src/components/v2/utils/tabUtils/useTab.ts
-src/components/v2/utils/tableUtils/Table.util.tsx
 src/components/v2/utils/useSharedState.ts
 src/components/v2/values/ChartValues.component.tsx
 src/components/v2/values/chartValuesDiff/ChartRepoSelector.tsx

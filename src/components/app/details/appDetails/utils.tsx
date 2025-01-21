@@ -21,6 +21,7 @@ import { AggregationKeys } from '../../types'
 import { getVersionArr, isVersionLessThanOrEqualToTarget, DayPickerRangeControllerPresets } from '../../../common'
 import { ChartTypes, AppMetricsTabType, StatusType, StatusTypes } from './appDetails.type'
 import { ZERO_TIME_STRING, Nodes, NodeType, ACTION_STATE, ButtonStyleType, SelectPicker, SelectPickerProps, SelectPickerVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import { GetIFrameSrcParamsType } from './types'
 
 export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: boolean): AggregationKeys {
     switch (nodeType) {
@@ -172,15 +173,16 @@ export interface AppInfo {
     k8sVersion: string
 }
 
-export function getIframeSrc(
-    appInfo: AppInfo,
-    chartName: ChartTypes,
+export function getIframeSrc({
+    appInfo,
+    chartName,
     calendarInputs,
-    tab: AppMetricsTabType,
-    isLegendRequired: boolean,
-    statusCode?: StatusTypes,
-    latency?: number,
-): string {
+    tab,
+    isLegendRequired,
+    statusCode,
+    latency,
+    grafanaTheme = 'light',
+}: GetIFrameSrcParamsType): string {
     const baseURL = getGrafanaBaseURL(chartName)
     let grafanaURL = addChartNameExtensionToBaseURL(baseURL, appInfo.k8sVersion, chartName, statusCode)
     grafanaURL = addQueryParamToGrafanaURL(
@@ -193,6 +195,7 @@ export function getIframeSrc(
         calendarInputs,
         tab,
         isLegendRequired,
+        grafanaTheme,
         statusCode,
         latency,
     )
@@ -300,6 +303,7 @@ export function addQueryParamToGrafanaURL(
     calendarInputs,
     tab: AppMetricsTabType,
     isLegendRequired: boolean,
+    grafanaTheme: GetIFrameSrcParamsType['grafanaTheme'],
     statusCode?: StatusTypes,
     latency?: number,
 ): string {
@@ -333,7 +337,7 @@ export function addQueryParamToGrafanaURL(
         panelId = tab === 'aggregate' ? 4 : 5
     }
     url += `&from=${startTime}&to=${endTime}`
-    url += `&panelId=${panelId}`
+    url += `&panelId=${panelId}&theme=${grafanaTheme}`
     return url
 }
 

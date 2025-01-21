@@ -61,7 +61,7 @@ const DownloadChartButton = ({ name, versions }: DownloadChartButtonProps) => {
                     >
                         Select Version
                     </div>
-                    <div className="mb-4 mxh-140 dc__overflow-scroll">
+                    <div className="mb-4 mxh-140 dc__overflow-auto">
                         {versions.map((versionsList) => (
                             <button
                                 type="button"
