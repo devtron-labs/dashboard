@@ -211,9 +211,6 @@ legend {
     border: 0;
     padding: 0;
 }
-textarea {
-    overflow: auto;
-}
 optgroup {
     font-weight: bold;
 }
@@ -244,8 +241,7 @@ body {
 }
 input,
 button,
-select,
-textarea {
+select {
     font-family: inherit;
     font-size: inherit;
     line-height: inherit;

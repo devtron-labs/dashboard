@@ -88,14 +88,6 @@
         top: 50%;
         transform: translateY(-50%);
     }
-
-    textarea {
-        border-radius: 4px;
-        border: solid 1px var(--N200);
-        &.form__input--error {
-            border: solid 1px var(--R500);
-        }
-    }
 }
 
 .page-enter {

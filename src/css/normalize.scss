@@ -3,6 +3,7 @@ textarea {
     border-radius: 4px;
     border: solid 1px var(--N200);
     font-weight: 400;
+    background-color: var(--bg-secondary);
 
     &[aria-invalid="true"] {
         border-color: var(--R400);
@@ -23,6 +24,9 @@ textarea {
 
 textarea {
     resize: vertical;
+    min-height: 56px;
+    max-height: 140px;
+    overflow: auto;
 }
 
 summary {
