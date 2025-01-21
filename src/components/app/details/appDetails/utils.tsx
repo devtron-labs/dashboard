@@ -15,12 +15,20 @@
  */
 
 import moment from 'moment'
-import React from 'react'
-import { components } from 'react-select'
 import { AggregationKeys } from '../../types'
 import { getVersionArr, isVersionLessThanOrEqualToTarget, DayPickerRangeControllerPresets } from '../../../common'
 import { ChartTypes, AppMetricsTabType, StatusType, StatusTypes } from './appDetails.type'
-import { ZERO_TIME_STRING, Nodes, NodeType, ACTION_STATE, ButtonStyleType, SelectPicker, SelectPickerProps, SelectPickerVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ZERO_TIME_STRING,
+    Nodes,
+    NodeType,
+    ACTION_STATE,
+    ButtonStyleType,
+    SelectPicker,
+    SelectPickerProps,
+    SelectPickerVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { GetIFrameSrcParamsType } from './types'
 
 export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: boolean): AggregationKeys {
     switch (nodeType) {
@@ -75,7 +83,7 @@ export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: bool
 }
 
 export const ThroughputSelect = (props) => {
-    const onCreateOption: SelectPickerProps['onCreateOption'] = (inputValue) => { 
+    const onCreateOption: SelectPickerProps['onCreateOption'] = (inputValue) => {
         props.handleStatusChange({ label: inputValue, value: inputValue })
     }
 
@@ -172,15 +180,16 @@ export interface AppInfo {
     k8sVersion: string
 }
 
-export function getIframeSrc(
-    appInfo: AppInfo,
-    chartName: ChartTypes,
+export function getIframeSrc({
+    appInfo,
+    chartName,
     calendarInputs,
-    tab: AppMetricsTabType,
-    isLegendRequired: boolean,
-    statusCode?: StatusTypes,
-    latency?: number,
-): string {
+    tab,
+    isLegendRequired,
+    statusCode,
+    latency,
+    grafanaTheme = 'light',
+}: GetIFrameSrcParamsType): string {
     const baseURL = getGrafanaBaseURL(chartName)
     let grafanaURL = addChartNameExtensionToBaseURL(baseURL, appInfo.k8sVersion, chartName, statusCode)
     grafanaURL = addQueryParamToGrafanaURL(
@@ -193,6 +202,7 @@ export function getIframeSrc(
         calendarInputs,
         tab,
         isLegendRequired,
+        grafanaTheme,
         statusCode,
         latency,
     )
@@ -300,6 +310,7 @@ export function addQueryParamToGrafanaURL(
     calendarInputs,
     tab: AppMetricsTabType,
     isLegendRequired: boolean,
+    grafanaTheme: GetIFrameSrcParamsType['grafanaTheme'],
     statusCode?: StatusTypes,
     latency?: number,
 ): string {
@@ -333,35 +344,8 @@ export function addQueryParamToGrafanaURL(
         panelId = tab === 'aggregate' ? 4 : 5
     }
     url += `&from=${startTime}&to=${endTime}`
-    url += `&panelId=${panelId}`
+    url += `&panelId=${panelId}&theme=${grafanaTheme}`
     return url
-}
-
-export const ValueContainer = (props) => {
-    const { children, ...rest } = props
-    return (
-        <components.ValueContainer {...rest}>
-            {`${props.getValue()[0].value}`}
-            {React.cloneElement(children[1])}
-        </components.ValueContainer>
-    )
-}
-
-export const ValueContainerImage = (props) => {
-    const value = props.selectProps?.value?.value
-    return (
-        <components.ValueContainer {...props}>
-            <>
-                {!props.selectProps.menuIsOpen &&
-                    (value ? (
-                        <div className="cn-7 fs-12 flex left">{value}</div>
-                    ) : (
-                        <span className="cn-5">Select or enter image</span>
-                    ))}
-                {React.cloneElement(props.children[1])}
-            </>
-        </components.ValueContainer>
-    )
 }
 
 export const validateMomentDate = (date: string, format: string): string => {

@@ -1,0 +1,7 @@
+.organization-frame {
+    &__logo {
+        > path:first-child {
+            fill: var(--bg-sidebar);
+        }
+    }
+}

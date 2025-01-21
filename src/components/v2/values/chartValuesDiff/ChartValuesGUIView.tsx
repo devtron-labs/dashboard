@@ -79,7 +79,7 @@ const ChartValuesGUIForm = ({
     }
 
     return (
-        <div className="chart-values-view__gui-form-container">
+        <div className="chart-values-view__gui-form-container dc__overflow-auto">
             <InfoColourBar
                 classname="info_bar dc__no-border-radius dc__no-top-border dc__no-right-border dc__no-left-border"
                 Icon={ICInfoFilled}

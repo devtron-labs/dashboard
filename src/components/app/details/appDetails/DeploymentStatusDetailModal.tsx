@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useHistory } from 'react-router-dom'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { DeploymentStatusDetailModalType } from './appDetails.type'
@@ -101,7 +101,7 @@ export default function DeploymentStatusDetailModal({
                         </span>
                     </div>
                 </div>
-                <div className="bcn-1 dc__overflow-scroll pb-20 deployment-status-breakdown">
+                <div className="bcn-1 dc__overflow-auto pb-20 deployment-status-breakdown">
                     {isLoading ? (
                         <Progressing />
                     ) : (

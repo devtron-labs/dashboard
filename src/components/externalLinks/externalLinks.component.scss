@@ -55,7 +55,7 @@
             .configure-link-action-container,
             .configure-link-info-container {
                 overflow-wrap: break-word;
-                overflow-y: scroll;
+                overflow-y: auto;
             }
 
             .configure-link-action-container {

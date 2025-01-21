@@ -29,8 +29,6 @@ import { getAppOtherEnvironmentMin } from '../../../../services/service'
 import { DeploymentTableModal } from './DeploymentTableModal'
 import { BenchmarkModal } from './BenchmarkModal'
 import {
-    DropdownIndicator,
-    styles,
     BenchmarkLine,
     frequencyXAxisLabel,
     leadTimeXAxisLabel,
@@ -43,7 +41,7 @@ import {
     EliteCategoryMessage,
     FailureLegendEmptyState,
 } from './deploymentMetrics.util'
-import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
+import AppNotDeployed from '../../../../assets/img/app-not-deployed.svg'
 import SelectEnvImage from '../../../../assets/img/ic-empty-dep-metrics@2x.png'
 import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Deploy } from '../../../../assets/icons/ic-deploy.svg'

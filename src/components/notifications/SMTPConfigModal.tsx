@@ -117,7 +117,7 @@ export const SMTPConfigModal = ({
         setForm((prevForm) => ({ ...prevForm, isLoading: true }))
 
         const payload = {
-            channel: ConfigurationsTabTypes.SES,
+            channel: ConfigurationsTabTypes.SMTP,
             configs: [
                 {
                     configName: form.configName,

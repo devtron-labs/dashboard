@@ -14,67 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
-import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Smiley } from '../../../../assets/icons/ic-smiley-party.svg'
-import { ReactComponent as Check } from '../../../../assets/icons/ic-check.svg'
 import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { createTimestamp } from './deploymentMetrics.service'
-
-export const styles = {
-    control: (base, state) => ({
-        ...base,
-        boxShadow: 'none',
-        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--B500)',
-    }),
-    menu: (base, state) => {
-        return {
-            ...base,
-            top: `38px`,
-            backgroundColor: 'var(--bg-primary)',
-        }
-    },
-    singleValue: (base, state) => {
-        return {
-            ...base,
-            fontWeight: 600,
-            color: 'var(--B500)',
-        }
-    },
-    option: (base, state) => {
-        return {
-            ...base,
-            color: 'var(--N900)',
-            backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--bg-primary)',
-        }
-    },
-}
-
-export const Option = (props) => {
-    const { selectOption, data } = props
-    const style = { height: '16px', width: '16px', flex: '0 0 16px' }
-    const onClick = (e) => selectOption(data)
-    return (
-        <div className="flex left pl-12" style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}>
-            {props.isSelected ? (
-                <Check onClick={onClick} className="mr-8 icon-dim-16" style={style} />
-            ) : (
-                <span onClick={onClick} className="mr-8" style={style} />
-            )}
-            <components.Option {...props} />
-        </div>
-    )
-}
-
-export const DropdownIndicator = (props) => {
-    return (
-        <components.DropdownIndicator {...props}>
-            <ArrowDown className="icon-dim-20 icon-n5" />
-        </components.DropdownIndicator>
-    )
-}
 
 export function frequencyXAxisLabel(props) {
     const { x, y, stroke } = props.viewBox
