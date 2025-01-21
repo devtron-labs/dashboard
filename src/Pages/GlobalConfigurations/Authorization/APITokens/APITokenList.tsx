@@ -88,7 +88,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                     <div>Expires on</div>
                     <div />
                 </div>
-                <div className="dc__overflow-scroll api__list__height dc__position-rel">
+                <div className="dc__overflow-auto api__list__height dc__position-rel">
                     {!tokenList || tokenList.length === 0
                         ? noMatchingResults()
                         : tokenList.map((list, index) => (

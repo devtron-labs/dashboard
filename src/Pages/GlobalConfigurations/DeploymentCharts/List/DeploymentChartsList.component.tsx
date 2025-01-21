@@ -117,7 +117,7 @@ const DeploymentChartsList = () => {
                         <span>Version</span>
                         <span>Description</span>
                     </div>
-                    <div className="h-100 dc__overflow-scroll">
+                    <div className="h-100 dc__overflow-auto">
                         {chartList.map((chartData) => (
                             <div
                                 key={`custom-chart_${chartData.name}`}

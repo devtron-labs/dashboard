@@ -144,7 +144,7 @@ export const PreBuild: React.FC<PreBuildType> = ({ isJobView }) => {
 
     function renderPluginList(): JSX.Element {
         return (
-            <div className="px-20 pb-20 dc__overflow-scroll flexbox-col">
+            <div className="px-20 pb-20 dc__overflow-auto flexbox-col">
                 <div className="cn-9 fw-6 fs-14 pb-10 pt-20">What do you want this task to do?</div>
                 <div onClick={() => setPluginType(PluginType.INLINE, 0)}>
                     <CustomScriptCard />
@@ -203,7 +203,7 @@ export const PreBuild: React.FC<PreBuildType> = ({ isJobView }) => {
         }
 
         return (
-            <div className="flexbox-col flex-grow-1 dc__overflow-scroll">
+            <div className="flexbox-col flex-grow-1 dc__overflow-auto">
                 <TaskDetailComponent />
             </div>
         )

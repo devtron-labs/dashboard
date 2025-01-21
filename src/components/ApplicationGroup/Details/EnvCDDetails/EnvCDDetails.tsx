@@ -312,7 +312,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                 </div>
             )}
             <div className="ci-details__body">
-                <div className="flexbox-col flex-grow-1 dc__overflow-scroll h-100" ref={scrollableRef}>
+                <div className="flexbox-col flex-grow-1 dc__overflow-auto h-100" ref={scrollableRef}>
                     {renderDetail()}
                 </div>
                 <LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />

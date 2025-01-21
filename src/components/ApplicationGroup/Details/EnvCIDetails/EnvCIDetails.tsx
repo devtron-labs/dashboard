@@ -293,7 +293,7 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                 </div>
             )}
             <div className="ci-details__body">
-                <div className="flexbox-col flex-grow-1 dc__overflow-scroll" ref={scrollableParentRef}>
+                <div className="flexbox-col flex-grow-1 dc__overflow-auto" ref={scrollableParentRef}>
                     {!pipelineId ? (
                         <EmptyView
                             title="No application selected"

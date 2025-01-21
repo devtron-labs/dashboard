@@ -189,7 +189,7 @@ const GUIView = ({
         }
 
         return (
-            <div className="dc__overflow-scroll">
+            <div className="dc__overflow-auto">
                 <RJSFForm
                     schema={state.guiSchema}
                     className={!modelRef.current ? 'dc__mxw-960' : ''}
