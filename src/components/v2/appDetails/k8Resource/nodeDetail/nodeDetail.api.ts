@@ -65,7 +65,7 @@ export const getManifestResource = (
         selectedResource,
     })
 
-    if (window._env_.FEATURE_CONFIG_DRIFT_ENABLE && getDesiredAndLiveManifest && ad.appType === AppType.DEVTRON_APP && !isResourceBrowserView) {
+    if (!isResourceBrowserView && window._env_.FEATURE_CONFIG_DRIFT_ENABLE && getDesiredAndLiveManifest && ad.appType === AppType.DEVTRON_APP) {
         return getDesiredAndLiveManifest(requestData, signal)
     }
 

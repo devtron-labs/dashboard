@@ -29,7 +29,7 @@ import SuggestionItem from './SuggestionItem'
 import { ReactComponent as ICClose } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as ICSearch } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as ICVariable } from '../../../assets/icons/ic-variable.svg'
-import NoVariables from '../../../assets/img/no-artifact@2x.png'
+import NoVariables from '../../../assets/img/no-artifact.webp'
 import { SuggestionsProps, ScopedVariableType } from './types'
 import SuggestionsInfo from './SuggestionsInfo'
 import { NO_DEFINED_DESCRIPTION, NO_DEFINED_VALUE } from './constants'
@@ -123,7 +123,7 @@ const Suggestions = ({ handleDeActivation, loading, variables, reloadVariables, 
 
     const renderSuggestions = (): JSX.Element => (
         <>
-            <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bg__primary flex-grow-1">
+            <div className="flexbox-col dc__align-self-stretch dc__overflow-auto bg__primary flex-grow-1">
                 {suggestions.length ? (
                     suggestions.map((variable) => (
                         <SuggestionItem
@@ -155,7 +155,7 @@ const Suggestions = ({ handleDeActivation, loading, variables, reloadVariables, 
     const renderBody = (): JSX.Element => {
         if (loading) {
             return (
-                <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bg__primary flex-grow-1 h-200">
+                <div className="flexbox-col dc__align-self-stretch dc__overflow-auto bg__primary flex-grow-1 h-200">
                     <Progressing pageLoader size={32} />
                 </div>
             )
@@ -164,7 +164,7 @@ const Suggestions = ({ handleDeActivation, loading, variables, reloadVariables, 
         if (variables?.length === 0) {
             return (
                 <>
-                    <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll flex-grow-1 h-200">
+                    <div className="flexbox-col dc__align-self-stretch dc__overflow-auto flex-grow-1 h-250">
                         <GenericEmptyState title="No variables found" image={NoVariables} />
                     </div>
 

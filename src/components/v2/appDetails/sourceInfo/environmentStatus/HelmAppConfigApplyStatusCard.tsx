@@ -49,7 +49,7 @@ const HelmAppConfigApplyStatusCard = ({ releaseStatus, cardLoading }: HelmAppCon
                     </p>
                 </div>
                 <div className="flex br-4">
-                    <figure className={`${releaseStatus.status.toLowerCase()} icon-dim-24`} />
+                    <figure className={`${releaseStatus.status.toLowerCase()} icon-dim-24 dc__bs-contains`} />
                 </div>
             </div>
             <div className="app-details-info-card__bottom-container">

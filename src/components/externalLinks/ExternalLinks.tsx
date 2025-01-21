@@ -461,7 +461,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                             {filteredLinksLen > 0 && (
                                 <>
                                     {renderExternalLinksHeader()}
-                                    <div className="external-links__list dc__overflow-scroll">
+                                    <div className="external-links__list dc__overflow-auto">
                                         {renderExternalLinks(filteredLinksLen)}
                                     </div>
                                 </>

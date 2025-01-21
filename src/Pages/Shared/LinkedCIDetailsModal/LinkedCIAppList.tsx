@@ -27,12 +27,12 @@ const AppListRow = ({ appId, appName, deploymentStatus, environmentName, trigger
         <div className="display-grid dc__align-items-center linked-ci-detail__table-row cn-9 pl-20 pr-20 pt-8 pb-8 fs-13 fw-4 dc__hover-n50 ">
             <span className="dc__truncate">
                 <Tippy className="default-tt" placement="right" arrow={false} content={appName}>
-                    <span className="dc__truncate dc__w-fit-content">{appName}</span>
+                    <span className="dc__truncate dc__w-fit-content cb-5">{appName}</span>
                 </Tippy>
             </span>
             {environmentName ? (
                 <>
-                    <span>{environmentName}</span>
+                    <span className="dc__truncate dc__w-fit-content">{environmentName}</span>
                     <span className="dc__first-letter-capitalize">{triggerMode}</span>
                     <AppStatus
                         appStatus={

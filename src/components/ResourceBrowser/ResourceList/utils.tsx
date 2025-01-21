@@ -6,6 +6,7 @@ import {
     OPTIONAL_NODE_LIST_HEADERS,
 } from '../Constants'
 import { ResourceListUrlFiltersType } from './types'
+import { K8SResourceListType } from '../Types'
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
     targetK8sVersion: searchParams.get(TARGET_K8S_VERSION_SEARCH_KEY),
@@ -54,3 +55,13 @@ export const getUpgradeCompatibilityTippyConfig = ({
         },
     ],
 })
+
+// Note: this is a hack to handle the case where the event kind is not present in the resource group map
+// This will break for the kind with multiple groups
+export const getFirstResourceFromKindResourceMap = (
+    lowercaseKindToResourceGroupMap: K8SResourceListType['lowercaseKindToResourceGroupMap'],
+    kind: string,
+) =>
+    Object.values(lowercaseKindToResourceGroupMap).find(
+        (resourceGroup) => resourceGroup.gvk.Kind?.toLowerCase() === kind.toLowerCase(),
+    )

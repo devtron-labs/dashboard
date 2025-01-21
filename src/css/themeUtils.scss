@@ -22,11 +22,23 @@
     &__modal {
         background: var(--bg-modal);
     }
+
+    &__white {
+        background: var(--white);
+    }
 }
 
 .text {
     &__white {
         color: var(--white);
+    }
+
+    &__black {
+        color: var(--black);
+
+        &--imp {
+            color: var(--black) !important;
+        }
     }
 }
 
@@ -43,5 +55,51 @@
         *[stroke^="#"] {
             stroke: var(--white);
         }
+    }
+}
+
+.shadow {
+    &__menu {
+        box-shadow: var(--shadow-menu);
+    }
+
+    &__modal {
+        box-shadow: var(--shadow-modal);
+    }
+
+    &__overlay {
+        box-shadow: var(--shadow-overlay);
+    }
+
+    &__drawer {
+        box-shadow: var(--shadow-drawer);
+    }
+}
+
+.border {
+    &__primary {
+        border: 1px solid var(--border-primary);
+    }
+
+    &__secondary {
+        border: 1px solid var(--border-secondary);
+    }
+
+    &__white {
+        border: 1px solid var(--white);
+    }
+}
+
+.divider {
+    &__primary {
+        width: 1px;
+        min-height: 16px;
+        background-color: var(--divider-primary);
+    }
+
+    &__secondary {
+        width: 1px;
+        min-height: 16px;
+        background-color: var(--divider-secondary);
     }
 }
