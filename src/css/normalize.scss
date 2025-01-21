@@ -5,6 +5,7 @@ textarea {
     font-weight: 400;
     background-color: var(--bg-secondary);
     color: var(--N900);
+    transition: border-color 0.17s, border 0.17s;
 
     &::placeholder {
         color: var(--N500);
