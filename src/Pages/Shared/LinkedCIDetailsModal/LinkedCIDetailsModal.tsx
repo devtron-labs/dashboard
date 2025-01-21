@@ -156,7 +156,7 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
 
     return (
         <div className="bg__primary h-100 flexbox-col show-shimmer-loading">
-            <div className="flexbox-col flex-grow-1 dc__overflow-scroll">
+            <div className="flexbox-col flex-grow-1 dc__overflow-auto">
                 <div className="dc__position-sticky dc__top-0 bg__primary dc__zi-20">
                     <div className="flex flex-justify dc__border-bottom pt-10 pr-20 pb-10 pl-20">
                         <h2 className="fs-16 fw-6 lh-24 m-0 dc__ellipsis-right">{ciPipelineName}</h2>
