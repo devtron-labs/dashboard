@@ -1,3 +1,30 @@
+input,
+textarea {
+    border-radius: 4px;
+    border: solid 1px var(--N200);
+    font-weight: 400;
+
+    &[aria-invalid="true"] {
+        border-color: var(--R400);
+    }
+
+    &:hover:not([aria-invalid="true"]):not([disabled]):not(:focus:focus-visible) {
+        border-color: var(--N300);
+    }
+
+    &:focus,
+    &:focus-within {
+        &:not([disabled]) {
+            border-color: var(--B500);
+            outline: none;
+        }
+    }
+}
+
+textarea {
+    resize: vertical;
+}
+
 summary {
     list-style: none;
 }
