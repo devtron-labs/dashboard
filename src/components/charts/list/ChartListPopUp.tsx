@@ -165,7 +165,7 @@ const ChartListPopUp = ({
             return renderEmptyState(true)
         }
         return (
-            <div className="dc__overflow-scroll h-100 mxh-390-imp">
+            <div className="dc__overflow-auto h-100 mxh-390-imp">
                 {filteredChartList.map((list, index) => {
                     return (
                         list.id != 1 && (

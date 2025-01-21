@@ -95,8 +95,6 @@
         }
 
         .chart-values-view__details {
-            padding: 16px;
-            overflow: scroll;
 
             .chart-values__project-container .chart-values__project-label,
             .chart-values__environment-container .chart-values__environment-label,
@@ -240,7 +238,6 @@
 
         .chart-values-view__gui-form-container {
             border-bottom: 1px solid var(--N100);
-            overflow: scroll;
 
             & .rjsf-form-template__container {
                 max-width: 800px;

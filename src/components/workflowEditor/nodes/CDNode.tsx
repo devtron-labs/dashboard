@@ -183,7 +183,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
 
     renderReadOnlyCard() {
         return (
-            <div className="workflow-node dc__overflow-scroll">
+            <div className="workflow-node dc__overflow-auto">
                 <div className="workflow-node__title flex">
                     <div className="workflow-node__full-width-minus-Icon">
                         <span className="workflow-node__text-light">Deploy</span>

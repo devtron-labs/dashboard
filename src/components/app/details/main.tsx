@@ -342,7 +342,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
 
     const _filteredEnvIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
     return (
-        <div className="app-details-page dc__overflow-scroll">
+        <div className="app-details-page dc__overflow-auto">
             {!isV2 && (
                 <AppHeader
                     appName={appName}

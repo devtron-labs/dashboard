@@ -257,7 +257,7 @@ export const CiWebhookModal = ({
     )
 
     const renderTimeStampDetailedDescription = () => (
-        <div className="flex column top dc__gap-16 h-100 dc__overflow-scroll">
+        <div className="flex column top dc__gap-16 h-100 dc__overflow-auto">
             <div className="flex column py-16 px-20 w-100 dc__gap-16">
                 {renderFilterTable()}
                 <div className="expand-incoming-payload  w-100 pb-20">{renderReceivedPayloadCodeEditor()}</div>
