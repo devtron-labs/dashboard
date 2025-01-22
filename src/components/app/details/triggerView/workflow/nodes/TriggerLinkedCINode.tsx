@@ -17,11 +17,11 @@
 import { Component } from 'react'
 import { RouteComponentProps, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
+import { getWorkflowNodeStatusTitle } from '@devtron-labs/devtron-fe-common-lib'
 import link from '@Icons/ic-link.svg'
 import { ReactComponent as ICLinkedCINode } from '@Icons/ic-node-build-linked.svg'
 import { TriggerStatus } from '../../../../config'
 import { DEFAULT_STATUS, URLS } from '../../../../../../config'
-import { getWorkflowNodeStatusTitle } from './workflow.utils'
 
 export interface CINodeProps extends RouteComponentProps<{}> {
     x: number

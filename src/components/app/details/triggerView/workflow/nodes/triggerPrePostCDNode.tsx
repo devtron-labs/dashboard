@@ -16,14 +16,14 @@
 
 import { Component } from 'react'
 import { Link } from 'react-router-dom'
-import { DeploymentAppTypes, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, stopPropagation, getWorkflowNodeStatusTitle } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerPrePostCDNodeProps, TriggerPrePostCDNodeState } from '../../types'
 import { TriggerStatus } from '../../../../config'
 import { BUILD_STATUS, URLS, DEFAULT_STATUS } from '../../../../../../config'
 import { TriggerViewContext } from '../../config'
 import NoGitOpsRepoConfiguredWarning from '../../../../../workflowEditor/NoGitOpsRepoConfiguredWarning'
 import { gitOpsRepoNotConfiguredWithEnforcedEnv } from '../../../../../gitOps/constants'
-import { getNodeSideHeadingAndClass, getWorkflowNodeStatusTitle } from './workflow.utils'
+import { getNodeSideHeadingAndClass } from './workflow.utils'
 import { getAppGroupDeploymentHistoryLink } from '../../../../../ApplicationGroup/AppGroup.utils'
 
 export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, TriggerPrePostCDNodeState> {
@@ -45,7 +45,7 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                 this.props.id,
                 this.props.match.params.envId === this.props.environmentId.toString(),
                 '',
-                this.props.type
+                this.props.type,
             )
         }
         return `${this.props.match.url.replace(URLS.APP_TRIGGER, URLS.APP_CD_DETAILS)}/${this.props.environmentId}/${

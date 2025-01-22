@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { RouteComponentProps, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { CIMaterialType, ConsequenceType } from '@devtron-labs/devtron-fe-common-lib'
+import { CIMaterialType, ConsequenceType, getWorkflowNodeStatusTitle } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerStatus } from '../../../../config'
 import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
 import { ReactComponent as IcLink } from '../../../../../../assets/icons/ic-link.svg'
 import { TriggerViewContext } from '../../config'
 import { DEFAULT_ENV } from '../../Constants'
 import { getLinkedCITippyContent } from '../../../../../../Pages/Shared/LinkedCIDetailsModal/utils'
-import { getWorkflowNodeStatusTitle } from './workflow.utils'
 
 export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string }> {
     x: number

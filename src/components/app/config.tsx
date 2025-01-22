@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { WorkflowStatusEnum } from '@Components/ApplicationGroup/AppGroup.types'
+import { WorkflowStatusEnum } from '@devtron-labs/devtron-fe-common-lib'
 
 const Colors = {
     red: 'var(--R500)',

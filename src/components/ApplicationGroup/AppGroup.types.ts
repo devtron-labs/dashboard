@@ -154,14 +154,6 @@ export interface ProcessWorkFlowStatusType {
     workflows: WorkflowType[]
 }
 
-export enum WorkflowStatusEnum {
-    STARTING = 'Starting',
-    RUNNING = 'Running',
-    PROGRESSING = 'Progressing',
-    WAITING_TO_START = 'WaitingToStart',
-    CANCELLED = 'CANCELLED',
-}
-
 export interface CIWorkflowStatusType {
     ciPipelineId: number
     ciPipelineName: string

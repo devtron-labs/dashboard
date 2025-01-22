@@ -25,6 +25,7 @@ import {
     CIMaterialType,
     SourceTypeMap,
     DEPLOYMENT_STATUS,
+    WorkflowStatusEnum,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getParsedBranchValuesForPlugin } from '@Components/common'
 import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED, URLS } from '../../config'
@@ -34,7 +35,6 @@ import {
     CDWorkflowStatusType,
     CIWorkflowStatusType,
     ProcessWorkFlowStatusType,
-    WorkflowStatusEnum,
 } from './AppGroup.types'
 
 let timeoutId
