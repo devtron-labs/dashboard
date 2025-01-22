@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable jsx-a11y/tabindex-no-positive */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useEffect, useState } from 'react'
 import {
@@ -228,16 +227,14 @@ const EditAPIToken = ({
                 </div>
                 <div className="flexbox-col dc__gap-16">
                     {renderRegenerateInfoBar()}
-                    <label className="form__row">
-                        <CustomInput
-                            label="Name"
-                            data-testid="api-token-name-textbox"
-                            value={editData.name}
-                            disabled
-                            name="name"
-                            onChange={noop}
-                        />
-                    </label>
+                    <CustomInput
+                        label="Name"
+                        data-testid="api-token-name-textbox"
+                        value={editData.name}
+                        disabled
+                        name="name"
+                        onChange={noop}
+                    />
                     <Textarea
                         label="Description"
                         name="description"

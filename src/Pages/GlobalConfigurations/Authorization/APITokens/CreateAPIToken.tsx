@@ -16,7 +16,6 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable jsx-a11y/label-has-associated-control */
-/* eslint-disable jsx-a11y/tabindex-no-positive */
 import { useEffect, useState } from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { Moment } from 'moment'
@@ -257,7 +256,6 @@ const CreateAPIToken = ({
                 </div>
                 <div className="flexbox-col dc__gap-16">
                     <CustomInput
-                        tabIndex={1}
                         placeholder="Name"
                         data-testid="api-token-name-textbox"
                         name="name"
