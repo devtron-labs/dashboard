@@ -2281,6 +2281,10 @@ button.anchor {
     &--modal {
         box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.2);
     }
+
+    &--segmented-chart {
+        box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.1)
+    }
 }
 
 .dc__box-shadow-top {
@@ -3103,6 +3107,10 @@ button.anchor {
 
 .min-w-385 {
     min-width: 385px;
+}
+
+.w-1 {
+    width: 1px;
 }
 
 .w-20 {
@@ -3928,6 +3936,10 @@ button.anchor {
 
 .p-0-imp {
     padding: 0 !important;
+}
+
+.p-2-imp {
+    padding: 2px !important;
 }
 
 .pb-0-imp {

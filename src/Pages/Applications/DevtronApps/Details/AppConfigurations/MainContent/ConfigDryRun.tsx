@@ -10,13 +10,13 @@ import {
     getIsRequestAborted,
     MODES,
     useAsync,
+    ToggleResolveScopedVariables,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
 // FIXME: Placeholder icon since no sense of git merge icon as of now
 import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
 import SelectMergeStrategy from './SelectMergeStrategy'
-import ToggleResolveScopedVariables from './ToggleResolveScopedVariables'
 import NoPublishedVersionEmptyState from './NoPublishedVersionEmptyState'
 import { ConfigDryRunProps } from './types'
 
