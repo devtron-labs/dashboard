@@ -23,10 +23,10 @@ import {
     ButtonWithLoader,
     ToastVariantType,
     ToastManager,
+    Textarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as CloseIcon } from '@Icons/ic-close.svg'
 import { ReactComponent as Info } from '@Icons/ic-info-filled.svg'
-import { ReactComponent as Error } from '@Icons/ic-warning.svg'
 import errorImage from '@Images/ic_upload_chart_error.png'
 import { DOCUMENTATION, SERVER_ERROR_CODES } from '@Config/constants'
 import { uploadChart, validateChart } from './service'
@@ -162,20 +162,15 @@ const UploadChartModal = ({ closeUploadPopup }: UploadChartModalType) => {
                     />
                 </div>
                 <div className="mt-16">
-                    <span className="fs-13 fw-4 cn-7">Description</span>
-                    <textarea
-                        cols={3}
-                        className="w-100 br-4 en-2 bw-1 mt-6 form__input"
+                    <Textarea
+                        placeholder="Enter description"
+                        name="upload-chart-description"
+                        label="Description"
                         value={chartDetail.description}
                         onChange={handleDescriptionChange}
                         disabled={loadingData}
+                        error={isDescriptionLengthError ? 'Maximum 250 characters allowed' : null}
                     />
-                    {isDescriptionLengthError && (
-                        <span className="form__error">
-                            <Error className="form__icon form__icon--error" />
-                            Maximum 250 characters allowed
-                        </span>
-                    )}
                 </div>
             </div>
         </>

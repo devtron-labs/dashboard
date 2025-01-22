@@ -46,6 +46,7 @@ import {
     SelectPicker,
     ToastVariantType,
     ToastManager,
+    Textarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import CreatableSelect from 'react-select/creatable'
@@ -1681,29 +1682,17 @@ const DockerForm = ({
                         </div>
                     </div>
                     {isGCROrGCP && (
-                        <div className="form__row">
-                            <label htmlFor="" className="form__label w-100 dc__required-field">
-                                {selectedDockerRegistryType.password.label}
-                            </label>
-                            <textarea
-                                name="password"
-                                tabIndex={6}
-                                data-testid="artifact-service-account-textbox"
-                                value={customState.password.value}
-                                className="w-100 p-10"
-                                rows={3}
-                                onBlur={id && handleOnBlur}
-                                onFocus={handleOnFocus}
-                                onChange={customHandleChange}
-                                placeholder={selectedDockerRegistryType.password.placeholder}
-                            />
-                            {customState.password?.error && (
-                                <div className="form__error">
-                                    <Error className="form__icon form__icon--error" />
-                                    {customState.password?.error}
-                                </div>
-                            )}
-                        </div>
+                        <Textarea
+                            label={selectedDockerRegistryType.password.label}
+                            required
+                            name="password"
+                            value={customState.password.value}
+                            onBlur={id && handleOnBlur}
+                            onFocus={handleOnFocus}
+                            onChange={customHandleChange}
+                            placeholder={selectedDockerRegistryType.password.placeholder}
+                            error={customState.password?.error}
+                        />
                     )}
                 </>
             )
@@ -1763,29 +1752,17 @@ const DockerForm = ({
                         </div>
                     </div>
                     {isGCROrGCP && (
-                        <div className="form__row">
-                            <label htmlFor="" className="form__label w-100 dc__required-field">
-                                {selectedDockerRegistryType.password.label}
-                            </label>
-                            <textarea
-                                name="password"
-                                tabIndex={6}
-                                data-testid="artifact-service-account-textbox"
-                                value={customState.password.value}
-                                className="w-100 p-10"
-                                rows={3}
-                                onBlur={id && handleOnBlur}
-                                onFocus={handleOnFocus}
-                                onChange={customHandleChange}
-                                placeholder={selectedDockerRegistryType.password.placeholder}
-                            />
-                            {customState.password?.error && (
-                                <div className="form__error">
-                                    <Error className="form__icon form__icon--error" />
-                                    {customState.password?.error}
-                                </div>
-                            )}
-                        </div>
+                        <Textarea
+                            label={selectedDockerRegistryType.password.label}
+                            required
+                            name="password"
+                            value={customState.password.value}
+                            onBlur={id && handleOnBlur}
+                            onFocus={handleOnFocus}
+                            onChange={customHandleChange}
+                            placeholder={selectedDockerRegistryType.password.placeholder}
+                            error={customState.password?.error}
+                        />
                     )}
                 </>
             )
@@ -1969,20 +1946,13 @@ const DockerForm = ({
                                 {value == CERTTYPE.SECURE_WITH_CERT &&
                                     state.advanceSelect.value == CERTTYPE.SECURE_WITH_CERT && (
                                         <div className="ml-20">
-                                            <textarea
+                                            <Textarea
                                                 name="certInput"
                                                 placeholder="Begins with -----BEGIN CERTIFICATE-----"
-                                                className="form__input"
-                                                style={{ height: '100px', backgroundColor: 'var(--bg-secondary)' }}
                                                 onChange={handleOnChange}
                                                 value={state.certInput.value}
+                                                error={certError}
                                             />
-                                            {certError && (
-                                                <div className="form__error">
-                                                    <Error className="form__icon form__icon--error" />
-                                                    {certError}
-                                                </div>
-                                            )}
                                         </div>
                                     )}
                             </div>

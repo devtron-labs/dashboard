@@ -15,7 +15,7 @@
  */
 
 import { Component } from 'react'
-import { showError, Progressing, DialogForm, CustomInput, ToastVariantType, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, DialogForm, CustomInput, ToastVariantType, ToastManager, Textarea } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartGroup, CreateChartGroupProps } from '../charts.types'
 import { getChartGroups, saveChartGroup, updateChartGroup } from '../charts.service'
 import { getChartGroupEditURL } from '../charts.helper'
@@ -203,24 +203,13 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                         error={this.state.name.error}
                     />
                 </label>
-
-                <label className="form__row">
-                    <span className="form__label" data-testid="create-group-desc-heading">
-                        Description
-                    </span>
-                    <textarea
-                        className="form__input form__input--textarea"
-                        name="description"
-                        value={this.state.description}
-                        placeholder="Enter a short description for this group."
-                        autoFocus
-                        tabIndex={2}
-                        data-testid="create-group-desc"
-                        onChange={this.handleDescriptionChange}
-                        required
-                    />
-                    <span className="form__error" />
-                </label>
+                <Textarea
+                    label="Description"
+                    name="description"
+                    value={this.state.description}
+                    placeholder="Enter a short description for this group."
+                    onChange={this.handleDescriptionChange}
+                />
                 <button
                     type="button"
                     className="cta dc__align-right"

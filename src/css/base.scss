@@ -550,20 +550,6 @@ a:focus {
     grid-template-columns: 1fr 1fr;
 }
 
-// ClassName of text area
-.dc__code-textarea {
-    min-width: 100%;
-    height: 550px;
-    color: var(--N0);
-    border: unset;
-    white-space: nowrap;
-    overflow: auto;
-    resize: none;
-    background: var(--terminal-bg);
-    padding: 16px;
-    font-family: monospace;
-}
-
 .build-context-label {
     justify-content: none;
 }

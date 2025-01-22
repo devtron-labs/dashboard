@@ -30,6 +30,7 @@ import {
     ComponentSizeType,
     SelectPickerProps,
     DeleteComponent,
+    Textarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -819,13 +820,9 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                         </div>
                                     )}
                                 </div>
-                                <textarea
-                                    data-testid="exclude-include-commit-textbox"
-                                    className="form__textarea dc__no-border-imp mxh-140"
-                                    autoComplete="off"
-                                    autoFocus
+                                <Textarea
+                                    name="exclude-include-commit-textbox"
                                     placeholder={INCLUDE_EXCLUDE_PLACEHOLDER}
-                                    rows={3}
                                     value={this.props.material.includeExcludeFilePath}
                                     onChange={this.props.handleFileChange}
                                 />
