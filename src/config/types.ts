@@ -3,7 +3,7 @@ import { ReactNode } from 'react'
 export type DeleteComponentModalProps = {
     // Required Props
     title: string
-    component: string
+    component?: string
     showConfirmationModal: boolean
     closeConfirmationModal: () => void
     onDelete: () => void

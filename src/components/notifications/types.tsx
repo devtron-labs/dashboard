@@ -22,6 +22,7 @@ import {
     SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { VariableDataTableActionType } from '@Components/CIPipelineN/VariableDataTable/types'
+import { HostURLConfig } from '@Services/service.types'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes } from './constants'
 
 export interface NotifierProps extends RouteComponentProps<{ id: string }> {}
@@ -80,7 +81,6 @@ export interface ConfigurationTabState {
     slackConfig: any
     webhookConfig: any
     activeTab?: ConfigurationsTabTypes
-    showCannotDeleteDialogModal: boolean
 }
 
 export interface ConfigurationTableProps {
@@ -246,4 +246,66 @@ export interface AddConfigurationButtonProps {
 
 export interface ConfigurationTabSwitcherType {
     isEmptyView: boolean
+}
+
+export interface NotificationConfiguration {
+    id: number
+    pipelineId?: number
+    appName: string
+    pipelineName?: string
+    pipelineType: 'CI' | 'CD'
+    environmentName?: string
+    branch?: string
+    trigger: boolean
+    success: boolean
+    failure: boolean
+    isSelected: boolean
+    providers: { dest: string; configId: number; recipient: string; name?: string }[]
+    appliedFilters: {
+        project: { id: number; name: string }[]
+        application: { id: number; name: string }[]
+        environment: { id: number; name: string }[]
+        cluster: {
+            id: number
+            name: string
+        }[]
+    }
+    singleDeletedId: number
+    isVirtualEnvironment?: boolean
+}
+
+export interface NotificationTabState {
+    view: string
+    statusCode: number
+    notificationList: NotificationConfiguration[]
+    channelList: any[]
+    showDeleteDialog: boolean
+    showModifyRecipientsModal: boolean
+    headerCheckbox: {
+        isChecked: boolean
+        value: 'INTERMEDIATE' | 'CHECKED'
+    }
+    triggerCheckbox: {
+        isChecked: boolean
+        value: 'INTERMEDIATE' | 'CHECKED'
+    }
+    successCheckbox: {
+        isChecked: boolean
+        value: 'INTERMEDIATE' | 'CHECKED'
+    }
+    failureCheckbox: {
+        isChecked: boolean
+        value: 'INTERMEDIATE' | 'CHECKED'
+    }
+    payloadUpdateEvents: Array<{ id: number; eventTypeIds: number[] }>
+    pagination: {
+        size: number
+        pageSize: number
+        offset: number
+    }
+    hostURLConfig: HostURLConfig
+    deleting: boolean
+    confirmation: boolean
+    singleDeletedId: number
+    disableEdit: boolean
 }

@@ -15,15 +15,9 @@
  */
 
 import { useEffect, useState } from 'react'
-import {
-    showError,
-    Progressing,
-    useSearchString,
-    ConfirmationModal,
-    ConfirmationModalVariantType,
-    ServerErrors,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, useSearchString, ERROR_STATUS_CODE } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useLocation } from 'react-router-dom'
+import { DeleteConfirmationModal } from '@Config/DeleteConfigurationModal'
 import { deleteNotification, getConfigs } from './notifications.service'
 import { DC_CONFIGURATION_CONFIRMATION_MESSAGE } from '../../config/constantMessaging'
 import { ConfigurationTabState } from './types'
@@ -60,7 +54,6 @@ export const ConfigurationTab = () => {
         webhookConfig: {},
         activeTab: ConfigurationsTabTypes.SES,
         isLoading: false,
-        showCannotDeleteDialogModal: false,
     })
 
     const getAllChannelConfigs = async () => {
@@ -142,60 +135,8 @@ export const ConfigurationTab = () => {
     }
 
     const onClickDelete = async () => {
-        try {
-            await deleteNotification(deletePayload)
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            getAllChannelConfigs()
-            setState({ ...state, confirmation: false })
-        } catch (serverError) {
-            if (serverError instanceof ServerErrors && serverError.code !== 500) {
-                showError(serverError)
-            }
-            setState({ ...state, confirmation: false, showCannotDeleteDialogModal: true })
-        }
+        await deleteNotification(deletePayload)
     }
-
-    const handleConfirmation = () => {
-        setState({ ...state, showCannotDeleteDialogModal: false })
-    }
-
-    const renderDeleteModal = () => (
-        <ConfirmationModal
-            variant={ConfirmationModalVariantType.delete}
-            title={`Delete ${ConfigurationTabText[state.activeTab.toUpperCase()]} '${deletePayload.configName}'`}
-            subtitle="Are you sure you want to delete this configuration?"
-            buttonConfig={{
-                secondaryButtonConfig: {
-                    text: 'Cancel',
-                    onClick: hideDeleteModal,
-                    disabled: state.isLoading,
-                },
-                primaryButtonConfig: {
-                    text: 'Delete',
-                    onClick: onClickDelete,
-                    isLoading: state.isLoading,
-                },
-            }}
-            showConfirmationModal={state.confirmation}
-            handleClose={hideDeleteModal}
-        />
-    )
-
-    const renderCannotDeleteDialogModal = () => (
-        <ConfirmationModal
-            variant={ConfirmationModalVariantType.info}
-            title={`Cannot delete ${ConfigurationTabText[state.activeTab.toUpperCase()]} '${deletePayload.configName}'`}
-            subtitle={DC_CONFIGURATION_CONFIRMATION_MESSAGE}
-            buttonConfig={{
-                primaryButtonConfig: {
-                    text: 'Okay',
-                    onClick: handleConfirmation,
-                },
-            }}
-            showConfirmationModal={state.showCannotDeleteDialogModal}
-            handleClose={handleConfirmation}
-        />
-    )
 
     const renderTableComponent = () => <ConfigurationTables activeTab={modal} state={state} setState={setState} />
 
@@ -246,8 +187,17 @@ export const ConfigurationTab = () => {
             <ConfigurationTabSwitcher isEmptyView={isEmptyView} />
             {isEmptyView ? renderEmptyState() : renderTableComponent()}
             {renderModal()}
-            {renderDeleteModal()}
-            {renderCannotDeleteDialogModal()}
+            <DeleteConfirmationModal
+                title={deletePayload.configName}
+                component={ConfigurationTabText[state.activeTab.toUpperCase()]}
+                disabled={state.isLoading}
+                onDelete={onClickDelete}
+                showConfirmationModal={state.confirmation}
+                closeConfirmationModal={hideDeleteModal}
+                renderCannotDeleteConfirmationSubTitle={DC_CONFIGURATION_CONFIRMATION_MESSAGE}
+                errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+                reload={getAllChannelConfigs}
+            />
         </div>
     )
 }
