@@ -20,3 +20,18 @@ export const MAX_30CHARS = 'Max 30 chars'
 export const INVALID_WORKFLOW_NAME =
     'Start with alphabet; End with alphanumeric; Use only lowercase; Allowed:(-); Do not use "spaces"'
 export const SUCCESS_CREATION = 'Empty Workflow Created successfully'
+
+export const CHANGE_CI_TOOLTIP = {
+    TITLE: 'Change image source',
+    DISABLED: 'Can not change image source since no image source is present.',
+}
+
+export const WORKFLOW_EDITOR_HEADER_TIPPY = {
+    HEADING: 'Workflow Editor',
+    INFO_TEXT: {
+        JOB_VIEW:
+            'Configure job pipelines to be executed. Pipelines can be configured to be triggered automatically based on code change or time.',
+        DEFAULT: 'Workflow consist of pipelines from build to deployment stages of an application.',
+    },
+    DOCUMENTATION_LINK_TEXT: 'Learn more',
+}

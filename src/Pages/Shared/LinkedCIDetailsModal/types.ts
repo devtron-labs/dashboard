@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import { BaseFilterQueryParams, UseUrlFiltersReturnType, WorkflowType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    BaseFilterQueryParams,
+    UseUrlFiltersReturnType,
+    WorkflowType,
+    TriggerType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { StatusConstants } from '../../../components/app/list-new/Constants'
-import { DEPLOYMENT_STATUS, TriggerType } from '../../../config'
+import { DEPLOYMENT_STATUS } from '../../../config'
 import { SortableKeys } from './constants'
 
 export interface LinkedCIDetailModalProps {

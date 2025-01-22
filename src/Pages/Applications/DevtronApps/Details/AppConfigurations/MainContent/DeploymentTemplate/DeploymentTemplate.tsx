@@ -52,7 +52,7 @@ import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackMa
 import { URLS } from '@Config/routes'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
-import deleteOverrideEmptyStateImage from '@Images/no-artifact@2x.png'
+import deleteOverrideEmptyStateImage from '@Images/no-artifact.webp'
 import {
     ConfigEditorStatesType,
     DeploymentTemplateProps,

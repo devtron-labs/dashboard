@@ -48,12 +48,14 @@ import {
     uploadCDPipelineFile,
     getGlobalVariables,
     FloatingVariablesSuggestions,
+    saveCDPipeline,
+    TriggerType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { CDDeploymentTabText, RegistryPayloadType, SourceTypeMap, TriggerType, ViewType } from '../../config'
+import { CDDeploymentTabText, RegistryPayloadType, SourceTypeMap, ViewType } from '../../config'
 import {
     getPluginIdsFromBuildStage,
     importComponentFromFELibrary,
@@ -67,7 +69,6 @@ import {
     getCDPipelineNameSuggestion,
     getConfigMapAndSecrets,
     getDeploymentStrategyList,
-    saveCDPipeline,
     updateCDPipeline,
 } from './cdPipeline.service'
 import { Sidebar } from '../CIPipelineN/Sidebar'
