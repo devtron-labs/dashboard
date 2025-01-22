@@ -1633,37 +1633,6 @@ button.anchor {
     height: 16px;
 }
 
-// Can be removed?
-.dc__resizable-textarea {
-    resize: none;
-    border-radius: 4px;
-    outline: none;
-    border: solid 1px var(--N200);
-    padding: 12px 10px;
-
-    &:disabled {
-        background: var(--N100);
-    }
-
-    &:not(.form__input--error):hover {
-        border-color: var(--N400);
-    }
-
-    &:not(.form__input--error):focus {
-        border: solid 1px var(--B500);
-    }
-
-    &--vertical {
-        resize: vertical;
-    }
-}
-
-// Can be removed?
-.dc__resizable-textarea__with-max-height {
-    max-height: 100px;
-    overflow: auto;
-}
-
 .dc__app-commit__hash {
     font-size: 12px;
     border-radius: 4px;
