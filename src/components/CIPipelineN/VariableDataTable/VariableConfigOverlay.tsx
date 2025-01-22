@@ -5,7 +5,7 @@ import {
     CHECKBOX_VALUE,
     CustomInput,
     InputOutputVariablesHeaderKeys,
-    ResizableTextarea,
+    Textarea,
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -54,17 +54,13 @@ export const VariableConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOver
                         isRequiredField
                         autoFocus
                     />
-                    <div className="flexbox-col dc__gap-6">
-                        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                        <label className="m-0 fs-13 lh-20 cn-7 fw-4">Description</label>
-                        <ResizableTextarea
-                            value={variableDescription}
-                            minHeight={84}
-                            maxHeight={84}
-                            placeholder="Describe this variable"
-                            onChange={handleVariableDescriptionChange}
-                        />
-                    </div>
+                    <Textarea
+                        label="Description"
+                        value={variableDescription}
+                        placeholder="Describe this variable"
+                        onChange={handleVariableDescriptionChange}
+                        name="variable-description"
+                    />
                 </div>
                 <div className="dc__border-top-n1 p-12 flexbox-col dc__gap-8">
                     <Checkbox

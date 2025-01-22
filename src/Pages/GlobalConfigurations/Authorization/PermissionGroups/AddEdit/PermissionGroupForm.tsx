@@ -199,7 +199,6 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
                         name="permission-group-description"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        dataTestId="permission-group-description-textbox"
                         placeholder="Enter a description for this group"
                     />
                     <div className="dc__border-top" />

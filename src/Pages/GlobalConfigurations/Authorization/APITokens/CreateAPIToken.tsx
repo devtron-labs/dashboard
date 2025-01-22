@@ -24,11 +24,11 @@ import {
     ServerErrors,
     showError,
     CustomInput,
-    ResizableTextarea,
     InfoIconTippy,
     useMainContext,
     ToastVariantType,
     ToastManager,
+    Textarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { FormType, GenerateTokenType } from './apiToken.type'
 import { createGeneratedAPIToken } from './service'
@@ -267,24 +267,14 @@ const CreateAPIToken = ({
                         label="Name"
                         isRequiredField
                     />
-                    <label className="form__row">
-                        <span className="form__label">Description</span>
-                        <ResizableTextarea
-                            name="description"
-                            maxHeight={300}
-                            className="w-100"
-                            value={formData.description}
-                            onChange={onChangeHandler}
-                            data-testid="api-token-description-textbox"
-                            placeholder="Enter a description to remember where you have used this token"
-                        />
-                        {formDataErrorObj.invalidDescription && (
-                            <span className="form__error">
-                                <Error className="form__icon form__icon--error" />
-                                {formDataErrorObj.invalidDescriptionMessage}
-                            </span>
-                        )}
-                    </label>
+                    <Textarea
+                        label="Description"
+                        name="description"
+                        value={formData.description}
+                        onChange={onChangeHandler}
+                        placeholder="Enter a description to remember where you have used this token"
+                        error={formDataErrorObj.invalidDescription && formDataErrorObj.invalidDescriptionMessage}
+                    />
                     <label className="form__row">
                         <div className="flex left">
                             <ExpirationDate
