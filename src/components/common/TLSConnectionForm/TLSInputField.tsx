@@ -15,8 +15,7 @@
  */
 
 import { SyntheticEvent, useState } from 'react'
-import { DEFAULT_SECRET_PLACEHOLDER } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
+import { DEFAULT_SECRET_PLACEHOLDER, Textarea } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICError } from '@Icons/ic-error.svg'
 import { TLSInputFieldProps } from './types'
 
@@ -53,41 +52,26 @@ const TLSInputField = ({
 
     const sanitizedValue = !isSensitive || isFocussed || value?.length > 0 ? value : DEFAULT_SECRET_PLACEHOLDER
     return (
-        <div className="flexbox-col dc__gap-6">
-            <label className="m-0 cn-7 fs-13 fw-4 lh-20 dc_width-max-content" htmlFor={id}>
-                {label}
-            </label>
-
-            <div className="dc__position-rel">
-                <textarea
-                    id={id}
-                    name={id}
-                    data-testid={id}
-                    className="form__textarea mxh-140 dc__hover-border-n300"
-                    placeholder={placeholder}
-                    onFocus={handleOnFocus}
-                    onBlur={handleOnBlur}
-                    onChange={handleInputChange}
-                    value={sanitizedValue}
-                />
-
-                {showClearButton && !!sanitizedValue && (
-                    <button
-                        className="dc__outline-none-imp dc__no-border p-0 bg__secondary flex dc__position-abs dc__right-10 dc__top-8"
-                        type="button"
-                        onClick={handleClearInput}
-                        aria-label="Clear input"
-                    >
-                        <ICError className="icon-dim-18 dc__no-shrink icon-n4 dc__vertical-align-middle" />
-                    </button>
-                )}
-            </div>
-
-            {error && (
-                <div className="form__error">
-                    <ICWarning className="form__icon form__icon--error dc__no-shrink" />
-                    {error}
-                </div>
+        <div className="dc__position-rel">
+            <Textarea
+                label={label}
+                name={id}
+                placeholder={placeholder}
+                onFocus={handleOnFocus}
+                onBlur={handleOnBlur}
+                onChange={handleInputChange}
+                value={sanitizedValue}
+                error={error}
+            />
+            {showClearButton && !!sanitizedValue && (
+                <button
+                    className="dc__outline-none-imp dc__no-border p-0 dc__transparent--unstyled flex dc__position-abs dc__right-10 dc__top-34"
+                    type="button"
+                    onClick={handleClearInput}
+                    aria-label="Clear input"
+                >
+                    <ICError className="icon-dim-18 dc__no-shrink icon-n4 dc__vertical-align-middle" />
+                </button>
             )}
         </div>
     )
