@@ -34,7 +34,7 @@ import {
     TOAST_ACCESS_DENIED,
     BlockedStateData,
     getEnvironmentListMinPublic,
-    uploadCIPipelineFile,
+    CIPipelineNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { withRouter, NavLink, Route, Switch } from 'react-router-dom'
@@ -55,7 +55,7 @@ import {
 } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
-import { CIMaterialProps, CIPipelineNodeType, TriggerViewProps, TriggerViewState } from './types'
+import { CIMaterialProps, TriggerViewProps, TriggerViewState } from './types'
 import CDMaterial from './cdMaterial'
 import {
     URLS,

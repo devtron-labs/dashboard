@@ -1,15 +1,13 @@
 import { Link } from 'react-router-dom'
 
-import { CMSecretExternalType, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import { CMSecretExternalType, InfoColourBar, CMSecretComponentType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as InfoIcon } from '@Icons/info-filled.svg'
 import { ReactComponent as InfoIconN7 } from '@Icons/info-filled-n7.svg'
-import { ReactComponent as ICWarningY5 } from '@Icons/ic-warning-y5.svg'
 import { URLS } from '@Config/routes'
 import { DOCUMENTATION } from '@Config/constants'
 
 import { EXTERNAL_INFO_TEXT } from './constants'
-import { CMSecretComponentType } from './types'
 
 export const renderESOInfo = (isESO: boolean) =>
     isESO ? (
@@ -59,31 +57,6 @@ export const renderExternalInfo = (
             iconSize={20}
         />
     ) : null
-
-export const renderHashiOrAwsDeprecatedInfo = () => (
-    <InfoColourBar
-        classname="warn"
-        message={
-            <p className="m-0 cn-9 fs-13 lh-20">
-                <span>
-                    Kubernetes External Secret (KES) has been deprecated and will be removed in the next Devtron
-                    version. You can delete this file and create a secret using
-                </span>
-                &nbsp;
-                <a
-                    className="anchor"
-                    href="https://github.com/external-secrets/external-secrets"
-                    rel="noreferrer noopener"
-                    target="_blank"
-                >
-                    External Secret Operator (ESO).
-                </a>
-            </p>
-        }
-        Icon={ICWarningY5}
-        iconSize={20}
-    />
-)
 
 export const renderChartVersionBelow3090NotSupportedText = () => (
     <span className="fs-12 fw-4">

@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "1.5.4-beta-2",
+        "@devtron-labs/devtron-fe-common-lib": "1.5.6-beta-2",
         "@esbuild-plugins/node-globals-polyfill": "0.2.3",
         "@rjsf/core": "^5.13.3",
         "@rjsf/utils": "^5.13.3",
@@ -30,7 +30,6 @@
         "react-csv": "^2.2.2",
         "react-dates": "^21.8.0",
         "react-dom": "^17.0.2",
-        "react-draggable": "^4.4.5",
         "react-ga4": "^1.4.1",
         "react-gtm-module": "^2.0.11",
         "react-mde": "^11.5.0",

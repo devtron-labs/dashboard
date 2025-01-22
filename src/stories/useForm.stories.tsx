@@ -34,7 +34,7 @@ const validations: UseFormValidations<FormData> = {
     },
 }
 
-const FormComponent = ({ validationMode }: { validationMode: 'onChange' | 'onBlur' }) => {
+const FormComponent = ({ validationMode }: Pick<Parameters<typeof useForm>[0], 'validationMode'>) => {
     const { data, errors, register, handleSubmit, formState } = useForm<FormData>({
         initialValues: { email: '', password: '' },
         validations,
@@ -89,5 +89,11 @@ export const FormWithOnChangeValidationMode: Story = {
 export const FormWithOnBlurValidationMode: Story = {
     args: {
         validationMode: 'onBlur',
+    },
+}
+
+export const FormWithAllValidationMode: Story = {
+    args: {
+        validationMode: 'all',
     },
 }
