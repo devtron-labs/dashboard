@@ -28,7 +28,6 @@ const TextareaTemplate: Story = {
     args: {
         name: 'textarea',
         label: 'Description',
-        dataTestId: 'textarea',
         value: '',
         placeholder: 'Enter description',
     } as TextareaProps,
