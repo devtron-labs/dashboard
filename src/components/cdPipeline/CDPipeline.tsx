@@ -47,6 +47,7 @@ import {
     getEnvironmentListMinPublic,
     uploadCDPipelineFile,
     getGlobalVariables,
+    FloatingVariablesSuggestions,
     saveCDPipeline,
     TriggerType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -56,7 +57,6 @@ import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { CDDeploymentTabText, RegistryPayloadType, SourceTypeMap, ViewType } from '../../config'
 import {
-    FloatingVariablesSuggestions,
     getPluginIdsFromBuildStage,
     importComponentFromFELibrary,
     sortObjectArrayAlphabetically,

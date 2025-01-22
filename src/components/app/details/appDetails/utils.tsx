@@ -262,6 +262,21 @@ export function addChartNameExtensionToBaseURL(
     return url
 }
 
+// Need to send either the relative time like: now-5m or the timestamp to grafana
+// Assuming format is 'DD-MM-YYYY hh:mm:ss'
+const getTimestampFromDateIfAvailable = (dateString: string): string => {
+    try {
+        const [day, month, yearAndTime] = dateString.split('-')
+        const [year, time] = yearAndTime.split(' ')
+        const formattedDate = `${year}-${month}-${day}T${time}`
+        const parsedDate = new Date(formattedDate).getTime()
+
+        return isNaN(parsedDate) ? dateString : parsedDate.toString()
+    } catch {
+        return dateString
+    }
+}
+
 export function addQueryParamToGrafanaURL(
     url: string,
     appId: string | number,
@@ -276,8 +291,8 @@ export function addQueryParamToGrafanaURL(
     statusCode?: StatusTypes,
     latency?: number,
 ): string {
-    const startTime: string = calendarInputs.startDate
-    const endTime: string = calendarInputs.endDate
+    const startTime: string = getTimestampFromDateIfAvailable(calendarInputs.startDate)
+    const endTime: string = getTimestampFromDateIfAvailable(calendarInputs.endDate)
     url += `?orgId=${window.__GRAFANA_ORG_ID__}`
     url += `&refresh=10s`
     url += `&var-app=${appId}`

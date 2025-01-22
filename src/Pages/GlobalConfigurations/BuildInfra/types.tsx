@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+import { ReactNode } from 'react'
+
 export interface BuildInfraProps {
     isSuperAdmin: boolean
+}
+
+export interface BuildInfraUtilityProviderProps {
+    children: ReactNode
 }
