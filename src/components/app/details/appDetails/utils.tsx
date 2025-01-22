@@ -21,7 +21,7 @@ import { AggregationKeys } from '../../types'
 import { getVersionArr, isVersionLessThanOrEqualToTarget, DayPickerRangeControllerPresets } from '../../../common'
 import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron-down.svg'
 import { ChartTypes, AppMetricsTabType, StatusType, StatusTypes } from './appDetails.type'
-import { ZERO_TIME_STRING, Nodes, NodeType, ACTION_STATE, ButtonStyleType } from '@devtron-labs/devtron-fe-common-lib'
+import { ZERO_TIME_STRING, Nodes, NodeType, ACTION_STATE, ButtonStyleType, prefixZeroIfSingleDigit } from '@devtron-labs/devtron-fe-common-lib'
 import CreatableSelect from 'react-select/creatable'
 
 export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: boolean): AggregationKeys {
@@ -336,7 +336,8 @@ const getTimestampFromDateIfAvailable = (dateString: string): string => {
     try {
         const [day, month, yearAndTime] = dateString.split('-')
         const [year, time] = yearAndTime.split(' ')
-        const formattedDate = `${year}-${month}-${day}T${time}`
+        const updatedTime = time.split(':').map((item) => ['0', '00'].includes(item) ? '00' : prefixZeroIfSingleDigit(Number(item))).join(':')
+        const formattedDate = `${year}-${prefixZeroIfSingleDigit(Number(month))}-${prefixZeroIfSingleDigit(Number(day))}T${updatedTime}`
         const parsedDate = new Date(formattedDate).getTime()
 
         return isNaN(parsedDate) ? dateString : parsedDate.toString()
