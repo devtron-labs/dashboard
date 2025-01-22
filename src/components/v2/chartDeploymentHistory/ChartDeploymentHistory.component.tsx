@@ -38,7 +38,7 @@ import Tippy from '@tippyjs/react'
 import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
 import docker from '../../../assets/icons/misc/docker.svg'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
-import DataNotFound from '../../../assets/img/app-not-deployed.png'
+import DataNotFound from '../../../assets/img/app-not-deployed.svg'
 import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
 import { Moment12HourFormat, SERVER_ERROR_CODES, URLS } from '../../../config'
 import '../../app/details/cIDetails/ciDetails.scss'
@@ -748,7 +748,7 @@ const ChartDeploymentHistory = ({
                         {renderDeploymentCards()}
                     </div>
                 </div>
-                <div className="ci-details__body dc__overflow-scroll">{renderSelectedDeploymentDetail()}</div>
+                <div className="ci-details__body dc__overflow-auto">{renderSelectedDeploymentDetail()}</div>
                 {showRollbackConfirmation && (
                     <RollbackConfirmationDialog
                         deploying={deploying}

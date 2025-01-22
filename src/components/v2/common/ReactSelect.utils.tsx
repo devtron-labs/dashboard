@@ -21,6 +21,9 @@ import { multiSelectStyles, noop, stopPropagation, Environment } from '@devtron-
 import { ReactComponent as ArrowDown } from '../assets/icons/ic-chevron-down.svg'
 import { CLUSTER_TERMINAL_MESSAGING } from '../../ClusterNodes/constants'
 
+/**
+ * @deprecated
+ */
 export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
     return (base, state) => ({
         ...base,
@@ -42,6 +45,9 @@ export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
     })
 }
 
+/**
+ * @deprecated
+ */
 export const getCommonSelectStyle = (styleOverrides = {}) => {
     return {
         menuList: (base) => ({
@@ -99,34 +105,6 @@ export const getCommonSelectStyle = (styleOverrides = {}) => {
     }
 }
 
-export const styles = {
-    control: (base, state) => ({
-        ...base,
-        boxShadow: 'none',
-        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-    }),
-    menu: (base, state) => {
-        return {
-            ...base,
-            top: `0px`,
-            backgroundColor: 'var(--bg-primary)',
-        }
-    },
-    singleValue: (base, state) => {
-        return {
-            ...base,
-            color: 'var(--N900)',
-        }
-    },
-    option: (base, state) => {
-        return {
-            ...base,
-            color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
-            backgroundColor: state.isFocused ? 'var(--bg-secondary)' : 'var(--bg-primary)',
-        }
-    },
-}
-
 /**
  * @deprecated - use SelectOption from fe-common
  */
@@ -168,39 +146,6 @@ export const DropdownIndicator = (props) => {
     )
 }
 
-export function customOption(label: string, icon: string, className = '', onImageLoadError = noop) {
-    return (
-        <div className={`flex left ${className}`}>
-            {icon && <img src={icon} alt={label} className="icon-dim-20 mr-8" onError={onImageLoadError} />}
-            <span className="dc__ellipsis-right">{label}</span>
-        </div>
-    )
-}
-
-export const OptionWithIcon = (props) => {
-    const { selectProps, data, style } = props
-    selectProps.styles.option = getCustomOptionSelectionStyle(style)
-    return <components.Option {...props}>{customOption(data.label, data.icon)}</components.Option>
-}
-
-export const ValueContainerWithIcon = (props) => {
-    const { selectProps } = props
-    return (
-        <components.ValueContainer {...props}>
-            {selectProps.value ? (
-                <>
-                    {customOption(selectProps.value.label, selectProps.value.icon)}
-                    {React.cloneElement(props.children[1], {
-                        style: { position: 'absolute' },
-                    })}
-                </>
-            ) : (
-                <>{props.children}</>
-            )}
-        </components.ValueContainer>
-    )
-}
-
 export const noMatchingOptions = () => 'No matching results'
 
 export const formatOptionLabel = (option): JSX.Element => {
@@ -237,54 +182,6 @@ export const GroupHeading = (props) => {
                 </span>
             </div>
         </components.GroupHeading>
-    )
-}
-
-export const EnvFormatOptions = (props) => {
-    const { data, environmentfieldName } = props
-    return <components.SingleValue {...props}>{data[environmentfieldName]}</components.SingleValue>
-}
-
-export function formatHighlightedText(option: Environment, inputValue: string, environmentfieldName: string) {
-    const highLightText = (highlighted) => `<mark>${highlighted}</mark>`
-    const regex = new RegExp(inputValue, 'gi')
-    return (
-        <div className="flex left column dc__highlight-text" data-testid={option[environmentfieldName]}>
-            <span
-                className="w-100 dc__ellipsis-right"
-                dangerouslySetInnerHTML={{
-                    __html: option[environmentfieldName].replace(regex, highLightText),
-                }}
-            />
-            <small className="w-100 dc__truncate-text fs-12 cn-7">{option.description}</small>
-        </div>
-    )
-}
-
-export function formatHighlightedTextDescription(
-    option: Environment,
-    inputValue: string,
-    environmentfieldName: string,
-) {
-    const highLightText = (highlighted) => `<mark>${highlighted}</mark>`
-    const regex = new RegExp(inputValue, 'gi')
-    return (
-        <div className="flex left column dc__highlight-text">
-            <span
-                className="w-100 dc__ellipsis-right"
-                dangerouslySetInnerHTML={{
-                    __html: option[environmentfieldName].replace(regex, highLightText),
-                }}
-            />
-            {option.description && (
-                <small
-                    className="cn-6"
-                    dangerouslySetInnerHTML={{
-                        __html: `${option.description}`.replace(regex, highLightText),
-                    }}
-                />
-            )}
-        </div>
     )
 }
 

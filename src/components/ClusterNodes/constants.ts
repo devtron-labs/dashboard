@@ -27,6 +27,8 @@ export const clusterSelectStyle = {
         textAlign: 'left',
         minWidth: '150px',
         maxWidth: '300px',
+        backgroundColor: 'var(--bg-menu)',
+        border: '1px solid var(--N200)',
     }),
     control: (base, state) => ({
         ...base,
@@ -217,6 +219,8 @@ export const clusterImageSelect = {
         textAlign: 'left',
         maxWidth: '380px',
         minWidth: '350px',
+        backgroundColor: 'var(--bg-menu)',
+        border: '1px solid var(--N200)',
     }),
     control: (base, state) => ({
         ...clusterSelectStyle.control(base, state),

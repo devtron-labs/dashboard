@@ -786,8 +786,11 @@ table.pod__table td:last-child {
 
         &.f-progressing,
         &.f-inprogress,
-        &.f-unknown,
         &.initiated {
+            color: var(--O500);
+        }
+
+        &.f-unknown {
             color: var(--Y500);
         }
 
@@ -1772,7 +1775,7 @@ table.resource-tree {
     .dc__app-summary__icon {
         &.healthy {
             background-size: contain, contain;
-            background: url(../../../../assets/icons/appstatus/ic-heart-green.svg), transparent;
+            background: url('../../../../assets/icons/appstatus/ic-heart-green.svg'), transparent;
         }
     }
 
@@ -1946,7 +1949,7 @@ table.resource-tree {
     margin: auto;
     margin-right: 0;
     height: 100%;
-    overflow: scroll;
+    overflow: auto;
 
     .issues-listing-modal__header {
         position: sticky;

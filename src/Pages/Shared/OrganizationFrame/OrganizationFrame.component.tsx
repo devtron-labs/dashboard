@@ -16,6 +16,7 @@
 
 import { getRandomColor } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICDevtron } from '../../../assets/icons/ic-devtron-blue-outline.svg'
+import './organizationFrame.scss'
 
 const OrganizationFrame = () => (
     <div className="w-36 h-42 dc__no-shrink flexbox dc__position-rel dc__content-center">
@@ -30,7 +31,7 @@ const OrganizationFrame = () => (
             </span>
         </div>
 
-        <ICDevtron className="icon-dim-20 dc__no-shrink dc__position-abs dc__bottom-0" />
+        <ICDevtron className="icon-dim-20 dc__no-shrink dc__position-abs dc__bottom-0 organization-frame__logo" />
     </div>
 )
 

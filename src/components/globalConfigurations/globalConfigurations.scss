@@ -29,7 +29,7 @@
         border-right: solid 1px var(--N200);
         background: var(--bg-primary);
         height: 100%;
-        overflow: scroll;
+        overflow: auto;
 
         a {
             font-size: 13px;
@@ -255,20 +255,6 @@
         border-radius: 8px;
         overflow: hidden;
         background: var(--bg-primary);
-    }
-
-    &.collapsed-list--create {
-        .add-icon {
-            background: url('../../assets/icons/ic-add.svg');
-            width: 24px;
-            height: 24px;
-            background-size: contain;
-        }
-
-        .list__title {
-            color: var(--B500);
-            font-weight: 600;
-        }
     }
 }
 

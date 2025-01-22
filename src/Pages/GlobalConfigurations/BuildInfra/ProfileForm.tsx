@@ -65,7 +65,7 @@ const ProfileForm: FunctionComponent = () => {
             onKeyDown={handleKeyDown}
             onSubmit={handleSubmit}
         >
-            <div className="flexbox-col dc__gap-24 pt pr pb pl h-100 dc__overflow-scroll">
+            <div className="flexbox-col dc__gap-24 pt pr pb pl h-100 dc__overflow-auto">
                 <BuildInfraDescriptor breadCrumbs={breadcrumbs} />
 
                 <APIResponseHandler

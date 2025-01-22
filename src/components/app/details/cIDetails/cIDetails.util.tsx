@@ -15,8 +15,7 @@
  */
 
 import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import notScanned from '../../../../assets/img/not-scanned.png'
-import scannedDisabled from '../../../../assets/img/ic-empty-scanner-disabled.png'
+import { ReactComponent as ScannedDisabled } from '../../../../assets/img/ic-empty-scanner-disabled.svg'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 import { ReactComponent as Arrow } from '../../../../assets/icons/ic-arrow-forward.svg'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
@@ -32,7 +31,7 @@ export const ScanDisabledView = (props) => {
     }
     return (
         <GenericEmptyState
-            image={notScanned}
+            SvgImage={ScannedDisabled}
             title={EMPTY_STATE_STATUS.CI_DETAILS_IMAGE_NOT_SCANNED.TITLE}
             subTitle={EMPTY_STATE_STATUS.CI_DETAILS_IMAGE_SCANNED_DISABLED}
             isButtonAvailable
@@ -45,7 +44,7 @@ export const ScanDisabledView = (props) => {
 export const ImageNotScannedView = () => {
     return (
         <GenericEmptyState
-            image={scannedDisabled}
+            SvgImage={ScannedDisabled}
             title={EMPTY_STATE_STATUS.CI_DETAILS_IMAGE_NOT_SCANNED.TITLE}
             subTitle={EMPTY_STATE_STATUS.CI_DETAILS_IMAGE_NOT_SCANNED.SUBTITLE}
         />

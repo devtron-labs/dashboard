@@ -51,7 +51,7 @@ import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackMa
 import { URLS } from '@Config/routes'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
-import deleteOverrideEmptyStateImage from '@Images/no-artifact@2x.png'
+import deleteOverrideEmptyStateImage from '@Images/no-artifact.webp'
 import {
     ConfigEditorStatesType,
     DeploymentTemplateProps,
@@ -1497,7 +1497,7 @@ const DeploymentTemplate = ({
     const renderEditorComponent = () => {
         if (isResolvingVariables || isLoadingChangedChartDetails || !!isLoadingMergedTemplate) {
             return (
-                <div className="flex h-100 flex-grow-1 dc__overflow-scroll">
+                <div className="flex h-100 flex-grow-1 dc__overflow-auto">
                     <Progressing pageLoader />
                 </div>
             )
@@ -1527,7 +1527,7 @@ const DeploymentTemplate = ({
         if (isCompareView) {
             return (
                 <CompareConfigView
-                    className="flex-grow-1 dc__overflow-scroll"
+                    className="flex-grow-1 dc__overflow-auto"
                     compareFromSelectedOptionValue={compareFromSelectedOptionValue}
                     handleCompareFromOptionSelection={handleCompareFromOptionSelection}
                     isApprovalView={isApprovalView}
@@ -1693,7 +1693,7 @@ const DeploymentTemplate = ({
     }
 
     const renderValuesView = () => (
-        <div className="flexbox-col flex-grow-1 dc__overflow-scroll">
+        <div className="flexbox-col flex-grow-1 dc__overflow-auto">
             {window._env_.ENABLE_SCOPED_VARIABLES && (
                 <div className="app-config-variable-widget-position">
                     <FloatingVariablesSuggestions
@@ -1827,7 +1827,7 @@ const DeploymentTemplate = ({
         }
 
         return (
-            <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-scroll bg__primary">
+            <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-auto bg__primary">
                 {renderBody()}
 
                 {showDeleteOverrideDialog && (

@@ -15,6 +15,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import ReactGA from 'react-ga4'
 import { Route, Switch, useRouteMatch, Redirect, useLocation, useParams } from 'react-router-dom'
 import { DynamicTabs, useTabs } from '@Components/common/DynamicTabs'
 import { EnvResourceType, noop } from '@devtron-labs/devtron-fe-common-lib'
@@ -28,6 +29,7 @@ import { AppDetailsTabs, getInitialTabs } from './appDetails.store'
 import { K8ResourceComponentProps, NodeTreeDetailTabProps, NodeType } from './appDetails.type'
 import IndexStore from './index.store'
 import NodeDetailComponentWrapper from './NodeDetailComponentWrapper'
+import { getApplicationsGAEvent } from './k8Resource/utils'
 import './appDetails.scss'
 
 const NodeTreeDetailTab = ({
@@ -79,6 +81,14 @@ const NodeTreeDetailTab = ({
         markTabActiveById(AppDetailsTabs.log_analyzer).catch(noop)
     }
 
+    const handleReloadK8sResourceTab = () => {
+        handleReloadResourceTree()
+        ReactGA.event({
+            category: getApplicationsGAEvent(appDetails.appType),
+            action: getApplicationsGAEvent(appDetails.appType),
+        })
+    }
+
     // NOTE: don't render any of the components before tabs are initialized
     // this is cuz, the components mark their own corresponding tabs as the selected tabs on mount
     return (
@@ -97,7 +107,7 @@ const NodeTreeDetailTab = ({
                                 if (tab.id === AppDetailsTabs.k8s_Resources) {
                                     acc[tab.id] = {
                                         isLoading: isReloadResourceTreeInProgress,
-                                        reload: handleReloadResourceTree,
+                                        reload: handleReloadK8sResourceTab,
                                     }
                                 }
 

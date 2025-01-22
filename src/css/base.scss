@@ -848,8 +848,11 @@ button.anchor {
 
     &.f-progressing,
     &.f-inprogress,
-    &.f-unknown,
     &.initiated {
+        color: var(--O500);
+    }
+
+    &.f-unknown {
         color: var(--Y500);
     }
 
@@ -1596,27 +1599,38 @@ button.anchor {
     right: 10px !important;
 }
 
-.shimmer {
-    background: linear-gradient(90deg, var(--N100) 30%, var(--N0) 60%, var(--N100) 100%);
-    background-repeat: no-repeat;
-    background-size: 800px 104px;
-    display: inline-block;
-    position: relative;
-    animation-duration: 1s;
-    animation-fill-mode: forwards;
-    animation-iteration-count: infinite;
-    animation-name: placeholderShimmer;
-    animation-timing-function: linear;
-}
-
-@keyframes placeholderShimmer {
+@keyframes shimmer-loading {
     0% {
-        background-position: -468px 0;
+        background-position: 0% 0%;
+    }
+
+    25% {
+        background-position: 50% 0%;
+    }
+
+    50% {
+        background-position: 100% 0%;
+    }
+
+    75% {
+        background-position: 50% 0%;
     }
 
     100% {
-        background-position: 468px 0;
+        background-position: 0% 0%;
     }
+}
+
+.shimmer, .show-shimmer-loading .child-shimmer-loading, .shimmer-loading {
+    background: var(--bg-shimmer-loader);
+    border-radius: 4px;
+    opacity: 0.5;
+    background-repeat: no-repeat;
+    background-size: 200% 100%;
+    display: inline-block;
+    position: relative;
+    animation: shimmer-loading 1s infinite linear;
+    height: 16px;
 }
 
 .dc__resizable-textarea {
@@ -3601,6 +3615,10 @@ textarea {
     height: 132px;
 }
 
+.h-192 {
+    height: 192px;
+}
+
 .h-200 {
     height: 200px;
 }
@@ -4105,6 +4123,10 @@ textarea {
     background: none !important;
 }
 
+.dc__bs-contains {
+    background-size: contain;
+}
+
 //Overflow
 .dc__overflow-hidden {
     overflow: hidden !important;
@@ -4114,20 +4136,8 @@ textarea {
     overflow: auto !important;
 }
 
-.dc__overflow-y-auto {
-    overflow: auto !important;
-}
-
-.dc__overflow-scroll {
-    overflow: scroll !important;
-}
-
 .dc__hide-hscroll {
     overflow-x: hidden;
-}
-
-.dc__hscroll {
-    overflow-x: scroll;
 }
 
 .dc__overflow-initial {
@@ -4628,44 +4638,6 @@ textarea::placeholder {
     z-index: 20;
 }
 
-.show-shimmer-loading {
-    .child-shimmer-loading {
-        animation-duration: 2s;
-        animation-fill-mode: forwards;
-        animation-iteration-count: infinite;
-        animation-name: shimmer-loading;
-        animation-timing-function: linear;
-        background: linear-gradient(90deg, var(--N100) 30%, var(--N0) 60%, var(--N100) 100%);
-        background-size: 800px 104px;
-        position: relative;
-        height: 16px;
-        border-radius: 2px;
-        margin-top: 4px;
-    }
-}
-
-.shimmer-loading {
-    animation-duration: 2s;
-    animation-fill-mode: forwards;
-    animation-iteration-count: infinite;
-    animation-name: shimmer-loading;
-    animation-timing-function: linear;
-    background: linear-gradient(90deg, var(--N100) 30%, var(--N0) 60%, var(--N100) 100%);
-    background-size: 800px 104px;
-    position: relative;
-    border-radius: 2px;
-}
-
-@keyframes shimmer-loading {
-    0% {
-        background-position: -800px 0;
-    }
-
-    100% {
-        background-position: 800px 0;
-    }
-}
-
 .dc__place-abs-shimmer-center {
     position: absolute;
     top: 50%;
@@ -4858,25 +4830,6 @@ textarea::placeholder {
         top: 0;
         text-align: center;
     }
-
-    &.cd-trigger-announcement {
-        .info-bar-container {
-            .announcement-bar {
-                border-radius: 0;
-                border: none;
-                border-bottom: 1px solid var(--Y700);
-            }
-        }
-    }
-}
-
-.announcement-bar {
-    background-color: var(--Y500);
-    border: 1px solid var(--Y700);
-    border-top: none;
-    padding: 8px 12px !important;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
 }
 
 // End: accouncement banner
