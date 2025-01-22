@@ -32,22 +32,26 @@ import {
     DEFAULT_SECRET_PLACEHOLDER,
     GenericFilterEmptyState,
     CodeEditor,
-    DeleteComponent,
     ToastManager,
     ToastVariantType,
+    ButtonStyleType,
+    ButtonVariantType,
+    Button,
+    ERROR_STATUS_CODE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import TippyHeadless from '@tippyjs/react/headless'
-import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
-import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning-y6.svg'
+import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
+import { ReactComponent as ErrorIcon } from '@Icons/ic-warning-y6.svg'
 import { useForm, CustomPassword, importComponentFromFELibrary } from '../common'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { saveCluster, updateCluster, deleteCluster, validateCluster, saveClusters } from './cluster.service'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ReactComponent as Warning } from '../../assets/icons/ic-alert-triangle.svg'
-import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
-import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as ForwardArrow } from '../../assets/icons/ic-arrow-right.svg'
+import { ReactComponent as Close } from '@Icons/ic-close.svg'
+import { ReactComponent as Warning } from '@Icons/ic-alert-triangle.svg'
+import { ReactComponent as FormError } from '@Icons/ic-warning.svg'
+import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
+import { ReactComponent as ForwardArrow } from '@Icons/ic-arrow-right.svg'
+import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { ReactComponent as MechanicalOperation } from '../../assets/img/ic-mechanical-operation.svg'
 import {
     AuthenticationType,
@@ -66,14 +70,15 @@ import {
     DeleteComponentsName,
     EMPTY_STATE_STATUS,
 } from '../../config/constantMessaging'
-import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
+import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
+import { ReactComponent as InfoIcon } from '@Icons/info-filled.svg'
 import ClusterInfoStepsModal from './ClusterInfoStepsModal'
 import { UPLOAD_STATE } from '@Pages/GlobalConfigurations/DeploymentCharts/types'
 import UserNameDropDownList from './UseNameListDropdown'
 import { clusterId } from '../ClusterNodes/__mocks__/clusterAbout.mock'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { RemoteConnectionType } from '../dockerRegistry/dockerType'
+import { DeleteConfirmationModal } from '@Config/DeleteConfigurationModal'
 
 const VirtualClusterSelectionTab = importComponentFromFELibrary('VirtualClusterSelectionTab')
 const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio')
@@ -144,8 +149,7 @@ export default function ClusterForm({
     const isDefaultCluster = (): boolean => {
         return id == 1
     }
-    const [deleting, setDeleting] = useState(false)
-    const [confirmation, toggleConfirmation] = useState(false)
+    const [confirmation, setConfirmation] = useState(false)
     const inputFileRef = useRef(null)
     const [uploadState, setUploadState] = useState<string>(UPLOAD_STATE.UPLOAD)
     const [saveYamlData, setSaveYamlData] = useState<string>('')
@@ -555,25 +559,6 @@ export default function ClusterForm({
         } else {
             setPrometheusAuthenticationType({ type: AuthenticationType.BASIC })
         }
-    }
-
-    const payload = {
-        id,
-        cluster_name,
-        config: { bearer_token: state.token.value },
-        active,
-        prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
-        prometheusAuth: {
-            userName: prometheusToggleEnabled ? state.userName.value : '',
-            password: prometheusToggleEnabled ? state.password.value : '',
-            tlsClientCert: prometheusToggleEnabled ? state.prometheusTlsClientKey.value : '',
-            tlsClientKey: prometheusToggleEnabled ? state.prometheusTlsClientCert.value : '',
-        },
-        remoteConnectionConfig: getRemoteConnectionConfig(state, remoteConnectionMethod),
-        server_url,
-        defaultClusterComponent,
-        k8sversion: '',
-        insecureSkipTlsVerify: !isTlsConnection,
     }
 
     const ClusterInfoComponent = () => {
@@ -1441,6 +1426,31 @@ export default function ClusterForm({
         toggleShowAddCluster()
     }
 
+    const showConfirmationModal = () => setConfirmation(true)
+    const hideConfirmationModal = () => setConfirmation(false)
+
+    const onDelete = async () => {
+        const payload = {
+            id,
+            cluster_name,
+            config: { bearer_token: state.token.value },
+            active,
+            prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
+            prometheusAuth: {
+                userName: prometheusToggleEnabled ? state.userName.value : '',
+                password: prometheusToggleEnabled ? state.password.value : '',
+                tlsClientCert: prometheusToggleEnabled ? state.prometheusTlsClientKey.value : '',
+                tlsClientKey: prometheusToggleEnabled ? state.prometheusTlsClientCert.value : '',
+            },
+            remoteConnectionConfig: getRemoteConnectionConfig(state, remoteConnectionMethod),
+            server_url,
+            defaultClusterComponent,
+            k8sversion: '',
+            insecureSkipTlsVerify: !isTlsConnection,
+        }
+        await deleteCluster(payload)
+    }
+
     return getClusterVar ? (
         displayClusterDetails()
     ) : (
@@ -1485,34 +1495,35 @@ export default function ClusterForm({
                         </div>
 
                         {!isKubeConfigFile && (
-                            <div className="w-100 dc__border-top flex right pb-12 pt-12 pr-20 pl-20 dc__position-fixed dc__position-abs dc__bottom-0">
+                            <div className="w-100 dc__border-top flex dc__content-space pb-12 pt-12 pr-20 pl-20 dc__position-abs dc__bottom-0">
                                 {id && (
-                                    <button
-                                        data-testid="delete_cluster"
-                                        style={{ margin: 'auto', marginLeft: 20 }}
-                                        className="flex cta delete scr-5 h-36 lh-36"
-                                        type="button"
-                                        onClick={() => toggleConfirmation(true)}
+                                    <Button
+                                        text="Delete"
+                                        variant={ButtonVariantType.secondary}
+                                        style={ButtonStyleType.negative}
+                                        startIcon={<Trash />}
                                         disabled={isDefaultCluster()}
-                                    >
-                                        {deleting ? <Progressing /> : 'Delete'}
-                                    </button>
+                                        dataTestId="delete_cluster"
+                                        onClick={showConfirmationModal}
+                                    />
                                 )}
-                                <button
-                                    data-testid="cancel_button"
-                                    className="cta cancel h-36 lh-36"
-                                    type="button"
-                                    onClick={handleCloseButton}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    data-testid="save_cluster_after_entering_cluster_details"
-                                    className="cta ml-12 h-36 lh-36"
-                                    onClick={handleOnSubmit}
-                                >
-                                    {id ? 'Update cluster' : 'Save cluster'}
-                                </button>
+                                <div className="flexbox dc__gap-12">
+                                    <Button
+                                        text="Cancel"
+                                        variant={ButtonVariantType.secondary}
+                                        style={ButtonStyleType.neutral}
+                                        dataTestId="cancel_button"
+                                        onClick={handleCloseButton}
+                                    />
+                                    <Button
+                                        dataTestId="save_cluster_after_entering_cluster_details"
+                                        onClick={handleOnSubmit}
+                                        text={id ? 'Update cluster' : 'Save cluster'}
+                                        buttonProps={{
+                                            type: 'submit',
+                                        }}
+                                    />
+                                </div>
                             </div>
                         )}
                         {isKubeConfigFile && (
@@ -1540,18 +1551,16 @@ export default function ClusterForm({
                                 </button>
                             </div>
                         )}
-                        {confirmation && (
-                            <DeleteComponent
-                                setDeleting={setDeleting}
-                                deleteComponent={deleteCluster}
-                                payload={payload}
-                                title={cluster_name}
-                                toggleConfirmation={toggleConfirmation}
-                                component={DeleteComponentsName.Cluster}
-                                confirmationDialogDescription={DC_CLUSTER_CONFIRMATION_MESSAGE}
-                                reload={reload}
-                            />
-                        )}
+                        <DeleteConfirmationModal
+                            title={cluster_name}
+                            component={DeleteComponentsName.Cluster}
+                            renderCannotDeleteConfirmationSubTitle={DC_CLUSTER_CONFIRMATION_MESSAGE}
+                            onDelete={onDelete}
+                            reload={reload}
+                            showConfirmationModal={confirmation}
+                            closeConfirmationModal={hideConfirmationModal}
+                            errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+                        />
                     </>
                 )}
             </div>

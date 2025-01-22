@@ -42,15 +42,18 @@ import {
     MultiValueRemove,
     MultiValueChipContainer,
     OptionType,
-    DeleteComponent,
     SelectPicker,
     ToastVariantType,
     ToastManager,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ERROR_STATUS_CODE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import CreatableSelect from 'react-select/creatable'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import { useForm, handleOnBlur, handleOnFocus, parsePassword, importComponentFromFELibrary } from '../common'
+import { useForm, handleOnBlur, handleOnFocus, parsePassword, importComponentFromFELibrary, Trash } from '../common'
 import {
     getClusterListMinWithoutAuth,
     getDockerRegistryList,
@@ -94,6 +97,7 @@ import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/Validate
 import { ReactComponent as ErrorInfo } from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { creatableSelectStyles } from './creatableStyles'
+import { DeleteConfirmationModal } from '@Config/DeleteConfigurationModal'
 
 const RegistryHelmPushCheckbox = importComponentFromFELibrary('RegistryHelmPushCheckbox')
 const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio')
@@ -531,8 +535,7 @@ const DockerForm = ({
         password: '',
     }
 
-    const [deleting, setDeleting] = useState(false)
-    const [confirmation, toggleConfirmation] = useState(false)
+    const [confirmation, setConfirmationModal] = useState(false)
     const [isIAMAuthType, setIAMAuthType] = useState(!awsAccessKeyId && !awsSecretAccessKey)
     const [blackList, setBlackList] = useState(_ignoredClusterIdsCsv)
     const [whiteList, setWhiteList] = useState(_appliedClusterIdsCsv)
@@ -1792,6 +1795,16 @@ const DockerForm = ({
         }
     }
 
+    const showConfirmationModal = () => setConfirmationModal(true)
+    const closeConfirmationModal = () => setConfirmationModal(false)
+
+    const onDelete = async () => {
+        const deletePayload = getRegistryPayload(
+            selectedDockerRegistryType.value === RegistryType.ECR && fetchAWSRegion(),
+        )
+        await deleteDockerReg(deletePayload)
+    }
+
     // For EA Mode GCR is not available as it is not OCI compliant
     const EA_MODE_REGISTRY_TYPE_MAP = Object.fromEntries(Object.entries(REGISTRY_TYPE_MAP).filter(([key,_]) => key !== 'gcr'))
     return (
@@ -1995,50 +2008,48 @@ const DockerForm = ({
                 {renderDefaultRegistry()}
             </div>
             <div className="p-20 divider">
-                <div className="flex right">
+                <div className="flexbox">
                     {id && (
-                        <button
-                            className="cta flex h-36 delete dc__m-auto ml-0"
-                            data-testid="delete-container-registry"
-                            type="button"
-                            disabled={loading}
-                            onClick={() => toggleConfirmation(true)}
-                        >
-                            {deleting ? <Progressing /> : 'Delete'}
-                        </button>
+                        <Button
+                            text="Delete"
+                            variant={ButtonVariantType.secondary}
+                            style={ButtonStyleType.negative}
+                            startIcon={<Trash />}
+                            dataTestId="delete-container-registry"
+                            onClick={showConfirmationModal}
+                        />
                     )}
-                    <button
-                        className="cta flex h-36 mr-16 cancel"
-                        type="button"
-                        onClick={setToggleCollapse}
-                        disabled={loading || deleting}
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        className="cta flex h-36"
-                        type="submit"
-                        disabled={loading || deleting}
-                        data-testid="container-registry-save-button"
-                    >
-                        {loading ? <Progressing /> : id ? 'Update' : 'Save'}
-                    </button>
+                    <div className="flex right w-100 dc__gap-12">
+                        <button
+                            className="cta flex h-36 cancel"
+                            type="button"
+                            onClick={setToggleCollapse}
+                            disabled={loading}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            className="cta flex h-36"
+                            type="submit"
+                            disabled={loading}
+                            data-testid="container-registry-save-button"
+                        >
+                            {loading ? <Progressing /> : id ? 'Update' : 'Save'}
+                        </button>
+                    </div>
                 </div>
 
-                {confirmation && (
-                    <DeleteComponent
-                        setDeleting={setDeleting}
-                        deleteComponent={deleteDockerReg}
-                        payload={getRegistryPayload(
-                            selectedDockerRegistryType.value === RegistryType.ECR && fetchAWSRegion(),
-                        )}
-                        title={id}
-                        toggleConfirmation={toggleConfirmation}
-                        component={DeleteComponentsName.ContainerRegistry}
-                        confirmationDialogDescription={DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE}
-                        reload={reload}
-                    />
-                )}
+                <DeleteConfirmationModal
+                    title={id}
+                    component={DeleteComponentsName.ContainerRegistry}
+                    renderCannotDeleteConfirmationSubTitle={DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE}
+                    errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+                    reload={reload}
+                    onDelete={onDelete}
+                    dataTestId="delete-cluster-confirm-button"
+                    showConfirmationModal={confirmation}
+                    closeConfirmationModal={closeConfirmationModal}
+                />
             </div>
         </form>
     )

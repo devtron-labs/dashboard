@@ -40,6 +40,10 @@ export const DC_CONFIGURATION_CONFIRMATION_MESSAGE =
 export const DC_PROJECT_CONFIRMATION_MESSAGE = 'Please delete applications assigned to this project and try again.'
 export const GITOPS_FQDN_MESSAGE = 'This is not a Fully Qualified Domain Name (FQDN).'
 export const GITOPS_HTTP_MESSAGE = 'Http protocol is not supported.'
+export const USER_PERMISSION_DELETE_CONFIRMATION_MESSAGE =
+    'Deleting this user will remove the user and revoke all their permissions.'
+export const USER_PERMISSION_GROUP_DELETE_CONFIRMATION_MESSAGE =
+    'Deleting this group will revoke permissions from users added to this group..'
 
 export const CONTEXT_NOT_AVAILABLE_ERROR = 'cannot be rendered outside the component'
 export const GIT_MATERIAL_IN_USE_MESSAGE =
@@ -58,6 +62,9 @@ export const enum DeleteComponentsName {
     WebhookConfigurationTab = 'webhook',
     Project = 'project',
     GitRepo = 'Repo',
+    USER = 'user',
+    GROUP = 'group',
+    API_TOKEN = 'API token',
 }
 
 // DELETE COMPONENT ENDS

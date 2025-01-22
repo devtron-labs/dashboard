@@ -25,13 +25,17 @@ import {
     noop,
     DEFAULT_SECRET_PLACEHOLDER,
     FeatureTitleWithInfo,
-    DeleteComponent,
     ToastVariantType,
     ToastManager,
+    Button,
+    ButtonVariantType,
+    ButtonStyleType,
+    ComponentSizeType,
+    ERROR_STATUS_CODE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react/headless'
-import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
+import { ReactComponent as ClusterIcon } from '@Icons/ic-cluster.svg'
 import { importComponentFromFELibrary, useForm } from '../common'
 import { List } from '../globalConfigurations/GlobalConfiguration'
 import {
@@ -41,12 +45,12 @@ import {
     retryClusterInstall,
     deleteEnvironment,
 } from './cluster.service'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as Database } from '../../assets/icons/ic-env.svg'
-import { ReactComponent as PencilEdit } from '../../assets/icons/ic-pencil.svg'
-import { ReactComponent as DeleteEnvironment } from '../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as VirtualClusterIcon } from '../../assets/icons/ic-virtual-cluster.svg'
-import { ReactComponent as VirtualEnvIcon } from '../../assets/icons/ic-environment-temp.svg'
+import { ReactComponent as Add } from '@Icons/ic-add.svg'
+import { ReactComponent as Database } from '@Icons/ic-env.svg'
+import { ReactComponent as PencilEdit } from '@Icons/ic-pencil.svg'
+import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
+import { ReactComponent as VirtualClusterIcon } from '@Icons/ic-virtual-cluster.svg'
+import { ReactComponent as VirtualEnvIcon } from '@Icons/ic-environment-temp.svg'
 import { ClusterComponentModal } from './ClusterComponentModal'
 import { ClusterInstallStatus } from './ClusterInstallStatus'
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type'
@@ -55,6 +59,8 @@ import { getEnvName } from './cluster.util'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import ClusterForm from './ClusterForm'
 import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
+import { DeleteConfirmationModal } from '@Config/DeleteConfigurationModal'
+import { EnvironmentDeleteComponent } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/EnvironmentDeleteComponent'
 
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 const getSSHConfig = importComponentFromFELibrary('getSSHConfig', noop, 'function')
@@ -348,8 +354,7 @@ const Cluster = ({
     const [prometheusAuth, setPrometheusAuth] = useState(undefined)
     const [showClusterComponentModal, toggleClusterComponentModal] = useState(false)
     const [showWindow, setShowWindow] = useState(false)
-    const [envDelete, setDeleteEnv] = useState(false)
-    const [confirmation, toggleConfirmation] = useState(false)
+    const [confirmation, setConfirmation] = useState(false)
     const [prometheusToggleEnabled] = useState(!!prometheus_url)
 
     const [prometheusAuthenticationType] = useState({
@@ -521,19 +526,6 @@ const Cluster = ({
         setShowWindow(false)
     }
 
-    const getEnvironmentPayload = () => {
-        return {
-            id: environment.id,
-            environment_name: environment.environmentName,
-            cluster_id: environment.clusterId,
-            prometheus_endpoint: environment.prometheusEndpoint,
-            namespace: environment.namespace || '',
-            active: true,
-            default: environment.isProduction,
-            description: environment.description || '',
-        }
-    }
-
     async function onValidation() {
         const payload = getClusterPayload()
         const urlValue = state.url.value?.trim() ?? ''
@@ -594,16 +586,12 @@ const Cluster = ({
         )
     }
 
-    const showToggleConfirmation = (): void => {
-        toggleConfirmation(true)
-    }
+    const showToggleConfirmation = () => setConfirmation(true)
+
+    const hideConfirmationModal = () => setConfirmation(false)
 
     const showWindowModal = (): void => {
         setShowWindow(true)
-    }
-
-    const clusterDelete = (): void => {
-        setDeleteEnv(false)
     }
 
     const addCluster = () => {
@@ -647,6 +635,20 @@ const Cluster = ({
     }
 
     const subTitle: string = isVirtualCluster ? 'Isolated cluster' : server_url
+
+    const onDelete = async () => {
+        const deletePayload = {
+            id: environment.id,
+            environment_name: environment.environmentName,
+            cluster_id: environment.clusterId,
+            prometheus_endpoint: environment.prometheusEndpoint,
+            namespace: environment.namespace || '',
+            active: true,
+            default: environment.isProduction,
+            description: environment.description || '',
+        }
+        await deleteEnvironment(deletePayload)
+    }
 
     return (
         <>
@@ -772,52 +774,37 @@ const Cluster = ({
                                             </div>
                                             <div className="dc__visible-hover--child">
                                                 <div className="flex">
-                                                    <Tippy
-                                                        className="default-tt cursor"
-                                                        arrow={false}
-                                                        content="Edit Environment"
-                                                    >
-                                                        <div className="flex p-4 mr-4">
-                                                            <PencilEdit
-                                                                className="icon-dim-16 cursor"
-                                                                onClick={showWindowModal}
-                                                            />
-                                                        </div>
-                                                    </Tippy>
-                                                    {envDelete ? (
-                                                        <Progressing size={20} />
-                                                    ) : (
-                                                        <Tippy
-                                                            className="default-tt cursor"
-                                                            arrow={false}
-                                                            content="Delete Environment"
-                                                        >
-                                                            <div className="flex p-4">
-                                                                <DeleteEnvironment
-                                                                    data-testid={`env-delete-button-${environment_name}`}
-                                                                    className="icon-dim-16 cursor"
-                                                                    onClick={showToggleConfirmation}
-                                                                />
-                                                            </div>
-                                                        </Tippy>
-                                                    )}
+                                                    <Button
+                                                        dataTestId={`env-edit-button-${environment_name}`}
+                                                        icon={<PencilEdit />}
+                                                        ariaLabel="Edit Environment"
+                                                        variant={ButtonVariantType.borderLess}
+                                                        style={ButtonStyleType.neutral}
+                                                        size={ComponentSizeType.xs}
+                                                        onClick={showWindowModal}
+                                                    />
+                                                    <Button
+                                                        dataTestId={`env-delete-button-${environment_name}`}
+                                                        icon={<Trash />}
+                                                        onClick={showToggleConfirmation}
+                                                        variant={ButtonVariantType.borderLess}
+                                                        style={ButtonStyleType.negativeGrey}
+                                                        size={ComponentSizeType.xs}
+                                                        ariaLabel="Delete"
+                                                    />
                                                 </div>
                                             </div>
                                         </div>
                                     ) : null,
                             )}
-                        {confirmation && (
-                            <DeleteComponent
-                                setDeleting={clusterDelete}
-                                deleteComponent={deleteEnvironment}
-                                payload={getEnvironmentPayload()}
-                                title={environment.environmentName}
-                                toggleConfirmation={toggleConfirmation}
-                                component={DeleteComponentsName.Environment}
-                                confirmationDialogDescription={DC_ENVIRONMENT_CONFIRMATION_MESSAGE}
-                                reload={reload}
-                            />
-                        )}
+
+                        <EnvironmentDeleteComponent
+                            environmentName={confirmation && environment.environmentName}
+                            showConfirmationModal={confirmation}
+                            onDelete={onDelete}
+                            reload={reload}
+                            closeConfirmationModal={hideConfirmationModal}
+                        />
                     </div>
                 ) : (
                     clusterId && renderNoEnvironmentTab()

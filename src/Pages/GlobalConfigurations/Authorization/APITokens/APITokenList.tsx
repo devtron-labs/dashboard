@@ -17,7 +17,14 @@
 import moment from 'moment'
 import { useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { GenericFilterEmptyState, FeatureTitleWithInfo } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    GenericFilterEmptyState,
+    FeatureTitleWithInfo,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { HEADER_TEXT, MomentDateFormat } from '../../../../config'
 import { ReactComponent as Key } from '../../../../assets/icons/ic-key-bulb.svg'
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
@@ -131,34 +138,36 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                                       )}
                                   </div>
                                   <div className="api__row-actions flex right dc__gap-8">
-                                      <button
-                                          type="button"
-                                          className="dc__transparent flex p-4"
+                                      <Button
+                                          icon={<Edit />}
+                                          ariaLabel="Edit api token"
+                                          variant={ButtonVariantType.borderLess}
+                                          style={ButtonStyleType.neutral}
+                                          size={ComponentSizeType.xs}
                                           data-index={index}
-                                          data-testid="api-token-edit-button"
+                                          dataTestId="api-token-edit-button"
                                           onClick={handleEditRowAction}
-                                          aria-label="Edit api token"
-                                      >
-                                          <Edit className="scn-6 icon-dim-16" />
-                                      </button>
-                                      <button
-                                          type="button"
-                                          className="dc__transparent flex p-4 icon-delete"
+                                      />
+
+                                      <Button
+                                          icon={<Trash />}
+                                          variant={ButtonVariantType.borderLess}
+                                          style={ButtonStyleType.negativeGrey}
+                                          size={ComponentSizeType.xs}
+                                          ariaLabel="Delete api token"
                                           data-index={index}
-                                          data-testid="api-token-delete-button"
+                                          dataTestId="api-token-delete-button"
                                           onClick={handleDelete}
-                                          aria-label="Delete api token"
-                                      >
-                                          <Trash className="scn-6 icon-dim-16" />
-                                      </button>
+                                      />
                                   </div>
                               </div>
                           ))}
                 </div>
-                {showDeleteConfirmation && selectedToken && (
+                {selectedToken && (
                     <DeleteAPITokenModal
                         tokenData={selectedToken}
                         reload={reload}
+                        showDeleteConfirmation={showDeleteConfirmation}
                         setDeleteConfirmation={setDeleteConfirmation}
                     />
                 )}

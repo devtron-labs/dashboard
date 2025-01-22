@@ -290,3 +290,12 @@ export interface CreateUserPermissionPayloadParams extends Pick<User, 'userStatu
     k8sPermission: K8sPermissionFilter[]
     permissionType: PermissionType
 }
+
+export interface DeleteUserPermissionProps {
+    title: string
+    onDelete: () => void
+    reload: () => void
+    showConfirmationModal: boolean
+    closeConfirmationModal: () => void
+    isUserGroup?: boolean
+}
