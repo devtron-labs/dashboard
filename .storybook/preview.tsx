@@ -13,7 +13,6 @@ const preview: Preview = {
             },
         },
     },
-    tags: ['autodocs'],
     decorators: (Story) => {
         if (!window._env_) {
             window._env_ = {
