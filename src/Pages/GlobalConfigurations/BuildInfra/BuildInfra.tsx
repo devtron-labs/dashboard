@@ -19,6 +19,7 @@ import { ErrorScreenNotAuthorized } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '../../../components/common'
 import { BuildInfraProps } from './types'
 import ProfileForm from './ProfileForm'
+import BuildInfraUtilityProvider from './BuildInfraUtiltityProvider'
 
 const BuildInfraRouter = importComponentFromFELibrary('BuildInfraRouter', null, 'function')
 
@@ -28,7 +29,11 @@ export const BuildInfra: FunctionComponent<BuildInfraProps> = ({ isSuperAdmin })
     }
 
     if (BuildInfraRouter) {
-        return <BuildInfraRouter />
+        return (
+            <BuildInfraUtilityProvider>
+                <BuildInfraRouter />
+            </BuildInfraUtilityProvider>
+        )
     }
 
     return <ProfileForm />

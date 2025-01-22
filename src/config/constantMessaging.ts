@@ -71,7 +71,6 @@ export const enum DeleteComponentsName {
 
 export const LEARN_MORE = 'Learn more'
 export const REQUIRED_FIELD_MSG = 'This is a required field'
-export const INVALID_VOLUME_MOUNT_PATH_IN_CM_CS = 'Use only alphanumeric, (/), (-), (_); Do not use "spaces"'
 export const MAX_LENGTH_30 = 'Max 30 characters allowed'
 export const MAX_LENGTH_350 = 'Max 350 characters allowed'
 export const REPO_NAME_VALIDATION = 'Repository name is not valid; Invalid character(s) "_"'
