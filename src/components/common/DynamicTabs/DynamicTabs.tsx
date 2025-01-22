@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { cloneElement, RefCallback, useRef } from 'react'
+import React, { cloneElement, RefCallback, useMemo, useRef } from 'react'
 import { useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { Dayjs } from 'dayjs'
@@ -60,9 +60,14 @@ const DynamicTabs = ({
 
     const dynamicTabsContainerRef = useRef<HTMLDivElement>(null)
 
-    const fixedTabs = tabs.filter((tab) => tab.type === 'fixed')
-    const dynamicTabs = tabs.filter((tab) => tab.type === 'dynamic')
-    const selectedTab = tabs.find((tab) => tab.isSelected) ?? null
+    const { fixedTabs, dynamicTabs, selectedTab } = useMemo(
+        () => ({
+            fixedTabs: tabs.filter((tab) => tab.type === 'fixed'),
+            dynamicTabs: tabs.filter((tab) => tab.type === 'dynamic'),
+            selectedTab: tabs.find((tab) => tab.isSelected) ?? null,
+        }),
+        [tabs],
+    )
     const selectedTabTimerConfig = selectedTab && timerConfig ? timerConfig[selectedTab.id] : null
 
     const getMarkTabActiveHandler = (tab: DynamicTabType) => () => {

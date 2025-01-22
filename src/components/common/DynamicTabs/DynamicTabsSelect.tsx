@@ -102,6 +102,7 @@ const DynamicTabsSelect = ({
                         filterOption={selectFilter}
                         onKeyDown={handleOnEscPress}
                         shouldMenuAlignRight
+                        menuPosition="absolute"
                         menuIsOpen
                         autoFocus
                     />
