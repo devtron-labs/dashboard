@@ -53,7 +53,7 @@ import {
     getArtifactForJobCi,
 } from '../../service'
 import { URLS, Routes } from '../../../../config'
-import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
+import { BuildDetails, CIDetailsProps, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
 import { ImageNotScannedView, CIRunningView } from './cIDetails.util'
 import './ciDetails.scss'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
@@ -72,11 +72,7 @@ export default function CIDetails({
     isJobView,
     filteredEnvIds,
     clearEnvListSelection,
-}: {
-    isJobView?: boolean
-    filteredEnvIds?: string
-    clearEnvListSelection?: () => void
-}) {
+}: CIDetailsProps) {
     const { appId, pipelineId, buildId } = useParams<{
         appId: string
         pipelineId: string

@@ -44,7 +44,7 @@ import { useAppContext } from '@Components/common'
 import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../../../services/service'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import './cdDetail.scss'
-import { DeploymentTemplateList } from './cd.type'
+import { CDDetailsProps } from './cd.type'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import {
@@ -60,10 +60,7 @@ import {
 export default function CDDetails({
     filteredEnvIds,
     clearEnvListSelection,
-}: {
-    filteredEnvIds: string
-    clearEnvListSelection: () => void
-}) {
+}: CDDetailsProps) {
     const location = useLocation()
     const { appId, envId, triggerId, pipelineId } = useParams<{
         appId: string
@@ -166,11 +163,10 @@ export default function CDDetails({
         setTriggerHistory(new Map(newTriggerHistory))
     }, [deploymentHistoryResult, loading])
 
+    const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(curr, true), new Map())
     //Result Typing to be fixed here
     useEffect(() => {
-        const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(curr, true), new Map())
-
-        if (envId && !filteredEnvMap.get(envId)) {
+        if (envId && filteredEnvIds && !filteredEnvMap.get(envId)) {
             clearEnvListSelection()
         }
         if (result) {
@@ -209,7 +205,6 @@ export default function CDDetails({
             const cdPipelinesMap = mapByKey(pipelines, 'environmentId')
             let _selectedEnvironment
             let isEnvDeleted = false
-            const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
             const envOptions: CICDSidebarFilterOptionType[] = (result[0]['value']?.result || [])
                 .filter((env) => {
                     return !filteredEnvMap || filteredEnvMap.get(env.environmentId)

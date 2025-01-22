@@ -36,6 +36,7 @@ import {
     ConfirmationModalVariantType,
     ServerErrors,
     getIsRequestAborted,
+    stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
@@ -113,11 +114,10 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     'function',
 )
 
-export default function AppDetail({ selectedEnvList, clearEnvListSelection }: AppDetailsProps) {
+export default function AppDetail({ selectedEnvList, clearEnvListSelection }: Readonly<AppDetailsProps>) {
     const params = useParams<{ appId: string; envId?: string }>()
     const { replace } = useHistory()
     const { path } = useRouteMatch()
-    const isMounted = useRef<boolean>(false)
     const { environmentId, setEnvironmentId } = useAppContext() // global state for app to synchronise environments
     const [isAppDeleted, setIsAppDeleted] = useState(false)
     const [otherEnvsLoading, otherEnvsResult] = useAsync(() => getAppOtherEnvironmentMin(params.appId), [params.appId])
@@ -131,7 +131,7 @@ export default function AppDetail({ selectedEnvList, clearEnvListSelection }: Ap
         (selectedEnvList.length
             ? otherEnvsResult?.result?.filter((env) => selectedEnvsMap.get(env.environmentId))
             : otherEnvsResult?.result) || []
-    ).sort((a, b) => (a.environmentName > b.environmentName ? 1 : -1))
+    ).sort((a, b) => stringComparatorBySortOrder(a.environmentName, b.environmentName))
 
     useEffect(() => {
         if (params.envId) {
@@ -141,35 +141,14 @@ export default function AppDetail({ selectedEnvList, clearEnvListSelection }: Ap
 
     useEffect(() => {
         if (envList.length > 0) {
-            let selectedEnvId: number
-            if (!params.envId) {
-                if (environmentId) {
-                    if (envList.some((env) => env.environmentId === environmentId)) {
-                        selectedEnvId = environmentId
-                    } else {
-                        selectedEnvId = envList[0].environmentId
-                    }
-                } else {
-                    selectedEnvId = envList[0].environmentId
-                }
-            } else {
-                if (environmentId) {
-                    if (envList.some((env) => env.environmentId === +params.envId)) {
-                        // If environmentId is present and different from params.envContext, set environmentId
-                        if (+environmentId !== +params.envId) {
-                            setEnvironmentId(+params.envId)
-                        }
-                        selectedEnvId = +params.envId
-                    } else {
-                        selectedEnvId = envList[0].environmentId
-                    }
-                } else {
-                    if (envList.some((env) => env.environmentId === +params.envId)) {
-                        selectedEnvId = +params.envId
-                    } else {
-                        selectedEnvId = envList[0].environmentId
-                    }
-                }
+            const userDefinedEnvId: number = params.envId && !isNaN(+params.envId) ? +params.envId : environmentId
+            const selectedEnvId: number =
+                userDefinedEnvId && envList.some((env) => env.environmentId === userDefinedEnvId)
+                    ? userDefinedEnvId
+                    : envList[0].environmentId
+
+            if (selectedEnvId !== +params.envId) {
+                setEnvironmentId(+params.envId)
             }
 
             // Set the URL and push to navigation stack

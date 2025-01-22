@@ -62,3 +62,9 @@ export interface SecurityTabType {
     status: string
     appIdFromParent?: string
 }
+
+export interface CIDetailsProps {
+    isJobView?: boolean
+    filteredEnvIds?: string
+    clearEnvListSelection?: () => void
+}
