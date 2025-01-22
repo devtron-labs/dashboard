@@ -35,6 +35,9 @@
     --shadow-modal: 0px 1px 1px 0px rgba(0, 0, 0, 0.04), 0px 2px 8px 0px rgba(0, 0, 0, 0.04), 0px 3px 17px 0px rgba(0, 0, 0, 0.04), 0px 4px 30px 0px rgba(0, 0, 0, 0.13);
     --shadow-overlay: 0px 1px 1px 0px rgba(0, 0, 0, 0.04), 0px 2px 6px 0px rgba(0, 0, 0, 0.04), 0px 4px 12px 0px rgba(0, 0, 0, 0.10);
     --shadow-drawer: 0px 1px 1px 0px rgba(0, 0, 0, 0.04), 0px 2px 8px 0px rgba(0, 0, 0, 0.04), 0px 3px 17px 0px rgba(0, 0, 0, 0.04), 0px 4px 30px 0px rgba(0, 0, 0, 0.13);
+    --shadow-card-primary: 0px 1px 2px 0px rgba(1, 87, 173, 0.1);
+    --shadow-card-secondary: 0px 0px 8px 0px rgba(0, 0, 0, 0.1);
+    --shadow-card-tertiary: 0 8px 12px 0 rgba(30, 35, 96, 0.1), 0 1px 4px 0 rgba(0, 0, 0, 0.1);
 
     &.theme {
         &__light {

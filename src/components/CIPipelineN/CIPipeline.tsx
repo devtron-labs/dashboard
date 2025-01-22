@@ -48,6 +48,7 @@ import {
     ResourceKindType,
     uploadCIPipelineFile,
     getGlobalVariables,
+    TriggerType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -57,7 +58,7 @@ import {
     importComponentFromFELibrary,
     sortObjectArrayAlphabetically,
 } from '../common'
-import { BuildStageVariable, BuildTabText, JobPipelineTabText, TriggerType, URLS, ViewType } from '../../config'
+import { BuildStageVariable, BuildTabText, JobPipelineTabText, URLS, ViewType } from '../../config'
 import {
     deleteCIPipeline,
     getInitData,
