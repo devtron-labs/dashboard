@@ -317,7 +317,7 @@ export default function CIConfigDiffView({
         <Drawer parentClassName="dc__overflow-hidden" position="right" width="87%" minWidth="1024px" maxWidth="1246px">
             <div className="modal__body modal__config-override-diff br-0 modal__body--p-0 dc__overflow-hidden">
                 {renderConfigDiffModalTitle()}
-                <div className="config-override-diff__view h-100 p-20 bg__tertiary dc__overflow-scroll">
+                <div className="config-override-diff__view h-100 p-20 bg__tertiary dc__overflow-auto">
                     {renderBodyContent()}
                 </div>
                 {showDeleteDialog && (

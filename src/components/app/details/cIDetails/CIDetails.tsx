@@ -244,7 +244,7 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
                 </div>
             )}
             <div className="ci-details__body">
-                <div className="flexbox-col flex-grow-1 dc__overflow-scroll" ref={scrollableParentRef}>
+                <div className="flexbox-col flex-grow-1 dc__overflow-auto" ref={scrollableParentRef}>
                     {!pipelineId ? (
                         // Empty state if there is no pipeline
                         <GenericEmptyState

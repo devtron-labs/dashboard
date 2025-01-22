@@ -73,7 +73,7 @@ const styless = {
     },
     PresetDateRangePicker_button: {
         width: '178px',
-        background: 'var(--bg-primary)',
+        background: 'var(--transparent)',
         border: 'none',
         color: 'var(--N900)',
         padding: '8px',

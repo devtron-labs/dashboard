@@ -87,7 +87,7 @@
     padding: 14px 16px;
     display: flex;
     background-blend-mode: multiply;
-    background-image: linear-gradient(to bottom, var(--bg-window), var(--bg-window));
+    background-image: linear-gradient(to bottom, var(--bg-tertiary), var(--bg-tertiary));
     border-top: solid 1px var(--N200);
     border-radius: 0 0 4px 4px;
 }
@@ -199,7 +199,7 @@
 
 .ci-webhook-condition {
     display: grid;
-    grid-template-columns: 200px 500px 30px;
+    grid-template-columns: 200px 1fr 30px;
     gap: 16px;
 }
 

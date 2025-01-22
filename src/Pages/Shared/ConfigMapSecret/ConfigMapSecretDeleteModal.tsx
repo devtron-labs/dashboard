@@ -6,13 +6,15 @@ import {
     showError,
     ToastManager,
     ToastVariantType,
+    CMSecretComponentType,
+    CM_SECRET_STATE,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 
 import { deleteEnvSecret, deleteEnvConfigMap, deleteSecret, deleteConfigMap } from './ConfigMapSecret.service'
 import { CM_SECRET_COMPONENT_NAME } from './constants'
-import { CM_SECRET_STATE, CMSecretComponentType, ConfigMapSecretDeleteModalProps } from './types'
+import { ConfigMapSecretDeleteModalProps } from './types'
 
 const DeleteModal = importComponentFromFELibrary('DeleteModal')
 const DeleteOverrideDraftModal = importComponentFromFELibrary('DeleteOverrideDraftModal')

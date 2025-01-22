@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { RouteComponentProps, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { CINode } from './nodes/CINode'
@@ -29,7 +29,6 @@ import {
     getWebhookDetailsURL,
     importComponentFromFELibrary,
 } from '../common'
-import { CIPipelineNodeType } from '../app/details/triggerView/types'
 import { PipelineSelect } from './PipelineSelect'
 import { WorkflowCreate } from '../app/details/triggerView/config'
 import { WebhookNode } from './nodes/WebhookNode'
@@ -45,13 +44,15 @@ import {
     AddPipelineType,
     SelectedNode,
     ConditionalWrap,
+    ChangeCIPayloadType,
+    CIPipelineNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
 import { ReactComponent as ICMoreOption } from '../../assets/icons/ic-more-option.svg'
 import { ReactComponent as ICDelete } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as ICEdit } from '../../assets/icons/ic-pencil.svg'
-import { ChangeCIPayloadType, WorkflowPositionState } from './types'
-import { CHANGE_CI_TOOLTIP } from './workflowEditor.constants'
+import { WorkflowPositionState } from './types'
+import { CHANGE_CI_TOOLTIP } from './constants'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
 const LinkedCDNode = importComponentFromFELibrary('LinkedCDNode')
@@ -867,7 +868,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         className={
                             configDiffView
                                 ? 'workflow__body'
-                                : 'workflow__body dc__border-n1 bg__secondary dc__overflow-scroll br-4'
+                                : 'workflow__body dc__border-n1 bg__secondary dc__overflow-auto br-4'
                         }
                     >
                         {nodesWithBufferHeight.length === 0 && this.props.isJobView ? (
