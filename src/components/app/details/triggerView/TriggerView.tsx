@@ -597,7 +597,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    getWorkflowStatus() {
+    getWorkflowStatus = () => {
         getWorkflowStatus(this.props.match.params.appId)
             .then((response) => {
                 const _processedWorkflowsData = processWorkflowStatuses(
@@ -1473,7 +1473,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         baseURL={this.props.match.url}
                         workflows={this.state.workflows}
                         getModuleInfo={getModuleInfo}
-                        reloadWorkflowStatus={this.closeCDModal}
+                        reloadWorkflowStatus={this.getWorkflowStatus}
                         appName={this.props.appContext.currentAppName}
                     />
                 )}

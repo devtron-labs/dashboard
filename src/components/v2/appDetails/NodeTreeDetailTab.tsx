@@ -121,7 +121,7 @@ const NodeTreeDetailTab = ({
                         }}
                     />
                 </div>
-                <div className="node-tree-detail-tab__content flexbox-col w-100">
+                <div className="node-tree-detail-tab__content flexbox-col w-100 dc__no-shrink">
                     <Switch>
                         <Route
                             path={[
