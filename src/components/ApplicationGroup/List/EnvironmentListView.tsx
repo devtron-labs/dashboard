@@ -134,7 +134,7 @@ const EnvironmentsListView = ({
         !filteredEnvList.length ? (
             <LoadingShimmerList />
         ) : (
-            <div className="dc__overflow-scroll">
+            <div className="dc__overflow-auto">
                 {filteredEnvList?.map((envData) => (
                     <div
                         key={envData.id}

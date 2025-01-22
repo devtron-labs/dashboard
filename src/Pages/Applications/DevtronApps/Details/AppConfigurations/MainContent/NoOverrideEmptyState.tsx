@@ -4,10 +4,10 @@ import {
     ComponentSizeType,
     GenericEmptyState,
     ImageType,
+    CMSecretComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import cmCsEmptyState from '@Images/cm-cs-empty-state.png'
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
-import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/types'
 import { NoOverrideEmptyStateProps } from './types'
 
 import './NoOverrideEmptyState.scss'
@@ -48,7 +48,7 @@ const NoOverrideEmptyState = ({
     handleCreateOverride,
     handleViewInheritedConfig,
 }: NoOverrideEmptyStateProps) => (
-    <div className="no-override-empty-state-container flexbox-col flex-grow-1 dc__overflow-scroll">
+    <div className="no-override-empty-state-container flexbox-col flex-grow-1 dc__overflow-auto">
         <GenericEmptyState
             image={cmCsEmptyState}
             title={getNoOverrideEmptyStateTitle({ componentType, environmentName, configName })}

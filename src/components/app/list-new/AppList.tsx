@@ -419,7 +419,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
     }
 
     return (
-        <div className="flexbox-col h-100 dc__overflow-scroll">
+        <div className="flexbox-col h-100 dc__overflow-auto">
             <HeaderWithCreateButton headerName="Applications" />
             <AppListFilters
                 filterConfig={filterConfig}

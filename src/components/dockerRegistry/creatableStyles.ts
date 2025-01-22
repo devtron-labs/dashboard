@@ -37,8 +37,8 @@ export const creatableSelectStyles = {
         ...base,
         height: '34px',
     }),
-    valueContainer: (base) => ({
-        ...baseStyles.valueContainer(base),
+    valueContainer: (base, state) => ({
+        ...baseStyles.valueContainer(base, state),
         maxHeight: '100%',
         gap: '4px',
         paddingBlock: '4px',

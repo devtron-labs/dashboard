@@ -24,7 +24,7 @@ export const WebhookConfigurationTable = ({ state, deleteClickHandler }: Configu
 
     return (
         <div className="webhook-config-container">
-            <div className="webhook-config-grid fs-12 fw-6 dc__uppercase cn-7 py-6 dc__gap-16 dc__border-bottom-n1 px-20">
+            <div className="webhook-config-grid fs-12 fw-6 dc__uppercase cn-7 py-6 dc__gap-16 dc__border-bottom-n1 px-20 dc__position-sticky dc__top-0 bg__primary">
                 <p className="icon-dim-24 m-0" />
                 <p className="flex left m-0">Name</p>
                 <p className="dc__truncate-text flex left m-0">Webhook URL</p>

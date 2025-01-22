@@ -146,7 +146,7 @@ const CreatePluginFormContent = ({
     }
 
     const renderExistingPluginVersionList = () => (
-        <div className="flexbox-col dc__gap-4 p-12 mxh-350 dc__overflow-scroll">
+        <div className="flexbox-col dc__gap-4 p-12 mxh-350 dc__overflow-auto">
             {selectedPluginVersions.map((version) => (
                 <div className="flexbox dc__align-items-center dc__gap-4" key={version}>
                     <ICTag className="icon-dim-16 dc__no-shrink" />
@@ -191,7 +191,7 @@ const CreatePluginFormContent = ({
     const showPluginDetailFields = currentTab !== CreatePluginFormViewType.EXISTING_PLUGIN || !!name
 
     return (
-        <div className="flexbox-col flex-grow-1 dc__overflow-scroll p-20 dc__gap-16">
+        <div className="flexbox-col flex-grow-1 dc__overflow-auto p-20 dc__gap-16">
             <StyledRadioGroup
                 className="gui-yaml-switch dc__no-shrink dc__content-start"
                 onChange={handleTabChange}

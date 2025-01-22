@@ -201,7 +201,7 @@ export const TaskDetailComponent = () => {
         <>
             <PluginDetailHeader handlePluginVersionChange={handlePluginVersionChange} />
 
-            <div className="p-20 dc__overflow-scroll">
+            <div className="p-20 dc__overflow-auto">
                 <div>
                     <div className="row-container mb-12">
                         <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">Task name</div>

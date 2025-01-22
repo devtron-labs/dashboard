@@ -98,7 +98,7 @@
 }
 .webhook-tippy-card-container {
     .webhook-tippy-card {
-        background-color: var(--N900);
+        background-color: var(--bg-toast);
         position: fixed;
         z-index: 6;
         right: 20px;
@@ -106,13 +106,13 @@
     }
     .webhook-icon-white {
         path[fill='#4A4A4A'] {
-            fill: var(--N0);
+            fill: var(--white);
         }
     }
     .arrow-down {
         border-left: 12px solid transparent;
         border-right: 12px solid transparent;
-        border-top: 12px solid var(--N900);
+        border-top: 12px solid var(--bg-toast);
         right: 50%;
         position: fixed;
         top: 85px;
@@ -124,12 +124,4 @@
     position: fixed;
     bottom: 108px;
     right: 96px;
-}
-
-.workflow-options-modal {
-    margin: 0 auto;
-    width: 650px;
-    margin-top: 40px;
-    box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.2);
-    background: var(--bg-primary);
 }

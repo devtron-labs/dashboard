@@ -14,6 +14,6 @@
   - limitations under the License.
   -->
 
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect x="3.75" y="3.75" width="16.5" height="16.5" rx="3.25" fill="white" stroke="#959BA1" stroke-width="1.5"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+  <rect width="16.5" height="16.5" x="3.75" y="3.75" fill="#000A14" fill-opacity=".02" stroke="#959BA1" stroke-width="1.5" rx="3.25" vector-effect="non-scaling-stroke"/>
 </svg>

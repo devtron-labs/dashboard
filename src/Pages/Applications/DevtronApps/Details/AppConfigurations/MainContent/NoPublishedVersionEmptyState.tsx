@@ -1,5 +1,5 @@
 import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import noArtifact from '@Images/no-artifact@2x.png'
+import noArtifact from '@Images/no-artifact.webp'
 
 import { NoPublishedVersionEmptyStateProps } from './types'
 

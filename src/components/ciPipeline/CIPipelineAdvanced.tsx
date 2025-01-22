@@ -15,8 +15,15 @@
  */
 
 import { Component } from 'react'
-import { CustomInput, RadioGroup, RadioGroupItem, Toggle, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
-import { TriggerType, SourceTypeMap } from '../../config'
+import {
+    CustomInput,
+    RadioGroup,
+    RadioGroupItem,
+    Toggle,
+    CodeEditor,
+    TriggerType,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { SourceTypeMap } from '../../config'
 import { Trash, Page } from '../common'
 import { ReactComponent as Docker } from '../../assets/icons/misc/docker.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
