@@ -23,7 +23,6 @@ import {
     VisibleModal,
     Drawer,
     DeleteDialog,
-    RefVariableType,
     VariableType,
     MandatoryPluginDataType,
     ButtonWithLoader,
@@ -48,11 +47,11 @@ import {
     ResourceKindType,
     uploadCIPipelineFile,
     getGlobalVariables,
+    FloatingVariablesSuggestions,
     TriggerType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
-    FloatingVariablesSuggestions,
     getParsedBranchValuesForPlugin,
     getPluginIdsFromBuildStage,
     importComponentFromFELibrary,

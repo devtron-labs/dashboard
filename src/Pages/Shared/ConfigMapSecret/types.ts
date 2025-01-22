@@ -1,64 +1,27 @@
 import { Dispatch, MutableRefObject, SetStateAction } from 'react'
 
 import {
-    ConfigDatum,
-    CMSecretExternalType,
+    CMSecretConfigData,
+    ConfigMapSecretUseFormProps,
     DraftAction,
     DraftMetadataDTO,
     ProtectConfigTabsType,
-    SelectPickerOptionType,
     useForm,
     AppEnvDeploymentConfigDTO,
     DryRunEditorMode,
     ConfigHeaderTabType,
     OverrideMergeStrategyType,
     ConfigMapSecretDataType,
+    CMSecretComponentType,
+    CM_SECRET_STATE,
+    CMSecretPayloadType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ConfigToolbarProps } from '@Pages/Applications'
 
 import { ComponentStates, EnvironmentOverrideComponentProps } from '../EnvironmentOverride/EnvironmentOverrides.types'
 
-// ENUMS
-export enum CMSecretComponentType {
-    ConfigMap = 1,
-    Secret = 2,
-}
-
-export enum CM_SECRET_STATE {
-    BASE = '',
-    INHERITED = 'INHERITING',
-    OVERRIDDEN = 'OVERRIDDEN',
-    ENV = 'ENV',
-    UNPUBLISHED = 'UNPUBLISHED',
-}
-
 // PAYLOAD PROPS
-export type CMSecretPayloadType = Pick<
-    CMSecretConfigData,
-    | 'data'
-    | 'name'
-    | 'type'
-    | 'externalType'
-    | 'external'
-    | 'roleARN'
-    | 'mountPath'
-    | 'subPath'
-    | 'esoSecretData'
-    | 'filePermission'
-    | 'esoSubPath'
-    | 'mergeStrategy'
->
-
-export interface ESOSecretData {
-    secretStore: Record<string, any>
-    secretStoreRef: Record<string, any>
-    refreshInterval: string
-    esoData: Record<string, any>[]
-    esoDataFrom: Record<string, any>[]
-    template: Record<string, any>
-}
-
 export interface CMSecretDraftPayloadType {
     id: number
     appId: number
@@ -79,39 +42,6 @@ export interface GetConfigMapSecretConfigDataProps<IsJob extends boolean>
 export type GetConfigMapSecretConfigDataReturnType<IsJob extends boolean> = IsJob extends true
     ? ConfigMapSecretDataType
     : AppEnvDeploymentConfigDTO
-
-// SELECT PICKER OPTION TYPE
-export type ConfigMapSecretDataTypeOptionType = SelectPickerOptionType<string>
-
-// USE FORM PROPS
-export interface CMSecretYamlData {
-    k: string
-    v: string
-    id: string | number
-}
-
-export interface ConfigMapSecretUseFormProps {
-    name: string
-    isSecret: boolean
-    external: boolean
-    externalType: CMSecretExternalType
-    selectedType: string
-    isFilePermissionChecked: boolean
-    isSubPathChecked: boolean
-    externalSubpathValues: string
-    filePermission: string
-    volumeMountPath: string
-    roleARN: string
-    yamlMode: boolean
-    yaml: string
-    currentData: CMSecretYamlData[]
-    secretDataYaml: string
-    esoSecretYaml: string
-    hasCurrentDataErr: boolean
-    isResolvedData: boolean
-    mergeStrategy: ConfigToolbarProps['mergeStrategy']
-    skipValidation: boolean
-}
 
 // COMPONENT PROPS
 export interface CMSecretDraftData extends Omit<DraftMetadataDTO, 'data'> {
@@ -138,26 +68,43 @@ export interface ConfigMapSecretContainerProps extends Omit<CMSecretWrapperProps
     appChartRef: { id: number; version: string; name: string }
 }
 
-export interface CMSecretConfigData extends ConfigDatum {
-    unAuthorized: boolean
-}
+type CMCSFormBaseProps =
+    | {
+          isExternalSubmit: true
+          onSubmit?: never
+          onCancel?: never
+      }
+    | {
+          isExternalSubmit?: never
+          onSubmit: () => void
+          onCancel: () => void
+      }
 
-export interface ConfigMapSecretFormProps
-    extends Required<
-        Pick<ConfigMapSecretContainerProps, 'isJob' | 'isApprovalPolicyConfigured' | 'componentType' | 'appChartRef'>
-    > {
-    id: number
-    configMapSecretData: CMSecretConfigData
-    inheritedConfigMapSecretData: CMSecretConfigData
-    cmSecretStateLabel: CM_SECRET_STATE
-    isSubmitting: boolean
-    areScopeVariablesResolving: boolean
-    isDraft?: boolean
-    disableDataTypeChange: boolean
-    onSubmit: () => void
-    onCancel: () => void
-    useFormProps: ReturnType<typeof useForm<ConfigMapSecretUseFormProps>>
-}
+export type ConfigMapSecretFormProps = Required<
+    Pick<ConfigMapSecretContainerProps, 'isApprovalPolicyConfigured' | 'componentType' | 'appChartRef'>
+> &
+    CMCSFormBaseProps & {
+        /**
+         * @default false
+         */
+        isCreateView?: boolean
+        configMapSecretData: CMSecretConfigData
+        inheritedConfigMapSecretData: CMSecretConfigData
+        cmSecretStateLabel: CM_SECRET_STATE
+        isSubmitting?: boolean
+        areScopeVariablesResolving: boolean
+        isDraft?: boolean
+        disableDataTypeChange: boolean
+        useFormProps: ReturnType<typeof useForm<ConfigMapSecretUseFormProps>>
+        /**
+         * @default false
+         */
+        noContainerPadding?: boolean
+        /**
+         * This is also being used in BuildInfra
+         */
+        isJob?: boolean
+    }
 
 export interface ConfigMapSecretDataProps extends Pick<ConfigMapSecretFormProps, 'useFormProps'> {
     isESO: boolean
@@ -167,20 +114,13 @@ export interface ConfigMapSecretDataProps extends Pick<ConfigMapSecretFormProps,
     isPatchMode: boolean
 }
 
-export interface ConfigMapSecretReadyOnlyProps
-    extends Pick<
-        ConfigMapSecretFormProps,
-        'configMapSecretData' | 'componentType' | 'cmSecretStateLabel' | 'isJob' | 'areScopeVariablesResolving'
-    > {
-    hideCodeEditor?: boolean
-}
-
 export type CMSecretDeleteModalType = 'deleteModal' | 'protectedDeleteModal'
 
 export interface ConfigMapSecretDeleteModalProps
-    extends Pick<ConfigMapSecretFormProps, 'componentType' | 'id' | 'cmSecretStateLabel'> {
+    extends Pick<ConfigMapSecretFormProps, 'componentType' | 'cmSecretStateLabel'> {
     appId: number
     envId: number
+    id: number
     configName: string
     openDeleteModal: CMSecretDeleteModalType
     draftData: CMSecretDraftData
@@ -213,13 +153,13 @@ export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 
         | 'cmSecretStateLabel'
         | 'isJob'
         | 'disableDataTypeChange'
-        | 'id'
         | 'onSubmit'
         | 'areScopeVariablesResolving'
         | 'appChartRef'
         | 'useFormProps'
     > &
     Pick<ConfigMapSecretDeleteModalProps, 'updateCMSecret'> & {
+        id: number
         componentName: string
         publishedConfigMapSecretData: ConfigMapSecretFormProps['configMapSecretData']
         inheritedConfigMapSecretData: ConfigMapSecretFormProps['configMapSecretData']
