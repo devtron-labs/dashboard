@@ -130,6 +130,7 @@ function CustomImageTags({
                     <span className="cn-7"> Use mix of fixed pattern and</span>
                     {renderCounterXTippy(`variable {x}`)}
                 </div>
+                {/* TODO: Check with design */}
                 <textarea
                     tabIndex={1}
                     className="form__input form__input-no-bottom-radius custom-tag__text-area"
