@@ -20,7 +20,7 @@ const TextareaTemplate: Story = {
 
         const handleChange: TextareaProps['onChange'] = (e) => {
             setValue(e.target.value)
-            action('changed')
+            action('changed')(e)
         }
 
         return <Textarea {...props} value={value} onChange={handleChange} />
