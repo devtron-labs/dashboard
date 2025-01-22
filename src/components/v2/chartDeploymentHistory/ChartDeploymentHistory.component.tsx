@@ -64,8 +64,8 @@ import {
     processVirtualEnvironmentDeploymentData,
     renderDeploymentApprovalInfo,
 } from '../../app/details/cdDetails/utils'
-import { ReactComponent as Rocket} from '@Icons/ic-nav-rocket.svg'
-import {ReactComponent as ICLines } from '@Icons/ic-lines.svg'
+import { ReactComponent as Rocket } from '@Icons/ic-nav-rocket.svg'
+import { ReactComponent as ICLines } from '@Icons/ic-lines.svg'
 
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 const ChartSecurityTab = importComponentFromFELibrary('ChartSecurityTab', null, 'function')
@@ -115,7 +115,7 @@ const ChartDeploymentHistory = ({
             DEPLOYMENT_HISTORY_TAB.SOURCE,
             DEPLOYMENT_HISTORY_TAB.VALUES_YAML,
             DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST,
-            (ChartSecurityTab && !isExternal && DEPLOYMENT_HISTORY_TAB.SECURITY),
+            ChartSecurityTab && !isExternal && DEPLOYMENT_HISTORY_TAB.SECURITY,
         ]
         if (installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS) {
             tabs.unshift(DEPLOYMENT_HISTORY_TAB.STEPS)
@@ -467,19 +467,17 @@ const ChartDeploymentHistory = ({
             )
         }
         return (
-            <div className="bg__primary border-btm h-100">
-                <CodeEditor
-                    value={
-                        selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
-                            ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
-                            : getEditorValue(selectedDeploymentManifestDetail.manifest)
-                    }
-                    noParsing
-                    mode={MODES.YAML}
-                    height="100%"
-                    readOnly
-                />
-            </div>
+            <CodeEditor
+                value={
+                    selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
+                        ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
+                        : getEditorValue(selectedDeploymentManifestDetail.manifest)
+                }
+                noParsing
+                mode={MODES.YAML}
+                height="fitToParent"
+                readOnly
+            />
         )
     }
 
@@ -496,7 +494,7 @@ const ChartDeploymentHistory = ({
 
         return (
             <div
-                className={`trigger-outputs-container h-100 ${
+                className={`trigger-outputs-container flex-grow-1 flexbox-col ${
                     selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SOURCE ? 'pt-20' : ''
                 }`}
                 data-testid="trigger-output-container"
@@ -595,7 +593,9 @@ const ChartDeploymentHistory = ({
                     />
                 )}
                 {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SECURITY && !isExternal && ChartSecurityTab && (
-                    <ChartSecurityTab installedAppVersionHistoryId={deploymentHistoryArr[selectedDeploymentHistoryIndex].version} />
+                    <ChartSecurityTab
+                        installedAppVersionHistoryId={deploymentHistoryArr[selectedDeploymentHistoryIndex].version}
+                    />
                 )}
             </div>
         )
@@ -618,16 +618,17 @@ const ChartDeploymentHistory = ({
                         </div>
 
                         <div className="flex column left">
-                                <div className=" cn-9 fs-13 fw-4 lh-20">
-                                    <span>Message</span>
-                                </div>
+                            <div className=" cn-9 fs-13 fw-4 lh-20">
+                                <span>Message</span>
+                            </div>
 
                             {/* Need key since using ref inside of this component as useEffect dependency, so there were issues while switching builds */}
                             {message && <ShowMoreText text={message} key={message} textClass="cn-7" />}
                         </div>
                     </div>
                 )
-            }}
+            }
+        }
 
         return (
             <div className="trigger-details pb-20">
@@ -655,7 +656,6 @@ const ChartDeploymentHistory = ({
                                 <DockerImageDetails deployment={deployment} setShowDockerInfo={setShowDockerInfo} />
                             )}
                         </div>
-
                     </div>
 
                     {!(selectedDeploymentHistoryIndex === 0 || isVirtualEnvironment) && (
@@ -675,7 +675,6 @@ const ChartDeploymentHistory = ({
                     )}
                 </div>
                 {getViewMessage()}
-
             </div>
         )
     }

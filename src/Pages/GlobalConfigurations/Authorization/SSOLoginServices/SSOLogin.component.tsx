@@ -628,15 +628,17 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }
         const value = YAMLStringify(newConfig)
 
-        this.setState({
-            ssoConfig: {
-                ...this.state.ssoConfig,
-                config: {
-                    ...this.state.ssoConfig.config,
-                    config: value,
+        setTimeout(() => {
+            this.setState({
+                ssoConfig: {
+                    ...this.state.ssoConfig,
+                    config: {
+                        ...this.state.ssoConfig.config,
+                        config: value,
+                    },
                 },
-            },
-        })
+            })
+        }, 0)
     }
 
     renderSSOCodeEditor() {
