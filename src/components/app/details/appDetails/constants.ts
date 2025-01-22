@@ -1,0 +1,1 @@
+export const APP_METRICS_CALENDAR_INPUT_DATE_FORMAT = 'DD-MM-YYYY hh:mm:ss'
