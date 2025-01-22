@@ -57,7 +57,13 @@ import {
     renderVirtualHistoryArtifacts,
 } from './utils'
 
-export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }) {
+export default function CDDetails({
+    filteredEnvIds,
+    clearEnvListSelection,
+}: {
+    filteredEnvIds: string
+    clearEnvListSelection: () => void
+}) {
     const location = useLocation()
     const { appId, envId, triggerId, pipelineId } = useParams<{
         appId: string
@@ -162,6 +168,11 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
 
     //Result Typing to be fixed here
     useEffect(() => {
+        const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(curr, true), new Map())
+
+        if (envId && !filteredEnvMap.get(envId)) {
+            clearEnvListSelection()
+        }
         if (result) {
             if (result[1]) {
                 setDeploymentAppType(
@@ -170,7 +181,6 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
                 )
             }
             if (result[0]) {
-                const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(curr, true), new Map())
                 const _selectedEnvironment = (result[0]['value']?.result || [])
                     .filter((env) => {
                         return !filteredEnvMap || filteredEnvMap.get(env.environmentId)
