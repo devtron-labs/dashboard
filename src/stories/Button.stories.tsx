@@ -52,6 +52,12 @@ const ButtonTemplate: Story = {
         size: ComponentSizeType.large,
         linkProps,
         onClick: action('Button clicked'),
+        disabled: false,
+        isLoading: false,
+        fullWidth: false,
+        startIcon: <ICDeleteInteractive />,
+        endIcon: <ICAbort />,
+        dataTestId: 'button-story',
     } as ButtonProps,
 }
 
