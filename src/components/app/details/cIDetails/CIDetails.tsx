@@ -663,7 +663,7 @@ const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) =
         return <CIRunningView isSecurityTab />
     }
 
-    if (!artifactId || ['failed', 'cancelled'].includes(status.toLowerCase())) {
+    if (!artifactId) {
         return (
             <GenericEmptyState
                 title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
