@@ -651,10 +651,6 @@ pre code {
     background-color: transparent;
     border-radius: 0;
 }
-.pre-scrollable {
-    max-height: 340px;
-    overflow-y: scroll;
-}
 .container {
     padding-right: 20px;
     padding-left: 20px;
@@ -3211,13 +3207,6 @@ button.close {
 }
 .modal-footer .btn-block + .btn-block {
     margin-left: 0;
-}
-.modal-scrollbar-measure {
-    position: absolute;
-    top: -9999px;
-    width: 50px;
-    height: 50px;
-    overflow: scroll;
 }
 @media (min-width: 768px) {
     .modal-dialog {
