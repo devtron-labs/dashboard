@@ -1692,6 +1692,7 @@ const DockerForm = ({
                             onChange={customHandleChange}
                             placeholder={selectedDockerRegistryType.password.placeholder}
                             error={customState.password?.error}
+                            shouldTrim={false}
                         />
                     )}
                 </>
@@ -1762,6 +1763,7 @@ const DockerForm = ({
                             onChange={customHandleChange}
                             placeholder={selectedDockerRegistryType.password.placeholder}
                             error={customState.password?.error}
+                            shouldTrim={false}
                         />
                     )}
                 </>
@@ -1952,6 +1954,7 @@ const DockerForm = ({
                                                 onChange={handleOnChange}
                                                 value={state.certInput.value}
                                                 error={certError}
+                                                shouldTrim={false}
                                             />
                                         </div>
                                     )}
