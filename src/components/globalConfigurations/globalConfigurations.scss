@@ -320,21 +320,6 @@
     font-weight: 500;
 }
 
-.cluster-form {
-    .form__row--bearer-token .bearer-token {
-        display: flex;
-        width: 100%;
-
-        img {
-            margin-left: 16px;
-        }
-
-        input {
-            width: 100%;
-        }
-    }
-}
-
 .environment-create-body {
     width: 450px;
     border-radius: 8px;

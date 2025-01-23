@@ -732,27 +732,25 @@ export default function ClusterForm({
                         dataTestid="enter_server_url_input"
                     />
                 </div>
-                <div className="form__row form__row--bearer-token flex column left top">
+                <div className="form__row">
                     {id !== DEFAULT_CLUSTER_ID && (
-                        <div className="bearer-token">
-                            <Textarea
-                                name="token"
-                                value={
-                                    id
-                                        ? id !== 1
-                                            ? DEFAULT_SECRET_PLACEHOLDER
-                                            : config?.bearer_token
-                                              ? config.bearer_token
-                                              : ''
-                                        : state.token.value
-                                }
-                                onChange={handleOnChange}
-                                onBlur={handleOnBlur}
-                                onFocus={handleOnFocus}
-                                placeholder="Enter bearer token"
-                                error={state.token.error}
-                            />
-                        </div>
+                        <Textarea
+                            name="token"
+                            value={
+                                id
+                                    ? id !== 1
+                                        ? DEFAULT_SECRET_PLACEHOLDER
+                                        : config?.bearer_token
+                                            ? config.bearer_token
+                                            : ''
+                                    : state.token.value
+                            }
+                            onChange={handleOnChange}
+                            onBlur={handleOnBlur}
+                            onFocus={handleOnFocus}
+                            placeholder="Enter bearer token"
+                            error={state.token.error}
+                        />
                     )}
                 </div>
                 <RadioGroup
