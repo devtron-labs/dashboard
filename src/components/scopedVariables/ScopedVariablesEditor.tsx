@@ -197,18 +197,6 @@ export default function ScopedVariablesEditor({
                         />
                     )}
 
-                    {showSaveView && (
-                        <div className="bg__primary w-100 h-32 dc__grid-half vertical-divider">
-                            <div className="fs-12 fw-6 cn-7 pt-8 pb-8 pl-12 pr-12 flexbox">Last Saved File</div>
-                            <div className="fs-12 fw-6 cn-7 flex-grow-1 dc__gap-4 flexbox pt-8 pb-8 pl-12 pr-12">
-                                <div className="flex">
-                                    <ICPencil className="icon-dim-16" />
-                                </div>
-                                Edit File
-                            </div>
-                        </div>
-                    )}
-
                     <CodeEditor
                         mode={MODES.YAML}
                         noParsing
@@ -218,6 +206,7 @@ export default function ScopedVariablesEditor({
                                   diffView: true,
                                   originalValue: savedScopedVariables || '',
                                   modifiedValue: editorData,
+                                  onModifiedValueChange: handleEditorChange,
                               }
                             : {
                                   diffView: false,
@@ -225,7 +214,22 @@ export default function ScopedVariablesEditor({
                                   onChange: handleEditorChange,
                                   validatorSchema: jsonSchema,
                               })}
-                    />
+                    >
+                        {showSaveView && (
+                            <CodeEditor.Header
+                                hideDefaultSplitHeader
+                                className="bg__primary w-100 h-32 dc__grid-half vertical-divider"
+                            >
+                                <div className="fs-12 fw-6 cn-7 pt-8 pb-8 pl-12 pr-12 flexbox">Last Saved File</div>
+                                <div className="fs-12 fw-6 cn-7 flex-grow-1 dc__gap-4 flexbox pt-8 pb-8 pl-12 pr-12">
+                                    <div className="flex">
+                                        <ICPencil className="icon-dim-16" />
+                                    </div>
+                                    Edit File
+                                </div>
+                            </CodeEditor.Header>
+                        )}
+                    </CodeEditor>
 
                     <div className="flexbox pt-13 pb-13 pl-12 pr-12 bg__primary dc__border-top dc__content-end dc__align-items-center dc__align-self-stretch dc__gap-12">
                         <button

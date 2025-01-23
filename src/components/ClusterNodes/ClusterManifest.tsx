@@ -138,20 +138,6 @@ export default function ClusterManifest({
         }
         return (
             <div className="h-100 flexbox-col">
-                {manifestMode === EditModeType.REVIEW && (
-                    <div className="dc__grid-half py-4 text__white vertical-divider">
-                        <div className="flex dc__content-space px-12">
-                            <span>Pod manifest</span>
-                            <span className="flex" data-testid="close-to-edit-manifest" onClick={switchToEditMode}>
-                                <Close className="icon-dim-16 cursor icon-fill__white" />
-                            </span>
-                        </div>
-                        <div className="flex left px-12">
-                            <Pencil className="icon-dim-16 mr-10 icon-stroke__white" />
-                            <span>Manifest (Editing)</span>
-                        </div>
-                    </div>
-                )}
                 <CodeEditor
                     theme={AppThemeType.dark}
                     height="100%"
@@ -164,13 +150,32 @@ export default function ClusterManifest({
                               diffView: true,
                               originalValue: defaultManifest,
                               modifiedValue: manifestValue,
+                              onModifiedValueChange: setManifest,
                           }
                         : {
                               diffView: false,
                               value: manifestValue,
                               onChange: setManifest,
                           })}
-                />
+                >
+                    {manifestMode === EditModeType.REVIEW && (
+                        <CodeEditor.Header
+                            hideDefaultSplitHeader
+                            className="dc__grid-half py-4 text__white vertical-divider"
+                        >
+                            <div className="flex dc__content-space px-12">
+                                <span>Pod manifest</span>
+                                <span className="flex" data-testid="close-to-edit-manifest" onClick={switchToEditMode}>
+                                    <Close className="icon-dim-16 cursor icon-fill__white" />
+                                </span>
+                            </div>
+                            <div className="flex left px-12">
+                                <Pencil className="icon-dim-16 mr-10 icon-stroke__white" />
+                                <span>Manifest (Editing)</span>
+                            </div>
+                        </CodeEditor.Header>
+                    )}
+                </CodeEditor>
             </div>
         )
     }

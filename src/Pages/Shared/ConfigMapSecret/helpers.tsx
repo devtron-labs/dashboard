@@ -49,7 +49,7 @@ export const renderExternalInfo = (
     externalType === CMSecretExternalType.KubernetesSecret ||
     (componentType === CMSecretComponentType.ConfigMap && external) ? (
         <InfoColourBar
-            classname={`info_bar ${className}`}
+            classname={`info_bar ${className || ''}`}
             message={
                 <div className="flex column left">
                     <h4 className="m-0 lh-20 dc__info-title">{EXTERNAL_INFO_TEXT[componentType].title}</h4>
