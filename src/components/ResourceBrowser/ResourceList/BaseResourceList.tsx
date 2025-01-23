@@ -458,9 +458,9 @@ const BaseResourceListContent = ({
                             key={`${resourceData.id}-${columnName}`}
                             className={`flexbox dc__align-items-center ${
                                 columnName === 'status'
-                                    ? ` app-summary__status-name ${getStatusClass(String(resourceData[columnName]))}`
+                                    ? `app-summary__status-name dc__no-text-transform ${getStatusClass(String(resourceData[columnName]))}`
                                     : ''
-                            } ${columnName === 'errors' ? 'app-summary__status-name f-error' : ''}`}
+                            } ${columnName === 'errors' ? 'app-summary__status-name f-error dc__no-text-transform' : ''}`}
                         >
                             <ConditionalWrap
                                 condition={columnName === 'node'}

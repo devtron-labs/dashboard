@@ -825,6 +825,7 @@ button.anchor {
     &.f-switchedtoactiveservice,
     &.f-containercreating,
     &.f-pending,
+    &.f-podinitializing,
     &[class*='f-init__']:not(.f-init__crashloopbackoff) {
         color: var(--O500);
     }
@@ -840,6 +841,7 @@ button.anchor {
     &.f-terminating,
     &.f-crashloopbackoff,
     &.f-init__crashloopbackoff,
+    &.f-createcontainerconfigerror,
     &.f-deleted,
     &.f-not__ready,
     &.f-evicted {
