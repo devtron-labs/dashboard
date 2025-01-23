@@ -62,6 +62,7 @@ const TLSInputField = ({
                 onChange={handleInputChange}
                 value={sanitizedValue}
                 error={error}
+                shouldTrim={false}
             />
             {showClearButton && !!sanitizedValue && (
                 <button
