@@ -85,6 +85,8 @@ import {
     AnimatedDeployButton,
     triggerCDNode,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
+    DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
+    SortingOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -788,6 +790,8 @@ const CDMaterial = ({
     const onClickSetInitialParams = (modeParamValue: 'list' | 'review-config') => {
         const newParams = new URLSearchParams({
             ...searchParams,
+            sortBy: DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
+            sort: SortingOrder.ASC,
             mode: modeParamValue,
             deploy: getConfigToDeployValue(),
         })
@@ -1394,6 +1398,7 @@ const CDMaterial = ({
             stageType,
             showLatestTag: +mat.index === 0 && materialType !== MATERIAL_TYPE.rollbackMaterialList && !searchImageTag,
             isVirtualEnvironment,
+            targetPlatforms: mat.targetPlatforms,
             additionalInfo:
                 ImagePromotionInfoChip && promotionApprovalMetadata?.promotedFromType ? (
                     <ImagePromotionInfoChip
