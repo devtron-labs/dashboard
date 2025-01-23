@@ -103,6 +103,7 @@ const DynamicTabs = ({
                 data-testid={isSelected}
                 onClick={getMarkTabActiveHandler(tab)}
                 aria-label={`Select tab ${_title}`}
+                role="tab"
             >
                 <div className={`px-12 dc__ellipsis-right flex dc__gap-8 ${!shouldRenderTitle ? 'py-10' : 'py-8'}`}>
                     {iconsConfig[tab.id] &&
