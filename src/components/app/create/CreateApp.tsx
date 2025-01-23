@@ -375,7 +375,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             value={this.state.form.appName}
                             placeholder={`e.g. my-first-${this.props.isJobView ? 'job' : 'app'}`}
                             autoFocus
-                            tabIndex={1}
                             onChange={this.handleAppName}
                             isRequiredField
                             error={appNameErrors && !this.state.isValid.appName && errorObject[0].message}
@@ -446,7 +445,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                                     Option,
                                 }}
                                 placeholder={`Select ${this.props.isJobView ? 'job' : 'app'}`}
-                                tabIndex={3}
                             />
                             <span className="form__error">
                                 {showError && !this.state.isValid.cloneAppId ? (

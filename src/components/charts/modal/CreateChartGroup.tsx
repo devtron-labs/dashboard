@@ -15,7 +15,7 @@
  */
 
 import { Component } from 'react'
-import { showError, Progressing, DialogForm, CustomInput, ToastVariantType, ToastManager, Textarea } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, DialogForm, CustomInput, ToastVariantType, ToastManager, Textarea, Button } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartGroup, CreateChartGroupProps } from '../charts.types'
 import { getChartGroups, saveChartGroup, updateChartGroup } from '../charts.service'
 import { getChartGroupEditURL } from '../charts.helper'
@@ -189,7 +189,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                 close={this.props.closeChartGroupModal}
                 onSave={this.saveChartGroup}
             >
-                <label className="form__row">
+                <div className="flexbox-col dc__gap-16">
                     <CustomInput
                         name="name"
                         label="Name"
@@ -197,27 +197,26 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                         data-testid="create-group-name-value"
                         placeholder="e.g. elastic-stack"
                         autoFocus
-                        tabIndex={1}
                         onChange={this.handleNameChange}
                         isRequiredField
                         error={this.state.name.error}
                     />
-                </label>
-                <Textarea
-                    label="Description"
-                    name="description"
-                    value={this.state.description}
-                    placeholder="Enter a short description for this group."
-                    onChange={this.handleDescriptionChange}
-                />
-                <button
-                    type="button"
-                    className="cta dc__align-right"
-                    onClick={this.saveChartGroup}
-                    data-testid="save-group-button"
-                >
-                    {this.state.loading ? <Progressing /> : this.props.chartGroupId ? 'Update Group' : 'Create Group'}
-                </button>
+                    <Textarea
+                        label="Description"
+                        name="description"
+                        value={this.state.description}
+                        placeholder="Enter a short description for this group."
+                        onChange={this.handleDescriptionChange}
+                    />
+                    <div className="dc__align-self-end">
+                        <Button
+                            onClick={this.saveChartGroup}
+                            dataTestId="save-group-button"
+                            isLoading={this.state.loading}
+                            text={this.props.chartGroupId ? 'Update Group' : 'Create Group'}
+                        />
+                    </div>
+                </div>
             </DialogForm>
         )
     }
