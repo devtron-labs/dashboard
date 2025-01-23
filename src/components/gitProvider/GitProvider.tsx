@@ -905,17 +905,20 @@ const GitForm = ({
                 </div>
             )}
             {state.auth.value === 'SSH' && (
-                <Textarea
-                    label="Private SSH key"
-                    placeholder="Enter key text"
-                    onChange={customHandleChange}
-                    onBlur={id && handleOnBlur}
-                    onFocus={handleOnFocus}
-                    name="sshInput"
-                    value={customState.sshInput.value}
-                    error={customState.sshInput.error}
-                    required
-                />
+                <div className="mb-16">
+                    <Textarea
+                        label="Private SSH key"
+                        placeholder="Enter key text"
+                        onChange={customHandleChange}
+                        onBlur={id && handleOnBlur}
+                        onFocus={handleOnFocus}
+                        name="sshInput"
+                        value={customState.sshInput.value}
+                        error={customState.sshInput.error}
+                        required
+                        shouldTrim={false}
+                    />
+                </div>
             )}
 
             {state.auth.value === 'USERNAME_PASSWORD' && (
