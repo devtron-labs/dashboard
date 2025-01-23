@@ -167,17 +167,14 @@ const DeploymentChartsList = () => {
                                             <span className="dc__ellipsis-right">{description}</span>
                                         </Tooltip>
                                         <div>
-                                            {isUserUploaded ? (
-                                                <>
-                                                    {getAlphabetIcon(uploadedBy)}
-                                                    <span>{uploadedBy}</span>
-                                                </>
-                                            ) : (
-                                                <div className="flexbox dc__align-items-center dc__gap-4 fcb-5">
-                                                    <ICDevtron className="icon-dim-20" />
-                                                    <span>Devtron</span>
-                                                </div>
-                                            )}
+                                            <div className="flexbox dc__align-items-center dc__gap-4">
+                                                {isUserUploaded ? (
+                                                    getAlphabetIcon(uploadedBy)
+                                                ) : (
+                                                    <ICDevtron className="icon-dim-20 fcb-5" />
+                                                )}
+                                                <span>{uploadedBy}</span>
+                                            </div>
                                         </div>
                                         <div className="flexbox dc__gap-4">
                                             {EditDeploymentChart && <EditDeploymentChart name={chartData.name} />}
