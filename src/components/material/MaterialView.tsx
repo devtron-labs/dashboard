@@ -20,7 +20,6 @@ import {
     ConditionalWrap,
     Checkbox,
     InfoColourBar,
-    multiSelectStyles,
     TippyCustomized,
     TippyTheme,
     stopPropagation,
@@ -30,7 +29,6 @@ import {
     ComponentSizeType,
     SelectPickerProps,
     DeleteComponent,
-    Textarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
