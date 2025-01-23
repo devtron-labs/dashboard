@@ -16,7 +16,7 @@
 
 import { useState, useEffect } from 'react'
 import ReactGA from 'react-ga4'
-import { Route, Switch, useRouteMatch, Redirect, useLocation, useParams } from 'react-router-dom'
+import { Route, Switch, useRouteMatch, Redirect, useLocation, useParams, useHistory } from 'react-router-dom'
 import { DynamicTabs, useTabs } from '@Components/common/DynamicTabs'
 import { EnvResourceType, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { DynamicTabsProps, DynamicTabsVariantType } from '@Components/common/DynamicTabs/types'
@@ -25,7 +25,7 @@ import { ReactComponent as ICLogs } from '@Icons/ic-logs.svg'
 import { K8ResourceComponent } from './k8Resource/K8Resource.component'
 import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component'
 import { URLS } from '../../../config'
-import { AppDetailsTabs, getInitialTabs } from './appDetails.store'
+import { APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX, AppDetailsTabs, getInitialTabs } from './appDetails.store'
 import { K8ResourceComponentProps, NodeTreeDetailTabProps, NodeType } from './appDetails.type'
 import IndexStore from './index.store'
 import NodeDetailComponentWrapper from './NodeDetailComponentWrapper'
@@ -54,19 +54,23 @@ const NodeTreeDetailTab = ({
         getTabId,
         updateTabUrl,
         // NOTE: fallback to 0th index since that is the k8s_resource tab
-    } = useTabs(`${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}`, 0)
+    } = useTabs(`${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}`, APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX)
     const { url: routeMatchUrl, path: routeMatchPath } = useRouteMatch()
     const location = useLocation()
+    const { push } = useHistory()
     const [clickedNodes, registerNodeClick] = useState<Map<string, string>>(new Map<string, string>())
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const displayLogAnalyzer = IndexStore.getNodesByKind(NodeType.Pod).length > 0 && !isVirtualEnvironment
 
     useEffect(() => {
-        initTabs(
-            getInitialTabs(location.pathname, routeMatchUrl, displayLogAnalyzer),
-            false,
-            !displayLogAnalyzer ? [AppDetailsTabs.log_analyzer] : null,
-        )
+        const initialTabs = getInitialTabs(location.pathname, routeMatchUrl, displayLogAnalyzer)
+
+        initTabs(initialTabs, false, !displayLogAnalyzer ? [AppDetailsTabs.log_analyzer] : null)
+
+        // NOTE: if we need to hide (remove) logAnalyzer tab but user was on this tab then we need
+        if (!displayLogAnalyzer && location.pathname.includes(URLS.APP_DETAILS_LOG)) {
+            push(initialTabs[APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX].url)
+        }
     }, [displayLogAnalyzer])
 
     const handleMarkK8sResourceTabSelected = () => {

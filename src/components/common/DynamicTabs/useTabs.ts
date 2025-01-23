@@ -188,7 +188,10 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
 
                     return {
                         ..._tab,
-                        isSelected: false,
+                        // NOTE: if reInit is false, we need to retain the current selection
+                        // if reInit is true, we need to remove old selection and use the provided initTabs' selection
+                        // or fallback if user has sent all initTabs with isSelected false
+                        ...(reInit ? { isSelected: false } : {}),
                         /* NOTE: following lines migrate old tab data to new */
                         lastSyncMoment: dayjs(),
                         ...(_tab.componentKey
@@ -213,7 +216,9 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
                         return true
                     }
 
-                    _tabs[index].isSelected = _initTab.isSelected
+                    if (reInit) {
+                        _tabs[index].isSelected = _initTab.isSelected
+                    }
                     _tabs[index].isAlive = _initTab.isAlive
                     _tabs[index].tippyConfig = _initTab.tippyConfig
                     return false

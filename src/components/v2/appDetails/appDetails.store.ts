@@ -29,8 +29,8 @@ export const getInitialTabs = (
     routeMatchPath: string,
     displayLogAnalyzerTab: boolean,
 ): InitTabType[] => {
-    const isK8sResourceTabSelected = locationPathname.includes(AppDetailsTabs.k8s_Resources)
-    const isLogAnalyzerTabSelected = locationPathname.includes(AppDetailsTabs.log_analyzer)
+    const isK8sResourceTabSelected = locationPathname.includes(URLS.APP_DETAILS_K8)
+    const isLogAnalyzerTabSelected = locationPathname.includes(URLS.APP_DETAILS_LOG)
     const pathWithTrailingSlash = `${routeMatchPath}${routeMatchPath.endsWith('/') ? '' : '/'}`
 
     return [
@@ -54,3 +54,5 @@ export const getInitialTabs = (
               ] as const)),
     ]
 }
+
+export const APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX = 0
