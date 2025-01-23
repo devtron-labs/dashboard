@@ -27,15 +27,22 @@ import {
     ComponentSizeType,
     ButtonStyleType,
     logExceptionToSentry,
+    Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICCross } from '@Icons/ic-cross.svg'
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
 import { checkIfDataIsStale, getClassNameForVariant } from './utils'
 import { DynamicTabsProps } from './types'
-import { timerTransition } from './DynamicTabs.component'
 import Timer from './DynamicTabs.timer'
 import DynamicTabsSelect from './DynamicTabsSelect'
 import './DynamicTabs.scss'
+
+export const timerTransition = (): JSX.Element => (
+    <div className="flex dc__gap-8">
+        <Progressing size={18} />
+        <span>Syncing...</span>
+    </div>
+)
 
 /**
  * This component enables a way to display dynamic tabs with the following functionalities,

@@ -45,7 +45,6 @@ export const K8ResourceComponent = ({
     isDevtronApp,
     clusterId,
     isDeploymentBlocked,
-    isExternalApp,
     handleMarkK8sResourceTabSelected,
     addTab,
     removeTabByIdentifier,
@@ -166,7 +165,6 @@ export const K8ResourceComponent = ({
                             isDevtronApp={isDevtronApp}
                             clusterId={clusterId}
                             isDeploymentBlocked={isDeploymentBlocked}
-                            isExternalApp={isExternalApp}
                             addTab={addTab}
                             tabs={tabs}
                             removeTabByIdentifier={removeTabByIdentifier}

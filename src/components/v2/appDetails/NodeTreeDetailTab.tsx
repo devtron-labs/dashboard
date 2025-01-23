@@ -16,7 +16,7 @@
 
 import { useState, useEffect } from 'react'
 import ReactGA from 'react-ga4'
-import { Route, Switch, useRouteMatch, Redirect, useLocation, useParams, useHistory } from 'react-router-dom'
+import { Route, Switch, useRouteMatch, Redirect, useLocation, useHistory } from 'react-router-dom'
 import { DynamicTabs, useTabs } from '@Components/common/DynamicTabs'
 import { EnvResourceType, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { DynamicTabsProps, DynamicTabsVariantType } from '@Components/common/DynamicTabs/types'
@@ -43,7 +43,7 @@ const NodeTreeDetailTab = ({
     handleReloadResourceTree,
     isReloadResourceTreeInProgress,
 }: NodeTreeDetailTabProps) => {
-    const { appId, envId } = useParams<Record<'appId' | 'envId', string>>()
+    const { url: routeMatchUrl, path: routeMatchPath } = useRouteMatch()
     const {
         tabs,
         initTabs,
@@ -54,8 +54,7 @@ const NodeTreeDetailTab = ({
         getTabId,
         updateTabUrl,
         // NOTE: fallback to 0th index since that is the k8s_resource tab
-    } = useTabs(`${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}`, APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX)
-    const { url: routeMatchUrl, path: routeMatchPath } = useRouteMatch()
+    } = useTabs(routeMatchUrl, APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX)
     const location = useLocation()
     const { push } = useHistory()
     const [clickedNodes, registerNodeClick] = useState<Map<string, string>>(new Map<string, string>())
@@ -141,7 +140,6 @@ const NodeTreeDetailTab = ({
                                     isDevtronApp={isDevtronApp}
                                     isDeploymentBlocked={isDeploymentBlocked}
                                     clusterId={appDetails.clusterId}
-                                    isExternalApp={isExternalApp}
                                     addTab={addTab}
                                     handleMarkK8sResourceTabSelected={handleMarkK8sResourceTabSelected}
                                     tabs={tabs}
@@ -179,7 +177,6 @@ const NodeTreeDetailTab = ({
                                     isDevtronApp={isDevtronApp}
                                     clusterId={appDetails.clusterId}
                                     isDeploymentBlocked={isDeploymentBlocked}
-                                    isExternalApp={isExternalApp}
                                     addTab={addTab}
                                     handleMarkK8sResourceTabSelected={handleMarkK8sResourceTabSelected}
                                     tabs={tabs}
@@ -199,7 +196,6 @@ const NodeTreeDetailTab = ({
                                     isDevtronApp={isDevtronApp}
                                     isDeploymentBlocked={isDeploymentBlocked}
                                     clusterId={appDetails.clusterId}
-                                    isExternalApp={isExternalApp}
                                     addTab={addTab}
                                     handleMarkK8sResourceTabSelected={handleMarkK8sResourceTabSelected}
                                     tabs={tabs}
@@ -215,7 +211,6 @@ const NodeTreeDetailTab = ({
                                 <LogAnalyzerComponent
                                     logSearchTerms={logSearchTerms}
                                     setLogSearchTerms={setLogSearchTerms}
-                                    isExternalApp={isExternalApp}
                                     handleMarkLogAnalyzerTabSelected={handleMarkLogAnalyzerTabSelected}
                                 />
                             )}

@@ -364,7 +364,6 @@ interface Sync {
 export interface LogSearchTermType {
     logSearchTerms: Record<string, string>
     setLogSearchTerms: React.Dispatch<React.SetStateAction<Record<string, string>>>
-    isExternalApp?: boolean
 }
 
 export interface LogAnalyzerProps extends LogSearchTermType {
@@ -378,8 +377,8 @@ export interface NodeDetailPropsType
     isResourceBrowserView?: boolean
     selectedResource?: SelectedResourceType
     removeTabByIdentifier?: UseTabsReturnType['removeTabByIdentifier']
-    isExternalApp?: boolean
     clusterName?: string
+    isExternalApp?: boolean
 }
 
 export interface LogsComponentProps extends Omit<NodeDetailPropsType, 'lowercaseKindToResourceGroupMap' | 'updateTabUrl' | 'tabs'> {
@@ -506,7 +505,6 @@ export interface NodeComponentProps extends Pick<UseTabsReturnType, 'addTab'>, P
     isDevtronApp?: boolean
     clusterId?: number
     isDeploymentBlocked?: boolean
-    isExternalApp: boolean
 }
 
 export interface K8ResourceComponentProps extends Pick<NodeComponentProps, 'addTab'>, Pick<NodeDeleteComponentType, 'removeTabByIdentifier' | 'tabs'>  {
@@ -517,7 +515,6 @@ export interface K8ResourceComponentProps extends Pick<NodeComponentProps, 'addT
     isDevtronApp?: boolean
     clusterId?: number
     isDeploymentBlocked?: boolean
-    isExternalApp: boolean
     handleMarkK8sResourceTabSelected: () => void
     handleUpdateK8sResourceTabUrl: (props: Omit<UpdateTabUrlParamsType, 'id'>) => void
 }

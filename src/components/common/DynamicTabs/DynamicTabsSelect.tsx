@@ -56,10 +56,8 @@ const DynamicTabsSelect = ({
     )
 
     const onChangeTab = (option: SelectPickerOptionType<DynamicTabType>): void => {
-        if (option) {
-            setIsMenuOpen(false)
-            getMarkTabActiveHandler(option.value)()
-        }
+        setIsMenuOpen(false)
+        getMarkTabActiveHandler(option.value)()
     }
 
     const handleCloseMenu = () => {

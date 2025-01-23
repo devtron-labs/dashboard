@@ -21,7 +21,6 @@ import LogsComponent from '../k8Resource/nodeDetail/NodeDetailTabs/Logs.componen
 const LogAnalyzerComponent = ({
     logSearchTerms,
     setLogSearchTerms,
-    isExternalApp,
     handleMarkLogAnalyzerTabSelected,
 }: LogAnalyzerProps) => {
     useEffect(() => {
@@ -35,7 +34,6 @@ const LogAnalyzerComponent = ({
                 isDeleted={false}
                 logSearchTerms={logSearchTerms}
                 setLogSearchTerms={setLogSearchTerms}
-                isExternalApp={isExternalApp}
             />
         </div>
     )
