@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { get, post } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, ROUTES as COMMON_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
 import { ScopedVariablesDataType } from './types'
 import { Routes } from '../../config'
 
@@ -25,5 +25,5 @@ export const postScopedVariables = (scopedVariables: ScopedVariablesDataType) =>
     const payload = {
         manifest: scopedVariables,
     }
-    return post(Routes.SCOPED_GLOBAL_VARIABLES, payload)
+    return post(COMMON_ROUTES.SCOPED_GLOBAL_VARIABLES, payload)
 }

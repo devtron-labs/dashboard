@@ -29,6 +29,7 @@ import {
 } from './utils'
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg'
 import { DEFAULTK8SVERSION } from '../../../../config'
+import { APP_METRICS_CALENDAR_INPUT_DATE_FORMAT } from './constants'
 
 export const ChartNames = {
     cpu: 'CPU Usage',
@@ -211,8 +212,8 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
                 endDate: end,
             },
             calendarInputs: {
-                startDate: start?.format('DD MM YYYY hh:mm:ss'),
-                endDate: end?.format('DD MM YYYY hh:mm:ss') || '',
+                startDate: start?.format(APP_METRICS_CALENDAR_INPUT_DATE_FORMAT),
+                endDate: end?.format(APP_METRICS_CALENDAR_INPUT_DATE_FORMAT) || '',
             },
         })
     }

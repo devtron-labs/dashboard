@@ -31,9 +31,12 @@ import {
     ToastVariantType,
     ToastManager,
     TARGET_IDS,
+    CIPipelineNodeType,
+    ChangeCIPayloadType,
+    WorkflowOptionsModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { ChangeCIPayloadType, PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
+import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
 import { URLS, AppConfigStatus, ViewType, DOCUMENTATION } from '../../config'
 import { importComponentFromFELibrary } from '../common'
 import { Workflow } from './Workflow'
@@ -56,7 +59,6 @@ import { ReactComponent as ICAddWhite } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as ICClose } from '../../assets/icons/ic-close.svg'
 import { getHostURLConfiguration, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
 import './workflowEditor.scss'
-import { CIPipelineNodeType } from '../app/details/triggerView/types'
 import CDSuccessModal from './CDSuccessModal'
 import NoGitOpsConfiguredWarning from './NoGitOpsConfiguredWarning'
 import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'
@@ -64,13 +66,13 @@ import DeprecatedWarningModal from './DeprecatedWarningModal'
 import nojobs from '../../assets/img/empty-joblist.webp'
 import CDPipeline from '../cdPipeline/CDPipeline'
 import EmptyWorkflow from './EmptyWorkflow'
-import { WORKFLOW_EDITOR_HEADER_TIPPY } from './workflowEditor.constants'
-import WorkflowOptionsModal from './WorkflowOptionsModal'
 import { WorkflowCreate } from '../app/details/triggerView/config'
 import { LinkedCIDetail } from '../../Pages/Shared/LinkedCIDetailsModal'
+import { WORKFLOW_EDITOR_HEADER_TIPPY } from './constants'
 
 export const pipelineContext = createContext<PipelineContext>(null)
 const SyncEnvironment = importComponentFromFELibrary('SyncEnvironment')
+const LINKED_CD_SOURCE_VARIANT = importComponentFromFELibrary('LINKED_CD_SOURCE_VARIANT', null, 'function')
 
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     workflowTimer = null
@@ -981,6 +983,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         workflows={this.state.workflows}
                         getWorkflows={this.getWorkflows}
                         resetChangeCIPayload={this.resetChangeCIPayload}
+                        linkedCDSourceVariant={LINKED_CD_SOURCE_VARIANT}
                     />
                 )}
             </>

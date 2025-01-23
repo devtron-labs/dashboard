@@ -202,7 +202,7 @@ $color-suffix: 00;
             color: var(--#{$color}#{$i});
         }
 
-        @if $i != 50 {
+        @if $color != 'N' {
             .bc#{to-lower-case($color)}-#{$i} {
                 background-color: var(--#{$color}#{$i});
             }

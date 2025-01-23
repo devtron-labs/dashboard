@@ -57,6 +57,7 @@ import HostErrorImage from '../../../../assets/img/ic-error-hosturl.png'
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-chevron-down.svg'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
+import { APP_METRICS_CALENDAR_INPUT_DATE_FORMAT } from './constants'
 
 export const AppMetrics: React.FC<{
     appName: string
@@ -111,8 +112,8 @@ export const AppMetrics: React.FC<{
             endDate,
         })
         setCalendarInput({
-            startDate: startDate?.format('DD-MM-YYYY hh:mm:ss'),
-            endDate: endDate?.format('DD-MM-YYYY hh:mm:ss') || '',
+            startDate: startDate?.format(APP_METRICS_CALENDAR_INPUT_DATE_FORMAT),
+            endDate: endDate?.format(APP_METRICS_CALENDAR_INPUT_DATE_FORMAT) || '',
         })
     }
 
