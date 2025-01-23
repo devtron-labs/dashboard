@@ -35,6 +35,7 @@ import {
     YAMLStringify,
     InfoColourBar,
     logExceptionToSentry,
+    AppThemeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
@@ -694,6 +695,7 @@ const ManifestComponent = ({
         return (
             <div style={{ height: isResourceBrowserView ? 'calc(100vh - 119px)' : 'calc(100vh - 77px)' }}>
                 <CodeEditor
+                    theme={AppThemeType.dark}
                     {...(showManifestCompareView
                         ? {
                               diffView: true,

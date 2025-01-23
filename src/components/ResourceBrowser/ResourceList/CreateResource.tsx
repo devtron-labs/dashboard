@@ -25,6 +25,7 @@ import {
     CodeEditor,
     createNewResource,
     CreateResourceDTO,
+    AppThemeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { APP_STATUS_HEADERS, MODES } from '../../../config'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
@@ -173,6 +174,7 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
                         Icon={InfoIcon}
                     />
                     <CodeEditor
+                        theme={AppThemeType.dark}
                         value={resourceYAML}
                         mode={MODES.YAML}
                         noParsing

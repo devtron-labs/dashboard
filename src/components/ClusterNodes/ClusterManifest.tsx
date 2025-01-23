@@ -16,7 +16,7 @@
 
 import { useState, useEffect } from 'react'
 import YAML from 'yaml'
-import { VisibleModal2, YAMLStringify, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
+import { VisibleModal2, YAMLStringify, CodeEditor, AppThemeType } from '@devtron-labs/devtron-fe-common-lib'
 import MessageUI, { MsgUIType } from '../v2/common/message.ui'
 import { getClusterManifest } from './clusterNodes.service'
 import { ManifestMessaging, MESSAGING_UI, MODES } from '../../config'
@@ -153,6 +153,7 @@ export default function ClusterManifest({
                     </div>
                 )}
                 <CodeEditor
+                    theme={AppThemeType.dark}
                     height="100%"
                     mode={MODES.YAML}
                     noParsing

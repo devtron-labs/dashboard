@@ -35,6 +35,7 @@ import {
     ToastVariantType,
     TOAST_ACCESS_DENIED,
     ResourceDetail,
+    AppThemeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
 import YAML from 'yaml'
@@ -907,6 +908,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         return (
             <div className="node-details-container flexbox-col flex-grow-1">
                 <CodeEditor
+                    theme={AppThemeType.dark}
                     {...(isReviewState
                         ? {
                               diffView: true,
