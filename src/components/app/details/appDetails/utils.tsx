@@ -27,6 +27,7 @@ import {
     SelectPicker,
     SelectPickerProps,
     SelectPickerVariantType,
+    prefixZeroIfSingleDigit,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { GetIFrameSrcParamsType } from './types'
 
@@ -268,7 +269,8 @@ const getTimestampFromDateIfAvailable = (dateString: string): string => {
     try {
         const [day, month, yearAndTime] = dateString.split('-')
         const [year, time] = yearAndTime.split(' ')
-        const formattedDate = `${year}-${month}-${day}T${time}`
+        const updatedTime = time.split(':').map((item) => ['0', '00'].includes(item) ? '00' : prefixZeroIfSingleDigit(Number(item))).join(':')
+        const formattedDate = `${year}-${prefixZeroIfSingleDigit(Number(month))}-${prefixZeroIfSingleDigit(Number(day))}T${updatedTime}`
         const parsedDate = new Date(formattedDate).getTime()
 
         return isNaN(parsedDate) ? dateString : parsedDate.toString()

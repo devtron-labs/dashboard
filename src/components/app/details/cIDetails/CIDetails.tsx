@@ -43,6 +43,7 @@ import {
     TRIGGER_STATUS_PROGRESSING,
     ErrorScreenManager,
     SecurityDetailsCards,
+    sanitizeTargetPlatforms,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, Redirect, useRouteMatch, useParams, useHistory, generatePath } from 'react-router-dom'
 import {
@@ -545,12 +546,15 @@ const HistoryLogs = ({
     const [ciJobArtifact, setciJobArtifact] = useState<string[]>([])
     const [loading, setLoading] = useState<boolean>(false)
     const downloadArtifactUrl = `${Routes.CI_CONFIG_GET}/${pipelineId}/artifacts/${buildId}`
+    const targetPlatforms = sanitizeTargetPlatforms(triggerDetails.targetPlatforms)
+
     useEffect(() => {
         if (isJobCI) {
             setLoading(true)
             getArtifactsForCiJobRes()
         }
     }, [triggerDetails])
+
     const getArtifactsForCiJobRes = async () => {
         try {
             const { result } = await getArtifactForJobCi(pipelineId, buildId)
@@ -565,6 +569,7 @@ const HistoryLogs = ({
     }
 
     const CiArtifactsArrayCards = Array.from({ length: ciJobArtifact?.length }, (_, index) => {
+        // TargetPlatforms are not supported for Artifacts in case of JobCI
         return (
             <Artifacts
                 status={triggerDetails.status}
@@ -582,6 +587,7 @@ const HistoryLogs = ({
                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                 rootClassName="pb-0-imp"
                 renderCIListHeader={renderCIListHeader}
+                targetPlatforms={[]}
             />
         )
     })
@@ -603,11 +609,7 @@ const HistoryLogs = ({
                     )}
                 </Route>
                 <Route path={`${path}/source-code`}>
-                    <GitChanges
-                        gitTriggers={triggerDetails.gitTriggers}
-                        ciMaterials={triggerDetails.ciMaterials}
-                        renderCIListHeader={renderCIListHeader}
-                    />
+                    <GitChanges gitTriggers={triggerDetails.gitTriggers} ciMaterials={triggerDetails.ciMaterials} />
                 </Route>
                 <Route path={`${path}/artifacts`}>
                     {loading && <Progressing pageLoader />}
@@ -629,6 +631,7 @@ const HistoryLogs = ({
                                 appReleaseTagNames={appReleaseTags}
                                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                                 renderCIListHeader={renderCIListHeader}
+                                targetPlatforms={targetPlatforms}
                             />
                         </div>
                     )}
@@ -636,7 +639,6 @@ const HistoryLogs = ({
                 {
                     <Route path={`${path}/security`}>
                         <SecurityTab
-                            ciPipelineId={triggerDetails.ciPipelineId}
                             artifactId={triggerDetails.artifactId}
                             status={triggerDetails.status}
                             appIdFromParent={appIdFromParent}
@@ -655,9 +657,8 @@ const HistoryLogs = ({
     )
 }
 
-const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: SecurityTabType) => {
+const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) => {
     const { appId } = useParams<{ appId: string }>()
-    const { push } = useHistory()
 
     const computedAppId = appId ?? appIdFromParent
 
@@ -665,17 +666,6 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
         appId: +computedAppId,
         artifactId,
     })
-
-    const redirectToCreate = () => {
-        if (!ciPipelineId) {
-            return
-        }
-        push(
-            `${URLS.APP}/${computedAppId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${ciPipelineId}/${
-                URLS.APP_CI_CONFIG
-            }/${ciPipelineId}/build`,
-        )
-    }
 
     if (['starting', 'running'].includes(status.toLowerCase())) {
         return <CIRunningView isSecurityTab />
