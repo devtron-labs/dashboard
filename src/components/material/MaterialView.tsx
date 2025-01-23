@@ -820,9 +820,14 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                         </div>
                                     )}
                                 </div>
-                                <Textarea
-                                    name="exclude-include-commit-textbox"
+                                {/* Can't use Textarea component here */}
+                                <textarea
+                                    data-testid="exclude-include-commit-textbox"
+                                    className="form__textarea dc__no-border-imp mxh-140 w-100"
+                                    autoComplete="off"
+                                    autoFocus
                                     placeholder={INCLUDE_EXCLUDE_PLACEHOLDER}
+                                    rows={3}
                                     value={this.props.material.includeExcludeFilePath}
                                     onChange={this.props.handleFileChange}
                                 />
