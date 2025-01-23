@@ -30,17 +30,6 @@
     align-items: flex-start;
 }
 
-.output-drawer {
-    position: fixed;
-    bottom: 0;
-    left: 64px;
-    width: calc(100vw - 64px);
-    display: grid;
-    z-index: var(--events-logs);
-    overflow: scroll;
-    height: 100%;
-}
-
 .right-readme {
     height: calc(100vh - 97px);
     overflow: auto;
@@ -85,7 +74,7 @@
 .bulk-output-body {
     letter-spacing: 0.2px;
     height: calc(40vh - 36px);
-    overflow: scroll;
+    overflow: auto;
     font-family: monospace;
 }
 

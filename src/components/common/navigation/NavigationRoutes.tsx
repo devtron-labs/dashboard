@@ -30,6 +30,7 @@ import {
     MODES,
     DEVTRON_BASE_MAIN_ID,
     MainContext,
+    getHashedValue,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -194,20 +195,27 @@ export default function NavigationRoutes() {
             }
             if (window._env_.GA_ENABLED) {
                 const path = location.pathname
-                ReactGA.initialize(window._env_.GA_TRACKING_ID)
-                ReactGA.send({ hitType: 'pageview', page: path })
-                ReactGA.event({
-                    category: `Page ${path}`,
-                    action: 'First Land',
-                })
-                history.listen((location) => {
-                    let path = location.pathname
-                    path = path.replace(new RegExp('[0-9]', 'g'), '')
-                    path = path.replace(new RegExp('//', 'g'), '/')
+                // Using .then to use in useEffect
+                getHashedValue(email).then((hashedEmail) => { 
+                    ReactGA.initialize(window._env_.GA_TRACKING_ID, {
+                        gaOptions: {
+                            userId: hashedEmail,
+                        },
+                    })
                     ReactGA.send({ hitType: 'pageview', page: path })
                     ReactGA.event({
                         category: `Page ${path}`,
                         action: 'First Land',
+                    })
+                    history.listen((location) => {
+                        let path = location.pathname
+                        path = path.replace(new RegExp('[0-9]', 'g'), '')
+                        path = path.replace(new RegExp('//', 'g'), '/')
+                        ReactGA.send({ hitType: 'pageview', page: path })
+                        ReactGA.event({
+                            category: `Page ${path}`,
+                            action: 'First Land',
+                        })
                     })
                 })
             }
@@ -289,7 +297,7 @@ export default function NavigationRoutes() {
                 ) {
                     localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
                 }
-            } catch (e) {
+            } catch {
                 localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
             }
         }

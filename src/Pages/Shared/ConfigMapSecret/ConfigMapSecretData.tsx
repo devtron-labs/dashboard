@@ -15,24 +15,26 @@ import {
     ToastManager,
     ToastVariantType,
     YAMLStringify,
+    convertKeyValuePairToYAML,
+    configMapSecretMountDataMap,
+    convertYAMLToKeyValuePair,
+    CODE_EDITOR_RADIO_STATE,
+    PATTERNS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { ReactComponent as HideIcon } from '@Icons/ic-visibility-off.svg'
 import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
-import { PATTERNS } from '@Config/constants'
 
 import {
-    CODE_EDITOR_RADIO_STATE,
     CODE_EDITOR_RADIO_STATE_VALUE,
     CONFIG_MAP_SECRET_NO_DATA_ERROR,
-    configMapSecretMountDataMap,
     DATA_HEADER_MAP,
     sampleJSONs,
     VIEW_MODE,
 } from './constants'
 import { externalTypeSecretCodeEditorDataHeaders, renderYamlInfoText } from './helpers'
-import { convertKeyValuePairToYAML, convertYAMLToKeyValuePair, getLockedYamlString } from './utils'
+import { getLockedYamlString } from './utils'
 import { ConfigMapSecretDataProps } from './types'
 
 export const ConfigMapSecretData = ({

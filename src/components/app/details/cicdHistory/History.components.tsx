@@ -18,7 +18,7 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
-import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
+import AppNotDeployed from '../../../../assets/img/app-not-deployed.svg'
 import { EmptyViewType } from './types'
 
 export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyViewType) => {

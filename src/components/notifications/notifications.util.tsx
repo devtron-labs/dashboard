@@ -225,7 +225,7 @@ export const getSMTPDefaultConfiguration = (shouldBeDefault: boolean): SMTPFormT
 })
 
 export const renderText = (text: string, isLink: boolean = false, linkTo?: () => void, dataTestId?: string) => (
-    <Tooltip content={text} placement="bottom" showOnTruncate={!!text} className="mxh-210 dc__hscroll" interactive>
+    <Tooltip content={text} placement="bottom" showOnTruncate={!!text} className="mxh-210 dc__overflow-auto" interactive>
         {isLink ? (
             <button
                 type="button"

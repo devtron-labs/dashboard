@@ -57,7 +57,7 @@ import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import { EventList } from './EventList'
 import ResourceFilterOptions from './ResourceFilterOptions'
 import { BaseResourceListProps, BulkOperationsModalState } from './types'
-import { getAppliedColumnsFromLocalStorage } from './utils'
+import { getAppliedColumnsFromLocalStorage, getFirstResourceFromKindResourceMap } from './utils'
 import NodeListSearchFilter from './NodeListSearchFilter'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
@@ -363,7 +363,9 @@ const BaseResourceListContent = ({
     const renderResourceRow = (resourceData: K8sResourceDetailDataType): JSX.Element => {
         const lowercaseKind = (resourceData.kind as string)?.toLowerCase()
         // This should be used only if shouldOverrideSelectedResourceKind is true
-        const gvkFromRawData = lowercaseKindToResourceGroupMap[lowercaseKind]?.gvk ?? ({} as GVKType)
+        // Group and version are not available for Events / shouldOverrideSelectedResourceKind is true
+        const gvkFromRawData =
+            getFirstResourceFromKindResourceMap(lowercaseKindToResourceGroupMap, lowercaseKind)?.gvk ?? ({} as GVKType)
         // Redirection and actions are not possible for Events since the required data for the same is not available
         const shouldShowRedirectionAndActions = lowercaseKind !== Nodes.Event.toLowerCase()
         const isNodeUnschedulable = isNodeListing && !!resourceData.unschedulable
@@ -575,7 +577,7 @@ const BaseResourceListContent = ({
                             'scrollable-resource-list',
                             showPaginatedView,
                             showStaleDataWarning,
-                        )} dc__overflow-scroll`}
+                        )} dc__overflow-auto`}
                     >
                         <div
                             className="scrollable-resource-list__row no-hover-bg h-36 fw-6 cn-7 fs-12 dc__gap-16 dc__zi-2 dc__position-sticky dc__border-bottom dc__uppercase bg__primary dc__top-0"

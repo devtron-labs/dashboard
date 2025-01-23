@@ -25,6 +25,7 @@ import {
     CdPipeline,
     getIsApprovalPolicyConfigured,
     sanitizeApprovalConfigData,
+    TriggerType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCDConfig, getCIConfig, getWorkflowList, getWorkflowViewList } from '../../../../services/service'
 import {
@@ -36,7 +37,7 @@ import {
     GetInitialWorkflowsParamsType,
 } from './types'
 import { WorkflowTrigger, WorkflowCreate, Offset, WorkflowDimensions, WorkflowDimensionType } from './config'
-import { TriggerType, DEFAULT_STATUS, GIT_BRANCH_NOT_CONFIGURED } from '../../../../config'
+import { DEFAULT_STATUS, GIT_BRANCH_NOT_CONFIGURED } from '../../../../config'
 import { importComponentFromFELibrary, isEmpty } from '../../../common'
 import { WebhookDetailsType } from '../../../ciPipeline/Webhook/types'
 import { getExternalCIList } from '../../../ciPipeline/Webhook/webhook.service'

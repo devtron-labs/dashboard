@@ -23,9 +23,6 @@
     display: flex;
 
     .ci-artifact {
-        .add-image-button {
-            margin-left: 52px;
-        }
         &.ci-artifact--report {
             svg path {
                 fill: currentColor;

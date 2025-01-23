@@ -115,7 +115,7 @@ const ChartSelectorDropdown = ({
                     />
                 </div>
             </PopupMenu.Button>
-            <PopupMenu.Body rootClassName="dc__overflow-scroll mxh-350 w-400 dc__border br-4">
+            <PopupMenu.Body rootClassName="dc__overflow-auto mxh-350 w-400 dc__border br-4">
                 <>
                     {customCharts.length > 0 && (
                         <div

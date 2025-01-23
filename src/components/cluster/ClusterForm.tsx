@@ -1081,7 +1081,7 @@ export default function ClusterForm({
                         <div data-testid="message_validate">MESSAGE</div>
                         <div />
                     </div>
-                    <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 161px)' }}>
+                    <div className="dc__overflow-auto" style={{ height: 'calc(100vh - 161px)' }}>
                         {!saveClusterList || saveClusterList.length === 0 ? (
                             <NoMatchingResults />
                         ) : (
@@ -1238,7 +1238,7 @@ export default function ClusterForm({
                         className="cluster-form dc__position-rel h-100 bg__primary"
                     >
                         <AddClusterHeader />
-                        <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 110px)' }}>
+                        <div className="dc__overflow-auto" style={{ height: 'calc(100vh - 110px)' }}>
                             <div className="api-token__list en-2 bw-1 bg__primary br-4 mr-20 ml-20 mt-16">
                                 <InfoColourBar
                                     message={

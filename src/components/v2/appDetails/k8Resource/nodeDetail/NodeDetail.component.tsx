@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useRef, useState, useMemo } from 'react'
-import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router-dom'
+import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router-dom'
 import {
     showError,
     Checkbox,
@@ -30,7 +30,8 @@ import {
     FormProps,
     ToastManager,
     ToastVariantType,
-    OptionsBase
+    OptionsBase,
+    noop
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
@@ -50,8 +51,6 @@ import {
     NodeType,
     Options,
 } from '../../appDetails.type'
-import AppDetailsStore from '../../appDetails.store'
-import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
 import { getManifestResource } from './nodeDetail.api'
 import MessageUI, { MsgUIType } from '../../../common/message.ui'
@@ -65,6 +64,7 @@ import { CLUSTER_NODE_ACTIONS_LABELS } from '../../../../ClusterNodes/constants'
 import DeleteResourcePopup from '../../../../ResourceBrowser/ResourceList/DeleteResourcePopup'
 import { EDITOR_VIEW } from '@Config/constants'
 import { importComponentFromFELibrary } from '@Components/common'
+import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
 
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', false, 'function')
 const ToggleManifestConfigurationMode = importComponentFromFELibrary(
@@ -85,10 +85,6 @@ const NodeDetailComponent = ({
     clusterName = '',
 }: NodeDetailPropsType) => {
     const location = useLocation()
-    const [applicationObjectTabs] = useSharedState(
-        AppDetailsStore.getAppDetailsTabs(),
-        AppDetailsStore.getAppDetailsTabsObservable(),
-    )
     const appDetails = IndexStore.getAppDetails()
     const params = useParams<ParamsType>()
     const [tabs, setTabs] = useState([])
@@ -120,8 +116,8 @@ const NodeDetailComponent = ({
     }
 
     const _selectedResource = useMemo(
-        () => lowercaseKindToResourceGroupMap[params.nodeType.toLowerCase()],
-        [lowercaseKindToResourceGroupMap, params.nodeType],
+        () => lowercaseKindToResourceGroupMap[`${params.group === K8S_EMPTY_GROUP ? '' : params.group?.toLowerCase()}-${params.nodeType.toLowerCase()}`],
+        [lowercaseKindToResourceGroupMap, params.nodeType, params.group],
     )
 
     const resourceName = isResourceBrowserView ? params.node : params.podName
@@ -254,7 +250,7 @@ const NodeDetailComponent = ({
                 }
             }
 
-            if (result?.manifestResponse.ephemeralContainers) {
+            if (result?.manifestResponse?.ephemeralContainers) {
                 _resourceContainers.push(
                     ...result.manifestResponse.ephemeralContainers.map((_container) => ({
                         name: _container.name,
@@ -301,40 +297,12 @@ const NodeDetailComponent = ({
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
         setSelectedTabName(_tabName)
-        updateTabUrl?.({
+        updateTabUrl({
             url: _url
         })
-
-        /**
-         * NOTE: resource browser handles creation of missing tabs;
-         * Need to remove this whole function and not keep missing tab creation
-         * logic here. Instead it should be the concern on this component & should
-         * only be done on component mount */
-        if (isResourceBrowserView) {
-            return
-        }
-
-        /* NOTE: this setTimeout is dangerous; Need to refactor later */
-        if (!AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)) {
-            setTimeout(() => {
-                let _urlToCreate = _url
-
-                const query = new URLSearchParams(window.location.search)
-
-                if (query.get('container')) {
-                    _urlToCreate = `${_urlToCreate}?container=${query.get('container')}`
-                }
-
-                AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, _urlToCreate)
-            }, 500)
-        }
     }
 
-    const currentTab = applicationObjectTabs.filter((tab) => {
-        return tab.name.toLowerCase() === `${params.nodeType}/...${resourceName?.slice(-6)}`
-    })
     const isDeleted =
-        (currentTab?.[0] ? currentTab[0].isDeleted : false) ||
         (isResourceBrowserView && isResourceDeleted) ||
         (!isResourceBrowserView &&
             !(
@@ -523,7 +491,7 @@ const NodeDetailComponent = ({
     return (
         <>
             <div
-                className={`w-100 pr-20 pl-20 bg__primary flex dc__border-bottom dc__content-space ${!isResourceBrowserView ? 'node-detail__sticky' : ''}`}
+                className={`w-100 pr-20 pl-20 bg__primary flex dc__border-bottom dc__content-space h-32 ${!isResourceBrowserView ? 'node-detail__sticky' : ''}`}
             >
                 <div className="flex left">
                     <TabGroup tabs={TAB_GROUP_CONFIG} size={ComponentSizeType.medium} alignActiveBorderWithContainer />
@@ -646,7 +614,10 @@ const NodeDetailComponent = ({
                     setContainers={setContainers}
                     switchSelectedContainer={switchSelectedContainer}
                     selectedNamespaceByClickingPod={selectedResource?.namespace}
-                    handleSuccess={getContainersFromManifest}
+                    // getContainersFromManifest can only be used from resource browser
+                    {...isResourceBrowserView ? {
+                        handleSuccess: getContainersFromManifest
+                    } : {}}
                 />
             )}
             {isResourceBrowserView && showDeleteDialog && (

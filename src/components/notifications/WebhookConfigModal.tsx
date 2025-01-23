@@ -150,7 +150,7 @@ export const WebhookConfigModal = ({
 
     const renderConfigureLinkInfoColumn = () => (
         <div
-            className="h-100 w-280 flexbox-col left mh-0 p-16 dc__overflow-scroll dc__gap-16 fs-13"
+            className="h-100 w-280 flexbox-col left mh-0 p-16 dc__overflow-auto dc__gap-16 fs-13"
             data-testid="available-webhook-data"
         >
             <div className="flexbox lh-20 fw-6">

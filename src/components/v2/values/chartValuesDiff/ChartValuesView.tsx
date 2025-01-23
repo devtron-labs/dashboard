@@ -1624,7 +1624,7 @@ const ChartValuesView = ({
             >
                 {renderValuesTabsContainer()}
                 <div className="chart-values-view__wrapper flexbox flex-grow-1 dc__overflow-hidden">
-                    <div className="flexbox-col dc__gap-16 chart-values-view__details dc__border-right dc__overflow-scroll">
+                    <div className="flexbox-col dc__gap-16 chart-values-view__details dc__border-right dc__overflow-auto p-16">
                         <div className="flexbox-col dc__gap-12">
                             {isCreateValueView && (
                                 <ValueNameInput

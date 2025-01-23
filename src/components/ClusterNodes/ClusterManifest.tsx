@@ -129,11 +129,11 @@ export default function ClusterManifest({
 
     const renderManifest = () => {
         if (isResourceMissing) {
-            return <MessageUI msg={MESSAGING_UI.MANIFEST_NOT_AVAILABLE} size={24} minHeight="100%" />
+            return <MessageUI msg={MESSAGING_UI.MANIFEST_NOT_AVAILABLE} size={24} />
         }
         if (loading) {
             return (
-                <MessageUI msg={MESSAGING_UI.FETCHING_MANIFEST} icon={MsgUIType.LOADING} size={24} minHeight="100%" />
+                <MessageUI msg={MESSAGING_UI.FETCHING_MANIFEST} icon={MsgUIType.LOADING} size={24} />
             )
         }
         return (

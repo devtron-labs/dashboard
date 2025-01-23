@@ -716,7 +716,6 @@ const ManifestComponent = ({
                     height="100%"
                 >
                     {renderEditorInfo(true)}
-
                     {!loading &&
                         !error &&
                         isConfigDriftEnabled &&
@@ -754,27 +753,25 @@ const ManifestComponent = ({
             <MessageUI
                 msg="This resource no longer exists"
                 size={32}
-                minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
             />
         </div>
     ) : (
         <div
-            className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ' '} manifest-container flexbox-col flex-grow-1 dc__overflow-scroll`}
+            className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ' '} manifest-container flexbox-col flex-grow-1 dc__overflow-auto`}
             data-testid="app-manifest-container"
-            style={{ background: '#0B0F22' }}
+            style={{ background: '#0B0F22', ...(!isResourceBrowserView ? { minHeight: 'calc(100vh - 152px)' } : {}) }}
         >
             {error && !loading && (
                 <MessageUI
                     msg="Manifest not available"
                     size={24}
-                    minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
                 />
             )}
             {!error && (
                 <div
                     className={`${
                         manifestFormConfigurationType === ConfigurationType.GUI ? 'bg__primary' : ''
-                    } flexbox-col flex-grow-1 dc__overflow-scroll h-100`}
+                    } flexbox-col flex-grow-1 dc__overflow-auto h-100`}
                 >
                     {isResourceMissing && !loading && !showManifestCompareView ? (
                         <MessageUI

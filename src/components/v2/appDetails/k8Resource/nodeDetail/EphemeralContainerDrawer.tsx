@@ -500,7 +500,9 @@ const EphemeralContainerDrawer = ({
                 setResourceContainers(_containers)
                 setShowEphemeralContainerDrawer(false)
                 switchSelectedContainer(containerName)
-                handleSuccess()
+                if (typeof handleSuccess === 'function') {
+                    handleSuccess()
+                }
             })
             .catch((err) => {
                 showError(err)

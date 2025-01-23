@@ -97,7 +97,7 @@ export default function MaterialSource({
 
     return (
         <div
-            className="select-material--trigger-view__sidebar dc__overflow-scroll"
+            className="select-material--trigger-view__sidebar dc__overflow-auto"
             style={{ height: fromTriggerInfo ? '100%' : 'calc(100% - 44px)' }}
         >
             {material.map((mat, index) => {

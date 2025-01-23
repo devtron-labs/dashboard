@@ -10,8 +10,8 @@ import {
     ProtectConfigTabsType,
     SelectPickerOptionType,
     ServerErrors,
+    CMSecretComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/types'
 import { FunctionComponent, MutableRefObject, ReactNode } from 'react'
 import { DeploymentTemplateStateType } from './DeploymentTemplate/types'
 
@@ -218,16 +218,6 @@ export type ConfigDryRunProps = {
     isOverridden: boolean
 } & ConfigDryRunManifestProps &
     ConfigErrorHandlingProps
-
-export interface ToggleResolveScopedVariablesProps {
-    resolveScopedVariables: boolean
-    handleToggleScopedVariablesView: () => void
-    isDisabled?: boolean
-    /**
-     * @default true
-     */
-    showTooltip?: boolean
-}
 
 export enum DeploymentTemplateComponentType {
     DEPLOYMENT_TEMPLATE = '3',

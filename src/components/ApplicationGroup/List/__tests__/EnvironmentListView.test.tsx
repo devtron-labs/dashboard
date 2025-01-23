@@ -33,7 +33,7 @@ describe('EnvironmentList', () => {
         const appGroupLoaderContainer = container.querySelector('.flex.dc__border-top-n1')
         expect(appGroupLoaderContainer).toBeInTheDocument()
 
-        const appGroupListContainer = container.querySelector('.dc__overflow-scroll')
+        const appGroupListContainer = container.querySelector('.dc__overflow-auto')
         expect(appGroupListContainer).not.toBeInTheDocument()
     })
 
@@ -47,7 +47,7 @@ describe('EnvironmentList', () => {
         })
 
         expect(component.container).toBeInTheDocument()
-        const appGroupListContainer = component.container.querySelector('.dc__overflow-scroll')
+        const appGroupListContainer = component.container.querySelector('.dc__overflow-auto')
         expect(appGroupListContainer).toBeInTheDocument()
         expect(component.getAllByText('a')[0]).toBeInTheDocument()
         expect(component.getByText('shubham')).toBeInTheDocument()
