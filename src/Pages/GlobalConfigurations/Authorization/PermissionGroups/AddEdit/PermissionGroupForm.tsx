@@ -17,7 +17,6 @@
 import { useState, useEffect } from 'react'
 import {
     showError,
-    DeleteDialog,
     ResizableTextarea,
     CustomInput,
     useMainContext,
@@ -43,6 +42,7 @@ import {
 } from '../../Shared/components/PermissionConfigurationForm'
 import { getIsSuperAdminPermission, getRoleFilters, validateDirectPermissionForm } from '../../utils'
 import { excludeKeyAndClusterValue } from '../../Shared/components/K8sObjectPermissions/utils'
+import { DeleteUserPermission } from '../../UserPermissions/DeleteUserPermission'
 
 const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const { serverMode } = useMainContext()
@@ -139,21 +139,8 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
         }
     }
 
-    const handleDelete = async () => {
-        setSubmitting(true)
-        try {
-            await deletePermissionGroup(_permissionGroup.id)
-            ToastManager.showToast({
-                variant: ToastVariantType.success,
-                description: 'Group deleted',
-            })
-            setDeleteConfirmationModal(false)
-            _redirectToPermissionGroupList()
-        } catch (err) {
-            showError(err)
-        } finally {
-            setSubmitting(false)
-        }
+    const onDelete = async () => {
+        await deletePermissionGroup(_permissionGroup.id)
     }
 
     return (
@@ -244,15 +231,14 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
                             </span>
                         )}
                 </div>
-                {deleteConfirmationModal && (
-                    <DeleteDialog
-                        title={`Delete group '${name.value}'?`}
-                        description="Deleting this group will revoke permissions from users added to this group."
-                        closeDelete={toggleDeleteConfirmationModal}
-                        delete={handleDelete}
-                        apiCallInProgress={submitting}
-                    />
-                )}
+                <DeleteUserPermission
+                    title={name.value}
+                    onDelete={onDelete}
+                    reload={_redirectToPermissionGroupList}
+                    showConfirmationModal={deleteConfirmationModal}
+                    closeConfirmationModal={toggleDeleteConfirmationModal}
+                    isUserGroup
+                />
             </div>
         </div>
     )

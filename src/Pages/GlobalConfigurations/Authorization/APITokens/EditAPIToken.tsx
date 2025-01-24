@@ -86,7 +86,7 @@ const EditAPIToken = ({
     const [loader, setLoader] = useState(false)
 
     const [customDate, setCustomDate] = useState<number>(undefined)
-    const [deleteConfirmation, setDeleteConfirmation] = useState(false)
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
     const [invalidDescription, setInvalidDescription] = useState(false)
 
     const renderActionButton = () => (
@@ -110,7 +110,7 @@ const EditAPIToken = ({
     }
 
     const handleDeleteButton = () => {
-        setDeleteConfirmation(true)
+        setShowDeleteConfirmation(true)
     }
 
     const handleUpdatedToken = async (tokenId) => {
@@ -290,14 +290,13 @@ const EditAPIToken = ({
                 buttonText="Update token"
                 disabled={isSaveDisabled}
             />
-            {deleteConfirmation && (
-                <DeleteAPITokenModal
-                    isEditView
-                    tokenData={editData}
-                    reload={reload}
-                    setDeleteConfirmation={setDeleteConfirmation}
-                />
-            )}
+            <DeleteAPITokenModal
+                isEditView
+                tokenData={editData}
+                reload={reload}
+                showDeleteConfirmation={showDeleteConfirmation}
+                setDeleteConfirmation={setShowDeleteConfirmation}
+            />
             {showRegeneratedModal && (
                 <RegeneratedModal
                     close={handleRegenerateActionButton}

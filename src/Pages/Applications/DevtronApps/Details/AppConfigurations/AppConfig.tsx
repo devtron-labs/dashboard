@@ -15,23 +15,23 @@
  */
 
 import { useState, useEffect } from 'react'
-import { useParams, useLocation, useRouteMatch, useHistory, Link } from 'react-router-dom'
+import { useParams, useLocation, useRouteMatch, useHistory } from 'react-router-dom'
 import {
     showError,
     Progressing,
     ErrorScreenManager,
-    DeleteDialog,
-    ConfirmationDialog,
     useAsync,
     ResourceKindType,
     ToastManager,
     ToastVariantType,
     ResourceIdToResourceApprovalPolicyConfigMapType,
+    ConfirmationModal,
+    ConfirmationModalVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { DeleteComponentsName } from '@Config/constantMessaging'
 import { URLS, getAppComposeURL, APP_COMPOSE_STAGE, ViewType } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { getAppOtherEnvironmentMin, getJobOtherEnvironmentMin, getWorkflowList } from '../../../../../services/service'
-import warn from '../../../../../assets/icons/ic-warning.svg'
 import './appConfig.scss'
 import {
     AppConfigProps,
@@ -325,30 +325,27 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
         }))
     }
 
-    const redirectToWorkflowEditor = () => getAppComposeURL(appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR, isJob)
-
     const deleteAppHandler = () => {
-        deleteApp(appId)
-            .then((response) => {
-                if (response.code === 200) {
-                    if (isJob) {
-                        ToastManager.showToast({
-                            variant: ToastVariantType.success,
-                            description: 'Job Deleted!',
-                        })
-                        history.push(`${URLS.JOB}/${URLS.APP_LIST}`)
-                    } else {
-                        ToastManager.showToast({
-                            variant: ToastVariantType.success,
-                            description: 'Application Deleted!',
-                        })
-                        history.push(`${URLS.APP}/${URLS.APP_LIST}`)
-                    }
+        try {
+            const response = deleteApp(appId)
+            if (response) {
+                if (isJob) {
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Job Deleted!',
+                    })
+                    history.push(`${URLS.JOB}/${URLS.APP_LIST}`)
+                } else {
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Application Deleted!',
+                    })
+                    history.push(`${URLS.APP}/${URLS.APP_LIST}`)
                 }
-            })
-            .catch((error) => {
-                showError(error)
-            })
+            }
+        } catch (error) {
+            showError(error)
+        }
     }
 
     const respondOnSuccess = (redirection: boolean = false) => {
@@ -394,52 +391,66 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
             })
     }
 
+    const closeDeleteConfirmationModal = () => setState((prevState) => ({ ...prevState, showDeleteConfirm: false }))
+
+    const renderSubTitle = () => (
+        <>
+            <p className="fs-13 cn-7 lh-1-54">This will delete all resources associated with this application.</p>
+            <p className="fs-13 cn-7 lh-1-54">Deleted applications cannot be restored.</p>
+        </>
+    )
+
+    const onClickCloseCannotDeleteModal = () => setState((prevState) => ({ ...prevState, showDeleteConfirm: false }))
+
+    const redirectToWorkflowEditor = () => {
+        onClickCloseCannotDeleteModal()
+        history.push(getAppComposeURL(appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR, isJob))
+    }
+
     const renderDeleteDialog = () => {
-        if (state.showDeleteConfirm) {
-            return state.canDeleteApp ? (
-                <DeleteDialog
+        // Using Confirmation Dialog Modal instead of Delete Confirmation as we are evaluation this with local variable despite of error code
+        // NOTE: Automation will break here as two component were using to delete having different data-testId
+        if (!state.showDeleteConfirm) return null
+        return (
+            <>
+                <ConfirmationModal
                     title={`Delete '${appName}'?`}
-                    delete={deleteAppHandler}
-                    closeDelete={() => {
-                        setState((prevState) => ({ ...prevState, showDeleteConfirm: false }))
+                    variant={ConfirmationModalVariantType.delete}
+                    showConfirmationModal={state.canDeleteApp}
+                    subtitle={renderSubTitle()}
+                    buttonConfig={{
+                        secondaryButtonConfig: {
+                            text: 'Cancel',
+                            onClick: closeDeleteConfirmationModal,
+                        },
+                        primaryButtonConfig: {
+                            text: 'Delete',
+                            onClick: deleteAppHandler,
+                            isLoading: state.view === ViewType.LOADING,
+                        },
                     }}
-                >
-                    <DeleteDialog.Description>
-                        <p className="fs-13 cn-7 lh-1-54">
-                            This will delete all resources associated with this application.
-                        </p>
-                        <p className="fs-13 cn-7 lh-1-54">Deleted applications cannot be restored.</p>
-                    </DeleteDialog.Description>
-                </DeleteDialog>
-            ) : (
-                <ConfirmationDialog>
-                    <ConfirmationDialog.Icon src={warn} />
-                    <ConfirmationDialog.Body title={`Cannot Delete ${isJob ? 'job' : 'application'}`} />
-                    <p className="fs-13 cn-7 lh-1-54">
-                        Delete all pipelines and workflows before deleting this {isJob ? 'job' : 'application'}.
-                    </p>
-                    <ConfirmationDialog.ButtonGroup>
-                        <button
-                            type="button"
-                            className="cta cancel"
-                            onClick={() => {
-                                setState((prevState) => ({ ...prevState, showDeleteConfirm: false }))
-                            }}
-                        >
-                            Cancel
-                        </button>
-                        <Link
-                            onClick={() => setState((prevState) => ({ ...prevState, showDeleteConfirm: false }))}
-                            to={redirectToWorkflowEditor()}
-                            className="cta ml-12 dc__no-decor"
-                        >
-                            View Workflows
-                        </Link>
-                    </ConfirmationDialog.ButtonGroup>
-                </ConfirmationDialog>
-            )
-        }
-        return null
+                    handleClose={closeDeleteConfirmationModal}
+                    dataTestId="dialog" // To make compatible with previous code data-testid="dialog-delete"
+                />
+                <ConfirmationModal
+                    title={`Cannot Delete ${isJob ? DeleteComponentsName.Job : DeleteComponentsName.Application}`}
+                    variant={ConfirmationModalVariantType.warning}
+                    subtitle={`Delete all pipelines and workflows before deleting this ${isJob ? DeleteComponentsName.Job : DeleteComponentsName.Application}`}
+                    showConfirmationModal={!state.canDeleteApp}
+                    buttonConfig={{
+                        secondaryButtonConfig: {
+                            text: 'Cancel',
+                            onClick: onClickCloseCannotDeleteModal,
+                        },
+                        primaryButtonConfig: {
+                            text: 'View Workflows',
+                            onClick: redirectToWorkflowEditor,
+                        },
+                    }}
+                    handleClose={onClickCloseCannotDeleteModal}
+                />
+            </>
+        )
     }
 
     const getAdditionalParentClass = () => {

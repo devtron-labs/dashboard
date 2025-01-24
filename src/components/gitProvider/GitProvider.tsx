@@ -28,11 +28,15 @@ import {
     CustomInput,
     DEFAULT_SECRET_PLACEHOLDER,
     FeatureTitleWithInfo,
-    DeleteComponent,
     ToastVariantType,
     ToastManager,
     SelectPicker,
     ComponentSizeType,
+    ERROR_STATUS_CODE,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -55,11 +59,12 @@ import { List } from '../globalConfigurations/GlobalConfiguration'
 import { HEADER_TEXT } from '../../config'
 import './gitProvider.scss'
 import { GitHostConfigModal } from './AddGitHostConfigModal'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg'
+import { ReactComponent as Add } from '@Icons/ic-add.svg'
+import { ReactComponent as Warn } from '@Icons/ic-info-warn.svg'
+import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { DC_GIT_PROVIDER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { AuthenticationType } from '../cluster/cluster.type'
-import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
+import { ReactComponent as Info } from '@Icons/info-filled.svg'
 import { safeTrim } from '../../util/Util'
 import { TLSInputType } from './types'
 
@@ -466,7 +471,7 @@ const GitForm = ({
     })
 
     const [deleting, setDeleting] = useState(false)
-    const [confirmation, toggleConfirmation] = useState(false)
+    const [confirmation, setConfirmation] = useState(false)
 
     const isTLSInitiallyConfigured = id && enableTLSVerification
 
@@ -777,18 +782,27 @@ const GitForm = ({
         }
     }
 
-    const deletePayload = {
-        id: id || 0,
-        name: state.name.value,
-        url: state.url.value,
-        gitHostId: gitHost?.value?.value || 0,
-        authMode: state.auth.value || '',
-        active,
-        username: customState.username.value || '',
-        password: customState.password.value || '',
-        accessToken: customState.accessToken.value || '',
-        sshPrivateKey: customState.sshInput.value || '',
+    const collapseForm = () => toggleCollapse((t) => !t)
+
+    const onDelete = async () => {
+        const deletePayload = {
+            id: id || 0,
+            name: state.name.value,
+            url: state.url.value,
+            gitHostId: gitHost?.value?.value || 0,
+            authMode: state.auth.value || '',
+            active,
+            username: customState.username.value || '',
+            password: customState.password.value || '',
+            accessToken: customState.accessToken.value || '',
+            sshPrivateKey: customState.sshInput.value || '',
+        }
+        await deleteGitProvider(deletePayload)
     }
+
+    const closeConfirmationModal = () => setConfirmation(false)
+    const showConfirmationModal = () => setConfirmation(true)
+
 
     return (
         <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
@@ -936,41 +950,49 @@ const GitForm = ({
                 />
             )}
 
-            <div className="form__row form__buttons">
+            <div className="flex py-16 dc__content-space dc__border-top">
                 {id && (
-                    <button
-                        className="cta delete dc__m-auto ml-0"
-                        data-testid="delete-git-repo"
-                        type="button"
-                        onClick={() => toggleConfirmation(true)}
-                    >
-                        {deleting ? <Progressing /> : 'Delete'}
-                    </button>
+                    <Button
+                        text="Delete"
+                        variant={ButtonVariantType.secondary}
+                        style={ButtonStyleType.negative}
+                        startIcon={<Trash />}
+                        dataTestId="delete-git-repo"
+                        onClick={showConfirmationModal}
+                    />
                 )}
-                <button
-                    className="cta cancel"
-                    data-testid="add-git-account-cancel-button"
-                    type="button"
-                    onClick={(e) => toggleCollapse((t) => !t)}
-                >
-                    Cancel
-                </button>
-                <button className="cta" data-testid="add-git-account-save-button" type="submit" disabled={loading}>
-                    {loading ? <Progressing /> : id ? 'Update' : 'Save'}
-                </button>
+
+                <div className="flex right w-100 dc__gap-12">
+                    <Button
+                        text="Cancel"
+                        variant={ButtonVariantType.secondary}
+                        style={ButtonStyleType.neutral}
+                        dataTestId="add-git-account-cancel-button"
+                        onClick={collapseForm}
+                    />
+                    <Button
+                        text={id ? 'Update' : 'Save'}
+                        dataTestId="add-git-account-save-button"
+                        isLoading={loading}
+                        disabled={loading}
+                        buttonProps={{
+                            type: 'submit',
+                        }}
+                    />
+                </div>
             </div>
-            {confirmation && (
-                <DeleteComponent
-                    setDeleting={setDeleting}
-                    deleteComponent={deleteGitProvider}
-                    payload={deletePayload}
-                    title={state.name.value}
-                    toggleConfirmation={toggleConfirmation}
-                    component={DeleteComponentsName.GitProvider}
-                    confirmationDialogDescription={DC_GIT_PROVIDER_CONFIRMATION_MESSAGE}
-                    reload={reload}
-                />
-            )}
+
+            <DeleteConfirmationModal
+                title={state.name.value}
+                onDelete={onDelete}
+                component={DeleteComponentsName.GitProvider}
+                renderCannotDeleteConfirmationSubTitle={DC_GIT_PROVIDER_CONFIRMATION_MESSAGE}
+                showConfirmationModal={confirmation}
+                closeConfirmationModal={closeConfirmationModal}
+                reload={reload}
+                errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+                dataTestId="dialog" // To make compatible with previous code data-testid="dialog-delete"
+            />
         </form>
     )
 }

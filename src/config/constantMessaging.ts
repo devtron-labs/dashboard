@@ -40,17 +40,26 @@ export const DC_CONFIGURATION_CONFIRMATION_MESSAGE =
 export const DC_PROJECT_CONFIRMATION_MESSAGE = 'Please delete applications assigned to this project and try again.'
 export const GITOPS_FQDN_MESSAGE = 'This is not a Fully Qualified Domain Name (FQDN).'
 export const GITOPS_HTTP_MESSAGE = 'Http protocol is not supported.'
+export const USER_PERMISSION_DELETE_CONFIRMATION_MESSAGE =
+    'Deleting this user will remove the user and revoke all their permissions.'
+export const USER_PERMISSION_GROUP_DELETE_CONFIRMATION_MESSAGE =
+    'Deleting this group will revoke permissions from users added to this group..'
 
 export const CONTEXT_NOT_AVAILABLE_ERROR = 'cannot be rendered outside the component'
 export const GIT_MATERIAL_IN_USE_MESSAGE =
     'This repository is being used as source for Dockerfile or as Build Context. Please select another repository and try again'
+
 export const enum DeleteComponentsName {
+    API_TOKEN = 'API token',
+    Application = 'application',
     ChartGroup = 'chart group',
     ContainerRegistry = 'container registry',
     ChartRepository = 'chart repository',
     Cluster = 'cluster',
     Environment = 'environment',
     GitProvider = 'git account',
+    GROUP = 'group',
+    Job = 'job',
     MaterialView = 'git repository',
     SlackConfigurationTab = 'slack',
     SesConfigurationTab = 'ses',
@@ -58,6 +67,7 @@ export const enum DeleteComponentsName {
     WebhookConfigurationTab = 'webhook',
     Project = 'project',
     GitRepo = 'Repo',
+    USER = 'user',
 }
 
 // DELETE COMPONENT ENDS
