@@ -36,7 +36,7 @@ import './apiToken.scss'
 
 const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType) => {
     const history = useHistory()
-    const [showDeleteConfirmation, setDeleteConfirmation] = useState(false)
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
     const [selectedToken, setSelectedToken] = useState<TokenListType>()
 
     const handleGenerateRowActionButton = (key: 'create' | 'edit', id?) => {
@@ -45,7 +45,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
 
     const handleDeleteButton = (_tokenList) => {
         setSelectedToken(_tokenList)
-        setDeleteConfirmation(true)
+        setShowDeleteConfirmation(true)
     }
 
     const handleGenerateRowAction = () => {
@@ -168,7 +168,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                         tokenData={selectedToken}
                         reload={reload}
                         showDeleteConfirmation={showDeleteConfirmation}
-                        setDeleteConfirmation={setDeleteConfirmation}
+                        setDeleteConfirmation={setShowDeleteConfirmation}
                     />
                 )}
             </div>
