@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useRef } from 'react'
-import { K8ResourceComponent } from './k8Resource/K8Resource.component'
-import './appDetails.scss'
-import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component'
-import { Route, Switch, useRouteMatch, Redirect, useParams } from 'react-router-dom'
-import { URLS } from '../../../config'
-import AppDetailsStore from './appDetails.store'
-import { NodeTreeDetailTabProps, NodeType } from './appDetails.type'
-import NodeDetailComponent from './k8Resource/nodeDetail/NodeDetail.component'
-import IndexStore from './index.store'
-import NodeTreeTabList from './k8Resource/NodeTreeTabList'
+import { useState, useEffect } from 'react'
+import ReactGA from 'react-ga4'
+import { Route, Switch, useRouteMatch, Redirect, useLocation, useHistory } from 'react-router-dom'
+import { DynamicTabs, useTabs } from '@Components/common/DynamicTabs'
 import { EnvResourceType, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { DynamicTabsProps, DynamicTabsVariantType } from '@Components/common/DynamicTabs/types'
+import { ReactComponent as ICObject } from '@Icons/ic-object.svg'
+import { ReactComponent as ICLogs } from '@Icons/ic-logs.svg'
+import { K8ResourceComponent } from './k8Resource/K8Resource.component'
+import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component'
+import { URLS } from '../../../config'
+import { APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX, AppDetailsTabs, getInitialTabs } from './appDetails.store'
+import { K8ResourceComponentProps, NodeTreeDetailTabProps, NodeType } from './appDetails.type'
+import IndexStore from './index.store'
+import NodeDetailComponentWrapper from './NodeDetailComponentWrapper'
+import { getApplicationsGAEvent } from './k8Resource/utils'
+import './appDetails.scss'
 
 const NodeTreeDetailTab = ({
     appDetails,
@@ -38,132 +43,183 @@ const NodeTreeDetailTab = ({
     handleReloadResourceTree,
     isReloadResourceTreeInProgress,
 }: NodeTreeDetailTabProps) => {
-    const params = useParams<{ appId: string; envId: string; nodeType: string }>()
-    const { path, url } = useRouteMatch()
+    const { url: routeMatchUrl, path: routeMatchPath } = useRouteMatch()
+    const {
+        tabs,
+        initTabs,
+        markTabActiveById,
+        removeTabByIdentifier,
+        stopTabByIdentifier,
+        addTab,
+        getTabId,
+        updateTabUrl,
+        // NOTE: fallback to 0th index since that is the k8s_resource tab
+    } = useTabs(routeMatchUrl, APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX)
+    const location = useLocation()
+    const { push } = useHistory()
     const [clickedNodes, registerNodeClick] = useState<Map<string, string>>(new Map<string, string>())
-    const tabRef = useRef<HTMLDivElement>(null)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
+    const displayLogAnalyzer = IndexStore.getNodesByKind(NodeType.Pod).length > 0 && !isVirtualEnvironment
 
     useEffect(() => {
-        const _pods = IndexStore.getNodesByKind(NodeType.Pod)
-        const isLogAnalyserURL = window.location.href.indexOf(URLS.APP_DETAILS_LOG) > 0
-        AppDetailsStore.initAppDetailsTabs(
-            url,
-            _pods.length > 0 && !isVirtualEnvironment,
-            isLogAnalyserURL,
-            isExternalApp,
-        )
-    }, [params.appId, params.envId, isVirtualEnvironment])
+        const initialTabs = getInitialTabs(location.pathname, routeMatchUrl, displayLogAnalyzer)
 
-    const handleFocusTabs = () => {
-        if (tabRef?.current) {
-            tabRef.current.focus()
+        initTabs(initialTabs, false, !displayLogAnalyzer ? [AppDetailsTabs.log_analyzer] : null)
+
+        // NOTE: if we need to hide (remove) logAnalyzer tab but user was on this tab then we need
+        if (!displayLogAnalyzer && location.pathname.includes(URLS.APP_DETAILS_LOG)) {
+            push(initialTabs[APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX].url)
         }
+    }, [displayLogAnalyzer])
+
+    const handleMarkK8sResourceTabSelected = () => {
+        markTabActiveById(AppDetailsTabs.k8s_Resources).catch(noop)
     }
 
+    const handleUpdateK8sResourceTabUrl: K8ResourceComponentProps['handleUpdateK8sResourceTabUrl'] = (props) => {
+        updateTabUrl({ id: AppDetailsTabs.k8s_Resources, ...props })
+    }
+
+    const handleMarkLogAnalyzerTabSelected = () => {
+        markTabActiveById(AppDetailsTabs.log_analyzer).catch(noop)
+    }
+
+    const handleReloadK8sResourceTab = () => {
+        handleReloadResourceTree()
+        ReactGA.event({
+            category: getApplicationsGAEvent(appDetails.appType),
+            action: getApplicationsGAEvent(appDetails.appType),
+        })
+    }
+
+    // NOTE: don't render any of the components before tabs are initialized
+    // this is cuz, the components mark their own corresponding tabs as the selected tabs on mount
     return (
-        <>
-            {appDetails?.resourceTree?.nodes?.length > 0 && (
-                <>
-                    <NodeTreeTabList
-                        logSearchTerms={logSearchTerms}
-                        setLogSearchTerms={setLogSearchTerms}
-                        tabRef={tabRef}
-                        appType={appDetails.appType}
-                        isExternalApp={isExternalApp}
-                        handleReloadResourceTree={handleReloadResourceTree}
-                        isReloadResourceTreeInProgress={isReloadResourceTreeInProgress}
+        appDetails?.resourceTree?.nodes?.length > 0 &&
+        tabs.length && (
+            <>
+                <div className="dc__position-sticky dc__left-0 bg__primary dc__top-0 pt-7 dc__zi-10">
+                    <DynamicTabs
+                        variant={DynamicTabsVariantType.ROUNDED}
+                        markTabActiveById={markTabActiveById}
+                        removeTabByIdentifier={removeTabByIdentifier}
+                        stopTabByIdentifier={stopTabByIdentifier}
+                        tabs={tabs}
+                        timerConfig={tabs.reduce(
+                            (acc, tab) => {
+                                if (tab.id === AppDetailsTabs.k8s_Resources) {
+                                    acc[tab.id] = {
+                                        isLoading: isReloadResourceTreeInProgress,
+                                        reload: handleReloadK8sResourceTab,
+                                    }
+                                }
+
+                                return acc
+                            },
+                            {} as DynamicTabsProps['timerConfig'],
+                        )}
+                        iconsConfig={{
+                            [AppDetailsTabs.k8s_Resources]: <ICObject className="fcn-7" />,
+                            [AppDetailsTabs.log_analyzer]: <ICLogs className="fcn-7" />,
+                        }}
                     />
+                </div>
+                <div className="node-tree-detail-tab__content flexbox-col w-100 dc__no-shrink">
                     <Switch>
                         <Route
                             path={[
-                                `${path}/${URLS.APP_DETAILS_K8}/:nodeType/${URLS.APP_DIFF_VIEW}/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`,
-                                `${path}/${URLS.APP_DETAILS_K8}/:nodeType/group/:resourceName`,
+                                `${routeMatchPath}/${URLS.APP_DETAILS_K8}/:nodeType/${URLS.APP_DIFF_VIEW}/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`,
+                                `${routeMatchPath}/${URLS.APP_DETAILS_K8}/:nodeType/group/:resourceName`,
                             ]}
-                            render={() => {
-                                return (
-                                    <K8ResourceComponent
-                                        clickedNodes={clickedNodes}
-                                        registerNodeClick={registerNodeClick}
-                                        handleFocusTabs={handleFocusTabs}
-                                        externalLinks={externalLinks}
-                                        monitoringTools={monitoringTools}
-                                        isDevtronApp={isDevtronApp}
-                                        isDeploymentBlocked={isDeploymentBlocked}
-                                        clusterId={appDetails.clusterId}
-                                        isExternalApp={isExternalApp}
-                                    />
-                                )
-                            }}
+                            render={() => (
+                                <K8ResourceComponent
+                                    clickedNodes={clickedNodes}
+                                    registerNodeClick={registerNodeClick}
+                                    externalLinks={externalLinks}
+                                    monitoringTools={monitoringTools}
+                                    isDevtronApp={isDevtronApp}
+                                    isDeploymentBlocked={isDeploymentBlocked}
+                                    clusterId={appDetails.clusterId}
+                                    addTab={addTab}
+                                    handleMarkK8sResourceTabSelected={handleMarkK8sResourceTabSelected}
+                                    tabs={tabs}
+                                    removeTabByIdentifier={removeTabByIdentifier}
+                                    handleUpdateK8sResourceTabUrl={handleUpdateK8sResourceTabUrl}
+                                />
+                            )}
                         />
                         <Route
-                            path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType/:podName`}
-                            render={() => {
-                                return (
-                                    <NodeDetailComponent
-                                        logSearchTerms={logSearchTerms}
-                                        setLogSearchTerms={setLogSearchTerms}
-                                        isExternalApp={isExternalApp}
-                                        lowercaseKindToResourceGroupMap={{}}
-                                        updateTabUrl={noop}
-                                    />
-                                )
-                            }}
+                            path={`${routeMatchPath}/${URLS.APP_DETAILS_K8}/:nodeType/:podName`}
+                            render={() => (
+                                <NodeDetailComponentWrapper
+                                    addTab={addTab}
+                                    getTabId={getTabId}
+                                    markTabActiveById={markTabActiveById}
+                                    // NOTE: Node detail component requires updateTabUrl to retain sub tab selection (manifest, events, ..etc)
+                                    updateTabUrl={updateTabUrl}
+                                    nodeDetailComponentProps={{
+                                        logSearchTerms,
+                                        setLogSearchTerms,
+                                        isExternalApp,
+                                        lowercaseKindToResourceGroupMap: {},
+                                    }}
+                                />
+                            )}
                         />
                         <Route
-                            path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType`}
-                            render={() => {
-                                return (
-                                    <K8ResourceComponent
-                                        clickedNodes={clickedNodes}
-                                        registerNodeClick={registerNodeClick}
-                                        handleFocusTabs={handleFocusTabs}
-                                        externalLinks={externalLinks}
-                                        monitoringTools={monitoringTools}
-                                        isDevtronApp={isDevtronApp}
-                                        clusterId={appDetails.clusterId}
-                                        isDeploymentBlocked={isDeploymentBlocked}
-                                        isExternalApp={isExternalApp}
-                                    />
-                                )
-                            }}
+                            path={`${routeMatchPath}/${URLS.APP_DETAILS_K8}/:nodeType`}
+                            render={() => (
+                                <K8ResourceComponent
+                                    clickedNodes={clickedNodes}
+                                    registerNodeClick={registerNodeClick}
+                                    externalLinks={externalLinks}
+                                    monitoringTools={monitoringTools}
+                                    isDevtronApp={isDevtronApp}
+                                    clusterId={appDetails.clusterId}
+                                    isDeploymentBlocked={isDeploymentBlocked}
+                                    addTab={addTab}
+                                    handleMarkK8sResourceTabSelected={handleMarkK8sResourceTabSelected}
+                                    tabs={tabs}
+                                    removeTabByIdentifier={removeTabByIdentifier}
+                                    handleUpdateK8sResourceTabUrl={handleUpdateK8sResourceTabUrl}
+                                />
+                            )}
                         />
                         <Route
-                            path={`${path}/${URLS.APP_DETAILS_K8}`}
-                            render={() => {
-                                return (
-                                    <K8ResourceComponent
-                                        clickedNodes={clickedNodes}
-                                        registerNodeClick={registerNodeClick}
-                                        handleFocusTabs={handleFocusTabs}
-                                        externalLinks={externalLinks}
-                                        monitoringTools={monitoringTools}
-                                        isDevtronApp={isDevtronApp}
-                                        isDeploymentBlocked={isDeploymentBlocked}
-                                        clusterId={appDetails.clusterId}
-                                        isExternalApp={isExternalApp}
-                                    />
-                                )
-                            }}
+                            path={`${routeMatchPath}/${URLS.APP_DETAILS_K8}`}
+                            render={() => (
+                                <K8ResourceComponent
+                                    clickedNodes={clickedNodes}
+                                    registerNodeClick={registerNodeClick}
+                                    externalLinks={externalLinks}
+                                    monitoringTools={monitoringTools}
+                                    isDevtronApp={isDevtronApp}
+                                    isDeploymentBlocked={isDeploymentBlocked}
+                                    clusterId={appDetails.clusterId}
+                                    addTab={addTab}
+                                    handleMarkK8sResourceTabSelected={handleMarkK8sResourceTabSelected}
+                                    tabs={tabs}
+                                    removeTabByIdentifier={removeTabByIdentifier}
+                                    handleUpdateK8sResourceTabUrl={handleUpdateK8sResourceTabUrl}
+                                />
+                            )}
                         />
                         <Route
                             exact
-                            path={`${path}/${URLS.APP_DETAILS_LOG}`}
-                            render={() => {
-                                return (
-                                    <LogAnalyzerComponent
-                                        logSearchTerms={logSearchTerms}
-                                        setLogSearchTerms={setLogSearchTerms}
-                                        isExternalApp={isExternalApp}
-                                    />
-                                )
-                            }}
+                            path={`${routeMatchPath}/${URLS.APP_DETAILS_LOG}`}
+                            render={() => (
+                                <LogAnalyzerComponent
+                                    logSearchTerms={logSearchTerms}
+                                    setLogSearchTerms={setLogSearchTerms}
+                                    handleMarkLogAnalyzerTabSelected={handleMarkLogAnalyzerTabSelected}
+                                />
+                            )}
                         />
-                        <Redirect to={`${path}/${URLS.APP_DETAILS_K8}`} />
+                        <Redirect to={`${routeMatchPath}/${URLS.APP_DETAILS_K8}`} />
                     </Switch>
-                </>
-            )}
-        </>
+                </div>
+            </>
+        )
     )
 }
 

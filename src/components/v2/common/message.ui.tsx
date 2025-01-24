@@ -36,14 +36,12 @@ export interface MsgUIProps {
     icon?: MsgUIType
     theme?: 'white' | 'dark' | 'light-gray'
     iconClassName?: string
-    bodyStyle?: any
-    msgStyle?: any
     actionButtonStyle?: any
     size: number
     isShowActionButton?: boolean
     actionButtonText?: string
+    centerMessage?: boolean
     onActionButtonClick?: () => void
-    minHeight?: string
 }
 
 const MessageUI: React.FC<MsgUIProps> = ({
@@ -52,20 +50,18 @@ const MessageUI: React.FC<MsgUIProps> = ({
     icon,
     theme,
     iconClassName,
-    bodyStyle,
-    msgStyle,
     actionButtonStyle,
     size = 24,
     isShowActionButton,
     actionButtonText,
     onActionButtonClick,
-    minHeight,
-}: MsgUIProps) => {
-    return (
-        <div
-            data-testid={dataTestId}
-            className={`dc__text-center w-100 h-100 flexbox-col dc__content-center ${theme || 'dark'}-background`}
-        >
+    centerMessage = false,
+}: MsgUIProps) => (
+    <div
+        data-testid={dataTestId}
+        className={`dc__text-center w-100 h-100 ${theme || 'dark'}-background ${centerMessage ? 'flex' : ''}`}
+    >
+        <div className="flex column" style={!centerMessage ? { paddingTop: '200px' } : {}}>
             <div>
                 {(() => {
                     switch (icon) {
@@ -89,11 +85,17 @@ const MessageUI: React.FC<MsgUIProps> = ({
                         case MsgUIType.INFO:
                             return <FilledInfoIcon className={iconClassName || ''} width={size} height={size} />
                         default:
-                            return <InfoIcon className={`icon-fill__white ${iconClassName || ''}`} width={size} height={size} />
+                            return (
+                                <InfoIcon
+                                    className={`icon-fill__white ${iconClassName || ''}`}
+                                    width={size}
+                                    height={size}
+                                />
+                            )
                     }
                 })()}
             </div>
-            <div className="fs-14 text__white">{msg}</div>
+            <div className={`fs-14 ${!theme ? 'text__white' : ''}`}>{msg}</div>
             {isShowActionButton && (
                 <div
                     className="cursor dc__underline fs-14 cb-3"
@@ -106,7 +108,7 @@ const MessageUI: React.FC<MsgUIProps> = ({
                 </div>
             )}
         </div>
-    )
-}
+    </div>
+)
 
 export default MessageUI
