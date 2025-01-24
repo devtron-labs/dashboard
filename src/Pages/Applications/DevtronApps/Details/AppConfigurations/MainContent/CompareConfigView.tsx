@@ -18,7 +18,6 @@ const CompareConfigView = ({
     selectedChartVersion,
     draftChartVersion,
     isDeleteOverrideView,
-    editorKey = `${compareFromSelectedOptionValue || 'compare'}-draft-editor-key`,
     className = '',
     errorInfo,
     handleErrorReload,
@@ -56,7 +55,6 @@ const CompareConfigView = ({
         ) : (
             <div className="p-16">
                 <DeploymentHistoryDiffView
-                    key={editorKey}
                     currentConfiguration={getCompareViewHistoryDiffConfigProps(
                         publishedEditorTemplate,
                         publishedEditorConfig,

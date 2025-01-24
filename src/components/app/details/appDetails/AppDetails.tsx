@@ -205,7 +205,7 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
     }, [envList, params.envId])
 
     return (
-        <div data-testid="app-details-wrapper" className="app-details-page-wrapper">
+        <div data-testid="app-details-wrapper" className="app-details-page-wrapper mw-none">
             {!params.envId && envList.length > 0 && (
                 <div className="w-100 pt-16 pr-20 pb-20 pl-20">
                     <SourceInfo

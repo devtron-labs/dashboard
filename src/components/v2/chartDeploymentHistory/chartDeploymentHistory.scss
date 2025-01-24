@@ -16,7 +16,7 @@
 
 .ci-details__history.deployment-cards {
     grid-template-rows: 30px 1fr !important;
-    flex-basis: 305px;
+    flex: 0 0 305px;
 }
 
 .ci-details__build-card {
