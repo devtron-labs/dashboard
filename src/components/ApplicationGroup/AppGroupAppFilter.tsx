@@ -16,6 +16,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import ReactSelect, { SelectInstance } from 'react-select'
+import ReactGA from 'react-ga4'
 import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
 import { appGroupAppSelectorStyle } from './AppGroup.utils'
 import { AppGroupAppFilterContextType, FilterParentType } from './AppGroup.types'
@@ -52,7 +53,15 @@ export default function AppGroupAppFilter() {
         setSelectedFilterTab(_filterTab)
     }
 
+    const handleFilterGAEvent = (isItemClick?: boolean) => {
+        ReactGA.event({
+            category: 'Group filter',
+            action: `${filterParentType} filter ${isItemClick ? 'item' : ''} clicked`,
+        })
+    }
+
     const handleOpenFilter = (): void => {
+        handleFilterGAEvent()
         selectDefaultFilterTab()
         setMenuOpen(true)
     }
@@ -86,6 +95,7 @@ export default function AppGroupAppFilter() {
     }
 
     const onChangeFilter = (selectedValue): void => {
+        handleFilterGAEvent(true)
         if (selectedFilterTab === AppFilterTabs.APP_FILTER) {
             setSelectedAppList(selectedValue)
             setSelectedGroupFilter([])
@@ -119,6 +129,7 @@ export default function AppGroupAppFilter() {
     }
 
     const handleFilterFocus = () => {
+        handleFilterGAEvent()
         appGroupFilterRef.current.focus()
         appGroupFilterRef.current.onMenuOpen()
     }

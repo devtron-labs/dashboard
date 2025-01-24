@@ -332,6 +332,17 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         getPermissionCheck({ resourceIds: selectedGroupId.appIds, groupType: FilterParentType.app }, false, true)
     }
 
+    const clearEnvListSelection = () => {
+        setSelectedAppList([])
+        setGroupFilterOptions([])
+        setAppGroupFilterInLocalStorage({
+            filterParentType: FilterParentType.app,
+            resourceId: appId,
+            resourceList: [],
+            groupList: [],
+        })
+    }
+
     if (appListLoading || initLoading) {
         return <Progressing pageLoader />
     }
@@ -389,7 +400,12 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                         ) : (
                             <Route
                                 path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`}
-                                render={(props) => <AppDetails filteredEnvIds={_filteredEnvIds} />}
+                                render={(props) => (
+                                    <AppDetails
+                                        selectedEnvList={selectedAppList}
+                                        clearEnvListSelection={clearEnvListSelection}
+                                    />
+                                )}
                             />
                         )}
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
@@ -405,7 +421,11 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                             render={(props) => <TriggerView filteredEnvIds={_filteredEnvIds} />}
                         />
                         <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
-                            <CIDetails key={appId} filteredEnvIds={_filteredEnvIds} />
+                            <CIDetails
+                                key={appId}
+                                filteredEnvIds={_filteredEnvIds}
+                                clearEnvListSelection={clearEnvListSelection}
+                            />
                         </Route>
                         <Route
                             path={`${path}/${URLS.APP_DEPLOYMENT_METRICS}/:envId(\\d+)?`}
@@ -416,7 +436,11 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                         <Route
                             path={`${path}/${URLS.APP_CD_DETAILS}/:envId(\\d+)?/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
                         >
-                            <CDDetails key={appId} filteredEnvIds={_filteredEnvIds} />
+                            <CDDetails
+                                key={appId}
+                                filteredEnvIds={_filteredEnvIds}
+                                clearEnvListSelection={clearEnvListSelection}
+                            />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CONFIG}`}>
                             <AppConfig

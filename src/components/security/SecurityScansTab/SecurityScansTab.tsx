@@ -334,7 +334,7 @@ export const SecurityScansTab = () => {
             <>
                 {securityScansResult.result.securityScans.map((scan) => (
                     <div
-                        className="table__row table__row-grid display-grid fs-13 dc__gap-16 px-20 w-100-imp py-12 dc__align-items-center dc__hover-n50"
+                        className="table__row table__row-grid display-grid bg__primary fs-13 dc__gap-16 px-20 w-100-imp py-12 dc__align-items-center dc__hover-n50"
                         onClick={(event) => handleOpenScanDetailsModal(event, scan)}
                         key={`${scan.name}-${scan.environment}`}
                         role="button"
@@ -355,7 +355,7 @@ export const SecurityScansTab = () => {
                 ))}
                 {securityScansResult.result.totalCount > DEFAULT_BASE_PAGE_SIZE && (
                     <Pagination
-                        rootClassName="flex dc__content-space px-20 dc__border-top"
+                        rootClassName="flex dc__content-space px-20 dc__border-top bg__primary"
                         size={securityScansResult.result.totalCount}
                         pageSize={pageSize}
                         offset={offset}

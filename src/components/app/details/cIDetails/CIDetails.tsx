@@ -54,7 +54,7 @@ import {
     getArtifactForJobCi,
 } from '../../service'
 import { URLS, Routes } from '../../../../config'
-import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
+import { BuildDetails, CIDetailsProps, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
 import { ImageNotScannedView, CIRunningView } from './cIDetails.util'
 import './ciDetails.scss'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
@@ -69,7 +69,11 @@ const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar'
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 const statusSet = new Set(['starting', 'running', 'pending'])
 
-export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: boolean; filteredEnvIds?: string }) {
+export default function CIDetails({
+    isJobView,
+    filteredEnvIds,
+    clearEnvListSelection,
+}: CIDetailsProps) {
     const { appId, pipelineId, buildId } = useParams<{
         appId: string
         pipelineId: string
@@ -100,6 +104,7 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
             ]),
         [appId, filteredEnvIds],
     )
+
     const [loading, triggerHistoryResult, , , , dependencyState] = useAsync(
         () => getTriggerHistory(+pipelineId, pagination),
         [pipelineId, pagination],
@@ -206,10 +211,15 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
     ) // external and LINKED_CD pipelines not visible in dropdown
     const selectedPipelineExist = !pipelineId || pipelines.find((pipeline) => pipeline.id === +pipelineId)
 
-    if (!pipelines.length && pipelineId) {
+    if ((!pipelines.length || !selectedPipelineExist) && filteredEnvIds) {
+        clearEnvListSelection()
+    } else if (!pipelines.length && pipelineId && !filteredEnvIds) {
         // reason is un-required params like logs were leaking
         replace(generatePath(path, { appId }))
-    } else if ((pipelines.length === 1 && !pipelineId) || (!selectedPipelineExist && pipelines.length)) {
+    } else if (
+        (pipelines.length === 1 && !pipelineId) ||
+        (!selectedPipelineExist && pipelines.length && !filteredEnvIds)
+    ) {
         replace(generatePath(path, { appId, pipelineId: pipelines[0].id }))
     }
     const pipelineOptions: CICDSidebarFilterOptionType[] = (pipelines || []).map((item) => {

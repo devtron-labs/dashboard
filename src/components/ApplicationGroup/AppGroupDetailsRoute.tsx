@@ -425,6 +425,17 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         return _appListData
     }, [selectedAppList, appGroupListData?.apps, appGroupListData?.description])
 
+    const clearAppListSelection = () => {
+        setSelectedAppList([])
+        setSelectedGroupFilter([])
+        setAppGroupFilterInLocalStorage({
+            filterParentType: FilterParentType.env,
+            resourceId: envId,
+            resourceList: [],
+            groupList: [],
+        })
+    }
+
     const renderRoute = () => {
         if (initLoading || loading || appListLoading) {
             return <Progressing pageLoader />
@@ -454,15 +465,25 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                             <EnvTriggerView filteredAppIds={_filteredAppsIds} isVirtualEnv={isVirtualEnv} />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
-                            <EnvCIDetails filteredAppIds={_filteredAppsIds} />
+                            <EnvCIDetails
+                                filteredAppIds={_filteredAppsIds}
+                                clearAppListSelection={clearAppListSelection}
+                            />
                         </Route>
                         <Route
                             path={`${path}/${URLS.APP_CD_DETAILS}/:appId(\\d+)?/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
                         >
-                            <EnvCDDetails filteredAppIds={_filteredAppsIds} />
+                            <EnvCDDetails
+                                filteredAppIds={_filteredAppsIds}
+                                clearAppListSelection={clearAppListSelection}
+                            />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CONFIG}/:appId(\\d+)?`}>
-                            <EnvConfig filteredAppIds={_filteredAppsIds} envName={envName} />
+                            <EnvConfig
+                                filteredAppIds={_filteredAppsIds}
+                                envName={envName}
+                                clearAppListSelection={clearAppListSelection}
+                            />
                         </Route>
                         <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />
                     </Switch>
