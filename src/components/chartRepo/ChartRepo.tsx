@@ -33,6 +33,7 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     ERROR_STATUS_CODE,
+    DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { NavLink } from 'react-router-dom'
@@ -40,7 +41,6 @@ import { ReactComponent as Add } from '@Icons/ic-add.svg'
 import { ReactComponent as Helm } from '@Icons/ic-helmchart.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
-import { DeleteConfirmationModal } from '@Config/DeleteConfigurationModal'
 
 import { useForm } from '../common'
 import { List, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'

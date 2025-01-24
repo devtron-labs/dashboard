@@ -1,6 +1,5 @@
 import { DeleteComponentsName, DC_ENVIRONMENT_CONFIRMATION_MESSAGE } from '@Config/constantMessaging'
-import { DeleteConfirmationModal } from '@Config/DeleteConfigurationModal'
-import { ERROR_STATUS_CODE } from '@devtron-labs/devtron-fe-common-lib'
+import { DeleteConfirmationModal, ERROR_STATUS_CODE } from '@devtron-labs/devtron-fe-common-lib'
 import { EnvironmentDeleteComponentProps } from './ClusterEnvironmentDrawer/types'
 
 export const EnvironmentDeleteComponent = ({

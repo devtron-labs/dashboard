@@ -36,6 +36,7 @@ import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
+    DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -66,7 +67,6 @@ import { AuthenticationType } from '../cluster/cluster.type'
 import { ReactComponent as Info } from '@Icons/info-filled.svg'
 import { safeTrim } from '../../util/Util'
 import { TLSInputType } from './types'
-import { DeleteConfirmationModal } from '@Config/DeleteConfigurationModal'
 
 export default function GitProvider({ ...props }) {
     const [, , error] = useAsync(getGitProviderList, [], props.isSuperAdmin)

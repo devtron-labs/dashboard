@@ -49,6 +49,7 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ERROR_STATUS_CODE,
+    DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import CreatableSelect from 'react-select/creatable'
@@ -97,7 +98,6 @@ import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/Validate
 import { ReactComponent as ErrorInfo } from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { creatableSelectStyles } from './creatableStyles'
-import { DeleteConfirmationModal } from '@Config/DeleteConfigurationModal'
 
 const RegistryHelmPushCheckbox = importComponentFromFELibrary('RegistryHelmPushCheckbox')
 const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio')

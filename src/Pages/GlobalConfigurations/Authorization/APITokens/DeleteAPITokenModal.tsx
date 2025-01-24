@@ -15,9 +15,9 @@
  */
 
 import { useRouteMatch } from 'react-router-dom'
-import { DeleteConfirmationModal } from '@Config/DeleteConfigurationModal'
 import { DeleteComponentsName } from '@Config/constantMessaging'
 import React from 'react'
+import { DeleteConfirmationModal } from '@devtron-labs/devtron-fe-common-lib'
 import { deleteGeneratedAPIToken } from './service'
 
 const DeleteAPITokenModal = ({

@@ -27,10 +27,10 @@ import {
     ButtonStyleType,
     ComponentSizeType,
     ERROR_STATUS_CODE,
+    DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ProjectProps, ProjectState } from './types'
 import { DC_PROJECT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '@Config/constantMessaging'
-import { DeleteConfirmationModal } from '@Config/DeleteConfigurationModal'
 
 export class Project extends Component<ProjectProps, ProjectState> {
     constructor(props) {

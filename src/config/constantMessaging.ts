@@ -48,13 +48,18 @@ export const USER_PERMISSION_GROUP_DELETE_CONFIRMATION_MESSAGE =
 export const CONTEXT_NOT_AVAILABLE_ERROR = 'cannot be rendered outside the component'
 export const GIT_MATERIAL_IN_USE_MESSAGE =
     'This repository is being used as source for Dockerfile or as Build Context. Please select another repository and try again'
+
 export const enum DeleteComponentsName {
+    API_TOKEN = 'API token',
+    Application = 'application',
     ChartGroup = 'chart group',
     ContainerRegistry = 'container registry',
     ChartRepository = 'chart repository',
     Cluster = 'cluster',
     Environment = 'environment',
     GitProvider = 'git account',
+    GROUP = 'group',
+    Job = 'job',
     MaterialView = 'git repository',
     SlackConfigurationTab = 'slack',
     SesConfigurationTab = 'ses',
@@ -63,8 +68,6 @@ export const enum DeleteComponentsName {
     Project = 'project',
     GitRepo = 'Repo',
     USER = 'user',
-    GROUP = 'group',
-    API_TOKEN = 'API token',
 }
 
 // DELETE COMPONENT ENDS
