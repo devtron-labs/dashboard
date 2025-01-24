@@ -25,6 +25,7 @@ import {
     CIMaterialType,
     SourceTypeMap,
     DEPLOYMENT_STATUS,
+    WorkflowStatusEnum,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getParsedBranchValuesForPlugin } from '@Components/common'
 import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED, URLS } from '../../config'
@@ -55,7 +56,12 @@ export const processWorkflowStatuses = (
                 status: pipeline.ciStatus,
                 storageConfigured: pipeline.storageConfigured || false,
             }
-            if (!cicdInProgress && (pipeline.ciStatus === 'Starting' || pipeline.ciStatus === 'Running')) {
+            if (
+                !cicdInProgress &&
+                (pipeline.ciStatus === WorkflowStatusEnum.STARTING ||
+                    pipeline.ciStatus === WorkflowStatusEnum.RUNNING ||
+                    pipeline.ciStatus === WorkflowStatusEnum.WAITING_TO_START)
+            ) {
                 cicdInProgress = true
             }
         })
@@ -73,11 +79,13 @@ export const processWorkflowStatuses = (
             }
             if (
                 !cicdInProgress &&
-                (pipeline.pre_status === 'Starting' ||
-                    pipeline.pre_status === 'Running' ||
-                    pipeline.deploy_status === 'Progressing' ||
-                    pipeline.post_status === 'Starting' ||
-                    pipeline.post_status === 'Running')
+                (pipeline.pre_status === WorkflowStatusEnum.STARTING ||
+                    pipeline.pre_status === WorkflowStatusEnum.RUNNING ||
+                    pipeline.pre_status === WorkflowStatusEnum.WAITING_TO_START ||
+                    pipeline.deploy_status === WorkflowStatusEnum.PROGRESSING ||
+                    pipeline.post_status === WorkflowStatusEnum.STARTING ||
+                    pipeline.post_status === WorkflowStatusEnum.RUNNING ||
+                    pipeline.post_status === WorkflowStatusEnum.WAITING_TO_START)
             ) {
                 cicdInProgress = true
             }
@@ -322,8 +330,8 @@ export const getAppGroupDeploymentHistoryLink = (
     }
     if (redirectToAppGroup) {
         // It will redirect to application group deployment history in case of same environment
-        return `${URLS.APPLICATION_GROUP}/${envId}/${URLS.APP_CD_DETAILS}/${appId}/${pipelineId}${type ?`?type=${type}` : ''}`
+        return `${URLS.APPLICATION_GROUP}/${envId}/${URLS.APP_CD_DETAILS}/${appId}/${pipelineId}${type ? `?type=${type}` : ''}`
         // It will redirect to application deployment history in case of other environments
     }
-    return `${URLS.APP}/${appId}/${URLS.APP_CD_DETAILS}/${envId}/${pipelineId}${type ?`?type=${type}` : ''}`
+    return `${URLS.APP}/${appId}/${URLS.APP_CD_DETAILS}/${envId}/${pipelineId}${type ? `?type=${type}` : ''}`
 }

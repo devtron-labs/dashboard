@@ -33,6 +33,7 @@ import {
     ToastManager,
     SelectPicker,
     ComponentSizeType,
+    renderMaterialIcon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -46,7 +47,6 @@ import {
     handleOnBlur,
     handleOnFocus,
     parsePassword,
-    renderMaterialIcon,
     TLSConnectionForm,
 } from '@Components/common'
 import { getGitHostList, getGitProviderList } from '../../services/service'

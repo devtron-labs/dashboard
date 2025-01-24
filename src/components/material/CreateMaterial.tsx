@@ -15,11 +15,10 @@
  */
 
 import { Component } from 'react'
-import { showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, ToastManager, ToastVariantType, isAWSCodeCommitURL } from '@devtron-labs/devtron-fe-common-lib'
 import { createMaterial } from './material.service'
 import { MaterialView } from './MaterialView'
 import { CreateMaterialState } from './material.types'
-import { isAWSCodeCommitURL } from '../common'
 
 interface CreateMaterialProps {
     appId: number

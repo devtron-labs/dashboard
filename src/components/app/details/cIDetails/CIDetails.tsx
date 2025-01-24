@@ -440,10 +440,12 @@ export const Details = ({
                         podStatus={triggerDetails.podStatus}
                         stage={triggerDetails.stage}
                         artifact={triggerDetails.artifact}
+                        namespace={triggerDetails.namespace}
                         environmentName={triggerDetails.environmentName}
                         isJobView={isJobView}
                         workerPodName={triggerDetails.podName}
                         renderDeploymentHistoryTriggerMetaText={renderDeploymentHistoryTriggerMetaText}
+                        workflowExecutionStages={triggerDetails.workflowExecutionStages}
                     />
                     <div className="dc__border-bottom pl-50 pr-20 dc__position-sticky dc__top-0 bg__primary dc__zi-3">
                         <TabGroup
@@ -661,7 +663,7 @@ const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) =
         return <CIRunningView isSecurityTab />
     }
 
-    if (!artifactId || ['failed', 'cancelled'].includes(status.toLowerCase())) {
+    if (!artifactId) {
         return (
             <GenericEmptyState
                 title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
