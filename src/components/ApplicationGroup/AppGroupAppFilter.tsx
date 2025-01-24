@@ -129,9 +129,9 @@ export default function AppGroupAppFilter() {
     }
 
     const handleFilterFocus = () => {
+        handleFilterGAEvent()
         appGroupFilterRef.current.focus()
         appGroupFilterRef.current.onMenuOpen()
-        handleFilterGAEvent(true)
     }
 
     useEffect(() => {
