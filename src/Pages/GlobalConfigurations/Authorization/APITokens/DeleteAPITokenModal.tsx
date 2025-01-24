@@ -16,9 +16,9 @@
 
 import { useRouteMatch } from 'react-router-dom'
 import { DeleteComponentsName } from '@Config/constantMessaging'
-import React from 'react'
 import { DeleteConfirmationModal } from '@devtron-labs/devtron-fe-common-lib'
 import { deleteGeneratedAPIToken } from './service'
+import { DeleteAPITokenModalProps } from './apiToken.type'
 
 const DeleteAPITokenModal = ({
     isEditView,
@@ -26,17 +26,11 @@ const DeleteAPITokenModal = ({
     reload,
     showDeleteConfirmation,
     setDeleteConfirmation,
-}: {
-    tokenData
-    reload: () => void
-    showDeleteConfirmation: boolean
-    setDeleteConfirmation: React.Dispatch<React.SetStateAction<boolean>>
-    isEditView?: boolean
-}) => {
+}: DeleteAPITokenModalProps) => {
     const match = useRouteMatch()
 
     const onDelete = async () => {
-        await deleteGeneratedAPIToken(tokenData.id)
+        await deleteGeneratedAPIToken(tokenData.id.toString())
     }
 
     const renderDescriptionContent = () => (
