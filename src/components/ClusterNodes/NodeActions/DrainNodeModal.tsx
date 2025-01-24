@@ -24,6 +24,7 @@ import {
     CHECKBOX_VALUE,
     ToastVariantType,
     ToastManager,
+    drainNodeCapacity,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import DrainIcon from '../../../assets/icons/ic-clean-brush-medium.svg'
@@ -31,7 +32,6 @@ import { ReactComponent as QuestionIcon } from '../../v2/assets/icons/ic-questio
 import { ReactComponent as TimerIcon } from '../../../assets/icons/ic-timer.svg'
 import { DRAIN_NODE_MODAL_MESSAGING } from '../constants'
 import { NodeActionModalPropType } from '../types'
-import { drainNodeCapacity } from '../clusterNodes.service'
 
 export default function DrainNodeModal({ name, version, kind, closePopup }: NodeActionModalPropType) {
     const { clusterId } = useParams<{ clusterId: string }>()

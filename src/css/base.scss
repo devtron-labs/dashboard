@@ -2118,6 +2118,11 @@ button.anchor {
     &--white {
         border: 1px solid var(--white);
     }
+
+    &--left {
+        border: none;
+        border-left: 1px solid var(--N200);
+    }
 }
 
 .dc__border-dashed {

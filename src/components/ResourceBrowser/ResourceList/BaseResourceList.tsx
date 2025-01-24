@@ -292,16 +292,8 @@ const BaseResourceListContent = ({
         }
     }
 
-    const handleCloseRBBulkOperationsModal = () => {
-        setBulkOperationModalState('closed')
-    }
-
-    const handleOpenRestartBulkOperationsModal = () => {
-        setBulkOperationModalState('restart')
-    }
-
-    const handleOpenDeleteBulkOperationsModal = () => {
-        setBulkOperationModalState('delete')
+    const getBulkOperationsModalStateSetter = (option: BulkOperationsModalState) => () => {
+        setBulkOperationModalState(option)
     }
 
     const handleClearBulkSelection = () => {
@@ -668,19 +660,23 @@ const BaseResourceListContent = ({
                                     : getSelectedIdentifiersCount()
                             }
                             handleClearBulkSelection={handleClearBulkSelection}
-                            handleOpenBulkDeleteModal={handleOpenDeleteBulkOperationsModal}
-                            handleOpenRestartWorkloadModal={handleOpenRestartBulkOperationsModal}
+                            handleOpenBulkDeleteModal={getBulkOperationsModalStateSetter('delete')}
+                            handleOpenRestartWorkloadModal={getBulkOperationsModalStateSetter('restart')}
                             showBulkRestartOption={
                                 window._env_.FEATURE_BULK_RESTART_WORKLOADS_FROM_RB.split(',')
                                     .map((feat: string) => feat.trim().toUpperCase())
                                     .indexOf(selectedResource.gvk.Kind.toUpperCase()) > -1
                             }
+                            showNodeListingOptions={isNodeListing}
+                            handleOpenCordonNodeModal={getBulkOperationsModalStateSetter('cordon')}
+                            handleOpenUncordonNodeModal={getBulkOperationsModalStateSetter('uncordon')}
+                            handleOpenDrainNodeModal={getBulkOperationsModalStateSetter('drain')}
                         />
                     )}
 
                     {RBBulkOperations && bulkOperationModalState !== 'closed' && (
                         <RBBulkOperations
-                            handleModalClose={handleCloseRBBulkOperationsModal}
+                            handleModalClose={getBulkOperationsModalStateSetter('closed')}
                             handleReloadDataAfterBulkOperation={handleReloadDataAfterBulkDelete}
                             operationType={bulkOperationModalState}
                             allResources={filteredResourceList}

@@ -114,8 +114,7 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
                     name={name}
                     version={version}
                     kind={kind}
-                    // NOTE!: ts was showing error in yarn lint but vscode did not
-                    unschedulable={!!nodeData.unschedulable as unknown as boolean}
+                    unschedulable={!!nodeData.unschedulable as boolean}
                     closePopup={hideCordonNodeModal}
                 />
             )

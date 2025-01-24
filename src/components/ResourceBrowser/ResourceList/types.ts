@@ -1,5 +1,10 @@
 import { useTabs } from '@Components/common/DynamicTabs'
-import { K8sResourceDetailType, ServerErrors, ALL_NAMESPACE_OPTION } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    K8sResourceDetailType,
+    ServerErrors,
+    ALL_NAMESPACE_OPTION,
+    RBBulkOperationType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Dispatch, ReactNode, SetStateAction } from 'react'
 import { ClusterListType } from '@Components/ClusterNodes/types'
 import {
@@ -58,6 +63,4 @@ export interface ResourceListUrlFiltersType {
     targetK8sVersion: string
 }
 
-export type BulkOperationType = 'restart' | 'delete'
-
-export type BulkOperationsModalState = BulkOperationType | 'closed'
+export type BulkOperationsModalState = RBBulkOperationType | 'closed'
