@@ -15,7 +15,6 @@
  */
 
 import { useState } from 'react'
-import Tippy from '@tippyjs/react'
 import {
     showError,
     Progressing,
@@ -25,15 +24,15 @@ import {
     ToastVariantType,
     ToastManager,
     drainNodeCapacity,
+    DRAIN_NODE_MODAL_MESSAGING,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import DrainIcon from '../../../assets/icons/ic-clean-brush-medium.svg'
-import { ReactComponent as QuestionIcon } from '../../v2/assets/icons/ic-question.svg'
 import { ReactComponent as TimerIcon } from '../../../assets/icons/ic-timer.svg'
-import { DRAIN_NODE_MODAL_MESSAGING } from '../constants'
 import { NodeActionModalPropType } from '../types'
 
-export default function DrainNodeModal({ name, version, kind, closePopup }: NodeActionModalPropType) {
+const DrainNodeModal = ({ name, version, kind, closePopup }: NodeActionModalPropType) => {
     const { clusterId } = useParams<{ clusterId: string }>()
     const [gracePeriod, setGracePeriod] = useState('-1')
     const [deleteEmptyDirData, setDeleteEmptyDirData] = useState(false)
@@ -136,7 +135,11 @@ export default function DrainNodeModal({ name, version, kind, closePopup }: Node
             <div className="drain-node-options-container fs-14">
                 <div className="flex left mb-8">
                     <TimerIcon className="grace-period-timer-icon icon-dim-20 scn-6" />
-                    <span className="ml-5">{DRAIN_NODE_MODAL_MESSAGING.GracePeriod.heading}</span>
+                    <Tooltip content={DRAIN_NODE_MODAL_MESSAGING.GracePeriod.infoText} alwaysShowTippyOnHover>
+                        <span className="ml-5 dc__underline-dotted">
+                            {DRAIN_NODE_MODAL_MESSAGING.GracePeriod.heading}
+                        </span>
+                    </Tooltip>
                     <span className="grace-period-input-wrapper flex left ml-8">
                         <input
                             name="grace-period"
@@ -154,44 +157,22 @@ export default function DrainNodeModal({ name, version, kind, closePopup }: Node
                             sec
                         </span>
                     </span>
-                    <Tippy
-                        className="default-tt"
-                        arrow={false}
-                        placement="top"
-                        content={DRAIN_NODE_MODAL_MESSAGING.GracePeriod.infoText}
-                        maxWidth={250}
-                    >
-                        <button className="dc__no-background dc__no-border">
-                            <QuestionIcon className="icon-dim-16" />
-                        </button>
-                    </Tippy>
                 </div>
-                {DRAIN_NODE_OPTIONS.map((option) => {
-                    return (
-                        <div className="flex left mb-12" key={option.heading}>
-                            <Checkbox
-                                rootClassName="dc_width-max-content"
-                                isChecked={option.isChecked}
-                                value={CHECKBOX_VALUE.CHECKED}
-                                disabled={apiCallInProgress}
-                                onChange={option.onChange}
-                            >
-                                {option.heading}
-                            </Checkbox>
-                            <Tippy
-                                className="default-tt"
-                                arrow={false}
-                                placement="top"
-                                content={option.infoText}
-                                maxWidth={250}
-                            >
-                                <button className="dc__no-background dc__no-border">
-                                    <QuestionIcon className="icon-dim-16" />
-                                </button>
-                            </Tippy>
-                        </div>
-                    )
-                })}
+                {DRAIN_NODE_OPTIONS.map((option) => (
+                    <div className="flex left mb-12" key={option.heading}>
+                        <Checkbox
+                            rootClassName="dc_width-max-content"
+                            isChecked={option.isChecked}
+                            value={CHECKBOX_VALUE.CHECKED}
+                            disabled={apiCallInProgress}
+                            onChange={option.onChange}
+                        >
+                            <Tooltip content={option.infoText} alwaysShowTippyOnHover>
+                                <span className="dc__underline-dotted">{option.heading}</span>
+                            </Tooltip>
+                        </Checkbox>
+                    </div>
+                ))}
             </div>
             <ConfirmationDialog.ButtonGroup>
                 <button type="button" className="flex cta cancel h-36" disabled={apiCallInProgress} onClick={onClose}>
@@ -204,3 +185,5 @@ export default function DrainNodeModal({ name, version, kind, closePopup }: Node
         </ConfirmationDialog>
     )
 }
+
+export default DrainNodeModal

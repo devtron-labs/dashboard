@@ -33,7 +33,6 @@ import {
     TabProps,
     ToastManager,
     ToastVariantType,
-    TOAST_ACCESS_DENIED,
     ResourceDetail,
     CodeEditorThemesKeys,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -50,7 +49,7 @@ import { ReactComponent as Storage } from '../../assets/icons/ic-storage.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as CordonIcon } from '../../assets/icons/ic-cordon.svg'
-import { ReactComponent as UncordonIcon } from '../../assets/icons/ic-play-medium.svg'
+import { ReactComponent as UncordonIcon } from '../../assets/icons/ic-medium-play.svg'
 import { ReactComponent as DrainIcon } from '../../assets/icons/ic-clean-brush.svg'
 import { ReactComponent as EditTaintsIcon } from '../../assets/icons/ic-spraycan.svg'
 import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
