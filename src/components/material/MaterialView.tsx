@@ -29,6 +29,7 @@ import {
     ComponentSizeType,
     SelectPickerProps,
     DeleteComponent,
+    Textarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -571,8 +572,10 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         )
     }
 
+    getShouldRenderIncludeExcludeInfoBar = () => this.props.material.includeExcludeFilePath?.trim() !== ''
+
     renderIncludeExcludeInfoBar = (): JSX.Element => {
-        if (this.props.material.includeExcludeFilePath?.trim() === '') {
+        if (!this.getShouldRenderIncludeExcludeInfoBar()) {
             return null
         }
         const filePath = this.props.material.includeExcludeFilePath.split(/\r?\n/)
@@ -584,7 +587,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             }
         }
         return (
-            <div className="flex left h-36 p-8 bcy-1 dc__border-top">
+            <div className="flex left h-36 p-8 bcy-1 dc__border dc__no-border-top-imp dc__bottom-radius-4">
                 <span className="fw-4 fs-13">
                     <InfoOutlined className="icon-dim-16 mr-6 mt-6 fcn-6" />
                 </span>
@@ -728,8 +731,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             </span>
                         </div>
                         {this.props.material.isExcludeRepoChecked && (
-                            <div className="dc__border br-4 mt-8 ml-35">
-                                <div className="p-8 dc__border-bottom">
+                            <div className="mt-8 ml-35">
+                                <div className="p-8 dc__top-radius-4 dc__border dc__no-bottom-border">
                                     <p className="fw-4 fs-13 mb-0-imp">
                                         Enter file or folder paths to be included or excluded.
                                         <a
@@ -818,16 +821,16 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                         </div>
                                     )}
                                 </div>
-                                {/* Can't use Textarea component here */}
-                                <textarea
-                                    data-testid="exclude-include-commit-textbox"
-                                    className="py-7 px-10 dc__no-border-imp mxh-140 w-100"
-                                    autoComplete="off"
+                                <Textarea
+                                    name="exclude-include-commit-textbox"
                                     autoFocus
                                     placeholder={INCLUDE_EXCLUDE_PLACEHOLDER}
-                                    rows={3}
                                     value={this.props.material.includeExcludeFilePath}
                                     onChange={this.props.handleFileChange}
+                                    borderRadiusConfig={{
+                                        top: false,
+                                        ...(this.getShouldRenderIncludeExcludeInfoBar() && { bottom: false }),
+                                    }}
                                 />
                                 {this.renderIncludeExcludeInfoBar()}
                             </div>
