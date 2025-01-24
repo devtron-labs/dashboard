@@ -15,12 +15,20 @@
  */
 
 import moment from 'moment'
-import React from 'react'
-import { components } from 'react-select'
 import { AggregationKeys } from '../../types'
 import { getVersionArr, isVersionLessThanOrEqualToTarget, DayPickerRangeControllerPresets } from '../../../common'
 import { ChartTypes, AppMetricsTabType, StatusType, StatusTypes } from './appDetails.type'
-import { ZERO_TIME_STRING, Nodes, NodeType, ACTION_STATE, ButtonStyleType, SelectPicker, SelectPickerProps, SelectPickerVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ZERO_TIME_STRING,
+    Nodes,
+    NodeType,
+    ACTION_STATE,
+    ButtonStyleType,
+    SelectPicker,
+    SelectPickerProps,
+    SelectPickerVariantType,
+    prefixZeroIfSingleDigit,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { GetIFrameSrcParamsType } from './types'
 
 export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: boolean): AggregationKeys {
@@ -76,7 +84,7 @@ export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: bool
 }
 
 export const ThroughputSelect = (props) => {
-    const onCreateOption: SelectPickerProps['onCreateOption'] = (inputValue) => { 
+    const onCreateOption: SelectPickerProps['onCreateOption'] = (inputValue) => {
         props.handleStatusChange({ label: inputValue, value: inputValue })
     }
 
@@ -293,6 +301,22 @@ export function addChartNameExtensionToBaseURL(
     return url
 }
 
+// Need to send either the relative time like: now-5m or the timestamp to grafana
+// Assuming format is 'DD-MM-YYYY hh:mm:ss'
+const getTimestampFromDateIfAvailable = (dateString: string): string => {
+    try {
+        const [day, month, yearAndTime] = dateString.split('-')
+        const [year, time] = yearAndTime.split(' ')
+        const updatedTime = time.split(':').map((item) => ['0', '00'].includes(item) ? '00' : prefixZeroIfSingleDigit(Number(item))).join(':')
+        const formattedDate = `${year}-${prefixZeroIfSingleDigit(Number(month))}-${prefixZeroIfSingleDigit(Number(day))}T${updatedTime}`
+        const parsedDate = new Date(formattedDate).getTime()
+
+        return isNaN(parsedDate) ? dateString : parsedDate.toString()
+    } catch {
+        return dateString
+    }
+}
+
 export function addQueryParamToGrafanaURL(
     url: string,
     appId: string | number,
@@ -307,8 +331,8 @@ export function addQueryParamToGrafanaURL(
     statusCode?: StatusTypes,
     latency?: number,
 ): string {
-    const startTime: string = calendarInputs.startDate
-    const endTime: string = calendarInputs.endDate
+    const startTime: string = getTimestampFromDateIfAvailable(calendarInputs.startDate)
+    const endTime: string = getTimestampFromDateIfAvailable(calendarInputs.endDate)
     url += `?orgId=${window.__GRAFANA_ORG_ID__}`
     url += `&refresh=10s`
     url += `&var-app=${appId}`
@@ -339,33 +363,6 @@ export function addQueryParamToGrafanaURL(
     url += `&from=${startTime}&to=${endTime}`
     url += `&panelId=${panelId}&theme=${grafanaTheme}`
     return url
-}
-
-export const ValueContainer = (props) => {
-    const { children, ...rest } = props
-    return (
-        <components.ValueContainer {...rest}>
-            {`${props.getValue()[0].value}`}
-            {React.cloneElement(children[1])}
-        </components.ValueContainer>
-    )
-}
-
-export const ValueContainerImage = (props) => {
-    const value = props.selectProps?.value?.value
-    return (
-        <components.ValueContainer {...props}>
-            <>
-                {!props.selectProps.menuIsOpen &&
-                    (value ? (
-                        <div className="cn-7 fs-12 flex left">{value}</div>
-                    ) : (
-                        <span className="cn-5">Select or enter image</span>
-                    ))}
-                {React.cloneElement(props.children[1])}
-            </>
-        </components.ValueContainer>
-    )
 }
 
 export const validateMomentDate = (date: string, format: string): string => {

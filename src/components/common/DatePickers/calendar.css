@@ -120,8 +120,9 @@
     background-color: var(--transparent);
     color: var(--N200);
 
-    &:hover {
+    &:hover,&:active,&:focus-visible,&:focus {
         border-color: var(--N300);
+        background-color: var(--transparent);
     }
 }
 
@@ -134,8 +135,14 @@
     color: var(--N700) !important;
     background: var(--transparent) !important;
 
-    &:hover {
+    &[aria-disabled="true"] {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    &:hover:not([aria-disabled="true"]) {
         color: var(--B500) !important;
+        background: var(--bg-secondary) !important;
     }
 }
 

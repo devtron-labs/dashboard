@@ -245,13 +245,6 @@ src/components/common/DatePickers/DayPickerRangeController.tsx
 src/components/common/DeprecatedUpdateWarn.tsx
 src/components/common/Description/GenericDescription.tsx
 src/components/common/DynamicTabs/__tests__/DynamicTabs.test.tsx
-src/components/common/FloatingVariablesSuggestions/FloatingVariablesSuggestions.tsx
-src/components/common/FloatingVariablesSuggestions/SuggestionItem.tsx
-src/components/common/FloatingVariablesSuggestions/Suggestions.tsx
-src/components/common/FloatingVariablesSuggestions/__tests__/FloatingVariablesSuggestions.test.tsx
-src/components/common/FloatingVariablesSuggestions/__tests__/Suggestions.test.tsx
-src/components/common/FloatingVariablesSuggestions/__tests__/SuggestionsInfo.test.tsx
-src/components/common/FloatingVariablesSuggestions/__tests__/SuggestionsItem.test.tsx
 src/components/common/HiddenInput/HiddenInput.tsx
 src/components/common/List/List.tsx
 src/components/common/MultiSelect/MultiSelect.tsx
@@ -357,16 +350,13 @@ src/components/security/security.util.tsx
 src/components/terminal/TerminalWrapper.tsx
 src/components/util/KeyValueFileInput.tsx
 src/components/v2/appDetails/AppDetails.component.tsx
-src/components/v2/appDetails/NodeTreeDetailTab.tsx
 src/components/v2/appDetails/ReleaseStatusEmptyState.tsx
 src/components/v2/appDetails/SyncError.component.tsx
 src/components/v2/appDetails/__tests__/index.store.test.ts
 src/components/v2/appDetails/appDetails.api.ts
-src/components/v2/appDetails/appDetails.store.ts
 src/components/v2/appDetails/appDetails.type.ts
 src/components/v2/appDetails/ea/EAAppDetail.component.tsx
 src/components/v2/appDetails/k8Resource/FilterResource.tsx
-src/components/v2/appDetails/k8Resource/NodeTreeTabList.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/EphemeralContainerDrawer.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetail.component.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/CustomLogsModal/CustomLogsModal.tsx
@@ -385,8 +375,6 @@ src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/const
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/terminal.type.ts
 src/components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api.ts
 src/components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.util.tsx
-src/components/v2/appDetails/k8Resource/nodeType/Node.component.tsx
-src/components/v2/appDetails/k8Resource/nodeType/NodeDelete.component.tsx
 src/components/v2/appDetails/k8Resource/nodeType/NodeTree.component.tsx
 src/components/v2/appDetails/k8Resource/nodeType/PodTabSection.tsx
 src/components/v2/appDetails/k8Resource/nodeType/__tests__/NodeTree.component.test.ts
@@ -405,7 +393,6 @@ src/components/v2/chartDeploymentHistory/DockerListModal.tsx
 src/components/v2/chartDeploymentHistory/chartDeploymentHistory.service.ts
 src/components/v2/common/ReactSelect.utils.tsx
 src/components/v2/common/ReactSelectCustomization.tsx
-src/components/v2/common/message.ui.tsx
 src/components/v2/devtronStackManager/AboutDevtronView.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.component.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.service.tsx

@@ -85,6 +85,8 @@ import {
     AnimatedDeployButton,
     triggerCDNode,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
+    DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
+    SortingOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -107,7 +109,7 @@ import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search
 import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as PlayIC } from '@Icons/ic-play-outline.svg'
 
-import noArtifact from '../../../../assets/img/no-artifact@2x.png'
+import noArtifact from '../../../../assets/img/no-artifact.webp'
 import { importComponentFromFELibrary, useAppContext } from '../../../common'
 import { CDButtonLabelMap, TriggerViewContext } from './config'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
@@ -788,6 +790,8 @@ const CDMaterial = ({
     const onClickSetInitialParams = (modeParamValue: 'list' | 'review-config') => {
         const newParams = new URLSearchParams({
             ...searchParams,
+            sortBy: DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
+            sort: SortingOrder.ASC,
             mode: modeParamValue,
             deploy: getConfigToDeployValue(),
         })
@@ -1394,6 +1398,7 @@ const CDMaterial = ({
             stageType,
             showLatestTag: +mat.index === 0 && materialType !== MATERIAL_TYPE.rollbackMaterialList && !searchImageTag,
             isVirtualEnvironment,
+            targetPlatforms: mat.targetPlatforms,
             additionalInfo:
                 ImagePromotionInfoChip && promotionApprovalMetadata?.promotedFromType ? (
                     <ImagePromotionInfoChip

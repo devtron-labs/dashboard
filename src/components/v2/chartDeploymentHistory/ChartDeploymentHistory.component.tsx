@@ -38,7 +38,7 @@ import Tippy from '@tippyjs/react'
 import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
 import docker from '../../../assets/icons/misc/docker.svg'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
-import DataNotFound from '../../../assets/img/app-not-deployed.png'
+import DataNotFound from '../../../assets/img/app-not-deployed.svg'
 import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
 import { Moment12HourFormat, SERVER_ERROR_CODES, URLS } from '../../../config'
 import '../../app/details/cIDetails/ciDetails.scss'
@@ -454,8 +454,8 @@ const ChartDeploymentHistory = ({
                     iconClassName="error-exclamation-icon"
                     theme="white"
                     msg="There was an error loading the file."
-                    msgStyle={{ color: 'var(--N500)', marginTop: '0' }}
                     size={24}
+                    centerMessage
                     isShowActionButton
                     actionButtonText="Retry"
                     onActionButtonClick={() => {

@@ -400,7 +400,6 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
             kind: upgradeClusterLowerCaseKind,
             name: UPGRADE_CLUSTER_CONSTANTS.NAME,
             url: URL,
-            iconPath: UPGRADE_CLUSTER_CONSTANTS.ICON_PATH,
             dynamicTitle: `${UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE} to v${selectedVersion}`,
             tippyConfig: getUpgradeCompatibilityTippyConfig({
                 targetK8sVersion: selectedVersion
@@ -503,7 +502,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
         return (
             <div
                 className="p-20 dc__column-gap-32 h-100 dc__overflow-auto flexbox flex-justify-center"
-                style={{ backgroundImage: 'linear-gradient(249deg, var(--B100) 0%, var(--N0)50.58%)' }}
+                style={{ backgroundImage: 'linear-gradient(249deg, var(--B100) 0%, var(--bg-primary) 50.58%)' }}
             >
                 {renderSideInfoData()}
                 <div className="dc__mxw-1068 flex-grow-1 mw-none">
