@@ -5302,6 +5302,14 @@ details[open] {
         }
     }
 
+    &--gap-8 {
+        gap: 16px;
+
+        & > :not(:first-child)::before {
+            left: -8px;
+        }
+    }
+
     &--vertical {
         gap: 40px;
         align-items: unset;
