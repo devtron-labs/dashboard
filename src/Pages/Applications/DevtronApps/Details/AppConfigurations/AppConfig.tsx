@@ -410,7 +410,6 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
 
     const renderDeleteDialog = () => {
         // Using Confirmation Dialog Modal instead of Delete Confirmation as we are evaluation this with local variable despite of error code
-        // NOTE: Automation will break here as two component were using to delete having different data-testId
         if (!state.showDeleteConfirm) return null
         return (
             <>
