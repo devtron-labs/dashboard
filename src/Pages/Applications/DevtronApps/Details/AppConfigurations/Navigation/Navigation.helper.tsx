@@ -4,15 +4,18 @@ import {
     ApprovalConfigDataKindType,
     ApprovalConfigDataType,
     CollapsibleListItem,
+    ConditionalWrap,
     EnvResourceType,
     getIsApprovalPolicyConfigured,
     ResourceIdToResourceApprovalPolicyConfigMapType,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Lock } from '@Icons/ic-locked.svg'
 import { ReactComponent as ICStamp } from '@Icons/ic-stamp.svg'
 import { ResourceConfigStage, ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
+import { AnchorHTMLAttributes, ReactElement } from 'react'
 import {
     CustomNavItemsType,
     EnvConfigRouteParams,
@@ -32,29 +35,51 @@ const renderNavItemIcon = (isLocked: boolean, isApprovalPolicyConfigured: boolea
     return null
 }
 
+const wrapWithTooltip = (content: string) => (children: ReactElement) => (
+    <Tooltip content={content} alwaysShowTippyOnHover placement="right">
+        {children}
+    </Tooltip>
+)
+
 /**
  *
  * @param item
  * @param hideApprovalPolicyIcon Used to hide the policy icon (applicable for jobs atm)
  */
-export const renderNavItem = (item: CustomNavItemsType, hideApprovalPolicyIcon?: boolean) => {
+export const renderNavItem = (
+    item: CustomNavItemsType,
+    hideApprovalPolicyIcon?: boolean,
+    options?: {
+        target?: AnchorHTMLAttributes<HTMLAnchorElement>['target']
+        icon?: ReactElement
+        tooltipContent?: string
+    },
+) => {
     const linkDataTestName = item.title.toLowerCase().split(' ').join('-')
 
     return (
-        <NavLink
-            data-testid={`${linkDataTestName}-link`}
-            key={item.title}
-            onClick={(event) => {
-                if (item.isLocked) {
-                    event.preventDefault()
-                }
-            }}
-            className="dc__nav-item cursor fs-13 lh-32 cn-7 w-100 br-4 px-8 flexbox dc__align-items-center dc__content-space dc__no-decor"
-            to={item.href}
-        >
-            <span className="dc__truncate nav-text">{item.title}</span>
-            {renderNavItemIcon(item.isLocked, !hideApprovalPolicyIcon && item.isProtectionAllowed, linkDataTestName)}
-        </NavLink>
+        <ConditionalWrap condition={!!options?.tooltipContent} wrap={wrapWithTooltip(options?.tooltipContent)}>
+            <NavLink
+                data-testid={`${linkDataTestName}-link`}
+                key={item.title}
+                onClick={(event) => {
+                    if (item.isLocked) {
+                        event.preventDefault()
+                    }
+                }}
+                className="dc__nav-item cursor fs-13 lh-32 cn-9 w-100 br-4 px-8 flexbox dc__align-items-center dc__content-space dc__no-decor"
+                to={item.href}
+                target={options?.target}
+            >
+                <span className="dc__truncate nav-text">{item.title}</span>
+                {options?.icon ??
+                    renderNavItemIcon(
+                        item.isLocked,
+                        !hideApprovalPolicyIcon && item.isProtectionAllowed,
+                        linkDataTestName,
+                    )}
+            </NavLink>
+        </ConditionalWrap>
     )
 }
 
