@@ -16,13 +16,20 @@
 
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { showError, Progressing, ConfirmationDialog, ToastVariantType, ToastManager, cordonNodeCapacity } from '@devtron-labs/devtron-fe-common-lib'
-import CordonIcon from '../../../assets/icons/ic-cordon-medium.svg'
-import UncordonIcon from '../../../assets/icons/ic-play-medium.svg'
+import {
+    showError,
+    Progressing,
+    ConfirmationDialog,
+    ToastVariantType,
+    ToastManager,
+    cordonNodeCapacity,
+} from '@devtron-labs/devtron-fe-common-lib'
+import CordonIcon from '@Icons/ic-medium-pause.svg'
+import UncordonIcon from '@Icons/ic-medium-play.svg'
 import { CordonNodeModalType } from '../types'
 import { CORDON_NODE_MODAL_MESSAGING } from '../constants'
 
-export default function CordonNodeModal({ name, version, kind, unschedulable, closePopup }: CordonNodeModalType) {
+const CordonNodeModal = ({ name, version, kind, unschedulable, closePopup }: CordonNodeModalType) => {
     const { clusterId } = useParams<{ clusterId: string }>()
     const [apiCallInProgress, setAPICallInProgress] = useState(false)
 
@@ -57,6 +64,13 @@ export default function CordonNodeModal({ name, version, kind, unschedulable, cl
         }
     }
 
+    const getButtonText = () => {
+        if (apiCallInProgress) {
+            return <Progressing />
+        }
+        return unschedulable ? CORDON_NODE_MODAL_MESSAGING.uncordon : CORDON_NODE_MODAL_MESSAGING.cordon
+    }
+
     return (
         <ConfirmationDialog className="confirmation-dialog__body--w-400">
             {unschedulable ? (
@@ -86,15 +100,11 @@ export default function CordonNodeModal({ name, version, kind, unschedulable, cl
                     disabled={apiCallInProgress}
                     onClick={cordonAPI}
                 >
-                    {apiCallInProgress ? (
-                        <Progressing />
-                    ) : unschedulable ? (
-                        CORDON_NODE_MODAL_MESSAGING.uncordon
-                    ) : (
-                        CORDON_NODE_MODAL_MESSAGING.cordon
-                    )}
+                    {getButtonText()}
                 </button>
             </ConfirmationDialog.ButtonGroup>
         </ConfirmationDialog>
     )
 }
+
+export default CordonNodeModal
