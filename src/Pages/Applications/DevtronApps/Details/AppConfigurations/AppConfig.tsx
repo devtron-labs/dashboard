@@ -53,6 +53,8 @@ import { ENV_CONFIG_PATH_REG } from './AppConfig.constants'
 
 const getApprovalPolicyConfigForApp: (appId: number) => Promise<ResourceIdToResourceApprovalPolicyConfigMapType> =
     importComponentFromFELibrary('getApprovalPolicyConfigForApp', null, 'function')
+const isFELibAvailable: (appId: number) => Promise<ResourceIdToResourceApprovalPolicyConfigMapType> =
+    importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigProps) => {
     // HOOKS
@@ -463,7 +465,9 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
                 : 'app-compose-with-no-gitops-config__nav'
         } ${isJob ? 'job-compose__side-nav' : ''} ${
             !showCannotDeleteTooltip ? 'dc__position-rel' : ''
-        }  ${hideConfigHelp ? 'hide-app-config-help' : ''} ${!canShowExternalLinks ? 'hide-external-links' : ''}`
+        }  ${hideConfigHelp ? 'hide-app-config-help' : ''} ${!canShowExternalLinks ? 'hide-external-links' : ''}  ${
+            state.isUnlocked.workflowEditor && isFELibAvailable && !isJob ? 'config-protection__side-nav' : ''
+        }`
     }
 
     const toggleRepoSelectionTippy = () => {
