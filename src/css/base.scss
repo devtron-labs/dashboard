@@ -5283,6 +5283,15 @@ details[open] {
             left: -12px;
             top: 50%;
             transform: translateY(-50%);
+            display: block;
+        }
+    }
+
+    &--tight {
+        gap: 1px;
+
+        & > :not(:first-child)::before {
+            left: -1px;
         }
     }
 
