@@ -27,10 +27,10 @@ import {
     ButtonStyleType,
     ComponentSizeType,
     ERROR_STATUS_CODE,
+    DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ProjectProps, ProjectState } from './types'
 import { DC_PROJECT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '@Config/constantMessaging'
-import { DeleteConfirmationModal } from '@Config/DeleteConfigurationModal'
 
 export class Project extends Component<ProjectProps, ProjectState> {
     constructor(props) {
@@ -93,6 +93,7 @@ export class Project extends Component<ProjectProps, ProjectState> {
                     showConfirmationModal={this.state.confirmation}
                     closeConfirmationModal={this.toggleConfirmation}
                     errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+                    dataTestId="dialog" // To make compatible with previous code data-testid="dialog-delete"
                 />
             </div>
         )

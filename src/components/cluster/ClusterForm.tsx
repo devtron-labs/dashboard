@@ -38,6 +38,7 @@ import {
     ButtonVariantType,
     Button,
     ERROR_STATUS_CODE,
+    DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import TippyHeadless from '@tippyjs/react/headless'
@@ -78,7 +79,6 @@ import UserNameDropDownList from './UseNameListDropdown'
 import { clusterId } from '../ClusterNodes/__mocks__/clusterAbout.mock'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { RemoteConnectionType } from '../dockerRegistry/dockerType'
-import { DeleteConfirmationModal } from '@Config/DeleteConfigurationModal'
 
 const VirtualClusterSelectionTab = importComponentFromFELibrary('VirtualClusterSelectionTab')
 const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio')
@@ -1560,6 +1560,7 @@ export default function ClusterForm({
                             showConfirmationModal={confirmation}
                             closeConfirmationModal={hideConfirmationModal}
                             errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+                            dataTestId="dialog" // To make compatible with previous code data-testid="dialog-delete"
                         />
                     </>
                 )}

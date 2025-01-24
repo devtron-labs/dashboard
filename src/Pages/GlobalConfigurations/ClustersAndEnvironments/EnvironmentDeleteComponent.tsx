@@ -1,6 +1,5 @@
 import { DeleteComponentsName, DC_ENVIRONMENT_CONFIRMATION_MESSAGE } from '@Config/constantMessaging'
-import { DeleteConfirmationModal } from '@Config/DeleteConfigurationModal'
-import { ERROR_STATUS_CODE } from '@devtron-labs/devtron-fe-common-lib'
+import { DeleteConfirmationModal, ERROR_STATUS_CODE } from '@devtron-labs/devtron-fe-common-lib'
 import { EnvironmentDeleteComponentProps } from './ClusterEnvironmentDrawer/types'
 
 export const EnvironmentDeleteComponent = ({
@@ -19,5 +18,6 @@ export const EnvironmentDeleteComponent = ({
         showConfirmationModal={showConfirmationModal}
         closeConfirmationModal={closeConfirmationModal}
         errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.BAD_REQUEST}
+        dataTestId="dialog" // To make compatible with previous code data-testid="dialog-delete"
     />
 )

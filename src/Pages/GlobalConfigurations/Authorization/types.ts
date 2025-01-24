@@ -28,6 +28,7 @@ import {
     EntityTypes,
     CustomRoleAndMeta,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { DeleteComponentModalProps } from '@devtron-labs/devtron-fe-common-lib/dist/Shared/Components/ConfirmationModal/types'
 import { SERVER_MODE } from '../../../config'
 import { ActionTypes, PermissionType, UserRoleType } from './constants'
 
@@ -291,11 +292,12 @@ export interface CreateUserPermissionPayloadParams extends Pick<User, 'userStatu
     permissionType: PermissionType
 }
 
-export interface DeleteUserPermissionProps {
-    title: string
-    onDelete: () => void
-    reload: () => void
-    showConfirmationModal: boolean
-    closeConfirmationModal: () => void
+export interface DeleteUserPermissionProps
+    extends Partial<
+        Pick<
+            DeleteComponentModalProps,
+            'title' | 'onDelete' | 'reload' | 'showConfirmationModal' | 'closeConfirmationModal'
+        >
+    > {
     isUserGroup?: boolean
 }

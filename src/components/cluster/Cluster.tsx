@@ -56,10 +56,8 @@ import { ClusterInstallStatus } from './ClusterInstallStatus'
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type'
 import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, CONFIGURATION_TYPES, AppCreationType } from '../../config'
 import { getEnvName } from './cluster.util'
-import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import ClusterForm from './ClusterForm'
 import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
-import { DeleteConfirmationModal } from '@Config/DeleteConfigurationModal'
 import { EnvironmentDeleteComponent } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/EnvironmentDeleteComponent'
 
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
@@ -799,7 +797,7 @@ const Cluster = ({
                             )}
 
                         <EnvironmentDeleteComponent
-                            environmentName={confirmation && environment.environmentName}
+                            environmentName={environment?.environmentName}
                             showConfirmationModal={confirmation}
                             onDelete={onDelete}
                             reload={reload}

@@ -49,6 +49,8 @@ import {
     getGlobalVariables,
     FloatingVariablesSuggestions,
     TriggerType,
+    ERROR_STATUS_CODE,
+    DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -535,8 +537,8 @@ export default function CIPipeline({
         close()
     }
 
-    const deletePipeline = (): void => {
-        deleteCIPipeline(
+    const onDelete = async () => {
+        await deleteCIPipeline(
             formData,
             ciPipeline,
             formData.materials,
@@ -545,20 +547,9 @@ export default function CIPipeline({
             false,
             formData.webhookConditionList,
         )
-            .then((response) => {
-                if (response) {
-                    ToastManager.showToast({
-                        variant: ToastVariantType.success,
-                        description: 'Pipeline Deleted',
-                    })
-                    setPageState(ViewType.FORM)
-                    handleClose()
-                    deleteWorkflow(appId, Number(workflowId))
-                }
-            })
-            .catch((error: ServerErrors) => {
-                showError(error)
-            })
+            setPageState(ViewType.FORM)
+            handleClose()
+            deleteWorkflow(appId, Number(workflowId))
     }
 
     const closeCIDeleteModal = (): void => {
@@ -566,12 +557,17 @@ export default function CIPipeline({
     }
 
     const renderDeleteCIModal = () => {
+        if (!ciPipelineId) return null
         return (
-            <DeleteDialog
-                title={`Delete '${formData.name}' ?`}
+            <DeleteConfirmationModal
+                title={formData.name}
                 description={`Are you sure you want to delete this CI Pipeline from '${appName}' ?`}
-                closeDelete={closeCIDeleteModal}
-                delete={deletePipeline}
+                showConfirmationModal={showDeleteModal}
+                closeConfirmationModal={closeCIDeleteModal}
+                onDelete={onDelete}
+                errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.BAD_REQUEST}
+                renderCannotDeleteConfirmationSubTitle="Please delete deployment pipelines for this workflow first and try again."
+                successToastMessage="Pipeline Deleted"
             />
         )
     }
@@ -929,7 +925,7 @@ export default function CIPipeline({
                         )}
                     </div>
                 )}
-                {ciPipelineId && showDeleteModal && renderDeleteCIModal()}
+                {renderDeleteCIModal()}
             </>
         )
     }

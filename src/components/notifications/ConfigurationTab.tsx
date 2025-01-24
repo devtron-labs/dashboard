@@ -15,9 +15,14 @@
  */
 
 import { useEffect, useState } from 'react'
-import { showError, Progressing, useSearchString, ERROR_STATUS_CODE } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    useSearchString,
+    ERROR_STATUS_CODE,
+    DeleteConfirmationModal,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useLocation } from 'react-router-dom'
-import { DeleteConfirmationModal } from '@Config/DeleteConfigurationModal'
 import { deleteNotification, getConfigs } from './notifications.service'
 import { DC_CONFIGURATION_CONFIRMATION_MESSAGE } from '../../config/constantMessaging'
 import { ConfigurationTabState } from './types'

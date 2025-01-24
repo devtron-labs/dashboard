@@ -57,8 +57,8 @@ const PermissionGroupRow = ({
 
     const onDelete = async () => {
         await deletePermissionGroup(id)
-        // Clearing the selection on single delete since the selected one might be removed
         if (!isBulkSelectionApplied) {
+            // Clearing the selection on single delete since the selected one might be removed
             handleBulkSelection({
                 action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
             })
