@@ -22,6 +22,7 @@ import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { handleUTCTime } from '../../common'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import { SidebarChildButtonPropsType } from '../Types'
+import { Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 
 export const KindSearchValueContainer = (props) => {
     const { selectProps } = props
@@ -102,12 +103,14 @@ export const SidebarChildButton: React.FC<SidebarChildButtonPropsType> = ({
         onClick={onClick}
         aria-label={`Select ${text}`}
     >
-        <div
-            className={`fs-13 pointer dc__ellipsis-right dc__align-left dc__border-radius-4-imp fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
-                isSelected ? 'bcb-1 cb-5' : 'cn-7 dc__hover-n50'
-            }`}
-        >
-            {text}
-        </div>
+        <Tooltip content={text}>
+            <div
+                className={`fs-13 pointer dc__ellipsis-right dc__align-left dc__border-radius-4-imp fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
+                    isSelected ? 'bcb-1 cb-5' : 'cn-7 dc__hover-n50'
+                }`}
+            >
+                {text}
+            </div>
+        </Tooltip>
     </button>
 )

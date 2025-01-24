@@ -15,5 +15,7 @@
   -->
 
 <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M19.5 18V30M28.5 18V30M42 24C42 33.9411 33.9411 42 24 42C14.0589 42 6 33.9411 6 24C6 14.0589 14.0589 6 24 6C33.9411 6 42 14.0589 42 24Z" stroke="#F33E3E" stroke-width="2" stroke-linecap="round"/>
+<g id="Icon/ic-medium-pause">
+<path id="Vector" d="M19.4999 18V30M28.4999 18V30M42 24C42 33.9411 33.9411 42 24 42C14.0589 42 6 33.9411 6 24C6 14.0589 14.0589 6 24 6C33.9411 6 42 14.0589 42 24Z" fill="#F33E3E" fill-opacity="0.12" stroke="#F33E3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
+</g>
 </svg>

@@ -31,7 +31,6 @@ import {
     ToastManager,
     ToastVariantType,
     OptionsBase,
-    noop
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
@@ -40,7 +39,6 @@ import EventsComponent from './NodeDetailTabs/Events.component'
 import LogsComponent from './NodeDetailTabs/Logs.component'
 import ManifestComponent from './NodeDetailTabs/Manifest.component'
 import TerminalComponent from './NodeDetailTabs/Terminal.component'
-import SummaryComponent from './NodeDetailTabs/Summary.component'
 import { NodeDetailTab, ParamsType } from './nodeDetail.type'
 import {
     AppType,
@@ -586,12 +584,6 @@ const NodeDetailComponent = ({
                             />
                         </div>
                     </Route>
-                    {/* NOTE: this seems like an obsolete component? since it can't be reached through UI */}
-                    {!isResourceBrowserView && (
-                        <Route path={`${path}/${NodeDetailTab.SUMMARY}`}>
-                            <SummaryComponent selectedTab={handleSelectedTab} />
-                        </Route>
-                    )}
                     {!location.pathname.endsWith('/terminal') && (
                         <Redirect to={`${path}/${NodeDetailTab.MANIFEST.toLowerCase()}`} />
                     )}

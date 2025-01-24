@@ -223,6 +223,10 @@ const BaseResourceListContent = ({
                 return acc
             }, {}) as Record<string, K8sResourceDetailDataType>) ?? {},
         )
+
+        handleBulkSelection({
+            action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
+        })
     }, [resourceListOffset, filteredResourceList, pageSize])
 
     useEffect(
@@ -292,16 +296,8 @@ const BaseResourceListContent = ({
         }
     }
 
-    const handleCloseRBBulkOperationsModal = () => {
-        setBulkOperationModalState('closed')
-    }
-
-    const handleOpenRestartBulkOperationsModal = () => {
-        setBulkOperationModalState('restart')
-    }
-
-    const handleOpenDeleteBulkOperationsModal = () => {
-        setBulkOperationModalState('delete')
+    const getBulkOperationsModalStateSetter = (option: BulkOperationsModalState) => () => {
+        setBulkOperationModalState(option)
     }
 
     const handleClearBulkSelection = () => {
@@ -458,9 +454,9 @@ const BaseResourceListContent = ({
                             key={`${resourceData.id}-${columnName}`}
                             className={`flexbox dc__align-items-center ${
                                 columnName === 'status'
-                                    ? ` app-summary__status-name ${getStatusClass(String(resourceData[columnName]))}`
+                                    ? `app-summary__status-name dc__no-text-transform ${getStatusClass(String(resourceData[columnName]))}`
                                     : ''
-                            } ${columnName === 'errors' ? 'app-summary__status-name f-error' : ''}`}
+                            } ${columnName === 'errors' ? 'app-summary__status-name f-error dc__no-text-transform' : ''}`}
                         >
                             <ConditionalWrap
                                 condition={columnName === 'node'}
@@ -668,19 +664,23 @@ const BaseResourceListContent = ({
                                     : getSelectedIdentifiersCount()
                             }
                             handleClearBulkSelection={handleClearBulkSelection}
-                            handleOpenBulkDeleteModal={handleOpenDeleteBulkOperationsModal}
-                            handleOpenRestartWorkloadModal={handleOpenRestartBulkOperationsModal}
+                            handleOpenBulkDeleteModal={getBulkOperationsModalStateSetter('delete')}
+                            handleOpenRestartWorkloadModal={getBulkOperationsModalStateSetter('restart')}
                             showBulkRestartOption={
                                 window._env_.FEATURE_BULK_RESTART_WORKLOADS_FROM_RB.split(',')
                                     .map((feat: string) => feat.trim().toUpperCase())
                                     .indexOf(selectedResource.gvk.Kind.toUpperCase()) > -1
                             }
+                            showNodeListingOptions={isNodeListing}
+                            handleOpenCordonNodeModal={getBulkOperationsModalStateSetter('cordon')}
+                            handleOpenUncordonNodeModal={getBulkOperationsModalStateSetter('uncordon')}
+                            handleOpenDrainNodeModal={getBulkOperationsModalStateSetter('drain')}
                         />
                     )}
 
                     {RBBulkOperations && bulkOperationModalState !== 'closed' && (
                         <RBBulkOperations
-                            handleModalClose={handleCloseRBBulkOperationsModal}
+                            handleModalClose={getBulkOperationsModalStateSetter('closed')}
                             handleReloadDataAfterBulkOperation={handleReloadDataAfterBulkDelete}
                             operationType={bulkOperationModalState}
                             allResources={filteredResourceList}

@@ -19,9 +19,7 @@ import { Routes } from '../../config'
 import {
     ClusterCapacityResponse,
     ClusterListResponse,
-    NodeCordonRequest,
     NodeDetailResponse,
-    NodeDrainRequest,
     UpdateNodeRequestBody,
     EditTaintsRequest,
     TerminalDataType,
@@ -56,12 +54,6 @@ export const updateClusterShortDescription = (
 
 export const getNodeCapacity = (clusterId: string, nodeName: string): Promise<NodeDetailResponse> =>
     get(`${COMMON_ROUTES.NODE_CAPACITY}?clusterId=${clusterId}&name=${nodeName}`)
-
-export const cordonNodeCapacity = (requestPayload: NodeCordonRequest): Promise<ResponseType> =>
-    put(`${COMMON_ROUTES.NODE_CAPACITY}/cordon`, requestPayload)
-
-export const drainNodeCapacity = (requestPayload: NodeDrainRequest): Promise<ResponseType> =>
-    put(`${COMMON_ROUTES.NODE_CAPACITY}/drain`, requestPayload)
 
 export const updateNodeManifest = (
     clusterId: string,
