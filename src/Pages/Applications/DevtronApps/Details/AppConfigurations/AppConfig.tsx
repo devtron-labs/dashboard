@@ -29,6 +29,7 @@ import {
     ConfirmationModalVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DeleteComponentsName } from '@Config/constantMessaging'
+import { APP_CONFIG_TEXT } from '@Components/app/details/appConfig/constants'
 import { URLS, getAppComposeURL, APP_COMPOSE_STAGE, ViewType } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { getAppOtherEnvironmentMin, getJobOtherEnvironmentMin, getWorkflowList } from '../../../../../services/service'
@@ -395,8 +396,8 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
 
     const renderSubTitle = () => (
         <>
-            <p className="fs-13 cn-7 lh-1-54">This will delete all resources associated with this application.</p>
-            <p className="fs-13 cn-7 lh-1-54">Deleted applications cannot be restored.</p>
+            <p className="fs-13 cn-7 lh-1-54">{APP_CONFIG_TEXT.DELETE_APPS.SUBTITLE_PARA1}</p>
+            <p className="fs-13 cn-7 lh-1-54">{APP_CONFIG_TEXT.DELETE_APPS.SUBTITLE_PARA2}</p>
         </>
     )
 
