@@ -17,7 +17,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
     showError,
-    DeleteDialog,
     ServerErrors,
     OptionType,
     UserStatus,
@@ -48,6 +47,7 @@ import {
 import { createUserPermissionPayload, validateDirectPermissionForm } from '../../utils'
 import { excludeKeyAndClusterValue } from '../../Shared/components/K8sObjectPermissions/utils'
 import { getDefaultUserStatusAndTimeout } from '../../libUtils'
+import { DeleteUserPermission } from '../DeleteUserPermission'
 
 const UserAutoAssignedRoleGroupsTable = importComponentFromFELibrary('UserAutoAssignedRoleGroupsTable')
 const UserPermissionsInfoBar = importComponentFromFELibrary('UserPermissionsInfoBar', null, 'function')
@@ -208,21 +208,8 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
         setEmailState((prevEmailState) => ({ ...prevEmailState, emails: newValue || [], emailError: '' }))
     }
 
-    const handleDelete = async () => {
-        setSubmitting(true)
-        try {
-            await deleteUser(_userData.id)
-            ToastManager.showToast({
-                variant: ToastVariantType.success,
-                description: 'User deleted',
-            })
-            setDeleteConfirmationModal(false)
-            _redirectToUserPermissionList()
-        } catch (err) {
-            showError(err)
-        } finally {
-            setSubmitting(false)
-        }
+    const onDelete = async () => {
+        await deleteUser(_userData.id)
     }
 
     const handleKeyDown = useCallback(
@@ -390,15 +377,13 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                         )}
                 </div>
             </div>
-            {deleteConfirmationModal && (
-                <DeleteDialog
-                    title={`Delete user '${emailState.emails[0]?.value || ''}'?`}
-                    description="Deleting this user will remove the user and revoke all their permissions."
-                    delete={handleDelete}
-                    closeDelete={toggleDeleteConfirmationModal}
-                    apiCallInProgress={submitting}
-                />
-            )}
+            <DeleteUserPermission
+                title={emailState.emails[0]?.value}
+                onDelete={onDelete}
+                reload={_redirectToUserPermissionList}
+                showConfirmationModal={deleteConfirmationModal}
+                closeConfirmationModal={toggleDeleteConfirmationModal}
+            />
         </div>
     )
 }

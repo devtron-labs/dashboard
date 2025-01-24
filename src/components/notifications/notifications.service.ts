@@ -16,9 +16,8 @@
 
 import { get, post, trash, put, ResponseType, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config/constants'
-import { NotificationConfiguration } from './NotificationTab'
 import { FilterOptions, PipelineType } from './AddNotification'
-import { SMTPConfigResponseType, WebhookAttributesResponseType } from './types'
+import { NotificationConfiguration, SMTPConfigResponseType, WebhookAttributesResponseType } from './types'
 
 interface UpdateNotificationEvent {
     id: number

@@ -18,14 +18,10 @@ import { useState } from 'react'
 import {
     handleUTCTime,
     getRandomColor,
-    showError,
-    DeleteDialog,
     ConditionalWrap,
     Checkbox,
     CHECKBOX_VALUE,
     BulkSelectionEvents,
-    ToastVariantType,
-    ToastManager,
     Button,
     ButtonComponentType,
     ComponentSizeType,
@@ -35,9 +31,9 @@ import {
 import { Link, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
-import { ReactComponent as Edit } from '../../../../../assets/icons/ic-pencil.svg'
-import { ReactComponent as Lock } from '../../../../../assets/icons/ic-locked.svg'
-import { ReactComponent as Trash } from '../../../../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
+import { ReactComponent as Lock } from '@Icons/ic-locked.svg'
+import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 
 import { UserPermissionRowProps } from './types'
 import { DEFAULT_USER_TOOLTIP_CONTENT } from './constants'
@@ -47,6 +43,7 @@ import { importComponentFromFELibrary } from '../../../../../components/common'
 import { Moment12HourFormat } from '../../../../../config'
 import { LAST_LOGIN_TIME_NULL_STATE } from '../constants'
 import { useAuthorizationBulkSelection } from '../../Shared/components/BulkSelection'
+import { DeleteUserPermission } from '../DeleteUserPermission'
 
 const StatusCell = importComponentFromFELibrary('StatusCell', null, 'function')
 const UserGroupCell = importComponentFromFELibrary('UserGroupCell', null, 'function')
@@ -68,7 +65,6 @@ const UserPermissionRow = ({
     const { path } = useRouteMatch()
     const isAdminOrSystemUser = getIsAdminOrSystemUser(emailId)
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
-    const [isModalLoading, setIsModalLoading] = useState(false)
     const { handleBulkSelection, isBulkSelectionApplied } = useAuthorizationBulkSelection()
 
     const _showCheckbox = showCheckbox || isChecked
@@ -77,33 +73,17 @@ const UserPermissionRow = ({
         setIsDeleteModalOpen(!isDeleteModalOpen)
     }
 
-    const handleDelete = async () => {
-        setIsModalLoading(true)
-        try {
-            await deleteUser(id)
-            ToastManager.showToast({
-                variant: ToastVariantType.success,
-                description: 'User deleted',
+    const onDelete = async () => {
+        await deleteUser(id)
+        // Clearing the selection on single delete since the selected one might be removed
+        if (!isBulkSelectionApplied) {
+            handleBulkSelection({
+                action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
             })
-            refetchUserPermissionList()
-            setIsDeleteModalOpen(false)
-
-            // Clearing the selection on single delete since the selected one might be removed
-            if (!isBulkSelectionApplied) {
-                handleBulkSelection({
-                    action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
-                })
-            }
-        } catch (err) {
-            showError(err)
-        } finally {
-            setIsModalLoading(false)
         }
     }
 
-    const handleChecked = () => {
-        toggleChecked(id)
-    }
+    const handleChecked = () => toggleChecked(id)
 
     return (
         <>
@@ -223,16 +203,13 @@ const UserPermissionRow = ({
                     </div>
                 )}
             </div>
-            {isDeleteModalOpen && (
-                <DeleteDialog
-                    dataTestId="user-form-delete-dialog"
-                    title={`Delete user '${emailId || ''}'?`}
-                    description="Deleting this user will remove the user and revoke all their permissions."
-                    delete={handleDelete}
-                    closeDelete={toggleDeleteModal}
-                    apiCallInProgress={isModalLoading}
-                />
-            )}
+            <DeleteUserPermission
+                title={emailId}
+                onDelete={onDelete}
+                reload={refetchUserPermissionList}
+                showConfirmationModal={isDeleteModalOpen}
+                closeConfirmationModal={toggleDeleteModal}
+            />
         </>
     )
 }

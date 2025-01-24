@@ -170,7 +170,6 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                 // 412 is for linked pipeline and 403 is for RBAC
                 if (!force && error.code != 403 && error.code != 412) {
                     this.parseErrorIntoForceDelete(error)
-                    this.handleDeleteDialogUpdate(DeleteDialogType.showForceDeleteDialog)
                 } else {
                     this.handleHideDeleteModal()
                 }
@@ -267,7 +266,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         />
     )
 
-    renderDeleteConformationDialog = () => {
+    renderDeleteConfirmationDialog = () => {
         if (this.state.showDeploymentConfirmationDeleteDialog && DeploymentWindowConfirmationDialog) {
             return this.renderDeploymentWindowConfirmationModal()
         } else if (this.state.showDeletePipelinePopup) {
@@ -404,7 +403,6 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                 >
                     {this.props.cdNamesList?.length > 0 ? this.renderReadOnlyCard() : this.renderCardContent()}
                 </foreignObject>
-                
                 <DeleteCDNode
                     showDeleteDialog={this.state.showDeleteDialog}
                     deleteDialog={this.state.deleteDialog}
@@ -418,7 +416,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                     deleteTitleName={this.props.environmentName}
                     isLoading={this.state.deleteInProgress}
                 />
-                {this.renderDeleteConformationDialog()}
+                {this.renderDeleteConfirmationDialog()}
             </>
         )
     }
