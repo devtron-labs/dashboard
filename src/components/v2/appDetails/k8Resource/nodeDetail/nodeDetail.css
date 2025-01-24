@@ -59,6 +59,6 @@
 
 .node-detail__sticky {
     position: sticky;
-    top: 120px;
+    top: 43px;
     z-index: 10;
 }
