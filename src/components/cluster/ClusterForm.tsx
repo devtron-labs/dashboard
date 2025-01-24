@@ -1560,6 +1560,7 @@ export default function ClusterForm({
                             showConfirmationModal={confirmation}
                             closeConfirmationModal={hideConfirmationModal}
                             errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+                            dataTestId="dialog" // To make compatible with previous code data-testid="dialog-delete"
                         />
                     </>
                 )}

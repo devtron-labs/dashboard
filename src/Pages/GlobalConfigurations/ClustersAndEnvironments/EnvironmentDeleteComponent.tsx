@@ -18,5 +18,6 @@ export const EnvironmentDeleteComponent = ({
         showConfirmationModal={showConfirmationModal}
         closeConfirmationModal={closeConfirmationModal}
         errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.BAD_REQUEST}
+        dataTestId="dialog" // To make compatible with previous code data-testid="dialog-delete"
     />
 )

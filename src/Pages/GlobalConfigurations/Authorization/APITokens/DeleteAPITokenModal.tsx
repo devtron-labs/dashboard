@@ -42,17 +42,19 @@ const DeleteAPITokenModal = ({
     const renderDescriptionContent = () => (
         <>
             {tokenData.description && (
-                <p className="fs-14 cn-7 lh-20 bcn-1 p-16 br-4 dc__break-word">
+                <p className="fs-14 cn-7 lh-20 bcn-1 p-16 br-4 dc__break-word m-0">
                     {tokenData.description && <span className="fw-6">Token description:</span>}
                     <br />
                     <span>{tokenData.description}</span>
                 </p>
             )}
 
-            <p className="fs-14 cn-7 lh-20">
+            <p className="fs-14 cn-7 lh-20 m-0">
                 Any applications or scripts using this token will no longer be able to access the Devtron API.
             </p>
-            <p className="fs-14 cn-7 lh-20">You cannot undo this action. Are you sure you want to delete this token?</p>
+            <p className="fs-14 cn-7 lh-20 m-0">
+                You cannot undo this action. Are you sure you want to delete this token?
+            </p>
         </>
     )
 

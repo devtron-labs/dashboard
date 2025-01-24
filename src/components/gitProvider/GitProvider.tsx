@@ -991,6 +991,7 @@ const GitForm = ({
                 closeConfirmationModal={closeConfirmationModal}
                 reload={reload}
                 errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+                dataTestId="dialog" // To make compatible with previous code data-testid="dialog-delete"
             />
         </form>
     )

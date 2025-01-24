@@ -74,9 +74,9 @@ const UserPermissionRow = ({
     }
 
     const onDelete = async () => {
-        await deleteUser(id)
+        const response = await deleteUser(id)
         // Clearing the selection on single delete since the selected one might be removed
-        if (!isBulkSelectionApplied) {
+        if (response && !isBulkSelectionApplied) {
             handleBulkSelection({
                 action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
             })

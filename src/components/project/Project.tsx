@@ -93,6 +93,7 @@ export class Project extends Component<ProjectProps, ProjectState> {
                     showConfirmationModal={this.state.confirmation}
                     closeConfirmationModal={this.toggleConfirmation}
                     errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+                    dataTestId="dialog" // To make compatible with previous code data-testid="dialog-delete"
                 />
             </div>
         )

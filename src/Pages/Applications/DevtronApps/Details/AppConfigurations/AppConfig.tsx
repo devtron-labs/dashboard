@@ -430,7 +430,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
                         },
                     }}
                     handleClose={closeDeleteConfirmationModal}
-                    dataTestId="dialog"
+                    dataTestId="dialog" // To make compatible with previous code data-testid="dialog-delete"
                 />
                 <ConfirmationModal
                     title={`Cannot Delete ${isJob ? DeleteComponentsName.Job : DeleteComponentsName.Application}`}

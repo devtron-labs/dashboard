@@ -50,6 +50,7 @@ import {
     ButtonVariantType,
     ERROR_STATUS_CODE,
     DeleteConfirmationModal,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import CreatableSelect from 'react-select/creatable'
@@ -2020,22 +2021,22 @@ const DockerForm = ({
                         />
                     )}
                     <div className="flex right w-100 dc__gap-12">
-                        <button
-                            className="cta flex h-36 cancel"
-                            type="button"
+                        <Button
+                            dataTestId="container-registry-cancel-button"
                             onClick={setToggleCollapse}
+                            text="Cancel"
+                            variant={ButtonVariantType.secondary}
+                            size={ComponentSizeType.medium}
+                        />
+                        <Button
+                            dataTestId="container-registry-save-button"
                             disabled={loading}
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            className="cta flex h-36"
-                            type="submit"
-                            disabled={loading}
-                            data-testid="container-registry-save-button"
-                        >
-                            {loading ? <Progressing /> : id ? 'Update' : 'Save'}
-                        </button>
+                            text={id ? 'Update' : 'Save'}
+                            size={ComponentSizeType.medium}
+                            buttonProps={{
+                                type: 'submit',
+                            }}
+                        />
                     </div>
                 </div>
 
@@ -2046,7 +2047,7 @@ const DockerForm = ({
                     errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
                     reload={reload}
                     onDelete={onDelete}
-                    dataTestId="delete-cluster-confirm-button"
+                    dataTestId="dialog" // To make compatible with previous code data-testid="dialog-delete"
                     showConfirmationModal={confirmation}
                     closeConfirmationModal={closeConfirmationModal}
                 />
