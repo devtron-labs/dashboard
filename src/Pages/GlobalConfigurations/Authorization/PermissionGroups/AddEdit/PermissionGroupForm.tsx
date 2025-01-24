@@ -18,7 +18,6 @@ import { useState, useEffect } from 'react'
 import {
     showError,
     DeleteDialog,
-    ResizableTextarea,
     CustomInput,
     useMainContext,
     ToastVariantType,
@@ -28,6 +27,7 @@ import {
     ComponentSizeType,
     ButtonStyleType,
     Button,
+    Textarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory } from 'react-router-dom'
 import { ReactComponent as ICDeleteInteractive } from '@Icons/ic-delete-interactive.svg'
@@ -194,21 +194,13 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
                         error={name.error}
                         placeholder="Eg. Project managers"
                     />
-                    <div>
-                        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                        <label htmlFor="permission-group-description" className="form__label">
-                            Description
-                        </label>
-                        <ResizableTextarea
-                            name="permission-group-description"
-                            maxHeight={300}
-                            className="w-100"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            data-testid="permission-group-description-textbox"
-                            placeholder="Enter a description for this group"
-                        />
-                    </div>
+                    <Textarea
+                        label="Description"
+                        name="permission-group-description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Enter a description for this group"
+                    />
                     <div className="dc__border-top" />
                     <PermissionConfigurationForm showUserPermissionGroupSelector={false} />
                 </div>

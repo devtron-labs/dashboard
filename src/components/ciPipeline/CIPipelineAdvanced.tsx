@@ -22,6 +22,7 @@ import {
     Toggle,
     CodeEditor,
     TriggerType,
+    Textarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { SourceTypeMap } from '../../config'
 import { Trash, Page } from '../common'
@@ -405,16 +406,15 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                                                     }}
                                                 />
                                             </div>
-                                            <div className="form__field">
-                                                <label className="form__label">Value</label>
-                                                <textarea
-                                                    value={arg.value}
-                                                    onChange={(event) => {
-                                                        this.props.handleDockerArgChange(event, index, 'value')
-                                                    }}
-                                                    placeholder="Enter Your Text here"
-                                                />
-                                            </div>
+                                            <Textarea
+                                                label="Value"
+                                                name="value"
+                                                value={arg.value}
+                                                onChange={(event) => {
+                                                    this.props.handleDockerArgChange(event, index, 'value')
+                                                }}
+                                                placeholder="Enter Your Text here"
+                                            />
                                         </div>
                                     )
                                 })}

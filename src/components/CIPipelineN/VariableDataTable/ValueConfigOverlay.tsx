@@ -10,9 +10,10 @@ import {
     CustomInput,
     FilePropertyTypeSizeUnit,
     PATTERNS,
-    ResizableTextarea,
     SelectPicker,
     SelectPickerOptionType,
+    Textarea,
+    TextareaProps,
     Tooltip,
     validateRequiredPositiveNumber,
     VariableTypeFormat,
@@ -103,7 +104,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
         })
     }
 
-    const handleFileAllowedExtensionsChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleFileAllowedExtensionsChange: TextareaProps['onChange'] = (e) => {
         handleRowUpdateAction({
             actionType: VariableDataTableActionType.UPDATE_FILE_ALLOWED_EXTENSIONS,
             rowId,
@@ -173,17 +174,13 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
                         error={hasFileMountError ? 'This field is required' : ''}
                         autoFocus
                     />
-                    <div className="flexbox-col dc__gap-6">
-                        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                        <label className="m-0 fs-13 lh-20 cn-7 fw-4">Restrict file type</label>
-                        <ResizableTextarea
-                            value={fileInfo.allowedExtensions}
-                            minHeight={96}
-                            maxHeight={96}
-                            placeholder="Enter file types separated by commas Eg. .xls, .csv, .tar"
-                            onChange={handleFileAllowedExtensionsChange}
-                        />
-                    </div>
+                    <Textarea
+                        name="file-allowed-extension"
+                        label="Restrict file type"
+                        value={fileInfo.allowedExtensions}
+                        placeholder="Enter file types separated by commas Eg. .xls, .csv, .tar"
+                        onChange={handleFileAllowedExtensionsChange}
+                    />
                     <div>
                         <div className="flexbox dc__align-items-center">
                             <div className="flex-grow-1">

@@ -232,7 +232,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
                         <span className="form__label mb-16">
                             Recipient will be removed from the respective notification.
                         </span>
-                        <div className="form__input form__input--textarea">
+                        <div className="form__input h-132">
                             {this.state.savedRecipients.map((p) => {
                                 return (
                                     <div className="dc__devtron-tag mr-5 mb-5">

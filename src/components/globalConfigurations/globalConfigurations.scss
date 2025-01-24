@@ -88,14 +88,6 @@
         top: 50%;
         transform: translateY(-50%);
     }
-
-    textarea {
-        border-radius: 4px;
-        border: solid 1px var(--N200);
-        &.form__input--error {
-            border: solid 1px var(--R500);
-        }
-    }
 }
 
 .page-enter {
@@ -326,26 +318,6 @@
 .select-button--docker-register {
     padding: 8px 0 8px 10px;
     font-weight: 500;
-}
-
-.cluster-form {
-    .form__row--bearer-token .bearer-token {
-        display: flex;
-        width: 100%;
-
-        img {
-            margin-left: 16px;
-        }
-
-        input,
-        textarea {
-            width: 100%;
-        }
-
-        textarea {
-            resize: vertical;
-        }
-    }
 }
 
 .environment-create-body {

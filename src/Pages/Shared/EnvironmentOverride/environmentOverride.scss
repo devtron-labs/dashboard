@@ -166,26 +166,6 @@ div.override-container {
     }
 }
 
-.override-textarea-container {
-    display: flex;
-    & > div {
-        width: 100%;
-    }
-    textarea {
-        width: calc(50% - 8px);
-        border: 1px solid var(--N200);
-        border-radius: 4px;
-        resize: vertical;
-        height: 100%;
-        &:disabled {
-            background: var(--N100);
-        }
-        &:first-child {
-            margin-right: 16px;
-        }
-    }
-}
-
 .list-collapse-enter {
     transform: scaleY(0);
     transform-origin: top;

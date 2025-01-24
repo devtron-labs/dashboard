@@ -22,6 +22,7 @@ import {
     RadioGroupItem,
     CustomInput,
     Tooltip,
+    Textarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
@@ -165,15 +166,12 @@ export default function ConfigureLinkAction({
                         error={link.invalidName && CONFIGURE_LINK_NO_NAME}
                     />
                 </div>
-                <div className="link-text-area">
-                    <textarea
-                        rows={1}
-                        placeholder="Description"
-                        value={link.description}
-                        onChange={onDescriptionChange}
-                        data-testid="external-link-description-input"
-                    />
-                </div>
+                <Textarea
+                    name="external-link-description-input"
+                    placeholder="Description"
+                    value={link.description}
+                    onChange={onDescriptionChange}
+                />
                 {!isAppConfigView && (
                     <div className="link-scope flex left">
                         <label className="mr-16">Show link in:</label>
@@ -183,7 +181,7 @@ export default function ConfigureLinkAction({
                             name={`external-link-scope-${index}`}
                             onChange={handleLinkScope}
                         >
-                            <RadioGroupItem value={ExternalLinkScopeType.ClusterLevel} >
+                            <RadioGroupItem value={ExternalLinkScopeType.ClusterLevel}>
                                 <span
                                     className={`dc__no-text-transform ${
                                         link.type === ExternalLinkScopeType.ClusterLevel ? 'fw-6' : 'fw-4'
@@ -218,20 +216,19 @@ export default function ConfigureLinkAction({
                         getErrorLabel={getErrorLabel}
                     />
                 )}
-                <div className="link-text-area">
-                    <label className="dc__required-field">URL Template</label>
-                    <textarea
-                        name={LinkValidationKeys.urlTemplate}
-                        rows={1}
-                        placeholder="Link or URL template"
-                        value={link.urlTemplate}
-                        onChange={onUrlTemplateChange}
-                        onBlur={validateAndUpdateLinksData}
-                        data-testid="link-url-template-input"
-                    />
-                    {link.invalidUrlTemplate && getErrorLabel('url')}
-                    {link.invalidProtocol && getErrorLabel('invalidProtocol')}
-                </div>
+                <Textarea
+                    label="URL Template"
+                    name={LinkValidationKeys.urlTemplate}
+                    placeholder="Link or URL template"
+                    value={link.urlTemplate}
+                    onChange={onUrlTemplateChange}
+                    onBlur={validateAndUpdateLinksData}
+                    error={
+                        (link.invalidUrlTemplate && getErrorLabel('url')) ||
+                        (link.invalidProtocol && getErrorLabel('invalidProtocol'))
+                    }
+                    required
+                />
                 <div className="flex left dc__gap-20">
                     {isFullMode && !isAppConfigView && link.type === ExternalLinkScopeType.AppLevel && (
                         <Checkbox

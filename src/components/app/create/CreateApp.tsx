@@ -38,6 +38,7 @@ import {
     validateTagValue,
     DynamicDataTableCellErrorType,
     TagsTableColumnsType,
+    Textarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import AsyncSelect from 'react-select/async'
 import { importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../common'
@@ -374,7 +375,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             value={this.state.form.appName}
                             placeholder={`e.g. my-first-${this.props.isJobView ? 'job' : 'app'}`}
                             autoFocus
-                            tabIndex={1}
                             onChange={this.handleAppName}
                             isRequiredField
                             error={appNameErrors && !this.state.isValid.appName && errorObject[0].message}
@@ -386,27 +386,18 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             Apps are NOT env specific and can be used to deploy to multiple environments.
                         </span>
                     )}
-                    <span className="form__label mt-16">Description</span>
-                    <textarea
-                        data-testid="description-textbox"
-                        className="form__textarea dc__resizable-textarea--vertical"
-                        name={this.props.isJobView ? 'job-description' : 'app-description'}
-                        value={this.state.form.description}
-                        placeholder={
-                            this.props.isJobView ? 'Describe this job' : 'Write a description for this application'
-                        }
-                        tabIndex={2}
-                        onChange={this.updateCreateAppFormDescription}
-                        rows={4}
-                    />
-                    <span className="form__error">
-                        {!this.state.isValid.description ? (
-                            <>
-                                <Error className="form__icon form__icon--error" />
-                                {errorObject[3].message} <br />
-                            </>
-                        ) : null}
-                    </span>
+                    <div className="mt-16">
+                        <Textarea
+                            label="Description"
+                            name={this.props.isJobView ? 'job-description' : 'app-description'}
+                            value={this.state.form.description}
+                            placeholder={
+                                this.props.isJobView ? 'Describe this job' : 'Write a description for this application'
+                            }
+                            onChange={this.updateCreateAppFormDescription}
+                            error={!this.state.isValid.description ? errorObject[3].message : null}
+                        />
+                    </div>
                 </div>
 
                 <div className="form__row clone-apps dc__inline-block">
@@ -454,7 +445,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                                     Option,
                                 }}
                                 placeholder={`Select ${this.props.isJobView ? 'job' : 'app'}`}
-                                tabIndex={3}
                             />
                             <span className="form__error">
                                 {showError && !this.state.isValid.cloneAppId ? (

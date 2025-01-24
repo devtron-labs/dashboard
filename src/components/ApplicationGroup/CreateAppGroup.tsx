@@ -28,13 +28,13 @@ import {
     stopPropagation,
     TabGroup,
     TabProps,
+    Textarea,
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import { ReactComponent as Abort } from '../../assets/icons/ic-abort.svg'
 import Info from '../../assets/icons/ic-info-outline-grey.svg'
@@ -368,22 +368,17 @@ export default function CreateAppGroup({
                         error={showErrorMsg && nameErrorMessage()}
                     />
                 </div>
-                <div className="form__row mb-16">
-                    <span className="form__label">Description (Max 50 characters)</span>
-                    <textarea
-                        tabIndex={2}
+                <div className="mb-16">
+                    <Textarea
+                        label="Description (Max 50 characters)"
                         placeholder="Write a description for this filter"
-                        className="form__textarea"
                         value={appGroupDescription}
                         name="description"
                         onChange={onInputChange}
+                        error={
+                            showErrorMsg && appGroupDescription?.length > 50 && 'Max 50 char is allowed in description'
+                        }
                     />
-                    {showErrorMsg && appGroupDescription?.length > 50 && (
-                        <span className="form__error">
-                            <Error className="form__icon form__icon--error" />
-                            Max 50 char is allowed in description
-                        </span>
-                    )}
                 </div>
                 <div>
                     <div className="dc__border-bottom mb-8">

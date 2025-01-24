@@ -132,30 +132,6 @@
                         }
                     }
                 }
-
-                .link-text-area {
-                    display: flex;
-                    flex-direction: column;
-
-                    textarea {
-                        width: 648px;
-                        min-height: 72px;
-                        resize: vertical;
-                        padding: 10px 8px;
-                        background-color: var(--bg-secondary);
-                        color: var(--N900);
-                        border: 1px solid var(--N200);
-                        border-radius: 4px;
-
-                        &::placeholder {
-                            color: var(--N500);
-                        }
-
-                        &:-ms-input-placeholder {
-                            color: var(--N500);
-                        }
-                    }
-                }
             }
 
             .configure-link-info-container {
