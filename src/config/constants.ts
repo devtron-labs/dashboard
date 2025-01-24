@@ -492,9 +492,9 @@ export const EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT = {
 
 export const CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT = {
     heading: 'Deployment Charts',
-    infoText: 'Devtron provides charts that cover most use cases.',
+    infoText: 'Deployment charts in the Deployment Template are used to deploy Devtron applications.',
     additionalParagraphText:
-        'In case you need to add certain capabilities to a chart provided by Devtron, you can download the chart, make required changes and upload the chart.',
+        'Devtron offers charts for most use cases. If needed, you can download a chart, modify it, and re-upload it to add specific capabilities.',
     documentationLinkText: 'View documentation',
 }
 
