@@ -30,7 +30,6 @@ export const EventsTable = ({ loading, eventsList, isResourceBrowserView, errorV
                     msg={MESSAGING_UI.FETCHING_EVENTS}
                     icon={MsgUIType.LOADING}
                     size={24}
-                    minHeight={isResourceBrowserView ? '200px' : ''}
                 />
             )
         }
@@ -103,7 +102,6 @@ export const EventsTable = ({ loading, eventsList, isResourceBrowserView, errorV
                 dataTestId="app-events-container-empty"
                 msg={MESSAGING_UI.NO_EVENTS}
                 size={24}
-                minHeight={isResourceBrowserView ? '200px' : ''}
             />
         )
     }

@@ -311,7 +311,7 @@ export default function NavigationRoutes() {
                 ) {
                     localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
                 }
-            } catch (e) {
+            } catch {
                 localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
             }
         }
