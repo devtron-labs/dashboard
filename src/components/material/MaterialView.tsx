@@ -821,7 +821,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 {/* Can't use Textarea component here */}
                                 <textarea
                                     data-testid="exclude-include-commit-textbox"
-                                    className="form__textarea dc__no-border-imp mxh-140 w-100"
+                                    className="py-7 px-10 dc__no-border-imp mxh-140 w-100"
                                     autoComplete="off"
                                     autoFocus
                                     placeholder={INCLUDE_EXCLUDE_PLACEHOLDER}
