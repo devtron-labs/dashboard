@@ -19,21 +19,6 @@
 .resource-browser-container {
     min-width: 1024px;
 
-    .resource-browser-tab {
-        .dynamic-tabs-section {
-            .dynamic-tabs-container,
-            .fixed-tabs-container {
-                .dynamic-tabs-wrapper,
-                .fixed-tabs-wrapper {
-                    .dynamic-tab-selected {
-                        border-top: none;
-                        border-radius: 0;
-                    }
-                }
-            }
-        }
-    }
-
     .resource-browser {
         display: grid;
         grid-template-columns: 220px auto;

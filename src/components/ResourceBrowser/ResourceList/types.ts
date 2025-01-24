@@ -1,4 +1,3 @@
-import { useTabs } from '@Components/common/DynamicTabs'
 import {
     K8sResourceDetailType,
     ServerErrors,
@@ -7,6 +6,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Dispatch, ReactNode, SetStateAction } from 'react'
 import { ClusterListType } from '@Components/ClusterNodes/types'
+import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 import {
     K8SResourceListType,
     ResourceBrowserActionMenuType,
@@ -52,7 +52,7 @@ export interface BaseResourceListProps
 }
 
 export interface ClusterUpgradeCompatibilityInfoProps
-    extends Pick<ReturnType<typeof useTabs>, 'addTab'>,
+    extends Pick<UseTabsReturnType, 'addTab'>,
         Pick<ClusterListType, 'updateTabUrl'>,
         Pick<
             BaseResourceListProps,
