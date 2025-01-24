@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useRouteMatch } from 'react-router-dom'
-import AppDetailsStore from '../../../appDetails.store'
 import { NodeDetailTab } from '../nodeDetail.type'
 
 const SummaryComponent = ({ selectedTab }) => {

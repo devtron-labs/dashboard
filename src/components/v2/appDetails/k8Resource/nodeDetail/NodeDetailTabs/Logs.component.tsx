@@ -498,7 +498,6 @@ const LogsComponent = ({
         <MessageUI
             msg="This resource no longer exists"
             size={32}
-            minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
         />
     ) : (
         <>
@@ -805,8 +804,6 @@ const LogsComponent = ({
                                 dataTestId="no-prev-container-logs"
                                 msg={showNoPrevContainer}
                                 size={24}
-                                minHeight={isResourceBrowserView ? '200px' : ''}
-                                msgStyle={{ maxWidth: '300px', margin: '8px auto' }}
                             />
                         ) : (
                             <div className="log-viewer">

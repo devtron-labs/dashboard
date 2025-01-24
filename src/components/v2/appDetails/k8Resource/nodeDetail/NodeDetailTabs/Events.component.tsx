@@ -84,7 +84,7 @@ const EventsComponent = ({
     const renderContent = () => {
         if (isDeleted) {
             return (
-                <MessageUI msg={MESSAGING_UI.NO_RESOURCE} size={32} minHeight={isResourceBrowserView ? '200px' : ''} />
+                <MessageUI msg={MESSAGING_UI.NO_RESOURCE} size={32} />
             )
         }
 
