@@ -15,13 +15,16 @@
  */
 
 import { useEffect } from 'react'
-import AppDetailsStore, { AppDetailsTabs } from '../appDetails.store'
-import { LogSearchTermType } from '../appDetails.type'
+import { LogAnalyzerProps } from '../appDetails.type'
 import LogsComponent from '../k8Resource/nodeDetail/NodeDetailTabs/Logs.component'
 
-const LogAnalyzerComponent = ({ logSearchTerms, setLogSearchTerms, isExternalApp }: LogSearchTermType) => {
+const LogAnalyzerComponent = ({
+    logSearchTerms,
+    setLogSearchTerms,
+    handleMarkLogAnalyzerTabSelected,
+}: LogAnalyzerProps) => {
     useEffect(() => {
-        AppDetailsStore.markAppDetailsTabActiveByIdentifier(AppDetailsTabs.log_analyzer)
+        handleMarkLogAnalyzerTabSelected()
     }, [])
 
     return (
@@ -31,7 +34,6 @@ const LogAnalyzerComponent = ({ logSearchTerms, setLogSearchTerms, isExternalApp
                 isDeleted={false}
                 logSearchTerms={logSearchTerms}
                 setLogSearchTerms={setLogSearchTerms}
-                isExternalApp={isExternalApp}
             />
         </div>
     )

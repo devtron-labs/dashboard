@@ -1670,10 +1670,6 @@ table.resource-tree {
     height: 170px;
 }
 
-.app-metrics-graph__empty-state-wrapper {
-    border-bottom: solid 1px var(--N100);
-}
-
 .app-metrics-graph__empty-state {
     display: grid;
     grid-template-columns: 150px 615px;
@@ -1764,6 +1760,8 @@ table.resource-tree {
     display: flex;
     flex-direction: column;
     flex: 1;
+    width: calc(100vw - 56px);
+    overflow-x: hidden;
 }
 
 .more-message::before {

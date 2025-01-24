@@ -16,6 +16,7 @@
 
 .dynamic-tabs-section {
     z-index: 11;
+
     .dynamic-tabs-container {
         overflow-x: auto;
         -ms-overflow-style: none;
@@ -26,84 +27,9 @@
         }
     }
 
-    .more-tabs-wrapper {
-        .more-tabs__menu-wrapper {
-            border-radius: 4px 4px 0 0;
-            right: 0px;
-            z-index: 10;
-        }
-
-        .more-tabs__blanket {
-            bottom: 0;
-            left: 0;
-            top: 0;
-            right: 0;
-            z-index: 9;
-        }
-
-        &.hide-more-tabs-option {
-            display: none !important;
-        }
-
-        .tab-search-select__open-tabs {
-            background-color: var(--bg-tertiary);
-        }
-
-        .tab-search-select__control {
-            border-color: var(--N200);
-
-            &:hover {
-                border-color: var(--N200);
-            }
-        }
-
-        .tab-search-select__input-container {
-            input {
-                max-width: 230px;
-            }
-        }
-
-        .tab-option__select {
-            width: calc(100% - 28px);
-        }
-
-        .tab-search-select__option {
-            .dynamic-tab__close {
-                display: none;
-            }
-
-            &:hover {
-                .dynamic-tab__close {
-                    display: flex;
-                }
-            }
-        }
-
-        .more-tabs__search-icon,
-        .more-tabs__clear-tab-search {
-            position: absolute;
-            top: 10px;
-            z-index: 15;
-        }
-
-        .more-tabs__search-icon {
-            left: 10px;
-        }
-
-        .more-tabs__clear-tab-search {
-            right: 10px;
-
-            .clear-tab-search-icon {
-                rect {
-                    fill: var(--N600);
-                }
-            }
-        }
-    }
-
     .dynamic-tab__close {
         &:hover {
-            background-color: var(--R100);
+            background-color: var(--R200);
 
             svg {
                 path {
@@ -114,45 +40,130 @@
         }
     }
 
-    .dynamic-tab__border:not(:first-of-type) {
-        height: 16px;
-        border-left: 1px solid var(--N200);
-    }
+    &.variant {
+        &__rectangular {
+            [data-is-selected='true'] {
+                position: relative;
 
-    .dynamic-tabs-container,
-    .fixed-tabs-container {
-        display: flex;
-        align-items: center;
-        height: 36px;
+                &::before,
+                &::after {
+                    position: absolute;
+                    content: '';
+                    display: block;
+                    height: 100%;
+                    width: 1px;
+                    background-color: var(--N200);
+                    z-index: 1;
+                }
 
-        .dynamic-tab-selected {
-            border-bottom: 2px solid var(--bg-primary);
-            border-left: 1px solid var(--N200);
-            border-right: 1px solid var(--N200);
-            background-color: var(--bg-primary);
+                &::before {
+                    left: -1px;
+                }
 
-            + .dynamic-tab__border {
-                display: none;
+                &::after {
+                    right: -1px;
+                }
+            }
+
+            .separator {
+                position: relative;
+
+                &::after {
+                    width: 1px;
+                    height: 100%;
+                    position: absolute;
+                    content: '';
+                    background-color: var(--N200);
+                    z-index: 1;
+                }
+            }
+
+            .separator.separator-right {
+                &::after {
+                    right: -1px;
+                }
+            }
+            .separator.separator-left {
+                &::after {
+                    left: -1px;
+                }
             }
         }
 
-        .dynamic-tab__resource {
-            user-select: none;
-            text-align: center;
-            color: var(--N900);
-            padding: 8px 12px;
+        &__rounded {
+            [data-is-selected='true'] {
+                position: relative;
+                border-radius: 8px 8px 0 0;
 
-            &:hover {
-                color: var(--B500) !important;
+                &::before,
+                &::after {
+                    position: absolute;
+                    content: '';
+                    display: block;
+                }
+
+                &::before {
+                    height: 100%;
+                    width: calc(100% + 1px);
+                    background-color: transparent;
+                    z-index: 1;
+                    border: 1px solid var(--N200);
+                    border-radius: 8px 8px 0 0;
+                    left: 0;
+                }
+
+                &::after {
+                    height: 1px;
+                    width: calc(100% - 1px);
+                    background-color: var(--bg-primary);
+                    z-index: 2;
+                    bottom: 0;
+                    left: 1px;
+                }
             }
 
-            .dynamic-tab__deleted {
-                text-decoration: line-through;
+            .separator {
+                position: relative;
+
+                &::after {
+                    width: 1px;
+                    height: 16px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    content: '';
+                    position: absolute;
+                    background-color: var(--N200);
+                }
             }
 
-            &--no-title {
-                padding: 10px 12px;
+            .separator.separator-right {
+                &::after {
+                    right: -1px;
+                }
             }
+            .separator.separator-left {
+                &::after {
+                    left: -1px;
+                }
+            }
+        }
+    }
+}
+
+.dynamic-tabs-select-popup-body {
+    .dynamic-tabs-select {
+        &__menu {
+            margin-top: 0px;
+
+            border-radius: 0 0 4px 4px;
+        }
+
+        &__control {
+            border-radius: 4px 4px 0 0;
+        }
+
+        &__indicator {
+            display: none;
         }
     }
 }
