@@ -538,7 +538,7 @@ export default function CIPipeline({
     }
 
     const onDelete = async () => {
-        const response = await deleteCIPipeline(
+        await deleteCIPipeline(
             formData,
             ciPipeline,
             formData.materials,
@@ -547,11 +547,9 @@ export default function CIPipeline({
             false,
             formData.webhookConditionList,
         )
-        if (response) {
             setPageState(ViewType.FORM)
             handleClose()
             deleteWorkflow(appId, Number(workflowId))
-        }
     }
 
     const closeCIDeleteModal = (): void => {
