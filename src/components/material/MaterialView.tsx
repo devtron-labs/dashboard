@@ -587,7 +587,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             }
         }
         return (
-            <div className="flex left h-36 p-8 bcy-1 dc__border dc__no-border-top-imp dc__bottom-radius-4">
+            <div className="flex left h-36 p-8 bcy-1 border__primary dc__no-border-top-imp dc__bottom-radius-4">
                 <span className="fw-4 fs-13">
                     <InfoOutlined className="icon-dim-16 mr-6 mt-6 fcn-6" />
                 </span>
@@ -732,7 +732,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         </div>
                         {this.props.material.isExcludeRepoChecked && (
                             <div className="mt-8 ml-35">
-                                <div className="p-8 dc__top-radius-4 dc__border dc__no-bottom-border">
+                                <div className="p-8 dc__top-radius-4 border__primary dc__no-bottom-border">
                                     <p className="fw-4 fs-13 mb-0-imp">
                                         Enter file or folder paths to be included or excluded.
                                         <a
