@@ -860,7 +860,9 @@ node-details-full-screen
     const showManagedFieldsCheckbox: boolean =
         selectedTabIndex === 2 && isManifestAvailable && manifestButtonState === EditModeType.NON_EDIT
 
-    const fullScreenClassWrapper = isFullScreen ? 'cluster-full_screen' : 'cluster-terminal-view-container'
+    const fullScreenClassWrapper = isFullScreen
+        ? 'cluster-full_screen'
+        : 'cluster-terminal-view-container dc__overflow-hidden'
 
     const getNodeGroupOptions = () => {
         const nodeGroupOptions = nodeGroups.reduce((acc, group) => {

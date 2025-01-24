@@ -597,7 +597,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    getWorkflowStatus() {
+    getWorkflowStatus = () => {
         getWorkflowStatus(this.props.match.params.appId)
             .then((response) => {
                 const _processedWorkflowsData = processWorkflowStatuses(
@@ -1076,8 +1076,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.props.history.push(this.props.match.url)
     }
 
-    closeCDModal = (e: React.MouseEvent): void => {
-        e.stopPropagation()
+    closeCDModal = (e?: React.MouseEvent): void => {
+        e?.stopPropagation()
         this.setState({ searchImageTag: '' })
         this.props.history.push({
             search: '',
@@ -1473,6 +1473,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         baseURL={this.props.match.url}
                         workflows={this.state.workflows}
                         getModuleInfo={getModuleInfo}
+                        reloadWorkflowStatus={this.getWorkflowStatus}
                         appName={this.props.appContext.currentAppName}
                     />
                 )}

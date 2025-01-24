@@ -14,23 +14,35 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useEffect, useRef, useState } from 'react'
+import React, { cloneElement, RefCallback, useMemo, useRef } from 'react'
 import { useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { Dayjs } from 'dayjs'
-import { stopPropagation, ConditionalWrap, noop, OptionType, DynamicTabType } from '@devtron-labs/devtron-fe-common-lib'
-import ReactSelect, { components, InputActionMeta, OptionProps } from 'react-select'
-import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
-import { COMMON_TABS_SELECT_STYLES, EMPTY_TABS_DATA, initTabsData, checkIfDataIsStale } from './Utils'
-import { DynamicTabsProps, TabsDataType } from './Types'
-import { MoreButtonWrapper, noMatchingTabs, TabsMenu, timerTransition } from './DynamicTabs.component'
-import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
+import {
+    ConditionalWrap,
+    noop,
+    DynamicTabType,
+    Button,
+    ButtonVariantType,
+    ComponentSizeType,
+    ButtonStyleType,
+    logExceptionToSentry,
+    Progressing,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as ICCross } from '@Icons/ic-cross.svg'
+import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
+import { checkIfDataIsStale, getClassNameForVariant } from './utils'
+import { DynamicTabsProps } from './types'
 import Timer from './DynamicTabs.timer'
-import { ReactComponent as Cross } from '../../../assets/icons/ic-cross.svg'
-import { ReactComponent as SearchIcon } from '../../../assets/icons/ic-search.svg'
-import { ReactComponent as ClearIcon } from '../../../assets/icons/ic-error.svg'
-import { ReactComponent as RefreshIcon } from '../../../assets/icons/ic-arrow-clockwise.svg'
+import DynamicTabsSelect from './DynamicTabsSelect'
 import './DynamicTabs.scss'
+
+export const timerTransition = (): JSX.Element => (
+    <div className="flex dc__gap-8">
+        <Progressing size={18} />
+        <span>Syncing...</span>
+    </div>
+)
 
 /**
  * This component enables a way to display dynamic tabs with the following functionalities,
@@ -42,41 +54,44 @@ import './DynamicTabs.scss'
  * Note: To be used with useTabs hook
  */
 const DynamicTabs = ({
-    tabs,
+    tabs = [],
+    variant,
     removeTabByIdentifier,
     markTabActiveById,
     stopTabByIdentifier,
-    refreshData,
-    setIsDataStale,
-    hideTimer,
+    setIsDataStale = noop,
+    timerConfig,
+    iconsConfig = {},
 }: DynamicTabsProps) => {
     const { push } = useHistory()
-    const tabsSectionRef = useRef<HTMLDivElement>(null)
-    const fixedContainerRef = useRef<HTMLDivElement>(null)
-    const moreButtonRef = useRef(null)
-    const [tabsData, setTabsData] = useState<TabsDataType>(EMPTY_TABS_DATA)
-    const [selectedTab, setSelectedTab] = useState<DynamicTabType>(null)
-    const [tabSearchText, setTabSearchText] = useState('')
-    const [isMenuOpen, setIsMenuOpen] = useState(false)
-    const tabPopupMenuRef = useRef(null)
-    const CLUSTER_TERMINAL_TAB = 'cluster_terminal-Terminal'
 
-    const closeMenu = () => {
-        setIsMenuOpen(false)
-        setTabSearchText('')
-    }
+    const dynamicTabsContainerRef = useRef<HTMLDivElement>(null)
 
-    useEffect(() => {
-        initTabsData(tabs, setTabsData, setSelectedTab, closeMenu)
-    }, [tabs])
+    const { fixedTabs, dynamicTabs, selectedTab } = useMemo(
+        () => ({
+            fixedTabs: tabs.filter((tab) => tab.type === 'fixed'),
+            dynamicTabs: tabs.filter((tab) => tab.type === 'dynamic'),
+            selectedTab: tabs.find((tab) => tab.isSelected) ?? null,
+        }),
+        [tabs],
+    )
+    const selectedTabTimerConfig = selectedTab && timerConfig ? timerConfig[selectedTab.id] : null
 
     const getMarkTabActiveHandler = (tab: DynamicTabType) => () => {
         markTabActiveById(tab.id)
-        push(tab.url)
+            .then((isFound) => {
+                if (isFound) {
+                    push(tab.url)
+                    return
+                }
+
+                logExceptionToSentry('Tried to mark a tab active which was not found!')
+            })
+            .catch(noop)
     }
 
     const getTabNavLink = (tab: DynamicTabType) => {
-        const { name, isDeleted, isSelected, iconPath, dynamicTitle, title, showNameOnSelect, isAlive, hideName } = tab
+        const { name, isSelected, dynamicTitle, title, showNameOnSelect, isAlive, hideName } = tab
         const shouldRenderTitle = (!showNameOnSelect || isAlive || isSelected) && !hideName
 
         const _title = dynamicTitle || title
@@ -88,11 +103,13 @@ const DynamicTabs = ({
                 data-testid={isSelected}
                 onClick={getMarkTabActiveHandler(tab)}
                 aria-label={`Select tab ${_title}`}
+                role="tab"
             >
-                <div
-                    className={`dynamic-tab__resource dc__ellipsis-right flex dc__gap-8 ${isDeleted ? 'dynamic-tab__deleted cr-5' : ''} ${!shouldRenderTitle ? 'dynamic-tab__resource--no-title' : ''}`}
-                >
-                    {iconPath && <img className="icon-dim-16" src={iconPath} alt={name} />}
+                <div className={`px-12 dc__ellipsis-right flex dc__gap-8 ${!shouldRenderTitle ? 'py-10' : 'py-8'}`}>
+                    {iconsConfig[tab.id] &&
+                        cloneElement(iconsConfig[tab.id], {
+                            className: `icon-dim-16 ${iconsConfig[tab.id].props.className}`,
+                        })}
                     {shouldRenderTitle && (
                         <span className="fs-12 fw-6 lh-20 dc__ellipsis-right" data-testid={name}>
                             {_title}
@@ -115,6 +132,27 @@ const DynamicTabs = ({
         stopTabByIdentifier(e.currentTarget.dataset.id)
             .then((url) => url && push(url))
             .catch(noop)
+    }
+
+    const selectedTabRefCallback: RefCallback<HTMLDivElement> = (node) => {
+        if (!node || node.dataset.isSelected !== 'true' || !dynamicTabsContainerRef.current) {
+            return
+        }
+
+        // NOTE: we can't use scrollIntoView since that will also scroll it vertically
+        // therefore we need to conditionally scroll and that too in the horizontal direction only
+        const { right, left } = node.getBoundingClientRect()
+        const { right: parentRight, left: parentLeft } = dynamicTabsContainerRef.current.getBoundingClientRect()
+
+        // NOTE: please look into https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
+        // for more information what left and right pertain to
+        if (left < parentLeft) {
+            dynamicTabsContainerRef.current.scrollLeft += left - parentLeft
+        }
+
+        if (right > parentRight) {
+            dynamicTabsContainerRef.current.scrollLeft += right - parentRight
+        }
     }
 
     const getTabTippyContent = (title: string) => {
@@ -140,8 +178,9 @@ const DynamicTabs = ({
         </div>
     )
 
-    const renderTab = (tab: DynamicTabType, idx: number, isFixed: boolean, tippyConfig?: any) => {
+    const renderTab = (tab: DynamicTabType, tippyConfig?: any) => {
         const _showNameOnSelect = tab.showNameOnSelect && tab.isAlive && !tab.hideName
+        const isFixed = tab.type === 'fixed'
 
         const renderWithTippy: (children: JSX.Element) => React.ReactNode = (children) => (
             <Tippy
@@ -155,134 +194,49 @@ const DynamicTabs = ({
                 {children}
             </Tippy>
         )
-        return (
-            <Fragment key={`${idx}-tab`}>
-                <div className={!tab.isSelected ? 'dynamic-tab__border' : ''} />
-                <ConditionalWrap condition={!isFixed} wrap={renderWithTippy}>
-                    <div
-                        id={tab.name}
-                        className={`${isFixed ? 'fixed-tab' : 'dynamic-tab'} flex dc__gap-5 cn-9 ${
-                            tab.isSelected ? 'dynamic-tab-selected' : ''
-                        }`}
-                    >
-                        {getTabNavLink(tab)}
-                        {_showNameOnSelect && (
-                            <button
-                                type="button"
-                                className="dc__unset-button-styles pr-12"
-                                aria-label={`Stop tab ${tab.name}`}
-                                onClick={handleTabStopAction}
-                                data-id={tab.id}
-                            >
-                                <div className="dynamic-tab__close flex br-4">
-                                    <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
-                                </div>
-                            </button>
-                        )}
-                        {!isFixed && (
-                            <button
-                                type="button"
-                                className="dc__unset-button-styles pr-12"
-                                aria-label={`Close tab ${tab.name}`}
-                                onClick={handleTabCloseAction}
-                                data-id={tab.id}
-                            >
-                                <div className="dynamic-tab__close flex br-4">
-                                    <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
-                                </div>
-                            </button>
-                        )}
-                    </div>
-                </ConditionalWrap>
-            </Fragment>
-        )
-    }
-
-    const highLightText = (highlighted: string) => `<mark>${highlighted}</mark>`
-
-    const tabsOption = (props: OptionProps<OptionType & DynamicTabType>) => {
-        const { selectProps, data } = props
-        selectProps.styles.option = getCustomOptionSelectionStyle({
-            display: 'flex',
-            alignItems: 'center',
-        })
-
-        const splittedLabel = data.label.split('/')
-        const regex = new RegExp(tabSearchText, 'gi')
 
         return (
-            <div onClick={stopPropagation}>
-                <components.Option {...props}>
-                    <div className="tab-option__select dc__highlight-text">
-                        <small
-                            className="cn-7"
-                            // eslint-disable-next-line react/no-danger
-                            dangerouslySetInnerHTML={{
-                                __html: splittedLabel[0].replace(regex, highLightText),
-                            }}
-                        />
-                        {splittedLabel[1] && (
-                            <div
-                                className="w-100 dc__ellipsis-right"
-                                // eslint-disable-next-line react/no-danger
-                                dangerouslySetInnerHTML={{
-                                    __html: splittedLabel[1].replace(regex, highLightText),
-                                }}
-                            />
-                        )}
-                    </div>
-                    <button
-                        type="button"
-                        className="dc__unset-button-styles"
-                        aria-label={`Close tab ${data.name}`}
-                        onClick={handleTabCloseAction}
-                        data-id={data.id}
-                    >
-                        <div className="dynamic-tab__close icon-dim-16 flex br-5 ml-auto">
-                            <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
-                        </div>
-                    </button>
-                </components.Option>
-            </div>
+            <ConditionalWrap key={tab.id} condition={!isFixed} wrap={renderWithTippy}>
+                <div
+                    ref={selectedTabRefCallback}
+                    data-is-selected={tab.isSelected}
+                    id={tab.name}
+                    className={`${isFixed ? 'fixed-tab' : 'dynamic-tab'} flex dc__gap-5 cn-9 ${tab.isSelected ? 'dynamic-tab-selected bg__primary' : ''}`}
+                >
+                    {getTabNavLink(tab)}
+                    {_showNameOnSelect && (
+                        <button
+                            type="button"
+                            // NOTE: need dc__zi-2 because the before pseudo class renders
+                            // the rounded corners and it has a z-index of 1
+                            className="dc__unset-button-styles pr-12 dc__zi-2"
+                            aria-label={`Stop tab ${tab.name}`}
+                            onClick={handleTabStopAction}
+                            data-id={tab.id}
+                        >
+                            <div className="dynamic-tab__close flex br-4">
+                                <ICCross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
+                            </div>
+                        </button>
+                    )}
+                    {!isFixed && (
+                        <button
+                            type="button"
+                            // NOTE: need dc__zi-2 because the before pseudo class renders
+                            // the rounded corners and it has a z-index of 1
+                            className="dc__unset-button-styles pr-12 dc__zi-2"
+                            aria-label={`Close tab ${tab.name}`}
+                            onClick={handleTabCloseAction}
+                            data-id={tab.id}
+                        >
+                            <div className="dynamic-tab__close flex br-4">
+                                <ICCross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
+                            </div>
+                        </button>
+                    )}
+                </div>
+            </ConditionalWrap>
         )
-    }
-
-    const handleOnChangeSearchText = (newValue: string, actionMeta: InputActionMeta) => {
-        if ((actionMeta.action === 'input-blur' || actionMeta.action === 'menu-close') && actionMeta.prevInputValue) {
-            setTabSearchText(actionMeta.prevInputValue)
-        } else {
-            setTabSearchText(newValue)
-        }
-    }
-
-    const focusSearchTabInput = () => {
-        moreButtonRef.current?.inputRef?.focus()
-    }
-
-    const clearSearchInput = () => {
-        setTabSearchText('')
-        focusSearchTabInput()
-    }
-
-    const onChangeTab = (option: DynamicTabType): void => {
-        if (option) {
-            setSelectedTab(option)
-            setIsMenuOpen(false)
-            markTabActiveById(option.id)
-            push(option.url)
-        }
-    }
-
-    const toggleMenu = () => {
-        setIsMenuOpen((isOpen) => !isOpen)
-        setTabSearchText('')
-    }
-
-    const escHandler = (e: React.KeyboardEvent) => {
-        if (e.key !== 'Escape') {
-            return
-        }
-        closeMenu()
     }
 
     const updateOnStaleData = (now: Dayjs) => {
@@ -295,105 +249,57 @@ const DynamicTabs = ({
     }
 
     const timerTranspose = (output: string) => (
-        <>
-            <Tippy className="default-tt" arrow={false} placement="top" content="Sync Now">
-                <span>
-                    <RefreshIcon
-                        data-testid="refresh-icon"
-                        className="icon-dim-16 scn-6 flexbox mr-6 cursor ml-12"
-                        onClick={refreshData}
-                    />
-                </span>
-            </Tippy>
-            {selectedTab?.name === AppDetailsTabs.k8s_Resources && (
-                <div className="flex">
-                    {output}
-                    <span className="ml-2">ago</span>
-                </div>
+        <div className="flexbox dc__gap-6 dc__align-items-center dc__no-shrink">
+            {selectedTabTimerConfig.reload && (
+                <Button
+                    variant={ButtonVariantType.borderLess}
+                    size={ComponentSizeType.xs}
+                    style={ButtonStyleType.neutral}
+                    isLoading={selectedTabTimerConfig.isLoading ?? false}
+                    icon={<ICArrowClockwise />}
+                    dataTestId="refresh-icon"
+                    onClick={selectedTabTimerConfig.reload}
+                    ariaLabel="Sync now"
+                />
             )}
-        </>
+            {selectedTabTimerConfig.showTimeSinceLastSync && <span>{output}&nbsp;ago</span>}
+        </div>
     )
 
-    const timerForSync = () =>
-        selectedTab && (
-            <Timer
-                key={selectedTab.componentKey}
-                start={selectedTab.lastSyncMoment}
-                callback={updateOnStaleData}
-                transition={timerTransition}
-                transpose={timerTranspose}
-            />
-        )
-
     return (
-        <div ref={tabsSectionRef} className="dynamic-tabs-section flexbox pl-12 pr-12 w-100 dc__outline-none-imp">
-            {tabsData.fixedTabs.length > 0 && (
-                <div ref={fixedContainerRef} className="fixed-tabs-container">
-                    {tabsData.fixedTabs.map((tab, idx) => renderTab(tab, idx, true))}
-                </div>
-            )}
-            {tabsData.dynamicTabs.length > 0 && (
-                <div
-                    className={`dynamic-tabs-container ${tabsData.dynamicTabs[0].isSelected || tabsData.fixedTabs[tabsData.fixedTabs.length - 1].isSelected ? '' : 'dc__border-left'}`}
-                >
-                    {tabsData.dynamicTabs.map((tab, idx) => renderTab(tab, idx, false, tab.tippyConfig))}
-                </div>
-            )}
-            {(tabsData.dynamicTabs.length > 0 || (!hideTimer && selectedTab?.id !== CLUSTER_TERMINAL_TAB)) && (
-                <div
-                    className={`ml-auto flexbox dc__no-shrink dc__align-self-stretch ${tabsData.dynamicTabs[(tabsData.dynamicTabs?.length || 0) - 1]?.isSelected ? '' : 'dc__border-left'}`}
-                >
-                    {!hideTimer && selectedTab?.id !== CLUSTER_TERMINAL_TAB && (
-                        <div className="flexbox fw-6 cn-7 dc__align-items-center">{timerForSync()}</div>
+        <div
+            className={`dynamic-tabs-section ${getClassNameForVariant(variant)} flexbox pl-12 pr-12 w-100 dc__outline-none-imp h-36 w-100 dc__box-shadow`}
+        >
+            <div
+                className={`dc__separated-flexbox dc__separated-flexbox--tight ${dynamicTabs.length ? 'separator separator-right' : ''}`}
+            >
+                {fixedTabs.map((tab) => renderTab(tab, fixedTabs.length))}
+            </div>
+            <div
+                className="flex-grow-1 dynamic-tabs-container dc__separated-flexbox dc__separated-flexbox--tight"
+                ref={dynamicTabsContainerRef}
+            >
+                {dynamicTabs.map((tab) => renderTab(tab, tab.tippyConfig))}
+            </div>
+            {(dynamicTabs.length > 0 || selectedTabTimerConfig) && (
+                <div className="flexbox dc__no-shrink dc__gap-12 pl-12 separator-left separator dc__align-items-center">
+                    {selectedTabTimerConfig && (
+                        <Timer
+                            key={selectedTab.componentKey}
+                            start={selectedTab.lastSyncMoment}
+                            callback={updateOnStaleData}
+                            transition={timerTransition}
+                            transpose={timerTranspose}
+                        />
                     )}
 
-                    {tabsData.dynamicTabs.length > 0 && (
-                        <MoreButtonWrapper
-                            tabPopupMenuRef={tabPopupMenuRef}
-                            isMenuOpen={isMenuOpen}
-                            onClose={closeMenu}
-                            toggleMenu={toggleMenu}
-                        >
-                            <div
-                                className="more-tabs__search-icon icon-dim-16 cursor-text"
-                                onClick={focusSearchTabInput}
-                            >
-                                <SearchIcon className="icon-dim-16" />
-                            </div>
-                            <ReactSelect
-                                ref={moreButtonRef}
-                                placeholder="Search tabs"
-                                classNamePrefix="tab-search-select"
-                                options={tabsData.dynamicTabs}
-                                value={selectedTab}
-                                inputValue={tabSearchText}
-                                onChange={onChangeTab}
-                                onKeyDown={escHandler}
-                                onInputChange={handleOnChangeSearchText}
-                                tabSelectsValue={false}
-                                backspaceRemovesValue={false}
-                                controlShouldRenderValue={false}
-                                hideSelectedOptions={false}
-                                menuIsOpen
-                                autoFocus
-                                noOptionsMessage={noMatchingTabs}
-                                components={{
-                                    IndicatorSeparator: null,
-                                    DropdownIndicator: null,
-                                    Option: tabsOption,
-                                    Menu: TabsMenu,
-                                }}
-                                styles={COMMON_TABS_SELECT_STYLES}
-                            />
-                            <div className="more-tabs__clear-tab-search icon-dim-16 cursor">
-                                {tabSearchText && (
-                                    <ClearIcon
-                                        className="clear-tab-search-icon icon-dim-16"
-                                        onClick={clearSearchInput}
-                                    />
-                                )}
-                            </div>
-                        </MoreButtonWrapper>
+                    {dynamicTabs.length > 0 && (
+                        <DynamicTabsSelect
+                            tabs={dynamicTabs}
+                            getMarkTabActiveHandler={getMarkTabActiveHandler}
+                            selectedTab={selectedTab}
+                            handleTabCloseAction={handleTabCloseAction}
+                        />
                     )}
                 </div>
             )}

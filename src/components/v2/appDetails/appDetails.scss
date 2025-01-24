@@ -47,3 +47,7 @@
 .app-info-bg-gradient {
     background: linear-gradient(to top, var(--bg-primary) 0, var(--bg-primary) 50px, var(--bg-tertiary) 50px);
 }
+
+.node-tree-detail-tab__content {
+    height: calc(100vh - 120px);
+}
