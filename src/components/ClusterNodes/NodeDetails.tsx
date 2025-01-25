@@ -49,7 +49,7 @@ import { ReactComponent as Storage } from '../../assets/icons/ic-storage.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as CordonIcon } from '../../assets/icons/ic-cordon.svg'
-import { ReactComponent as UncordonIcon } from '../../assets/icons/ic-medium-play.svg'
+import { ReactComponent as UncordonIcon } from '../../assets/icons/ic-play-outline.svg'
 import { ReactComponent as DrainIcon } from '../../assets/icons/ic-clean-brush.svg'
 import { ReactComponent as EditTaintsIcon } from '../../assets/icons/ic-spraycan.svg'
 import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
@@ -735,7 +735,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                     <span className="flex left fw-6 cb-5 fs-12 cursor" onClick={showCordonNodeModal}>
                         {nodeDetail?.unschedulable ? (
                             <>
-                                <UncordonIcon className="icon-dim-16 mr-5 scb-5 dc__stroke-width-4" />
+                                <UncordonIcon className="icon-dim-16 mr-5 scb-5" />
                                 {CLUSTER_NODE_ACTIONS_LABELS.uncordon}
                             </>
                         ) : (

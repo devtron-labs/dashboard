@@ -223,6 +223,10 @@ const BaseResourceListContent = ({
                 return acc
             }, {}) as Record<string, K8sResourceDetailDataType>) ?? {},
         )
+
+        handleBulkSelection({
+            action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
+        })
     }, [resourceListOffset, filteredResourceList, pageSize])
 
     useEffect(
