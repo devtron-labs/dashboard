@@ -735,7 +735,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                     <span className="flex left fw-6 cb-5 fs-12 cursor" onClick={showCordonNodeModal}>
                         {nodeDetail?.unschedulable ? (
                             <>
-                                <UncordonIcon className="icon-dim-16 mr-5 scb-5 dc__stroke-width-4" />
+                                <UncordonIcon className="icon-dim-16 mr-5 scb-5" />
                                 {CLUSTER_NODE_ACTIONS_LABELS.uncordon}
                             </>
                         ) : (
