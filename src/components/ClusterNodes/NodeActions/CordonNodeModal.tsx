@@ -18,20 +18,22 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import {
     showError,
-    Progressing,
-    ConfirmationDialog,
     ToastVariantType,
     ToastManager,
     cordonNodeCapacity,
+    ButtonVariantType,
+    ButtonStyleType,
+    ConfirmationModal,
+    CORDON_NODE_MODAL_MESSAGING,
+    ConfirmationModalVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import CordonIcon from '@Icons/ic-medium-pause.svg'
-import UncordonIcon from '@Icons/ic-medium-play.svg'
 import { CordonNodeModalType } from '../types'
-import { CORDON_NODE_MODAL_MESSAGING } from '../constants'
 
 const CordonNodeModal = ({ name, version, kind, unschedulable, closePopup }: CordonNodeModalType) => {
     const { clusterId } = useParams<{ clusterId: string }>()
     const [apiCallInProgress, setAPICallInProgress] = useState(false)
+    // NOTE: if node is unschedulable it means the node is already cordoned
+    const isCordonButton = !unschedulable
 
     const onClose = (): void => {
         closePopup()
@@ -64,46 +66,61 @@ const CordonNodeModal = ({ name, version, kind, unschedulable, closePopup }: Cor
         }
     }
 
-    const getButtonText = () => {
-        if (apiCallInProgress) {
-            return <Progressing />
+    const getButtonConfig = () => {
+        const secondaryButtonConfig = {
+            dataTestId: 'cancel-button',
+            text: CORDON_NODE_MODAL_MESSAGING.cancel,
+            variant: ButtonVariantType.secondary,
+            disabled: apiCallInProgress,
+            onClick: onClose,
         }
-        return unschedulable ? CORDON_NODE_MODAL_MESSAGING.uncordon : CORDON_NODE_MODAL_MESSAGING.cordon
+        const commonPrimaryButtonConfig = {
+            variant: ButtonVariantType.primary,
+            isLoading: apiCallInProgress,
+            onClick: cordonAPI,
+        }
+
+        if (isCordonButton) {
+            return {
+                primaryButtonConfig: {
+                    text: CORDON_NODE_MODAL_MESSAGING.cordon,
+                    style: ButtonStyleType.negative,
+                    ...commonPrimaryButtonConfig,
+                },
+                secondaryButtonConfig,
+            } as const
+        }
+
+        return {
+            primaryButtonConfig: {
+                text: CORDON_NODE_MODAL_MESSAGING.uncordon,
+                style: ButtonStyleType.default,
+                ...commonPrimaryButtonConfig,
+            },
+            secondaryButtonConfig,
+        } as const
     }
 
     return (
-        <ConfirmationDialog className="confirmation-dialog__body--w-400">
-            {unschedulable ? (
-                <>
-                    <ConfirmationDialog.Icon src={UncordonIcon} />
-                    <ConfirmationDialog.Body title={`${CORDON_NODE_MODAL_MESSAGING.uncordon} ‘${name}’ ?`} />
-                    <p className="fs-14 fw-4 lh-20">{CORDON_NODE_MODAL_MESSAGING.uncordonInfoText.lineOne}</p>
-                    <br />
-                    <p className="fs-14 fw-4 lh-20">{CORDON_NODE_MODAL_MESSAGING.uncordonInfoText.lineTwo}</p>
-                </>
-            ) : (
-                <>
-                    <ConfirmationDialog.Icon src={CordonIcon} />
-                    <ConfirmationDialog.Body title={`${CORDON_NODE_MODAL_MESSAGING.cordon} ‘${name}’ ?`} />
-                    <p className="fs-14 fw-4 lh-20">{CORDON_NODE_MODAL_MESSAGING.cordonInfoText.lineOne}</p>
-                    <br />
-                    <p className="fs-14 fw-4 lh-20">{CORDON_NODE_MODAL_MESSAGING.cordonInfoText.lineTwo}</p>
-                </>
-            )}
-            <ConfirmationDialog.ButtonGroup>
-                <button type="button" className="flex cta cancel h-36" disabled={apiCallInProgress} onClick={onClose}>
-                    {CORDON_NODE_MODAL_MESSAGING.cancel}
-                </button>
-                <button
-                    type="button"
-                    className={`flex cta ${unschedulable ? '' : 'delete'} h-36`}
-                    disabled={apiCallInProgress}
-                    onClick={cordonAPI}
-                >
-                    {getButtonText()}
-                </button>
-            </ConfirmationDialog.ButtonGroup>
-        </ConfirmationDialog>
+        <ConfirmationModal
+            variant={ConfirmationModalVariantType.custom}
+            Icon={
+                isCordonButton ? (
+                    <CORDON_NODE_MODAL_MESSAGING.CordonIcon />
+                ) : (
+                    <CORDON_NODE_MODAL_MESSAGING.UncordonIcon />
+                )
+            }
+            title={`${CORDON_NODE_MODAL_MESSAGING[isCordonButton ? 'cordon' : 'uncordon']} node '${name}'`}
+            handleClose={onClose}
+            showConfirmationModal
+            subtitle={
+                isCordonButton
+                    ? CORDON_NODE_MODAL_MESSAGING.cordonInfoText
+                    : CORDON_NODE_MODAL_MESSAGING.uncordonInfoText
+            }
+            buttonConfig={getButtonConfig()}
+        />
     )
 }
 
