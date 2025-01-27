@@ -397,8 +397,8 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
 
     const renderSubTitle = () => (
         <>
-            <p className="fs-13 cn-7 lh-1-54">{APP_CONFIG_TEXT.DELETE_APPS.SUBTITLE_PARA1}</p>
-            <p className="fs-13 cn-7 lh-1-54">{APP_CONFIG_TEXT.DELETE_APPS.SUBTITLE_PARA2}</p>
+            <p className="fs-13 cn-7 lh-1-54 m-0">{APP_CONFIG_TEXT.DELETE_APPS.SUBTITLE_PARA1}</p>
+            <p className="fs-13 cn-7 lh-1-54 m-0">{APP_CONFIG_TEXT.DELETE_APPS.SUBTITLE_PARA2}</p>
         </>
     )
 
@@ -415,7 +415,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
         return (
             <>
                 <ConfirmationModal
-                    title={`Delete '${appName}'?`}
+                    title={`Delete ${isJob ? DeleteComponentsName.Job : DeleteComponentsName.Application} '${appName}' ?`}
                     variant={ConfirmationModalVariantType.delete}
                     showConfirmationModal={state.canDeleteApp}
                     subtitle={renderSubTitle()}
