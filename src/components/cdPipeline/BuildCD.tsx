@@ -65,6 +65,7 @@ import { BuildCDProps } from './types'
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
 const MigrateHelmReleaseBody = importComponentFromFELibrary('MigrateHelmReleaseBody', null, 'function')
+const ApprovalPolicyRedirectCard = importComponentFromFELibrary('ApprovalPolicyRedirectCard', null, 'function')
 
 export default function BuildCD({
     isAdvanced,
@@ -776,6 +777,9 @@ export default function BuildCD({
                     !noGitOpsModuleInstalledAndConfigured &&
                     renderDeploymentAppType()}
                 {isAdvanced ? renderAdvancedDeploymentStrategy() : renderBasicDeploymentStrategy()}
+                {isAdvanced &&
+                    ApprovalPolicyRedirectCard &&
+                    <ApprovalPolicyRedirectCard />}
                 {isAdvanced && (
                     <>
                         <CustomImageTags
