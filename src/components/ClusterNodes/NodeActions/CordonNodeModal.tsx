@@ -26,6 +26,7 @@ import {
     ConfirmationModal,
     CORDON_NODE_MODAL_MESSAGING,
     ConfirmationModalVariantType,
+    ConfirmationModalProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CordonNodeModalType } from '../types'
 
@@ -68,7 +69,7 @@ const CordonNodeModal = ({ name, version, kind, unschedulable, closePopup }: Cor
 
     const { CordonIcon, UncordonIcon } = CORDON_NODE_MODAL_MESSAGING
 
-    const getButtonConfig = () => {
+    const getButtonConfig = (): ConfirmationModalProps['buttonConfig'] => {
         const secondaryButtonConfig = {
             dataTestId: 'cancel-button',
             text: CORDON_NODE_MODAL_MESSAGING.cancel,
