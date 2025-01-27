@@ -114,7 +114,7 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
                     name={name}
                     version={version}
                     kind={kind}
-                    unschedulable={!!nodeData.unschedulable as boolean}
+                    unschedulable={!!nodeData.unschedulable}
                     closePopup={hideCordonNodeModal}
                 />
             )

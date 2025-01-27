@@ -66,6 +66,8 @@ const CordonNodeModal = ({ name, version, kind, unschedulable, closePopup }: Cor
         }
     }
 
+    const { CordonIcon, UncordonIcon } = CORDON_NODE_MODAL_MESSAGING
+
     const getButtonConfig = () => {
         const secondaryButtonConfig = {
             dataTestId: 'cancel-button',
@@ -104,13 +106,7 @@ const CordonNodeModal = ({ name, version, kind, unschedulable, closePopup }: Cor
     return (
         <ConfirmationModal
             variant={ConfirmationModalVariantType.custom}
-            Icon={
-                isCordonButton ? (
-                    <CORDON_NODE_MODAL_MESSAGING.CordonIcon />
-                ) : (
-                    <CORDON_NODE_MODAL_MESSAGING.UncordonIcon />
-                )
-            }
+            Icon={isCordonButton ? <CordonIcon /> : <UncordonIcon />}
             title={`${CORDON_NODE_MODAL_MESSAGING[isCordonButton ? 'cordon' : 'uncordon']} node '${name}'`}
             handleClose={onClose}
             showConfirmationModal

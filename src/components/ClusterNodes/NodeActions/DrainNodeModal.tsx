@@ -45,6 +45,8 @@ const DrainNodeModal = ({ name, version, kind, closePopup }: NodeActionModalProp
         closePopup()
     }
 
+    const { DrainIcon } = DRAIN_NODE_MODAL_MESSAGING
+
     const drainAPI = async () => {
         try {
             setAPICallInProgress(true)
@@ -73,7 +75,7 @@ const DrainNodeModal = ({ name, version, kind, closePopup }: NodeActionModalProp
             handleClose={onClose}
             showConfirmationModal
             variant={ConfirmationModalVariantType.custom}
-            Icon={<DRAIN_NODE_MODAL_MESSAGING.DrainIcon className="scr-5" />}
+            Icon={<DrainIcon className="scr-5" />}
             title={`${DRAIN_NODE_MODAL_MESSAGING.Actions.drain} ‘${name}’ ?`}
             subtitle={DRAIN_NODE_MODAL_MESSAGING.Actions.infoText}
             buttonConfig={{
