@@ -30,6 +30,8 @@ import {
     ToastManager,
     Button,
     ComponentSizeType,
+    ButtonVariantType,
+    ButtonComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, useHistory, withRouter } from 'react-router-dom'
 import Tippy from '@tippyjs/react/headless'
@@ -206,10 +208,6 @@ class ClusterList extends Component<ClusterListProps, any> {
         this.setState({ showEditCluster: !this.state.showEditCluster })
     }
 
-    handleShowCreateClusterForm = () => {
-        this.props.history.push(`${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_CLUSTER}`)
-    }
-
     handleCloseCreateClusterForm = () => {
         this.props.history.push(URLS.GLOBAL_CONFIG_CLUSTER)
     }
@@ -220,6 +218,10 @@ class ClusterList extends Component<ClusterListProps, any> {
 
     toggleBrowseFile() {
         this.setState({ browseFile: !this.state.browseFile })
+    }
+
+    handleCloseCreateEnvironmentForm = () => {
+        this.props.history.push(URLS.GLOBAL_CONFIG_CLUSTER)
     }
 
     render() {
@@ -256,9 +258,12 @@ class ClusterList extends Component<ClusterListProps, any> {
                     />
                     <Button
                         dataTestId="add_cluster_button"
-                        onClick={this.handleShowCreateClusterForm}
-                        size={ComponentSizeType.medium}
+                        linkProps={{
+                            to: `${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_CLUSTER}`,
+                        }}
+                        component={ButtonComponentType.link}
                         startIcon={<Add />}
+                        size={ComponentSizeType.medium}
                         text="Add cluster"
                     />
                 </div>
@@ -310,6 +315,28 @@ class ClusterList extends Component<ClusterListProps, any> {
                         />
                     </Drawer>
                 </Route>
+
+                <Route path={`${URLS.GLOBAL_CONFIG_CLUSTER}/:clusterId/${URLS.CREATE_ENVIRONMENT}`}
+                    render={(props) => {
+                        const clusterId = props.match.params.clusterId
+                        const { isVirtualCluster, prometheus_url } = this.state.clusters.find((cluster) => cluster.id == clusterId) || {}
+                        
+                        return (
+                            <ClusterEnvironmentDrawer
+                                reload={this.initialise}
+                                id={null}
+                                environmentName={null}
+                                clusterId={+clusterId}
+                                namespace={null}
+                                prometheusEndpoint={prometheus_url}
+                                isProduction={null}
+                                description={null}
+                                hideClusterDrawer={this.handleCloseCreateEnvironmentForm}
+                                isVirtual={isVirtualCluster}
+                            />
+                        )
+                    }}
+                />
             </section>
         )
     }
@@ -605,7 +632,7 @@ const Cluster = ({
         setDeleteEnv(false)
     }
 
-    const addCluster = () => {
+    const handleAddEnvironment = () => {
         setEnvironment({
             id: null,
             environmentName: null,
@@ -671,17 +698,16 @@ const Cluster = ({
                             tag={isProd ? 'Prod' : null}
                         />
                         {clusterId && (
-                            <div className="flex dc__align-right">
-                                <div
-                                    className="flex mr-16"
-                                    data-testid={`add-environment-button-${cluster_name}`}
-                                    onClick={addCluster}
-                                >
-                                    <List.Logo>
-                                        <Add className="icon-dim-20 fcb-5 mr-8" />
-                                    </List.Logo>
-                                    <div className="fw-6 fs-13 cb-5">Add Environment</div>
-                                </div>
+                            <div className="flex dc__align-right dc__gap-16">
+                                <Button
+                                    dataTestId={`add-environment-button-${cluster_name}`}
+                                    onClick={handleAddEnvironment}
+                                    startIcon={<Add />}
+                                    text="Add Environment"
+                                    variant={ButtonVariantType.text}
+                                    size={ComponentSizeType.small}
+                                />
+
                                 <div className="dc__divider" />
                             </div>
                         )}
