@@ -771,7 +771,7 @@ const Cluster = ({
                                                 {description}
                                             </div>
                                             <div className="dc__visible-hover--child">
-                                                <div className="flex">
+                                                <div className="flex dc__gap-4">
                                                     <Button
                                                         dataTestId={`env-edit-button-${environment_name}`}
                                                         icon={<PencilEdit />}
