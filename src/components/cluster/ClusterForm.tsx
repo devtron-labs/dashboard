@@ -127,7 +127,7 @@ export default function ClusterForm({
     isTlsConnection,
     toggleCheckTlsConnection,
     setTlsConnectionFalse,
-    toggleShowAddCluster,
+    handleCloseCreateClusterForm,
     toggleKubeConfigFile,
     isKubeConfigFile,
     isClusterDetails,
@@ -532,7 +532,7 @@ export default function ClusterForm({
                 variant: ToastVariantType.success,
                 description: `Successfully ${id ? 'updated' : 'saved'}`,
             })
-            toggleShowAddCluster()
+            handleCloseCreateClusterForm()
             setRemoteConnectionFalse()
             setTlsConnectionFalse()
             reload()
@@ -654,7 +654,7 @@ export default function ClusterForm({
         }
         setRemoteConnectionFalse()
         setTlsConnectionFalse()
-        toggleShowAddCluster()
+        handleCloseCreateClusterForm()
 
         setLoadingState(false)
         reload()
@@ -1438,7 +1438,7 @@ export default function ClusterForm({
         toggleEditMode(e)
         setLoadingState(false)
         reload()
-        toggleShowAddCluster()
+        handleCloseCreateClusterForm()
     }
 
     return getClusterVar ? (

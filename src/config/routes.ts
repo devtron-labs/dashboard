@@ -131,6 +131,7 @@ export const URLS = {
     WEBHOOK_RECEIVED_PAYLOAD_ID: 'payload-id',
     SOFTWARE_DISTRIBUTION_HUB: '/software-distribution-hub',
     MONITORING_DASHBOARD: 'monitoring-dashboard',
+    CREATE_CLUSTER: '/create/cluster'
 }
 
 export enum APP_COMPOSE_STAGE {

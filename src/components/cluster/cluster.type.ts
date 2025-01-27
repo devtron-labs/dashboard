@@ -177,4 +177,5 @@ export const RemoteConnectionTypeCluster = 'cluster'
 
 export type ClusterFormProps = Record<string, any> & {
     isProd: boolean
+    handleCloseCreateClusterForm: () => void
 }

@@ -28,8 +28,10 @@ import {
     DeleteComponent,
     ToastVariantType,
     ToastManager,
+    Button,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory } from 'react-router-dom'
+import { Route, useHistory, withRouter } from 'react-router-dom'
 import Tippy from '@tippyjs/react/headless'
 import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
 import { importComponentFromFELibrary, useForm } from '../common'
@@ -59,7 +61,7 @@ import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAn
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 const getSSHConfig = importComponentFromFELibrary('getSSHConfig', noop, 'function')
 
-export default class ClusterList extends Component<ClusterListProps, any> {
+class ClusterList extends Component<ClusterListProps, any> {
     timerRef
 
     constructor(props) {
@@ -68,7 +70,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
             view: ViewType.LOADING,
             clusters: [],
             clusterEnvMap: {},
-            showAddCluster: false,
             isTlsConnection: false,
             appCreationType: AppCreationType.Blank,
             isKubeConfigFile: false,
@@ -81,7 +82,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         this.initialise = this.initialise.bind(this)
         this.toggleCheckTlsConnection = this.toggleCheckTlsConnection.bind(this)
         this.setTlsConnectionFalse = this.setTlsConnectionFalse.bind(this)
-        this.toggleShowAddCluster = this.toggleShowAddCluster.bind(this)
         this.toggleKubeConfigFile = this.toggleKubeConfigFile.bind(this)
         this.toggleBrowseFile = this.toggleBrowseFile.bind(this)
         this.toggleClusterDetails = this.toggleClusterDetails.bind(this)
@@ -206,8 +206,12 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         this.setState({ showEditCluster: !this.state.showEditCluster })
     }
 
-    toggleShowAddCluster() {
-        this.setState({ showAddCluster: !this.state.showAddCluster })
+    handleShowCreateClusterForm = () => {
+        this.props.history.push(`${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_CLUSTER}`)
+    }
+
+    handleCloseCreateClusterForm = () => {
+        this.props.history.push(URLS.GLOBAL_CONFIG_CLUSTER)
     }
 
     toggleKubeConfigFile(updateKubeConfigFile: boolean) {
@@ -242,7 +246,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         const moduleBasedTitle = `Clusters${window._env_.K8S_CLIENT ? '' : ' and Environments'}`
         return (
             <section className="global-configuration__component flex-1">
-                <div data-testid="cluster_and_env_header" className="flex left dc__content-space">
+                <div data-testid="cluster_and_env_header" className="flexbox dc__content-space">
                     <FeatureTitleWithInfo
                         title={moduleBasedTitle}
                         renderDescriptionContent={() => `Manage your organization’s ${moduleBasedTitle.toLowerCase()}.`}
@@ -250,21 +254,13 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                         showInfoIconTippy
                         additionalContainerClasses="mb-20"
                     />
-                    <button
-                        type="button"
-                        className="flex cta h-32 lh-n fcb-5 mb-20"
-                        onClick={() =>
-                            this.setState({
-                                showAddCluster: true,
-                            })
-                        }
-                    >
-                        <Add
-                            data-testid="add_cluster_button"
-                            className="icon-dim-16 mr-8 fcb-5 dc__vertical-align-middle"
-                        />
-                        Add cluster
-                    </button>
+                    <Button
+                        dataTestId="add_cluster_button"
+                        onClick={this.handleShowCreateClusterForm}
+                        size={ComponentSizeType.medium}
+                        startIcon={<Add />}
+                        text="Add cluster"
+                    />
                 </div>
                 {this.state.clusters.map(
                     (cluster) =>
@@ -283,8 +279,9 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                             />
                         ),
                 )}
-                {this.state.showAddCluster && (
-                    <Drawer position="right" width="1000px" onEscape={this.toggleShowAddCluster}>
+
+                <Route path={`${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_CLUSTER}`}>
+                    <Drawer position="right" width="1000px" onEscape={this.handleCloseCreateClusterForm}>
                         <ClusterForm
                             {...getSSHConfig(this.state)}
                             id={null}
@@ -304,7 +301,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                             isConnectedViaSSHTunnel={this.state.isConnectedViaSSHTunnel}
                             toggleCheckTlsConnection={this.toggleCheckTlsConnection}
                             setTlsConnectionFalse={this.setTlsConnectionFalse}
-                            toggleShowAddCluster={this.toggleShowAddCluster}
+                            toggleShowAddCluster={this.handleCloseCreateClusterForm}
                             toggleKubeConfigFile={this.toggleKubeConfigFile}
                             isKubeConfigFile={this.state.isKubeConfigFile}
                             toggleClusterDetails={this.toggleClusterDetails}
@@ -312,11 +309,13 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                             isProd={false}
                         />
                     </Drawer>
-                )}
+                </Route>
             </section>
         )
     }
 }
+
+export default withRouter(ClusterList)
 
 const Cluster = ({
     id,
