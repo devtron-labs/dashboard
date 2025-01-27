@@ -27,6 +27,8 @@ import {
     TippyCustomized,
     TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { importComponentFromFELibrary } from '@Components/common'
+import { ReactComponent as ICArrowSquareOut } from '@Icons/ic-arrow-square-out.svg'
 import { DEVTRON_APPS_STEPS, STAGE_NAME } from '../AppConfig.types'
 import { URLS } from '../../../../../../config'
 import AppConfigurationCheckBox from './AppConfigurationCheckBox'
@@ -37,6 +39,8 @@ import EnvironmentOverrideRouter from './EnvironmentOverrideRouter'
 import { useAppConfigurationContext } from '../AppConfiguration.provider'
 import { renderNavItem } from './Navigation.helper'
 import { EnvConfigurationsNav } from './EnvConfigurationsNav'
+
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 export const AppNavigation = () => {
     // HOOKS
@@ -49,6 +53,7 @@ export const AppNavigation = () => {
         deleteApp,
         canShowExternalLinks,
         showCannotDeleteTooltip,
+        isWorkflowEditorUnlocked,
         toggleRepoSelectionTippy,
         getRepo,
         isJobView,
@@ -167,6 +172,23 @@ export const AppNavigation = () => {
                                     <div key={item.stage}>
                                         <div className="dc__border-bottom-n1 mt-8 mb-8" />
                                         {renderNavItem(item)}
+                                    </div>
+                                )
+                            )
+                        }
+
+                        if (item.stage === STAGE_NAME.PROTECT_CONFIGURATION) {
+                            return (
+                                isWorkflowEditorUnlocked &&
+                                isFELibAvailable && (
+                                    <div key={item.stage}>
+                                        {!canShowExternalLinks && <div className="dc__border-bottom-n1 mt-8 mb-8" />}
+                                        {renderNavItem(item, null, {
+                                            target: '_blank',
+                                            icon: <ICArrowSquareOut className="icon-dim-16 dc__no-shrink scn-8" />,
+                                            tooltipContent:
+                                                'Configuration change approval has been moved to Global Configuration',
+                                        })}
                                     </div>
                                 )
                             )
