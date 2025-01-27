@@ -327,9 +327,9 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
         }))
     }
 
-    const deleteAppHandler = () => {
+    const deleteAppHandler = async () => {
         try {
-            const response = deleteApp(appId)
+            const response = await deleteApp(appId)
             if (response) {
                 if (isJob) {
                     ToastManager.showToast({
@@ -431,10 +431,9 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
                         },
                     }}
                     handleClose={closeDeleteConfirmationModal}
-                    dataTestId="dialog" // To make compatible with previous code data-testid="dialog-delete"
                 />
                 <ConfirmationModal
-                    title={`Cannot Delete ${isJob ? DeleteComponentsName.Job : DeleteComponentsName.Application}`}
+                    title={`Cannot Delete ${isJob ? DeleteComponentsName.Job : DeleteComponentsName.Application} '${appName}'`}
                     variant={ConfirmationModalVariantType.warning}
                     subtitle={`Delete all pipelines and workflows before deleting this ${isJob ? DeleteComponentsName.Job : DeleteComponentsName.Application}`}
                     showConfirmationModal={!state.canDeleteApp}

@@ -378,7 +378,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                 </div>
             </div>
             <DeleteUserPermission
-                title={emailState.emails[0]?.value}
+                title={emailState.emails[0]?.value || ''}
                 onDelete={onDelete}
                 reload={_redirectToUserPermissionList}
                 showConfirmationModal={deleteConfirmationModal}

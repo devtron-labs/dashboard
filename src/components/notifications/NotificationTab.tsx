@@ -372,7 +372,6 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                     },
                 }}
                 handleClose={this.closeConfirmationModal}
-                dataTestId="dialog" // To make compatible with previous code data-testid="dialog-delete"
             />
         )
     }

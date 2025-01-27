@@ -30,6 +30,10 @@ import {
     ComponentSizeType,
     SelectPickerProps,
     DeleteComponent,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -129,19 +133,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             }
 
             return res[0]?.authMode == 'SSH' ? 'e.g. git@github.com:abc/xyz.git' : 'e.g. https://gitlab.com/abc/xyz.git'
-        }
-    }
-
-    getMaterialPayload = () => {
-        return {
-            appId: this.props.appId,
-            material: {
-                id: this.props.material.id,
-                url: this.props.material.url,
-                checkoutPath: this.props.material.checkoutPath,
-                gitProviderId: this.props.material.gitProvider.id,
-                fetchSubmodules: !!this.props.material.fetchSubmodules,
-            },
         }
     }
 
@@ -628,6 +619,21 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         </NavLink>
     )
 
+    onDelete = async () => {
+        const deletePayload = {
+            appId: this.props.appId,
+            material: {
+                id: this.props.material.id,
+                url: this.props.material.url,
+                checkoutPath: this.props.material.checkoutPath,
+                gitProviderId: this.props.material.gitProvider.id,
+                fetchSubmodules: !!this.props.material.fetchSubmodules,
+            },
+        }
+
+        await deleteMaterial(deletePayload)
+    }
+
     renderForm() {
         const sortedProviders: any[] = this.props.providers
             ? sortObjectArrayAlphabetically(this.props.providers, 'name')
@@ -928,15 +934,15 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 </Tippy>
                             )}
                         >
-                            <button
-                                className="cta delete dc__m-auto ml-0"
-                                type="button"
+                            <Button
+                                style={ButtonStyleType.negative}
+                                variant={ButtonVariantType.secondary}
                                 onClick={this.onClickDelete}
                                 disabled={this.props.preventRepoDelete}
-                                data-testid="git-repository-delete-button"
-                            >
-                                {this.state.deleting ? <Progressing /> : 'Delete'}
-                            </button>
+                                dataTestId="git-repository-delete-button"
+                                isLoading={this.state.deleting}
+                                text="Delete"
+                            />
                         </ConditionalWrap>
                     )}
                     {this.props.isMultiGit ? (
@@ -959,22 +965,19 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         {this.props.isLoading ? <Progressing /> : 'Save'}
                     </button>
                 </div>
-                {this.state.confirmation && (
-                    <DeleteComponent
-                        setDeleting={this.setDeleting}
-                        deleteComponent={deleteMaterial}
-                        payload={this.getMaterialPayload()}
-                        title={this.props.material.name}
-                        toggleConfirmation={this.toggleConfirmation}
-                        component={DeleteComponentsName.GitRepo}
-                        confirmationDialogDescription={
-                            this.props.isMultiGit
-                                ? DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE
-                                : DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE
-                        }
-                        reload={this.props.reload}
-                    />
-                )}
+                <DeleteConfirmationModal
+                    title={this.props.material.name}
+                    component={DeleteComponentsName.GitRepo}
+                    showConfirmationModal={this.state.confirmation}
+                    closeConfirmationModal={this.toggleConfirmation}
+                    onDelete={this.onDelete}
+                    reload={this.props.reload}
+                    description={
+                        this.props.isMultiGit
+                            ? DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE
+                            : DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE
+                    }
+                />
             </form>
         )
     }
