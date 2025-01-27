@@ -408,7 +408,7 @@ export default function BuildCD({
                     placeholder="Select Environment"
                     autoFocus
                     options={
-                        releaseMode === ReleaseMode.MIGRATE_HELM
+                        releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS
                             ? getEnvListOptions().filter((env) =>
                                   env.options.filter((_env) => !_env.isVirtualEnvironment),
                               )
@@ -662,7 +662,7 @@ export default function BuildCD({
     }
 
     const renderAdvancedDeploymentStrategy = () => {
-        if (noStrategyAvailable.current || releaseMode === ReleaseMode.MIGRATE_HELM) {
+        if (noStrategyAvailable.current || releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS) {
             return null
         }
 
@@ -759,10 +759,11 @@ export default function BuildCD({
     const renderBuild = () => {
         return (
             <>
-                {isAdvanced && formData.releaseMode === ReleaseMode.MIGRATE_HELM && (
+                {isAdvanced && formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && (
                     <div className="flexbox px-12 py-8 dc__gap-8 bcb-1 br-4 mb-16">
                         <ICInfo className="dc__no-shrink icon-dim-20" />
                         <span className="fs=13 fw-4 lh-20 cn-9">
+                            {/* FIXME: Update for argo */}
                             This deployment pipeline was linked to helm release: {formData.deploymentAppName}
                         </span>
                     </div>
@@ -801,7 +802,7 @@ export default function BuildCD({
         </div>
     ) : (
         <div className="cd-pipeline-body p-20 ci-scrollable-content">
-            {releaseMode === ReleaseMode.MIGRATE_HELM && !isAdvanced ? (
+            {releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && !isAdvanced ? (
                 <MigrateHelmReleaseBody
                     renderTriggerType={renderTriggerType}
                     formData={formData}

@@ -682,7 +682,7 @@ export default function CDPipeline({
             environmentId: formData.environmentId,
             namespace: formData.namespace,
             id: +cdPipelineId,
-            strategies: formData.releaseMode === ReleaseMode.MIGRATE_HELM ? [] : formData.savedStrategies,
+            strategies: formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS ? [] : formData.savedStrategies,
             parentPipelineType,
             parentPipelineId: +parentPipelineId,
             isClusterCdActive: formData.isClusterCdActive,
@@ -1126,7 +1126,7 @@ export default function CDPipeline({
                 </button>
             )
         }
-        if (!isAdvanced && formData.releaseMode !== ReleaseMode.MIGRATE_HELM) {
+        if (!isAdvanced && formData.releaseMode !== ReleaseMode.MIGRATE_EXTERNAL_APPS) {
             return (
                 !isWebhookCD && (
                     <button
@@ -1155,7 +1155,7 @@ export default function CDPipeline({
     }
 
     const handleSelectMigrateHelmRelease = () => {
-        setFormData({ ...formData, releaseMode: ReleaseMode.MIGRATE_HELM, deploymentAppType: DeploymentAppTypes.HELM })
+        setFormData({ ...formData, releaseMode: ReleaseMode.MIGRATE_EXTERNAL_APPS, deploymentAppType: DeploymentAppTypes.HELM })
     }
 
     const handleSelectNewDeployment = () => {
@@ -1311,7 +1311,7 @@ export default function CDPipeline({
             if (!formData.environmentId) {
                 return 'Please select an environment'
             }
-            if (formData.releaseMode === ReleaseMode.MIGRATE_HELM && !formData.deploymentAppName) {
+            if (formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && !formData.deploymentAppName) {
                 return 'Please select a release'
             }
             return ''
@@ -1343,7 +1343,7 @@ export default function CDPipeline({
                     <div
                         className={`ci-button-container bg__primary pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
                             !isWebhookCD &&
-                            !(formData.releaseMode === ReleaseMode.MIGRATE_HELM && !isAdvanced) &&
+                            !(formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && !isAdvanced) &&
                             (cdPipelineId || !isAdvanced)
                                 ? 'flex-justify'
                                 : 'justify-right'
