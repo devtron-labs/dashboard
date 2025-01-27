@@ -54,6 +54,7 @@ import { ENV_CONFIG_PATH_REG } from './AppConfig.constants'
 
 const getApprovalPolicyConfigForApp: (appId: number) => Promise<ResourceIdToResourceApprovalPolicyConfigMapType> =
     importComponentFromFELibrary('getApprovalPolicyConfigForApp', null, 'function')
+const isFELibAvailable: boolean = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigProps) => {
     // HOOKS
@@ -326,9 +327,9 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
         }))
     }
 
-    const deleteAppHandler = () => {
+    const deleteAppHandler = async () => {
         try {
-            const response = deleteApp(appId)
+            const response = await deleteApp(appId)
             if (response) {
                 if (isJob) {
                     ToastManager.showToast({
@@ -396,8 +397,8 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
 
     const renderSubTitle = () => (
         <>
-            <p className="fs-13 cn-7 lh-1-54">{APP_CONFIG_TEXT.DELETE_APPS.SUBTITLE_PARA1}</p>
-            <p className="fs-13 cn-7 lh-1-54">{APP_CONFIG_TEXT.DELETE_APPS.SUBTITLE_PARA2}</p>
+            <p className="fs-13 cn-7 lh-1-54 m-0">{APP_CONFIG_TEXT.DELETE_APPS.SUBTITLE_PARA1}</p>
+            <p className="fs-13 cn-7 lh-1-54 m-0">{APP_CONFIG_TEXT.DELETE_APPS.SUBTITLE_PARA2}</p>
         </>
     )
 
@@ -414,7 +415,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
         return (
             <>
                 <ConfirmationModal
-                    title={`Delete '${appName}'?`}
+                    title={`Delete ${isJob ? DeleteComponentsName.Job : DeleteComponentsName.Application} '${appName}' ?`}
                     variant={ConfirmationModalVariantType.delete}
                     showConfirmationModal={state.canDeleteApp}
                     subtitle={renderSubTitle()}
@@ -430,10 +431,9 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
                         },
                     }}
                     handleClose={closeDeleteConfirmationModal}
-                    dataTestId="dialog" // To make compatible with previous code data-testid="dialog-delete"
                 />
                 <ConfirmationModal
-                    title={`Cannot Delete ${isJob ? DeleteComponentsName.Job : DeleteComponentsName.Application}`}
+                    title={`Cannot Delete ${isJob ? DeleteComponentsName.Job : DeleteComponentsName.Application} '${appName}'`}
                     variant={ConfirmationModalVariantType.warning}
                     subtitle={`Delete all pipelines and workflows before deleting this ${isJob ? DeleteComponentsName.Job : DeleteComponentsName.Application}`}
                     showConfirmationModal={!state.canDeleteApp}
@@ -474,7 +474,9 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
                 : 'app-compose-with-no-gitops-config__nav'
         } ${isJob ? 'job-compose__side-nav' : ''} ${
             !showCannotDeleteTooltip ? 'dc__position-rel' : ''
-        }  ${hideConfigHelp ? 'hide-app-config-help' : ''} ${!canShowExternalLinks ? 'hide-external-links' : ''}`
+        }  ${hideConfigHelp ? 'hide-app-config-help' : ''} ${!canShowExternalLinks ? 'hide-external-links' : ''}  ${
+            state.isUnlocked.workflowEditor && isFELibAvailable && !isJob ? 'config-protection__side-nav' : ''
+        }`
     }
 
     const toggleRepoSelectionTippy = () => {

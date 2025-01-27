@@ -26,6 +26,5 @@ export const DeleteUserPermission = ({
         reload={reload}
         showConfirmationModal={showConfirmationModal}
         closeConfirmationModal={closeConfirmationModal}
-        dataTestId="dialog"
     />
 )

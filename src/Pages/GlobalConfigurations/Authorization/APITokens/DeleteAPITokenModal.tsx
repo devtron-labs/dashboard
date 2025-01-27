@@ -63,7 +63,6 @@ const DeleteAPITokenModal = ({
             reload={reload}
             showConfirmationModal={showDeleteConfirmation}
             closeConfirmationModal={closeDeleteConfirmationModal}
-            dataTestId="dialog" // To make compatible with previous code data-testid="dialog-delete"
             url={isEditView ? `${match.path.split('edit')[0]}list` : ''}
         />
     )

@@ -1495,7 +1495,7 @@ export default function ClusterForm({
                         </div>
 
                         {!isKubeConfigFile && (
-                            <div className="w-100 dc__border-top flex dc__content-space pb-12 pt-12 pr-20 pl-20 dc__position-abs dc__bottom-0">
+                            <div className="w-100 dc__border-top flexbox py-12 px-20 dc__position-abs dc__bottom-0 dc__content-space">
                                 {id && (
                                     <Button
                                         text="Delete"
@@ -1507,7 +1507,7 @@ export default function ClusterForm({
                                         onClick={showConfirmationModal}
                                     />
                                 )}
-                                <div className="flexbox dc__gap-12">
+                                <div className="flex dc__gap-12 right w-100">
                                     <Button
                                         text="Cancel"
                                         variant={ButtonVariantType.secondary}
@@ -1560,7 +1560,6 @@ export default function ClusterForm({
                             showConfirmationModal={confirmation}
                             closeConfirmationModal={hideConfirmationModal}
                             errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
-                            dataTestId="dialog" // To make compatible with previous code data-testid="dialog-delete"
                         />
                     </>
                 )}
