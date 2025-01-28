@@ -97,7 +97,10 @@ const ResourceList = () => {
     const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>(null)
     const { targetK8sVersion } = useUrlFilters<never, ResourceListUrlFiltersType>({ parseSearchParams })
 
-    const [rawGVKLoader, k8SObjectMapRaw] = useAsync(() => getResourceGroupListRaw(clusterId), [clusterId])
+    const [rawGVKLoader, k8SObjectMapRaw, , reloadK8sObjectMapRaw] = useAsync(
+        () => getResourceGroupListRaw(clusterId),
+        [clusterId],
+    )
 
     const [loading, clusterListData, error] = useAsync(() => getClusterListMin())
 
@@ -354,6 +357,7 @@ const ResourceList = () => {
     const closeResourceModal = (_refreshData: boolean) => {
         if (_refreshData) {
             refreshData()
+            reloadK8sObjectMapRaw()
         }
     }
 
