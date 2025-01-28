@@ -66,6 +66,7 @@ export const enum DeleteComponentsName {
     SesConfigurationTab = 'ses',
     SMTPConfigurationTab = 'smtp',
     WebhookConfigurationTab = 'webhook',
+    Preset = 'preset value',
     Project = 'project',
     GitRepo = 'Repo',
     USER = 'user',

@@ -112,18 +112,8 @@ export default function ChartGroupDetails() {
     }
 
     async function deleteInstalledChartFromDeployments(installedAppId: number) {
-        try {
-            await deleteInstalledChart(installedAppId)
-            ToastManager.showToast({
-                variant: ToastVariantType.success,
-                description: 'Successfully Deleted',
-            })
-            reloadChartGroupDetails()
-        } catch (err) {
-            showError(err)
-        } finally {
-            setLoading(false)
-        }
+        await deleteInstalledChart(installedAppId)
+        reloadChartGroupDetails()
     }
 
     async function handleInstall() {
@@ -169,7 +159,6 @@ export default function ChartGroupDetails() {
                 url={`${URLS.CHARTS}/discover`}
                 showConfirmationModal={showConfirmationModal}
                 onDelete={onDelete}
-
             />
         )
     }

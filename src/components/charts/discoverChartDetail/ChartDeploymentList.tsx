@@ -39,7 +39,7 @@ import trash from '../../../assets/icons/ic-delete.svg'
 import deleteIcon from '../../../assets/img/warning-medium.svg'
 import { getAppId } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import ClusterNotReachableDailog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
-import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo'
+import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo/ApplicationDeletionInfo'
 
 export const ChartDeploymentList = ({ chartId }) => {
     const [installs, setInstalls] = React.useState([])

@@ -29,7 +29,7 @@ import {
     ConfirmationModalVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DeleteComponentsName } from '@Config/constantMessaging'
-import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo'
+import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo/ApplicationDeletionInfo'
 import { URLS, getAppComposeURL, APP_COMPOSE_STAGE, ViewType } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { getAppOtherEnvironmentMin, getJobOtherEnvironmentMin, getWorkflowList } from '../../../../../services/service'

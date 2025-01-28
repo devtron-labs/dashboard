@@ -35,11 +35,6 @@ export const UPDATE_DATA_VALIDATION_ERROR_MSG = 'Encountered data validation err
 export const SAVE_DATA_VALIDATION_ERROR_MSG = 'Encountered data validation error while saving.'
 export const EMPTY_YAML_ERROR = 'YAML cannot be empty.'
 
-export const DELETE_PRESET_VALUE_DESCRIPTION_LINES = {
-    First: 'This will delete the preset value and it will no longer be available to be used for deployment.',
-    Second: 'Are you sure?',
-}
-
 export const CHART_VALUE_TOAST_MSGS = {
     Updated: 'Chart Value Updated',
     Created: 'Chart Value Created',
