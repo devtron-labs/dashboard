@@ -468,6 +468,7 @@ const ChartDeploymentHistory = ({
         }
         return (
             <CodeEditor
+                key={selectedDeploymentTabName}
                 value={
                     selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
                         ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
