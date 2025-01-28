@@ -17,7 +17,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import dayjs from 'dayjs'
 import { useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
-import { TimerType } from './Types'
+import { TimerType } from './types'
 import { getTimeElapsed } from '../helpers/time'
 
 const Timer: React.FC<TimerType> = ({ start, callback, transition, transpose, format = getTimeElapsed }: TimerType) => {

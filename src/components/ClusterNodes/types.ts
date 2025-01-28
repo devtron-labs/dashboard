@@ -23,12 +23,11 @@ import {
     NodeTaintType,
     NodeActionRequest,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/Types'
+import { UpdateTabUrlParamsType, UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 import { LabelTag, OptionType } from '../app/types'
 import { CLUSTER_PAGE_TAB } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
 import { ClusterOptionType, K8SResourceListType } from '../ResourceBrowser/Types'
-import { useTabs } from '../common/DynamicTabs'
 
 export enum ERROR_TYPE {
     VERSION_ERROR = 'K8s Version diff',
@@ -131,7 +130,7 @@ export interface ColumnMetadataType {
 }
 
 export interface ClusterListType extends Pick<K8SResourceListType, 'lowercaseKindToResourceGroupMap'> {
-    addTab?: ReturnType<typeof useTabs>['addTab']
+    addTab?: UseTabsReturnType['addTab']
     updateTabUrl: (params: Omit<UpdateTabUrlParamsType, 'id'>) => void
 }
 
@@ -185,14 +184,6 @@ export interface EditTaintsModalType extends NodeActionModalPropType {
     taints: TaintType[]
 }
 
-interface NodeCordonOptions {
-    unschedulableDesired: boolean
-}
-
-export interface NodeCordonRequest extends NodeActionRequest {
-    nodeCordonOptions: NodeCordonOptions
-}
-
 export interface ClusteNotePatchRequest {
     id: number // this is mandatory to send in the request
     identifier: number // equals clusterId for cluster description and appId for app/job description
@@ -202,18 +193,6 @@ export interface ClusteNotePatchRequest {
 export interface ClusterShortDescriptionPatchRequest {
     id: number
     description: string
-}
-
-interface NodeDrainOptions {
-    gracePeriodSeconds: number
-    deleteEmptyDirData: boolean
-    disableEviction: boolean
-    force: boolean
-    ignoreAllDaemonSets: boolean
-}
-
-export interface NodeDrainRequest extends NodeActionRequest {
-    nodeDrainOptions: NodeDrainOptions
 }
 
 export interface EditTaintsRequest extends NodeActionRequest {
@@ -302,7 +281,7 @@ export interface ClusterErrorType {
 }
 export interface ClusterOverviewProps {
     selectedCluster: ClusterOptionType
-    addTab: ReturnType<typeof useTabs>['addTab']
+    addTab: UseTabsReturnType['addTab']
 }
 
 export interface ClusterMapInitialStatusType {

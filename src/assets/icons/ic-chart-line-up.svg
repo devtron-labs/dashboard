@@ -14,6 +14,6 @@
   - limitations under the License.
   -->
 
-<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M19.5 18V30M28.5 18V30M42 24C42 33.9411 33.9411 42 24 42C14.0589 42 6 33.9411 6 24C6 14.0589 14.0589 6 24 6C33.9411 6 42 14.0589 42 24Z" stroke="#F33E3E" stroke-width="2" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+  <path stroke="#3B444C" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 19.5H3v-15M19.5 6 12 13.5l-3-3-6 6M19.5 6v3.75m0-3.75h-3.75" vector-effect="non-scaling-stroke"/>
 </svg>

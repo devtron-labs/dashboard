@@ -30,7 +30,7 @@ import { ReactComponent as Info } from '@Icons/ic-info-outline.svg'
 import { useSharedState } from '@Components/v2/utils/useSharedState'
 import { URLS } from '@Config/routes'
 import IndexStore from '../index.store'
-import AppDetailsStore, { AppDetailsTabs } from '../appDetails.store'
+import { AppDetailsTabs } from '../appDetails.store'
 import { K8ResourceComponentProps } from '../appDetails.type'
 import NodeTreeComponent from './nodeType/NodeTree.component'
 import NodeComponent from './nodeType/Node.component'
@@ -40,13 +40,16 @@ import { doesNodeSatisfiesFilter } from './utils'
 export const K8ResourceComponent = ({
     clickedNodes,
     registerNodeClick,
-    handleFocusTabs,
     externalLinks,
     monitoringTools,
     isDevtronApp,
     clusterId,
     isDeploymentBlocked,
-    isExternalApp,
+    handleMarkK8sResourceTabSelected,
+    addTab,
+    removeTabByIdentifier,
+    tabs,
+    handleUpdateK8sResourceTabUrl,
 }: K8ResourceComponentProps) => {
     const history = useHistory()
     const location = useLocation()
@@ -55,7 +58,7 @@ export const K8ResourceComponent = ({
     const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
     const { isSuperAdmin } = useMainContext()
     useEffect(() => {
-        AppDetailsStore.markAppDetailsTabActiveByIdentifier(AppDetailsTabs.k8s_Resources)
+        handleMarkK8sResourceTabSelected()
     }, [])
 
     useEffect(() => {
@@ -77,9 +80,13 @@ export const K8ResourceComponent = ({
             return
         }
         if (!currentFilteredNodes.length) {
-            history.push({ pathname: location.pathname, search: `filterType=${ALL_RESOURCE_KIND_FILTER}` })
+            history.push({ pathname: location.pathname, search: '' })
         }
     }, [nodes])
+
+    useEffect(() => {
+        handleUpdateK8sResourceTabUrl({ url: `${location.pathname}${location.search}` })
+    }, [location.pathname, location.search])
 
     const getPodNameForSelectedFilter = (selectedFilter: string) => {
         const podParents = getPodsRootParentNameAndStatus(nodes)
@@ -109,7 +116,7 @@ export const K8ResourceComponent = ({
         const searchParams = new URLSearchParams([['filterType', selectedFilter]])
         IndexStore.updateFilterType(selectedFilter.toUpperCase())
         if (selectedFilter === ALL_RESOURCE_KIND_FILTER) {
-            history.push({ search: `${searchParams}` })
+            history.push({ search: '' })
             return
         }
         // current selected node exist in new selected filter or not
@@ -128,10 +135,10 @@ export const K8ResourceComponent = ({
     }
 
     return (
-        <div className="bg__primary" style={{ justifyContent: 'space-between' }}>
+        <div className="bg__primary flexbox flex-grow-1" style={{ justifyContent: 'space-between' }}>
             {nodes.length > 0 ? (
                 <div
-                    className={`resource-node-wrapper flexbox ${isSuperAdmin ? 'pb-28' : ''}`}
+                    className={`flex-grow-1 flexbox ${isSuperAdmin ? 'pb-28' : ''}`}
                     data-testid="resource-node-wrapper"
                 >
                     <div
@@ -153,13 +160,14 @@ export const K8ResourceComponent = ({
                     </div>
                     <div className="flex-grow-1-imp p-0" data-testid="k8-resources-node-details">
                         <NodeComponent
-                            handleFocusTabs={handleFocusTabs}
                             externalLinks={externalLinks}
                             monitoringTools={monitoringTools}
                             isDevtronApp={isDevtronApp}
                             clusterId={clusterId}
                             isDeploymentBlocked={isDeploymentBlocked}
-                            isExternalApp={isExternalApp}
+                            addTab={addTab}
+                            tabs={tabs}
+                            removeTabByIdentifier={removeTabByIdentifier}
                         />
                     </div>
                 </div>

@@ -825,6 +825,7 @@ button.anchor {
     &.f-switchedtoactiveservice,
     &.f-containercreating,
     &.f-pending,
+    &.f-podinitializing,
     &[class*='f-init__']:not(.f-init__crashloopbackoff) {
         color: var(--O500);
     }
@@ -840,6 +841,7 @@ button.anchor {
     &.f-terminating,
     &.f-crashloopbackoff,
     &.f-init__crashloopbackoff,
+    &.f-createcontainerconfigerror,
     &.f-deleted,
     &.f-not__ready,
     &.f-evicted {
@@ -2115,6 +2117,11 @@ button.anchor {
 
     &--white {
         border: 1px solid var(--white);
+    }
+
+    &--left {
+        border: none;
+        border-left: 1px solid var(--N200);
     }
 }
 
@@ -5289,6 +5296,23 @@ details[open] {
             left: -12px;
             top: 50%;
             transform: translateY(-50%);
+            display: block;
+        }
+    }
+
+    &--tight {
+        gap: 1px;
+
+        & > :not(:first-child)::before {
+            left: -1px;
+        }
+    }
+
+    &--gap-8 {
+        gap: 16px;
+
+        & > :not(:first-child)::before {
+            left: -8px;
         }
     }
 
