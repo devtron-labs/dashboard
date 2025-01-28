@@ -919,7 +919,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         </Checkbox>
                     </div>
                 </label>
-                <div className="form__buttons">
+                <div className="flexbox dc__content-space pt-20">
                     {this.props.material.id && (
                         <ConditionalWrap
                             condition={this.props.preventRepoDelete}
@@ -945,25 +945,25 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             />
                         </ConditionalWrap>
                     )}
-                    {this.props.isMultiGit ? (
-                        <button
-                            type="button"
-                            className="cta cancel mr-16"
-                            onClick={this.props.cancel}
-                            data-testid="git-repository-cancel-button"
-                        >
-                            Cancel
-                        </button>
-                    ) : null}
-                    <button
-                        type="button"
-                        className="cta"
-                        disabled={this.props.isLoading}
-                        onClick={this.props.save}
-                        data-testid="git-repository-save-button"
-                    >
-                        {this.props.isLoading ? <Progressing /> : 'Save'}
-                    </button>
+                    <div className='flex w-100 dc__gap-12 right'>
+                        {this.props.isMultiGit ? (
+                            <Button
+                                text="Cancel"
+                                style={ButtonStyleType.neutral}
+                                variant={ButtonVariantType.secondary}
+                                onClick={this.props.cancel}
+                                dataTestId="git-repository-cancel-button"
+                            />
+                        ) : null}
+                        <Button
+                            text="Save"
+                            variant={ButtonVariantType.secondary}
+                            disabled={this.props.isLoading}
+                            onClick={this.props.save}
+                            dataTestId="git-repository-save-button"
+                            isLoading={this.props.isLoading}
+                        />
+                    </div>
                 </div>
                 <DeleteConfirmationModal
                     title={this.props.material.name}
