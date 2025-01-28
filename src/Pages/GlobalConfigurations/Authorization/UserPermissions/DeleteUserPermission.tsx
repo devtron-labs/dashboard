@@ -16,7 +16,7 @@ export const DeleteUserPermission = ({
 }: DeleteUserPermissionProps) => (
     <DeleteConfirmationModal
         title={title}
-        description={
+        subtitle={
             isUserGroup
                 ? USER_PERMISSION_GROUP_DELETE_CONFIRMATION_MESSAGE
                 : USER_PERMISSION_DELETE_CONFIRMATION_MESSAGE

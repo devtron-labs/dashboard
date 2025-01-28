@@ -561,7 +561,7 @@ export default function CIPipeline({
         return (
             <DeleteConfirmationModal
                 title={formData.name}
-                description={`Are you sure you want to delete this CI Pipeline from '${appName}' ?`}
+                subtitle={`Are you sure you want to delete this CI Pipeline from '${appName}' ?`}
                 showConfirmationModal={showDeleteModal}
                 closeConfirmationModal={closeCIDeleteModal}
                 onDelete={onDelete}

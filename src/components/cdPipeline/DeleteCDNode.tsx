@@ -58,7 +58,7 @@ const DeleteCDNode = ({
                 title={forceDeleteData.forceDeleteDialogTitle}
                 onDelete={handleForceDeleteCDNode}
                 closeConfirmationModal={hideDeleteModal}
-                description={forceDeleteData.forceDeleteDialogMessage}
+                subtitle={forceDeleteData.forceDeleteDialogMessage}
                 showConfirmationModal={showForceDeleteModal}
             />
         )
