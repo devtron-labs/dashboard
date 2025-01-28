@@ -972,7 +972,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     closeConfirmationModal={this.toggleConfirmation}
                     onDelete={this.onDelete}
                     reload={this.props.reload}
-                    description={
+                    subtitle={
                         this.props.isMultiGit
                             ? DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE
                             : DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE

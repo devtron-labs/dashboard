@@ -57,7 +57,7 @@ const DeleteAPITokenModal = ({
     return (
         <DeleteConfirmationModal
             title={tokenData.name}
-            description={renderDescriptionContent()}
+            subtitle={renderDescriptionContent()}
             component={DeleteComponentsName.API_TOKEN}
             onDelete={onDelete}
             reload={reload}
