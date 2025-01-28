@@ -20,7 +20,6 @@ import {
     showError,
     Progressing,
     ErrorScreenManager,
-    DeleteDialog,
     InfoColourBar,
     ConditionalWrap,
     WorkflowNodeType,

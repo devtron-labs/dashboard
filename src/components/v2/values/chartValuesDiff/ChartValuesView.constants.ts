@@ -40,11 +40,6 @@ export const DELETE_PRESET_VALUE_DESCRIPTION_LINES = {
     Second: 'Are you sure?',
 }
 
-export const DELETE_CHART_APP_DESCRIPTION_LINES = {
-    First: 'This will delete all resources associated with this application.',
-    Second: 'Deleted applications cannot be restored.',
-}
-
 export const CHART_VALUE_TOAST_MSGS = {
     Updated: 'Chart Value Updated',
     Created: 'Chart Value Created',

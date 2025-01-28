@@ -57,6 +57,7 @@ export const enum DeleteComponentsName {
     ChartRepository = 'chart repository',
     Cluster = 'cluster',
     Environment = 'environment',
+    Filter = 'filter',
     GitProvider = 'git account',
     GROUP = 'group',
     Job = 'job',
