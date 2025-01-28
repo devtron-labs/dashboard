@@ -316,13 +316,15 @@
 
 .sort {
     background-image: url('../../../assets/icons/ic-sort-arrow-down.svg');
+    transform: rotate(180deg);
+    transition: transform 0.3s;
     display: inline-block;
     height: 12px;
     width: 12px;
 }
 
 .sort-up {
-    transform: rotate(180deg);
+    transform: rotate(0);
 }
 
 .select-material--h450 {

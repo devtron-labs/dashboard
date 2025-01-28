@@ -148,8 +148,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
     preventRepoDeleteContent = () => {
         return (
             <>
-                <h2 className="fs-13 fw-4 lh-20 cn-0 m-0 p-0">Cannot Delete!</h2>
-                <p className="fs-13 fw-4 lh-20 cn-0 m-0 p-0">At least one repository is required.</p>
+                <h2 className="fs-13 fw-4 lh-20 m-0">Cannot Delete!</h2>
+                <p className="fs-13 fw-4 lh-20 m-0">At least one repository is required.</p>
             </>
         )
     }
