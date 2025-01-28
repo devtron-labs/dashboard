@@ -756,45 +756,52 @@ export default function BuildCD({
         )
     }
 
-    const renderBuild = () => {
-        return (
-            <>
-                {isAdvanced && formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && (
-                    <div className="flexbox px-12 py-8 dc__gap-8 bcb-1 br-4 mb-16">
-                        <ICInfo className="dc__no-shrink icon-dim-20" />
-                        <span className="fs=13 fw-4 lh-20 cn-9">
-                            {/* FIXME: Update for argo */}
-                            This deployment pipeline was linked to helm release: {formData.deploymentAppName}
-                        </span>
-                    </div>
-                )}
-                {isAdvanced && renderPipelineNameInput()}
-                <p className="fs-14 fw-6 cn-9">Deploy to environment</p>
-                {renderEnvNamespaceAndTriggerType()}
-                {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
-                    !isVirtualEnvironment &&
-                    formData.allowedDeploymentTypes.length > 0 &&
-                    !noGitOpsModuleInstalledAndConfigured &&
-                    renderDeploymentAppType()}
-                {isAdvanced ? renderAdvancedDeploymentStrategy() : renderBasicDeploymentStrategy()}
-                {isAdvanced && (
-                    <>
-                        <CustomImageTags
-                            formData={formData}
-                            setFormData={setFormData}
-                            formDataErrorObj={formDataErrorObj}
-                            setFormDataErrorObj={setFormDataErrorObj}
-                            isCDBuild
-                            savedTagPattern={savedCustomTagPattern}
-                            selectedCDStageTypeValue={selectedCDStageTypeValue}
-                            setSelectedCDStageTypeValue={setSelectedCDStageTypeValue}
-                        />
-                        <PullImageDigestToggle formData={formData} setFormData={setFormData} />
-                    </>
-                )}
-            </>
-        )
-    }
+    const renderBuild = () => (
+        <>
+            {isAdvanced && (
+                <>
+                    {formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && (
+                        <div className="flexbox px-12 py-8 dc__gap-8 bcb-1 br-4 mb-16">
+                            <ICInfo className="dc__no-shrink icon-dim-20 dc__no-shrink" />
+                            <span className="fs-13 fw-4 lh-20 cn-9 dc__word-break">
+                                {/* FIXME: Update for argo */}
+                                This deployment pipeline was linked to helm release: {formData.deploymentAppName}
+                            </span>
+                        </div>
+                    )}
+
+                    {renderPipelineNameInput()}
+                </>
+            )}
+
+            <p className="fs-14 fw-6 cn-9">Deploy to environment</p>
+            {renderEnvNamespaceAndTriggerType()}
+
+            {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
+                !isVirtualEnvironment &&
+                formData.allowedDeploymentTypes.length > 0 &&
+                !noGitOpsModuleInstalledAndConfigured &&
+                renderDeploymentAppType()}
+
+            {isAdvanced ? renderAdvancedDeploymentStrategy() : renderBasicDeploymentStrategy()}
+
+            {isAdvanced && (
+                <>
+                    <CustomImageTags
+                        formData={formData}
+                        setFormData={setFormData}
+                        formDataErrorObj={formDataErrorObj}
+                        setFormDataErrorObj={setFormDataErrorObj}
+                        isCDBuild
+                        savedTagPattern={savedCustomTagPattern}
+                        selectedCDStageTypeValue={selectedCDStageTypeValue}
+                        setSelectedCDStageTypeValue={setSelectedCDStageTypeValue}
+                    />
+                    <PullImageDigestToggle formData={formData} setFormData={setFormData} />
+                </>
+            )}
+        </>
+    )
 
     return pageState === ViewType.LOADING.toString() ? (
         <div style={{ minHeight: '200px' }} className="flex">

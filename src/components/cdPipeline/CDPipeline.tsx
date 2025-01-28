@@ -56,13 +56,9 @@ import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-
 import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { CDDeploymentTabText, RegistryPayloadType, SourceTypeMap, ViewType } from '../../config'
-import {
-    getPluginIdsFromBuildStage,
-    importComponentFromFELibrary,
-    sortObjectArrayAlphabetically,
-} from '../common'
+import { getPluginIdsFromBuildStage, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
-import { CD_PATCH_ACTION, GeneratedHelmPush } from './cdPipeline.types'
+import { CD_PATCH_ACTION, GeneratedHelmPush, MigrateToDevtronFormState } from './cdPipeline.types'
 import {
     deleteCDPipeline,
     getCDPipelineConfig,
@@ -113,7 +109,7 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     null,
     'function',
 )
-const ReleaseModeTabs = importComponentFromFELibrary('ReleaseModeTabs', null, 'function')
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 export default function CDPipeline({
     location,
@@ -198,6 +194,16 @@ export default function CDPipeline({
         generatedHelmPushAction: GeneratedHelmPush.DO_NOT_PUSH,
         isDigestEnforcedForPipeline: false,
         isDigestEnforcedForEnv: false,
+    })
+    const [migrateToDevtronFormState, setMigrateToDevtronFormState] = useState<MigrateToDevtronFormState>({
+        deploymentAppType: DeploymentAppTypes.HELM,
+        migrateFromArgoFormState: {
+            appName: null,
+            namespace: null,
+            clusterId: null,
+            targetEnvironmentId: null,
+        },
+        triggerType: TriggerType.Auto,
     })
     const [configMapAndSecrets, setConfigMapAndSecrets] = useState([])
     const [savedCustomTagPattern, setSavedCustomTagPattern] = useState<string>('')
@@ -1155,7 +1161,11 @@ export default function CDPipeline({
     }
 
     const handleSelectMigrateHelmRelease = () => {
-        setFormData({ ...formData, releaseMode: ReleaseMode.MIGRATE_EXTERNAL_APPS, deploymentAppType: DeploymentAppTypes.HELM })
+        setFormData({
+            ...formData,
+            releaseMode: ReleaseMode.MIGRATE_EXTERNAL_APPS,
+            deploymentAppType: migrateToDevtronFormState.deploymentAppType,
+        })
     }
 
     const handleSelectNewDeployment = () => {
@@ -1331,13 +1341,37 @@ export default function CDPipeline({
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
-                {!isAdvanced && ReleaseModeTabs && (
-                    <ReleaseModeTabs
-                        handleSelectMigrateHelmRelease={handleSelectMigrateHelmRelease}
-                        handleSelectNewDeployment={handleSelectNewDeployment}
-                        releaseMode={formData.releaseMode}
-                    />
+
+                {!isAdvanced && !!isFELibAvailable && (
+                    <div className="px-20">
+                        <TabGroup
+                            tabs={[
+                                {
+                                    tabType: 'button',
+                                    active: formData.releaseMode === ReleaseMode.NEW_DEPLOYMENT,
+                                    label: 'New Deployment',
+                                    id: ReleaseMode.NEW_DEPLOYMENT,
+                                    props: {
+                                        onClick: handleSelectNewDeployment,
+                                        'data-testid': 'new-deployment-tab',
+                                    },
+                                },
+                                {
+                                    tabType: 'button',
+                                    active: formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS,
+                                    label: 'Migrate to devtron',
+                                    id: ReleaseMode.MIGRATE_EXTERNAL_APPS,
+                                    props: {
+                                        onClick: handleSelectMigrateHelmRelease,
+                                        'data-testid': 'migrate-to-devtron-tab',
+                                    },
+                                },
+                            ]}
+                            alignActiveBorderWithContainer
+                        />
+                    </div>
                 )}
+
                 {renderCDPipelineBody()}
                 {pageState !== ViewType.LOADING && pageState !== ViewType.ERROR && (
                     <div

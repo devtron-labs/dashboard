@@ -53,7 +53,7 @@ import { ReactComponent as VirtualClusterIcon } from '../../assets/icons/ic-virt
 import { ReactComponent as VirtualEnvIcon } from '../../assets/icons/ic-environment-temp.svg'
 import { ClusterComponentModal } from './ClusterComponentModal'
 import { ClusterInstallStatus } from './ClusterInstallStatus'
-import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type'
+import { POLLING_INTERVAL, ClusterListProps, AuthenticationType, ClusterFormProps } from './cluster.type'
 import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, CONFIGURATION_TYPES, AppCreationType } from '../../config'
 import { getEnvName } from './cluster.util'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
@@ -61,7 +61,8 @@ import ClusterForm from './ClusterForm'
 import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
 
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
-const getSSHConfig = importComponentFromFELibrary('getSSHConfig', noop, 'function')
+const getSSHConfig: (...props) => Pick<ClusterFormProps, 'sshUsername' | 'sshPassword' | 'sshAuthKey' | 'sshServerAddress'> =
+    importComponentFromFELibrary('getSSHConfig', noop, 'function')
 
 class ClusterList extends Component<ClusterListProps, any> {
     timerRef
@@ -306,21 +307,23 @@ class ClusterList extends Component<ClusterListProps, any> {
                             isConnectedViaSSHTunnel={this.state.isConnectedViaSSHTunnel}
                             toggleCheckTlsConnection={this.toggleCheckTlsConnection}
                             setTlsConnectionFalse={this.setTlsConnectionFalse}
-                            toggleShowAddCluster={this.handleCloseCreateClusterForm}
                             toggleKubeConfigFile={this.toggleKubeConfigFile}
                             isKubeConfigFile={this.state.isKubeConfigFile}
                             toggleClusterDetails={this.toggleClusterDetails}
+                            handleCloseCreateClusterForm={this.handleCloseCreateClusterForm}
                             isVirtualCluster={false}
                             isProd={false}
                         />
                     </Drawer>
                 </Route>
 
-                <Route path={`${URLS.GLOBAL_CONFIG_CLUSTER}/:clusterId/${URLS.CREATE_ENVIRONMENT}`}
+                <Route
+                    path={`${URLS.GLOBAL_CONFIG_CLUSTER}/:clusterId/${URLS.CREATE_ENVIRONMENT}`}
                     render={(props) => {
                         const clusterId = props.match.params.clusterId
-                        const { isVirtualCluster, prometheus_url } = this.state.clusters.find((cluster) => cluster.id == clusterId) || {}
-                        
+                        const { isVirtualCluster, prometheus_url } =
+                            this.state.clusters.find((cluster) => cluster.id == clusterId) || {}
+
                         return (
                             <ClusterEnvironmentDrawer
                                 reload={this.initialise}
@@ -668,7 +671,7 @@ const Cluster = ({
         return <Database className="icon-dim-20" />
     }
 
-    const DisableEditMode = (): void => {
+    const handleToggleEditMode = (): void => {
         toggleEditMode((t) => !t)
     }
 
@@ -848,7 +851,7 @@ const Cluster = ({
                     clusterId && renderNoEnvironmentTab()
                 )}
                 {editMode && (
-                    <Drawer position="right" width="1000px" onEscape={DisableEditMode}>
+                    <Drawer position="right" width="1000px" onEscape={handleToggleEditMode}>
                         <div className="h-100 bg__primary" ref={drawerRef}>
                             <ClusterForm
                                 {...getSSHConfig(sshTunnelConfig)}
@@ -868,12 +871,12 @@ const Cluster = ({
                                 isConnectedViaSSHTunnel={toConnectWithSSHTunnel}
                                 toggleCheckTlsConnection={toggleCheckTlsConnection}
                                 setTlsConnectionFalse={setTlsConnectionFalse}
-                                toggleShowAddCluster={toggleShowAddCluster}
                                 toggleKubeConfigFile
                                 isKubeConfigFile={state.isKubeConfigFile}
                                 toggleEditMode={toggleEditMode}
                                 toggleClusterDetails
                                 isVirtualCluster={isVirtualCluster}
+                                handleCloseCreateClusterForm={handleToggleEditMode}
                                 isProd={isProd}
                             />
                         </div>

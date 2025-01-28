@@ -175,7 +175,35 @@ export interface ClusterFormType {
 
 export const RemoteConnectionTypeCluster = 'cluster'
 
-export type ClusterFormProps = Record<string, any> & {
-    isProd: boolean
+export type ClusterFormProps = {
+    /**
+     * @default false
+     */
+    isProd?: boolean
     handleCloseCreateClusterForm: () => void
+    id: number
+    cluster_name: string
+    server_url: string
+    active: boolean
+    config: any
+    toggleEditMode: any
+    reload: () => void
+    prometheus_url: string
+    prometheusAuth: any
+    defaultClusterComponent: any
+    proxyUrl: string
+    sshUsername: string
+    sshPassword: string
+    sshAuthKey: string
+    sshServerAddress: string
+    isConnectedViaProxy: boolean
+    isConnectedViaSSHTunnel: boolean
+    isTlsConnection: boolean
+    toggleCheckTlsConnection: any
+    setTlsConnectionFalse: any
+    toggleKubeConfigFile: any
+    isKubeConfigFile: boolean
+    isClusterDetails: boolean
+    toggleClusterDetails: any
+    isVirtualCluster: boolean
 }

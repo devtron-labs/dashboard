@@ -130,6 +130,7 @@ export default function NavigationRoutes() {
     const contextValue = useMemo(() => ({ environmentId, setEnvironmentId }), [environmentId])
     const [isAirgapped, setIsAirGapped] = useState(false)
     const [isManifestScanningEnabled, setIsManifestScanningEnabled] = useState<boolean>(false)
+    const [isGitOpsEnabled, setIsGitOpsEnabled] = useState<MainContext['isGitOpsEnabled']>(false)
 
     const getInit = async (_serverMode: string) => {
         setLoginLoader(true)
@@ -277,12 +278,14 @@ export default function NavigationRoutes() {
             const { result } = await getEnvironmentData()
             setIsAirGapped(result.isAirGapEnvironment)
             setIsManifestScanningEnabled(result.isManifestScanningEnabled)
+            setIsGitOpsEnabled(result.isGitOpsEnabled)
             if (typeof Storage !== 'undefined') {
                 localStorage.setItem('isAirGapped', result.isAirGapEnvironment)
             }
         } catch {
             setIsAirGapped(false)
             setIsManifestScanningEnabled(false)
+            setIsGitOpsEnabled(false)
         }
     }
 
@@ -382,6 +385,7 @@ export default function NavigationRoutes() {
                 isAirgapped,
                 isSuperAdmin,
                 isManifestScanningEnabled,
+                isGitOpsEnabled,
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>

@@ -15,8 +15,10 @@
  */
 
 import {
+    DeploymentAppTypes,
     DeploymentStrategy,
     Environment,
+    TriggerType,
     SavedDeploymentStrategy,
     VariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -127,4 +129,21 @@ export interface AdvanceCDPipelineModalProps {
 export interface InputVariablesFromInputListType {
     preBuildStage: Map<string, VariableType>[]
     postBuildStage: Map<string, VariableType>[]
+}
+
+interface MigrateFromArgoFormState {
+    appName: string | null
+    namespace: string | null
+    clusterId: number | null
+    /**
+     * Would need to send as envId while saving
+     */
+    targetEnvironmentId: number | null
+}
+
+export interface MigrateToDevtronFormState {
+    deploymentAppType: Extract<DeploymentAppTypes, DeploymentAppTypes.HELM | DeploymentAppTypes.GITOPS> | null
+    migrateFromArgoFormState: MigrateFromArgoFormState
+    // TODO: Will add helm form state
+    triggerType: (typeof TriggerType)[keyof typeof TriggerType]
 }
