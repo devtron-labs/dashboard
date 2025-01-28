@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-import { useState, useContext, Fragment, useEffect } from 'react'
-import Tippy from '@tippyjs/react'
-import { VariableType } from '@devtron-labs/devtron-fe-common-lib'
+import { useState, useContext, useEffect } from 'react'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { PluginVariableType } from '../ciPipeline/types'
-import CustomInputVariableSelect from './CustomInputVariableSelect'
-import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { VariableDataTable } from './VariableDataTable'
 

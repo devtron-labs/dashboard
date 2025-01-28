@@ -184,14 +184,6 @@ export interface EditTaintsModalType extends NodeActionModalPropType {
     taints: TaintType[]
 }
 
-interface NodeCordonOptions {
-    unschedulableDesired: boolean
-}
-
-export interface NodeCordonRequest extends NodeActionRequest {
-    nodeCordonOptions: NodeCordonOptions
-}
-
 export interface ClusteNotePatchRequest {
     id: number // this is mandatory to send in the request
     identifier: number // equals clusterId for cluster description and appId for app/job description
@@ -201,18 +193,6 @@ export interface ClusteNotePatchRequest {
 export interface ClusterShortDescriptionPatchRequest {
     id: number
     description: string
-}
-
-interface NodeDrainOptions {
-    gracePeriodSeconds: number
-    deleteEmptyDirData: boolean
-    disableEviction: boolean
-    force: boolean
-    ignoreAllDaemonSets: boolean
-}
-
-export interface NodeDrainRequest extends NodeActionRequest {
-    nodeDrainOptions: NodeDrainOptions
 }
 
 export interface EditTaintsRequest extends NodeActionRequest {
