@@ -301,6 +301,14 @@ p.sentence-case:first-letter {
     line-height: 16px;
 }
 
+.form__checkbox__root {
+    &--gap-8 {
+        .form__checkbox-label {
+            margin-left: 8px;
+        }
+    }
+}
+
 .form__checkbox-check {
     display: none;
 }

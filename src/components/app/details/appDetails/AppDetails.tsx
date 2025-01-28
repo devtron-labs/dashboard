@@ -696,7 +696,7 @@ export const Details: React.FC<DetailsType> = ({
         return (
             <ConfirmationModal
                 variant={ConfirmationModalVariantType.custom}
-                Icon={hibernateConfirmationModal === 'hibernate' ? ICHibernate : ICUnhibernate}
+                Icon={hibernateConfirmationModal === 'hibernate' ? <ICHibernate /> : <ICUnhibernate />}
                 title={`${hibernateConfirmationModal === 'hibernate' ? 'Hibernate' : 'Restore'} '${appDetails.appName}' on '${appDetails.environmentName}'`}
                 subtitle={
                     <p className="m-0-imp fs-13">

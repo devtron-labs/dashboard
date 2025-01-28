@@ -61,9 +61,7 @@ src/components/ClusterNodes/ClusterEvents.tsx
 src/components/ClusterNodes/ClusterManifest.tsx
 src/components/ClusterNodes/ClusterNodeEmptyStates.tsx
 src/components/ClusterNodes/ClusterOverview.tsx
-src/components/ClusterNodes/NodeActions/CordonNodeModal.tsx
 src/components/ClusterNodes/NodeActions/DeleteNodeModal.tsx
-src/components/ClusterNodes/NodeActions/DrainNodeModal.tsx
 src/components/ClusterNodes/NodeActions/EditTaintsModal.tsx
 src/components/ClusterNodes/NodeActions/NodeActionsMenu.tsx
 src/components/ClusterNodes/NodeActions/validationRules.ts

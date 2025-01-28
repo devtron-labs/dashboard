@@ -19,9 +19,9 @@ import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import { noop, PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetailsTabs } from '@Components/v2/appDetails/appDetails.store'
 import { TaintType } from '@Components/ClusterNodes/types'
+import { ReactComponent as UncordonIcon } from '@Icons/ic-play-outline.svg'
 import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
 import { ReactComponent as CordonIcon } from '../../../assets/icons/ic-cordon.svg'
-import { ReactComponent as UncordonIcon } from '../../../assets/icons/ic-play-medium.svg'
 import { ReactComponent as DrainIcon } from '../../../assets/icons/ic-clean-brush.svg'
 import { ReactComponent as EditTaintsIcon } from '../../../assets/icons/ic-spraycan.svg'
 import { ReactComponent as EditFileIcon } from '../../../assets/icons/ic-edit-lines.svg'
@@ -114,8 +114,7 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
                     name={name}
                     version={version}
                     kind={kind}
-                    // NOTE!: ts was showing error in yarn lint but vscode did not
-                    unschedulable={!!nodeData.unschedulable as unknown as boolean}
+                    unschedulable={!!nodeData.unschedulable}
                     closePopup={hideCordonNodeModal}
                 />
             )
@@ -171,7 +170,7 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
                         >
                             {nodeData.unschedulable ? (
                                 <>
-                                    <UncordonIcon className="icon-dim-16 mr-8 scn-7 dc__stroke-width-4" />
+                                    <UncordonIcon className="icon-dim-16 mr-8 scn-7" />
                                     {CLUSTER_NODE_ACTIONS_LABELS.uncordon}
                                 </>
                             ) : (
