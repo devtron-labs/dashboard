@@ -55,6 +55,9 @@ import {
     InfoColourBar,
     ToastManager,
     ToastVariantType,
+    Button,
+    ButtonVariantType,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import yamlJsParser from 'yaml'
 import Check from '@Icons/ic-selected-corner.png'
@@ -487,13 +490,13 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
                             return (
                                 <div className="pb-20 pr-20 pl-20">
-                                    <button
-                                        type="button"
+                                    <Button
+                                        variant={ButtonVariantType.text}
+                                        size={ComponentSizeType.small}
                                         onClick={handleClick}
-                                        className="cta secondary cursor lh-20-imp h-28"
-                                    >
-                                        Take me there
-                                    </button>
+                                        dataTestId="take-me-there"
+                                        text="Take me there"
+                                    />
                                 </div>
                             )
                         }
