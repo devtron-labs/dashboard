@@ -35,7 +35,6 @@ interface SaveNotificationPayload {
         eventTypeIds: number[]
     }[]
     providers: { configId: number; dest: 'ses' | 'slack' | ''; recipient: string }[]
-    sesConfigId: number
 }
 
 interface SaveNotificationResponseType extends ResponseType {
@@ -84,7 +83,7 @@ interface SESConfigResponseType extends ResponseType {
     }
 }
 
-function createSaveNotificationPayload(selectedPipelines, providers, sesConfigId: number): SaveNotificationPayload {
+function createSaveNotificationPayload(selectedPipelines, providers): SaveNotificationPayload {
     const allPipelines = selectedPipelines.map((config) => {
         const eventTypeIds = []
         if (config.trigger) {
@@ -135,13 +134,12 @@ function createSaveNotificationPayload(selectedPipelines, providers, sesConfigId
     return {
         notificationConfigRequest: allPipelines,
         providers,
-        sesConfigId,
     }
 }
 
-export function saveNotification(selectedPipelines, providers, sesConfigId): Promise<SaveNotificationResponseType> {
+export function saveNotification(selectedPipelines, providers): Promise<SaveNotificationResponseType> {
     const URL = `${Routes.NOTIFIER}`
-    const payload = createSaveNotificationPayload(selectedPipelines, providers, sesConfigId)
+    const payload = createSaveNotificationPayload(selectedPipelines, providers)
     return post(URL, payload)
 }
 
