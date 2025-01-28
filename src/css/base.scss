@@ -957,21 +957,6 @@ button.anchor {
     background-color: var(--N000);
 }
 
-.dc__ses_config-table__tag {
-    border-radius: 2px;
-    padding: 2px 8px;
-    font-size: 11px;
-    font-weight: 600;
-    font-stretch: normal;
-    line-height: 1.82;
-    text-transform: uppercase;
-    margin: 0 8px;
-    color: var(--B500);
-    border: solid 1px #b5d3f2;
-    background-blend-mode: multiply;
-    background-image: linear-gradient(to bottom, var(--B50), var(--B50));
-}
-
 .dc__saved-filter__clear-btn--dark {
     height: 36px;
     background-color: var(--white);
@@ -3222,6 +3207,10 @@ textarea,
 
 .w-160 {
     width: 160px;
+
+    &--imp {
+        width: 160px !important;
+    }
 }
 
 .w-180 {
@@ -3458,6 +3447,10 @@ textarea,
 // width fix content
 .dc__w-fit-content {
     width: fit-content;
+
+    &--imp {
+        width: fit-content !important;
+    }
 }
 
 .dc__width-inherit {
@@ -3467,6 +3460,15 @@ textarea,
 // Height in pixels
 .dc__height-inherit {
     height: inherit;
+}
+
+.dc__height-auto {
+    height: auto;
+
+    &--imp {
+        height: auto !important;
+    }
+
 }
 
 .dc__min-width-fit-content {
@@ -3579,6 +3581,10 @@ textarea,
 
 .h-66 {
     height: 66px !important;
+}
+
+.h-68 {
+    height: 68px;
 }
 
 .h-72 {
@@ -4166,6 +4172,10 @@ textarea,
     }
 }
 
+.dc__row-gap-4 {
+    row-gap: 4px !important;
+}
+
 .dc__row-gap-8 {
     row-gap: 8px;
 }
@@ -4381,6 +4391,10 @@ textarea::placeholder {
 .dc__hover-n50:hover,
 .dc__bg-n50 {
     background-color: var(--N50);
+}
+
+.dc__hover-text-n90:hover {
+    color: var(--N900) !important;
 }
 
 .dc__bg-g5 {
@@ -5395,4 +5409,23 @@ details[open] {
     white-space: -pre-wrap;      /* Opera 4-6 */
     white-space: -o-pre-wrap;    /* Opera 7 */
     word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+.vertical-divider {
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        transform: translate(-50%, 0);
+        width: 1px;
+        background-color: var(--N200);
+    }
+
+    &.vertical-divider--zi-2::after {
+        z-index: 2;
+    }
 }

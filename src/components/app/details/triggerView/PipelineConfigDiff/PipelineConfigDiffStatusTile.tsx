@@ -14,13 +14,12 @@ export const PipelineConfigDiffStatusTile = ({
     onClick,
     canReviewConfig,
     urlFilters,
-    showConfigNotAvailableTooltip,
     renderConfigNotAvailableTooltip,
 }: PipelineConfigDiffStatusTileProps) => {
     const { deploy } = urlFilters
     const lastDeployedOptionSelected = deploy === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG
     const lastSavedConfigOptionSelected = deploy === DeploymentWithConfigType.LAST_SAVED_CONFIG
-    const _canReviewConfig = canReviewConfig && !noLastDeploymentConfig && !showConfigNotAvailableTooltip
+    const _canReviewConfig = canReviewConfig && !noLastDeploymentConfig
 
     // RENDERERS
     const renderDiffState = () => (
@@ -74,7 +73,7 @@ export const PipelineConfigDiffStatusTile = ({
             <Tooltip
                 alwaysShowTippyOnHover={!isLoading && !lastDeployedOptionSelected && !noLastDeploymentConfig}
                 content={
-                    showConfigNotAvailableTooltip
+                    noLastDeploymentConfig
                         ? renderConfigNotAvailableTooltip()
                         : `${hasDiff ? 'Config' : 'No config'} diff from last deployed`
                 }

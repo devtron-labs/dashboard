@@ -15,11 +15,10 @@
  */
 
 import { useState } from 'react'
-import { showError, DeleteDialog, InfoColourBar, ToastVariantType, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, DeleteDialog, InfoColourBar, ToastVariantType, ToastManager, deleteNodeCapacity } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { NodeActionModalPropType } from '../types'
-import { deleteNodeCapacity } from '../clusterNodes.service'
 import { DELETE_NODE_MODAL_MESSAGING } from '../constants'
 
 export default function DeleteNodeModal({ name, version, kind, closePopup }: NodeActionModalPropType) {

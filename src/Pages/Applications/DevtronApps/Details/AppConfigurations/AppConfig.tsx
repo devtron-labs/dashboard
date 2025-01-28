@@ -53,8 +53,7 @@ import { ENV_CONFIG_PATH_REG } from './AppConfig.constants'
 
 const getApprovalPolicyConfigForApp: (appId: number) => Promise<ResourceIdToResourceApprovalPolicyConfigMapType> =
     importComponentFromFELibrary('getApprovalPolicyConfigForApp', null, 'function')
-const isFELibAvailable: (appId: number) => Promise<ResourceIdToResourceApprovalPolicyConfigMapType> =
-    importComponentFromFELibrary('isFELibAvailable', null, 'function')
+const isFELibAvailable: boolean = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigProps) => {
     // HOOKS

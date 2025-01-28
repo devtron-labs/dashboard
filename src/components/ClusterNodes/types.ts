@@ -21,6 +21,7 @@ import {
     ClusterCapacityType,
     ClusterDetail,
     NodeTaintType,
+    NodeActionRequest,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/Types'
 import { LabelTag, OptionType } from '../app/types'
@@ -172,12 +173,6 @@ export interface TaintErrorObj {
     }[]
 }
 
-export interface NodeActionRequest {
-    clusterId?: number
-    name: string
-    version: string
-    kind: string
-}
 export interface NodeActionModalPropType extends NodeActionRequest {
     closePopup: (refreshData?: boolean) => void
 }

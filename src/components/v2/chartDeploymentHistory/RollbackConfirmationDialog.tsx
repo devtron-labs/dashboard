@@ -15,10 +15,14 @@
  */
 
 import React from 'react'
-import { ConfirmationDialog, usePrompt, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ConfirmationDialog,
+    usePrompt,
+    Progressing,
+    DEFAULT_ROUTE_PROMPT_MESSAGE,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt } from 'react-router-dom'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
-import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../config'
 
 interface RollbackConfirmationDialogProps {
     deploying: boolean

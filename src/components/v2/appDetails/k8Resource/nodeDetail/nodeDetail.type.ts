@@ -15,8 +15,13 @@
  */
 
 import React from 'react'
-import { OptionType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
-import { AppDetails, Options, OptionsBase, SelectedResourceType } from '../../appDetails.type'
+import {
+    OptionType,
+    SelectPickerOptionType,
+    OptionsBase,
+    SelectedResourceType,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { AppDetails, Options } from '../../appDetails.type'
 import { CUSTOM_LOGS_FILTER, MANIFEST_KEY_FIELDS } from '../../../../../config'
 import { CustomLogFilterOptionsType, SelectedCustomLogFilterType } from './NodeDetailTabs/node.type'
 
@@ -40,6 +45,7 @@ export interface ParamsType {
     envId?: string
     namespace?: string
     clusterId?: string
+    group?: string
 }
 export interface EphemeralForm {
     basicData: {
@@ -70,7 +76,7 @@ export interface EphemeralContainerDrawerType {
     switchSelectedContainer: (string) => void
     onClickShowLaunchEphemeral: () => void
     selectedNamespaceByClickingPod?: string
-    handleSuccess: () => void
+    handleSuccess?: () => void
 }
 
 export interface ResponsePayload {

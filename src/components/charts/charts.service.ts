@@ -22,9 +22,10 @@ import {
     sortCallback,
     ResponseType,
     getUrlWithSearchParams,
+    getAPIOptionsWithTriggerTimeout
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DELETE_ACTION, Routes } from '../../config'
-import { getAPIOptionsWithTriggerTimeout, handleUTCTime } from '../common'
+import { handleUTCTime } from '../common'
 import {
     ChartValuesType,
     ChartGroup,
