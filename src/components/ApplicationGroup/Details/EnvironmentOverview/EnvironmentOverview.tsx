@@ -357,7 +357,6 @@ export default function EnvironmentOverview({
                     <EditableTextArea
                         emptyState="Write a short description for this environment"
                         placeholder="Write a short description for this environment"
-                        rows={4}
                         initialText={description}
                         updateContent={handleSaveDescription}
                         validations={{

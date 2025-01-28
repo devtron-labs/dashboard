@@ -504,10 +504,6 @@
     text-transform: none;
 }
 
-.build__value {
-    background-color: var(--bg-secondary);
-}
-
 .format-grid {
     display: grid;
     grid-template-columns: 16px auto;
@@ -548,8 +544,4 @@
             }
         }
     }
-}
-
-.custom-tag__text-area {
-    resize: none;
 }
