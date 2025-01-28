@@ -126,7 +126,7 @@ const BulkDeleteModal = ({
                 },
             }}
             showConfirmationModal
-            customInputConfig={{
+            confirmationConfig={{
                 identifier: 'delete-user-confirmation',
                 confirmationKeyword: confirmationText,
             }}
