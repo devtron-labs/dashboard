@@ -44,6 +44,7 @@ import { EditModeType, MANIFEST_SELECTION_MESSAGE, TerminalWrapperType } from '.
 import { CLUSTER_TERMINAL_MESSAGING } from '../../../../../../ClusterNodes/constants'
 
 const DownloadFileFolderButton = importComponentFromFELibrary('DownloadFileFolderButton', null, 'function')
+const UploadFileFolderButton = importComponentFromFELibrary('UploadFileFolderButton', null, 'function')
 
 const creatableSelectWrapper = (selectData: SelectWrapperType) => {
     if (selectData.hideTerminalStripComponent) {
@@ -346,6 +347,13 @@ const downloadFileFolderButton = (elementData): JSX.Element => {
     )
 }
 
+const uploadFileFolderButton = (elementData): JSX.Element => {
+    if (elementData.hideTerminalStripComponent || !UploadFileFolderButton) {
+        return null
+    }
+    return <UploadFileFolderButton />
+}
+
 export default function terminalStripTypeData(elementData) {
     switch (elementData.type) {
         case TerminalWrapperType.CREATABLE_SELECT:
@@ -370,6 +378,8 @@ export default function terminalStripTypeData(elementData) {
             return elementData.customComponent()
         case TerminalWrapperType.DOWNLOAD_FILE_FOLDER:
             return downloadFileFolderButton(elementData)
+        case TerminalWrapperType.UPLOAD_FILE_FOLDER:
+            return uploadFileFolderButton(elementData)
         default:
             return null
     }
