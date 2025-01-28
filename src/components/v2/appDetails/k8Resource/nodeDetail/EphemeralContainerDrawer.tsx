@@ -515,7 +515,7 @@ const EphemeralContainerDrawer = ({
 
     const renderEphemeralFooter = (): JSX.Element => {
         return (
-            <div className="dc__border-top bg__primary pt-12 pb-12 pl-20 pr-20 flex right bottom-border-radiu">
+            <div className="dc__border-top bg__primary pt-12 pb-12 pl-20 pr-20 flex right bottom-border-radius">
                 <ButtonWithLoader
                     rootClassName="flex cta cancel h-36 "
                     onClick={onClickShowLaunchEphemeral}
