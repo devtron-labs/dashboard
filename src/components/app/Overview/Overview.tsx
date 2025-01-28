@@ -379,6 +379,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
         switch (status) {
             case 'Succeeded':
                 return <SucceededIcon className="dc__app-summary__icon icon-dim-16 mr-6" />
+            case WorkflowStatusEnum.TIMED_OUT:
             case 'Failed':
             case 'Error':
                 return <FailedIcon className="dc__app-summary__icon icon-dim-16 mr-6" />
