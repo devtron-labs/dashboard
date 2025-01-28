@@ -24,6 +24,7 @@ import {
     Button,
     ButtonVariantType,
     ButtonStyleType,
+    capitalizeFirstLetter,
     SelectPickerProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
@@ -84,7 +85,11 @@ const DirectPermission = ({
               ]
             : []),
         ...projectsList,
-    ].map((project) => ({ label: project.name, value: project.name, description: project.description }))
+    ].map((project) => ({
+        label: project.name === HELM_APP_UNASSIGNED_PROJECT ? capitalizeFirstLetter(project.name) : project.name,
+        value: project.name,
+        description: project.description,
+    }))
 
     const formatProjectOptionLabel: SelectPickerProps['formatOptionLabel'] = (option) =>
         option.label === HELM_APP_UNASSIGNED_PROJECT ? (
