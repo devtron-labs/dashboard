@@ -956,8 +956,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             />
                         ) : null}
                         <Button
-                            text="Save"
-                            variant={ButtonVariantType.secondary}
+                            text={this.props.material.id ? 'Update' : 'Save'}
+                            variant={ButtonVariantType.primary}
                             disabled={this.props.isLoading}
                             onClick={this.props.save}
                             dataTestId="git-repository-save-button"
