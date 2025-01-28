@@ -29,7 +29,7 @@ import {
     ConfirmationModalVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DeleteComponentsName } from '@Config/constantMessaging'
-import { APP_CONFIG_TEXT } from '@Components/app/details/appConfig/constants'
+import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo'
 import { URLS, getAppComposeURL, APP_COMPOSE_STAGE, ViewType } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { getAppOtherEnvironmentMin, getJobOtherEnvironmentMin, getWorkflowList } from '../../../../../services/service'
@@ -395,13 +395,6 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
 
     const closeDeleteConfirmationModal = () => setState((prevState) => ({ ...prevState, showDeleteConfirm: false }))
 
-    const renderSubTitle = () => (
-        <>
-            <p className="fs-13 cn-7 lh-1-54 m-0">{APP_CONFIG_TEXT.DELETE_APPS.SUBTITLE_PARA1}</p>
-            <p className="fs-13 cn-7 lh-1-54 m-0">{APP_CONFIG_TEXT.DELETE_APPS.SUBTITLE_PARA2}</p>
-        </>
-    )
-
     const onClickCloseCannotDeleteModal = () => setState((prevState) => ({ ...prevState, showDeleteConfirm: false }))
 
     const redirectToWorkflowEditor = () => {
@@ -418,7 +411,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
                     title={`Delete ${isJob ? DeleteComponentsName.Job : DeleteComponentsName.Application} '${appName}' ?`}
                     variant={ConfirmationModalVariantType.delete}
                     showConfirmationModal={state.canDeleteApp}
-                    subtitle={renderSubTitle()}
+                    subtitle={<ApplicationDeletionInfo />}
                     buttonConfig={{
                         secondaryButtonConfig: {
                             text: 'Cancel',
