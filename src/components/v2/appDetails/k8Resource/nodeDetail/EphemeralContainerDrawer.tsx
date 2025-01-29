@@ -28,6 +28,7 @@ import {
     ToastVariantType,
     TabGroup,
     SelectPicker,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
@@ -74,7 +75,7 @@ const EphemeralContainerDrawer = ({
     switchSelectedContainer,
     onClickShowLaunchEphemeral,
     selectedNamespaceByClickingPod,
-    handleSuccess
+    handleSuccess,
 }: EphemeralContainerDrawerType) => {
     const [switchManifest, setSwitchManifest] = useState<string>(SwitchItemValues.Configuration)
     const [loader, setLoader] = useState<boolean>(false)
@@ -260,7 +261,7 @@ const EphemeralContainerDrawer = ({
 
     const renderBasicEphemeral = (): JSX.Element => {
         return (
-            <div className="p-20">
+            <div className="p-20 flex-grow-1">
                 <div className="dc__row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
                         <Tippy
@@ -405,21 +406,19 @@ const EphemeralContainerDrawer = ({
                 ? ephemeralFormAdvanced.advancedData.manifest
                 : YAMLStringify(sampleConfig?.sampleManifest)
         return (
-            <div className="mr-24 mb-24 code-editor-container">
+            <div className="flex-grow-1 flexbox-col">
                 <CodeEditor
                     value={codeEditorBody}
-                    mode="yaml"
+                    mode={MODES.YAML}
                     onChange={handleManifestAdvanceConfiguration}
                     readOnly={switchManifest === SwitchItemValues.Sample}
+                    height="fitToParent"
                 >
                     <CodeEditor.Header>
                         <Switch value={switchManifest} name="tab" onChange={handleManifestTabChange}>
                             <SwitchItem value={SwitchItemValues.Configuration}> Manifest </SwitchItem>
                             <SwitchItem value={SwitchItemValues.Sample}> Sample manifest</SwitchItem>
                         </Switch>
-                        <div className="w-70 ml-8">
-                            <CodeEditor.ValidationError />
-                        </div>
                     </CodeEditor.Header>
                 </CodeEditor>
             </div>
@@ -516,37 +515,35 @@ const EphemeralContainerDrawer = ({
 
     const renderEphemeralFooter = (): JSX.Element => {
         return (
-            <div className="">
-                <div className="dc__border-top w-100 bg__primary pt-12 pb-12 pl-20 pr-20 flex right bottom-border-radius dc__position-abs dc__right-0 dc__bottom-0">
-                    <ButtonWithLoader
-                        rootClassName="flex cta cancel h-36 "
-                        onClick={onClickShowLaunchEphemeral}
-                        disabled={loader}
-                        dataTestId="cancel-token"
-                        isLoading={false}
-                    >
-                        Cancel
-                    </ButtonWithLoader>
-                    <ButtonWithLoader
-                        rootClassName="flex cta h-36 ml-16"
-                        onClick={onSave}
-                        disabled={
-                            ephemeralContainerType === EDITOR_VIEW.BASIC
-                                ? !ephemeralForm.basicData.containerName
-                                : !ephemeralFormAdvanced.advancedData.manifest
-                        }
-                        isLoading={loader}
-                    >
-                        Launch container
-                    </ButtonWithLoader>
-                </div>
+            <div className="dc__border-top bg__primary pt-12 pb-12 pl-20 pr-20 flex right bottom-border-radius">
+                <ButtonWithLoader
+                    rootClassName="flex cta cancel h-36 "
+                    onClick={onClickShowLaunchEphemeral}
+                    disabled={loader}
+                    dataTestId="cancel-token"
+                    isLoading={false}
+                >
+                    Cancel
+                </ButtonWithLoader>
+                <ButtonWithLoader
+                    rootClassName="flex cta h-36 ml-16"
+                    onClick={onSave}
+                    disabled={
+                        ephemeralContainerType === EDITOR_VIEW.BASIC
+                            ? !ephemeralForm.basicData.containerName
+                            : !ephemeralFormAdvanced.advancedData.manifest
+                    }
+                    isLoading={loader}
+                >
+                    Launch container
+                </ButtonWithLoader>
             </div>
         )
     }
 
     return (
         <Drawer position="right" width="50%">
-            <div className="bg__primary h-100 dc__position-rel">
+            <div className="bg__primary h-100 flexbox-col">
                 {renderEphemeralHeaders()}
                 {renderEphemeralContainerType()}
                 {ephemeralContainerType === EDITOR_VIEW.BASIC ? renderBasicEphemeral() : renderAdvancedEphemeral()}

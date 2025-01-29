@@ -487,6 +487,10 @@ $color-suffix: 00;
 
 .divider {
     border-top: 1px solid var(--N200);
+
+    &--n1 {
+        border-top-color: var(--divider-secondary);
+    }
 }
 
 .sqr-44 {

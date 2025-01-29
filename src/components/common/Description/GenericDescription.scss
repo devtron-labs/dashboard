@@ -139,11 +139,6 @@
     flex-shrink: 0;
 }
 
-.cluster-manifest-header {
-    display: grid;
-    grid-template-columns: 1fr 1fr 30px;
-}
-
 .cluster__description-footer {
     border-radius: 0 0 3px 3px;
     border: 1px solid var(--N200);
