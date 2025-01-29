@@ -219,7 +219,8 @@ const ManifestComponent = ({
     }
 
     const handleInitializeLockedManifestKeys = async (signal: AbortSignal) => {
-        if (!getLockedManifestKeys || !isManifestEditable) {
+        // NOTE: this feature is only applicable to non-superadmins
+        if (!getLockedManifestKeys || !isManifestEditable || isSuperAdmin) {
             return
         }
 
