@@ -210,7 +210,7 @@ const ResourceList = () => {
             isOverviewSelected: isOverviewNodeType,
             isMonitoringDashBoardSelected: isMonitoringNodeType,
         })
-        initTabs(_tabs, reInit)
+        initTabs(_tabs, reInit, null, true)
     }
 
     useEffect(() => initTabsBasedOnRole(false), [])
