@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, doesJSONConformToSchema07 } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
 import { ChartValuesViewAction, ChartValuesViewActionTypes, ChartValuesViewState } from './ChartValuesView.type'
 
@@ -50,7 +50,12 @@ export const initState = (
         manifestGenerationKey: '',
         generatedManifest: '',
         valuesEditorError: '',
-        installedConfig: installedConfigFromParent,
+        installedConfig: {
+            ...installedConfigFromParent,
+            valuesSchemaJson: doesJSONConformToSchema07(installedConfigFromParent.valuesSchemaJson).isValid
+                ? installedConfigFromParent.valuesSchemaJson
+                : '',
+        },
         fetchingReadMe: false,
         fetchedReadMe: new Map<number, string>(),
         activeTab: 'yaml',

@@ -40,6 +40,7 @@ import {
     ToastVariantType,
     UNSAVED_CHANGES_PROMPT_MESSAGE,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
+    doesJSONConformToSchema07,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -283,6 +284,9 @@ const ChartValuesView = ({
                     const _releaseInfo = releaseInfoResponse.result.releaseInfo
                     const _installedAppInfo = releaseInfoResponse.result.installedAppInfo
                     const _fetchedReadMe = commonState.fetchedReadMe
+                    _releaseInfo.valuesSchemaJson = doesJSONConformToSchema07(_releaseInfo.valuesSchemaJson).isValid
+                        ? _releaseInfo.valuesSchemaJson
+                        : ''
                     _fetchedReadMe.set(0, _releaseInfo.readme)
                     dispatch({
                         type: ChartValuesViewActionTypes.multipleOptions,
@@ -577,6 +581,9 @@ const ChartValuesView = ({
     const initData = async (_installedAppInfo: InstalledAppInfo, _releaseInfo: ReleaseInfo) => {
         try {
             const { result } = await getChartVersionDetailsV2(_installedAppInfo.installedAppVersionId)
+            result.valuesSchemaJson = doesJSONConformToSchema07(result.valuesSchemaJson).isValid
+                ? result.valuesSchemaJson
+                : ''
             const _repoChartValue = {
                 appStoreApplicationVersionId: result?.appStoreVersion,
                 chartRepoName: _installedAppInfo.appStoreChartRepoName,
