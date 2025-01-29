@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useRouteMatch } from 'react-router-dom'
+import { useHistory, useRouteMatch } from 'react-router-dom'
 import { DeleteComponentsName } from '@Config/constantMessaging'
 import { DeleteConfirmationModal } from '@devtron-labs/devtron-fe-common-lib'
 import { deleteGeneratedAPIToken } from './service'
@@ -28,9 +28,12 @@ const DeleteAPITokenModal = ({
     setDeleteConfirmation,
 }: DeleteAPITokenModalProps) => {
     const match = useRouteMatch()
+    const { push } = useHistory()
 
     const onDelete = async () => {
         await deleteGeneratedAPIToken(tokenData.id.toString())
+        reload()
+        push(isEditView ? `${match.path.split('edit')[0]}list` : '')
     }
 
     const renderDescriptionContent = () => (
@@ -60,10 +63,8 @@ const DeleteAPITokenModal = ({
             subtitle={renderDescriptionContent()}
             component={DeleteComponentsName.API_TOKEN}
             onDelete={onDelete}
-            reload={reload}
             showConfirmationModal={showDeleteConfirmation}
             closeConfirmationModal={closeDeleteConfirmationModal}
-            url={isEditView ? `${match.path.split('edit')[0]}list` : ''}
         />
     )
 }

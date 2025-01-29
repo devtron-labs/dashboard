@@ -44,28 +44,20 @@ export default function DeleteNodeModal({
         await deleteNodeCapacity(payload)
         closePopup(true)
     }
-
-    const renderSubtitle = () => {
-        const recommendedNote = () => {
-            return (
-                <div className="fs-13 fw-4 lh-20">
-                    <span className="fw-6">{DELETE_NODE_MODAL_MESSAGING.recommended}</span>
-                    {DELETE_NODE_MODAL_MESSAGING.recommendedInfoText}
-                </div>
-            )
-        }
+    const recommendedNote = () => {
         return (
-            <>
-                <InfoColourBar
-                    classname="question-bar p-lr-12"
-                    message={recommendedNote()}
-                    Icon={Help}
-                    iconClass="fcv-5"
-                />
-                <p className="m-0 fs-13 lh-20 cn-7">{DELETE_NODE_MODAL_MESSAGING.description}</p>
-            </>
+            <div className="fs-13 fw-4 lh-20">
+                <span className="fw-6">{DELETE_NODE_MODAL_MESSAGING.recommended}</span>
+                {DELETE_NODE_MODAL_MESSAGING.recommendedInfoText}
+            </div>
         )
     }
+    const renderSubtitle = () => (
+        <>
+            <InfoColourBar classname="question-bar p-lr-12" message={recommendedNote()} Icon={Help} iconClass="fcv-5" />
+            <p className="m-0 fs-13 lh-20 cn-7">{DELETE_NODE_MODAL_MESSAGING.description}</p>
+        </>
+    )
 
     return (
         <DeleteConfirmationModal

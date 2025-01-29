@@ -90,11 +90,11 @@ const CollapsibleDeployment: React.FC<{
         target.src = placeHolder
     }
 
-    const onClickSetCandidateChart = () => setCandidateChart(defaultInstalledChart)
+    const onCloseDeleteModal = () => setCandidateChart(defaultInstalledChart)
 
     const onDelete = async () => {
         await props.deleteInstalledChart(candidateChart.installedAppId)
-        onClickSetCandidateChart()
+        onCloseDeleteModal()
     }
 
     return (
@@ -160,7 +160,7 @@ const CollapsibleDeployment: React.FC<{
                 title={candidateChart.chartName}
                 component={DeleteComponentsName.ChartGroup}
                 onDelete={onDelete}
-                closeConfirmationModal={onClickSetCandidateChart}
+                closeConfirmationModal={onCloseDeleteModal}
                 showConfirmationModal={!!candidateChart.installedAppId}
                 subtitle={<ApplicationDeletionInfo />}
             />

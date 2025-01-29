@@ -5,7 +5,6 @@ import { EnvironmentDeleteComponentProps } from './ClusterEnvironmentDrawer/type
 export const EnvironmentDeleteComponent = ({
     environmentName,
     onDelete,
-    reload,
     showConfirmationModal,
     closeConfirmationModal,
 }: EnvironmentDeleteComponentProps) => (
@@ -14,7 +13,6 @@ export const EnvironmentDeleteComponent = ({
         component={DeleteComponentsName.Environment}
         renderCannotDeleteConfirmationSubTitle={DC_ENVIRONMENT_CONFIRMATION_MESSAGE}
         onDelete={onDelete}
-        reload={reload}
         showConfirmationModal={showConfirmationModal}
         closeConfirmationModal={closeConfirmationModal}
         errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.BAD_REQUEST}

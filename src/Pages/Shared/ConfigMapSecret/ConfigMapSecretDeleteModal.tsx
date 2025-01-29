@@ -59,6 +59,7 @@ export const ConfigMapSecretDeleteModal = ({
             const deleteConfigMapSecretParams = { id, appId, name: configName }
             await (isSecret ? deleteSecret : deleteConfigMap)(deleteConfigMapSecretParams)
         }
+        updateCMSecret()
     }
 
     const prepareDataToDeleteOverrideDraft = () => ({ id })
@@ -94,7 +95,7 @@ export const ConfigMapSecretDeleteModal = ({
         ) : null
     }
 
-    const updatedHandleError = (err) => handleError(DraftAction.Delete, err)
+    const onError = (err) => handleError(DraftAction.Delete, err)
 
     const renderDeleteModal = () => (
         <DeleteConfirmationModal
@@ -107,11 +108,10 @@ export const ConfigMapSecretDeleteModal = ({
             }
             onDelete={handleDelete}
             successToastMessage={isDeleteOverride && envId ? 'Restored to global' : 'Successfully Deleted'}
-            reload={updateCMSecret}
             closeConfirmationModal={closeDeleteModal}
             showConfirmationModal={openDeleteModal === 'deleteModal'}
-            handleError={updatedHandleError}
-            primaryButtonText="Delete Override"
+            handleError={onError}
+            primaryButtonText={isDeleteOverride ? 'override' : ''}
         />
     )
 

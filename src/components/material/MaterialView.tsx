@@ -632,6 +632,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         }
 
         await deleteMaterial(deletePayload)
+        this.props.reload()
     }
 
     renderForm() {
@@ -971,7 +972,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     showConfirmationModal={this.state.confirmation}
                     closeConfirmationModal={this.toggleConfirmation}
                     onDelete={this.onDelete}
-                    reload={this.props.reload}
                     subtitle={
                         this.props.isMultiGit
                             ? DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE

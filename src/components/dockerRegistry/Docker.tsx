@@ -1804,6 +1804,7 @@ const DockerForm = ({
             selectedDockerRegistryType.value === RegistryType.ECR && fetchAWSRegion(),
         )
         await deleteDockerReg(deletePayload)
+        reload()
     }
 
     // For EA Mode GCR is not available as it is not OCI compliant
@@ -2045,7 +2046,6 @@ const DockerForm = ({
                     component={DeleteComponentsName.ContainerRegistry}
                     renderCannotDeleteConfirmationSubTitle={DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE}
                     errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
-                    reload={reload}
                     onDelete={onDelete}
                     showConfirmationModal={confirmation}
                     closeConfirmationModal={closeConfirmationModal}

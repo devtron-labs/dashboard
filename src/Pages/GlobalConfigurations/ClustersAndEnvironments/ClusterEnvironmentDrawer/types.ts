@@ -55,7 +55,6 @@ export interface ClusterNamespacesDTO {
 export interface EnvironmentDeleteComponentProps {
     environmentName: string
     onDelete: () => void
-    reload: () => void
     showConfirmationModal: boolean
     closeConfirmationModal: () => void
 }

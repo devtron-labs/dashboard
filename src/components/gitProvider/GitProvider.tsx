@@ -798,6 +798,7 @@ const GitForm = ({
             sshPrivateKey: customState.sshInput.value || '',
         }
         await deleteGitProvider(deletePayload)
+        reload()
     }
 
     const closeConfirmationModal = () => setConfirmation(false)
@@ -989,7 +990,6 @@ const GitForm = ({
                 renderCannotDeleteConfirmationSubTitle={DC_GIT_PROVIDER_CONFIRMATION_MESSAGE}
                 showConfirmationModal={confirmation}
                 closeConfirmationModal={closeConfirmationModal}
-                reload={reload}
                 errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
             />
         </form>

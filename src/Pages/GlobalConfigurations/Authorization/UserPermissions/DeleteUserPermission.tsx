@@ -9,7 +9,6 @@ import { DeleteUserPermissionProps } from '../types'
 export const DeleteUserPermission = ({
     title,
     onDelete,
-    reload,
     showConfirmationModal,
     closeConfirmationModal,
     isUserGroup,
@@ -23,7 +22,6 @@ export const DeleteUserPermission = ({
         }
         component={isUserGroup ? DeleteComponentsName.GROUP : DeleteComponentsName.USER}
         onDelete={onDelete}
-        reload={reload}
         showConfirmationModal={showConfirmationModal}
         closeConfirmationModal={closeConfirmationModal}
     />

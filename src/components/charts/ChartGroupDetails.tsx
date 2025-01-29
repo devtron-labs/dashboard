@@ -149,6 +149,7 @@ export default function ChartGroupDetails() {
                 installedChartData: chartGroupInstalled?.result?.installedChartData,
             }
             await deleteChartGroup(payload)
+            push(`${URLS.CHARTS}/discover`)
         }
 
         return (
@@ -156,7 +157,6 @@ export default function ChartGroupDetails() {
                 title={state.name}
                 closeConfirmationModal={closeConfirmationModal}
                 component={DeleteComponentsName.ChartGroup}
-                url={`${URLS.CHARTS}/discover`}
                 showConfirmationModal={showConfirmationModal}
                 onDelete={onDelete}
             />

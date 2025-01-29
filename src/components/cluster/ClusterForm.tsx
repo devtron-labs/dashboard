@@ -1449,6 +1449,7 @@ export default function ClusterForm({
             insecureSkipTlsVerify: !isTlsConnection,
         }
         await deleteCluster(payload)
+        reload()
     }
 
     return getClusterVar ? (
@@ -1555,7 +1556,6 @@ export default function ClusterForm({
                             component={DeleteComponentsName.Cluster}
                             renderCannotDeleteConfirmationSubTitle={DC_CLUSTER_CONFIRMATION_MESSAGE}
                             onDelete={onDelete}
-                            reload={reload}
                             showConfirmationModal={confirmation}
                             closeConfirmationModal={hideConfirmationModal}
                             errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}

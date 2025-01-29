@@ -141,6 +141,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
 
     const onDelete = async () => {
         await deletePermissionGroup(_permissionGroup.id)
+        _redirectToPermissionGroupList()
     }
 
     return (
@@ -234,7 +235,6 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
                 <DeleteUserPermission
                     title={name.value}
                     onDelete={onDelete}
-                    reload={_redirectToPermissionGroupList}
                     showConfirmationModal={deleteConfirmationModal}
                     closeConfirmationModal={toggleDeleteConfirmationModal}
                     isUserGroup

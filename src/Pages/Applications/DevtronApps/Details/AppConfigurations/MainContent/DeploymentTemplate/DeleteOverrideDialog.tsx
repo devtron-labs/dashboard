@@ -39,9 +39,10 @@ const DeleteOverrideDialog = ({
 
     const handleDelete = async () => {
         await deleteOverrideDeploymentTemplate(environmentConfigId, Number(appId), Number(envId))
+        handleReload()
     }
 
-    const updatedHandleError = (error: ServerError) => {
+    const handleError = (error: ServerError) => {
         showError(error)
         if (error.code === API_STATUS_CODES.LOCKED) {
             handleProtectionError()
@@ -57,9 +58,8 @@ const DeleteOverrideDialog = ({
             showConfirmationModal={showConfirmationModal}
             onDelete={handleDelete}
             successToastMessage="Restored to global"
-            reload={handleReload}
             closeConfirmationModal={handleClose}
-            handleError={updatedHandleError}
+            handleError={handleError}
             primaryButtonText="Delete Override"
         />
     )

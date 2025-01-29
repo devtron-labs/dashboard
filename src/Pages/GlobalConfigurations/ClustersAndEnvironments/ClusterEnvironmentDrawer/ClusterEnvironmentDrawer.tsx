@@ -234,6 +234,7 @@ export const ClusterEnvironmentDrawer = ({
             isVirtual,
         })
         await deleteEnvironment(payload)
+        redirectToListAfterReload()
     }
 
     return (
@@ -367,7 +368,6 @@ export const ClusterEnvironmentDrawer = ({
                 <EnvironmentDeleteComponent
                     environmentName={data.environmentName}
                     onDelete={onDelete}
-                    reload={redirectToListAfterReload}
                     showConfirmationModal={showDeleteConfirmation}
                     closeConfirmationModal={closeConfirmationModal}
                 />

@@ -108,6 +108,7 @@ export default function SavedValuesList() {
 
     const onDelete = async () => {
         await deleteChartValues(selectedValue.id)
+        getData()
     }
 
     const handleFilterChanges = (_searchText: string): void => {
@@ -150,7 +151,6 @@ export default function SavedValuesList() {
                 onDelete={onDelete}
                 showConfirmationModal={showDeleteDialog}
                 closeConfirmationModal={hideDeleteModal}
-                reload={getData}
             />
         )
     }
