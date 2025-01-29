@@ -21,7 +21,10 @@ import {
     TriggerType,
     SavedDeploymentStrategy,
     VariableType,
+    NodeStatusDTO,
+    CDFormType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { SyntheticEvent } from 'react'
 
 export const CD_PATCH_ACTION = {
     DELETE: 1,
@@ -131,14 +134,61 @@ export interface InputVariablesFromInputListType {
     postBuildStage: Map<string, VariableType>[]
 }
 
-interface MigrateFromArgoFormState {
+export enum MigrationSourceValidationReasonType {
+    CLUSTER_NOT_FOUND = 'ClusterNotFound',
+    ENVIRONMENT_NOT_FOUND = 'EnvironmentNotFound',
+    APPLICATION_ALREADY_LINKED = 'ApplicationAlreadyLinked',
+    UNSUPPORTED_APPLICATION_SPEC = 'UnsupportedApplicationSpec',
+    CHART_TYPE_MISMATCH = 'ChartTypeMismatch',
+    CHART_VERSION_NOT_FOUND = 'ChartVersionNotFound',
+    GITOPS_NOT_FOUND = 'GitOpsNotFound',
+    INTERNAL_SERVER_ERROR = 'InternalServerError',
+    ENVIRONMENT_ALREADY_PRESENT = 'EnvironmentAlreadyPresent',
+    ENFORCED_POLICY_VIOLATION = 'EnforcedPolicyViolation',
+}
+
+export interface MigrateToDevtronRequiredFieldsDTO {
+    deploymentAppType: DeploymentAppTypes
+    applicationObjectClusterId: number
+    applicationObjectNamespace: string
+    deploymentAppName: string
+}
+
+interface ValidateMigrationSourceAppDestinationDetailsDTO {
+    clusterName: string
+    clusterServerUrl: string
+    namespace: string
+    environmentName: string
+    environmentId: number
+}
+
+export interface ValidateMigrationSourceDTO {
+    isLinkable: boolean
+    errorDetail: {
+        validationFailedReason: MigrationSourceValidationReasonType
+        validationFailedMessage: string
+    }
+    applicationMetadata: {
+        source: {
+            repoURL: string
+            chartPath: string
+            chartMetadata: {
+                chartVersion: string
+                savedChartName: string
+                valuesFileName: string
+                requiredChartName: string
+            }
+        }
+        destination: ValidateMigrationSourceAppDestinationDetailsDTO
+        status: NodeStatusDTO
+    }
+}
+
+export interface MigrateFromArgoFormState {
     appName: string | null
     namespace: string | null
     clusterId: number | null
-    /**
-     * Would need to send as envId while saving
-     */
-    targetEnvironmentId: number | null
+    validationResponse: ValidateMigrationSourceDTO | null
 }
 
 export interface MigrateToDevtronFormState {
@@ -146,4 +196,14 @@ export interface MigrateToDevtronFormState {
     migrateFromArgoFormState: MigrateFromArgoFormState
     // TODO: Will add helm form state
     triggerType: (typeof TriggerType)[keyof typeof TriggerType]
+}
+
+export interface MigratePipelineFromArgoRequiredFieldsDTO
+    extends MigrateToDevtronRequiredFieldsDTO,
+        Pick<MigrateToDevtronFormState, 'triggerType'>,
+        Pick<CDFormType, 'environmentId' | 'environmentName' | 'namespace'> {}
+
+export interface TriggerTypeRadioProps {
+    value: (typeof TriggerType)[keyof typeof TriggerType]
+    onChange: (event: SyntheticEvent) => void
 }

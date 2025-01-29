@@ -152,6 +152,7 @@ export const Routes = {
     CHART_VALUES_LIST_TEMPLATE: 'template/values/list',
     CHART_GROUP: 'chart-group',
     CHART_GROUP_LIST: 'chart-group/list',
+    CD_PIPELINE_VALIDATE_LINK_REQUEST: 'cd-pipeline/validate-link-request',
     APP_CREATE_CONFIG_MAP: 'config/global/cm',
     APP_CREATE_SECRET: 'config/global/cs',
     WORKFLOW: 'app/app-wf',

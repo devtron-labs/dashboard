@@ -58,7 +58,12 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { CDDeploymentTabText, RegistryPayloadType, SourceTypeMap, ViewType } from '../../config'
 import { getPluginIdsFromBuildStage, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
-import { CD_PATCH_ACTION, GeneratedHelmPush, MigrateToDevtronFormState } from './cdPipeline.types'
+import {
+    CD_PATCH_ACTION,
+    GeneratedHelmPush,
+    MigratePipelineFromArgoRequiredFieldsDTO,
+    MigrateToDevtronFormState,
+} from './cdPipeline.types'
 import {
     deleteCDPipeline,
     getCDPipelineConfig,
@@ -201,7 +206,7 @@ export default function CDPipeline({
             appName: null,
             namespace: null,
             clusterId: null,
-            targetEnvironmentId: null,
+            validationResponse: null,
         },
         triggerType: TriggerType.Auto,
     })
@@ -681,6 +686,27 @@ export default function CDPipeline({
             }),
         }
 
+        const isMigratingFromArgoApp =
+            migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.GITOPS &&
+            formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS &&
+            !cdPipelineId
+
+        const { migrateFromArgoFormState } = migrateToDevtronFormState
+        const migrateFromArgoTargetDetails = migrateFromArgoFormState?.validationResponse?.applicationMetadata?.destination
+
+        const migrateToDevtronRequiredPayload: MigratePipelineFromArgoRequiredFieldsDTO  = isMigratingFromArgoApp
+            ? {
+                  deploymentAppType: migrateToDevtronFormState.deploymentAppType,
+                  applicationObjectClusterId: migrateFromArgoFormState.clusterId,
+                  applicationObjectNamespace: migrateFromArgoFormState.namespace,
+                  deploymentAppName: migrateFromArgoFormState.appName,
+                  environmentId: migrateFromArgoTargetDetails?.environmentId,
+                  environmentName: migrateFromArgoTargetDetails?.environmentName,
+                  namespace: migrateFromArgoTargetDetails?.namespace,
+                  triggerType: migrateToDevtronFormState.triggerType,
+              }
+            : null
+
         const pipeline = {
             name: formData.name,
             appWorkflowId: +workflowId,
@@ -716,6 +742,7 @@ export default function CDPipeline({
             customTagStage: formData?.customTagStage ? formData.customTagStage : StageTypeEnums.PRE_CD,
             isDigestEnforcedForPipeline: formData.isDigestEnforcedForPipeline,
             isDigestEnforcedForEnv: formData.isDigestEnforcedForEnv,
+            ...migrateToDevtronRequiredPayload,
         }
 
         if (isVirtualEnvironment) {
@@ -726,7 +753,7 @@ export default function CDPipeline({
             pipeline.triggerType =
                 formData.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH
                     ? TriggerType.Manual
-                    : formData.triggerType // In case of virtual environment trigger type will always be manual
+                    : formData.triggerType as MigrateToDevtronFormState['triggerType'] // In case of virtual environment trigger type will always be manual
         }
 
         // Its not allowed to switch from external to external
@@ -1294,6 +1321,8 @@ export default function CDPipeline({
                                     noGitOpsModuleInstalledAndConfigured={noGitOpsModuleInstalledAndConfigured}
                                     releaseMode={formData.releaseMode}
                                     getMandatoryPluginData={getMandatoryPluginData}
+                                    migrateToDevtronFormState={migrateToDevtronFormState}
+                                    setMigrateToDevtronFormState={setMigrateToDevtronFormState}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />
