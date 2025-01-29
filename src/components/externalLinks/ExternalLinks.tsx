@@ -48,6 +48,7 @@ import { DOCUMENTATION, SERVER_MODE } from '../../config'
 import { ApplicationFilter, AppliedFilterChips, ClusterFilter, SearchInput } from './ExternalLinksFilters'
 import AddExternalLink from './ExternalLinksCRUD/AddExternalLink'
 import './externalLinks.scss'
+import { DeleteComponentsName } from '@Config/constantMessaging'
 
 const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
     const { appId } = useParams<{ appId: string }>()
@@ -577,7 +578,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
             )}
             <DeleteConfirmationModal
                 title={selectedLink?.name}
-                component="link"
+                component={DeleteComponentsName.Link}
                 subtitle={renderSubTitle()}
                 onDelete={onDelete}
                 isLoading={isAPICallInProgress}

@@ -139,19 +139,19 @@ export default function ChartGroupDetails() {
     const closeConfirmationModal = () => setShowConfirmationModal(false)
     const onClickConfirmationModal = () => setShowConfirmationModal(true)
 
-    const renderDeleteComponent = () => {
-        const onDelete = async () => {
-            const payload = {
-                name: state.name,
-                description: state.description,
-                id: parseInt(groupId),
-                chartGroupEntries: state.charts,
-                installedChartData: chartGroupInstalled?.result?.installedChartData,
-            }
-            await deleteChartGroup(payload)
-            push(`${URLS.CHARTS}/discover`)
+    const onDelete = async () => {
+        const payload = {
+            name: state.name,
+            description: state.description,
+            id: parseInt(groupId),
+            chartGroupEntries: state.charts,
+            installedChartData: chartGroupInstalled?.result?.installedChartData,
         }
+        await deleteChartGroup(payload)
+        push(`${URLS.CHARTS}/discover`)
+    }
 
+    const renderDeleteComponent = () => {
         return (
             <DeleteConfirmationModal
                 title={state.name}
