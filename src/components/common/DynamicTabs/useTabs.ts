@@ -163,7 +163,12 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
      * It allows for reinitializing tabs,removing specific tabs, and ensuring
      * that tabs are not duplicated. It uses localStorage to store and retrieve tab data.
      */
-    const initTabs: UseTabsReturnType['initTabs'] = (initTabsData, reInit, tabsToRemove) => {
+    const initTabs: UseTabsReturnType['initTabs'] = (
+        initTabsData,
+        reInit,
+        tabsToRemove,
+        overrideSelectionStatus = false,
+    ) => {
         let _tabs: DynamicTabType[] = []
         let tabDataVersion = TAB_DATA_VERSION
         let parsedTabsData: ParsedTabsData
@@ -188,10 +193,10 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
 
                     return {
                         ..._tab,
-                        // NOTE: if reInit is false, we need to retain the current selection
+                        // NOTE: if reInit && overrideSelectionStatus is false, we need to retain the current selection
                         // if reInit is true, we need to remove old selection and use the provided initTabs' selection
                         // or fallback if user has sent all initTabs with isSelected false
-                        ...(reInit ? { isSelected: false } : {}),
+                        ...(reInit || overrideSelectionStatus ? { isSelected: false } : {}),
                         /* NOTE: following lines migrate old tab data to new */
                         lastSyncMoment: dayjs(),
                         ...(_tab.componentKey
@@ -216,7 +221,7 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
                         return true
                     }
 
-                    if (reInit) {
+                    if (reInit || overrideSelectionStatus) {
                         _tabs[index].isSelected = _initTab.isSelected
                     }
                     _tabs[index].isAlive = _initTab.isAlive
@@ -230,7 +235,7 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
                 })
             }
             if (!_tabs.some((_tab) => _tab.isSelected)) {
-                _tabs[fallbackTabIndex].isSelected = true
+                _tabs[FALLBACK_TAB].isSelected = true
             }
 
             _tabs.sort((a, b) => {
