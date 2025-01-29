@@ -151,6 +151,7 @@ export interface DeleteResourcePopupType
         'clusterId' | 'resourceData' | 'selectedResource' | 'getResourceListData' | 'removeTabByIdentifier'
     > {
     toggleDeleteDialog: () => void
+    showConfirmationModal: boolean
 }
 
 export interface ResourceListEmptyStateType {

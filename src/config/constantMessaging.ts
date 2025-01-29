@@ -62,6 +62,7 @@ export const enum DeleteComponentsName {
     GROUP = 'group',
     Job = 'job',
     MaterialView = 'git repository',
+    Node = 'node',
     SlackConfigurationTab = 'slack',
     SesConfigurationTab = 'ses',
     SMTPConfigurationTab = 'smtp',

@@ -124,10 +124,6 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
             return <DrainNodeModal name={name} version={version} kind={kind} closePopup={hideDrainNodeModal} />
         }
 
-        if (showDeleteNodeDialog) {
-            return <DeleteNodeModal name={name} version={version} kind={kind} closePopup={hideDeleteNodeModal} />
-        }
-
         if (showEditTaintNodeDialog) {
             return (
                 <EditTaintsModal
@@ -140,7 +136,15 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
             )
         }
 
-        return null
+        return (
+            <DeleteNodeModal
+                name={name}
+                version={version}
+                kind={kind}
+                closePopup={hideDeleteNodeModal}
+                showConfirmationDialog={showDeleteNodeDialog}
+            />
+        )
     }
 
     const menuListItemButtonClassName = 'flex left h-36 cursor pl-12 pr-12 dc__hover-n50 dc__transparent w-100'

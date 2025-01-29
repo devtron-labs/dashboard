@@ -174,6 +174,7 @@ export interface TaintErrorObj {
 
 export interface NodeActionModalPropType extends NodeActionRequest {
     closePopup: (refreshData?: boolean) => void
+    showConfirmationDialog?: boolean
 }
 
 export interface CordonNodeModalType extends NodeActionModalPropType {
