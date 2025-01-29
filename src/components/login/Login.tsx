@@ -259,7 +259,6 @@ class Login extends Component<LoginProps, LoginFormState> {
                 <form className="login-dt__form" autoComplete="on" onSubmit={this.login}>
                     <CustomInput
                         data-testid="username-textbox"
-                        rootClassName="fs-14 mb-24"
                         placeholder="Username"
                         value={this.state.form.username}
                         name="username"
@@ -268,7 +267,6 @@ class Login extends Component<LoginProps, LoginFormState> {
                     <CustomInput
                         type={import.meta.env.VITE_NODE_ENV !== 'development' ? 'password' : 'text'}
                         data-testid="password-textbox"
-                        rootClassName="fs-14"
                         placeholder="Password"
                         value={this.state.form.password}
                         name="password"

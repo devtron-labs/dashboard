@@ -321,7 +321,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                         placeholder="Name"
                         value={this.state.ciPipeline.name}
                         onChange={noop}
-                        isRequiredField
+                        required
                     />
                 </label>
                 {this.renderTriggerType()}

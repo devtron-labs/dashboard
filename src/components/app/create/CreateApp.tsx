@@ -376,7 +376,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             placeholder={`e.g. my-first-${this.props.isJobView ? 'job' : 'app'}`}
                             autoFocus
                             onChange={this.handleAppName}
-                            isRequiredField
+                            required
                             error={appNameErrors && !this.state.isValid.appName && errorObject[0].message}
                         />
                     </div>

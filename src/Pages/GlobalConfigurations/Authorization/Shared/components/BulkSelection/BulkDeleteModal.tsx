@@ -18,6 +18,7 @@ import {
     BulkSelectionEvents,
     ConfirmationDialog,
     CustomInput,
+    CustomInputProps,
     Progressing,
     showError,
     ToastManager,
@@ -119,7 +120,7 @@ const BulkDeleteModal = ({
         }
     }
 
-    const handleKeyDown = async (event: KeyboardEvent) => {
+    const handleKeyDown: CustomInputProps['onKeyDown'] = async (event) => {
         if (event.key === 'Enter' && !isDeleteDisabled) {
             event.preventDefault()
             await handleBulkDelete()
@@ -136,16 +137,18 @@ const BulkDeleteModal = ({
         <ConfirmationDialog className="w-400">
             <DeleteIcon className="icon-dim-48" />
             <ConfirmationDialog.Body title={title} subtitle={subTitle}>
-                <CustomInput
-                    name="bulk-delete-confirmation"
-                    value={deleteConfirmationText}
-                    onChange={handleChange}
-                    label={getLabel()}
-                    inputWrapClassName="mt-12 w-100"
-                    placeholder="Type to confirm"
-                    isRequiredField
-                    onKeyDown={handleKeyDown}
-                />
+                <div className="mt-12 w-100">
+                    <CustomInput
+                        name="bulk-delete-confirmation"
+                        value={deleteConfirmationText}
+                        onChange={handleChange}
+                        label={getLabel()}
+                        fullWidth
+                        placeholder="Type to confirm"
+                        required
+                        onKeyDown={handleKeyDown}
+                    />
+                </div>
             </ConfirmationDialog.Body>
             <ConfirmationDialog.ButtonGroup>
                 <button type="button" className="cta cancel" disabled={isDeleteLoading} onClick={onClose}>

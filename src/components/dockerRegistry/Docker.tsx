@@ -1603,10 +1603,8 @@ const DockerForm = ({
                             <>
                                 <div className="form__row">
                                     <CustomInput
-                                        dataTestid="aws-access-keyid-textbox"
                                         name="awsAccessKeyId"
-                                        labelClassName="dc__required-field"
-                                        tabIndex={5}
+                                        required
                                         value={customState.awsAccessKeyId.value}
                                         error={customState.awsAccessKeyId.error}
                                         onChange={customHandleChange}
@@ -1616,10 +1614,8 @@ const DockerForm = ({
                                 </div>
                                 <div className="form__row">
                                     <CustomInput
-                                        dataTestid="aws-secret-access-key-textbox"
                                         name="awsSecretAccessKey"
-                                        labelClassName="dc__required-field"
-                                        tabIndex={6}
+                                        required
                                         value={customState.awsSecretAccessKey.value}
                                         error={customState.awsSecretAccessKey.error}
                                         onBlur={id && handleOnBlur}
@@ -1639,12 +1635,9 @@ const DockerForm = ({
                     <div className={`${isGCROrGCP ? '' : 'form__row--two-third'}`}>
                         <div className="form__row">
                             <CustomInput
-                                dataTestid="container-registry-username-textbox"
                                 name="username"
-                                labelClassName="dc__required-field"
-                                tabIndex={5}
+                                required
                                 value={customState.username.value || selectedDockerRegistryType.id.defaultValue}
-                                autoComplete="off"
                                 error={customState.username.error}
                                 onChange={customHandleChange}
                                 label={selectedDockerRegistryType.id.label}
@@ -1662,10 +1655,8 @@ const DockerForm = ({
                                 selectedDockerRegistryType.value === RegistryType.QUAY ||
                                 selectedDockerRegistryType.value === RegistryType.OTHER) && (
                                 <CustomInput
-                                    dataTestid="container-registry-password-textbox"
                                     name="password"
-                                    labelClassName="dc__required-field"
-                                    tabIndex={6}
+                                    required
                                     value={customState.password.value}
                                     error={customState.password.error}
                                     onChange={customHandleChange}
@@ -1710,12 +1701,9 @@ const DockerForm = ({
                     <div className={`${isGCROrGCP ? '' : 'form__row--two-third'}`}>
                         <div className="form__row">
                             <CustomInput
-                                dataTestid="container-registry-username-textbox"
                                 name="username"
-                                labelClassName="dc__required-field"
-                                tabIndex={5}
+                                required
                                 value={customState.username.value || selectedDockerRegistryType.id.defaultValue}
-                                autoComplete="off"
                                 error={customState.username.error}
                                 onChange={customHandleChange}
                                 label={selectedDockerRegistryType.id.label}
@@ -1733,10 +1721,8 @@ const DockerForm = ({
                                 selectedDockerRegistryType.value === RegistryType.QUAY ||
                                 selectedDockerRegistryType.value === RegistryType.OTHER) && (
                                 <CustomInput
-                                    dataTestid="container-registry-password-textbox"
                                     name="password"
-                                    labelClassName="dc__required-field"
-                                    tabIndex={6}
+                                    required
                                     value={customState.password.value}
                                     error={customState.password.error}
                                     onChange={customHandleChange}
@@ -1860,12 +1846,10 @@ const DockerForm = ({
                 <div className="form__row--two-third">
                     <div className="form__row">
                         <CustomInput
-                            dataTestid="container-registry-name"
-                            labelClassName="dc__required-field"
+                            required
                             name="id"
                             value={customState.id.value}
                             error={customState.id.error}
-                            tabIndex={1}
                             onChange={customHandleChange}
                             label="Name"
                             disabled={!!id}
@@ -1875,10 +1859,8 @@ const DockerForm = ({
                     </div>
                     <div className="form__row">
                         <CustomInput
-                            dataTestid="container-registry-url-textbox"
                             name="registryUrl"
-                            tabIndex={3}
-                            labelClassName="dc__required-field"
+                            required
                             label={selectedDockerRegistryType.registryURL.label}
                             value={customState.registryUrl.value || selectedDockerRegistryType.registryURL.defaultValue}
                             error={customState.registryUrl.error}

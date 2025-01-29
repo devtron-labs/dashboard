@@ -46,6 +46,6 @@ export interface ProtectedInputType {
     placeholder?: string
     dataTestid: string
     onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
-    isRequiredField?: boolean
+    required?: boolean
     autoFocus?: boolean
 }

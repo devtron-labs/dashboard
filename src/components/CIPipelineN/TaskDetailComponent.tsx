@@ -206,20 +206,17 @@ export const TaskDetailComponent = () => {
                     <div className="row-container mb-12">
                         <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">Task name</div>
                         <CustomInput
-                            rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
-                            data-testid="preBuild-task-name-textbox"
                             type="text"
                             onChange={(e) => handleNameChange(e)}
                             value={selectedStep.name}
                             name="task-name"
+                            placeholder="Enter task name"
                             error={renderTaskNameError()}
                         />
                     </div>
                     <div className="row-container mb-12">
                         <div className="fw-6 fs-13 lh-32 cn-7 ">Description</div>
                         <CustomInput
-                            rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
-                            data-testid="preBuild-task-description-textbox"
                             type="text"
                             onChange={(e) => handleDescriptionChange(e)}
                             value={selectedStep.description}

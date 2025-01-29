@@ -814,10 +814,10 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     <CustomInput
                         value={this.state.ssoConfig.url || window.__ORCHESTRATOR_ROOT__}
                         onChange={this.handleURLChange}
-                        data-testid="sso-url-input"
                         name="sso-url"
                         label="URL"
-                        isRequiredField
+                        placeholder="Enter URL"
+                        required
                         error={this.state.isError.url}
                     />
                     <div className="flex left fw-4 pt-4">

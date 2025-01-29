@@ -421,7 +421,6 @@ const ChartForm = ({
         const isNameField: boolean = field === 'name'
         return (
             <CustomInput
-                dataTestid={isNameField ? 'add-chart-repo-name' : 'add-chart-repo-URL'}
                 value={isNameField ? state.name.value : state.url.value}
                 onChange={handleOnChange}
                 name={isNameField ? 'name' : 'url'}
@@ -429,7 +428,7 @@ const ChartForm = ({
                 label={isNameField ? 'Name' : 'URL'}
                 placeholder={isNameField ? 'Enter Repository name' : 'Enter repo URL'}
                 disabled={!isEditable}
-                isRequiredField
+                required
             />
         )
     }
@@ -483,14 +482,13 @@ const ChartForm = ({
                     (id && authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD)) && (
                     <>
                         <CustomInput
-                            dataTestid="add-chart-repo-username"
+                            placeholder='Enter username'
                             value={customState.username.value}
                             onChange={customHandleChange}
                             name="username"
                             error={customState.username.error}
                             label="Username"
-                            labelClassName="mt-12"
-                            isRequiredField
+                            required
                         />
                         <ProtectedInput
                             dataTestid="add-chart-repo-password"
@@ -500,7 +498,7 @@ const ChartForm = ({
                             error={customState.password.error}
                             label="Password"
                             labelClassName="mt-12"
-                            isRequiredField
+                            required
                         />
                     </>
                 )}

@@ -153,49 +153,45 @@ export const SMTPConfigModal = ({
     const renderForm = () => (
         <div className="dc__gap-16 flex-grow-1 flexbox-col mh-0 p-20 dc__overflow-auto mh-0">
             <CustomInput
-                dataTestid={`add-smtp-${ConfigurationFieldKeys.CONFIG_NAME}`}
                 name={ConfigurationFieldKeys.CONFIG_NAME}
                 label="Configuration name"
                 value={form.configName}
                 onChange={handleInputChange}
                 onBlur={handleBlur}
                 placeholder="Enter a name"
-                isRequiredField
+                required
                 error={isFormValid[ConfigurationFieldKeys.CONFIG_NAME].message}
                 autoFocus
             />
             <CustomInput
-                dataTestid={`add-smtp-${ConfigurationFieldKeys.PORT}`}
                 name={ConfigurationFieldKeys.PORT}
                 label="SMTP Port"
                 value={form.port}
                 onChange={handleInputChange}
                 onBlur={handleBlur}
                 placeholder="Enter SMTP port"
-                isRequiredField
+                required
                 error={isFormValid[ConfigurationFieldKeys.PORT].message}
             />
             <CustomInput
-                dataTestid={`add-smtp-${ConfigurationFieldKeys.HOST}`}
                 name={ConfigurationFieldKeys.HOST}
                 label="SMTP Host address/Server"
                 value={form.host}
                 onChange={handleInputChange}
                 onBlur={handleBlur}
                 placeholder="Eg. smtp.gmail.com"
-                isRequiredField
+                required
                 error={isFormValid[ConfigurationFieldKeys.HOST].message}
             />
 
             <CustomInput
-                dataTestid={`add-smtp-${ConfigurationFieldKeys.AUTH_USER}`}
                 name={ConfigurationFieldKeys.AUTH_USER}
                 label="SMTP Username"
                 value={form.authUser}
                 onChange={handleInputChange}
                 onBlur={handleBlur}
                 placeholder="Enter SMTP username"
-                isRequiredField
+                required
                 error={isFormValid[ConfigurationFieldKeys.AUTH_USER].message}
             />
             <div className="smtp-protected-input">
@@ -208,13 +204,12 @@ export const SMTPConfigModal = ({
                     label="SMTP Password"
                     labelClassName="form__label--fs-13 mb-8 fw-5 fs-13"
                     placeholder="Enter SMTP password"
-                    isRequiredField
+                    required
                     tabIndex={0}
                     onBlur={handleBlur}
                 />
             </div>
             <CustomInput
-                dataTestid="add-smtp-from-email"
                 type="email"
                 name={ConfigurationFieldKeys.FROM_EMAIL}
                 label="Send email from"
@@ -222,7 +217,7 @@ export const SMTPConfigModal = ({
                 onChange={handleInputChange}
                 onBlur={handleBlur}
                 placeholder="Enter sender’s email"
-                isRequiredField
+                required
                 error={isFormValid[ConfigurationFieldKeys.FROM_EMAIL].message}
             />
             <DefaultCheckbox

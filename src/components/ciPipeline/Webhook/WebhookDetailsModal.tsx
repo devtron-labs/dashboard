@@ -382,11 +382,11 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                 <CustomInput
                     name="api-token"
                     placeholder="Enter API token"
-                    rootClassName="bg__primary dc__no-border-imp w-100 h-32 pt-5-imp p-0-8-imp"
+                    // rootClassName="bg__primary dc__no-border-imp w-100 h-32 pt-5-imp p-0-8-imp"
                     onChange={handleTokenChange}
                     value={tryoutAPIToken}
                     error={showTryoutAPITokenError && WEBHOOK_NO_API_TOKEN_ERROR}
-                    inputWrapClassName="w-100"
+                    fullWidth
                 />
             </div>
         )
@@ -444,6 +444,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
             <div>
                 <div className="mt-16">
                     <CustomInput
+                        placeholder="Enter token name"
                         name="token-name"
                         label="Token name"
                         value={tokenName}

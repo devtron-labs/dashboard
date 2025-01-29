@@ -277,8 +277,8 @@ const EphemeralContainerDrawer = ({
                     </div>
                     <CustomInput
                         name="container-name"
-                        rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 h-36"
-                        data-testid="ephemeral-container-name"
+                        fullWidth
+                        placeholder="Enter container name"
                         onChange={handleContainerChange}
                         value={ephemeralForm.basicData.containerName}
                     />

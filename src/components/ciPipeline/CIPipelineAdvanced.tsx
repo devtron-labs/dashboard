@@ -190,7 +190,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                                         onChange={(event) =>
                                             this.props.handleChange(event, stage.id, key, index, 'name')
                                         }
-                                        isRequiredField
+                                        required
                                     />
                                 </label>
                                 <label className="form__row">
@@ -266,7 +266,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                                         onChange={(event) =>
                                             this.props.handleChange(event, stage.id, key, index, 'name')
                                         }
-                                        isRequiredField
+                                        required
                                     />
                                 </label>
                                 <label className="form__row">
@@ -515,7 +515,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                             placeholder="e.g. my-first-pipeline"
                             value={this.props.form.name}
                             onChange={this.props.handlePipelineName}
-                            isRequiredField
+                            required
                             error={
                                 this.props.showError &&
                                 !errorObj.isValid &&

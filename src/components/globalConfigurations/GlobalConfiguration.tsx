@@ -851,7 +851,7 @@ export const ProtectedInput = ({
     placeholder = '',
     dataTestid = '',
     onBlur = (e) => { },
-    isRequiredField = false,
+    required = false,
     autoFocus = false,
 }: ProtectedInputType) => {
     const inputRef = useRef<HTMLInputElement>()
@@ -874,7 +874,7 @@ export const ProtectedInput = ({
         <div className="flex column left top ">
             <label
                 htmlFor=""
-                className={`form__label ${labelClassName} ${isRequiredField ? 'dc__required-field' : ''}`}
+                className={`form__label ${labelClassName} ${required ? 'dc__required-field' : ''}`}
             >
                 {label}
             </label>

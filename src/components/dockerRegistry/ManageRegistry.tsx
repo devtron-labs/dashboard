@@ -409,16 +409,16 @@ const ManageRegistry = ({
                             Icon={InfoIcon}
                             iconClass="icon-dim-20"
                         />
-                        <CustomInput
-                            tabIndex={2}
-                            placeholder="Enter image pull secret seperated by comma"
-                            rootClassName="mt-8"
-                            name={CredentialType.NAME}
-                            value={credentialValue}
-                            onChange={onClickSpecifyImagePullSecret}
-                            autoFocus
-                            error={errorValidation && REQUIRED_FIELD_MSG}
-                        />
+                        <div className="mt-8">
+                            <CustomInput
+                                placeholder="Enter image pull secret separated by comma"
+                                name={CredentialType.NAME}
+                                value={credentialValue}
+                                onChange={onClickSpecifyImagePullSecret}
+                                autoFocus
+                                error={errorValidation && REQUIRED_FIELD_MSG}
+                            />
+                        </div>
                     </>
                 )}
                 {credentialsType === CredentialType.CUSTOM_CREDENTIAL && (

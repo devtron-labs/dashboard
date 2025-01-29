@@ -225,7 +225,7 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
                 onBlur={handleBlur}
                 placeholder="Enter channel name"
                 autoFocus
-                isRequiredField
+                required
                 error={isFormValid[ConfigurationFieldKeys.CONFIG_NAME].message}
             />
             <CustomInput
@@ -236,7 +236,7 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
                 placeholder="Enter incoming webhook URL"
                 onChange={handleInputChange}
                 onBlur={handleBlur}
-                isRequiredField
+                required
                 error={isFormValid[ConfigurationFieldKeys.WEBHOOK_URL].message}
             />
             <SelectPicker

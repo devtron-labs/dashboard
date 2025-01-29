@@ -68,15 +68,21 @@ const FormComponent = ({ validationMode }: Pick<Parameters<typeof useForm>[0], '
                     label="Email"
                     value={data.email}
                     {...register('email')}
-                    inputProps={{ type: 'email' }}
-                    noTrim
+                    type="email"
+                    shouldTrim={false}
+                    placeholder="Enter Email"
                 />
                 {errors.email && <p className="m-0 cr-5">{errors.email}</p>}
             </div>
-            <div>
-                <CustomInput label="Password" value={data.password} {...register('password')} type="password" noTrim />
-                {errors.password && <p className="m-0 cr-5">{errors.password}</p>}
-            </div>
+            <CustomInput
+                placeholder="Enter Password"
+                label="Password"
+                value={data.password}
+                {...register('password')}
+                type="password"
+                shouldTrim={false}
+                error={errors.password}
+            />
             <Button dataTestId="useForm-story-submit-btn" buttonProps={{ type: 'submit' }} text="Submit" />
             <div style={{ marginTop: '20px' }}>
                 <strong>Form State:</strong>

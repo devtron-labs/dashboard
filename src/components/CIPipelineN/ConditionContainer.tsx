@@ -339,16 +339,14 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
                                         options={operatorOptions}
                                         isSearchable={false}
                                     />
-                                    <div className="fs-13">
-                                        <CustomInput
-                                            name="conditionalValue"
-                                            rootClassName="w-100 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 br-4 h-32"
-                                            value={conditionDetail.conditionalValue}
-                                            onChange={(e) => {
-                                                handleConditionalValueChange(e, index)
-                                            }}
-                                        />
-                                    </div>
+                                    <CustomInput
+                                        placeholder="Enter value"
+                                        name="conditionalValue"
+                                        value={conditionDetail.conditionalValue}
+                                        onChange={(e) => {
+                                            handleConditionalValueChange(e, index)
+                                        }}
+                                    />
                                     <Close
                                         className="icon-dim-24 pointer mt-4"
                                         onClick={() => {

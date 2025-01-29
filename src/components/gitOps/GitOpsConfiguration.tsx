@@ -1162,18 +1162,16 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         <CustomInput
                             value={this.state.form.host}
                             onChange={(event) => this.handleChange(event, 'host')}
-                            name="Enter host"
-                            error={this.state.isError.host}
-                            label={getGitOpsLabel()}
-                            placeholder={`Enter ${getGitOpsLabelText(this.state.providerTab)}`}
-                            labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
-                            dataTestid={
+                            name={
                                 this.state.providerTab === GitProvider.AZURE_DEVOPS
                                     ? 'gitops-azure-organisation-url-textbox'
                                     : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
                                       ? 'gitops-bitbucket-host-url-textbox'
                                       : 'gitops-github-gitlab-host-url-textbox'
                             }
+                            error={this.state.isError.host}
+                            label={getGitOpsLabel()}
+                            placeholder={`Enter ${getGitOpsLabelText(this.state.providerTab)}`}
                             autoFocus
                         />
                     </div>
@@ -1212,9 +1210,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 value={this.state.form.bitBucketWorkspaceId}
                                 onChange={(event) => this.handleChange(event, 'bitBucketWorkspaceId')}
                                 error={this.state.isError.bitBucketWorkspaceId}
-                                labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
-                                dataTestid="gitops-bitbucket-workspace-id-textbox"
-                                isRequiredField
+                                required
                             />
                         </div>
                     )}
@@ -1232,17 +1228,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             onChange={(event) => {
                                 this.handleChange(event, key)
                             }}
-                            labelClassName="gitops__id form__label--fs-13 fw-5 fs-13"
-                            dataTestid={
-                                this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                    ? 'gitops-azure-project-name-textbox'
-                                    : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                      ? 'gitops-bitbucket-project-textbox'
-                                      : this.state.providerTab === GitProvider.GITLAB
-                                        ? 'gitops-gitlab-group-id-textbox'
-                                        : 'gitops-github-organisation-name-textbox'
-                            }
-                            isRequiredField
+                            required
                         />
                     </div>
                     <div
@@ -1292,17 +1278,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                                 ? 'Bitbucket Username'
                                                 : 'GitHub Username'
                                     }
-                                    labelClassName="gitops__id form__label--fs-13 fw-5 fs-13"
-                                    dataTestid={
-                                        this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                            ? 'gitops-azure-username-textbox'
-                                            : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                              ? 'gitops-bitbucket-username-textbox'
-                                              : this.state.providerTab === GitProvider.GITLAB
-                                                ? 'gitops-gitlab-username-textbox'
-                                                : 'gitops-github-username-textbox'
-                                    }
-                                    isRequiredField
+                                    required
                                 />
                             </div>
                             <div>
@@ -1320,17 +1296,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                     onChange={(event) => this.handleChange(event, 'token')}
                                     error={this.state.isError.token}
                                     onFocus={handleOnFocus}
-                                    labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13"
-                                    dataTestid={
-                                        this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                            ? 'gitops-azure-pat-textbox'
-                                            : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                              ? 'gitops-bitbucket-pat-textbox'
-                                              : this.state.providerTab === GitProvider.GITLAB
-                                                ? 'gitops-gitlab-pat-textbox'
-                                                : 'gitops-github-pat-textbox'
-                                    }
-                                    isRequiredField
+                                    required
                                     onBlur={this.handleOnBlur}
                                 />
                             </div>

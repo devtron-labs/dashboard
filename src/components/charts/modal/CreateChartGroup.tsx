@@ -198,7 +198,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                         placeholder="e.g. elastic-stack"
                         autoFocus
                         onChange={this.handleNameChange}
-                        isRequiredField
+                        required
                         error={this.state.name.error}
                     />
                     <Textarea

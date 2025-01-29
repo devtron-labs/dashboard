@@ -32,6 +32,7 @@ import {
     SelectPickerOptionType,
     SelectPickerProps,
     MarkDown,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
@@ -692,14 +693,13 @@ export const ValueNameInput = ({
             <CustomInput
                 name="value-name"
                 label="Name"
-                tabIndex={1}
                 placeholder="Eg. value-template"
                 value={valueName}
                 onChange={(e) => handleValueNameChange(e.target.value)}
                 onBlur={() => handleValueNameOnBlur()}
                 disabled={valueNameDisabled}
                 data-testid="preset-values-name-input"
-                isRequiredField
+                required
                 error={invalidValueName && (invalidValueNameMessage || REQUIRED_FIELD_MSG)}
             />
         </div>
@@ -714,21 +714,19 @@ export const AppNameInput = ({
     invalidAppNameMessage,
 }: AppNameInputType) => {
     return (
-        <div className="w-100">
-            <CustomInput
-                name="app-name"
-                tabIndex={1}
-                label="App Name"
-                placeholder="Eg. app-name"
-                value={appName}
-                onChange={(e) => handleAppNameChange(e.target.value)}
-                onBlur={handleAppNameOnBlur}
-                data-testid="app-name-input"
-                isRequiredField
-                error={invalidAppName && (invalidAppNameMessage || REQUIRED_FIELD_MSG)}
-                rootClassName="h-32"
-            />
-        </div>
+        <CustomInput
+            name="app-name"
+            label="App Name"
+            placeholder="Eg. app-name"
+            value={appName}
+            onChange={(e) => handleAppNameChange(e.target.value)}
+            onBlur={handleAppNameOnBlur}
+            data-testid="app-name-input"
+            required
+            error={invalidAppName && (invalidAppNameMessage || REQUIRED_FIELD_MSG)}
+            size={ComponentSizeType.medium}
+            fullWidth
+        />
     )
 }
 

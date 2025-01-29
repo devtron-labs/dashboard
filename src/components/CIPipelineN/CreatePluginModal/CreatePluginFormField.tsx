@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { SyntheticEvent, useCallback } from 'react'
+import { SyntheticEvent } from 'react'
 import { CustomInput, Textarea } from '@devtron-labs/devtron-fe-common-lib'
 import { CreatePluginFormFieldProps } from './types'
 
@@ -30,16 +30,7 @@ const CreatePluginFormField = ({
     useTextArea,
     helperText,
     autoFocus,
-    labelClassName,
 }: CreatePluginFormFieldProps) => {
-    const callbackRef = useCallback((inputElement) => {
-        if (inputElement && autoFocus) {
-            setTimeout(() => {
-                inputElement.focus()
-            }, 100)
-        }
-    }, [])
-
     const handleInputChange = (e: SyntheticEvent) => {
         handleChange({ action, payload: (e.target as HTMLInputElement).value })
     }
@@ -68,14 +59,10 @@ const CreatePluginFormField = ({
             error={error}
             onChange={handleInputChange}
             placeholder={placeholder}
-            isRequiredField={required}
+            required={required}
             disabled={disabled}
-            dataTestid={action}
             autoFocus={autoFocus}
             helperText={helperText}
-            rootClassName="h-36"
-            labelClassName={labelClassName}
-            inputProps={{ ref: callbackRef } as React.InputHTMLAttributes<HTMLInputElement>}
         />
     )
 }
