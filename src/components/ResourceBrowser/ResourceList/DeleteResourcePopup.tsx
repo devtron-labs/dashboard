@@ -16,15 +16,12 @@
 
 import React, { useState } from 'react'
 import {
-    showError,
-    DeleteDialog,
     Checkbox,
     CHECKBOX_VALUE,
     noop,
-    ToastManager,
-    ToastVariantType,
     ResourceListPayloadType,
     deleteResource,
+    DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import { DELETE_MODAL_MESSAGING } from '../Constants'
@@ -37,44 +34,32 @@ const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
     getResourceListData,
     toggleDeleteDialog,
     removeTabByIdentifier,
+    showConfirmationModal,
 }) => {
     const { push } = useHistory()
-    const [apiCallInProgress, setApiCallInProgress] = useState(false)
     const [forceDelete, setForceDelete] = useState(false)
 
     const handleDelete = async (): Promise<void> => {
-        try {
-            setApiCallInProgress(true)
-            const resourceDeletePayload: ResourceListPayloadType = {
-                clusterId: Number(clusterId),
-                k8sRequest: {
-                    resourceIdentifier: {
-                        groupVersionKind: selectedResource.gvk,
-                        namespace: String(resourceData.namespace),
-                        name: String(resourceData.name),
-                    },
-                    forceDelete,
+        const resourceDeletePayload: ResourceListPayloadType = {
+            clusterId: Number(clusterId),
+            k8sRequest: {
+                resourceIdentifier: {
+                    groupVersionKind: selectedResource.gvk,
+                    namespace: String(resourceData.namespace),
+                    name: String(resourceData.name),
                 },
-            }
+                forceDelete,
+            },
+        }
 
-            await deleteResource(resourceDeletePayload)
-            ToastManager.showToast({
-                variant: ToastVariantType.success,
-                description: 'Resource deleted successfully',
-            })
-            await getResourceListData()
-            toggleDeleteDialog()
-            if (removeTabByIdentifier) {
-                removeTabByIdentifier(
-                    `${selectedResource?.gvk?.Kind.toLowerCase()}_${resourceData.namespace}/${resourceData.name}`,
-                )
-                    .then((url) => url && push(url))
-                    .catch(noop)
-            }
-        } catch (err) {
-            showError(err)
-        } finally {
-            setApiCallInProgress(false)
+        await deleteResource(resourceDeletePayload)
+        await getResourceListData()
+        if (removeTabByIdentifier) {
+            removeTabByIdentifier(
+                `${selectedResource?.gvk?.Kind.toLowerCase()}_${resourceData.namespace}/${resourceData.name}`,
+            )
+                .then((url) => url && push(url))
+                .catch(noop)
         }
     }
 
@@ -83,27 +68,28 @@ const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
     }
 
     return (
-        <DeleteDialog
-            title={`Delete ${selectedResource.gvk.Kind} "${resourceData.name}"`}
-            delete={handleDelete}
-            closeDelete={toggleDeleteDialog}
-            apiCallInProgress={apiCallInProgress}
-            showDeleteConfirmation
-            deleteConfirmationText={resourceData.name as string}
+        <DeleteConfirmationModal
+            title={resourceData.name as string}
+            component={selectedResource.gvk.Kind}
+            subtitle={DELETE_MODAL_MESSAGING.description}
+            onDelete={handleDelete}
+            showConfirmationModal={showConfirmationModal}
+            closeConfirmationModal={toggleDeleteDialog}
+            confirmationConfig={{
+                identifier: 'delete-resource-pod-input',
+                confirmationKeyword: resourceData.name as string,
+            }}
+            successToastMessage="Resource deleted successfully"
         >
-            <DeleteDialog.Description>
-                <p className="mb-12">{DELETE_MODAL_MESSAGING.description}</p>
-                <Checkbox
-                    rootClassName="resource-force-delete"
-                    isChecked={forceDelete}
-                    value={CHECKBOX_VALUE.CHECKED}
-                    disabled={apiCallInProgress}
-                    onChange={forceDeleteHandler}
-                >
-                    {DELETE_MODAL_MESSAGING.checkboxText}
-                </Checkbox>
-            </DeleteDialog.Description>
-        </DeleteDialog>
+            <Checkbox
+                rootClassName="resource-force-delete"
+                isChecked={forceDelete}
+                value={CHECKBOX_VALUE.CHECKED}
+                onChange={forceDeleteHandler}
+            >
+                {DELETE_MODAL_MESSAGING.checkboxText}
+            </Checkbox>
+        </DeleteConfirmationModal>
     )
 }
 

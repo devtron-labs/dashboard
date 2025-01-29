@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import {
     API_STATUS_CODES,
     BaseURLParams,
-    DeleteDialog,
+    DeleteConfirmationModal,
+    ServerError,
     showError,
-    ToastManager,
-    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { DeleteComponentsName } from '@Config/constantMessaging'
 import { DeleteOverrideDialogProps } from './types'
 import { deleteOverrideDeploymentTemplate } from './service'
 
@@ -33,40 +32,35 @@ const DeleteOverrideDialog = ({
     handleClose,
     handleProtectionError,
     reloadEnvironments,
+    showConfirmationModal,
+    environmentName,
 }: DeleteOverrideDialogProps) => {
     const { appId, envId } = useParams<BaseURLParams>()
-    const [isDeletingOverride, setIsDeletingOverride] = useState<boolean>(false)
 
     const handleDelete = async () => {
-        try {
-            setIsDeletingOverride(true)
-            await deleteOverrideDeploymentTemplate(environmentConfigId, Number(appId), Number(envId))
-            ToastManager.showToast({
-                variant: ToastVariantType.success,
-                description: 'Restored to global.',
-            })
-            handleClose()
-            handleReload()
-        } catch (error) {
-            showError(error)
-            if (error.code === API_STATUS_CODES.LOCKED) {
-                handleProtectionError()
-                reloadEnvironments()
-            }
-        } finally {
-            setIsDeletingOverride(false)
+        await deleteOverrideDeploymentTemplate(environmentConfigId, Number(appId), Number(envId))
+    }
+
+    const updatedHandleError = (error: ServerError) => {
+        showError(error)
+        if (error.code === API_STATUS_CODES.LOCKED) {
+            handleProtectionError()
+            reloadEnvironments()
         }
     }
 
     return (
-        <DeleteDialog
-            title="Delete override"
-            description="This action will result in the removal of all overrides, and the original base configurations for this file will be reinstated."
-            delete={handleDelete}
-            closeDelete={handleClose}
-            apiCallInProgress={isDeletingOverride}
-            disabled={isDeletingOverride}
-            deletePostfix=" Override"
+        <DeleteConfirmationModal
+            title={environmentName}
+            component={`${DeleteComponentsName.Override} for environment`}
+            subtitle="This action will result in the removal of all overrides, and the original base configurations for this file will be reinstated."
+            showConfirmationModal={showConfirmationModal}
+            onDelete={handleDelete}
+            successToastMessage="Restored to global"
+            reload={handleReload}
+            closeConfirmationModal={handleClose}
+            handleError={updatedHandleError}
+            primaryButtonText="Delete Override"
         />
     )
 }

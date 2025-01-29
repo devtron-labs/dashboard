@@ -298,6 +298,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 {this.renderMaterials()}
                 <DeleteConfirmationModal
                     title={this.state.form.name}
+                    component="linked build pipeline"
                     subtitle={`Are you sure you want to delete this CI Pipeline from '${this.props.appName}' ?`}
                     showConfirmationModal={this.props.match.params.ciPipelineId && this.state.showDeleteModal}
                     closeConfirmationModal={this.closeCIDeleteModal}

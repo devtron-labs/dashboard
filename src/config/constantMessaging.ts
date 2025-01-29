@@ -59,6 +59,7 @@ export const enum DeleteComponentsName {
     Environment = 'environment',
     Filter = 'filter',
     GitProvider = 'git account',
+    GitRepo = 'repo',
     GROUP = 'group',
     Job = 'job',
     MaterialView = 'git repository',
@@ -69,7 +70,7 @@ export const enum DeleteComponentsName {
     WebhookConfigurationTab = 'webhook',
     Preset = 'preset value',
     Project = 'project',
-    GitRepo = 'Repo',
+    Override = 'override',
     USER = 'user',
 }
 
