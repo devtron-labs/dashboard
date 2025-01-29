@@ -140,6 +140,11 @@
         cursor: not-allowed;
     }
 
+    &[aria-label^="Selected"] {
+        background: var(--B200) !important;
+        color: var(--N0) !important;
+    }
+
     &:hover:not([aria-disabled="true"]) {
         color: var(--B500) !important;
         background: var(--bg-secondary) !important;
