@@ -129,18 +129,6 @@
     border: solid 1px var(--R500);
 }
 
-.form__text-field-info {
-    font-size: 11px;
-    font-weight: 400;
-    line-height: 1.45;
-    letter-spacing: normal;
-    color: var(--N500);
-    vertical-align: middle;
-    text-transform: lowercase;
-    display: flex;
-    align-items: flex-end;
-}
-
 p.sentence-case {
     margin-bottom: 0px;
 }
@@ -602,14 +590,6 @@ p.sentence-case:first-letter {
 
 .form__input:focus {
     outline: none;
-}
-
-.form__input:focus ~ .form__text-field-info {
-    color: var(--B500);
-}
-
-.form__input:focus ~ .form__text-field-info path[fill='#06C'] {
-    fill: var(--B500);
 }
 
 .form__input:disabled {
