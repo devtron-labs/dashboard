@@ -16,7 +16,13 @@
 
 import { useRef } from 'react'
 import Tippy, { TippyProps } from '@tippyjs/react'
-import { Progressing, Tooltip, useDownload } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    useDownload,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICDownload } from '@Icons/ic-arrow-line-down.svg'
 import { Routes } from '@Config/constants'
 import { DownloadChartButtonProps } from '../types'
@@ -83,16 +89,16 @@ const DownloadChartButton = ({ name, versions }: DownloadChartButtonProps) => {
             onClickOutside={handleCloseTippy}
             animation="fade"
         >
-            <div className="flex pointer p-4 dc__hover-n50 br-4">
-                {isDownloading ? (
-                    <Progressing pageLoader size={16} />
-                ) : (
-                    <Tooltip alwaysShowTippyOnHover content="Download Chart">
-                        <span>
-                            <ICDownload className="icon-dim-16 scn-6 dc__no-shrink" data-testid={`download-${name}`} />
-                        </span>
-                    </Tooltip>
-                )}
+            <div className="icon-dim-24">
+                <Button
+                    dataTestId={`download-${name}`}
+                    icon={<ICDownload />}
+                    ariaLabel="Download Chart"
+                    size={ComponentSizeType.xs}
+                    variant={ButtonVariantType.borderLess}
+                    isLoading={isDownloading}
+                    style={ButtonStyleType.neutral}
+                />
             </div>
         </Tippy>
     )

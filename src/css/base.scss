@@ -4406,6 +4406,10 @@ textarea::placeholder {
     background-color: var(--bg-secondary);
 }
 
+.dc__hover-n100:hover {
+    background-color: var(--N100);
+}
+
 .dc__hover-text-n90:hover {
     color: var(--N900) !important;
 }

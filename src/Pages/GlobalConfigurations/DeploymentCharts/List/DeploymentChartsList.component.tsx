@@ -42,7 +42,7 @@ import DownloadChartButton from './DownloadChartButton'
 import './styles.scss'
 import { DeploymentChartsListSortableKeys } from '../types'
 
-const EditDeploymentChart = importComponentFromFELibrary('EditDeploymentChart', null, 'function')
+const DeploymentChartActionButton = importComponentFromFELibrary('DeploymentChartActionButton', null, 'function')
 
 const DeploymentChartsList = () => {
     const [showUploadPopup, setShowUploadPopup] = useState(false)
@@ -154,7 +154,9 @@ const DeploymentChartsList = () => {
                                         key={`custom-chart_${chartData.name}`}
                                         className="chart-list-row fw-4 cn-9 fs-13 lh-20 fw-4 dc__grid dc__gap-16 dc__align-items-center px-20 py-10"
                                     >
-                                        <ICFolderZip className="icon-dim-24 fcb-5" />
+                                        <div className="icon-dim-24 p-2">
+                                            <ICFolderZip className="icon-dim-20 fcb-5" />
+                                        </div>
                                         <span className="dc__ellipsis-right">{chartData.name}</span>
                                         <div className="flexbox dc__gap-8">
                                             <span>{version}</span>
@@ -176,8 +178,10 @@ const DeploymentChartsList = () => {
                                                 <span>{uploadedBy}</span>
                                             </div>
                                         </div>
-                                        <div className="flexbox dc__gap-4">
-                                            {EditDeploymentChart && <EditDeploymentChart name={chartData.name} />}
+                                        <div className="flex dc__gap-4">
+                                            {DeploymentChartActionButton && (
+                                                <DeploymentChartActionButton name={chartData.name} />
+                                            )}
                                             <DownloadChartButton name={chartData.name} versions={chartData.versions} />
                                         </div>
                                     </div>
