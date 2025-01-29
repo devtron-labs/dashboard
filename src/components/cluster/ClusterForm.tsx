@@ -759,8 +759,8 @@ export default function ClusterForm({
                 </RadioGroup>
                 {id !== DEFAULT_CLUSTER_ID && RemoteConnectionRadio && (
                     <>
-                        <hr />
-                        <div className="dc__position-rel dc__hover mb-20">
+                        <div className="divider divider--n1 mt-20 mb-20" />
+                        <div className="dc__position-rel dc__hover">
                             <span className="form__input-header pb-20">
                                 How do you want Devtron to connect with this cluster?
                             </span>
@@ -780,7 +780,7 @@ export default function ClusterForm({
                 )}
                 {id !== DEFAULT_CLUSTER_ID && (
                     <>
-                        <hr />
+                        <div className="divider divider--n1 mt-20 mb-20" />
                         <div className="dc__position-rel flex left dc__hover mb-20">
                             <Checkbox
                                 isChecked={isTlsConnection}
@@ -793,7 +793,7 @@ export default function ClusterForm({
                                 </div>
                             </Checkbox>
                         </div>
-                        {!isTlsConnection && <hr />}
+                        {!isTlsConnection && <div className="divider divider--n1" />}
                         {isTlsConnection && (
                             <>
                                 <div className="form__row ml-24">
@@ -874,7 +874,7 @@ export default function ClusterForm({
                                         </label>
                                     )}
                                 </div>
-                                <hr />
+                                <div className="divider divider--n1" />
                             </>
                         )}
                     </>
@@ -977,10 +977,10 @@ export default function ClusterForm({
 
     const codeEditor = () => {
         return (
-            <div className="code-editor-container">
+            <CodeEditor.Container flexExpand>
                 <CodeEditor
                     value={saveYamlData}
-                    height="calc(100vh - 236px)"
+                    height="fitToParent"
                     diffView={false}
                     onChange={onChangeEditorValue}
                     mode={MODES.YAML}
@@ -1011,7 +1011,7 @@ export default function ClusterForm({
                     </CodeEditor.Header>
                     {hasValidationError && <CodeEditor.ErrorBar text={errorText} />}
                 </CodeEditor>
-            </div>
+            </CodeEditor.Container>
         )
     }
 
@@ -1102,7 +1102,7 @@ export default function ClusterForm({
                         )}
                     </div>
                 </div>
-                <div className="w-100 dc__border-top flex right pb-12 pt-12 pr-20 pl-20 dc__position-fixed dc__position-abs dc__bottom-0">
+                <div className="dc__border-top flex right py-12 px-20">
                     <button
                         className="dc__edit_button cb-5 h-36 lh-36"
                         type="button"
@@ -1454,9 +1454,9 @@ export default function ClusterForm({
     return getClusterVar ? (
         displayClusterDetails()
     ) : (
-        <div className="cluster-form dc__position-rel h-100 bg__primary" style={{ padding: 'auto 0' }}>
+        <div className="cluster-form dc__position-rel h-100 bg__primary flexbox-col">
             <AddClusterHeader />
-            <div style={{ overflow: 'auto', height: 'calc(100vh - 110px)' }}>
+            <div className="flex-grow-1 flexbox-col dc__overflow-auto">
                 {VirtualClusterSelectionTab && (
                     <VirtualClusterSelectionTab
                         id={id}
@@ -1469,7 +1469,7 @@ export default function ClusterForm({
                 )}
                 {!isVirtual && (
                     <>
-                        <div className="p-20">
+                        <div className="p-20 flex-grow-1 flexbox-col">
                             {!id && (
                                 <div className="form__row clone-apps dc__inline-block pd-0 pt-0 pb-12">
                                     <RadioGroup
@@ -1494,8 +1494,32 @@ export default function ClusterForm({
                             {isKubeConfigFile ? codeEditor() : renderUrlAndBearerToken()}
                         </div>
 
-                        {!isKubeConfigFile && (
-                            <div className="w-100 dc__border-top flexbox py-12 px-20 dc__position-abs dc__bottom-0 dc__content-space">
+                        {isKubeConfigFile ? (
+                            <div className="dc__border-top flex right py-12 px-20">
+                                <button
+                                    data-testid="cancel_kubeconfig_button"
+                                    className="cta cancel h-36 lh-36"
+                                    type="button"
+                                    onClick={handleCloseButton}
+                                >
+                                    Cancel
+                                </button>
+
+                                <button
+                                    className="cta ml-12 h-36 lh-36"
+                                    type="button"
+                                    onClick={handleGetClustersClick}
+                                    disabled={!saveYamlData}
+                                    data-testId="get_cluster_button"
+                                >
+                                    <div className="flex">
+                                        Get cluster
+                                        <ForwardArrow className={`ml-5 ${!saveYamlData ? 'scn-4' : ''}`} />
+                                    </div>
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="dc__border-top flexbox py-12 px-20 dc__content-space">
                                 {id && (
                                     <Button
                                         text="Delete"
@@ -1524,31 +1548,6 @@ export default function ClusterForm({
                                         }}
                                     />
                                 </div>
-                            </div>
-                        )}
-                        {isKubeConfigFile && (
-                            <div className="w-100 dc__border-top flex right pb-12 pt-12 pr-20 pl-20 dc__position-fixed dc__position-abs dc__bottom-0">
-                                <button
-                                    data-testid="cancel_kubeconfig_button"
-                                    className="cta cancel h-36 lh-36"
-                                    type="button"
-                                    onClick={handleCloseButton}
-                                >
-                                    Cancel
-                                </button>
-
-                                <button
-                                    className="cta ml-12 h-36 lh-36"
-                                    type="button"
-                                    onClick={handleGetClustersClick}
-                                    disabled={!saveYamlData}
-                                    data-testId="get_cluster_button"
-                                >
-                                    <div className="flex">
-                                        Get cluster
-                                        <ForwardArrow className={`ml-5 ${!saveYamlData ? 'scn-4' : ''}`} />
-                                    </div>
-                                </button>
                             </div>
                         )}
                         <DeleteConfirmationModal
