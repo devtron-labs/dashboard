@@ -1,4 +1,4 @@
-import { noop } from '@devtron-labs/devtron-fe-common-lib'
+import { logExceptionToSentry, noop } from '@devtron-labs/devtron-fe-common-lib'
 import {
     TARGET_K8S_VERSION_SEARCH_KEY,
     LOCAL_STORAGE_EXISTS,
@@ -61,7 +61,13 @@ export const getUpgradeCompatibilityTippyConfig = ({
 export const getFirstResourceFromKindResourceMap = (
     lowercaseKindToResourceGroupMap: K8SResourceListType['lowercaseKindToResourceGroupMap'],
     kind: string,
-) =>
-    Object.values(lowercaseKindToResourceGroupMap).find(
-        (resourceGroup) => resourceGroup.gvk.Kind?.toLowerCase() === kind.toLowerCase(),
+) => {
+    // Logging to sentry as kind is expected to be received
+    if (!kind) {
+        logExceptionToSentry('Kind is not present in the resource')
+    }
+
+    return Object.values(lowercaseKindToResourceGroupMap).find(
+        (resourceGroup) => resourceGroup.gvk.Kind?.toLowerCase() === kind?.toLowerCase(),
     )
+}
