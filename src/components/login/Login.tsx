@@ -257,21 +257,23 @@ class Login extends Component<LoginProps, LoginFormState> {
                 <p className="login__text">Your tool for Rapid, Reliable & Repeatable deployments</p>
                 {/* @ts-ignore */}
                 <form className="login-dt__form" autoComplete="on" onSubmit={this.login}>
-                    <CustomInput
-                        data-testid="username-textbox"
-                        placeholder="Username"
-                        value={this.state.form.username}
-                        name="username"
-                        onChange={this.handleChange}
-                    />
-                    <CustomInput
-                        type={import.meta.env.VITE_NODE_ENV !== 'development' ? 'password' : 'text'}
-                        data-testid="password-textbox"
-                        placeholder="Password"
-                        value={this.state.form.password}
-                        name="password"
-                        onChange={this.handleChange}
-                    />
+                    <div className="flexbox-col dc__gap-24">
+                        <CustomInput
+                            data-testid="username-textbox"
+                            placeholder="Username"
+                            value={this.state.form.username}
+                            name="username"
+                            onChange={this.handleChange}
+                        />
+                        <CustomInput
+                            type={import.meta.env.VITE_NODE_ENV !== 'development' ? 'password' : 'text'}
+                            data-testid="password-textbox"
+                            placeholder="Password"
+                            value={this.state.form.password}
+                            name="password"
+                            onChange={this.handleChange}
+                        />
+                    </div>
                     <div className="login__know-password">
                         <a
                             className="login__know-password--link fs-12 cb-5"
@@ -292,7 +294,7 @@ class Login extends Component<LoginProps, LoginFormState> {
                                 fullWidth
                                 size={ComponentSizeType.xl}
                                 buttonProps={{
-                                    type: 'submit'
+                                    type: 'submit',
                                 }}
                             />
                         </div>
