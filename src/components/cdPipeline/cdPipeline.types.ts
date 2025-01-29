@@ -138,7 +138,6 @@ export enum MigrationSourceValidationReasonType {
     CLUSTER_NOT_FOUND = 'ClusterNotFound',
     ENVIRONMENT_NOT_FOUND = 'EnvironmentNotFound',
     APPLICATION_ALREADY_LINKED = 'ApplicationAlreadyLinked',
-    UNSUPPORTED_APPLICATION_SPEC = 'UnsupportedApplicationSpec',
     CHART_TYPE_MISMATCH = 'ChartTypeMismatch',
     CHART_VERSION_NOT_FOUND = 'ChartVersionNotFound',
     GITOPS_NOT_FOUND = 'GitOpsNotFound',
@@ -173,7 +172,7 @@ export interface ValidateMigrationSourceDTO {
             repoURL: string
             chartPath: string
             chartMetadata: {
-                chartVersion: string
+                requiredChartVersion: string
                 savedChartName: string
                 valuesFileName: string
                 requiredChartName: string

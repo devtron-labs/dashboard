@@ -3,12 +3,18 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
+    ButtonProps,
     InfoColourBar,
     Tooltip,
+    ButtonComponentType,
+    URLS as COMMON_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { URLS } from '@Config/routes'
 import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
 import { ReactComponent as ICArgoCDApp } from '@Icons/ic-argocd-app.svg'
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
+import { ReactComponent as ICArrowRight } from '@Icons/ic-arrow-right.svg'
+import { ReactComponent as ICUpload } from '@Icons/ic-upload.svg'
 import { MigrationSourceValidationReasonType } from '../cdPipeline.types'
 import { MigrateToDevtronValidationFactoryProps } from './types'
 import './MigrateToDevtronValidationFactory.scss'
@@ -39,6 +45,20 @@ const MigrateToDevtronValidationFactory = ({
     const { source, status, destination } = applicationMetadata || {}
 
     if (!isLinkable) {
+        if (!Object.values(MigrationSourceValidationReasonType).includes(validationFailedReason)) {
+            return (
+                <InfoColourBar
+                    classname="error_bar"
+                    Icon={ICErrorExclamation}
+                    iconClass="icon-dim-20 dc__no-shrink"
+                    textConfig={{
+                        heading: validationFailedReason,
+                        description: validationFailedMessage || 'Something went wrong',
+                    }}
+                />
+            )
+        }
+
         switch (validationFailedReason) {
             // First rendering states requiring only infobar
             case MigrationSourceValidationReasonType.CHART_TYPE_MISMATCH:
@@ -54,18 +74,71 @@ const MigrateToDevtronValidationFactory = ({
                     />
                 )
             case MigrationSourceValidationReasonType.INTERNAL_SERVER_ERROR:
-                // TODO: Should we show re-try button here?
                 return (
                     <InfoColourBar
                         classname="error_bar"
                         Icon={ICErrorExclamation}
                         iconClass="icon-dim-20 dc__no-shrink"
                         textConfig={{
-                            heading: 'Internal server error',
-                            description: validationFailedMessage || 'Internal server error occurred.',
+                            heading: 'Something went wrong',
+                            description: validationFailedMessage || '',
                         }}
                     />
                 )
+
+            case MigrationSourceValidationReasonType.GITOPS_NOT_FOUND: {
+                const actionButtonConfig: ButtonProps = {
+                    dataTestId: 'configure-gitops-button',
+                    text: 'Configure',
+                    endIcon: <ICArrowRight />,
+                    variant: ButtonVariantType.text,
+                    size: ComponentSizeType.medium,
+                    component: ButtonComponentType.link,
+                    linkProps: {
+                        to: URLS.GLOBAL_CONFIG_GITOPS,
+                    },
+                }
+
+                return (
+                    <InfoColourBar
+                        classname="error_bar"
+                        Icon={ICErrorExclamation}
+                        iconClass="icon-dim-20 dc__no-shrink"
+                        textConfig={{
+                            heading: 'GitOps credentials not configured',
+                            description: 'GitOps credentials is required to deploy applications via GitOps',
+                            actionButtonConfig,
+                        }}
+                    />
+                )
+            }
+
+            case MigrationSourceValidationReasonType.CHART_VERSION_NOT_FOUND: {
+                const actionButtonConfig: ButtonProps = {
+                    dataTestId: 'upload-chart-button',
+                    text: 'Upload Chart',
+                    startIcon: <ICUpload />,
+                    variant: ButtonVariantType.text,
+                    size: ComponentSizeType.medium,
+                    component: ButtonComponentType.link,
+                    linkProps: {
+                        to: COMMON_URLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST,
+                    },
+                }
+
+                return (
+                    <InfoColourBar
+                        classname="error_bar"
+                        Icon={ICErrorExclamation}
+                        iconClass="icon-dim-20 dc__no-shrink"
+                        textConfig={{
+                            heading: 'Chart version not found',
+                            description: `Chart version '${source.chartMetadata.requiredChartVersion}' not found for '${source.chartMetadata.requiredChartName}' chart`,
+                            actionButtonConfig,
+                        }}
+                    />
+                )
+            }
 
             default:
                 break
