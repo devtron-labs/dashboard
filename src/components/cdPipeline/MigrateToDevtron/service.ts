@@ -5,6 +5,7 @@ import {
     MigrateToDevtronRequiredFieldsDTO,
     ValidateMigrationSourceDTO,
 } from '../cdPipeline.types'
+import { sanitizeValidateMigrationSourceResponse } from './utils'
 
 export const validateMigrationSource = async (
     migrateToDevtronFormState: MigrateToDevtronFormState,
@@ -21,7 +22,7 @@ export const validateMigrationSource = async (
             payload,
         )
 
-        return result
+        return sanitizeValidateMigrationSourceResponse(result)
     } catch (error) {
         showError(error)
         throw error
