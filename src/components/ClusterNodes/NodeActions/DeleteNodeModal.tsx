@@ -43,7 +43,7 @@ export default function DeleteNodeModal({ name, version, kind, closePopup, handl
                 variant: ToastVariantType.success,
                 description: DELETE_NODE_MODAL_MESSAGING.initiated,
             })
-            handleClearBulkSelection?.()
+            handleClearBulkSelection()
             closePopup(true)
         } catch (err) {
             showError(err)

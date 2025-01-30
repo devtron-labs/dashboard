@@ -64,7 +64,7 @@ const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
                 description: 'Resource deleted successfully',
             })
             await getResourceListData()
-            handleClearBulkSelection?.()
+            handleClearBulkSelection()
             toggleDeleteDialog()
             if (removeTabByIdentifier) {
                 removeTabByIdentifier(

@@ -135,7 +135,7 @@ export interface ResourceBrowserActionMenuType {
     resourceData: K8sResourceDetailDataType
     selectedResource: ApiResourceGroupType
     handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
-    handleClearBulkSelection?: () => void
+    handleClearBulkSelection: () => void
     removeTabByIdentifier?: UseTabsReturnType['removeTabByIdentifier']
     getResourceListData?: () => Promise<void>
     /**
