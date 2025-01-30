@@ -169,7 +169,7 @@ if (!window || !window._env_) {
         FEATURE_DEFAULT_LANDING_RB_ENABLE: false,
         FEATURE_CLUSTER_MAP_ENABLE: true,
         FEATURE_ACTION_AUDIOS_ENABLE: true,
-        FEATURE_EXPERIMENTAL_THEMING_ENABLE: true,
+        FEATURE_EXPERIMENTAL_THEMING_ENABLE: import.meta.env.DEV,
     }
 }
 
