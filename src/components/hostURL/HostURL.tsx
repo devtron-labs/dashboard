@@ -245,7 +245,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                                     <button
                                         type="button"
                                         onClick={(e) => this.handleHostURLLocation(window.location.origin)}
-                                        className="hosturl__url fw-4 cg-5"
+                                        className="hosturl__url fw-4 cg-5 py-0"
                                         data-testid="clickable-url"
                                     >
                                         {window.location.origin}
