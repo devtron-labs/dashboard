@@ -32,6 +32,7 @@ import {
     getConfigMapSecretPayload,
     getConfigMapSecretReadOnlyValues,
     ConfigMapSecretReadyOnly,
+    isNullOrUndefined,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { CompareConfigView, CompareConfigViewProps, NoPublishedVersionEmptyState } from '@Pages/Applications'
@@ -227,7 +228,7 @@ export const ConfigMapSecretProtected = ({
         <ConfigMapSecretForm
             configMapSecretData={configMapSecretData}
             inheritedConfigMapSecretData={inheritedConfigMapSecretData}
-            isCreateView={!id}
+            isCreateView={isNullOrUndefined(id)}
             componentType={componentType}
             cmSecretStateLabel={
                 selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT &&
