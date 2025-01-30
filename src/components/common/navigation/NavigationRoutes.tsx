@@ -130,7 +130,11 @@ export default function NavigationRoutes() {
     const contextValue = useMemo(() => ({ environmentId, setEnvironmentId }), [environmentId])
     const [isAirgapped, setIsAirGapped] = useState(false)
     const [isManifestScanningEnabled, setIsManifestScanningEnabled] = useState<boolean>(false)
-    const [isGitOpsEnabled, setIsGitOpsEnabled] = useState<MainContext['isGitOpsEnabled']>(false)
+    const [featureGitOpsFlags, setFeatureGitOpsFlags] = useState<MainContext['featureGitOpsFlags']>({
+        isFeatureArgoCdMigrationEnabled: false,
+        isFeatureGitOpsEnabled: false,
+        isFeatureUserDefinedGitOpsEnabled: false,
+    })
 
     const getInit = async (_serverMode: string) => {
         setLoginLoader(true)
@@ -211,7 +215,7 @@ export default function NavigationRoutes() {
             if (window._env_.GA_ENABLED) {
                 const path = location.pathname
                 // Using .then to use in useEffect
-                getHashedValue(email).then((hashedEmail) => { 
+                getHashedValue(email).then((hashedEmail) => {
                     ReactGA.initialize(window._env_.GA_TRACKING_ID, {
                         gaOptions: {
                             userId: hashedEmail,
@@ -278,14 +282,26 @@ export default function NavigationRoutes() {
             const { result } = await getEnvironmentData()
             setIsAirGapped(result.isAirGapEnvironment)
             setIsManifestScanningEnabled(result.isManifestScanningEnabled)
-            setIsGitOpsEnabled(result.isGitOpsEnabled)
+
+            const parsedFeatureGitOpsFlags: typeof featureGitOpsFlags = {
+                isFeatureArgoCdMigrationEnabled: result.featureGitOpsFlags?.isFeatureArgoCdMigrationEnabled || false,
+                isFeatureGitOpsEnabled: result.featureGitOpsFlags?.isFeatureGitOpsEnabled || false,
+                isFeatureUserDefinedGitOpsEnabled:
+                    result.featureGitOpsFlags?.isFeatureUserDefinedGitOpsEnabled || false,
+            }
+            setFeatureGitOpsFlags(parsedFeatureGitOpsFlags)
+
             if (typeof Storage !== 'undefined') {
                 localStorage.setItem('isAirGapped', result.isAirGapEnvironment)
             }
         } catch {
             setIsAirGapped(false)
             setIsManifestScanningEnabled(false)
-            setIsGitOpsEnabled(false)
+            setFeatureGitOpsFlags({
+                isFeatureArgoCdMigrationEnabled: false,
+                isFeatureGitOpsEnabled: false,
+                isFeatureUserDefinedGitOpsEnabled: false,
+            })
         }
     }
 
@@ -385,7 +401,7 @@ export default function NavigationRoutes() {
                 isAirgapped,
                 isSuperAdmin,
                 isManifestScanningEnabled,
-                isGitOpsEnabled,
+                featureGitOpsFlags,
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
@@ -409,7 +425,9 @@ export default function NavigationRoutes() {
                         }`}
                     >
                         <Suspense
-                            fallback={<DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />}
+                            fallback={
+                                <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />
+                            }
                         >
                             <ErrorBoundary>
                                 <Switch>

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { lazy, useState, useEffect, Suspense, isValidElement, useRef } from 'react'
+import { lazy, useState, useEffect, Suspense, isValidElement, useRef, LazyExoticComponent } from 'react'
 import { Route, NavLink, Router, Switch, Redirect, useHistory, useLocation } from 'react-router-dom'
 import {
     showError,
@@ -185,9 +185,21 @@ const NavItem = ({ serverMode }) => {
         Authorization: !location.pathname.startsWith('/global-config/auth'),
     })
     const { tippyConfig, setTippyConfig } = useGlobalConfiguration()
+    const {
+        featureGitOpsFlags: { isFeatureGitOpsEnabled },
+    } = useMainContext()
 
     let moduleStatusTimer = null
-    const ConfigRequired = [
+    const ConfigRequired: {
+        name: string
+        href: string
+        component: LazyExoticComponent<any>
+        // TODO: Ask for optional
+        isAvailableInEA?: boolean
+        moduleName?: string
+        isAvailableInDesktop?: boolean
+        hideRoute?: boolean
+    }[] = [
         {
             name: 'Host URL',
             href: URLS.GLOBAL_CONFIG_HOST_URL,
@@ -199,6 +211,8 @@ const NavItem = ({ serverMode }) => {
             href: URLS.GLOBAL_CONFIG_GITOPS,
             component: GitOpsConfiguration,
             moduleName: ModuleNameMap.ARGO_CD,
+            // TODO: Ask for ea mode as well
+            hideRoute: !isFeatureGitOpsEnabled,
         },
         { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project, isAvailableInEA: true },
         {
@@ -333,11 +347,12 @@ const NavItem = ({ serverMode }) => {
                     to={`${route.href}`}
                     activeClassName="active-route"
                     data-testid={route.dataTestId}
-                    className={`${route.name === 'API tokens' &&
+                    className={`${
+                        route.name === 'API tokens' &&
                         location.pathname.startsWith(`${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}`)
-                        ? 'active-route'
-                        : ''
-                        }`}
+                            ? 'active-route'
+                            : ''
+                    }`}
                     onClick={(e) => {
                         if (!preventOnClickOp) {
                             handleGroupCollapsedState(e, route)
@@ -402,6 +417,7 @@ const NavItem = ({ serverMode }) => {
             {ConfigRequired.map(
                 (route) =>
                     ((!window._env_.K8S_CLIENT &&
+                        !route.hideRoute &&
                         ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) ||
                             route.isAvailableInEA ||
                             installedModuleMap.current?.[route.moduleName])) ||
@@ -573,7 +589,10 @@ const NavItem = ({ serverMode }) => {
 }
 
 const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, isSuperAdmin }: BodyType) => {
-    const location = useLocation()
+    const {
+        featureGitOpsFlags: { isFeatureGitOpsEnabled },
+    } = useMainContext()
+
     const defaultRoute = (): string => {
         if (window._env_.K8S_CLIENT) {
             return URLS.GLOBAL_CONFIG_CLUSTER
@@ -617,13 +636,21 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                           />,
                       ]
                     : []),
-                <Route
-                    key={URLS.GLOBAL_CONFIG_GITOPS}
-                    path={URLS.GLOBAL_CONFIG_GITOPS}
-                    render={(props) => {
-                        return <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
-                    }}
-                />,
+
+                ...(isFeatureGitOpsEnabled
+                    ? [
+                          <Route
+                              key={URLS.GLOBAL_CONFIG_GITOPS}
+                              path={URLS.GLOBAL_CONFIG_GITOPS}
+                              render={(props) => {
+                                  return (
+                                      <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
+                                  )
+                              }}
+                          />,
+                      ]
+                    : []),
+
                 <Route
                     key={URLS.GLOBAL_CONFIG_PROJECT}
                     path={URLS.GLOBAL_CONFIG_PROJECT}
@@ -850,7 +877,7 @@ export const ProtectedInput = ({
     labelClassName = '',
     placeholder = '',
     dataTestid = '',
-    onBlur = (e) => { },
+    onBlur = (e) => {},
     isRequiredField = false,
     autoFocus = false,
 }: ProtectedInputType) => {
@@ -864,7 +891,7 @@ export const ProtectedInput = ({
             }
         }, 100)
     }, [autoFocus])
-    
+
     const [shown, toggleShown] = useState(false)
     useEffect(() => {
         toggleShown(!hidden)
@@ -927,7 +954,7 @@ export const ShowHide = ({
             height="24"
             className={className}
             viewBox="0 0 24 24"
-            onClick={disabled ? () => { } : onClick || defaultOnClick}
+            onClick={disabled ? () => {} : onClick || defaultOnClick}
         >
             <g fill="none" fillRule="evenodd">
                 <path d="M0 0h24v24H0V0zm0 0h24v24H0V0zm0 0h24v24H0V0zm0 0h24v24H0V0z" />
@@ -944,7 +971,7 @@ export const ShowHide = ({
             height="24"
             className={className}
             viewBox="0 0 24 24"
-            onClick={disabled ? () => { } : onClick || defaultOnClick}
+            onClick={disabled ? () => {} : onClick || defaultOnClick}
         >
             <g fill="none" fillRule="evenodd">
                 <path d="M0 0h24v24H0z" />

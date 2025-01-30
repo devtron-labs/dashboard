@@ -106,7 +106,7 @@ export default function BuildCD({
         setReloadNoGitOpsRepoConfiguredModal,
     } = useContext(pipelineContext)
 
-    const { isGitOpsEnabled } = useMainContext()
+    const { featureGitOpsFlags: { isFeatureArgoCdMigrationEnabled } } = useMainContext()
     const { isSuperAdmin } = useSuperAdmin()
 
     const validationRules = new ValidationRules()
@@ -783,7 +783,7 @@ export default function BuildCD({
                 return <ErrorScreenNotAuthorized />
             }
 
-            if (!isGitOpsEnabled) {
+            if (!isFeatureArgoCdMigrationEnabled) {
                 return (
                     <MigrateHelmReleaseBody
                         renderTriggerType={renderTriggerType}
