@@ -203,9 +203,10 @@ export default function CDPipeline({
     const [migrateToDevtronFormState, setMigrateToDevtronFormState] = useState<MigrateToDevtronFormState>({
         deploymentAppType: DeploymentAppTypes.HELM,
         migrateFromArgoFormState: {
-            appName: null,
-            namespace: null,
-            clusterId: null,
+            appName: '',
+            namespace: '',
+            clusterId: 0,
+            clusterName: '',
             validationResponse: {
                 isLinkable: false,
                 errorDetail: {

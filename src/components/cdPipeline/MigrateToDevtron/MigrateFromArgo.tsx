@@ -27,7 +27,7 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
     const [isLoadingArgoAppListResponse, argoAppListResponse, argoAppListResponseError, reloadArgoAppListResponse] =
         useAsync(
             () => getArgoInstalledExternalApps(String(migrateToDevtronFormState.migrateFromArgoFormState.clusterId)),
-            [],
+            [migrateToDevtronFormState.migrateFromArgoFormState.clusterId],
             !!migrateToDevtronFormState.migrateFromArgoFormState.clusterId,
         )
 
@@ -75,6 +75,7 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
                 ...prevState.migrateFromArgoFormState,
                 appName: '',
                 namespace: '',
+                clusterName: clusterOption.label as string,
                 clusterId: clusterOption.value,
             },
         }))
@@ -106,7 +107,7 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
         <>
             <div className="flexbox dc__gap-8 dc__align-end">
                 <div className="w-250">
-                    <SelectPicker
+                    <SelectPicker<(typeof clusterOptions)[number]['value'], false>
                         inputId="migrate-from-source-cluster-select"
                         classNamePrefix="migrate-from-source-cluster-select"
                         label="Cluster containing Argo CD application"
@@ -115,6 +116,14 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
                         reloadOptionList={refetchResourcesOptions}
                         options={clusterOptions}
                         onChange={handleClusterChange}
+                        value={
+                            migrateToDevtronFormState.migrateFromArgoFormState.clusterId
+                                ? {
+                                      label: migrateToDevtronFormState.migrateFromArgoFormState.clusterName,
+                                      value: migrateToDevtronFormState.migrateFromArgoFormState.clusterId,
+                                  }
+                                : null
+                        }
                         required
                         placeholder="Select a cluster"
                     />
@@ -123,7 +132,7 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
                 <span className="cn-7 fs-20 fw-4 lh-36">/</span>
 
                 <div className="flex-grow-1">
-                    <SelectPicker
+                    <SelectPicker<(typeof argoAppListOptions)[number]['value'], false>
                         inputId="migrate-from-source-argo-app-select"
                         classNamePrefix="migrate-from-source-argo-app-select"
                         label="Argo CD application"
@@ -135,6 +144,18 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
                         disabledTippyContent="Select a cluster to view and select Argo CD applications in that cluster"
                         isDisabled={!migrateToDevtronFormState.migrateFromArgoFormState.clusterId}
                         required
+                        value={
+                            migrateToDevtronFormState.migrateFromArgoFormState.appName
+                                ? {
+                                      label: migrateToDevtronFormState.migrateFromArgoFormState.appName || '',
+                                      value: {
+                                          appName: migrateToDevtronFormState.migrateFromArgoFormState.appName || '',
+                                          namespace: migrateToDevtronFormState.migrateFromArgoFormState.namespace || '',
+                                      },
+                                      description: `Namespace: ${migrateToDevtronFormState.migrateFromArgoFormState.namespace || '--'}`,
+                                  }
+                                : null
+                        }
                         placeholder="Select an Argo CD application"
                     />
                 </div>

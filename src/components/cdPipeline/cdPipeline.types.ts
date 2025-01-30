@@ -187,6 +187,7 @@ export interface MigrateFromArgoFormState {
     appName: string | null
     namespace: string | null
     clusterId: number | null
+    clusterName: string | null
     validationResponse: ValidateMigrationSourceDTO | null
 }
 
