@@ -368,12 +368,23 @@ const BaseResourceListContent = ({
             .catch(noop)
     }
 
+    // This should be used only if shouldOverrideSelectedResourceKind is true
+    // Group and version are not available for Events / shouldOverrideSelectedResourceKind is true
+    const getSelectedResourceKindOverride = (lowercaseKind: string) => {
+        const gvkFromRawData: GVKType =
+            getFirstResourceFromKindResourceMap(lowercaseKindToResourceGroupMap, lowercaseKind)?.gvk ?? ({} as GVKType)
+
+        return {
+            gvk: {
+                Group: gvkFromRawData.Group ?? selectedResource.gvk.Group,
+                Kind: gvkFromRawData.Kind ?? selectedResource.gvk.Kind,
+                Version: gvkFromRawData.Version ?? selectedResource.gvk.Version,
+            } as GVKType,
+        }
+    }
+
     const renderResourceRow = (resourceData: K8sResourceDetailDataType): JSX.Element => {
         const lowercaseKind = (resourceData.kind as string)?.toLowerCase()
-        // This should be used only if shouldOverrideSelectedResourceKind is true
-        // Group and version are not available for Events / shouldOverrideSelectedResourceKind is true
-        const gvkFromRawData =
-            getFirstResourceFromKindResourceMap(lowercaseKindToResourceGroupMap, lowercaseKind)?.gvk ?? ({} as GVKType)
         // Redirection and actions are not possible for Events since the required data for the same is not available
         const shouldShowRedirectionAndActions = lowercaseKind !== Nodes.Event.toLowerCase()
         const isNodeUnschedulable = isNodeListing && !!resourceData.unschedulable
@@ -442,13 +453,8 @@ const BaseResourceListContent = ({
                                         getResourceListData={reloadResourceListData as () => Promise<void>}
                                         selectedResource={{
                                             ...selectedResource,
-                                            ...(shouldOverrideSelectedResourceKind && {
-                                                gvk: {
-                                                    Group: gvkFromRawData.Group ?? selectedResource.gvk.Group,
-                                                    Kind: gvkFromRawData.Kind ?? selectedResource.gvk.Kind,
-                                                    Version: gvkFromRawData.Version ?? selectedResource.gvk.Version,
-                                                } as GVKType,
-                                            }),
+                                            ...(shouldOverrideSelectedResourceKind &&
+                                                getSelectedResourceKindOverride(lowercaseKind)),
                                         }}
                                         handleResourceClick={handleResourceClick}
                                         hideDeleteResource={hideDeleteResource}
