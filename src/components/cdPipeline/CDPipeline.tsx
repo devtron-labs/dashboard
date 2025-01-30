@@ -222,7 +222,7 @@ export default function CDPipeline({
                             savedChartName: '',
                             valuesFileName: '',
                             requiredChartName: '',
-                        }
+                        },
                     },
                     destination: {
                         clusterName: '',
@@ -232,7 +232,7 @@ export default function CDPipeline({
                         environmentId: 0,
                     },
                     status: null,
-                }
+                },
             },
         },
         triggerType: TriggerType.Auto,
@@ -297,11 +297,10 @@ export default function CDPipeline({
     const [disableParentModalClose, setDisableParentModalClose] = useState<boolean>(false)
     const [mandatoryPluginData, setMandatoryPluginData] = useState<MandatoryPluginDataType>(null)
 
-
     const isMigratingFromArgoApp =
-    migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.GITOPS &&
-    formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS &&
-    !cdPipelineId
+        migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.GITOPS &&
+        formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS &&
+        !cdPipelineId
 
     const handleHideScopedVariableWidgetUpdate: PipelineContext['handleHideScopedVariableWidgetUpdate'] = (
         hideScopedVariableWidgetValue: boolean,
@@ -720,9 +719,10 @@ export default function CDPipeline({
         }
 
         const { migrateFromArgoFormState } = migrateToDevtronFormState
-        const migrateFromArgoTargetDetails = migrateFromArgoFormState?.validationResponse?.applicationMetadata?.destination
+        const migrateFromArgoTargetDetails =
+            migrateFromArgoFormState?.validationResponse?.applicationMetadata?.destination
 
-        const migrateToDevtronRequiredPayload: MigratePipelineFromArgoRequiredFieldsDTO  = isMigratingFromArgoApp
+        const migrateToDevtronRequiredPayload: MigratePipelineFromArgoRequiredFieldsDTO = isMigratingFromArgoApp
             ? {
                   deploymentAppType: migrateToDevtronFormState.deploymentAppType,
                   applicationObjectClusterId: migrateFromArgoFormState.clusterId,
@@ -781,7 +781,7 @@ export default function CDPipeline({
             pipeline.triggerType =
                 formData.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH
                     ? TriggerType.Manual
-                    : formData.triggerType as MigrateToDevtronFormState['triggerType'] // In case of virtual environment trigger type will always be manual
+                    : (formData.triggerType as MigrateToDevtronFormState['triggerType']) // In case of virtual environment trigger type will always be manual
         }
 
         // Its not allowed to switch from external to external
@@ -978,34 +978,38 @@ export default function CDPipeline({
     }
 
     const savePipeline = () => {
-        if (checkForGitOpsRepoNotConfigured()) {
-            return
-        }
-        const isUnique = checkUniqueness(formData, true)
-        if (!isUnique) {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'All task names must be unique',
-            })
-            return
-        }
-        setLoadingData(true)
-        validateStage(BuildStageVariable.PreBuild, formData)
-        validateStage(BuildStageVariable.Build, formData)
-        validateStage(BuildStageVariable.PostBuild, formData)
-        if (
-            !formDataErrorObj.buildStage.isValid ||
-            !formDataErrorObj.preBuildStage.isValid ||
-            !formDataErrorObj.postBuildStage.isValid
-        ) {
-            setLoadingData(false)
-            if (formData.name === '') {
+        if (!isMigratingFromArgoApp) {
+            if (checkForGitOpsRepoNotConfigured()) {
+                return
+            }
+            const isUnique = checkUniqueness(formData, true)
+            if (!isUnique) {
                 ToastManager.showToast({
                     variant: ToastVariantType.error,
-                    description: MULTI_REQUIRED_FIELDS_MSG,
+                    description: 'All task names must be unique',
                 })
+                return
             }
-            return
+
+            setLoadingData(true)
+            validateStage(BuildStageVariable.PreBuild, formData)
+            validateStage(BuildStageVariable.Build, formData)
+            validateStage(BuildStageVariable.PostBuild, formData)
+
+            if (
+                !formDataErrorObj.buildStage.isValid ||
+                !formDataErrorObj.preBuildStage.isValid ||
+                !formDataErrorObj.postBuildStage.isValid
+            ) {
+                setLoadingData(false)
+                if (formData.name === '') {
+                    ToastManager.showToast({
+                        variant: ToastVariantType.error,
+                        description: MULTI_REQUIRED_FIELDS_MSG,
+                    })
+                }
+                return
+            }
         }
 
         const request = responseCode()
@@ -1375,8 +1379,12 @@ export default function CDPipeline({
 
         // Disable button if environment or release name is not selected
         const getButtonDisabledMessage = (): string => {
-            if (isMigratingFromArgoApp && !migrateToDevtronFormState.migrateFromArgoFormState.validationResponse.isLinkable) {
-                return 'Please resolve errors before proceeding'
+            if (isMigratingFromArgoApp) {
+                if (!migrateToDevtronFormState.migrateFromArgoFormState.validationResponse.isLinkable) {
+                    return 'Please resolve errors before proceeding'
+                }
+
+                return ''
             }
 
             if (!formData.environmentId) {
