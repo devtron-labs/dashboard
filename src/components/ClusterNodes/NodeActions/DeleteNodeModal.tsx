@@ -18,10 +18,10 @@ import { useState } from 'react'
 import { showError, DeleteDialog, InfoColourBar, ToastVariantType, ToastManager, deleteNodeCapacity } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
-import { NodeActionModalPropType } from '../types'
+import { DeleteNodeModalProps } from '../types'
 import { DELETE_NODE_MODAL_MESSAGING } from '../constants'
 
-export default function DeleteNodeModal({ name, version, kind, closePopup }: NodeActionModalPropType) {
+export default function DeleteNodeModal({ name, version, kind, closePopup, handleClearBulkSelection }: DeleteNodeModalProps) {
     const { clusterId } = useParams<{ clusterId: string }>()
     const [apiCallInProgress, setAPICallInProgress] = useState(false)
 
@@ -43,6 +43,7 @@ export default function DeleteNodeModal({ name, version, kind, closePopup }: Nod
                 variant: ToastVariantType.success,
                 description: DELETE_NODE_MODAL_MESSAGING.initiated,
             })
+            handleClearBulkSelection?.()
             closePopup(true)
         } catch (err) {
             showError(err)

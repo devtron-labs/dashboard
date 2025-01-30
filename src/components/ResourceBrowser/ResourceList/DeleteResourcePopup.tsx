@@ -37,6 +37,7 @@ const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
     getResourceListData,
     toggleDeleteDialog,
     removeTabByIdentifier,
+    handleClearBulkSelection,
 }) => {
     const { push } = useHistory()
     const [apiCallInProgress, setApiCallInProgress] = useState(false)
@@ -63,6 +64,7 @@ const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
                 description: 'Resource deleted successfully',
             })
             await getResourceListData()
+            handleClearBulkSelection?.()
             toggleDeleteDialog()
             if (removeTabByIdentifier) {
                 removeTabByIdentifier(
