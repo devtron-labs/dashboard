@@ -6,7 +6,7 @@ WORKDIR /app
 COPY package.json .
 COPY yarn.lock .
 
-RUN yarn install --network-timeout 600000
+RUN yarn install --frozen-lockfile --network-timeout 600000
 
 COPY src/ src
 COPY nginx.conf .

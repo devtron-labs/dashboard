@@ -32,6 +32,7 @@ import {
     ToastManager,
     ComponentSizeType,
     showError,
+    MODES,
     TriggerType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useContext, useState } from 'react'
@@ -739,13 +740,11 @@ export default function BuildCD({
                                     <CodeEditor
                                         height={300}
                                         value={strategy.yamlStr}
-                                        mode="yaml"
+                                        mode={MODES.YAML}
                                         onChange={(event) =>
                                             handleStrategyChange(event, strategy.deploymentTemplate, 'yaml')
                                         }
-                                    >
-                                        <CodeEditor.Header className="code-editor" />
-                                    </CodeEditor>
+                                    />
                                 </div>
                             )}
                         </div>
