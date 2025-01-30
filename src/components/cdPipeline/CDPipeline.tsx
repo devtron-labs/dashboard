@@ -206,7 +206,33 @@ export default function CDPipeline({
             appName: null,
             namespace: null,
             clusterId: null,
-            validationResponse: null,
+            validationResponse: {
+                isLinkable: false,
+                errorDetail: {
+                    validationFailedReason: null,
+                    validationFailedMessage: '',
+                },
+                applicationMetadata: {
+                    source: {
+                        repoURL: '',
+                        chartPath: '',
+                        chartMetadata: {
+                            requiredChartVersion: '',
+                            savedChartName: '',
+                            valuesFileName: '',
+                            requiredChartName: '',
+                        }
+                    },
+                    destination: {
+                        clusterName: '',
+                        clusterServerUrl: '',
+                        namespace: '',
+                        environmentName: '',
+                        environmentId: 0,
+                    },
+                    status: null,
+                }
+            },
         },
         triggerType: TriggerType.Auto,
     })
@@ -269,6 +295,12 @@ export default function CDPipeline({
     const [hideScopedVariableWidget, setHideScopedVariableWidget] = useState<boolean>(false)
     const [disableParentModalClose, setDisableParentModalClose] = useState<boolean>(false)
     const [mandatoryPluginData, setMandatoryPluginData] = useState<MandatoryPluginDataType>(null)
+
+
+    const isMigratingFromArgoApp =
+    migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.GITOPS &&
+    formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS &&
+    !cdPipelineId
 
     const handleHideScopedVariableWidgetUpdate: PipelineContext['handleHideScopedVariableWidgetUpdate'] = (
         hideScopedVariableWidgetValue: boolean,
@@ -685,11 +717,6 @@ export default function CDPipeline({
                 return secret['label']
             }),
         }
-
-        const isMigratingFromArgoApp =
-            migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.GITOPS &&
-            formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS &&
-            !cdPipelineId
 
         const { migrateFromArgoFormState } = migrateToDevtronFormState
         const migrateFromArgoTargetDetails = migrateFromArgoFormState?.validationResponse?.applicationMetadata?.destination
@@ -1347,6 +1374,10 @@ export default function CDPipeline({
 
         // Disable button if environment or release name is not selected
         const getButtonDisabledMessage = (): string => {
+            if (isMigratingFromArgoApp && !migrateToDevtronFormState.migrateFromArgoFormState.validationResponse.isLinkable) {
+                return 'Please resolve errors before proceeding'
+            }
+
             if (!formData.environmentId) {
                 return 'Please select an environment'
             }
