@@ -1097,107 +1097,6 @@ button.anchor {
     background-repeat: no-repeat;
 }
 
-// TODO: (rohit) - remove this after verifying ClusterForm
-@mixin dc__app-status-icon($background) {
-    height: 24px;
-    width: 24px;
-    z-index: 2;
-
-    &.queued,
-    &.pending {
-        background: url('../assets/icons/ic-clock.svg'), $background;
-        background-size: contain, contain;
-    }
-
-    &.failed,
-    &.error {
-        background: url('../assets/icons/appstatus/ic-appstatus-failed.svg'), $background;
-        background-size: contain, contain;
-    }
-
-    &.cancelled,
-    &.aborted {
-        background: url('../assets/icons/ic-appstatus-cancelled.svg'), $background;
-        background-size: contain, contain;
-    }
-
-    &.not-ready {
-        background: url('../assets/icons/ic-error.svg');
-        background-size: contain, contain;
-    }
-
-    &.ready,
-    &.healthy,
-    &.synced,
-    &.sync.ok,
-    &.succeeded {
-        background: url('../assets/icons/appstatus/healthy.svg'), $background;
-        background-size: contain, contain;
-
-        &.healthy--node {
-            background: url('../assets/icons/appstatus/ic-heart-green.svg'), transparent;
-            background-size: contain, contain;
-        }
-    }
-
-    &.drifted {
-        background: url('../assets/icons/ic-out-of-sync.svg'), $background;
-        background-size: contain, contain;
-    }
-
-    &.missing {
-        background: url('../assets/icons/appstatus/missing.svg'), $background;
-        background-size: contain, contain;
-    }
-
-    &.unknown {
-        background: url('../assets/icons/appstatus/unknown.svg'), $background;
-        background-size: contain, contain;
-    }
-
-    &.not-deployed,
-    &.not-triggered {
-        background: url('../assets/icons/appstatus/notdeployed.svg'), $background;
-        background-size: contain, contain;
-
-        &.not-deployed--node {
-            background: url('../assets/icons/ic-close.svg'), transparent;
-            background-size: contain, contain;
-        }
-    }
-
-    &.suspended {
-        background: url('../assets/icons/appstatus/suspended.svg'), $background;
-        background-size: contain, contain;
-    }
-
-    &.degraded {
-        background: url('../assets/icons/appstatus/degraded.svg'), $background;
-        background-size: contain, contain;
-    }
-
-    &.initiating,
-    &.progressing,
-    &.running,
-    &.request_accepted,
-    &.starting {
-        background: url('../assets/icons/appstatus/progressing-rotating.svg'), $background;
-        background-size: contain, contain;
-        animation: unset;
-    }
-
-    &.hibernating,
-    &.hibernated {
-        background: url('../assets/icons/ic-hibernate-2.svg'), $background;
-        background-size: contain, contain;
-    }
-
-    &.timedout {
-        background: url('../assets/icons/ic-timeout-red.svg'), $background;
-        background-size: contain, contain;
-    }
-}
-
 @mixin dc__striped-row($background) {
     background-color: $background;
 }
@@ -1219,11 +1118,6 @@ button.anchor {
     div:hover {
         @include dc__striped-row(var(--B50));
     }
-}
-
-// TODO: (rohit) - remove this after verifying ClusterForm
-.dc__app-summary__icon {
-    @include dc__app-status-icon(transparent);
 }
 
 .dc__app-update-toast {
