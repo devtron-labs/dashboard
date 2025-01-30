@@ -138,9 +138,8 @@ function createSaveNotificationPayload(selectedPipelines, providers): SaveNotifi
 }
 
 export function saveNotification(selectedPipelines, providers): Promise<SaveNotificationResponseType> {
-    const URL = `${Routes.NOTIFIER}`
     const payload = createSaveNotificationPayload(selectedPipelines, providers)
-    return post(URL, payload)
+    return post<SaveNotificationResponseType['result'] , SaveNotificationPayload>(Routes.NOTIFIER, payload)
 }
 
 export function getChannelConfigs(): Promise<ResponseType> {
