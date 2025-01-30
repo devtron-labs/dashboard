@@ -33,6 +33,7 @@ import {
     ToastManager,
     SelectPicker,
     ComponentSizeType,
+    Textarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -904,20 +905,19 @@ const GitForm = ({
                 </div>
             )}
             {state.auth.value === 'SSH' && (
-                <div className="form__row ">
-                    <div className="form__label dc__required-field">Private SSH key</div>
-                    <textarea
-                        data-testid="git-account-ssh-key-textbox"
+                <div className="mb-16">
+                    <Textarea
+                        label="Private SSH key"
                         placeholder="Enter key text"
-                        className="form__input w-100"
-                        style={{ height: '100px', backgroundColor: 'var(--bg-secondary)' }}
                         onChange={customHandleChange}
                         onBlur={id && handleOnBlur}
                         onFocus={handleOnFocus}
                         name="sshInput"
                         value={customState.sshInput.value}
+                        error={customState.sshInput.error}
+                        required
+                        shouldTrim={false}
                     />
-                    {customState.sshInput.error && <div className="form__error">{customState.sshInput.error}</div>}
                 </div>
             )}
 

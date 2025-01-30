@@ -259,7 +259,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                     <EditableTextArea
                         emptyState={config.defaultDescription}
                         placeholder={config.defaultDescription}
-                        rows={4}
                         initialText={description}
                         updateContent={handleSaveDescription}
                         validations={{

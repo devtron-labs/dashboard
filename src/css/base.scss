@@ -341,10 +341,6 @@ a:focus {
     top: 0;
 }
 
-.dc__top-8 {
-    top: 8px;
-}
-
 .dc__top-9 {
     top: 9px;
 }
@@ -367,6 +363,10 @@ a:focus {
 
 .dc__top-26 {
     top: 26px;
+}
+
+.dc__top-34 {
+    top: 34px;
 }
 
 .dc__top-36 {
@@ -548,20 +548,6 @@ a:focus {
 .dc__grid-row-one-half {
     display: grid;
     grid-template-columns: 1fr 1fr;
-}
-
-// ClassName of text area
-.dc__code-textarea {
-    min-width: 100%;
-    height: 550px;
-    color: var(--N0);
-    border: unset;
-    white-space: nowrap;
-    overflow: auto;
-    resize: none;
-    background: var(--terminal-bg);
-    padding: 16px;
-    font-family: monospace;
 }
 
 .build-context-label {
@@ -1633,35 +1619,6 @@ button.anchor {
     position: relative;
     animation: shimmer-loading 1s infinite linear;
     height: 16px;
-}
-
-.dc__resizable-textarea {
-    resize: none;
-    border-radius: 4px;
-    outline: none;
-    border: solid 1px var(--N200);
-    padding: 12px 10px;
-
-    &:disabled {
-        background: var(--N100);
-    }
-
-    &:not(.form__input--error):hover {
-        border-color: var(--N400);
-    }
-
-    &:not(.form__input--error):focus {
-        border: solid 1px var(--B500);
-    }
-
-    &--vertical {
-        resize: vertical;
-    }
-}
-
-.dc__resizable-textarea__with-max-height {
-    max-height: 100px;
-    overflow: auto;
 }
 
 .dc__app-commit__hash {
@@ -2738,11 +2695,6 @@ button.anchor {
     border-bottom-left-radius: 8px;
 }
 
-input,
-textarea {
-    background-color: var(--bg-secondary);
-}
-
 .bc-b50 {
     background-color: var(--B50);
 
@@ -2760,7 +2712,6 @@ textarea {
     gap: 1px;
     background-color: var(--N700);
     padding-bottom: 1px;
-    padding-right: 30px;
     color: var(--N0);
     font-size: 12px;
     font-weight: 600;
@@ -2907,6 +2858,12 @@ textarea {
 .info-icon-n6 {
     circle {
         fill: var(--N600);
+    }
+}
+
+.info-icon-n7 {
+    circle {
+        fill: var(--N700);
     }
 }
 
@@ -3768,6 +3725,10 @@ textarea {
     max-height: 20px;
 }
 
+.mxh-36 {
+    max-height: 36px;
+}
+
 .mxh-64 {
     max-height: 64px;
 }
@@ -4579,17 +4540,6 @@ textarea::placeholder {
     }
 }
 
-.dc__description-textarea {
-    width: 100% !important;
-    min-height: 90px;
-    padding: 8px;
-    border: 1px solid var(--N200);
-    border-radius: 4px;
-    font-size: 14px;
-    line-height: 20px;
-    color: var(--N800);
-}
-
 .dc__outline-none-imp {
     outline: none !important;
 }
@@ -5114,40 +5064,6 @@ textarea::placeholder {
     animation-timing-function: linear;
 }
 
-.code-editor__warning {
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 1.33;
-    letter-spacing: normal;
-    color: var(--N900);
-    height: auto;
-    padding: 8px 16px;
-    border-bottom: 1px solid var(--Y200);
-    background-color: var(--Y100);
-}
-
-.code-editor__error {
-    background-color: var(--O100);
-    color: var(--O500);
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 1.33;
-    padding: 8px 16px;
-    border-bottom: 1px solid var(--N200);
-}
-
-.code-editor__information {
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 1.33;
-    letter-spacing: normal;
-    color: var(--N900);
-    height: auto;
-    padding: 8px 16px;
-    border-bottom: 1px solid var(--N200);
-    background-color: var(--B100);
-}
-
 .security-policy--whitelist,
 .security-policy--whitelisted {
     color: var(--G500);
@@ -5355,4 +5271,8 @@ details[open] {
     &.vertical-divider--zi-2::after {
         z-index: 2;
     }
+}
+
+.dc__overscroll-none {
+    overscroll-behavior: none;
 }
