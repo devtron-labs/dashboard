@@ -411,7 +411,7 @@ const HelmAppList = ({
             </div>
             {isArgoInstalled && (
                 <div className="app-list__cell app-list__cell--namespace">
-                    <AppStatus appStatus={app.appStatus} isVirtualEnv={app.environmentDetail.isVirtualEnvironment} />
+                    <AppStatus status={app.appStatus} isVirtualEnv={app.environmentDetail.isVirtualEnvironment} />
                 </div>
             )}
             <div className="app-list__cell app-list__cell--env">

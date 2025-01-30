@@ -767,22 +767,8 @@ button.anchor {
     }
 }
 
-.dc__app-summary__icon {
-    flex-shrink: 0;
-}
-
 .dc__no-shrink {
     flex-shrink: 0;
-}
-
-.app-summary__app-status {
-    display: flex;
-    align-items: center;
-
-    .dc__app-summary__icon {
-        position: unset;
-        margin: 0 4px 0 10px;
-    }
 }
 
 .app-summary__status-name {
@@ -1111,6 +1097,7 @@ button.anchor {
     background-repeat: no-repeat;
 }
 
+// TODO: (rohit) - remove this after verifying ClusterForm
 @mixin dc__app-status-icon($background) {
     height: 24px;
     width: 24px;
@@ -1234,24 +1221,9 @@ button.anchor {
     }
 }
 
+// TODO: (rohit) - remove this after verifying ClusterForm
 .dc__app-summary__icon {
     @include dc__app-status-icon(transparent);
-
-    &.icon-dim-20 {
-        width: 20px;
-        height: 20px;
-    }
-
-    &.icon-dim-16 {
-        width: 16px;
-        height: 16px;
-    }
-}
-
-.ci-details__build-card {
-    .app-status__icon {
-        @include dc__app-status-icon(transparent);
-    }
 }
 
 .dc__app-update-toast {

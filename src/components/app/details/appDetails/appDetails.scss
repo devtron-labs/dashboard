@@ -916,13 +916,6 @@ table.pod__table td:last-child {
                     font-size: 12px;
                 }
 
-                .dc__app-summary__icon {
-                    width: 32px;
-                    height: 32px;
-                    background-size: cover;
-                    position: unset;
-                }
-
                 .deployment-summary {
                     height: 53px;
                     background: var(--bg-tertiary);
@@ -1772,13 +1765,6 @@ table.resource-tree {
 
 .source-info-container,
 .app-details-info-card {
-    .dc__app-summary__icon {
-        &.healthy {
-            background-size: contain, contain;
-            background: url('../../../../assets/icons/appstatus/ic-heart-green.svg'), transparent;
-        }
-    }
-
     .mw-340 {
         max-width: 340px !important;
     }

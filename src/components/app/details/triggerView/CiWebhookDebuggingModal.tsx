@@ -30,6 +30,7 @@ import {
     getUrlWithSearchParams,
     Tooltip,
     MODES,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
@@ -156,9 +157,7 @@ export const CiWebhookModal = ({
                                 onClick={() => getCIWebhookPayloadRes(ciPipelineMaterialId, webhookPayload)}
                             >
                                 <div className="flex left top dc__gap-8">
-                                    <div
-                                        className={`dc__app-summary__icon dc__no-shrink icon-dim-20  ${isPassed ? 'succeeded' : 'not-ready'}`}
-                                    />
+                                    <Icon name={isPassed ? 'ic-success' : 'ic-error'} size={20} color={null} />
                                     <div>
                                         <span className={`lh-20 ${isActive ? 'cb-5 fw-6' : 'cn-9'}`}>
                                             {moment(webhookPayload.eventTime).format(Moment12HourFormat)}

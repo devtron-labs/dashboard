@@ -19,6 +19,7 @@ import { Link, NavLink } from 'react-router-dom'
 import {
     ComponentSizeType,
     CustomInput,
+    Icon,
     InfoColourBar,
     REGISTRY_TYPE_MAP,
     SelectPicker,
@@ -182,8 +183,9 @@ export default function CIContainerRegistryConfig({
                         />
                     )}
                     {!ciConfig && selectedRegistry?.registryType === 'ecr' && (
-                        <label className="form__error form__error--info">
-                            New repository will be created if not provided
+                        <label className="form__error dc__gap-4">
+                            <Icon name="ic-info-outline" color="N700" size={14} />
+                            <span className="cn-7">New repository will be created if not provided</span>
                         </label>
                     )}
                 </div>

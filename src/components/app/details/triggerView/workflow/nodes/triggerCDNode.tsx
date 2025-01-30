@@ -20,7 +20,7 @@ import { Link } from 'react-router-dom'
 import {
     DeploymentAppTypes,
     DeploymentNodeType,
-    triggerStatus,
+    getDeploymentStatusFromStatus,
     statusColor,
     statusIcon,
     URLS,
@@ -49,18 +49,18 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
     }
 
     getCDNodeDetailsURL = (): string => {
-         if (this.props.fromAppGrouping) {
-             return getAppGroupDeploymentHistoryLink(
-                 this.props.appId,
-                 this.props.environmentId,
-                 this.props.id,
-                 this.props.match.params.envId === this.props.environmentId.toString(),
-                 this.props.status,
-             )
-         }
-         return `${this.props.match.url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}/${
-             this.props.environmentId
-         }`
+        if (this.props.fromAppGrouping) {
+            return getAppGroupDeploymentHistoryLink(
+                this.props.appId,
+                this.props.environmentId,
+                this.props.id,
+                this.props.match.params.envId === this.props.environmentId.toString(),
+                this.props.status,
+            )
+        }
+        return `${this.props.match.url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}/${
+            this.props.environmentId
+        }`
     }
 
     componentDidUpdate(prevProps: Readonly<TriggerCDNodeProps>, prevState: Readonly<TriggerCDNodeState>): void {
@@ -74,7 +74,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
 
     renderStatus() {
         const url = this.getCDNodeDetailsURL()
-        const statusText = this.props.status ? triggerStatus(this.props.status) : ''
+        const statusText = this.props.status ? getDeploymentStatusFromStatus(this.props.status) : ''
         const status = statusText ? statusText.toLowerCase() : ''
         const hideDetails =
             status === DEFAULT_STATUS.toLowerCase() || status === 'not triggered' || status === 'not deployed'
