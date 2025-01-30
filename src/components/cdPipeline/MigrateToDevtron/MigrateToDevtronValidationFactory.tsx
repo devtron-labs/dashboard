@@ -40,11 +40,13 @@ const ContentRow = ({ title, value, buttonProps, titleTooltip }: ContentRowProps
             </Tooltip>
         </div>
 
-        <Tooltip content={value}>
-            <span className="dc__truncate cn-9 fs-13 fw-4 lh-20">{value || '--'}</span>
-        </Tooltip>
+        <div className="flexbox dc__gap-8">
+            <Tooltip content={value}>
+                <span className="dc__truncate cn-9 fs-13 fw-4 lh-20">{value || '--'}</span>
+            </Tooltip>
 
-        {buttonProps && <Button {...buttonProps} />}
+            {buttonProps && <Button {...buttonProps} />}
+        </div>
     </>
 )
 
@@ -323,7 +325,7 @@ const MigrateToDevtronValidationFactory = ({
 
     return (
         <div className="flexbox-col dc__gap-16 br-8 bg__primary border__secondary">
-            <div className="flexbox p-16 dc__content-space">
+            <div className="flexbox px-16 pt-16 dc__content-space">
                 <div className="flexbox dc__gap-12">
                     <ICArgoCDApp className="icon-dim-36 dc__no-shrink" />
 
