@@ -23,5 +23,7 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
     args: {
         name: options[0] as IconsProps['name'],
+        size: 80,
+        color: null,
     },
 }
