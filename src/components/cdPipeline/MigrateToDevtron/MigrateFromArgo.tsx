@@ -162,7 +162,7 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
             </div>
 
             {migrateToDevtronFormState.migrateFromArgoFormState.appName && (
-                <div className="flex">
+                <div className="flex column w-100 dc__gap-16">
                     <APIResponseHandler
                         isLoading={isLoadingValidationResponse}
                         error={validationResponseError}
@@ -187,18 +187,24 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
                             description: '',
                         }}
                     >
-                        <MigrateToDevtronValidationFactory
-                            appName={migrateToDevtronFormState.migrateFromArgoFormState.appName}
-                            refetchValidationResponse={reloadValidationResponse}
-                            validationResponse={migrateToDevtronFormState.migrateFromArgoFormState.validationResponse}
-                        />
+                        <div className="w-100">
+                            <MigrateToDevtronValidationFactory
+                                appName={migrateToDevtronFormState.migrateFromArgoFormState.appName}
+                                refetchValidationResponse={reloadValidationResponse}
+                                validationResponse={
+                                    migrateToDevtronFormState.migrateFromArgoFormState.validationResponse
+                                }
+                            />
+                        </div>
                     </APIResponseHandler>
 
                     {migrateToDevtronFormState.migrateFromArgoFormState.validationResponse.isLinkable && (
-                        <TriggerTypeRadio
-                            value={migrateToDevtronFormState.triggerType}
-                            onChange={handleTriggerTypeChange}
-                        />
+                        <div className="w-100">
+                            <TriggerTypeRadio
+                                value={migrateToDevtronFormState.triggerType}
+                                onChange={handleTriggerTypeChange}
+                            />
+                        </div>
                     )}
                 </div>
             )}
