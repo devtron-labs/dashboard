@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
     Button,
     ButtonStyleType,
@@ -20,7 +36,7 @@ export const ConfigurationTabDrawerModal = ({
     disableSave,
 }: ConfigurationTabDrawerModalProps) => {
     const renderFooter = () => (
-        <div className="px-20 py-16 flex right dc__gap-12 dc__zi-1 dc__border-top bcn-0">
+        <div className="px-20 py-16 flex right dc__gap-12 dc__zi-1 dc__border-top bg__primary">
             <Button
                 dataTestId={`${modal}-config-modal-close-button`}
                 size={ComponentSizeType.large}
@@ -58,7 +74,7 @@ export const ConfigurationTabDrawerModal = ({
             <div
                 className={`configuration-drawer h-100 modal__body w-${modal === ConfigurationsTabTypes.WEBHOOK ? '1024' : '600'} modal__body--p-0 dc__no-border-radius mt-0 flex-grow-1 flexbox-col`}
             >
-                <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
+                <div className="flex flex-align-center dc__border-bottom flex-justify bg__primary pb-12 pt-12 pl-20 pr-20">
                     <h1 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Configure {getTabText(modal)}</h1>
                     <Button
                         ariaLabel="close-button"

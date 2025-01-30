@@ -248,7 +248,7 @@ export const CiWebhookModal = ({
 
     const renderReceivedPayloadCodeEditor = () => (
         <div className="dc__border br-4">
-            <div className="flex dc__content-space dc__gap-6 px-16 py-10 flexbox dc__align-items-center dc__gap-8 w-100 br-4 bcn-50 dc__position-sticky dc__top-0 dc__zi-10">
+            <div className="flex dc__content-space dc__gap-6 px-16 py-10 flexbox dc__align-items-center dc__gap-8 w-100 br-4 bg__secondary dc__position-sticky dc__top-0 dc__zi-10">
                 <div className="fw-6">Payload</div>
                 <ClipboardButton content={_value} rootClassName="p-4 dc__visible-hover--child" />
             </div>
@@ -257,7 +257,7 @@ export const CiWebhookModal = ({
     )
 
     const renderTimeStampDetailedDescription = () => (
-        <div className="flex column top dc__gap-16 h-100 dc__overflow-scroll">
+        <div className="flex column top dc__gap-16 h-100 dc__overflow-auto">
             <div className="flex column py-16 px-20 w-100 dc__gap-16">
                 {renderFilterTable()}
                 <div className="expand-incoming-payload  w-100 pb-20">{renderReceivedPayloadCodeEditor()}</div>
@@ -266,7 +266,7 @@ export const CiWebhookModal = ({
     )
 
     const renderWebhookPayloadContent = () => (
-        <div className="bcn-0 dc__top-0 dc__right-0 timestamp-detail-container">
+        <div className="bg__primary dc__top-0 dc__right-0 timestamp-detail-container">
             {isPayloadLoading ? (
                 <div className="flex payload-wrapper-no-header">{renderWebhookPayloadLoader()}</div>
             ) : (

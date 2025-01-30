@@ -18,7 +18,7 @@
     display: grid;
     grid-template-columns: 255px 1fr;
     height: calc(100vh - 77px);
-    background: white;
+    background: var(--bg-primary);
     overflow: hidden;
 
     &.app-compose-for-env-compare {
@@ -31,8 +31,8 @@
 
     .app-compose__nav {
         padding: 16px 12px;
-        border-right: solid 1px #d6dbdf;
-        background: white;
+        border-right: solid 1px var(--N200);
+        background: var(--bg-primary);
         height: 100%;
         display: grid;
         grid-template-columns: 1fr;
@@ -108,18 +108,18 @@
         }
 
         .help-container {
-            background-color: #f3f0ff;
+            background-color: var(--V100);
             padding: 8px 12px;
             border-radius: 4px;
             height: 100px;
 
             .progress-container {
-                background-color: #ffffff;
+                background-color: var(--bg-primary);
                 margin: 5px 0 10px 0;
                 font-size: 12px;
 
                 .progress-tracker {
-                    background-color: #1dad70;
+                    background-color: var(--G500);
                     height: 4px;
                     width: 1%;
                 }
@@ -145,7 +145,7 @@
 
     .app-compose__main {
         overflow: auto;
-        background-color: var(--window-bg);
+        background-color: var(--bg-tertiary);
     }
 
     .app-compose__nav-item {
@@ -173,7 +173,7 @@
 
         &:hover:not(.no-hover) {
             text-decoration: none;
-            background: var(--N50);
+            background: var(--bg-secondary);
         }
 
         &.active {
@@ -204,7 +204,7 @@
         grid-template-columns: 16px 1fr;
         grid-column-gap: 8px;
         align-content: initial;
-        color: #f32e2e;
+        color: var(--R500);
         font-size: 12px;
 
         svg {
@@ -221,8 +221,8 @@
         width: calc(100% - 240px - 72px);
         height: 64px;
         padding: 12px 24px;
-        background-color: rgba(242, 244, 247, 0.8);
-        box-shadow: inset 0 1px 0 0 #d6dbdf;
+        background-color: var(--bg-tertiary);
+        box-shadow: inset 0 1px 0 0 var(--N200);
         z-index: var(--index-next-section);
     }
 

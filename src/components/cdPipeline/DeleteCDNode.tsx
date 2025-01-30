@@ -89,7 +89,7 @@ const DeleteCDNode = ({
                     isLoading,
                 },
             }}
-            customInputConfig={{
+            confirmationConfig={{
                 identifier: 'delete-cd-node-input',
                 confirmationKeyword: deleteTitleName,
             }}

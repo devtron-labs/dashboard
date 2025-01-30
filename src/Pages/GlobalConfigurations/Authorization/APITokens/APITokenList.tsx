@@ -58,7 +58,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
     const noMatchingResults = () => <GenericFilterEmptyState />
 
     return (
-        <div className="bcn-0">
+        <div className="bg__primary">
             <div data-testid="api-token-page-header" className="flex dc__content-space pl-20 pr-20 pb-16">
                 <FeatureTitleWithInfo
                     title={HEADER_TEXT.API_TOKEN.title}
@@ -88,7 +88,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                     <div>Expires on</div>
                     <div />
                 </div>
-                <div className="dc__overflow-scroll api__list__height dc__position-rel">
+                <div className="dc__overflow-auto api__list__height dc__position-rel">
                     {!tokenList || tokenList.length === 0
                         ? noMatchingResults()
                         : tokenList.map((list, index) => (

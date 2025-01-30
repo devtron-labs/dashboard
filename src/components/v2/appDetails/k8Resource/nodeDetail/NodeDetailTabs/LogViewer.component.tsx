@@ -107,6 +107,7 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
             // disableStdin: true,
             cursorStyle: 'bar',
             cursorWidth: 1,
+            // Cannot use variables here
             theme: {
                 background: '#0b0f22',
                 foreground: '#FFFFFF',

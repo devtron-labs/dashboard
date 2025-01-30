@@ -64,7 +64,7 @@ export default function UploadScopedVariables({
             setScopedVariables={setScopedVariables}
         />
     ) : (
-        <div className="flex column center bcn-0 h-100">
+        <div className="flex column center bg__primary h-100">
             <div className="flex column center dc__gap-20 w-320 dc__no-shrink">
                 <div className="flex column center dc__gap-8">
                     <p className="cn-9 fs-16 m-0 fw-6">{HEADER_TEXT.SCOPED_VARIABLES.title}</p>
@@ -73,7 +73,7 @@ export default function UploadScopedVariables({
                     </p>
                 </div>
 
-                <div className="flex column center dc__gap-8 bc-n50 dc__align-self-stretch dc__border-dashed w-320 h-128 br-4">
+                <div className="flex column center dc__gap-8 bg__secondary dc__align-self-stretch dc__border-dashed w-320 h-128 br-4">
                     {status === null ? (
                         <HiddenInput handleFileUpload={handleFileUpload} id="upload-scoped-variables-input">
                             <div className="flex center p-8 dc__gap-4 dc__border-radius-50-per bcb-1">

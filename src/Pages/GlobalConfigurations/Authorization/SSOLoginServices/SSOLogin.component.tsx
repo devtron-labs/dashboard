@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 /* eslint-disable react/prop-types */
 /*
  * Copyright (c) 2024. Devtron Inc.
@@ -727,7 +743,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     render() {
         if (this.state.view === ViewType.LOADING) {
             return (
-                <div className="bcn-0 h-100">
+                <div className="bg__primary h-100">
                     <Progressing pageLoader />
                 </div>
             )
@@ -838,7 +854,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     />
                     {renderSSOBody()}
                 </div>
-                <div className="px-20 py-16 dc__border-top-n1 w-100 dc__position-fixed bcn-0 dc__bottom-0">
+                <div className="px-20 py-16 dc__border-top-n1 w-100 dc__position-fixed bg__primary dc__bottom-0">
                     <button
                         onClick={this.onLoginConfigSave}
                         tabIndex={5}
@@ -853,7 +869,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             </div>
         )
         return (
-            <section className="bcn-0 sso-login__wrapper">
+            <section className="bg__primary sso-login__wrapper">
                 {renderSSOContent()}
                 {/* Confirmation Modal for SSO Change */}
                 {showSSOChangeConfirmationModal && (

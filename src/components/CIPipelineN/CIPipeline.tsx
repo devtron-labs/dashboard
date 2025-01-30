@@ -23,7 +23,6 @@ import {
     VisibleModal,
     Drawer,
     DeleteDialog,
-    RefVariableType,
     VariableType,
     MandatoryPluginDataType,
     ButtonWithLoader,
@@ -48,16 +47,17 @@ import {
     ResourceKindType,
     uploadCIPipelineFile,
     getGlobalVariables,
+    FloatingVariablesSuggestions,
+    TriggerType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
-    FloatingVariablesSuggestions,
     getParsedBranchValuesForPlugin,
     getPluginIdsFromBuildStage,
     importComponentFromFELibrary,
     sortObjectArrayAlphabetically,
 } from '../common'
-import { BuildStageVariable, BuildTabText, JobPipelineTabText, TriggerType, URLS, ViewType } from '../../config'
+import { BuildStageVariable, BuildTabText, JobPipelineTabText, URLS, ViewType } from '../../config'
 import {
     deleteCIPipeline,
     getInitData,
@@ -902,7 +902,7 @@ export default function CIPipeline({
                 </pipelineContext.Provider>
                 {pageState !== ViewType.LOADING && (
                     <div
-                        className={`ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
+                        className={`ci-button-container bg__primary pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
                             ciPipelineId || !isAdvanced ? 'flex-justify' : 'justify-right'
                         } `}
                     >
@@ -941,7 +941,7 @@ export default function CIPipeline({
                     isAdvanced ? 'advanced-option-container' : 'bottom-border-radius'
                 }`}
             >
-                <div className="flex flex-align-center flex-justify bcn-0 py-12 px-20">
+                <div className="flex flex-align-center flex-justify bg__primary py-12 px-20">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
                         {title}
                     </h2>

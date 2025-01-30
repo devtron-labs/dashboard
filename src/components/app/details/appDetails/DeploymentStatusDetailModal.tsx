@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useHistory } from 'react-router-dom'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { DeploymentStatusDetailModalType } from './appDetails.type'
@@ -66,11 +66,11 @@ export default function DeploymentStatusDetailModal({
     return (
         <Drawer position="right" width="1024px">
             <div
-                className="deployment-status-breakdown-modal-container bcn-0"
+                className="deployment-status-breakdown-modal-container bg__primary"
                 data-testid="deployment-status-drawer"
                 ref={appStatusDetailRef}
             >
-                <div className="dc__box-shadow pb-12 pt-12 bcn-0">
+                <div className="dc__box-shadow pb-12 pt-12 bg__primary">
                     <div
                         className="title flex dc__content-space pl-20 pr-20 show-shimmer-loading"
                         data-testid="app-status-cross"
@@ -101,7 +101,7 @@ export default function DeploymentStatusDetailModal({
                         </span>
                     </div>
                 </div>
-                <div className="bcn-1 dc__overflow-scroll pb-20 deployment-status-breakdown">
+                <div className="bcn-1 dc__overflow-auto pb-20 deployment-status-breakdown">
                     {isLoading ? (
                         <Progressing />
                     ) : (

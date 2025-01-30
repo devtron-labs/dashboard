@@ -34,7 +34,7 @@ import {
     TOAST_ACCESS_DENIED,
     BlockedStateData,
     getEnvironmentListMinPublic,
-    uploadCIPipelineFile,
+    CIPipelineNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { withRouter, NavLink, Route, Switch } from 'react-router-dom'
@@ -55,7 +55,7 @@ import {
 } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
-import { CIMaterialProps, CIPipelineNodeType, TriggerViewProps, TriggerViewState } from './types'
+import { CIMaterialProps, TriggerViewProps, TriggerViewState } from './types'
 import CDMaterial from './cdMaterial'
 import {
     URLS,
@@ -597,7 +597,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    getWorkflowStatus() {
+    getWorkflowStatus = () => {
         getWorkflowStatus(this.props.match.params.appId)
             .then((response) => {
                 const _processedWorkflowsData = processWorkflowStatuses(
@@ -961,7 +961,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             ToastManager.showToast({
                                 variant: ToastVariantType.error,
                                 title: 'Nothing to execute',
-                                description: 'error.userMessage',
+                                description: error.userMessage,
                                 buttonProps: {
                                     text: 'Edit Pipeline',
                                     dataTestId: 'edit-pipeline-btn',
@@ -1076,8 +1076,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.props.history.push(this.props.match.url)
     }
 
-    closeCDModal = (e: React.MouseEvent): void => {
-        e.stopPropagation()
+    closeCDModal = (e?: React.MouseEvent): void => {
+        e?.stopPropagation()
         this.setState({ searchImageTag: '' })
         this.props.history.push({
             search: '',
@@ -1441,7 +1441,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
         return (
             <>
-                <div className="svg-wrapper-trigger bcn-0">
+                <div className="svg-wrapper-trigger bg__primary">
                     <TriggerViewContext.Provider
                         value={{
                             invalidateCache: this.state.invalidateCache,
@@ -1473,6 +1473,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         baseURL={this.props.match.url}
                         workflows={this.state.workflows}
                         getModuleInfo={getModuleInfo}
+                        reloadWorkflowStatus={this.getWorkflowStatus}
                         appName={this.props.appContext.currentAppName}
                     />
                 )}

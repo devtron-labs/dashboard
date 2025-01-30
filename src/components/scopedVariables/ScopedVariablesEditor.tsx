@@ -147,11 +147,11 @@ export default function ScopedVariablesEditor({
     }
 
     return (
-        <div className="flex column dc__content-space h-100 bcn-0 saved-variables-editor">
+        <div className="flex column dc__content-space h-100 bg__primary saved-variables-editor">
             <Descriptor />
-            <div className="flexbox-col p-8 dc__align-start dc__gap-16 dc__align-self-stretch dc__window-bg flex-grow-1 dc__no-shrink">
+            <div className="flexbox-col p-8 dc__align-start dc__gap-16 dc__align-self-stretch bg__tertiary flex-grow-1 dc__no-shrink">
                 <div className="flexbox-col dc__content-space dc__align-start flex-grow-1 dc__no-shrink dc__align-self-stretch dc__border-radius-4-imp dc__border">
-                    <div className="flexbox pt-8 pb-8 pl-12 pr-12 bcn-0 dc__border-bottom dc__gap-16 dc__align-self-stretch dc__align-start dc__top-radius-4">
+                    <div className="flexbox pt-8 pb-8 pl-12 pr-12 bg__primary dc__border-bottom dc__gap-16 dc__align-self-stretch dc__align-start dc__top-radius-4">
                         {setShowEditView ? (
                             <p
                                 data-testid={`${showSaveView ? 'review-variables' : 'edit-variables'}`}
@@ -217,10 +217,10 @@ export default function ScopedVariablesEditor({
                         validatorSchema={jsonSchema}
                     />
 
-                    <div className="flexbox pt-13 pb-13 pl-12 pr-12 bcn-0 dc__border-top dc__content-end dc__align-items-center dc__align-self-stretch dc__gap-12">
+                    <div className="flexbox pt-13 pb-13 pl-12 pr-12 bg__primary dc__border-top dc__content-end dc__align-items-center dc__align-self-stretch dc__gap-12">
                         <button
                             type="button"
-                            className="flex pt-8 pb-8 pl-16 pr-16 dc__gap-8 dc__border-radius-4-imp dc__border bcn-0 cn-7 fs-13 fw-6 lh-20 mw-56 dc__outline-none-imp h-32"
+                            className="flex pt-8 pb-8 pl-16 pr-16 dc__gap-8 dc__border-radius-4-imp dc__border bg__primary cn-7 fs-13 fw-6 lh-20 mw-56 dc__outline-none-imp h-32"
                             onClick={handleAbort}
                             disabled={showSaveView ? isSaving : loadingSavedScopedVariables}
                         >

@@ -1,13 +1,21 @@
-import { GroupBase, OptionsOrGroups } from 'react-select'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import { CMSecretExternalType } from '@devtron-labs/devtron-fe-common-lib'
-
-import {
-    CMSecretComponentType,
-    CMSecretYamlData,
-    ConfigMapSecretDataTypeOptionType,
-    ConfigMapSecretNullStateProps,
-} from './types'
+import { CMSecretComponentType } from '@devtron-labs/devtron-fe-common-lib'
+import { ConfigMapSecretNullStateProps } from './types'
 
 export const CM_SECRET_COMPONENT_NAME = {
     [CMSecretComponentType.ConfigMap]: 'ConfigMap',
@@ -63,72 +71,6 @@ export const getCMSecretNullStateText = (
         subTitle: CM_SECRET_EMPTY_STATE_TEXT[componentType].subtitle,
     },
 })
-
-export const configMapDataTypeOptions: ConfigMapSecretDataTypeOptionType[] = [
-    { value: '', label: 'Kubernetes ConfigMap' },
-    { value: CMSecretExternalType.KubernetesConfigMap, label: 'Kubernetes External ConfigMap' },
-]
-
-export const getSecretDataTypeOptions = (
-    isJob: boolean,
-    isHashiOrAWS: boolean,
-):
-    | ConfigMapSecretDataTypeOptionType[]
-    | OptionsOrGroups<ConfigMapSecretDataTypeOptionType, GroupBase<ConfigMapSecretDataTypeOptionType>> => {
-    const kubernetesOptions: ConfigMapSecretDataTypeOptionType[] = [
-        { value: '', label: 'Kubernetes Secret' },
-        { value: CMSecretExternalType.KubernetesSecret, label: 'Mount Existing Kubernetes Secret' },
-    ]
-
-    const esoOptions: GroupBase<ConfigMapSecretDataTypeOptionType>[] = [
-        {
-            label: 'External Secret Operator (ESO)',
-            options: [
-                { value: CMSecretExternalType.ESO_GoogleSecretsManager, label: 'Google Secrets Manager' },
-                { value: CMSecretExternalType.ESO_AWSSecretsManager, label: 'AWS Secrets Manager' },
-                { value: CMSecretExternalType.ESO_AzureSecretsManager, label: 'Azure Secrets Manager' },
-                { value: CMSecretExternalType.ESO_HashiCorpVault, label: 'Hashi Corp Vault' },
-            ],
-        },
-    ]
-
-    const kesOptions: GroupBase<ConfigMapSecretDataTypeOptionType>[] = [
-        {
-            label: 'Kubernetes External Secret (KES)',
-            options: [
-                {
-                    value: CMSecretExternalType.AWSSecretsManager,
-                    label: 'AWS Secrets Manager',
-                    description: 'Deprecated',
-                },
-                {
-                    value: CMSecretExternalType.AWSSystemManager,
-                    label: 'AWS System Manager',
-                    description: 'Deprecated',
-                },
-                {
-                    value: CMSecretExternalType.HashiCorpVault,
-                    label: 'Hashi Corp Vault',
-                    description: 'Deprecated',
-                },
-            ],
-        },
-    ]
-
-    return isJob ? kubernetesOptions : [...kubernetesOptions, ...esoOptions, ...(isHashiOrAWS ? kesOptions : [])]
-}
-
-export const configMapSecretMountDataMap = {
-    environment: { title: 'Environment Variable', value: 'environment' },
-    volume: { title: 'Data Volume', value: 'volume' },
-}
-
-export const CONFIG_MAP_SECRET_DEFAULT_CURRENT_DATA: CMSecretYamlData[] = [{ k: '', v: '', id: 0 }]
-
-export enum CODE_EDITOR_RADIO_STATE {
-    DATA = 'data',
-    SAMPLE = 'sample',
-}
 
 export const CODE_EDITOR_RADIO_STATE_VALUE = { DATA: 'Data', SAMPLE: 'Sample' }
 
@@ -270,14 +212,3 @@ export const sampleJSONs = {
 }
 
 export const CONFIG_MAP_SECRET_NO_DATA_ERROR = 'This is a required field'
-
-export const CONFIG_MAP_SECRET_YAML_PARSE_ERROR = 'Could not parse to valid YAML'
-
-export const SECRET_TOAST_INFO = {
-    BOTH_STORE_AVAILABLE: 'Please use either secretStore or secretStoreRef',
-    CHECK_KEY_SECRET_KEY: 'Please check key and secretKey',
-    BOTH_STORE_UNAVAILABLE: 'Please provide secretStore or secretStoreRef',
-    CHECK_KEY_NAME: 'Please check key and name',
-    BOTH_ESO_DATA_AND_DATA_FROM_AVAILABLE: 'Please use either esoData or esoDataFrom',
-    BOTH_ESO_DATA_AND_DATA_FROM_UNAVAILABLE: 'Please provide esoData or esoDataFrom',
-}

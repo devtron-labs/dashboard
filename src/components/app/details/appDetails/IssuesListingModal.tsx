@@ -52,8 +52,8 @@ const IssuesListingModal = ({ errorsList, closeIssuesListingModal }: IssuesListi
 
     return (
         <Drawer position="right" width="800px" onEscape={closeIssuesListingModal}>
-            <div className="issues-listing-modal bcn-0" ref={issuesModalRef}>
-                <div className="issues-listing-modal__header dc__box-shadow pt-12 pr-20 pb-12 pl-20 bcn-0 flex dc__content-space">
+            <div className="issues-listing-modal bg__primary" ref={issuesModalRef}>
+                <div className="issues-listing-modal__header dc__box-shadow pt-12 pr-20 pb-12 pl-20 bg__primary flex dc__content-space">
                     <div className="issues-listing-modal__header-text flex">
                         <Error className="form__icon--error icon-dim-20" />
                         <div data-testid="issues-listing-modal-title" className="cn-9 fs-16 fw-6 ml-8 lh-24">

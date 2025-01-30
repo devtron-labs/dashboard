@@ -61,11 +61,11 @@ const ProfileForm: FunctionComponent = () => {
 
     return (
         <form
-            className="h-100 flexbox-col build-infra pl pr pt pb dc__content-space bcn-0"
+            className="h-100 flexbox-col build-infra pl pr pt pb dc__content-space bg__primary"
             onKeyDown={handleKeyDown}
             onSubmit={handleSubmit}
         >
-            <div className="flexbox-col dc__gap-24 pt pr pb pl h-100 dc__overflow-scroll">
+            <div className="flexbox-col dc__gap-24 pt pr pb pl h-100 dc__overflow-auto">
                 <BuildInfraDescriptor breadCrumbs={breadcrumbs} />
 
                 <APIResponseHandler

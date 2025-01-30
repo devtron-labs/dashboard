@@ -31,7 +31,7 @@ const Authorization = () => {
             <Route
                 path={path}
                 render={() => (
-                    <div className="authorization-container flexbox-col flex-grow-1 min-h-100 bcn-0 flex-align-center dc__content-center pt-16">
+                    <div className="authorization-container flexbox-col flex-grow-1 min-h-100 bg__primary flex-align-center dc__content-center pt-16">
                         <UserAndGroupPermissions />
                     </div>
                 )}

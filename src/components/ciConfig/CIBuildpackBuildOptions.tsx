@@ -60,7 +60,7 @@ export const renderOptionIcon = (option: string) => {
     return isGitLab || isGitHub || isBitBucket ? (
         <>
             {isGitLab && <GitLab className="mr-8 dc__vertical-align-middle icon-dim-20" />}
-            {isGitHub && <GitHub className="mr-8 dc__vertical-align-middle icon-dim-20" />}
+            {isGitHub && <GitHub className="mr-8 dc__vertical-align-middle icon-dim-20 fcn-8" />}
             {isBitBucket && <BitBucket className="mr-8 dc__vertical-align-middle icon-dim-20" />}
         </>
     ) : (

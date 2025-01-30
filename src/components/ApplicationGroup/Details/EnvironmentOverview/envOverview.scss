@@ -18,7 +18,7 @@
     display: grid;
     grid-template-columns: 300px 1fr;
     gap: 32px;
-    background: linear-gradient(249deg, #d4e6f7 0%, var(--N50) 50.58%);
+    background: linear-gradient(249deg, var(--B100) 0%, var(--N50) 50.58%);
 
     .response-list-container {
         max-height: calc(100vh - 120px);
@@ -39,8 +39,8 @@
     display: inline-block;
     height: 20px;
     width: 30px;
-    background-color: var(--N0);
-    border: 1px solid #ccc;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--N200);
     border-radius: 3px;
 }
 

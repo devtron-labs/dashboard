@@ -199,7 +199,7 @@ const ExportToCsv = <ConfigValueType extends string = string>({
         }
 
         return (
-            <div className="export-success bcn-0 flex column cn-9 h-100 lh-20">
+            <div className="export-success bg__primary flex column cn-9 h-100 lh-20">
                 <Success className="icon-dim-32" />
                 <span className="fs-14 fw-6 mt-8">Your export is ready</span>
                 <span className="fs-13 fw-4"> If download does not start automatically,</span>

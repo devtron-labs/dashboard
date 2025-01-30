@@ -30,6 +30,7 @@ import {
     MODES,
     DEVTRON_BASE_MAIN_ID,
     MainContext,
+    getHashedValue,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -208,20 +209,27 @@ export default function NavigationRoutes() {
             }
             if (window._env_.GA_ENABLED) {
                 const path = location.pathname
-                ReactGA.initialize(window._env_.GA_TRACKING_ID)
-                ReactGA.send({ hitType: 'pageview', page: path })
-                ReactGA.event({
-                    category: `Page ${path}`,
-                    action: 'First Land',
-                })
-                history.listen((location) => {
-                    let path = location.pathname
-                    path = path.replace(new RegExp('[0-9]', 'g'), '')
-                    path = path.replace(new RegExp('//', 'g'), '/')
+                // Using .then to use in useEffect
+                getHashedValue(email).then((hashedEmail) => { 
+                    ReactGA.initialize(window._env_.GA_TRACKING_ID, {
+                        gaOptions: {
+                            userId: hashedEmail,
+                        },
+                    })
                     ReactGA.send({ hitType: 'pageview', page: path })
                     ReactGA.event({
                         category: `Page ${path}`,
                         action: 'First Land',
+                    })
+                    history.listen((location) => {
+                        let path = location.pathname
+                        path = path.replace(new RegExp('[0-9]', 'g'), '')
+                        path = path.replace(new RegExp('//', 'g'), '/')
+                        ReactGA.send({ hitType: 'pageview', page: path })
+                        ReactGA.event({
+                            category: `Page ${path}`,
+                            action: 'First Land',
+                        })
                     })
                 })
             }
@@ -303,7 +311,7 @@ export default function NavigationRoutes() {
                 ) {
                     localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
                 }
-            } catch (e) {
+            } catch {
                 localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
             }
         }
@@ -345,7 +353,7 @@ export default function NavigationRoutes() {
     if (pageState === ViewType.LOADING || loginLoader) {
         return (
             <div className="full-height-width">
-                <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
+                <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />
             </div>
         )
     }
@@ -392,12 +400,12 @@ export default function NavigationRoutes() {
                 )}
                 {serverMode && (
                     <div
-                        className={`main ${location.pathname.startsWith('/app/list') || location.pathname.startsWith('/application-group/list') ? 'bcn-0' : ''} ${
+                        className={`main ${location.pathname.startsWith('/app/list') || location.pathname.startsWith('/application-group/list') ? 'bg__primary' : ''} ${
                             pageOverflowEnabled ? '' : 'main__overflow-disabled'
                         }`}
                     >
                         <Suspense
-                            fallback={<DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />}
+                            fallback={<DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />}
                         >
                             <ErrorBoundary>
                                 <Switch>

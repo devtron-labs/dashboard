@@ -25,7 +25,7 @@ interface SampleAppDeployType {
 
 export default function SampleAppDeploy({ parentClassName, imageClassName }: SampleAppDeployType) {
     return (
-        <div className={`bcn-0 mb-8 br-4 ${parentClassName}`}>
+        <div className={`bg__primary mb-8 br-4 ${parentClassName}`}>
             <img className={`img-width pt-12 pl-16 ${imageClassName}`} src={Sample} />
             <div className="pl-16 pr-16 pt-12 pb-12 fs-13">
                 <div className="cn-9">Deploy a sample Node.js application.</div>

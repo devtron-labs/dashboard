@@ -86,7 +86,7 @@
                 font-weight: 600;
                 text-transform: none;
                 color: var(--N900);
-                background-color: var(--window-bg);
+                background-color: var(--bg-tertiary);
                 padding: 4px 10px;
                 border-top-left-radius: 4px;
                 border-top-right-radius: 4px;
@@ -95,8 +95,6 @@
         }
 
         .chart-values-view__details {
-            padding: 16px;
-            overflow: scroll;
 
             .chart-values__project-container .chart-values__project-label,
             .chart-values__environment-container .chart-values__environment-label,
@@ -201,7 +199,7 @@
 
                 .form__input {
                     height: 32px;
-                    background-color: var(--N50);
+                    background-color: var(--bg-secondary);
                 }
             }
 
@@ -240,7 +238,6 @@
 
         .chart-values-view__gui-form-container {
             border-bottom: 1px solid var(--N100);
-            overflow: scroll;
 
             & .rjsf-form-template__container {
                 max-width: 800px;
@@ -274,7 +271,7 @@
                 .monaco-editor {
                     .monaco-editor-background,
                     .margin {
-                        background-color: var(--N000) !important;
+                        background-color: var(--bg-primary) !important;
                     }
                 }
                 .code-editor__warning {

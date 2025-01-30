@@ -18,7 +18,7 @@
     display: flex;
     margin-bottom: 12px;
     padding: 15px 20px;
-    border: solid 1px #d6dbdf;
+    border: solid 1px var(--N200);
     align-items: center;
     cursor: pointer;
 }
@@ -62,7 +62,7 @@
     height: 56px;
     border-radius: 4px;
     border: solid 1px var(--N200);
-    background-color: var(--white);
+    background-color: var(--bg-primary);
 }
 
 .form-row__material {
@@ -72,8 +72,8 @@
 }
 
 .sample-repo-container {
-    background-color: #f3f0ff;
-    border: 1px solid #c5bbfa;
+    background-color: var(--V100);
+    border: 1px solid var(--V200);
     margin: 20px 0;
 }
 

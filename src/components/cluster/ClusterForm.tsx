@@ -1032,8 +1032,8 @@ export default function ClusterForm({
 
     const LoadingCluster = (): JSX.Element => {
         return (
-            <div className="cluster-form dc__position-rel h-100 bcn-0">
-                <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
+            <div className="cluster-form dc__position-rel h-100 bg__primary">
+                <div className="flex flex-align-center dc__border-bottom flex-justify bg__primary pb-12 pt-12 pl-20 pr-20">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Add Cluster</h2>
                     <button type="button" className="dc__transparent flex icon-dim-24 " onClick={handleCloseButton}>
                         <Close className="icon-dim-24" />
@@ -1068,9 +1068,9 @@ export default function ClusterForm({
 
     const saveClusterDetails = (): JSX.Element => {
         return (
-            <div className="cluster-form dc__position-rel h-100 bcn-0">
+            <div className="cluster-form dc__position-rel h-100 bg__primary">
                 <AddClusterHeader />
-                <div className="api-token__list en-2 bw-0 bcn-0 br-8">
+                <div className="api-token__list en-2 bw-0 bg__primary br-8">
                     <div
                         data-testid="cluster_list_page_after_selection"
                         className="saved-cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20  dc__border-bottom-n1"
@@ -1081,7 +1081,7 @@ export default function ClusterForm({
                         <div data-testid="message_validate">MESSAGE</div>
                         <div />
                     </div>
-                    <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 161px)' }}>
+                    <div className="dc__overflow-auto" style={{ height: 'calc(100vh - 161px)' }}>
                         {!saveClusterList || saveClusterList.length === 0 ? (
                             <NoMatchingResults />
                         ) : (
@@ -1235,11 +1235,11 @@ export default function ClusterForm({
                 {isKubeConfigFile && (
                     <div
                         data-testid="valid_cluster_infocolor_bar"
-                        className="cluster-form dc__position-rel h-100 bcn-0"
+                        className="cluster-form dc__position-rel h-100 bg__primary"
                     >
                         <AddClusterHeader />
-                        <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 110px)' }}>
-                            <div className="api-token__list en-2 bw-1 bcn-0 br-4 mr-20 ml-20 mt-16">
+                        <div className="dc__overflow-auto" style={{ height: 'calc(100vh - 110px)' }}>
+                            <div className="api-token__list en-2 bw-1 bg__primary br-4 mr-20 ml-20 mt-16">
                                 <InfoColourBar
                                     message={
                                         <>
@@ -1378,7 +1378,7 @@ export default function ClusterForm({
                 )}
 
                 {isKubeConfigFile && (
-                    <div className="w-100 dc__border-top flex right pb-12 pt-12 pl-20 pr-20 dc__position-fixed dc__position-abs bcn-0 dc__bottom-0">
+                    <div className="w-100 dc__border-top flex right pb-12 pt-12 pl-20 pr-20 dc__position-fixed dc__position-abs bg__primary dc__bottom-0">
                         <button
                             className="dc__edit_button cb-5"
                             type="button"
@@ -1418,7 +1418,7 @@ export default function ClusterForm({
 
     const AddClusterHeader = () => {
         return (
-            <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
+            <div className="flex flex-align-center dc__border-bottom flex-justify bg__primary pb-12 pt-12 pl-20 pr-20">
                 <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
                     <span className="fw-6 fs-16 cn-9">{clusterTitle()}</span>
                 </h2>
@@ -1444,7 +1444,7 @@ export default function ClusterForm({
     return getClusterVar ? (
         displayClusterDetails()
     ) : (
-        <div className="cluster-form dc__position-rel h-100 bcn-0" style={{ padding: 'auto 0' }}>
+        <div className="cluster-form dc__position-rel h-100 bg__primary" style={{ padding: 'auto 0' }}>
             <AddClusterHeader />
             <div style={{ overflow: 'auto', height: 'calc(100vh - 110px)' }}>
                 {VirtualClusterSelectionTab && (

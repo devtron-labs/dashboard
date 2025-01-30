@@ -130,10 +130,7 @@ export const SourceInfo = ({
 
         return (
             <div className="flex left w-100">
-                <EnvSelector
-                    environments={environments}
-                    disabled={loadingDetails || loadingResourceTree || (params.envId && !showCommitInfo)}
-                />
+                <EnvSelector environments={environments} />
                 {appDetails?.deploymentAppType && (
                     <Tooltip
                         placement="top"
@@ -172,8 +169,8 @@ export const SourceInfo = ({
                     <Tooltip
                         content={
                             <div className="fw-4 lh-18 flexbox-col dc__ga-2">
-                                <h6 className="fs-12 fw-6 cn-0 m-0">Last snapshot received</h6>
-                                <p className="m-0 fs-12 cn-50">
+                                <h6 className="fs-12 fw-6 m-0">Last snapshot received</h6>
+                                <p className="m-0 fs-12">
                                     {moment(appDetails.resourceTree.lastSnapshotTime).format(
                                         DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT,
                                     )}

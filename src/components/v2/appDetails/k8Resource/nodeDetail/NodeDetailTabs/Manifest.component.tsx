@@ -35,6 +35,7 @@ import {
     YAMLStringify,
     InfoColourBar,
     logExceptionToSentry,
+    CodeEditorThemesKeys,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
@@ -696,7 +697,7 @@ const ManifestComponent = ({
                 defaultValue={showManifestCompareView && desiredManifest}
                 cleanData={showManifestCompareView}
                 diffView={showManifestCompareView}
-                theme="vs-dark--dt"
+                theme={CodeEditorThemesKeys.vsDarkDT}
                 height={isResourceBrowserView ? 'calc(100vh - 119px)' : 'calc(100vh - 77px)'}
                 value={getCodeEditorValue()}
                 mode={MODES.YAML}
@@ -708,7 +709,6 @@ const ManifestComponent = ({
                         msg={loadingMsg}
                         icon={MsgUIType.LOADING}
                         size={24}
-                        minHeight={isResourceBrowserView ? 'calc(100vh - 151px)' : ''}
                     />
                 }
                 focus={isEditMode}
@@ -751,27 +751,25 @@ const ManifestComponent = ({
             <MessageUI
                 msg="This resource no longer exists"
                 size={32}
-                minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
             />
         </div>
     ) : (
         <div
-            className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ' '} manifest-container flexbox-col flex-grow-1 dc__overflow-scroll`}
+            className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ' '} manifest-container flexbox-col flex-grow-1 dc__overflow-auto`}
             data-testid="app-manifest-container"
-            style={{ background: '#0B0F22' }}
+            style={{ background: '#0B0F22', ...(!isResourceBrowserView ? { minHeight: 'calc(100vh - 152px)' } : {}) }}
         >
             {error && !loading && (
                 <MessageUI
                     msg="Manifest not available"
                     size={24}
-                    minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
                 />
             )}
             {!error && (
                 <div
                     className={`${
-                        manifestFormConfigurationType === ConfigurationType.GUI ? 'bcn-0' : ''
-                    } flexbox-col flex-grow-1 dc__overflow-scroll h-100`}
+                        manifestFormConfigurationType === ConfigurationType.GUI ? 'bg__primary' : ''
+                    } flexbox-col flex-grow-1 dc__overflow-auto h-100`}
                 >
                     {isResourceMissing && !loading && !showManifestCompareView ? (
                         <MessageUI

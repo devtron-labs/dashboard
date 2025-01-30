@@ -164,9 +164,6 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                     className={`workflow-node__trigger-type workflow-node__trigger-type--ci fw-6 ${
                         this.props.isCITriggerBlocked ? 'flex bcr-1 er-2 bw-1 cr-5' : ''
                     }`}
-                    style={{
-                        opacity: this.props.isCITriggerBlocked ? 1 : 0.4,
-                    }}
                 >
                     {this.props.isCITriggerBlocked ? 'BLOCKED' : this.props.triggerType}
                 </div>

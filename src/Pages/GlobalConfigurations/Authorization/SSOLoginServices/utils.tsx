@@ -29,7 +29,7 @@ export const SSOTabIcons = ({ provider }: SSOTabIconsTypes) => {
         case SSOProvider.google:
             return <Google />
         case SSOProvider.github:
-            return <GitHub />
+            return <GitHub className="fcn-8" />
         case SSOProvider.gitlab:
             return <GitLab />
         case SSOProvider.microsoft:

@@ -78,11 +78,11 @@ const ResourceBrowser: React.FC = () => {
     }
 
     if (initialLoading) {
-        return <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
+        return <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />
     }
 
     return (
-        <div className="resource-browser-container flexbox-col h-100 bcn-0">
+        <div className="resource-browser-container flexbox-col h-100 bg__primary">
             <PageHeader
                 isBreadcrumbs={false}
                 headerName="Kubernetes Resource Browser"

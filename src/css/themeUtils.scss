@@ -1,0 +1,133 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.bg {
+    &__primary {
+        background: var(--bg-primary);
+    }
+
+    &__secondary {
+        background: var(--bg-secondary);
+    }
+
+    &__tertiary {
+        background: var(--bg-tertiary);
+    }
+
+    &__overlay {
+        background: var(--bg-overlay);
+    }
+
+    &__menu {
+        background: var(--bg-menu);
+    }
+
+    &__modal {
+        background: var(--bg-modal);
+    }
+
+    &__white {
+        background: var(--white);
+    }
+}
+
+.text {
+    &__white {
+        color: var(--white);
+    }
+
+    &__black {
+        color: var(--black);
+
+        &--imp {
+            color: var(--black) !important;
+        }
+    }
+}
+
+.icon-fill {
+    &__white {
+        *[fill^="#"] {
+            fill: var(--white);
+        }
+    }
+}
+
+.icon-stroke {
+    &__white {
+        *[stroke^="#"] {
+            stroke: var(--white);
+        }
+    }
+}
+
+.shadow {
+    &__menu {
+        box-shadow: var(--shadow-menu);
+    }
+
+    &__modal {
+        box-shadow: var(--shadow-modal);
+    }
+
+    &__overlay {
+        box-shadow: var(--shadow-overlay);
+    }
+
+    &__drawer {
+        box-shadow: var(--shadow-drawer);
+    }
+
+    &__card {
+        &--primary {
+            box-shadow: var(--shadow-card-primary);
+        }
+        &--secondary {
+            box-shadow: var(--shadow-card-secondary);
+        }
+        &--tertiary {
+            box-shadow: var(--shadow-card-tertiary);
+        }
+    }
+}
+
+.border {
+    &__primary {
+        border: 1px solid var(--border-primary);
+    }
+
+    &__secondary {
+        border: 1px solid var(--border-secondary);
+    }
+
+    &__white {
+        border: 1px solid var(--white);
+    }
+}
+
+.divider {
+    &__primary {
+        width: 1px;
+        min-height: 16px;
+        background-color: var(--divider-primary);
+    }
+
+    &__secondary {
+        width: 1px;
+        min-height: 16px;
+        background-color: var(--divider-secondary);
+    }
+}

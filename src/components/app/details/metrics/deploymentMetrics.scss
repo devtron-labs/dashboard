@@ -29,7 +29,7 @@
 
 .benchmark-table__row {
     font-weight: 400;
-    background-color: var(--N000);
+    background-color: var(--bg-primary);
 }
 
 .benchmark-table__cell {
@@ -40,7 +40,7 @@
 }
 
 .benchmark-table__cell--elite {
-    background-color: #c4b6e9;
+    background-color: var(--V200);
     font-weight: 600;
 }
 
@@ -79,7 +79,7 @@
     font-weight: normal;
     line-height: 1.67;
     letter-spacing: normal;
-    color: #151515;
+    color: var(--N900);
     padding-left: 30px;
 }
 
@@ -102,8 +102,12 @@
     padding: 16px 24px;
     width: 100%;
     height: 326px;
-    background-color: var(--N000);
+    background-color: var(--bg-primary);
     border-bottom: solid 1px var(--N200);
+
+    text {
+        fill: var(--N700);
+    }
 }
 
 .deployment-metrics__frequency-graph {
@@ -119,7 +123,7 @@
 }
 
 .deployment-metrics__body {
-    background-color: var(--N000);
+    background-color: var(--bg-primary);
     min-height: calc(100vh - 293px);
     padding: 16px 24px;
     padding-bottom: 0px;
@@ -166,7 +170,7 @@
 
 .graph-tooltip {
     background-color: var(--N900);
-    color: var(--N000);
+    color: var(--N0);
     border-radius: 4px;
     padding: 12px;
     min-width: 180px;
@@ -218,7 +222,7 @@
     text-transform: uppercase;
     padding: 12px 10px;
     white-space: nowrap;
-    color: var(--N500);
+    color: var(--N700);
 }
 
 .deployment-table__cell-deployed {
@@ -307,26 +311,26 @@
 
 .category__label--low {
     background-color: var(--R100);
-    border: solid 1px var(--R300);
+    border: solid 1px var(--R200);
     color: var(--R500);
 }
 
 .category__label--medium {
     background-color: var(--Y100);
-    border: solid 1px #ffbc76;
-    color: #ff8300;
+    border: solid 1px var(--Y200);
+    color: var(--Y500);
 }
 
 .category__label--high {
     background-color: var(--G100);
-    border: solid 1px var(--G300);
+    border: solid 1px var(--G200);
     color: var(--G500);
 }
 
 .category__label--elite {
-    background-color: #e5d1fa;
-    border: solid 1px #c69cf4;
-    color: #8930e8;
+    background-color: var(--V100);
+    border: solid 1px var(--V200);
+    color: var(--V500);
 }
 
 .modal__title--benchmark {

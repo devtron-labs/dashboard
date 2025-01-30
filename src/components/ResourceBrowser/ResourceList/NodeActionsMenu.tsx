@@ -19,9 +19,9 @@ import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import { noop, PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetailsTabs } from '@Components/v2/appDetails/appDetails.store'
 import { TaintType } from '@Components/ClusterNodes/types'
+import { ReactComponent as UncordonIcon } from '@Icons/ic-play-outline.svg'
 import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
 import { ReactComponent as CordonIcon } from '../../../assets/icons/ic-cordon.svg'
-import { ReactComponent as UncordonIcon } from '../../../assets/icons/ic-play-medium.svg'
 import { ReactComponent as DrainIcon } from '../../../assets/icons/ic-clean-brush.svg'
 import { ReactComponent as EditTaintsIcon } from '../../../assets/icons/ic-spraycan.svg'
 import { ReactComponent as EditFileIcon } from '../../../assets/icons/ic-edit-lines.svg'
@@ -36,7 +36,7 @@ import EditTaintsModal from '../../ClusterNodes/NodeActions/EditTaintsModal'
 import { K8S_EMPTY_GROUP } from '../Constants'
 
 // TODO: This should be commoned out with ResourceBrowserActionMenu to have consistent styling
-const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuProps) => {
+const NodeActionsMenu = ({ nodeData, getNodeListData, addTab, handleClearBulkSelection }: NodeActionsMenuProps) => {
     const history = useHistory()
     const { url } = useRouteMatch()
     const location = useLocation()
@@ -114,8 +114,7 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
                     name={name}
                     version={version}
                     kind={kind}
-                    // NOTE!: ts was showing error in yarn lint but vscode did not
-                    unschedulable={!!nodeData.unschedulable as unknown as boolean}
+                    unschedulable={!!nodeData.unschedulable}
                     closePopup={hideCordonNodeModal}
                 />
             )
@@ -126,7 +125,15 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
         }
 
         if (showDeleteNodeDialog) {
-            return <DeleteNodeModal name={name} version={version} kind={kind} closePopup={hideDeleteNodeModal} />
+            return (
+                <DeleteNodeModal
+                    name={name}
+                    version={version}
+                    kind={kind}
+                    closePopup={hideDeleteNodeModal}
+                    handleClearBulkSelection={handleClearBulkSelection}
+                />
+            )
         }
 
         if (showEditTaintNodeDialog) {
@@ -152,7 +159,7 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
                 <PopupMenu.Button rootClassName="flex ml-auto p-4" isKebab>
                     <MenuDots className="node-actions-menu-icon icon-dim-16" />
                 </PopupMenu.Button>
-                <PopupMenu.Body>
+                <PopupMenu.Body rootClassName="dc__border">
                     <div className="fs-13 fw-4 lh-20 pt-8 pb-8 w-160">
                         <button
                             type="button"
@@ -171,7 +178,7 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
                         >
                             {nodeData.unschedulable ? (
                                 <>
-                                    <UncordonIcon className="icon-dim-16 mr-8 scn-7 dc__stroke-width-4" />
+                                    <UncordonIcon className="icon-dim-16 mr-8 scn-7" />
                                     {CLUSTER_NODE_ACTIONS_LABELS.uncordon}
                                 </>
                             ) : (

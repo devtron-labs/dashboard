@@ -49,23 +49,21 @@ import {
     getStageTitle,
     TriggerBlockType,
     RuntimePluginVariables,
+    CIPipelineNodeType,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     triggerCDNode,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import {
-    BUILD_STATUS,
-    DEFAULT_GIT_BRANCH_VALUE,
-    NO_COMMIT_SELECTED,
-    URLS,
-    ViewType,
-} from '../../../../config'
+import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, NO_COMMIT_SELECTED, URLS, ViewType } from '../../../../config'
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import {
     CIMaterialProps,
     CIMaterialRouterProps,
-    CIPipelineNodeType,
     MATERIAL_TYPE,
     RuntimeParamsErrorState,
 } from '../../../app/details/triggerView/types'
@@ -147,6 +145,7 @@ const validateRuntimeParameters = importComponentFromFELibrary(
     () => ({ isValid: true, cellError: {} }),
     'function',
 )
+const ChangeImageSource = importComponentFromFELibrary('ChangeImageSource', null, 'function')
 
 // FIXME: IN CIMaterials we are sending isCDLoading while in CD materials we are sending isCILoading
 let inprogressStatusTimer
@@ -196,6 +195,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [runtimeParams, setRuntimeParams] = useState<Record<string, RuntimePluginVariables[]>>({})
     const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<Record<string, RuntimeParamsErrorState>>({})
     const [isBulkTriggerLoading, setIsBulkTriggerLoading] = useState<boolean>(false)
+
+    const selectedWorkflows = filteredWorkflows.filter((wf) => wf.isSelected)
 
     const enableRoutePrompt = isBranchChangeLoading || isBulkTriggerLoading
     usePrompt({ shouldPrompt: enableRoutePrompt })
@@ -1304,12 +1305,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         preventBodyScroll(false)
     }
 
-    const hideWebhookModal = (e?) => {
-        if (e) {
-            stopPropagation(e)
-        }
-    }
-
     const onClickWebhookTimeStamp = () => {
         if (webhookTimeStampOrder === TIME_STAMP_ORDER.DESCENDING) {
             setWebhookTimeStampOrder(TIME_STAMP_ORDER.ASCENDING)
@@ -1384,6 +1379,11 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setShowBulkSourceChangeModal(false)
         setResponseList([])
         preventBodyScroll(false)
+    }
+
+    const handleCloseChangeImageSource = () => {
+        setPageViewType(ViewType.LOADING)
+        getWorkflowsData()
     }
 
     const onShowChangeSourceModal = () => {
@@ -1496,11 +1496,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         ciArtifactId: Number(ciArtifact.id),
                         appId: Number(currentAppId),
                         stageType: bulkTriggerType,
-                        ...(
-                            getRuntimeParamsPayload
-                                ? { runtimeParamsPayload: getRuntimeParamsPayload(runtimeParams[currentAppId] ?? [])}
-                                : {}
-                        ),
+                        ...(getRuntimeParamsPayload
+                            ? { runtimeParamsPayload: getRuntimeParamsPayload(runtimeParams[currentAppId] ?? []) }
+                            : {}),
                     }),
                 )
             } else {
@@ -2285,7 +2283,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             <PopupMenu autoClose>
                 <PopupMenu.Button
                     isKebab
-                    rootClassName="h-36 popup-button-kebab dc__border-left-b4 pl-8 pr-8 dc__no-left-radius flex bcb-5"
+                    rootClassName="h-32 popup-button-kebab dc__border-left-b4 pl-8 pr-8 dc__no-left-radius flex bcb-5"
                     dataTestId="deploy-popup"
                 >
                     <Dropdown className="icon-dim-20 fcn-0" />
@@ -2327,42 +2325,46 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const renderBulkTriggerActionButtons = (): JSX.Element => {
         const _showPopupMenu = showPreDeployment || showPostDeployment
         return (
-            <div className="flex dc__min-width-fit-content">
-                <button
-                    className="dc__edit_button h-36 lh-36"
-                    type="button"
-                    style={{ marginRight: 'auto' }}
+            <div className="flex dc__min-width-fit-content dc__gap-12">
+                {ChangeImageSource && <ChangeImageSource
+                    selectedWorkflows={selectedWorkflows}
+                    handleCloseChangeImageSource={handleCloseChangeImageSource}
+                />}
+                <Button
+                    dataTestId="change-branch-bulk"
+                    text="Change branch"
+                    startIcon={<Pencil />}
                     onClick={onShowChangeSourceModal}
-                >
-                    <span className="flex dc__align-items-center">
-                        <Pencil className="icon-dim-16 scb-5 mr-4" />
-                        Change branch
-                    </span>
-                </button>
+                    size={ComponentSizeType.medium}
+                    style={ButtonStyleType.neutral}
+                    variant={ButtonVariantType.secondary}
+                />
                 <span className="filter-divider-env" />
-                <button
-                    className="cta flex h-36 mr-12"
-                    data-testid="bulk-build-image-button"
+                <Button
+                    dataTestId="bulk-build-image-button"
+                    text="Build image"
                     onClick={onShowBulkCIModal}
-                >
-                    {isCILoading ? <Progressing /> : 'Build image'}
-                </button>
-                <button
-                    className={`cta flex h-36 ${_showPopupMenu ? 'dc__no-right-radius' : ''}`}
-                    data-trigger-type="CD"
-                    data-testid="bulk-deploy-button"
-                    onClick={onShowBulkCDModal}
-                >
-                    {isCDLoading ? (
-                        <Progressing />
-                    ) : (
-                        <>
-                            <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
-                            Deploy
-                        </>
-                    )}
-                </button>
-                {_showPopupMenu && renderDeployPopupMenu()}
+                    size={ComponentSizeType.medium}
+                    isLoading={isCILoading}
+                />
+                <div className="flex">
+                    <button
+                        className={`cta flex h-32 ${_showPopupMenu ? 'dc__no-right-radius' : ''}`}
+                        data-trigger-type="CD"
+                        data-testid="bulk-deploy-button"
+                        onClick={onShowBulkCDModal}
+                    >
+                        {isCDLoading ? (
+                            <Progressing />
+                        ) : (
+                            <>
+                                <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
+                                Deploy
+                            </>
+                        )}
+                    </button>
+                    {_showPopupMenu && renderDeployPopupMenu()}
+                </div>
             </div>
         )
     }
@@ -2423,7 +2425,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 })}
                 {!!selectedAppList.length && (
                     <div
-                        className="flexbox dc__content-space dc__position-fixed dc__bottom-0 dc__border-top w-100 bcn-0 pt-12 pr-20 pb-12 pl-20 dc__right-0"
+                        className="flexbox dc__content-space dc__position-fixed dc__bottom-0 dc__border-top w-100 bg__primary pt-12 pr-20 pb-12 pl-20 dc__right-0"
                         style={{ width: 'calc(100vw - 56px)' }}
                     >
                         {renderSelectedApps()}
@@ -2437,7 +2439,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
     return (
         <div
-            className="svg-wrapper-trigger app-group-trigger-view-container bcn-0"
+            className="svg-wrapper-trigger app-group-trigger-view-container bg__primary"
             style={{ paddingBottom: selectedAppList.length ? '68px' : '16px' }}
         >
             <div className="flex left mb-14">

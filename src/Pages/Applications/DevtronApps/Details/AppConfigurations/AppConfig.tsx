@@ -503,7 +503,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
             <>
                 <div className={`app-compose ${getAdditionalParentClass()}`}>
                     <div
-                        className={`app-compose__nav ${getAppComposeClasses()} flex column left top dc__overflow-scroll`}
+                        className={`app-compose__nav ${getAppComposeClasses()} flex column left top dc__overflow-auto`}
                     >
                         <AppNavigation />
                     </div>

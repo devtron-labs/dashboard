@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { Fragment } from 'react'
 import {
     Button,
@@ -9,6 +25,7 @@ import {
     BaseURLParams,
     ComponentSizeType,
     InvalidYAMLTippyWrapper,
+    ToggleResolveScopedVariables,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -16,7 +33,6 @@ import { ReactComponent as ICMore } from '@Icons/ic-more-option.svg'
 import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
 import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
 import BaseConfigurationNavigation from './BaseConfigurationNavigation'
-import ToggleResolveScopedVariables from './ToggleResolveScopedVariables'
 import { PopupMenuItem } from './utils'
 import { ConfigToolbarProps } from './types'
 import SelectMergeStrategy from './SelectMergeStrategy'
@@ -367,7 +383,7 @@ const ConfigToolbar = ({
 
     return (
         <div
-            className={`px-12 bcn-0 dc__border-bottom-n1 flexbox dc__align-items-center dc__content-space dc__gap-8 dc__no-shrink h-32 ${!showProtectedTabs ? 'py-4' : ''}`}
+            className={`px-12 bg__primary dc__border-bottom-n1 flexbox dc__align-items-center dc__content-space dc__gap-8 dc__no-shrink h-32 ${!showProtectedTabs ? 'py-4' : ''}`}
         >
             <div className="flexbox dc__content-space dc__align-items-center dc__gap-8 dc__align-self-stretch">
                 {getLHSActionNodes()}

@@ -129,6 +129,10 @@
 .form__textarea {
     min-height: 36px;
     resize: vertical;
+
+    &:focus-visible {
+        outline: 1px solid var(--B500);
+    }
 }
 
 .form__input--error {
@@ -178,11 +182,11 @@ p.sentence-case:first-letter {
 }
 
 .form__icon--info path[fill='#06C'] {
-    fill: gray;
+    fill: var(--N600);
 }
 
 .form__key-value-file {
-    background: var(--window-bg);
+    background: var(--bg-tertiary);
     border-radius: 4px;
     padding: 16px;
     margin-bottom: 16px;
@@ -191,7 +195,7 @@ p.sentence-case:first-letter {
 
 .form__key-value-inputs {
     min-height: 122px;
-    background: var(--window-bg);
+    background: var(--bg-tertiary);
     display: grid;
     grid-template-columns: 100%;
     border-radius: 4px;
@@ -229,7 +233,7 @@ p.sentence-case:first-letter {
 
 .form__add-parameter {
     border: none;
-    background-color: var(--white);
+    background-color: var(--bg-primary);
     margin-left: auto;
     padding: 0 16px;
     font-size: 13px;
@@ -243,7 +247,7 @@ p.sentence-case:first-letter {
     display: flex;
     border: solid 1px var(--N200);
     border-radius: 4px;
-    background-color: var(--white);
+    background-color: transparent;
 
     &.permission-type__radio-group,
     &.regisrty-form__radio-group,
@@ -264,7 +268,7 @@ p.sentence-case:first-letter {
             }
 
             input:checked ~ .form__radio-item-content .radio__button {
-                background: radial-gradient(var(--B500) 0, var(--B500) 40%, var(--white) 45%, var(--white) 100%);
+                background: radial-gradient(var(--B500) 0, var(--B500) 40%, var(--N0) 45%, var(--N0) 100%);
                 border: 1.5px solid var(--B500);
             }
         }
@@ -272,7 +276,7 @@ p.sentence-case:first-letter {
 
     &.regisrty-form__radio-group {
         .form__radio-item.disabled {
-            background-color: var(--N000) !important;
+            background-color: var(--bg-primary) !important;
             opacity: 0.5;
         }
         .form__radio-item .form__radio-item-content {
@@ -308,6 +312,14 @@ p.sentence-case:first-letter {
     line-height: 16px;
 }
 
+.form__checkbox__root {
+    &--gap-8 {
+        .form__checkbox-label {
+            margin-left: 8px;
+        }
+    }
+}
+
 .form__checkbox-check {
     display: none;
 }
@@ -320,6 +332,11 @@ p.sentence-case:first-letter {
     background-size: contain;
     background-repeat: no-repeat;
     background-image: url('../assets/icons/ic-checkbox-unselected.svg');
+    transition: background-image 0.17s;
+
+    &:hover {
+        background-image: url('../assets/icons/ic-checkbox-hover.svg');
+    }
 }
 
 .form__checkbox:checked[value='INTERMEDIATE'] ~ .form__checkbox-container {
@@ -395,19 +412,6 @@ p.sentence-case:first-letter {
     color: var(--N400);
 }
 
-.copy-button {
-    background-color: #2c3354;
-    border: none;
-    padding: 6px;
-    border-radius: 2px;
-    display: inline-flex;
-}
-
-.copy-button--icon path[fill='black'] {
-    fill: var(--white);
-    display: inline-flex;
-}
-
 .typeahead {
     position: relative;
 }
@@ -420,8 +424,8 @@ p.sentence-case:first-letter {
 
 .typeahead__single-selection.disabled,
 .typeahead__selection.disabled {
-    background-color: #eeeeee;
-    border: solid 1px #d2d2d2;
+    background-color: var(--N100);
+    border: solid 1px var(--N200);
     cursor: not-allowed;
 }
 
@@ -430,7 +434,7 @@ p.sentence-case:first-letter {
     padding: 0px;
     font-size: 12px;
     line-height: 1.54;
-    color: #151515;
+    color: var(--N900);
     max-width: 100%;
     font-weight: 600;
     margin: 0 5px;
@@ -438,8 +442,8 @@ p.sentence-case:first-letter {
 
 .selection-chip {
     border-radius: 4px;
-    border: solid 1px #72767a;
-    background-color: #ffffff;
+    border: solid 1px var(--N500);
+    background-color: var(--bg-primary);
     text-transform: lowercase;
     font-size: 12px;
     font-weight: normal;
@@ -447,7 +451,7 @@ p.sentence-case:first-letter {
     font-stretch: normal;
     line-height: 1.5;
     letter-spacing: normal;
-    color: #151515;
+    color: var(--N900);
     cursor: default;
     padding: 0px 8px;
     margin: 0 2px;
@@ -458,24 +462,24 @@ p.sentence-case:first-letter {
 
 .typeahead__single-selection {
     border-radius: 4px;
-    border: solid 1px #d2d2d2;
+    border: solid 1px var(--N200);
     padding: 10px 12px;
     font-size: 12px;
     font-weight: 400;
     line-height: 1.54;
-    color: #151515;
+    color: var(--N900);
     width: 100%;
     display: block;
 }
 
 .typeahead__multi-selection {
     border-radius: 4px;
-    border: solid 1px #d2d2d2;
+    border: solid 1px var(--N200);
     padding: 10px 12px;
     font-size: 12px;
     line-height: 1.54;
     font-weight: 400;
-    color: #151515;
+    color: var(--N900);
     width: 100%;
     display: block;
 }
@@ -496,10 +500,10 @@ p.sentence-case:first-letter {
     width: 100%;
     padding: 4px;
     list-style: none;
-    background-color: var(--white);
+    background-color: var(--bg-primary);
     max-height: 300px;
     z-index: var(--filter-menu-index);
-    border: solid 1px #d6dbdf;
+    border: solid 1px var(--N200);
     top: 68px;
     border-radius: 4px;
     overflow: auto;
@@ -563,7 +567,7 @@ p.sentence-case:first-letter {
 .search__icon {
     position: absolute;
     z-index: 1;
-    color: #9c9c9c;
+    color: var(--N400);
     top: 50%;
     left: 8px;
     transform: translateY(-50%);
@@ -595,7 +599,7 @@ p.sentence-case:first-letter {
     z-index: 1;
     border: none;
     padding: 2px;
-    color: #72767a;
+    color: var(--N500);
     margin: 0px 5px;
 }
 
@@ -604,7 +608,7 @@ p.sentence-case:first-letter {
 }
 
 .form__radio-item input:checked ~ .form__radio-item-content .radio__button {
-    background: radial-gradient(var(--B500) 0, var(--B500) 40%, var(--white) 45%, var(--white) 50%, var(--white) 100%);
+    background: radial-gradient(var(--B500) 0, var(--B500) 40%, var(--N0) 45%, var(--N0) 50%, var(--N0) 100%);
     border: 1px solid var(--B500);
 }
 
@@ -638,10 +642,6 @@ p.sentence-case:first-letter {
     cursor: not-allowed;
 }
 
-.copy-button:hover {
-    background-color: #0b0f22;
-}
-
 .form__label.form__label--sentence {
     text-transform: lowercase;
 }
@@ -651,7 +651,7 @@ p.sentence-case:first-letter {
 }
 
 .form__label-color {
-    color: #404040;
+    color: var(--N700);
 }
 
 .modal__form-title {

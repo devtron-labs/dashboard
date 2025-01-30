@@ -167,15 +167,15 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
 
     regexInfoSteps = (): JSX.Element => {
         return (
-            <div data-testid="exclude-include-use-regex-info" className="w-500 h-380 fs-13 bcn-0">
-                <div className="h-365 dc__align-start p-12 dc__gap-12 dc__position-sticky dc__overflow-scroll">
+            <div data-testid="exclude-include-use-regex-info" className="w-500 h-380 fs-13 bg__primary">
+                <div className="h-365 dc__align-start p-12 dc__gap-12 dc__position-sticky dc__overflow-auto">
                     <div className="w-476 h-112 flex column dc__align-start p-0 dc__gap-4">
                         {USE_REGEX_TIPPY_CONTENT.insructionsList.regexInfo.map((item, index) => (
                             <div
                                 key={item.info}
                                 className={`${index === 2 ? 'h-24' : 'h-40'} dc__gap-12 w-476 fs-13 fw-4 flex dc__align-start p-0`}
                             >
-                                <div className="w-28 h-24 flex column dc__content-center dc__align-items-center p-10 dc__gap-10 bcn-1 br-4 dc__ff-monospace dc__no-border">
+                                <div className="w-28 h-24 flex column dc__content-center dc__align-items-center p-10 dc__gap-10 bcn-1 br-4 mono dc__no-border">
                                     {item.regex}
                                 </div>
                                 <span className={`${index === 2 ? 'h-20' : 'h-40'} w-436 lh-20`}>{item.info}</span>
@@ -193,7 +193,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         </div>
                         <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
                             <div className="flex left">
-                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 cn-7">
                                     {
                                         USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
                                             .regexExample1
@@ -270,7 +270,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         </div>
                         <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
                             <div className="flex left">
-                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 cn-7">
                                     {
                                         USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
                                             .regexExample2
@@ -347,7 +347,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         </div>
                         <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
                             <div className="flex left">
-                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 cn-7">
                                     {
                                         USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
                                             .regexExample3.partOne
@@ -359,7 +359,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                             .regexExample3.partTwo
                                     }
                                 </span>
-                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                     {
                                         USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
                                             .regexExample3.partThree
@@ -418,7 +418,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         </div>
                         <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
                             <div className="flex left">
-                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 cn-7">
                                     {
                                         USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
                                             .regexExample4
@@ -483,7 +483,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                             .regexExample5.partOne
                                     }
                                 </span>
-                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                     {
                                         USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
                                             .regexExample5.partTwo
@@ -495,7 +495,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                             .regexExample5.partThree
                                     }
                                 </span>
-                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                     {
                                         USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
                                             .regexExample5.partFour
@@ -533,7 +533,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                             .regexExample6.partOne
                                     }
                                 </span>
-                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                     {
                                         USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
                                             .regexExample6.partTwo
@@ -621,7 +621,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
     renderGitProviderOptionsFooter = () => (
         <NavLink
             to={URLS.GLOBAL_CONFIG_GIT}
-            className="flex left dc__gap-8 dc__border-top bcn-0 px-8 py-10 cb-5 dc__block fw-6 fs-13 lh-20 anchor cursor dc__no-decor dc__hover-n50"
+            className="flex left dc__gap-8 dc__border-top bg__primary px-8 py-10 cb-5 dc__block fw-6 fs-13 lh-20 anchor cursor dc__no-decor dc__hover-n50"
         >
             <Add className="icon-dim-20 dc__no-shrink fcb-5" data-testid="add-git-account-option" />
             <span>Add Git Account</span>
@@ -712,7 +712,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 <TippyCustomized
                                     theme={TippyTheme.white}
                                     iconClass="fcv-5"
-                                    className="bcn-0 deafult-tt"
+                                    className="bg__primary deafult-tt"
                                     placement="bottom"
                                     Icon={Help}
                                     heading="Exclude file/folders"
@@ -754,13 +754,13 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 <span className="fs-13 fw-4">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partOne}
                                                 </span>
-                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partTwo}
                                                 </span>
                                                 <span className="ml-4 fs-13 fw-4">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partThree}
                                                 </span>
-                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partFour}
                                                 </span>
                                                 <br />
@@ -770,21 +770,21 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 <span className="fs-13 fw-4">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partOne}
                                                 </span>
-                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partTwo}
                                                 </span>
                                                 <span className="fs-13 fw-4 ml-2">,</span>
-                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partThree}
                                                 </span>
                                                 <span className="fs-13 fw-4 ml-2">,</span>
-                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFour}
                                                 </span>
                                                 <TippyCustomized
                                                     theme={TippyTheme.white}
                                                     iconClass="fcv-5"
-                                                    className="dc__mxw-none w-505 bcn-0 dc__border-radius-8-imp tippy-box default-white tippy-shadow"
+                                                    className="dc__mxw-none w-505 bg__primary dc__border-radius-8-imp tippy-box default-white tippy-shadow"
                                                     heading={USE_REGEX_TIPPY_CONTENT.insructionsList.heading}
                                                     placement="bottom"
                                                     Icon={Help}
@@ -810,7 +810,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 </span>
                                                 <br />
                                             </div>
-                                            <div className="ml-10 mt-4 dc__ff-monospace fs-13 fw-4">
+                                            <div className="ml-10 mt-4 mono fs-13 fw-4">
                                                 {INCLUDE_EXCLUDE_COMMIT_INFO.example.lineOne}
                                                 <br />
                                                 {INCLUDE_EXCLUDE_COMMIT_INFO.example.lineTwo}

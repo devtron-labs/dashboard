@@ -57,7 +57,6 @@ const AppDetails = lazy(() => import('./appDetails/AppDetails'))
 const IndexComponent = lazy(() => import('../../v2/index'))
 
 const CDDetails = lazy(() => import('./cdDetails/CDDetails'))
-const TestRunList = lazy(() => import('./testViewer/TestRunList'))
 
 export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const { path } = useRouteMatch()
@@ -343,7 +342,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
 
     const _filteredEnvIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
     return (
-        <div className="app-details-page dc__overflow-scroll">
+        <div className="app-details-page dc__overflow-auto">
             {!isV2 && (
                 <AppHeader
                     appName={appName}
@@ -426,10 +425,6 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                                 filteredEnvIds={_filteredEnvIds}
                             />
                         </Route>
-                        {/* commented for time being */}
-                        {/* <Route path={`${path}/tests/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
-                            render={() => <TestRunList />}
-                        /> */}
                         <Redirect to={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} />
                     </Switch>
                 </Suspense>

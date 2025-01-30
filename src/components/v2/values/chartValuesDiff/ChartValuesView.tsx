@@ -1616,7 +1616,7 @@ const ChartValuesView = ({
             !appDetails?.isVirtualEnvironment
         return (
             <div
-                className={`chart-values-view__container flexbox-col h-100 bcn-0 dc__overflow-hidden ${
+                className={`chart-values-view__container flexbox-col h-100 bg__primary dc__overflow-hidden ${
                     isDeployChartView || isCreateValueView ? 'chart-values-view__deploy-chart' : ''
                 } ${commonState.openReadMe ? 'readmeOpened' : ''} ${
                     commonState.openComparison ? 'comparisonOpened' : ''
@@ -1624,7 +1624,7 @@ const ChartValuesView = ({
             >
                 {renderValuesTabsContainer()}
                 <div className="chart-values-view__wrapper flexbox flex-grow-1 dc__overflow-hidden">
-                    <div className="flexbox-col dc__gap-16 chart-values-view__details dc__border-right dc__overflow-scroll">
+                    <div className="flexbox-col dc__gap-16 chart-values-view__details dc__border-right dc__overflow-auto p-16">
                         <div className="flexbox-col dc__gap-12">
                             {isCreateValueView && (
                                 <ValueNameInput
@@ -1664,7 +1664,7 @@ const ChartValuesView = ({
                                 </div>
                             )}
                             {!isDeployChartView && showUpdateAppModal && !isCreateValueView && (
-                                <div className="app-overview-container display-grid bcn-0 dc__overflow-hidden">
+                                <div className="app-overview-container display-grid bg__primary dc__overflow-hidden">
                                     <ProjectUpdateModal
                                         appId={appId}
                                         appMetaInfo={appMetaInfo}

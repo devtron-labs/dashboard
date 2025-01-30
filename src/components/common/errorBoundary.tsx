@@ -17,7 +17,7 @@
 import { Component } from 'react'
 import * as Sentry from '@sentry/browser'
 import { Reload } from '@devtron-labs/devtron-fe-common-lib'
-import bugFixing from '../../assets/img/bug_fixing.svg'
+import bugFixing from '../../assets/img/bug-fixing.webp'
 
 interface errorBoundaryState {
     eventId: any

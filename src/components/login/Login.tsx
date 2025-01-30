@@ -27,6 +27,10 @@ import {
     URLS as CommonURL,
     ToastVariantType,
     ToastManager,
+    Button,
+    ComponentSizeType,
+    ButtonComponentType,
+    ButtonVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import LoginIcons from '../../assets/icons/LoginSprite.svg'
@@ -223,9 +227,17 @@ class Login extends Component<LoginProps, LoginFormState> {
                         )
                     })}
                 {this.renderLoginPrivacyText()}
-                <NavLink className="login__link" to={`${URLS.LOGIN_ADMIN}${search}`}>
-                    Login as administrator
-                </NavLink>
+                <div className="flex mt-20 mb-40">
+                    <Button
+                        component={ButtonComponentType.link}
+                        variant={ButtonVariantType.text}
+                        linkProps={{
+                            to: `${URLS.LOGIN_ADMIN}${search}`,
+                        }}
+                        text="Login as administrator"
+                        dataTestId="login-as-admin"
+                    />
+                </div>
             </div>
         )
     }
@@ -272,20 +284,32 @@ class Login extends Component<LoginProps, LoginFormState> {
                             What is my admin password?
                         </a>
                     </div>
-                    <button
-                        disabled={this.isFormNotValid() || this.state.loading}
-                        className="cta login__button"
-                        data-testid="login-button"
-                    >
-                        {this.state.loading ? <Progressing /> : 'Login'}
-                    </button>
-                    {this.state.loginList.length ? (
-                        <NavLink className="login__link cb-5" to={`${URLS.LOGIN_SSO}${search}`}>
-                            Login using SSO service
-                        </NavLink>
-                    ) : (
-                        <p className="login__link" />
-                    )}
+                    <div className="mt-32 flex column dc__gap-16">
+                        <div className="w-100">
+                            <Button
+                                disabled={this.isFormNotValid() || this.state.loading}
+                                isLoading={this.state.loading}
+                                dataTestId="login-button"
+                                text="Login"
+                                fullWidth
+                                size={ComponentSizeType.xl}
+                                buttonProps={{
+                                    type: 'submit'
+                                }}
+                            />
+                        </div>
+                        {this.state.loginList.length > 0 && (
+                            <Button
+                                dataTestId="sso-login"
+                                text="Login using SSO service"
+                                component={ButtonComponentType.link}
+                                linkProps={{
+                                    to: `${URLS.LOGIN_SSO}${search}`,
+                                }}
+                                variant={ButtonVariantType.text}
+                            />
+                        )}
+                    </div>
                 </form>
             </div>
         )

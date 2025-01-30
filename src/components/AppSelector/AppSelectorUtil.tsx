@@ -32,6 +32,7 @@ export const appSelectorStyle = {
         minWidth: state.menuIsOpen ? '300px' : 'unset',
         justifyContent: state.menuIsOpen ? 'space-between' : 'flex-start',
         cursor: 'pointer',
+        backgroundColor: 'var(--bg-primary)',
     }),
     valueContainer: (base, state) => ({
         ...base,
@@ -40,15 +41,16 @@ export const appSelectorStyle = {
         flexBasis: '0px',
         justifyContent: 'flex-end',
         padding: state.selectProps.menuIsOpen ? '0 0 0 4px' : '0',
-        color: state.selectProps.menuIsOpen ? 'var(--N500)' : base.color,
+        color: state.selectProps.menuIsOpen ? 'var(--N500)' : 'var(--N900)',
         height: '30px',
     }),
     singleValue: (base, state) => ({
         ...state,
-        color: state.selectProps.menuIsOpen ? 'var(--N500)' : base.color,
+        color: state.selectProps.menuIsOpen ? 'var(--N500)' : 'var(--N900)',
     }),
     menu: (base, state) => ({
         ...base,
+        backgroundColor: 'var(--bg-primary)',
         minWidth: '300px',
         fontSize: '14px',
         fontWeight: 'normal',
@@ -61,7 +63,7 @@ export const appSelectorStyle = {
         ...base,
         borderRadius: '4px',
         color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
-        backgroundColor: state.isSelected ? 'var(--B100)' : state.isFocused ? 'var(--N100)' : 'white',
+        backgroundColor: state.isSelected ? 'var(--B100)' : state.isFocused ? 'var(--N100)' : 'var(--bg-primary)',
         fontWeight: state.isSelected ? 600 : 'normal',
         marginRight: '8px',
     }),
@@ -69,6 +71,7 @@ export const appSelectorStyle = {
         ...base,
         margin: '0',
         flex: 'unset',
+        color: 'var(--N900)',
     }),
     dropdownIndicator: (base, state) => ({
         ...base,

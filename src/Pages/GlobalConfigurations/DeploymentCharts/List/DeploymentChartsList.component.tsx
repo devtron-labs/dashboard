@@ -25,7 +25,7 @@ import {
     URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '@Config/constants'
-import emptyCustomChart from '@Images/ic-empty-custom-charts.png'
+import emptyCustomChart from '@Images/ic-empty-custom-charts.webp'
 import { ReactComponent as DevtronIcon } from '@Icons/ic-devtron-app.svg'
 import { ReactComponent as HelpIcon } from '@Icons/ic-help.svg'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -88,7 +88,7 @@ const DeploymentChartsList = () => {
                 <DeploymentChartsListHeader handleOpenUploadChartModal={handleOpenUploadChartModal} />
                 <div
                     data-testid="custom-chart-list"
-                    className="en-2 bw-1 bcn-0 br-8 h-100 dc__overflow-hidden flexbox-col"
+                    className="en-2 bw-1 bg__primary br-8 h-100 dc__overflow-hidden flexbox-col"
                 >
                     <InfoColourBar
                         message={
@@ -117,7 +117,7 @@ const DeploymentChartsList = () => {
                         <span>Version</span>
                         <span>Description</span>
                     </div>
-                    <div className="h-100 dc__overflow-scroll">
+                    <div className="h-100 dc__overflow-auto">
                         {chartList.map((chartData) => (
                             <div
                                 key={`custom-chart_${chartData.name}`}

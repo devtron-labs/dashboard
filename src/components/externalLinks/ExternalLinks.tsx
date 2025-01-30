@@ -310,7 +310,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
     const renderExternalLinksHeader = (): JSX.Element => {
         return (
             <div
-                className={`external-links__header h-40 fs-12 fw-6 pl-20 bcn-0 dc__uppercase ${
+                className={`external-links__header h-40 fs-12 fw-6 pl-20 bg__primary dc__uppercase ${
                     isAppConfigView ? 'app-config-view' : ''
                 }`}
             >
@@ -450,7 +450,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                         url={url}
                     />
                 )}
-                <div className={`external-links dc__border bcn-0 ${isAppConfigView ? 'app-config-view__listing' : ''}`}>
+                <div className={`external-links dc__border bg__primary ${isAppConfigView ? 'app-config-view__listing' : ''}`}>
                     {isAPICallInProgress ? (
                         <Progressing pageLoader />
                     ) : (
@@ -461,7 +461,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                             {filteredLinksLen > 0 && (
                                 <>
                                     {renderExternalLinksHeader()}
-                                    <div className="external-links__list dc__overflow-scroll">
+                                    <div className="external-links__list dc__overflow-auto">
                                         {renderExternalLinks(filteredLinksLen)}
                                     </div>
                                 </>

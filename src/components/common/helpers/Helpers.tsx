@@ -1143,7 +1143,7 @@ export const renderMaterialIcon = (url: string = '') => {
     }
 
     if (url.includes('github')) {
-        return <GitHub className="dc__vertical-align-middle icon-dim-20" />
+        return <GitHub className="dc__vertical-align-middle icon-dim-20 fcn-8" />
     }
 
     if (url.includes('bitbucket')) {

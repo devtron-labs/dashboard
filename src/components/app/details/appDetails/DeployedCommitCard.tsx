@@ -65,7 +65,7 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
         <div
             data-testid="deployed-commit-card"
             onClick={showCommitInfoDrawer}
-            className="app-details-info-card pointer flex left bcn-0 br-8 mr-12 lh-20 w-200"
+            className="app-details-info-card pointer flex left bg__primary br-8 mr-12 lh-20 w-200"
         >
             <div className="app-details-info-card__top-container flex">
                 <div className="app-details-info-card__top-container__content">
@@ -85,7 +85,7 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
                     </div>
                     <div className="flex fs-12 fw-4">
                         <CommitIcon className="icon-dim-20" />
-                        <div className="dc__ellipsis-right cn-7 ml-2 fw-4 fs-12 dc__ff-monospace">{commitId}</div>
+                        <div className="dc__ellipsis-right cn-7 ml-2 fw-4 fs-12 mono">{commitId}</div>
                     </div>
                 </div>
                 <div className="dc__git-logo" />

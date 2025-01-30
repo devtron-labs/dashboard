@@ -1,6 +1,20 @@
-import { components } from 'react-select'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
-    commonSelectStyles,
     InlineStepDetailType,
     PluginImageContainer,
     SelectPickerOptionType,
@@ -8,7 +22,6 @@ import {
     ValidationResponseType,
     VariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import {
     CreatePluginFormType,
     CreatePluginPayloadPipelineScriptDTO,
@@ -58,56 +71,6 @@ export const validateDocumentationLink = (docLink: string): ValidationResponseTy
 
     return validateURL(docLink)
 }
-
-export const pluginCreatableTagSelectStyles = {
-    ...commonSelectStyles,
-    valueContainer: (base) => ({
-        ...commonSelectStyles.valueContainer(base),
-        gap: '4px',
-        paddingBlock: '4px',
-    }),
-    control: (base, state) => ({
-        ...commonSelectStyles.control(base, state),
-        minHeight: '36px',
-    }),
-    menuList: (base) => ({
-        ...base,
-        padding: '4px 0px 0px 0px',
-        cursor: 'pointer',
-    }),
-    option: (base, state) => ({
-        ...base,
-        height: '36px',
-        padding: '8px 0px',
-        backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-        color: 'var(--N900)',
-        cursor: 'pointer',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-
-        ':active': {
-            backgroundColor: 'var(--N100)',
-        },
-    }),
-    multiValue: (base, state) => ({
-        ...base,
-        border: getIsTagValid(state.data.value) ? `1px solid var(--N200)` : `1px solid var(--R500)`,
-        borderRadius: `4px`,
-        background: getIsTagValid(state.data.value) ? 'white' : 'var(--R100)',
-        height: '28px',
-        maxWidth: '250px',
-        margin: 0,
-        paddingLeft: '2px 4px',
-        fontSize: '12px',
-    }),
-}
-
-export const PluginCreatableTagClearIndicator = (props) => (
-    <components.ClearIndicator {...props}>
-        <ICClose className="icon-dim-16 fcn-6 dc__no-shrink" />
-    </components.ClearIndicator>
-)
 
 const getCreatePluginPayloadPathArgPortMapping = (
     inlineStepDetail: InlineStepDetailType,

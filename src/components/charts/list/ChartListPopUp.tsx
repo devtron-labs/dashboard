@@ -35,7 +35,7 @@ import { reSyncChartRepo } from '../../chartRepo/chartRepo.service'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { URLS } from '../../../config'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
-import EmptyFolder from '../../../assets/img/Empty-folder.png'
+import EmptyFolder from '../../../assets/img/empty-folder.webp'
 import NoResults from '../../../assets/img/empty-noresult@2x.png'
 import AddChartSource from './AddChartSource'
 import ChartListPopUpRow from './ChartListPopUpRow'
@@ -165,7 +165,7 @@ const ChartListPopUp = ({
             return renderEmptyState(true)
         }
         return (
-            <div className="dc__overflow-scroll h-100 mxh-390-imp">
+            <div className="dc__overflow-auto h-100 mxh-390-imp">
                 {filteredChartList.map((list, index) => {
                     return (
                         list.id != 1 && (
@@ -255,7 +255,7 @@ const ChartListPopUp = ({
     return (
         <div className="dc__transparent-div" onClick={closeChartPopUpModalOnBlur}>
             <div
-                className="chart-store__list h-100 w-400 br-4 bcn-0 en-2 bw-1 fw-4 fs-13 dc__overflow-hidden"
+                className="chart-store__list h-100 w-400 br-4 bg__primary en-2 bw-1 fw-4 fs-13 dc__overflow-hidden"
                 onClick={onClickChartListPopUp}
             >
                 {renderChartListHeaders()}
