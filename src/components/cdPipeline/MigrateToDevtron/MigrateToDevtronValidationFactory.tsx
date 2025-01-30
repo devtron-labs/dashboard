@@ -69,7 +69,7 @@ const MigrateToDevtronValidationFactory = ({
                         iconClass="icon-dim-20 dc__no-shrink"
                         textConfig={{
                             heading: 'Chart type mismatch',
-                            description: `Argo CD application uses ${source?.chartMetadata?.savedChartName} chart where as this application uses ${source?.chartMetadata?.requiredChartName} chart. You can upload your own charts in Global Configuration > Deployment Charts.`,
+                            description: `Argo CD application uses ${source.chartMetadata.savedChartName} chart where as this application uses ${source.chartMetadata.requiredChartName} chart. You can upload your own charts in Global Configuration > Deployment Charts.`,
                         }}
                     />
                 )
@@ -152,9 +152,9 @@ const MigrateToDevtronValidationFactory = ({
 
         return (
             <div className="display-grid dc__row-gap-8 dc__column-gap-16 validation-response__content-container">
-                <ContentRow title="Target cluster" value={destination?.clusterName || '--'} />
-                <ContentRow title="Target namespace" value={destination?.namespace || '--'} />
-                <ContentRow title="Target environment" value={destination?.environmentName || '--'} />
+                <ContentRow title="Target cluster" value={destination.clusterName || '--'} />
+                <ContentRow title="Target namespace" value={destination.namespace || '--'} />
+                <ContentRow title="Target environment" value={destination.environmentName || '--'} />
             </div>
         )
     }
@@ -174,7 +174,7 @@ const MigrateToDevtronValidationFactory = ({
                             // TODO: Can make a component for this
                             <span
                                 data-testid="deployment-status-name"
-                                className={`app-summary__status-name fs-13 mr-8 fw-6 f-${status?.toLowerCase()}`}
+                                className={`app-summary__status-name fs-13 mr-8 fw-6 f-${status.toLowerCase()}`}
                             >
                                 {status}
                             </span>
