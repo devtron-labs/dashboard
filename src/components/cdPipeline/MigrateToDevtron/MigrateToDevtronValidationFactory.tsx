@@ -15,11 +15,18 @@ import { ReactComponent as ICArgoCDApp } from '@Icons/ic-argocd-app.svg'
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
 import { ReactComponent as ICArrowRight } from '@Icons/ic-arrow-right.svg'
 import { ReactComponent as ICUpload } from '@Icons/ic-upload.svg'
+import { ReactComponent as ICInfoFilled } from '@Icons/ic-info-filled.svg'
 import { MigrationSourceValidationReasonType } from '../cdPipeline.types'
 import { MigrateToDevtronValidationFactoryProps } from './types'
 import './MigrateToDevtronValidationFactory.scss'
 
-const ContentRow = ({ title, value }: { title: string; value: string }) => (
+interface ContentRowProps {
+    title: string
+    value?: string
+    buttonProps?: ButtonProps
+}
+
+const ContentRow = ({ title, value, buttonProps }: ContentRowProps) => (
     <>
         <div>
             <h6 className="m-0 dc__underline-dotted dc_max-width__max-content cn-7 fs-13 fw-4 lh-20">{title}</h6>
@@ -28,6 +35,8 @@ const ContentRow = ({ title, value }: { title: string; value: string }) => (
         <Tooltip content={value}>
             <span className="dc__truncate cn-9 fs-13 fw-4 lh-20">{value || '--'}</span>
         </Tooltip>
+
+        {buttonProps && <Button {...buttonProps} />}
     </>
 )
 
@@ -44,19 +53,21 @@ const MigrateToDevtronValidationFactory = ({
     const { validationFailedReason, validationFailedMessage } = errorDetail || {}
     const { source, status, destination } = applicationMetadata || {}
 
+    const renderUnknownError = () => (
+        <InfoColourBar
+            classname="error_bar"
+            Icon={ICErrorExclamation}
+            iconClass="icon-dim-20 dc__no-shrink"
+            textConfig={{
+                heading: validationFailedReason,
+                description: validationFailedMessage || 'Something went wrong',
+            }}
+        />
+    )
+
     if (!isLinkable) {
         if (!Object.values(MigrationSourceValidationReasonType).includes(validationFailedReason)) {
-            return (
-                <InfoColourBar
-                    classname="error_bar"
-                    Icon={ICErrorExclamation}
-                    iconClass="icon-dim-20 dc__no-shrink"
-                    textConfig={{
-                        heading: validationFailedReason,
-                        description: validationFailedMessage || 'Something went wrong',
-                    }}
-                />
-            )
+            return renderUnknownError()
         }
 
         switch (validationFailedReason) {
@@ -145,18 +156,135 @@ const MigrateToDevtronValidationFactory = ({
         }
     }
 
+    const renderAllContentFields = () => (
+        <div className="display-grid dc__row-gap-8 dc__column-gap-16 validation-response__content-container">
+            <ContentRow title="Target cluster" value={destination.clusterName || '--'} />
+            <ContentRow title="Target namespace" value={destination.namespace || '--'} />
+            <ContentRow title="Target environment" value={destination.environmentName || '--'} />
+        </div>
+    )
+
     const renderContent = () => {
-        if (!isLinkable) {
+        switch (validationFailedReason) {
+            case MigrationSourceValidationReasonType.CLUSTER_NOT_FOUND:
+                return (
+                    <div className="display-grid dc__row-gap-8 dc__column-gap-16 validation-response__content-container">
+                        <ContentRow
+                            title="Target cluster"
+                            value={destination.clusterServerUrl}
+                            buttonProps={{
+                                dataTestId: 'connect-cluster-button',
+                                text: 'Connect Cluster',
+                                variant: ButtonVariantType.text,
+                                size: ComponentSizeType.large,
+                                component: ButtonComponentType.link,
+                                linkProps: {
+                                    to: `${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_CLUSTER}`,
+                                },
+                            }}
+                        />
+                        <ContentRow title="Target namespace" value={destination.namespace || '--'} />
+                    </div>
+                )
+
+            case MigrationSourceValidationReasonType.ENVIRONMENT_NOT_FOUND:
+                return (
+                    <div className="display-grid dc__row-gap-8 dc__column-gap-16 validation-response__content-container">
+                        <ContentRow title="Target cluster" value={destination.clusterName || '--'} />
+                        <ContentRow title="Target namespace" value={destination.namespace || '--'} />
+                        <ContentRow
+                            title="Target environment"
+                            buttonProps={{
+                                dataTestId: 'add-environment-button',
+                                text: 'Add Environment',
+                                variant: ButtonVariantType.text,
+                                size: ComponentSizeType.large,
+                                component: ButtonComponentType.link,
+                                linkProps: {
+                                    to: `${URLS.GLOBAL_CONFIG_CLUSTER}/${destination.environmentId}/${URLS.CREATE_ENVIRONMENT}`,
+                                },
+                            }}
+                        />
+                    </div>
+                )
+
+            default:
+                return renderAllContentFields()
+        }
+    }
+
+    const shouldRenderInfoVariantWithContent =
+        isLinkable ||
+        validationFailedReason === MigrationSourceValidationReasonType.CLUSTER_NOT_FOUND ||
+        validationFailedReason === MigrationSourceValidationReasonType.ENVIRONMENT_NOT_FOUND
+
+    const shouldRenderInfoErrorVariantWithContent =
+        validationFailedReason === MigrationSourceValidationReasonType.APPLICATION_ALREADY_LINKED ||
+        validationFailedReason === MigrationSourceValidationReasonType.ENFORCED_POLICY_VIOLATION ||
+        validationFailedReason === MigrationSourceValidationReasonType.ENVIRONMENT_ALREADY_PRESENT
+
+    const getInfoErrorVariantMessage = () => {
+        if (!shouldRenderInfoErrorVariantWithContent) {
             return null
         }
 
-        return (
-            <div className="display-grid dc__row-gap-8 dc__column-gap-16 validation-response__content-container">
-                <ContentRow title="Target cluster" value={destination.clusterName || '--'} />
-                <ContentRow title="Target namespace" value={destination.namespace || '--'} />
-                <ContentRow title="Target environment" value={destination.environmentName || '--'} />
-            </div>
-        )
+        if (validationFailedReason === MigrationSourceValidationReasonType.ENVIRONMENT_ALREADY_PRESENT) {
+            return 'A pipeline already exists for this environment. Delete the existing deployment pipeline and try again.'
+        }
+
+        if (validationFailedReason === MigrationSourceValidationReasonType.APPLICATION_ALREADY_LINKED) {
+            return 'This Argo CD application is already linked to a deployment pipeline'
+        }
+
+        if (validationFailedReason === MigrationSourceValidationReasonType.ENFORCED_POLICY_VIOLATION) {
+            return 'Cannot migrate Argo CD Application. Deployment via Helm is enforced on the target environment.'
+        }
+
+        return validationFailedMessage
+    }
+
+    const getInfoBarInfoVariantMessage = () => {
+        if (!shouldRenderInfoVariantWithContent) {
+            return null
+        }
+
+        if (isLinkable) {
+            return 'A deployment pipeline will be created for the target environment'
+        }
+
+        if (validationFailedReason === MigrationSourceValidationReasonType.CLUSTER_NOT_FOUND) {
+            return 'Connect the target cluster with Devtron and try again'
+        }
+
+        if (validationFailedMessage === MigrationSourceValidationReasonType.ENVIRONMENT_NOT_FOUND) {
+            return `Add an environment with namespace '${destination.namespace}' in '${destination.clusterName}' cluster and try again`
+        }
+
+        return validationFailedMessage
+    }
+
+    const renderInfoBar = () => {
+        if (shouldRenderInfoVariantWithContent) {
+            return (
+                <InfoColourBar
+                    Icon={ICInfoFilled}
+                    message={getInfoBarInfoVariantMessage()}
+                    classname="dc__overflow-hidden py-6 px-10 bg__secondary border-top__secondary"
+                />
+            )
+        }
+
+        if (shouldRenderInfoErrorVariantWithContent) {
+            return (
+                <InfoColourBar
+                    Icon={ICErrorExclamation}
+                    message={getInfoErrorVariantMessage()}
+                    classname="dc__overflow-hidden py-6 px-10 bcr-50 border-top__secondary"
+                />
+            )
+        }
+
+        return null
     }
 
     return (
@@ -194,6 +322,7 @@ const MigrateToDevtronValidationFactory = ({
                 />
             </div>
             {renderContent()}
+            {renderInfoBar()}
         </div>
     )
 }

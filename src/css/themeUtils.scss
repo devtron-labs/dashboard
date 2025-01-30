@@ -102,6 +102,20 @@
     }
 }
 
+.border-top {
+    &__primary {
+        border-top: 1px solid var(--border-primary);
+    }
+
+    &__secondary {
+        border-top: 1px solid var(--border-secondary);
+    }
+
+    &__white {
+        border-top: 1px solid var(--white);
+    }
+}
+
 .divider {
     &__primary {
         width: 1px;
