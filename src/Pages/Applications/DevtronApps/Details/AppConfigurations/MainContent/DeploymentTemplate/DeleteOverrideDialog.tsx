@@ -59,7 +59,7 @@ const DeleteOverrideDialog = ({
             onDelete={handleDelete}
             successToastMessage="Restored to global"
             closeConfirmationModal={handleClose}
-            handleError={handleError}
+            onError={handleError}
             primaryButtonText="Delete Override"
         />
     )

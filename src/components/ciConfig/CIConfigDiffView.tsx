@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
     Drawer,
-    DeleteDialog,
     noop,
     DockerConfigOverrideType,
     Reload,
@@ -28,6 +27,8 @@ import {
     WorkflowType,
     ToastVariantType,
     ToastManager,
+    ConfirmationModal,
+    ConfirmationModalVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -313,6 +314,8 @@ export default function CIConfigDiffView({
         ))
     }
 
+    const onClose = () => toggleConfigOverrideDiffModal()
+
     return (
         <Drawer parentClassName="dc__overflow-hidden" position="right" width="87%" minWidth="1024px" maxWidth="1246px">
             <div className="modal__body modal__config-override-diff br-0 modal__body--p-0 dc__overflow-hidden">
@@ -320,16 +323,25 @@ export default function CIConfigDiffView({
                 <div className="config-override-diff__view h-100 p-20 bg__tertiary dc__overflow-auto">
                     {renderBodyContent()}
                 </div>
-                {showDeleteDialog && (
-                    <DeleteDialog
-                        title="Delete Override"
-                        description="Are you sure you want to delete override for this pipeline"
-                        deletePrefix="Confirm "
-                        closeDelete={toggleDeleteDialogVisibility}
-                        delete={deleteOverride}
-                        apiCallInProgress={deleteInProgress}
-                    />
-                )}
+                <ConfirmationModal
+                    variant={ConfirmationModalVariantType.delete}
+                    title="Delete Override"
+                    subtitle="Are you sure you want to delete override for this pipeline"
+                    buttonConfig={{
+                        secondaryButtonConfig: {
+                            text: 'Cancel',
+                            onClick: onClose,
+                            disabled: deleteInProgress,
+                        },
+                        primaryButtonConfig: {
+                            text: 'Confirm Delete',
+                            onClick: deleteOverride,
+                            isLoading: deleteInProgress,
+                        },
+                    }}
+                    showConfirmationModal={showDeleteDialog}
+                    handleClose={onClose}
+                />
             </div>
         </Drawer>
     )

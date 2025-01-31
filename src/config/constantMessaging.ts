@@ -22,11 +22,8 @@ export const EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT =
 export const DC_MATERIAL_VIEW_CONFIRMATION_MESSAGE =
     'Checkout path for this repository is being used in docker build config. Please change checkout path in use and try again.'
 export const DC_CHART_REPO_CONFIRMATION_MESSAGE = 'Some deployed helm apps are using this repository.'
-export const DC_CLUSTER_CONFIRMATION_MESSAGE = 'Please delete environments on this cluster and try again.'
 export const DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE =
     'Some applications are currently using this container registry. Please change the container registry in use and try again.'
-export const DC_ENVIRONMENT_CONFIRMATION_MESSAGE =
-    'Please delete applications deployed on this environment and try again.'
 export const DOCKER =
     'Some applications are currently using this container registry. Please change the container registry in use and try again.'
 export const DC_GIT_PROVIDER_CONFIRMATION_MESSAGE =

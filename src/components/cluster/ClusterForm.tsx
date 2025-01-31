@@ -39,6 +39,7 @@ import {
     Button,
     ERROR_STATUS_CODE,
     DeleteConfirmationModal,
+    DC_DELETE_SUBTITLES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import TippyHeadless from '@tippyjs/react/headless'
@@ -67,7 +68,6 @@ import {
 
 import { CLUSTER_COMMAND, AppCreationType, MODES, ModuleNameMap } from '../../config'
 import {
-    DC_CLUSTER_CONFIRMATION_MESSAGE,
     DeleteComponentsName,
     EMPTY_STATE_STATUS,
 } from '../../config/constantMessaging'
@@ -1554,7 +1554,7 @@ export default function ClusterForm({
                         <DeleteConfirmationModal
                             title={cluster_name}
                             component={DeleteComponentsName.Cluster}
-                            renderCannotDeleteConfirmationSubTitle={DC_CLUSTER_CONFIRMATION_MESSAGE}
+                            subtitle={DC_DELETE_SUBTITLES.DELETE_ENVIRONMENT_SUBTITLE}
                             onDelete={onDelete}
                             showConfirmationModal={confirmation}
                             closeConfirmationModal={hideConfirmationModal}

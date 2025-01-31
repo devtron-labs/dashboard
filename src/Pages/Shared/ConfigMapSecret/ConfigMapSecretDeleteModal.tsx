@@ -110,7 +110,7 @@ export const ConfigMapSecretDeleteModal = ({
             successToastMessage={isDeleteOverride && envId ? 'Restored to global' : 'Successfully Deleted'}
             closeConfirmationModal={closeDeleteModal}
             showConfirmationModal={openDeleteModal === 'deleteModal'}
-            handleError={onError}
+            onError={onError}
             primaryButtonText={isDeleteOverride ? 'override' : ''}
         />
     )
