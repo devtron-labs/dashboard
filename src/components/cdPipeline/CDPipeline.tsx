@@ -1012,11 +1012,11 @@ export default function CDPipeline({
             }
         }
 
+        setLoadingData(true)
         const request = responseCode()
-
         const _form = { ...formData }
-
         const promise = cdPipelineId ? updateCDPipeline(request) : saveCDPipeline(request)
+
         promise
             .then((response) => {
                 if (response.result) {
