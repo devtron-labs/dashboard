@@ -1,5 +1,5 @@
-import { DeleteComponentsName, DC_ENVIRONMENT_CONFIRMATION_MESSAGE } from '@Config/constantMessaging'
-import { DeleteConfirmationModal, ERROR_STATUS_CODE } from '@devtron-labs/devtron-fe-common-lib'
+import { DeleteComponentsName } from '@Config/constantMessaging'
+import { DeleteConfirmationModal, ERROR_STATUS_CODE, DC_DELETE_SUBTITLES } from '@devtron-labs/devtron-fe-common-lib'
 import { EnvironmentDeleteComponentProps } from './ClusterEnvironmentDrawer/types'
 
 export const EnvironmentDeleteComponent = ({
@@ -11,7 +11,7 @@ export const EnvironmentDeleteComponent = ({
     <DeleteConfirmationModal
         title={environmentName}
         component={DeleteComponentsName.Environment}
-        renderCannotDeleteConfirmationSubTitle={DC_ENVIRONMENT_CONFIRMATION_MESSAGE}
+        subtitle={DC_DELETE_SUBTITLES.DELETE_ENVIRONMENT_SUBTITLE}
         onDelete={onDelete}
         showConfirmationModal={showConfirmationModal}
         closeConfirmationModal={closeConfirmationModal}

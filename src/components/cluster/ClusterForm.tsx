@@ -38,6 +38,7 @@ import {
     Button,
     ERROR_STATUS_CODE,
     DeleteConfirmationModal,
+    DC_DELETE_SUBTITLES,
     Textarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
@@ -1517,6 +1518,7 @@ export default function ClusterForm({
                         <DeleteConfirmationModal
                             title={cluster_name}
                             component={DeleteComponentsName.Cluster}
+                            subtitle={DC_DELETE_SUBTITLES.DELETE_ENVIRONMENT_SUBTITLE}
                             onDelete={onDelete}
                             showConfirmationModal={confirmation}
                             closeConfirmationModal={hideConfirmationModal}

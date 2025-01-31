@@ -410,7 +410,7 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
                     </Fragment>
                 ))}
 
-                {PipelineTaskActionConfirmationDialog && taskActionModalState && (
+                {taskActionModalState && (
                     <PipelineTaskActionConfirmationDialog
                         handleClose={handleClearTaskActionModalState}
                         handleDelete={deleteTask}
@@ -422,6 +422,7 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
                         pluginDataStore={pluginDataStore}
                         resourceKindType={isCdPipeline ? ResourceKindType.cdPipeline : ResourceKindType.ciPipeline}
                         mandatoryPluginList={mandatoryPluginData?.pluginData || []}
+                        showConfirmationModal={PipelineTaskActionConfirmationDialog}
                     />
                 )}
             </div>

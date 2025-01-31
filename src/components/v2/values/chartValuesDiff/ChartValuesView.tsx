@@ -75,7 +75,6 @@ import {
 import {
     ChartEnvironmentSelector,
     ActiveReadmeColumn,
-    DeleteChartDialog,
     ChartProjectSelector,
     ChartVersionValuesSelector,
     DeleteApplicationButton,
@@ -140,6 +139,7 @@ import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog
 import { VIEW_MODE } from '@Pages/Shared/ConfigMapSecret/constants'
 import IndexStore from '../../appDetails/index.store'
 import { AUTO_GENERATE_GITOPS_REPO, CHART_VALUE_ID } from './constant'
+import { DeleteChartDialog } from './DeleteChartDialog'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 const getDownloadManifestUrl = importComponentFromFELibrary('getDownloadManifestUrl', null, 'function')
@@ -699,7 +699,7 @@ const ChartValuesView = ({
                     })
 
                     init && init()
-                    history.push(`${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`)
+                     history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`)
                     return
                 }
 
@@ -1630,6 +1630,13 @@ const ChartValuesView = ({
             !isVirtualEnvironmentOnSelector &&
             (!isDeployChartView || allowedDeploymentTypes.length > 0) &&
             !appDetails?.isVirtualEnvironment
+
+        const toggleDeleteConfirmation = () =>(
+            dispatch({
+                type: ChartValuesViewActionTypes.showDeleteAppConfirmationDialog,
+                payload: false,
+            })
+        )
         return (
             <div
                 className={`chart-values-view__container flexbox-col h-100 bg__primary dc__overflow-hidden ${
@@ -1856,24 +1863,19 @@ const ChartValuesView = ({
                         deployOrUpdateApplication={deployOrUpdateApplication}
                     />
                 </footer>
-                {commonState.showDeleteAppConfirmationDialog && (
-                    <DeleteChartDialog
-                        appName={
-                            (isCreateValueView && valueName) ||
-                            (isExternalApp && commonState.releaseInfo.deployedAppDetail.appName) ||
-                            commonState.installedConfig?.appName
-                        }
-                        handleDelete={() => deleteApplication(DELETE_ACTION.DELETE)}
-                        toggleConfirmation={() => {
-                            dispatch({
-                                type: ChartValuesViewActionTypes.showDeleteAppConfirmationDialog,
-                                payload: false,
-                            })
-                        }}
-                        disableButton={commonState.isDeleteInProgress}
-                        isCreateValueView={isCreateValueView}
-                    />
-                )}
+
+                <DeleteChartDialog
+                    appName={
+                        (isCreateValueView && valueName) ||
+                        (isExternalApp && commonState.releaseInfo.deployedAppDetail.appName) ||
+                        commonState.installedConfig?.appName
+                    }
+                    handleDelete={() => deleteApplication(DELETE_ACTION.DELETE)}
+                    toggleConfirmation={toggleDeleteConfirmation}
+                    disableButton={commonState.isDeleteInProgress}
+                    isCreateValueView={isCreateValueView}
+                    showConfirmationModal={commonState.showDeleteAppConfirmationDialog}
+                />
 
                 <ForceDeleteConfirmationModal
                     title={commonState.forceDeleteData.title}
@@ -1882,7 +1884,6 @@ const ChartValuesView = ({
                     showConfirmationModal={commonState.forceDeleteData.forceDelete}
                     closeConfirmationModal={onCloseForceDelete}
                 />
-
                 {commonState.nonCascadeDeleteData.nonCascade && (
                     <ClusterNotReachableDailog
                         clusterName={commonState.nonCascadeDeleteData.clusterName}

@@ -40,6 +40,7 @@ import trash from '../../../assets/icons/ic-delete.svg'
 import deleteIcon from '../../../assets/img/warning-medium.svg'
 import { getAppId } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import ClusterNotReachableDailog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
+import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo/ApplicationDeletionInfo'
 
 export const ChartDeploymentList = ({ chartId }) => {
     const [installs, setInstalls] = React.useState([])
@@ -257,9 +258,8 @@ export const DeploymentRow = ({
                     <ConfirmationDialog.Icon src={deleteIcon} />
                     <ConfirmationDialog.Body
                         title={`Delete app ‘${appName}’`}
-                        subtitle="This will delete all resources associated with this application."
                     >
-                        <p className="mt-20">Deleted applications cannot be restored.</p>
+                       <ApplicationDeletionInfo />
                     </ConfirmationDialog.Body>
                     <ConfirmationDialog.ButtonGroup>
                         <button className="cta cancel" type="button" onClick={(e) => toggleConfirmation(false)}>

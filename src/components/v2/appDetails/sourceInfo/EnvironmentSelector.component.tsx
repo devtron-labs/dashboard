@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Select from 'react-select'
 import {
     showError,
@@ -42,7 +42,6 @@ import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-inte
 import { deleteApplicationRelease } from '../../../external-apps/ExternalAppService'
 import { deleteInstalledChart } from '../../../charts/charts.service'
 import { ReactComponent as Dots } from '../../assets/icons/ic-menu-dot.svg'
-import { DeleteChartDialog } from '../../values/chartValuesDiff/ChartValuesView.component'
 import { DELETE_ACTION, checkIfDevtronOperatorHelmRelease } from '../../../../config'
 import { ReactComponent as BinWithDots } from '../../../../assets/icons/ic-delete-dots.svg'
 import { DELETE_DEPLOYMENT_PIPELINE, DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
@@ -51,6 +50,7 @@ import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTyp
 import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 import { getEnvironmentName } from './utils'
 import { getAppId } from '../k8Resource/nodeDetail/nodeDetail.api'
+import { DeleteChartDialog } from '@Components/v2/values/chartValuesDiff/DeleteChartDialog'
 
 const EnvironmentSelectorComponent = ({
     isExternalApp,
@@ -387,14 +387,14 @@ const EnvironmentSelectorComponent = ({
                                     </div>
                                 </PopupMenu.Body>
                             </PopupMenu>
-                            {showDeleteConfirmation && (
-                                <DeleteChartDialog
-                                    appName={appDetails.appName}
-                                    handleDelete={handleDelete}
-                                    toggleConfirmation={setShowDeleteConfirmation}
-                                    isCreateValueView={false}
-                                />
-                            )}
+
+                            <DeleteChartDialog
+                                appName={appDetails.appName}
+                                handleDelete={handleDelete}
+                                toggleConfirmation={setShowDeleteConfirmation}
+                                isCreateValueView={false}
+                                showConfirmationModal={showDeleteConfirmation}
+                            />
                         </div>
                     )}
                     <ForceDeleteConfirmationModal

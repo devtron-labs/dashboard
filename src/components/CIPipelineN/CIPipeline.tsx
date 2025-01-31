@@ -22,7 +22,6 @@ import {
     ConditionalWrap,
     VisibleModal,
     Drawer,
-    DeleteDialog,
     VariableType,
     MandatoryPluginDataType,
     ButtonWithLoader,

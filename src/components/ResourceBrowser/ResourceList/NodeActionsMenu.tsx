@@ -148,7 +148,16 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab, handleClearBulkSel
             )
         }
 
-        return null
+        return (
+            <DeleteNodeModal
+                name={name}
+                version={version}
+                kind={kind}
+                closePopup={hideDeleteNodeModal}
+                showConfirmationModal={showDeleteNodeDialog}
+                handleClearBulkSelection={handleClearBulkSelection}
+            />
+        )
     }
 
     const menuListItemButtonClassName = 'flex left h-36 cursor pl-12 pr-12 dc__hover-n50 dc__transparent w-100'
