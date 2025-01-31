@@ -34,7 +34,6 @@ export const DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE =
     'Please select another repository containing Dockerfile and try again.'
 export const DC_CONFIGURATION_CONFIRMATION_MESSAGE =
     'This configuration is being used in some notifications. Please delete notifications using this configuration and try again.'
-export const DC_PROJECT_CONFIRMATION_MESSAGE = 'Please delete applications assigned to this project and try again.'
 export const GITOPS_FQDN_MESSAGE = 'This is not a Fully Qualified Domain Name (FQDN).'
 export const GITOPS_HTTP_MESSAGE = 'Http protocol is not supported.'
 export const USER_PERMISSION_DELETE_CONFIRMATION_MESSAGE =
