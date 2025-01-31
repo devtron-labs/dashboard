@@ -118,17 +118,10 @@ function createSaveNotificationPayload(selectedPipelines, providers): SaveNotifi
         }
     })
     providers = providers.map((p) => {
-        if (p.data.configId) {
-            return {
-                configId: p.data.configId,
-                dest: p.data.dest,
-                recipient: '',
-            }
-        }
         return {
-            configId: 0,
+            configId: p.data.configId || 0,
             dest: p.data.dest || '',
-            recipient: p.data.recipient,
+            recipient: p.data.recipient || '',
         }
     })
     return {
@@ -139,6 +132,7 @@ function createSaveNotificationPayload(selectedPipelines, providers): SaveNotifi
 
 export function saveNotification(selectedPipelines, providers): Promise<SaveNotificationResponseType> {
     const payload = createSaveNotificationPayload(selectedPipelines, providers)
+    console.log({payload})
     return post<SaveNotificationResponseType['result'] , SaveNotificationPayload>(Routes.NOTIFIER, payload)
 }
 
