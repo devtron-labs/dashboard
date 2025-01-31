@@ -266,8 +266,7 @@ class Login extends Component<LoginProps, LoginFormState> {
                             onChange={this.handleChange}
                         />
                         <CustomInput
-                            type={import.meta.env.VITE_NODE_ENV !== 'development' ? 'password' : 'text'}
-                            data-testid="password-textbox"
+                            type={import.meta.env.PROD ? 'password' : 'text'}
                             placeholder="Password"
                             value={this.state.form.password}
                             name="password"
