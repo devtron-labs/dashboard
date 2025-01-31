@@ -38,18 +38,15 @@ import {
     noop,
     InfoIconTippy,
     DEFAULT_SECRET_PLACEHOLDER,
-    ClearIndicator,
-    MultiValueRemove,
-    MultiValueChipContainer,
     OptionType,
     DeleteComponent,
     SelectPicker,
     ToastVariantType,
     ToastManager,
     Textarea,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import CreatableSelect from 'react-select/creatable'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { useForm, handleOnBlur, handleOnFocus, parsePassword, importComponentFromFELibrary } from '../common'
 import {
@@ -85,16 +82,12 @@ import ManageRegistry from './ManageRegistry'
 import {
     CredentialType,
     CustomCredential,
-    EAModeRegistryType,
     RemoteConnectionType,
     RemoteConnectionTypeRegistry,
     SSHAuthenticationType,
 } from './dockerType'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
-import { ReactComponent as ErrorInfo } from '../../assets/icons/misc/errorInfo.svg'
-import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { creatableSelectStyles } from './creatableStyles'
 
 const RegistryHelmPushCheckbox = importComponentFromFELibrary('RegistryHelmPushCheckbox')
 const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio')
@@ -104,13 +97,6 @@ enum CERTTYPE {
     SECURE = 'secure',
     INSECURE = 'insecure',
     SECURE_WITH_CERT = 'secure-with-cert',
-}
-
-const creatableComponents = {
-    DropdownIndicator: null,
-    ClearIndicator,
-    MultiValueRemove,
-    MultiValueContainer: (props) => <MultiValueChipContainer {...props} />,
 }
 
 const getInitialSSHAuthenticationType = (remoteConnectionConfig: any): SSHAuthenticationType => {
@@ -1486,39 +1472,25 @@ const DockerForm = ({
         return (
             <>
                 <div className="mb-12">
-                    <div className="dc__required-field fs-13 cn-9 mb-6">List of repositories</div>
-                    <CreatableSelect
+                    <SelectPicker
+                        required
+                        label="List of repositories"
                         isMulti
-                        isClearable
+                        options={[]}
                         autoFocus
-                        value={customState.repositoryList.value}
-                        inputValue={customState.repositoryList.inputValue}
-                        tabIndex={3}
-                        menuIsOpen={false}
-                        styles={creatableSelectStyles}
-                        components={creatableComponents}
-                        onChange={handleCreatableChange}
-                        onInputChange={handleCreatableInputChange}
-                        onBlur={setRepoListValue}
-                        onKeyDown={handleCreatableKeyDown}
+                        isClearable
                         placeholder="Enter repository name and press enter"
+                        inputValue={customState.repositoryList.inputValue}
+                        value={customState.repositoryList.value}
+                        onBlur={setRepoListValue}
+                        onInputChange={handleCreatableInputChange}
+                        onKeyDown={handleCreatableKeyDown}
+                        onChange={handleCreatableChange}
+                        inputId="repository-list"
+                        error={repositoryError || customState.repositoryList?.error}
+                        shouldHideMenu
+                        size={ComponentSizeType.large}
                     />
-                    {repositoryError.length > 0 && (
-                        <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6">
-                            <div className="error-label-icon">
-                                <ErrorInfo className="icon-dim-16" />
-                            </div>
-                            <div className="ml-4 cr-5">{repositoryError}</div>
-                        </div>
-                    )}
-                    {customState.repositoryList?.error && (
-                        <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6">
-                            <div className="error-label-icon">
-                                <AlertTriangle className="icon-dim-16" />
-                            </div>
-                            <div className="ml-4 cr-5">{customState.repositoryList?.error}</div>
-                        </div>
-                    )}
                 </div>
                 {registryStorageType === RegistryStorageType.OCI_PUBLIC && (
                     <InfoColourBar
@@ -1760,7 +1732,7 @@ const DockerForm = ({
     // For EA Mode GCR is not available as it is not OCI compliant
     const EA_MODE_REGISTRY_TYPE_MAP = Object.fromEntries(Object.entries(REGISTRY_TYPE_MAP).filter(([key,_]) => key !== 'gcr'))
     return (
-        <form onSubmit={handleOnSubmit} className="docker-form divider" autoComplete="off">
+        <form onSubmit={handleOnSubmit} className="docker-form divider" autoComplete="off" noValidate>
             <div className="pl-20 pr-20 pt-20 pb-20">
                 <div
                     className={`form__row--two-third ${

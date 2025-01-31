@@ -204,14 +204,15 @@ export const TaskDetailComponent = () => {
             <div className="p-20 dc__overflow-auto">
                 <div>
                     <div className="row-container mb-12">
-                        <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">Task name</div>
                         <CustomInput
                             type="text"
                             onChange={(e) => handleNameChange(e)}
                             value={selectedStep.name}
                             name="task-name"
                             placeholder="Enter task name"
+                            label="Task name"
                             error={renderTaskNameError()}
+                            required
                         />
                     </div>
                     <div className="row-container mb-12">
