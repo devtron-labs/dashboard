@@ -33,12 +33,13 @@ import {
     DEPLOYMENT_STATUS,
     EMPTY_STATE_STATUS,
     MODES,
+    Button,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
-import Tippy from '@tippyjs/react'
 import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
 import docker from '../../../assets/icons/misc/docker.svg'
-import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
+import { ReactComponent as DeployButton } from '../../../assets/icons/ic-nav-rocket.svg'
 import DataNotFound from '../../../assets/img/app-not-deployed.svg'
 import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
 import { Moment12HourFormat, SERVER_ERROR_CODES, URLS } from '../../../config'
@@ -660,16 +661,17 @@ const ChartDeploymentHistory = ({
                     </div>
 
                     {!(selectedDeploymentHistoryIndex === 0 || isVirtualEnvironment) && (
-                        <Tippy className="default-tt" arrow={false} content="Re-deploy this version">
-                            <button
-                                className="flex cta deploy-button"
-                                onClick={() => setShowRollbackConfirmation(true)}
-                                data-testid="re-deployment-button"
-                            >
-                                <DeployButton className="deploy-button-icon" />
-                                <span className="ml-4">Deploy</span>
-                            </button>
-                        </Tippy>
+                        <Button
+                            dataTestId="re-deployment-button"
+                            text="Deploy"
+                            size={ComponentSizeType.medium}
+                            showTooltip
+                            tooltipProps={{
+                                content: 'Re-deploy this version',
+                            }}
+                            onClick={() => setShowRollbackConfirmation(true)}
+                            startIcon={<DeployButton />}
+                        />
                     )}
                     {showDockerInfo && (
                         <DockerListModal dockerList={deployment.dockerImages} closeTab={closeDockerInfoTab} />
@@ -750,14 +752,13 @@ const ChartDeploymentHistory = ({
                     </div>
                 </div>
                 <div className="ci-details__body dc__overflow-auto">{renderSelectedDeploymentDetail()}</div>
-                {showRollbackConfirmation && (
-                    <RollbackConfirmationDialog
-                        deploying={deploying}
-                        rollbackDialogTitle={rollbackDialogTitle}
-                        setShowRollbackConfirmation={setShowRollbackConfirmation}
-                        handleDeployClick={handleDeployClick}
-                    />
-                )}
+                <RollbackConfirmationDialog
+                    deploying={deploying}
+                    rollbackDialogTitle={rollbackDialogTitle}
+                    setShowRollbackConfirmation={setShowRollbackConfirmation}
+                    handleDeployClick={handleDeployClick}
+                    showRollbackConfirmation={showRollbackConfirmation}
+                />
             </div>
         )
     }
