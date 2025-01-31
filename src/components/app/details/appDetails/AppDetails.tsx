@@ -20,7 +20,6 @@ import {
     Progressing,
     noop,
     stopPropagation,
-    multiSelectStyles,
     DeploymentAppTypes,
     useSearchString,
     useAsync,
@@ -53,7 +52,6 @@ import {
     DEFAULT_STATUS_TEXT,
 } from '../../../../config'
 import { NavigationArrow, useAppContext, FragmentHOC } from '../../../common'
-import { groupHeaderStyle, Option } from '../../../v2/common/ReactSelect.utils'
 import { getAppConfigStatus, getAppOtherEnvironmentMin, stopStartApp } from '../../../../services/service'
 import AppNotDeployedIcon from '@Images/app-not-deployed.svg'
 import AppNotConfiguredIcon from '@Images/app-not-configured.png'
@@ -377,6 +375,7 @@ export const Details: React.FC<DetailsType> = ({
     useEffect(
         () => () => {
             clearPollingInterval()
+            clearDeploymentStatusTimer()
             IndexStore.clearAppDetails()
         },
         [],
