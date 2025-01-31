@@ -20,7 +20,6 @@ import {
     Progressing,
     ConditionalWrap,
     VisibleModal,
-    DeleteDialog,
     ServerErrors,
     RadioGroup,
     RadioGroupItem,
@@ -299,7 +298,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 <DeleteConfirmationModal
                     title={this.state.form.name}
                     component="linked build pipeline"
-                    subtitle={`Are you sure you want to delete this CI Pipeline from '${this.props.appName}' ?`}
+                    subtitle={`Are you sure you want to delete this linked CI Pipeline from '${this.props.appName}' ?`}
                     showConfirmationModal={this.props.match.params.ciPipelineId && this.state.showDeleteModal}
                     closeConfirmationModal={this.closeCIDeleteModal}
                     onDelete={this.onDelete}

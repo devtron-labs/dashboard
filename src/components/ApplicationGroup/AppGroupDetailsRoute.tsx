@@ -487,7 +487,6 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             <DeleteConfirmationModal
                 title={clickedGroup?.label}
                 component={DeleteComponentsName.Filter}
-                subtitle="Are you sure you want to delete this filter?"
                 onDelete={onDelete}
                 showConfirmationModal={showDeleteGroup && isPopupBox}
                 closeConfirmationModal={closeDeleteGroup}

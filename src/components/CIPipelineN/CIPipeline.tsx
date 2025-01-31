@@ -73,7 +73,7 @@ import { Sidebar } from './Sidebar'
 import { Build } from './Build'
 import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning.svg'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
+import { DeleteComponentsName, MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
 import { LoadingState } from '../ciConfig/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from '../cdPipeline/cdpipeline.util'
@@ -560,6 +560,7 @@ export default function CIPipeline({
         return (
             <DeleteConfirmationModal
                 title={formData.name}
+                component={DeleteComponentsName.BuildPipeline}
                 subtitle={`Are you sure you want to delete this CI Pipeline from '${appName}' ?`}
                 showConfirmationModal={showDeleteModal}
                 closeConfirmationModal={closeCIDeleteModal}

@@ -88,7 +88,6 @@ export class Project extends Component<ProjectProps, ProjectState> {
                 <DeleteConfirmationModal
                     title={this.props.name}
                     component={DeleteComponentsName.Project}
-                    subtitle="Are you sure you want to delete this project?"
                     onDelete={this.onDelete}
                     showConfirmationModal={this.state.confirmation}
                     closeConfirmationModal={this.toggleConfirmation}

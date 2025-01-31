@@ -48,6 +48,7 @@ export const GIT_MATERIAL_IN_USE_MESSAGE =
 export const enum DeleteComponentsName {
     API_TOKEN = 'API token',
     Application = 'application',
+    BuildPipeline = 'build pipeline',
     ChartGroup = 'chart group',
     ContainerRegistry = 'container registry',
     ChartRepository = 'chart repository',
