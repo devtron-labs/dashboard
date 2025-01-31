@@ -1,5 +1,7 @@
+import { SyntheticEvent } from 'react'
 import {
     APIResponseHandler,
+    BaseURLParams,
     GenericSectionErrorState,
     ResourceKindType,
     SelectPicker,
@@ -8,17 +10,20 @@ import {
     useAsync,
     useGetResourceKindsOptions,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { SyntheticEvent } from 'react'
+import { useParams } from 'react-router-dom'
+
 import { getArgoInstalledExternalApps } from '@Components/app/list-new/AppListService'
+import TriggerTypeRadio from '../TriggerTypeRadio'
 import MigrateToDevtronValidationFactory from './MigrateToDevtronValidationFactory'
 import { MigrateFromArgoProps } from './types'
 import { MigrateFromArgoFormState } from '../cdPipeline.types'
 import { validateMigrationSource } from './service'
-import TriggerTypeRadio from '../TriggerTypeRadio'
 
 const RESOURCES_TO_FETCH: ResourceKindType.cluster[] = [ResourceKindType.cluster]
 
 const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormState }: MigrateFromArgoProps) => {
+    const { appId } = useParams<Pick<BaseURLParams, 'appId'>>()
+
     const { isResourcesOptionsLoading, refetchResourcesOptions, resourcesOptionsError, resourcesOptionsMap } =
         useGetResourceKindsOptions({
             resourcesToFetch: RESOURCES_TO_FETCH,
@@ -32,7 +37,41 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
         )
 
     const handleSyncMigrateFromArgoFormStateWithValidationResponse = async () => {
-        const validationResponse = await validateMigrationSource(migrateToDevtronFormState)
+        setMigrateToDevtronFormState((prevState) => ({
+            ...prevState,
+            migrateFromArgoFormState: {
+                ...prevState.migrateFromArgoFormState,
+                validationResponse: {
+                    isLinkable: false,
+                    errorDetail: {
+                        validationFailedReason: null,
+                        validationFailedMessage: '',
+                    },
+                    applicationMetadata: {
+                        source: {
+                            repoURL: '',
+                            chartPath: '',
+                            chartMetadata: {
+                                requiredChartVersion: '',
+                                savedChartName: '',
+                                valuesFileName: '',
+                                requiredChartName: '',
+                            },
+                        },
+                        destination: {
+                            clusterName: '',
+                            clusterServerUrl: '',
+                            namespace: '',
+                            environmentName: '',
+                            environmentId: 0,
+                        },
+                        status: null,
+                    },
+                },
+            },
+        }))
+
+        const validationResponse = await validateMigrationSource(migrateToDevtronFormState, +appId)
         setMigrateToDevtronFormState((prevState) => ({
             ...prevState,
             migrateFromArgoFormState: {
@@ -72,6 +111,10 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
         .sort((a, b) => stringComparatorBySortOrder(a.label as string, b.label as string))
 
     const handleClusterChange = (clusterOption: SelectPickerOptionType<number>) => {
+        if (clusterOption.value === migrateToDevtronFormState.migrateFromArgoFormState.clusterId) {
+            return
+        }
+
         setMigrateToDevtronFormState((prevState) => ({
             ...prevState,
             migrateFromArgoFormState: {
@@ -87,6 +130,13 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
     const handleArgoAppChange = (
         argoAppOption: SelectPickerOptionType<Pick<MigrateFromArgoFormState, 'appName' | 'namespace'>>,
     ) => {
+        if (
+            argoAppOption.value.appName === migrateToDevtronFormState.migrateFromArgoFormState.appName &&
+            argoAppOption.value.namespace === migrateToDevtronFormState.migrateFromArgoFormState.namespace
+        ) {
+            return
+        }
+
         setMigrateToDevtronFormState((prevState) => ({
             ...prevState,
             migrateFromArgoFormState: {
@@ -129,6 +179,7 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
                         }
                         required
                         placeholder="Select a cluster"
+                        autoFocus
                     />
                 </div>
 

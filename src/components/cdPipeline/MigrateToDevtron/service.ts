@@ -9,13 +9,15 @@ import { sanitizeValidateMigrationSourceResponse } from './utils'
 
 export const validateMigrationSource = async (
     migrateToDevtronFormState: MigrateToDevtronFormState,
+    appId: number,
 ): Promise<ValidateMigrationSourceDTO> => {
     try {
-        const payload: MigrateToDevtronRequiredFieldsDTO = {
+        const payload: MigrateToDevtronRequiredFieldsDTO & { appId: number } = {
             deploymentAppType: migrateToDevtronFormState.deploymentAppType,
             deploymentAppName: migrateToDevtronFormState.migrateFromArgoFormState.appName,
             applicationObjectClusterId: migrateToDevtronFormState.migrateFromArgoFormState.clusterId,
             applicationObjectNamespace: migrateToDevtronFormState.migrateFromArgoFormState.namespace,
+            appId,
         }
         const { result } = await post<ValidateMigrationSourceDTO, MigrateToDevtronRequiredFieldsDTO>(
             Routes.APP_CD_PIPELINE_VALIDATE_LINK_REQUEST,

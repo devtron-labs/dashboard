@@ -299,7 +299,7 @@ const MigrateToDevtronValidationFactory = ({
         return validationFailedMessage
     }
 
-    const renderInfoBar = () => {
+    const renderContentInfoBar = () => {
         if (shouldRenderInfoVariantWithContent) {
             return (
                 <InfoColourBar
@@ -358,7 +358,7 @@ const MigrateToDevtronValidationFactory = ({
                 />
             </div>
             <div className="px-16 flexbox-col">{renderContent()}</div>
-            {renderInfoBar()}
+            {renderContentInfoBar()}
         </div>
     )
 }
