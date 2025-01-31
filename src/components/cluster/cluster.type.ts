@@ -207,3 +207,11 @@ export type ClusterFormProps = {
     toggleClusterDetails: any
     isVirtualCluster: boolean
 }
+
+export interface AddClusterFormPrefilledInfoType {
+    serverURL: string
+}
+
+export interface AddEnvironmentFormPrefilledInfoType {
+    namespace: string
+}

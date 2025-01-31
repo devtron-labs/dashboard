@@ -319,18 +319,18 @@ class ClusterList extends Component<ClusterListProps, any> {
                 </Route>
 
                 <Route
-                    path={`${URLS.GLOBAL_CONFIG_CLUSTER}/:clusterId${URLS.CREATE_ENVIRONMENT}`}
+                    path={`${URLS.GLOBAL_CONFIG_CLUSTER}/:clusterName${URLS.CREATE_ENVIRONMENT}`}
                     render={(props) => {
-                        const clusterId = props.match.params.clusterId
-                        const { isVirtualCluster, prometheus_url } =
-                            this.state.clusters.find((cluster) => cluster.id == clusterId) || {}
+                        const clusterName = props.match.params.clusterName
+                        const { isVirtualCluster, prometheus_url, id: clusterId } =
+                            this.state.clusters.find((cluster) => cluster.cluster_name === clusterName) || {}
 
                         return (
                             <ClusterEnvironmentDrawer
                                 reload={this.initialise}
                                 id={null}
                                 environmentName={null}
-                                clusterId={+clusterId}
+                                clusterId={clusterId}
                                 namespace={null}
                                 prometheusEndpoint={prometheus_url}
                                 isProduction={null}
@@ -688,13 +688,13 @@ const Cluster = ({
                             className="fw-6 dc__mxw-400 dc__truncate-text"
                             tag={isProd ? 'Prod' : null}
                         />
-                        {clusterId && (
+                        {cluster_name && (
                             <div className="flex dc__align-right dc__gap-16">
                                 <Button
                                     dataTestId={`add-environment-button-${cluster_name}`}
                                     component={ButtonComponentType.link}
                                     linkProps={{
-                                        to: `${URLS.GLOBAL_CONFIG_CLUSTER}/${clusterId}${URLS.CREATE_ENVIRONMENT}`
+                                        to: `${URLS.GLOBAL_CONFIG_CLUSTER}/${cluster_name}${URLS.CREATE_ENVIRONMENT}`
                                     }}
                                     startIcon={<Add />}
                                     text="Add Environment"

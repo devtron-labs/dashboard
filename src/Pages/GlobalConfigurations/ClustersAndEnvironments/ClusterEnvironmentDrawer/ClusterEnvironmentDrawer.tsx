@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import {
     Button,
@@ -40,6 +40,8 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { saveEnvironment, updateEnvironment, deleteEnvironment } from '@Components/cluster/cluster.service'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '@Config/constantMessaging'
 
+import { getNamespaceFromLocalStorage } from '@Components/cluster/cluster.util'
+import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Components/cluster/constants'
 import { ClusterEnvironmentDrawerFormProps, ClusterEnvironmentDrawerProps, ClusterNamespacesDTO } from './types'
 import { getClusterNamespaceByName, getClusterEnvironmentUpdatePayload, getNamespaceLabels } from './utils'
 import { clusterEnvironmentDrawerFormValidationSchema } from './schema'
@@ -137,12 +139,18 @@ export const ClusterEnvironmentDrawer = ({
     const { data, errors, register, handleSubmit, trigger } = useForm<ClusterEnvironmentDrawerFormProps>({
         initialValues: {
             environmentName: environmentName ?? '',
-            namespace: namespace ?? '',
+            namespace: !id ? getNamespaceFromLocalStorage(namespace ?? '') : namespace ?? '',
             isProduction: !!isProduction,
             description: description ?? '',
         },
         validations: clusterEnvironmentDrawerFormValidationSchema({ isNamespaceMandatory: !isVirtual }),
     })
+
+    useEffect(() => {
+        if (typeof Storage !== 'undefined' && !id) {
+            localStorage.removeItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY)
+        }
+    }, [])
 
     const onValidation =
         (clusterNamespacesData = clusterNamespaces.data): UseFormSubmitHandler<ClusterEnvironmentDrawerFormProps> =>

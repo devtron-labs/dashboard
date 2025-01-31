@@ -22,7 +22,10 @@ import {
     ClusterComponentStatus,
     ClusterTerminalParamsType,
     emptyClusterTerminalParamsData,
+    AddClusterFormPrefilledInfoType,
+    AddEnvironmentFormPrefilledInfoType,
 } from './cluster.type'
+import { ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY, ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from './constants'
 
 export function getEnvName(components: ClusterComponentType[], agentInstallationStage): string {
     let nonTerminatingStatus: ClusterComponentStatusType[] = []
@@ -90,4 +93,33 @@ export const createTaintsList = (list: any[], nodeLabel: string): Map<string, No
         }
         return taints
     }, new Map<string, NodeTaintType[]>())
+}
+
+export const getServerURLFromLocalStorage = (fallbackServerUrl: string): string => {
+    if (typeof Storage !== 'undefined' && localStorage.getItem(ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY)) {
+        try {
+            const clusterData: AddClusterFormPrefilledInfoType = JSON.parse(localStorage.getItem(ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY))
+            const serverURL = clusterData?.serverURL || fallbackServerUrl
+            return serverURL
+        } catch (e) {
+            // Should we send this in sentry?
+            console.error('Error while parsing local storage data', e)
+        }
+    }
+
+    return fallbackServerUrl
+}
+
+export const getNamespaceFromLocalStorage = (fallbackNamespace: string): string => {
+    if (typeof Storage !== 'undefined' && localStorage.getItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY)) {
+        try {
+            const envData: AddEnvironmentFormPrefilledInfoType = JSON.parse(localStorage.getItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY))
+            const namespace = envData?.namespace || fallbackNamespace
+            return namespace
+        } catch (e) {
+            console.error('Error while parsing local storage data', e)
+        }
+    }
+
+    return fallbackNamespace
 }

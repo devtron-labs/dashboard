@@ -156,6 +156,9 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
         }))
     }
 
+    const getArgoOptionValue = (option: (typeof argoAppListOptions)[number]): `${string}-${string}` =>
+        `${option.value.appName}-${option.value.namespace}`
+
     return (
         <>
             <div className="flexbox dc__gap-8 dc__align-end">
@@ -210,6 +213,7 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
                                   }
                                 : null
                         }
+                        getOptionValue={getArgoOptionValue}
                         placeholder="Select an Argo CD application"
                     />
                 </div>

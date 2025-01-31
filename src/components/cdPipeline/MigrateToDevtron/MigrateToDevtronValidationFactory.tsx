@@ -17,6 +17,11 @@ import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.sv
 import { ReactComponent as ICArrowRight } from '@Icons/ic-arrow-right.svg'
 import { ReactComponent as ICUpload } from '@Icons/ic-upload.svg'
 import { ReactComponent as ICInfoFilled } from '@Icons/ic-info-filled.svg'
+import { AddClusterFormPrefilledInfoType, AddEnvironmentFormPrefilledInfoType } from '@Components/cluster/cluster.type'
+import {
+    ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY,
+    ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY,
+} from '@Components/cluster/constants'
 import { MigrationSourceValidationReasonType } from '../cdPipeline.types'
 import { MigrateToDevtronValidationFactoryProps } from './types'
 import './MigrateToDevtronValidationFactory.scss'
@@ -189,6 +194,26 @@ const MigrateToDevtronValidationFactory = ({
         </div>
     )
 
+    const handleAddEnvironmentClick = () => {
+        if (typeof Storage !== 'undefined') {
+            const environmentFormData: AddEnvironmentFormPrefilledInfoType = {
+                namespace: destination.namespace,
+            }
+
+            localStorage.setItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY, JSON.stringify(environmentFormData))
+        }
+    }
+
+    const handleAddClusterClick = () => {
+        if (typeof Storage !== 'undefined') {
+            const clusterFormData: AddClusterFormPrefilledInfoType = {
+                serverURL: destination.clusterServerUrl,
+            }
+
+            localStorage.setItem(ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY, JSON.stringify(clusterFormData))
+        }
+    }
+
     const renderContent = () => {
         switch (validationFailedReason) {
             case MigrationSourceValidationReasonType.CLUSTER_NOT_FOUND:
@@ -203,6 +228,7 @@ const MigrateToDevtronValidationFactory = ({
                                 variant: ButtonVariantType.text,
                                 size: ComponentSizeType.large,
                                 component: ButtonComponentType.link,
+                                onClick: handleAddClusterClick,
                                 linkProps: {
                                     to: `${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_CLUSTER}`,
                                 },
@@ -238,8 +264,9 @@ const MigrateToDevtronValidationFactory = ({
                                 variant: ButtonVariantType.text,
                                 size: ComponentSizeType.large,
                                 component: ButtonComponentType.link,
+                                onClick: handleAddEnvironmentClick,
                                 linkProps: {
-                                    to: `${URLS.GLOBAL_CONFIG_CLUSTER}/${destination.environmentId}/${URLS.CREATE_ENVIRONMENT}`,
+                                    to: `${URLS.GLOBAL_CONFIG_CLUSTER}/${destination.clusterName}${URLS.CREATE_ENVIRONMENT}`,
                                 },
                             }}
                             titleTooltip={TARGET_ENVIRONMENT_TOOLTIP}
