@@ -22,7 +22,6 @@ import {
     showError,
     Progressing,
     ConfirmationDialog,
-    ForceDeleteDialog,
     PopupMenu,
     ResponseType,
     DeploymentAppTypes,

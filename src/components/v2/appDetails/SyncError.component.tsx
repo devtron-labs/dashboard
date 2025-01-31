@@ -17,7 +17,6 @@
 import React, { useState, useEffect } from 'react'
 import {
     DeploymentAppTypes,
-    ForceDeleteDialog,
     ResponseType,
     ServerErrors,
     not,
