@@ -9,13 +9,13 @@ import {
     ButtonComponentType,
     URLS as COMMON_URLS,
     isNullOrUndefined,
+    GenericSectionErrorState,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { Link } from 'react-router-dom'
 import { URLS } from '@Config/routes'
 import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
 import { ReactComponent as ICArgoCDApp } from '@Icons/ic-argocd-app.svg'
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
-import { ReactComponent as ICArrowRight } from '@Icons/ic-arrow-right.svg'
-import { ReactComponent as ICUpload } from '@Icons/ic-upload.svg'
 import { ReactComponent as ICInfoFilled } from '@Icons/ic-info-filled.svg'
 import { AddClusterFormPrefilledInfoType, AddEnvironmentFormPrefilledInfoType } from '@Components/cluster/cluster.type'
 import {
@@ -24,6 +24,7 @@ import {
 } from '@Components/cluster/constants'
 import { MigrationSourceValidationReasonType } from '../cdPipeline.types'
 import { MigrateToDevtronValidationFactoryProps } from './types'
+import { GENERIC_SECTION_ERROR_STATE_COMMON_PROPS } from './constants'
 import './MigrateToDevtronValidationFactory.scss'
 
 interface ContentRowProps {
@@ -62,7 +63,7 @@ const MigrateToDevtronValidationFactory = ({
     validationResponse,
     appName,
     refetchValidationResponse,
-}: MigrateToDevtronValidationFactoryProps) => {
+}: Readonly<MigrateToDevtronValidationFactoryProps>) => {
     if (!validationResponse) {
         return null
     }
@@ -71,100 +72,88 @@ const MigrateToDevtronValidationFactory = ({
     const { validationFailedReason, validationFailedMessage } = errorDetail || {}
     const { source, status, destination } = applicationMetadata || {}
 
-    const renderUnknownError = () => (
-        <InfoColourBar
-            classname="error_bar"
-            Icon={ICErrorExclamation}
-            iconClass="icon-dim-20 dc__no-shrink"
-            textConfig={{
-                heading: validationFailedReason,
-                description: validationFailedMessage || 'Something went wrong',
-            }}
-        />
+    const renderGitOpsNotConfiguredDescription = () => (
+        <p className="m-0">
+            GitOps credentials is required to deploy applications via GitOps.&nbsp;
+            <Link
+                to={URLS.GLOBAL_CONFIG_GITOPS}
+                data-testid="configure-gitops-button"
+                target="_blank"
+                className="anchor"
+            >
+                Configure
+            </Link>
+            &nbsp;and try again.
+        </p>
+    )
+
+    const renderChartVersionNotFoundDescription = () => (
+        <p className="m-0">
+            Chart version &apos;{source.chartMetadata.requiredChartVersion}&apos; not found for &apos;
+            {source.chartMetadata.requiredChartName}&apos; chart.&nbsp;
+            <Link
+                to={COMMON_URLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST}
+                data-testid="upload-chart-button"
+                target="_blank"
+                className="anchor"
+            >
+                Upload Chart
+            </Link>
+            &nbsp;and try again.
+        </p>
     )
 
     if (!isLinkable) {
         if (!Object.values(MigrationSourceValidationReasonType).includes(validationFailedReason)) {
-            return renderUnknownError()
+            return (
+                <GenericSectionErrorState
+                    title={validationFailedReason}
+                    subTitle={validationFailedMessage || 'Something went wrong'}
+                    reload={refetchValidationResponse}
+                    {...GENERIC_SECTION_ERROR_STATE_COMMON_PROPS}
+                />
+            )
         }
 
         switch (validationFailedReason) {
             // First rendering states requiring only infobar
             case MigrationSourceValidationReasonType.CHART_TYPE_MISMATCH:
                 return (
-                    <InfoColourBar
-                        classname="error_bar"
-                        Icon={ICErrorExclamation}
-                        iconClass="icon-dim-20 dc__no-shrink"
-                        textConfig={{
-                            heading: 'Chart type mismatch',
-                            description: `Argo CD application uses '${source.chartMetadata.savedChartName}' chart where as this application uses '${source.chartMetadata.requiredChartName}' chart. You can upload your own charts in Global Configuration > Deployment Charts.`,
-                        }}
+                    <GenericSectionErrorState
+                        title="Chart type mismatch"
+                        subTitle={`Argo CD application uses '${source.chartMetadata.savedChartName}' chart where as this application uses '${source.chartMetadata.requiredChartName}' chart. You can upload your own charts in Global Configuration > Deployment Charts.`}
+                        reload={refetchValidationResponse}
+                        {...GENERIC_SECTION_ERROR_STATE_COMMON_PROPS}
                     />
                 )
             case MigrationSourceValidationReasonType.INTERNAL_SERVER_ERROR:
                 return (
-                    <InfoColourBar
-                        classname="error_bar"
-                        Icon={ICErrorExclamation}
-                        iconClass="icon-dim-20 dc__no-shrink"
-                        textConfig={{
-                            heading: 'Something went wrong',
-                            description: validationFailedMessage || '',
-                        }}
+                    <GenericSectionErrorState
+                        title="Something went wrong"
+                        subTitle={validationFailedMessage || ''}
+                        reload={refetchValidationResponse}
+                        {...GENERIC_SECTION_ERROR_STATE_COMMON_PROPS}
                     />
                 )
 
             case MigrationSourceValidationReasonType.GITOPS_NOT_FOUND: {
-                const actionButtonConfig: ButtonProps = {
-                    dataTestId: 'configure-gitops-button',
-                    text: 'Configure',
-                    endIcon: <ICArrowRight />,
-                    variant: ButtonVariantType.text,
-                    size: ComponentSizeType.medium,
-                    component: ButtonComponentType.link,
-                    linkProps: {
-                        to: URLS.GLOBAL_CONFIG_GITOPS,
-                    },
-                }
-
                 return (
-                    <InfoColourBar
-                        classname="error_bar"
-                        Icon={ICErrorExclamation}
-                        iconClass="icon-dim-20 dc__no-shrink"
-                        textConfig={{
-                            heading: 'GitOps credentials not configured',
-                            description: 'GitOps credentials is required to deploy applications via GitOps',
-                            actionButtonConfig,
-                        }}
+                    <GenericSectionErrorState
+                        title="GitOps credentials not configured"
+                        subTitle={renderGitOpsNotConfiguredDescription()}
+                        reload={refetchValidationResponse}
+                        {...GENERIC_SECTION_ERROR_STATE_COMMON_PROPS}
                     />
                 )
             }
 
             case MigrationSourceValidationReasonType.CHART_VERSION_NOT_FOUND: {
-                const actionButtonConfig: ButtonProps = {
-                    dataTestId: 'upload-chart-button',
-                    text: 'Upload Chart',
-                    startIcon: <ICUpload />,
-                    variant: ButtonVariantType.text,
-                    size: ComponentSizeType.medium,
-                    component: ButtonComponentType.link,
-                    linkProps: {
-                        to: COMMON_URLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST,
-                    },
-                }
-
                 return (
-                    <InfoColourBar
-                        classname="error_bar"
-                        Icon={ICErrorExclamation}
-                        iconClass="icon-dim-20 dc__no-shrink"
-                        textConfig={{
-                            heading: 'Chart version not found',
-                            description: `Chart version '${source.chartMetadata.requiredChartVersion}' not found for '${source.chartMetadata.requiredChartName}' chart`,
-                            actionButtonConfig,
-                        }}
+                    <GenericSectionErrorState
+                        title="Chart version not found"
+                        subTitle={renderChartVersionNotFoundDescription()}
+                        reload={refetchValidationResponse}
+                        {...GENERIC_SECTION_ERROR_STATE_COMMON_PROPS}
                     />
                 )
             }
@@ -354,7 +343,7 @@ const MigrateToDevtronValidationFactory = ({
     }
 
     return (
-        <div className="flexbox-col dc__gap-16 br-8 bg__primary border__secondary">
+        <div className="flexbox-col dc__gap-16 br-8 bg__primary border__secondary w-100">
             <div className="flexbox px-16 pt-16 dc__content-space">
                 <div className="flexbox dc__gap-12">
                     <ICArgoCDApp className="icon-dim-36 dc__no-shrink" />

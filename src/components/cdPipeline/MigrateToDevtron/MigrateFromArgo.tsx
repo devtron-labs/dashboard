@@ -18,6 +18,7 @@ import MigrateToDevtronValidationFactory from './MigrateToDevtronValidationFacto
 import { MigrateFromArgoProps } from './types'
 import { MigrateFromArgoFormState } from '../cdPipeline.types'
 import { validateMigrationSource } from './service'
+import { GENERIC_SECTION_ERROR_STATE_COMMON_PROPS } from './constants'
 
 const RESOURCES_TO_FETCH: ResourceKindType.cluster[] = [ResourceKindType.cluster]
 
@@ -232,8 +233,7 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
                                 }}
                                 title="Checking compatibility"
                                 subTitle="Checking if Argo CD application and its configurations are compatible for migration to deployment pipeline"
-                                rootClassName="dc__mxw-400"
-                                description=""
+                                {...GENERIC_SECTION_ERROR_STATE_COMMON_PROPS}
                             />
                         }
                         genericSectionErrorProps={{
@@ -241,11 +241,10 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
                             subTitle:
                                 'An error occurred while checking if Argo CD application and its configurations are compatible for migration to deployment pipeline',
                             reload: reloadValidationResponse,
-                            rootClassName: 'dc__mxw-400',
-                            description: '',
+                            ...GENERIC_SECTION_ERROR_STATE_COMMON_PROPS,
                         }}
                     >
-                        <div className="w-100">
+                        <div className="w-100 flex column center">
                             <MigrateToDevtronValidationFactory
                                 appName={migrateToDevtronFormState.migrateFromArgoFormState.appName}
                                 refetchValidationResponse={reloadValidationResponse}
