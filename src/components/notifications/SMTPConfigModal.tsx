@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 import { useState, useEffect } from 'react'
-import { showError, CustomInput, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    CustomInput,
+    ToastManager,
+    ToastVariantType,
+    PasswordField,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import { getSMTPConfiguration, saveEmailConfiguration } from './notifications.service'
-import { ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, DefaultSMTPValidation } from './constants'
 import { SMTPConfigModalProps, SMTPFormType } from './types'
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
@@ -194,19 +199,17 @@ export const SMTPConfigModal = ({
                 required
                 error={isFormValid[ConfigurationFieldKeys.AUTH_USER].message}
             />
-            <div className="smtp-protected-input">
-                <ProtectedInput
-                    dataTestid="add-smtp-password"
+            <div className="mb-8">
+                <PasswordField
                     name={ConfigurationFieldKeys.AUTH_PASSWORD}
                     value={form.authPassword}
                     onChange={handleInputChange}
                     error={isFormValid[ConfigurationFieldKeys.AUTH_PASSWORD].message}
                     label="SMTP Password"
-                    labelClassName="form__label--fs-13 mb-8 fw-5 fs-13"
                     placeholder="Enter SMTP password"
                     required
-                    tabIndex={0}
                     onBlur={handleBlur}
+                    shouldShowDefaultPlaceholderOnBlur={false}
                 />
             </div>
             <CustomInput

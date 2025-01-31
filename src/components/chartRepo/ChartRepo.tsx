@@ -29,11 +29,12 @@ import {
     DeleteComponent,
     ToastManager,
     ToastVariantType,
+    PasswordField,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { NavLink } from 'react-router-dom'
 import { useForm } from '../common'
-import { List, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
+import { List } from '../globalConfigurations/GlobalConfiguration'
 import {
     saveChartProviderConfig,
     updateChartProviderConfig,
@@ -481,25 +482,29 @@ const ChartForm = ({
                 {(chartRepoType !== CHART_REPO_TYPE.PUBLIC ||
                     (id && authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD)) && (
                     <>
-                        <CustomInput
-                            placeholder='Enter username'
-                            value={customState.username.value}
-                            onChange={customHandleChange}
-                            name="username"
-                            error={customState.username.error}
-                            label="Username"
-                            required
-                        />
-                        <ProtectedInput
-                            dataTestid="add-chart-repo-password"
-                            value={customState.password.value}
-                            onChange={customHandleChange}
-                            name="password"
-                            error={customState.password.error}
-                            label="Password"
-                            labelClassName="mt-12"
-                            required
-                        />
+                        <div className="mt-12">
+                            <CustomInput
+                                placeholder="Enter username"
+                                value={customState.username.value}
+                                onChange={customHandleChange}
+                                name="username"
+                                error={customState.username.error}
+                                label="Username"
+                                required
+                            />
+                        </div>
+                        <div className="mt-12">
+                            <PasswordField
+                                value={customState.password.value}
+                                onChange={customHandleChange}
+                                name="password"
+                                error={customState.password.error}
+                                label="Password"
+                                required
+                                placeholder="Enter password"
+                                shouldShowDefaultPlaceholderOnBlur={false}
+                            />
+                        </div>
                     </>
                 )}
 
