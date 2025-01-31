@@ -152,6 +152,7 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
         </a>
     )
 
+    // TODO: Fix both
     const renderWebhookUrlLabel = () => (
         <div className="flex left dc__gap-6">
             <div className="dc__required-field">Webhook URL </div>

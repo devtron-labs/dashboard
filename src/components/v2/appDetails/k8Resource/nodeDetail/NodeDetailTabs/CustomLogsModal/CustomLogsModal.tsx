@@ -144,6 +144,7 @@ export const InputForSelectedOption = ({
         case CUSTOM_LOGS_FILTER.LINES:
             return (
                 <div className="flexbox-col cn-7">
+                    {/* TODO:  */}
                     <div className="dc__required-field mb-6 fs-13">
                         {filterTypeRadio === CUSTOM_LOGS_FILTER.DURATION ? 'View logs for last' : 'Set number of lines'}
                     </div>

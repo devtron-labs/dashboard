@@ -263,6 +263,7 @@ const EphemeralContainerDrawer = ({
         return (
             <div className="p-20 flex-grow-1">
                 <div className="dc__row-container mb-12">
+                    {/* TODO: Update */}
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
                         <Tippy
                             className="default-tt"
@@ -286,6 +287,7 @@ const EphemeralContainerDrawer = ({
                 </div>
 
                 <div className="dc__row-container mb-12">
+                    {/* TODO: Update */}
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
                         <Tippy
                             className="default-tt"
@@ -322,6 +324,7 @@ const EphemeralContainerDrawer = ({
                 </div>
 
                 <div className="dc__row-container mb-12">
+                    {/* TODO: Update */}
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
                         <Tippy
                             className="default-tt"
