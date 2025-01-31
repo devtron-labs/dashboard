@@ -25,6 +25,7 @@ import {
     DeploymentAppTypes,
     ToastManager,
     ToastVariantType,
+    ForceDeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './sourceInfo.css'
 import { useParams, useHistory, useRouteMatch } from 'react-router-dom'
@@ -221,6 +222,8 @@ const EnvironmentSelectorComponent = ({
         templateType: appDetails.fluxTemplateType,
     })
 
+    const closeForceConfirmationModal = () =>  showForceDeleteDialog(false)
+
     return (
         <div className="flexbox flex-justify pl-20 pr-20 pt-16 pb-16">
             <div>
@@ -394,16 +397,13 @@ const EnvironmentSelectorComponent = ({
                             )}
                         </div>
                     )}
-                    {forceDeleteDialog && (
-                        <ForceDeleteDialog
-                            forceDeleteDialogTitle={forceDeleteDialogTitle}
-                            onClickDelete={handleForceDelete}
-                            closeDeleteModal={() => {
-                                showForceDeleteDialog(false)
-                            }}
-                            forceDeleteDialogMessage={forceDeleteDialogMessage}
-                        />
-                    )}
+                    <ForceDeleteConfirmationModal
+                        title={forceDeleteDialogTitle}
+                        subtitle={forceDeleteDialogMessage}
+                        showConfirmationModal={forceDeleteDialog}
+                        onDelete={handleForceDelete}
+                        closeConfirmationModal={closeForceConfirmationModal}
+                    />
                     {nonCascadeDeleteDialog && (
                         <ClusterNotReachableDailog
                             clusterName={clusterName}

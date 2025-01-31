@@ -25,6 +25,7 @@ import {
     renderErrorHeaderMessage,
     ToastVariantType,
     ToastManager,
+    ForceDeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
@@ -151,6 +152,8 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ showApplicationDetailedMo
         showNonCascadeDeleteDialog(true)
     }
 
+    const closeForceDeleteModal = () => showForceDeleteDialog(false)
+
     return (
         <div className="top flex left column w-100 bcr-1 pl-20 pr-20 fs-13">
             <div className="flex left w-100 cursor h-56" onClick={toggleErrorHeader}>
@@ -207,14 +210,15 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ showApplicationDetailedMo
                     </tbody>
                 </table>
             )}
-            {forceDeleteDialog && (
-                <ForceDeleteDialog
-                    forceDeleteDialogTitle={forceDeleteDialogTitle}
-                    onClickDelete={handleForceDelete}
-                    closeDeleteModal={() => showForceDeleteDialog(false)}
-                    forceDeleteDialogMessage={forceDeleteDialogMessage}
-                />
-            )}
+
+            <ForceDeleteConfirmationModal
+                title={forceDeleteDialogTitle}
+                onDelete={handleForceDelete}
+                showConfirmationModal={forceDeleteDialog}
+                closeConfirmationModal={closeForceDeleteModal}
+                subtitle={forceDeleteDialogMessage}
+            />
+
             {nonCascadeDeleteDialog && (
                 <ClusterNotReachableDailog
                     clusterName={clusterName}
