@@ -210,6 +210,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
 
     const onDelete = async () => {
         await deleteUser(_userData.id)
+        _redirectToUserPermissionList()
     }
 
     const handleKeyDown = useCallback(
@@ -380,7 +381,6 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
             <DeleteUserPermission
                 title={emailState.emails[0]?.value || ''}
                 onDelete={onDelete}
-                reload={_redirectToUserPermissionList}
                 showConfirmationModal={deleteConfirmationModal}
                 closeConfirmationModal={toggleDeleteConfirmationModal}
             />

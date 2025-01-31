@@ -141,6 +141,7 @@ export const ConfigurationTab = () => {
 
     const onClickDelete = async () => {
         await deleteNotification(deletePayload)
+        await getAllChannelConfigs()
     }
 
     const renderTableComponent = () => <ConfigurationTables activeTab={modal} state={state} setState={setState} />
@@ -201,7 +202,6 @@ export const ConfigurationTab = () => {
                 closeConfirmationModal={hideDeleteModal}
                 renderCannotDeleteConfirmationSubTitle={DC_CONFIGURATION_CONFIRMATION_MESSAGE}
                 errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
-                reload={getAllChannelConfigs}
             />
         </div>
     )

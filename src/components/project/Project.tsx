@@ -63,6 +63,7 @@ export class Project extends Component<ProjectProps, ProjectState> {
             active: this.props.active,
         }
         await deleteProject(deletePayload)
+        this.props.reload()
     }
 
     renderCollapsedView() {
@@ -89,7 +90,6 @@ export class Project extends Component<ProjectProps, ProjectState> {
                     component={DeleteComponentsName.Project}
                     renderCannotDeleteConfirmationSubTitle={DC_PROJECT_CONFIRMATION_MESSAGE}
                     onDelete={this.onDelete}
-                    reload={this.props.reload}
                     showConfirmationModal={this.state.confirmation}
                     closeConfirmationModal={this.toggleConfirmation}
                     errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}

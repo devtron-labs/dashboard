@@ -451,6 +451,7 @@ const ChartForm = ({
 
     const onDelete = async () => {
         await deleteChartRepo(chartRepoPayload)
+        reload()
     }
 
     return (
@@ -565,7 +566,6 @@ const ChartForm = ({
                 renderCannotDeleteConfirmationSubTitle={DC_CHART_REPO_CONFIRMATION_MESSAGE}
                 errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
                 onDelete={onDelete}
-                reload={reload}
                 showConfirmationModal={confirmation}
                 closeConfirmationModal={closeConfirmationModal}
             />

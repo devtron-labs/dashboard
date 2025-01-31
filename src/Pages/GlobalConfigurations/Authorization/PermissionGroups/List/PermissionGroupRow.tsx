@@ -63,6 +63,7 @@ const PermissionGroupRow = ({
                 action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
             })
         }
+        refetchPermissionGroupList()
     }
 
     const handleChecked = () => {
@@ -131,7 +132,6 @@ const PermissionGroupRow = ({
             <DeleteUserPermission
                 title={name}
                 onDelete={onDelete}
-                reload={refetchPermissionGroupList}
                 showConfirmationModal={isDeleteModalOpen}
                 closeConfirmationModal={toggleDeleteModal}
                 isUserGroup

@@ -81,6 +81,7 @@ const UserPermissionRow = ({
                 action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
             })
         }
+        refetchUserPermissionList()
     }
 
     const handleChecked = () => toggleChecked(id)
@@ -206,7 +207,6 @@ const UserPermissionRow = ({
             <DeleteUserPermission
                 title={emailId}
                 onDelete={onDelete}
-                reload={refetchUserPermissionList}
                 showConfirmationModal={isDeleteModalOpen}
                 closeConfirmationModal={toggleDeleteModal}
             />

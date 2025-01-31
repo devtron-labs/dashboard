@@ -25,7 +25,6 @@ import {
     InfoColourBar,
     Toggle,
     GenericEmptyState,
-    ResizableTextarea,
     useAsync,
     CustomInput,
     noop,
@@ -39,6 +38,7 @@ import {
     Button,
     ERROR_STATUS_CODE,
     DeleteConfirmationModal,
+    Textarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import TippyHeadless from '@tippyjs/react/headless'
@@ -49,10 +49,10 @@ import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type
 import { saveCluster, updateCluster, deleteCluster, validateCluster, saveClusters } from './cluster.service'
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
 import { ReactComponent as Warning } from '@Icons/ic-alert-triangle.svg'
-import { ReactComponent as FormError } from '@Icons/ic-warning.svg'
 import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
 import { ReactComponent as ForwardArrow } from '@Icons/ic-arrow-right.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
+
 import { ReactComponent as MechanicalOperation } from '../../assets/img/ic-mechanical-operation.svg'
 import {
     AuthenticationType,
@@ -67,7 +67,6 @@ import {
 
 import { CLUSTER_COMMAND, AppCreationType, MODES, ModuleNameMap } from '../../config'
 import {
-    DC_CLUSTER_CONFIRMATION_MESSAGE,
     DeleteComponentsName,
     EMPTY_STATE_STATUS,
 } from '../../config/constantMessaging'
@@ -718,34 +717,25 @@ export default function ClusterForm({
                         dataTestid="enter_server_url_input"
                     />
                 </div>
-                <div className="form__row form__row--bearer-token flex column left top">
+                <div className="form__row">
                     {id !== DEFAULT_CLUSTER_ID && (
-                        <div className="bearer-token">
-                            <ResizableTextarea
-                                className="dc__resizable-textarea__with-max-height dc__required-field"
-                                name="token"
-                                value={
-                                    id
-                                        ? id !== 1
-                                            ? DEFAULT_SECRET_PLACEHOLDER
-                                            : config?.bearer_token
-                                              ? config.bearer_token
-                                              : ''
-                                        : state.token.value
-                                }
-                                onChange={handleOnChange}
-                                onBlur={handleOnBlur}
-                                onFocus={handleOnFocus}
-                                placeholder="Enter bearer token"
-                                dataTestId="enter_bearer_token_input"
-                            />
-                        </div>
-                    )}
-                    {state.token.error && (
-                        <label htmlFor="" className="form__error">
-                            <FormError className="form__icon form__icon--error" />
-                            {state.token.error}
-                        </label>
+                        <Textarea
+                            name="token"
+                            value={
+                                id
+                                    ? id !== 1
+                                        ? DEFAULT_SECRET_PLACEHOLDER
+                                        : config?.bearer_token
+                                            ? config.bearer_token
+                                            : ''
+                                    : state.token.value
+                            }
+                            onChange={handleOnChange}
+                            onBlur={handleOnBlur}
+                            onFocus={handleOnFocus}
+                            placeholder="Enter bearer token"
+                            error={state.token.error}
+                        />
                     )}
                 </div>
                 <RadioGroup
@@ -797,15 +787,9 @@ export default function ClusterForm({
                         {isTlsConnection && (
                             <>
                                 <div className="form__row ml-24">
-                                    <span
-                                        data-testid="certificate_authority_data"
-                                        className="form__label dc__required-field"
-                                    >
-                                        Certificate Authority Data
-                                    </span>
-                                    <ResizableTextarea
-                                        dataTestId="certificate_authority_data_input"
-                                        className="dc__resizable-textarea__with-max-height w-100"
+                                    <Textarea
+                                        required
+                                        label="Certificate Authority Data"
                                         name="certificateAuthorityData"
                                         value={
                                             id && id !== 1 && isTlsConnection
@@ -816,21 +800,13 @@ export default function ClusterForm({
                                         onBlur={handleOnBlur}
                                         onFocus={handleOnFocus}
                                         placeholder="Enter CA Data"
+                                        error={state.certificateAuthorityData.error}
                                     />
-                                    {state.certificateAuthorityData.error && (
-                                        <label htmlFor="" className="form__error">
-                                            <FormError className="form__icon form__icon--error" />
-                                            {state.certificateAuthorityData.error}
-                                        </label>
-                                    )}
                                 </div>
                                 <div className="form__row ml-24">
-                                    <span data-testid="tls_client_key" className="form__label dc__required-field">
-                                        TLS Key
-                                    </span>
-                                    <ResizableTextarea
-                                        dataTestId="tls_client_key_input"
-                                        className="dc__resizable-textarea__with-max-height w-100"
+                                    <Textarea
+                                        label="TLS Key"
+                                        required
                                         name="tlsClientKey"
                                         value={
                                             id && id !== 1 && isTlsConnection
@@ -841,21 +817,13 @@ export default function ClusterForm({
                                         onBlur={handleOnBlur}
                                         onFocus={handleOnFocus}
                                         placeholder="Enter tls Key"
+                                        error={state.tlsClientKey.error}
                                     />
-                                    {state.tlsClientKey.error && (
-                                        <label htmlFor="" className="form__error">
-                                            <FormError className="form__icon form__icon--error" />
-                                            {state.tlsClientKey.error}
-                                        </label>
-                                    )}
                                 </div>
                                 <div className="form__row ml-24">
-                                    <span data-testid="tls_certificate" className="form__label dc__required-field">
-                                        TLS Certificate
-                                    </span>
-                                    <ResizableTextarea
-                                        dataTestId="tls_certificate_input"
-                                        className="dc__resizable-textarea__with-max-height w-100"
+                                    <Textarea
+                                        label="TLS Certificate"
+                                        required
                                         name="tlsClientCert"
                                         value={
                                             id && id !== 1 && isTlsConnection
@@ -866,13 +834,8 @@ export default function ClusterForm({
                                         onBlur={handleOnBlur}
                                         onFocus={handleOnFocus}
                                         placeholder="Enter tls Certificate"
+                                        error={state.tlsClientCert.error}
                                     />
-                                    {state.tlsClientCert.error && (
-                                        <label htmlFor="" className="form__error">
-                                            <FormError className="form__icon form__icon--error" />
-                                            {state.tlsClientCert.error}
-                                        </label>
-                                    )}
                                 </div>
                                 <div className="divider divider--n1" />
                             </>
@@ -943,21 +906,21 @@ export default function ClusterForm({
                             </div>
                         ) : null}
                         <div className="form__row">
-                            <span className="form__label">TLS Key</span>
-                            <ResizableTextarea
-                                className="dc__resizable-textarea__with-max-height w-100"
+                            <Textarea
+                                label="TLS Key"
                                 name="prometheusTlsClientKey"
                                 value={state.prometheusTlsClientKey.value}
                                 onChange={handleOnChange}
+                                placeholder="Enter TLS Key"
                             />
                         </div>
                         <div className="form__row">
-                            <span className="form__label">TLS Certificate</span>
-                            <ResizableTextarea
-                                className="dc__resizable-textarea__with-max-height w-100"
+                            <Textarea
+                                label="TLS Certificate"
                                 name="prometheusTlsClientCert"
                                 value={state.prometheusTlsClientCert.value}
                                 onChange={handleOnChange}
+                                placeholder="Enter TLS Certificate"
                             />
                         </div>
                     </div>
@@ -1449,6 +1412,7 @@ export default function ClusterForm({
             insecureSkipTlsVerify: !isTlsConnection,
         }
         await deleteCluster(payload)
+        reload()
     }
 
     return getClusterVar ? (
@@ -1553,9 +1517,7 @@ export default function ClusterForm({
                         <DeleteConfirmationModal
                             title={cluster_name}
                             component={DeleteComponentsName.Cluster}
-                            renderCannotDeleteConfirmationSubTitle={DC_CLUSTER_CONFIRMATION_MESSAGE}
                             onDelete={onDelete}
-                            reload={reload}
                             showConfirmationModal={confirmation}
                             closeConfirmationModal={hideConfirmationModal}
                             errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}

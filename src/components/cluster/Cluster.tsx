@@ -646,6 +646,7 @@ const Cluster = ({
             description: environment.description || '',
         }
         await deleteEnvironment(deletePayload)
+        reload()
     }
 
     return (
@@ -800,7 +801,6 @@ const Cluster = ({
                             environmentName={environment?.environmentName}
                             showConfirmationModal={confirmation}
                             onDelete={onDelete}
-                            reload={reload}
                             closeConfirmationModal={hideConfirmationModal}
                         />
                     </div>

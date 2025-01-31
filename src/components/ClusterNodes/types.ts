@@ -27,7 +27,7 @@ import { UpdateTabUrlParamsType, UseTabsReturnType } from '@Components/common/Dy
 import { LabelTag, OptionType } from '../app/types'
 import { CLUSTER_PAGE_TAB } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
-import { ClusterOptionType, K8SResourceListType } from '../ResourceBrowser/Types'
+import { ClusterOptionType, K8SResourceListType, ResourceBrowserActionMenuType } from '../ResourceBrowser/Types'
 
 export enum ERROR_TYPE {
     VERSION_ERROR = 'K8s Version diff',
@@ -175,6 +175,10 @@ export interface TaintErrorObj {
 export interface NodeActionModalPropType extends NodeActionRequest {
     closePopup: (refreshData?: boolean) => void
 }
+
+export interface DeleteNodeModalProps
+    extends NodeActionModalPropType,
+        Pick<ResourceBrowserActionMenuType, 'handleClearBulkSelection'> {}
 
 export interface CordonNodeModalType extends NodeActionModalPropType {
     unschedulable: boolean
