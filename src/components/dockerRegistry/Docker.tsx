@@ -537,7 +537,7 @@ const DockerForm = ({
         password: '',
     }
 
-    const [confirmation, setConfirmationModal] = useState(false)
+    const [confirmationModal, setConfirmationModal] = useState(false)
     const [isIAMAuthType, setIAMAuthType] = useState(!awsAccessKeyId && !awsSecretAccessKey)
     const [blackList, setBlackList] = useState(_ignoredClusterIdsCsv)
     const [whiteList, setWhiteList] = useState(_appliedClusterIdsCsv)
@@ -2020,7 +2020,7 @@ const DockerForm = ({
                     renderCannotDeleteConfirmationSubTitle={DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE}
                     errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
                     onDelete={onDelete}
-                    showConfirmationModal={confirmation}
+                    showConfirmationModal={confirmationModal}
                     closeConfirmationModal={closeConfirmationModal}
                 />
             </div>

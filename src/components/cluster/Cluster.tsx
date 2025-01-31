@@ -31,7 +31,6 @@ import {
     ButtonVariantType,
     ButtonStyleType,
     ComponentSizeType,
-    ERROR_STATUS_CODE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react/headless'
