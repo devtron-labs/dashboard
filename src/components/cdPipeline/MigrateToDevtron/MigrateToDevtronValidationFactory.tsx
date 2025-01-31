@@ -8,6 +8,7 @@ import {
     Tooltip,
     ButtonComponentType,
     URLS as COMMON_URLS,
+    isNullOrUndefined,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '@Config/routes'
 import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
@@ -41,9 +42,11 @@ const ContentRow = ({ title, value, buttonProps, titleTooltip }: ContentRowProps
         </div>
 
         <div className="flexbox dc__gap-8">
-            <Tooltip content={value}>
-                <span className="dc__truncate cn-9 fs-13 fw-4 lh-20">{value || '--'}</span>
-            </Tooltip>
+            {!isNullOrUndefined(value) && (
+                <Tooltip content={value}>
+                    <span className="dc__truncate cn-9 fs-13 fw-4 lh-20">{value || '--'}</span>
+                </Tooltip>
+            )}
 
             {buttonProps && <Button {...buttonProps} />}
         </div>
@@ -90,7 +93,7 @@ const MigrateToDevtronValidationFactory = ({
                         iconClass="icon-dim-20 dc__no-shrink"
                         textConfig={{
                             heading: 'Chart type mismatch',
-                            description: `Argo CD application uses ${source.chartMetadata.savedChartName} chart where as this application uses ${source.chartMetadata.requiredChartName} chart. You can upload your own charts in Global Configuration > Deployment Charts.`,
+                            description: `Argo CD application uses '${source.chartMetadata.savedChartName}' chart where as this application uses '${source.chartMetadata.requiredChartName}' chart. You can upload your own charts in Global Configuration > Deployment Charts.`,
                         }}
                     />
                 )
@@ -292,7 +295,7 @@ const MigrateToDevtronValidationFactory = ({
             return 'Connect the target cluster with Devtron and try again'
         }
 
-        if (validationFailedMessage === MigrationSourceValidationReasonType.ENVIRONMENT_NOT_FOUND) {
+        if (validationFailedReason === MigrationSourceValidationReasonType.ENVIRONMENT_NOT_FOUND) {
             return `Add an environment with namespace '${destination.namespace}' in '${destination.clusterName}' cluster and try again`
         }
 
@@ -338,7 +341,7 @@ const MigrateToDevtronValidationFactory = ({
                             // TODO: Can make a component for this
                             <span
                                 data-testid="deployment-status-name"
-                                className={`app-summary__status-name fs-13 mr-8 fw-6 f-${status.toLowerCase()}`}
+                                className={`app-summary__status-name fs-13 mr-8 fw-6 f-${status.toLowerCase()} dc__first-letter-capitalize--imp`}
                             >
                                 {status}
                             </span>

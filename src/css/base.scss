@@ -2954,6 +2954,14 @@ textarea {
     &::first-letter {
         text-transform: uppercase;
     }
+
+    &--imp {
+        text-transform: lowercase !important;
+
+        &::first-letter {
+            text-transform: uppercase !important;
+        }
+    }
 }
 
 .dc__no-text-transform {
