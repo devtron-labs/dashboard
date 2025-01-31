@@ -420,7 +420,6 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
                     <EditableTextArea
                         emptyState={defaultClusterShortDescription}
                         placeholder={defaultClusterShortDescription}
-                        rows={4}
                         updateContent={handleUpdateClusterDescription}
                         initialText={clusterDetails.shortDescription}
                         validations={{
