@@ -1725,16 +1725,6 @@ button.anchor {
     color: var(--B500);
 }
 
-.dc__cve-cell::after {
-    content: '';
-    background-image: url('../assets/icons/ic-open-in-new.svg');
-    width: 14px;
-    height: 14px;
-    vertical-align: middle;
-    margin: 0 3px;
-    background-size: contain;
-}
-
 // End Security CSS
 
 .saved-filter {
@@ -2393,28 +2383,6 @@ button.anchor {
     &.other {
         background-image: url('../assets/icons/container.svg');
     }
-}
-
-.dc__ci-pipeline-type-icon {
-    width: 20px;
-    height: 20px;
-    background-size: contain;
-    background-image: url('../assets/icons/ic-CI.svg');
-
-    &.normal {
-        background-image: url('../assets/icons/ic-CI.svg');
-    }
-
-    &.ci_job {
-        background-image: url('../assets/icons/ic-job-node.svg');
-    }
-}
-
-.dc__environment-icon {
-    width: 18px;
-    height: 18px;
-    background-size: contain;
-    background-image: url('../assets/icons/ic-env.svg');
 }
 
 .xterm .xterm-viewport {

@@ -21,6 +21,7 @@ import {
     DeploymentAppTypes,
     DeploymentNodeType,
     getDeploymentStatusFromStatus,
+    Icon,
     statusColor,
     statusIcon,
     URLS,
@@ -159,7 +160,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
                                 >
                                     <span>{heading}</span>
                                 </div>
-                                <div className="workflow-node__title flex">
+                                <div className="workflow-node__title flex dc__gap-8">
                                     <div className="workflow-node__full-width-minus-Icon">
                                         <span
                                             data-testid={`${this.props.deploymentStrategy}`}
@@ -169,13 +170,13 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
                                         </span>
                                         {envDescriptionTippy(this.props.environmentName, this.props.description)}
                                     </div>
-                                    <div
-                                        className={`workflow-node__icon-common ml-8 ${
-                                            this.props.isVirtualEnvironment
-                                                ? 'workflow-node__CD-rocket-icon'
-                                                : 'workflow-node__CD-icon dc__flip'
-                                        }`}
-                                    />
+                                    <div className={`flex ${!this.props.isVirtualEnvironment ? 'dc__flip' : ''}`}>
+                                        <Icon
+                                            name={this.props.isVirtualEnvironment ? 'ic-paper-plane-color' : 'ic-cd'}
+                                            size={20}
+                                            color={null}
+                                        />
+                                    </div>
                                 </div>
                                 {this.renderStatus()}
                                 <div className="workflow-node__btn-grp">
