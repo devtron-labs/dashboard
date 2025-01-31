@@ -44,7 +44,10 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
 
     const [isLoadingValidationResponse, , validationResponseError, reloadValidationResponse] = useAsync(
         handleSyncMigrateFromArgoFormStateWithValidationResponse,
-        [],
+        [
+            migrateToDevtronFormState.migrateFromArgoFormState.appName,
+            migrateToDevtronFormState.migrateFromArgoFormState.namespace,
+        ],
         !!migrateToDevtronFormState.migrateFromArgoFormState.appName &&
             !!migrateToDevtronFormState.migrateFromArgoFormState.namespace,
     )

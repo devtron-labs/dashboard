@@ -18,7 +18,7 @@ export const validateMigrationSource = async (
             applicationObjectNamespace: migrateToDevtronFormState.migrateFromArgoFormState.namespace,
         }
         const { result } = await post<ValidateMigrationSourceDTO, MigrateToDevtronRequiredFieldsDTO>(
-            Routes.CD_PIPELINE_VALIDATE_LINK_REQUEST,
+            Routes.APP_CD_PIPELINE_VALIDATE_LINK_REQUEST,
             payload,
         )
 
