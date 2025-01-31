@@ -392,10 +392,14 @@ export const Details: React.FC<DetailsType> = ({
         ],
     )
 
-    useEffect(() => () => {
-        clearPollingInterval()
-        IndexStore.clearAppDetails()
-    }, [])
+    useEffect(
+        () => () => {
+            clearPollingInterval()
+            clearDeploymentStatusTimer()
+            IndexStore.clearAppDetails()
+        },
+        [],
+    )
 
     useEffect(() => {
         appDetailsAbortRef.current = new AbortController()
@@ -409,8 +413,11 @@ export const Details: React.FC<DetailsType> = ({
             if (setIsAppDeleted) {
                 setIsAppDeleted(true)
             }
-            // NOTE: BE sends  string representation of 7000 instead of number 7000 
-            if (getIsRequestAborted(error) || (error instanceof ServerErrors && String(error.errors?.[0]?.code ?? '') === "7000")) {
+            // NOTE: BE sends  string representation of 7000 instead of number 7000
+            if (
+                getIsRequestAborted(error) ||
+                (error instanceof ServerErrors && String(error.errors?.[0]?.code ?? '') === '7000')
+            ) {
                 setResourceTreeFetchTimeOut(true)
             } else {
                 setResourceTreeFetchTimeOut(false)
