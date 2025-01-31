@@ -64,6 +64,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
     handleResourceClick,
     removeTabByIdentifier,
     hideDeleteResource,
+    handleClearBulkSelection,
 }) => {
     const { installedModuleMap } = useMainContext()
 
@@ -185,6 +186,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
                 toggleDeleteDialog={toggleDeleteDialog}
                 removeTabByIdentifier={removeTabByIdentifier}
                 showConfirmationModal={showDeleteDialog}
+                handleClearBulkSelection={handleClearBulkSelection}
             />
 
             {showVulnerabilityModal && !!getResourceScanDetails && (

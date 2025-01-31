@@ -36,7 +36,7 @@ import EditTaintsModal from '../../ClusterNodes/NodeActions/EditTaintsModal'
 import { K8S_EMPTY_GROUP } from '../Constants'
 
 // TODO: This should be commoned out with ResourceBrowserActionMenu to have consistent styling
-const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuProps) => {
+const NodeActionsMenu = ({ nodeData, getNodeListData, addTab, handleClearBulkSelection }: NodeActionsMenuProps) => {
     const history = useHistory()
     const { url } = useRouteMatch()
     const location = useLocation()
@@ -124,6 +124,18 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
             return <DrainNodeModal name={name} version={version} kind={kind} closePopup={hideDrainNodeModal} />
         }
 
+        if (showDeleteNodeDialog) {
+            return (
+                <DeleteNodeModal
+                    name={name}
+                    version={version}
+                    kind={kind}
+                    closePopup={hideDeleteNodeModal}
+                    handleClearBulkSelection={handleClearBulkSelection}
+                />
+            )
+        }
+
         if (showEditTaintNodeDialog) {
             return (
                 <EditTaintsModal
@@ -142,7 +154,8 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab }: NodeActionsMenuP
                 version={version}
                 kind={kind}
                 closePopup={hideDeleteNodeModal}
-                showConfirmationDialog={showDeleteNodeDialog}
+                showConfirmationModal={showDeleteNodeDialog}
+                handleClearBulkSelection={handleClearBulkSelection}
             />
         )
     }

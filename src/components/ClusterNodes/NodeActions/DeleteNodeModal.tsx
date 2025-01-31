@@ -17,17 +17,11 @@
 import { InfoColourBar, deleteNodeCapacity, DeleteConfirmationModal } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
-import { NodeActionModalPropType } from '../types'
+import { DeleteNodeModalProps } from '../types'
 import { DELETE_NODE_MODAL_MESSAGING } from '../constants'
 import { DeleteComponentsName } from '@Config/constantMessaging'
 
-export default function DeleteNodeModal({
-    name,
-    version,
-    kind,
-    closePopup,
-    showConfirmationDialog,
-}: NodeActionModalPropType) {
+export default function DeleteNodeModal({ name, version, kind, closePopup, showConfirmationModal, handleClearBulkSelection }: DeleteNodeModalProps) {
     const { clusterId } = useParams<{ clusterId: string }>()
 
     const onClose = (): void => {
@@ -42,6 +36,7 @@ export default function DeleteNodeModal({
             kind,
         }
         await deleteNodeCapacity(payload)
+        handleClearBulkSelection()
         closePopup(true)
     }
     const recommendedNote = () => {
@@ -66,7 +61,7 @@ export default function DeleteNodeModal({
             subtitle={renderSubtitle()}
             onDelete={onDelete}
             closeConfirmationModal={onClose}
-            showConfirmationModal={showConfirmationDialog}
+            showConfirmationModal={showConfirmationModal}
             successToastMessage={DELETE_NODE_MODAL_MESSAGING.initiated}
             confirmationConfig={{
                 identifier: 'delete-cd-node-input',

@@ -15,6 +15,7 @@
  */
 
 import { TagType } from '@devtron-labs/devtron-fe-common-lib'
+import { DeleteConfirmationModalProps } from '@devtron-labs/devtron-fe-common-lib/dist/Shared/Components/ConfirmationModal/types'
 
 export interface ClusterEnvironmentDrawerFormProps {
     environmentName: string
@@ -52,9 +53,7 @@ export interface ClusterNamespacesDTO {
     resourceVersion: string
 }
 
-export interface EnvironmentDeleteComponentProps {
+export interface EnvironmentDeleteComponentProps
+    extends Pick<DeleteConfirmationModalProps, 'showConfirmationModal' | 'closeConfirmationModal' | 'onDelete'> {
     environmentName: string
-    onDelete: () => void
-    showConfirmationModal: boolean
-    closeConfirmationModal: () => void
 }

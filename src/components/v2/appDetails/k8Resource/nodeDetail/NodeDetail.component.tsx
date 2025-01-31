@@ -31,6 +31,7 @@ import {
     ToastManager,
     ToastVariantType,
     OptionsBase,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
@@ -607,14 +608,11 @@ const NodeDetailComponent = ({
                     switchSelectedContainer={switchSelectedContainer}
                     selectedNamespaceByClickingPod={selectedResource?.namespace}
                     // getContainersFromManifest can only be used from resource browser
-                    {...(isResourceBrowserView
-                        ? {
-                              handleSuccess: getContainersFromManifest,
-                          }
-                        : {})}
+                    {...isResourceBrowserView ? {
+                        handleSuccess: getContainersFromManifest
+                    } : {}}
                 />
             )}
-
             <DeleteResourcePopup
                 clusterId={`${selectedResource.clusterId}`}
                 resourceData={selectedResource}
@@ -629,6 +627,7 @@ const NodeDetailComponent = ({
                 getResourceListData={getContainersFromManifest}
                 toggleDeleteDialog={toggleDeleteDialog}
                 removeTabByIdentifier={removeTabByIdentifier}
+                handleClearBulkSelection={noop}
                 showConfirmationModal={isResourceBrowserView && showDeleteDialog}
             />
         </>

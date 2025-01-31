@@ -35,6 +35,7 @@ import {
     ToastVariantType,
     ResourceDetail,
     AppThemeType,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
 import YAML from 'yaml'
@@ -708,6 +709,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                                             selectedResource={selectedResource}
                                             getResourceListData={getPodListData}
                                             handleResourceClick={handleResourceClick}
+                                            handleClearBulkSelection={noop}
                                         />
                                     </div>
                                     <span>{pod.cpu.requestPercentage || '-'}</span>
@@ -1073,7 +1075,8 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                         version={nodeDetail.version}
                         kind={nodeDetail.kind}
                         closePopup={hideDeleteNodeModal}
-                        showConfirmationDialog={showDeleteNodeDialog}
+                        showConfirmationModal={showDeleteNodeDialog}
+                        handleClearBulkSelection={noop}
                     />
                     {showEditTaints && (
                         <EditTaintsModal

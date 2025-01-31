@@ -28,12 +28,14 @@ const DeleteAPITokenModal = ({
     setDeleteConfirmation,
 }: DeleteAPITokenModalProps) => {
     const match = useRouteMatch()
-    const { push } = useHistory()
+    const history = useHistory()
 
     const onDelete = async () => {
         await deleteGeneratedAPIToken(tokenData.id.toString())
         reload()
-        push(isEditView ? `${match.path.split('edit')[0]}list` : '')
+        if (isEditView) {
+            history.push(`${match.path.split('edit')[0]}list`)
+        }
     }
 
     const renderDescriptionContent = () => (

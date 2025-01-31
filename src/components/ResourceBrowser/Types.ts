@@ -135,6 +135,7 @@ export interface ResourceBrowserActionMenuType {
     resourceData: K8sResourceDetailDataType
     selectedResource: ApiResourceGroupType
     handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
+    handleClearBulkSelection: () => void
     removeTabByIdentifier?: UseTabsReturnType['removeTabByIdentifier']
     getResourceListData?: () => Promise<void>
     /**
@@ -148,7 +149,12 @@ export interface ResourceBrowserActionMenuType {
 export interface DeleteResourcePopupType
     extends Pick<
         ResourceBrowserActionMenuType,
-        'clusterId' | 'resourceData' | 'selectedResource' | 'getResourceListData' | 'removeTabByIdentifier'
+        | 'clusterId'
+        | 'resourceData'
+        | 'selectedResource'
+        | 'getResourceListData'
+        | 'removeTabByIdentifier'
+        | 'handleClearBulkSelection'
     > {
     toggleDeleteDialog: () => void
     showConfirmationModal: boolean
@@ -294,6 +300,7 @@ export interface NodeActionsMenuProps {
     addTab: UseTabsReturnType['addTab']
     nodeData: K8sResourceDetailDataType
     getNodeListData: () => void
+    handleClearBulkSelection: () => void
 }
 
 export interface GetResourceDataType {

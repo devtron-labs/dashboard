@@ -35,6 +35,7 @@ const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
     toggleDeleteDialog,
     removeTabByIdentifier,
     showConfirmationModal,
+    handleClearBulkSelection,
 }) => {
     const { push } = useHistory()
     const [forceDelete, setForceDelete] = useState(false)
@@ -54,6 +55,7 @@ const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
 
         await deleteResource(resourceDeletePayload)
         await getResourceListData()
+        handleClearBulkSelection()
         if (removeTabByIdentifier) {
             removeTabByIdentifier(
                 `${selectedResource?.gvk?.Kind.toLowerCase()}_${resourceData.namespace}/${resourceData.name}`,

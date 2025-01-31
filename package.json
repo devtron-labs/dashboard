@@ -1,10 +1,10 @@
 {
     "name": "dashboard",
-    "version": "1.5.0",
+    "version": "1.6.0",
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "1.5.12-beta-2",
+        "@devtron-labs/devtron-fe-common-lib": "1.6.1",
         "@esbuild-plugins/node-globals-polyfill": "0.2.3",
         "@rjsf/core": "^5.13.3",
         "@rjsf/utils": "^5.13.3",
