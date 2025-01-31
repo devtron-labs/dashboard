@@ -1,7 +1,8 @@
+import { useEffect, useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 import { ComponentSizeType, CustomInput, CustomInputProps } from '@devtron-labs/devtron-fe-common-lib'
-import { useEffect, useState } from 'react'
+import { ReactComponent as ICKeyBulb } from '@Icons/ic-key-bulb.svg'
 
 const meta = {
     component: CustomInput,
@@ -186,5 +187,18 @@ export const WithNumberType: Story = {
         label: 'Age',
         placeholder: 'Enter age',
         type: 'number',
+    },
+}
+
+export const WithEndIcon: Story = {
+    ...Default,
+    args: {
+        ...Default.args,
+        endIconButtonConfig: {
+            icon: <ICKeyBulb />,
+            onClick: action('end icon clicked'),
+            ariaLabel: 'End icon',
+            showAriaLabelInTippy: false,
+        },
     },
 }
