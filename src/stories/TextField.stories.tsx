@@ -170,16 +170,6 @@ export const WithNoTopBorderRadius: Story = {
     },
 }
 
-export const WithPasswordType: Story = {
-    ...Default,
-    args: {
-        ...Default.args,
-        label: 'Password',
-        placeholder: 'Enter password',
-        type: 'password',
-    },
-}
-
 export const WithNumberType: Story = {
     ...Default,
     args: {
