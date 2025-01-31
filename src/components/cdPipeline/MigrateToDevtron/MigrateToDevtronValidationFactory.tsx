@@ -220,6 +220,7 @@ const MigrateToDevtronValidationFactory = ({
                                 onClick: handleAddClusterClick,
                                 linkProps: {
                                     to: `${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_CLUSTER}`,
+                                    target: '_blank',
                                 },
                             }}
                             titleTooltip={TARGET_CLUSTER_TOOLTIP}
@@ -256,6 +257,7 @@ const MigrateToDevtronValidationFactory = ({
                                 onClick: handleAddEnvironmentClick,
                                 linkProps: {
                                     to: `${URLS.GLOBAL_CONFIG_CLUSTER}/${destination.clusterName}${URLS.CREATE_ENVIRONMENT}`,
+                                    target: '_blank',
                                 },
                             }}
                             titleTooltip={TARGET_ENVIRONMENT_TOOLTIP}
