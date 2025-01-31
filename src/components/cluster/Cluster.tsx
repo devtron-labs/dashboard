@@ -32,6 +32,7 @@ import {
     ComponentSizeType,
     ButtonVariantType,
     ButtonComponentType,
+    ButtonStyleType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, useHistory, withRouter } from 'react-router-dom'
 import Tippy from '@tippyjs/react/headless'
@@ -318,7 +319,7 @@ class ClusterList extends Component<ClusterListProps, any> {
                 </Route>
 
                 <Route
-                    path={`${URLS.GLOBAL_CONFIG_CLUSTER}/:clusterId/${URLS.CREATE_ENVIRONMENT}`}
+                    path={`${URLS.GLOBAL_CONFIG_CLUSTER}/:clusterId${URLS.CREATE_ENVIRONMENT}`}
                     render={(props) => {
                         const clusterId = props.match.params.clusterId
                         const { isVirtualCluster, prometheus_url } =
@@ -635,19 +636,6 @@ const Cluster = ({
         setDeleteEnv(false)
     }
 
-    const handleAddEnvironment = () => {
-        setEnvironment({
-            id: null,
-            environmentName: null,
-            clusterId,
-            namespace: null,
-            prometheusEndpoint: prometheus_url,
-            isProduction: null,
-            description: null,
-        })
-        setShowWindow(true)
-    }
-
     const editModeToggle = (): void => {
         if (!clusterId) {
             toggleEditMode((t) => !t)
@@ -704,7 +692,10 @@ const Cluster = ({
                             <div className="flex dc__align-right dc__gap-16">
                                 <Button
                                     dataTestId={`add-environment-button-${cluster_name}`}
-                                    onClick={handleAddEnvironment}
+                                    component={ButtonComponentType.link}
+                                    linkProps={{
+                                        to: `${URLS.GLOBAL_CONFIG_CLUSTER}/${clusterId}${URLS.CREATE_ENVIRONMENT}`
+                                    }}
                                     startIcon={<Add />}
                                     text="Add Environment"
                                     variant={ButtonVariantType.text}
@@ -716,11 +707,15 @@ const Cluster = ({
                         )}
                     </div>
                     {clusterId && (
-                        <Tippy className="default-tt cursor" arrow={false} content="Edit Cluster">
-                            <div data-testid={`edit_cluster_pencil-${cluster_name}`}>
-                                <PencilEdit onClick={handleEdit} />
-                            </div>
-                        </Tippy>
+                        <Button
+                            dataTestId={`edit_cluster_pencil-${cluster_name}`}
+                            ariaLabel='Edit Cluster'
+                            icon={<PencilEdit />}
+                            size={ComponentSizeType.small}
+                            variant={ButtonVariantType.borderLess}
+                            style={ButtonStyleType.neutral}
+                            onClick={handleEdit}
+                        />
                     )}
                 </List>
                 {!isVirtualCluster && serverMode !== SERVER_MODE.EA_ONLY && !window._env_.K8S_CLIENT && clusterId && (
