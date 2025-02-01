@@ -718,13 +718,6 @@ const CDMaterial = ({
         }))
     }
 
-    const handleInputChange = (event): void => {
-        setState({
-            ...state,
-            searchText: event.target.value,
-        })
-    }
-
     const handleFilterKeyPress = (_searchText: string): void => {
         setState({
             ...state,
@@ -791,7 +784,7 @@ const CDMaterial = ({
         const newParams = new URLSearchParams({
             ...searchParams,
             sortBy: DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
-            sort: SortingOrder.ASC,
+            sortOrder: SortingOrder.ASC,
             mode: modeParamValue,
             deploy: getConfigToDeployValue(),
         })
