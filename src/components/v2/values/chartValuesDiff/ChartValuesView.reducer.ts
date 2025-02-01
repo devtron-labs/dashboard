@@ -80,7 +80,7 @@ export const initState = (
         invalidProject: false,
         formValidationError: {},
         showNoGitOpsWarning: false,
-        deploymentAppType: deploymentAppType ?? DeploymentAppTypes.HELM,
+        deploymentAppType: deploymentAppType ?? window._env_.HIDE_GITOPS_OR_HELM_OPTION ? '' : DeploymentAppTypes.HELM,
         gitRepoURL: '',
         authMode: null,
         initialChartVersionValues: {
