@@ -21,7 +21,6 @@ import {
     Progressing,
     stopPropagation,
     OptionType,
-    DeleteDialog,
     ErrorScreenManager,
     ResourceKindType,
     ToastManager,
@@ -50,6 +49,7 @@ import { CreateGroupAppListType, FilterParentType, GroupOptionType } from '../..
 import { getAppOtherEnvironmentMin } from '../../../services/service'
 import { appGroupPermission, deleteEnvGroup, getEnvGroupList } from '../../ApplicationGroup/AppGroup.service'
 import CreateAppGroup from '../../ApplicationGroup/CreateAppGroup'
+import { DeleteComponentsName } from '@Config/constantMessaging'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
@@ -358,8 +358,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
 
             <DeleteConfirmationModal
                 title={clickedGroup?.label}
-                component="filter"
-                subtitle="Are you sure you want to delete this filter?"
+                component={DeleteComponentsName.Filter}
                 onDelete={handleDelete}
                 closeConfirmationModal={closeDeleteGroup}
                 showConfirmationModal={showDeleteGroup && isPopupBox}

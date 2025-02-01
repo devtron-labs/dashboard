@@ -22,10 +22,10 @@ import {
     showError,
     ResponseType,
     ServerErrors,
-    ForceDeleteDialog,
     renderErrorHeaderMessage,
     ToastVariantType,
     ToastManager,
+    ForceDeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as ErrorIcon } from '../../../../assets/icons/ic-warning.svg'
@@ -200,6 +200,8 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
         return <LoadingCard />
     }
 
+    const onCloseForceDeleteModal = () => showForceDeleteDialog(false)
+
     return (
         <div
             data-testid="issues-card"
@@ -245,14 +247,13 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
                     Details
                 </div>
             </div>
-            {forceDeleteDialog && (
-                <ForceDeleteDialog
-                    forceDeleteDialogTitle={forceDeleteDialogTitle}
-                    onClickDelete={handleForceDelete}
-                    closeDeleteModal={() => showForceDeleteDialog(false)}
-                    forceDeleteDialogMessage={forceDeleteDialogMessage}
-                />
-            )}
+            <ForceDeleteConfirmationModal
+                title={forceDeleteDialogTitle}
+                onDelete={handleForceDelete}
+                closeConfirmationModal={onCloseForceDeleteModal}
+                subtitle={forceDeleteDialogMessage}
+            />
+
             {nonCascadeDeleteDialog && (
                 <ClusterNotReachableDialog
                     clusterName={clusterName}

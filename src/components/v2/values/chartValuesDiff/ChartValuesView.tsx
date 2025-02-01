@@ -24,7 +24,6 @@ import {
     ConditionalWrap,
     InfoColourBar,
     ServerErrors,
-    ForceDeleteDialog,
     GenericEmptyState,
     ResponseType,
     DeploymentAppTypes,
@@ -40,6 +39,7 @@ import {
     ToastVariantType,
     UNSAVED_CHANGES_PROMPT_MESSAGE,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
+    ForceDeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -1606,6 +1606,21 @@ const ChartValuesView = ({
         )
     }
 
+    const onForceDelete = () => deleteApplication(DELETE_ACTION.FORCE_DELETE)
+    const onCloseForceDelete = () => {
+        dispatch({
+            type: ChartValuesViewActionTypes.multipleOptions,
+            payload: {
+                showDeleteAppConfirmationDialog: false,
+                forceDeleteData: {
+                    forceDelete: false,
+                    title: '',
+                    message: '',
+                },
+            },
+        })
+    }
+
     const renderData = () => {
         const deployedAppDetail = isExternalApp && appId && appId.split('|')
         const showDeploymentTools =
@@ -1861,26 +1876,13 @@ const ChartValuesView = ({
                     showConfirmationModal={commonState.showDeleteAppConfirmationDialog}
                 />
 
-                {commonState.forceDeleteData.forceDelete && (
-                    <ForceDeleteDialog
-                        forceDeleteDialogTitle={commonState.forceDeleteData.title}
-                        forceDeleteDialogMessage={commonState.forceDeleteData.message}
-                        onClickDelete={() => deleteApplication(DELETE_ACTION.FORCE_DELETE)}
-                        closeDeleteModal={() => {
-                            dispatch({
-                                type: ChartValuesViewActionTypes.multipleOptions,
-                                payload: {
-                                    showDeleteAppConfirmationDialog: false,
-                                    forceDeleteData: {
-                                        forceDelete: false,
-                                        title: '',
-                                        message: '',
-                                    },
-                                },
-                            })
-                        }}
-                    />
-                )}
+                <ForceDeleteConfirmationModal
+                    title={commonState.forceDeleteData.title}
+                    subtitle={commonState.forceDeleteData.message}
+                    onDelete={onForceDelete}
+                    showConfirmationModal={commonState.forceDeleteData.forceDelete}
+                    closeConfirmationModal={onCloseForceDelete}
+                />
                 {commonState.nonCascadeDeleteData.nonCascade && (
                     <ClusterNotReachableDailog
                         clusterName={commonState.nonCascadeDeleteData.clusterName}

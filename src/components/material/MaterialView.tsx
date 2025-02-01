@@ -16,7 +16,6 @@
 
 import { Component } from 'react'
 import {
-    Progressing,
     ConditionalWrap,
     Checkbox,
     InfoColourBar,
@@ -28,7 +27,6 @@ import {
     SelectPicker,
     ComponentSizeType,
     SelectPickerProps,
-    DeleteComponent,
     Button,
     ButtonStyleType,
     ButtonVariantType,

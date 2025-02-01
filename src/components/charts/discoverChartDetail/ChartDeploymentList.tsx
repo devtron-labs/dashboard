@@ -22,13 +22,13 @@ import {
     showError,
     Progressing,
     ConfirmationDialog,
-    ForceDeleteDialog,
     PopupMenu,
     ResponseType,
     DeploymentAppTypes,
     AppStatus,
     ToastManager,
     ToastVariantType,
+    ForceDeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Td } from '../../common'
 import { Routes, URLS, ViewType, SERVER_MODE, DELETE_ACTION } from '../../../config'
@@ -215,11 +215,9 @@ export const DeploymentRow = ({
         handleDelete(DELETE_ACTION.DELETE)
     }
 
-    const renderChartStatus = (status: string) => {
-        if (status === 'Not Found') {
-            return 'NOT AVAILABLE'
-        }
-        return status.toUpperCase()
+    const closeForceDeleteModal = () => {
+        toggleConfirmation(false)
+        setForceDeleteDialog(false)
     }
 
     return (
@@ -272,17 +270,13 @@ export const DeploymentRow = ({
                     </ConfirmationDialog.ButtonGroup>
                 </ConfirmationDialog>
             )}
-            {showForceDeleteDialog && (
-                <ForceDeleteDialog
-                    onClickDelete={handleForceDelete}
-                    closeDeleteModal={() => {
-                        toggleConfirmation(false)
-                        setForceDeleteDialog(false)
-                    }}
-                    forceDeleteDialogTitle={forceDeleteDialogTitle}
-                    forceDeleteDialogMessage={forceDeleteDialogMessage}
-                />
-            )}
+            <ForceDeleteConfirmationModal
+                title={forceDeleteDialogTitle}
+                subtitle={forceDeleteDialogMessage}
+                onDelete={handleForceDelete}
+                showConfirmationModal={showForceDeleteDialog}
+                closeConfirmationModal={closeForceDeleteModal}
+            />
             {nonCascadeDeleteDialog && (
                 <ClusterNotReachableDailog
                     clusterName={clusterName}
