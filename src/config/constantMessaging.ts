@@ -60,6 +60,7 @@ export const enum DeleteComponentsName {
     GROUP = 'group',
     Job = 'job',
     Link = 'link',
+    LinkedBuildPipeline = 'linked build pipeline',
     MaterialView = 'git repository',
     Node = 'node',
     SlackConfigurationTab = 'slack',

@@ -29,6 +29,7 @@ import {
     ToastManager,
     TriggerType,
     DeleteConfirmationModal,
+    ERROR_STATUS_CODE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -41,6 +42,7 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
 import { SourceMaterials } from './SourceMaterials'
 import './ciPipeline.scss'
+import { DeleteComponentsName } from '@Config/constantMessaging'
 
 export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIPipelineState> {
     constructor(props) {
@@ -297,12 +299,13 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 {this.renderMaterials()}
                 <DeleteConfirmationModal
                     title={this.state.form.name}
-                    component="linked build pipeline"
+                    component={DeleteComponentsName.LinkedBuildPipeline}
                     subtitle={`Are you sure you want to delete this linked CI Pipeline from '${this.props.appName}' ?`}
                     showConfirmationModal={this.props.match.params.ciPipelineId && this.state.showDeleteModal}
                     closeConfirmationModal={this.closeCIDeleteModal}
                     onDelete={this.onDelete}
                     successToastMessage="Pipeline Deleted"
+                    errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.BAD_REQUEST}
                 />
             </>
         )

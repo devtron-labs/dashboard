@@ -581,7 +581,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                 component={DeleteComponentsName.Link}
                 subtitle={renderSubTitle()}
                 onDelete={onDelete}
-                isLoading={isAPICallInProgress}
+                isDeleting={isAPICallInProgress}
                 showConfirmationModal={showDeleteDialog}
                 closeConfirmationModal={hideDeleteConfirmationModal}
             />

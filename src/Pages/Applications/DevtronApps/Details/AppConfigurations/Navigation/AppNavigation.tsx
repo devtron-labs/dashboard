@@ -48,7 +48,7 @@ import { ReactComponent as ICArrowSquareOut } from '@Icons/ic-arrow-square-out.s
 import { DEVTRON_APPS_STEPS, STAGE_NAME } from '../AppConfig.types'
 import { URLS } from '../../../../../../config'
 import AppConfigurationCheckBox from './AppConfigurationCheckBox'
-import { DeleteComponentsName, GIT_MATERIAL_IN_USE_MESSAGE } from '../../../../../../config/constantMessaging'
+import { GIT_MATERIAL_IN_USE_MESSAGE } from '../../../../../../config/constantMessaging'
 import DockerFileInUse from '../../../../../../assets/img/ic-dockerfile-in-use.png'
 
 import EnvironmentOverrideRouter from './EnvironmentOverrideRouter'
@@ -100,7 +100,7 @@ export const AppNavigation = () => {
             visible={showCannotDeleteTooltip}
             iconClass="repo-configured-icon"
             iconSize={32}
-            infoTextHeading={`${DeleteComponentsName.GitRepo} '${getRepo}' is in use`}
+            infoTextHeading={`Repo '${getRepo}' is in use`}
             infoText={GIT_MATERIAL_IN_USE_MESSAGE}
             showCloseButton
             trigger="manual"

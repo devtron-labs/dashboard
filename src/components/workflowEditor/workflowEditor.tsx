@@ -439,7 +439,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     },
                     primaryButtonConfig: {
                         text: 'Delete',
-                        onClick: () => this.deleteWorkflow,
+                        onClick: () => this.deleteWorkflow(),
                     },
                 }}
             />
