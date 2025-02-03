@@ -111,7 +111,7 @@ export const ConfigMapSecretDeleteModal = ({
             closeConfirmationModal={closeDeleteModal}
             showConfirmationModal={openDeleteModal === 'deleteModal'}
             onError={onError}
-            primaryButtonText={isDeleteOverride ? 'override' : ''}
+            primaryButtonText={isDeleteOverride ? 'Delete Override' : 'Delete'}
         />
     )
 
