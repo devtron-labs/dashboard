@@ -288,7 +288,7 @@ export default function CIConfigForm({
                     <span className="fs-14 cn-7 dc__block">Custom target platform(s):</span>
                     {selectedTargetPlatforms.map((targetPlatform) =>
                         targetPlatformMap.get(targetPlatform.value) ? null : (
-                            <span className="fs-13 cn-7 dc__block">{targetPlatform.value}</span>
+                            <span key={targetPlatform.value} className="fs-13 cn-7 dc__block">{targetPlatform.value}</span>
                         ),
                     )}
                 </div>

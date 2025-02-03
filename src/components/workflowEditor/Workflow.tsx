@@ -362,9 +362,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     }
 
     openCIPipeline(node: CommonNodeAttr) {
-        if (node.isExternalCI && !node.isLinkedCI) {
-            return `${this.props.match.url}/deprecated-warning`
-        }
         const { appId } = this.props.match.params
         let url = ''
         if (node.isLinkedCI) {

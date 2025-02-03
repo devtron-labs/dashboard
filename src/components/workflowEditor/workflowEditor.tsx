@@ -62,7 +62,6 @@ import './workflowEditor.scss'
 import CDSuccessModal from './CDSuccessModal'
 import NoGitOpsConfiguredWarning from './NoGitOpsConfiguredWarning'
 import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'
-import DeprecatedWarningModal from './DeprecatedWarningModal'
 import nojobs from '../../assets/img/empty-joblist.webp'
 import CDPipeline from '../cdPipeline/CDPipeline'
 import EmptyWorkflow from './EmptyWorkflow'
@@ -615,9 +614,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         )
                     }}
                 />
-                <Route path={`${this.props.match.path}/deprecated-warning`}>
-                    <DeprecatedWarningModal closePopup={this.closePipeline} />
-                </Route>
                 {!this.props.isJobView && [
                     <Route
                         key={`${this.props.match.path}/webhook/`}

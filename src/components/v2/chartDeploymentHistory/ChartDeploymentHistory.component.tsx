@@ -38,8 +38,8 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
-import docker from '../../../assets/icons/misc/docker.svg'
-import { ReactComponent as DeployButton } from '../../../assets/icons/ic-nav-rocket.svg'
+import docker from '@Icons/misc/docker.svg'
+import { ReactComponent as DeployButton } from '@Icons/ic-nav-rocket.svg'
 import DataNotFound from '../../../assets/img/app-not-deployed.svg'
 import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
 import { Moment12HourFormat, SERVER_ERROR_CODES, URLS } from '../../../config'
@@ -607,6 +607,10 @@ const ChartDeploymentHistory = ({
         setShowDockerInfo(false)
     }
 
+    const handleOpenRollbackConfirmation = () => {
+        setShowRollbackConfirmation(true)
+    }
+
     function renderSelectedDeploymentDetailHeader() {
         const deployment: ChartDeploymentDetail = deploymentHistoryArr[selectedDeploymentHistoryIndex]
 
@@ -669,7 +673,7 @@ const ChartDeploymentHistory = ({
                             tooltipProps={{
                                 content: 'Re-deploy this version',
                             }}
-                            onClick={() => setShowRollbackConfirmation(true)}
+                            onClick={handleOpenRollbackConfirmation}
                             startIcon={<DeployButton />}
                         />
                     )}
