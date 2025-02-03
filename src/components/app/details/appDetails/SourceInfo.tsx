@@ -56,7 +56,7 @@ const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadC
 const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
 const ConfigSyncStatusButton = importComponentFromFELibrary('ConfigSyncStatusButton', null, 'function')
 const SwapTraffic = importComponentFromFELibrary('SwapTraffic', null, 'function')
-const getHibernationPatchConfigured = importComponentFromFELibrary('getHibernationPatchConfigured', null, 'function')
+const getHibernationPatchConfig = importComponentFromFELibrary('getHibernationPatchConfig', null, 'function')
 
 export const SourceInfo = ({
     appDetails,
@@ -118,14 +118,14 @@ export const SourceInfo = ({
             showHibernateModal(HibernationModalTypes.RESUME)
             return
         }
-        if (getHibernationPatchConfigured) {
+        if (getHibernationPatchConfig) {
             try {
                 setHibernationPatchResponseLoading(true)
-                const response = await getHibernationPatchConfigured({
+                const result = await getHibernationPatchConfig({
                     appId: appDetails.appId ?? +params.appId,
                     envId: appDetails.environmentId ?? +envId,
                 })
-                const { isHibernationPatchConfigured, chartName } = response.result
+                const { isHibernationPatchConfigured, chartName } = result
                 if (isHibernationPatchConfigured) {
                     showHibernateModal(HibernationModalTypes.HIBERNATE)
                 } else {
