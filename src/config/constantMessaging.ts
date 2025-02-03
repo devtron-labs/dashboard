@@ -146,11 +146,10 @@ export const CONFIRMATION_DIALOG_MESSAGING = {
     DELETION_IN_PROGRESS: 'Deployment pipeline configurations cannot be edited when deletion is in progress.',
 }
 
-export const NONCASCADE_DELETE_DIALOG_INTERNAL_MESSAGE = [
-    'The underlying resources cannot be deleted as the cluster is not reachable at the moment.',
-    'Do you still want to delete the deployment without deleting the resources? ',
-]
-
+export const NON_CASCADE_DELETE_DIALOG_INTERNAL_MESSAGE = {
+    PARA1: 'The underlying resources cannot be deleted as the cluster is not reachable at the moment.',
+    PARA2: 'Do you still want to delete the deployment without deleting the resources? ',
+}
 // Toast messages
 
 export const TOAST_INFO = {

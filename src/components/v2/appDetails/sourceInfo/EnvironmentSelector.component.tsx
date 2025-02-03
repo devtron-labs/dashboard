@@ -46,7 +46,7 @@ import { ReactComponent as BinWithDots } from '../../../../assets/icons/ic-delet
 import { DELETE_DEPLOYMENT_PIPELINE, DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
 import { getAppOtherEnvironmentMin } from '../../../../services/service'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
-import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
+import ClusterNotReachableDialog from '../../../common/ClusterNotReachableDialog/ClusterNotReachableDialog'
 import { getEnvironmentName } from './utils'
 import { getAppId } from '../k8Resource/nodeDetail/nodeDetail.api'
 import { DeleteChartDialog } from '@Components/v2/values/chartValuesDiff/DeleteChartDialog'
@@ -221,7 +221,7 @@ const EnvironmentSelectorComponent = ({
         templateType: appDetails.fluxTemplateType,
     })
 
-    const closeForceConfirmationModal = () =>  showForceDeleteDialog(false)
+    const closeForceConfirmationModal = () => showForceDeleteDialog(false)
 
     return (
         <div className="flexbox flex-justify pl-20 pr-20 pt-16 pb-16">
@@ -403,13 +403,13 @@ const EnvironmentSelectorComponent = ({
                         onDelete={handleForceDelete}
                         closeConfirmationModal={closeForceConfirmationModal}
                     />
-                    {nonCascadeDeleteDialog && (
-                        <ClusterNotReachableDailog
-                            clusterName={clusterName}
-                            onClickCancel={onClickHideNonCascadeDeletePopup}
-                            onClickDelete={onClickNonCascadeDelete}
-                        />
-                    )}
+
+                    <ClusterNotReachableDialog
+                        clusterName={clusterName}
+                        onClickCancel={onClickHideNonCascadeDeletePopup}
+                        onClickDelete={onClickNonCascadeDelete}
+                        showConfirmationModal={nonCascadeDeleteDialog}
+                    />
                 </div>
             )}
             {urlInfo && (

@@ -65,12 +65,7 @@ import {
     installChart,
     updateChartValues,
 } from '../../../charts/charts.service'
-import {
-    DELETE_ACTION,
-    SERVER_MODE,
-    URLS,
-    checkIfDevtronOperatorHelmRelease,
-} from '../../../../config'
+import { DELETE_ACTION, SERVER_MODE, URLS, checkIfDevtronOperatorHelmRelease } from '../../../../config'
 import {
     ChartEnvironmentSelector,
     ActiveReadmeColumn,
@@ -134,7 +129,7 @@ import {
     UPDATE_DATA_VALIDATION_ERROR_MSG,
     EMPTY_YAML_ERROR,
 } from './ChartValuesView.constants'
-import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
+import ClusterNotReachableDialog from '../../../common/ClusterNotReachableDialog/ClusterNotReachableDialog'
 import { VIEW_MODE } from '@Pages/Shared/ConfigMapSecret/constants'
 import IndexStore from '../../appDetails/index.store'
 import { AUTO_GENERATE_GITOPS_REPO, CHART_VALUE_ID } from './constant'
@@ -698,7 +693,7 @@ const ChartValuesView = ({
                     })
 
                     init && init()
-                     history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`)
+                    history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`)
                     return
                 }
 
@@ -1630,12 +1625,11 @@ const ChartValuesView = ({
             (!isDeployChartView || allowedDeploymentTypes.length > 0) &&
             !appDetails?.isVirtualEnvironment
 
-        const toggleDeleteConfirmation = () =>(
+        const toggleDeleteConfirmation = () =>
             dispatch({
                 type: ChartValuesViewActionTypes.showDeleteAppConfirmationDialog,
                 payload: false,
             })
-        )
         return (
             <div
                 className={`chart-values-view__container flexbox-col h-100 bg__primary dc__overflow-hidden ${
@@ -1883,13 +1877,14 @@ const ChartValuesView = ({
                     showConfirmationModal={commonState.forceDeleteData.forceDelete}
                     closeConfirmationModal={onCloseForceDelete}
                 />
-                {commonState.nonCascadeDeleteData.nonCascade && (
-                    <ClusterNotReachableDailog
-                        clusterName={commonState.nonCascadeDeleteData.clusterName}
-                        onClickCancel={onClickHideNonCascadeDeletePopup}
-                        onClickDelete={onClickNonCascadeDelete}
-                    />
-                )}
+
+                <ClusterNotReachableDialog
+                    clusterName={commonState.nonCascadeDeleteData.clusterName}
+                    onClickCancel={onClickHideNonCascadeDeletePopup}
+                    onClickDelete={onClickNonCascadeDelete}
+                    showConfirmationModal={commonState.nonCascadeDeleteData.nonCascade}
+                />
+
                 {commonState.showNoGitOpsWarning && (
                     <NoGitOpsConfiguredWarning
                         closePopup={() =>

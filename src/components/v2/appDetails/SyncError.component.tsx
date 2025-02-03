@@ -37,7 +37,7 @@ import {
 } from '../../app/details/appDetails/appDetails.service'
 import { ClusterConnectionResponse } from '../../app/details/appDetails/appDetails.type'
 import { TOAST_INFO } from '../../../config/constantMessaging'
-import ClusterNotReachableDailog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
+import ClusterNotReachableDialog from '../../common/ClusterNotReachableDialog/ClusterNotReachableDialog'
 
 const SyncErrorComponent: React.FC<SyncErrorType> = ({ showApplicationDetailedModal }) => {
     const [collapsed, toggleCollapsed] = useState<boolean>(true)
@@ -218,13 +218,12 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ showApplicationDetailedMo
                 subtitle={forceDeleteDialogMessage}
             />
 
-            {nonCascadeDeleteDialog && (
-                <ClusterNotReachableDailog
-                    clusterName={clusterName}
-                    onClickCancel={onClickHideNonCascadeDeletePopup}
-                    onClickDelete={onClickNonCascadeDelete}
-                />
-            )}
+            <ClusterNotReachableDialog
+                clusterName={clusterName}
+                onClickCancel={onClickHideNonCascadeDeletePopup}
+                onClickDelete={onClickNonCascadeDelete}
+                showConfirmationModal={nonCascadeDeleteDialog}
+            />
         </div>
     )
 }

@@ -32,7 +32,7 @@ import { ReactComponent as ErrorIcon } from '../../../../assets/icons/ic-warning
 import { deleteArgoCDAppWithNonCascade, getClusterConnectionStatus } from './appDetails.service'
 import { ClusterConnectionResponse, ErrorItem, IssuesCardType } from './appDetails.type'
 import { TOAST_INFO } from '../../../../config/constantMessaging'
-import ClusterNotReachableDialog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
+import ClusterNotReachableDialog from '../../../common/ClusterNotReachableDialog/ClusterNotReachableDialog'
 import { AppType } from '../../../v2/appDetails/appDetails.type'
 import { AppDetailsErrorType } from '../../../../config'
 import IndexStore from '../../../v2/appDetails/index.store'
@@ -254,13 +254,12 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
                 subtitle={forceDeleteDialogMessage}
             />
 
-            {nonCascadeDeleteDialog && (
-                <ClusterNotReachableDialog
-                    clusterName={clusterName}
-                    onClickCancel={onClickHideNonCascadeDeletePopup}
-                    onClickDelete={onClickNonCascadeDelete}
-                />
-            )}
+            <ClusterNotReachableDialog
+                clusterName={clusterName}
+                onClickCancel={onClickHideNonCascadeDeletePopup}
+                onClickDelete={onClickNonCascadeDelete}
+                showConfirmationModal={nonCascadeDeleteDialog}
+            />
         </div>
     )
 }
