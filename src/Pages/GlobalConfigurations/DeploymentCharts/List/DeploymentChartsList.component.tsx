@@ -109,14 +109,14 @@ const DeploymentChartsList = () => {
         }
 
         return (
-            <div className="flexbox-col flex-grow-1 pt-16 dc__gap-8" data-testid="custom-charts-list">
+            <div className="flexbox-col h-100 dc__gap-8 pt-16" data-testid="custom-charts-list">
                 <DeploymentChartsListHeader
                     searchKey={searchKey}
                     handleSearch={handleSearch}
                     handleOpenUploadChartModal={handleOpenUploadChartModal}
                 />
                 {filteredChartList.length ? (
-                    <div className="flexbox-col flex-grow-1">
+                    <div className="flexbox-col dc__overflow-auto">
                         <div className="dc__grid dc__gap-16 dc__align-items-center chart-list-row dc__border-bottom px-20 py-10 fs-12 fw-6 lh-20 cn-7">
                             <span />
                             <SortableTableHeaderCell
@@ -152,7 +152,7 @@ const DeploymentChartsList = () => {
                                 return (
                                     <div
                                         key={`custom-chart_${chartData.name}`}
-                                        className="chart-list-row fw-4 cn-9 fs-13 lh-20 fw-4 dc__grid dc__gap-16 dc__align-items-center px-20 py-10"
+                                        className="chart-list-row bg__primary fw-4 cn-9 fs-13 lh-20 fw-4 dc__grid dc__gap-16 dc__align-items-center px-20 py-10"
                                     >
                                         <div className="icon-dim-24 p-2">
                                             <ICFolderZip className="icon-dim-20 fcb-5" />
