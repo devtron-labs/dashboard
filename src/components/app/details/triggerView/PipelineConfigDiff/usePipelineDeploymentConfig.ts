@@ -77,7 +77,9 @@ export const usePipelineDeploymentConfig = ({
 
     useEffect(() => {
         // INITIAL DEFAULT SORTING
-        handleSorting(DEPLOYMENT_CONFIG_DIFF_SORT_KEY)
+        if (sortBy !== DEPLOYMENT_CONFIG_DIFF_SORT_KEY) {
+            handleSorting(DEPLOYMENT_CONFIG_DIFF_SORT_KEY)
+        }
     }, [])
 
     // FETCH PREVIOUS DEPLOYMENTS
@@ -302,7 +304,6 @@ export const usePipelineDeploymentConfig = ({
         )
 
     const onDeploymentConfigChange = ({ value }: SelectPickerOptionType) => {
-        handleSorting('')
         updateSearchParams({
             [PipelineConfigDiffQueryParams.DEPLOY]: value as PipelineConfigDiffQueryParamsType['deploy'],
         })

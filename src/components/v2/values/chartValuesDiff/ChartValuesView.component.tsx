@@ -434,7 +434,6 @@ export const GitOpsDrawer = ({
                         renderValidationErrorLabel()}
                 </div>
             ) : null}
-            <hr />
         </>
     )
 }
