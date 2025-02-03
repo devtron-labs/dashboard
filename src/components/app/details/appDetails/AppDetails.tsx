@@ -100,7 +100,7 @@ import { renderCIListHeader } from '../cdDetails/utils'
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 const DeploymentWindowStatusModal = importComponentFromFELibrary('DeploymentWindowStatusModal')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
-const ConfigDriftModalRoute = importComponentFromFELibrary('ConfigDriftModalRoute', null, 'function')
+const ConfigDriftModal = importComponentFromFELibrary('ConfigDriftModal', null, 'function')
 const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
     'processVirtualEnvironmentDeploymentData',
     null,
@@ -258,6 +258,7 @@ export const Details: React.FC<DetailsType> = ({
     // fixme: the state is not being set anywhere and just being drilled down
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false)
     const [resourceTreeFetchTimeOut, setResourceTreeFetchTimeOut] = useState<boolean>(false)
+    const [showConfigDriftModal, setShowConfigDriftModal] = useState<boolean>(false)
     const [urlInfo, setUrlInfo] = useState<boolean>(false)
     const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<'' | 'resume' | 'hibernate'>('')
     const [rotateModal, setRotateModal] = useState<boolean>(false)
@@ -764,6 +765,7 @@ export const Details: React.FC<DetailsType> = ({
                     ciArtifactId={appDetails?.ciArtifactId}
                     setErrorsList={setErrorsList}
                     deploymentUserActionState={deploymentUserActionState}
+                    setShowConfigDriftModal={setShowConfigDriftModal}
                 />
             </div>
             {!loadingDetails && !loadingResourceTree && !appDetails?.deploymentAppDeleteRequest && (
@@ -797,7 +799,11 @@ export const Details: React.FC<DetailsType> = ({
                 <AppStatusDetailModal
                     close={hideAppDetailsStatus}
                     showAppStatusMessage={false}
-                    showConfigDriftInfo={isConfigDriftEnabled && !!ConfigDriftModalRoute}
+                    {...(isConfigDriftEnabled && !!ConfigDriftModal
+                        ? {
+                              setShowConfigDriftModal,
+                          }
+                        : {})}
                 />
             )}
             {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
@@ -841,8 +847,8 @@ export const Details: React.FC<DetailsType> = ({
                     isVirtualEnvironment={isVirtualEnvRef.current}
                 />
             }
-            {isConfigDriftEnabled && ConfigDriftModalRoute && !isVirtualEnvRef.current && (
-                <ConfigDriftModalRoute path={path} />
+            {isConfigDriftEnabled && ConfigDriftModal && showConfigDriftModal && !isVirtualEnvRef.current && (
+                <ConfigDriftModal setShowConfigDriftModal={setShowConfigDriftModal} />
             )}
         </>
     )

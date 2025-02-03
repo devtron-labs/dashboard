@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react'
+import React, { Dispatch, ReactNode, SetStateAction } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 import {
     ACTION_STATE,
@@ -599,6 +599,7 @@ export interface SourceInfoType {
     setErrorsList?: React.Dispatch<React.SetStateAction<ErrorItem[]>>
     filteredEnvIds?: string
     deploymentUserActionState?: ACTION_STATE
+    setShowConfigDriftModal?: Dispatch<SetStateAction<boolean>>
 }
 
 export interface AppDetailsCDButtonType
