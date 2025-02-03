@@ -37,6 +37,8 @@ const DeleteCDNode = ({
     deleteTitleName,
     isLoading,
 }: Readonly<DeleteCDNodeProps>) => {
+    const onClickDeleteCDNode = () => handleDeleteCDNodePipeline(deleteCD, deploymentAppType as DeploymentAppTypes)
+
     const onClickHideNonCascadeDeletePopup = () => {
         setDeleteDialog(DeleteDialogType.showNormalDeleteDialog)
     }
@@ -50,19 +52,15 @@ const DeleteCDNode = ({
         handleDeletePipeline(DELETE_ACTION.FORCE_DELETE, deleteCD, deploymentAppType)
     }
 
-    const renderForceDeleteConfirmationModal = () => {
-        const showForceDeleteModal: boolean = deleteDialog === DeleteDialogType.showForceDeleteDialog
-        if (!showForceDeleteModal) return null
-        return (
-            <ForceDeleteConfirmationModal
-                title={forceDeleteData.forceDeleteDialogTitle}
-                onDelete={handleForceDeleteCDNode}
-                closeConfirmationModal={hideDeleteModal}
-                subtitle={forceDeleteData.forceDeleteDialogMessage}
-                showConfirmationModal={showForceDeleteModal}
-            />
-        )
-    }
+    const renderForceDeleteConfirmationModal = () => (
+        <ForceDeleteConfirmationModal
+            title={forceDeleteData.forceDeleteDialogTitle}
+            onDelete={handleForceDeleteCDNode}
+            closeConfirmationModal={hideDeleteModal}
+            subtitle={forceDeleteData.forceDeleteDialogMessage}
+            showConfirmationModal={deleteDialog === DeleteDialogType.showForceDeleteDialog && showDeleteDialog}
+        />
+    )
 
     const renderNonCascadeDescription = () => (
         <div className="flexbox dc__gap-12">
@@ -75,68 +73,59 @@ const DeleteCDNode = ({
         </div>
     )
 
-    const renderUnreachableClusterModal = () => {
-        const showUnreachableContainerModal = deleteDialog === DeleteDialogType.showNonCascadeDeleteDialog
-        if (!showUnreachableContainerModal) return null
-        return (
-            <ConfirmationModal
-                variant={ConfirmationModalVariantType.warning}
-                title={`The cluster ${clusterName} is not reachable`}
-                buttonConfig={{
-                    secondaryButtonConfig: {
-                        text: 'Cancel',
-                        onClick: onClickHideNonCascadeDeletePopup,
-                    },
-                    primaryButtonConfig: {
-                        text: 'Force Delete',
-                        onClick: onClickNonCascadeDelete,
-                        isLoading,
-                    },
-                }}
-                subtitle={renderNonCascadeDescription()}
-                showConfirmationModal={showUnreachableContainerModal}
-                handleClose={onClickHideNonCascadeDeletePopup}
-            />
-        )
-    }
+    const renderUnreachableClusterModal = () => (
+        <ConfirmationModal
+            variant={ConfirmationModalVariantType.warning}
+            title={`The cluster ${clusterName} is not reachable`}
+            buttonConfig={{
+                secondaryButtonConfig: {
+                    text: 'Cancel',
+                    onClick: onClickHideNonCascadeDeletePopup,
+                },
+                primaryButtonConfig: {
+                    text: 'Force Delete',
+                    onClick: onClickNonCascadeDelete,
+                    isLoading,
+                },
+            }}
+            subtitle={renderNonCascadeDescription()}
+            showConfirmationModal={deleteDialog === DeleteDialogType.showNonCascadeDeleteDialog && showDeleteDialog}
+            handleClose={onClickHideNonCascadeDeletePopup}
+        />
+    )
 
-    const renderConfirmationDeleteModal = () => {
-        if (deleteDialog !== DeleteDialogType.showNormalDeleteDialog) return null
-        return (
-            <ConfirmationModal
-                variant={ConfirmationModalVariantType.delete}
-                title={`Delete pipeline for '${deleteTitleName}' environment ?`}
-                subtitle={`Are you sure you want to delete this CD Pipeline from '${appName}' application?`}
-                buttonConfig={{
-                    secondaryButtonConfig: {
-                        text: 'Cancel',
-                        onClick: hideDeleteModal,
-                        disabled: isLoading,
-                    },
-                    primaryButtonConfig: {
-                        text: 'Delete',
-                        onClick: () => handleDeleteCDNodePipeline(deleteCD, deploymentAppType as DeploymentAppTypes),
-                        isLoading,
-                    },
-                }}
-                confirmationConfig={{
-                    identifier: 'delete-cd-node-input',
-                    confirmationKeyword: deleteTitleName,
-                }}
-                showConfirmationModal={showDeleteDialog}
-                handleClose={hideDeleteModal}
-            />
-        )
-    }
+    const renderConfirmationDeleteModal = () => (
+        <ConfirmationModal
+            variant={ConfirmationModalVariantType.delete}
+            title={`Delete pipeline for '${deleteTitleName}' environment ?`}
+            subtitle={`Are you sure you want to delete this CD Pipeline from '${appName}' application?`}
+            buttonConfig={{
+                secondaryButtonConfig: {
+                    text: 'Cancel',
+                    onClick: hideDeleteModal,
+                    disabled: isLoading,
+                },
+                primaryButtonConfig: {
+                    text: 'Delete',
+                    onClick: onClickDeleteCDNode,
+                    isLoading,
+                },
+            }}
+            confirmationConfig={{
+                identifier: 'delete-cd-node-input',
+                confirmationKeyword: deleteTitleName,
+            }}
+            showConfirmationModal={deleteDialog === DeleteDialogType.showNormalDeleteDialog && showDeleteDialog}
+            handleClose={hideDeleteModal}
+        />
+    )
 
     return (
-        showDeleteDialog && (
-            <>
-                {renderConfirmationDeleteModal()}
-                {renderForceDeleteConfirmationModal()}
-                {renderUnreachableClusterModal()}
-            </>
-        )
+        <>
+            {renderConfirmationDeleteModal()}
+            {renderForceDeleteConfirmationModal()}
+            {renderUnreachableClusterModal()}
+        </>
     )
 }
 

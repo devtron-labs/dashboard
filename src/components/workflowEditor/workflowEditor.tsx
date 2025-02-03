@@ -20,7 +20,6 @@ import {
     showError,
     Progressing,
     ErrorScreenManager,
-    DeleteDialog,
     InfoColourBar,
     ConditionalWrap,
     WorkflowNodeType,
@@ -440,7 +439,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     },
                     primaryButtonConfig: {
                         text: 'Delete',
-                        onClick: () => this.deleteWorkflow,
+                        onClick: () => this.deleteWorkflow(),
                     },
                 }}
             />

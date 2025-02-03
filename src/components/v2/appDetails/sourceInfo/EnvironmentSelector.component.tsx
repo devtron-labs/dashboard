@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Select from 'react-select'
 import {
     showError,
     PopupMenu,
     multiSelectStyles,
-    ForceDeleteDialog,
     ServerErrors,
     DeploymentAppTypes,
     ToastManager,
     ToastVariantType,
+    ForceDeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './sourceInfo.css'
 import { useParams, useHistory, useRouteMatch } from 'react-router-dom'
@@ -41,15 +41,15 @@ import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-inte
 import { deleteApplicationRelease } from '../../../external-apps/ExternalAppService'
 import { deleteInstalledChart } from '../../../charts/charts.service'
 import { ReactComponent as Dots } from '../../assets/icons/ic-menu-dot.svg'
-import { DeleteChartDialog } from '../../values/chartValuesDiff/ChartValuesView.component'
 import { DELETE_ACTION, checkIfDevtronOperatorHelmRelease } from '../../../../config'
 import { ReactComponent as BinWithDots } from '../../../../assets/icons/ic-delete-dots.svg'
 import { DELETE_DEPLOYMENT_PIPELINE, DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
 import { getAppOtherEnvironmentMin } from '../../../../services/service'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
-import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
+import ClusterNotReachableDialog from '../../../common/ClusterNotReachableDialog/ClusterNotReachableDialog'
 import { getEnvironmentName } from './utils'
 import { getAppId } from '../k8Resource/nodeDetail/nodeDetail.api'
+import { DeleteChartDialog } from '@Components/v2/values/chartValuesDiff/DeleteChartDialog'
 
 const EnvironmentSelectorComponent = ({
     isExternalApp,
@@ -221,6 +221,8 @@ const EnvironmentSelectorComponent = ({
         templateType: appDetails.fluxTemplateType,
     })
 
+    const closeForceConfirmationModal = () => showForceDeleteDialog(false)
+
     return (
         <div className="flexbox flex-justify pl-20 pr-20 pt-16 pb-16">
             <div>
@@ -384,33 +386,30 @@ const EnvironmentSelectorComponent = ({
                                     </div>
                                 </PopupMenu.Body>
                             </PopupMenu>
-                            {showDeleteConfirmation && (
-                                <DeleteChartDialog
-                                    appName={appDetails.appName}
-                                    handleDelete={handleDelete}
-                                    toggleConfirmation={setShowDeleteConfirmation}
-                                    isCreateValueView={false}
-                                />
-                            )}
+
+                            <DeleteChartDialog
+                                appName={appDetails.appName}
+                                handleDelete={handleDelete}
+                                toggleConfirmation={setShowDeleteConfirmation}
+                                isCreateValueView={false}
+                                showConfirmationModal={showDeleteConfirmation}
+                            />
                         </div>
                     )}
-                    {forceDeleteDialog && (
-                        <ForceDeleteDialog
-                            forceDeleteDialogTitle={forceDeleteDialogTitle}
-                            onClickDelete={handleForceDelete}
-                            closeDeleteModal={() => {
-                                showForceDeleteDialog(false)
-                            }}
-                            forceDeleteDialogMessage={forceDeleteDialogMessage}
-                        />
-                    )}
-                    {nonCascadeDeleteDialog && (
-                        <ClusterNotReachableDailog
-                            clusterName={clusterName}
-                            onClickCancel={onClickHideNonCascadeDeletePopup}
-                            onClickDelete={onClickNonCascadeDelete}
-                        />
-                    )}
+                    <ForceDeleteConfirmationModal
+                        title={forceDeleteDialogTitle}
+                        subtitle={forceDeleteDialogMessage}
+                        showConfirmationModal={forceDeleteDialog}
+                        onDelete={handleForceDelete}
+                        closeConfirmationModal={closeForceConfirmationModal}
+                    />
+
+                    <ClusterNotReachableDialog
+                        clusterName={clusterName}
+                        onClickCancel={onClickHideNonCascadeDeletePopup}
+                        onClickDelete={onClickNonCascadeDelete}
+                        showConfirmationModal={nonCascadeDeleteDialog}
+                    />
                 </div>
             )}
             {urlInfo && (

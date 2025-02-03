@@ -22,7 +22,6 @@ import {
     ConditionalWrap,
     VisibleModal,
     Drawer,
-    DeleteDialog,
     VariableType,
     MandatoryPluginDataType,
     ButtonWithLoader,
@@ -74,7 +73,7 @@ import { Sidebar } from './Sidebar'
 import { Build } from './Build'
 import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning.svg'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
+import { DeleteComponentsName, MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
 import { LoadingState } from '../ciConfig/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from '../cdPipeline/cdpipeline.util'
@@ -547,30 +546,28 @@ export default function CIPipeline({
             false,
             formData.webhookConditionList,
         )
-            setPageState(ViewType.FORM)
-            handleClose()
-            deleteWorkflow(appId, Number(workflowId))
+        setPageState(ViewType.FORM)
+        handleClose()
+        deleteWorkflow(appId, Number(workflowId))
     }
 
     const closeCIDeleteModal = (): void => {
         setShowDeleteModal(false)
     }
 
-    const renderDeleteCIModal = () => {
-        if (!ciPipelineId) return null
-        return (
-            <DeleteConfirmationModal
-                title={formData.name}
-                subtitle={`Are you sure you want to delete this CI Pipeline from '${appName}' ?`}
-                showConfirmationModal={showDeleteModal}
-                closeConfirmationModal={closeCIDeleteModal}
-                onDelete={onDelete}
-                errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.BAD_REQUEST}
-                renderCannotDeleteConfirmationSubTitle="Please delete deployment pipelines for this workflow first and try again."
-                successToastMessage="Pipeline Deleted"
-            />
-        )
-    }
+    const renderDeleteCIModal = () => (
+        <DeleteConfirmationModal
+            title={formData.name}
+            component={isJobView ? DeleteComponentsName.Job : DeleteComponentsName.BuildPipeline}
+            subtitle={`Are you sure you want to delete this pipeline from '${appName}' ?`}
+            showConfirmationModal={ciPipelineId && showDeleteModal}
+            closeConfirmationModal={closeCIDeleteModal}
+            onDelete={onDelete}
+            errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.BAD_REQUEST}
+            renderCannotDeleteConfirmationSubTitle="Please delete deployment pipelines for this workflow first and try again."
+            successToastMessage="Pipeline Deleted"
+        />
+    )
 
     const renderSecondaryButton = () => {
         if (ciPipelineId) {

@@ -16,7 +16,6 @@
 
 import { Component } from 'react'
 import {
-    Progressing,
     ConditionalWrap,
     Checkbox,
     InfoColourBar,
@@ -28,12 +27,12 @@ import {
     SelectPicker,
     ComponentSizeType,
     SelectPickerProps,
-    DeleteComponent,
     Button,
     ButtonStyleType,
     ButtonVariantType,
     DeleteConfirmationModal,
     Textarea,
+    ERROR_STATUS_CODE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -975,7 +974,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     showConfirmationModal={this.state.confirmation}
                     closeConfirmationModal={this.toggleConfirmation}
                     onDelete={this.onDelete}
-                    subtitle={
+                    errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+                    renderCannotDeleteConfirmationSubTitle={
                         this.props.isMultiGit
                             ? DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE
                             : DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE

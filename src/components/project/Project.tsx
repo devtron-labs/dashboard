@@ -30,7 +30,7 @@ import {
     DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ProjectProps, ProjectState } from './types'
-import { DC_PROJECT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '@Config/constantMessaging'
+import { DeleteComponentsName } from '@Config/constantMessaging'
 
 export class Project extends Component<ProjectProps, ProjectState> {
     constructor(props) {
@@ -88,7 +88,6 @@ export class Project extends Component<ProjectProps, ProjectState> {
                 <DeleteConfirmationModal
                     title={this.props.name}
                     component={DeleteComponentsName.Project}
-                    renderCannotDeleteConfirmationSubTitle={DC_PROJECT_CONFIRMATION_MESSAGE}
                     onDelete={this.onDelete}
                     showConfirmationModal={this.state.confirmation}
                     closeConfirmationModal={this.toggleConfirmation}
