@@ -63,6 +63,7 @@ import { HelmAppListResponse } from '../../app/list-new/AppListType'
 import { ExternalFluxAppDetailsRoute } from '../../../Pages/App/Details/ExternalFlux'
 
 import { TAB_DATA_LOCAL_STORAGE_KEY } from '../DynamicTabs/constants'
+import { DEFAULT_GIT_OPS_FEATURE_FLAGS } from './constants'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -78,6 +79,7 @@ const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/Devt
 const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
+// TODO: Move this to common-lib in onboard-argo v2
 const getEnvironmentData = importComponentFromFELibrary('getEnvironmentData', null, 'function')
 const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
 const SoftwareDistributionHub = importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
@@ -116,11 +118,7 @@ export default function NavigationRoutes() {
     const contextValue = useMemo(() => ({ environmentId, setEnvironmentId }), [environmentId])
     const [isAirgapped, setIsAirGapped] = useState(false)
     const [isManifestScanningEnabled, setIsManifestScanningEnabled] = useState<boolean>(false)
-    const [featureGitOpsFlags, setFeatureGitOpsFlags] = useState<MainContext['featureGitOpsFlags']>({
-        isFeatureArgoCdMigrationEnabled: false,
-        isFeatureGitOpsEnabled: false,
-        isFeatureUserDefinedGitOpsEnabled: false,
-    })
+    const [featureGitOpsFlags, setFeatureGitOpsFlags] = useState<MainContext['featureGitOpsFlags']>(structuredClone(DEFAULT_GIT_OPS_FEATURE_FLAGS))
 
     const getInit = async (_serverMode: string) => {
         setLoginLoader(true)
@@ -283,11 +281,7 @@ export default function NavigationRoutes() {
         } catch {
             setIsAirGapped(false)
             setIsManifestScanningEnabled(false)
-            setFeatureGitOpsFlags({
-                isFeatureArgoCdMigrationEnabled: false,
-                isFeatureGitOpsEnabled: false,
-                isFeatureUserDefinedGitOpsEnabled: false,
-            })
+            setFeatureGitOpsFlags(structuredClone(DEFAULT_GIT_OPS_FEATURE_FLAGS))
         }
     }
 

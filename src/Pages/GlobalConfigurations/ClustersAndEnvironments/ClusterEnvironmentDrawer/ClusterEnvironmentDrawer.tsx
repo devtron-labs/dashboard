@@ -135,11 +135,13 @@ export const ClusterEnvironmentDrawer = ({
         }
     }
 
+    const parsedNamespace = namespace ?? ''
+
     // FORM METHODS
     const { data, errors, register, handleSubmit, trigger } = useForm<ClusterEnvironmentDrawerFormProps>({
         initialValues: {
             environmentName: environmentName ?? '',
-            namespace: !id ? getNamespaceFromLocalStorage(namespace ?? '') : namespace ?? '',
+            namespace: !id ? getNamespaceFromLocalStorage(parsedNamespace) : parsedNamespace,
             isProduction: !!isProduction,
             description: description ?? '',
         },

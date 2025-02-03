@@ -194,8 +194,7 @@ const NavItem = ({ serverMode }) => {
         name: string
         href: string
         component: LazyExoticComponent<any>
-        // TODO: Ask for optional
-        isAvailableInEA?: boolean
+        isAvailableInEA: boolean
         moduleName?: string
         isAvailableInDesktop?: boolean
         hideRoute?: boolean
@@ -210,8 +209,8 @@ const NavItem = ({ serverMode }) => {
             name: 'GitOps ',
             href: URLS.GLOBAL_CONFIG_GITOPS,
             component: GitOpsConfiguration,
-            // TODO: Ask for ea mode as well
             hideRoute: !isFeatureGitOpsEnabled,
+            isAvailableInEA: isFeatureGitOpsEnabled,
         },
         { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project, isAvailableInEA: true },
         {

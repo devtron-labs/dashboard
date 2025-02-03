@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { SyntheticEvent } from 'react'
 import {
     DeploymentAppTypes,
     DeploymentStrategy,
@@ -24,7 +25,6 @@ import {
     NodeStatusDTO,
     CDFormType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { SyntheticEvent } from 'react'
 
 export const CD_PATCH_ACTION = {
     DELETE: 1,
@@ -146,19 +146,31 @@ export enum MigrationSourceValidationReasonType {
     ENFORCED_POLICY_VIOLATION = 'EnforcedPolicyViolation',
 }
 
-export interface MigrateToDevtronRequiredFieldsDTO {
+export interface ValidateMigrateToDevtronPayloadType {
     deploymentAppType: DeploymentAppTypes
     applicationObjectClusterId: number
     applicationObjectNamespace: string
     deploymentAppName: string
+    appId: number
 }
 
-interface ValidateMigrationSourceAppDestinationDetailsDTO {
+interface ValidateMigrationDestinationDetailsDTO {
     clusterName: string
     clusterServerUrl: string
     namespace: string
     environmentName: string
     environmentId: number
+}
+
+interface ValidateMigrationSourceDetailsDTO {
+    repoURL: string
+    chartPath: string
+    chartMetadata: {
+        requiredChartVersion: string
+        savedChartName: string
+        valuesFileName: string
+        requiredChartName: string
+    }
 }
 
 export interface ValidateMigrationSourceDTO {
@@ -168,17 +180,8 @@ export interface ValidateMigrationSourceDTO {
         validationFailedMessage: string
     }
     applicationMetadata: {
-        source: {
-            repoURL: string
-            chartPath: string
-            chartMetadata: {
-                requiredChartVersion: string
-                savedChartName: string
-                valuesFileName: string
-                requiredChartName: string
-            }
-        }
-        destination: ValidateMigrationSourceAppDestinationDetailsDTO
+        source: ValidateMigrationSourceDetailsDTO
+        destination: ValidateMigrationDestinationDetailsDTO
         status: NodeStatusDTO
     }
 }
@@ -194,12 +197,11 @@ export interface MigrateFromArgoFormState {
 export interface MigrateToDevtronFormState {
     deploymentAppType: Extract<DeploymentAppTypes, DeploymentAppTypes.HELM | DeploymentAppTypes.GITOPS> | null
     migrateFromArgoFormState: MigrateFromArgoFormState
-    // TODO: Will add helm form state
     triggerType: (typeof TriggerType)[keyof typeof TriggerType]
 }
 
-export interface MigratePipelineFromArgoRequiredFieldsDTO
-    extends MigrateToDevtronRequiredFieldsDTO,
+export interface MigrateArgoAppToCDPipelineRequiredPayloadType
+    extends Omit<ValidateMigrateToDevtronPayloadType, 'appId'>,
         Pick<MigrateToDevtronFormState, 'triggerType'>,
         Pick<CDFormType, 'environmentId' | 'environmentName' | 'namespace'> {}
 

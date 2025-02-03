@@ -98,13 +98,12 @@ export const createTaintsList = (list: any[], nodeLabel: string): Map<string, No
 export const getServerURLFromLocalStorage = (fallbackServerUrl: string): string => {
     if (typeof Storage !== 'undefined' && localStorage.getItem(ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY)) {
         try {
-            const clusterData: AddClusterFormPrefilledInfoType = JSON.parse(localStorage.getItem(ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY))
+            const clusterData: AddClusterFormPrefilledInfoType = JSON.parse(
+                localStorage.getItem(ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY),
+            )
             const serverURL = clusterData?.serverURL || fallbackServerUrl
             return serverURL
-        } catch (e) {
-            // Should we send this in sentry?
-            console.error('Error while parsing local storage data', e)
-        }
+        } catch {}
     }
 
     return fallbackServerUrl
@@ -113,12 +112,12 @@ export const getServerURLFromLocalStorage = (fallbackServerUrl: string): string 
 export const getNamespaceFromLocalStorage = (fallbackNamespace: string): string => {
     if (typeof Storage !== 'undefined' && localStorage.getItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY)) {
         try {
-            const envData: AddEnvironmentFormPrefilledInfoType = JSON.parse(localStorage.getItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY))
+            const envData: AddEnvironmentFormPrefilledInfoType = JSON.parse(
+                localStorage.getItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY),
+            )
             const namespace = envData?.namespace || fallbackNamespace
             return namespace
-        } catch (e) {
-            console.error('Error while parsing local storage data', e)
-        }
+        } catch {}
     }
 
     return fallbackNamespace

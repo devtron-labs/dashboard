@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { SyntheticEvent, useContext, useState } from 'react'
 import {
     CustomInput,
     DeploymentAppTypes,
@@ -38,7 +39,6 @@ import {
     useSuperAdmin,
     ErrorScreenNotAuthorized,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { SyntheticEvent, useContext, useState } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
 import yamlJsParser from 'yaml'
 import error from '../../assets/icons/misc/errorInfo.svg'
@@ -146,14 +146,6 @@ export default function BuildCD({
 
         _form.triggerType = triggerType
         setFormData(_form)
-
-        // TODO: This is a hack would fix on exposing migrate helm release body
-        if (releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS) {
-            setMigrateToDevtronFormState((prevState) => ({
-                ...prevState,
-                triggerType,
-            }))
-        }
     }
 
     const handleMigrateFromAppTypeChange = (event: SyntheticEvent) => {
@@ -183,8 +175,6 @@ export default function BuildCD({
             _form.environmentId = selection.id
             _form.environmentName = selection.name
             _form.namespace = selection.namespace
-            // Only readonly field not to be consumed while sending
-            _form.isClusterCdActive = selection.isClusterCdActive
 
             setIsVirtualEnvironment(selection.isVirtualEnvironment)
             _formDataErrorObj.envNameError = validationRules.environment(selection.id)
@@ -199,7 +189,9 @@ export default function BuildCD({
                 configMaps: [],
                 secrets: [],
             }
-
+            
+            // Only readonly field not to be consumed while sending
+            _form.isClusterCdActive = selection.isClusterCdActive
             _form.runPreStageInEnv = getPrePostStageInEnv(
                 selection.isVirtualEnvironment,
                 _form.isClusterCdActive && _form.runPreStageInEnv,
@@ -796,7 +788,6 @@ export default function BuildCD({
 
             return (
                 <div className="flexbox-col dc__gap-16">
-                    {/* TODO: Can be fieldset */}
                     <div className="flexbox-col dc__gap-8">
                         <span className="cn-7 fs-13 fw-4 lh-20">Select type of application to migrate</span>
 

@@ -24,20 +24,34 @@ import {
 } from '@Components/cluster/constants'
 import { MigrationSourceValidationReasonType } from '../cdPipeline.types'
 import { MigrateToDevtronValidationFactoryProps } from './types'
-import { GENERIC_SECTION_ERROR_STATE_COMMON_PROPS } from './constants'
+import {
+    GENERIC_SECTION_ERROR_STATE_COMMON_PROPS,
+    TARGET_CLUSTER_TOOLTIP_INFO,
+    TARGET_NAMESPACE_TOOLTIP_INFO,
+    TARGET_ENVIRONMENT_INFO_LIST,
+} from './constants'
 import './MigrateToDevtronValidationFactory.scss'
 
 interface ContentRowProps {
     title: string
     value?: string
     buttonProps?: ButtonProps
-    titleTooltip: string
+    titleTooltip: JSX.Element
 }
 
-const TARGET_CLUSTER_TOOLTIP = 'Cluster in which the Argo CD application is deploying your microservice'
-const TARGET_NAMESPACE_TOOLTIP = 'Namespace in which the Argo CD application is deploying your microservice'
-const TARGET_ENVIRONMENT_TOOLTIP =
-    'A deployment pipeline will be created for the target environment. Environment is a unique combination of cluster and namespace in Devtron.'
+const renderContentTooltip = (title: string, infoList: string[]) => (
+    <div className="flexbox-col dc__gap-2">
+        <h6 className="m-0 fs-12 fw-6 lh-18 text__white">{title}</h6>
+
+        <div className="flexbox-col dc__gap-12">
+            {infoList?.map((info) => (
+                <span key={info} className="fs-12 fw-4 lh-18 text__white">
+                    {info}
+                </span>
+            ))}
+        </div>
+    </div>
+)
 
 const ContentRow = ({ title, value, buttonProps, titleTooltip }: ContentRowProps) => (
     <>
@@ -166,19 +180,28 @@ const MigrateToDevtronValidationFactory = ({
     const renderAllContentFields = () => (
         <div className="display-grid dc__row-gap-8 dc__column-gap-16 validation-response__content-container">
             <ContentRow
-                title="Target cluster"
+                title={TARGET_CLUSTER_TOOLTIP_INFO.heading}
                 value={destination.clusterName || '--'}
-                titleTooltip={TARGET_CLUSTER_TOOLTIP}
+                titleTooltip={renderContentTooltip(
+                    TARGET_CLUSTER_TOOLTIP_INFO.heading,
+                    TARGET_CLUSTER_TOOLTIP_INFO.infoList,
+                )}
             />
             <ContentRow
-                title="Target namespace"
+                title={TARGET_NAMESPACE_TOOLTIP_INFO.heading}
                 value={destination.namespace || '--'}
-                titleTooltip={TARGET_NAMESPACE_TOOLTIP}
+                titleTooltip={renderContentTooltip(
+                    TARGET_NAMESPACE_TOOLTIP_INFO.heading,
+                    TARGET_NAMESPACE_TOOLTIP_INFO.infoList,
+                )}
             />
             <ContentRow
-                title="Target environment"
+                title={TARGET_ENVIRONMENT_INFO_LIST.heading}
                 value={destination.environmentName || '--'}
-                titleTooltip={TARGET_ENVIRONMENT_TOOLTIP}
+                titleTooltip={renderContentTooltip(
+                    TARGET_ENVIRONMENT_INFO_LIST.heading,
+                    TARGET_ENVIRONMENT_INFO_LIST.infoList,
+                )}
             />
         </div>
     )
@@ -209,7 +232,7 @@ const MigrateToDevtronValidationFactory = ({
                 return (
                     <div className="display-grid dc__row-gap-8 dc__column-gap-16 validation-response__content-container">
                         <ContentRow
-                            title="Target cluster"
+                            title={TARGET_CLUSTER_TOOLTIP_INFO.heading}
                             value={destination.clusterServerUrl}
                             buttonProps={{
                                 dataTestId: 'connect-cluster-button',
@@ -219,16 +242,22 @@ const MigrateToDevtronValidationFactory = ({
                                 component: ButtonComponentType.link,
                                 onClick: handleAddClusterClick,
                                 linkProps: {
-                                    to: `${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_CLUSTER}`,
+                                    to: URLS.GLOBAL_CONFIG_CREATE_CLUSTER,
                                     target: '_blank',
                                 },
                             }}
-                            titleTooltip={TARGET_CLUSTER_TOOLTIP}
+                            titleTooltip={renderContentTooltip(
+                                TARGET_CLUSTER_TOOLTIP_INFO.heading,
+                                TARGET_CLUSTER_TOOLTIP_INFO.infoList,
+                            )}
                         />
                         <ContentRow
-                            title="Target namespace"
+                            title={TARGET_NAMESPACE_TOOLTIP_INFO.heading}
                             value={destination.namespace || '--'}
-                            titleTooltip={TARGET_NAMESPACE_TOOLTIP}
+                            titleTooltip={renderContentTooltip(
+                                TARGET_NAMESPACE_TOOLTIP_INFO.heading,
+                                TARGET_NAMESPACE_TOOLTIP_INFO.infoList,
+                            )}
                         />
                     </div>
                 )
@@ -237,17 +266,23 @@ const MigrateToDevtronValidationFactory = ({
                 return (
                     <div className="display-grid dc__row-gap-8 dc__column-gap-16 validation-response__content-container">
                         <ContentRow
-                            title="Target cluster"
+                            title={TARGET_CLUSTER_TOOLTIP_INFO.heading}
                             value={destination.clusterName || '--'}
-                            titleTooltip={TARGET_CLUSTER_TOOLTIP}
+                            titleTooltip={renderContentTooltip(
+                                TARGET_CLUSTER_TOOLTIP_INFO.heading,
+                                TARGET_CLUSTER_TOOLTIP_INFO.infoList,
+                            )}
                         />
                         <ContentRow
-                            title="Target namespace"
+                            title={TARGET_NAMESPACE_TOOLTIP_INFO.heading}
                             value={destination.namespace || '--'}
-                            titleTooltip={TARGET_NAMESPACE_TOOLTIP}
+                            titleTooltip={renderContentTooltip(
+                                TARGET_NAMESPACE_TOOLTIP_INFO.heading,
+                                TARGET_NAMESPACE_TOOLTIP_INFO.infoList,
+                            )}
                         />
                         <ContentRow
-                            title="Target environment"
+                            title={TARGET_ENVIRONMENT_INFO_LIST.heading}
                             buttonProps={{
                                 dataTestId: 'add-environment-button',
                                 text: 'Add Environment',
@@ -260,7 +295,10 @@ const MigrateToDevtronValidationFactory = ({
                                     target: '_blank',
                                 },
                             }}
-                            titleTooltip={TARGET_ENVIRONMENT_TOOLTIP}
+                            titleTooltip={renderContentTooltip(
+                                TARGET_ENVIRONMENT_INFO_LIST.heading,
+                                TARGET_ENVIRONMENT_INFO_LIST.infoList,
+                            )}
                         />
                     </div>
                 )
@@ -356,7 +394,6 @@ const MigrateToDevtronValidationFactory = ({
                         </Tooltip>
 
                         {status && (
-                            // TODO: Can make a component for this
                             <span
                                 data-testid="deployment-status-name"
                                 className={`app-summary__status-name fs-13 mr-8 fw-6 f-${status.toLowerCase()} dc__first-letter-capitalize--imp`}

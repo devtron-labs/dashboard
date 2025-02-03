@@ -61,7 +61,7 @@ import BuildCD from './BuildCD'
 import {
     CD_PATCH_ACTION,
     GeneratedHelmPush,
-    MigratePipelineFromArgoRequiredFieldsDTO,
+    MigrateArgoAppToCDPipelineRequiredPayloadType,
     MigrateToDevtronFormState,
 } from './cdPipeline.types'
 import {
@@ -104,6 +104,7 @@ import {
     gitOpsRepoNotConfiguredWithOptionsHidden,
 } from '../gitOps/constants'
 import { BuildCDProps, CDPipelineProps, DeleteDialogType, ForceDeleteMessageType } from './types'
+import { MIGRATE_TO_DEVTRON_FORM_STATE } from './constants'
 
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 const processPluginData: (params: ProcessPluginDataParamsType) => Promise<ProcessPluginDataReturnType> =
@@ -200,43 +201,9 @@ export default function CDPipeline({
         isDigestEnforcedForPipeline: false,
         isDigestEnforcedForEnv: false,
     })
-    const [migrateToDevtronFormState, setMigrateToDevtronFormState] = useState<MigrateToDevtronFormState>({
-        deploymentAppType: DeploymentAppTypes.HELM,
-        migrateFromArgoFormState: {
-            appName: '',
-            namespace: '',
-            clusterId: 0,
-            clusterName: '',
-            validationResponse: {
-                isLinkable: false,
-                errorDetail: {
-                    validationFailedReason: null,
-                    validationFailedMessage: '',
-                },
-                applicationMetadata: {
-                    source: {
-                        repoURL: '',
-                        chartPath: '',
-                        chartMetadata: {
-                            requiredChartVersion: '',
-                            savedChartName: '',
-                            valuesFileName: '',
-                            requiredChartName: '',
-                        },
-                    },
-                    destination: {
-                        clusterName: '',
-                        clusterServerUrl: '',
-                        namespace: '',
-                        environmentName: '',
-                        environmentId: 0,
-                    },
-                    status: null,
-                },
-            },
-        },
-        triggerType: TriggerType.Auto,
-    })
+    const [migrateToDevtronFormState, setMigrateToDevtronFormState] = useState<MigrateToDevtronFormState>(
+        structuredClone(MIGRATE_TO_DEVTRON_FORM_STATE),
+    )
     const [configMapAndSecrets, setConfigMapAndSecrets] = useState([])
     const [savedCustomTagPattern, setSavedCustomTagPattern] = useState<string>('')
     const [selectedTaskIndex, setSelectedTaskIndex] = useState<number>(0)
@@ -718,20 +685,19 @@ export default function CDPipeline({
             }),
         }
 
-        const { migrateFromArgoFormState } = migrateToDevtronFormState
-        const migrateFromArgoTargetDetails =
-            migrateFromArgoFormState?.validationResponse?.applicationMetadata?.destination
+        const { migrateFromArgoFormState, deploymentAppType, triggerType } = migrateToDevtronFormState
+        const migrateFromArgoTargetDetails = migrateFromArgoFormState.validationResponse.applicationMetadata.destination
 
-        const migrateToDevtronRequiredPayload: MigratePipelineFromArgoRequiredFieldsDTO = isMigratingFromArgoApp
+        const migrateToDevtronRequiredPayload: MigrateArgoAppToCDPipelineRequiredPayloadType = isMigratingFromArgoApp
             ? {
-                  deploymentAppType: migrateToDevtronFormState.deploymentAppType,
+                  deploymentAppType,
                   applicationObjectClusterId: migrateFromArgoFormState.clusterId,
                   applicationObjectNamespace: migrateFromArgoFormState.namespace,
                   deploymentAppName: migrateFromArgoFormState.appName,
-                  environmentId: migrateFromArgoTargetDetails?.environmentId,
-                  environmentName: migrateFromArgoTargetDetails?.environmentName,
-                  namespace: migrateFromArgoTargetDetails?.namespace,
-                  triggerType: migrateToDevtronFormState.triggerType,
+                  environmentId: migrateFromArgoTargetDetails.environmentId,
+                  environmentName: migrateFromArgoTargetDetails.environmentName,
+                  namespace: migrateFromArgoTargetDetails.namespace,
+                  triggerType,
               }
             : null
 
@@ -1191,22 +1157,19 @@ export default function CDPipeline({
                 </button>
             )
         }
-        if (!isAdvanced && formData.releaseMode !== ReleaseMode.MIGRATE_EXTERNAL_APPS) {
+        if (!isAdvanced && formData.releaseMode !== ReleaseMode.MIGRATE_EXTERNAL_APPS && !isWebhookCD) {
             return (
-                !isWebhookCD && (
-                    <button
-                        type="button"
-                        data-testid="create-build-pipeline-advanced-options-button"
-                        className="cta cta--workflow cancel mr-16 flex dc__gap-6"
-                        onClick={handleAdvanceClick}
-                    >
-                        Advanced options
-                        {mandatoryPluginData &&
-                            (!mandatoryPluginData.isValidPre || !mandatoryPluginData.isValidPost) && (
-                                <ICWarning className="icon-dim-16 warning-icon-y7-imp dc__no-shrink" />
-                            )}
-                    </button>
-                )
+                <button
+                    type="button"
+                    data-testid="create-build-pipeline-advanced-options-button"
+                    className="cta cta--workflow cancel mr-16 flex dc__gap-6"
+                    onClick={handleAdvanceClick}
+                >
+                    Advanced options
+                    {mandatoryPluginData && (!mandatoryPluginData.isValidPre || !mandatoryPluginData.isValidPost) && (
+                        <ICWarning className="icon-dim-16 warning-icon-y7-imp dc__no-shrink" />
+                    )}
+                </button>
             )
         }
         return null
@@ -1219,10 +1182,11 @@ export default function CDPipeline({
         close()
     }
 
-    const handleSelectMigrateHelmRelease = () => {
+    const handleSelectMigrateToDevtron = () => {
         setFormData({
             ...formData,
             releaseMode: ReleaseMode.MIGRATE_EXTERNAL_APPS,
+            // This will select default deployment app type
             deploymentAppType: migrateToDevtronFormState.deploymentAppType,
         })
     }
@@ -1431,7 +1395,7 @@ export default function CDPipeline({
                                     label: 'Migrate to devtron',
                                     id: ReleaseMode.MIGRATE_EXTERNAL_APPS,
                                     props: {
-                                        onClick: handleSelectMigrateHelmRelease,
+                                        onClick: handleSelectMigrateToDevtron,
                                         'data-testid': 'migrate-to-devtron-tab',
                                     },
                                 },

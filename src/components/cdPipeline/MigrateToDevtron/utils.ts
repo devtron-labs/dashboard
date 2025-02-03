@@ -3,7 +3,7 @@ import { ValidateMigrationSourceDTO } from '../cdPipeline.types'
 export const sanitizeValidateMigrationSourceResponse = (
     response: ValidateMigrationSourceDTO,
 ): ValidateMigrationSourceDTO => {
-    const { isLinkable, errorDetail, applicationMetadata } = response
+    const { isLinkable, errorDetail, applicationMetadata } = response || {}
     const { source, destination, status } = applicationMetadata || {}
 
     return {

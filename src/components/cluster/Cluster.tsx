@@ -261,7 +261,7 @@ class ClusterList extends Component<ClusterListProps, any> {
                     <Button
                         dataTestId="add_cluster_button"
                         linkProps={{
-                            to: `${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_CLUSTER}`,
+                            to: URLS.GLOBAL_CONFIG_CREATE_CLUSTER,
                         }}
                         component={ButtonComponentType.link}
                         startIcon={<Add />}
@@ -287,7 +287,7 @@ class ClusterList extends Component<ClusterListProps, any> {
                         ),
                 )}
 
-                <Route path={`${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_CLUSTER}`}>
+                <Route path={URLS.GLOBAL_CONFIG_CREATE_CLUSTER}>
                     <Drawer position="right" width="1000px" onEscape={this.handleCloseCreateClusterForm}>
                         <ClusterForm
                             {...getSSHConfig(this.state)}
