@@ -22,7 +22,8 @@ import {
     ConfirmationModalVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt } from 'react-router-dom'
-import { ReactComponent as DeployButton } from '../../../assets/icons/ic-nav-rocket.svg'
+import { ReactComponent as DeployButton } from '@Icons/ic-nav-rocket.svg'
+import { ReactComponent as ICRollback } from '@Icons/ic-rollback-medium.svg'
 
 interface RollbackConfirmationDialogProps {
     deploying: boolean
@@ -48,7 +49,8 @@ const RollbackConfirmationDialog = ({
     return (
         <>
             <ConfirmationModal
-                variant={ConfirmationModalVariantType.info} // need to confirm variant as no icon is present
+                variant={ConfirmationModalVariantType.custom}
+                Icon={<ICRollback />}
                 title={rollbackDialogTitle}
                 subtitle="Are you sure you want to deploy a previous version?"
                 showConfirmationModal={showRollbackConfirmation}
