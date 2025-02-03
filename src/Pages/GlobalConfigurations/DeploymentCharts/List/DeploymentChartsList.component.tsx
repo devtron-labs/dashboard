@@ -175,7 +175,9 @@ const DeploymentChartsList = () => {
                                                 ) : (
                                                     <ICDevtron className="icon-dim-20 fcb-5" />
                                                 )}
-                                                <span>{uploadedBy}</span>
+                                                <Tooltip content={uploadedBy} placement="left">
+                                                    <span className="dc__ellipsis-right">{uploadedBy}</span>
+                                                </Tooltip>
                                             </div>
                                         </div>
                                         <div className="flex dc__gap-4">
