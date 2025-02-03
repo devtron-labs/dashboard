@@ -20,7 +20,6 @@ import {
     Progressing,
     noop,
     stopPropagation,
-    multiSelectStyles,
     DeploymentAppTypes,
     useSearchString,
     useAsync,
@@ -375,6 +374,7 @@ export const Details: React.FC<DetailsType> = ({
     useEffect(
         () => () => {
             clearPollingInterval()
+            clearDeploymentStatusTimer()
             IndexStore.clearAppDetails()
         },
         [],
