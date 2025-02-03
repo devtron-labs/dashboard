@@ -24,6 +24,7 @@ import {
     SelectPickerVariantType,
     getCVEUrlFromCVEName,
     ConditionalWrap,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink } from 'react-router-dom'
 import {
@@ -459,8 +460,10 @@ export class SecurityPolicyEdit extends Component<
                                             href={getCVEUrlFromCVEName(cve.name)}
                                             rel="noopener noreferrer"
                                             target="_blank"
+                                            className="dc__inline-flex dc__align-items-center dc__gap-4"
                                         >
                                             {cve.name}
+                                            <Icon name="ic-open-in-new" size={14} color={null} />
                                         </a>
                                     </td>
                                     <td className="security-policy__data-cell">

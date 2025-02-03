@@ -17,6 +17,7 @@
 import React, { Component } from 'react'
 import Tippy from '@tippyjs/react'
 import link from '../../../../../../assets/icons/ic-link.svg'
+import { Icon } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface CINodeProps {
     x: number
@@ -51,14 +52,14 @@ export class TriggerExternalCINode extends Component<CINodeProps> {
                 <div className="workflow-node__trigger-type workflow-node__trigger-type--create">
                     {this.props.triggerType}
                 </div>
-                <div className="workflow-node__title flex">
+                <div className="workflow-node__title flex dc__gap-8">
                     <div className="workflow-node__full-width-minus-Icon">
                         <span className="workflow-node__text-light">Build: External</span>
                         <Tippy className="default-tt" arrow placement="bottom" content={this.props.title}>
                             <div className="dc__ellipsis-left">{this.props.title}</div>
                         </Tippy>
                     </div>
-                    <div className="workflow-node__icon-common ml-8 workflow-node__CI-webhook-icon" />
+                    <Icon name="ic-ci-webhook" size={20} color={null} />
                 </div>
             </div>
         )

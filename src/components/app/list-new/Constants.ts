@@ -69,15 +69,6 @@ export const DefaultJobNote = `## Describe this job\n\nDescribe this job in a fe
 
 export const FLUX_CD_HELM_RELEASE_LABEL = 'Helm Release'
 
-export const StatusConstants = {
-    NOT_DEPLOYED: {
-        titleCase: 'Not Deployed',
-        noSpaceLower: 'notdeployed',
-        normalCase: 'Not deployed',
-        lowerCase: 'not-deployed',
-    },
-} as const
-
 export const TEMPLATE_TYPE_FILTER_OPTIONS: SelectPickerOptionType[] = [
     { label: FLUX_CD_HELM_RELEASE_LABEL, value: FluxCDTemplateType.HELM_RELEASE },
     { label: FluxCDTemplateType.KUSTOMIZATION, value: FluxCDTemplateType.KUSTOMIZATION },

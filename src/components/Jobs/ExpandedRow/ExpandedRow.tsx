@@ -45,7 +45,7 @@ export default function ExpandedRow(props: ExpandedRowProps) {
                     <div className="app-list__cell--icon" />
                     <div className="app-list__cell app-list__cell--env cb-5">{ciPipeline.ciPipelineName}</div>
                     <div className="app-list__cell app-list__cell--app_status">
-                        <AppStatus appStatus={ciPipeline.status} isJobView />
+                        <AppStatus status={ciPipeline.status} isJobView />
                     </div>
                     <div className="app-list__cell app-list__cell--time">
                         <p className="dc__truncate-text m-0">

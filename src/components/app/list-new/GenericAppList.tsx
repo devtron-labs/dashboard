@@ -292,7 +292,7 @@ const GenericAppList = ({
                 <div className="dc__truncate-text  m-0 value">{app.appName}</div>
             </div>
             <div className="app-list__cell app-list__cell--namespace">
-                <AppStatus appStatus={app.appStatus} />
+                <AppStatus status={app.appStatus} />
             </div>
             {/* Template Type is only shown in FluxCD */}
             {isFluxCDAppList && (

@@ -31,13 +31,14 @@ import {
     stringComparatorBySortOrder,
     handleRelativeDateSorting,
     Tooltip,
+    DeploymentStatus,
+    StatusType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as DevtronIcon } from '@Icons/ic-devtron-app.svg'
 import { ReactComponent as ICActivity } from '@Icons/ic-activity.svg'
 import { ReactComponent as ICArrowLineDown } from '@Icons/ic-arrow-line-down.svg'
 import { ReactComponent as ICMoreOption } from '@Icons/ic-more-option.svg'
-import { StatusConstants } from '@Components/app/list-new/Constants'
 
 import {
     EnvironmentOverviewTableHeaderFixedKeys,
@@ -222,12 +223,7 @@ export const EnvironmentOverviewTable = ({
                         value="CHECKED"
                         rootClassName={`mb-0 ml-2 ${!isPartialChecked ? 'dc__visible-hover--child' : ''}`}
                     />
-                    {!isVirtualEnv && (
-                        <AppStatus
-                            appStatus={deployedAt ? status : StatusConstants.NOT_DEPLOYED.noSpaceLower}
-                            hideStatusMessage
-                        />
-                    )}
+                    {!isVirtualEnv && <AppStatus status={deployedAt ? status : StatusType.NOT_DEPLOYED} hideMessage />}
                     <div className="flexbox dc__align-items-center dc__content-space dc__gap-8">
                         <Tooltip content={name}>
                             <Link className="py-2 dc__truncate dc__no-decor" to={redirectLink}>
@@ -240,9 +236,8 @@ export const EnvironmentOverviewTable = ({
                 <div
                     className={`environment-overview-table__variable-cell px-16 py-8 cn-9 fs-13 lh-20 ${isLastDeployedExpandedRowClassName}`}
                 >
-                    <AppStatus
-                        appStatus={deployedAt ? deploymentStatus : StatusConstants.NOT_DEPLOYED.noSpaceLower}
-                        isDeploymentStatus
+                    <DeploymentStatus
+                        status={deployedAt ? deploymentStatus : StatusType.NOT_DEPLOYED}
                         isVirtualEnv={isVirtualEnv}
                     />
                     {lastDeployedImage && (

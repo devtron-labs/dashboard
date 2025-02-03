@@ -17,8 +17,8 @@
 import {
     ComponentSizeType,
     Environment,
+    Icon,
     SelectPicker,
-    SelectPickerOptionType,
     SelectPickerVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { createClusterEnvGroup } from '../common'
@@ -76,7 +76,7 @@ export const EnvironmentList = ({
             ...selectedEnv,
             label: selectedEnv?.name,
             value: selectedEnv?.id, // assuming the whole object is set as value
-            startIcon: !isBuildStage ? <div className="dc__environment-icon" /> : null,
+            startIcon: !isBuildStage ? <Icon name='ic-env' size={18} color={null} /> : null,
         }
 
         return _selectedEnv

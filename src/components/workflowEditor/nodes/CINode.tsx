@@ -15,7 +15,13 @@
  */
 
 import React, { Component, ReactElement } from 'react'
-import { WorkflowNodeType, SelectedNode, CommonNodeAttr, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    WorkflowNodeType,
+    SelectedNode,
+    CommonNodeAttr,
+    ConditionalWrap,
+    Icon,
+} from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { Link, RouteComponentProps } from 'react-router-dom'
 import ToggleCDSelectButton from '../ToggleCDSelectButton'
@@ -94,11 +100,9 @@ export class CINode extends Component<CINodeProps> {
         }
 
         return (
-            <div
-                className={`workflow-node__icon-common mr-12 ${
-                    isJobCard ? 'workflow-node__job-icon' : 'workflow-node__CI-icon'
-                }`}
-            />
+            <div className="flex pr-12">
+                <Icon name={isJobCard ? 'ic-job-color' : 'ic-build-color'} size={20} color={null} />
+            </div>
         )
     }
 
