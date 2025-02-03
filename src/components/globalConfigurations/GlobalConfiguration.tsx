@@ -210,7 +210,6 @@ const NavItem = ({ serverMode }) => {
             name: 'GitOps ',
             href: URLS.GLOBAL_CONFIG_GITOPS,
             component: GitOpsConfiguration,
-            moduleName: ModuleNameMap.ARGO_CD,
             // TODO: Ask for ea mode as well
             hideRoute: !isFeatureGitOpsEnabled,
         },
