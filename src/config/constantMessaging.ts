@@ -58,7 +58,7 @@ export const enum DeleteComponentsName {
     GitProvider = 'git account',
     GitRepo = 'repo',
     GROUP = 'group',
-    Job = 'job',
+    Job = 'job pipeline',
     Link = 'link',
     LinkedBuildPipeline = 'linked build pipeline',
     MaterialView = 'git repository',

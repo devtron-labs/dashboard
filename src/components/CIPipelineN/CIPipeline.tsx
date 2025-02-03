@@ -546,31 +546,28 @@ export default function CIPipeline({
             false,
             formData.webhookConditionList,
         )
-            setPageState(ViewType.FORM)
-            handleClose()
-            deleteWorkflow(appId, Number(workflowId))
+        setPageState(ViewType.FORM)
+        handleClose()
+        deleteWorkflow(appId, Number(workflowId))
     }
 
     const closeCIDeleteModal = (): void => {
         setShowDeleteModal(false)
     }
 
-    const renderDeleteCIModal = () => {
-        if (!ciPipelineId) return null
-        return (
-            <DeleteConfirmationModal
-                title={formData.name}
-                component={DeleteComponentsName.BuildPipeline}
-                subtitle={`Are you sure you want to delete this CI Pipeline from '${appName}' ?`}
-                showConfirmationModal={showDeleteModal}
-                closeConfirmationModal={closeCIDeleteModal}
-                onDelete={onDelete}
-                errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.BAD_REQUEST}
-                renderCannotDeleteConfirmationSubTitle="Please delete deployment pipelines for this workflow first and try again."
-                successToastMessage="Pipeline Deleted"
-            />
-        )
-    }
+    const renderDeleteCIModal = () => (
+        <DeleteConfirmationModal
+            title={formData.name}
+            component={isJobView ? DeleteComponentsName.Job : DeleteComponentsName.BuildPipeline}
+            subtitle={`Are you sure you want to delete this pipeline from '${appName}' ?`}
+            showConfirmationModal={ciPipelineId && showDeleteModal}
+            closeConfirmationModal={closeCIDeleteModal}
+            onDelete={onDelete}
+            errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.BAD_REQUEST}
+            renderCannotDeleteConfirmationSubTitle="Please delete deployment pipelines for this workflow first and try again."
+            successToastMessage="Pipeline Deleted"
+        />
+    )
 
     const renderSecondaryButton = () => {
         if (ciPipelineId) {
