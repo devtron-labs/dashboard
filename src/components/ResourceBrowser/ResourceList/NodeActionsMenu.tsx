@@ -124,18 +124,6 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab, handleClearBulkSel
             return <DrainNodeModal name={name} version={version} kind={kind} closePopup={hideDrainNodeModal} />
         }
 
-        if (showDeleteNodeDialog) {
-            return (
-                <DeleteNodeModal
-                    name={name}
-                    version={version}
-                    kind={kind}
-                    closePopup={hideDeleteNodeModal}
-                    handleClearBulkSelection={handleClearBulkSelection}
-                />
-            )
-        }
-
         if (showEditTaintNodeDialog) {
             return (
                 <EditTaintsModal
