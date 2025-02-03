@@ -312,7 +312,7 @@ export function getWorkflowViewList(appId, filteredEnvIds?: string, offending: O
 }
 
 export function stopStartApp(AppId, EnvironmentId, RequestType) {
-    return post(`app/stop-start-app/alpha-1`, { AppId, EnvironmentId, RequestType })
+    return post(`app/stop-start-app/alpha1`, { AppId, EnvironmentId, RequestType })
 }
 
 export const validateToken = (): Promise<ResponseType<Record<'emailId' | 'isVerified' | 'isSuperAdmin', string>>> => {
