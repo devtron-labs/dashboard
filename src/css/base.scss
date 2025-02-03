@@ -2329,62 +2329,6 @@ button.anchor {
     background-size: contain !important;
 }
 
-.dc__registry-icon,
-.repository-icon {
-    width: 20px;
-    height: 20px;
-    background-size: contain;
-    background-image: url('../assets/icons/container.svg');
-
-    &.git {
-        background-image: url('../assets/icons/git/git.svg');
-    }
-
-    &.github {
-        background-image: url('../assets/icons/git/github.svg');
-    }
-
-    &.gitlab {
-        background-image: url('../assets/icons/git/gitlab.svg');
-    }
-
-    &.bitbucket {
-        background-image: url('../assets/icons/git/bitbucket.svg');
-    }
-
-    &.docker {
-        background-image: url('../assets/icons/git/docker.svg');
-    }
-
-    &.docker-hub {
-        background-image: url('../assets/icons/git/docker.svg');
-    }
-
-    &.acr {
-        background-image: url('../assets/icons/ic-azure.svg');
-    }
-
-    &.quay {
-        background-image: url('../assets/icons/ic-quay.svg');
-    }
-
-    &.ecr {
-        background-image: url('../assets/icons/ic-ecr.svg');
-    }
-
-    &.artifact-registry {
-        background-image: url('../assets/icons/ic-google-artifact-registry.svg');
-    }
-
-    &.gcr {
-        background-image: url('../assets/icons/ic-google-container-registry.svg');
-    }
-
-    &.other {
-        background-image: url('../assets/icons/container.svg');
-    }
-}
-
 .xterm .xterm-viewport {
     width: initial !important;
 }

@@ -22,6 +22,7 @@ import {
     Icon,
     InfoColourBar,
     REGISTRY_TYPE_MAP,
+    RegistryIcon,
     SelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ArrowIcon } from '../../assets/icons/ic-arrow-left.svg'
@@ -53,7 +54,7 @@ export default function CIContainerRegistryConfig({
         ...registry,
         label: registry.id,
         value: registry.id,
-        startIcon: <div className={`dc__registry-icon dc__no-shrink ${registry.registryType}`} />,
+        startIcon: <RegistryIcon registryType={registry.registryType} />,
     })
 
     const getContainerRegistryOptions = () => dockerRegistries.map(getCustomRegistryOption)
@@ -133,7 +134,7 @@ export default function CIContainerRegistryConfig({
                                 Container Registry
                             </label>
                             <div className="flex left dc__gap-8">
-                                <span className={`dc__registry-icon dc__no-shrink ${currentRegistry?.registryType}`} />
+                                <RegistryIcon registryType={currentRegistry?.registryType} />
                                 <span className="fs-14 fw-4 lh-20 cn-9">{currentRegistry?.id}</span>
                             </div>
                         </>
