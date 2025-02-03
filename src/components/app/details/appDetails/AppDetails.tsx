@@ -20,7 +20,6 @@ import {
     Progressing,
     noop,
     stopPropagation,
-    multiSelectStyles,
     DeploymentAppTypes,
     useSearchString,
     useAsync,
@@ -53,7 +52,6 @@ import {
     DEFAULT_STATUS_TEXT,
 } from '../../../../config'
 import { NavigationArrow, useAppContext, FragmentHOC } from '../../../common'
-import { groupHeaderStyle, Option } from '../../../v2/common/ReactSelect.utils'
 import { getAppConfigStatus, getAppOtherEnvironmentMin, stopStartApp } from '../../../../services/service'
 import AppNotDeployedIcon from '@Images/app-not-deployed.svg'
 import AppNotConfiguredIcon from '@Images/app-not-configured.png'
@@ -205,7 +203,7 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
     }, [envList, params.envId])
 
     return (
-        <div data-testid="app-details-wrapper" className="app-details-page-wrapper">
+        <div data-testid="app-details-wrapper" className="app-details-page-wrapper mw-none">
             {!params.envId && envList.length > 0 && (
                 <div className="w-100 pt-16 pr-20 pb-20 pl-20">
                     <SourceInfo
@@ -377,6 +375,7 @@ export const Details: React.FC<DetailsType> = ({
     useEffect(
         () => () => {
             clearPollingInterval()
+            clearDeploymentStatusTimer()
             IndexStore.clearAppDetails()
         },
         [],
@@ -696,7 +695,7 @@ export const Details: React.FC<DetailsType> = ({
         return (
             <ConfirmationModal
                 variant={ConfirmationModalVariantType.custom}
-                Icon={hibernateConfirmationModal === 'hibernate' ? ICHibernate : ICUnhibernate}
+                Icon={hibernateConfirmationModal === 'hibernate' ? <ICHibernate /> : <ICUnhibernate />}
                 title={`${hibernateConfirmationModal === 'hibernate' ? 'Hibernate' : 'Restore'} '${appDetails.appName}' on '${appDetails.environmentName}'`}
                 subtitle={
                     <p className="m-0-imp fs-13">

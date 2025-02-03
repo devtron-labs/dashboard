@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 /* eslint-disable react/prop-types */
 /*
  * Copyright (c) 2024. Devtron Inc.
@@ -39,6 +55,7 @@ import {
     InfoColourBar,
     ToastManager,
     ToastVariantType,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import yamlJsParser from 'yaml'
 import Check from '@Icons/ic-selected-corner.png'
@@ -627,15 +644,17 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }
         const value = YAMLStringify(newConfig)
 
-        this.setState({
-            ssoConfig: {
-                ...this.state.ssoConfig,
-                config: {
-                    ...this.state.ssoConfig.config,
-                    config: value,
+        setTimeout(() => {
+            this.setState({
+                ssoConfig: {
+                    ...this.state.ssoConfig,
+                    config: {
+                        ...this.state.ssoConfig.config,
+                        config: value,
+                    },
                 },
-            },
-        })
+            })
+        }, 0)
     }
 
     renderSSOCodeEditor() {
@@ -675,23 +694,20 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
         const shebangHtml = this.state.configMap === SwitchItemValues.Configuration ? presetConfig : null
 
-        const decorationWidth = this.state.sso !== OIDCType ? 50 : 25
         return (
-            <div className="br-4 dc__border w-100 dc__overflow-hidden">
+            <CodeEditor.Container>
                 <CodeEditor
                     value={codeEditorBody}
-                    mode="yaml"
+                    mode={MODES.YAML}
                     noParsing={this.state.sso === OIDCType}
-                    lineDecorationsWidth={this.state.configMap === SwitchItemValues.Configuration ? decorationWidth : 0}
                     shebang={shebangHtml}
                     readOnly={this.state.configMap !== SwitchItemValues.Configuration}
                     onChange={this.handleConfigChange}
                     onBlur={this.handleOnBlur}
-                    adjustEditorHeightToContent
+                    height="auto"
                 >
                     <CodeEditor.Header>
                         <div className="flex dc__content-space dc__gap-6">
-                            <CodeEditor.ValidationError />
                             <div className="dc__no-shrink">
                                 <Switch
                                     value={this.state.configMap}
@@ -707,7 +723,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </div>
                     </CodeEditor.Header>
                 </CodeEditor>
-            </div>
+            </CodeEditor.Container>
         )
     }
 
@@ -853,7 +869,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             </div>
         )
         return (
-            <section className="bg__primary sso-login__wrapper">
+            <section className="bg__primary sso-login__wrapper min-h-100">
                 {renderSSOContent()}
                 {/* Confirmation Modal for SSO Change */}
                 {showSSOChangeConfirmationModal && (

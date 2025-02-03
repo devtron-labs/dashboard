@@ -327,7 +327,7 @@ $color-suffix: 00;
     }
 
     &.secondary {
-        @include cta(var(--N0), var(--B500), var(--N200));
+        @include cta(var(--bg-primary), var(--B500), var(--N200));
 
         &:hover {
             @include cta(var(--B100), var(--B500), var(--N200));
@@ -406,28 +406,28 @@ $color-suffix: 00;
 
     &.cancel {
         &:not(.cta__no-svg-override) {
-            @include cta(var(--transparent), var(--N700), var(--N200));
+            @include cta(var(--bg-primary), var(--N700), var(--N200));
 
             &:hover {
-                @include cta(var(--transparent), var(--N700), var(--N300));
+                @include cta(var(--bg-primary), var(--N700), var(--N300));
             }
 
             &:active,
             &:focus {
-                @include cta(var(--transparent), var(--N700), var(--N300));
+                @include cta(var(--bg-primary), var(--N700), var(--N300));
             }
         }
 
         &.cta__no-svg-override {
-            @include cta(var(--transparent), var(--N700), var(--N200), pointer, false);
+            @include cta(var(--bg-primary), var(--N700), var(--N200), pointer, false);
 
             &:hover {
-                @include cta(var(--transparent), var(--N700), var(--N300), pointer, false);
+                @include cta(var(--bg-primary), var(--N700), var(--N300), pointer, false);
             }
 
             &:active,
             &:focus {
-                @include cta(var(--transparent), var(--N700), var(--N300), pointer, false);
+                @include cta(var(--bg-primary), var(--N700), var(--N300), pointer, false);
             }
         }
     }
@@ -487,6 +487,10 @@ $color-suffix: 00;
 
 .divider {
     border-top: 1px solid var(--N200);
+
+    &--n1 {
+        border-top-color: var(--divider-secondary);
+    }
 }
 
 .sqr-44 {

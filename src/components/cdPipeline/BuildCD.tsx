@@ -32,6 +32,7 @@ import {
     ToastManager,
     ComponentSizeType,
     showError,
+    MODES,
     TriggerType,
     useMainContext,
     useSuperAdmin,
@@ -70,6 +71,7 @@ import TriggerTypeRadio from './TriggerTypeRadio'
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
 const MigrateHelmReleaseBody = importComponentFromFELibrary('MigrateHelmReleaseBody', null, 'function')
+const ApprovalPolicyRedirectCard = importComponentFromFELibrary('ApprovalPolicyRedirectCard', null, 'function')
 
 export default function BuildCD({
     isAdvanced,
@@ -761,13 +763,11 @@ export default function BuildCD({
                                     <CodeEditor
                                         height={300}
                                         value={strategy.yamlStr}
-                                        mode="yaml"
+                                        mode={MODES.YAML}
                                         onChange={(event) =>
                                             handleStrategyChange(event, strategy.deploymentTemplate, 'yaml')
                                         }
-                                    >
-                                        <CodeEditor.Header className="code-editor" />
-                                    </CodeEditor>
+                                    />
                                 </div>
                             )}
                         </div>
@@ -870,6 +870,10 @@ export default function BuildCD({
                     renderDeploymentAppType()}
 
                 {isAdvanced ? renderAdvancedDeploymentStrategy() : renderBasicDeploymentStrategy()}
+
+                {isAdvanced &&
+                    ApprovalPolicyRedirectCard &&
+                    <ApprovalPolicyRedirectCard />}
 
                 {isAdvanced && (
                     <>

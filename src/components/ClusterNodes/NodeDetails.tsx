@@ -33,30 +33,30 @@ import {
     TabProps,
     ToastManager,
     ToastVariantType,
-    TOAST_ACCESS_DENIED,
     ResourceDetail,
-    CodeEditorThemesKeys,
+    AppThemeType,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
 import YAML from 'yaml'
 import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
-import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
-import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { ReactComponent as Cpu } from '../../assets/icons/ic-cpu.svg'
-import { ReactComponent as Memory } from '../../assets/icons/ic-memory.svg'
-import { ReactComponent as Storage } from '../../assets/icons/ic-storage.svg'
-import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
-import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as CordonIcon } from '../../assets/icons/ic-cordon.svg'
-import { ReactComponent as UncordonIcon } from '../../assets/icons/ic-play-medium.svg'
-import { ReactComponent as DrainIcon } from '../../assets/icons/ic-clean-brush.svg'
-import { ReactComponent as EditTaintsIcon } from '../../assets/icons/ic-spraycan.svg'
-import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
-import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
-import { ReactComponent as Review } from '../../assets/icons/ic-visibility-on.svg'
+import { ReactComponent as Info } from '@Icons/ic-info-filled.svg'
+import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
+import { ReactComponent as AlertTriangle } from '@Icons/ic-alert-triangle.svg'
+import { ReactComponent as Cpu } from '@Icons/ic-cpu.svg'
+import { ReactComponent as Memory } from '@Icons/ic-memory.svg'
+import { ReactComponent as Storage } from '@Icons/ic-storage.svg'
+import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
+import { ReactComponent as Dropdown } from '@Icons/ic-chevron-down.svg'
+import { ReactComponent as CordonIcon } from '@Icons/ic-cordon.svg'
+import { ReactComponent as UncordonIcon } from '@Icons/ic-play-outline.svg'
+import { ReactComponent as DrainIcon } from '@Icons/ic-clean-brush.svg'
+import { ReactComponent as EditTaintsIcon } from '@Icons/ic-spraycan.svg'
+import { ReactComponent as DeleteIcon } from '@Icons/ic-delete-interactive.svg'
+import { ReactComponent as Success } from '@Icons/appstatus/healthy.svg'
+import { ReactComponent as Check } from '@Icons/ic-check.svg'
+import { ReactComponent as Review } from '@Icons/ic-visibility-on.svg'
 import { getNodeCapacity, updateNodeManifest } from './clusterNodes.service'
 import {
     ClusterListType,
@@ -74,7 +74,7 @@ import { AUTO_SELECT, CLUSTER_NODE_ACTIONS_LABELS, NODE_DETAILS_TABS } from './c
 import CordonNodeModal from './NodeActions/CordonNodeModal'
 import DrainNodeModal from './NodeActions/DrainNodeModal'
 import DeleteNodeModal from './NodeActions/DeleteNodeModal'
-import { K8S_EMPTY_GROUP, K8S_RESOURCE_LIST, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
+import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 import './clusterNodes.scss'
@@ -709,6 +709,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                                             selectedResource={selectedResource}
                                             getResourceListData={getPodListData}
                                             handleResourceClick={handleResourceClick}
+                                            handleClearBulkSelection={noop}
                                         />
                                     </div>
                                     <span>{pod.cpu.requestPercentage || '-'}</span>
@@ -736,7 +737,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                     <span className="flex left fw-6 cb-5 fs-12 cursor" onClick={showCordonNodeModal}>
                         {nodeDetail?.unschedulable ? (
                             <>
-                                <UncordonIcon className="icon-dim-16 mr-5 scb-5 dc__stroke-width-4" />
+                                <UncordonIcon className="icon-dim-16 mr-5 scb-5" />
                                 {CLUSTER_NODE_ACTIONS_LABELS.uncordon}
                             </>
                         ) : (
@@ -905,27 +906,25 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         }
     }
 
-    const getCodeEditorHeight = (): string => {
-        if (!isReviewState) {
-            return 'calc(100vh - 115px)'
-        }
-        if (isShowWarning) {
-            return `calc(100vh - 180px)`
-        }
-        return `calc(100vh - 148px)`
-    }
-
     const renderYAMLEditor = (): JSX.Element => {
         return (
-            <div className="node-details-container">
+            <div className="node-details-container flexbox-col flex-grow-1">
                 <CodeEditor
-                    value={modifiedManifest}
-                    defaultValue={(nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || ''}
-                    height={getCodeEditorHeight()}
+                    theme={AppThemeType.dark}
+                    {...(isReviewState
+                        ? {
+                              diffView: true,
+                              originalValue: (nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || '',
+                              modifiedValue: modifiedManifest,
+                              onModifiedValueChange: handleEditorValueChange,
+                          }
+                        : {
+                              diffView: false,
+                              value: modifiedManifest,
+                              onChange: handleEditorValueChange,
+                          })}
+                    height="fitToParent"
                     readOnly={!isEdit}
-                    theme={CodeEditorThemesKeys.vsDarkDT}
-                    diffView={isReviewState}
-                    onChange={handleEditorValueChange}
                     mode={MODES.YAML}
                     noParsing
                 >
@@ -936,11 +935,11 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                         />
                     )}
                     {isReviewState && (
-                        <CodeEditor.Header hideDefaultSplitHeader className="node-code-editor-header">
-                            <div className="h-32 lh-32 fs-12 fw-6 flexbox w-100 cn-0">
+                        <CodeEditor.Header hideDefaultSplitHeader className="node-code-editor-header vertical-divider">
+                            <div className="h-32 lh-32 fs-12 fw-6 flexbox w-100 text__white">
                                 <div className=" pl-10 w-49">Current node YAML </div>
                                 <div className="pl-25 w-51 flexbox">
-                                    <Edit className="icon-dim-16 scn-0 mt-7 mr-5" />
+                                    <Edit className="icon-dim-16 icon-fill-white mt-7 mr-5" />
                                     YAML (Editing)
                                 </div>
                             </div>
@@ -1047,7 +1046,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     }
 
     return (
-        <div className="bg__primary node-data-container">
+        <div className="bg__primary node-data-container flexbox-col">
             {loader ? (
                 <Progressing pageLoader size={32} />
             ) : (
@@ -1077,6 +1076,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                             version={nodeDetail.version}
                             kind={nodeDetail.kind}
                             closePopup={hideDeleteNodeModal}
+                            handleClearBulkSelection={noop}
                         />
                     )}
                     {showEditTaints && (

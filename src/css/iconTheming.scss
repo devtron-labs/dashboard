@@ -1,10 +1,26 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 // This file is a hack that should be removed once the icons are cleaned up
 
 $svg-stroke-hex-to-var: (
     "#FFBF00": --Y500,
     "white": --white,
     "#FF5656": --R500,
-    "#596168": --N700,
+    "#596168": --N600,
     "#fff": --white,
     "#0066CC": --B500,
     "#3B444C": --N700,
@@ -79,13 +95,13 @@ $svg-fill-hex-to-var: (
 // Using where to have lowest specificity (0,0,0)
 :where(svg:not([data-style-override="false"])) {
     @each $hex, $var in $svg-stroke-hex-to-var {
-        :where([stroke="#{$hex}" i]) {
+        :where([stroke="#{$hex}" i]:not([data-style-override="false"])) {
             stroke: var($var);
         }
     }
 
     @each $hex, $var in $svg-fill-hex-to-var {
-        :where([fill="#{$hex}" i]) {
+        :where([fill="#{$hex}" i]:not([data-style-override="false"])) {
             fill: var($var);
         }
     }

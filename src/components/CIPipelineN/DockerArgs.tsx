@@ -15,7 +15,7 @@
  */
 
 import React, { FunctionComponent } from 'react'
-import { CustomInput, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, InfoIconTippy, Textarea } from '@devtron-labs/devtron-fe-common-lib'
 import { DockerArgsAction, DockerArgsItemProps, DockerArgsProps } from './types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 
@@ -65,11 +65,8 @@ const DockerArgsItem: FunctionComponent<DockerArgsItemProps> = ({
                     disabled={readOnly}
                     onChange={handleDockerArgKeyUpdate}
                 />
-                <textarea
-                    data-testid={fromBuildPack ? `build-pack-build-env-value${index}` : `docker-arg-value-${index}`}
-                    className={`w-100 dc__bottom-radius-4 dc__no-top-border pl-10 pr-10 pt-6 pb-6 en-2 bw-1 mxh-140 form__textarea ${
-                        readOnly ? 'cursor-not-allowed bcn-1' : 'build__value'
-                    }`}
+                <Textarea
+                    name={fromBuildPack ? `build-pack-build-env-value${index}` : `docker-arg-value-${index}`}
                     value={arg.value}
                     placeholder="Value"
                     onChange={handleDockerArgValueUpdate}
