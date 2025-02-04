@@ -24,16 +24,7 @@ import { JOB_STATUS_OPTIONS } from './Constants'
 
 export const getJobs = async (request, options?: APIOptions) => {
     const response = (await post(Routes.JOB_LIST, request, options)) as JobList
-
-    return {
-        ...response,
-        result: {
-            ...response?.result,
-            jobContainers: (response?.result?.jobContainers ?? []).sort((a, b) =>
-                stringComparatorBySortOrder(a.jobName, b.jobName),
-            ),
-        },
-    }
+    return response
 }
 
 export const createJob = (request) => {

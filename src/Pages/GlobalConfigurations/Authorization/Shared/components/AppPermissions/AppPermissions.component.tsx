@@ -26,6 +26,7 @@ import {
     useMainContext,
     ACCESS_TYPE_MAP,
     EntityTypes,
+    SortingOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ActionTypes, DEFAULT_ACCESS_TYPE_TO_ERROR_MAP } from '../../../constants'
 import { HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
@@ -64,7 +65,7 @@ import { getWorkflowOptions, validateDirectPermissionForm } from '../../../utils
 import { AppPermissionsDetailType, DirectPermissionRowProps } from './types'
 import { APIRoleFilter, ChartGroupPermissionsFilter, DirectPermissionsRoleFilter } from '../../../types'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
-import { JobList } from '../../../../../../components/Jobs/Types'
+import { JobList, JobsListSortableKeys } from '../../../../../../components/Jobs/Types'
 import { AccessTypeToErrorMapType } from '../PermissionConfigurationForm/types'
 
 const handleApprovalPermissionChange = importComponentFromFELibrary('handleApprovalPermissionChange', null, 'function')
@@ -146,7 +147,11 @@ const AppPermissions = () => {
         try {
             const {
                 result: { jobContainers },
-            } = await getJobs({ teams: missingProjects })
+            } = await getJobs({
+                teams: missingProjects,
+                sortBy: JobsListSortableKeys.APP_NAME,
+                sortOrder: SortingOrder.ASC,
+            })
 
             // Group the job list by respective project IDs
             const projectsMap = (jobContainers ?? []).reduce(

@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { Link } from 'react-router-dom'
 
 import { CMSecretExternalType, InfoColourBar, CMSecretComponentType } from '@devtron-labs/devtron-fe-common-lib'
@@ -42,11 +58,12 @@ export const renderExternalInfo = (
     externalType: CMSecretExternalType,
     external: boolean,
     componentType: CMSecretComponentType,
+    className?: string,
 ) =>
     externalType === CMSecretExternalType.KubernetesSecret ||
     (componentType === CMSecretComponentType.ConfigMap && external) ? (
         <InfoColourBar
-            classname="info_bar"
+            classname={`info_bar ${className || ''}`}
             message={
                 <div className="flex column left">
                     <h4 className="m-0 lh-20 dc__info-title">{EXTERNAL_INFO_TEXT[componentType].title}</h4>
@@ -74,7 +91,7 @@ export const renderChartVersionBelow3090NotSupportedText = () => (
 )
 
 export const renderYamlInfoText = () => (
-    <p className="m-0 py-6 px-10 flex left dc__gap-6 fs-12 lh-20 cn-8 bg__secondary dc__border-top-n1">
+    <p className="m-0 py-6 px-10 flex left dc__gap-6 fs-12 lh-20 cn-8 bg__secondary dc__border-top-n1 dc__bottom-radius-4">
         <InfoIconN7 className="icon-dim-16 dc__no-shrink" />
         <span>
             GUI Recommended for multi-line data. Boolean and numeric values must be wrapped in double quotes Eg.
