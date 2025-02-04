@@ -16,7 +16,7 @@
 
 import React, { useState, useEffect, MouseEventHandler } from 'react'
 import { components, ValueContainerProps, ClearIndicatorProps } from 'react-select'
-import { Tooltip } from '@devtron-labs/devtron-fe-common-lib'
+import { Button, ButtonVariantType, ComponentSizeType, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as SearchIcon } from '@Icons/ic-search.svg'
 import { ReactComponent as ClearIcon } from '@Icons/ic-error.svg'
 import { ReactComponent as Warning } from '@Icons/ic-warning.svg'
@@ -76,9 +76,14 @@ const WarningStrip: React.FC<{ lastSyncTime: string; callback: () => void }> = (
             <div className="pl-12 flex fs-13 pt-6 pb-6 pl-12">
                 <Warning className="icon-dim-20 mr-8" />
                 <span>Last synced {timePassed}. The data might be stale. </span>
-                <button className="cb-5 ml-4 fw-6 dc__unset-button-styles cursor" onClick={callback} type="button">
-                    Sync now
-                </button>
+                &nbsp;
+                <Button
+                    variant={ButtonVariantType.text}
+                    size={ComponentSizeType.xs}
+                    text="Sync now"
+                    dataTestId="sync-resource-list"
+                    onClick={callback}
+                />
             </div>
         </div>
     )
