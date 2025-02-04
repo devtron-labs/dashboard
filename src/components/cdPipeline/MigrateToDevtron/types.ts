@@ -1,4 +1,4 @@
-import { SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { ButtonProps, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { MigrateFromArgoFormState } from '../cdPipeline.types'
 import { BuildCDProps } from '../types'
 
@@ -12,3 +12,10 @@ export interface MigrateToDevtronValidationFactoryProps extends Pick<MigrateFrom
 
 export type SelectClusterOptionType = SelectPickerOptionType<number>
 export type SelectArgoAppOptionType = SelectPickerOptionType<Pick<MigrateFromArgoFormState, 'appName' | 'namespace'>>
+
+export interface ValidationResponseContentRowProps {
+    title: string
+    value?: string
+    buttonProps?: ButtonProps
+    titleTooltip: JSX.Element
+}

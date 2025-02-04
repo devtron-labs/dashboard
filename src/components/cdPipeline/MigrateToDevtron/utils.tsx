@@ -1,4 +1,6 @@
+import { Link } from 'react-router-dom'
 import { GenericAppType } from '@Components/app/list-new/AppListType'
+import { URLS } from '@Config/routes'
 import { ValidateMigrationSourceDTO } from '../cdPipeline.types'
 import { SelectArgoAppOptionType, SelectClusterOptionType } from './types'
 
@@ -53,3 +55,13 @@ export const generateArgoAppOption = ({
     },
     description: `Namespace: ${namespace || '--'}`,
 })
+
+export const renderGitOpsNotConfiguredDescription = () => (
+    <p className="m-0">
+        GitOps credentials is required to deploy applications via GitOps.&nbsp;
+        <Link to={URLS.GLOBAL_CONFIG_GITOPS} data-testid="configure-gitops-button" target="_blank" className="anchor">
+            Configure
+        </Link>
+        &nbsp;and try again.
+    </p>
+)

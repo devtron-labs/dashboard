@@ -3,7 +3,6 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
-    ButtonProps,
     InfoColourBar,
     Tooltip,
     ButtonComponentType,
@@ -23,7 +22,7 @@ import {
     ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY,
 } from '@Components/cluster/constants'
 import { MigrationSourceValidationReasonType } from '../cdPipeline.types'
-import { MigrateToDevtronValidationFactoryProps } from './types'
+import { MigrateToDevtronValidationFactoryProps, ValidationResponseContentRowProps } from './types'
 import {
     GENERIC_SECTION_ERROR_STATE_COMMON_PROPS,
     TARGET_CLUSTER_TOOLTIP_INFO,
@@ -31,13 +30,7 @@ import {
     TARGET_ENVIRONMENT_INFO_LIST,
 } from './constants'
 import './MigrateToDevtronValidationFactory.scss'
-
-interface ContentRowProps {
-    title: string
-    value?: string
-    buttonProps?: ButtonProps
-    titleTooltip: JSX.Element
-}
+import { renderGitOpsNotConfiguredDescription } from './utils'
 
 const renderContentTooltip = (title: string, infoList: string[]) => (
     <div className="flexbox-col dc__gap-2">
@@ -53,7 +46,7 @@ const renderContentTooltip = (title: string, infoList: string[]) => (
     </div>
 )
 
-const ContentRow = ({ title, value, buttonProps, titleTooltip }: ContentRowProps) => (
+const ContentRow = ({ title, value, buttonProps, titleTooltip }: ValidationResponseContentRowProps) => (
     <>
         <div>
             <Tooltip content={titleTooltip} alwaysShowTippyOnHover>
@@ -71,16 +64,6 @@ const ContentRow = ({ title, value, buttonProps, titleTooltip }: ContentRowProps
             {buttonProps && <Button {...buttonProps} />}
         </div>
     </>
-)
-
-const renderGitOpsNotConfiguredDescription = () => (
-    <p className="m-0">
-        GitOps credentials is required to deploy applications via GitOps.&nbsp;
-        <Link to={URLS.GLOBAL_CONFIG_GITOPS} data-testid="configure-gitops-button" target="_blank" className="anchor">
-            Configure
-        </Link>
-        &nbsp;and try again.
-    </p>
 )
 
 const MigrateToDevtronValidationFactory = ({
@@ -391,7 +374,7 @@ const MigrateToDevtronValidationFactory = ({
                         {status && (
                             <span
                                 data-testid="deployment-status-name"
-                                className={`app-summary__status-name fs-13 mr-8 fw-6 f-${status.toLowerCase()} dc__first-letter-capitalize--imp`}
+                                className={`app-summary__status-name fs-13 mr-8 fw-6 f-${status.toLowerCase()} dc__first-letter-capitalize--imp dc__truncate`}
                             >
                                 {status}
                             </span>
