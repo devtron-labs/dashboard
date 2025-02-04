@@ -456,7 +456,6 @@ export const handleInitializeDraftData = ({
         chartRefId,
         readme,
         schema,
-        migratedFrom,
     } = JSON.parse(latestDraft.data) as OverriddenBaseDeploymentTemplateParsedDraftDTO
 
     const response: DeploymentTemplateStateType['draftTemplateData'] = {
@@ -473,7 +472,6 @@ export const handleInitializeDraftData = ({
             isOverridden: isDraftOverriden,
         }),
 
-        migratedFrom,
         schema,
         readme,
         guiSchema,
