@@ -52,7 +52,7 @@ export const KindSearchClearIndicator = (props: ClearIndicatorProps) => {
                         type="button"
                         className="dc__unset-button-styles"
                         onClick={selectProps.onBlur as unknown as MouseEventHandler<HTMLButtonElement>}
-                        aria-label="kind-select-clear-indicator"
+                        aria-label="Clear kind search"
                     >
                         <ClearIcon className="clear-kind-search-icon dc__no-shrink icon-dim-16" />
                     </button>
