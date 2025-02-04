@@ -13,8 +13,13 @@ import { ReactComponent as ICCaretLeftSmall } from '@Icons/ic-caret-left-small.s
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { ChangeEvent, useState } from 'react'
 import ProjectSelector from './ProjectSelector'
-import { CreateAppFormStateActionType, CreateAppFormStateType, HandleFormStateChangeParamsType } from './types'
-import { createAppInitialFormState } from './constants'
+import {
+    CreateAppFormStateActionType,
+    CreateAppFormStateType,
+    CreationMethodType,
+    HandleFormStateChangeParamsType,
+} from './types'
+import { createAppInitialFormState, CREATION_METHOD_CONFIG } from './constants'
 
 const ApplicationInfoForm = ({
     formState,
@@ -96,8 +101,48 @@ const HeaderSection = ({
     </div>
 )
 
+const Sidebar = ({
+    selectedCreationMethod,
+    handleCreationMethodChange,
+}: {
+    selectedCreationMethod: CreationMethodType
+    handleCreationMethodChange: (creationMethod: CreationMethodType) => void
+}) => {
+    const getHandleCreationMethodChange = (creationMethod: CreationMethodType) => () => {
+        handleCreationMethodChange(creationMethod)
+    }
+
+    return (
+        <div className="w-250 p-20 flexbox-col dc__gap-24">
+            <div className="flexbox-col">
+                {CREATION_METHOD_CONFIG.map(({ label, value }) => {
+                    const isSelected = value === selectedCreationMethod
+
+                    return (
+                        <button
+                            className={`dc__transparent flex left dc__gap-8 py-6 px-8 ${isSelected ? 'br-4 bcb-1' : 'dc__hover-n50'}`}
+                            key={value}
+                            aria-label={`Creation method: ${label}`}
+                            type="button"
+                            onClick={getHandleCreationMethodChange(value)}
+                        >
+                            {/* Add icon */}
+                            <span className={`fs-13 lh-20 dc__truncate ${isSelected ? 'cb-5 fw-6' : 'cn-9'}`}>
+                                {label}
+                            </span>
+                        </button>
+                    )
+                })}
+            </div>
+        </div>
+    )
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CreateAppModal = (props: any) => {
+    const [selectedCreationMethod, setSelectedCreationMethod] = useState<CreationMethodType>(
+        CREATION_METHOD_CONFIG[0].value,
+    )
     const [formState, setFormState] = useState<CreateAppFormStateType>(structuredClone(createAppInitialFormState))
 
     const handleFormStateChange = ({ action, value }: HandleFormStateChangeParamsType) => {
@@ -125,7 +170,10 @@ const CreateAppModal = (props: any) => {
             <div className="h-100 bg__primary flexbox-col dc__overflow-hidden">
                 <HeaderSection isJobView={false} handleClose={noop} disableClose={false} />
                 <div className="flexbox flex-grow-1 dc__overflow-auto">
-                    <div className="w-250 p-20">Sidebar</div>
+                    <Sidebar
+                        selectedCreationMethod={selectedCreationMethod}
+                        handleCreationMethodChange={setSelectedCreationMethod}
+                    />
                     <div className="p-20 flex-grow-1 bg__secondary h-100 dc__overflow-auto">
                         <ApplicationInfoForm formState={formState} handleFormStateChange={handleFormStateChange} />
                     </div>

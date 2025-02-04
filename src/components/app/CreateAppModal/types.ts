@@ -4,6 +4,12 @@ export interface CreateAppFormStateType {
     description: string
 }
 
+export enum CreationMethodType {
+    blank = 'blank',
+    clone = 'clone',
+    template = 'template',
+}
+
 export enum CreateAppFormStateActionType {
     updateProjectId = 'updateProjectId',
     updateName = 'updateName',
