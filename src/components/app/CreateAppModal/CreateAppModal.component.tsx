@@ -124,7 +124,7 @@ const CreateAppModal = (props: any) => {
         <Drawer position="right" width="1024px">
             <div className="h-100 bg__primary flexbox-col dc__overflow-hidden">
                 <HeaderSection isJobView={false} handleClose={noop} disableClose={false} />
-                <div className="flexbox h-100">
+                <div className="flexbox flex-grow-1 dc__overflow-auto">
                     <div className="w-250 p-20">Sidebar</div>
                     <div className="p-20 flex-grow-1 bg__secondary h-100 dc__overflow-auto">
                         <ApplicationInfoForm formState={formState} handleFormStateChange={handleFormStateChange} />
