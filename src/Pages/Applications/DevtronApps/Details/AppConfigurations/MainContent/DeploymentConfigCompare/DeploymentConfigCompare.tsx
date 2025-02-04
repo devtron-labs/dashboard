@@ -111,7 +111,7 @@ export const DeploymentConfigCompare = ({
 
     useEffect(() => {
         // Set default initial sorting
-        if (!isManifestView) {
+        if (!isManifestView && sortBy !== DEPLOYMENT_CONFIG_DIFF_SORT_KEY) {
             handleSorting(DEPLOYMENT_CONFIG_DIFF_SORT_KEY)
         }
     }, [])
@@ -380,8 +380,6 @@ export const DeploymentConfigCompare = ({
 
     // METHODS
     const onCompareEnvironmentChange = ({ value }: SelectPickerOptionType) => {
-        handleSorting('')
-
         if (typeof value === 'number') {
             updateSearchParams({
                 chartRefId: value,
@@ -406,8 +404,6 @@ export const DeploymentConfigCompare = ({
     const onEnvironmentConfigTypeChange =
         (isCompare?: boolean) =>
         ({ value }: SelectPickerOptionType) => {
-            handleSorting('')
-
             if (typeof value === 'string') {
                 const modifiedValue = getPreviousDeploymentValue(value)
                 if (modifiedValue) {

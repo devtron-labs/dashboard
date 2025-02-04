@@ -70,6 +70,7 @@ import {
 } from '../../../../values/chartValuesDiff/ChartValuesView.constants'
 import { getDecodedEncodedSecretManifestData, getTrimmedManifestData } from '../nodeDetail.util'
 import { importComponentFromFELibrary } from '@Components/common'
+import { DEFAULT_CLUSTER_ID } from '@Components/cluster/cluster.type'
 
 const renderOutOfSyncWarning = importComponentFromFELibrary('renderOutOfSyncWarning', null, 'function')
 const getManifestGUISchema = importComponentFromFELibrary('getManifestGUISchema', null, 'function')
@@ -95,7 +96,7 @@ const ManifestComponent = ({
     handleUpdateUnableToParseManifest,
     handleManifestGUIErrors,
     manifestGUIFormRef,
-    isExternalApp,
+    isManifestEditable,
 }: ManifestActionPropsType) => {
     const location = useLocation()
     const history = useHistory()
@@ -196,7 +197,7 @@ const ManifestComponent = ({
     ])
 
     const handleInitializeGUISchema = async (abortSignal: AbortSignal) => {
-        if (!getManifestGUISchema || isExternalApp) {
+        if (!getManifestGUISchema || !isManifestEditable) {
             return
         }
 
@@ -209,7 +210,7 @@ const ManifestComponent = ({
         })
 
         const guiSchemaResponse = await getManifestGUISchema({
-            clusterId: resourceRequestPayload.clusterId,
+            clusterId: DEFAULT_CLUSTER_ID,
             gvk: resourceRequestPayload.k8sRequest.resourceIdentifier.groupVersionKind,
             signal: abortSignal,
         })
@@ -218,7 +219,8 @@ const ManifestComponent = ({
     }
 
     const handleInitializeLockedManifestKeys = async (signal: AbortSignal) => {
-        if (!getLockedManifestKeys || isExternalApp) {
+        // NOTE: this feature is only applicable to non-superadmins
+        if (!getLockedManifestKeys || !isManifestEditable || isSuperAdmin) {
             return
         }
 
@@ -231,7 +233,7 @@ const ManifestComponent = ({
         })
 
         const lockedKeysResponse = await getLockedManifestKeys({
-            clusterId: resourceRequestPayload.clusterId,
+            clusterId: DEFAULT_CLUSTER_ID,
             gvk: resourceRequestPayload.k8sRequest.resourceIdentifier.groupVersionKind,
             signal,
         })
