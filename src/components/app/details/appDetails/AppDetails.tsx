@@ -729,6 +729,14 @@ export const Details: React.FC<DetailsType> = ({
         )
     }
 
+    const handleOpenConfigDriftModal = () => {
+        setShowConfigDriftModal(true)
+    }
+
+    const handleCloseConfigDriftModal = () => {
+        setShowConfigDriftModal(false)
+    }
+
     const onClickRotatePodClose = () => setRotateModal(false)
 
     const renderRestartWorkload = () => {
@@ -765,7 +773,7 @@ export const Details: React.FC<DetailsType> = ({
                     ciArtifactId={appDetails?.ciArtifactId}
                     setErrorsList={setErrorsList}
                     deploymentUserActionState={deploymentUserActionState}
-                    setShowConfigDriftModal={setShowConfigDriftModal}
+                    handleOpenConfigDriftModal={handleOpenConfigDriftModal}
                 />
             </div>
             {!loadingDetails && !loadingResourceTree && !appDetails?.deploymentAppDeleteRequest && (
@@ -848,7 +856,7 @@ export const Details: React.FC<DetailsType> = ({
                 />
             }
             {isConfigDriftEnabled && ConfigDriftModal && showConfigDriftModal && !isVirtualEnvRef.current && (
-                <ConfigDriftModal setShowConfigDriftModal={setShowConfigDriftModal} />
+                <ConfigDriftModal handleCloseModal={handleCloseConfigDriftModal} />
             )}
         </>
     )

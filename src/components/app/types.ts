@@ -599,7 +599,7 @@ export interface SourceInfoType {
     setErrorsList?: React.Dispatch<React.SetStateAction<ErrorItem[]>>
     filteredEnvIds?: string
     deploymentUserActionState?: ACTION_STATE
-    setShowConfigDriftModal?: Dispatch<SetStateAction<boolean>>
+    handleOpenConfigDriftModal?: () => void
 }
 
 export interface AppDetailsCDButtonType
