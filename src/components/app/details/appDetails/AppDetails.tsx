@@ -295,7 +295,7 @@ export const Details: React.FC<DetailsType> = ({
             deploymentStatus: DEFAULT_STATUS,
             deploymentStatusText: DEFAULT_STATUS_TEXT,
         })
-    const isConfigDriftEnabled: boolean = window._env_.FEATURE_CONFIG_DRIFT_ENABLE
+    const isConfigDriftEnabled: boolean = window._env_.FEATURE_CONFIG_DRIFT_ENABLE && !!ConfigDriftModal
     const isExternalToolAvailable: boolean =
         externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0
     const interval = Number(window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL) || 30000
@@ -807,7 +807,7 @@ export const Details: React.FC<DetailsType> = ({
                 <AppStatusDetailModal
                     close={hideAppDetailsStatus}
                     showAppStatusMessage={false}
-                    {...(isConfigDriftEnabled && !!ConfigDriftModal
+                    {...(isConfigDriftEnabled
                         ? {
                               handleOpenConfigDriftModal,
                           }
@@ -855,7 +855,7 @@ export const Details: React.FC<DetailsType> = ({
                     isVirtualEnvironment={isVirtualEnvRef.current}
                 />
             }
-            {isConfigDriftEnabled && ConfigDriftModal && showConfigDriftModal && !isVirtualEnvRef.current && (
+            {isConfigDriftEnabled && showConfigDriftModal && !isVirtualEnvRef.current && (
                 <ConfigDriftModal handleCloseModal={handleCloseConfigDriftModal} />
             )}
         </>
