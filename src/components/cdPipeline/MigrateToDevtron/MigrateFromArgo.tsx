@@ -1,8 +1,10 @@
-import { SyntheticEvent } from 'react'
+import { SyntheticEvent, useEffect, useRef } from 'react'
 import {
+    abortPreviousRequests,
     APIResponseHandler,
     BaseURLParams,
     GenericSectionErrorState,
+    getIsRequestAborted,
     ResourceKindType,
     SelectPicker,
     SelectPickerOptionType,
@@ -15,28 +17,47 @@ import { useParams } from 'react-router-dom'
 import { getArgoInstalledExternalApps } from '@Components/app/list-new/AppListService'
 import TriggerTypeRadio from '../TriggerTypeRadio'
 import MigrateToDevtronValidationFactory from './MigrateToDevtronValidationFactory'
-import { MigrateFromArgoProps } from './types'
+import { MigrateFromArgoProps, SelectArgoAppOptionType, SelectClusterOptionType } from './types'
 import { MigrateFromArgoFormState } from '../cdPipeline.types'
 import { validateMigrationSource } from './service'
 import { GENERIC_SECTION_ERROR_STATE_COMMON_PROPS } from './constants'
-import { sanitizeValidateMigrationSourceResponse } from './utils'
+import { generateArgoAppOption, generateClusterOption, sanitizeValidateMigrationSourceResponse } from './utils'
 
 const RESOURCES_TO_FETCH: ResourceKindType.cluster[] = [ResourceKindType.cluster]
 
 const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormState }: MigrateFromArgoProps) => {
     const { appId } = useParams<Pick<BaseURLParams, 'appId'>>()
+    const argoAppListControllerRef = useRef<AbortController>(new AbortController())
 
     const { isResourcesOptionsLoading, refetchResourcesOptions, resourcesOptionsError, resourcesOptionsMap } =
         useGetResourceKindsOptions({
             resourcesToFetch: RESOURCES_TO_FETCH,
         })
 
-    const [isLoadingArgoAppListResponse, argoAppListResponse, argoAppListResponseError, reloadArgoAppListResponse] =
-        useAsync(
-            () => getArgoInstalledExternalApps(String(migrateToDevtronFormState.migrateFromArgoFormState.clusterId)),
-            [migrateToDevtronFormState.migrateFromArgoFormState.clusterId],
-            !!migrateToDevtronFormState.migrateFromArgoFormState.clusterId,
-        )
+    const [
+        isLoadingArgoAppListResponseWithAbortedError,
+        argoAppListResponse,
+        argoAppListResponseErrorWithAbortedError,
+        reloadArgoAppListResponse,
+    ] = useAsync(
+        () =>
+            abortPreviousRequests(
+                () =>
+                    getArgoInstalledExternalApps(
+                        String(migrateToDevtronFormState.migrateFromArgoFormState.clusterId),
+                        argoAppListControllerRef,
+                    ),
+                argoAppListControllerRef,
+            ),
+        [migrateToDevtronFormState.migrateFromArgoFormState.clusterId],
+        !!migrateToDevtronFormState.migrateFromArgoFormState.clusterId,
+    )
+
+    const isLoadingArgoAppListResponse =
+        isLoadingArgoAppListResponseWithAbortedError || getIsRequestAborted(argoAppListResponseErrorWithAbortedError)
+    const argoAppListResponseError = isLoadingArgoAppListResponse ? null : argoAppListResponseErrorWithAbortedError
+
+    useEffect(() => () => argoAppListControllerRef.current.abort(), [])
 
     const handleSyncMigrateFromArgoFormStateWithValidationResponse = async () => {
         setMigrateToDevtronFormState((prevState) => ({
@@ -69,21 +90,13 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
 
     const clusterOptions = (resourcesOptionsMap?.[ResourceKindType.cluster] || [])
         .filter((cluster) => !cluster.isVirtual)
-        .map<SelectPickerOptionType<number>>((cluster) => ({
-            label: cluster.name,
-            value: cluster.id,
-        }))
+        .map<SelectClusterOptionType>((cluster) => generateClusterOption(cluster.name, cluster.id))
         .sort((a, b) => stringComparatorBySortOrder(a.label as string, b.label as string))
 
     const argoAppListOptions = (argoAppListResponse?.result || [])
-        .map<SelectPickerOptionType<Pick<MigrateFromArgoFormState, 'appName' | 'namespace'>>>((argoApp) => ({
-            label: argoApp.appName || '',
-            value: {
-                appName: argoApp.appName || '',
-                namespace: argoApp.namespace || '',
-            },
-            description: `Namespace: ${argoApp.namespace || '--'}`,
-        }))
+        .map<SelectArgoAppOptionType>((argoApp) =>
+            generateArgoAppOption({ appName: argoApp.appName, namespace: argoApp.namespace }),
+        )
         .sort((a, b) => stringComparatorBySortOrder(a.label as string, b.label as string))
 
     const handleClusterChange = (clusterOption: SelectPickerOptionType<number>) => {
@@ -126,6 +139,7 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
     const handleTriggerTypeChange = (event: SyntheticEvent) => {
         const triggerType = (event.target as HTMLInputElement)
             .value as (typeof migrateToDevtronFormState)['triggerType']
+
         setMigrateToDevtronFormState((prevState) => ({
             ...prevState,
             triggerType,
@@ -139,7 +153,7 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
         <>
             <div className="flexbox dc__gap-8 dc__align-end">
                 <div className="w-250">
-                    <SelectPicker<(typeof clusterOptions)[number]['value'], false>
+                    <SelectPicker<SelectClusterOptionType['value'], false>
                         inputId="migrate-from-source-cluster-select"
                         classNamePrefix="migrate-from-source-cluster-select"
                         label="Cluster containing Argo CD application"
@@ -150,14 +164,14 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
                         onChange={handleClusterChange}
                         value={
                             migrateToDevtronFormState.migrateFromArgoFormState.clusterId
-                                ? {
-                                      label: migrateToDevtronFormState.migrateFromArgoFormState.clusterName,
-                                      value: migrateToDevtronFormState.migrateFromArgoFormState.clusterId,
-                                  }
+                                ? generateClusterOption(
+                                      migrateToDevtronFormState.migrateFromArgoFormState.clusterName,
+                                      migrateToDevtronFormState.migrateFromArgoFormState.clusterId,
+                                  )
                                 : null
                         }
-                        required
                         placeholder="Select a cluster"
+                        required
                         autoFocus
                     />
                 </div>
@@ -179,14 +193,10 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
                         required
                         value={
                             migrateToDevtronFormState.migrateFromArgoFormState.appName
-                                ? {
-                                      label: migrateToDevtronFormState.migrateFromArgoFormState.appName || '',
-                                      value: {
-                                          appName: migrateToDevtronFormState.migrateFromArgoFormState.appName || '',
-                                          namespace: migrateToDevtronFormState.migrateFromArgoFormState.namespace || '',
-                                      },
-                                      description: `Namespace: ${migrateToDevtronFormState.migrateFromArgoFormState.namespace || '--'}`,
-                                  }
+                                ? generateArgoAppOption({
+                                      appName: migrateToDevtronFormState.migrateFromArgoFormState.appName,
+                                      namespace: migrateToDevtronFormState.migrateFromArgoFormState.namespace,
+                                  })
                                 : null
                         }
                         getOptionValue={getArgoOptionValue}

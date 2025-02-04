@@ -1,4 +1,6 @@
+import { GenericAppType } from '@Components/app/list-new/AppListType'
 import { ValidateMigrationSourceDTO } from '../cdPipeline.types'
+import { SelectArgoAppOptionType, SelectClusterOptionType } from './types'
 
 export const sanitizeValidateMigrationSourceResponse = (
     response: ValidateMigrationSourceDTO,
@@ -34,3 +36,20 @@ export const sanitizeValidateMigrationSourceResponse = (
         },
     }
 }
+
+export const generateClusterOption = (clusterName: string, clusterId: number): SelectClusterOptionType => ({
+    label: clusterName,
+    value: clusterId,
+})
+
+export const generateArgoAppOption = ({
+    appName,
+    namespace,
+}: Pick<GenericAppType, 'appName' | 'namespace'>): SelectArgoAppOptionType => ({
+    label: appName || '',
+    value: {
+        appName: appName || '',
+        namespace: namespace || '',
+    },
+    description: `Namespace: ${namespace || '--'}`,
+})
