@@ -409,3 +409,10 @@ export interface DeleteInstalledChartParamsType {
     partialDelete?: true
     cascade?: false
 }
+
+export interface ChartGroupDeploymentsProps {
+    name: string
+    description: string
+    installedChartData: InstalledChartGroup[]
+    deleteInstalledChart: (e) => void
+}

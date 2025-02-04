@@ -105,7 +105,6 @@ export const CLUSTER_NODE_ACTIONS_LABELS = {
 export const DELETE_NODE_MODAL_MESSAGING = {
     recommended: 'Recommended: ',
     recommendedInfoText: 'Drain the node before deleting it as it may cause disruption because of pod deletion.',
-    delete: 'Delete node',
     deletePostfix: ' Node',
     description: 'Are you sure you want to delete this node?',
     initiated: 'Node deletion initiated',
