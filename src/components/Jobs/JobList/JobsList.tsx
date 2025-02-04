@@ -29,7 +29,7 @@ import { URLS } from '../../../config'
 import { INITIAL_EMPTY_MASTER_FILTERS, JobListViewType } from '../Constants'
 import JobListContainer from './JobListContainer'
 import { getJobStatusLabelFromValue, parseSearchParams } from '../Utils'
-import { AddNewApp } from '../../app/create/CreateApp'
+import { CreateAppModal } from '../../app/CreateAppModal'
 import { getJobsInitFilters } from '../Service'
 import '../../app/list/list.scss'
 import {
@@ -139,7 +139,7 @@ const JobsList = () => {
             <Route
                 path={`${path}/${URLS.CREATE_JOB}`}
                 render={({ history: routeHistory, location: routeLocation, match }) => (
-                    <AddNewApp
+                    <CreateAppModal
                         isJobView
                         close={closeJobCreateModal}
                         history={routeHistory}

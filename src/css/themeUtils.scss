@@ -107,6 +107,14 @@
 .border {
     &__primary {
         border: 1px solid var(--border-primary);
+
+        &--top {
+            border-top: 1px solid var(--border-primary);
+        }
+
+        &--bottom {
+            border-bottom: 1px solid var(--border-primary);
+        }
     }
 
     &__secondary {

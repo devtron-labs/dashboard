@@ -63,7 +63,6 @@ import { useAppContext } from '../../common'
 import { SERVER_MODE, DOCUMENTATION } from '../../../config'
 import HelmAppList from './HelmAppList'
 import { AppListPropType } from '../list/types'
-import { AddNewApp } from '../create/CreateApp'
 import '../list/list.scss'
 import EAEmptyState, { EAEmptyStateType } from '../../common/eaEmptyState/EAEmptyState'
 import { APP_LIST_LOCAL_STORAGE_KEY, APP_LISTING_URLS, FLUX_CD_HELM_RELEASE_LABEL } from './Constants'
@@ -85,6 +84,7 @@ import {
 } from './AppListType'
 import DevtronAppList from '../list/DevtronAppListContainer'
 import AppListFilters from './AppListFilters'
+import { CreateAppModal } from '../CreateAppModal'
 
 let interval
 
@@ -421,7 +421,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                         path={`${currentUrl}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
                         key={currentUrl}
                         render={(props) => (
-                            <AddNewApp
+                            <CreateAppModal
                                 close={closeDevtronAppCreateModal}
                                 match={props.match}
                                 location={props.location}
