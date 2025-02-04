@@ -24,5 +24,6 @@ export const DeleteUserPermission = ({
         onDelete={onDelete}
         showConfirmationModal={showConfirmationModal}
         closeConfirmationModal={closeConfirmationModal}
+        successToastMessage={isUserGroup ? 'Group deleted successfully' : 'User Deleted successfully'}
     />
 )

@@ -170,6 +170,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                 // 412 is for linked pipeline and 403 is for RBAC
                 if (!force && error.code != 403 && error.code != 412) {
                     this.parseErrorIntoForceDelete(error)
+                    this.handleDeleteDialogUpdate(DeleteDialogType.showForceDeleteDialog)
                 } else {
                     this.handleHideDeleteModal()
                 }
