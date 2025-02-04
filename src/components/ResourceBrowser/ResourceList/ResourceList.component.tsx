@@ -75,7 +75,7 @@ const WarningStrip: React.FC<{ lastSyncTime: string; callback: () => void }> = (
         <div className="fs-13 flex left w-100 bcy-1 h-32 warning-icon-y7-imp dc__border-bottom-y2">
             <div className="pl-12 flex fs-13 pt-6 pb-6 pl-12">
                 <Warning className="icon-dim-20 mr-8" />
-                <span>Last synced {timePassed}. The data might be stale. </span>
+                <span>Last synced {timePassed}. The data might be stale.</span>
                 &nbsp;
                 <Button
                     variant={ButtonVariantType.text}
