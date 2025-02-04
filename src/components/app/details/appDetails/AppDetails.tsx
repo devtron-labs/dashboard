@@ -809,7 +809,7 @@ export const Details: React.FC<DetailsType> = ({
                     showAppStatusMessage={false}
                     {...(isConfigDriftEnabled && !!ConfigDriftModal
                         ? {
-                              setShowConfigDriftModal,
+                              handleOpenConfigDriftModal,
                           }
                         : {})}
                 />
