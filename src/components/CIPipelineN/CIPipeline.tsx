@@ -418,7 +418,7 @@ export default function CIPipeline({
             let valid = _formData.materials.reduce((isValid, mat) => {
                 isValid =
                     isValid &&
-                    validationRules.sourceValue(mat.regex || mat.value, mat.type !== SourceTypeMap.WEBHOOK).isValid
+                    validationRules.sourceValue(mat.regex || mat.value, mat.type === SourceTypeMap.BranchRegex).isValid
                 return isValid
             }, true)
             if (_formData.materials.length > 1) {
@@ -659,7 +659,7 @@ export default function CIPipeline({
             if (formData.name === '' || branchNameNotPresent) {
                 ToastManager.showToast({
                     variant: ToastVariantType.error,
-                    description: MULTI_REQUIRED_FIELDS_MSG,
+                    description: 'Please ensure all fields are valid',
                 })
             }
             return
