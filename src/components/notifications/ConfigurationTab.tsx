@@ -141,7 +141,8 @@ export const ConfigurationTab = () => {
 
     const onClickDelete = async () => {
         await deleteNotification(deletePayload)
-        await getAllChannelConfigs()
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        getAllChannelConfigs()
     }
 
     const renderTableComponent = () => <ConfigurationTables activeTab={modal} state={state} setState={setState} />

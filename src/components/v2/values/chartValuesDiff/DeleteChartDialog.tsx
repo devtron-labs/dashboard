@@ -14,8 +14,8 @@ export const DeleteChartDialog = ({
     const closeConfirmation = () => {
         toggleConfirmation(false)
     }
-    const handleForceDelete = () => {
-        handleDelete(DELETE_ACTION.DELETE)
+    const onClickDelete = async () => {
+        await handleDelete(DELETE_ACTION.DELETE)
     }
 
     return (
@@ -30,7 +30,7 @@ export const DeleteChartDialog = ({
                 },
                 primaryButtonConfig: {
                     text: 'Delete',
-                    onClick: handleForceDelete,
+                    onClick: onClickDelete,
                     isLoading: disableButton,
                     disabled: disableButton,
                 },

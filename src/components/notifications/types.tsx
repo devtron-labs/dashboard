@@ -20,6 +20,7 @@ import {
     ResponseType,
     DynamicDataTableRowType,
     SelectPickerOptionType,
+    PaginationProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { VariableDataTableActionType } from '@Components/CIPipelineN/VariableDataTable/types'
 import { HostURLConfig } from '@Services/service.types'
@@ -274,6 +275,11 @@ export interface NotificationConfiguration {
     isVirtualEnvironment?: boolean
 }
 
+interface NotificationTabCheckboxTypes {
+    isChecked: boolean
+    value: 'INTERMEDIATE' | 'CHECKED'
+}
+
 export interface NotificationTabState {
     view: string
     statusCode: number
@@ -281,28 +287,12 @@ export interface NotificationTabState {
     channelList: any[]
     showDeleteDialog: boolean
     showModifyRecipientsModal: boolean
-    headerCheckbox: {
-        isChecked: boolean
-        value: 'INTERMEDIATE' | 'CHECKED'
-    }
-    triggerCheckbox: {
-        isChecked: boolean
-        value: 'INTERMEDIATE' | 'CHECKED'
-    }
-    successCheckbox: {
-        isChecked: boolean
-        value: 'INTERMEDIATE' | 'CHECKED'
-    }
-    failureCheckbox: {
-        isChecked: boolean
-        value: 'INTERMEDIATE' | 'CHECKED'
-    }
+    headerCheckbox: NotificationTabCheckboxTypes
+    triggerCheckbox: NotificationTabCheckboxTypes
+    successCheckbox: NotificationTabCheckboxTypes
+    failureCheckbox: NotificationTabCheckboxTypes
     payloadUpdateEvents: Array<{ id: number; eventTypeIds: number[] }>
-    pagination: {
-        size: number
-        pageSize: number
-        offset: number
-    }
+    pagination: Pick<PaginationProps, 'offset' | 'size' | 'pageSize'>
     hostURLConfig: HostURLConfig
     deleting: boolean
     confirmation: boolean

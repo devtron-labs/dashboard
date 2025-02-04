@@ -63,7 +63,7 @@ const DeleteCDNode = ({
     )
 
     const renderNonCascadeDescription = () => (
-        <div className="flexbox dc__gap-12">
+        <div className="flexbox-col dc__gap-12">
             <p className="fs-14 cn-7 lh-20 m-0">
                 The underlying resources cannot be deleted as the cluster is not reachable at the moment.
             </p>
