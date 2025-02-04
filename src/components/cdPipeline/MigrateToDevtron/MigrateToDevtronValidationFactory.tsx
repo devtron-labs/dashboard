@@ -73,6 +73,16 @@ const ContentRow = ({ title, value, buttonProps, titleTooltip }: ContentRowProps
     </>
 )
 
+const renderGitOpsNotConfiguredDescription = () => (
+    <p className="m-0">
+        GitOps credentials is required to deploy applications via GitOps.&nbsp;
+        <Link to={URLS.GLOBAL_CONFIG_GITOPS} data-testid="configure-gitops-button" target="_blank" className="anchor">
+            Configure
+        </Link>
+        &nbsp;and try again.
+    </p>
+)
+
 const MigrateToDevtronValidationFactory = ({
     validationResponse,
     appName,
@@ -85,21 +95,6 @@ const MigrateToDevtronValidationFactory = ({
     const { isLinkable, errorDetail, applicationMetadata } = validationResponse
     const { validationFailedReason, validationFailedMessage } = errorDetail || {}
     const { source, status, destination } = applicationMetadata || {}
-
-    const renderGitOpsNotConfiguredDescription = () => (
-        <p className="m-0">
-            GitOps credentials is required to deploy applications via GitOps.&nbsp;
-            <Link
-                to={URLS.GLOBAL_CONFIG_GITOPS}
-                data-testid="configure-gitops-button"
-                target="_blank"
-                className="anchor"
-            >
-                Configure
-            </Link>
-            &nbsp;and try again.
-        </p>
-    )
 
     const renderChartVersionNotFoundDescription = () => (
         <p className="m-0">

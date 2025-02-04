@@ -771,6 +771,7 @@ const DeploymentTemplate = ({
             namespace,
             envOverrideValues,
             mergeStrategy,
+            migratedFrom,
             envOverridePatchValues,
         } = environmentConfig || {}
 
@@ -788,7 +789,7 @@ const DeploymentTemplate = ({
                 mergedTemplateObject: IsOverride ? envOverrideValues || globalConfig : globalConfig,
                 isOverridden: !!IsOverride,
             }),
-
+            migratedFrom,
             schema,
             readme,
             guiSchema,
@@ -1498,6 +1499,7 @@ const DeploymentTemplate = ({
             showDeleteOverrideDraftEmptyState,
             isApprovalPolicyConfigured,
             isDeleteOverrideDraftPresent: isDeleteOverrideDraft,
+            migratedFrom: currentEditorTemplateData?.migratedFrom,
         }),
         popupNodeType,
         popupMenuNode: ProtectionViewToolbarPopupNode ? (
@@ -1814,6 +1816,7 @@ const DeploymentTemplate = ({
                                 isGuiSupported={isGuiSupported}
                                 areChartsLoading={false}
                                 showDeleteOverrideDraftEmptyState={showDeleteOverrideDraftEmptyState}
+                                migratedFrom={currentEditorTemplateData?.migratedFrom}
                             />
                         )}
                     </ConfigToolbar>

@@ -31,6 +31,7 @@ import {
     ProtectConfigTabsType,
     DraftMetadataDTO,
     OverrideMergeStrategyType,
+    PipelineMigratedFromType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 export enum ConfigEditorStatesType {
@@ -186,7 +187,7 @@ export interface DeploymentTemplateStateType {
 }
 
 export interface DeploymentTemplateOptionsHeaderProps
-    extends Pick<DeploymentTemplateEditorDataStateType, 'parsingError' | 'selectedChart'>,
+    extends Pick<DeploymentTemplateEditorDataStateType, 'parsingError' | 'selectedChart' | 'migratedFrom'>,
         Pick<DeploymentTemplateStateType, 'showReadMe' | 'editMode' | 'chartDetails'> {
     disableVersionSelect: boolean
     handleChangeToGUIMode: () => void
@@ -271,6 +272,7 @@ export interface DTChartSelectorProps
             | 'areChartsLoading'
             | 'parsingError'
             | 'restoreLastSavedTemplate'
+            | 'migratedFrom'
         > {
     selectChart: (selectedChart: DeploymentChartVersionType) => void
     selectedChartRefId: number
@@ -306,6 +308,7 @@ interface EnvironmentConfigDTO {
     status: number
     mergeStrategy: OverrideMergeStrategyType
     envOverridePatchValues: Record<string, string>
+    migratedFrom: PipelineMigratedFromType
 }
 
 export interface EnvironmentOverrideDeploymentTemplateDTO {
@@ -482,6 +485,7 @@ export interface OverriddenBaseDeploymentTemplateParsedDraftDTO {
     readme: string
     schema: Record<string, string>
     mergeStrategy: OverrideMergeStrategyType
+    migratedFrom: PipelineMigratedFromType
     envOverridePatchValues: Record<string, string>
 }
 

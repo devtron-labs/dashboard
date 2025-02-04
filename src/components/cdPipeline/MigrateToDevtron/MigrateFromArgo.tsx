@@ -19,6 +19,7 @@ import { MigrateFromArgoProps } from './types'
 import { MigrateFromArgoFormState } from '../cdPipeline.types'
 import { validateMigrationSource } from './service'
 import { GENERIC_SECTION_ERROR_STATE_COMMON_PROPS } from './constants'
+import { sanitizeValidateMigrationSourceResponse } from './utils'
 
 const RESOURCES_TO_FETCH: ResourceKindType.cluster[] = [ResourceKindType.cluster]
 
@@ -42,33 +43,7 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
             ...prevState,
             migrateFromArgoFormState: {
                 ...prevState.migrateFromArgoFormState,
-                validationResponse: {
-                    isLinkable: false,
-                    errorDetail: {
-                        validationFailedReason: null,
-                        validationFailedMessage: '',
-                    },
-                    applicationMetadata: {
-                        source: {
-                            repoURL: '',
-                            chartPath: '',
-                            chartMetadata: {
-                                requiredChartVersion: '',
-                                savedChartName: '',
-                                valuesFileName: '',
-                                requiredChartName: '',
-                            },
-                        },
-                        destination: {
-                            clusterName: '',
-                            clusterServerUrl: '',
-                            namespace: '',
-                            environmentName: '',
-                            environmentId: 0,
-                        },
-                        status: null,
-                    },
-                },
+                validationResponse: sanitizeValidateMigrationSourceResponse(null),
             },
         }))
 
