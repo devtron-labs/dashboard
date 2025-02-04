@@ -314,7 +314,6 @@ export default function CIConfigDiffView({
         ))
     }
 
-    const onClose = () => toggleConfigOverrideDiffModal()
 
     return (
         <Drawer parentClassName="dc__overflow-hidden" position="right" width="87%" minWidth="1024px" maxWidth="1246px">
@@ -330,7 +329,7 @@ export default function CIConfigDiffView({
                     buttonConfig={{
                         secondaryButtonConfig: {
                             text: 'Cancel',
-                            onClick: onClose,
+                            onClick: toggleConfigOverrideDiffModal,
                             disabled: deleteInProgress,
                         },
                         primaryButtonConfig: {
@@ -340,7 +339,7 @@ export default function CIConfigDiffView({
                         },
                     }}
                     showConfirmationModal={showDeleteDialog}
-                    handleClose={onClose}
+                    handleClose={toggleConfigOverrideDiffModal}
                 />
             </div>
         </Drawer>

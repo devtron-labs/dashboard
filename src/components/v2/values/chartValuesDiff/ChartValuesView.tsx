@@ -1601,7 +1601,9 @@ const ChartValuesView = ({
         )
     }
 
+    const onDelete = () => deleteApplication(DELETE_ACTION.DELETE)
     const onForceDelete = () => deleteApplication(DELETE_ACTION.FORCE_DELETE)
+
     const onCloseForceDelete = () => {
         dispatch({
             type: ChartValuesViewActionTypes.multipleOptions,
@@ -1863,7 +1865,7 @@ const ChartValuesView = ({
                         (isExternalApp && commonState.releaseInfo.deployedAppDetail.appName) ||
                         commonState.installedConfig?.appName
                     }
-                    handleDelete={() => deleteApplication(DELETE_ACTION.DELETE)}
+                    handleDelete={onDelete}
                     toggleConfirmation={toggleDeleteConfirmation}
                     disableButton={commonState.isDeleteInProgress}
                     isCreateValueView={isCreateValueView}
