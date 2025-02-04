@@ -15,13 +15,19 @@
  */
 
 import { useState } from 'react'
-import { showError, DeleteDialog, InfoColourBar, ToastVariantType, ToastManager, deleteNodeCapacity } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    DELETE_NODE_MODAL_MESSAGING,
+    ToastVariantType,
+    ToastManager,
+    deleteNodeCapacity,
+    ConfirmationModal,
+    ConfirmationModalVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
-import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { DeleteNodeModalProps } from '../types'
-import { DELETE_NODE_MODAL_MESSAGING } from '../constants'
 
-export default function DeleteNodeModal({ name, version, kind, closePopup, handleClearBulkSelection }: DeleteNodeModalProps) {
+const DeleteNodeModal = ({ name, version, kind, closePopup, handleClearBulkSelection }: DeleteNodeModalProps) => {
     const { clusterId } = useParams<{ clusterId: string }>()
     const [apiCallInProgress, setAPICallInProgress] = useState(false)
 
@@ -41,7 +47,7 @@ export default function DeleteNodeModal({ name, version, kind, closePopup, handl
             await deleteNodeCapacity(payload)
             ToastManager.showToast({
                 variant: ToastVariantType.success,
-                description: DELETE_NODE_MODAL_MESSAGING.initiated,
+                description: DELETE_NODE_MODAL_MESSAGING.successInfoToastMessage,
             })
             handleClearBulkSelection()
             closePopup(true)
@@ -52,34 +58,28 @@ export default function DeleteNodeModal({ name, version, kind, closePopup, handl
         }
     }
 
-    const RecommendedNote = () => {
-        return (
-            <div className="fs-13 fw-4 lh-20">
-                <span className="fw-6">{DELETE_NODE_MODAL_MESSAGING.recommended}</span>
-                {DELETE_NODE_MODAL_MESSAGING.recommendedInfoText}
-            </div>
-        )
-    }
-
     return (
-        <DeleteDialog
-            title={`${DELETE_NODE_MODAL_MESSAGING.delete} ‘${name}’ ?`}
-            delete={deleteAPI}
-            closeDelete={onClose}
-            deletePostfix={DELETE_NODE_MODAL_MESSAGING.deletePostfix}
-            showDeleteConfirmation
-            apiCallInProgress={apiCallInProgress}
-            deleteConfirmationText={name}
-        >
-            <InfoColourBar
-                classname="question-bar p-lr-12"
-                message={<RecommendedNote />}
-                Icon={Help}
-                iconClass="fcv-5"
-            />
-            <DeleteDialog.Description>
-                <p className="mt-12 mb-12">{DELETE_NODE_MODAL_MESSAGING.description}</p>
-            </DeleteDialog.Description>
-        </DeleteDialog>
+        <ConfirmationModal
+            variant={ConfirmationModalVariantType.delete}
+            title={`Delete node '${name}'?`}
+            handleClose={onClose}
+            showConfirmationModal
+            subtitle={DELETE_NODE_MODAL_MESSAGING.subtitle}
+            confirmationConfig={{ confirmationKeyword: name, identifier: 'delete-node-confirmation' }}
+            buttonConfig={{
+                primaryButtonConfig: {
+                    onClick: deleteAPI,
+                    isLoading: apiCallInProgress,
+                    text: 'Delete node',
+                },
+                secondaryButtonConfig: {
+                    onClick: onClose,
+                    disabled: apiCallInProgress,
+                    text: 'Cancel',
+                },
+            }}
+        />
     )
 }
+
+export default DeleteNodeModal

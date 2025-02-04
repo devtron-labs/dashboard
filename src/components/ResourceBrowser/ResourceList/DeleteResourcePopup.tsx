@@ -17,17 +17,16 @@
 import React, { useState } from 'react'
 import {
     showError,
-    DeleteDialog,
-    Checkbox,
-    CHECKBOX_VALUE,
     noop,
     ToastManager,
     ToastVariantType,
     ResourceListPayloadType,
     deleteResource,
+    ConfirmationModal,
+    ConfirmationModalVariantType,
+    ForceDeleteOption,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
-import { DELETE_MODAL_MESSAGING } from '../Constants'
 import { DeleteResourcePopupType } from '../Types'
 
 const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
@@ -80,32 +79,32 @@ const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
         }
     }
 
-    const forceDeleteHandler = () => {
-        setForceDelete((prevState) => !prevState)
-    }
-
     return (
-        <DeleteDialog
-            title={`Delete ${selectedResource.gvk.Kind} "${resourceData.name}"`}
-            delete={handleDelete}
-            closeDelete={toggleDeleteDialog}
-            apiCallInProgress={apiCallInProgress}
-            showDeleteConfirmation
-            deleteConfirmationText={resourceData.name as string}
+        <ConfirmationModal
+            title={`Delete ${selectedResource.gvk.Kind} '${resourceData.name}'?`}
+            variant={ConfirmationModalVariantType.delete}
+            subtitle="Are you sure, you want to delete this resource?"
+            handleClose={toggleDeleteDialog}
+            confirmationConfig={{
+                confirmationKeyword: resourceData.name as string,
+                identifier: 'delete-resource-confirmation',
+            }}
+            buttonConfig={{
+                primaryButtonConfig: {
+                    onClick: handleDelete,
+                    isLoading: apiCallInProgress,
+                    text: 'Delete',
+                },
+                secondaryButtonConfig: {
+                    onClick: toggleDeleteDialog,
+                    disabled: apiCallInProgress,
+                    text: 'Cancel',
+                },
+            }}
+            showConfirmationModal
         >
-            <DeleteDialog.Description>
-                <p className="mb-12">{DELETE_MODAL_MESSAGING.description}</p>
-                <Checkbox
-                    rootClassName="resource-force-delete"
-                    isChecked={forceDelete}
-                    value={CHECKBOX_VALUE.CHECKED}
-                    disabled={apiCallInProgress}
-                    onChange={forceDeleteHandler}
-                >
-                    {DELETE_MODAL_MESSAGING.checkboxText}
-                </Checkbox>
-            </DeleteDialog.Description>
-        </DeleteDialog>
+            <ForceDeleteOption optionsData={forceDelete} setOptionsData={setForceDelete} />
+        </ConfirmationModal>
     )
 }
 
