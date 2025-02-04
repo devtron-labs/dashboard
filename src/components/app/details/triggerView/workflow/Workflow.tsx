@@ -361,6 +361,8 @@ export class Workflow extends Component<WorkflowProps> {
             (node) => node.isExternalCI && !node.isLinkedCI && node.type === WorkflowNodeType.CI,
         )
 
+        const numberOfCDNodes = this.props.nodes.reduce((acc, node) => acc + (node.type === 'CD' ? 1 : 0), 0)
+
         return (
             <div className="workflow--trigger flexbox-col mb-16 dc__gap-6" style={{ minWidth: 'auto' }}>
                 <div className="bg__primary cn-9 fs-13 fw-6 lh-20 flexbox dc__align-items-center dc__content-space">
@@ -381,7 +383,7 @@ export class Workflow extends Component<WorkflowProps> {
                             </span>
 
                             <div className="dc__separated-flexbox">
-                                {BulkDeployLink && this.props.nodes.reduce((acc, node) => acc + (node.type === 'CD' ? 1 : 0), 0) > 1 && (
+                                {BulkDeployLink && numberOfCDNodes > 1 && (
                                     <BulkDeployLink
                                         workflowId={this.props.id}
                                     />
