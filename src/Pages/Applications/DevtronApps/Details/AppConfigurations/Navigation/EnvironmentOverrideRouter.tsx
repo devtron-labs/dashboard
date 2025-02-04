@@ -19,7 +19,6 @@ import { useParams, useLocation, useRouteMatch, NavLink, Link } from 'react-rout
 import {
     EnvResourceType,
     showError,
-    DeleteDialog,
     ConfirmationDialog,
     InfoColourBar,
     PopupMenu,
@@ -28,6 +27,7 @@ import {
     ToastVariantType,
     ToastManager,
     SelectPicker,
+    DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICStamp } from '@Icons/ic-stamp.svg'
 import { URLS, DOCUMENTATION } from '../../../../../../config'
@@ -65,48 +65,35 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
     const [showDelete, setDeleteView] = useState(false)
     const [deletePipeline, setDeletePipeline] = useState()
 
-    const deleteEnvHandler = () => {
-        const requestBody = { envId: envOverride.environmentId, appId }
-        deleteJobEnvironment(requestBody)
-            .then(() => {
-                ToastManager.showToast({
-                    variant: ToastVariantType.success,
-                    description: 'Deleted Successfully',
-                })
-                reload()
-                setDeleteView(false)
-            })
-            .catch((error) => {
-                showError(error)
-            })
+    const onCloseDeleteModal = () => {
+        setDeleteView(false)
     }
 
-    const handleDeleteConfirmation = () => {
-        setDeleteView(false)
-        deleteEnvHandler()
+    const deleteEnvHandler = async () => {
+        const requestBody = { envId: envOverride.environmentId, appId }
+        await deleteJobEnvironment(requestBody)
+        reload()
+    }
+    const handleDeleteConfirmation = async () => {
+        onCloseDeleteModal()
+        await deleteEnvHandler()
     }
 
     const handleCancelDelete = () => {
-        setDeleteView(false)
+        onCloseDeleteModal()
         setDeletePipeline(null)
     }
 
-    const handleViewPipeline = () => {
-        setDeleteView(false)
-    }
-
     const renderDeleteDialog = (): JSX.Element => (
-        <DeleteDialog
-            title={`Delete configurations for environment '${envOverride.environmentName}'?`}
-            delete={deleteEnvHandler}
-            closeDelete={handleCancelDelete}
+        <DeleteConfirmationModal
+            title={envOverride.environmentName}
+            component="configurations for environment"
+            onDelete={deleteEnvHandler}
+            closeConfirmationModal={handleCancelDelete}
+            showConfirmationModal={showDelete}
         >
-            <DeleteDialog.Description>
-                <p className="fs-13 cn-7 lh-1-54">
-                    Are you sure you want to delete configurations for this environment?
-                </p>
-            </DeleteDialog.Description>
-        </DeleteDialog>
+            <p className="fs-13 cn-7 lh-1-54">Are you sure you want to delete configurations for this environment?</p>
+        </DeleteConfirmationModal>
     )
 
     const renderConfirmationDeleteModal = (pipeline, path: string): JSX.Element => (
@@ -117,7 +104,7 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
             />
             <p className="fs-13 cn-7 lh-1-54">
                 {`Pipeline ‘${pipeline.name}‘ is using configurations for environment ‘${envOverride.environmentName}’.`}
-                <Link to={path} onClick={handleViewPipeline} className="ml-2">
+                <Link to={path} onClick={onCloseDeleteModal} className="ml-2">
                     View pipeline
                 </Link>
             </p>
@@ -154,7 +141,10 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
         const path = pipeline
             ? `${url}/${URLS.APP_WORKFLOW_CONFIG}/${workFlow?.id}/ci-pipeline/${pipeline?.id}/pre-build`
             : ''
-        return !showConfirmationDialog ? renderDeleteDialog() : renderConfirmationDeleteModal(pipeline, path)
+        if (showConfirmationDialog) {
+            return renderConfirmationDeleteModal(pipeline, path)
+        }
+        return renderDeleteDialog()
     }
 
     const toggleDeleteDialog = (e) => {

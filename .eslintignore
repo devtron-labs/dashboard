@@ -231,7 +231,6 @@ src/components/command/command.util.ts
 src/components/common/Accordian/Accordian.tsx
 src/components/common/AppDetailsEmptyState.tsx
 src/components/common/Carousel/Carousel.tsx
-src/components/common/ClusterNotReachableDailog/ClusterNotReachableDialog.tsx
 src/components/common/ContentCard/ContentCard.tsx
 src/components/common/Contexts/AppContext.ts
 src/components/common/DatePickers/Calender.tsx

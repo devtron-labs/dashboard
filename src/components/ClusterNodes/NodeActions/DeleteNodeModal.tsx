@@ -14,69 +14,53 @@
  * limitations under the License.
  */
 
-import { useState } from 'react'
 import {
-    showError,
     DELETE_NODE_MODAL_MESSAGING,
-    ToastVariantType,
-    ToastManager,
     deleteNodeCapacity,
-    ConfirmationModal,
-    ConfirmationModalVariantType,
+    DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
+import { DeleteComponentsName } from '@Config/constantMessaging'
 import { DeleteNodeModalProps } from '../types'
 
-const DeleteNodeModal = ({ name, version, kind, closePopup, handleClearBulkSelection }: DeleteNodeModalProps) => {
+const DeleteNodeModal = ({
+    name,
+    version,
+    kind,
+    closePopup,
+    handleClearBulkSelection,
+    showConfirmationModal,
+}: DeleteNodeModalProps) => {
     const { clusterId } = useParams<{ clusterId: string }>()
-    const [apiCallInProgress, setAPICallInProgress] = useState(false)
 
     const onClose = (): void => {
         closePopup()
     }
 
-    const deleteAPI = async () => {
-        try {
-            setAPICallInProgress(true)
-            const payload = {
-                clusterId: Number(clusterId),
-                name,
-                version,
-                kind,
-            }
-            await deleteNodeCapacity(payload)
-            ToastManager.showToast({
-                variant: ToastVariantType.success,
-                description: DELETE_NODE_MODAL_MESSAGING.successInfoToastMessage,
-            })
-            handleClearBulkSelection()
-            closePopup(true)
-        } catch (err) {
-            showError(err)
-        } finally {
-            setAPICallInProgress(false)
+    const onDelete = async () => {
+        const payload = {
+            clusterId: Number(clusterId),
+            name,
+            version,
+            kind,
         }
+        await deleteNodeCapacity(payload)
+        handleClearBulkSelection()
+        closePopup(true)
     }
 
     return (
-        <ConfirmationModal
-            variant={ConfirmationModalVariantType.delete}
-            title={`Delete node '${name}'?`}
-            handleClose={onClose}
-            showConfirmationModal
+        <DeleteConfirmationModal
+            title={name}
+            component={DeleteComponentsName.Node}
             subtitle={DELETE_NODE_MODAL_MESSAGING.subtitle}
-            confirmationConfig={{ confirmationKeyword: name, identifier: 'delete-node-confirmation' }}
-            buttonConfig={{
-                primaryButtonConfig: {
-                    onClick: deleteAPI,
-                    isLoading: apiCallInProgress,
-                    text: 'Delete node',
-                },
-                secondaryButtonConfig: {
-                    onClick: onClose,
-                    disabled: apiCallInProgress,
-                    text: 'Cancel',
-                },
+            onDelete={onDelete}
+            closeConfirmationModal={onClose}
+            showConfirmationModal={showConfirmationModal}
+            successToastMessage={DELETE_NODE_MODAL_MESSAGING.successInfoToastMessage}
+            confirmationConfig={{
+                identifier: 'delete-cd-node-input',
+                confirmationKeyword: name,
             }}
         />
     )

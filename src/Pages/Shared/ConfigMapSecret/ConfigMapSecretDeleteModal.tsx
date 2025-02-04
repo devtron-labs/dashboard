@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-import { useState } from 'react'
-
 import {
-    DeleteDialog,
-    DraftAction,
-    showError,
-    ToastManager,
-    ToastVariantType,
     CMSecretComponentType,
     CM_SECRET_STATE,
+    DeleteConfirmationModal,
+    DraftAction,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 
+import { DeleteComponentsName } from '@Config/constantMessaging'
 import { deleteEnvSecret, deleteEnvConfigMap, deleteSecret, deleteConfigMap } from './ConfigMapSecret.service'
-import { CM_SECRET_COMPONENT_NAME } from './constants'
+import { CM_SECRET_COMPONENT_NAME, DELETE_OVERRIDE_CONFIG_SUBTITLE } from './constants'
 import { ConfigMapSecretDeleteModalProps } from './types'
 
 const DeleteModal = importComponentFromFELibrary('DeleteModal')
@@ -49,7 +45,6 @@ export const ConfigMapSecretDeleteModal = ({
     handleError,
 }: ConfigMapSecretDeleteModalProps) => {
     // STATES
-    const [isDeleting, setIsDeleting] = useState(false)
 
     // CONSTANTS
     const isDeleteOverride = cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
@@ -57,34 +52,14 @@ export const ConfigMapSecretDeleteModal = ({
 
     // METHODS
     const handleDelete = async () => {
-        setIsDeleting(true)
-        try {
-            if (envId) {
-                const deleteEnvConfigMapSecretParams = { id, appId, envId, name: configName }
-                await (isSecret ? deleteEnvSecret : deleteEnvConfigMap)(deleteEnvConfigMapSecretParams)
-
-                ToastManager.showToast({
-                    variant: ToastVariantType.success,
-                    description: isDeleteOverride ? 'Restored to global.' : 'Successfully Deleted',
-                })
-            } else {
-                const deleteConfigMapSecretParams = { id, appId, name: configName }
-                await (isSecret ? deleteSecret : deleteConfigMap)(deleteConfigMapSecretParams)
-
-                ToastManager.showToast({
-                    variant: ToastVariantType.success,
-                    description: 'Successfully deleted',
-                })
-            }
-
-            setIsDeleting(false)
-            updateCMSecret()
-            closeDeleteModal()
-        } catch (err) {
-            setIsDeleting(false)
-            handleError(DraftAction.Delete, err)
-            showError(err)
+        if (envId) {
+            const deleteEnvConfigMapSecretParams = { id, appId, envId, name: configName }
+            await (isSecret ? deleteEnvSecret : deleteEnvConfigMap)(deleteEnvConfigMapSecretParams)
+        } else {
+            const deleteConfigMapSecretParams = { id, appId, name: configName }
+            await (isSecret ? deleteSecret : deleteConfigMap)(deleteConfigMapSecretParams)
         }
+        updateCMSecret()
     }
 
     const prepareDataToDeleteOverrideDraft = () => ({ id })
@@ -120,22 +95,23 @@ export const ConfigMapSecretDeleteModal = ({
         ) : null
     }
 
+    const onError = (err) => handleError(DraftAction.Delete, err)
+
     const renderDeleteModal = () => (
-        <DeleteDialog
-            title={
+        <DeleteConfirmationModal
+            title={configName}
+            component={isDeleteOverride ? DeleteComponentsName.Override : CM_SECRET_COMPONENT_NAME[componentType]}
+            subtitle={
                 isDeleteOverride
-                    ? 'Delete override ?'
-                    : `Delete ${CM_SECRET_COMPONENT_NAME[componentType]} '${configName}' ?`
-            }
-            description={
-                isDeleteOverride
-                    ? 'This action will result in the removal of all overrides, and the original base configurations for this file will be reinstated.'
+                    ? DELETE_OVERRIDE_CONFIG_SUBTITLE
                     : `'${configName}' will not be used in future deployments. Are you sure?`
             }
-            closeDelete={closeDeleteModal}
-            buttonPrimaryText={`Delete ${isDeleteOverride ? 'override' : ''}`}
-            delete={handleDelete}
-            apiCallInProgress={isDeleting}
+            onDelete={handleDelete}
+            successToastMessage={isDeleteOverride && envId ? 'Restored to global' : 'Successfully Deleted'}
+            closeConfirmationModal={closeDeleteModal}
+            showConfirmationModal={openDeleteModal === 'deleteModal'}
+            onError={onError}
+            primaryButtonText={isDeleteOverride ? 'Delete Override' : 'Delete'}
         />
     )
 
@@ -143,5 +119,10 @@ export const ConfigMapSecretDeleteModal = ({
         return null
     }
 
-    return openDeleteModal === 'protectedDeleteModal' ? renderProtectedDeleteModal() : renderDeleteModal()
+    return (
+        <>
+            {openDeleteModal === 'protectedDeleteModal' && renderProtectedDeleteModal()}
+            {renderDeleteModal()}
+        </>
+    )
 }

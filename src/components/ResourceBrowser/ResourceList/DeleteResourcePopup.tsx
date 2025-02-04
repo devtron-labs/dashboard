@@ -16,15 +16,11 @@
 
 import React, { useState } from 'react'
 import {
-    showError,
     noop,
-    ToastManager,
-    ToastVariantType,
     ResourceListPayloadType,
     deleteResource,
-    ConfirmationModal,
-    ConfirmationModalVariantType,
     ForceDeleteOption,
+    DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import { DeleteResourcePopupType } from '../Types'
@@ -36,75 +32,53 @@ const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
     getResourceListData,
     toggleDeleteDialog,
     removeTabByIdentifier,
+    showConfirmationModal,
     handleClearBulkSelection,
 }) => {
     const { push } = useHistory()
-    const [apiCallInProgress, setApiCallInProgress] = useState(false)
     const [forceDelete, setForceDelete] = useState(false)
 
     const handleDelete = async (): Promise<void> => {
-        try {
-            setApiCallInProgress(true)
-            const resourceDeletePayload: ResourceListPayloadType = {
-                clusterId: Number(clusterId),
-                k8sRequest: {
-                    resourceIdentifier: {
-                        groupVersionKind: selectedResource.gvk,
-                        namespace: String(resourceData.namespace),
-                        name: String(resourceData.name),
-                    },
-                    forceDelete,
+        const resourceDeletePayload: ResourceListPayloadType = {
+            clusterId: Number(clusterId),
+            k8sRequest: {
+                resourceIdentifier: {
+                    groupVersionKind: selectedResource.gvk,
+                    namespace: String(resourceData.namespace),
+                    name: String(resourceData.name),
                 },
-            }
+                forceDelete,
+            },
+        }
 
-            await deleteResource(resourceDeletePayload)
-            ToastManager.showToast({
-                variant: ToastVariantType.success,
-                description: 'Resource deleted successfully',
-            })
-            await getResourceListData()
-            handleClearBulkSelection()
-            toggleDeleteDialog()
-            if (removeTabByIdentifier) {
-                removeTabByIdentifier(
-                    `${selectedResource?.gvk?.Kind.toLowerCase()}_${resourceData.namespace}/${resourceData.name}`,
-                )
-                    .then((url) => url && push(url))
-                    .catch(noop)
-            }
-        } catch (err) {
-            showError(err)
-        } finally {
-            setApiCallInProgress(false)
+        await deleteResource(resourceDeletePayload)
+        await getResourceListData()
+        handleClearBulkSelection()
+        if (removeTabByIdentifier) {
+            removeTabByIdentifier(
+                `${selectedResource?.gvk?.Kind.toLowerCase()}_${resourceData.namespace}/${resourceData.name}`,
+            )
+                .then((url) => url && push(url))
+                .catch(noop)
         }
     }
 
     return (
-        <ConfirmationModal
-            title={`Delete ${selectedResource.gvk.Kind} '${resourceData.name}'?`}
-            variant={ConfirmationModalVariantType.delete}
+        <DeleteConfirmationModal
+            title={resourceData.name as string}
+            component={selectedResource.gvk.Kind}
             subtitle="Are you sure, you want to delete this resource?"
-            handleClose={toggleDeleteDialog}
+            onDelete={handleDelete}
+            showConfirmationModal={showConfirmationModal}
+            closeConfirmationModal={toggleDeleteDialog}
             confirmationConfig={{
+                identifier: 'delete-resource-pod-input',
                 confirmationKeyword: resourceData.name as string,
-                identifier: 'delete-resource-confirmation',
             }}
-            buttonConfig={{
-                primaryButtonConfig: {
-                    onClick: handleDelete,
-                    isLoading: apiCallInProgress,
-                    text: 'Delete',
-                },
-                secondaryButtonConfig: {
-                    onClick: toggleDeleteDialog,
-                    disabled: apiCallInProgress,
-                    text: 'Cancel',
-                },
-            }}
-            showConfirmationModal
+            successToastMessage="Resource deleted successfully"
         >
             <ForceDeleteOption optionsData={forceDelete} setOptionsData={setForceDelete} />
-        </ConfirmationModal>
+        </DeleteConfirmationModal>
     )
 }
 

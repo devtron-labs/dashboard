@@ -22,17 +22,17 @@ import {
     showError,
     ResponseType,
     ServerErrors,
-    ForceDeleteDialog,
     renderErrorHeaderMessage,
     ToastVariantType,
     ToastManager,
+    ForceDeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as ErrorIcon } from '../../../../assets/icons/ic-warning.svg'
 import { deleteArgoCDAppWithNonCascade, getClusterConnectionStatus } from './appDetails.service'
 import { ClusterConnectionResponse, ErrorItem, IssuesCardType } from './appDetails.type'
 import { TOAST_INFO } from '../../../../config/constantMessaging'
-import ClusterNotReachableDialog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
+import ClusterNotReachableDialog from '../../../common/ClusterNotReachableDialog/ClusterNotReachableDialog'
 import { AppType } from '../../../v2/appDetails/appDetails.type'
 import { AppDetailsErrorType } from '../../../../config'
 import IndexStore from '../../../v2/appDetails/index.store'
@@ -200,6 +200,8 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
         return <LoadingCard />
     }
 
+    const onCloseForceDeleteModal = () => showForceDeleteDialog(false)
+
     return (
         <div
             data-testid="issues-card"
@@ -245,21 +247,19 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
                     Details
                 </div>
             </div>
-            {forceDeleteDialog && (
-                <ForceDeleteDialog
-                    forceDeleteDialogTitle={forceDeleteDialogTitle}
-                    onClickDelete={handleForceDelete}
-                    closeDeleteModal={() => showForceDeleteDialog(false)}
-                    forceDeleteDialogMessage={forceDeleteDialogMessage}
-                />
-            )}
-            {nonCascadeDeleteDialog && (
-                <ClusterNotReachableDialog
-                    clusterName={clusterName}
-                    onClickCancel={onClickHideNonCascadeDeletePopup}
-                    onClickDelete={onClickNonCascadeDelete}
-                />
-            )}
+            <ForceDeleteConfirmationModal
+                title={forceDeleteDialogTitle}
+                onDelete={handleForceDelete}
+                closeConfirmationModal={onCloseForceDeleteModal}
+                subtitle={forceDeleteDialogMessage}
+            />
+
+            <ClusterNotReachableDialog
+                clusterName={clusterName}
+                onClickCancel={onClickHideNonCascadeDeletePopup}
+                onClickDelete={onClickNonCascadeDelete}
+                showConfirmationModal={nonCascadeDeleteDialog}
+            />
         </div>
     )
 }

@@ -17,7 +17,6 @@
 import React, { useState, useEffect } from 'react'
 import {
     DeploymentAppTypes,
-    ForceDeleteDialog,
     ResponseType,
     ServerErrors,
     not,
@@ -25,6 +24,7 @@ import {
     renderErrorHeaderMessage,
     ToastVariantType,
     ToastManager,
+    ForceDeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
@@ -37,7 +37,7 @@ import {
 } from '../../app/details/appDetails/appDetails.service'
 import { ClusterConnectionResponse } from '../../app/details/appDetails/appDetails.type'
 import { TOAST_INFO } from '../../../config/constantMessaging'
-import ClusterNotReachableDailog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
+import ClusterNotReachableDialog from '../../common/ClusterNotReachableDialog/ClusterNotReachableDialog'
 
 const SyncErrorComponent: React.FC<SyncErrorType> = ({ showApplicationDetailedModal }) => {
     const [collapsed, toggleCollapsed] = useState<boolean>(true)
@@ -151,6 +151,8 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ showApplicationDetailedMo
         showNonCascadeDeleteDialog(true)
     }
 
+    const closeForceDeleteModal = () => showForceDeleteDialog(false)
+
     return (
         <div className="top flex left column w-100 bcr-1 pl-20 pr-20 fs-13">
             <div className="flex left w-100 cursor h-56" onClick={toggleErrorHeader}>
@@ -207,21 +209,21 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ showApplicationDetailedMo
                     </tbody>
                 </table>
             )}
-            {forceDeleteDialog && (
-                <ForceDeleteDialog
-                    forceDeleteDialogTitle={forceDeleteDialogTitle}
-                    onClickDelete={handleForceDelete}
-                    closeDeleteModal={() => showForceDeleteDialog(false)}
-                    forceDeleteDialogMessage={forceDeleteDialogMessage}
-                />
-            )}
-            {nonCascadeDeleteDialog && (
-                <ClusterNotReachableDailog
-                    clusterName={clusterName}
-                    onClickCancel={onClickHideNonCascadeDeletePopup}
-                    onClickDelete={onClickNonCascadeDelete}
-                />
-            )}
+
+            <ForceDeleteConfirmationModal
+                title={forceDeleteDialogTitle}
+                onDelete={handleForceDelete}
+                showConfirmationModal={forceDeleteDialog}
+                closeConfirmationModal={closeForceDeleteModal}
+                subtitle={forceDeleteDialogMessage}
+            />
+
+            <ClusterNotReachableDialog
+                clusterName={clusterName}
+                onClickCancel={onClickHideNonCascadeDeletePopup}
+                onClickDelete={onClickNonCascadeDelete}
+                showConfirmationModal={nonCascadeDeleteDialog}
+            />
         </div>
     )
 }

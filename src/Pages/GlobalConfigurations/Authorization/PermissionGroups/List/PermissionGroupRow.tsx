@@ -24,11 +24,7 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     ComponentSizeType,
-    DeleteDialog,
     getRandomColor,
-    showError,
-    ToastManager,
-    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as Edit } from '../../../../../assets/icons/ic-pencil.svg'
@@ -37,6 +33,7 @@ import { ReactComponent as Trash } from '../../../../../assets/icons/ic-delete-i
 import { PermissionGroupRowProps } from './types'
 import { deletePermissionGroup } from '../../authorization.service'
 import { useAuthorizationBulkSelection } from '../../Shared/components/BulkSelection'
+import { DeleteUserPermission } from '../../UserPermissions/DeleteUserPermission'
 
 const PermissionGroupRow = ({
     id,
@@ -50,7 +47,6 @@ const PermissionGroupRow = ({
 }: PermissionGroupRowProps) => {
     const { path } = useRouteMatch()
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
-    const [isModalLoading, setIsModalLoading] = useState(false)
     const { isBulkSelectionApplied, handleBulkSelection } = useAuthorizationBulkSelection()
 
     const _showCheckbox = showCheckbox || isChecked
@@ -59,28 +55,15 @@ const PermissionGroupRow = ({
         setIsDeleteModalOpen(!isDeleteModalOpen)
     }
 
-    const handleDelete = async () => {
-        setIsModalLoading(true)
-        try {
-            await deletePermissionGroup(id)
-            ToastManager.showToast({
-                variant: ToastVariantType.success,
-                description: 'Group deleted',
-            })
-            refetchPermissionGroupList()
-            setIsDeleteModalOpen(false)
-
+    const onDelete = async () => {
+        await deletePermissionGroup(id)
+        if (!isBulkSelectionApplied) {
             // Clearing the selection on single delete since the selected one might be removed
-            if (!isBulkSelectionApplied) {
-                handleBulkSelection({
-                    action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
-                })
-            }
-        } catch (err) {
-            showError(err)
-        } finally {
-            setIsModalLoading(false)
+            handleBulkSelection({
+                action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
+            })
         }
+        refetchPermissionGroupList()
     }
 
     const handleChecked = () => {
@@ -146,15 +129,13 @@ const PermissionGroupRow = ({
                     />
                 </div>
             </div>
-            {isDeleteModalOpen && (
-                <DeleteDialog
-                    title={`Delete group '${name}'?`}
-                    description="Deleting this group will revoke permissions from users added to this group."
-                    closeDelete={toggleDeleteModal}
-                    delete={handleDelete}
-                    apiCallInProgress={isModalLoading}
-                />
-            )}
+            <DeleteUserPermission
+                title={name}
+                onDelete={onDelete}
+                showConfirmationModal={isDeleteModalOpen}
+                closeConfirmationModal={toggleDeleteModal}
+                isUserGroup
+            />
         </>
     )
 }

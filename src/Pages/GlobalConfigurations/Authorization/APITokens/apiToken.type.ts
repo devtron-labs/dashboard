@@ -45,13 +45,19 @@ export interface TokenListType {
     id: number
     name: string
     token: string
-    updatedAt: string
     userId: number
     userIdentifier: string
     description: string
-    lastUsedByIp: string
-    lastUsedAt: string
+    lastUsedByIp?: string
+    lastUsedAt?: string
+    updatedAt?: string
 }
+
+export interface EditDataType
+    extends Pick<
+        TokenListType,
+        'name' | 'description' | 'expireAtInMs' | 'token' | 'id' | 'userId' | 'userIdentifier'
+    > {}
 export interface EditTokenType {
     setShowRegeneratedModal: React.Dispatch<React.SetStateAction<boolean>>
     showRegeneratedModal: boolean
@@ -85,15 +91,6 @@ export interface APITokenListType {
     reload: () => void
 }
 
-export interface EditDataType {
-    name: string
-    description: string
-    expireAtInMs: number
-    token: string
-    id: number
-    userId: number
-    userIdentifier: string
-}
 export interface RegenerateModalType {
     close: () => void
     setShowRegeneratedModal: React.Dispatch<React.SetStateAction<boolean>>
@@ -102,4 +99,12 @@ export interface RegenerateModalType {
     setCustomDate: React.Dispatch<React.SetStateAction<number>>
     reload: () => void
     redirectToTokenList: () => void
+}
+
+export interface DeleteAPITokenModalProps {
+    tokenData: TokenListType
+    reload: () => void
+    showDeleteConfirmation: boolean
+    setDeleteConfirmation: React.Dispatch<React.SetStateAction<boolean>>
+    isEditView?: boolean
 }
