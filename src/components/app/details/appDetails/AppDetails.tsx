@@ -572,7 +572,7 @@ export const Details: React.FC<DetailsType> = ({
         }
     }, [isPollingRequired])
 
-    async function handleHibernate(e) {
+    async function handleHibernate() {
         try {
             setHibernating(true)
             const isUnHibernateReq = ['hibernating', 'hibernated'].includes(

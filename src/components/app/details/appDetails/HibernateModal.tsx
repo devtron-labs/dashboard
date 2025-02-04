@@ -28,17 +28,7 @@ const HibernateModal = ({
             variant={ConfirmationModalVariantType.custom}
             Icon={hibernateConfirmationModal === 'hibernate' ? <ICHibernate /> : <ICUnhibernate />}
             title={`${hibernateConfirmationModal === 'hibernate' ? 'Hibernate' : 'Restore'} '${appName}' on '${envName}'`}
-            subtitle={
-                <p className="m-0-imp fs-13">
-                    Pods for this application will be
-                    <b className="mr-4 ml-4">
-                        scaled
-                        {hibernateConfirmationModal === 'hibernate' ? ' down to 0 ' : ' up to its original count '}
-                        on {envName}
-                    </b>
-                    environment.
-                </p>
-            }
+            subtitle={`Pods for this application will be scaled ${hibernateConfirmationModal === 'hibernate' ? 'down to 0' : 'up to its original count'} on ${envName} environment.`}
             buttonConfig={{
                 secondaryButtonConfig: {
                     disabled: hibernating,

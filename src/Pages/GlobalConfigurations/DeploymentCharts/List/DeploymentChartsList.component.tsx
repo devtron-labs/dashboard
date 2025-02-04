@@ -173,7 +173,7 @@ const DeploymentChartsList = () => {
                                                 {isUserUploaded ? (
                                                     getAlphabetIcon(uploadedBy)
                                                 ) : (
-                                                    <ICDevtron className="icon-dim-20 fcb-5" />
+                                                    <ICDevtron className="icon-dim-20 fcb-5 dc__no-shrink" />
                                                 )}
                                                 <Tooltip content={uploadedBy} placement="left">
                                                     <span className="dc__ellipsis-right">{uploadedBy}</span>

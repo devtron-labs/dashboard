@@ -33,7 +33,7 @@ export interface HibernationModalProps {
     envName: string
     hibernating: boolean
     chartName: string
-    handleHibernate: (e: any) => Promise<void>
+    handleHibernate: () => Promise<void>
     hibernateConfirmationModal: HibernationModalTypes
     handleHibernateConfirmationModalClose: (e: any) => void
 }
