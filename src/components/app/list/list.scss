@@ -303,28 +303,6 @@
     z-index: var(--tooltip-index);
 }
 
-.sort-col {
-    background-image: url('../../../assets/icons/misc/sort.svg');
-    display: inline-block;
-    vertical-align: middle;
-    height: 16px;
-    width: 16px;
-    background-size: 100% 100%;
-    -o-background-size: 100% 100%;
-    -webkit-background-size: 100% 100%;
-}
-
-.sort {
-    background-image: url('../../../assets/icons/ic-sort-arrow-down.svg');
-    display: inline-block;
-    height: 12px;
-    width: 12px;
-}
-
-.sort-up {
-    transform: rotate(180deg);
-}
-
 .select-material--h450 {
     height: 450px;
 }

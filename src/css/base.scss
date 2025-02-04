@@ -1522,8 +1522,8 @@ button.anchor {
 }
 
 .tippy-box.default-black {
-    color: var(--N0);
-    background-color: var(--N900);
+    color: var(--white);
+    background-color: var(--bg-tooltip-black);
 
     &.no-content-padding {
         .tippy-content {
@@ -1536,7 +1536,7 @@ button.anchor {
     }
 
     .tippy-arrow {
-        color: var(--N900);
+        color: var(--bg-tooltip-black);
 
         &::before {
             scale: 1.4;
