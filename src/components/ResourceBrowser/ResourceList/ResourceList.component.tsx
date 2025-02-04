@@ -103,7 +103,7 @@ export const SidebarChildButton: React.FC<SidebarChildButtonPropsType> = ({
         onClick={onClick}
         aria-label={`Select ${text}`}
     >
-        <Tooltip content={text}>
+        <Tooltip content={text} placement='right'>
             <div
                 className={`fs-13 pointer dc__ellipsis-right dc__align-left dc__border-radius-4-imp fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
                     isSelected ? 'bcb-1 cb-5' : 'cn-7 dc__hover-n50'
