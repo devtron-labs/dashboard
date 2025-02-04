@@ -77,7 +77,6 @@ src/components/Jobs/JobsEmptyState.tsx
 src/components/Jobs/Service.ts
 src/components/Jobs/Utils.ts
 src/components/LogViewer/LogViewer.tsx
-src/components/ResourceBrowser/ResourceList/ResourceList.component.tsx
 src/components/ResourceBrowser/ResourceList/__tests__/Sidebar.test.tsx
 src/components/__mocks__/xterm-webfont.js
 src/components/app/LogFilter.test.ts
