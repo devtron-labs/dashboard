@@ -53,6 +53,7 @@ import {
     FloatingVariablesSuggestions,
     UseFormErrorHandler,
     UseFormSubmitHandler,
+    isNullOrUndefined,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
@@ -854,7 +855,7 @@ export const ConfigMapSecretContainer = ({
             />
         ) : (
             <ConfigMapSecretForm
-                isCreateView={!id}
+                isCreateView={isNullOrUndefined(id)}
                 cmSecretStateLabel={cmSecretStateLabel}
                 componentType={componentType}
                 configMapSecretData={configMapSecretData}
