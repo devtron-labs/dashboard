@@ -21,6 +21,7 @@ import {
     PopupMenu,
     ScopedVariablesFileViewType,
     SavedVariablesViewParamsType,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import Descriptor from './Descriptor'
@@ -148,7 +149,7 @@ const SavedVariablesContent = ({
                     </PopupMenu>
                 </div>
 
-                <CodeEditor value={scopedVariablesYAML} mode="yaml" height="100%" readOnly noParsing />
+                <CodeEditor value={scopedVariablesYAML} mode={MODES.YAML} height="fitToParent" readOnly noParsing />
             </div>
         </div>
     )

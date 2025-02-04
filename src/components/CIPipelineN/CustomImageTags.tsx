@@ -16,7 +16,7 @@
 
 import { useState } from 'react'
 import Tippy from '@tippyjs/react'
-import { OptionType, SelectPicker, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionType, SelectPicker, Textarea, Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import { CustomImageTagsType } from './CustomImageTag.type'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { CustomErrorMessage, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
@@ -101,7 +101,7 @@ function CustomImageTags({
         return (
             <Tippy
                 content={
-                    <div className="fs-12">
+                    <div>
                         {`{x}`} is an auto increasing number. It will increase by one on each{' '}
                         {isCDBuild ? getCDStageTypeSelectorValue(formData.customTagStage).label : ' build '} trigger.
                     </div>
@@ -126,48 +126,34 @@ function CustomImageTags({
         return (
             <div className="white-card pl-12 pr-12 pt-8 pb-8 mt-12 ml-54">
                 <div className="fw-6 pb-8">Create tag pattern</div>
-                <div>
-                    <span className="cn-7"> Use mix of fixed pattern and</span>
-                    {renderCounterXTippy(`variable {x}`)}
-                </div>
-                <textarea
-                    tabIndex={1}
-                    className="form__input form__input-no-bottom-radius custom-tag__text-area"
+                <Textarea
+                    label={
+                        <span>
+                            <span>Use mix of fixed pattern and</span>
+                            {renderCounterXTippy(`variable {x}`)}
+                        </span>
+                    }
                     placeholder="Example: v1.2.{x}"
                     name="image_tag"
-                    autoComplete="off"
                     autoFocus
-                    data-testid="custom-image-tag-textarea"
                     value={formData.customTag?.tagPattern}
                     onChange={onChangeCustomInput}
-                    draggable={false}
+                    warningText={!isCDBuild && 'Build will fail if resulting image tag has already been built'}
+                    error={isCustomTagError && formDataErrorObj.customTag.message?.[0]}
                 />
 
-                <div className="image-tag-preview en-2 bw-1 dc__bottom-radius-4 dc__no-border-top-imp pl-8 pr-8 pt-6 pb-6 cn-7">
-                    {isCustomTagError ? (
-                        formDataErrorObj.customTag.message.map((_msg: string) => {
-                            return renderInputErrorMessage(_msg)
-                        })
-                    ) : (
-                        <div className="flexbox">
-                            Tag Preview:
-                            <div className="ml-4 bg__secondary mono flexbox dc__w-fit-content pl-4 pr-4 br-4">
-                                <div className="dc__registry-icon docker mr-5" />
-                                {formData.customTag?.tagPattern?.replace(
-                                    '{x}',
-                                    formData.customTag?.counterX?.toString() ?? '0',
-                                )}
-                            </div>
+                {!isCustomTagError && (
+                    <div className="image-tag-preview pt-6 pb-6 cn-7 flexbox">
+                        Tag Preview:
+                        <div className="ml-4 bg__secondary mono flexbox dc__w-fit-content pl-4 pr-4 br-4">
+                            <div className="dc__registry-icon docker mr-5" />
+                            {formData.customTag?.tagPattern?.replace(
+                                '{x}',
+                                formData.customTag?.counterX?.toString() ?? '0',
+                            )}
                         </div>
-                    )}
-                </div>
-                {!isCDBuild && (
-                    <div className="mt-4 cn-7 fs-12 flex left">
-                        <Warning className="mr-4 icon-dim-16 image-tag-alert-icon" />
-                        Build will fail if resulting image tag has already been built
                     </div>
                 )}
-
                 <hr className="mt-12 mb-12" />
                 <div className="flex left cn-7">
                     Value of {renderCounterXTippy(`{x}`)} will be

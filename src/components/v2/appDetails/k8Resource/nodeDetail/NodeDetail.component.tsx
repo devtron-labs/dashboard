@@ -31,6 +31,7 @@ import {
     ToastManager,
     ToastVariantType,
     OptionsBase,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
@@ -629,6 +630,7 @@ const NodeDetailComponent = ({
                     getResourceListData={getContainersFromManifest}
                     toggleDeleteDialog={toggleDeleteDialog}
                     removeTabByIdentifier={removeTabByIdentifier}
+                    handleClearBulkSelection={noop}
                 />
             )}
         </>
