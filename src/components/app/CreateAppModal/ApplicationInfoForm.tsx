@@ -91,7 +91,7 @@ const ApplicationInfoForm = ({
                 />
             </div>
             <div>
-                <span className="form__label mt-16">Description</span>
+                <span className="form__label">Description</span>
                 <ResizableTextarea
                     name="description"
                     value={formState.description}
