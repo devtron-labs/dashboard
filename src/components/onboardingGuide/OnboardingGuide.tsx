@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { AppListConstants, ModuleNameMap, handlePostHogEventUpdate } from '@devtron-labs/devtron-fe-common-lib'
 import HelmCollage from '../../assets/img/guided-helm-collage.png'

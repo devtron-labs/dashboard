@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { updatePostHogEvent } from '../../services/service'
-
 export const POSTHOG_EVENT_ONBOARDING = {
     PREVIEW: 'Preview',
     DEPLOY_CUSTOM_APP_CI_CD: 'Deploy custom app using CI/CD pipelines',
