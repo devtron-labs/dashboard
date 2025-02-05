@@ -1,5 +1,5 @@
-import { getEmptyTagTableRow, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
-import { CreateAppFormErrorStateType, CreateAppFormStateType, CreationMethodType } from './types'
+import { getEmptyTagTableRow } from '@devtron-labs/devtron-fe-common-lib'
+import { CreateAppFormErrorStateType, CreateAppFormStateType } from './types'
 
 export const createAppInitialFormState: CreateAppFormStateType = {
     name: '',
@@ -16,18 +16,3 @@ export const createAppInitialFormErrorState: CreateAppFormErrorStateType = {
     tags: {},
     cloneAppId: null,
 }
-
-export const CREATION_METHOD_CONFIG: SelectPickerOptionType<CreationMethodType>[] = [
-    {
-        label: 'Blank application',
-        value: CreationMethodType.blank,
-    },
-    {
-        label: 'Clone application',
-        value: CreationMethodType.clone,
-    },
-    {
-        label: 'From template',
-        value: CreationMethodType.template,
-    },
-]

@@ -1,7 +1,6 @@
 import { CreationMethodType, SidebarProps } from './types'
-import { CREATION_METHOD_CONFIG } from './constants'
 
-const Sidebar = ({ selectedCreationMethod, handleCreationMethodChange }: SidebarProps) => {
+const Sidebar = ({ selectedCreationMethod, handleCreationMethodChange, createMethodConfig }: SidebarProps) => {
     const getHandleCreationMethodChange = (creationMethod: CreationMethodType) => () => {
         handleCreationMethodChange(creationMethod)
     }
@@ -9,7 +8,7 @@ const Sidebar = ({ selectedCreationMethod, handleCreationMethodChange }: Sidebar
     return (
         <div className="w-250 p-20 flexbox-col dc__gap-24 dc__no-shrink">
             <div className="flexbox-col">
-                {CREATION_METHOD_CONFIG.map(({ label, value }) => {
+                {createMethodConfig.map(({ label, value }) => {
                     const isSelected = value === selectedCreationMethod
 
                     return (

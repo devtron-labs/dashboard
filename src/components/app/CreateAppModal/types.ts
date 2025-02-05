@@ -6,6 +6,7 @@ import {
     TagsTableColumnsType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { SyntheticEvent } from 'react'
+import { getCreateMethodConfig } from './utils'
 
 export interface CreateAppFormStateType {
     projectId: string
@@ -83,6 +84,7 @@ export interface ProjectSelectorProps extends Required<Pick<SelectPickerProps, '
 export interface SidebarProps {
     selectedCreationMethod: CreationMethodType
     handleCreationMethodChange: (creationMethod: CreationMethodType) => void
+    createMethodConfig: ReturnType<typeof getCreateMethodConfig>
 }
 
 export interface AppToCloneSelectorProps

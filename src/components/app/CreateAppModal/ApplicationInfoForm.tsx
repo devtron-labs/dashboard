@@ -115,7 +115,7 @@ const ApplicationInfoForm = ({
                     <ICCaretLeftSmall
                         className={`scn-7 dc__no-shrink dc__transition--transform ${isTagsAccordionExpanded ? 'dc__flip-270' : 'dc__flip-180'}`}
                     />
-                    <span className="fs-13 fw-6 lh-20 cn-9">Add tags to application</span>
+                    <span className="fs-13 fw-6 lh-20 cn-9">Add tags to {isJobView ? 'job' : 'application'}</span>
                 </button>
                 {isTagsAccordionExpanded &&
                     (MandatoryTagsContainer ? (

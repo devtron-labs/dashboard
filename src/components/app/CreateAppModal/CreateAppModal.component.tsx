@@ -23,8 +23,8 @@ import {
     CreateAppModalProps,
     CreationMethodType,
 } from './types'
-import { createAppInitialFormErrorState, createAppInitialFormState, CREATION_METHOD_CONFIG } from './constants'
-import { validateAppName, validateCloneApp, validateProject } from './utils'
+import { createAppInitialFormErrorState, createAppInitialFormState } from './constants'
+import { getCreateMethodConfig, validateAppName, validateCloneApp, validateProject } from './utils'
 import { createApp } from './service'
 import ApplicationInfoForm from './ApplicationInfoForm'
 import HeaderSection from './HeaderSection'
@@ -32,10 +32,11 @@ import Sidebar from './Sidebar'
 
 const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
     const history = useHistory()
+    const createMethodConfig = getCreateMethodConfig(isJobView)
 
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [selectedCreationMethod, setSelectedCreationMethod] = useState<CreationMethodType>(
-        CREATION_METHOD_CONFIG[0].value,
+        createMethodConfig[0].value,
     )
     const [formState, setFormState] = useState<CreateAppFormStateType>(structuredClone(createAppInitialFormState))
     const [formErrorState, setFormErrorState] = useState<CreateAppFormErrorStateType>(
@@ -229,6 +230,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                     <Sidebar
                         selectedCreationMethod={selectedCreationMethod}
                         handleCreationMethodChange={setSelectedCreationMethod}
+                        createMethodConfig={createMethodConfig}
                     />
                     <div className="p-20 flex-grow-1 bg__secondary h-100 dc__overflow-auto">
                         <ApplicationInfoForm

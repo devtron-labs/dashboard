@@ -1,7 +1,7 @@
 import { MAX_LENGTH_30 } from '@Config/constantMessaging'
 import { PATTERNS } from '@Config/constants'
-import { ValidationResponseType } from '@devtron-labs/devtron-fe-common-lib'
-import { CreateAppFormStateType } from './types'
+import { SelectPickerOptionType, ValidationResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { CreateAppFormStateType, CreateAppModalProps, CreationMethodType } from './types'
 
 export const validateAppName = (value: CreateAppFormStateType['name']): Required<ValidationResponseType> => {
     const re = PATTERNS.APP_NAME
@@ -45,4 +45,22 @@ export const validateCloneApp = (cloneAppId: CreateAppFormStateType['cloneAppId'
     }
 
     return { isValid: false, message: 'Please select an application to clone' }
+}
+
+export const getCreateMethodConfig = (
+    isJobView: CreateAppModalProps['isJobView'],
+): SelectPickerOptionType<CreationMethodType>[] => {
+    const labelSuffix = isJobView ? 'job' : 'application'
+
+    return [
+        {
+            label: `Blank ${labelSuffix}`,
+            value: CreationMethodType.blank,
+        },
+        {
+            label: `Clone ${labelSuffix}`,
+            value: CreationMethodType.clone,
+        },
+        ...(isJobView ? [] : [{ label: `From template`, value: CreationMethodType.template }]),
+    ]
 }
