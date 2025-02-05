@@ -37,7 +37,7 @@ const AppStatusDetailModal = ({
     appStatus,
     appStatusText,
     showFooter,
-    showConfigDriftInfo = false,
+    handleOpenConfigDriftModal,
 }: AppStatusDetailType) => {
     const _appDetails = IndexStore.getAppDetails()
 
@@ -132,7 +132,7 @@ const AppStatusDetailModal = ({
                     <AppStatusDetailsChart
                         showFooter={showFooter}
                         onClose={close}
-                        showConfigDriftInfo={showConfigDriftInfo}
+                        handleOpenConfigDriftModal={handleOpenConfigDriftModal}
                     />
                 </div>
             </div>
