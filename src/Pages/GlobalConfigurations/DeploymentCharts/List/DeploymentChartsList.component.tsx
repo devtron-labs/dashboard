@@ -53,6 +53,8 @@ const DeploymentChartsList = () => {
             initialSortKey: DeploymentChartsListSortableKeys.CHART_NAME,
         })
 
+    const handleTriggerSorting = (sortKey: DeploymentChartsListSortableKeys) => () => handleSorting(sortKey)
+
     const sortChartList = (a: DeploymentChartType, b: DeploymentChartType) => {
         switch (sortBy) {
             case DeploymentChartsListSortableKeys.CHART_VERSION:
@@ -124,7 +126,7 @@ const DeploymentChartsList = () => {
                                 isSortable
                                 disabled={false}
                                 sortOrder={sortOrder}
-                                triggerSorting={() => handleSorting(DeploymentChartsListSortableKeys.CHART_NAME)}
+                                triggerSorting={handleTriggerSorting(DeploymentChartsListSortableKeys.CHART_NAME)}
                                 isSorted={sortBy === DeploymentChartsListSortableKeys.CHART_NAME}
                             />
                             <SortableTableHeaderCell
@@ -132,7 +134,7 @@ const DeploymentChartsList = () => {
                                 isSortable
                                 disabled={false}
                                 sortOrder={sortOrder}
-                                triggerSorting={() => handleSorting(DeploymentChartsListSortableKeys.CHART_VERSION)}
+                                triggerSorting={handleTriggerSorting(DeploymentChartsListSortableKeys.CHART_VERSION)}
                                 isSorted={sortBy === DeploymentChartsListSortableKeys.CHART_VERSION}
                             />
                             <SortableTableHeaderCell title="Description" isSortable={false} />
@@ -141,7 +143,7 @@ const DeploymentChartsList = () => {
                                 isSortable
                                 disabled={false}
                                 sortOrder={sortOrder}
-                                triggerSorting={() => handleSorting(DeploymentChartsListSortableKeys.UPLOADED_BY)}
+                                triggerSorting={handleTriggerSorting(DeploymentChartsListSortableKeys.UPLOADED_BY)}
                                 isSorted={sortBy === DeploymentChartsListSortableKeys.UPLOADED_BY}
                             />
                             <span />

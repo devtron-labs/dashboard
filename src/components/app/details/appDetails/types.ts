@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { SyntheticEvent } from 'react'
 import { AppMetricsTabType, ChartTypes, HibernationModalTypes, StatusTypes } from './appDetails.type'
 import { AppInfo } from './utils'
 
@@ -35,5 +36,5 @@ export interface HibernationModalProps {
     chartName: string
     handleHibernate: () => Promise<void>
     hibernateConfirmationModal: HibernationModalTypes
-    handleHibernateConfirmationModalClose: (e: any) => void
+    handleHibernateConfirmationModalClose: (e?: SyntheticEvent) => void
 }

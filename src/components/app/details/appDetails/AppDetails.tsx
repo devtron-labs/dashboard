@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react'
+import React, { useEffect, useState, useMemo, useRef, useCallback, SyntheticEvent } from 'react'
 import {
     showError,
     Progressing,
@@ -665,7 +665,7 @@ export const Details: React.FC<DetailsType> = ({
         )
     }
 
-    const handleHibernateConfirmationModalClose = (e) => {
+    const handleHibernateConfirmationModalClose = (e?: SyntheticEvent) => {
         e?.stopPropagation()
         setHibernateConfirmationModal(null)
     }

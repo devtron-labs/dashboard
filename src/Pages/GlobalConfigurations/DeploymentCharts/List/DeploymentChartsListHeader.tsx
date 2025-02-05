@@ -26,7 +26,7 @@ const DeploymentChartsListHeader = ({
 }: DeploymentChartsListHeaderProps) => (
     <div className="flexbox dc__content-space px-20">
         <div className="flex dc__gap-8">
-            <span className="cn-9 fw-6 fs-16 lh-32">{CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.heading}</span>
+            <h2 className="cn-9 fw-6 fs-16 lh-32 m-0-imp">{CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.heading}</h2>
             <InfoIconTippy
                 heading={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.heading}
                 infoText={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.infoText}
