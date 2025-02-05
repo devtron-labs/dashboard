@@ -374,7 +374,7 @@ export const EnvConfigurationsNav = ({
     }
 
     return (
-        <nav className="flexbox-col h-100 dc__overflow-hidden">
+        <nav className="flexbox-col h-100 dc__overflow-hidden w-100">
             {!hideEnvSelector && renderEnvSelector()}
             {showComparison && renderCompareWithBtn()}
             <div className="mw-none p-8 flex-grow-1 dc__overflow-auto">

@@ -157,6 +157,7 @@ export interface DeleteResourcePopupType
         | 'handleClearBulkSelection'
     > {
     toggleDeleteDialog: () => void
+    showConfirmationModal: boolean
 }
 
 export interface ResourceListEmptyStateType {

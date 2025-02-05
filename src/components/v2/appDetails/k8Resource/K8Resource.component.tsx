@@ -141,22 +141,22 @@ export const K8ResourceComponent = ({
                     className={`flex-grow-1 flexbox ${isSuperAdmin ? 'pb-28' : ''}`}
                     data-testid="resource-node-wrapper"
                 >
-                    <div
-                        className="k8-resources-node-tree p-8 dc__border-right--n1"
-                        data-testid="k8-resources-node-tree"
-                    >
-                        <div className="flexbox mb-8 px-12">
+                    <div className="k8-resources-node-tree dc__border-right--n1" data-testid="k8-resources-node-tree">
+                        <div className="pt-16 pb-15 px-16 border__secondary--bottom">
                             <StatusFilterButtonComponent
                                 nodes={nodes}
                                 selectedTab={currentFilter}
                                 handleFilterClick={handleFilterClick}
+                                maxInlineFiltersCount={3}
                             />
                         </div>
-                        <NodeTreeComponent
-                            clickedNodes={clickedNodes}
-                            registerNodeClick={registerNodeClick}
-                            isDevtronApp={isDevtronApp}
-                        />
+                        <div className="py-8 px-12">
+                            <NodeTreeComponent
+                                clickedNodes={clickedNodes}
+                                registerNodeClick={registerNodeClick}
+                                isDevtronApp={isDevtronApp}
+                            />
+                        </div>
                     </div>
                     <div className="flex-grow-1-imp p-0" data-testid="k8-resources-node-details">
                         <NodeComponent

@@ -253,12 +253,13 @@ export interface DeploymentTemplateCTAProps
     isDryRunView: boolean
 }
 
-export interface DeleteOverrideDialogProps {
+export interface DeleteOverrideDialogProps extends Pick<DeploymentTemplateProps, 'environmentName'> {
     environmentConfigId: number
     handleReload: () => void
     handleClose: () => void
     handleProtectionError: () => void
     reloadEnvironments: () => void
+    showConfirmationModal: boolean
 }
 
 export interface DTChartSelectorProps

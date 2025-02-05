@@ -151,16 +151,6 @@ export interface AddExternalLinkType {
     setExternalLinks: React.Dispatch<React.SetStateAction<ExternalLink[]>>
 }
 
-export interface DeleteExternalLinkType {
-    appId: string
-    isAppConfigView: boolean
-    selectedLink: ExternalLink
-    isAPICallInProgress: boolean
-    setAPICallInProgress: React.Dispatch<React.SetStateAction<boolean>>
-    setExternalLinks: React.Dispatch<React.SetStateAction<ExternalLink[]>>
-    setShowDeleteConfirmation: React.Dispatch<React.SetStateAction<boolean>>
-}
-
 export interface AppliedFilterChipsType extends AppliedClustersType, AppliedApplicationsType, URLModificationType {}
 
 export interface AppLevelExternalLinksType {
