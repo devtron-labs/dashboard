@@ -61,6 +61,8 @@ export const getCreateMethodConfig = (
             label: `Clone ${labelSuffix}`,
             value: CreationMethodType.clone,
         },
-        ...(isJobView ? [] : [{ label: `From template`, value: CreationMethodType.template }]),
+        ...(isJobView || !window._env_.FEATURE_APPLICATION_TEMPLATES_ENABLE
+            ? []
+            : [{ label: `From template`, value: CreationMethodType.template }]),
     ]
 }

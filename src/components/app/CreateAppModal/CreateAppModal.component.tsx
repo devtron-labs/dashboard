@@ -232,7 +232,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                         handleCreationMethodChange={setSelectedCreationMethod}
                         createMethodConfig={createMethodConfig}
                     />
-                    <div className="p-20 flex-grow-1 bg__secondary h-100 dc__overflow-auto">
+                    <div className="p-20 flexbox-col dc__gap-20 flex-grow-1 bg__secondary h-100 dc__overflow-auto">
                         <ApplicationInfoForm
                             formState={formState}
                             handleFormStateChange={handleFormStateChange}
@@ -241,6 +241,12 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                             isJobView={isJobView}
                             selectedCreationMethod={selectedCreationMethod}
                         />
+                        {selectedCreationMethod === CreationMethodType.template && (
+                            <>
+                                <div className="divider__secondary--horizontal" />
+                                <div>Code Source</div>
+                            </>
+                        )}
                     </div>
                 </div>
                 <div className="px-20 py-16 flexbox dc__content-end dc__no-shrink border__primary--top">
