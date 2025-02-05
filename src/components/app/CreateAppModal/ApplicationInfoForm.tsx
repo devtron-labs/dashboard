@@ -108,7 +108,7 @@ const ApplicationInfoForm = ({
             </div>
             <div className="flexbox-col dc__gap-16">
                 <button
-                    className="dc__transparent p-0 flex left dc__gap-8"
+                    className="dc__transparent p-0 flex left dc__gap-8 dc__w-fit-content"
                     type="button"
                     onClick={toggleIsTagsAccordionExpanded}
                 >

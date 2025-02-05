@@ -33,10 +33,7 @@ const AppToCloneSelector = ({ isJobView, error, handleCloneIdChange }: AppToClon
 
     return (
         <>
-            <div
-                className="form__row clone-apps dc__inline-block"
-                data-testid={`clone-existing-${isJobView ? 'job' : 'application'}-radio-button`}
-            >
+            <div>
                 <span
                     className="form__label dc__required-field"
                     data-testid={`Clone-${isJobView ? 'job' : 'app'}-option`}
