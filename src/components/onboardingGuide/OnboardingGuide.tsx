@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
-import { AppListConstants, ModuleNameMap } from '@devtron-labs/devtron-fe-common-lib'
+import { AppListConstants, ModuleNameMap, handlePostHogEventUpdate } from '@devtron-labs/devtron-fe-common-lib'
 import HelmCollage from '../../assets/img/guided-helm-collage.png'
 import HelmCluster from '../../assets/img/guided-helm-cluster.png'
 import DeployCICD from '../../assets/img/guide-onboard.png'
 import { SERVER_MODE, URLS } from '../../config'
 import { ReactComponent as ArrowRight } from '../../assets/icons/ic-arrow-right.svg'
-import { handlePostHogEventUpdate, LOGIN_COUNT, POSTHOG_EVENT_ONBOARDING } from './onboarding.utils'
+import { LOGIN_COUNT, POSTHOG_EVENT_ONBOARDING } from './onboarding.utils'
 import GuideCommonHeader from './GuideCommonHeader'
 import { OnboardingGuideProps } from './OnboardingGuide.type'
 import { updateLoginCount } from '../../services/service'
@@ -55,19 +55,19 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
             : `${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.CICD}`
     }
 
-    const onClickHelmChart = (e) => {
-        handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.BROWSE_HELM_CHART)
+    const onClickHelmChart = () => {
+        handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.BROWSE_HELM_CHART)
     }
 
-    const onClickCluster = (e) => {
-        handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.CONNECT_CLUSTER)
+    const onClickCluster = () => {
+        handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.CONNECT_CLUSTER)
     }
 
-    const onClickedCICD = (e) => {
+    const onClickedCICD = () => {
         if (serverMode === SERVER_MODE.FULL) {
-            handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.DEPLOY_CUSTOM_APP_CI_CD)
+            handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.DEPLOY_CUSTOM_APP_CI_CD)
         } else {
-            handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.INSTALL_CUSTOM_CI_CD)
+            handlePostHogEventUpdate(POSTHOG_EVENT_ONBOARDING.INSTALL_CUSTOM_CI_CD)
         }
     }
 
