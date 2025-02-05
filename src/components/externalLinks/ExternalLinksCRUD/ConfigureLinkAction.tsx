@@ -50,7 +50,8 @@ export default function ConfigureLinkAction({
     onToolSelection,
     handleLinksDataActions,
 }: ConfigureLinkActionType): JSX.Element {
-    const getErrorLabel = (field: string, type?: string): JSX.Element => {
+
+    const getErrorLabel = (field: string, type?: string): JSX.Element | string => {
         const errorLabel = (label: string): JSX.Element => {
             return (
                 <div className="error-label flex left dc__align-start fs-11 mt-4">
@@ -69,7 +70,7 @@ export default function ConfigureLinkAction({
             case 'identifiers':
                 return errorLabel(`Please select one or more ${type}`)
             case 'url':
-                return errorLabel('Please enter URL template')
+                return 'Please enter URL template'
             case 'invalidProtocol':
                 return errorLabel('The url should start with http:// or https://')
             default:

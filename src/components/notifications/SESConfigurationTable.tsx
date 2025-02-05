@@ -17,9 +17,10 @@
 import { DeleteComponentsName } from '@Config/constantMessaging'
 import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
+import { getInteractiveCellText } from '@Components/common'
 import { ConfigurationTableProps } from './types'
 import { ConfigurationsTabTypes } from './constants'
-import { getConfigTabIcons, renderDefaultTag, renderText } from './notifications.util'
+import { getConfigTabIcons, renderDefaultTag } from './notifications.util'
 import './notifications.scss'
 import { ConfigTableRowActionButton } from './ConfigTableRowActionButton'
 
@@ -55,11 +56,11 @@ const SESConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTable
                     >
                         {getConfigTabIcons(ConfigurationsTabTypes.SES)}
                         <div className=" flex left dc__gap-8">
-                            {renderText(sesConfig.name, true, onClickSESConfigEdit(sesConfig.id))}
+                            {getInteractiveCellText(sesConfig.name, onClickSESConfigEdit(sesConfig.id))}
                             {renderDefaultTag(sesConfig.isDefault)}
                         </div>
-                        {renderText(sesConfig.accessKeyId)}
-                        {renderText(sesConfig.email)}
+                        {getInteractiveCellText(sesConfig.accessKeyId)}
+                        {getInteractiveCellText(sesConfig.email)}
                         <ConfigTableRowActionButton
                             onClickEditRow={onClickSESConfigEdit(sesConfig.id)}
                             onClickDeleteRow={deleteClickHandler(

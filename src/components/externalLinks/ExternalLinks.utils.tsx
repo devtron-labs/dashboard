@@ -15,29 +15,33 @@
  */
 
 import { MultiValue } from 'react-select'
-import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
-import { AppDetails } from '../app/types'
+import { EMPTY_STATE_STATUS, GenericEmptyState, multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
+import { UserRoleType } from '@Pages/GlobalConfigurations/Authorization/constants'
+import CloudwatchlIcon from '@Icons/ic-cloudwatch.png'
+import CoralogixlIcon from '@Icons/ic-coralogix.png'
+import DatadogIcon from '@Icons/ic-datadog.svg'
+import GrafanaIcon from '@Icons/ic-grafana.png'
+import KibanaIcon from '@Icons/ic-kibana.png'
+import LokiIcon from '@Icons/ic-loki.png'
+import NewrelicIcon from '@Icons/ic-newrelic.svg'
+import AlertsIcon from '@Icons/tools/ic-link-alerts.png'
+import BugsIcon from '@Icons/tools/ic-link-bugs.png'
+import ChatIcon from '@Icons/tools/ic-link-chat.png'
+import ConfluenceIcon from '@Icons/tools/ic-link-confluence.png'
+import DocumentIcon from '@Icons/tools/ic-link-document.png'
+import FolderIcon from '@Icons/tools/ic-link-folder.png'
+import JiraIcon from '@Icons/tools/ic-link-jira.png'
+import PerformanceIcon from '@Icons/tools/ic-link-performance.png'
+import ReportIcon from '@Icons/tools/ic-link-report.png'
+import SwaggerIcon from '@Icons/tools/ic-link-swagger.png'
+import WebpageIcon from '@Icons/tools/ic-link-webpage.png'
+import { ExternalLink, ExternalLinkScopeType, OptionTypeWithIcon } from './ExternalLinks.type'
 import { AppDetails as HelmAppDetails } from '../v2/appDetails/appDetails.type'
-import { ExternalLink, OptionTypeWithIcon } from './ExternalLinks.type'
-import CloudwatchlIcon from '../../assets/icons/ic-cloudwatch.png'
-import CoralogixlIcon from '../../assets/icons/ic-coralogix.png'
-import DatadogIcon from '../../assets/icons/ic-datadog.svg'
-import GrafanaIcon from '../../assets/icons/ic-grafana.png'
-import KibanaIcon from '../../assets/icons/ic-kibana.png'
-import LokiIcon from '../../assets/icons/ic-loki.png'
-import NewrelicIcon from '../../assets/icons/ic-newrelic.svg'
-import AlertsIcon from '../../assets/icons/tools/ic-link-alerts.png'
-import BugsIcon from '../../assets/icons/tools/ic-link-bugs.png'
-import ChatIcon from '../../assets/icons/tools/ic-link-chat.png'
-import ConfluenceIcon from '../../assets/icons/tools/ic-link-confluence.png'
-import DocumentIcon from '../../assets/icons/tools/ic-link-document.png'
-import FolderIcon from '../../assets/icons/tools/ic-link-folder.png'
-import JiraIcon from '../../assets/icons/tools/ic-link-jira.png'
-import PerformanceIcon from '../../assets/icons/tools/ic-link-performance.png'
-import ReportIcon from '../../assets/icons/tools/ic-link-report.png'
-import SwaggerIcon from '../../assets/icons/tools/ic-link-swagger.png'
-import WebpageIcon from '../../assets/icons/tools/ic-link-webpage.png'
+import { AppDetails } from '../app/types'
 import { tempMultiSelectStyles } from '../ciConfig/CIConfig.utils'
+import { AddLinkButton } from './AddLinkButton'
+import { ExternalLinksLearnMore, RoleBasedInfoNote } from './ExternalLinks.component'
+import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
 
 export const MONITORING_TOOL_ICONS = {
     cloudwatch: CloudwatchlIcon,
@@ -62,13 +66,13 @@ export const MONITORING_TOOL_ICONS = {
 
 export const customMultiSelectStyles = {
     ...multiSelectStyles,
-    menu: (base, state) => ({
+    menu: (base) => ({
         ...base,
         top: 'auto',
         width: '100%',
         backgroundColor: 'var(--bg-menu)',
     }),
-    menuList: (base, state) => ({
+    menuList: (base) => ({
         ...base,
         maxHeight: '190px',
         borderRadius: '4px',
@@ -114,13 +118,13 @@ export const customMultiSelectStyles = {
 
 export const ToolSelectStyles = {
     ...customMultiSelectStyles,
-    menuList: (base, state) => ({
-        ...customMultiSelectStyles.menuList(base, state),
+    menuList: (base) => ({
+        ...customMultiSelectStyles.menuList(base),
         maxHeight: '208px',
         padding: '14px',
     }),
-    menu: (base, state) => ({
-        ...customMultiSelectStyles.menu(base, state),
+    menu: (base) => ({
+        ...customMultiSelectStyles.menu(base),
         width: 'auto',
         marginTop: '0',
     }),
@@ -205,15 +209,11 @@ export const IdentifierSelectStyles = {
     }),
 }
 
-export const getMonitoringToolIcon = (monitoringTools: MultiValue<OptionTypeWithIcon>, toolId: number): string => {
-    return (
-        MONITORING_TOOL_ICONS[monitoringTools.find((tool) => tool.value === toolId)?.label.toLowerCase()] || WebpageIcon
-    )
-}
+export const getMonitoringToolIcon = (monitoringTools: MultiValue<OptionTypeWithIcon>, toolId: number): string =>
+    MONITORING_TOOL_ICONS[monitoringTools.find((tool) => tool.value === toolId)?.label.toLowerCase()] || WebpageIcon
 
-export const sortByUpdatedOn = (uptA: ExternalLink, uptB: ExternalLink) => {
-    return new Date(uptB.updatedOn).getTime() - new Date(uptA.updatedOn).getTime()
-}
+export const sortByUpdatedOn = (uptA: ExternalLink, uptB: ExternalLink) =>
+    new Date(uptB.updatedOn).getTime() - new Date(uptA.updatedOn).getTime()
 
 export const availableVariables = ['{appName}', '{appId}', '{envId}', '{namespace}', '{podName}', '{containerName}']
 
@@ -241,4 +241,47 @@ export const onImageLoadError = (e) => {
     if (e && e.target) {
         e.target.src = WebpageIcon
     }
+}
+
+export const NoExternalLinksView = ({
+    handleAddLinkClick,
+    isAppConfigView,
+    userRole,
+}: {
+    handleAddLinkClick: () => void
+    isAppConfigView: boolean
+    userRole: UserRoleType
+}): JSX.Element => {
+    const handleButton = () => <AddLinkButton handleOnClick={handleAddLinkClick} />
+    return (
+        <GenericEmptyState
+            image={EmptyExternalLinks}
+            title={EMPTY_STATE_STATUS.EXTERNAL_LINK_COMPONENT.TITLE}
+            heightToDeduct={120}
+            subTitle={
+                <>
+                    {`Add frequently visited links (eg. Monitoring dashboards, documents, specs etc.) for
+                    ${isAppConfigView ? ' this ' : ' any '}application. Links will be available on the app details
+                    page. `}
+                    <ExternalLinksLearnMore />
+                </>
+            }
+            isButtonAvailable
+            renderButton={handleButton}
+        >
+            {isAppConfigView && <RoleBasedInfoNote userRole={userRole} />}
+        </GenericEmptyState>
+    )
+}
+
+export const getScopeLabel = (link: ExternalLink): string => {
+    const _identifiersLen = link.identifiers.length
+    const _labelPostfix = `${link.type === ExternalLinkScopeType.ClusterLevel ? 'cluster' : 'application'}${
+        _identifiersLen === 0 || _identifiersLen > 1 ? 's' : ''
+    }`
+
+    if (_identifiersLen === 0) {
+        return `All ${_labelPostfix}`
+    }
+    return `${_identifiersLen} ${_labelPostfix}`
 }

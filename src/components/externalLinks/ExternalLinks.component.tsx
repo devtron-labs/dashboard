@@ -18,7 +18,6 @@ import React, { Fragment, useEffect, useState } from 'react'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
-import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as LinkIcon } from '../../assets/icons/ic-link.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { DOCUMENTATION, URLS } from '../../config'
@@ -58,15 +57,7 @@ import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/con
 import { ReactComponent as ICArrowOut } from '@Icons/ic-arrow-square-out.svg'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import ICWebpage from '@Icons/tools/ic-link-webpage.png'
-
-export const AddLinkButton = ({ handleOnClick }: { handleOnClick: () => void }): JSX.Element => {
-    return (
-        <button onClick={handleOnClick} className="add-link cta flex" data-testid="external-links-add-link">
-            <AddIcon className="icon-dim-16 mr-8" />
-            Add link
-        </button>
-    )
-}
+import { AddLinkButton } from './AddLinkButton'
 
 export const ExternalLinksLearnMore = (): JSX.Element => {
     return (
@@ -80,12 +71,10 @@ export const NoExternalLinksView = ({
     handleAddLinkClick,
     isAppConfigView,
     userRole,
-    history,
 }: {
     handleAddLinkClick: () => void
     isAppConfigView: boolean
     userRole: UserRoleType
-    history: any
 }): JSX.Element => {
     const handleButton = () => {
         return <AddLinkButton handleOnClick={handleAddLinkClick} />
@@ -97,7 +86,7 @@ export const NoExternalLinksView = ({
             heightToDeduct={120}
             subTitle={
                 <>
-                    {`Add frequenly visited links (eg. Monitoring dashboards, documents, specs etc.) for
+                    {`Add frequently visited links (eg. Monitoring dashboards, documents, specs etc.) for
                     ${isAppConfigView ? ' this ' : ' any '}application. Links will be available on the app details
                     page. `}
                     <ExternalLinksLearnMore />

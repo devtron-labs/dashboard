@@ -15,11 +15,12 @@
  */
 
 import { DeleteComponentsName } from '@Config/constantMessaging'
-import { noop, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
+import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
+import { getInteractiveCellText } from '@Components/common'
 import { ConfigurationTableProps } from './types'
 import { ConfigurationsTabTypes } from './constants'
-import { getConfigTabIcons, renderDefaultTag, renderText } from './notifications.util'
+import { getConfigTabIcons, renderDefaultTag } from './notifications.util'
 import { ConfigTableRowActionButton } from './ConfigTableRowActionButton'
 
 export const SMTPConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTableProps) => {
@@ -60,12 +61,12 @@ export const SMTPConfigurationTable = ({ state, deleteClickHandler }: Configurat
                             data-testid={`smtp-config-name-${smtpConfig.name}`}
                             className=" dc__truncate-text flexbox dc__gap-8"
                         >
-                            {renderText(smtpConfig.name, true, onClickEditRow(smtpConfig.id))}
+                            {getInteractiveCellText(smtpConfig.name, onClickEditRow(smtpConfig.id))}
                             {renderDefaultTag(smtpConfig.isDefault)}
                         </div>
-                        {renderText(smtpConfig.host, false, noop, `smtp-config-host-${smtpConfig.host}`)}
-                        {renderText(smtpConfig.port)}
-                        {renderText(smtpConfig.email)}
+                        {getInteractiveCellText(smtpConfig.host, null, `smtp-config-host-${smtpConfig.host}`)}
+                        {getInteractiveCellText(smtpConfig.port)}
+                        {getInteractiveCellText(smtpConfig.email)}
                         <ConfigTableRowActionButton
                             onClickEditRow={onClickEditRow(smtpConfig.id)}
                             onClickDeleteRow={deleteClickHandler(

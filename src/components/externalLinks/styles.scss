@@ -15,8 +15,6 @@
  */
 
 .external-links-container {
-    min-width: 962px;
-    width: 90%;
 
     &.error-view {
         min-width: 100%;
@@ -68,19 +66,6 @@
     }
 
     .external-links-wrapper {
-        max-width: 1200px;
-        margin: auto;
-        padding: 20px 24px;
-
-        .cta-search-filter-container {
-            margin-top: 20px;
-
-            .add-link {
-                .cta {
-                    height: 32px;
-                }
-            }
-        }
 
         .search-filter-wrapper {
             display: flex;
@@ -162,16 +147,8 @@
     }
 
     .external-links {
-        min-height: 465px;
-        box-sizing: border-box;
-        border-radius: 8px;
-
         &.app-config-view__listing {
             height: calc(100% - 110px);
-        }
-
-        .empty-state {
-            height: 465px !important;
         }
 
         .external-links__list {
@@ -197,14 +174,8 @@
         grid-template-columns: 24px 144px minmax(100px, calc(59% - 322px)) 100px minmax(100px, 59%) 56px;
         column-gap: 16px;
         align-items: center;
-        justify-content: stretch;
-        font-style: normal;
-        font-stretch: normal;
         line-height: 1.5;
-        letter-spacing: normal;
         box-shadow: 0 1px 0 0 var(--N200);
-        border-top-left-radius: 8px;
-        border-top-right-radius: 8px;
         margin-bottom: 1px;
 
         &.app-config-view {

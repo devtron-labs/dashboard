@@ -216,7 +216,7 @@ export interface IdentifierSelectorProps {
         key?: number,
         value?: OptionTypeWithIcon | IdentifierOptionType[] | string | boolean | ExternalLinkScopeType | LinkAction,
     ) => void
-    getErrorLabel: (field: string, type?: string) => JSX.Element
+    getErrorLabel: (field: string, type?: string) => JSX.Element | string
 }
 
 export enum LinkValidationKeys {
@@ -235,4 +235,18 @@ export interface ExternalLinkChipProps {
     details: AppDetails | CommonAppDetails
     handleOpenModal: (linkOption: OptionTypeWithIcon, externalLinkURL: string) => void
     isOverviewPage: boolean
+}
+
+export interface AddLinkButtonProps {
+    handleOnClick: () => void
+}
+
+export interface ExternalLinkListProps {
+    filteredLinksLen: number
+    filteredExternalLinks: ExternalLink[]
+    isAppConfigView: boolean
+    setSelectedLink: React.Dispatch<React.SetStateAction<ExternalLink>>
+    setShowDeleteDialog: React.Dispatch<React.SetStateAction<boolean>>
+    setShowAddLinkDialog: React.Dispatch<React.SetStateAction<boolean>>
+    monitoringTools: OptionTypeWithIcon[]
 }
