@@ -19,6 +19,7 @@ import {
     ResponseType,
     SelectPickerOptionType,
     ServerError,
+    SortingOrder,
     UseUrlFiltersReturnType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { AppListPayloadType } from '@Components/app/list-new/AppListType'
@@ -71,7 +72,7 @@ export interface JobListState {
     showCommandBar: boolean
     sortRule: {
         key: string
-        order: string
+        order: SortingOrder
     }
     size: number
     offset: number

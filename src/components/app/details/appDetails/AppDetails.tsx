@@ -99,7 +99,7 @@ import HibernateModal from './HibernateModal'
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 const DeploymentWindowStatusModal = importComponentFromFELibrary('DeploymentWindowStatusModal')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
-const ConfigDriftModalRoute = importComponentFromFELibrary('ConfigDriftModalRoute', null, 'function')
+const ConfigDriftModal = importComponentFromFELibrary('ConfigDriftModal', null, 'function')
 const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
     'processVirtualEnvironmentDeploymentData',
     null,
@@ -256,6 +256,7 @@ export const Details: React.FC<DetailsType> = ({
     // fixme: the state is not being set anywhere and just being drilled down
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false)
     const [resourceTreeFetchTimeOut, setResourceTreeFetchTimeOut] = useState<boolean>(false)
+    const [showConfigDriftModal, setShowConfigDriftModal] = useState<boolean>(false)
     const [urlInfo, setUrlInfo] = useState<boolean>(false)
     const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<HibernationModalTypes>(null)
     const [rotateModal, setRotateModal] = useState<boolean>(false)
@@ -293,7 +294,7 @@ export const Details: React.FC<DetailsType> = ({
             deploymentStatus: DEFAULT_STATUS,
             deploymentStatusText: DEFAULT_STATUS_TEXT,
         })
-    const isConfigDriftEnabled: boolean = window._env_.FEATURE_CONFIG_DRIFT_ENABLE
+    const isConfigDriftEnabled: boolean = window._env_.FEATURE_CONFIG_DRIFT_ENABLE && !!ConfigDriftModal
     const isExternalToolAvailable: boolean =
         externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0
     const interval = Number(window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL) || 30000
@@ -697,6 +698,14 @@ export const Details: React.FC<DetailsType> = ({
         )
     }
 
+    const handleOpenConfigDriftModal = () => {
+        setShowConfigDriftModal(true)
+    }
+
+    const handleCloseConfigDriftModal = () => {
+        setShowConfigDriftModal(false)
+    }
+
     const onClickRotatePodClose = () => setRotateModal(false)
 
     const renderRestartWorkload = () => {
@@ -733,6 +742,7 @@ export const Details: React.FC<DetailsType> = ({
                     ciArtifactId={appDetails?.ciArtifactId}
                     setErrorsList={setErrorsList}
                     deploymentUserActionState={deploymentUserActionState}
+                    handleOpenConfigDriftModal={handleOpenConfigDriftModal}
                     setHibernationPatchChartName={setHibernationPatchChartName}
                 />
             </div>
@@ -767,7 +777,11 @@ export const Details: React.FC<DetailsType> = ({
                 <AppStatusDetailModal
                     close={hideAppDetailsStatus}
                     showAppStatusMessage={false}
-                    showConfigDriftInfo={isConfigDriftEnabled && !!ConfigDriftModalRoute}
+                    {...(isConfigDriftEnabled
+                        ? {
+                              handleOpenConfigDriftModal,
+                          }
+                        : {})}
                 />
             )}
             {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
@@ -811,8 +825,8 @@ export const Details: React.FC<DetailsType> = ({
                     isVirtualEnvironment={isVirtualEnvRef.current}
                 />
             }
-            {isConfigDriftEnabled && ConfigDriftModalRoute && !isVirtualEnvRef.current && (
-                <ConfigDriftModalRoute path={path} />
+            {isConfigDriftEnabled && showConfigDriftModal && !isVirtualEnvRef.current && (
+                <ConfigDriftModal handleCloseModal={handleCloseConfigDriftModal} />
             )}
         </>
     )

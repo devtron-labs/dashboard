@@ -29,6 +29,10 @@ export const getInstalledChartResourceTree = (_appId: number, _envId: number) =>
 }
 
 export const getInstalledChartNotesDetail = (_appId: number, _envId: number) => {
+    if (isNaN(Number(_appId)) || isNaN(Number(_envId))) {
+        return null
+    }
+    
     return get(`${Routes.APP_STORE_INSTALLED_APP}/notes?installed-app-id=${_appId}&env-id=${_envId}`)
 }
 

@@ -542,22 +542,6 @@ export interface AboutAppInfoModalProps extends Pick<AppOverviewProps, 'appType'
     projectsList?: Teams[]
 }
 
-export interface DeleteComponentProps {
-    setDeleting: (boolean) => void
-    toggleConfirmation: any
-    deleteComponent: (any) => Promise<any>
-    title: string
-    component: string
-    payload: any
-    confirmationDialogDescription?: string
-    redirectTo?: boolean
-    url?: string
-    reload?: () => void
-    configuration?: string
-    dataTestid?: string
-    closeCustomComponent?: () => void
-}
-
 export interface JobPipeline {
     ciPipelineID: number
     ciPipelineName: string
@@ -599,6 +583,7 @@ export interface SourceInfoType {
     setErrorsList?: React.Dispatch<React.SetStateAction<ErrorItem[]>>
     filteredEnvIds?: string
     deploymentUserActionState?: ACTION_STATE
+    handleOpenConfigDriftModal?: () => void
     setHibernationPatchChartName?: Dispatch<SetStateAction<string>>
 }
 

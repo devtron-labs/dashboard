@@ -23,7 +23,7 @@ interface HelpBoxType {
 }
 
 const HelpBox = ({ selectedNav, isJobView, totalSteps }: HelpBoxType) => (
-    <div className="help-container">
+    <div className="help-container mb-10">
         <div>
             {selectedNav?.currentStep}/{isJobView ? '2' : totalSteps} Completed
         </div>

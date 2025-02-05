@@ -16,15 +16,13 @@
 
 import {
     BulkSelectionEvents,
-    ConfirmationDialog,
-    CustomInput,
-    Progressing,
+    ConfirmationModal,
+    ConfirmationModalVariantType,
     showError,
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useState } from 'react'
-import { ReactComponent as DeleteIcon } from '../../../../../../assets/icons/ic-medium-delete.svg'
 import { deletePermissionGroupInBulk, deleteUserInBulk } from '../../../authorization.service'
 import { UserBulkDeletePayload, PermissionGroupBulkDeletePayload } from '../../../types'
 import { BulkSelectionEntityTypes } from './constants'
@@ -59,19 +57,11 @@ const BulkDeleteModal = ({
 }: BulkDeleteModalProps) => {
     const [isDeleteLoading, setIsDeleteLoading] = useState(false)
 
-    const [deleteConfirmationText, setDeleteConfirmationText] = useState('')
-
     const { bulkSelectionState, handleBulkSelection, isBulkSelectionApplied } = useAuthorizationBulkSelection()
 
     const { title, subTitle, buttonText, successToastText, confirmationText } = getModalConfig({
         selectedIdentifiersCount,
     })[entityType]
-
-    const isDeleteDisabled = isDeleteLoading || deleteConfirmationText !== confirmationText
-
-    const handleChange = (e) => {
-        setDeleteConfirmationText(e.target.value)
-    }
 
     const handleBulkDelete = async () => {
         setIsDeleteLoading(true)
@@ -119,48 +109,29 @@ const BulkDeleteModal = ({
         }
     }
 
-    const handleKeyDown = async (event: KeyboardEvent) => {
-        if (event.key === 'Enter' && !isDeleteDisabled) {
-            event.preventDefault()
-            await handleBulkDelete()
-        }
-    }
-
-    const getLabel = () => (
-        <span>
-            Type <span className="fw-6">&apos;{confirmationText}&apos;</span> to confirm
-        </span>
-    )
-
     return (
-        <ConfirmationDialog className="w-400">
-            <DeleteIcon className="icon-dim-48" />
-            <ConfirmationDialog.Body title={title} subtitle={subTitle}>
-                <CustomInput
-                    name="bulk-delete-confirmation"
-                    value={deleteConfirmationText}
-                    onChange={handleChange}
-                    label={getLabel()}
-                    inputWrapClassName="mt-12 w-100"
-                    placeholder="Type to confirm"
-                    isRequiredField
-                    onKeyDown={handleKeyDown}
-                />
-            </ConfirmationDialog.Body>
-            <ConfirmationDialog.ButtonGroup>
-                <button type="button" className="cta cancel" disabled={isDeleteLoading} onClick={onClose}>
-                    Cancel
-                </button>
-                <button
-                    type="submit"
-                    className="cta delete dc__no-text-transform"
-                    disabled={isDeleteDisabled}
-                    onClick={handleBulkDelete}
-                >
-                    {isDeleteLoading ? <Progressing /> : buttonText}
-                </button>
-            </ConfirmationDialog.ButtonGroup>
-        </ConfirmationDialog>
+        <ConfirmationModal
+            variant={ConfirmationModalVariantType.delete}
+            title={title}
+            subtitle={subTitle}
+            buttonConfig={{
+                secondaryButtonConfig: {
+                    onClick: onClose,
+                    text: 'Cancel',
+                },
+                primaryButtonConfig: {
+                    isLoading: isDeleteLoading,
+                    onClick: handleBulkDelete,
+                    text: buttonText,
+                },
+            }}
+            showConfirmationModal
+            confirmationConfig={{
+                identifier: 'delete-user-confirmation',
+                confirmationKeyword: confirmationText,
+            }}
+            handleClose={onClose}
+        />
     )
 }
 
