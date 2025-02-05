@@ -52,7 +52,7 @@ const AppOrJobSelector = ({
             : null
     const listForAccessType = getListForAccessType(permission.accessType)
     const appOrJobSelectorName = isAccessTypeJob ? DirectPermissionFieldName.jobs : DirectPermissionFieldName.apps
-    const appOrJobSelectorOptions = [allApplicationsOption(permission.entity), ...applications]
+    const appOrJobSelectorOptions = [allApplicationsOption(permission), ...applications]
 
     const setWorkflowsForJobs = async (_permission: DirectPermissionsRoleFilter) => {
         if (abortControllerRef.current) {
@@ -119,6 +119,7 @@ const AppOrJobSelector = ({
             }}
             error={permission.entityNameError}
             size={ComponentSizeType.large}
+            disableDescriptionEllipsis
         />
     )
 }

@@ -556,8 +556,8 @@ const BulkCITrigger = ({
     const tippyContent = (tippyTile: string, tippyDescription: string): JSX.Element => {
         return (
             <div>
-                <div className="fs-12 fw-6 cn-0">{tippyTile}</div>
-                <div className="fs-12 fw-4 cn-0">{tippyDescription}</div>
+                <div className="fs-12 fw-6">{tippyTile}</div>
+                <div className="fs-12 fw-4">{tippyDescription}</div>
             </div>
         )
     }
