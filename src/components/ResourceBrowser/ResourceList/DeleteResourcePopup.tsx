@@ -16,15 +16,13 @@
 
 import React, { useState } from 'react'
 import {
-    Checkbox,
-    CHECKBOX_VALUE,
     noop,
     ResourceListPayloadType,
     deleteResource,
+    ForceDeleteOption,
     DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
-import { DELETE_MODAL_MESSAGING } from '../Constants'
 import { DeleteResourcePopupType } from '../Types'
 
 const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
@@ -65,15 +63,11 @@ const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
         }
     }
 
-    const forceDeleteHandler = () => {
-        setForceDelete((prevState) => !prevState)
-    }
-
     return (
         <DeleteConfirmationModal
             title={resourceData.name as string}
             component={selectedResource.gvk.Kind}
-            subtitle={DELETE_MODAL_MESSAGING.description}
+            subtitle="Are you sure, you want to delete this resource?"
             onDelete={handleDelete}
             showConfirmationModal={showConfirmationModal}
             closeConfirmationModal={toggleDeleteDialog}
@@ -83,14 +77,7 @@ const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
             }}
             successToastMessage="Resource deleted successfully"
         >
-            <Checkbox
-                rootClassName="resource-force-delete"
-                isChecked={forceDelete}
-                value={CHECKBOX_VALUE.CHECKED}
-                onChange={forceDeleteHandler}
-            >
-                {DELETE_MODAL_MESSAGING.checkboxText}
-            </Checkbox>
+            <ForceDeleteOption optionsData={forceDelete} setOptionsData={setForceDelete} />
         </DeleteConfirmationModal>
     )
 }
