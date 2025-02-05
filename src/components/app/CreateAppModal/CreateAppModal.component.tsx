@@ -29,6 +29,7 @@ import { createApp } from './service'
 import ApplicationInfoForm from './ApplicationInfoForm'
 import HeaderSection from './HeaderSection'
 import Sidebar from './Sidebar'
+import UpdateTemplateConfig from './UpdateTemplateConfig'
 
 const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
     const history = useHistory()
@@ -241,11 +242,8 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                             isJobView={isJobView}
                             selectedCreationMethod={selectedCreationMethod}
                         />
-                        {selectedCreationMethod === CreationMethodType.template && (
-                            <>
-                                <div className="divider__secondary--horizontal" />
-                                <div>Code Source</div>
-                            </>
+                        {selectedCreationMethod === CreationMethodType.template && formState.templateId && (
+                            <UpdateTemplateConfig formState={formState} isJobView={isJobView} />
                         )}
                     </div>
                 </div>

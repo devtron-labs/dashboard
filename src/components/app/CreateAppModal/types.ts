@@ -14,6 +14,7 @@ export interface CreateAppFormStateType {
     description: string
     tags: DynamicDataTableRowType<TagsTableColumnsType>[]
     cloneAppId: number | null
+    templateId: number | null
 }
 
 export interface CreateAppFormErrorStateType {
@@ -91,4 +92,8 @@ export interface AppToCloneSelectorProps
     extends Pick<CreateAppModalProps, 'isJobView'>,
         Required<Pick<SelectPickerProps, 'error'>> {
     handleCloneIdChange: (cloneAppId: CreateAppFormStateType['cloneAppId']) => void
+}
+
+export interface UpdateTemplateConfigProps extends Pick<CreateAppModalProps, 'isJobView'> {
+    formState: CreateAppFormStateType
 }
