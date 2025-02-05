@@ -27,6 +27,7 @@ import {
     ResourceIdToResourceApprovalPolicyConfigMapType,
     ConfirmationModal,
     ConfirmationModalVariantType,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DeleteComponentsName } from '@Config/constantMessaging'
 import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo/ApplicationDeletionInfo'
@@ -62,6 +63,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
     const match = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
+    const { isSuperAdmin } = useMainContext()
 
     // STATES
     const [showCannotDeleteTooltip, setShowCannotDeleteTooltip] = useState(false)
@@ -269,6 +271,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
             resourceKind,
             isGitOpsConfigurationRequired: _isGitOpsConfigurationRequired,
             envIdToEnvApprovalConfigurationMap,
+            isSuperAdmin,
         })
         // Finding index of navItem which is locked and is not of alternate nav menu (nav-item rendering on different path)
         let index = navItems.findIndex((item) => !item.altNavKey && item.isLocked)

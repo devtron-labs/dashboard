@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
+import { URLS as COMMON_URLS, EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface NavItem {
     title: string
@@ -59,10 +59,10 @@ export const URLS = {
     APP_DOCKER_CONFIG: 'docker-build-config',
     APP_GITOPS_CONFIG: 'gitops-config',
     APP_DOCKER_OVERRIDE_DETAILS: 'override-details',
-    APP_DEPLOYMENT_CONFIG: 'deployment-template',
+    APP_DEPLOYMENT_CONFIG: EnvResourceType.DeploymentTemplate,
     APP_WORKFLOW_CONFIG: 'workflow',
-    APP_CM_CONFIG: 'configmap',
-    APP_CS_CONFIG: 'secrets',
+    APP_CM_CONFIG: EnvResourceType.ConfigMap,
+    APP_CS_CONFIG: EnvResourceType.Secret,
     APP_ENV_OVERRIDE_CONFIG: 'env-override',
     APP_ENV_CONFIG_COMPARE: 'config-compare',
     APP_EXTERNAL_LINKS: 'external-links',

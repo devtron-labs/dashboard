@@ -26,10 +26,11 @@ import {
     Progressing,
     useAsync,
     CMSecretComponentType,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
-import { importComponentFromFELibrary } from '@Components/common'
+import { getConfigurationsDefaultResourceType, importComponentFromFELibrary } from '@Components/common'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret'
 import { DeploymentConfigCompare, DeploymentTemplate } from '@Pages/Applications'
 import { getEnvConfig } from '@Pages/Applications/DevtronApps/service'
@@ -54,6 +55,7 @@ const renderNullState = () => (
 export const Configurations = () => {
     // HOOKS
     const { path, params } = useRouteMatch<Pick<DeploymentHistoryBaseParamsType, 'appId' | 'envId'>>()
+    const { isSuperAdmin } = useMainContext()
     const { appId, envId } = params
 
     // CONTEXTS
@@ -156,7 +158,7 @@ export const Configurations = () => {
                     />
                 </div>
             </Route>
-            <Redirect to={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`} />
+            <Redirect to={`${path}/${getConfigurationsDefaultResourceType({ isSuperAdmin })}`} />
         </Switch>
     )
 

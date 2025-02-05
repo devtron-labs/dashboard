@@ -19,7 +19,6 @@ import {
     showError,
     OptionType,
     DeploymentAppTypes,
-    APIOptions,
     useWindowSize,
     APPROVAL_MODAL_TYPE,
     YAMLStringify,
@@ -29,6 +28,7 @@ import {
     PipelineBuildStageType,
     SeverityCount,
     useMainContext,
+    EnvResourceType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link, PromptProps } from 'react-router-dom'
@@ -52,7 +52,11 @@ import { ReactComponent as BitBucket } from '../../../assets/icons/git/bitbucket
 import { ReactComponent as ICAWSCodeCommit } from '../../../assets/icons/ic-aws-codecommit.svg'
 import { AppEnvLocalStorageKeyType, FilterParentType } from '@Components/ApplicationGroup/AppGroup.types'
 import { APP_GROUP_LOCAL_STORAGE_KEY, ENV_GROUP_LOCAL_STORAGE_KEY } from '@Components/ApplicationGroup/Constants'
-import { GetAndSetAppGroupFiltersParamsType, SetFiltersInLocalStorageParamsType } from './types'
+import {
+    GetAndSetAppGroupFiltersParamsType,
+    GetConfigurationsDefaultResourceType,
+    SetFiltersInLocalStorageParamsType,
+} from './types'
 
 let module
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -1271,3 +1275,9 @@ export const setAppGroupFilterInLocalStorage = ({
         localStorage.setItem(localStorageKey, '')
     }
 }
+
+export const getConfigurationsDefaultResourceType = ({
+    isSuperAdmin,
+    isJobView = false,
+}: GetConfigurationsDefaultResourceType): EnvResourceType =>
+    isSuperAdmin && !isJobView ? EnvResourceType.DeploymentTemplate : EnvResourceType.ConfigMap

@@ -23,6 +23,7 @@ import {
 
 import { URLS, DOCUMENTATION } from '@Config/index'
 
+import { getConfigurationsDefaultResourceType } from '@Components/common'
 import { AppConfigStatusItemType, EnvConfigDTO } from '../../service.types'
 import { AppConfigState, AppStageUnlockedType, CustomNavItemsType, EnvConfigType, STAGE_NAME } from './AppConfig.types'
 
@@ -103,11 +104,13 @@ export const getNavItems = ({
     resourceKind,
     isGitOpsConfigurationRequired,
     envIdToEnvApprovalConfigurationMap,
+    isSuperAdmin,
 }: Pick<AppConfigState, 'envIdToEnvApprovalConfigurationMap'> & {
     _isUnlocked: AppStageUnlockedType
     appId: string
     resourceKind: ResourceKindType
     isGitOpsConfigurationRequired: boolean
+    isSuperAdmin: boolean
 }): { navItems: CustomNavItemsType[] } => {
     const completedSteps = getCompletedStep(
         _isUnlocked,
@@ -145,7 +148,7 @@ export const getNavItems = ({
                     },
                     {
                         title: 'ConfigMaps & Secrets',
-                        href: `/job/${appId}/edit/configmap`,
+                        href: `/job/${appId}/edit/${getConfigurationsDefaultResourceType({ isSuperAdmin, isJobView: true })}`,
                         stage: STAGE_NAME.REDIRECT_ITEM,
                         isLocked: !_isUnlocked.configmap,
                         isProtectionAllowed: true,
@@ -211,7 +214,7 @@ export const getNavItems = ({
                     },
                     {
                         title: 'Base Configurations',
-                        href: `/app/${appId}/edit/deployment-template`,
+                        href: `/app/${appId}/edit/${getConfigurationsDefaultResourceType({ isSuperAdmin })}`,
                         stage: STAGE_NAME.REDIRECT_ITEM,
                         isLocked: !_isUnlocked.deploymentTemplate,
                         isProtectionAllowed:
