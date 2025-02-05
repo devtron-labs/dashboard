@@ -26,7 +26,7 @@ const ProjectSelector = ({ selectedProjectId, handleProjectIdChange, error }: Pr
     }
 
     return (
-        <div className="w-200">
+        <div className="w-300">
             <SelectPicker
                 icon={<ICFolderColor />}
                 inputId="project"
