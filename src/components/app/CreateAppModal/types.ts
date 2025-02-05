@@ -1,8 +1,11 @@
 import {
+    ButtonProps,
     DynamicDataTableCellErrorType,
     DynamicDataTableRowType,
+    SelectPickerProps,
     TagsTableColumnsType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { SyntheticEvent } from 'react'
 
 export interface CreateAppFormStateType {
     projectId: string
@@ -54,3 +57,29 @@ export type HandleFormStateChangeParamsType =
           CreateAppFormStateActionType.updateCloneAppId,
           CreateAppFormStateType['cloneAppId']
       >
+
+export interface CreateAppModalProps {
+    isJobView: boolean
+    handleClose: (e: SyntheticEvent) => void
+}
+
+export interface HeaderSectionProps extends CreateAppModalProps {
+    isCloseDisabled: ButtonProps['disabled']
+}
+
+export interface ApplicationInfoFormProps extends Pick<CreateAppModalProps, 'isJobView'> {
+    formState: CreateAppFormStateType
+    handleFormStateChange: (params: HandleFormStateChangeParamsType) => void
+    formErrorState: CreateAppFormErrorStateType
+    handleTagErrorChange: (tagsError: CreateAppFormErrorStateType['tags']) => void
+}
+
+export interface ProjectSelectorProps extends Required<Pick<SelectPickerProps, 'error'>> {
+    selectedProjectId: CreateAppFormStateType['projectId']
+    handleProjectIdChange: (projectId: CreateAppFormStateType['projectId']) => void
+}
+
+export interface SidebarProps {
+    selectedCreationMethod: CreationMethodType
+    handleCreationMethodChange: (creationMethod: CreationMethodType) => void
+}

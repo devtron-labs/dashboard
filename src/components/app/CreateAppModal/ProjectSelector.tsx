@@ -6,16 +6,9 @@ import {
     useGetResourceKindsOptions,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICFolderColor } from '@Icons/ic-folder-color.svg'
-import { CreateAppFormStateType } from './types'
+import { CreateAppFormStateType, ProjectSelectorProps } from './types'
 
-const ProjectSelector = ({
-    selectedProjectId,
-    handleProjectIdChange,
-    error,
-}: {
-    selectedProjectId: CreateAppFormStateType['projectId']
-    handleProjectIdChange: (projectId: CreateAppFormStateType['projectId']) => void
-} & Pick<SelectPickerProps, 'error'>) => {
+const ProjectSelector = ({ selectedProjectId, handleProjectIdChange, error }: ProjectSelectorProps) => {
     const { isResourcesOptionsLoading, resourcesOptionsMap, resourcesOptionsError, refetchResourcesOptions } =
         useGetResourceKindsOptions({
             resourcesToFetch: [ResourceKindType.project],
