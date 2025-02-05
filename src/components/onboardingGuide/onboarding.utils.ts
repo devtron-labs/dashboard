@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { updatePostHogEvent } from '../../services/service'
-
 export const POSTHOG_EVENT_ONBOARDING = {
     PREVIEW: 'Preview',
     DEPLOY_CUSTOM_APP_CI_CD: 'Deploy custom app using CI/CD pipelines',
@@ -33,14 +31,4 @@ export const POSTHOG_EVENT_ONBOARDING = {
 export const LOGIN_COUNT = 'login-count'
 
 export const MAX_LOGIN_COUNT = 5
-
-export const handlePostHogEventUpdate = (e, eventName?: string): void => {
-    const payload = {
-        eventType: eventName || e.target?.dataset.posthog,
-        key: LOGIN_COUNT,
-        value: '',
-        active: true,
-    }
-    updatePostHogEvent(payload)
-}
 
