@@ -3,7 +3,7 @@ import { PATTERNS } from '@Config/constants'
 import { ValidationResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { CreateAppFormStateType } from './types'
 
-export const validateAppName = (value: CreateAppFormStateType['name']): ValidationResponseType => {
+export const validateAppName = (value: CreateAppFormStateType['name']): Required<ValidationResponseType> => {
     const re = PATTERNS.APP_NAME
     const regExp = new RegExp(re)
     const test = regExp.test(value)

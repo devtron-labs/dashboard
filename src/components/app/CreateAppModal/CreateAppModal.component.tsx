@@ -24,7 +24,7 @@ import {
 } from './types'
 import { createAppInitialFormErrorState, createAppInitialFormState, CREATION_METHOD_CONFIG } from './constants'
 import { validateAppName, validateCloneApp, validateProject } from './utils'
-import { createApp } from '../create/service'
+import { createApp } from './service'
 import ApplicationInfoForm from './ApplicationInfoForm'
 import HeaderSection from './HeaderSection'
 import Sidebar from './Sidebar'
@@ -208,7 +208,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
 
     return (
         <Drawer position="right" width="1024px">
-            <div className="h-100 bg__primary flexbox-col dc__overflow-hidden">
+            <div className="h-100 bg__modal flexbox-col dc__overflow-hidden">
                 <HeaderSection isJobView handleClose={handleClose} isCloseDisabled={isSubmitting} />
                 <div className="flexbox flex-grow-1 dc__overflow-auto">
                     <Sidebar
