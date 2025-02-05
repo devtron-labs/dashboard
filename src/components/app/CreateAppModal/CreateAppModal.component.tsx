@@ -14,6 +14,7 @@ import { saveHostURLConfiguration } from '@Components/hostURL/hosturl.service'
 import { createJob } from '@Components/Jobs/Service'
 import { APP_COMPOSE_STAGE, getAppComposeURL } from '@Config/routes'
 import { useHistory } from 'react-router-dom'
+import { REQUIRED_FIELDS_MISSING } from '@Config/constants'
 import {
     CreateAppFormErrorStateType,
     CreateAppFormStateActionType,
@@ -41,13 +42,28 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
         structuredClone(createAppInitialFormErrorState),
     )
 
-    const getIsFormValid = () => {
+    const validateFormField = (field: keyof CreateAppFormStateType, value) => {
+        switch (field) {
+            case 'name':
+                return validateAppName(value).message
+            case 'description':
+                return validateDescription(value).message
+            case 'projectId':
+                return validateProject(value).message
+            case 'cloneAppId':
+                return selectedCreationMethod === CreationMethodType.clone ? validateCloneApp(value).message : null
+            default:
+                throw new Error(`Invalid field: ${field}`)
+        }
+    }
+
+    const validateForm = () => {
         const updatedFormErrorState = structuredClone(formErrorState)
 
-        updatedFormErrorState.projectId = validateProject(formState.projectId).message
-        updatedFormErrorState.name = validateAppName(formState.name).message
-        updatedFormErrorState.description = validateDescription(formState.description).message
-        updatedFormErrorState.cloneAppId = validateCloneApp(formState.cloneAppId).message
+        updatedFormErrorState.projectId = validateFormField('projectId', formState.projectId)
+        updatedFormErrorState.name = validateFormField('name', formState.name)
+        updatedFormErrorState.description = validateFormField('description', formState.description)
+        updatedFormErrorState.cloneAppId = validateFormField('cloneAppId', formState.cloneAppId)
 
         const labelTags = []
         updatedFormErrorState.tags = {}
@@ -92,7 +108,9 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
         setFormErrorState(updatedFormErrorState)
 
         return {
-            isFormValid: Object.keys(formErrorState).every((key) => !formErrorState[key]),
+            isFormValid: Object.keys(updatedFormErrorState)
+                .filter((key) => key !== 'tags')
+                .every((key) => !updatedFormErrorState[key]),
             invalidLabels,
             labelTags,
         }
@@ -106,22 +124,22 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
             switch (action) {
                 case CreateAppFormStateActionType.updateProjectId:
                     updatedFormState.projectId = value
-                    updatedFormErrorState.projectId = validateProject(value).message
+                    updatedFormErrorState.projectId = validateFormField('projectId', value)
                     break
                 case CreateAppFormStateActionType.updateName:
                     updatedFormState.name = value
-                    updatedFormErrorState.name = validateAppName(value).message
+                    updatedFormErrorState.name = validateFormField('name', value)
                     break
                 case CreateAppFormStateActionType.updateDescription:
                     updatedFormState.description = value
-                    updatedFormErrorState.description = validateDescription(value).message
+                    updatedFormErrorState.description = validateFormField('description', value)
                     break
                 case CreateAppFormStateActionType.updateTags:
                     updatedFormState.tags = value
                     break
                 case CreateAppFormStateActionType.updateCloneAppId:
                     updatedFormState.cloneAppId = value
-                    updatedFormErrorState.cloneAppId = validateCloneApp(value).message
+                    updatedFormErrorState.cloneAppId = validateFormField('cloneAppId', value)
                     break
                 default:
                     throw new Error(`Invalid action type: ${action}`)
@@ -163,29 +181,26 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
     }
 
     const handleCreateApp = async () => {
-        const { isFormValid, invalidLabels, labelTags } = getIsFormValid()
+        const { isFormValid, invalidLabels, labelTags } = validateForm()
 
         if (!isFormValid || invalidLabels) {
-            if (invalidLabels) {
-                ToastManager.showToast({
-                    variant: ToastVariantType.error,
-                    description: 'Some required fields in tags are missing or invalid',
-                })
-            }
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: invalidLabels
+                    ? 'Some required fields in tags are missing or invalid'
+                    : REQUIRED_FIELDS_MISSING,
+            })
             return
         }
 
         const request = {
             appName: formState.name,
-            teamId: formState.projectId,
+            teamId: +formState.projectId,
             templateId: formState.cloneAppId,
             description: formState.description?.trim(),
             labels: labelTags,
-            appType: null,
-        }
-
-        if (isJobView) {
-            request.appType = 2 // type 2 is for job type
+            // type 2 is for job type
+            appType: isJobView ? 2 : null,
         }
 
         const createAPI = isJobView ? createJob : createApp
