@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 
-import { InfoColourBar, deleteNodeCapacity, DeleteConfirmationModal } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DELETE_NODE_MODAL_MESSAGING,
+    deleteNodeCapacity,
+    DeleteConfirmationModal,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
-import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
-import { DeleteNodeModalProps } from '../types'
-import { DELETE_NODE_MODAL_MESSAGING } from '../constants'
 import { DeleteComponentsName } from '@Config/constantMessaging'
+import { DeleteNodeModalProps } from '../types'
 
-export default function DeleteNodeModal({ name, version, kind, closePopup, showConfirmationModal, handleClearBulkSelection }: DeleteNodeModalProps) {
+const DeleteNodeModal = ({
+    name,
+    version,
+    kind,
+    closePopup,
+    handleClearBulkSelection,
+    showConfirmationModal,
+}: DeleteNodeModalProps) => {
     const { clusterId } = useParams<{ clusterId: string }>()
 
     const onClose = (): void => {
@@ -39,30 +48,16 @@ export default function DeleteNodeModal({ name, version, kind, closePopup, showC
         handleClearBulkSelection()
         closePopup(true)
     }
-    const recommendedNote = () => {
-        return (
-            <div className="fs-13 fw-4 lh-20">
-                <span className="fw-6">{DELETE_NODE_MODAL_MESSAGING.recommended}</span>
-                {DELETE_NODE_MODAL_MESSAGING.recommendedInfoText}
-            </div>
-        )
-    }
-    const renderSubtitle = () => (
-        <>
-            <InfoColourBar classname="question-bar p-lr-12" message={recommendedNote()} Icon={Help} iconClass="fcv-5" />
-            <p className="m-0 fs-13 lh-20 cn-7">{DELETE_NODE_MODAL_MESSAGING.description}</p>
-        </>
-    )
 
     return (
         <DeleteConfirmationModal
             title={name}
             component={DeleteComponentsName.Node}
-            subtitle={renderSubtitle()}
+            subtitle={DELETE_NODE_MODAL_MESSAGING.subtitle}
             onDelete={onDelete}
             closeConfirmationModal={onClose}
             showConfirmationModal={showConfirmationModal}
-            successToastMessage={DELETE_NODE_MODAL_MESSAGING.initiated}
+            successToastMessage={DELETE_NODE_MODAL_MESSAGING.successInfoToastMessage}
             confirmationConfig={{
                 identifier: 'delete-cd-node-input',
                 confirmationKeyword: name,
@@ -70,3 +65,5 @@ export default function DeleteNodeModal({ name, version, kind, closePopup, showC
         />
     )
 }
+
+export default DeleteNodeModal
