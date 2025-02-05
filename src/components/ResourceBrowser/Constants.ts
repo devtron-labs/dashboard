@@ -176,11 +176,6 @@ export const K8S_RESOURCE_LIST = {
     createResource: 'Create / Update Kubernetes Resources',
 }
 
-export const DELETE_MODAL_MESSAGING = {
-    description: 'Are you sure, you want to delete this resource?',
-    checkboxText: 'Force delete resource',
-}
-
 export const SIDEBAR_KEYS: RBSidebarKeysType = {
     nodes: 'Nodes',
     events: 'Events',
