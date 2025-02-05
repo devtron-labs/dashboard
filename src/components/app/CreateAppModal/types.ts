@@ -72,6 +72,7 @@ export interface ApplicationInfoFormProps extends Pick<CreateAppModalProps, 'isJ
     handleFormStateChange: (params: HandleFormStateChangeParamsType) => void
     formErrorState: CreateAppFormErrorStateType
     handleTagErrorChange: (tagsError: CreateAppFormErrorStateType['tags']) => void
+    selectedCreationMethod: CreationMethodType
 }
 
 export interface ProjectSelectorProps extends Required<Pick<SelectPickerProps, 'error'>> {
@@ -82,4 +83,10 @@ export interface ProjectSelectorProps extends Required<Pick<SelectPickerProps, '
 export interface SidebarProps {
     selectedCreationMethod: CreationMethodType
     handleCreationMethodChange: (creationMethod: CreationMethodType) => void
+}
+
+export interface AppToCloneSelectorProps
+    extends Pick<CreateAppModalProps, 'isJobView'>,
+        Required<Pick<SelectPickerProps, 'error'>> {
+    handleCloneIdChange: (cloneAppId: CreateAppFormStateType['cloneAppId']) => void
 }

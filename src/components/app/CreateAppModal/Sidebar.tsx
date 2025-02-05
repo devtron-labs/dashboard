@@ -7,7 +7,7 @@ const Sidebar = ({ selectedCreationMethod, handleCreationMethodChange }: Sidebar
     }
 
     return (
-        <div className="w-250 p-20 flexbox-col dc__gap-24">
+        <div className="w-250 p-20 flexbox-col dc__gap-24 dc__no-shrink">
             <div className="flexbox-col">
                 {CREATION_METHOD_CONFIG.map(({ label, value }) => {
                     const isSelected = value === selectedCreationMethod

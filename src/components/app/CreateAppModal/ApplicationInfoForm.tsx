@@ -9,9 +9,12 @@ import {
     ApplicationInfoFormProps,
     CreateAppFormStateActionType,
     CreateAppFormStateType,
+    CreationMethodType,
     HandleFormStateChangeParamsType,
+    ProjectSelectorProps,
 } from './types'
 import { ReactComponent as ICError } from '../../../assets/icons/ic-warning.svg'
+import AppToCloneSelector from './AppToCloneSelector'
 
 const MandatoryTagsContainer = importComponentFromFELibrary('MandatoryTagsContainer', null, 'function')
 
@@ -21,6 +24,7 @@ const ApplicationInfoForm = ({
     isJobView,
     formErrorState,
     handleTagErrorChange,
+    selectedCreationMethod,
 }: ApplicationInfoFormProps) => {
     const [isTagsAccordionExpanded, setIsTagsAccordionExpanded] = useState(false)
 
@@ -39,7 +43,7 @@ const ApplicationInfoForm = ({
             handleFormStateChange({ action, value: event.target.value })
         }
 
-    const handleProjectIdChange = (projectId: CreateAppFormStateType['projectId']) => {
+    const handleProjectIdChange: ProjectSelectorProps['handleProjectIdChange'] = (projectId) => {
         handleFormStateChange({
             action: CreateAppFormStateActionType.updateProjectId,
             value: projectId,
@@ -50,6 +54,13 @@ const ApplicationInfoForm = ({
         handleFormStateChange({
             action: CreateAppFormStateActionType.updateTags,
             value: tags,
+        })
+    }
+
+    const handleCloneIdChange = (cloneId) => {
+        handleFormStateChange({
+            action: CreateAppFormStateActionType.updateCloneAppId,
+            value: cloneId,
         })
     }
 
@@ -128,6 +139,13 @@ const ApplicationInfoForm = ({
                         />
                     ))}
             </div>
+            {selectedCreationMethod === CreationMethodType.clone && (
+                <AppToCloneSelector
+                    error={formErrorState.cloneAppId}
+                    isJobView={isJobView}
+                    handleCloneIdChange={handleCloneIdChange}
+                />
+            )}
         </div>
     )
 }

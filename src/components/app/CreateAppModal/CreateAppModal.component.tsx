@@ -16,12 +16,12 @@ import { APP_COMPOSE_STAGE, getAppComposeURL } from '@Config/routes'
 import { useHistory } from 'react-router-dom'
 import { REQUIRED_FIELDS_MISSING } from '@Config/constants'
 import {
+    ApplicationInfoFormProps,
     CreateAppFormErrorStateType,
     CreateAppFormStateActionType,
     CreateAppFormStateType,
     CreateAppModalProps,
     CreationMethodType,
-    HandleFormStateChangeParamsType,
 } from './types'
 import { createAppInitialFormErrorState, createAppInitialFormState, CREATION_METHOD_CONFIG } from './constants'
 import { validateAppName, validateCloneApp, validateProject } from './utils'
@@ -116,7 +116,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
         }
     }
 
-    const handleFormStateChange = ({ action, value }: HandleFormStateChangeParamsType) => {
+    const handleFormStateChange: ApplicationInfoFormProps['handleFormStateChange'] = ({ action, value }) => {
         setFormErrorState((previousFormErrorState) => {
             const updatedFormState = structuredClone(formState)
             const updatedFormErrorState = structuredClone(previousFormErrorState)
@@ -237,6 +237,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                             formErrorState={formErrorState}
                             handleTagErrorChange={handleTagErrorChange}
                             isJobView={isJobView}
+                            selectedCreationMethod={selectedCreationMethod}
                         />
                     </div>
                 </div>
