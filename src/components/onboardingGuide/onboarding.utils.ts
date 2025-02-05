@@ -34,13 +34,3 @@ export const LOGIN_COUNT = 'login-count'
 
 export const MAX_LOGIN_COUNT = 5
 
-export const handlePostHogEventUpdate = (e, eventName?: string): void => {
-    const payload = {
-        eventType: eventName || e.target?.dataset.posthog,
-        key: LOGIN_COUNT,
-        value: '',
-        active: true,
-    }
-    updatePostHogEvent(payload)
-}
-
