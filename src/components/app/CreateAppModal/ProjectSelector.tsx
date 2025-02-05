@@ -11,10 +11,11 @@ import { CreateAppFormStateType } from './types'
 const ProjectSelector = ({
     selectedProjectId,
     handleProjectIdChange,
+    error,
 }: {
     selectedProjectId: CreateAppFormStateType['projectId']
     handleProjectIdChange: (projectId: CreateAppFormStateType['projectId']) => void
-}) => {
+} & Pick<SelectPickerProps, 'error'>) => {
     const { isResourcesOptionsLoading, resourcesOptionsMap, resourcesOptionsError, refetchResourcesOptions } =
         useGetResourceKindsOptions({
             resourcesToFetch: [ResourceKindType.project],
@@ -47,6 +48,7 @@ const ProjectSelector = ({
                 placeholder="Select project"
                 value={selectedProject}
                 onChange={handleChange}
+                error={error}
             />
         </div>
     )

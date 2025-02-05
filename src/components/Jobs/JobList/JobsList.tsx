@@ -136,18 +136,9 @@ const JobsList = () => {
 
     const renderCreateJobRouter = () => (
         <Switch>
-            <Route
-                path={`${path}/${URLS.CREATE_JOB}`}
-                render={({ history: routeHistory, location: routeLocation, match }) => (
-                    <CreateAppModal
-                        isJobView
-                        close={closeJobCreateModal}
-                        history={routeHistory}
-                        location={routeLocation}
-                        match={match}
-                    />
-                )}
-            />
+            <Route path={`${path}/${URLS.CREATE_JOB}`}>
+                <CreateAppModal isJobView handleClose={closeJobCreateModal} />
+            </Route>
         </Switch>
     )
 

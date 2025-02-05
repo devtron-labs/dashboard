@@ -417,18 +417,9 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
         return (
             <Switch>
                 {APP_LISTING_URLS.map((currentUrl) => (
-                    <Route
-                        path={`${currentUrl}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
-                        key={currentUrl}
-                        render={(props) => (
-                            <CreateAppModal
-                                close={closeDevtronAppCreateModal}
-                                match={props.match}
-                                location={props.location}
-                                history={props.history}
-                            />
-                        )}
-                    />
+                    <Route path={`${currentUrl}/${AppListConstants.CREATE_DEVTRON_APP_URL}`} key={currentUrl}>
+                        <CreateAppModal handleClose={closeDevtronAppCreateModal} isJobView={false} />
+                    </Route>
                 ))}
             </Switch>
         )
