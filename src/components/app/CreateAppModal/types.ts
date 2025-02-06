@@ -6,6 +6,8 @@ import {
     TagsTableColumnsType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { SyntheticEvent } from 'react'
+import { GitMaterialType } from '@Components/material/material.types'
+import { CIConfigProps } from '@Components/ciConfig/types'
 import { getCreateMethodConfig } from './utils'
 
 export interface CreateAppFormStateType {
@@ -15,6 +17,8 @@ export interface CreateAppFormStateType {
     tags: DynamicDataTableRowType<TagsTableColumnsType>[]
     cloneAppId: number | null
     templateId: number | null
+    gitMaterial: Pick<GitMaterialType, 'id' | 'url' | 'gitProvider'>
+    buildConfiguration: Required<Pick<CIConfigProps['parentState']['ciConfig'], 'dockerRegistry' | 'dockerRepository'>>
 }
 
 export interface CreateAppFormErrorStateType {
@@ -23,6 +27,7 @@ export interface CreateAppFormErrorStateType {
     description: string
     tags: DynamicDataTableCellErrorType<TagsTableColumnsType>
     cloneAppId: string | null
+    gitMaterial: boolean
 }
 
 export enum CreationMethodType {
@@ -37,6 +42,8 @@ export enum CreateAppFormStateActionType {
     updateDescription = 'updateDescription',
     updateTags = 'updateTags',
     updateCloneAppId = 'updateCloneAppId',
+    updateGitMaterial = 'updateGitMaterial',
+    updateBuildConfiguration = 'updateBuildConfiguration',
 }
 
 type BaseHandleFormStateChangeParamsType<Action extends CreateAppFormStateActionType, Value> = {
@@ -58,6 +65,14 @@ export type HandleFormStateChangeParamsType =
     | BaseHandleFormStateChangeParamsType<
           CreateAppFormStateActionType.updateCloneAppId,
           CreateAppFormStateType['cloneAppId']
+      >
+    | BaseHandleFormStateChangeParamsType<
+          CreateAppFormStateActionType.updateGitMaterial,
+          CreateAppFormStateType['gitMaterial']
+      >
+    | BaseHandleFormStateChangeParamsType<
+          CreateAppFormStateActionType.updateBuildConfiguration,
+          CreateAppFormStateType['buildConfiguration']
       >
 
 export interface CreateAppModalProps {
@@ -94,6 +109,8 @@ export interface AppToCloneSelectorProps
     handleCloneIdChange: (cloneAppId: CreateAppFormStateType['cloneAppId']) => void
 }
 
-export interface UpdateTemplateConfigProps extends Pick<CreateAppModalProps, 'isJobView'> {
+export interface UpdateTemplateConfigProps
+    extends Pick<CreateAppModalProps, 'isJobView'>,
+        Pick<ApplicationInfoFormProps, 'handleFormStateChange'> {
     formState: CreateAppFormStateType
 }

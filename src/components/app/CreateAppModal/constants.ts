@@ -7,7 +7,9 @@ export const createAppInitialFormState: CreateAppFormStateType = {
     description: '',
     tags: [getEmptyTagTableRow()],
     cloneAppId: null,
-    templateId: null,
+    templateId: 9,
+    gitMaterial: null,
+    buildConfiguration: null,
 }
 
 export const createAppInitialFormErrorState: CreateAppFormErrorStateType = {
@@ -16,4 +18,5 @@ export const createAppInitialFormErrorState: CreateAppFormErrorStateType = {
     description: '',
     tags: {},
     cloneAppId: null,
+    gitMaterial: false,
 }

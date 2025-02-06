@@ -1,11 +1,61 @@
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
 import MaterialList from '@Components/material/MaterialList'
 import CIConfig from '@Components/ciConfig/CIConfig'
-import { ComponentStates } from '@Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
-import { UpdateTemplateConfigProps } from './types'
+import { CIConfigProps } from '@Components/ciConfig/types'
+import { DockerConfigOverrideKeys } from '@Components/ciPipeline/types'
+import { CreateAppFormStateActionType, UpdateTemplateConfigProps } from './types'
 
-const UpdateTemplateConfig = ({ formState, isJobView }: UpdateTemplateConfigProps) => {
+const parentState: CIConfigProps['parentState'] = {
+    loadingState: null,
+    selectedCIPipeline: null,
+    dockerRegistries: null,
+    sourceConfig: null,
+    ciConfig: null,
+    defaultDockerConfigs: null,
+    currentCIBuildType: null,
+}
+
+const UpdateTemplateConfig = ({ formState, isJobView, handleFormStateChange }: UpdateTemplateConfigProps) => {
     const stringTemplateId = formState.templateId.toString()
+
+    const handleBuildConfigurationChange = (key, value) => {
+        switch (key) {
+            case DockerConfigOverrideKeys.dockerRegistry:
+                handleFormStateChange({
+                    action: CreateAppFormStateActionType.updateBuildConfiguration,
+                    value: {
+                        ...formState.buildConfiguration,
+                        dockerRegistry: value,
+                    },
+                })
+                break
+            case DockerConfigOverrideKeys.dockerRepository:
+                handleFormStateChange({
+                    action: CreateAppFormStateActionType.updateBuildConfiguration,
+                    value: {
+                        ...formState.buildConfiguration,
+                        dockerRepository: value,
+                    },
+                })
+                break
+            default:
+                break
+        }
+    }
+
+    const handleCIConfigParentStateUpdate: CIConfigProps['setParentState'] = (updatedParentStateOrHandler) => {
+        const {
+            ciConfig: { dockerRegistry, dockerRepository },
+        } = updatedParentStateOrHandler
+
+        handleFormStateChange({
+            action: CreateAppFormStateActionType.updateBuildConfiguration,
+            value: {
+                dockerRegistry,
+                dockerRepository,
+            },
+        })
+    }
 
     return (
         <>
@@ -31,16 +81,9 @@ const UpdateTemplateConfig = ({ formState, isJobView }: UpdateTemplateConfigProp
                     allowOverride={false}
                     isCDPipeline={false}
                     respondOnSuccess={noop}
-                    parentState={{
-                        loadingState: ComponentStates.loading,
-                        selectedCIPipeline: null,
-                        dockerRegistries: null,
-                        sourceConfig: null,
-                        ciConfig: null,
-                        defaultDockerConfigs: null,
-                        currentCIBuildType: null,
-                    }}
-                    setParentState={noop}
+                    parentState={parentState}
+                    setParentState={handleCIConfigParentStateUpdate}
+                    updateDockerConfigOverride={handleBuildConfigurationChange}
                 />
             </div>
         </>

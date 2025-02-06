@@ -143,6 +143,9 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                     updatedFormState.cloneAppId = value
                     updatedFormErrorState.cloneAppId = validateFormField('cloneAppId', value)
                     break
+                case CreateAppFormStateActionType.updateBuildConfiguration:
+                    updatedFormState.buildConfiguration = value
+                    break
                 default:
                     throw new Error(`Invalid action type: ${action}`)
             }
@@ -243,7 +246,11 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                             selectedCreationMethod={selectedCreationMethod}
                         />
                         {selectedCreationMethod === CreationMethodType.template && formState.templateId && (
-                            <UpdateTemplateConfig formState={formState} isJobView={isJobView} />
+                            <UpdateTemplateConfig
+                                formState={formState}
+                                isJobView={isJobView}
+                                handleFormStateChange={handleFormStateChange}
+                            />
                         )}
                     </div>
                 </div>

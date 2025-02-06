@@ -101,8 +101,8 @@ export interface CIConfigProps extends Pick<CIContainerRegistryConfigProps, 'isC
     configOverrideView?: boolean
     allowOverride?: boolean
     parentState?: CIConfigParentState
-    setParentState?: React.Dispatch<React.SetStateAction<CIConfigParentState>>
-    updateDockerConfigOverride?: (key, value) => void
+    setParentState?: (parentState: CIConfigParentState) => void
+    updateDockerConfigOverride?: (key: string, value) => void
     isCDPipeline?: boolean
     isCiPipeline?: boolean
     loadingStateFromParent?: LoadingState
@@ -141,7 +141,8 @@ export interface SourceConfigType {
     templateId: number
     material: SelectedGitMaterialType[]
 }
-export interface CIConfigFormProps extends Pick<CIConfigProps, 'isCreateAppView'> {
+export interface CIConfigFormProps
+    extends Required<Pick<CIConfigProps, 'isCreateAppView' | 'parentState' | 'setParentState'>> {
     parentReloading: boolean
     dockerRegistries: any
     sourceConfig: SourceConfigType
@@ -155,7 +156,7 @@ export interface CIConfigFormProps extends Pick<CIConfigProps, 'isCreateAppView'
     isCDPipeline: boolean
     isCiPipeline: boolean
     parentState: CIConfigParentState
-    setParentState: React.Dispatch<React.SetStateAction<CIConfigParentState>>
+    setParentState: (parentState: CIConfigParentState) => void
     loadingStateFromParent?: LoadingState
     setLoadingStateFromParent?: React.Dispatch<React.SetStateAction<LoadingState>>
 }
