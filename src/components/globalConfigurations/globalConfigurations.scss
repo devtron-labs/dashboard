@@ -20,6 +20,11 @@
     grid-template-columns: 240px 1fr;
     height: 100vh;
 
+    &--full-content {
+        grid-template-rows: 1fr;
+        grid-template-columns: 1fr;
+    }
+
     .dc__page-header {
         grid-column: 1 / -1;
     }

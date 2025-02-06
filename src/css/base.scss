@@ -1633,6 +1633,11 @@ button.anchor {
     position: relative;
     animation: shimmer-loading 1s infinite linear;
     height: 16px;
+
+    &__fill-dimensions {
+        height: 100%;
+        width: 100%;
+    }
 }
 
 .dc__resizable-textarea {
@@ -2049,6 +2054,10 @@ button.anchor {
 
 .dc__content-end {
     justify-content: flex-end !important;
+}
+
+.dc__content-space-around {
+    justify-content: space-around;
 }
 
 // Text alignment
