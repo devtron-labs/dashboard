@@ -95,6 +95,7 @@ export default function AppGroupAppFilter() {
     }
 
     const onChangeFilter = (selectedValue): void => {
+        handleFilterGAEvent(true)
         if (selectedFilterTab === AppFilterTabs.APP_FILTER) {
             setSelectedAppList(selectedValue)
             setSelectedGroupFilter([])

@@ -16,6 +16,7 @@
 
 import { ACTION_STATE, ResponseType, ScanResultDTO, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import { fetchAppDetailsInTime } from '@Components/app/service'
+import { MultiValue } from 'react-select'
 import { AggregatedNodes, OptionType } from '../../types'
 import { SyncErrorType, AppDetails } from '../../../v2/appDetails/appDetails.type'
 
@@ -51,6 +52,11 @@ export type CalendarFocusInputType = 'startDate' | 'endDate'
 export interface AppDetailsPathParams {
     appId: string
     envId?: string
+}
+
+export interface AppDetailsProps {
+    selectedEnvList?: MultiValue<OptionType>
+    clearEnvListSelection?: () => void
 }
 
 export interface SyncStageResourceDetail {
@@ -191,7 +197,6 @@ export interface DetailsType {
     showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
     isVirtualEnvRef?: React.MutableRefObject<boolean>
     isDeploymentBlocked?: boolean
-    filteredEnvIds?: string
     deploymentUserActionState?: ACTION_STATE
     onCloseHideDeploymentWindowConfirmationModal?: () => void
 }

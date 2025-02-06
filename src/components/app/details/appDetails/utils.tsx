@@ -220,17 +220,6 @@ export function getGrafanaBaseURL(chartName: ChartTypes): string {
     return url
 }
 
-export function getPodNameSuffix(nodeName: string, isAppDeployment: boolean, nodesMap: any, kind: string): string {
-    if (Nodes.Pod !== kind || !isAppDeployment) {
-        return ''
-    }
-    if (!nodesMap.has(nodeName)) {
-        return ''
-    }
-    const pod = nodesMap.get(nodeName)
-    return pod.isNew ? '(new)' : '(old)'
-}
-
 interface NodeItems {
     label: string
     value: string
@@ -239,33 +228,6 @@ interface NodeItems {
 interface SelectedNodeItems {
     label: string
     value: string
-}
-
-export function getSelectedNodeItems(
-    selectedNodes: string,
-    nodeItems: NodeItems[],
-    isAppDeployment: boolean,
-    nodesMap: any,
-    kind: string,
-): SelectedNodeItems[] {
-    let selectedNodeItems = []
-    if (selectedNodes == 'All pods') {
-        selectedNodeItems = nodeItems
-    } else if (selectedNodes == 'All new pods') {
-        const result = nodeItems.filter((item) => item.label.includes('(new)'))
-        selectedNodeItems = result
-    } else if (selectedNodes == 'All old pods') {
-        const result = nodeItems.filter((item) => item.label.includes('(old)'))
-        selectedNodeItems = result
-    } else {
-        const initialNode = {
-            label: selectedNodes + getPodNameSuffix(selectedNodes, isAppDeployment, nodesMap, kind),
-            value: selectedNodes,
-        }
-        selectedNodeItems.push(initialNode)
-    }
-
-    return selectedNodeItems
 }
 
 export function addChartNameExtensionToBaseURL(
@@ -370,49 +332,6 @@ export const validateMomentDate = (date: string, format: string): string => {
         return '--'
     }
     return moment(date, format).fromNow()
-}
-
-class EnvironmentSelection {
-    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
-        throw new Error('This method should be overridden by concrete classes.')
-    }
-}
-
-export class NoParamsNoEnvContext extends EnvironmentSelection {
-    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
-        return _envList[0].environmentId
-    }
-}
-
-export class NoParamsWithEnvContext extends EnvironmentSelection {
-    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
-        if (environmentId && _envList.map((env) => env.environmentId).includes(environmentId)) {
-            return environmentId
-        }
-        return _envList[0].environmentId
-    }
-}
-
-export class ParamsNoEnvContext extends EnvironmentSelection {
-    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
-        if (params.envId && _envList.map((env) => env.environmentId).includes(+params.envId)) {
-            return +params.envId
-        }
-        return _envList[0].environmentId
-    }
-}
-
-export class ParamsAndEnvContext extends EnvironmentSelection {
-    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
-        if (params.envId && _envList.map((env) => env.environmentId).includes(+params.envId)) {
-            // If environmentId is present and different from params.envContext, set environmentId
-            if (environmentId && +environmentId !== +params.envId) {
-                setEnvironmentId(+params.envId)
-            }
-            return +params.envId
-        }
-        return _envList[0].environmentId
-    }
 }
 
 export const getDeployButtonStyle = (actionState: ACTION_STATE): ButtonStyleType => {

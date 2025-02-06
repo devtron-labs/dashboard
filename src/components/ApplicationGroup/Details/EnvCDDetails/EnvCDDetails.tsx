@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
     Progressing,
     showError,
@@ -56,13 +56,14 @@ import {
     renderVirtualHistoryArtifacts,
 } from '../../../app/details/cdDetails/utils'
 
-export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultType) {
+export default function EnvCDDetails({ filteredAppIds, clearAppListSelection }: AppGroupDetailDefaultType) {
     const { appId, envId, triggerId, pipelineId } = useParams<{
         appId: string
         envId: string
         triggerId: string
         pipelineId: string
     }>()
+    const isMounted = useRef<boolean>(false)
     const [pagination, setPagination] = useState<{ offset: number; size: number }>({ offset: 0, size: 20 })
     const [hasMore, setHasMore] = useState<boolean>(false)
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
@@ -79,6 +80,13 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         autoBottomScroll: triggerDetails && TRIGGER_STATUS_PROGRESSING.includes(triggerDetails.status.toLowerCase()),
     })
 
+    useEffect(() => {
+        if (appId && !isMounted.current) {
+            clearAppListSelection()
+        }
+        isMounted.current = true
+    }, [])
+
     const [loading, result] = useAsync(
         () =>
             Promise.allSettled([
@@ -86,6 +94,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                 getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
             ]),
         [filteredAppIds],
+        isMounted.current,
     )
     const [loadingDeploymentHistory, deploymentHistoryResult, , , , dependencyState] = useAsync(
         () => getTriggerHistory({ appId: Number(appId), envId: Number(envId), pagination }),
@@ -96,7 +105,6 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     const { replace } = useHistory()
     const { currentEnvironmentName } = useAppContext()
     useInterval(pollHistory, 30000)
-
 
     useEffect(() => {
         if (result?.[0]?.['value']?.result?.length) {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { generatePath, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
 import {
@@ -41,12 +41,20 @@ import ApplicationRoute from './ApplicationRoutes'
 const getApprovalPolicyConfigForEnv: (envId: number) => Promise<ResourceIdToResourceApprovalPolicyConfigMapType> =
     importComponentFromFELibrary('getApprovalPolicyConfigForEnv', null, 'function')
 
-const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
+const EnvConfig = ({ filteredAppIds, envName, clearAppListSelection }: AppGroupDetailDefaultType) => {
     // HOOKS
     const { path, params } = useRouteMatch<{ envId: string; appId: string }>()
     const { appId, envId } = params
     const { pathname } = useLocation()
     const { replace } = useHistory()
+    const isMounted = useRef<boolean>(false)
+
+    useEffect(() => {
+        if (appId && !isMounted.current) {
+            clearAppListSelection()
+        }
+        isMounted.current = true
+    }, [])
 
     // ASYNC CALLS
     const [loading, initDataResults] = useAsync(
@@ -58,6 +66,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
                     : null,
             ]),
         [filteredAppIds],
+        isMounted.current,
     )
     const [envConfigLoading, envConfigRes, , refetch] = useAsync(
         () => (appId ? getEnvConfig(+appId, +envId) : null),

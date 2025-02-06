@@ -71,3 +71,8 @@ export interface DeploymentDetailStepsType {
     userApprovalMetadata?: UserApprovalMetadataType
     isVirtualEnvironment?: boolean
 }
+
+export interface CDDetailsProps {
+    filteredEnvIds: string
+    clearEnvListSelection: () => void
+}

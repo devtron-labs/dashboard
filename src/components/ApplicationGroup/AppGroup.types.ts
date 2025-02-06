@@ -321,6 +321,7 @@ export interface AppGroupDetailDefaultType {
     description?: string
     getAppListData?: () => Promise<OptionType[]>
     handleSaveDescription?: (description: string) => Promise<void>
+    clearAppListSelection?: () => void
 }
 
 interface CIPipeline {

@@ -36,6 +36,7 @@ import {
     ConfirmationModalVariantType,
     ServerErrors,
     getIsRequestAborted,
+    stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
@@ -59,10 +60,8 @@ import { ReactComponent as ICHibernate } from '@Icons/ic-medium-hibernate.svg'
 import { ReactComponent as ICUnhibernate } from '@Icons/ic-medium-unhibernate.svg'
 import { ReactComponent as ForwardArrow } from '@Icons/ic-arrow-forward.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
-
 import { SourceInfo } from './SourceInfo'
 import { Application, Nodes, AggregatedNodes, NodeDetailTabs } from '../../types'
-import { NoParamsNoEnvContext, NoParamsWithEnvContext, ParamsNoEnvContext, ParamsAndEnvContext } from './utils'
 import { AppMetrics } from './AppMetrics'
 import IndexStore from '../../../v2/appDetails/index.store'
 import {
@@ -80,6 +79,7 @@ import { AppType, EnvType } from '../../../v2/appDetails/appDetails.type'
 import DeploymentStatusDetailModal from './DeploymentStatusDetailModal'
 import { getDeploymentStatusDetail } from './appDetails.service'
 import {
+    AppDetailsProps,
     DeletedAppComponentType,
     DeploymentStatusDetailsBreakdownDataType,
     DeploymentStatusDetailsType,
@@ -114,9 +114,9 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     'function',
 )
 
-export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string }) {
+export default function AppDetail({ selectedEnvList, clearEnvListSelection }: Readonly<AppDetailsProps>) {
     const params = useParams<{ appId: string; envId?: string }>()
-    const { push } = useHistory()
+    const { replace } = useHistory()
     const { path } = useRouteMatch()
     const { environmentId, setEnvironmentId } = useAppContext() // global state for app to synchronise environments
     const [isAppDeleted, setIsAppDeleted] = useState(false)
@@ -126,45 +126,44 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
     const isVirtualEnvRef = useRef(false)
     const [showDeploymentWindowConfirmation, setShowDeploymentWindowConfirmation] = useState(false)
 
-    const envList = useMemo(() => {
-        if (otherEnvsResult?.result?.length > 0) {
-            const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
-            const _envList =
-                otherEnvsResult.result
-                    .filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
-                    ?.sort((a, b) => (a.environmentName > b.environmentName ? 1 : -1)) || []
+    const selectedEnvsMap = new Map(selectedEnvList.map((env) => [+env.value, true]))
+    const envList = (
+        (selectedEnvList.length
+            ? otherEnvsResult?.result?.filter((env) => selectedEnvsMap.get(env.environmentId))
+            : otherEnvsResult?.result) || []
+    ).sort((a, b) => stringComparatorBySortOrder(a.environmentName, b.environmentName))
 
-            if (_envList.length > 0) {
-                let selector
-                if (!params.envId && !environmentId) {
-                    selector = new NoParamsNoEnvContext()
-                } else if (!params.envId && environmentId) {
-                    selector = new NoParamsWithEnvContext()
-                } else if (params.envId && !environmentId) {
-                    selector = new ParamsNoEnvContext()
-                } else if (params.envId && environmentId) {
-                    selector = new ParamsAndEnvContext()
-                }
+    useEffect(() => {
+        if (params.envId) {
+            clearEnvListSelection()
+        }
+    }, [])
 
-                const selectedEnvId = selector.resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId)
+    useEffect(() => {
+        if (envList.length > 0) {
+            const userDefinedEnvId: number = params.envId && !isNaN(+params.envId) ? +params.envId : environmentId
+            const selectedEnvId: number =
+                userDefinedEnvId && envList.some((env) => env.environmentId === userDefinedEnvId)
+                    ? userDefinedEnvId
+                    : envList[0].environmentId
 
-                // Set the URL and push to navigation stack
-                if (selectedEnvId) {
-                    if (String(selectedEnvId) !== String(params.envId)) {
-                        const newUrl = getAppDetailsURL(params.appId, selectedEnvId)
-                        push(newUrl)
-                    }
-                } else {
-                    setEnvironmentId(null)
+            if (selectedEnvId !== +params.envId) {
+                setEnvironmentId(+params.envId)
+            }
+
+            // Set the URL and push to navigation stack
+            if (selectedEnvId) {
+                if (String(selectedEnvId) !== String(params.envId)) {
+                    const newUrl = getAppDetailsURL(params.appId, selectedEnvId)
+                    replace(newUrl)
                 }
             } else {
                 setEnvironmentId(null)
             }
-            // Return the filtered and sorted environment list
-            return _envList
+        } else {
+            setEnvironmentId(null)
         }
-        return []
-    }, [filteredEnvIds, otherEnvsResult])
+    }, [selectedEnvList, otherEnvsResult])
 
     useEffect(() => {
         if (!params.envId) {
@@ -228,7 +227,6 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
                     isAppDeleted={isAppDeleted}
                     isVirtualEnvRef={isVirtualEnvRef}
                     isDeploymentBlocked={showDeploymentWindowConfirmation}
-                    filteredEnvIds={filteredEnvIds}
                     deploymentUserActionState={deploymentUserActionState}
                 />
             </Route>
@@ -900,17 +898,6 @@ export const EnvSelector = ({ environments }: { environments: any }) => {
         environments && !environments.deploymentAppDeleteRequest
             ? sortObjectArrayAlphabetically(environments, 'environmentName')
             : environments
-
-    const formatOptionLabel = (option): JSX.Element => {
-        return (
-            <div>
-                <div className="w-100 dc__ellipsis-right">{option.label}</div>
-                {option.description && (
-                    <small className="dc__word-break-all dc__white-space-normal fs-12 cn-7">{option.description}</small>
-                )}
-            </div>
-        )
-    }
 
     const groupList =
         sortedEnvironments?.reduce((acc, env) => {

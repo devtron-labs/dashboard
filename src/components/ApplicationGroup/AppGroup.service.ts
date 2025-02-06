@@ -68,7 +68,7 @@ export function getCIConfig(envID: string, appIds: string): Promise<ResponseType
 }
 
 export function getCIConfigMin(envID: string, appIds: string): Promise<ResponseType> {
-    return get(`${Routes.ENV_WORKFLOW}/${envID}/${URLS.APP_CI_CONFIG}/min${getFilteredAppQueryString(appIds)}`)
+    return get(`${Routes.ENV_WORKFLOW}/${envID}/${Routes.APP_CI_PIPELINE}${getFilteredAppQueryString(appIds)}`)
 }
 
 export function getCDConfig(envID: string, appIds: string): Promise<ResponseType> {
