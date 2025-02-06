@@ -208,7 +208,6 @@ export const Routes = {
     NODE_LIST: 'k8s/capacity/node/list',
     TAINTS_EDIT: 'k8s/capacity/node/taints/edit',
     HELM_APP_TEMPLATE_CHART: 'application/template-chart',
-    TELEMETRY_EVENT: 'telemetry/event',
     DEPLOYMENT_STATUS: 'app/deployment-status/timeline',
     HELM_DEPLOYMENT_STATUS_TIMELINE_INSTALLED_APP: 'app-store/deployment-status/timeline',
     MANUAL_SYNC: 'app/deployment-status/manual-sync',
