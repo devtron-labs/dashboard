@@ -199,7 +199,7 @@ export const ConfigMapSecretDryRun = ({
                     dryRunConfigMapSecretData.externalType,
                     dryRunConfigMapSecretData.external,
                     componentType,
-                    'px-16 pb-16',
+                    'mr-16 ml-16',
                 )}
             </>
         )
