@@ -210,10 +210,6 @@ class ClusterList extends Component<ClusterListProps, any> {
         this.setState({ showEditCluster: !this.state.showEditCluster })
     }
 
-    handleCloseCreateClusterForm = () => {
-        this.props.history.push(URLS.GLOBAL_CONFIG_CLUSTER)
-    }
-
     toggleKubeConfigFile(updateKubeConfigFile: boolean) {
         this.setState({ isKubeConfigFile: updateKubeConfigFile })
     }
@@ -222,7 +218,7 @@ class ClusterList extends Component<ClusterListProps, any> {
         this.setState({ browseFile: !this.state.browseFile })
     }
 
-    handleCloseCreateEnvironmentForm = () => {
+    handleRedirectToClusterList = () => {
         this.props.history.push(URLS.GLOBAL_CONFIG_CLUSTER)
     }
 
@@ -288,7 +284,7 @@ class ClusterList extends Component<ClusterListProps, any> {
                 )}
 
                 <Route path={URLS.GLOBAL_CONFIG_CREATE_CLUSTER}>
-                    <Drawer position="right" width="1000px" onEscape={this.handleCloseCreateClusterForm}>
+                    <Drawer position="right" width="1000px" onEscape={this.handleRedirectToClusterList}>
                         <ClusterForm
                             {...getSSHConfig(this.state)}
                             id={null}
@@ -311,7 +307,7 @@ class ClusterList extends Component<ClusterListProps, any> {
                             toggleKubeConfigFile={this.toggleKubeConfigFile}
                             isKubeConfigFile={this.state.isKubeConfigFile}
                             toggleClusterDetails={this.toggleClusterDetails}
-                            handleCloseCreateClusterForm={this.handleCloseCreateClusterForm}
+                            handleCloseCreateClusterForm={this.handleRedirectToClusterList}
                             isVirtualCluster={false}
                             isProd={false}
                         />
@@ -338,7 +334,7 @@ class ClusterList extends Component<ClusterListProps, any> {
                                 prometheusEndpoint={prometheus_url}
                                 isProduction={null}
                                 description={null}
-                                hideClusterDrawer={this.handleCloseCreateEnvironmentForm}
+                                hideClusterDrawer={this.handleRedirectToClusterList}
                                 isVirtual={isVirtualCluster}
                             />
                         )
