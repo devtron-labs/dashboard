@@ -20,7 +20,6 @@ import {
     showError,
     Progressing,
     ErrorScreenManager,
-    DeleteDialog,
     InfoColourBar,
     ConditionalWrap,
     WorkflowNodeType,
@@ -34,6 +33,8 @@ import {
     CIPipelineNodeType,
     ChangeCIPayloadType,
     WorkflowOptionsModal,
+    ConfirmationModal,
+    ConfirmationModalVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
@@ -62,7 +63,6 @@ import './workflowEditor.scss'
 import CDSuccessModal from './CDSuccessModal'
 import NoGitOpsConfiguredWarning from './NoGitOpsConfiguredWarning'
 import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'
-import DeprecatedWarningModal from './DeprecatedWarningModal'
 import nojobs from '../../assets/img/empty-joblist.webp'
 import CDPipeline from '../cdPipeline/CDPipeline'
 import EmptyWorkflow from './EmptyWorkflow'
@@ -254,6 +254,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.setState({ view: ViewType.LOADING })
     }
 
+    closeDeleteModal = () => this.setState({ showDeleteDialog: false })
+
     deleteWorkflow = (appId?: string, workflowId?: number) => {
         deleteWorkflow(appId || this.props.match.params.appId, workflowId || this.state.workflowId)
             .then((response) => {
@@ -268,7 +270,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 }
 
                 if (response.status.toLowerCase() === 'ok') {
-                    this.setState({ showDeleteDialog: false })
+                    this.closeDeleteModal()
                     this.handleDisplayLoader()
                     ToastManager.showToast({
                         variant: ToastVariantType.success,
@@ -421,16 +423,26 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     renderDeleteDialog = () => {
         const wf = this.state.workflows.find((wf) => wf.id === this.state.workflowId)
-        if (this.state.showDeleteDialog) {
-            return (
-                <DeleteDialog
-                    title={`Delete '${wf?.name}' ?`}
-                    description={`Are you sure you want to delete this workflow from '${this.state.appName}'?`}
-                    closeDelete={() => this.setState({ showDeleteDialog: false })}
-                    delete={this.deleteWorkflow}
-                />
-            )
-        }
+        //As delete api gives 200 in case of cannot delete, so we using this component despite of DeleteConfirmationModal
+        return (
+            <ConfirmationModal
+                title={`Delete workflow '${wf?.name}' ?`}
+                variant={ConfirmationModalVariantType.delete}
+                subtitle={`Are you sure you want to delete this workflow from '${this.state.appName}'?`}
+                handleClose={this.closeDeleteModal}
+                showConfirmationModal={this.state.showDeleteDialog}
+                buttonConfig={{
+                    secondaryButtonConfig: {
+                        text: 'Cancel',
+                        onClick: this.closeDeleteModal,
+                    },
+                    primaryButtonConfig: {
+                        text: 'Delete',
+                        onClick: () => this.deleteWorkflow(),
+                    },
+                }}
+            />
+        )
     }
 
     closeSuccessPopup = () => {
@@ -615,9 +627,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         )
                     }}
                 />
-                <Route path={`${this.props.match.path}/deprecated-warning`}>
-                    <DeprecatedWarningModal closePopup={this.closePipeline} />
-                </Route>
                 {!this.props.isJobView && [
                     <Route
                         key={`${this.props.match.path}/webhook/`}

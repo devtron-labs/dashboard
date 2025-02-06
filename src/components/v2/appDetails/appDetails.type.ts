@@ -430,7 +430,7 @@ export interface AppStatusDetailType {
     appStatus?: string
     appStatusText?: string
     showFooter?: boolean
-    showConfigDriftInfo?: boolean
+    handleOpenConfigDriftModal?: () => void
 }
 
 export interface StatusFilterButtonType {
@@ -474,7 +474,7 @@ export enum ManifestCodeEditorMode {
     CANCEL = 'cancel',
 }
 
-export interface ManifestActionPropsType extends ResourceInfoActionPropsType, Pick<NodeDetailPropsType, 'isExternalApp'> {
+export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
     hideManagedFields: boolean
     toggleManagedFields: (managedFieldsExist: boolean) => void
     manifestViewRef: MutableRefObject<ManifestViewRefType>
@@ -488,6 +488,7 @@ export interface ManifestActionPropsType extends ResourceInfoActionPropsType, Pi
     handleUpdateUnableToParseManifest: (value: boolean) => void
     handleManifestGUIErrors: FormProps['onError']
     manifestGUIFormRef: FormProps['ref']
+    isManifestEditable: boolean
 }
 
 export interface NodeTreeDetailTabProps {

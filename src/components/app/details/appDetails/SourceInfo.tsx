@@ -74,6 +74,7 @@ export const SourceInfo = ({
     setErrorsList,
     filteredEnvIds,
     deploymentUserActionState,
+    handleOpenConfigDriftModal,
 }: SourceInfoType) => {
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
@@ -151,8 +152,7 @@ export const SourceInfo = ({
                         <div className="pl-8">
                             <ConfigSyncStatusButton
                                 areConfigurationsDrifted={appDetails.resourceTree.hasDrift}
-                                appId={appDetails.appId}
-                                envId={envId}
+                                handleOpenModal={handleOpenConfigDriftModal}
                             />
                         </div>
                     )}
@@ -203,18 +203,6 @@ export const SourceInfo = ({
                                         style={ButtonStyleType.neutral}
                                     />
                                 )}
-                                {window._env_.FEATURE_SWAP_TRAFFIC_ENABLE &&
-                                    SwapTraffic &&
-                                    !!appDetails.pcoId &&
-                                    !appDetails.trafficSwitched && (
-                                        <SwapTraffic
-                                            appName={appDetails.appName}
-                                            envName={appDetails.environmentName}
-                                            appId={appDetails.appId}
-                                            envId={appDetails.environmentId}
-                                            pcoId={appDetails.pcoId}
-                                        />
-                                    )}
                                 {!isVirtualEnvironment && showHibernateModal && (
                                     <Button
                                         dataTestId="app-details-hibernate-modal-button"
@@ -255,6 +243,18 @@ export const SourceInfo = ({
                                         }}
                                     />
                                 )}
+                                {window._env_.FEATURE_SWAP_TRAFFIC_ENABLE &&
+                                    SwapTraffic &&
+                                    !!appDetails.pcoId &&
+                                    !appDetails.trafficSwitched && (
+                                        <SwapTraffic
+                                            appName={appDetails.appName}
+                                            envName={appDetails.environmentName}
+                                            appId={appDetails.appId}
+                                            envId={appDetails.environmentId}
+                                            pcoId={appDetails.pcoId}
+                                        />
+                                    )}
                                 <AppDetailsCDButton
                                     appId={appDetails.appId}
                                     environmentId={appDetails.environmentId}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import {
     showError,
     Progressing,
@@ -27,7 +27,6 @@ import {
     ToastVariantType,
     ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
-import ReactSelect from 'react-select'
 import { useParams } from 'react-router-dom'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
