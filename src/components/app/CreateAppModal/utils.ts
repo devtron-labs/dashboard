@@ -1,7 +1,10 @@
 import { MAX_LENGTH_30 } from '@Config/constantMessaging'
 import { PATTERNS } from '@Config/constants'
 import { SelectPickerOptionType, ValidationResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { importComponentFromFELibrary } from '@Components/common'
 import { CreateAppFormStateType, CreateAppModalProps, CreationMethodType } from './types'
+
+const isFELibAvailable: boolean = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 export const validateAppName = (value: CreateAppFormStateType['name']): Required<ValidationResponseType> => {
     const re = PATTERNS.APP_NAME
@@ -61,7 +64,7 @@ export const getCreateMethodConfig = (
             label: `Clone ${labelSuffix}`,
             value: CreationMethodType.clone,
         },
-        ...(isJobView || !window._env_.FEATURE_APPLICATION_TEMPLATES_ENABLE
+        ...(isJobView || !window._env_.FEATURE_APPLICATION_TEMPLATES_ENABLE || !isFELibAvailable
             ? []
             : [{ label: `From template`, value: CreationMethodType.template }]),
     ]
