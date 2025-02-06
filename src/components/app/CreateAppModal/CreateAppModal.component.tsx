@@ -119,44 +119,49 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
     }
 
     const handleFormStateChange: ApplicationInfoFormProps['handleFormStateChange'] = ({ action, value }) => {
-        setFormErrorState((previousFormErrorState) => {
-            const updatedFormState = structuredClone(formState)
-            const updatedFormErrorState = structuredClone(previousFormErrorState)
+        setFormState((previousFormState) => {
+            const updatedFormState = structuredClone(previousFormState)
 
-            switch (action) {
-                case CreateAppFormStateActionType.updateProjectId:
-                    updatedFormState.projectId = value
-                    updatedFormErrorState.projectId = validateFormField('projectId', value)
-                    break
-                case CreateAppFormStateActionType.updateName:
-                    updatedFormState.name = value
-                    updatedFormErrorState.name = validateFormField('name', value)
-                    break
-                case CreateAppFormStateActionType.updateDescription:
-                    updatedFormState.description = value
-                    updatedFormErrorState.description = validateFormField('description', value)
-                    break
-                case CreateAppFormStateActionType.updateTags:
-                    updatedFormState.tags = value
-                    break
-                case CreateAppFormStateActionType.updateCloneAppId:
-                    updatedFormState.cloneAppId = value
-                    updatedFormErrorState.cloneAppId = validateFormField('cloneAppId', value)
-                    break
-                case CreateAppFormStateActionType.updateGitMaterials:
-                    updatedFormState.gitMaterials = value.data
-                    updatedFormErrorState.gitMaterials = value.isError
-                    break
-                case CreateAppFormStateActionType.updateBuildConfiguration:
-                    updatedFormState.buildConfiguration = value
-                    break
-                default:
-                    throw new Error(`Invalid action type: ${action}`)
-            }
+            setFormErrorState((previousFormErrorState) => {
+                const updatedFormErrorState = structuredClone(previousFormErrorState)
 
-            setFormState(updatedFormState)
+                switch (action) {
+                    case CreateAppFormStateActionType.updateProjectId:
+                        updatedFormState.projectId = value
+                        updatedFormErrorState.projectId = validateFormField('projectId', value)
+                        break
+                    case CreateAppFormStateActionType.updateName:
+                        updatedFormState.name = value
+                        updatedFormErrorState.name = validateFormField('name', value)
+                        break
+                    case CreateAppFormStateActionType.updateDescription:
+                        updatedFormState.description = value
+                        updatedFormErrorState.description = validateFormField('description', value)
+                        break
+                    case CreateAppFormStateActionType.updateTags:
+                        updatedFormState.tags = value
+                        break
+                    case CreateAppFormStateActionType.updateCloneAppId:
+                        updatedFormState.cloneAppId = value
+                        updatedFormErrorState.cloneAppId = validateFormField('cloneAppId', value)
+                        break
+                    case CreateAppFormStateActionType.updateGitMaterials:
+                        updatedFormState.gitMaterials = value.data
+                        updatedFormErrorState.gitMaterials = value.isError
+                        break
+                    case CreateAppFormStateActionType.updateBuildConfiguration:
+                        updatedFormState.buildConfiguration = value
+                        break
+                    default:
+                        throw new Error(`Invalid action type: ${action}`)
+                }
 
-            return updatedFormErrorState
+                setFormState(updatedFormState)
+
+                return updatedFormErrorState
+            })
+
+            return updatedFormState
         })
     }
 
