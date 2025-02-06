@@ -204,6 +204,7 @@ const AppComposeRouter = () => {
                         respondOnSuccess={respondOnSuccess}
                         isCDPipeline={isCDPipeline}
                         isCiPipeline={isCiPipeline}
+                        appId={appId}
                     />
                 </Route>
             )}

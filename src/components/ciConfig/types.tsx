@@ -96,7 +96,7 @@ export interface LoadingState {
     failed: boolean
 }
 
-export interface CIConfigProps {
+export interface CIConfigProps extends Pick<CIContainerRegistryConfigProps, 'isCreateAppView'> {
     respondOnSuccess: (redirection?: boolean) => void
     configOverrideView?: boolean
     allowOverride?: boolean
@@ -107,6 +107,7 @@ export interface CIConfigProps {
     isCiPipeline?: boolean
     loadingStateFromParent?: LoadingState
     setLoadingStateFromParent?: React.Dispatch<React.SetStateAction<LoadingState>>
+    appId: string
 }
 
 export interface CIConfigDiffViewProps {
@@ -140,7 +141,7 @@ export interface SourceConfigType {
     templateId: number
     material: SelectedGitMaterialType[]
 }
-export interface CIConfigFormProps {
+export interface CIConfigFormProps extends Pick<CIConfigProps, 'isCreateAppView'> {
     parentReloading: boolean
     dockerRegistries: any
     sourceConfig: SourceConfigType
@@ -159,7 +160,7 @@ export interface CIConfigFormProps {
     setLoadingStateFromParent?: React.Dispatch<React.SetStateAction<LoadingState>>
 }
 
-export interface AdvancedConfigOptionsProps {
+export interface AdvancedConfigOptionsProps extends Pick<CIConfigProps, 'appId'> {
     ciPipeline: CIPipelineDataType
 }
 
@@ -242,6 +243,7 @@ export interface CIContainerRegistryConfigProps {
     currentRegistry: any
     handleOnChangeConfig: (e) => void
     isCDPipeline: boolean
+    isCreateAppView?: boolean
 }
 
 export interface CIBuildArgType {

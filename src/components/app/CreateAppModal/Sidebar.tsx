@@ -13,7 +13,7 @@ const Sidebar = ({ selectedCreationMethod, handleCreationMethodChange, createMet
 
                     return (
                         <button
-                            className={`dc__transparent flex left dc__gap-8 py-6 px-8 ${isSelected ? 'br-4 bcb-1' : 'dc__hover-n50'}`}
+                            className={`dc__transparent flex left dc__gap-8 py-6 px-8 br-4 ${isSelected ? 'bcb-1' : 'dc__hover-n50'}`}
                             key={value}
                             aria-label={`Creation method: ${label}`}
                             type="button"

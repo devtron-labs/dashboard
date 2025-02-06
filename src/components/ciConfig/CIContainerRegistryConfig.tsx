@@ -45,6 +45,7 @@ export default function CIContainerRegistryConfig({
     currentRegistry,
     handleOnChangeConfig,
     isCDPipeline,
+    isCreateAppView,
 }: CIContainerRegistryConfigProps) {
     const [selectedRegistry, setSelectedRegistry] = useState(currentRegistry)
 
@@ -120,12 +121,14 @@ export default function CIContainerRegistryConfig({
     )
 
     return (
-        <div className="white-card white-card__docker-config dc__position-rel mb-12">
-            <h3 className="fs-14 fw-6 lh-20 m-0 pb-16" data-testid="store-container-image-heading">
-                Store container image at
-            </h3>
-            <div className="mb-4 form-row__docker">
-                <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
+        <div className={isCreateAppView ? '' : 'white-card white-card__docker-config dc__position-rel mb-12'}>
+            {!isCreateAppView && (
+                <h3 className="fs-14 fw-6 lh-20 m-0 pb-16" data-testid="store-container-image-heading">
+                    Store container image at
+                </h3>
+            )}
+            <div className="mb-4 flexbox dc__gap-16 form-row__docker">
+                <div className={`form__field dc__no-shrink w-250 ${configOverrideView ? 'mb-0-imp' : ''}`}>
                     {configOverrideView && !allowOverride ? (
                         <>
                             <label htmlFor="" className="form__label dc__required-field">
@@ -152,7 +155,7 @@ export default function CIContainerRegistryConfig({
                     )}
                     {registry.error && <label className="form__error">{registry.error}</label>}
                 </div>
-                <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
+                <div className={`form__field flex-grow-1 ${configOverrideView ? 'mb-0-imp' : ''}`}>
                     <label htmlFor="" className="form__label">
                         Container Repository&nbsp;
                         {selectedRegistry && REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.desiredFormat}
@@ -188,7 +191,7 @@ export default function CIContainerRegistryConfig({
                     )}
                 </div>
             </div>
-            {!configOverrideView && (
+            {!isCreateAppView && !configOverrideView && (
                 <InfoColourBar
                     classname="info_bar"
                     Icon={InfoIcon}
