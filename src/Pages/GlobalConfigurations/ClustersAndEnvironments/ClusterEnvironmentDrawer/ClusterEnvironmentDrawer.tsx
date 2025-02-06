@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import {
     Button,
@@ -31,6 +31,9 @@ import {
     ServerErrors,
     Drawer,
     stopPropagation,
+    GenericEmptyState,
+    ButtonComponentType,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
@@ -39,7 +42,8 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { saveEnvironment, updateEnvironment, deleteEnvironment } from '@Components/cluster/cluster.service'
 
 import { getNamespaceFromLocalStorage } from '@Components/cluster/cluster.util'
-import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Components/cluster/constants'
+import { URLS } from '@Config/routes'
+import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { ClusterEnvironmentDrawerFormProps, ClusterEnvironmentDrawerProps, ClusterNamespacesDTO } from './types'
 import { getClusterNamespaceByName, getClusterEnvironmentUpdatePayload, getNamespaceLabels } from './utils'
 import { clusterEnvironmentDrawerFormValidationSchema } from './schema'
@@ -147,12 +151,6 @@ export const ClusterEnvironmentDrawer = ({
         validations: clusterEnvironmentDrawerFormValidationSchema({ isNamespaceMandatory: !isVirtual }),
     })
 
-    useEffect(() => {
-        if (typeof Storage !== 'undefined' && !id) {
-            localStorage.removeItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY)
-        }
-    }, [])
-
     const onValidation =
         (clusterNamespacesData = clusterNamespaces.data): UseFormSubmitHandler<ClusterEnvironmentDrawerFormProps> =>
         async (formData) => {
@@ -247,6 +245,148 @@ export const ClusterEnvironmentDrawer = ({
         redirectToListAfterReload()
     }
 
+    const renderCreateClusterButton = () => (
+        <Button
+            dataTestId="add_cluster_button"
+            linkProps={{
+                to: URLS.GLOBAL_CONFIG_CREATE_CLUSTER,
+            }}
+            component={ButtonComponentType.link}
+            startIcon={<ICAdd />}
+            size={ComponentSizeType.medium}
+            text="Add cluster"
+        />
+    )
+
+    const renderContent = () => {
+        if (!clusterId) {
+            return (
+                <GenericEmptyState
+                    title="Cluster not found"
+                    subTitle="Please add cluster before adding an environment."
+                    isButtonAvailable
+                    renderButton={renderCreateClusterButton}
+                />
+            )
+        }
+
+        return (
+            <form
+                className="flex-grow-1 flexbox-col mh-0"
+                onSubmit={handleSubmit(namespaceLabels.labels ? withLabelEditValidation : onValidation())}
+            >
+                <div className="dc__overflow-auto p-20 flex-grow-1">
+                    <div className="mb-16">
+                        <CustomInput
+                            dataTestid="environment-name"
+                            labelClassName="dc__required-field"
+                            disabled={!!environmentName}
+                            placeholder={id ? 'sample-env-name' : 'Eg. production'}
+                            value={data.environmentName}
+                            error={errors.environmentName}
+                            {...register('environmentName')}
+                            label="Environment Name"
+                            autoFocus={!id}
+                            noTrim
+                        />
+                    </div>
+                    <div className="mb-16">
+                        <CustomInput
+                            dataTestid="enter-namespace"
+                            labelClassName={isVirtual ? '' : 'dc__required-field'}
+                            disabled={!!namespace}
+                            placeholder={id ? 'sample-namespace' : 'Eg. prod'}
+                            value={data.namespace}
+                            error={errors.namespace}
+                            {...register('namespace')}
+                            label="Namespace"
+                            noTrim
+                        />
+                    </div>
+                    {!isVirtual && (
+                        <div className="mb-16 flex left">
+                            <label htmlFor="env-production-checkbox" className="pr-16 flex cursor">
+                                <input
+                                    id="env-production-checkbox"
+                                    data-testid="production"
+                                    type="radio"
+                                    checked={data.isProduction}
+                                    value="true"
+                                    {...register('isProduction', { sanitizeFn: (value) => value === 'true' })}
+                                />
+                                <span className="ml-10 fw-4 mt-4 fs-13">Production</span>
+                            </label>
+                            <label htmlFor="env-non-production-checkbox" className="flex cursor">
+                                <input
+                                    id="env-non-production-checkbox"
+                                    data-testid="nonProduction"
+                                    type="radio"
+                                    checked={!data.isProduction}
+                                    value="false"
+                                    {...register('isProduction', { sanitizeFn: (value) => value === 'true' })}
+                                />
+                                <span className="ml-10 fw-4 mt-4 fs-13">Non - Production</span>
+                            </label>
+                        </div>
+                    )}
+                    <div className="mb-16">
+                        <CustomInput
+                            placeholder="Add a description for this environment"
+                            value={data.description}
+                            error={errors.description}
+                            {...register('description')}
+                            label="Description (Maximum 40 characters allowed)"
+                            autoFocus={!!id}
+                            noTrim
+                        />
+                    </div>
+                    {EnvironmentLabels && !isVirtual && (
+                        <div className="dc__border-top-n1 pt-16">
+                            <EnvironmentLabels
+                                tags={namespaceLabels.labels}
+                                setTags={setTags}
+                                isLoading={clusterNamespaces.isFetching}
+                                addLabel={addLabel}
+                                error={clusterNamespaces.error}
+                                reload={refetchNamespaceLabels}
+                            />
+                        </div>
+                    )}
+                </div>
+                <div className="dc__border-top flexbox dc__align-items-center dc__content-space py-16 px-20 dc__bottom-0 bg__primary">
+                    {id && (
+                        <Button
+                            text="Delete"
+                            variant={ButtonVariantType.secondary}
+                            style={ButtonStyleType.negative}
+                            startIcon={<Trash />}
+                            dataTestId="environment-delete-btn"
+                            onClick={showConfirmationModal}
+                        />
+                    )}
+                    <div className="flex right w-100 dc__gap-12">
+                        <Button
+                            text="Cancel"
+                            variant={ButtonVariantType.secondary}
+                            style={ButtonStyleType.neutral}
+                            dataTestId="environment-cancel-btn"
+                            onClick={hideClusterDrawer}
+                        />
+                        <Button
+                            text={id ? 'Update' : 'Save'}
+                            dataTestId="save-and-update-environment"
+                            isLoading={crudLoading}
+                            disabled={crudLoading || clusterNamespaces.isFetching}
+                            buttonProps={{
+                                type: 'submit',
+                            }}
+                        />
+                    </div>
+                </div>
+            </form>
+        )
+    }
+
     return (
         <Drawer position="right" width="800px" onEscape={hideClusterDrawer} onClose={hideClusterDrawer}>
             <div className="h-100 bg__primary flexbox-col" onClick={stopPropagation}>
@@ -261,119 +401,8 @@ export const ClusterEnvironmentDrawer = ({
                         <Close className="icon-dim-24 dc__align-right cursor" />
                     </button>
                 </div>
-                <form
-                    className="flex-grow-1 flexbox-col mh-0"
-                    onSubmit={handleSubmit(namespaceLabels.labels ? withLabelEditValidation : onValidation())}
-                >
-                    <div className="dc__overflow-auto p-20 flex-grow-1">
-                        <div className="mb-16">
-                            <CustomInput
-                                dataTestid="environment-name"
-                                labelClassName="dc__required-field"
-                                disabled={!!environmentName}
-                                placeholder={id ? 'sample-env-name' : 'Eg. production'}
-                                value={data.environmentName}
-                                error={errors.environmentName}
-                                {...register('environmentName')}
-                                label="Environment Name"
-                                autoFocus={!id}
-                                noTrim
-                            />
-                        </div>
-                        <div className="mb-16">
-                            <CustomInput
-                                dataTestid="enter-namespace"
-                                labelClassName={isVirtual ? '' : 'dc__required-field'}
-                                disabled={!!namespace}
-                                placeholder={id ? 'sample-namespace' : 'Eg. prod'}
-                                value={data.namespace}
-                                error={errors.namespace}
-                                {...register('namespace')}
-                                label="Namespace"
-                                noTrim
-                            />
-                        </div>
-                        {!isVirtual && (
-                            <div className="mb-16 flex left">
-                                <label htmlFor="env-production-checkbox" className="pr-16 flex cursor">
-                                    <input
-                                        id="env-production-checkbox"
-                                        data-testid="production"
-                                        type="radio"
-                                        checked={data.isProduction}
-                                        value="true"
-                                        {...register('isProduction', { sanitizeFn: (value) => value === 'true' })}
-                                    />
-                                    <span className="ml-10 fw-4 mt-4 fs-13">Production</span>
-                                </label>
-                                <label htmlFor="env-non-production-checkbox" className="flex cursor">
-                                    <input
-                                        id="env-non-production-checkbox"
-                                        data-testid="nonProduction"
-                                        type="radio"
-                                        checked={!data.isProduction}
-                                        value="false"
-                                        {...register('isProduction', { sanitizeFn: (value) => value === 'true' })}
-                                    />
-                                    <span className="ml-10 fw-4 mt-4 fs-13">Non - Production</span>
-                                </label>
-                            </div>
-                        )}
-                        <div className="mb-16">
-                            <CustomInput
-                                placeholder="Add a description for this environment"
-                                value={data.description}
-                                error={errors.description}
-                                {...register('description')}
-                                label="Description (Maximum 40 characters allowed)"
-                                autoFocus={!!id}
-                                noTrim
-                            />
-                        </div>
-                        {EnvironmentLabels && !isVirtual && (
-                            <div className="dc__border-top-n1 pt-16">
-                                <EnvironmentLabels
-                                    tags={namespaceLabels.labels}
-                                    setTags={setTags}
-                                    isLoading={clusterNamespaces.isFetching}
-                                    addLabel={addLabel}
-                                    error={clusterNamespaces.error}
-                                    reload={refetchNamespaceLabels}
-                                />
-                            </div>
-                        )}
-                    </div>
-                    <div className="dc__border-top flexbox dc__align-items-center dc__content-space py-16 px-20 dc__bottom-0 bg__primary">
-                        {id && (
-                            <Button
-                                text="Delete"
-                                variant={ButtonVariantType.secondary}
-                                style={ButtonStyleType.negative}
-                                startIcon={<Trash />}
-                                dataTestId="environment-delete-btn"
-                                onClick={showConfirmationModal}
-                            />
-                        )}
-                        <div className="flex right w-100 dc__gap-12">
-                            <Button
-                                text="Cancel"
-                                variant={ButtonVariantType.secondary}
-                                style={ButtonStyleType.neutral}
-                                dataTestId="environment-cancel-btn"
-                                onClick={hideClusterDrawer}
-                            />
-                            <Button
-                                text={id ? 'Update' : 'Save'}
-                                dataTestId="save-and-update-environment"
-                                isLoading={crudLoading}
-                                disabled={crudLoading || clusterNamespaces.isFetching}
-                                buttonProps={{
-                                    type: 'submit',
-                                }}
-                            />
-                        </div>
-                    </div>
-                </form>
+
+                {renderContent()}
 
                 <EnvironmentDeleteComponent
                     environmentName={data.environmentName}

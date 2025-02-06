@@ -23,7 +23,7 @@ import { validateMigrationSource } from './service'
 import { GENERIC_SECTION_ERROR_STATE_COMMON_PROPS } from './constants'
 import { generateArgoAppOption, generateClusterOption, sanitizeValidateMigrationSourceResponse } from './utils'
 
-const RESOURCES_TO_FETCH: ResourceKindType.cluster[] = [ResourceKindType.cluster]
+const RESOURCES_TO_FETCH: [ResourceKindType.cluster] = [ResourceKindType.cluster]
 
 const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormState }: MigrateFromArgoProps) => {
     const { appId } = useParams<Pick<BaseURLParams, 'appId'>>()
@@ -91,7 +91,6 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
     const clusterOptions = (resourcesOptionsMap?.[ResourceKindType.cluster] || [])
         .filter((cluster) => !cluster.isVirtual)
         .map<SelectClusterOptionType>((cluster) => generateClusterOption(cluster.name, cluster.id))
-        .sort((a, b) => stringComparatorBySortOrder(a.label as string, b.label as string))
 
     const argoAppListOptions = (argoAppListResponse?.result || [])
         .map<SelectArgoAppOptionType>((argoApp) =>

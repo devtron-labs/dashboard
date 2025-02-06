@@ -185,23 +185,19 @@ const MigrateToDevtronValidationFactory = ({
     )
 
     const handleAddEnvironmentClick = () => {
-        if (typeof Storage !== 'undefined') {
-            const environmentFormData: AddEnvironmentFormPrefilledInfoType = {
-                namespace: destination.namespace,
-            }
-
-            localStorage.setItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY, JSON.stringify(environmentFormData))
+        const environmentFormData: AddEnvironmentFormPrefilledInfoType = {
+            namespace: destination.namespace,
         }
+
+        localStorage.setItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY, JSON.stringify(environmentFormData))
     }
 
     const handleAddClusterClick = () => {
-        if (typeof Storage !== 'undefined') {
-            const clusterFormData: AddClusterFormPrefilledInfoType = {
-                serverURL: destination.clusterServerUrl,
-            }
-
-            localStorage.setItem(ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY, JSON.stringify(clusterFormData))
+        const clusterFormData: AddClusterFormPrefilledInfoType = {
+            serverURL: destination.clusterServerUrl,
         }
+
+        localStorage.setItem(ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY, JSON.stringify(clusterFormData))
     }
 
     const renderContent = () => {
@@ -342,7 +338,7 @@ const MigrateToDevtronValidationFactory = ({
                 <InfoColourBar
                     Icon={ICInfoFilled}
                     message={getInfoBarInfoVariantMessage()}
-                    classname="dc__overflow-hidden py-6 px-10 bg__secondary border-top__secondary"
+                    classname="dc__overflow-hidden py-6 px-10 bg__secondary border__secondary--top"
                 />
             )
         }
@@ -352,7 +348,7 @@ const MigrateToDevtronValidationFactory = ({
                 <InfoColourBar
                     Icon={ICErrorExclamation}
                     message={getInfoErrorVariantMessage()}
-                    classname="dc__overflow-hidden py-6 px-10 bcr-50 border-top__secondary"
+                    classname="dc__overflow-hidden py-6 px-10 bcr-50 border__secondary--top"
                 />
             )
         }

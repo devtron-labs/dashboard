@@ -96,29 +96,31 @@ export const createTaintsList = (list: any[], nodeLabel: string): Map<string, No
 }
 
 export const getServerURLFromLocalStorage = (fallbackServerUrl: string): string => {
-    if (typeof Storage !== 'undefined' && localStorage.getItem(ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY)) {
+    const stringifiedClusterData = localStorage.getItem(ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY)
+
+    if (stringifiedClusterData) {
         try {
-            const clusterData: AddClusterFormPrefilledInfoType = JSON.parse(
-                localStorage.getItem(ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY),
-            )
+            const clusterData: AddClusterFormPrefilledInfoType = JSON.parse(stringifiedClusterData)
             const serverURL = clusterData?.serverURL || fallbackServerUrl
             return serverURL
         } catch {}
     }
 
+    localStorage.removeItem(ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY)
     return fallbackServerUrl
 }
 
 export const getNamespaceFromLocalStorage = (fallbackNamespace: string): string => {
-    if (typeof Storage !== 'undefined' && localStorage.getItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY)) {
+    const stringifiedEnvData = localStorage.getItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY)
+
+    if (stringifiedEnvData) {
         try {
-            const envData: AddEnvironmentFormPrefilledInfoType = JSON.parse(
-                localStorage.getItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY),
-            )
+            const envData: AddEnvironmentFormPrefilledInfoType = JSON.parse(stringifiedEnvData)
             const namespace = envData?.namespace || fallbackNamespace
             return namespace
         } catch {}
     }
 
+    localStorage.removeItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY)
     return fallbackNamespace
 }

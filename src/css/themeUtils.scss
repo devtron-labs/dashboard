@@ -107,10 +107,18 @@
 .border {
     &__primary {
         border: 1px solid var(--border-primary);
+
+        &--top {
+            border-top: 1px solid var(--border-primary);
+        }
     }
 
     &__secondary {
         border: 1px solid var(--border-secondary);
+
+        &--top {
+            border-top: 1px solid var(--border-secondary);
+        }
 
         &--bottom {
             border-bottom: 1px solid var(--border-secondary);
@@ -119,20 +127,10 @@
 
     &__white {
         border: 1px solid var(--white);
-    }
-}
 
-.border-top {
-    &__primary {
-        border-top: 1px solid var(--border-primary);
-    }
-
-    &__secondary {
-        border-top: 1px solid var(--border-secondary);
-    }
-
-    &__white {
-        border-top: 1px solid var(--white);
+        &--top {
+            border-top: 1px solid var(--white);
+        }
     }
 }
 

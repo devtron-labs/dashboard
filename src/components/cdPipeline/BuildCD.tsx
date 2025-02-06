@@ -838,7 +838,7 @@ export default function BuildCD({
                             <div className="flexbox px-12 py-8 dc__gap-8 bcb-1 br-4 mb-16">
                                 <ICInfo className="dc__no-shrink icon-dim-20 dc__no-shrink" />
                                 <span className="fs-13 fw-4 lh-20 cn-9 dc__word-break">
-                                    This deployment pipeline was linked to{' '}
+                                    This deployment pipeline was linked to&nbsp;
                                     {migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.GITOPS
                                         ? 'argo'
                                         : 'helm'}
