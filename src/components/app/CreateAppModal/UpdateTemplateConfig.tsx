@@ -19,7 +19,7 @@ const parentState: CIConfigProps['parentState'] = {
 const UpdateTemplateConfig = ({ formState, isJobView, handleFormStateChange }: UpdateTemplateConfigProps) => {
     const stringTemplateId = formState.templateId.toString()
 
-    const handleBuildConfigurationChange = (key, value) => {
+    const handleBuildConfigurationChange: CIConfigProps['updateDockerConfigOverride'] = (key, value) => {
         switch (key) {
             case DockerConfigOverrideKeys.dockerRegistry:
                 handleFormStateChange({
@@ -93,6 +93,8 @@ const UpdateTemplateConfig = ({ formState, isJobView, handleFormStateChange }: U
                     appId={stringTemplateId}
                     isJobView={isJobView}
                     handleGitMaterialsChange={handleGitMaterialsChange}
+                    setRepo={noop}
+                    toggleRepoSelectionTippy={noop}
                 />
             </div>
             <div className="br-8 border__secondary bg__primary p-20 flexbox-col dc__gap-16">

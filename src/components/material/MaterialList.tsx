@@ -22,7 +22,6 @@ import {
     sortCallback,
     AppListConstants,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { withRouter } from 'react-router-dom'
 import { getGitProviderListAuth, getSourceConfig } from '../../services/service'
 import { AppConfigStatus, ViewType, DOCUMENTATION, DEVTRON_NODE_DEPLOY_VIDEO } from '../../config'
 import { CreateMaterial } from './CreateMaterial'
@@ -86,7 +85,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
 
     handleSingleGitMaterialUpdate =
         (id: GitMaterialType['id']): UpdateMaterialProps['handleSingleGitMaterialUpdate'] =>
-            (updatedMaterial, isError) => {
+        (updatedMaterial, isError) => {
             if (this.props.handleGitMaterialsChange) {
                 this.props.handleGitMaterialsChange(
                     this.state.materials.map((mat) => (mat.id === id ? updatedMaterial : mat)),
@@ -257,4 +256,4 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
     }
 }
 
-export default withRouter(MaterialList)
+export default MaterialList
