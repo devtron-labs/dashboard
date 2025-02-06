@@ -25,11 +25,11 @@ import {
     HeaderWithCreateButton,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { CreateAppModal } from '@Pages/App/CreateAppModal'
 import { URLS } from '../../../config'
 import { INITIAL_EMPTY_MASTER_FILTERS, JobListViewType } from '../Constants'
 import JobListContainer from './JobListContainer'
 import { getJobStatusLabelFromValue, parseSearchParams } from '../Utils'
-import { CreateAppModal } from '../../app/CreateAppModal'
 import { getJobsInitFilters } from '../Service'
 import '../../app/list/list.scss'
 import {

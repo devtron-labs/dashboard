@@ -138,7 +138,7 @@ import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog
 import { VIEW_MODE } from '@Pages/Shared/ConfigMapSecret/constants'
 import IndexStore from '../../appDetails/index.store'
 import { AUTO_GENERATE_GITOPS_REPO, CHART_VALUE_ID } from './constant'
-import { validateAppName } from '@Components/app/CreateAppModal/utils'
+import { validateAppName } from '@Pages/App/CreateAppModal/utils'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 const getDownloadManifestUrl = importComponentFromFELibrary('getDownloadManifestUrl', null, 'function')

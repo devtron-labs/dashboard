@@ -59,6 +59,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCommonAppFilters } from '@Services/service'
 import { Cluster } from '@Services/service.types'
+import { CreateAppModal } from '@Pages/App/CreateAppModal'
 import { useAppContext } from '../../common'
 import { SERVER_MODE, DOCUMENTATION } from '../../../config'
 import HelmAppList from './HelmAppList'
@@ -84,7 +85,6 @@ import {
 } from './AppListType'
 import DevtronAppList from '../list/DevtronAppListContainer'
 import AppListFilters from './AppListFilters'
-import { CreateAppModal } from '../CreateAppModal'
 
 let interval
 
