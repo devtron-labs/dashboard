@@ -214,11 +214,24 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
         const request = {
             appName: formState.name,
             teamId: +formState.projectId,
-            templateId: formState.cloneAppId,
             description: formState.description?.trim(),
             labels: labelTags,
             // type 2 is for job type
             appType: isJobView ? 2 : null,
+            ...(selectedCreationMethod === CreationMethodType.clone
+                ? {
+                      templateId: formState.cloneAppId,
+                  }
+                : null),
+            ...(selectedCreationMethod === CreationMethodType.template
+                ? {
+                      templateId: formState.templateId,
+                      templatePatch: {
+                          gitMaterial: formState.gitMaterials,
+                          buildConfiguration: formState.buildConfiguration,
+                      },
+                  }
+                : null),
         }
 
         const createAPI = isJobView ? createJob : createApp
