@@ -143,6 +143,10 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                     updatedFormState.cloneAppId = value
                     updatedFormErrorState.cloneAppId = validateFormField('cloneAppId', value)
                     break
+                case CreateAppFormStateActionType.updateGitMaterials:
+                    updatedFormState.gitMaterials = value.data
+                    updatedFormErrorState.gitMaterials = value.isError
+                    break
                 case CreateAppFormStateActionType.updateBuildConfiguration:
                     updatedFormState.buildConfiguration = value
                     break

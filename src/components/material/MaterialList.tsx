@@ -26,8 +26,8 @@ import { withRouter } from 'react-router-dom'
 import { getGitProviderListAuth, getSourceConfig } from '../../services/service'
 import { AppConfigStatus, ViewType, DOCUMENTATION, DEVTRON_NODE_DEPLOY_VIDEO } from '../../config'
 import { CreateMaterial } from './CreateMaterial'
-import { UpdateMaterial } from './UpdateMaterial'
-import { MaterialListProps, MaterialListState } from './material.types'
+import { UpdateMaterial, UpdateMaterialProps } from './UpdateMaterial'
+import { GitMaterialType, MaterialListProps, MaterialListState } from './material.types'
 import { ReactComponent as GitHub } from '@Icons/ic-sample-app.svg'
 import { ReactComponent as PlayMedia } from '@Icons/ic-play-outline.svg'
 import { ReactComponent as Folder } from '@Icons/ic-folder-filled.svg'
@@ -46,13 +46,11 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
         this.isGitProviderValid = this.isGitProviderValid.bind(this)
         this.isCheckoutPathValid = this.isCheckoutPathValid.bind(this)
         this.refreshMaterials = this.refreshMaterials.bind(this)
+        this.handleSingleGitMaterialUpdate = this.handleSingleGitMaterialUpdate.bind(this)
     }
 
     getGitProviderConfig = () => {
-        Promise.all([
-            getSourceConfig(this.props.appId),
-            getGitProviderListAuth(this.props.appId),
-        ])
+        Promise.all([getSourceConfig(this.props.appId), getGitProviderListAuth(this.props.appId)])
             .then(([sourceConfigRes, providersRes]) => {
                 let materials = sourceConfigRes.result.material || []
                 const providers = providersRes.result
@@ -79,6 +77,23 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
     componentDidMount() {
         this.getGitProviderConfig()
     }
+
+    componentDidUpdate(_prevProps: MaterialListProps, prevState: MaterialListState) {
+        if (prevState.materials !== this.state.materials && this.props.handleGitMaterialsChange) {
+            this.props.handleGitMaterialsChange(this.state.materials, false)
+        }
+    }
+
+    handleSingleGitMaterialUpdate =
+        (id: GitMaterialType['id']): UpdateMaterialProps['handleSingleGitMaterialUpdate'] =>
+            (updatedMaterial, isError) => {
+            if (this.props.handleGitMaterialsChange) {
+                this.props.handleGitMaterialsChange(
+                    this.state.materials.map((mat) => (mat.id === id ? updatedMaterial : mat)),
+                    isError,
+                )
+            }
+        }
 
     static getDerivedStateFromProps(props, state) {
         if (props.configStatus !== state.configStatus) {
@@ -199,22 +214,23 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
         }
         return (
             <div className={!this.props.isCreateAppView ? 'form__app-compose' : ''}>
-                {!this.props.isCreateAppView && <>
-                    {this.renderPageHeader()}
-                    {!this.props.isJobView && !this.state.materials.length && this.renderSampleApp()}
-                    <CreateMaterial
-                        key={this.state.materials.length}
-                        appId={Number(this.props.appId)}
-                        isMultiGit={this.state.materials.length > 0}
-                        providers={this.state.providers}
-                        refreshMaterials={this.refreshMaterials}
-                        isGitProviderValid={this.isGitProviderValid}
-                        isCheckoutPathValid={this.isCheckoutPathValid}
-                        isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
-                        reload={this.getGitProviderConfig}
-                        isJobView={this.props.isJobView}
-                    />
-                </>}
+                {!this.props.isCreateAppView && (
+                    <>
+                        {this.renderPageHeader()}
+                        {!this.props.isJobView && !this.state.materials.length && this.renderSampleApp()}
+                        <CreateMaterial
+                            key={this.state.materials.length}
+                            appId={Number(this.props.appId)}
+                            isMultiGit={this.state.materials.length > 0}
+                            providers={this.state.providers}
+                            refreshMaterials={this.refreshMaterials}
+                            isGitProviderValid={this.isGitProviderValid}
+                            isCheckoutPathValid={this.isCheckoutPathValid}
+                            reload={this.getGitProviderConfig}
+                            isJobView={this.props.isJobView}
+                        />
+                    </>
+                )}
                 {this.state.materials.map((mat) => {
                     return (
                         <UpdateMaterial
@@ -227,12 +243,12 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                             refreshMaterials={this.refreshMaterials}
                             isGitProviderValid={this.isGitProviderValid}
                             isCheckoutPathValid={this.isCheckoutPathValid}
-                            isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
                             reload={this.getGitProviderConfig}
                             toggleRepoSelectionTippy={this.props.toggleRepoSelectionTippy}
                             setRepo={this.props.setRepo}
                             isJobView={this.props.isJobView}
                             isCreateAppView={this.props.isCreateAppView}
+                            handleSingleGitMaterialUpdate={this.handleSingleGitMaterialUpdate(mat.id)}
                         />
                     )
                 })}

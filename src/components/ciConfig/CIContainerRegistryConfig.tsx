@@ -177,7 +177,7 @@ export default function CIContainerRegistryConfig({
                                     : repository_name.value
                             }
                             onChange={handleOnChangeConfig}
-                            autoFocus={!configOverrideView}
+                            autoFocus={!configOverrideView && !isCreateAppView}
                             disabled={configOverrideView && !allowOverride}
                             data-testid="container-repository-textbox"
                             error={repository_name.error}

@@ -28,7 +28,6 @@ interface CreateMaterialProps {
     refreshMaterials: () => void
     isGitProviderValid
     isCheckoutPathValid
-    isWorkflowEditorUnlocked: boolean
     reload: () => void
     isJobView?: boolean
 }
@@ -280,7 +279,6 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 toggleCollapse={this.toggleCollapse}
                 save={this.save}
                 cancel={this.cancel}
-                isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
                 reload={this.props.reload}
                 isJobView={this.props.isJobView}
             />

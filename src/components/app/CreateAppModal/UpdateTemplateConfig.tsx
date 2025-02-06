@@ -3,6 +3,7 @@ import MaterialList from '@Components/material/MaterialList'
 import CIConfig from '@Components/ciConfig/CIConfig'
 import { CIConfigProps } from '@Components/ciConfig/types'
 import { DockerConfigOverrideKeys } from '@Components/ciPipeline/types'
+import { MaterialListProps } from '@Components/material/material.types'
 import { CreateAppFormStateActionType, UpdateTemplateConfigProps } from './types'
 
 const parentState: CIConfigProps['parentState'] = {
@@ -57,6 +58,20 @@ const UpdateTemplateConfig = ({ formState, isJobView, handleFormStateChange }: U
         })
     }
 
+    const handleGitMaterialsChange: MaterialListProps['handleGitMaterialsChange'] = (updatedGitMaterial, isError) => {
+        handleFormStateChange({
+            action: CreateAppFormStateActionType.updateGitMaterials,
+            value: {
+                data: updatedGitMaterial.map(({ id, gitProvider, url }) => ({
+                    id,
+                    gitProvider,
+                    url,
+                })),
+                isError,
+            },
+        })
+    }
+
     return (
         <>
             <div className="divider__secondary--horizontal" />
@@ -65,11 +80,9 @@ const UpdateTemplateConfig = ({ formState, isJobView, handleFormStateChange }: U
                 <MaterialList
                     isCreateAppView
                     respondOnSuccess={noop}
-                    isWorkflowEditorUnlocked
-                    toggleRepoSelectionTippy={noop}
-                    setRepo={noop}
                     appId={stringTemplateId}
                     isJobView={isJobView}
+                    handleGitMaterialsChange={handleGitMaterialsChange}
                 />
             </div>
             <div className="br-8 border__secondary bg__primary p-20 flexbox-col dc__gap-16">

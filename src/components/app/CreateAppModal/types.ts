@@ -17,7 +17,7 @@ export interface CreateAppFormStateType {
     tags: DynamicDataTableRowType<TagsTableColumnsType>[]
     cloneAppId: number | null
     templateId: number | null
-    gitMaterial: Pick<GitMaterialType, 'id' | 'url' | 'gitProvider'>
+    gitMaterials: Pick<GitMaterialType, 'id' | 'url' | 'gitProvider'>[]
     buildConfiguration: Required<Pick<CIConfigProps['parentState']['ciConfig'], 'dockerRegistry' | 'dockerRepository'>>
 }
 
@@ -27,7 +27,7 @@ export interface CreateAppFormErrorStateType {
     description: string
     tags: DynamicDataTableCellErrorType<TagsTableColumnsType>
     cloneAppId: string | null
-    gitMaterial: boolean
+    gitMaterials: boolean
 }
 
 export enum CreationMethodType {
@@ -42,7 +42,7 @@ export enum CreateAppFormStateActionType {
     updateDescription = 'updateDescription',
     updateTags = 'updateTags',
     updateCloneAppId = 'updateCloneAppId',
-    updateGitMaterial = 'updateGitMaterial',
+    updateGitMaterials = 'updateGitMaterials',
     updateBuildConfiguration = 'updateBuildConfiguration',
 }
 
@@ -67,8 +67,11 @@ export type HandleFormStateChangeParamsType =
           CreateAppFormStateType['cloneAppId']
       >
     | BaseHandleFormStateChangeParamsType<
-          CreateAppFormStateActionType.updateGitMaterial,
-          CreateAppFormStateType['gitMaterial']
+          CreateAppFormStateActionType.updateGitMaterials,
+          {
+              data: CreateAppFormStateType['gitMaterials']
+              isError: boolean
+          }
       >
     | BaseHandleFormStateChangeParamsType<
           CreateAppFormStateActionType.updateBuildConfiguration,

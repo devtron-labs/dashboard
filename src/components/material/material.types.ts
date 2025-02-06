@@ -17,10 +17,10 @@
 export interface MaterialListProps extends Pick<MaterialViewProps, 'isCreateAppView'> {
     appId: string
     respondOnSuccess: () => void
-    isWorkflowEditorUnlocked: boolean
     toggleRepoSelectionTippy: () => void
     setRepo: React.Dispatch<React.SetStateAction<string>>
     isJobView?: boolean
+    handleGitMaterialsChange: (updatedGitMaterial: GitMaterialType[], isError: boolean) => void
 }
 
 export interface GitMaterialType {
@@ -96,7 +96,6 @@ export interface MaterialViewProps {
     toggleCollapse: (event) => void
     save: (event) => void
     cancel: (event) => void
-    isWorkflowEditorUnlocked: boolean
     handleSubmoduleCheckbox: (event) => void
     appId?: number
     reload: () => void
