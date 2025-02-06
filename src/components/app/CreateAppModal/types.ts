@@ -100,7 +100,7 @@ export interface ProjectSelectorProps extends Required<Pick<SelectPickerProps, '
     handleProjectIdChange: (projectId: CreateAppFormStateType['projectId']) => void
 }
 
-export interface SidebarProps {
+export interface SidebarProps extends Pick<CreateAppModalProps, 'isJobView'> {
     selectedCreationMethod: CreationMethodType
     handleCreationMethodChange: (creationMethod: CreationMethodType) => void
     createMethodConfig: ReturnType<typeof getCreateMethodConfig>

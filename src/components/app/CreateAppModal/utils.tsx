@@ -2,6 +2,9 @@ import { MAX_LENGTH_30 } from '@Config/constantMessaging'
 import { PATTERNS } from '@Config/constants'
 import { SelectPickerOptionType, ValidationResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
+import { ReactComponent as ICNew } from '@Icons/ic-new.svg'
+import { ReactComponent as ICCopy } from '@Icons/ic-copy.svg'
+import { ReactComponent as ICCardStack } from '@Icons/ic-card-stack.svg'
 import { CreateAppFormStateType, CreateAppModalProps, CreationMethodType } from './types'
 
 const isFELibAvailable: boolean = importComponentFromFELibrary('isFELibAvailable', null, 'function')
@@ -52,20 +55,37 @@ export const validateCloneApp = (cloneAppId: CreateAppFormStateType['cloneAppId'
 
 export const getCreateMethodConfig = (
     isJobView: CreateAppModalProps['isJobView'],
-): SelectPickerOptionType<CreationMethodType>[] => {
+): (SelectPickerOptionType<CreationMethodType> & {
+    iconClass: string
+    selectedIconClass: string
+})[] => {
     const labelSuffix = isJobView ? 'job' : 'application'
 
     return [
         {
             label: `Blank ${labelSuffix}`,
             value: CreationMethodType.blank,
+            startIcon: <ICNew />,
+            iconClass: 'scn-8',
+            selectedIconClass: 'scb-5',
         },
         {
             label: `Clone ${labelSuffix}`,
             value: CreationMethodType.clone,
+            startIcon: <ICCopy />,
+            iconClass: 'fcn-8',
+            selectedIconClass: 'fcb-5',
         },
         ...(isJobView || !window._env_.FEATURE_APPLICATION_TEMPLATES_ENABLE || !isFELibAvailable
             ? []
-            : [{ label: `From template`, value: CreationMethodType.template }]),
+            : [
+                  {
+                      label: `From template`,
+                      value: CreationMethodType.template,
+                      startIcon: <ICCardStack />,
+                      iconClass: 'scn-8',
+                      selectedIconClass: 'scb-5',
+                  },
+              ]),
     ]
 }

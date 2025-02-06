@@ -244,6 +244,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                         selectedCreationMethod={selectedCreationMethod}
                         handleCreationMethodChange={setSelectedCreationMethod}
                         createMethodConfig={createMethodConfig}
+                        isJobView={isJobView}
                     />
                     <div className="p-20 flexbox-col dc__gap-20 flex-grow-1 bg__secondary h-100 dc__overflow-auto">
                         <ApplicationInfoForm
