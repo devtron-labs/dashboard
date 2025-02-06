@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { lazy, Suspense, useEffect, useState, useRef, useMemo } from 'react'
+import { lazy, Suspense, useEffect, useState, useRef, useMemo, FunctionComponent, Dispatch } from 'react'
 import {
     useUserEmail,
     showError,
@@ -27,10 +27,10 @@ import {
     ImageSelectionUtilityProvider,
     URLS as CommonURLS,
     AppListConstants,
-    MODES,
     DEVTRON_BASE_MAIN_ID,
     MainContext,
     getHashedValue,
+    ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -87,6 +87,17 @@ const SoftwareDistributionHubRenderProvider = importComponentFromFELibrary(
     null,
     'function',
 )
+const getIsPipelineRBACViewEnabled: () => Promise<boolean> = importComponentFromFELibrary(
+    'getIsPipelineRBACViewEnabled',
+    null,
+    'function',
+)
+const ViewIsPipelineRBACConfigured: FunctionComponent<{
+    isPipelineRBACViewEnabledLoading: boolean
+    isPipelineRBACViewEnabled: boolean
+    isPipelineRBACViewEnabledError: ServerErrors
+    setIsPipelineRBACViewEnabled: Dispatch<boolean>
+}> = importComponentFromFELibrary('ViewIsPipelineRBACConfigured', null, 'function')
 
 export default function NavigationRoutes() {
     const history = useHistory()
@@ -116,6 +127,17 @@ export default function NavigationRoutes() {
     const contextValue = useMemo(() => ({ environmentId, setEnvironmentId }), [environmentId])
     const [isAirgapped, setIsAirGapped] = useState(false)
     const [isManifestScanningEnabled, setIsManifestScanningEnabled] = useState<boolean>(false)
+    const [
+        isPipelineRBACViewEnabledLoading,
+        isPipelineRBACViewEnabled,
+        isPipelineRBACViewEnabledError,
+        ,
+        setIsPipelineRBACViewEnabled,
+    ] = useAsync(
+        getIsPipelineRBACViewEnabled ? () => getIsPipelineRBACViewEnabled() : () => Promise.resolve(false),
+        [serverMode],
+        serverMode === SERVER_MODE.FULL,
+    )
 
     const getInit = async (_serverMode: string) => {
         setLoginLoader(true)
@@ -196,7 +218,7 @@ export default function NavigationRoutes() {
             if (window._env_.GA_ENABLED) {
                 const path = location.pathname
                 // Using .then to use in useEffect
-                getHashedValue(email).then((hashedEmail) => { 
+                getHashedValue(email).then((hashedEmail) => {
                     ReactGA.initialize(window._env_.GA_TRACKING_ID, {
                         gaOptions: {
                             userId: hashedEmail,
@@ -347,6 +369,7 @@ export default function NavigationRoutes() {
         return <Reload />
     }
     const _isOnboardingPage = isOnboardingPage()
+
     return (
         <MainContextProvider
             value={{
@@ -368,6 +391,15 @@ export default function NavigationRoutes() {
                 isAirgapped,
                 isSuperAdmin,
                 isManifestScanningEnabled,
+                viewIsPipelineRBACConfiguredNode:
+                    serverMode === SERVER_MODE.FULL && ViewIsPipelineRBACConfigured ? (
+                        <ViewIsPipelineRBACConfigured
+                            isPipelineRBACViewEnabledLoading={isPipelineRBACViewEnabledLoading}
+                            isPipelineRBACViewEnabled={isPipelineRBACViewEnabled}
+                            isPipelineRBACViewEnabledError={isPipelineRBACViewEnabledError}
+                            setIsPipelineRBACViewEnabled={setIsPipelineRBACViewEnabled}
+                        />
+                    ) : null,
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
@@ -391,7 +423,9 @@ export default function NavigationRoutes() {
                         }`}
                     >
                         <Suspense
-                            fallback={<DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />}
+                            fallback={
+                                <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />
+                            }
                         >
                             <ErrorBoundary>
                                 <Switch>
