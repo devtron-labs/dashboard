@@ -4,6 +4,7 @@ import { ReactComponent as ICCaretLeftSmall } from '@Icons/ic-caret-left-small.s
 import { ChangeEvent, useState } from 'react'
 import { importComponentFromFELibrary } from '@Components/common'
 import { APP_TYPE } from '@Config/constants'
+import { ReactComponent as ICError } from '@Icons/ic-warning.svg'
 import ProjectSelector from './ProjectSelector'
 import {
     ApplicationInfoFormProps,
@@ -13,7 +14,6 @@ import {
     HandleFormStateChangeParamsType,
     ProjectSelectorProps,
 } from './types'
-import { ReactComponent as ICError } from '../../../assets/icons/ic-warning.svg'
 import AppToCloneSelector from './AppToCloneSelector'
 
 const MandatoryTagsContainer = importComponentFromFELibrary('MandatoryTagsContainer', null, 'function')

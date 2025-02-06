@@ -79,6 +79,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
 
     componentDidUpdate(_prevProps: MaterialListProps, prevState: MaterialListState) {
         if (prevState.materials !== this.state.materials && this.props.handleGitMaterialsChange) {
+            // Sync state with parent state
             this.props.handleGitMaterialsChange(this.state.materials, false)
         }
     }
@@ -87,6 +88,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
         (id: GitMaterialType['id']): UpdateMaterialProps['handleSingleGitMaterialUpdate'] =>
         (updatedMaterial, isError) => {
             if (this.props.handleGitMaterialsChange) {
+                // Sync state with parent state
                 this.props.handleGitMaterialsChange(
                     this.state.materials.map((mat) => (mat.id === id ? updatedMaterial : mat)),
                     isError,

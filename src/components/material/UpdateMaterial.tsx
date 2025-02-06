@@ -96,6 +96,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             })
         }
 
+        // This is for syncing the state with the parent state
         if (
             prevState.material.gitProvider.id !== this.state.material.gitProvider.id ||
             prevState.material.url !== this.state.material.url ||

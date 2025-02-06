@@ -156,7 +156,6 @@ export interface CIConfigFormProps
     isCDPipeline: boolean
     isCiPipeline: boolean
     parentState: CIConfigParentState
-    setParentState: (parentState: CIConfigParentState) => void
     loadingStateFromParent?: LoadingState
     setLoadingStateFromParent?: React.Dispatch<React.SetStateAction<LoadingState>>
 }
