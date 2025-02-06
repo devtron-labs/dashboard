@@ -17,11 +17,11 @@
 import React, { Component } from 'react'
 import { showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { updateMaterial } from './material.service'
-import { GitMaterialType, UpdateMaterialState } from './material.types'
+import { GitMaterialType, MaterialViewProps, UpdateMaterialState } from './material.types'
 import { MaterialView } from './MaterialView'
 import { isAWSCodeCommitURL } from '../common'
 
-interface UpdateMaterialProps {
+interface UpdateMaterialProps extends Pick<MaterialViewProps, 'isCreateAppView'> {
     appId: number
     isMultiGit: boolean
     preventRepoDelete: boolean
@@ -307,6 +307,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 toggleRepoSelectionTippy={this.props.toggleRepoSelectionTippy}
                 setRepo={this.props.setRepo}
                 isJobView={this.props.isJobView}
+                isCreateAppView={this.props.isCreateAppView}
             />
         )
     }

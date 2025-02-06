@@ -1,7 +1,7 @@
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
-import { UpdateMaterial } from '@Components/material/UpdateMaterial'
 import CIContainerRegistryConfig from '@Components/ciConfig/CIContainerRegistryConfig'
 import { CIFormStateOptionType } from '@Components/ciConfig/types'
+import MaterialList from '@Components/material/MaterialList'
 import { UpdateTemplateConfigProps } from './types'
 
 const UpdateTemplateConfig = ({ formState, isJobView }: UpdateTemplateConfigProps) => {
@@ -11,28 +11,15 @@ const UpdateTemplateConfig = ({ formState, isJobView }: UpdateTemplateConfigProp
     return (
         <>
             <div className="divider__secondary--horizontal" />
-            <div>
-                <UpdateMaterial
-                    appId={formState.templateId}
-                    isMultiGit={false}
-                    preventRepoDelete={false}
-                    providers={[]}
-                    material={{
-                        id: 1,
-                        name: 'some-name',
-                        gitProvider: { id: 1, name: 'some-name' },
-                        url: 'https://www.devtron.ai',
-                        checkoutPath: '',
-                        active: true,
-                        fetchSubmodules: false,
-                    }}
-                    refreshMaterials={noop}
-                    isGitProviderValid={noop}
-                    isCheckoutPathValid={noop}
-                    isWorkflowEditorUnlocked={false}
-                    reload={noop}
+            <div className="br-8 border__secondary bg__primary p-20 flexbox-col dc__gap-16">
+                <h4 className="fs-14 fw-6 lh-20 cn-9 m-0">Code Source</h4>
+                <MaterialList
+                    isCreateAppView
+                    respondOnSuccess={noop}
+                    isWorkflowEditorUnlocked
                     toggleRepoSelectionTippy={noop}
                     setRepo={noop}
+                    appId="1"
                     isJobView={isJobView}
                 />
             </div>

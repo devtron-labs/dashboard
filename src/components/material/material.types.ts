@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router-dom'
-
-export interface MaterialListProps extends RouteComponentProps<{ appId: string }> {
+export interface MaterialListProps extends Pick<MaterialViewProps, 'isCreateAppView'> {
+    appId: string
     respondOnSuccess: () => void
     isWorkflowEditorUnlocked: boolean
     toggleRepoSelectionTippy: () => void
@@ -105,6 +104,7 @@ export interface MaterialViewProps {
     toggleRepoSelectionTippy?: () => void
     setRepo?: React.Dispatch<React.SetStateAction<string>>
     isJobView?: boolean
+    isCreateAppView?: boolean
 }
 
 export interface MaterialViewState {

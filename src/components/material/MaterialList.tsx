@@ -50,8 +50,8 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
 
     getGitProviderConfig = () => {
         Promise.all([
-            getSourceConfig(this.props.match.params.appId),
-            getGitProviderListAuth(this.props.match.params.appId),
+            getSourceConfig(this.props.appId),
+            getGitProviderListAuth(this.props.appId),
         ])
             .then(([sourceConfigRes, providersRes]) => {
                 let materials = sourceConfigRes.result.material || []
@@ -94,7 +94,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
         if (this.state.materials.length < 1) {
             this.props.respondOnSuccess()
         }
-        getSourceConfig(this.props.match.params.appId).then((response) => {
+        getSourceConfig(this.props.appId).then((response) => {
             const materials = response.result.material.map((mat) => {
                 return {
                     ...mat,
@@ -198,26 +198,28 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
             return <ErrorScreenManager code={this.state.statusCode} />
         }
         return (
-            <div className="form__app-compose">
-                {this.renderPageHeader()}
-                {!this.props.isJobView && !this.state.materials.length && this.renderSampleApp()}
-                <CreateMaterial
-                    key={this.state.materials.length}
-                    appId={Number(this.props.match.params.appId)}
-                    isMultiGit={this.state.materials.length > 0}
-                    providers={this.state.providers}
-                    refreshMaterials={this.refreshMaterials}
-                    isGitProviderValid={this.isGitProviderValid}
-                    isCheckoutPathValid={this.isCheckoutPathValid}
-                    isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
-                    reload={this.getGitProviderConfig}
-                    isJobView={this.props.isJobView}
-                />
-                {this.state.materials.map((mat, index) => {
+            <div className={!this.props.isCreateAppView ? 'form__app-compose' : ''}>
+                {!this.props.isCreateAppView && <>
+                    {this.renderPageHeader()}
+                    {!this.props.isJobView && !this.state.materials.length && this.renderSampleApp()}
+                    <CreateMaterial
+                        key={this.state.materials.length}
+                        appId={Number(this.props.appId)}
+                        isMultiGit={this.state.materials.length > 0}
+                        providers={this.state.providers}
+                        refreshMaterials={this.refreshMaterials}
+                        isGitProviderValid={this.isGitProviderValid}
+                        isCheckoutPathValid={this.isCheckoutPathValid}
+                        isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
+                        reload={this.getGitProviderConfig}
+                        isJobView={this.props.isJobView}
+                    />
+                </>}
+                {this.state.materials.map((mat) => {
                     return (
                         <UpdateMaterial
                             key={mat.name}
-                            appId={Number(this.props.match.params.appId)}
+                            appId={Number(this.props.appId)}
                             isMultiGit={this.state.materials.length > 0}
                             preventRepoDelete={this.state.materials.length === 1}
                             providers={this.state.providers}
@@ -230,6 +232,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                             toggleRepoSelectionTippy={this.props.toggleRepoSelectionTippy}
                             setRepo={this.props.setRepo}
                             isJobView={this.props.isJobView}
+                            isCreateAppView={this.props.isCreateAppView}
                         />
                     )
                 })}
