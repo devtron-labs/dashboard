@@ -10,6 +10,7 @@ export const createAppInitialFormState: CreateAppFormStateType = {
     templateId: 9,
     gitMaterials: null,
     buildConfiguration: null,
+    workflowConfig: null,
 }
 
 export const createAppInitialFormErrorState: CreateAppFormErrorStateType = {
@@ -18,5 +19,6 @@ export const createAppInitialFormErrorState: CreateAppFormErrorStateType = {
     description: '',
     tags: {},
     cloneAppId: null,
-    gitMaterials: false,
+    gitMaterials: null,
+    workflowConfig: null,
 }

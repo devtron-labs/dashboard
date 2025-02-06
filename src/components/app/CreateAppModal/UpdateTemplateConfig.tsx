@@ -72,6 +72,16 @@ const UpdateTemplateConfig = ({ formState, isJobView, handleFormStateChange }: U
         })
     }
 
+    // const handleWorkflowConfigChange = (workflowConfig, isError) => {
+    //     handleFormStateChange({
+    //         action: CreateAppFormStateActionType.updateWorkflowConfig,
+    //         value: {
+    //             data: workflowConfig,
+    //             isError,
+    //         },
+    //     })
+    // }
+
     return (
         <>
             <div className="divider__secondary--horizontal" />

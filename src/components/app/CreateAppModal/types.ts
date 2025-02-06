@@ -10,6 +10,13 @@ import { GitMaterialType } from '@Components/material/material.types'
 import { CIConfigProps } from '@Components/ciConfig/types'
 import { getCreateMethodConfig } from './utils'
 
+interface CreateAppWorkflowConfigType {
+    cd: {
+        pipelineId: number
+        environmentId: number
+    }[]
+}
+
 export interface CreateAppFormStateType {
     projectId: string
     name: string
@@ -19,6 +26,7 @@ export interface CreateAppFormStateType {
     templateId: number | null
     gitMaterials: Pick<GitMaterialType, 'id' | 'url' | 'gitProvider'>[]
     buildConfiguration: Required<Pick<CIConfigProps['parentState']['ciConfig'], 'dockerRegistry' | 'dockerRepository'>>
+    workflowConfig: CreateAppWorkflowConfigType
 }
 
 export interface CreateAppFormErrorStateType {
@@ -28,6 +36,7 @@ export interface CreateAppFormErrorStateType {
     tags: DynamicDataTableCellErrorType<TagsTableColumnsType>
     cloneAppId: string | null
     gitMaterials: boolean
+    workflowConfig: boolean
 }
 
 export enum CreationMethodType {
@@ -44,6 +53,7 @@ export enum CreateAppFormStateActionType {
     updateCloneAppId = 'updateCloneAppId',
     updateGitMaterials = 'updateGitMaterials',
     updateBuildConfiguration = 'updateBuildConfiguration',
+    updateWorkflowConfig = 'updateWorkflowConfig',
 }
 
 type BaseHandleFormStateChangeParamsType<Action extends CreateAppFormStateActionType, Value> = {
@@ -76,6 +86,13 @@ export type HandleFormStateChangeParamsType =
     | BaseHandleFormStateChangeParamsType<
           CreateAppFormStateActionType.updateBuildConfiguration,
           CreateAppFormStateType['buildConfiguration']
+      >
+    | BaseHandleFormStateChangeParamsType<
+          CreateAppFormStateActionType.updateWorkflowConfig,
+          {
+              data: CreateAppFormStateType['workflowConfig']
+              isError: boolean
+          }
       >
 
 export interface CreateAppModalProps {

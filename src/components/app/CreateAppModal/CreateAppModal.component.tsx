@@ -152,6 +152,10 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                     case CreateAppFormStateActionType.updateBuildConfiguration:
                         updatedFormState.buildConfiguration = value
                         break
+                    case CreateAppFormStateActionType.updateWorkflowConfig:
+                        updatedFormState.workflowConfig = value.data
+                        updatedFormErrorState.workflowConfig = value.isError
+                        break
                     default:
                         throw new Error(`Invalid action type: ${action}`)
                 }
