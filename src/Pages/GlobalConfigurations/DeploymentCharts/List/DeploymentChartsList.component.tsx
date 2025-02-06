@@ -26,8 +26,6 @@ import {
     getAlphabetIcon,
     useUrlFilters,
     GenericFilterEmptyState,
-    stringComparatorBySortOrder,
-    DeploymentChartType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '@Config/constants'
 import emptyCustomChart from '@Images/ic-empty-custom-charts.webp'
@@ -41,6 +39,7 @@ import UploadButton from './UploadButton'
 import DownloadChartButton from './DownloadChartButton'
 import './styles.scss'
 import { DeploymentChartsListSortableKeys } from '../types'
+import { sortChartList } from './utils'
 
 const DeploymentChartActionButton = importComponentFromFELibrary('DeploymentChartActionButton', null, 'function')
 
@@ -55,21 +54,10 @@ const DeploymentChartsList = () => {
 
     const handleTriggerSorting = (sortKey: DeploymentChartsListSortableKeys) => () => handleSorting(sortKey)
 
-    const sortChartList = (a: DeploymentChartType, b: DeploymentChartType) => {
-        switch (sortBy) {
-            case DeploymentChartsListSortableKeys.CHART_VERSION:
-                return stringComparatorBySortOrder(a.versions[0].version, b.versions[0].version, sortOrder)
-            case DeploymentChartsListSortableKeys.UPLOADED_BY:
-                return stringComparatorBySortOrder(a.versions[0].uploadedBy, b.versions[0].uploadedBy, sortOrder)
-            default:
-                return stringComparatorBySortOrder(a.name, b.name, sortOrder)
-        }
-    }
-
     const filteredChartList = useMemo(() => {
         const lowerCaseSearch = searchKey.toLowerCase()
         const filteredList = chartList?.filter((chart) => chart.name.toLowerCase().includes(lowerCaseSearch)) || []
-        return filteredList.sort((a, b) => sortChartList(a, b))
+        return filteredList.sort((a, b) => sortChartList(a, b, sortBy, sortOrder))
     }, [sortBy, sortOrder, searchKey, chartList])
 
     const handleCloseUploadChartModal = (isReloadChartList: boolean): void => {
