@@ -31,6 +31,7 @@ import {
     MainContext,
     getHashedValue,
     ServerErrors,
+    ViewIsPipelineRBACConfiguredRadioTabs,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -87,16 +88,14 @@ const SoftwareDistributionHubRenderProvider = importComponentFromFELibrary(
     null,
     'function',
 )
-const getIsPipelineRBACViewEnabled: () => Promise<boolean> = importComponentFromFELibrary(
-    'getIsPipelineRBACViewEnabled',
-    null,
-    'function',
-)
+const getPipelineRBACViewSelectedTab: () => Promise<ViewIsPipelineRBACConfiguredRadioTabs> =
+    importComponentFromFELibrary('getPipelineRBACViewSelectedTab', null, 'function')
+
 const ViewIsPipelineRBACConfigured: FunctionComponent<{
-    isPipelineRBACViewEnabledLoading: boolean
-    isPipelineRBACViewEnabled: boolean
-    isPipelineRBACViewEnabledError: ServerErrors
-    setIsPipelineRBACViewEnabled: Dispatch<boolean>
+    isPipelineRBACViewSelectedTabLoading: boolean
+    pipelineRBACViewSelectedTab: ViewIsPipelineRBACConfiguredRadioTabs
+    pipelineRBACViewSelectedTabError: ServerErrors
+    setPipelineRBACViewSelectedTab: Dispatch<ViewIsPipelineRBACConfiguredRadioTabs>
 }> = importComponentFromFELibrary('ViewIsPipelineRBACConfigured', null, 'function')
 
 export default function NavigationRoutes() {
@@ -128,13 +127,13 @@ export default function NavigationRoutes() {
     const [isAirgapped, setIsAirGapped] = useState(false)
     const [isManifestScanningEnabled, setIsManifestScanningEnabled] = useState<boolean>(false)
     const [
-        isPipelineRBACViewEnabledLoading,
-        isPipelineRBACViewEnabled,
-        isPipelineRBACViewEnabledError,
+        isPipelineRBACViewSelectedTabLoading,
+        pipelineRBACViewSelectedTab,
+        pipelineRBACViewSelectedTabError,
         ,
-        setIsPipelineRBACViewEnabled,
+        setPipelineRBACViewSelectedTab,
     ] = useAsync(
-        getIsPipelineRBACViewEnabled ? () => getIsPipelineRBACViewEnabled() : () => Promise.resolve(false),
+        getPipelineRBACViewSelectedTab ? () => getPipelineRBACViewSelectedTab() : null,
         [serverMode],
         serverMode === SERVER_MODE.FULL,
     )
@@ -394,10 +393,10 @@ export default function NavigationRoutes() {
                 viewIsPipelineRBACConfiguredNode:
                     serverMode === SERVER_MODE.FULL && ViewIsPipelineRBACConfigured ? (
                         <ViewIsPipelineRBACConfigured
-                            isPipelineRBACViewEnabledLoading={isPipelineRBACViewEnabledLoading}
-                            isPipelineRBACViewEnabled={isPipelineRBACViewEnabled}
-                            isPipelineRBACViewEnabledError={isPipelineRBACViewEnabledError}
-                            setIsPipelineRBACViewEnabled={setIsPipelineRBACViewEnabled}
+                            isPipelineRBACViewSelectedTabLoading={isPipelineRBACViewSelectedTabLoading}
+                            pipelineRBACViewSelectedTab={pipelineRBACViewSelectedTab}
+                            pipelineRBACViewSelectedTabError={pipelineRBACViewSelectedTabError}
+                            setPipelineRBACViewSelectedTab={setPipelineRBACViewSelectedTab}
                         />
                     ) : null,
             }}
