@@ -20,7 +20,7 @@ const parentState: CIConfigProps['parentState'] = {
 }
 
 const UpdateTemplateConfig = ({ formState, isJobView, handleFormStateChange }: UpdateTemplateConfigProps) => {
-    const stringTemplateId = formState.templateId.toString()
+    const stringTemplateId = formState.templateConfig.templateId.toString()
 
     const handleBuildConfigurationChange: CIConfigProps['updateDockerConfigOverride'] = (key, value) => {
         switch (key) {
