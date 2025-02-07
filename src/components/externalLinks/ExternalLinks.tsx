@@ -76,11 +76,6 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
 
     const { searchKey, handleSearch, updateSearchParams, clusters, apps, clearFilters } = urlFilters
 
-    const filterConfig = {
-        clusters,
-        apps,
-    }
-
     const initExternalLinksData = () => {
         setLoading(true)
         const allPromises = [getClusterListMin()]
@@ -304,6 +299,25 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
             )}
         </div>
     )
+
+    const clusterMap = clusterList.reduce((acc, cluster) => {
+        acc[cluster.value] = cluster.label
+        return acc
+    }, {})
+
+    const clusterFilterChip = clusters.map((cluster) => clusterMap[cluster])
+
+    const appMap = allApps.reduce((acc, app) => {
+        acc[app.value] = app.label
+        return acc
+    }, {})
+
+    const appFilterChip = apps.map((app) => appMap[app])
+
+    const filterConfig = {
+        clusters: clusterFilterChip,
+        apps: appFilterChip,
+    }
 
     const renderExternalLinksView = (): JSX.Element => (
         <div className="flexbox-col dc__gap-8 external-links-wrapper pt-16 flex-grow-1">
