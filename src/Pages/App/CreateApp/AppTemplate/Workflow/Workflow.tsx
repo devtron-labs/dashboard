@@ -13,13 +13,14 @@ import { getEnvironmentListMin } from '@Services/service'
 
 import {
     getCDNodeIcon,
+    getValidatedNodes,
     getWorkflowGraphVisualizerEdges,
     getWorkflowGraphVisualizerNodes,
     getWorkflowLinkedCDNodes,
 } from './utils'
 import { HandleNodeUpdateActionProps, NodeUpdateActionType, WorkflowProps } from './types'
 
-export const Workflow = ({ appId }: WorkflowProps) => {
+export const Workflow = ({ appId, onChange, onError }: WorkflowProps) => {
     // STATES
     const [nodes, setNodes] = useState<Record<string, GraphVisualizerNode[]>>({})
     const [edges, setEdges] = useState<Record<string, GraphVisualizerEdge[]>>({})
@@ -55,42 +56,56 @@ export const Workflow = ({ appId }: WorkflowProps) => {
             case NodeUpdateActionType.UPDATE_CD_PIPELINE:
                 {
                     const { id, value, wfId } = nodeAction
-                    setNodesHandler(wfId)((prev) => {
-                        const updatedNodes = prev.map((node) =>
-                            node.id === id
-                                ? ({
-                                      ...node,
-                                      data: {
-                                          ...node.data,
-                                          value,
-                                          icon: getCDNodeIcon({
-                                              isVirtualEnvironment: value.isVirtualEnvironment,
-                                              showPluginWarning: false,
-                                          }),
-                                      },
-                                  } as GraphVisualizerNode)
-                                : node,
-                        )
-                        return updatedNodes
-                    })
+                    setNodes((prev) => {
+                        const changedNodes = []
 
-                    const linkedCDNodesMap = getWorkflowLinkedCDNodes(workflowData[0].workflows, id)
-                    if (linkedCDNodesMap.size) {
-                        Array.from(linkedCDNodesMap.entries()).forEach(([parentWfId, linkedCDNodes]) => {
-                            linkedCDNodes.forEach((linkedCDNode) => {
-                                setNodesHandler(parentWfId)((prev) =>
-                                    prev.map((node) =>
-                                        node.id === linkedCDNode.id
-                                            ? ({
-                                                  ...node,
-                                                  data: { ...node.data, text: value.label },
-                                              } as GraphVisualizerNode)
-                                            : node,
-                                    ),
+                        const updatedNodes = {
+                            ...prev,
+                            [wfId]: prev[wfId].map((node) => {
+                                if (node.id === id && node.type === 'dropdownNode') {
+                                    changedNodes.push({
+                                        environmentId: Number(value.value),
+                                        pipelineId: Number(node.id),
+                                    })
+
+                                    return {
+                                        ...node,
+                                        data: {
+                                            ...node.data,
+                                            value,
+                                            icon: getCDNodeIcon({
+                                                isVirtualEnvironment: value.isVirtualEnvironment,
+                                                showPluginWarning: false,
+                                            }),
+                                        },
+                                    }
+                                }
+
+                                return node
+                            }),
+                        }
+
+                        const linkedCDNodesMap = getWorkflowLinkedCDNodes(workflowData[0].workflows, id)
+                        if (linkedCDNodesMap.size) {
+                            Array.from(linkedCDNodesMap.entries()).forEach(([parentWfId, linkedCDNode]) => {
+                                updatedNodes[parentWfId] = updatedNodes[parentWfId].map((node) =>
+                                    node.id === linkedCDNode.id && node.type === 'textNode'
+                                        ? {
+                                              ...node,
+                                              data: { ...node.data, text: value.label as string },
+                                          }
+                                        : node,
                                 )
                             })
-                        })
-                    }
+                        }
+
+                        const { isValid, validatedNodes } = getValidatedNodes(updatedNodes)
+
+                        onChange?.(changedNodes)
+                        onError?.(isValid)
+
+                        return validatedNodes
+                    })
                 }
                 break
 

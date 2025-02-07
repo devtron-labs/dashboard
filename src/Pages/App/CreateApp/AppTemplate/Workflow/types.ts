@@ -1,9 +1,12 @@
 import { CommonNodeAttr, SelectPickerOptionType, WorkflowType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { EnvironmentListMinType } from '@Components/app/types'
+import { createClusterEnvGroup } from '@Components/common'
 
 export interface WorkflowProps {
     appId: number
+    onChange?: (params: { CD: { pipelineId: number; environmentId: number } }[]) => void
+    onError?: (isError: boolean) => void
 }
 
 export type CDNodeEnvironmentSelectPickerOptionType = SelectPickerOptionType & {
@@ -35,5 +38,5 @@ export interface ConvertWorkflowNodesToGraphVisualizerNodesProps
     extends Pick<GetWorkflowGraphVisualizerNodesProps, 'handleNodeUpdateAction'> {
     workflowNodes: CommonNodeAttr[]
     workflowId: string
-    environmentListOptions: CDNodeEnvironmentSelectPickerOptionType[]
+    environmentListOptions: ReturnType<typeof createClusterEnvGroup<EnvironmentListMinType>>
 }

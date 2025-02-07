@@ -3,6 +3,7 @@ import {
     getSelectPickerOptionByValue,
     GraphVisualizerEdge,
     GraphVisualizerNode,
+    SelectPickerOptionType,
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -15,7 +16,8 @@ import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
 import { ReactComponent as ICJobNode } from '@Icons/ic-job-node.svg'
 import { ReactComponent as ICLinkedCD } from '@Icons/ic-linked-cd.svg'
 import { ReactComponent as ICPaperRocket } from '@Icons/ic-paper-rocket.svg'
-import { EnvironmentListMinType } from '@Components/app/types'
+import { ReactComponent as ICError } from '@Icons/ic-error.svg'
+import { createClusterEnvGroup } from '@Components/common'
 
 import {
     CDNodeEnvironmentSelectPickerOptionType,
@@ -24,14 +26,17 @@ import {
     NodeUpdateActionType,
 } from './types'
 
-const getWorkflowCDNodeEnvironments = (environmentList: EnvironmentListMinType[]) =>
-    environmentList.map<CDNodeEnvironmentSelectPickerOptionType>(
-        ({ environment_name: environmentName, id, isVirtualEnvironment }) => ({
-            label: environmentName,
-            value: id.toString(),
-            isVirtualEnvironment,
-        }),
-    )
+const getWorkflowCDNodeEnvironments = (
+    environmentListOptions: ConvertWorkflowNodesToGraphVisualizerNodesProps['environmentListOptions'],
+) =>
+    environmentListOptions.map((elm) => ({
+        label: `Cluster: ${elm.label}`,
+        options: elm.options.map((option) => ({
+            ...option,
+            label: option.environment_name,
+            value: option.id.toString(),
+        })),
+    }))
 
 const renderSourceNode = (node: CommonNodeAttr): GraphVisualizerNode => ({
     id: node.id,
@@ -111,7 +116,8 @@ const renderCDNode = (
         'environmentListOptions' | 'handleNodeUpdateAction' | 'workflowId'
     >,
 ): GraphVisualizerNode => {
-    const value = getSelectPickerOptionByValue(environmentListOptions, node.environmentId.toString(), null)
+    const options = getWorkflowCDNodeEnvironments(environmentListOptions)
+    const value = getSelectPickerOptionByValue(options, node.environmentId.toString(), null)
 
     const onChange = (newValue: CDNodeEnvironmentSelectPickerOptionType) => {
         handleNodeUpdateAction({
@@ -128,7 +134,7 @@ const renderCDNode = (
         data: {
             inputId: `cd-node-${workflowId}-${node.id}`,
             value,
-            options: environmentListOptions,
+            options,
             onChange,
             icon: getCDNodeIcon({
                 isVirtualEnvironment: node.isVirtualEnvironment,
@@ -197,7 +203,7 @@ export const getWorkflowGraphVisualizerNodes = ({
         acc[curr.id] = convertWorkflowNodesToGraphVisualizerNodes({
             workflowNodes: curr.nodes,
             workflowId: curr.id,
-            environmentListOptions: getWorkflowCDNodeEnvironments(environmentList),
+            environmentListOptions: createClusterEnvGroup(environmentList, 'cluster_name'),
             handleNodeUpdateAction,
         })
         return acc
@@ -224,15 +230,71 @@ export const getWorkflowGraphVisualizerEdges = (workflows: WorkflowType[]) =>
     }, {})
 
 export const getWorkflowLinkedCDNodes = (workflows: WorkflowType[], linkedNodeId: string) => {
-    const linkedCDNodes = new Map<string, CommonNodeAttr[]>()
+    const linkedCDNodesMap = new Map<string, CommonNodeAttr>()
     workflows.forEach((workflow) => {
-        const filteredLinkedCDNodes = workflow.nodes.filter(
+        const linkedCDNode = workflow.nodes.find(
             (node) => node.isLinkedCD && node.parentCiPipeline.toString() === linkedNodeId,
         )
-        if (filteredLinkedCDNodes.length) {
-            linkedCDNodes.set(workflow.id, filteredLinkedCDNodes)
+        if (linkedCDNode) {
+            linkedCDNodesMap.set(workflow.id, linkedCDNode)
         }
     })
 
-    return linkedCDNodes
+    return linkedCDNodesMap
+}
+
+const getEnvironmentCDNodesMap = (nodes: Record<string, GraphVisualizerNode[]>) => {
+    const map = new Map<string, GraphVisualizerNode[]>()
+
+    Object.keys(nodes).forEach((wfId) => {
+        nodes[wfId].forEach((node) => {
+            if (node.type === 'dropdownNode') {
+                const envId = (node.data.value as SelectPickerOptionType).value.toString()
+                if (!map.get(envId)) {
+                    map.set(envId, [])
+                }
+                map.get(envId)!.push(node)
+            }
+        })
+    })
+
+    return map
+}
+
+export const getValidatedNodes = (nodes: Record<string, GraphVisualizerNode[]>) => {
+    const validatedNodes = nodes
+
+    const cdNodesWithDuplicateEnv = Array.from(getEnvironmentCDNodesMap(validatedNodes).values())
+        .filter((cdNodes) => cdNodes.length > 1)
+        .flatMap((node) => node)
+
+    Object.keys(validatedNodes).forEach((workflowId) => {
+        validatedNodes[workflowId] = validatedNodes[workflowId].map((node) => {
+            const errorNode = cdNodesWithDuplicateEnv.find((duplicateEnvNode) => duplicateEnvNode.id === node.id)
+
+            if (node.type === 'dropdownNode') {
+                return errorNode
+                    ? {
+                          ...node,
+                          data: { ...node.data, icon: <ICError />, isError: true },
+                      }
+                    : {
+                          ...node,
+                          data: {
+                              ...node.data,
+                              icon: getCDNodeIcon({
+                                  isVirtualEnvironment: (node.data.value as CDNodeEnvironmentSelectPickerOptionType)
+                                      .isVirtualEnvironment,
+                                  showPluginWarning: false,
+                              }),
+                              isError: false,
+                          },
+                      }
+            }
+
+            return node
+        })
+    })
+
+    return { validatedNodes, isValid: !cdNodesWithDuplicateEnv.length }
 }
