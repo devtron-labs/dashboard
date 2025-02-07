@@ -9,7 +9,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Fragment } from 'react'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
-import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText'
+import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 import { getMonitoringToolIcon, getScopeLabel, onImageLoadError } from './ExternalLinks.utils'
 import {
     ExternalLink,

@@ -1,10 +1,5 @@
 import { Tooltip } from '@devtron-labs/devtron-fe-common-lib'
-
-interface InteractiveCellTextProps {
-    text: string
-    linkRedirectsTo?: () => void
-    dataTestId?: string
-}
+import { InteractiveCellTextProps } from './types'
 
 export const InteractiveCellText = ({ text, linkRedirectsTo, dataTestId }: InteractiveCellTextProps) => (
     <Tooltip

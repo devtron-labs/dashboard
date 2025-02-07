@@ -17,7 +17,7 @@
 import { DeleteComponentsName } from '@Config/constantMessaging'
 import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
-import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText'
+import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 
 import { ConfigurationTableProps } from './types'
 import { ConfigurationsTabTypes } from './constants'
