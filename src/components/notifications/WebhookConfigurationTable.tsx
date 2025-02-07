@@ -17,7 +17,7 @@
 import { DeleteComponentsName } from '@Config/constantMessaging'
 import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
-import { getInteractiveCellText } from '@Components/common'
+import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText'
 import { ConfigurationTableProps } from './types'
 import { ConfigurationsTabTypes } from './constants'
 import { ConfigTableRowActionButton } from './ConfigTableRowActionButton'
@@ -55,16 +55,15 @@ export const WebhookConfigurationTable = ({ state, deleteClickHandler }: Configu
                         data-testid={`webhook-container-${webhookConfig.name}`}
                     >
                         {getConfigTabIcons(ConfigurationsTabTypes.WEBHOOK)}
-                        {getInteractiveCellText(
-                            webhookConfig.name,
-                            onClickWebhookConfigEdit(webhookConfig.id),
-                            `webhook-config-name-${webhookConfig.name}`,
-                        )}
-                        {getInteractiveCellText(
-                            webhookConfig.webhookUrl,
-                            null,
-                            `webhook-url-${webhookConfig.webhookUrl}`,
-                        )}
+                        <InteractiveCellText
+                            text={webhookConfig.name}
+                            linkRedirectsTo={onClickWebhookConfigEdit(webhookConfig.id)}
+                            dataTestId={`webhook-config-name-${webhookConfig.name}`}
+                        />
+                        <InteractiveCellText
+                            text={webhookConfig.webhookUrl}
+                            dataTestId={`webhook-url-${webhookConfig.webhookUrl}`}
+                        />
                         <ConfigTableRowActionButton
                             onClickEditRow={onClickWebhookConfigEdit(webhookConfig.id)}
                             onClickDeleteRow={deleteClickHandler(

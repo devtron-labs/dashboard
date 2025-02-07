@@ -17,7 +17,7 @@
 import { DeleteComponentsName } from '@Config/constantMessaging'
 import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
-import { getInteractiveCellText } from '@Components/common'
+import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText'
 import { ConfigurationTableProps } from './types'
 import { ConfigurationsTabTypes } from './constants'
 import { getConfigTabIcons, renderDefaultTag } from './notifications.util'
@@ -56,11 +56,14 @@ const SESConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTable
                     >
                         {getConfigTabIcons(ConfigurationsTabTypes.SES)}
                         <div className=" flex left dc__gap-8">
-                            {getInteractiveCellText(sesConfig.name, onClickSESConfigEdit(sesConfig.id))}
+                            <InteractiveCellText
+                                text={sesConfig.name}
+                                linkRedirectsTo={onClickSESConfigEdit(sesConfig.id)}
+                            />
                             {renderDefaultTag(sesConfig.isDefault)}
                         </div>
-                        {getInteractiveCellText(sesConfig.accessKeyId)}
-                        {getInteractiveCellText(sesConfig.email)}
+                        <InteractiveCellText text={sesConfig.accessKeyId} />
+                        <InteractiveCellText text={sesConfig.email} />
                         <ConfigTableRowActionButton
                             onClickEditRow={onClickSESConfigEdit(sesConfig.id)}
                             onClickDeleteRow={deleteClickHandler(
