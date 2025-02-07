@@ -29,7 +29,6 @@ import {
     PipelineBuildStageType,
     SeverityCount,
     useMainContext,
-    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link, PromptProps } from 'react-router-dom'
