@@ -110,6 +110,7 @@ const AppComposeRouter = () => {
                         toggleRepoSelectionTippy={toggleRepoSelectionTippy}
                         setRepo={setRepoState}
                         isJobView={isJobView}
+                        appId={appId}
                     />
                     <NextButton
                         currentStageName={STAGE_NAME.GIT_MATERIAL}
@@ -187,6 +188,7 @@ const AppComposeRouter = () => {
                         isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
                         toggleRepoSelectionTippy={toggleRepoSelectionTippy}
                         setRepo={setRepoState}
+                        appId={appId}
                     />
                     <NextButton
                         currentStageName={STAGE_NAME.GIT_MATERIAL}
@@ -202,6 +204,7 @@ const AppComposeRouter = () => {
                         respondOnSuccess={respondOnSuccess}
                         isCDPipeline={isCDPipeline}
                         isCiPipeline={isCiPipeline}
+                        appId={appId}
                     />
                 </Route>
             )}

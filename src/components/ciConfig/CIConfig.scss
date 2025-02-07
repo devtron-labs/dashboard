@@ -44,8 +44,8 @@
 
     .form-row__docker {
         display: grid;
-        grid-template-columns: 240px 1fr;
-        grid-column-gap: 8px;
+        grid-template-columns: 250px 1fr;
+        grid-column-gap: 16px;
 
         &.buildpack-option-wrapper {
             display: flex;
