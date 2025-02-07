@@ -50,7 +50,6 @@ export default function ConfigureLinkAction({
     onToolSelection,
     handleLinksDataActions,
 }: ConfigureLinkActionType): JSX.Element {
-
     const getErrorLabel = (field: string, type?: string): JSX.Element | string => {
         const errorLabel = (label: string): JSX.Element => {
             return (
