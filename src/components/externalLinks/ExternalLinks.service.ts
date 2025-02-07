@@ -33,11 +33,11 @@ const getURLWithQueryParams = (clusterId?: number, identifier?: string, type?: E
             type: type?.toString(),
         }
 
-        for (const param in queryParams) {
-            if (!queryParams[param]) {
+        Object.entries(queryParams).forEach(([param, value]) => {
+            if (!value) {
                 delete queryParams[param]
             }
-        }
+        })
 
         _url += `?${new URLSearchParams(queryParams).toString()}`
     }

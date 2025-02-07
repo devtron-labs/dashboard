@@ -101,19 +101,21 @@ export const NoExternalLinksView = ({
 
 export const RoleBasedInfoNote = ({ userRole, listingView }: RoleBasedInfoNoteProps) => {
     return (
+        <div className="flexbox-col px-20">
         <InfoColourBar
             message={
                 userRole === UserRoleType.SuperAdmin
                     ? 'Only links editable by application admins are shown here. To check all configured links,'
                     : 'Only links editable by application admins are shown here. All configured links are available to super admins in'
             }
-            classname={`info_bar fs-12 pl-12 pr-12 ${listingView ? 'mt-12 mb-12' : 'dc__mxw-300 m-20'}`}
+            classname={`info_bar fs-12 px-12 ${listingView ? '' : 'dc__mxw-300 m-20'}`}
             Icon={InfoIcon}
             iconClass="h-20"
             linkText={userRole === UserRoleType.SuperAdmin ? 'Go to Global configurations' : 'Global Configurations.'}
             internalLink
             redirectLink={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
         />
+        </div>
     )
 }
 

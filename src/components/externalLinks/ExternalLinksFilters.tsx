@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import ReactSelect, { InputActionMeta } from 'react-select'
-import { Option, ReactSelectInputAction, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
+import { Option, ReactSelectInputAction } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import {
     ApplicationFilterType,
@@ -24,36 +24,36 @@ import {
     ClusterFilterType,
     ExternalLinkIdentifierType,
     IdentifierOptionType,
-    URLModificationType,
 } from './ExternalLinks.type'
 import { OptionType } from '../app/types'
 import { FilterMenuList, ValueContainer } from './ExternalLinks.component'
 import { customMultiSelectStyles } from './ExternalLinks.utils'
 
 export const ClusterFilter = ({
-    clusters,
+    clusterList,
     appliedClusters,
     setAppliedClusters,
     queryParams,
+    // updateSearchParams,
+    // clusters,
     history,
     url,
 }: ClusterFilterType): JSX.Element => {
     const [selectedCluster, setSelectedCluster] = useState<OptionType[]>([])
     const [isMenuOpen, setMenuOpen] = useState(false)
     const [clusterSearchInput, setClusterSearchInput] = useState('')
-
     // To update the dropdown selections on query param value change or page reload
     useEffect(() => {
-        if (clusters.length > 0 && queryParams.has('clusters')) {
+        if (clusterList.length > 0 && queryParams.has('clusters')) {
             const _appliedClustersIds = queryParams.get('clusters').split(',')
-            const _appliedClusters = clusters.filter((cluster) => _appliedClustersIds.includes(cluster.value))
+            const _appliedClusters = clusterList.filter((cluster) => _appliedClustersIds.includes(cluster.value))
 
             setAppliedClusters(_appliedClusters)
             setSelectedCluster(_appliedClusters)
         } else {
             setSelectedCluster([])
         }
-    }, [clusters, queryParams.get('clusters')])
+    }, [clusterList, queryParams.get('clusters')])
 
     const handleFilterQueryChanges = (): void => {
         setClusterSearchInput('')
@@ -98,6 +98,22 @@ export const ClusterFilter = ({
         if (actionMeta.action === ReactSelectInputAction.inputChange) {
             setClusterSearchInput(value)
         }
+
+        //   const getFormattedLabel = (filterKey: ExternalLinkFilters, filterValue: string) => {
+        //         if (filterKey === ExternalLinkFilters.CLUSTERS) {
+        //             return clusterList.find((clusterItem) => clusterItem.value === filterValue)?.label
+        //         }
+        //         return filterValue
+        //     }
+
+        // const selectedClusters = clusters.map((cluster) => {
+        //     return { label: getFormattedLabel(ExternalLinkFilters.CLUSTERS, cluster), value: cluster }
+        // })
+
+        // const handleUpdateFilters = (filterKey: ExternalLinkFilters) => (selectedOptions: IdentifierOptionType[]) => {
+        //     console.log(selectedOptions, 'selectedOptions')
+        //     setAppliedClusters(selectedOptions)
+        //     updateSearchParams({ [filterKey]: selectedOptions.map((option) => String(option.value)) })
     }
 
     return (
@@ -107,7 +123,7 @@ export const ClusterFilter = ({
                 placeholder="Cluster: All"
                 name="Clusters"
                 value={selectedCluster}
-                options={clusters}
+                options={clusterList}
                 onChange={handleSelectedFilters}
                 isMulti
                 isSearchable
@@ -142,6 +158,15 @@ export const ClusterFilter = ({
                 }}
                 classNamePrefix="external-link-cluster-select"
             />
+            {/* // <FilterSelectPicker
+            //     placeholder="Clusters"
+            //     inputId="app-list-app-status-select"
+            //     options={clusterList}
+            //     appliedFilterOptions={appliedClusters}
+            //     isDisabled={false}
+            //     isLoading={false}
+            //     handleApplyFilter={handleUpdateFilters(ExternalLinkFilters.CLUSTERS)}
+            // /> */}
         </div>
     )
 }
@@ -153,6 +178,7 @@ const createAppFilterKey = (value: string) => {
 
 export const ApplicationFilter = ({
     allApps,
+    // updateSearchParams,
     appliedApps,
     setAppliedApps,
     queryParams,
@@ -162,7 +188,6 @@ export const ApplicationFilter = ({
     const [selectedApps, setSelectedApps] = useState<IdentifierOptionType[]>([])
     const [isMenuOpen, setMenuOpen] = useState(false)
     const [appSearchInput, setAppSearchInput] = useState('')
-
     // To update the dropdown selections on query param value change or page reload
     useEffect(() => {
         if (allApps.length > 0 && queryParams.has('apps')) {
@@ -177,6 +202,12 @@ export const ApplicationFilter = ({
             setSelectedApps([])
         }
     }, [allApps, queryParams.get('apps')])
+
+    // const handleUpdateFilters = (filterKey: ExternalLinkFilters) => (selectedOptions: IdentifierOptionType[]) => {
+    //     console.log(selectedOptions, 'selectedOptions')
+    //     setAppliedApps(selectedOptions)
+    //     updateSearchParams({ [filterKey]: selectedOptions.map((option) => String(option.value)) })
+    // }
 
     const handleFilterQueryChanges = (): void => {
         setAppSearchInput('')
@@ -268,31 +299,15 @@ export const ApplicationFilter = ({
                 classNamePrefix="external-link-application-select"
             />
         </div>
-    )
-}
-
-export const SearchInput = ({ queryParams, history, url }: URLModificationType): JSX.Element => {
-    const [searchTerm, setSearchTerm] = useState(queryParams.get('search') || '')
-
-    const handleExternalLinksUsingSearch = (_searchText: string): void => {
-        setSearchTerm(_searchText)
-            queryParams.set('search', _searchText)
-        history.push(`${url}?${queryParams.toString()}`)
-    }
-
-    return (
-        <div className="search-wrapper">
-             <SearchBar
-                initialSearchText={searchTerm}
-                containerClassName="w-250"
-                handleEnter={handleExternalLinksUsingSearch}
-                inputProps={{
-                    placeholder: 'Search',
-                    autoFocus: true
-                }}
-                dataTestId="external-link-app-search"
-            />
-        </div>
+        // <FilterSelectPicker
+        //     placeholder="Application"
+        //     inputId="app-list-app-status-select"
+        //     options={allApps}
+        //     appliedFilterOptions={appliedApps}
+        //     isDisabled={false}
+        //     isLoading={false}
+        //     handleApplyFilter={handleUpdateFilters(ExternalLinkFilters.APPS)}
+        // />
     )
 }
 
@@ -350,7 +365,7 @@ export const AppliedFilterChips = ({
     const renderFilterChip = (type: string, filter: IdentifierOptionType, showORDivider: boolean) => {
         return (
             <>
-                <div key={filter.label} className="saved-filter flex left dc__border bg__secondary pl-6 pr-6">
+                <div key={filter.label} className="saved-filter flex left dc__border bg__secondary px-6">
                     <span className="fw-6">{type}</span>
                     <span className="saved-filter-divider bcn-2 ml-6 mr-6" />
                     <span>{filter.label}</span>
@@ -362,7 +377,7 @@ export const AppliedFilterChips = ({
                         <Close className="icon-dim-12" />
                     </button>
                 </div>
-                {showORDivider && <span className="fs-12 fw-4 lh-20 ml-8 mr-8 mb-8">OR</span>}
+                {showORDivider && <span className="fs-12 fw-4 lh-20 px-8">OR</span>}
             </>
         )
     }
@@ -370,7 +385,7 @@ export const AppliedFilterChips = ({
     const clustersLastIndex = appliedClusters.length - 1
     const appsLastIndex = appliedApps.length - 1
     return (
-        <div className="saved-filters__wrap flex left flex-wrap dc__position-rel pl-0 pr-20 mb-10">
+        <div className="saved-filters__wrap flex left flex-wrap dc__position-rel px-20 bg__primary">
             {appliedClusters.map((filter, idx) => {
                 return renderFilterChip('Cluster', filter, clustersLastIndex !== idx || appliedApps.length > 0)
             })}
@@ -378,7 +393,7 @@ export const AppliedFilterChips = ({
                 return renderFilterChip('App', filter, appsLastIndex !== idx)
             })}
             <button type="button" className="saved-filters__clear-btn fs-13" onClick={removeAllFilters}>
-                Clear Filters
+                Clear All Filters
             </button>
         </div>
     )

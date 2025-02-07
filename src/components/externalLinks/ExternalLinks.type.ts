@@ -86,9 +86,8 @@ export interface LinkAction extends Pick<OptionTypeWithIcon, 'openInNewTab'> {
     isEditable: boolean
 }
 
-export interface ConfigureLinkActionType {
+export interface ConfigureLinkActionType extends Pick<ExternalLinksProps, 'isAppConfigView'> {
     isFullMode: boolean
-    isAppConfigView: boolean
     index: number
     link: LinkAction
     showDelete: boolean
@@ -132,17 +131,18 @@ export interface AppliedApplicationsType {
 }
 
 export interface ClusterFilterType extends AppliedClustersType, URLModificationType {
-    clusters: IdentifierOptionType[]
+    clusterList: IdentifierOptionType[]
+    updateSearchParams
 }
 
 export interface ApplicationFilterType extends AppliedApplicationsType, URLModificationType {
     allApps: IdentifierOptionType[]
+    updateSearchParams
 }
 
-export interface AddExternalLinkType {
+export interface AddExternalLinkType extends Pick<ExternalLinksProps, 'isAppConfigView'> {
     appId: string
     isFullMode: boolean
-    isAppConfigView: boolean
     monitoringTools: OptionTypeWithIcon[]
     clusters: IdentifierOptionType[]
     allApps: IdentifierOptionType[]
@@ -153,11 +153,10 @@ export interface AddExternalLinkType {
 
 export interface AppliedFilterChipsType extends AppliedClustersType, AppliedApplicationsType, URLModificationType {}
 
-export interface AppLevelExternalLinksType {
+export interface AppLevelExternalLinksType extends Pick<AddExternalLinkType, 'monitoringTools'> {
     appDetails?: AppDetails
     helmAppDetails?: HelmAppDetails
     externalLinks: ExternalLink[]
-    monitoringTools: OptionTypeWithIcon[]
     isOverviewPage?: boolean
 }
 
@@ -170,10 +169,9 @@ export interface NodeLevelExternalLinksType {
     addExtraSpace?: boolean
 }
 
-export interface ExternalLinksAndToolsType {
+export interface ExternalLinksAndToolsType extends Pick<AddExternalLinkType, 'monitoringTools'> {
     fetchingExternalLinks?: boolean
     externalLinks: ExternalLink[]
-    monitoringTools: OptionTypeWithIcon[]
 }
 
 export enum ExternalLinkIdentifierType {
@@ -241,12 +239,42 @@ export interface AddLinkButtonProps {
     handleOnClick: () => void
 }
 
-export interface ExternalLinkListProps {
+export interface ExternalLinkListProps
+    extends Pick<ExternalLinksProps, 'isAppConfigView'>,
+        Pick<AppliedClustersType, 'appliedClusters'>,
+        Pick<AddExternalLinkType, 'monitoringTools'> {
     filteredLinksLen: number
     filteredExternalLinks: ExternalLink[]
-    isAppConfigView: boolean
     setSelectedLink: React.Dispatch<React.SetStateAction<ExternalLink>>
     setShowDeleteDialog: React.Dispatch<React.SetStateAction<boolean>>
     setShowAddLinkDialog: React.Dispatch<React.SetStateAction<boolean>>
-    monitoringTools: OptionTypeWithIcon[]
+    isLoading: boolean
+}
+
+/**
+ * External Link List Filters
+ */
+export const enum ExternalLinkFilters {
+    CLUSTERS = 'clusters',
+    APPS = 'apps',
+}
+
+export interface ExternalListUrlFiltersType extends Record<ExternalLinkFilters, string[]> {}
+
+export const enum ExternalLinkMapListSortableKeys {
+    linkName = 'linkName',
+}
+
+export const parseSearchParams = (searchParams: URLSearchParams) => ({
+    [ExternalLinkFilters.CLUSTERS]: searchParams.getAll(ExternalLinkFilters.CLUSTERS),
+    [ExternalLinkFilters.APPS]: searchParams.getAll(ExternalLinkFilters.APPS),
+})
+
+export interface ExternalLinkFiltersProps extends Pick<URLModificationType, 'queryParams'> {
+    appliedClusters: IdentifierOptionType[]
+    setAppliedClusters: React.Dispatch<React.SetStateAction<IdentifierOptionType[]>>
+    appliedApps: IdentifierOptionType[]
+    setAppliedApps: React.Dispatch<React.SetStateAction<IdentifierOptionType[]>>
+    allApps: IdentifierOptionType[]
+    updateSearchParams
 }
