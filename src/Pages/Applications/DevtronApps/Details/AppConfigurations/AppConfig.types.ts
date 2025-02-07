@@ -120,6 +120,7 @@ export interface CustomNavItemsType {
     required?: boolean
     isProtectionAllowed?: boolean
     altNavKey?: string
+    disableHighlight?: boolean
 }
 
 export interface JobEnvOverrideRouteProps {

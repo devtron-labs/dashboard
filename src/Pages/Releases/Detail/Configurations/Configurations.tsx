@@ -15,7 +15,7 @@
  */
 
 import { useMemo } from 'react'
-import { generatePath, Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
+import { generatePath, Route, Switch, useRouteMatch } from 'react-router-dom'
 
 import {
     ApprovalConfigDataKindType,
@@ -26,11 +26,10 @@ import {
     Progressing,
     useAsync,
     CMSecretComponentType,
-    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
-import { getConfigurationsDefaultResourceType, importComponentFromFELibrary } from '@Components/common'
+import { importComponentFromFELibrary } from '@Components/common'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret'
 import { DeploymentConfigCompare, DeploymentTemplate } from '@Pages/Applications'
 import { getEnvConfig } from '@Pages/Applications/DevtronApps/service'
@@ -55,7 +54,6 @@ const renderNullState = () => (
 export const Configurations = () => {
     // HOOKS
     const { path, params } = useRouteMatch<Pick<DeploymentHistoryBaseParamsType, 'appId' | 'envId'>>()
-    const { isSuperAdmin } = useMainContext()
     const { appId, envId } = params
 
     // CONTEXTS
@@ -158,7 +156,7 @@ export const Configurations = () => {
                     />
                 </div>
             </Route>
-            <Redirect to={`${path}/${getConfigurationsDefaultResourceType({ isSuperAdmin })}`} />
+            {/* TODO: Check if Redirect is needed */}
         </Switch>
     )
 

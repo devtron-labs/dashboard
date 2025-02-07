@@ -27,15 +27,11 @@ import {
     ToastManager,
     SelectPicker,
     DeleteConfirmationModal,
-    useMainContext,
+    EnvResourceType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICStamp } from '@Icons/ic-stamp.svg'
 import { URLS, DOCUMENTATION } from '../../../../../../config'
-import {
-    usePrevious,
-    createClusterEnvGroup,
-    getConfigurationsDefaultResourceType,
-} from '../../../../../../components/common'
+import { usePrevious, createClusterEnvGroup } from '../../../../../../components/common'
 import { addJobEnvironment, deleteJobEnvironment, getCIConfig } from '../../../../../../services/service'
 import { ReactComponent as Help } from '../../../../../../assets/icons/ic-help.svg'
 import { ReactComponent as Add } from '../../../../../../assets/icons/ic-add.svg'
@@ -65,7 +61,6 @@ const EnvOverridesHelpNote = () => (
 const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected }: JobEnvOverrideRouteProps) => {
     const { url } = useRouteMatch()
     const { appId, workflowsRes } = useAppConfigurationContext()
-    const { isSuperAdmin } = useMainContext()
 
     const [showConfirmationDialog, setConfirmationDialog] = useState(false)
     const [showDelete, setDeleteView] = useState(false)
@@ -189,7 +184,7 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
             <NavLink
                 data-testid="env-deployment-template"
                 className="app-compose__nav-item  app-compose__nav-item--job cursor dc__gap-8"
-                to={`${URLS.APP_ENV_OVERRIDE_CONFIG}/${envOverride.environmentId}/${getConfigurationsDefaultResourceType({ isSuperAdmin, isJobView: true })}`}
+                to={`${URLS.APP_ENV_OVERRIDE_CONFIG}/${envOverride.environmentId}/${EnvResourceType.ConfigMap}`}
             >
                 <span className="dc__truncate">{envOverride.environmentName}</span>
                 {isEnvProtected && <ICStamp className="icon-dim-20 scv-5 dc__no-shrink" />}
@@ -205,7 +200,6 @@ const EnvironmentOverrideRouter = ({
 }: Pick<AppConfigState, 'envIdToEnvApprovalConfigurationMap'>) => {
     const { pathname } = useLocation()
     const { appId } = useParams<{ appId: string }>()
-    const { isSuperAdmin } = useMainContext()
     const previousPathName = usePrevious(pathname)
     const [environmentOptions, setEnvironmentOptions] = useState([])
     const [addEnvironment, setEnvironmentView] = useState(true)
@@ -329,7 +323,7 @@ const EnvironmentOverrideRouter = ({
                                         renderNavItem({
                                             title: env.environmentName,
                                             isProtectionAllowed: isApprovalApplicable,
-                                            href: `${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}/${getConfigurationsDefaultResourceType({ isSuperAdmin })}`,
+                                            href: `${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}`,
                                         })
                                     )}
                                 </Fragment>

@@ -21,20 +21,10 @@ import {
     getIsApprovalPolicyConfigured,
     Reload,
     CMSecretComponentType,
-    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
-import {
-    useParams,
-    useRouteMatch,
-    useHistory,
-    useLocation,
-    Redirect,
-    Route,
-    Switch,
-    generatePath,
-} from 'react-router-dom'
+import { useParams, useRouteMatch, useHistory, useLocation, Route, Switch, generatePath } from 'react-router-dom'
 
-import { mapByKey, ErrorBoundary, useAppContext, getConfigurationsDefaultResourceType } from '@Components/common'
+import { mapByKey, ErrorBoundary, useAppContext } from '@Components/common'
 import { APP_COMPOSE_STAGE, URLS, getAppComposeURL } from '@Config/index'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
 import { DeploymentTemplate } from '@Pages/Applications'
@@ -61,7 +51,6 @@ const EnvironmentOverride = ({
     const { push } = useHistory()
     const location = useLocation()
     const { environmentId, setEnvironmentId } = useAppContext()
-    const { isSuperAdmin } = useMainContext()
     const environmentsMap = mapByKey(environments || [], 'environmentId')
     const appMap = mapByKey(appList || [], 'id')
     const approvalConfigMap =
@@ -202,7 +191,7 @@ const EnvironmentOverride = ({
                             envName={getEnvName()}
                         />
                     </Route>
-                    <Redirect to={`${path}/${getConfigurationsDefaultResourceType({ isSuperAdmin })}`} />
+                    {/* TODO: Check if Redirect is needed */}
                 </Switch>
             </div>
         </ErrorBoundary>

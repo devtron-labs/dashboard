@@ -17,12 +17,10 @@
 import { Fragment } from 'react'
 import { generatePath, Route, Switch, useRouteMatch } from 'react-router-dom'
 
-import { EnvResourceType, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import { EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { EnvConfigurationsNav } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/Navigation/EnvConfigurationsNav'
 import { renderNavItem } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/Navigation/Navigation.helper'
-
-import { getConfigurationsDefaultResourceType } from '@Components/common'
 import { ApplicationRouteType } from '../../AppGroup.types'
 
 const ApplicationRoute = ({
@@ -36,7 +34,6 @@ const ApplicationRoute = ({
         params: { envId },
         path,
     } = useRouteMatch<{ envId: string; appId: string }>()
-    const { isSuperAdmin } = useMainContext()
 
     return (
         <Switch>
@@ -68,7 +65,7 @@ const ApplicationRoute = ({
                             {renderNavItem({
                                 title: name,
                                 isProtectionAllowed: appIdToAppApprovalConfigMap?.[id]?.isApprovalApplicable,
-                                href: `${url}/${id}/${getConfigurationsDefaultResourceType({ isSuperAdmin })}`,
+                                href: `${url}/${id}`,
                             })}
                         </Fragment>
                     ))}
