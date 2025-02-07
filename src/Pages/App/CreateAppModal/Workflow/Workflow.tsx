@@ -20,15 +20,15 @@ import {
 } from './utils'
 import { HandleNodeUpdateActionProps, NodeUpdateActionType, WorkflowProps } from './types'
 
-export const Workflow = ({ appId, onChange, onError }: WorkflowProps) => {
+export const Workflow = ({ templateId, onChange }: WorkflowProps) => {
     // STATES
     const [nodes, setNodes] = useState<Record<string, GraphVisualizerNode[]>>({})
     const [edges, setEdges] = useState<Record<string, GraphVisualizerEdge[]>>({})
 
     // ASYNC CALL - FETCH WORKFLOWS
     const [isWorkflowDataLoading, workflowData, workflowDataErr, reloadWorkflowData] = useAsync(
-        () => Promise.all([getCreateWorkflows(appId, false, ''), getEnvironmentListMin()]),
-        [appId],
+        () => Promise.all([getCreateWorkflows(templateId, false, ''), getEnvironmentListMin()]),
+        [templateId],
     )
 
     // METHODS
@@ -57,7 +57,7 @@ export const Workflow = ({ appId, onChange, onError }: WorkflowProps) => {
                 {
                     const { id, value, wfId } = nodeAction
                     setNodes((prev) => {
-                        const changedNodes = []
+                        const changedNodes: Parameters<WorkflowProps['onChange']>[0]['cd'] = []
 
                         const updatedNodes = {
                             ...prev,
@@ -100,9 +100,7 @@ export const Workflow = ({ appId, onChange, onError }: WorkflowProps) => {
                         }
 
                         const { isValid, validatedNodes } = getValidatedNodes(updatedNodes)
-
-                        onChange?.(changedNodes)
-                        onError?.(isValid)
+                        onChange?.({ cd: changedNodes }, !isValid)
 
                         return validatedNodes
                     })
@@ -139,8 +137,7 @@ export const Workflow = ({ appId, onChange, onError }: WorkflowProps) => {
                 reload: reloadWorkflowData,
             }}
         >
-            <div className="flexbox-col dc__gap-16 p-20 bg__primary border__secondary br-8">
-                <h4 className="m-0 fs-14 lh-20 fw-6">Workflows</h4>
+            <>
                 {(workflowData?.[0]?.workflows ?? []).map(({ id, name }) => (
                     <div key={id} className="flexbox-col dc__gap-6">
                         <p className="m-0 fs-13 lh-20 fw-6">{name}</p>
@@ -152,7 +149,7 @@ export const Workflow = ({ appId, onChange, onError }: WorkflowProps) => {
                         />
                     </div>
                 ))}
-            </div>
+            </>
         </APIResponseHandler>
     )
 }

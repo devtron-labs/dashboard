@@ -111,10 +111,11 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
 
         return {
             isFormValid: Object.keys(updatedFormErrorState)
-                .filter((key) => key !== 'tags')
+                .filter((key: keyof typeof updatedFormErrorState) => key !== 'tags' && key !== 'workflowConfig')
                 .every((key) => !updatedFormErrorState[key]),
             invalidLabels,
             labelTags,
+            invalidWorkFlow: updatedFormErrorState.workflowConfig,
         }
     }
 
@@ -199,7 +200,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
     }
 
     const handleCreateApp = async () => {
-        const { isFormValid, invalidLabels, labelTags } = validateForm()
+        const { isFormValid, invalidLabels, labelTags, invalidWorkFlow } = validateForm()
 
         if (!isFormValid || invalidLabels) {
             ToastManager.showToast({
@@ -207,6 +208,14 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                 description: invalidLabels
                     ? 'Some required fields in tags are missing or invalid'
                     : REQUIRED_FIELDS_MISSING,
+            })
+            return
+        }
+
+        if (invalidWorkFlow) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Invalid Workflow!',
             })
             return
         }
