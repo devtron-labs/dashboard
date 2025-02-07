@@ -5,13 +5,19 @@ import {
     ButtonStyleType,
     ComponentSizeType,
     GenericFilterEmptyState,
+    useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Fragment } from 'react'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
 import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText'
-import { useLocation } from 'react-router-dom'
 import { getMonitoringToolIcon, getScopeLabel, onImageLoadError } from './ExternalLinks.utils'
-import { ExternalLink, ExternalLinkListProps } from './ExternalLinks.type'
+import {
+    ExternalLink,
+    ExternalLinkListProps,
+    ExternalLinkMapListSortableKeys,
+    ExternalListUrlFiltersType,
+    parseSearchParams,
+} from './ExternalLinks.type'
 
 export const ExternalLinkList = ({
     filteredLinksLen,
@@ -21,10 +27,13 @@ export const ExternalLinkList = ({
     setShowDeleteDialog,
     setShowAddLinkDialog,
     monitoringTools,
-    appliedClusters,
 }: ExternalLinkListProps) => {
-    const location = useLocation()
-    const queryParams = new URLSearchParams(location.search)
+    const urlFilters = useUrlFilters<ExternalLinkMapListSortableKeys, ExternalListUrlFiltersType>({
+        initialSortKey: ExternalLinkMapListSortableKeys.linkName,
+        parseSearchParams,
+    })
+
+    const { clusters, apps, clearFilters, searchKey } = urlFilters
 
     const onClickEditLink = (link: ExternalLink): void => {
         setSelectedLink(link)
@@ -117,19 +126,14 @@ export const ExternalLinkList = ({
                 size={ComponentSizeType.medium}
                 variant={ButtonVariantType.primary}
                 style={ButtonStyleType.default}
-                onClick={() => {
-                    queryParams.delete('searchKey')
-                    queryParams.delete('clusterId')
-                    queryParams.delete('monitoringToolId')
-                    window.history.replaceState({}, '', `${location.pathname}?${queryParams}`)
-                }}
+                onClick={clearFilters}
                 dataTestId="clear-filter-button"
                 text="Clear Filters"
             />
         </div>
     )
 
-    if ((appliedClusters.length > 0 || queryParams.get('searchKey')) && filteredLinksLen === 0) {
+    if ((clusters.length || apps.length || searchKey) && filteredLinksLen === 0) {
         return (
             <GenericFilterEmptyState
                 classname="dc__align-reload-center"

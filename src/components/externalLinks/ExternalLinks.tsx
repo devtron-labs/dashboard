@@ -25,8 +25,9 @@ import {
     Progressing,
     SearchBar,
     useUrlFilters,
+    FilterChips,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import { DeleteComponentsName } from '@Config/constantMessaging'
 import { sortOptionsByLabel, sortOptionsByValue } from '../common'
 import { RoleBasedInfoNote, NoExternalLinksView } from './ExternalLinks.component'
@@ -44,18 +45,16 @@ import {
 } from './ExternalLinks.type'
 
 import { DOCUMENTATION, SERVER_MODE } from '../../config'
-import { ApplicationFilter, AppliedFilterChips, ClusterFilter } from './ExternalLinksFilters'
 import AddExternalLink from './ExternalLinksCRUD/AddExternalLink'
 import './styles.scss'
 import { AddLinkButton } from './AddLinkButton'
 import { ExternalLinkList } from './ExternalLinkList'
 import { sortByUpdatedOn } from './ExternalLinks.utils'
+import { ExternalLinkFilter } from './ExternalLinkFilter'
 
 const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
     const { appId } = useParams<{ appId: string }>()
-    const history = useHistory()
     const location = useLocation()
-    const { url } = useRouteMatch()
     const queryParams = new URLSearchParams(location.search)
     const [isLoading, setLoading] = useState(false)
     const [showAddLinkDialog, setShowAddLinkDialog] = useState(false)
@@ -64,8 +63,6 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
     const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([])
     const [clusterList, setClustersList] = useState<IdentifierOptionType[]>([])
     const [allApps, setAllApps] = useState<IdentifierOptionType[]>([])
-    const [appliedClusters, setAppliedClusters] = useState<IdentifierOptionType[]>([])
-    const [appliedApps, setAppliedApps] = useState<IdentifierOptionType[]>([])
     const [filteredExternalLinks, setFilteredExternalLinks] = useState<ExternalLink[]>([])
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [selectedLink, setSelectedLink] = useState<ExternalLink>()
@@ -77,7 +74,12 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
         parseSearchParams,
     })
 
-    const { searchKey, handleSearch, updateSearchParams } = urlFilters
+    const { searchKey, handleSearch, updateSearchParams, clusters, apps, clearFilters } = urlFilters
+
+    const filterConfig = {
+        clusters,
+        apps,
+    }
 
     const initExternalLinksData = () => {
         setLoading(true)
@@ -242,6 +244,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
              * 3. If only search query param is present then filter by searched term & set filtered external links
              * 4. Else set default external links
              */
+
             if (queryParams.has('clusters') || queryParams.has('apps')) {
                 const _appliedClusterIds = queryParams.get('clusters')?.split(',')
                 const _appliedAppIds = queryParams.get('apps')?.split(',')
@@ -266,6 +269,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
             }
         }
     }, [location.search, externalLinks])
+
     const handleAddLinkClick = (): void => {
         setShowAddLinkDialog(true)
         setSelectedLink(undefined)
@@ -276,7 +280,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
         handleSearch(searchText)
     }
 
-    const renderSearchFilterWrapper = (): JSX.Element => (
+    const renderFilters = (): JSX.Element => (
         <div className="flex dc__gap-8">
             <SearchBar
                 initialSearchText={searchKey}
@@ -289,28 +293,14 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                 dataTestId="external-link-app-search"
             />
             {!isAppConfigView && (
-                <>
-                    {isFullMode && (
-                        <ApplicationFilter
-                            allApps={allApps}
-                            appliedApps={appliedApps}
-                            setAppliedApps={setAppliedApps}
-                            queryParams={queryParams}
-                            updateSearchParams={updateSearchParams}
-                            history={history}
-                            url={url}
-                        />
-                    )}
-                    <ClusterFilter
-                        clusterList={clusterList}
-                        appliedClusters={appliedClusters}
-                        setAppliedClusters={setAppliedClusters}
-                        queryParams={queryParams}
-                        updateSearchParams={updateSearchParams}
-                        history={history}
-                        url={url}
-                    />
-                </>
+                <ExternalLinkFilter
+                    allApps={allApps}
+                    updateSearchParams={updateSearchParams}
+                    isFullMode={isFullMode}
+                    clusterList={clusterList}
+                    clusters={clusters}
+                    apps={apps}
+                />
             )}
         </div>
     )
@@ -329,7 +319,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                     />
                 </h3>
                 <div className="cta-search-filter-container flex">
-                    {renderSearchFilterWrapper()}
+                    {renderFilters()}
                     <div className="h-20 dc__border-right mr-8 ml-8" />
                     <AddLinkButton handleOnClick={handleAddLinkClick} />
                 </div>
@@ -337,19 +327,13 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
             {isAppConfigView ? (
                 <RoleBasedInfoNote userRole={userRole} listingView />
             ) : (
-                (appliedClusters.length > 0 || appliedApps.length > 0) && (
-                    <AppliedFilterChips
-                        appliedClusters={appliedClusters}
-                        setAppliedClusters={setAppliedClusters}
-                        appliedApps={appliedApps}
-                        setAppliedApps={setAppliedApps}
-                        queryParams={queryParams}
-                        history={history}
-                        url={url}
-                    />
-                )
+                <FilterChips<ExternalListUrlFiltersType>
+                    filterConfig={filterConfig}
+                    clearFilters={clearFilters}
+                    className="px-20"
+                    onRemoveFilter={updateSearchParams}
+                />
             )}
-
             <ExternalLinkList
                 filteredLinksLen={filteredLinksLen}
                 filteredExternalLinks={filteredExternalLinks}
@@ -358,7 +342,6 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                 setShowDeleteDialog={setShowDeleteDialog}
                 setShowAddLinkDialog={setShowAddLinkDialog}
                 monitoringTools={monitoringTools}
-                appliedClusters={appliedClusters}
                 isLoading={isLoading}
             />
         </div>
@@ -368,7 +351,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
         setShowAddLinkDialog(!showAddLinkDialog)
     }
 
-    const renderExternalLinksContainer = () => {
+    const renderExternalLinkListWrapper = () => {
         if (errorStatusCode > 0) {
             return (
                 <div className="error-screen-wrapper flex column h-100">
@@ -412,7 +395,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
 
     return (
         <div className={`external-links-container bg__primary h-100 ${errorStatusCode > 0 ? 'error-view' : ''}`}>
-            {renderExternalLinksContainer()}
+            {renderExternalLinkListWrapper()}
             {showAddLinkDialog && (
                 <AddExternalLink
                     appId={appId}

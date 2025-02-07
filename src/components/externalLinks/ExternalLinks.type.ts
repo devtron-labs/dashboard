@@ -241,7 +241,6 @@ export interface AddLinkButtonProps {
 
 export interface ExternalLinkListProps
     extends Pick<ExternalLinksProps, 'isAppConfigView'>,
-        Pick<AppliedClustersType, 'appliedClusters'>,
         Pick<AddExternalLinkType, 'monitoringTools'> {
     filteredLinksLen: number
     filteredExternalLinks: ExternalLink[]
@@ -270,11 +269,11 @@ export const parseSearchParams = (searchParams: URLSearchParams) => ({
     [ExternalLinkFilters.APPS]: searchParams.getAll(ExternalLinkFilters.APPS),
 })
 
-export interface ExternalLinkFiltersProps extends Pick<URLModificationType, 'queryParams'> {
-    appliedClusters: IdentifierOptionType[]
-    setAppliedClusters: React.Dispatch<React.SetStateAction<IdentifierOptionType[]>>
-    appliedApps: IdentifierOptionType[]
-    setAppliedApps: React.Dispatch<React.SetStateAction<IdentifierOptionType[]>>
+export interface ExternalLinkFiltersProps {
     allApps: IdentifierOptionType[]
     updateSearchParams
+    isFullMode: boolean
+    clusterList: IdentifierOptionType[]
+    clusters: string[]
+    apps: string[]
 }
