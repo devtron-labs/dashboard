@@ -26,7 +26,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Next } from '@Icons/ic-arrow-forward.svg'
-import { URLS } from '@Config/index'
+import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE, URLS } from '@Config/index'
 import { ErrorBoundary, useAppContext } from '@Components/common'
 import ExternalLinks from '@Components/externalLinks/ExternalLinks'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
@@ -293,7 +293,8 @@ const AppComposeRouter = () => {
                 </Route>,
                 <Route
                     key={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}`}
-                    path={`${path}/:envId(\\d+)?/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
+                    // TODO: Check this resourceType should not be optional in compare view
+                    path={`${path}/:envId(\\d+)?/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
                 >
                     {({ match }) => {
                         const basePath = generatePath(path, match.params)

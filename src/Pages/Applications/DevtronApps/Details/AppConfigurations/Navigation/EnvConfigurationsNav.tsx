@@ -44,6 +44,7 @@ import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
 import { URLS } from '@Config/routes'
 import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
+import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
 import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
 import { EnvConfigRouteParams, EnvConfigurationsNavProps, EnvConfigObjectKey, EnvConfigType } from '../AppConfig.types'
 import { getEnvConfiguration, getNavigationPath } from './Navigation.helper'
@@ -374,7 +375,7 @@ export const EnvConfigurationsNav = ({
         // Build the new app path, conditionally adding the environment override config when switching to environment
         const appPath = `${truncatedPath}${
             value !== BASE_CONFIGURATIONS.id ? `/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?` : ''
-        }/:resourceType(${Object.values(EnvResourceType).join('|')})` // Dynamically set valid resource types
+        }/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?` // Dynamically set valid resource types
 
         // Generate the final path
         // if application/job (paramToCheck = envId), use `appPath`
@@ -414,16 +415,19 @@ export const EnvConfigurationsNav = ({
     const renderCompareWithBtn = () => {
         const { name: compareTo } = resourceData
 
+        // TODO: Do we have to make this optional or should make compareWith url as null for isResourceTypeValid?
         // Construct the compare view path with dynamic route parameters for comparison
-        const compareViewPath = `${compareWithURL}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/:resourceType(${Object.values(EnvResourceType).join('|')})?/:resourceName?`
+        const compareViewPath = `${compareWithURL}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`
 
-        const compareWithHref = generatePath(compareViewPath, {
-            ...params,
-            // Only set compareTo if it's not the base configuration
-            compareTo: compareTo !== BASE_CONFIGURATIONS.name ? compareTo : null,
-            resourceType,
-            resourceName: resourceName ?? null,
-        })
+        const compareWithHref = isResourceTypeValid
+            ? generatePath(compareViewPath, {
+                  ...params,
+                  // Only set compareTo if it's not the base configuration
+                  compareTo: compareTo !== BASE_CONFIGURATIONS.name ? compareTo : null,
+                  resourceType,
+                  resourceName: resourceName ?? null,
+              })
+            : null
 
         return (
             <div className="p-8">
@@ -434,6 +438,7 @@ export const EnvConfigurationsNav = ({
                     size={ComponentSizeType.medium}
                     style={ButtonStyleType.neutral}
                     startIcon={<ICArrowsLeftRight />}
+                    disabled={!isResourceTypeValid}
                     linkProps={{ to: compareWithHref }}
                     text="Compare with..."
                 />

@@ -35,6 +35,7 @@ import { ENV_CONFIG_PATH_REG } from '@Pages/Applications/DevtronApps/Details/App
 import { DeploymentConfigCompare } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/DeploymentConfigCompare'
 
 import { EnvConfigType } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
+import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
 import { getConfigAppList } from '../../AppGroup.service'
 import { AppGroupDetailDefaultType, ApplicationRouteType, ConfigAppList } from '../../AppGroup.types'
 import ApplicationRoute from './ApplicationRoutes'
@@ -79,7 +80,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
                 setEnvConfigRes(null)
             }
         } catch {
-            // Do nothing or FIXME: Should we showError?
+            // Do nothing
         } finally {
             setEnvConfigLoading(false)
         }
@@ -148,7 +149,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
         <Switch>
             {!!appId && (
                 <Route
-                    path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
+                    path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
                 >
                     {({ match, location }) => {
                         const basePath = generatePath(path, match.params)

@@ -35,6 +35,7 @@ import { getEnvConfig } from '@Pages/Applications/DevtronApps/service'
 import { EnvConfigurationsNav } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/Navigation/EnvConfigurationsNav'
 
 import { EnvConfigType } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
+import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
 import { ReleaseConfigurationContextType } from './types'
 
 import './styles.scss'
@@ -109,7 +110,7 @@ export const Configurations = () => {
     // RENDERERS
     const renderConfigSideNav = () => (
         <Switch>
-            <Route path={`${path}/:resourceType(${Object.values(EnvResourceType).join('|')})`}>
+            <Route path={`${path}/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?`}>
                 <EnvConfigurationsNav
                     envConfig={envConfig}
                     environments={environments}
@@ -181,7 +182,7 @@ export const Configurations = () => {
         <Switch>
             <Route
                 key={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}`}
-                path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
+                path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
             >
                 {({ match, location }) => {
                     const basePath = generatePath(path, match.params)

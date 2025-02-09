@@ -39,14 +39,13 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     ConditionalWrap,
-    EnvResourceType,
     TippyCustomized,
     TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as ICArrowSquareOut } from '@Icons/ic-arrow-square-out.svg'
 import { DEVTRON_APPS_STEPS, STAGE_NAME } from '../AppConfig.types'
-import { URLS } from '../../../../../../config'
+import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE, URLS } from '../../../../../../config'
 import AppConfigurationCheckBox from './AppConfigurationCheckBox'
 import { GIT_MATERIAL_IN_USE_MESSAGE } from '../../../../../../config/constantMessaging'
 import DockerFileInUse from '../../../../../../assets/img/ic-dockerfile-in-use.png'
@@ -145,8 +144,9 @@ export const AppNavigation = () => {
         <Switch>
             <Route
                 path={[
-                    `${path}/:resourceType(${Object.values(EnvResourceType).join('|')})`,
-                    `${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)/:resourceType(${Object.values(EnvResourceType).join('|')})`,
+                    // TODO: Check what to do for base config?
+                    `${path}/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}`,
+                    `${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?`,
                 ]}
             >
                 {({ match }) => (
