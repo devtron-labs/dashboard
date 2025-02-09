@@ -38,6 +38,8 @@ import {
     validateTagValue,
     DynamicDataTableCellErrorType,
     TagsTableColumnsType,
+    AppSelectorNoOptionsMessage,
+
 } from '@devtron-labs/devtron-fe-common-lib'
 import AsyncSelect from 'react-select/async'
 import { importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../common'
@@ -49,7 +51,7 @@ import { createApp } from './service'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import { appListOptions, noOptionsMessage } from '../../AppSelector/AppSelectorUtil'
+import { appListOptions } from '../../AppSelector/AppSelectorUtil'
 import { Option } from '../../v2/common/ReactSelect.utils'
 import { saveHostURLConfiguration } from '../../hostURL/hosturl.service'
 import { createJob } from '../../Jobs/Service'
@@ -445,7 +447,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             <AsyncSelect
                                 classNamePrefix={`${this.props.isJobView ? 'job' : 'app'}-name-for-clone`}
                                 loadOptions={this.loadAppListOptions}
-                                noOptionsMessage={noOptionsMessage}
+                                noOptionsMessage={AppSelectorNoOptionsMessage}
                                 onChange={this.handleCloneAppChange}
                                 styles={this._multiSelectStyles}
                                 components={{

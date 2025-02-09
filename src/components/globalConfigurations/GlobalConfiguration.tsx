@@ -26,6 +26,7 @@ import {
     useMainContext,
     PageHeader,
     URLS as CommonURLS,
+    ResourceKindType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { ErrorBoundary, importComponentFromFELibrary } from '../common'
@@ -48,6 +49,7 @@ import { BodyType, ProtectedInputType } from './globalConfiguration.type'
 import { GlobalConfigurationProvider, useGlobalConfiguration } from './GlobalConfigurationProvider'
 import { OffendingPipelineModalAppView } from '@Pages/GlobalConfigurations/PluginPolicy/OffendingPipelineModal'
 import { getShouldHidePageHeaderAndSidebar } from './utils'
+import AppConfig from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -773,7 +775,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 ),
                 DevtronAppTemplates && (
                     <Route path={CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP}>
-                        <DevtronAppTemplates />
+                        <DevtronAppTemplates AppConfig={<AppConfig resourceKind={ResourceKindType.devtronApplication} appName='' />} />
                     </Route>
                 )
             ]}

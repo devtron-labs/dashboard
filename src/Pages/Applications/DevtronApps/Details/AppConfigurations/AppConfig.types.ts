@@ -64,6 +64,7 @@ export interface AppConfigProps {
     appName: string
     resourceKind: Extract<ResourceKindType, ResourceKindType.devtronApplication | ResourceKindType.job>
     filteredEnvIds?: string
+    isTemplateView?: boolean
 }
 
 export interface AppConfigState {
