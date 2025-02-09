@@ -2097,6 +2097,10 @@ button.anchor {
     text-align: left !important;
 }
 
+.dc__align-unset {
+    text-align: unset;
+}
+
 // Use text-align-end instead for internationalization
 .dc__align-right {
     text-align: right;
