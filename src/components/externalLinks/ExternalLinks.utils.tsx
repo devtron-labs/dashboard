@@ -15,7 +15,7 @@
  */
 
 import { MultiValue } from 'react-select'
-import { EMPTY_STATE_STATUS, GenericEmptyState, multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
+import { EMPTY_STATE_STATUS, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { UserRoleType } from '@Pages/GlobalConfigurations/Authorization/constants'
 import CloudwatchlIcon from '@Icons/ic-cloudwatch.png'
 import CoralogixlIcon from '@Icons/ic-coralogix.png'
@@ -64,20 +64,34 @@ export const MONITORING_TOOL_ICONS = {
     webpage: WebpageIcon,
 }
 
-export const customMultiSelectStyles = {
-    ...multiSelectStyles,
-    menu: (base) => ({
-        ...base,
-        top: 'auto',
-        width: '100%',
-        backgroundColor: 'var(--bg-menu)',
-    }),
+export const ToolSelectStyles = {
     menuList: (base) => ({
         ...base,
-        maxHeight: '190px',
+        maxHeight: '208px',
         borderRadius: '4px',
-        paddingTop: 0,
-        paddingBottom: 0,
+        padding: '14px',
+    }),
+    menu: (base, state) => ({
+        ...base,
+        top: 'auto',
+        width: 'auto',
+        minHeight: '36px',
+        border: `solid 1px ${state.isFocused ? 'var(--N400)' : 'var(--N200)'}`,
+        backgroundColor: 'var(--bg-secondary)',
+        justifyContent: 'flex-start',
+        cursor: 'pointer',
+        boxShadow: 'none',
+        marginTop: '0',
+    }),
+    control: (base) => ({
+        ...base,
+        minHeight: '36px',
+        width: '40px',
+        border: 'none',
+        backgroundColor: 'var(--bg-primary)',
+        justifyContent: 'flex-start',
+        cursor: 'pointer',
+        boxShadow: 'none',
     }),
     option: (base, state) => ({
         ...base,
@@ -89,53 +103,6 @@ export const customMultiSelectStyles = {
         whiteSpace: 'nowrap',
         cursor: 'pointer',
     }),
-    control: (base, state) => ({
-        ...base,
-        width: '160px',
-        minHeight: '36px',
-        border: `solid 1px ${state.isFocused ? 'var(--N400)' : 'var(--N200)'}`,
-        backgroundColor: 'var(--bg-secondary)',
-        justifyContent: 'flex-start',
-        cursor: 'pointer',
-        boxShadow: 'none',
-    }),
-    valueContainer: (base) => ({
-        ...base,
-        padding: '0 8px',
-    }),
-    dropdownIndicator: (base, state) => ({
-        ...base,
-        color: 'var(--N400)',
-        transition: 'all .2s ease',
-        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-        padding: '0 8px',
-    }),
-    placeholder: (base) => ({
-        ...base,
-        color: 'var(--N900)',
-    }),
-}
-
-export const ToolSelectStyles = {
-    ...customMultiSelectStyles,
-    menuList: (base) => ({
-        ...customMultiSelectStyles.menuList(base),
-        maxHeight: '208px',
-        padding: '14px',
-    }),
-    menu: (base) => ({
-        ...customMultiSelectStyles.menu(base),
-        width: 'auto',
-        marginTop: '0',
-    }),
-    control: (base, state) => ({
-        ...customMultiSelectStyles.control(base, state),
-        minHeight: '36px',
-        width: '40px',
-        border: 'none',
-        backgroundColor: 'var(--bg-primary)',
-        boxShadow: 'none',
-    }),
     valueContainer: (base) => ({
         ...base,
         padding: '0',
@@ -145,52 +112,15 @@ export const ToolSelectStyles = {
         color: 'var(--N500)',
     }),
     dropdownIndicator: (base, state) => ({
-        ...customMultiSelectStyles.dropdownIndicator(base, state),
+        ...base,
         padding: '0',
         svg: {
             width: '16px',
             height: '16px',
         },
-    }),
-}
-
-export const NodeLevelSelectStyles = {
-    ...customMultiSelectStyles,
-    menu: (base) => ({
-        ...base,
-        width: '120px',
-    }),
-    control: (base) => ({
-        ...base,
-        minWidth: '67px',
-        maxWidth: '112px',
-        minHeight: '24px',
-        backgroundColor: 'var(--bg-secondary)',
-        border: '1px solid var(--N200)',
-        cursor: 'pointer',
-    }),
-    option: (base) => ({
-        ...base,
-        cursor: 'pointer',
-    }),
-    valueContainer: (base) => ({
-        ...base,
-        padding: 0,
-        paddingLeft: '8px',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-    }),
-    dropdownIndicator: (base, state) => ({
-        ...customMultiSelectStyles.dropdownIndicator(base, state),
-        padding: '0 8px 0 4px',
-    }),
-    placeholder: (base) => ({
-        ...base,
-        color: 'var(--N700)',
-        margin: 0,
-        minWidth: '45px',
-        maxWidth: '60px',
+        color: 'var(--N400)',
+        transition: 'all .2s ease',
+        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
     }),
 }
 

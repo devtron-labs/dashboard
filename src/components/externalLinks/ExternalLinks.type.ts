@@ -15,7 +15,7 @@
  */
 
 import React, { ImgHTMLAttributes, ReactElement } from 'react'
-import { ResponseType, AppDetails as CommonAppDetails } from '@devtron-labs/devtron-fe-common-lib'
+import { ResponseType, AppDetails as CommonAppDetails, UseUrlFiltersProps } from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetails } from '../app/types'
 import { ActionResponse } from '../external-apps/ExternalAppService'
 import { AppDetails as HelmAppDetails } from '../v2/appDetails/appDetails.type'
@@ -271,7 +271,12 @@ export const parseSearchParams = (searchParams: URLSearchParams) => ({
 
 export interface ExternalLinkFiltersProps {
     allApps: IdentifierOptionType[]
-    updateSearchParams
+    updateSearchParams: (
+        paramsToSerialize: Partial<ExternalListUrlFiltersType>,
+        options?: Partial<
+            Pick<UseUrlFiltersProps<ExternalLinkMapListSortableKeys, ExternalListUrlFiltersType>, 'redirectionMethod'>
+        >,
+    ) => void
     isFullMode: boolean
     clusterList: IdentifierOptionType[]
     clusters: string[]

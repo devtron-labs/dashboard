@@ -26,47 +26,6 @@
         box-shadow: inset 0 -1px 0 0 var(--N200);
     }
 
-    .external-links-wrapper {
-
-
-        .saved-filters__wrap {
-            .saved-filter {
-                text-transform: none;
-                user-select: none;
-                margin: 0;
-                min-height: 24px;
-
-                .saved-filter-divider {
-                    height: 24px;
-                    width: 1px;
-                }
-
-                .saved-filter__clear-btn {
-                    border: none;
-                    margin: 0;
-                    margin-left: 4px;
-                    padding: 0;
-                    line-height: 0;
-                    background-color: var(--bg-secondary);
-
-                    svg {
-                        stroke: var(--N600);
-
-                        path {
-                            fill: var(--N600);
-                        }
-                    }
-                }
-            }
-
-            .saved-filters__clear-btn {
-                background: none;
-                margin: 0;
-                padding: 0;
-            }
-        }
-    }
-
     &.app-config-view__listing {
         height: calc(100% - 110px);
     }
@@ -74,6 +33,11 @@
     .external-link-list__row {
         display: grid;
         grid-template-columns: 24px 144px minmax(100px, calc(59% - 322px)) 100px minmax(100px, 59%) 56px;
+    }
+
+    .external-link-list__row__app-config {
+        display: grid;
+        grid-template-columns: 24px 144px minmax(100px, calc(59% - 322px)) minmax(100px, 59%) 56px;
     }
 
     .external-link__divider {
