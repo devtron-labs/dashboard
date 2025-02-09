@@ -90,7 +90,7 @@ export const ExternalLinkList = ({
             {filteredExternalLinks.map((link, idx) => (
                 <Fragment key={`external-link-${link.name}`}>
                     <div
-                        className={`external-link-list__row dc__align-items-center dc__gap-16 dc__visible-hover dc__visible-hover--parent dc__hover-n50 cn-9 fs-13 px-20 py-10 ${isAppConfigView ? 'app-config-view' : ''}`}
+                        className={` dc__align-items-center dc__gap-16 dc__visible-hover dc__visible-hover--parent dc__hover-n50 cn-9 fs-13 px-20 py-10 ${isAppConfigView ? 'app-config-view external-link-list__row__app-config' : 'external-link-list__row '}`}
                     >
                         <div className="p-2 flex">
                             <img
