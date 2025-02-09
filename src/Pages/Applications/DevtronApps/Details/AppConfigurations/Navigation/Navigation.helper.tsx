@@ -220,13 +220,3 @@ export const getEnvConfiguration = (
             secrets: [],
         },
     )
-
-export const resourceTypeBasedOnPath = (pathname: string) => {
-    if (pathname.includes(`/${EnvResourceType.ConfigMap}`)) {
-        return EnvResourceType.ConfigMap
-    }
-    if (pathname.includes(`/${EnvResourceType.Secret}`)) {
-        return EnvResourceType.Secret
-    }
-    return EnvResourceType.DeploymentTemplate
-}

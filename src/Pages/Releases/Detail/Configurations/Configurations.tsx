@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { generatePath, Route, Switch, useRouteMatch } from 'react-router-dom'
 
 import {
@@ -24,7 +24,6 @@ import {
     GenericEmptyState,
     getIsApprovalPolicyConfigured,
     Progressing,
-    useAsync,
     CMSecretComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -35,6 +34,7 @@ import { DeploymentConfigCompare, DeploymentTemplate } from '@Pages/Applications
 import { getEnvConfig } from '@Pages/Applications/DevtronApps/service'
 import { EnvConfigurationsNav } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/Navigation/EnvConfigurationsNav'
 
+import { EnvConfigType } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 import { ReleaseConfigurationContextType } from './types'
 
 import './styles.scss'
@@ -66,12 +66,29 @@ export const Configurations = () => {
         envIdToEnvApprovalConfigurationMap,
     }: ReleaseConfigurationContextType = useReleaseConfigurationContext()
 
-    // ASYNC CALLS
-    const [envConfigResLoading, envConfigRes, , fetchEnvConfig] = useAsync(
-        () => getEnvConfig(+appId, +envId),
-        [appId, envId],
-        !!(appId && envId),
-    )
+    const [envConfigResLoading, setEnvConfigResLoading] = useState<boolean>(false)
+    const [envConfigRes, setEnvConfigRes] = useState<EnvConfigType>(null)
+
+    const fetchEnvConfig = async (propEnvId?: number, callback?: Parameters<typeof getEnvConfig>[2]) => {
+        if (!appId || !envId) {
+            return
+        }
+
+        try {
+            setEnvConfigResLoading(true)
+            const res = await getEnvConfig(+appId, +envId, callback)
+            setEnvConfigRes(res)
+        } catch {
+            // Do nothing
+        } finally {
+            setEnvConfigResLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        fetchEnvConfig()
+    }, [appId, envId])
 
     // CONSTANTS
     const envConfig = {

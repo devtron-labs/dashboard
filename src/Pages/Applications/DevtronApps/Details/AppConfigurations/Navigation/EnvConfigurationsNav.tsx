@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { MouseEvent, useEffect, useMemo, useState } from 'react'
+import { Dispatch, MouseEvent, useEffect, useMemo, useState } from 'react'
 import { useRouteMatch, useLocation, NavLink, useHistory, generatePath } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { GroupBase, OptionsOrGroups } from 'react-select'
@@ -33,6 +33,7 @@ import {
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerVariantType,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
@@ -44,8 +45,8 @@ import { URLS } from '@Config/routes'
 import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
 import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
-import { EnvConfigRouteParams, EnvConfigurationsNavProps, EnvConfigObjectKey } from '../AppConfig.types'
-import { getEnvConfiguration, getNavigationPath, resourceTypeBasedOnPath } from './Navigation.helper'
+import { EnvConfigRouteParams, EnvConfigurationsNavProps, EnvConfigObjectKey, EnvConfigType } from '../AppConfig.types'
+import { getEnvConfiguration, getNavigationPath } from './Navigation.helper'
 
 // LOADING SHIMMER
 const ShimmerText = ({ width }: { width: string }) => (
@@ -54,30 +55,37 @@ const ShimmerText = ({ width }: { width: string }) => (
     </div>
 )
 
-export const EnvConfigurationsNav = ({
+type ExpandedIdsType = Record<Extract<EnvResourceType, EnvResourceType.ConfigMap | EnvResourceType.Secret>, boolean>
+
+const EnvConfigurationsNavContent = ({
     showBaseConfigurations,
     showDeploymentTemplate,
     envConfig,
-    fetchEnvConfig,
     environments: resourceList,
-    goBackURL,
     paramToCheck = 'envId',
-    showComparison,
     isCMSecretLocked,
-    hideEnvSelector,
-    compareWithURL,
     appOrEnvIdToResourceApprovalConfigurationMap,
-}: EnvConfigurationsNavProps) => {
+    expandedIds,
+    setExpandedIds,
+}: Pick<
+    EnvConfigurationsNavProps,
+    | 'showBaseConfigurations'
+    | 'showDeploymentTemplate'
+    | 'envConfig'
+    | 'environments'
+    | 'paramToCheck'
+    | 'isCMSecretLocked'
+    | 'appOrEnvIdToResourceApprovalConfigurationMap'
+> & {
+    expandedIds: ExpandedIdsType
+    setExpandedIds: Dispatch<ExpandedIdsType>
+}) => {
     // HOOKS
     const history = useHistory()
     const { pathname } = useLocation()
     const { path, params } = useRouteMatch<EnvConfigRouteParams>()
-    const { envId } = params
+    const { envId, resourceType } = params
     const parsedResourceId = +params[paramToCheck]
-
-    // STATES
-    const [expandedIds, setExpandedIds] =
-        useState<Record<Extract<EnvResourceType, EnvResourceType.ConfigMap | EnvResourceType.Secret>, boolean>>()
 
     const [updatedEnvConfig, setUpdatedEnvConfig] = useState<ReturnType<typeof getEnvConfiguration>>({
         deploymentTemplate: null,
@@ -86,7 +94,8 @@ export const EnvConfigurationsNav = ({
     })
 
     // CONSTANTS
-    const { isLoading, config } = envConfig
+    // isLoading is always going to be false, in this component since we are displaying loader in parent component
+    const { config } = envConfig
     /** Current Environment Data. */
     const resourceData =
         resourceList.find((resource) => resource.id === parsedResourceId) ||
@@ -96,7 +105,6 @@ export const EnvConfigurationsNav = ({
                   id: BASE_CONFIGURATIONS.id,
               }
             : null)
-    const resourceType = resourceTypeBasedOnPath(pathname)
     const envConfigKey =
         resourceType === EnvResourceType.ConfigMap ? EnvConfigObjectKey.ConfigMap : EnvConfigObjectKey.Secret
 
@@ -131,16 +139,7 @@ export const EnvConfigurationsNav = ({
     }, [resourceData, envId])
 
     useEffect(() => {
-        // Fetch the env configuration
-        fetchEnvConfig(+(envId || BASE_CONFIGURATIONS.id))
-
-        return () => {
-            setExpandedIds(null)
-        }
-    }, [])
-
-    useEffect(() => {
-        if (!isLoading && config) {
+        if (config) {
             const newEnvConfig = getEnvConfiguration(
                 config,
                 path,
@@ -151,17 +150,17 @@ export const EnvConfigurationsNav = ({
             )
             setUpdatedEnvConfig(isCreate ? addUnnamedNavLink(newEnvConfig) : newEnvConfig)
         }
-    }, [isLoading, config, pathname, isCreate, appOrEnvIdToResourceApprovalConfigurationMap])
+    }, [config, pathname, isCreate, appOrEnvIdToResourceApprovalConfigurationMap])
 
     useEffect(() => {
-        if (!isLoading && config) {
+        if (config) {
             setExpandedIds({
                 configmap: !!config.configmaps.length,
                 secrets: !!config.secrets.length,
                 ...(isCreate ? { [resourceType]: true } : {}),
             })
         }
-    }, [isLoading, config])
+    }, [config])
 
     // METHODS
     /** Renders the Deployment Template Nav Icon based on `envConfig`. */
@@ -261,7 +260,88 @@ export const EnvConfigurationsNav = ({
         },
     ]
 
-    // REACT SELECT PROPS
+    const handleDeploymentTemplateNavLinkOnClick = (e: MouseEvent<HTMLAnchorElement>) => {
+        if (pathname === updatedEnvConfig.deploymentTemplate.href) {
+            e.preventDefault()
+        }
+    }
+
+    return (
+        <>
+            {showDeploymentTemplate && updatedEnvConfig.deploymentTemplate && (
+                <NavLink
+                    data-testid="env-deployment-template"
+                    className="dc__nav-item cursor dc__gap-8 fs-13 lh-32 cn-7 w-100 br-4 px-8 flexbox dc__align-items-center dc__no-decor"
+                    to={{ pathname: updatedEnvConfig.deploymentTemplate.href, search: '' }}
+                    onClick={handleDeploymentTemplateNavLinkOnClick}
+                >
+                    <ICFileCode className="icon-dim-16 dc__nav-item__start-icon" />
+                    <span className="dc__truncate flex-grow-1">{updatedEnvConfig.deploymentTemplate.title}</span>
+                    {renderDeploymentTemplateNavIcon()}
+                </NavLink>
+            )}
+            <CollapsibleList config={collapsibleListConfig} tabType="navLink" onCollapseBtnClick={onCollapseBtnClick} />
+        </>
+    )
+}
+
+export const EnvConfigurationsNav = ({
+    showBaseConfigurations,
+    showDeploymentTemplate,
+    envConfig,
+    fetchEnvConfig,
+    environments: resourceList,
+    goBackURL,
+    paramToCheck = 'envId',
+    showComparison,
+    isCMSecretLocked,
+    hideEnvSelector,
+    compareWithURL,
+    appOrEnvIdToResourceApprovalConfigurationMap,
+}: EnvConfigurationsNavProps) => {
+    const history = useHistory()
+    const { isSuperAdmin } = useMainContext()
+    const { pathname } = useLocation()
+    const { path, params } = useRouteMatch<EnvConfigRouteParams>()
+
+    const { envId, resourceType } = params
+    const parsedResourceId = +params[paramToCheck]
+
+    const { isLoading } = envConfig
+    const resourceData =
+        resourceList.find((resource) => resource.id === parsedResourceId) ||
+        (showBaseConfigurations
+            ? {
+                  name: BASE_CONFIGURATIONS.name,
+                  id: BASE_CONFIGURATIONS.id,
+              }
+            : null)
+
+    const [expandedIds, setExpandedIds] =
+        useState<Record<Extract<EnvResourceType, EnvResourceType.ConfigMap | EnvResourceType.Secret>, boolean>>()
+
+    const isResourceTypeValid = Object.values(EnvResourceType).includes(resourceType as EnvResourceType)
+    const resourceName = isResourceTypeValid ? pathname.split(`${resourceType}/`)[1] : null
+
+    // TODO: Need to check and discuss whether we need to handle resourceType null case and redirection
+    const handleResourceTypeNavigation = (configResponse: EnvConfigType) => {
+        if (!isResourceTypeValid) {
+            const areCMsPresent = !!configResponse?.configmaps?.length
+            const validResourceType =
+                isSuperAdmin || !areCMsPresent ? EnvResourceType.DeploymentTemplate : EnvResourceType.ConfigMap
+
+            history.replace(generatePath(path, { ...params, resourceType: validResourceType }))
+        }
+    }
+
+    useEffect(() => {
+        fetchEnvConfig(+(envId || BASE_CONFIGURATIONS.id), handleResourceTypeNavigation)
+
+        return () => {
+            setExpandedIds(null)
+        }
+    }, [])
+
     const baseEnvOption = showBaseConfigurations
         ? [
               {
@@ -288,9 +368,6 @@ export const EnvConfigurationsNav = ({
             return
         }
 
-        // Extract the resource name from the current pathname based on resourceType
-        const resourceName = pathname.split(`${resourceType}/`)[1]
-
         // Truncate the path to the base application configuration path
         const truncatedPath = `${path.split(URLS.APP_CONFIG)[0]}${URLS.APP_CONFIG}`
 
@@ -309,12 +386,6 @@ export const EnvConfigurationsNav = ({
 
         // Navigate to the generated path
         history.push(generatedPath)
-    }
-
-    const handleDeploymentTemplateNavLinkOnClick = (e: MouseEvent<HTMLAnchorElement>) => {
-        if (pathname === updatedEnvConfig.deploymentTemplate.href) {
-            e.preventDefault()
-        }
     }
 
     const renderEnvSelector = () => (
@@ -343,11 +414,8 @@ export const EnvConfigurationsNav = ({
     const renderCompareWithBtn = () => {
         const { name: compareTo } = resourceData
 
-        // Extract the resource name from the current pathname based on resourceType
-        const resourceName = pathname.split(`/${resourceType}/`)[1]
-
         // Construct the compare view path with dynamic route parameters for comparison
-        const compareViewPath = `${compareWithURL}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`
+        const compareViewPath = `${compareWithURL}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/:resourceType(${Object.values(EnvResourceType).join('|')})?/:resourceName?`
 
         const compareWithHref = generatePath(compareViewPath, {
             ...params,
@@ -377,31 +445,29 @@ export const EnvConfigurationsNav = ({
         <nav className="flexbox-col h-100 dc__overflow-hidden w-100">
             {!hideEnvSelector && renderEnvSelector()}
             {showComparison && renderCompareWithBtn()}
+
             <div className="mw-none p-8 flex-grow-1 dc__overflow-auto">
                 {isLoading || !resourceData ? (
                     ['90', '70', '50'].map((item) => <ShimmerText key={item} width={item} />)
                 ) : (
-                    <>
-                        {showDeploymentTemplate && updatedEnvConfig.deploymentTemplate && (
-                            <NavLink
-                                data-testid="env-deployment-template"
-                                className="dc__nav-item cursor dc__gap-8 fs-13 lh-32 cn-7 w-100 br-4 px-8 flexbox dc__align-items-center dc__no-decor"
-                                to={{ pathname: updatedEnvConfig.deploymentTemplate.href, search: '' }}
-                                onClick={handleDeploymentTemplateNavLinkOnClick}
-                            >
-                                <ICFileCode className="icon-dim-16 dc__nav-item__start-icon" />
-                                <span className="dc__truncate flex-grow-1">
-                                    {updatedEnvConfig.deploymentTemplate.title}
-                                </span>
-                                {renderDeploymentTemplateNavIcon()}
-                            </NavLink>
-                        )}
-                        <CollapsibleList
-                            config={collapsibleListConfig}
-                            tabType="navLink"
-                            onCollapseBtnClick={onCollapseBtnClick}
-                        />
-                    </>
+                    <EnvConfigurationsNavContent
+                        {...{
+                            showBaseConfigurations,
+                            showDeploymentTemplate,
+                            envConfig,
+                            fetchEnvConfig,
+                            environments: resourceList,
+                            goBackURL,
+                            paramToCheck,
+                            showComparison,
+                            isCMSecretLocked,
+                            hideEnvSelector,
+                            compareWithURL,
+                            appOrEnvIdToResourceApprovalConfigurationMap,
+                        }}
+                        expandedIds={expandedIds}
+                        setExpandedIds={setExpandedIds}
+                    />
                 )}
             </div>
         </nav>

@@ -31,25 +31,29 @@ const ApplicationRoute = ({
 }: ApplicationRouteType) => {
     const {
         url,
-        params: { envId },
+        params: { envId, appId },
         path,
     } = useRouteMatch<{ envId: string; appId: string }>()
 
     return (
         <Switch>
-            <Route path={`${path}/:resourceType(${Object.values(EnvResourceType).join('|')})`}>
-                <EnvConfigurationsNav
-                    envConfig={envConfig}
-                    fetchEnvConfig={fetchEnvConfig}
-                    environments={envAppList}
-                    goBackURL={generatePath(path, { envId })}
-                    showDeploymentTemplate
-                    paramToCheck="appId"
-                    compareWithURL={path}
-                    showComparison
-                    appOrEnvIdToResourceApprovalConfigurationMap={appIdToAppApprovalConfigMap}
-                />
-            </Route>
+            {!!appId && (
+                <Route path={`${path}/:resourceType(${Object.values(EnvResourceType).join('|')})?`}>
+                    <EnvConfigurationsNav
+                        key={appId}
+                        envConfig={envConfig}
+                        fetchEnvConfig={fetchEnvConfig}
+                        environments={envAppList}
+                        goBackURL={generatePath(path, { envId })}
+                        showDeploymentTemplate
+                        paramToCheck="appId"
+                        compareWithURL={path}
+                        showComparison
+                        appOrEnvIdToResourceApprovalConfigurationMap={appIdToAppApprovalConfigMap}
+                    />
+                </Route>
+            )}
+
             <Route key="default-navigation">
                 <div className="pt-8 px-8" data-testid="application-group-configuration-heading">
                     <h4
