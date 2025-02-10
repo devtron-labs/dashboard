@@ -53,11 +53,3 @@ export interface SetFiltersInLocalStorageParamsType {
     resourceList: MultiValue<OptionType>
     groupList: MultiValue<GroupOptionType>
 }
-
-export interface GetConfigurationsDefaultResourceType {
-    isSuperAdmin: boolean
-    /**
-     * @default false
-     */
-    isJobView?: boolean
-}

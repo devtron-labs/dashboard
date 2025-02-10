@@ -63,10 +63,8 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
     )
 
     const [envConfigLoading, setEnvConfigLoading] = useState<boolean>(false)
-    // Question: is error even handled?
     const [envConfigRes, setEnvConfigRes] = useState<EnvConfigType>(null)
 
-    // Check how was this even working since prop actually expected envId as param?
     const fetchEnvConfig = async (
         propsEnvId?: number,
         callback?: Parameters<ApplicationRouteType['fetchEnvConfig']>[1],
@@ -147,35 +145,33 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
 
     return (
         <Switch>
-            {!!appId && (
-                <Route
-                    path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
-                >
-                    {({ match, location }) => {
-                        const basePath = generatePath(path, match.params)
-                        // Set the resourceTypePath based on the resourceType from the URL parameters.
-                        // If the resourceType is 'Manifest' or 'PipelineStrategy', use 'deployment-template' as the back URL.
-                        // Otherwise, use the actual resourceType from the URL, which could be 'deployment-template', 'configmap', or 'secrets'.
-                        const resourceTypePath = `/${match.params.resourceType === EnvResourceType.Manifest || match.params.resourceType === EnvResourceType.PipelineStrategy ? EnvResourceType.DeploymentTemplate : match.params.resourceType}`
-                        const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
+            <Route
+                path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
+            >
+                {({ match, location }) => {
+                    const basePath = generatePath(path, match.params)
+                    // Set the resourceTypePath based on the resourceType from the URL parameters.
+                    // If the resourceType is 'Manifest' or 'PipelineStrategy', use 'deployment-template' as the back URL.
+                    // Otherwise, use the actual resourceType from the URL, which could be 'deployment-template', 'configmap', or 'secrets'.
+                    const resourceTypePath = `/${match.params.resourceType === EnvResourceType.Manifest || match.params.resourceType === EnvResourceType.PipelineStrategy ? EnvResourceType.DeploymentTemplate : match.params.resourceType}`
+                    const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
 
-                        const goBackURL = `${basePath}${resourceTypePath}${resourceNamePath}`
+                    const goBackURL = `${basePath}${resourceTypePath}${resourceNamePath}`
 
-                        return (
-                            <DeploymentConfigCompare
-                                type="appGroup"
-                                envName={envName}
-                                environments={envAppList}
-                                goBackURL={goBackURL}
-                                getNavItemHref={(resourceType, resourceName) =>
-                                    `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
-                                }
-                                appOrEnvIdToResourceApprovalConfigurationMap={appIdToAppApprovalConfigMap}
-                            />
-                        )
-                    }}
-                </Route>
-            )}
+                    return (
+                        <DeploymentConfigCompare
+                            type="appGroup"
+                            envName={envName}
+                            environments={envAppList}
+                            goBackURL={goBackURL}
+                            getNavItemHref={(resourceType, resourceName) =>
+                                `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
+                            }
+                            appOrEnvIdToResourceApprovalConfigurationMap={appIdToAppApprovalConfigMap}
+                        />
+                    )
+                }}
+            </Route>
             <Route>
                 <div className="env-compose">
                     <div
