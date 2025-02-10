@@ -174,7 +174,6 @@ export const Configurations = () => {
                     />
                 </div>
             </Route>
-            {/* TODO: Check if Redirect is needed */}
         </Switch>
     )
 

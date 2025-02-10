@@ -191,7 +191,6 @@ const EnvironmentOverride = ({
                             envName={getEnvName()}
                         />
                     </Route>
-                    {/* TODO: Check if Redirect is needed */}
                 </Switch>
             </div>
         </ErrorBoundary>

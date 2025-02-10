@@ -66,7 +66,6 @@ export const getEnvConfig = async (appId: number, envId: number, callback: (res:
         return envConfig
     } catch (err) {
         showError(err)
-        // TODO: test
         callback(null)
 
         throw err

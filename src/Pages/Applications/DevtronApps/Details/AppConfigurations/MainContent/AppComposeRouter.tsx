@@ -301,7 +301,6 @@ const AppComposeRouter = () => {
                 </Route>,
                 <Route
                     key={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}`}
-                    // TODO: Check this resourceType should not be optional in compare view
                     path={`${path}/:envId(\\d+)?/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
                 >
                     {({ match }) => {

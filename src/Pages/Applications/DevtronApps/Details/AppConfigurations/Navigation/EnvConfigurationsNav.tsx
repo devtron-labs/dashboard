@@ -325,7 +325,6 @@ export const EnvConfigurationsNav = ({
     const isResourceTypeValid = Object.values(EnvResourceType).includes(resourceType as EnvResourceType)
     const resourceName = isResourceTypeValid ? pathname.split(`${resourceType}/`)[1] : null
 
-    // TODO: Need to check and discuss whether we need to handle resourceType null case and redirection
     const handleResourceTypeNavigation = (configResponse: EnvConfigType) => {
         if (!isResourceTypeValid) {
             const areCMsPresent = !!configResponse?.configmaps?.length
@@ -427,7 +426,6 @@ export const EnvConfigurationsNav = ({
     const renderCompareWithBtn = () => {
         const { name: compareTo } = resourceData
 
-        // TODO: Do we have to make this optional or should make compareWith url as null for isResourceTypeValid?
         // Construct the compare view path with dynamic route parameters for comparison
         const compareViewPath = `${compareWithURL}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`
 
