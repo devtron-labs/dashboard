@@ -16,7 +16,7 @@
 
 import { useEffect, useState } from 'react'
 import moment from 'moment'
-import { Link, useHistory, useLocation, useParams } from 'react-router-dom'
+import { generatePath, Link, useHistory, useLocation, useParams } from 'react-router-dom'
 import { APP_TYPE, ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
 import { getJobCIPipeline, getTeamList } from '../../../services/service'
 import {
@@ -31,6 +31,7 @@ import {
     EditableTextArea,
     ToastManager,
     ToastVariantType,
+    URLS as CommonUrls,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { getGitProviderIcon, handleUTCTime, importComponentFromFELibrary } from '../../common'
@@ -213,7 +214,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     }
 
     const renderSideInfoColumn = () => {
-        const { appName, description, gitMaterials = [], createdOn, createdBy, projectName, chartUsed } = appMetaInfo
+        const { appName, description, gitMaterials = [], createdOn, createdBy, projectName, chartUsed, templateConfig } = appMetaInfo
 
         const handleSaveDescription = async (value: string) => {
             const payload: EditAppRequest = {
@@ -330,6 +331,20 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                                     </a>
                                 ))}
                             </div>
+                        </div>
+                    )}
+                    {templateConfig?.id && (
+                        <div>
+                            <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Created from template</div>
+                            <Link
+                                to={generatePath(CommonUrls.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+                                    appId: templateConfig.id,
+                                })}
+                                className="flexbox dc__gap-8 dc__w-fit-content"
+                                target="_blank"
+                            >
+                                <span className="fs-13 fw-6 lh-20 cn-9 dc__truncate">{templateConfig.name}</span>
+                            </Link>
                         </div>
                     )}
                     {PartOfReleaseTrack && appType === 'app' && <PartOfReleaseTrack appId={+appId} />}
