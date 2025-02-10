@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
+import { AppConfigProps } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router-dom'
 
-export interface MaterialListProps extends RouteComponentProps<{ appId: string }> {
+export interface MaterialListProps
+    extends RouteComponentProps<{ appId: string }>,
+        Required<Pick<AppConfigProps, 'isTemplateView'>> {
     respondOnSuccess: () => void
     isWorkflowEditorUnlocked: boolean
     toggleRepoSelectionTippy: () => void
     setRepo: React.Dispatch<React.SetStateAction<string>>
     isJobView?: boolean
+}
+
+export interface MaterialServiceProps extends Pick<MaterialListProps, 'isTemplateView'> {
+    request: any
 }
 
 export interface GitMaterialType {
@@ -78,7 +85,7 @@ export interface UpdateMaterialState {
     isError: MaterialError
 }
 
-export interface MaterialViewProps {
+export interface MaterialViewProps extends Pick<MaterialListProps, 'isTemplateView'> {
     isMultiGit: boolean
     isChecked: boolean
     isLearnHowClicked: boolean

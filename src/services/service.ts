@@ -29,6 +29,8 @@ import {
     ACCESS_TYPE_MAP,
     ModuleNameMap,
     stringComparatorBySortOrder,
+    AppConfigProps,
+    getTemplateAPIRoute,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../config'
 import {
@@ -56,8 +58,14 @@ export function getAppConfigStatus(appId: number, isJobView?: boolean): Promise<
 }
 
 // NOTE: sending pipelineType to fetch workflowCacheConfig based on that
-export const getSourceConfig = (id: string, queryParams?: Record<'pipelineType', string>) => {
-    const URL = getUrlWithSearchParams<'pipelineType'>(`${Routes.SOURCE_CONFIG_GET}/${id}`, queryParams ?? {})
+export const getSourceConfig = (
+    id: string,
+    queryParams?: Record<'pipelineType', string>,
+    isTemplateView?: AppConfigProps['isTemplateView'],
+) => {
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({ type: 'git-material', queryParams: { id, ...queryParams } })
+        : getUrlWithSearchParams<'pipelineType'>(`${Routes.SOURCE_CONFIG_GET}/${id}`, queryParams ?? {})
     return get(URL)
 }
 

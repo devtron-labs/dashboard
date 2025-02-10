@@ -15,13 +15,13 @@
  */
 
 import React, { Component } from 'react'
-import { showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import { AppConfigProps, showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { updateMaterial } from './material.service'
 import { GitMaterialType, UpdateMaterialState } from './material.types'
 import { MaterialView } from './MaterialView'
 import { isAWSCodeCommitURL } from '../common'
 
-interface UpdateMaterialProps {
+interface UpdateMaterialProps extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     appId: number
     isMultiGit: boolean
     preventRepoDelete: boolean
@@ -241,7 +241,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                         fetchSubmodules: !!this.state.material.fetchSubmodules,
                     },
                 }
-                updateMaterial(payload)
+                updateMaterial({ request: payload, isTemplateView: this.props.isTemplateView })
                     .then((response) => {
                         this.props.refreshMaterials()
                         ToastManager.showToast({
@@ -307,6 +307,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 toggleRepoSelectionTippy={this.props.toggleRepoSelectionTippy}
                 setRepo={this.props.setRepo}
                 isJobView={this.props.isJobView}
+                isTemplateView={this.props.isTemplateView}
             />
         )
     }

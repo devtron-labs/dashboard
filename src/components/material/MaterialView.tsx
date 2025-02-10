@@ -962,7 +962,9 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                 {this.state.confirmation && (
                     <DeleteComponent
                         setDeleting={this.setDeleting}
-                        deleteComponent={deleteMaterial}
+                        deleteComponent={(payload) =>
+                            deleteMaterial({ request: payload, isTemplateView: this.props.isTemplateView })
+                        }
                         payload={this.getMaterialPayload()}
                         title={this.props.material.name}
                         toggleConfirmation={this.toggleConfirmation}

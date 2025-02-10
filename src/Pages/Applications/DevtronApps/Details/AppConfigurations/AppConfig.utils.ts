@@ -20,20 +20,14 @@ import {
     ConfigResourceType,
     BASE_CONFIGURATION_ENV_ID,
     URLS as CommonURLS,
+    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS, DOCUMENTATION } from '@Config/index'
 
 import { generatePath } from 'react-router-dom'
 import { AppConfigStatusItemType, EnvConfigDTO } from '../../service.types'
-import {
-    AppConfigProps,
-    AppConfigState,
-    AppStageUnlockedType,
-    CustomNavItemsType,
-    EnvConfigType,
-    STAGE_NAME,
-} from './AppConfig.types'
+import { AppConfigState, AppStageUnlockedType, CustomNavItemsType, EnvConfigType, STAGE_NAME } from './AppConfig.types'
 
 // stage: last configured stage
 const isCommonUnlocked = (stage, isGitOpsConfigurationRequired) =>

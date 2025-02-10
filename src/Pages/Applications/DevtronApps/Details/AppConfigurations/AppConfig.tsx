@@ -27,19 +27,14 @@ import {
     ToastManager,
     ToastVariantType,
     ResourceIdToResourceApprovalPolicyConfigMapType,
+    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS, getAppComposeURL, APP_COMPOSE_STAGE, ViewType } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { getAppOtherEnvironmentMin, getJobOtherEnvironmentMin, getWorkflowList } from '../../../../../services/service'
 import warn from '../../../../../assets/icons/ic-warning.svg'
 import './appConfig.scss'
-import {
-    AppConfigProps,
-    AppConfigState,
-    AppStageUnlockedType,
-    STAGE_NAME,
-    DEFAULT_LANDING_STAGE,
-} from './AppConfig.types'
+import { AppConfigState, AppStageUnlockedType, STAGE_NAME, DEFAULT_LANDING_STAGE } from './AppConfig.types'
 import { getUserRole } from '../../../../GlobalConfigurations/Authorization/authorization.service'
 import { isCIPipelineCreated, isCDPipelineCreated, getNavItems, isUnlocked } from './AppConfig.utils'
 import AppComposeRouter from './MainContent/AppComposeRouter'

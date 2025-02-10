@@ -21,6 +21,7 @@ import {
     EnvResourceType,
     AppEnvironment,
     ResourceIdToResourceApprovalPolicyConfigMapType,
+    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ViewType } from '@Config/constants'
@@ -58,13 +59,6 @@ export enum DEVTRON_APPS_STEPS {
 export enum DEFAULT_LANDING_STAGE {
     JOB_VIEW = 2,
     DEVTRON_APPS = 6,
-}
-
-export interface AppConfigProps {
-    appName: string
-    resourceKind: Extract<ResourceKindType, ResourceKindType.devtronApplication | ResourceKindType.job>
-    filteredEnvIds?: string
-    isTemplateView?: boolean
 }
 
 export interface AppConfigState {

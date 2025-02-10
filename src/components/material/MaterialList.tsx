@@ -50,7 +50,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
 
     getGitProviderConfig = () => {
         Promise.all([
-            getSourceConfig(this.props.match.params.appId),
+            getSourceConfig(this.props.match.params.appId, null, this.props.isTemplateView),
             getGitProviderListAuth(this.props.match.params.appId),
         ])
             .then(([sourceConfigRes, providersRes]) => {
@@ -212,6 +212,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                     isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
                     reload={this.getGitProviderConfig}
                     isJobView={this.props.isJobView}
+                    isTemplateView={this.props.isTemplateView}
                 />
                 {this.state.materials.map((mat, index) => {
                     return (
@@ -230,6 +231,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                             toggleRepoSelectionTippy={this.props.toggleRepoSelectionTippy}
                             setRepo={this.props.setRepo}
                             isJobView={this.props.isJobView}
+                            isTemplateView={this.props.isTemplateView}
                         />
                     )
                 })}

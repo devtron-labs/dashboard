@@ -93,6 +93,7 @@ const AppComposeRouter = () => {
         envConfig,
         fetchEnvConfig,
         envIdToEnvApprovalConfigurationMap,
+        isTemplateView,
     } = useAppConfigurationContext()
     const { currentAppName } = useAppContext()
 
@@ -187,6 +188,7 @@ const AppComposeRouter = () => {
                         isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
                         toggleRepoSelectionTippy={toggleRepoSelectionTippy}
                         setRepo={setRepoState}
+                        isTemplateView={isTemplateView}
                     />
                     <NextButton
                         currentStageName={STAGE_NAME.GIT_MATERIAL}
