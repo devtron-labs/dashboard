@@ -52,9 +52,11 @@ export const initState = (
         valuesEditorError: '',
         installedConfig: {
             ...installedConfigFromParent,
-            valuesSchemaJson: doesJSONConformToSchema07(installedConfigFromParent.valuesSchemaJson).isValid
-                ? installedConfigFromParent.valuesSchemaJson
-                : '',
+            valuesSchemaJson:
+                installedConfigFromParent?.valuesSchemaJson &&
+                doesJSONConformToSchema07(installedConfigFromParent.valuesSchemaJson).isValid
+                    ? installedConfigFromParent.valuesSchemaJson
+                    : '',
         },
         fetchingReadMe: false,
         fetchedReadMe: new Map<number, string>(),
@@ -85,7 +87,8 @@ export const initState = (
         invalidProject: false,
         formValidationError: {},
         showNoGitOpsWarning: false,
-        deploymentAppType: deploymentAppType ?? (window._env_.HIDE_GITOPS_OR_HELM_OPTION ? '' : DeploymentAppTypes.HELM),
+        deploymentAppType:
+            deploymentAppType ?? (window._env_.HIDE_GITOPS_OR_HELM_OPTION ? '' : DeploymentAppTypes.HELM),
         gitRepoURL: '',
         authMode: null,
         initialChartVersionValues: {
