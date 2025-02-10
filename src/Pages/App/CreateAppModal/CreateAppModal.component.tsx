@@ -1,5 +1,8 @@
 import {
     Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
     Drawer,
     showError,
     ToastManager,
@@ -16,6 +19,9 @@ import { APP_COMPOSE_STAGE, getAppComposeURL } from '@Config/routes'
 import { useHistory } from 'react-router-dom'
 import { REQUIRED_FIELDS_MISSING } from '@Config/constants'
 import { importComponentFromFELibrary } from '@Components/common'
+import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
+import { ReactComponent as ICDevtronApp } from '@Icons/ic-devtron-app.svg'
+
 import {
     ApplicationInfoFormProps,
     CreateAppFormErrorStateType,
@@ -32,6 +38,7 @@ import HeaderSection from './HeaderSection'
 import Sidebar from './Sidebar'
 import UpdateTemplateConfig from './UpdateTemplateConfig'
 
+const TemplateList = importComponentFromFELibrary('TemplateList', null, 'function')
 const createDevtronAppUsingTemplate = importComponentFromFELibrary('createDevtronAppUsingTemplate', null, 'function')
 
 const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
@@ -160,6 +167,9 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                         updatedFormState.workflowConfig = value.data
                         updatedFormErrorState.workflowConfig = value.isError
                         break
+                    case CreateAppFormStateActionType.updateTemplateConfig:
+                        updatedFormState.templateConfig = value
+                        break
                     default:
                         throw new Error(`Invalid action type: ${action}`)
                 }
@@ -179,6 +189,19 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
             tags: tagsError,
         }))
     }
+
+    const handleTemplateClick = ({ id, templateId, name }: CreateAppFormStateType['templateConfig']) => {
+        handleFormStateChange({
+            action: CreateAppFormStateActionType.updateTemplateConfig,
+            value: { id, templateId, name },
+        })
+    }
+
+    const goBackToTemplatesList = () =>
+        handleFormStateChange({
+            action: CreateAppFormStateActionType.updateTemplateConfig,
+            value: null,
+        })
 
     const getHostURLConfig = async () => {
         try {
@@ -245,7 +268,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                 : null),
             ...(selectedCreationMethod === CreationMethodType.template
                 ? {
-                      templateId: formState.templateId,
+                      templateId: formState.templateConfig.templateId,
                       templatePatch: {
                           gitMaterial: formState.gitMaterials,
                           buildConfiguration: formState.buildConfiguration,
@@ -283,23 +306,71 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                         createMethodConfig={createMethodConfig}
                         isJobView={isJobView}
                     />
-                    <div className="p-20 flexbox-col dc__gap-20 flex-grow-1 bg__secondary h-100 dc__overflow-auto">
-                        <ApplicationInfoForm
-                            formState={formState}
-                            handleFormStateChange={handleFormStateChange}
-                            formErrorState={formErrorState}
-                            handleTagErrorChange={handleTagErrorChange}
-                            isJobView={isJobView}
-                            selectedCreationMethod={selectedCreationMethod}
-                        />
-                        {selectedCreationMethod === CreationMethodType.template && formState.templateId && (
-                            <UpdateTemplateConfig
+                    {selectedCreationMethod !== CreationMethodType.template && (
+                        <div className="p-20 flexbox-col dc__gap-20 flex-grow-1 bg__secondary dc__overflow-auto">
+                            <ApplicationInfoForm
                                 formState={formState}
-                                isJobView={isJobView}
                                 handleFormStateChange={handleFormStateChange}
+                                formErrorState={formErrorState}
+                                handleTagErrorChange={handleTagErrorChange}
+                                isJobView={isJobView}
+                                selectedCreationMethod={selectedCreationMethod}
                             />
-                        )}
-                    </div>
+                        </div>
+                    )}
+                    {selectedCreationMethod === CreationMethodType.template && (
+                        <div className="flexbox-col flex-grow-1 bg__secondary">
+                            {formState.templateConfig ? (
+                                <>
+                                    <div className="flex left dc__gap-12 py-12 px-20">
+                                        <Button
+                                            icon={<ICBack />}
+                                            dataTestId="create-app-modal-go-back-to-templates-list"
+                                            ariaLabel="go-back-to-templates-list"
+                                            variant={ButtonVariantType.secondary}
+                                            style={ButtonStyleType.neutral}
+                                            size={ComponentSizeType.xs}
+                                            showAriaLabelInTippy={false}
+                                            onClick={goBackToTemplatesList}
+                                        />
+                                        <div className="flex left dc__gap-4">
+                                            <Button
+                                                dataTestId="template-list-breadcrumb"
+                                                variant={ButtonVariantType.text}
+                                                text="Templates"
+                                                onClick={goBackToTemplatesList}
+                                            />
+                                            <span>/</span>
+                                            <p className="m-0 flex left dc__gap-6">
+                                                <ICDevtronApp className="icon-dim-20 p-1" />
+                                                <span className="fs-13 lh-20 fw-6 cn-9">
+                                                    {formState.templateConfig.name}
+                                                </span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="divider__secondary--horizontal" />
+                                    <div className="flexbox-col dc__gap-20 flex-grow-1 bg__secondary dc__overflow-auto p-20">
+                                        <ApplicationInfoForm
+                                            formState={formState}
+                                            handleFormStateChange={handleFormStateChange}
+                                            formErrorState={formErrorState}
+                                            handleTagErrorChange={handleTagErrorChange}
+                                            isJobView={isJobView}
+                                            selectedCreationMethod={selectedCreationMethod}
+                                        />
+                                        <UpdateTemplateConfig
+                                            formState={formState}
+                                            isJobView={isJobView}
+                                            handleFormStateChange={handleFormStateChange}
+                                        />
+                                    </div>
+                                </>
+                            ) : (
+                                TemplateList && <TemplateList handleTemplateClick={handleTemplateClick} />
+                            )}
+                        </div>
+                    )}
                 </div>
                 <div className="px-20 py-16 flexbox dc__content-end dc__no-shrink border__primary--top">
                     <Button

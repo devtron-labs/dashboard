@@ -29,7 +29,11 @@ export interface CreateAppFormStateType {
     description: string
     tags: DynamicDataTableRowType<TagsTableColumnsType>[]
     cloneAppId: number | null
-    templateId: number | null
+    templateConfig: {
+        id: number
+        templateId: string
+        name: string
+    }
     gitMaterials: CreateAppGitMaterialType[]
     buildConfiguration: Required<Pick<CIConfigProps['parentState']['ciConfig'], 'dockerRegistry' | 'dockerRepository'>>
     workflowConfig: CreateAppWorkflowConfigType
@@ -60,6 +64,7 @@ export enum CreateAppFormStateActionType {
     updateGitMaterials = 'updateGitMaterials',
     updateBuildConfiguration = 'updateBuildConfiguration',
     updateWorkflowConfig = 'updateWorkflowConfig',
+    updateTemplateConfig = 'updateTemplateConfig',
 }
 
 type BaseHandleFormStateChangeParamsType<Action extends CreateAppFormStateActionType, Value> = {
@@ -99,6 +104,10 @@ export type HandleFormStateChangeParamsType =
               data: CreateAppFormStateType['workflowConfig']
               isError: boolean
           }
+      >
+    | BaseHandleFormStateChangeParamsType<
+          CreateAppFormStateActionType.updateTemplateConfig,
+          CreateAppFormStateType['templateConfig']
       >
 
 export interface CreateAppModalProps {
