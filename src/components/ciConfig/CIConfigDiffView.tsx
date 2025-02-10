@@ -28,6 +28,7 @@ import {
     WorkflowType,
     ToastVariantType,
     ToastManager,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -144,14 +145,14 @@ export default function CIConfigDiffView({
         }
 
         if (ciNode.isLinkedCI) {
-            return `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${getLinkedCIPipelineURL(
+            return `${URLS.APP}/${appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${getLinkedCIPipelineURL(
                 appId,
                 workflowId,
                 ciNode.id,
             )}`
         }
 
-        return `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${workflowId}/${
+        return `${URLS.APP}/${appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${workflowId}/${
             URLS.APP_CI_CONFIG
         }/${wfCIMap.get(workflowId)}/build`
     }

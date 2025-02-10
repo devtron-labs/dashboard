@@ -46,6 +46,7 @@ import {
     ConditionalWrap,
     ChangeCIPayloadType,
     CIPipelineNodeType,
+    URLS as CommonURLS
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
 import { ReactComponent as ICMoreOption } from '../../assets/icons/ic-more-option.svg'
@@ -445,7 +446,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 height={node.height}
                 configDiffView={this.props.cdWorkflowList?.length > 0}
                 title={node.title}
-                redirectTo={`${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${
+                redirectTo={`${URLS.APP}/${this.props.match.params.appId}/${CommonURLS.APP_CONFIG}/${
                     URLS.APP_WORKFLOW_CONFIG
                 }/${this.props.id ?? 0}/${URLS.LINKED_CD}?changeCi=0&switchFromCiPipelineId=${
                     node.id
@@ -694,7 +695,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
     handleNewJobRedirection = () => {
         this.props.history.push(
-            `${URLS.JOB}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${this.props.id}/${URLS.APP_CI_CONFIG}/0`,
+            `${URLS.JOB}/${this.props.match.params.appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${this.props.id}/${URLS.APP_CI_CONFIG}/0`,
         )
     }
 

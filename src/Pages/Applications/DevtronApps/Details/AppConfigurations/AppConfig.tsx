@@ -55,7 +55,7 @@ const getApprovalPolicyConfigForApp: (appId: number) => Promise<ResourceIdToReso
     importComponentFromFELibrary('getApprovalPolicyConfigForApp', null, 'function')
 const isFELibAvailable: boolean = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
-export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigProps) => {
+export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateView }: AppConfigProps) => {
     // HOOKS
     const { appId } = useParams<{ appId: string }>()
     const match = useRouteMatch()
@@ -268,6 +268,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
             resourceKind,
             isGitOpsConfigurationRequired: _isGitOpsConfigurationRequired,
             envIdToEnvApprovalConfigurationMap,
+            isTemplateView,
         })
         // Finding index of navItem which is locked and is not of alternate nav menu (nav-item rendering on different path)
         let index = navItems.findIndex((item) => !item.altNavKey && item.isLocked)

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { URLS as CommonURLS } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 
 export function getCDPipelineURL(
@@ -24,7 +25,7 @@ export function getCDPipelineURL(
     cdPipelineId: string = null,
     shouldComputeCompleteURL: boolean = false,
 ) {
-    const prefix = `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/`
+    const prefix = `${URLS.APP}/${appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/`
     const suffix = `${workflowId}/${isWebhookParent ? 'webhook' : 'ci-pipeline'}/${ciPipelineId}/cd-pipeline${
         cdPipelineId ? `/${cdPipelineId}` : ''
     }`

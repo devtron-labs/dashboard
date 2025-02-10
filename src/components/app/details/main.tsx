@@ -26,6 +26,7 @@ import {
     ResourceKindType,
     ToastManager,
     ToastVariantType,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import {
@@ -418,7 +419,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                         >
                             <CDDetails key={appId} filteredEnvIds={_filteredEnvIds} />
                         </Route>
-                        <Route path={`${path}/${URLS.APP_CONFIG}`}>
+                        <Route path={`${path}/${CommonURLS.APP_CONFIG}`}>
                             <AppConfig
                                 appName={appName}
                                 resourceKind={ResourceKindType.devtronApplication}

@@ -54,7 +54,6 @@ export const URLS = {
     APP_CI_DETAILS: 'ci-details',
     APP_CD_DETAILS: 'cd-details',
     APP_DEPLOYMENT_METRICS: 'deployment-metrics',
-    APP_CONFIG: 'edit',
     APP_GIT_CONFIG: 'materials',
     APP_DOCKER_CONFIG: 'docker-build-config',
     APP_GITOPS_CONFIG: 'gitops-config',
@@ -153,7 +152,7 @@ export const ORDERED_APP_COMPOSE_ROUTES: { stage: string; path: string }[] = [
 ]
 
 export const getAppComposeURL = (appId: string, appStage?: APP_COMPOSE_STAGE, isJobView?: boolean): string => {
-    const _url = `${isJobView ? URLS.JOB : URLS.APP}/${appId}/${URLS.APP_CONFIG}`
+    const _url = `${isJobView ? URLS.JOB : URLS.APP}/${appId}/${COMMON_URLS.APP_CONFIG}`
     if (!appStage) {
         return _url
     }

@@ -29,6 +29,7 @@ import {
     ToastVariantType,
     ToastManager,
     TriggerType,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -96,7 +97,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 this.setState({ ...response, loadingData: false }, () => {
                     this.generateSourceUrl().catch(() => {
                         this.setState({
-                            sourcePipelineURL: `${URLS.APP}/${this.state.ciPipeline.parentAppId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`,
+                            sourcePipelineURL: `${URLS.APP}/${this.state.ciPipeline.parentAppId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`,
                         })
                     })
                 })
@@ -142,7 +143,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 false,
             )
             this.setState({
-                sourcePipelineURL: `${URLS.APP}/${this.state.ciPipeline.parentAppId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${url}`,
+                sourcePipelineURL: `${URLS.APP}/${this.state.ciPipeline.parentAppId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${url}`,
             })
         }
     }

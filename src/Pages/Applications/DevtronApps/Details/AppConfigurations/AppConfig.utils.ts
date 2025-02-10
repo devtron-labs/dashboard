@@ -19,12 +19,21 @@ import {
     stringComparatorBySortOrder,
     ConfigResourceType,
     BASE_CONFIGURATION_ENV_ID,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS, DOCUMENTATION } from '@Config/index'
 
+import { generatePath } from 'react-router-dom'
 import { AppConfigStatusItemType, EnvConfigDTO } from '../../service.types'
-import { AppConfigState, AppStageUnlockedType, CustomNavItemsType, EnvConfigType, STAGE_NAME } from './AppConfig.types'
+import {
+    AppConfigProps,
+    AppConfigState,
+    AppStageUnlockedType,
+    CustomNavItemsType,
+    EnvConfigType,
+    STAGE_NAME,
+} from './AppConfig.types'
 
 // stage: last configured stage
 const isCommonUnlocked = (stage, isGitOpsConfigurationRequired) =>
@@ -103,12 +112,14 @@ export const getNavItems = ({
     resourceKind,
     isGitOpsConfigurationRequired,
     envIdToEnvApprovalConfigurationMap,
-}: Pick<AppConfigState, 'envIdToEnvApprovalConfigurationMap'> & {
-    _isUnlocked: AppStageUnlockedType
-    appId: string
-    resourceKind: ResourceKindType
-    isGitOpsConfigurationRequired: boolean
-}): { navItems: CustomNavItemsType[] } => {
+    isTemplateView,
+}: Pick<AppConfigState, 'envIdToEnvApprovalConfigurationMap'> &
+    Pick<AppConfigProps, 'isTemplateView'> & {
+        _isUnlocked: AppStageUnlockedType
+        appId: string
+        resourceKind: ResourceKindType
+        isGitOpsConfigurationRequired: boolean
+    }): { navItems: CustomNavItemsType[] } => {
     const completedSteps = getCompletedStep(
         _isUnlocked,
         resourceKind === ResourceKindType.job,
@@ -116,6 +127,9 @@ export const getNavItems = ({
     )
 
     let completedPercent = 0
+    const basePath = isTemplateView
+        ? generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, { appId })
+        : `/app/${appId}`
 
     switch (resourceKind) {
         case ResourceKindType.job:
@@ -191,7 +205,7 @@ export const getNavItems = ({
                 navItems: [
                     {
                         title: 'Git Repository',
-                        href: `/app/${appId}/edit/materials`,
+                        href: `${basePath}/edit/materials`,
                         stage: STAGE_NAME.GIT_MATERIAL,
                         isLocked: !_isUnlocked.material,
                         supportDocumentURL: DOCUMENTATION.APP_CREATE_MATERIAL,
@@ -201,7 +215,7 @@ export const getNavItems = ({
                     },
                     {
                         title: 'Build Configuration',
-                        href: `/app/${appId}/edit/docker-build-config`,
+                        href: `${basePath}/edit/docker-build-config`,
                         stage: STAGE_NAME.CI_CONFIG,
                         isLocked: !_isUnlocked.dockerBuildConfig,
                         supportDocumentURL: DOCUMENTATION.APP_CREATE_CI_CONFIG,
@@ -211,7 +225,7 @@ export const getNavItems = ({
                     },
                     {
                         title: 'Base Configurations',
-                        href: `/app/${appId}/edit/deployment-template`,
+                        href: `${basePath}/edit/deployment-template`,
                         stage: STAGE_NAME.REDIRECT_ITEM,
                         isLocked: !_isUnlocked.deploymentTemplate,
                         isProtectionAllowed:
@@ -220,7 +234,7 @@ export const getNavItems = ({
                     },
                     {
                         title: 'Deployment Template',
-                        href: `/app/${appId}/edit/deployment-template`,
+                        href: `${basePath}/edit/deployment-template`,
                         stage: STAGE_NAME.DEPLOYMENT_TEMPLATE,
                         isLocked: !_isUnlocked.deploymentTemplate,
                         supportDocumentURL: DOCUMENTATION.APP_DEPLOYMENT_TEMPLATE,
@@ -232,7 +246,7 @@ export const getNavItems = ({
                     },
                     {
                         title: 'GitOps Configuration',
-                        href: `/app/${appId}/edit/gitops-config`,
+                        href: `${basePath}/edit/gitops-config`,
                         stage: STAGE_NAME.GITOPS_CONFIG,
                         isLocked: !_isUnlocked.gitOpsConfig,
                         flowCompletionPercent: completedPercent,
@@ -241,7 +255,7 @@ export const getNavItems = ({
                     },
                     {
                         title: 'Workflow Editor',
-                        href: `/app/${appId}/edit/workflow`,
+                        href: `${basePath}/edit/workflow`,
                         stage: STAGE_NAME.WORKFLOW,
                         isLocked: !_isUnlocked.workflowEditor,
                         supportDocumentURL: DOCUMENTATION.APP_CREATE_WORKFLOW,
@@ -251,7 +265,7 @@ export const getNavItems = ({
                     },
                     {
                         title: 'ConfigMaps',
-                        href: `/app/${appId}/edit/configmap`,
+                        href: `${basePath}/edit/configmap`,
                         stage: STAGE_NAME.CONFIGMAP,
                         isLocked: !_isUnlocked.configmap,
                         supportDocumentURL: DOCUMENTATION.APP_CREATE_CONFIG_MAP,
@@ -263,7 +277,7 @@ export const getNavItems = ({
                     },
                     {
                         title: 'Secrets',
-                        href: `/app/${appId}/edit/secrets`,
+                        href: `${basePath}/edit/secrets`,
                         stage: STAGE_NAME.SECRETS,
                         isLocked: !_isUnlocked.secret,
                         supportDocumentURL: DOCUMENTATION.APP_CREATE_SECRET,
@@ -273,24 +287,28 @@ export const getNavItems = ({
                         required: true,
                         altNavKey: 'env-configurations',
                     },
-                    {
-                        title: 'External Links',
-                        href: `/app/${appId}/edit/external-links`,
-                        stage: STAGE_NAME.EXTERNAL_LINKS,
-                        isLocked: false,
-                        supportDocumentURL: DOCUMENTATION.EXTERNAL_LINKS,
-                        flowCompletionPercent: completedPercent,
-                        currentStep: completedSteps,
-                    },
-                    {
-                        title: 'Protect Configuration',
-                        href: URLS.GLOBAL_CONFIG_APPROVAL_POLICY,
-                        stage: STAGE_NAME.PROTECT_CONFIGURATION,
-                        isLocked: false,
-                    },
+                    ...(isTemplateView
+                        ? []
+                        : [
+                              {
+                                  title: 'External Links',
+                                  href: `${basePath}/edit/external-links`,
+                                  stage: STAGE_NAME.EXTERNAL_LINKS,
+                                  isLocked: false,
+                                  supportDocumentURL: DOCUMENTATION.EXTERNAL_LINKS,
+                                  flowCompletionPercent: completedPercent,
+                                  currentStep: completedSteps,
+                              },
+                              {
+                                  title: 'Protect Configuration',
+                                  href: URLS.GLOBAL_CONFIG_APPROVAL_POLICY,
+                                  stage: STAGE_NAME.PROTECT_CONFIGURATION,
+                                  isLocked: false,
+                              },
+                          ]),
                     {
                         title: 'Environment Override',
-                        href: `/app/${appId}/edit/env-override`,
+                        href: `${basePath}/edit/env-override`,
                         stage: STAGE_NAME.ENV_OVERRIDE,
                         isLocked: !_isUnlocked.envOverride,
                     },

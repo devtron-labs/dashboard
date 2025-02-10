@@ -33,6 +33,7 @@ import {
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerVariantType,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
@@ -292,7 +293,7 @@ export const EnvConfigurationsNav = ({
         const resourceName = pathname.split(`${resourceType}/`)[1]
 
         // Truncate the path to the base application configuration path
-        const truncatedPath = `${path.split(URLS.APP_CONFIG)[0]}${URLS.APP_CONFIG}`
+        const truncatedPath = `${path.split(CommonURLS.APP_CONFIG)[0]}${CommonURLS.APP_CONFIG}`
 
         // Build the new app path, conditionally adding the environment override config when switching to environment
         const appPath = `${truncatedPath}${

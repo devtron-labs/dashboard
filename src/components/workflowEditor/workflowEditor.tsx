@@ -34,6 +34,7 @@ import {
     CIPipelineNodeType,
     ChangeCIPayloadType,
     WorkflowOptionsModal,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
@@ -311,7 +312,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     addWebhookCD = (workflowId?: number | string) => {
         this.props.history.push(
-            `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${
+            `${URLS.APP}/${this.props.match.params.appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${
                 workflowId || 0
             }/${PipelineType.WEBHOOK.toLowerCase()}/0/${URLS.APP_CD_CONFIG}/0/build`,
         )
@@ -320,7 +321,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     // Replace this with addCISelect
     addLinkedCD = (changeCIPayload?: ChangeCIPayloadType) => {
         this.props.history.push(
-            `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${
+            `${URLS.APP}/${this.props.match.params.appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${
                 changeCIPayload?.appWorkflowId ?? 0
             }/${URLS.LINKED_CD}?changeCi=${Number(!!changeCIPayload)}&switchFromCiPipelineId=${
                 changeCIPayload?.switchFromCiPipelineId ?? 0
@@ -340,7 +341,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         const ciURL = isWebhookCD
             ? `${PipelineType.WEBHOOK.toLowerCase()}/0`
             : `${URLS.APP_CI_CONFIG.toLowerCase()}/${ciPipelineId}`
-        let LINK = `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${
+        let LINK = `${URLS.APP}/${this.props.match.params.appId}/${CommonURLS.APP_CONFIG}/${
             URLS.APP_WORKFLOW_CONFIG
         }/${workflowId}/${ciURL}/${URLS.APP_CD_CONFIG}/0/build?parentPipelineType=${parentPipelineType}&addType=${
             addType ?? AddPipelineType.PARALLEL
@@ -372,7 +373,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     closeAddWorkflow = () => {
         this.props.history.push(
-            `${this.props.isJobView ? URLS.JOB : URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${
+            `${this.props.isJobView ? URLS.JOB : URLS.APP}/${this.props.match.params.appId}/${CommonURLS.APP_CONFIG}/${
                 URLS.APP_WORKFLOW_CONFIG
             }`,
         )
@@ -387,7 +388,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         showWebhookTippy?: boolean,
     ) => {
         const _url = `${this.props.isJobView ? URLS.JOB : URLS.APP}/${this.props.match.params.appId}/${
-            URLS.APP_CONFIG
+            CommonURLS.APP_CONFIG
         }/${URLS.APP_WORKFLOW_CONFIG}`
         this.props.history.push(_url)
 

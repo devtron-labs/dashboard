@@ -60,6 +60,7 @@ import {
     DraftAction,
     checkIfPathIsMatching,
     FloatingVariablesSuggestions,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt, useLocation, useParams } from 'react-router-dom'
 import YAML from 'yaml'
@@ -255,7 +256,7 @@ const DeploymentTemplate = ({
 
     const isGuiSupported = isEditMode && !showDeleteOverrideDraftEmptyState
 
-    const baseDeploymentTemplateURL = `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_DEPLOYMENT_CONFIG}`
+    const baseDeploymentTemplateURL = `${URLS.APP}/${appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_DEPLOYMENT_CONFIG}`
 
     /**
      * Means has no global config
