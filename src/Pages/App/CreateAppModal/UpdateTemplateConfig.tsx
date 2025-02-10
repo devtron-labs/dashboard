@@ -20,7 +20,7 @@ const parentState: CIConfigProps['parentState'] = {
 }
 
 const UpdateTemplateConfig = ({ formState, isJobView, handleFormStateChange }: UpdateTemplateConfigProps) => {
-    const stringTemplateId = formState.templateConfig.templateId.toString()
+    const stringTemplateDbId = formState.templateConfig.id.toString()
 
     const handleBuildConfigurationChange: CIConfigProps['updateDockerConfigOverride'] = (key, value) => {
         switch (key) {
@@ -93,7 +93,7 @@ const UpdateTemplateConfig = ({ formState, isJobView, handleFormStateChange }: U
                 <MaterialList
                     isCreateAppView
                     respondOnSuccess={noop}
-                    appId={stringTemplateId}
+                    appId={stringTemplateDbId}
                     isJobView={isJobView}
                     handleGitMaterialsChange={handleGitMaterialsChange}
                     setRepo={noop}
@@ -104,7 +104,7 @@ const UpdateTemplateConfig = ({ formState, isJobView, handleFormStateChange }: U
                 <h4 className="fs-14 fw-6 lh-20 cn-9 m-0">Build Configuration</h4>
                 <CIConfig
                     isCreateAppView
-                    appId={stringTemplateId}
+                    appId={stringTemplateDbId}
                     configOverrideView={false}
                     allowOverride={false}
                     isCDPipeline={false}
@@ -116,7 +116,7 @@ const UpdateTemplateConfig = ({ formState, isJobView, handleFormStateChange }: U
             </div>
             <div className="br-8 border__secondary bg__primary p-20 flexbox-col dc__gap-16">
                 <h4 className="fs-14 fw-6 lh-20 cn-9 m-0">Workflows</h4>
-                <Workflow templateId={stringTemplateId} onChange={handleWorkflowConfigChange} />
+                <Workflow templateId={stringTemplateDbId} onChange={handleWorkflowConfigChange} />
             </div>
         </>
     )

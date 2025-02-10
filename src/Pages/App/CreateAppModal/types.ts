@@ -30,8 +30,9 @@ export interface CreateAppFormStateType {
     tags: DynamicDataTableRowType<TagsTableColumnsType>[]
     cloneAppId: number | null
     templateConfig: {
-        templateId: number
-        displayName: string
+        id: number
+        templateId: string
+        name: string
     }
     gitMaterials: CreateAppGitMaterialType[]
     buildConfiguration: Required<Pick<CIConfigProps['parentState']['ciConfig'], 'dockerRegistry' | 'dockerRepository'>>

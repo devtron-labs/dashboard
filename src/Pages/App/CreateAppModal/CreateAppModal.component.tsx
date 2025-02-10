@@ -190,10 +190,10 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
         }))
     }
 
-    const handleTemplateClick = ({ id, name }: { id: number; name: string }) => {
+    const handleTemplateClick = ({ id, templateId, name }: CreateAppFormStateType['templateConfig']) => {
         handleFormStateChange({
             action: CreateAppFormStateActionType.updateTemplateConfig,
-            value: { templateId: id, displayName: name },
+            value: { id, templateId, name },
         })
     }
 
@@ -344,7 +344,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                                             <p className="m-0 flex left dc__gap-6">
                                                 <ICDevtronApp className="icon-dim-20 p-1" />
                                                 <span className="fs-13 lh-20 fw-6 cn-9">
-                                                    {formState.templateConfig.displayName}
+                                                    {formState.templateConfig.name}
                                                 </span>
                                             </p>
                                         </div>
