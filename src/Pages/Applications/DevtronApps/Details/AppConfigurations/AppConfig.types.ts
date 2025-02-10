@@ -139,7 +139,7 @@ export interface NextButtonProps {
     isDisabled: boolean
 }
 
-interface CommonAppConfigurationProps {
+interface CommonAppConfigurationProps extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     appId: string
     resourceKind: Extract<ResourceKindType, ResourceKindType.devtronApplication | ResourceKindType.job>
     respondOnSuccess: () => void

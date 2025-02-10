@@ -47,6 +47,7 @@ import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.typ
 import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
 import { EnvConfigRouteParams, EnvConfigurationsNavProps, EnvConfigObjectKey } from '../AppConfig.types'
 import { getEnvConfiguration, getNavigationPath, resourceTypeBasedOnPath } from './Navigation.helper'
+import { useAppConfigurationContext } from '../AppConfiguration.provider'
 
 // LOADING SHIMMER
 const ShimmerText = ({ width }: { width: string }) => (
@@ -75,6 +76,7 @@ export const EnvConfigurationsNav = ({
     const { path, params } = useRouteMatch<EnvConfigRouteParams>()
     const { envId } = params
     const parsedResourceId = +params[paramToCheck]
+    const { isTemplateView } = useAppConfigurationContext()
 
     // STATES
     const [expandedIds, setExpandedIds] =
@@ -377,7 +379,7 @@ export const EnvConfigurationsNav = ({
     return (
         <nav className="flexbox-col h-100 dc__overflow-hidden">
             {!hideEnvSelector && renderEnvSelector()}
-            {showComparison && renderCompareWithBtn()}
+            {!isTemplateView && showComparison && renderCompareWithBtn()}
             <div className="mw-none p-8 flex-grow-1 dc__overflow-auto">
                 {isLoading || !resourceData ? (
                     ['90', '70', '50'].map((item) => <ShimmerText key={item} width={item} />)

@@ -40,6 +40,7 @@ export const AppConfigurationProvider = (props: AppConfigurationProviderProps) =
         filteredEnvIds,
         userRole,
         fetchEnvConfig,
+        isTemplateView,
     } = props
 
     const [showRepoOnDelete, setShowRepoOnDelete] = useState('')
@@ -74,6 +75,7 @@ export const AppConfigurationProvider = (props: AppConfigurationProviderProps) =
             lastUnlockedStage: state.redirectionUrl,
             envConfig: state.envConfig,
             fetchEnvConfig,
+            isTemplateView,
         }),
         [
             appId,
@@ -85,6 +87,7 @@ export const AppConfigurationProvider = (props: AppConfigurationProviderProps) =
             isGitOpsConfigurationRequired,
             userRole,
             filteredEnvIds,
+            isTemplateView,
         ],
     )
 

@@ -500,6 +500,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
             filteredEnvIds={filteredEnvIds}
             reloadAppConfig={reloadAppConfig}
             fetchEnvConfig={fetchEnvConfig}
+            isTemplateView={isTemplateView}
         >
             <>
                 <div className={`app-compose ${getAdditionalParentClass()}`}>
