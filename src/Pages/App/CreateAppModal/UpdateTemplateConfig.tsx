@@ -1,9 +1,12 @@
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
+
 import MaterialList from '@Components/material/MaterialList'
 import CIConfig from '@Components/ciConfig/CIConfig'
 import { CIConfigProps } from '@Components/ciConfig/types'
 import { DockerConfigOverrideKeys } from '@Components/ciPipeline/types'
 import { MaterialListProps } from '@Components/material/material.types'
+
+import { Workflow, WorkflowProps } from './Workflow'
 import { CreateAppFormStateActionType, UpdateTemplateConfigProps } from './types'
 
 const parentState: CIConfigProps['parentState'] = {
@@ -72,15 +75,15 @@ const UpdateTemplateConfig = ({ formState, isJobView, handleFormStateChange }: U
         })
     }
 
-    // const handleWorkflowConfigChange = (workflowConfig, isError) => {
-    //     handleFormStateChange({
-    //         action: CreateAppFormStateActionType.updateWorkflowConfig,
-    //         value: {
-    //             data: workflowConfig,
-    //             isError,
-    //         },
-    //     })
-    // }
+    const handleWorkflowConfigChange: WorkflowProps['onChange'] = (workflowConfig, isError) => {
+        handleFormStateChange({
+            action: CreateAppFormStateActionType.updateWorkflowConfig,
+            value: {
+                data: workflowConfig,
+                isError,
+            },
+        })
+    }
 
     return (
         <>
@@ -110,6 +113,10 @@ const UpdateTemplateConfig = ({ formState, isJobView, handleFormStateChange }: U
                     setParentState={handleCIConfigParentStateUpdate}
                     updateDockerConfigOverride={handleBuildConfigurationChange}
                 />
+            </div>
+            <div className="br-8 border__secondary bg__primary p-20 flexbox-col dc__gap-16">
+                <h4 className="fs-14 fw-6 lh-20 cn-9 m-0">Workflows</h4>
+                <Workflow templateId={stringTemplateId} onChange={handleWorkflowConfigChange} />
             </div>
         </>
     )
