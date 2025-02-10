@@ -47,6 +47,7 @@ import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.ser
 import { BodyType, ProtectedInputType } from './globalConfiguration.type'
 import { GlobalConfigurationProvider, useGlobalConfiguration } from './GlobalConfigurationProvider'
 import { OffendingPipelineModalAppView } from '@Pages/GlobalConfigurations/PluginPolicy/OffendingPipelineModal'
+import { getShouldHidePageHeaderAndSidebar } from './utils'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -71,6 +72,7 @@ const CatalogFramework = importComponentFromFELibrary('CatalogFramework')
 const PullImageDigest = importComponentFromFELibrary('PullImageDigest')
 const DeploymentWindow = importComponentFromFELibrary('DeploymentWindowComponent')
 const ImagePromotion = importComponentFromFELibrary('ImagePromotion')
+const DevtronAppTemplates = importComponentFromFELibrary('DevtronAppTemplates', null, 'function')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -84,6 +86,8 @@ export default function GlobalConfiguration(props) {
         chartStageCompleted: 0,
     })
     const { serverMode } = useMainContext()
+
+    const shouldHidePageHeaderAndSidebar = getShouldHidePageHeaderAndSidebar(location.pathname)
 
     useEffect(() => {
         serverMode !== SERVER_MODE.EA_ONLY && getHostURLConfig()
@@ -150,13 +154,15 @@ export default function GlobalConfiguration(props) {
     }
 
     return (
-        <main className="global-configuration">
-            <PageHeader headerName="Global Configurations" />
+        <main className={`global-configuration ${shouldHidePageHeaderAndSidebar ? 'global-configuration--full-content' : ''}`}>
+            {!shouldHidePageHeaderAndSidebar && <PageHeader headerName="Global Configurations" />}
             <Router history={useHistory()}>
                 <GlobalConfigurationProvider>
-                    <section className="global-configuration__navigation">
-                        <NavItem serverMode={serverMode} />
-                    </section>
+                    {!shouldHidePageHeaderAndSidebar && (
+                        <section className="global-configuration__navigation">
+                            <NavItem serverMode={serverMode} />
+                        </section>
+                    )}
                     <section className="global-configuration__component-wrapper">
                         <Suspense fallback={<Progressing pageLoader />}>
                             <ErrorBoundary>
@@ -265,6 +271,12 @@ const NavItem = ({ serverMode }) => {
             moduleName: ModuleNameMap.NOTIFICATION,
             isAvailableInEA: false,
         },
+        {
+            name: 'Application Templates',
+            href: CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP,
+            component: DevtronAppTemplates,
+            isAvailableInEA: false,
+        }
     ]
 
     useEffect(() => {
@@ -759,6 +771,11 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                         <LockDeploymentConfiguration />
                     </Route>
                 ),
+                DevtronAppTemplates && (
+                    <Route path={CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP}>
+                        <DevtronAppTemplates />
+                    </Route>
+                )
             ]}
             <Redirect to={defaultRoute()} />
         </Switch>
