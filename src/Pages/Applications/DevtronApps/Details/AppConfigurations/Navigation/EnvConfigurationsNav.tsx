@@ -299,6 +299,7 @@ export const EnvConfigurationsNav = ({
     hideEnvSelector,
     compareWithURL,
     appOrEnvIdToResourceApprovalConfigurationMap,
+    removeBaseConfigPath = false,
 }: EnvConfigurationsNavProps) => {
     const history = useHistory()
     const { isSuperAdmin } = useMainContext()
@@ -331,7 +332,18 @@ export const EnvConfigurationsNav = ({
             const validResourceType =
                 isSuperAdmin || !areCMsPresent ? EnvResourceType.DeploymentTemplate : EnvResourceType.ConfigMap
 
-            history.replace(generatePath(path, { ...params, resourceType: validResourceType }))
+            history.replace(
+                generatePath(
+                    // Here resourceType is mandatory since we are navigating to a specific resource type
+                    removeBaseConfigPath
+                        ? `${pathname.split(URLS.BASE_CONFIG)[0]}${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}`
+                        : path,
+                    {
+                        ...params,
+                        resourceType: validResourceType,
+                    },
+                ),
+            )
         }
     }
 

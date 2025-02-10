@@ -196,6 +196,7 @@ const AppComposeRouter = () => {
                     />
                 </>
             </Route>
+
             {isUnlocked.dockerBuildConfig && (
                 <Route path={`${path}/${URLS.APP_DOCKER_CONFIG}`}>
                     <CIConfig
@@ -205,6 +206,13 @@ const AppComposeRouter = () => {
                     />
                 </Route>
             )}
+
+            {(isUnlocked.deploymentTemplate || isUnlocked.workflowEditor) && (
+                <Route path={`${path}/${URLS.BASE_CONFIG}`}>
+                    <Progressing pageLoader />
+                </Route>
+            )}
+
             {isUnlocked.deploymentTemplate && (
                 <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
                     <DeploymentTemplate

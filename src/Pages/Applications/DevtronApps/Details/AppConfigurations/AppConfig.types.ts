@@ -120,7 +120,6 @@ export interface CustomNavItemsType {
     required?: boolean
     isProtectionAllowed?: boolean
     altNavKey?: string
-    disableHighlight?: boolean
 }
 
 export interface JobEnvOverrideRouteProps {
@@ -224,6 +223,10 @@ export interface EnvConfigurationsNavProps {
     isCMSecretLocked?: boolean
     hideEnvSelector?: boolean
     appOrEnvIdToResourceApprovalConfigurationMap: AppConfigState['envIdToEnvApprovalConfigurationMap']
+    /**
+     * @default false
+     */
+    removeBaseConfigPath?: boolean
 }
 
 export interface EnvConfigRouteParams {

@@ -211,8 +211,7 @@ export const getNavItems = ({
                     },
                     {
                         title: 'Base Configurations',
-                        href: `/app/${appId}/edit`,
-                        disableHighlight: true,
+                        href: `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.BASE_CONFIG}`,
                         stage: STAGE_NAME.REDIRECT_ITEM,
                         isLocked: !_isUnlocked.deploymentTemplate,
                         isProtectionAllowed:

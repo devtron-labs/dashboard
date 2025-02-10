@@ -72,6 +72,7 @@ export const URLS = {
     APP_LINKED_CI_CONFIG: 'linked-ci',
     APP_JOB_CI_CONFIG: 'ci-job',
     AUTHENTICATE: '/auth/login',
+    BASE_CONFIG: 'base-config',
     BULK_EDITS: '/bulk-edits',
     LINKED_CD: 'linked-cd',
     LOGIN_ADMIN: '/login/admin', //

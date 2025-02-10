@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { NavLink, NavLinkProps, generatePath } from 'react-router-dom'
+import { NavLink, generatePath } from 'react-router-dom'
 
 import {
     ApprovalConfigDataKindType,
@@ -57,17 +57,6 @@ const wrapWithTooltip = (content: string) => (children: ReactElement) => (
     </Tooltip>
 )
 
-const getNavItemIsActiveHandler =
-    (item: CustomNavItemsType): NavLinkProps['isActive'] =>
-    (match, location) => {
-        // if item.disableHighlight is true, then we don't want to highlight the item else based on the path we will highlight the item
-        if (item.disableHighlight) {
-            return false
-        }
-
-        return location.pathname.includes(item.href)
-    }
-
 /**
  *
  * @param item
@@ -97,7 +86,6 @@ export const renderNavItem = (
                 className="dc__nav-item cursor fs-13 lh-32 cn-9 w-100 br-4 px-8 flexbox dc__align-items-center dc__content-space dc__no-decor"
                 to={item.href}
                 target={options?.target}
-                isActive={getNavItemIsActiveHandler(item)}
             >
                 <span className="dc__truncate nav-text">{item.title}</span>
                 {options?.icon ??
