@@ -17,6 +17,12 @@ interface CreateAppWorkflowConfigType {
     }[]
 }
 
+interface CreateAppGitMaterialType {
+    gitMaterialId: GitMaterialType['id']
+    gitAccountId: GitMaterialType['gitProvider']['id']
+    gitMaterialURL: GitMaterialType['url']
+}
+
 export interface CreateAppFormStateType {
     projectId: string
     name: string
@@ -24,7 +30,7 @@ export interface CreateAppFormStateType {
     tags: DynamicDataTableRowType<TagsTableColumnsType>[]
     cloneAppId: number | null
     templateId: number | null
-    gitMaterials: Pick<GitMaterialType, 'id' | 'url' | 'gitProvider'>[]
+    gitMaterials: CreateAppGitMaterialType[]
     buildConfiguration: Required<Pick<CIConfigProps['parentState']['ciConfig'], 'dockerRegistry' | 'dockerRepository'>>
     workflowConfig: CreateAppWorkflowConfigType
 }

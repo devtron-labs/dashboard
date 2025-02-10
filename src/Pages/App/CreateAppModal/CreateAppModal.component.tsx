@@ -15,6 +15,7 @@ import { createJob } from '@Components/Jobs/Service'
 import { APP_COMPOSE_STAGE, getAppComposeURL } from '@Config/routes'
 import { useHistory } from 'react-router-dom'
 import { REQUIRED_FIELDS_MISSING } from '@Config/constants'
+import { importComponentFromFELibrary } from '@Components/common'
 import {
     ApplicationInfoFormProps,
     CreateAppFormErrorStateType,
@@ -30,6 +31,8 @@ import ApplicationInfoForm from './ApplicationInfoForm'
 import HeaderSection from './HeaderSection'
 import Sidebar from './Sidebar'
 import UpdateTemplateConfig from './UpdateTemplateConfig'
+
+const createDevtronAppUsingTemplate = importComponentFromFELibrary('createDevtronAppUsingTemplate', null, 'function')
 
 const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
     const history = useHistory()
@@ -198,6 +201,14 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
         history.push(url)
     }
 
+    const getCreateApiMethod = () => {
+        if (isJobView) {
+            return createJob
+        }
+
+        return selectedCreationMethod === CreationMethodType.template ? createDevtronAppUsingTemplate : createApp
+    }
+
     const handleCreateApp = async () => {
         const { isFormValid, invalidLabels, labelTags } = validateForm()
 
@@ -234,7 +245,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                 : null),
         }
 
-        const createAPI = isJobView ? createJob : createApp
+        const createAPI = getCreateApiMethod()
         setIsSubmitting(true)
         try {
             const { result } = await createAPI(request)

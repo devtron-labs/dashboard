@@ -63,9 +63,9 @@ const UpdateTemplateConfig = ({ formState, isJobView, handleFormStateChange }: U
             action: CreateAppFormStateActionType.updateGitMaterials,
             value: {
                 data: updatedGitMaterial.map(({ id, gitProvider, url }) => ({
-                    id,
-                    gitProvider,
-                    url,
+                    gitMaterialId: id,
+                    gitAccountId: gitProvider.id,
+                    gitMaterialURL: url,
                 })),
                 isError,
             },
