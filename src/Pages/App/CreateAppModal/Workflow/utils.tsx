@@ -1,3 +1,5 @@
+import { GroupBase } from 'react-select'
+
 import {
     CommonNodeAttr,
     getSelectPickerOptionByValue,
@@ -28,7 +30,7 @@ import {
 
 const getWorkflowCDNodeEnvironments = (
     environmentListOptions: ConvertWorkflowNodesToGraphVisualizerNodesProps['environmentListOptions'],
-) =>
+): GroupBase<SelectPickerOptionType>[] =>
     environmentListOptions.map((elm) => ({
         label: `Cluster: ${elm.label}`,
         options: elm.options.map((option) => ({
@@ -38,7 +40,7 @@ const getWorkflowCDNodeEnvironments = (
         })),
     }))
 
-const renderSourceNode = (node: CommonNodeAttr): GraphVisualizerNode => ({
+const getSourceNodeConfig = (node: CommonNodeAttr): GraphVisualizerNode => ({
     id: node.id,
     type: 'iconNode',
     data: { icon: <ICGit /> },
@@ -65,7 +67,7 @@ const getCINodeIcon = ({
     return <ICCi />
 }
 
-const renderCINode = (node: CommonNodeAttr): GraphVisualizerNode => {
+const getCINodeConfig = (node: CommonNodeAttr): GraphVisualizerNode => {
     if (node.isLinkedCD) {
         return {
             id: node.id,
@@ -105,7 +107,7 @@ export const getCDNodeIcon = ({
     return <ICCD className="flip-rocket" />
 }
 
-const renderCDNode = (
+const getCDNodeConfig = (
     node: CommonNodeAttr,
     {
         environmentListOptions,
@@ -146,7 +148,7 @@ const renderCDNode = (
     return cdNodeProps
 }
 
-const renderWebhookNode = (node: CommonNodeAttr): GraphVisualizerNode => ({
+const getWebhookNodeConfig = (node: CommonNodeAttr): GraphVisualizerNode => ({
     id: node.id,
     type: 'iconNode',
     data: { icon: <ICCIWebhook /> },
@@ -161,13 +163,13 @@ const getWorkflowGraphVisualizerNodeProps = (
 ): GraphVisualizerNode => {
     switch (node.type) {
         case 'GIT':
-            return renderSourceNode(node)
+            return getSourceNodeConfig(node)
         case 'CI':
-            return renderCINode(node)
+            return getCINodeConfig(node)
         case 'CD':
-            return renderCDNode(node, cdNodeProps)
+            return getCDNodeConfig(node, cdNodeProps)
         case 'WEBHOOK':
-            return renderWebhookNode(node)
+            return getWebhookNodeConfig(node)
         default:
             return {
                 id: node.id,

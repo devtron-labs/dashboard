@@ -39,6 +39,7 @@ import Sidebar from './Sidebar'
 import UpdateTemplateConfig from './UpdateTemplateConfig'
 
 const TemplateList = importComponentFromFELibrary('TemplateList', null, 'function')
+const createDevtronAppUsingTemplate = importComponentFromFELibrary('createDevtronAppUsingTemplate', null, 'function')
 
 const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
     const history = useHistory()
@@ -224,6 +225,14 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
         history.push(url)
     }
 
+    const getCreateApiMethod = () => {
+        if (isJobView) {
+            return createJob
+        }
+
+        return selectedCreationMethod === CreationMethodType.template ? createDevtronAppUsingTemplate : createApp
+    }
+
     const handleCreateApp = async () => {
         const { isFormValid, invalidLabels, labelTags, invalidWorkFlow } = validateForm()
 
@@ -268,7 +277,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                 : null),
         }
 
-        const createAPI = isJobView ? createJob : createApp
+        const createAPI = getCreateApiMethod()
         setIsSubmitting(true)
         try {
             const { result } = await createAPI(request)
