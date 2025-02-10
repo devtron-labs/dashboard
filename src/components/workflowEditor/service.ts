@@ -14,20 +14,39 @@
  * limitations under the License.
  */
 
-import { post, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { AppConfigProps, GetTemplateAPIRouteType, post, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { getTemplateAPIRoute } from '@Components/common'
 import { Routes } from '../../config'
 
-export function createWorkflow(request) {
-    const URL = `${Routes.WORKFLOW}`
+export function createWorkflow(request, isTemplateView?: AppConfigProps['isTemplateView']) {
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.WORKFLOW_LIST,
+              queryParams: { id: String(request.appId) },
+          })
+        : `${Routes.WORKFLOW}`
+
     return post(URL, request)
 }
 
-export function updateWorkflow(request) {
-    const URL = `${Routes.WORKFLOW}`
+export function updateWorkflow(request, isTemplateView?: AppConfigProps['isTemplateView']) {
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.WORKFLOW_LIST,
+              queryParams: { id: String(request.appId) },
+          })
+        : `${Routes.WORKFLOW}`
+
     return post(URL, request)
 }
 
-export function deleteWorkflow(appId: string, workflowId: number) {
-    const URL = `${Routes.WORKFLOW}/${appId}/${workflowId}`
+export function deleteWorkflow(appId: string, workflowId: number, isTemplateView?: AppConfigProps['isTemplateView']) {
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.WORKFLOW_LIST,
+              queryParams: { id: appId, workflowId },
+          })
+        : `${Routes.WORKFLOW}/${appId}/${workflowId}`
+
     return trash(URL)
 }

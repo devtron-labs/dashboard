@@ -22,6 +22,10 @@
 
     &--full-content {
         display: block;
+
+        .global-configuration__component-wrapper {
+            height: 100%;
+        }
     }
 
     .dc__page-header {

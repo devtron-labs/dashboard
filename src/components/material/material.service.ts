@@ -14,27 +14,28 @@
  * limitations under the License.
  */
 
-import { post, put, trash, getTemplateAPIRoute } from '@devtron-labs/devtron-fe-common-lib'
+import { GetTemplateAPIRouteType, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { getTemplateAPIRoute } from '@Components/common'
 import { Routes } from '../../config'
 import { MaterialServiceProps } from './material.types'
 
 export function createMaterial({ request, isTemplateView }: MaterialServiceProps) {
     const URL = isTemplateView
-        ? getTemplateAPIRoute({ type: 'git-material', queryParams: { id: request.appId } })
+        ? getTemplateAPIRoute({ type: GetTemplateAPIRouteType.GIT_MATERIAL, queryParams: { id: request.appId } })
         : `${Routes.GIT_MATERIAL}`
     return post(URL, request)
 }
 
 export function updateMaterial({ request, isTemplateView }: MaterialServiceProps) {
     const URL = isTemplateView
-        ? getTemplateAPIRoute({ type: 'git-material', queryParams: { id: request.appId } })
+        ? getTemplateAPIRoute({ type: GetTemplateAPIRouteType.GIT_MATERIAL, queryParams: { id: request.appId } })
         : `${Routes.GIT_MATERIAL}`
     return put(URL, request)
 }
 
 export function deleteMaterial({ request, isTemplateView }: MaterialServiceProps): Promise<any> {
     const URL = isTemplateView
-        ? getTemplateAPIRoute({ type: 'git-material', queryParams: { id: request.appId } })
+        ? getTemplateAPIRoute({ type: GetTemplateAPIRouteType.GIT_MATERIAL, queryParams: { id: request.appId } })
         : `${Routes.GIT_MATERIAL}/delete`
     return trash(URL, request)
 }

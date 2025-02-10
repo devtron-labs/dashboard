@@ -775,7 +775,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 ),
                 DevtronAppTemplates && (
                     <Route path={CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP}>
-                        <DevtronAppTemplates AppConfig={<AppConfig resourceKind={ResourceKindType.devtronApplication} appName='' />} />
+                        <DevtronAppTemplates AppConfig={AppConfig} />
                     </Route>
                 )
             ]}

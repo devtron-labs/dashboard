@@ -544,6 +544,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                 name={this.state.appName}
                                 onClose={this.closeAddWorkflow}
                                 getWorkflows={this.getWorkflows}
+                                isTemplateView={this.props.isTemplateView}
                             />
                         )
                     }}

@@ -81,6 +81,7 @@ export const AppNavigation = () => {
         isUnlocked,
         lastUnlockedStage,
         envIdToEnvApprovalConfigurationMap,
+        isTemplateView,
     } = useAppConfigurationContext()
 
     // CONSTANTS
@@ -139,6 +140,14 @@ export const AppNavigation = () => {
             : ''
 
         return secondLastUnlockedStage || lastUnlockedStage
+    }
+
+    const getDeleteButtonText = () => {
+        if (isJobView) {
+            return 'Job'
+        }
+
+        return isTemplateView ? 'Template' : 'Application'
     }
 
     return (
@@ -240,7 +249,7 @@ export const AppNavigation = () => {
                             size={ComponentSizeType.medium}
                             style={ButtonStyleType.negative}
                             onClick={deleteApp}
-                            text={`Delete ${isJobView ? 'Job' : 'Application'}`}
+                            text={`Delete ${getDeleteButtonText()}`}
                             fullWidth
                         />
                     </div>

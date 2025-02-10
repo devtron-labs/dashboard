@@ -15,8 +15,18 @@
  */
 
 import { Routes } from '@Config/constants'
-import { BaseURLParams, get, post, put, ResponseType, trash } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AppConfigProps,
+    BaseURLParams,
+    get,
+    GetTemplateAPIRouteType,
+    post,
+    put,
+    ResponseType,
+    trash,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { getChartReferencesForAppAndEnv } from '@Services/service'
+import { getTemplateAPIRoute } from '@Components/common'
 import {
     DeploymentTemplateConfigDTO,
     EnvironmentOverrideDeploymentTemplateDTO,
@@ -33,8 +43,18 @@ export const updateBaseDeploymentTemplate = (request: UpdateBaseDTPayloadType, a
     })
 }
 
-export const createBaseDeploymentTemplate = (request: UpdateBaseDTPayloadType, abortSignal: AbortSignal) => {
-    const URL = `${Routes.DEPLOYMENT_TEMPLATE}`
+export const createBaseDeploymentTemplate = (
+    request: UpdateBaseDTPayloadType,
+    abortSignal: AbortSignal,
+    isTemplateView?: AppConfigProps['isTemplateView'],
+) => {
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CONFIG_DEPLOYMENT_TEMPLATE,
+              queryParams: { id: String(request.appId) },
+          })
+        : `${Routes.DEPLOYMENT_TEMPLATE}`
+
     return post(URL, request, {
         signal: abortSignal,
     })
@@ -76,8 +96,16 @@ export async function getBaseDeploymentTemplate(
     chartRefId: number,
     abortSignal: AbortSignal,
     chartName: string,
+    isTemplateView?: AppConfigProps['isTemplateView'],
 ): Promise<ResponseType<DeploymentTemplateConfigDTO>> {
-    const response = await get(`${Routes.DEPLOYMENT_TEMPLATE}/${appId}/${chartRefId}`, {
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CONFIG_DEPLOYMENT_TEMPLATE,
+              queryParams: { id: String(appId), chartRefId },
+          })
+        : `${Routes.DEPLOYMENT_TEMPLATE}/${appId}/${chartRefId}`
+
+    const response = await get(URL, {
         signal: abortSignal,
     })
     return addGUISchemaIfAbsent(response, chartName)

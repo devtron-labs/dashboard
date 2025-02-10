@@ -30,7 +30,8 @@ import {
     ModuleNameMap,
     stringComparatorBySortOrder,
     AppConfigProps,
-    getTemplateAPIRoute,
+    noop,
+    GetTemplateAPIRouteType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../config'
 import {
@@ -52,6 +53,7 @@ import { ModuleStatus } from '../components/v2/devtronStackManager/DevtronStackM
 import { LOGIN_COUNT } from '../components/onboardingGuide/onboarding.utils'
 import { getProjectList } from '@Components/project/service'
 import { OffendingWorkflowQueryParamType } from '@Components/app/details/triggerView/types'
+import { getTemplateAPIRoute } from '@Components/common'
 
 export function getAppConfigStatus(appId: number, isJobView?: boolean): Promise<any> {
     return get(`${Routes.APP_CONFIG_STATUS}?app-id=${appId}${isJobView ? '&appType=2' : ''}`)
@@ -64,13 +66,15 @@ export const getSourceConfig = (
     isTemplateView?: AppConfigProps['isTemplateView'],
 ) => {
     const URL = isTemplateView
-        ? getTemplateAPIRoute({ type: 'git-material', queryParams: { id, ...queryParams } })
+        ? getTemplateAPIRoute({ type: GetTemplateAPIRouteType.GIT_MATERIAL, queryParams: { id, ...queryParams } })
         : getUrlWithSearchParams<'pipelineType'>(`${Routes.SOURCE_CONFIG_GET}/${id}`, queryParams ?? {})
     return get(URL)
 }
 
-export function getCIConfig(appId: number) {
-    const URL = `${Routes.CI_CONFIG_GET}/${appId}`
+export function getCIConfig(appId: number, isTemplateView?: AppConfigProps['isTemplateView']) {
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({ type: GetTemplateAPIRouteType.CI_BUILD_CONFIG, queryParams: { id: String(appId) } })
+        : `${Routes.CI_CONFIG_GET}/${appId}`
     return get(URL)
 }
 
@@ -152,7 +156,7 @@ export async function getProjectFilteredApps(
 ): Promise<ProjectFilteredApps> {
     const chartOnlyQueryParam = accessType === ACCESS_TYPE_MAP.HELM_APPS ? '&appType=DevtronChart' : ''
     const response = await get(`app/min?teamIds=${projectIds.join(',')}${chartOnlyQueryParam}`)
-    
+
     return {
         ...response,
         result: (response.result || [])
@@ -222,10 +226,7 @@ export const getCommonAppFilters = async (
             appListFilters: response[0],
         }
     }
-    const response = await Promise.all([
-        getProjectList(),
-        getClusterListMinWithoutAuth(),
-    ])
+    const response = await Promise.all([getProjectList(), getClusterListMinWithoutAuth()])
     return {
         isFullMode: false,
         clusterList: response[1],
@@ -253,8 +254,21 @@ export function getDockerRegistryList(): Promise<ResponseType> {
     return get(URL)
 }
 
-export function getAppOtherEnvironmentMin(appId): Promise<AppOtherEnvironment> {
-    const URL = `${Routes.APP_OTHER_ENVIRONMENT_MIN}?app-id=${appId}`
+export function getAppOtherEnvironmentMin(
+    appId,
+    isTemplateView?: AppConfigProps['isTemplateView'],
+): Promise<AppOtherEnvironment> {
+    const queryParams = {
+        'app-id': appId,
+    }
+
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CD_ENV_LIST,
+              queryParams: { id: String(appId), ...queryParams },
+          })
+        : getUrlWithSearchParams(Routes.APP_OTHER_ENVIRONMENT_MIN, queryParams)
+
     return get(URL)
 }
 
@@ -301,12 +315,14 @@ export const getAllWorkflowsForAppNames = (appNames: string[], signal?: AbortSig
     return post(`${Routes.WORKFLOW}/all`, { appNames }, { signal })
 }
 
-export function getWorkflowList(appId, filteredEnvIds?: string) {
+export function getWorkflowList(appId, filteredEnvIds?: string, isTemplateView?: AppConfigProps['isTemplateView']) {
     let filteredEnvParams = ''
     if (filteredEnvIds) {
         filteredEnvParams = `?envIds=${filteredEnvIds}`
     }
-    const URL = `${Routes.WORKFLOW}/${appId}${filteredEnvParams}`
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({ type: GetTemplateAPIRouteType.WORKFLOW_LIST, queryParams: { id: appId } })
+        : `${Routes.WORKFLOW}/${appId}${filteredEnvParams}`
     return get(URL)
 }
 

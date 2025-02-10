@@ -26,6 +26,7 @@ import {
     Material,
     SelectPickerOptionType,
     CiPipeline,
+    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { OptionTypeWithIcon } from '@Components/externalLinks/ExternalLinks.type'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
@@ -96,7 +97,7 @@ export interface LoadingState {
     failed: boolean
 }
 
-export interface CIConfigProps {
+export interface CIConfigProps extends Pick<AppConfigProps, 'isTemplateView'> {
     respondOnSuccess: (redirection?: boolean) => void
     configOverrideView?: boolean
     allowOverride?: boolean
@@ -140,7 +141,7 @@ export interface SourceConfigType {
     templateId: number
     material: SelectedGitMaterialType[]
 }
-export interface CIConfigFormProps {
+export interface CIConfigFormProps extends Pick<CIConfigProps, 'isTemplateView'> {
     parentReloading: boolean
     dockerRegistries: any
     sourceConfig: SourceConfigType

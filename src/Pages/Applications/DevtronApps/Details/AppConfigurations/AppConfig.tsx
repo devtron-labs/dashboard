@@ -107,7 +107,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
         envIdToEnvApprovalConfigurationMap: ResourceIdToResourceApprovalPolicyConfigMapType
     }> =>
         Promise.all([
-            isJob ? getJobOtherEnvironmentMin(appId) : getAppOtherEnvironmentMin(appId),
+            isJob ? getJobOtherEnvironmentMin(appId) : getAppOtherEnvironmentMin(appId, isTemplateView),
             typeof getApprovalPolicyConfigForApp === 'function' && !isJob
                 ? getApprovalPolicyConfigForApp(Number(appId))
                 : null,
@@ -160,7 +160,12 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
     // ASYNC CALLS
     const [, userRoleRes, userRoleErr] = useAsync(() => getUserRole(appName), [appName])
     const [, appConfigData, appConfigError] = useAsync(
-        () => Promise.all([getAppConfigStatus(+appId, resourceKind), getWorkflowList(appId), fetchEnvironments()]),
+        () =>
+            Promise.all([
+                getAppConfigStatus(+appId, resourceKind),
+                getWorkflowList(appId, '', isTemplateView),
+                fetchEnvironments(),
+            ]),
         [appId, filteredEnvIds, reload, resourceKind],
     )
 
@@ -393,7 +398,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
 
     const renderDeleteDialog = () => {
         if (state.showDeleteConfirm) {
-            return state.canDeleteApp ? (
+            return state.canDeleteApp || isTemplateView ? (
                 <DeleteDialog
                     title={`Delete '${appName}'?`}
                     delete={deleteAppHandler}

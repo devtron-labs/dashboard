@@ -53,6 +53,7 @@ export default function CIConfigForm({
     setParentState,
     loadingStateFromParent,
     setLoadingStateFromParent,
+    isTemplateView,
 }: CIConfigFormProps) {
     const currentMaterial: CurrentMaterialType =
         allowOverride && selectedCIPipeline?.isDockerConfigOverridden
@@ -82,7 +83,7 @@ export default function CIConfigForm({
             value: material?.id || currentMaterial.id,
             label: material?.name || currentMaterial.name,
             startIcon: getGitProviderIcon(material?.url || currentMaterial.url),
-            checkoutPath: material?.checkoutPath || currentMaterial.checkoutPath
+            checkoutPath: material?.checkoutPath || currentMaterial.checkoutPath,
         }
         return _currentMaterial
     }
@@ -246,7 +247,7 @@ export default function CIConfigForm({
         setApiInProgress(true)
         try {
             const saveOrUpdate = ciConfig && ciConfig.id ? updateCIConfig : saveCIConfig
-            await saveOrUpdate(requestBody)
+            await saveOrUpdate(requestBody, isTemplateView)
             ToastManager.showToast({
                 variant: ToastVariantType.success,
                 description: 'Successfully saved',

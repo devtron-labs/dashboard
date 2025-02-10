@@ -117,6 +117,7 @@ export const ConfigMapSecretContainer = ({
     parentName,
     appChartRef,
     reloadEnvironments,
+    isTemplateView,
 }: ConfigMapSecretContainerProps) => {
     // HOOKS
     const location = useLocation()
@@ -733,6 +734,7 @@ export const ConfigMapSecretContainer = ({
                     appId: +appId,
                     payload: payloadData,
                     signal: abortControllerRef.current.signal,
+                    isTemplateView,
                 }
 
                 await (isSecret ? updateSecret : updateConfigMap)(updateConfigMapSecretParams)

@@ -30,6 +30,7 @@ import {
     UploadFileProps,
     ChangeCIPayloadType,
     CIPipelineNodeType,
+    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router-dom'
 import { HostURLConfig } from '../../services/service.types'
@@ -87,7 +88,8 @@ export interface WorkflowEditState {
 }
 
 export interface WorkflowEditProps
-    extends RouteComponentProps<{ appId: string; workflowId: string; ciPipelineId: string; cdPipelineId: string }> {
+    extends RouteComponentProps<{ appId: string; workflowId: string; ciPipelineId: string; cdPipelineId: string }>,
+        Pick<AppConfigProps, 'isTemplateView'> {
     configStatus: number
     isCDPipeline: boolean
     respondOnSuccess: () => void
@@ -111,7 +113,9 @@ export interface EmptyWorkflowState {
     showError: boolean
 }
 
-export interface AddWorkflowProps extends RouteComponentProps<{ appId: string; workflowId: string }> {
+export interface AddWorkflowProps
+    extends RouteComponentProps<{ appId: string; workflowId: string }>,
+        Pick<AppConfigProps, 'isTemplateView'> {
     name: string
     onClose: () => void
     getWorkflows: () => void
