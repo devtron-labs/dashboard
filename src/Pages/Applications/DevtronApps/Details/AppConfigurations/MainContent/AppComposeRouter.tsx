@@ -254,6 +254,7 @@ const AppComposeRouter = () => {
                         filteredEnvIds={filteredEnvIds}
                         reloadEnvironments={reloadEnvironments}
                         reloadAppConfig={reloadAppConfig}
+                        isTemplateView={isTemplateView}
                     />
                 </Route>,
                 <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
