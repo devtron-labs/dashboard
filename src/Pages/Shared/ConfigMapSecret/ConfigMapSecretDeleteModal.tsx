@@ -61,7 +61,7 @@ export const ConfigMapSecretDeleteModal = ({
         setIsDeleting(true)
         try {
             if (envId) {
-                const deleteEnvConfigMapSecretParams = { id, appId, envId, name: configName }
+                const deleteEnvConfigMapSecretParams = { id, appId, envId, name: configName, isTemplateView }
                 await (isSecret ? deleteEnvSecret : deleteEnvConfigMap)(deleteEnvConfigMapSecretParams)
 
                 ToastManager.showToast({

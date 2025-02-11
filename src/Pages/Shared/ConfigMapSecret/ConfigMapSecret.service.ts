@@ -52,7 +52,7 @@ const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceN
 
 export const updateConfigMap = ({ id, appId, payload, signal, isTemplateView }: UpdateConfigMapSecretProps) => {
     const URL = isTemplateView
-        ? getTemplateAPIRoute({ type: GetTemplateAPIRouteType.CONFIG_MAP_CREATE, queryParams: { id: String(appId) } })
+        ? getTemplateAPIRoute({ type: GetTemplateAPIRouteType.CONFIG_CM, queryParams: { id: appId } })
         : `${Routes.APP_CREATE_CONFIG_MAP}`
 
     return post(
@@ -69,20 +69,42 @@ export const updateConfigMap = ({ id, appId, payload, signal, isTemplateView }: 
 export const deleteConfigMap = ({ id, appId, name, isTemplateView }: DeleteConfigMapSecretProps) => {
     const URL = isTemplateView
         ? getTemplateAPIRoute({
-              type: GetTemplateAPIRouteType.CONFIG_MAP_CREATE,
-              queryParams: { id: String(appId), envId: id, name },
+              type: GetTemplateAPIRouteType.CONFIG_CM,
+              queryParams: { id: appId, envId: id, name },
           })
         : `${Routes.APP_CREATE_CONFIG_MAP}/${appId}/${id}?name=${name}`
 
     return trash(URL)
 }
 
-export const deleteEnvConfigMap = ({ id, appId, envId, name }: DeleteEnvConfigMapSecretProps) =>
-    trash(`${Routes.APP_CREATE_ENV_CONFIG_MAP}/${appId}/${envId}/${id}?name=${name}`)
+export const deleteEnvConfigMap = ({ id, appId, envId, name, isTemplateView }: DeleteEnvConfigMapSecretProps) => {
+    const url = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CONFIG_CM,
+              queryParams: {
+                  id: appId,
+                  envId,
+                  // TODO: Confirm this
+                  resourceId: id,
+                  name,
+              },
+          })
+        : `${Routes.APP_CREATE_ENV_CONFIG_MAP}/${appId}/${envId}/${id}?name=${name}`
 
-export const overRideConfigMap = ({ appId, envId, payload, signal }: OverrideConfigMapSecretProps) =>
-    post(
-        `${Routes.APP_CREATE_ENV_CONFIG_MAP}`,
+    return trash(url)
+}
+export const overRideConfigMap = ({ appId, envId, payload, signal, isTemplateView }: OverrideConfigMapSecretProps) => {
+    const url = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CONFIG_CM,
+              queryParams: {
+                  id: appId,
+              },
+          })
+        : Routes.APP_CREATE_ENV_CONFIG_MAP
+
+    return post(
+        url,
         {
             appId,
             environmentId: envId,
@@ -90,12 +112,13 @@ export const overRideConfigMap = ({ appId, envId, payload, signal }: OverrideCon
         },
         { signal },
     )
+}
 
 export const updateSecret = ({ id, appId, payload, signal, isTemplateView }: UpdateConfigMapSecretProps) => {
     const URL = isTemplateView
         ? getTemplateAPIRoute({
-              type: GetTemplateAPIRouteType.CONFIG_SECRET_CREATE,
-              queryParams: { id: String(appId) },
+              type: GetTemplateAPIRouteType.CONFIG_CS,
+              queryParams: { id: appId },
           })
         : `${Routes.APP_CREATE_SECRET}`
 
@@ -113,20 +136,43 @@ export const updateSecret = ({ id, appId, payload, signal, isTemplateView }: Upd
 export const deleteSecret = ({ id, appId, name, isTemplateView }: DeleteConfigMapSecretProps) => {
     const URL = isTemplateView
         ? getTemplateAPIRoute({
-              type: GetTemplateAPIRouteType.CONFIG_MAP_CREATE,
-              queryParams: { id: String(appId), envId: id, name },
+              type: GetTemplateAPIRouteType.CONFIG_CM,
+              queryParams: { id: appId, envId: id, name },
           })
         : `${Routes.APP_CREATE_SECRET}/${appId}/${id}?name=${name}`
 
     return trash(URL)
 }
 
-export const deleteEnvSecret = ({ id, appId, envId, name }: DeleteEnvConfigMapSecretProps) =>
-    trash(`${Routes.APP_CREATE_ENV_SECRET}/${appId}/${envId}/${id}?name=${name}`)
+export const deleteEnvSecret = ({ id, appId, envId, name, isTemplateView }: DeleteEnvConfigMapSecretProps) => {
+    const url = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CONFIG_CS,
+              queryParams: {
+                  id: appId,
+                  envId,
+                  // TODO: Check with BE
+                  resourceId: id,
+                  name,
+              },
+          })
+        : `${Routes.APP_CREATE_ENV_SECRET}/${appId}/${envId}/${id}?name=${name}`
 
-export const overRideSecret = ({ appId, envId, payload, signal }: OverrideConfigMapSecretProps) =>
-    post(
-        `${Routes.APP_CREATE_ENV_SECRET}`,
+    return trash(url)
+}
+
+export const overRideSecret = ({ appId, envId, payload, signal, isTemplateView }: OverrideConfigMapSecretProps) => {
+    const url = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CONFIG_CS,
+              queryParams: {
+                  id: appId,
+              },
+          })
+        : Routes.APP_CREATE_ENV_SECRET
+
+    return post(
+        url,
         {
             appId,
             environmentId: envId,
@@ -134,6 +180,7 @@ export const overRideSecret = ({ appId, envId, payload, signal }: OverrideConfig
         },
         { signal },
     )
+}
 
 export const getJobCMSecret = ({
     componentType,

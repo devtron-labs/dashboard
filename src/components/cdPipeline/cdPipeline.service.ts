@@ -128,64 +128,62 @@ export async function getCDPipelineConfig(appId: string, pipelineId: string, isT
     )
 }
 
-// TODO: Check and update
-export function getConfigMapAndSecrets(appId: string, envId) {
-    return Promise.all([getEnvironmentConfigs(appId, envId), getEnvironmentSecrets(appId, envId)]).then(
-        ([configMapResponse, secretResponse]) => {
-            const configmaps =
-                configMapResponse.result && configMapResponse.result.configData
-                    ? configMapResponse.result.configData
-                    : []
-            const secrets =
-                secretResponse.result && secretResponse.result.configData ? secretResponse.result.configData : []
+export function getConfigMapAndSecrets(appId: string, envId, isTemplateView: AppConfigProps['isTemplateView']) {
+    return Promise.all([
+        getEnvironmentConfigs(appId, envId, isTemplateView),
+        getEnvironmentSecrets(appId, envId, isTemplateView),
+    ]).then(([configMapResponse, secretResponse]) => {
+        const configmaps =
+            configMapResponse.result && configMapResponse.result.configData ? configMapResponse.result.configData : []
+        const secrets =
+            secretResponse.result && secretResponse.result.configData ? secretResponse.result.configData : []
 
-            configmaps.sort((a, b) => {
-                sortCallback('name', a, b)
-            })
-            secrets.sort((a, b) => {
-                sortCallback('name', a, b)
-            })
-            const _configmaps = configmaps.map((configmap) => {
-                return {
-                    name: configmap.name,
-                    type: 'configmaps',
-                }
-            })
-            const _secrets = secrets.map((secret) => {
-                return {
-                    name: secret.name,
-                    type: 'secrets',
-                }
-            })
-
-            const configSecretsList = [
-                {
-                    label: 'ConfigMaps',
-                    options: configmaps.map((configmap) => {
-                        return {
-                            label: configmap.name,
-                            value: `${configmap.name}-cm`,
-                            type: 'configmaps',
-                        }
-                    }),
-                },
-                {
-                    label: 'Secrets',
-                    options: secrets.map((secret) => {
-                        return {
-                            label: secret.name,
-                            value: `${secret.name}-cs`,
-                            type: 'secrets',
-                        }
-                    }),
-                },
-            ]
-
+        configmaps.sort((a, b) => {
+            sortCallback('name', a, b)
+        })
+        secrets.sort((a, b) => {
+            sortCallback('name', a, b)
+        })
+        const _configmaps = configmaps.map((configmap) => {
             return {
-                code: configMapResponse.code,
-                result: _configmaps.concat(_secrets),
-                list: configSecretsList,
+                name: configmap.name,
+                type: 'configmaps',
             }
-        },
-    )
+        })
+        const _secrets = secrets.map((secret) => {
+            return {
+                name: secret.name,
+                type: 'secrets',
+            }
+        })
+
+        const configSecretsList = [
+            {
+                label: 'ConfigMaps',
+                options: configmaps.map((configmap) => {
+                    return {
+                        label: configmap.name,
+                        value: `${configmap.name}-cm`,
+                        type: 'configmaps',
+                    }
+                }),
+            },
+            {
+                label: 'Secrets',
+                options: secrets.map((secret) => {
+                    return {
+                        label: secret.name,
+                        value: `${secret.name}-cs`,
+                        type: 'secrets',
+                    }
+                }),
+            },
+        ]
+
+        return {
+            code: configMapResponse.code,
+            result: _configmaps.concat(_secrets),
+            list: configSecretsList,
+        }
+    })
 }

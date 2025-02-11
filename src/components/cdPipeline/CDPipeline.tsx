@@ -492,7 +492,7 @@ export default function CDPipeline({
     }
 
     const getConfigMapSecrets = () => {
-        getConfigMapAndSecrets(appId, formData.environmentId)
+        getConfigMapAndSecrets(appId, formData.environmentId, isTemplateView)
             .then((response) => {
                 setConfigMapAndSecrets(response.list)
             })

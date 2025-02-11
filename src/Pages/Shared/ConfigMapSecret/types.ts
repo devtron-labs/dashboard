@@ -79,7 +79,7 @@ export interface CMSecretWrapperProps
     isApprovalPolicyConfigured?: boolean
     envName: string
     appName: string
-    isTemplateView?: AppConfigProps['isTemplateView']
+    isTemplateView: AppConfigProps['isTemplateView']
 }
 
 export interface ConfigMapSecretContainerProps extends Omit<CMSecretWrapperProps, 'parentState' | 'setParentState'> {
@@ -233,7 +233,7 @@ export interface ConfigMapSecretCommonAPIProps {
 
 export interface UpdateConfigMapSecretProps
     extends Pick<ConfigMapSecretCommonAPIProps, 'appId' | 'id' | 'payload' | 'signal'> {
-    isTemplateView?: AppConfigProps['isTemplateView']
+    isTemplateView: AppConfigProps['isTemplateView']
 }
 
 export interface DeleteConfigMapSecretProps
@@ -245,7 +245,8 @@ export interface DeleteEnvConfigMapSecretProps
         Pick<ConfigMapSecretCommonAPIProps, 'envId'> {}
 
 export interface OverrideConfigMapSecretProps
-    extends Pick<ConfigMapSecretCommonAPIProps, 'appId' | 'envId' | 'payload' | 'signal'> {}
+    extends Pick<ConfigMapSecretCommonAPIProps, 'appId' | 'envId' | 'payload' | 'signal'>,
+        Pick<UpdateConfigMapSecretProps, 'isTemplateView'> {}
 
 export interface GetCMSecretProps extends Pick<ConfigMapSecretCommonAPIProps, 'id' | 'appId' | 'name' | 'signal'> {
     componentType: CMSecretComponentType

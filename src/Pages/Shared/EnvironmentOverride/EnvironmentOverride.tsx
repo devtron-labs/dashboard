@@ -178,6 +178,7 @@ const EnvironmentOverride = ({
                             isJob={isJob}
                             appName={getAppName()}
                             envName={getEnvName()}
+                            isTemplateView={false}
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
@@ -198,6 +199,7 @@ const EnvironmentOverride = ({
                             isJob={isJob}
                             appName={getAppName()}
                             envName={getEnvName()}
+                            isTemplateView={false}
                         />
                     </Route>
                     <Redirect to={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`} />

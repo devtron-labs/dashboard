@@ -136,6 +136,7 @@ export const Configurations = () => {
                             approvalConfigForEnv?.[ApprovalConfigDataKindType.configMap],
                         )}
                         clusterId={null}
+                        isTemplateView={false}
                     />
                 </div>
             </Route>
@@ -153,6 +154,7 @@ export const Configurations = () => {
                             approvalConfigForEnv?.[ApprovalConfigDataKindType.configSecret],
                         )}
                         clusterId={null}
+                        isTemplateView={false}
                     />
                 </div>
             </Route>

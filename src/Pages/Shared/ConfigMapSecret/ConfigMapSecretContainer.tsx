@@ -745,6 +745,7 @@ export const ConfigMapSecretContainer = ({
                     envId: +envId,
                     payload: payloadData,
                     signal: abortControllerRef.current.signal,
+                    isTemplateView,
                 }
 
                 await (isSecret ? overRideSecret : overRideConfigMap)(overrideConfigMapSecretParams)
@@ -952,6 +953,7 @@ export const ConfigMapSecretContainer = ({
             updateCMSecret={updateCMSecret}
             closeDeleteModal={closeDeleteModal}
             handleError={handleError}
+            isTemplateView={isTemplateView}
         />
     )
 

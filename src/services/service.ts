@@ -311,12 +311,30 @@ export function getJobCIPipeline(jobId) {
     return get(`${Routes.JOB_CI_DETAIL}/${jobId}`)
 }
 
-export function getEnvironmentConfigs(appId, envId, option?) {
-    return get(`${Routes.APP_CREATE_ENV_CONFIG_MAP}/${appId}/${envId}`, option)
+export function getEnvironmentConfigs(appId, envId, isTemplateView: AppConfigProps['isTemplateView']) {
+    const url = isTemplateView ? getTemplateAPIRoute({
+        type: GetTemplateAPIRouteType.CONFIG_CM,
+        queryParams: {
+            id: appId,
+            envId,
+        }
+    }) : `${Routes.APP_CREATE_ENV_CONFIG_MAP}/${appId}/${envId}`
+
+    return get(url)
 }
 
-export function getEnvironmentSecrets(appId, envId) {
-    return get(`${Routes.APP_CREATE_ENV_SECRET}/${appId}/${envId}`)
+export function getEnvironmentSecrets(appId, envId, isTemplateView: AppConfigProps['isTemplateView']) {
+    const url = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CONFIG_CS,
+              queryParams: {
+                  id: appId,
+                  envId,
+              },
+          })
+        : `${Routes.APP_CREATE_ENV_SECRET}/${appId}/${envId}`
+
+    return get(url)
 }
 export const getAllWorkflowsForAppNames = (appNames: string[], signal?: AbortSignal): Promise<AllWorkflows> => {
     return post(`${Routes.WORKFLOW}/all`, { appNames }, { signal })

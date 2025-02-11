@@ -146,6 +146,7 @@ const AppComposeRouter = () => {
                         onErrorRedirectURL={lastUnlockedStage}
                         appName={currentAppName}
                         envName=""
+                        isTemplateView={isTemplateView}
                     />
                 </Route>,
                 <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
@@ -159,6 +160,7 @@ const AppComposeRouter = () => {
                         onErrorRedirectURL={lastUnlockedStage}
                         appName={currentAppName}
                         envName=""
+                        isTemplateView={isTemplateView}
                     />
                 </Route>,
                 <Route path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}>
@@ -262,6 +264,7 @@ const AppComposeRouter = () => {
                         onErrorRedirectURL={lastUnlockedStage}
                         appName={currentAppName}
                         envName=""
+                        isTemplateView={isTemplateView}
                     />
                 </Route>,
                 <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
@@ -276,6 +279,7 @@ const AppComposeRouter = () => {
                         onErrorRedirectURL={lastUnlockedStage}
                         appName={currentAppName}
                         envName=""
+                        isTemplateView={isTemplateView}
                     />
                 </Route>,
                 <Route
