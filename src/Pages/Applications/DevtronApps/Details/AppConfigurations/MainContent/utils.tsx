@@ -18,6 +18,7 @@ import {
     ConfigHeaderTabType,
     ConfigToolbarPopupMenuConfigType,
     DeploymentTemplateHistoryType,
+    PipelineMigratedFromType,
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
@@ -139,6 +140,7 @@ export const getConfigToolbarPopupConfig = ({
     isDeleteOverrideDraftPresent = false,
     isDeleteDisabled = false,
     deleteDisabledTooltip = '',
+    migratedFrom,
 }: GetConfigToolbarPopupConfigProps): ConfigToolbarProps['popupConfig']['menuConfig'] => {
     if (isPublishedValuesView && !isPublishedConfigPresent) {
         return null
@@ -179,7 +181,11 @@ export const getConfigToolbarPopupConfig = ({
             text: 'Delete override',
             onClick: handleDeleteOverride,
             dataTestId: 'delete-override',
-            disabled: isLoading,
+            disabled: isLoading || migratedFrom === PipelineMigratedFromType.ARGO_APPLICATION,
+            tooltipText:
+                migratedFrom === PipelineMigratedFromType.ARGO_APPLICATION
+                    ? 'Can not delete override for pipelines migrated from argo'
+                    : null,
             icon: <ICDeleteInteractive className="scr-5 dc__no-shrink icon-dim-16" />,
             variant: 'negative',
         })

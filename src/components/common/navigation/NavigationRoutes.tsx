@@ -27,7 +27,7 @@ import {
     ImageSelectionUtilityProvider,
     URLS as CommonURLS,
     AppListConstants,
-    MODES,
+    getEnvironmentData,
     DEVTRON_BASE_MAIN_ID,
     MainContext,
     getHashedValue,
@@ -63,6 +63,7 @@ import { HelmAppListResponse } from '../../app/list-new/AppListType'
 import { ExternalFluxAppDetailsRoute } from '../../../Pages/App/Details/ExternalFlux'
 
 import { TAB_DATA_LOCAL_STORAGE_KEY } from '../DynamicTabs/constants'
+import { DEFAULT_GIT_OPS_FEATURE_FLAGS } from './constants'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -78,7 +79,6 @@ const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/Devt
 const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
-const getEnvironmentData = importComponentFromFELibrary('getEnvironmentData', null, 'function')
 const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
 const SoftwareDistributionHub = importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
 const NetworkStatusInterface = importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
@@ -116,6 +116,7 @@ export default function NavigationRoutes() {
     const contextValue = useMemo(() => ({ environmentId, setEnvironmentId }), [environmentId])
     const [isAirgapped, setIsAirGapped] = useState(false)
     const [isManifestScanningEnabled, setIsManifestScanningEnabled] = useState<boolean>(false)
+    const [featureGitOpsFlags, setFeatureGitOpsFlags] = useState<MainContext['featureGitOpsFlags']>(structuredClone(DEFAULT_GIT_OPS_FEATURE_FLAGS))
 
     const getInit = async (_serverMode: string) => {
         setLoginLoader(true)
@@ -196,7 +197,7 @@ export default function NavigationRoutes() {
             if (window._env_.GA_ENABLED) {
                 const path = location.pathname
                 // Using .then to use in useEffect
-                getHashedValue(email).then((hashedEmail) => { 
+                getHashedValue(email).then((hashedEmail) => {
                     ReactGA.initialize(window._env_.GA_TRACKING_ID, {
                         gaOptions: {
                             userId: hashedEmail,
@@ -263,12 +264,22 @@ export default function NavigationRoutes() {
             const { result } = await getEnvironmentData()
             setIsAirGapped(result.isAirGapEnvironment)
             setIsManifestScanningEnabled(result.isManifestScanningEnabled)
+
+            const parsedFeatureGitOpsFlags: typeof featureGitOpsFlags = {
+                isFeatureArgoCdMigrationEnabled: result.featureGitOpsFlags?.isFeatureArgoCdMigrationEnabled || false,
+                isFeatureGitOpsEnabled: result.featureGitOpsFlags?.isFeatureGitOpsEnabled || false,
+                isFeatureUserDefinedGitOpsEnabled:
+                    result.featureGitOpsFlags?.isFeatureUserDefinedGitOpsEnabled || false,
+            }
+            setFeatureGitOpsFlags(parsedFeatureGitOpsFlags)
+
             if (typeof Storage !== 'undefined') {
-                localStorage.setItem('isAirGapped', result.isAirGapEnvironment)
+                localStorage.setItem('isAirGapped', String(result.isAirGapEnvironment))
             }
         } catch {
             setIsAirGapped(false)
             setIsManifestScanningEnabled(false)
+            setFeatureGitOpsFlags(structuredClone(DEFAULT_GIT_OPS_FEATURE_FLAGS))
         }
     }
 
@@ -279,9 +290,7 @@ export default function NavigationRoutes() {
             setServerMode(SERVER_MODE.EA_ONLY)
         } else {
             getServerMode()
-            if (getEnvironmentData) {
-                getEnvironmentDataValues()
-            }
+            getEnvironmentDataValues()
             getCurrentServerInfo()
         }
     }, [])
@@ -368,6 +377,7 @@ export default function NavigationRoutes() {
                 isAirgapped,
                 isSuperAdmin,
                 isManifestScanningEnabled,
+                featureGitOpsFlags,
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
@@ -391,7 +401,9 @@ export default function NavigationRoutes() {
                         }`}
                     >
                         <Suspense
-                            fallback={<DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />}
+                            fallback={
+                                <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />
+                            }
                         >
                             <ErrorBoundary>
                                 <Switch>

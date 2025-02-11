@@ -22,7 +22,13 @@ import { ReactComponent as Info } from '../../assets/icons/ic-info-outline-purpl
 import { ConfigureWebhook } from './ConfigureWebhook'
 import { SourceMaterialsProps } from './types'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
-import { CustomInput, InfoColourBar, ConditionalWrap, SelectPicker, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CustomInput,
+    InfoColourBar,
+    ConditionalWrap,
+    SelectPicker,
+    ComponentSizeType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 
 export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
@@ -122,7 +128,10 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
                                   : i.value === mat.type,
                         ) || props.ciPipelineSourceTypeOptions[0]
                 }
-                const errorObj = props.validationRules?.sourceValue(isBranchRegex ? mat.regex : mat.value)
+                const errorObj = props.validationRules?.sourceValue(
+                    isBranchRegex ? mat.regex : mat.value,
+                    isBranchRegex,
+                )
                 const isMultiGitAndWebhook = isMultiGit && _selectedWebhookEvent
                 return (
                     <div key={`source-material-${index}`}>
@@ -199,7 +208,8 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
                                             error={
                                                 errorObj &&
                                                 !errorObj.isValid &&
-                                                props.validationRules?.sourceValue(_materials[index].value).message
+                                                props.validationRules?.sourceValue(_materials[index].value, false)
+                                                    .message
                                             }
                                             autoFocus
                                         />
@@ -228,7 +238,8 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
                                             error={
                                                 errorObj &&
                                                 !errorObj.isValid &&
-                                                props.validationRules?.sourceValue(_materials[index].regex).message
+                                                props.validationRules?.sourceValue(_materials[index].regex, true)
+                                                    .message
                                             }
                                         />
                                         {/* Note: In case Error is not shown */}

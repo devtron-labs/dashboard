@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { MutableRefObject } from 'react'
 import {
     EnvListMinDTO,
     get,
@@ -48,8 +49,8 @@ export const getDevtronInstalledHelmApps = (
     return get(url)
 }
 
-export const getArgoInstalledExternalApps = (clusterIdsCsv: string): Promise<ResponseType<GenericAppType[]>> =>
-    get(`${Routes.ARGO_APPS}${clusterIdsCsv ? `?clusterIds=${clusterIdsCsv}` : ''}`)
+export const getArgoInstalledExternalApps = (clusterIdsCsv: string, abortControllerRef?: MutableRefObject<AbortController>): Promise<ResponseType<GenericAppType[]>> =>
+    get(`${Routes.ARGO_APPS}${clusterIdsCsv ? `?clusterIds=${clusterIdsCsv}` : ''}`, { abortControllerRef })
 
 export const getDevtronAppListDataToExport = (
     filterConfig: AppListFilterConfig,

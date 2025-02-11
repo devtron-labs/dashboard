@@ -83,10 +83,9 @@ export const SourceInfo = ({
     const conditions = appDetails?.resourceTree?.conditions
     let message = null
     const Rollout = appDetails?.resourceTree?.nodes?.filter(({ kind }) => kind === Nodes.Rollout)
-    const isExternalCI = appDetails?.dataSource === 'EXTERNAL'
-    // helmMigratedAppNotTriggered means the app is migrated from a helm release and has not been deployed yet i.e. CD Pipeline has not been triggered
-    const helmMigratedAppNotTriggered =
-        appDetails?.releaseMode === ReleaseMode.MIGRATE_HELM && !appDetails?.isPipelineTriggered
+    // appMigratedFromExternalSourceAndIsNotTriggered means the app is migrated from a helm/argo release and has not been deployed yet i.e. CD Pipeline has not been triggered
+    const appMigratedFromExternalSourceAndIsNotTriggered =
+        appDetails?.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && !appDetails?.isPipelineTriggered
     const isIsolatedEnv = isVirtualEnvironment && !!appDetails?.resourceTree
 
     if (
@@ -313,7 +312,7 @@ export const SourceInfo = ({
                                   message={message}
                               />
                           )}
-                          {!helmMigratedAppNotTriggered && (
+                          {!appMigratedFromExternalSourceAndIsNotTriggered && (
                               <>
                                   {!loadingResourceTree && (
                                       <IssuesCard
@@ -332,7 +331,7 @@ export const SourceInfo = ({
                               </>
                           )}
                           {isVirtualEnvironment && !isIsolatedEnv && renderGeneratedManifestDownloadCard()}
-                          {!helmMigratedAppNotTriggered && (
+                          {!appMigratedFromExternalSourceAndIsNotTriggered && (
                               <>
                                   <DeploymentStatusCard
                                       deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
@@ -361,7 +360,7 @@ export const SourceInfo = ({
                                   filteredEnvIds={filteredEnvIds}
                               />
                           )}
-                          {!appDetails?.deploymentAppDeleteRequest && !helmMigratedAppNotTriggered && (
+                          {!appDetails?.deploymentAppDeleteRequest && !appMigratedFromExternalSourceAndIsNotTriggered && (
                               <SecurityVulnerabilityCard
                                   cardLoading={cardLoading}
                                   appId={params.appId}

@@ -84,6 +84,9 @@ export enum AggregationKeys {
     Events = 'Events',
 }
 
+/**
+ * @deprecated
+ */
 export enum NodeStatus {
     Degraded = 'degraded',
     Healthy = 'healthy',

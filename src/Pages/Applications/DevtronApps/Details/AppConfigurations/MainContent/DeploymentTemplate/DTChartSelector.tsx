@@ -26,6 +26,7 @@ import {
     versionComparatorBySortOrder,
     InvalidYAMLTippyWrapper,
     ComponentSizeType,
+    PipelineMigratedFromType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { sortObjectArrayAlphabetically } from '@Components/common'
 import { DEPLOYMENT } from '@Config/constants'
@@ -209,6 +210,7 @@ const DTChartSelector = ({
     areChartsLoading,
     parsingError,
     restoreLastSavedTemplate,
+    migratedFrom,
 }: DTChartSelectorProps) => {
     const filteredCharts = selectedChart
         ? charts
@@ -253,6 +255,9 @@ const DTChartSelector = ({
                     isSearchable={false}
                     variant={SelectPickerVariantType.BORDER_LESS}
                     size={ComponentSizeType.small}
+                    placeholder="Select version"
+                    isDisabled={migratedFrom === PipelineMigratedFromType.ARGO_APPLICATION}
+                    disabledTippyContent="Version selection is disabled for pipelines migrated from Argo"
                 />
             </div>
         )

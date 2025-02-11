@@ -40,6 +40,7 @@ const DeploymentTemplateOptionsHeader = ({
     isGuiSupported,
     areChartsLoading,
     showDeleteOverrideDraftEmptyState,
+    migratedFrom,
 }: DeploymentTemplateOptionsHeaderProps) => {
     if (isCompareView || showReadMe || showDeleteOverrideDraftEmptyState) {
         return null
@@ -90,6 +91,7 @@ const DeploymentTemplateOptionsHeader = ({
                 areChartsLoading={areChartsLoading}
                 parsingError={parsingError}
                 restoreLastSavedTemplate={restoreLastSavedTemplate}
+                migratedFrom={migratedFrom}
             />
         </div>
     )
