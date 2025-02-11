@@ -236,6 +236,14 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
     const handleCreateApp = async () => {
         const { isFormValid, invalidLabels, labelTags, invalidWorkFlow } = validateForm()
 
+        if (selectedCreationMethod === CreationMethodType.template && !formState.templateConfig?.templateId) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Please select a template to create app',
+            })
+            return
+        }
+
         if (!isFormValid || invalidLabels) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
