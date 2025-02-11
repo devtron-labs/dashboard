@@ -162,7 +162,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
     const [, appConfigData, appConfigError] = useAsync(
         () =>
             Promise.all([
-                getAppConfigStatus(+appId, resourceKind),
+                getAppConfigStatus(+appId, resourceKind, isTemplateView),
                 getWorkflowList(appId, '', isTemplateView),
                 fetchEnvironments(),
             ]),
@@ -354,7 +354,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
     }
 
     const respondOnSuccess = (redirection: boolean = false) => {
-        getAppConfigStatus(+appId, resourceKind)
+        getAppConfigStatus(+appId, resourceKind, isTemplateView)
             .then((configStatusRes) => {
                 const { navItems, isCDPipeline, isCiPipeline, configs, redirectUrl } = processConfigStatusData(
                     configStatusRes.result,

@@ -50,8 +50,8 @@ import { transformEnvConfig } from './Details/AppConfigurations/AppConfig.utils'
 
 export const getAppConfigStatus = (
     appId: number,
-    resourceKind?: ResourceKindType,
-    isTemplateView?: AppConfigProps['isTemplateView'],
+    resourceKind: ResourceKindType,
+    isTemplateView: AppConfigProps['isTemplateView'],
 ): Promise<ResponseType<AppConfigStatusItemType[]>> => {
     const queryParams = {
         'app-id': appId,

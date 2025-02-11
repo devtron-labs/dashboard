@@ -36,6 +36,7 @@ import {
     ConfirmationModalVariantType,
     ServerErrors,
     getIsRequestAborted,
+    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
@@ -189,7 +190,9 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
             otherEnvsResult &&
             !otherEnvsLoading && (
                 <>
-                    {envList.length === 0 && !isAppDeleted && !isVirtualEnvRef.current && <AppNotConfigured />}
+                    {envList.length === 0 && !isAppDeleted && !isVirtualEnvRef.current && (
+                        <AppNotConfigured />
+                    )}
                     {!params.envId && envList.length > 0 && !isVirtualEnvRef.current && (
                         <EnvironmentNotConfigured environments={envList} />
                     )}
@@ -1047,7 +1050,7 @@ export const AppNotConfigured = ({
     const { appId } = useParams<{ appId: string }>()
     const { push } = useHistory()
     function handleEditApp(e) {
-        getAppConfigStatus(+appId).then((response) => {
+        getAppConfigStatus(+appId, isJobView, false).then((response) => {
             const _urlPrefix = `/${isJobView ? 'job' : 'app'}/${appId}`
             let url = `${_urlPrefix}/edit`
             if (appConfigTabs) {

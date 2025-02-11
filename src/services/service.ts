@@ -55,8 +55,20 @@ import { getProjectList } from '@Components/project/service'
 import { OffendingWorkflowQueryParamType } from '@Components/app/details/triggerView/types'
 import { getTemplateAPIRoute } from '@Components/common'
 
-export function getAppConfigStatus(appId: number, isJobView?: boolean): Promise<any> {
-    return get(`${Routes.APP_CONFIG_STATUS}?app-id=${appId}${isJobView ? '&appType=2' : ''}`)
+export function getAppConfigStatus(appId: number, isJobView: boolean, isTemplateView: AppConfigProps['isTemplateView']): Promise<any> {
+    const queryParams = {
+        'app-id': appId,
+        appType: isJobView ? '2' : undefined,
+    }
+
+    const url = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.STAGE_STATUS,
+              queryParams: { id: String(appId), ...queryParams },
+          })
+        : getUrlWithSearchParams(Routes.APP_CONFIG_STATUS, queryParams)
+
+    return get(url)
 }
 
 // NOTE: sending pipelineType to fetch workflowCacheConfig based on that
