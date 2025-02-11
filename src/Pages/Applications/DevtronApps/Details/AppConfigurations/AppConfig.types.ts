@@ -223,10 +223,6 @@ export interface EnvConfigurationsNavProps {
     isCMSecretLocked?: boolean
     hideEnvSelector?: boolean
     appOrEnvIdToResourceApprovalConfigurationMap: AppConfigState['envIdToEnvApprovalConfigurationMap']
-    /**
-     * @default false
-     */
-    removeBaseConfigPath?: boolean
 }
 
 export interface EnvConfigRouteParams {

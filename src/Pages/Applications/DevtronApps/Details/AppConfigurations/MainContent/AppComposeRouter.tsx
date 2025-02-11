@@ -134,7 +134,10 @@ const AppComposeRouter = () => {
                         reloadEnvironments={reloadEnvironments}
                     />
                 </Route>,
-                <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
+                <Route
+                    key={`${path}/${URLS.BASE_CONFIG}/${URLS.APP_CM_CONFIG}`}
+                    path={`${path}/${URLS.BASE_CONFIG}/${URLS.APP_CM_CONFIG}/:name?`}
+                >
                     <ConfigMapSecretWrapper
                         isJob
                         isApprovalPolicyConfigured={false}
@@ -146,7 +149,10 @@ const AppComposeRouter = () => {
                         envName=""
                     />
                 </Route>,
-                <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
+                <Route
+                    key={`${path}/${URLS.BASE_CONFIG}/${URLS.APP_CS_CONFIG}`}
+                    path={`${path}/${URLS.BASE_CONFIG}/${URLS.APP_CS_CONFIG}/:name?`}
+                >
                     <ConfigMapSecretWrapper
                         isJob
                         isApprovalPolicyConfigured={false}
@@ -208,13 +214,13 @@ const AppComposeRouter = () => {
             )}
 
             {(isUnlocked.deploymentTemplate || isUnlocked.workflowEditor) && (
-                <Route path={`${path}/${URLS.BASE_CONFIG}`}>
+                <Route path={`${path}/${URLS.BASE_CONFIG}`} exact>
                     <Progressing pageLoader />
                 </Route>
             )}
 
             {isUnlocked.deploymentTemplate && (
-                <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
+                <Route path={`${path}/${URLS.BASE_CONFIG}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
                     <DeploymentTemplate
                         respondOnSuccess={respondOnSuccess}
                         isCiPipeline={isCiPipeline}
@@ -255,7 +261,10 @@ const AppComposeRouter = () => {
                         reloadAppConfig={reloadAppConfig}
                     />
                 </Route>,
-                <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
+                <Route
+                    key={`${path}/${URLS.BASE_CONFIG}/${URLS.APP_CM_CONFIG}`}
+                    path={`${path}/${URLS.BASE_CONFIG}/${URLS.APP_CM_CONFIG}/:name?`}
+                >
                     <ConfigMapSecretWrapper
                         isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
                             approvalConfigMapForBaseConfiguration?.[ApprovalConfigDataKindType.configMap],
@@ -268,7 +277,10 @@ const AppComposeRouter = () => {
                         envName=""
                     />
                 </Route>,
-                <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
+                <Route
+                    key={`${path}/${URLS.BASE_CONFIG}/${URLS.APP_CS_CONFIG}`}
+                    path={`${path}/${URLS.BASE_CONFIG}/${URLS.APP_CS_CONFIG}/:name?`}
+                >
                     <ConfigMapSecretWrapper
                         isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
                             approvalConfigMapForBaseConfiguration?.[ApprovalConfigDataKindType.configSecret],
@@ -307,7 +319,7 @@ const AppComposeRouter = () => {
                         const basePath = generatePath(path, match.params)
                         const envOverridePath = match.params.envId
                             ? `/${URLS.APP_ENV_OVERRIDE_CONFIG}/${match.params.envId}`
-                            : ''
+                            : `/${URLS.BASE_CONFIG}`
                         // Set the resourceTypePath based on the resourceType from the URL parameters.
                         // If the resourceType is 'Manifest' or 'PipelineStrategy', use 'deployment-template' as the back URL.
                         // Otherwise, use the actual resourceType from the URL, which could be 'deployment-template', 'configmap', or 'secrets'.

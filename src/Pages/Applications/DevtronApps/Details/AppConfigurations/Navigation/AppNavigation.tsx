@@ -32,7 +32,7 @@
  */
 
 import { ReactNode } from 'react'
-import { match as matchType, Route, Switch, useLocation, useRouteMatch } from 'react-router-dom'
+import { Route, Switch, useLocation, useRouteMatch } from 'react-router-dom'
 import {
     Button,
     ButtonStyleType,
@@ -114,9 +114,11 @@ export const AppNavigation = () => {
     )
 
     const getValidBackURL = () => {
-        const isBackURLLocked = location.pathname === lastUnlockedStage
-        const secondLastUnlockedStage = isBackURLLocked
-            ? navItems.reduce(
+        const isCurrentPathLastUnlockedStage = location.pathname === lastUnlockedStage
+        const eligibleNavItems = navItems.filter((navItem) => navItem.stage !== STAGE_NAME.REDIRECT_ITEM)
+
+        const secondLastUnlockedStage = isCurrentPathLastUnlockedStage
+            ? eligibleNavItems.reduce(
                   (acc, curr) => {
                       if (curr.href === lastUnlockedStage) {
                           acc.found = true
@@ -140,39 +142,32 @@ export const AppNavigation = () => {
         return secondLastUnlockedStage || lastUnlockedStage
     }
 
-    const renderEnvConfigurationsNav = (match: matchType, isBaseConfig?: boolean) => (
-        <EnvConfigurationsNav
-            key={`env-configurations-nav-${'envId' in match.params ? match.params.envId : ''}`}
-            envConfig={envConfig}
-            fetchEnvConfig={fetchEnvConfig}
-            environments={environments.map(({ environmentName, environmentId }) => ({
-                id: environmentId,
-                name: environmentName,
-            }))}
-            showBaseConfigurations
-            showDeploymentTemplate={!isJobView}
-            goBackURL={getValidBackURL()}
-            compareWithURL={`${path}/:envId(\\d+)?`}
-            showComparison={!isJobView && isUnlocked.workflowEditor}
-            isCMSecretLocked={!isUnlocked.workflowEditor}
-            appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
-            removeBaseConfigPath={isBaseConfig}
-        />
-    )
-
     return (
         <Switch>
             <Route
                 path={[
-                    `${path}/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}`,
+                    `${path}/${URLS.BASE_CONFIG}/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?`,
                     `${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?`,
                 ]}
             >
-                {({ match }) => renderEnvConfigurationsNav(match)}
-            </Route>
-
-            <Route path={`${path}/${URLS.BASE_CONFIG}`} key={URLS.BASE_CONFIG}>
-                {({ match }) => renderEnvConfigurationsNav(match, true)}
+                {({ match }) => (
+                    <EnvConfigurationsNav
+                        key={`env-configurations-nav-${'envId' in match.params ? match.params.envId : ''}`}
+                        envConfig={envConfig}
+                        fetchEnvConfig={fetchEnvConfig}
+                        environments={environments.map(({ environmentName, environmentId }) => ({
+                            id: environmentId,
+                            name: environmentName,
+                        }))}
+                        showBaseConfigurations
+                        showDeploymentTemplate={!isJobView}
+                        goBackURL={getValidBackURL()}
+                        compareWithURL={`${path}/:envId(\\d+)?`}
+                        showComparison={!isJobView && isUnlocked.workflowEditor}
+                        isCMSecretLocked={!isUnlocked.workflowEditor}
+                        appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                    />
+                )}
             </Route>
 
             <Route key="default-navigation">

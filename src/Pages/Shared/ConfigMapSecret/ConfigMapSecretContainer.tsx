@@ -56,7 +56,7 @@ import {
     isNullOrUndefined,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS } from '@Config/routes'
+import { APP_COMPOSE_STAGE, getAppComposeURL } from '@Config/routes'
 import { ConfigHeader, ConfigToolbar, ConfigToolbarProps, NoOverrideEmptyState } from '@Pages/Applications'
 import { getConfigToolbarPopupConfig } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/utils'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -187,7 +187,11 @@ export const ConfigMapSecretContainer = ({
     const gaEventCategory = `devtronapp-configuration-${isSecret ? 'secret' : 'cm'}`
 
     // COMPONENT PROP CONSTANTS
-    const baseConfigurationURL = `${isJob ? URLS.JOB : URLS.APP}/${appId}/${URLS.APP_CONFIG}/${isSecret ? URLS.APP_CS_CONFIG : URLS.APP_CM_CONFIG}/${name}`
+    const baseConfigurationURL = getAppComposeURL(
+        appId,
+        isSecret ? APP_COMPOSE_STAGE.SECRETS : APP_COMPOSE_STAGE.CONFIG_MAPS,
+        isJob,
+    )
     const headerMessage =
         cmSecretStateLabel === CM_SECRET_STATE.ENV ||
         cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED ||

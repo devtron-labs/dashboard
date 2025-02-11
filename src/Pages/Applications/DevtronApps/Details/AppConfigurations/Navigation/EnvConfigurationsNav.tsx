@@ -135,7 +135,7 @@ const EnvConfigurationsNavContent = ({
         if (resourceData.id === BASE_CONFIGURATIONS.id && envId) {
             // Removing `/env-override/:envId` from pathname, resulting path will be base configuration path.
             const [basePath, resourcePath] = pathname.split(`/${URLS.APP_ENV_OVERRIDE_CONFIG}/${envId}`)
-            history.push(`${basePath}${resourcePath}`)
+            history.push(`${basePath}${URLS.BASE_CONFIG}/${resourcePath}`)
         }
     }, [resourceData, envId])
 
@@ -299,7 +299,6 @@ export const EnvConfigurationsNav = ({
     hideEnvSelector,
     compareWithURL,
     appOrEnvIdToResourceApprovalConfigurationMap,
-    removeBaseConfigPath = false,
 }: EnvConfigurationsNavProps) => {
     const history = useHistory()
     const { isSuperAdmin } = useMainContext()
@@ -319,8 +318,7 @@ export const EnvConfigurationsNav = ({
               }
             : null)
 
-    const [expandedIds, setExpandedIds] =
-        useState<Record<Extract<EnvResourceType, EnvResourceType.ConfigMap | EnvResourceType.Secret>, boolean>>()
+    const [expandedIds, setExpandedIds] = useState<ExpandedIdsType>()
 
     const isResourceTypeValid = Object.values(EnvResourceType).includes(resourceType as EnvResourceType)
     const resourceName = isResourceTypeValid ? pathname.split(`${resourceType}/`)[1] : null
@@ -332,16 +330,10 @@ export const EnvConfigurationsNav = ({
                 isSuperAdmin || !areCMsPresent ? EnvResourceType.DeploymentTemplate : EnvResourceType.ConfigMap
 
             history.replace(
-                generatePath(
-                    // Here resourceType is mandatory since we are navigating to a specific resource type
-                    removeBaseConfigPath
-                        ? `${pathname.split(URLS.BASE_CONFIG)[0]}${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}`
-                        : path,
-                    {
-                        ...params,
-                        resourceType: validResourceType,
-                    },
-                ),
+                generatePath(path, {
+                    ...params,
+                    resourceType: validResourceType,
+                }),
             )
         }
     }
@@ -385,7 +377,7 @@ export const EnvConfigurationsNav = ({
 
         // Build the new app path, conditionally adding the environment override config when switching to environment
         const appPath = `${truncatedPath}${
-            value !== BASE_CONFIGURATIONS.id ? `/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?` : ''
+            value !== BASE_CONFIGURATIONS.id ? `/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?` : `/${URLS.BASE_CONFIG}`
         }/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?` // Dynamically set valid resource types
 
         // Generate the final path
