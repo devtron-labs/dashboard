@@ -353,13 +353,16 @@ export const getAllWorkflowsForAppNames = (appNames: string[], signal?: AbortSig
 }
 
 export function getWorkflowList(appId, filteredEnvIds: string, isTemplateView: AppConfigProps['isTemplateView']) {
-    let filteredEnvParams = ''
-    if (filteredEnvIds) {
-        filteredEnvParams = `?envIds=${filteredEnvIds}`
+    const queryParams = {
+        envIds: filteredEnvIds,
     }
+
     const URL = isTemplateView
-        ? getTemplateAPIRoute({ type: GetTemplateAPIRouteType.WORKFLOW_LIST, queryParams: { id: appId } })
-        : `${Routes.WORKFLOW}/${appId}${filteredEnvParams}`
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.WORKFLOW_LIST,
+              queryParams: { id: appId, ...queryParams },
+          })
+        : getUrlWithSearchParams(`${Routes.WORKFLOW}/${appId}`, queryParams)
     return get(URL)
 }
 
