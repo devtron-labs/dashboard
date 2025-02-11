@@ -131,7 +131,6 @@ function createSaveNotificationPayload(selectedPipelines, providers): SaveNotifi
 
 export function saveNotification(selectedPipelines, providers): Promise<SaveNotificationResponseType> {
     const payload = createSaveNotificationPayload(selectedPipelines, providers)
-    console.log({payload})
     return post<SaveNotificationResponseType['result'] , SaveNotificationPayload>(Routes.NOTIFIER, payload)
 }
 
