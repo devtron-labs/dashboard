@@ -183,7 +183,7 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
         <div className="flexbox dc__align-items-center dc__content-space pr-8">
             <NavLink
                 data-testid="env-deployment-template"
-                className="app-compose__nav-item  app-compose__nav-item--job cursor dc__gap-8"
+                className="app-compose__nav-item app-compose__nav-item--job cursor dc__gap-8"
                 to={`${URLS.APP_ENV_OVERRIDE_CONFIG}/${envOverride.environmentId}/${EnvResourceType.ConfigMap}`}
             >
                 <span className="dc__truncate">{envOverride.environmentName}</span>
