@@ -580,6 +580,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         workflowId={this.props.id}
                         isWebhookCD={isWebhookCD}
                         showApprovalConfigInfoTippy
+                        isTemplateView={this.props.isTemplateView}
                     />
                 )
             }
@@ -640,6 +641,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         isWebhookCD={isWebhookCD}
                         leftTooltipContent={leftTooltipContent}
                         showApprovalConfigInfoTippy
+                        isTemplateView={this.props.isTemplateView}
                     />,
                 )
             } else {

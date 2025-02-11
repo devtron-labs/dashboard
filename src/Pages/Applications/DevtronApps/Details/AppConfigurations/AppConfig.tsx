@@ -108,7 +108,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
     }> =>
         Promise.all([
             isJob ? getJobOtherEnvironmentMin(appId) : getAppOtherEnvironmentMin(appId, isTemplateView),
-            typeof getApprovalPolicyConfigForApp === 'function' && !isJob
+            typeof getApprovalPolicyConfigForApp === 'function' && !isJob && !isTemplateView
                 ? getApprovalPolicyConfigForApp(Number(appId))
                 : null,
         ]).then(([envResult, envIdToEnvApprovalConfigurationMap]) => {
