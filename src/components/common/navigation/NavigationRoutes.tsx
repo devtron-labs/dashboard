@@ -274,7 +274,7 @@ export default function NavigationRoutes() {
             setFeatureGitOpsFlags(parsedFeatureGitOpsFlags)
 
             if (typeof Storage !== 'undefined') {
-                localStorage.setItem('isAirGapped', result.isAirGapEnvironment)
+                localStorage.setItem('isAirGapped', String(result.isAirGapEnvironment))
             }
         } catch {
             setIsAirGapped(false)
