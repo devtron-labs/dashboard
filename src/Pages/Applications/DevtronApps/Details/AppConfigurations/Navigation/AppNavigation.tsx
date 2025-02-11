@@ -114,9 +114,11 @@ export const AppNavigation = () => {
     )
 
     const getValidBackURL = () => {
-        const isBackURLLocked = location.pathname === lastUnlockedStage
-        const secondLastUnlockedStage = isBackURLLocked
-            ? navItems.reduce(
+        const isCurrentPathLastUnlockedStage = location.pathname === lastUnlockedStage
+        const eligibleNavItems = navItems.filter((navItem) => navItem.stage !== STAGE_NAME.REDIRECT_ITEM)
+
+        const secondLastUnlockedStage = isCurrentPathLastUnlockedStage
+            ? eligibleNavItems.reduce(
                   (acc, curr) => {
                       if (curr.href === lastUnlockedStage) {
                           acc.found = true
