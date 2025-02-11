@@ -40,6 +40,8 @@ const getWorkflowCDNodeEnvironments = (
         })),
     }))
 
+const getNodeId = (node: CommonNodeAttr) => `${node.id}-${node.type}`
+
 const getSourceNodeConfig = (node: CommonNodeAttr): GraphVisualizerNode => ({
     id: node.id,
     type: 'iconNode',
@@ -70,14 +72,14 @@ const getCINodeIcon = ({
 const getCINodeConfig = (node: CommonNodeAttr): GraphVisualizerNode => {
     if (node.isLinkedCD) {
         return {
-            id: node.id,
+            id: getNodeId(node),
             type: 'textNode',
             data: { icon: <ICLinkedCD />, text: node.title },
         }
     }
 
     const ciNodeProps: GraphVisualizerNode = {
-        id: node.id,
+        id: getNodeId(node),
         type: 'iconNode',
         data: {
             icon: getCINodeIcon({
@@ -131,7 +133,7 @@ const getCDNodeConfig = (
     }
 
     const cdNodeProps: GraphVisualizerNode = {
-        id: node.id,
+        id: getNodeId(node),
         type: 'dropdownNode',
         data: {
             inputId: `cd-node-${workflowId}-${node.id}`,
@@ -149,7 +151,7 @@ const getCDNodeConfig = (
 }
 
 const getWebhookNodeConfig = (node: CommonNodeAttr): GraphVisualizerNode => ({
-    id: node.id,
+    id: getNodeId(node),
     type: 'iconNode',
     data: { icon: <ICCIWebhook /> },
 })
@@ -201,7 +203,7 @@ export const getWorkflowGraphVisualizerNodes = ({
     environmentList,
     handleNodeUpdateAction,
 }: GetWorkflowGraphVisualizerNodesProps) =>
-    workflows.reduce<Record<string, GraphVisualizerNode[]>>((acc, curr) => {
+    (workflows || []).reduce<Record<string, GraphVisualizerNode[]>>((acc, curr) => {
         acc[curr.id] = convertWorkflowNodesToGraphVisualizerNodes({
             workflowNodes: curr.nodes,
             workflowId: curr.id,
@@ -211,22 +213,45 @@ export const getWorkflowGraphVisualizerNodes = ({
         return acc
     }, {})
 
+const getParentPipelineType = (node: CommonNodeAttr) => {
+    switch (node.type) {
+        case 'CI':
+        case 'CD':
+            return `${node.type}_PIPELINE`
+        default:
+            return node.type
+    }
+}
+
 const convertWorkflowNodesToGraphVisualizerEdges = (workflowNodes: CommonNodeAttr[]) =>
     workflowNodes.reduce<GraphVisualizerEdge[]>((acc, node) => {
-        if (Array.isArray(node.parents)) {
+        if (node.parentPipelineId && node.parentPipelineType) {
+            const parentNode = workflowNodes.find(
+                (parent) =>
+                    node.parentPipelineId === parent.id && node.parentPipelineType === getParentPipelineType(parent),
+            )
+            if (parentNode) {
+                acc.push({
+                    id: `${parentNode.id}->${getNodeId(node)}`,
+                    source: getNodeId(parentNode),
+                    target: getNodeId(node),
+                })
+            }
+        } else if (Array.isArray(node.parents)) {
             node.parents.forEach((parentId) => {
                 acc.push({
-                    id: `${parentId}->${node.id}`,
+                    id: `${parentId}->${getNodeId(node)}`,
                     source: parentId,
-                    target: node.id,
+                    target: getNodeId(node),
                 })
             })
         }
+
         return acc
     }, [])
 
 export const getWorkflowGraphVisualizerEdges = (workflows: WorkflowType[]) =>
-    workflows.reduce<Record<string, GraphVisualizerEdge[]>>((acc, curr) => {
+    (workflows || []).reduce<Record<string, GraphVisualizerEdge[]>>((acc, curr) => {
         acc[curr.id] = convertWorkflowNodesToGraphVisualizerEdges(curr.nodes)
         return acc
     }, {})
