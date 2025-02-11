@@ -172,7 +172,9 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
     // CONSTANTS
     const userRole = userRoleRes?.result.role
     const canShowExternalLinks =
-        userRole === UserRoleType.SuperAdmin || userRole === UserRoleType.Admin || userRole === UserRoleType.Manager
+        !isTemplateView &&
+        (userRole === UserRoleType.SuperAdmin || userRole === UserRoleType.Admin || userRole === UserRoleType.Manager)
+
     const hideConfigHelp = isJob ? state.isCiPipeline : state.isCDPipeline
     const isGitOpsConfigurationRequired = state.navItems.find(
         ({ stage }) => stage === STAGE_NAME.GITOPS_CONFIG,
