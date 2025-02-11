@@ -322,7 +322,7 @@ export const getAllWorkflowsForAppNames = (appNames: string[], signal?: AbortSig
     return post(`${Routes.WORKFLOW}/all`, { appNames }, { signal })
 }
 
-export function getWorkflowList(appId, filteredEnvIds?: string, isTemplateView?: AppConfigProps['isTemplateView']) {
+export function getWorkflowList(appId, filteredEnvIds: string, isTemplateView: AppConfigProps['isTemplateView']) {
     let filteredEnvParams = ''
     if (filteredEnvIds) {
         filteredEnvParams = `?envIds=${filteredEnvIds}`

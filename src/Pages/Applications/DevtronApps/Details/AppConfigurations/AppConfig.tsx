@@ -319,7 +319,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
     }
 
     const reloadWorkflows = async () => {
-        const response = await getWorkflowList(appId)
+        const response = await getWorkflowList(appId, null, isTemplateView)
         setState((prevState) => ({
             ...prevState,
             canDeleteApp: response.result.workflows.length === 0,

@@ -147,7 +147,7 @@ export const getInitialWorkflows = ({
         })
     }
     if (isJobView) {
-        return Promise.all([getWorkflowList(id), getCIConfig(id, false)]).then(
+        return Promise.all([getWorkflowList(id, null, false), getCIConfig(id, false)]).then(
             ([workflow, ciConfig]) => {
                 return processWorkflow(
                     workflow.result as WorkflowResult,
@@ -161,10 +161,10 @@ export const getInitialWorkflows = ({
         )
     }
     return Promise.all([
-        getWorkflowList(id, filteredEnvIds),
+        getWorkflowList(id, filteredEnvIds, isTemplateView),
         getCIConfig(id, isTemplateView),
         getCDConfig(id, isTemplateView),
-        isTemplateView ? getExternalCIList(id) : null,
+        getExternalCIList(id, isTemplateView),
         shouldCheckDeploymentWindowState ? getDeploymentWindowState(id, filteredEnvIds) : null,
     ]).then(([workflow, ciConfig, cdConfig, externalCIConfig, deploymentWindowState]) => {
         if (Object.keys(deploymentWindowState?.result || {}).length > 0 && cdConfig) {

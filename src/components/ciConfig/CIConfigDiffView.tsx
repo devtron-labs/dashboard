@@ -79,7 +79,7 @@ export default function CIConfigDiffView({
         try {
             const [{ result: _configOverridenWorkflows }, { result: _processedWorkflows }] = await Promise.all([
                 getConfigOverrideWorkflowDetails(appId),
-                getWorkflowList(appId),
+                getWorkflowList(appId, null, isTemplateView),
             ])
 
             const { workflows = [] } =
@@ -247,6 +247,8 @@ export default function CIConfigDiffView({
                         false,
                         form.webhookConditionList,
                         form.ciPipelineSourceTypeOptions,
+                        null,
+                        isTemplateView,
                     )
 
                     if (response) {
@@ -306,6 +308,7 @@ export default function CIConfigDiffView({
                     addCIPipeline={noop}
                     addWebhookCD={noop}
                     cdWorkflowList={_configOverridenWorkflows}
+                    isTemplateView={isTemplateView}
                 />
                 {renderViewBuildPipelineRow(+_wf.id, _wf.nodes)}
                 <CIBuildConfigDiff

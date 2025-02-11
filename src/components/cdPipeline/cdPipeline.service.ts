@@ -14,28 +14,58 @@
  * limitations under the License.
  */
 
-import { post, get, sortCallback, getEnvironmentListMinPublic, TriggerType } from '@devtron-labs/devtron-fe-common-lib'
+import { post, get, sortCallback, getEnvironmentListMinPublic, TriggerType, GetTemplateAPIRouteType, AppConfigProps } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { getEnvironmentSecrets, getEnvironmentConfigs } from '../../services/service'
+import { getTemplateAPIRoute } from '@Components/common'
 
 export function getCDPipelineNameSuggestion(appId: string | number): Promise<any> {
     const URL = `app/pipeline/suggest/cd/${appId}`
     return get(URL)
 }
 
-export function getDeploymentStrategyList(appId) {
-    const URL = `${Routes.DEPLOYMENT_STRATEGY}/${appId}`
+export function getDeploymentStrategyList(appId, isTemplateView) {
+    const URL = isTemplateView ? getTemplateAPIRoute({
+        type: GetTemplateAPIRouteType.CONFIG_STRATEGY,
+        queryParams: {
+            id: appId,
+        }
+    }) : `${Routes.DEPLOYMENT_STRATEGY}/${appId}`
     return get(URL)
 }
 
-export function updateCDPipeline(request) {
-    const URL = `${Routes.CD_CONFIG_PATCH}`
+export function updateCDPipeline(request, isTemplateView: AppConfigProps['isTemplateView']) {
+    const URL = isTemplateView ? getTemplateAPIRoute({
+        type: GetTemplateAPIRouteType.CD_PIPELINE,
+        queryParams: {
+            id: request.appId,
+        }
+    }) : `${Routes.CD_CONFIG_PATCH}`
     return post(URL, request)
 }
 
-export function deleteCDPipeline(request, force?: boolean, cascadeDelete?: boolean) {
+export function deleteCDPipeline(
+    request,
+    {
+        force,
+        cascadeDelete,
+        isTemplateView,
+    }: {
+        force?: boolean
+        cascadeDelete?: boolean
+        isTemplateView: AppConfigProps['isTemplateView']
+    },
+) {
     let URL
-    if (force) {
+
+    if (isTemplateView) {
+        URL = getTemplateAPIRoute({
+            type: GetTemplateAPIRouteType.CD_PIPELINE,
+            queryParams: {
+                id: request.appId,
+            },
+        })
+    } else if (force) {
         URL = `${Routes.CD_CONFIG_PATCH}?force=${force}`
     } else if (!cascadeDelete) {
         URL = `${Routes.CD_CONFIG_PATCH}?cascade=${cascadeDelete}`
@@ -45,18 +75,21 @@ export function deleteCDPipeline(request, force?: boolean, cascadeDelete?: boole
     return post(URL, request)
 }
 
-export function getCDPipeline(appId: string, pipelineId: string) {
-    const URL = `${Routes.CD_CONFIG}/${appId}/${pipelineId}`
+export function getCDPipelineV2(appId: string, pipelineId: string, isTemplateView: AppConfigProps['isTemplateView']) {
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CD_PIPELINE,
+              queryParams: {
+                  id: appId,
+                  cdPipelineId: pipelineId,
+              },
+          })
+        : `${Routes.V2_CD_CONFIG}/${appId}/${pipelineId}`
     return get(URL)
 }
 
-export function getCDPipelineV2(appId: string, pipelineId: string) {
-    const URL = `${Routes.V2_CD_CONFIG}/${appId}/${pipelineId}`
-    return get(URL)
-}
-
-export async function getCDPipelineConfig(appId: string, pipelineId: string): Promise<any> {
-    return Promise.all([getCDPipelineV2(appId, pipelineId), getEnvironmentListMinPublic(true)]).then(
+export async function getCDPipelineConfig(appId: string, pipelineId: string, isTemplateView: AppConfigProps['isTemplateView']): Promise<any> {
+    return Promise.all([getCDPipelineV2(appId, pipelineId, isTemplateView), getEnvironmentListMinPublic(true)]).then(
         ([cdPipelineRes, envListResponse]) => {
             const envId = cdPipelineRes.result.environmentId
             const cdPipeline = cdPipelineRes.result
@@ -95,6 +128,7 @@ export async function getCDPipelineConfig(appId: string, pipelineId: string): Pr
     )
 }
 
+// TODO: Check and update
 export function getConfigMapAndSecrets(appId: string, envId) {
     return Promise.all([getEnvironmentConfigs(appId, envId), getEnvironmentSecrets(appId, envId)]).then(
         ([configMapResponse, secretResponse]) => {

@@ -120,7 +120,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
 
     async generateSourceUrl() {
         const parentCiPipelineId = this.state.ciPipeline.parentCiPipeline
-        const { result } = await getWorkflowList(this.state.ciPipeline.parentAppId)
+        const { result } = await getWorkflowList(this.state.ciPipeline.parentAppId, null, this.props.isTemplateView)
         let wf
         if (result.workflows) {
             const allWorkflows = result.workflows
@@ -174,6 +174,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
             +this.props.match.params.workflowId,
             this.state.ciPipeline.isExternal,
             this.state.form.webhookConditionList,
+            this.props.isTemplateView,
         )
             .then((response) => {
                 if (response) {

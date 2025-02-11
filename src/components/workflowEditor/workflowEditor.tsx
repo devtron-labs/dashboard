@@ -39,7 +39,7 @@ import {
 import Tippy from '@tippyjs/react'
 import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
 import { URLS, AppConfigStatus, ViewType, DOCUMENTATION } from '../../config'
-import { importComponentFromFELibrary } from '../common'
+import { getTemplateAPIRoute, importComponentFromFELibrary } from '../common'
 import { Workflow } from './Workflow'
 import {
     getAllChildDownstreams,
@@ -589,6 +589,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     changeCIPayload={this.state.changeCIPayload}
                                     reloadAppConfig={this.props.reloadAppConfig}
                                     handleDisplayLoader={this.handleDisplayLoader}
+                                    isTemplateView={this.props.isTemplateView}
                                 />
                             )
                         }}
@@ -626,7 +627,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         key={`${this.props.match.path}/webhook/`}
                         path={`${this.props.match.path}/webhook/:webhookId`}
                     >
-                        <WebhookDetailsModal close={this.closePipeline} />
+                        <WebhookDetailsModal close={this.closePipeline} isTemplateView={this.props.isTemplateView} />
                     </Route>,
                     <Route
                         key={`${this.props.match.path}/linked-ci/`}
@@ -680,6 +681,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                       deleteWorkflow={this.deleteWorkflow}
                                       getWorkflows={this.getWorkflows}
                                       workflows={this.state.workflows}
+                                      isTemplateView={this.props.isTemplateView}
                                   />
                               </Route>,
                           ]
@@ -865,6 +867,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             reloadEnvironments={this.props.reloadEnvironments}
                             workflowPositionState={this.state.workflowPositionState}
                             handleDisplayLoader={this.handleDisplayLoader}
+                            isTemplateView={this.props.isTemplateView}
                         />
                     )
                 })}
@@ -989,6 +992,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         getWorkflows={this.getWorkflows}
                         resetChangeCIPayload={this.resetChangeCIPayload}
                         linkedCDSourceVariant={LINKED_CD_SOURCE_VARIANT}
+                        getTemplateAPIRoute={getTemplateAPIRoute}
+                        isTemplateView={this.props.isTemplateView}
                     />
                 )}
             </>

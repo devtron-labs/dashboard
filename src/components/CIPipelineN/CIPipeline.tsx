@@ -545,6 +545,7 @@ export default function CIPipeline({
             Number(workflowId),
             false,
             formData.webhookConditionList,
+            isTemplateView,
         )
             .then((response) => {
                 if (response) {
@@ -712,6 +713,7 @@ export default function CIPipeline({
             formData.webhookConditionList,
             formData.ciPipelineSourceTypeOptions,
             changeCIPayload,
+            isTemplateView,
         )
             .then((response) => {
                 if (response) {

@@ -14,18 +14,37 @@
  * limitations under the License.
  */
 
-import { get, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { AppConfigProps, get, GetTemplateAPIRouteType, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../../config'
 import { WebhookDetailsResponse, WebhookDetailsType, WebhookListResponse } from './types'
+import { getTemplateAPIRoute } from '@Components/common'
 
-export function getExternalCIList(appId: number | string): Promise<WebhookListResponse> {
-    return get(`${Routes.EXTERNAL_CI_CONFIG}/${appId}`)
+export function getExternalCIList(appId: number | string, isTemplateView: AppConfigProps['isTemplateView']): Promise<WebhookListResponse> {
+    const url = isTemplateView ? getTemplateAPIRoute({
+        type: GetTemplateAPIRouteType.EXTERNAL_CI_LIST,
+        queryParams: {
+            id: appId,
+        }
+    }) : `${Routes.EXTERNAL_CI_CONFIG}/${appId}`
+
+    return get(url)
 }
 
 export function getExternalCIConfig(
     appId: number | string,
     webhookID: number | string,
+    isTemplateView: AppConfigProps['isTemplateView'],
 ): Promise<WebhookDetailsResponse> {
+    const url = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.EXTERNAL_CI,
+              queryParams: {
+                  id: appId,
+                  externalCiId: webhookID,
+              },
+          })
+        : `${Routes.EXTERNAL_CI_CONFIG}/${appId}/${webhookID}`
+
     return get(`${Routes.EXTERNAL_CI_CONFIG}/${appId}/${webhookID}`)
 }
 

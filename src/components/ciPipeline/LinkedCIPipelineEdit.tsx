@@ -147,6 +147,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
             appId: +this.props.match.params.appId,
             workflowId: +this.props.match.params.workflowId,
             name: this.state.form.name,
+            isTemplateView: this.props.isTemplateView,
         }
         saveLinkedCIPipeline(parentCIPipeline, params, this.props.changeCIPayload)
             .then((response) => {

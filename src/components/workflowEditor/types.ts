@@ -152,7 +152,8 @@ export interface ReloadNoGitOpsRepoConfiguredModalType {
 }
 export interface CDNodeProps
     extends Pick<WorkflowProps, 'handleDisplayLoader' | 'isOffendingPipelineView'>,
-        Pick<CommonNodeAttr, 'showPluginWarning'> {
+        Pick<CommonNodeAttr, 'showPluginWarning'>,
+        Required<Pick<AppConfigProps, 'isTemplateView'>> {
     id: string
     deploymentStrategy: string
     triggerType: string

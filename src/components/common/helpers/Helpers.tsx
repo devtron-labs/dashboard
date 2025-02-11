@@ -1276,4 +1276,4 @@ export const setAppGroupFilterInLocalStorage = ({
 
 const getTemplateAPIRouteFELib = importComponentFromFELibrary('getTemplateAPIRoute', noop, 'function')
 
-export const getTemplateAPIRoute = (props: GetTemplateAPIRouteProps) => getTemplateAPIRouteFELib(props)
+export const getTemplateAPIRoute = (props: GetTemplateAPIRouteProps): string => getTemplateAPIRouteFELib(props)

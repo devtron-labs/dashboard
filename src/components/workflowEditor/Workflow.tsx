@@ -46,7 +46,8 @@ import {
     ConditionalWrap,
     ChangeCIPayloadType,
     CIPipelineNodeType,
-    URLS as CommonURLS
+    URLS as CommonURLS,
+    AppConfigProps
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
 import { ReactComponent as ICMoreOption } from '../../assets/icons/ic-more-option.svg'
@@ -64,7 +65,7 @@ const getParsedPluginPolicyConsequenceData = importComponentFromFELibrary(
 )
 
 export interface WorkflowProps
-    extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }> {
+    extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }>, Required<Pick<AppConfigProps, 'isTemplateView'>> {
     nodes: CommonNodeAttr[]
     id: number
     name: string
@@ -511,6 +512,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 handleDisplayLoader={this.props.handleDisplayLoader}
                 showPluginWarning={node.showPluginWarning}
                 isOffendingPipelineView={this.props.isOffendingPipelineView}
+                isTemplateView={this.props.isTemplateView}
             />
         )
     }

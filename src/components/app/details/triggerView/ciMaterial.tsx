@@ -390,7 +390,10 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         }
 
         try {
-            const response = await savePipeline(payload, true)
+            const response = await savePipeline(payload, {
+                isRegexMaterial: true,
+                isTemplateView: false,
+            })
             if (response) {
                 await this.props.getWorkflows()
 

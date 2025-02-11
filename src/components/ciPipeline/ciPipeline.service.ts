@@ -42,12 +42,24 @@ const emptyStepsData = () => {
     return { id: 0, steps: [] }
 }
 
-export function savePipeline(request, isRegexMaterial = false): Promise<any> {
+export function savePipeline(
+    request,
+    { isTemplateView, isRegexMaterial }: Required<Pick<AppConfigProps, 'isTemplateView'>> & {
+        isRegexMaterial?: boolean
+    },
+): Promise<any> {
     let url
     if (isRegexMaterial) {
         url = `${Routes.CI_PIPELINE_PATCH}/regex`
     } else {
-        url = `${Routes.CI_PIPELINE_PATCH}`
+        url = isTemplateView
+            ? getTemplateAPIRoute({
+                  type: GetTemplateAPIRouteType.CI_PIPELINE,
+                  queryParams: {
+                      id: request.appId,
+                  },
+              })
+            : `${Routes.CI_PIPELINE_PATCH}`
     }
     return post(url, request)
 }
@@ -245,7 +257,7 @@ export function getInitDataWithCIPipeline(
 
 export function saveLinkedCIPipeline(
     parentCIPipeline,
-    params: { name: string; appId: number; workflowId: number },
+    { isTemplateView, ...params }: { name: string; appId: number; workflowId: number; isTemplateView: AppConfigProps['isTemplateView'] },
     changeCIPayload?: ChangeCIPayloadType,
 ) {
     delete parentCIPipeline['beforeDockerBuildScripts']
@@ -270,7 +282,7 @@ export function saveLinkedCIPipeline(
         request.switchFromExternalCiPipelineId = changeCIPayload.switchFromExternalCiPipelineId
     }
 
-    return savePipeline(request).then((response) => {
+    return savePipeline(request, { isTemplateView }).then((response) => {
         const ciPipelineFromRes = response?.result?.ciPipelines[0]
         return {
             code: response.code,
@@ -292,7 +304,8 @@ export function saveCIPipeline(
     isExternalCI,
     webhookConditionList,
     ciPipelineSourceTypeOptions,
-    changeCIPayload?: ChangeCIPayloadType,
+    changeCIPayload: ChangeCIPayloadType,
+    isTemplateView: AppConfigProps['isTemplateView']
 ) {
     const ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
 
@@ -309,7 +322,7 @@ export function saveCIPipeline(
         request.switchFromExternalCiPipelineId = changeCIPayload.switchFromExternalCiPipelineId
     }
 
-    return savePipeline(request).then((response) => {
+    return savePipeline(request, { isTemplateView }).then((response) => {
         const ciPipelineFromRes = response.result.ciPipelines[0]
         return parseCIResponse(
             response.code,
@@ -330,6 +343,7 @@ export function deleteCIPipeline(
     workflowId: number,
     isExternalCI: boolean,
     webhookConditionList,
+    isTemplateView: AppConfigProps['isTemplateView']
 ) {
     const ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
     const request = {
@@ -338,7 +352,7 @@ export function deleteCIPipeline(
         action: PatchAction.DELETE,
         ciPipeline: ci,
     }
-    return savePipeline(request).then((response) => {
+    return savePipeline(request, { isTemplateView }).then((response) => {
         return parseCIResponse(
             response.code,
             response?.result?.ciPipelines[0],

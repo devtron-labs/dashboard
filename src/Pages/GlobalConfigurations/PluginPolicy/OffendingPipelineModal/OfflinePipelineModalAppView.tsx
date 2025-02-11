@@ -104,6 +104,7 @@ const OffendingPipelineModalAppView = ({
                         workflowPositionState={null}
                         handleDisplayLoader={noop}
                         isOffendingPipelineView
+                        isTemplateView={false}
                     />
                 ))
             ) : (
