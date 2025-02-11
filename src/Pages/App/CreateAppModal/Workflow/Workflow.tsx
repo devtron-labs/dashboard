@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import {
     APIResponseHandler,
+    GenericEmptyState,
     GraphVisualizer,
     GraphVisualizerEdge,
     GraphVisualizerNode,
@@ -129,27 +130,32 @@ export const Workflow = ({ templateId, onChange }: WorkflowProps) => {
     return (
         <APIResponseHandler
             progressingProps={{ pageLoader: true }}
-            isLoading={
-                isWorkflowDataLoading || !workflowData || !Object.keys(nodes).length || !Object.keys(edges).length
-            }
+            isLoading={isWorkflowDataLoading}
             error={workflowDataErr}
-            reloadProps={{
+            errorScreenManagerProps={{
+                code: workflowDataErr?.code,
                 reload: reloadWorkflowData,
             }}
         >
-            <>
-                {(workflowData?.[0]?.workflows ?? []).map(({ id, name }) => (
-                    <div key={id} className="flexbox-col dc__gap-6">
-                        <p className="m-0 fs-13 lh-20 fw-6">{name}</p>
-                        <GraphVisualizer
-                            nodes={nodes[id]}
-                            setNodes={setNodesHandler(id)}
-                            edges={edges[id]}
-                            setEdges={setEdgesHandler(id)}
-                        />
-                    </div>
-                ))}
-            </>
+            {Array.isArray(workflowData?.[0]?.workflows) && workflowData[0].workflows.length ? (
+                workflowData[0].workflows.map(
+                    ({ id, name }) =>
+                        Object.keys(nodes).length &&
+                        Object.keys(edges).length && (
+                            <div key={id} className="flexbox-col dc__gap-6">
+                                <p className="m-0 fs-13 lh-20 fw-6">{name}</p>
+                                <GraphVisualizer
+                                    nodes={nodes[id]}
+                                    setNodes={setNodesHandler(id)}
+                                    edges={edges[id]}
+                                    setEdges={setEdgesHandler(id)}
+                                />
+                            </div>
+                        ),
+                )
+            ) : (
+                <GenericEmptyState title="No Workflows" />
+            )}
         </APIResponseHandler>
     )
 }
