@@ -215,14 +215,14 @@ const EnvironmentOverrideRouter = ({
     const [ciPipelines, setCIPipelines] = useState([])
     const [isEnvLoading, setIsEnvLoading] = useState(false)
 
-    const { isJobView, getWorkflows, reloadEnvironments, environments } = useAppConfigurationContext()
+    const { isJobView, getWorkflows, reloadEnvironments, environments, isTemplateView } = useAppConfigurationContext()
 
     const getJobOtherEnvironment = async () => {
         setIsEnvLoading(true)
         try {
             const [{ result: envListMinRes }, { result: ciConfigRes }] = await Promise.all([
                 getEnvironmentListMinPublic(),
-                getCIConfig(Number(appId)),
+                getCIConfig(Number(appId), isTemplateView),
             ])
             const list = []
             envListMinRes?.forEach((env) => {

@@ -149,7 +149,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     getWorkflows = () => {
         this.getHostURLConfig()
         this.checkGitOpsConfiguration()
-        getCreateWorkflows(this.props.match.params.appId, this.props.isJobView, this.props.filteredEnvIds)
+        getCreateWorkflows(this.props.match.params.appId, this.props.isJobView, this.props.filteredEnvIds, this.props.isTemplateView)
             .then((result) => {
                 const allCINodeMap = new Map()
                 const allDeploymentNodeMap = new Map()
@@ -613,6 +613,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                 isJobView={this.props.isJobView}
                                 isJobCI={isJobCI}
                                 changeCIPayload={this.state.changeCIPayload}
+                                isTemplateView={this.props.isTemplateView}
                             />
                         )
                     }}
@@ -641,6 +642,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     close={this.closePipeline}
                                     getWorkflows={this.getWorkflows}
                                     deleteWorkflow={this.deleteWorkflow}
+                                    isTemplateView={this.props.isTemplateView}
                                 />
                             )
                         }}
@@ -659,6 +661,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     close={this.closePipeline}
                                     getWorkflows={this.getWorkflows}
                                     changeCIPayload={this.state.changeCIPayload}
+                                    isTemplateView={this.props.isTemplateView}
                                 />
                             )
                         }}

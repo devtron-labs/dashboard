@@ -91,6 +91,7 @@ export default function CIPipeline({
     isJobView,
     isJobCI,
     changeCIPayload,
+    isTemplateView,
 }: CIPipelineType) {
     let { appId, workflowId, ciPipelineId } = useParams<{ appId: string; workflowId: string; ciPipelineId: string }>()
     if (ciPipelineId === '0') {
@@ -457,7 +458,7 @@ export default function CIPipeline({
             setPageState(ViewType.LOADING)
             await getSecurityModuleStatus()
             if (ciPipelineId) {
-                const ciPipelineResponse = await getInitDataWithCIPipeline(appId, ciPipelineId, true)
+                const ciPipelineResponse = await getInitDataWithCIPipeline(appId, ciPipelineId, true, isTemplateView)
                 if (ciPipelineResponse) {
                     const preBuildVariable = calculateLastStepDetail(
                         false,
@@ -484,7 +485,7 @@ export default function CIPipeline({
                     setIsAdvanced(true)
                 }
             } else {
-                const ciPipelineResponse = await getInitData(appId, true, isJobCard)
+                const ciPipelineResponse = await getInitData(appId, true, isJobCard, isTemplateView)
                 if (ciPipelineResponse) {
                     setFormData(ciPipelineResponse.result.form)
                     await getInitialPlugins(ciPipelineResponse.result.form)

@@ -53,6 +53,7 @@ export default function CIConfigDiffView({
     toggleConfigOverrideDiffModal,
     reload,
     gitMaterials,
+    isTemplateView,
 }: CIConfigDiffViewProps) {
     const history = useHistory()
     const location = useLocation()
@@ -225,7 +226,12 @@ export default function CIConfigDiffView({
         if (ciPipelineId) {
             setDeleteInProgress(true)
             try {
-                const { form, ciPipeline } = await getInitDataWithCIPipeline(appId, `${ciPipelineId}`, true)
+                const { form, ciPipeline } = await getInitDataWithCIPipeline(
+                    appId,
+                    `${ciPipelineId}`,
+                    true,
+                    isTemplateView,
+                )
                 if (form && ciPipeline) {
                     const response = await saveCIPipeline(
                         {

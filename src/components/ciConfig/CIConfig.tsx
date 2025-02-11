@@ -119,7 +119,7 @@ export default function CIConfig({
     async function reload(skipPageReload?: boolean, redirection: boolean = false) {
         try {
             updateLoadingState(true, skipPageReload)
-            const { result } = await getCIConfig(+appId)
+            const { result } = await getCIConfig(+appId, isTemplateView)
             setCIConfig(result)
 
             if (!skipPageReload) {

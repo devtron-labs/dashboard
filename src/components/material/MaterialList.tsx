@@ -94,7 +94,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
         if (this.state.materials.length < 1) {
             this.props.respondOnSuccess()
         }
-        getSourceConfig(this.props.match.params.appId).then((response) => {
+        getSourceConfig(this.props.match.params.appId, null, this.props.isTemplateView).then((response) => {
             const materials = response.result.material.map((mat) => {
                 return {
                     ...mat,

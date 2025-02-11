@@ -92,7 +92,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
 
     componentDidMount() {
         document.addEventListener('keydown', this.escFunction)
-        getInitDataWithCIPipeline(this.props.match.params.appId, this.props.match.params.ciPipelineId, true)
+        getInitDataWithCIPipeline(this.props.match.params.appId, this.props.match.params.ciPipelineId, true, this.props.isTemplateView)
             .then((response) => {
                 this.setState({ ...response, loadingData: false }, () => {
                     this.generateSourceUrl().catch(() => {

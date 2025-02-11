@@ -89,7 +89,7 @@ export interface WorkflowEditState {
 
 export interface WorkflowEditProps
     extends RouteComponentProps<{ appId: string; workflowId: string; ciPipelineId: string; cdPipelineId: string }>,
-        Pick<AppConfigProps, 'isTemplateView'> {
+        Required<Pick<AppConfigProps, 'isTemplateView'>> {
     configStatus: number
     isCDPipeline: boolean
     respondOnSuccess: () => void

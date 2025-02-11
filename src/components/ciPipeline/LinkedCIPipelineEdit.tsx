@@ -102,7 +102,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
         isValid.parentAppId = true
         isValid.parentCIPipelineId = false
         this.setState({ form, isValid, loadingPipelines: true }, () => {
-            getCIConfig(this.state.form.parentAppId)
+            getCIConfig(this.state.form.parentAppId, this.props.isTemplateView)
                 .then((response) => {
                     let pipelines = response.result && response.result.ciPipelines ? response.result.ciPipelines : []
                     pipelines = pipelines.filter(

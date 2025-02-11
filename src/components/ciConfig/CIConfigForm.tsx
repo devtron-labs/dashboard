@@ -424,6 +424,7 @@ export default function CIConfigForm({
                     toggleConfigOverrideDiffModal={toggleConfigOverrideDiffModal}
                     reload={reload}
                     gitMaterials={sourceConfig.material}
+                    isTemplateView={isTemplateView}
                 />
             )}
         </>

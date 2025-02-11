@@ -110,7 +110,7 @@ export interface CIConfigProps extends Pick<AppConfigProps, 'isTemplateView'> {
     setLoadingStateFromParent?: React.Dispatch<React.SetStateAction<LoadingState>>
 }
 
-export interface CIConfigDiffViewProps {
+export interface CIConfigDiffViewProps extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     parentReloading: boolean
     ciConfig: CiPipelineResult
     configOverridenPipelines: CiPipeline[]

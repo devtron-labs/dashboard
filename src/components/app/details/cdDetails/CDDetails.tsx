@@ -78,7 +78,7 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
         () =>
             Promise.allSettled([
                 getAppOtherEnvironmentMin(appId),
-                getCDPipelines(appId),
+                getCDPipelines(appId, false),
                 getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
             ]),
         [appId, filteredEnvIds],

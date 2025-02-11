@@ -62,8 +62,8 @@ export function getAppConfigStatus(appId: number, isJobView?: boolean): Promise<
 // NOTE: sending pipelineType to fetch workflowCacheConfig based on that
 export const getSourceConfig = (
     id: string,
-    queryParams?: Record<'pipelineType', string>,
-    isTemplateView?: AppConfigProps['isTemplateView'],
+    queryParams: Record<'pipelineType', string>,
+    isTemplateView: AppConfigProps['isTemplateView'],
 ) => {
     const URL = isTemplateView
         ? getTemplateAPIRoute({ type: GetTemplateAPIRouteType.GIT_MATERIAL, queryParams: { id, ...queryParams } })
@@ -71,7 +71,7 @@ export const getSourceConfig = (
     return get(URL)
 }
 
-export function getCIConfig(appId: number, isTemplateView?: AppConfigProps['isTemplateView']) {
+export function getCIConfig(appId: number, isTemplateView: AppConfigProps['isTemplateView']) {
     const URL = isTemplateView
         ? getTemplateAPIRoute({ type: GetTemplateAPIRouteType.CI_BUILD_CONFIG, queryParams: { id: String(appId) } })
         : `${Routes.CI_CONFIG_GET}/${appId}`
@@ -82,8 +82,15 @@ export function getConfigOverrideWorkflowDetails(appId: string): Promise<ConfigO
     return get(`${Routes.CI_CONFIG_OVERRIDE_GET}/${appId}`)
 }
 
-export function getCDConfig(appId: number | string): Promise<CDPipelines> {
-    const URL = `${Routes.CD_CONFIG}/${appId}`
+export function getCDConfig(appId: number | string, isTemplateView: AppConfigProps['isTemplateView']): Promise<CDPipelines> {
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({
+            type: GetTemplateAPIRouteType.CD_PIPELINE_LIST,
+            queryParams: {
+                id: appId,
+            }
+          })
+        : `${Routes.CD_CONFIG}/${appId}`
     return get(URL).then((response) => response.result)
 }
 
