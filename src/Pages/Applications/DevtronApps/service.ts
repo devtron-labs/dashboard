@@ -68,7 +68,7 @@ export const getAppConfigStatus = (
     return get(URL)
 }
 
-export const getEnvConfig = async (appId: number, envId: number, isTemplateView?: AppConfigProps['isTemplateView']) => {
+export const getEnvConfig = async (appId: number, envId: number, isTemplateView: AppConfigProps['isTemplateView']) => {
     try {
         const queryParams = { appId, envId }
 

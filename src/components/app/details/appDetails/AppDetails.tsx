@@ -121,7 +121,7 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
     const { path } = useRouteMatch()
     const { environmentId, setEnvironmentId } = useAppContext() // global state for app to synchronise environments
     const [isAppDeleted, setIsAppDeleted] = useState(false)
-    const [otherEnvsLoading, otherEnvsResult] = useAsync(() => getAppOtherEnvironmentMin(params.appId), [params.appId])
+    const [otherEnvsLoading, otherEnvsResult] = useAsync(() => getAppOtherEnvironmentMin(params.appId, false), [params.appId])
     const [commitInfo, showCommitInfo] = useState<boolean>(false)
     const [deploymentUserActionState, setDeploymentUserActionState] = useState<ACTION_STATE>(ACTION_STATE.ALLOWED)
     const isVirtualEnvRef = useRef(false)

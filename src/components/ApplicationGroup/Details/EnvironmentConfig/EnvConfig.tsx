@@ -60,7 +60,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
         [filteredAppIds],
     )
     const [envConfigLoading, envConfigRes, , refetch] = useAsync(
-        () => (appId ? getEnvConfig(+appId, +envId) : null),
+        () => (appId ? getEnvConfig(+appId, +envId, false) : null),
         [],
     )
 

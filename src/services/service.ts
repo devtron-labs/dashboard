@@ -275,7 +275,7 @@ export function getDockerRegistryList(): Promise<ResponseType> {
 
 export function getAppOtherEnvironmentMin(
     appId,
-    isTemplateView?: AppConfigProps['isTemplateView'],
+    isTemplateView: AppConfigProps['isTemplateView'],
 ): Promise<AppOtherEnvironment> {
     const queryParams = {
         'app-id': appId,

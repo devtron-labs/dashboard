@@ -158,7 +158,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const getAppListData = async (): Promise<OptionType[]> => {
         setSelectedAppList([])
         setAppListLoading(true)
-        const { result } = await getAppOtherEnvironmentMin(appId)
+        const { result } = await getAppOtherEnvironmentMin(appId, false)
         const appListOptionsList = result?.length
             ? result
                   .map((app): OptionType => {

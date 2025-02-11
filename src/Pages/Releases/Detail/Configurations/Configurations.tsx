@@ -68,7 +68,7 @@ export const Configurations = () => {
 
     // ASYNC CALLS
     const [envConfigResLoading, envConfigRes, , fetchEnvConfig] = useAsync(
-        () => getEnvConfig(+appId, +envId),
+        () => getEnvConfig(+appId, +envId, false),
         [appId, envId],
         !!(appId && envId),
     )

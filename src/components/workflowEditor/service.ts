@@ -18,7 +18,7 @@ import { AppConfigProps, GetTemplateAPIRouteType, post, trash } from '@devtron-l
 import { getTemplateAPIRoute } from '@Components/common'
 import { Routes } from '../../config'
 
-export function createWorkflow(request, isTemplateView?: AppConfigProps['isTemplateView']) {
+export function createWorkflow(request, isTemplateView: AppConfigProps['isTemplateView']) {
     const URL = isTemplateView
         ? getTemplateAPIRoute({
               type: GetTemplateAPIRouteType.WORKFLOW_LIST,
@@ -29,7 +29,7 @@ export function createWorkflow(request, isTemplateView?: AppConfigProps['isTempl
     return post(URL, request)
 }
 
-export function updateWorkflow(request, isTemplateView?: AppConfigProps['isTemplateView']) {
+export function updateWorkflow(request, isTemplateView: AppConfigProps['isTemplateView']) {
     const URL = isTemplateView
         ? getTemplateAPIRoute({
               type: GetTemplateAPIRouteType.WORKFLOW_LIST,
@@ -40,7 +40,7 @@ export function updateWorkflow(request, isTemplateView?: AppConfigProps['isTempl
     return post(URL, request)
 }
 
-export function deleteWorkflow(appId: string, workflowId: number, isTemplateView?: AppConfigProps['isTemplateView']) {
+export function deleteWorkflow(appId: string, workflowId: number, isTemplateView: AppConfigProps['isTemplateView']) {
     const URL = isTemplateView
         ? getTemplateAPIRoute({
               type: GetTemplateAPIRouteType.WORKFLOW_LIST,

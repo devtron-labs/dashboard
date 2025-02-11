@@ -108,7 +108,7 @@ export const getNavItems = ({
     envIdToEnvApprovalConfigurationMap,
     isTemplateView,
 }: Pick<AppConfigState, 'envIdToEnvApprovalConfigurationMap'> &
-    Pick<AppConfigProps, 'isTemplateView'> & {
+    Required<Pick<AppConfigProps, 'isTemplateView'>> & {
         _isUnlocked: AppStageUnlockedType
         appId: string
         resourceKind: ResourceKindType

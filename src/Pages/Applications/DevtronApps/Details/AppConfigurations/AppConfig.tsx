@@ -139,7 +139,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
         setState((prevState) => ({ ...prevState, envConfig: { ...prevState.envConfig, isLoading: true } }))
 
         // Fetch environment configuration
-        getEnvConfig(+appId, envId)
+        getEnvConfig(+appId, envId, isTemplateView)
             .then((res) => {
                 setState((prevState) => ({
                     ...prevState,
