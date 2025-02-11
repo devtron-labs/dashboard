@@ -648,7 +648,7 @@ const ManifestComponent = ({
         return (
             <InfoColourBar
                 message={message}
-                classname="w-100 m-0 code-editor__information dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
+                classname="w-100 m-0 fs-12 fw-4 lh-16 cn-9 py-8 px-16 bcb-1 dc__border-bottom dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
                 Icon={ICInfoFilled}
                 iconClass="icon-dim-16"
                 linkClass="dc__truncate--clamp-6"
@@ -668,7 +668,7 @@ const ManifestComponent = ({
         return (
             <InfoColourBar
                 message={errorText}
-                classname="w-100 m-0 code-editor__error dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
+                classname="w-100 m-0 fs-12 fw-4 lh-16 py-8 px-16 bco-1 co-5 dc__border-bottom dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
                 Icon={ICErrorExclamation}
                 iconClass="icon-dim-16"
                 linkClass="dc__truncate--clamp-6"
