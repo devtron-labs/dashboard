@@ -27,7 +27,7 @@ import {
     ImageSelectionUtilityProvider,
     URLS as CommonURLS,
     AppListConstants,
-    MODES,
+    getEnvironmentData,
     DEVTRON_BASE_MAIN_ID,
     MainContext,
     getHashedValue,
@@ -79,8 +79,6 @@ const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/Devt
 const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
-// TODO: Move this to common-lib in onboard-argo v2
-const getEnvironmentData = importComponentFromFELibrary('getEnvironmentData', null, 'function')
 const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
 const SoftwareDistributionHub = importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
 const NetworkStatusInterface = importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
@@ -292,9 +290,7 @@ export default function NavigationRoutes() {
             setServerMode(SERVER_MODE.EA_ONLY)
         } else {
             getServerMode()
-            if (getEnvironmentData) {
-                getEnvironmentDataValues()
-            }
+            getEnvironmentDataValues()
             getCurrentServerInfo()
         }
     }, [])
