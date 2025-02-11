@@ -15,16 +15,15 @@
  */
 
 import { AppConfigProps } from '@devtron-labs/devtron-fe-common-lib'
-import { RouteComponentProps } from 'react-router-dom'
 
-export interface MaterialListProps
-    extends RouteComponentProps<{ appId: string }>,
-        Required<Pick<AppConfigProps, 'isTemplateView'>> {
+export interface MaterialListProps extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
+    appId: string
     respondOnSuccess: () => void
-    isWorkflowEditorUnlocked: boolean
     toggleRepoSelectionTippy: () => void
     setRepo: React.Dispatch<React.SetStateAction<string>>
     isJobView?: boolean
+    handleGitMaterialsChange: (updatedGitMaterial: GitMaterialType[], isError: boolean) => void
+    isCreateAppView: boolean
 }
 
 export interface MaterialServiceProps extends Pick<MaterialListProps, 'isTemplateView'> {
@@ -104,7 +103,6 @@ export interface MaterialViewProps extends Pick<MaterialListProps, 'isTemplateVi
     toggleCollapse: (event) => void
     save: (event) => void
     cancel: (event) => void
-    isWorkflowEditorUnlocked: boolean
     handleSubmoduleCheckbox: (event) => void
     appId?: number
     reload: () => void
@@ -112,6 +110,7 @@ export interface MaterialViewProps extends Pick<MaterialListProps, 'isTemplateVi
     toggleRepoSelectionTippy?: () => void
     setRepo?: React.Dispatch<React.SetStateAction<string>>
     isJobView?: boolean
+    isCreateAppView?: boolean
 }
 
 export interface MaterialViewState {

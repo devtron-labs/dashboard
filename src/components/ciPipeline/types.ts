@@ -32,6 +32,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router-dom'
 import { ValidateInputOutputVariableCellProps } from '@Components/CIPipelineN/VariableDataTable/types'
+import { AdvancedConfigOptionsProps } from '@Components/ciConfig/types'
 import { HostURLConfig } from '../../services/service.types'
 
 export interface ExternalCIPipelineState {
@@ -397,7 +398,9 @@ export interface WebhookCIProps {
     copyToClipboard: (text: string, callback) => void
 }
 
-export interface BuildType {
+export interface BuildType
+    extends Pick<AdvancedConfigOptionsProps, 'appId'>,
+        Required<Pick<AppConfigProps, 'isTemplateView'>> {
     showFormError: boolean
     isAdvanced: boolean
     ciPipeline: CIPipelineDataType

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams } from 'react-router-dom'
 import { getGitProviderIcon, sortObjectArrayAlphabetically } from '../common'
 import { getDockerRegistryMinAuth } from './service'
 import { getSourceConfig, getCIConfig } from '../../services/service'
@@ -38,6 +37,8 @@ export default function CIConfig({
     loadingStateFromParent,
     setLoadingStateFromParent,
     isTemplateView,
+    appId,
+    isCreateAppView,
 }: CIConfigProps) {
     const [dockerRegistries, setDockerRegistries] = useState(parentState?.dockerRegistries)
     const [sourceConfig, setSourceConfig] = useState(parentState?.sourceConfig)
@@ -46,7 +47,6 @@ export default function CIConfig({
     const [loading, setLoading] = useState(
         !(configOverrideView && parentState?.loadingState === ComponentStates.loaded),
     )
-    const { appId } = useParams<{ appId: string }>()
 
     useEffect(() => {
         if (!configOverrideView || parentState?.loadingState !== ComponentStates.loaded) {
@@ -165,6 +165,7 @@ export default function CIConfig({
             loadingStateFromParent={loadingStateFromParent}
             setLoadingStateFromParent={setLoadingStateFromParent}
             isTemplateView={isTemplateView}
+            isCreateAppView={isCreateAppView}
         />
     )
 }

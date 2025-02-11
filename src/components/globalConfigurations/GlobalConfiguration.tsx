@@ -273,12 +273,16 @@ const NavItem = ({ serverMode }) => {
             moduleName: ModuleNameMap.NOTIFICATION,
             isAvailableInEA: false,
         },
-        {
-            name: 'Application Templates',
-            href: CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP,
-            component: DevtronAppTemplates,
-            isAvailableInEA: false,
-        }
+        ...(window._env_.FEATURE_APPLICATION_TEMPLATES_ENABLE
+            ? [
+                  {
+                      name: 'Application Templates',
+                      href: CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP,
+                      component: DevtronAppTemplates,
+                      isAvailableInEA: false,
+                  },
+              ]
+            : []),
     ]
 
     useEffect(() => {
@@ -773,7 +777,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                         <LockDeploymentConfiguration />
                     </Route>
                 ),
-                DevtronAppTemplates && (
+                window._env_.FEATURE_APPLICATION_TEMPLATES_ENABLE && DevtronAppTemplates && (
                     <Route path={CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP}>
                         <DevtronAppTemplates AppConfig={AppConfig} />
                     </Route>

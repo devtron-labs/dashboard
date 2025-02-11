@@ -897,6 +897,8 @@ export default function CIPipeline({
                                     isSecurityModuleInstalled={isSecurityModuleInstalled}
                                     isJobView={isJobCard}
                                     getPluginData={getPluginData}
+                                    appId={appId}
+                                    isTemplateView={isTemplateView}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />

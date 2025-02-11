@@ -107,6 +107,14 @@
 .border {
     &__primary {
         border: 1px solid var(--border-primary);
+
+        &--top {
+            border-top: 1px solid var(--border-primary);
+        }
+
+        &--bottom {
+            border-bottom: 1px solid var(--border-primary);
+        }
     }
 
     &__secondary {
@@ -123,11 +131,23 @@
         width: 1px;
         min-height: 16px;
         background-color: var(--divider-primary);
+
+        &--horizontal {
+            width: 100%;
+            min-height: 1px;
+            background-color: var(--divider-primary);
+        }
     }
 
     &__secondary {
         width: 1px;
         min-height: 16px;
         background-color: var(--divider-secondary);
+
+        &--horizontal {
+            width: 100%;
+            min-height: 1px;
+            background-color: var(--divider-secondary);
+        }
     }
 }
