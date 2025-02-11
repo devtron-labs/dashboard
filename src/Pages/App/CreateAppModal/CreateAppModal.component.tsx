@@ -15,7 +15,7 @@ import { useState } from 'react'
 import { getHostURLConfiguration } from '@Services/service'
 import { saveHostURLConfiguration } from '@Components/hostURL/hosturl.service'
 import { createJob } from '@Components/Jobs/Service'
-import { APP_COMPOSE_STAGE, getAppComposeURL } from '@Config/routes'
+import { APP_COMPOSE_STAGE, getAppComposeURL, URLS } from '@Config/routes'
 import { useHistory } from 'react-router-dom'
 import { REQUIRED_FIELDS_MISSING } from '@Config/constants'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -53,6 +53,8 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
     const [formErrorState, setFormErrorState] = useState<CreateAppFormErrorStateType>(
         structuredClone(createAppInitialFormErrorState),
     )
+
+    const isCreationMethodTemplate = selectedCreationMethod === CreationMethodType.template
 
     const validateFormField = (field: keyof CreateAppFormStateType, value) => {
         switch (field) {
@@ -221,7 +223,9 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
     }
 
     const redirectToArtifacts = (appId: string) => {
-        const url = getAppComposeURL(appId, APP_COMPOSE_STAGE.SOURCE_CONFIG, isJobView)
+        const url = isCreationMethodTemplate
+            ? `${URLS.APP}/${appId}/${URLS.APP_TRIGGER}`
+            : getAppComposeURL(appId, APP_COMPOSE_STAGE.SOURCE_CONFIG, isJobView)
         history.push(url)
     }
 
@@ -230,11 +234,19 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
             return createJob
         }
 
-        return selectedCreationMethod === CreationMethodType.template ? createDevtronAppUsingTemplate : createApp
+        return isCreationMethodTemplate ? createDevtronAppUsingTemplate : createApp
     }
 
     const handleCreateApp = async () => {
         const { isFormValid, invalidLabels, labelTags, invalidWorkFlow } = validateForm()
+
+        if (isCreationMethodTemplate && !formState.templateConfig?.templateId) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Please select a template to create app',
+            })
+            return
+        }
 
         if (!isFormValid || invalidLabels) {
             ToastManager.showToast({
@@ -266,7 +278,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                       templateId: formState.cloneAppId,
                   }
                 : null),
-            ...(selectedCreationMethod === CreationMethodType.template
+            ...(isCreationMethodTemplate
                 ? {
                       templateId: formState.templateConfig.templateId,
                       templatePatch: {
@@ -318,7 +330,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                             />
                         </div>
                     )}
-                    {selectedCreationMethod === CreationMethodType.template && (
+                    {isCreationMethodTemplate && (
                         <div className="flexbox-col flex-grow-1 bg__secondary">
                             {formState.templateConfig ? (
                                 <>
