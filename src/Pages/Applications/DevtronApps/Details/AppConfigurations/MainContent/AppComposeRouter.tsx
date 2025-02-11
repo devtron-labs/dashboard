@@ -134,7 +134,10 @@ const AppComposeRouter = () => {
                         reloadEnvironments={reloadEnvironments}
                     />
                 </Route>,
-                <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
+                <Route
+                    key={`${path}/${URLS.BASE_CONFIG}/${URLS.APP_CM_CONFIG}`}
+                    path={`${path}/${URLS.BASE_CONFIG}/${URLS.APP_CM_CONFIG}/:name?`}
+                >
                     <ConfigMapSecretWrapper
                         isJob
                         isApprovalPolicyConfigured={false}
@@ -146,7 +149,10 @@ const AppComposeRouter = () => {
                         envName=""
                     />
                 </Route>,
-                <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
+                <Route
+                    key={`${path}/${URLS.BASE_CONFIG}/${URLS.APP_CS_CONFIG}`}
+                    path={`${path}/${URLS.BASE_CONFIG}/${URLS.APP_CS_CONFIG}/:name?`}
+                >
                     <ConfigMapSecretWrapper
                         isJob
                         isApprovalPolicyConfigured={false}
