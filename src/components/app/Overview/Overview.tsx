@@ -333,7 +333,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                             </div>
                         </div>
                     )}
-                    {templateConfig?.id && (
+                    {!!templateConfig?.id && (
                         <div>
                             <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Created from template</div>
                             <Link

@@ -54,6 +54,7 @@ import {
     UseFormErrorHandler,
     UseFormSubmitHandler,
     isNullOrUndefined,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
@@ -116,6 +117,7 @@ export const ConfigMapSecretContainer = ({
     parentName,
     appChartRef,
     reloadEnvironments,
+    isTemplateView,
 }: ConfigMapSecretContainerProps) => {
     // HOOKS
     const location = useLocation()
@@ -187,7 +189,7 @@ export const ConfigMapSecretContainer = ({
     const gaEventCategory = `devtronapp-configuration-${isSecret ? 'secret' : 'cm'}`
 
     // COMPONENT PROP CONSTANTS
-    const baseConfigurationURL = `${isJob ? URLS.JOB : URLS.APP}/${appId}/${URLS.APP_CONFIG}/${isSecret ? URLS.APP_CS_CONFIG : URLS.APP_CM_CONFIG}/${name}`
+    const baseConfigurationURL = `${isJob ? URLS.JOB : URLS.APP}/${appId}/${CommonURLS.APP_CONFIG}/${isSecret ? URLS.APP_CS_CONFIG : URLS.APP_CM_CONFIG}/${name}`
     const headerMessage =
         cmSecretStateLabel === CM_SECRET_STATE.ENV ||
         cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED ||
@@ -732,6 +734,7 @@ export const ConfigMapSecretContainer = ({
                     appId: +appId,
                     payload: payloadData,
                     signal: abortControllerRef.current.signal,
+                    isTemplateView,
                 }
 
                 await (isSecret ? updateSecret : updateConfigMap)(updateConfigMapSecretParams)
@@ -742,6 +745,7 @@ export const ConfigMapSecretContainer = ({
                     envId: +envId,
                     payload: payloadData,
                     signal: abortControllerRef.current.signal,
+                    isTemplateView,
                 }
 
                 await (isSecret ? overRideSecret : overRideConfigMap)(overrideConfigMapSecretParams)
@@ -949,6 +953,7 @@ export const ConfigMapSecretContainer = ({
             updateCMSecret={updateCMSecret}
             closeDeleteModal={closeDeleteModal}
             handleError={handleError}
+            isTemplateView={isTemplateView}
         />
     )
 

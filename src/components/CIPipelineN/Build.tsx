@@ -34,6 +34,7 @@ export const Build = ({
     isJobView,
     getPluginData,
     appId,
+    isTemplateView,
 }: BuildType) => {
     const { formData, setFormData, formDataErrorObj, setFormDataErrorObj } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
@@ -274,7 +275,7 @@ export const Build = ({
             {!isJobView && isAdvanced && (
                 <>
                     {isSecurityModuleInstalled && renderScanner()}
-                    <AdvancedConfigOptions ciPipeline={ciPipeline} appId={appId} />
+                    <AdvancedConfigOptions ciPipeline={ciPipeline} appId={appId} isTemplateView={isTemplateView} />
                 </>
             )}
         </div>

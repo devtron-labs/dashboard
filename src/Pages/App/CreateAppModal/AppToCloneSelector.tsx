@@ -1,6 +1,6 @@
 import AsyncSelect from 'react-select/async'
-import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
-import { appListOptions, noOptionsMessage } from '@Components/AppSelector/AppSelectorUtil'
+import { AppSelectorNoOptionsMessage, multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
+import { appListOptions } from '@Components/AppSelector/AppSelectorUtil'
 import { Option } from '@Components/v2/common/ReactSelect.utils'
 import { ReactComponent as ICError } from '@Icons/ic-warning.svg'
 import { ReactComponent as ICInfoFilled } from '@Icons/ic-info-filled.svg'
@@ -43,7 +43,7 @@ const AppToCloneSelector = ({ isJobView, error, handleCloneIdChange }: AppToClon
                 <AsyncSelect
                     classNamePrefix={`${isJobView ? 'job' : 'app'}-name-for-clone`}
                     loadOptions={loadAppListOptions}
-                    noOptionsMessage={noOptionsMessage}
+                    noOptionsMessage={AppSelectorNoOptionsMessage}
                     onChange={onChange}
                     styles={_multiSelectStyles}
                     components={{

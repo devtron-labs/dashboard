@@ -49,6 +49,7 @@ const ApplicationRoute = ({
                     compareWithURL={path}
                     showComparison
                     appOrEnvIdToResourceApprovalConfigurationMap={appIdToAppApprovalConfigMap}
+                    isTemplateView={false}
                 />
             </Route>
             <Route key="default-navigation">

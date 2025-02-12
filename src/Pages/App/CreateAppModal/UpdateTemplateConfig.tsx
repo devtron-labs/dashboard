@@ -98,12 +98,14 @@ const UpdateTemplateConfig = ({ formState, isJobView, handleFormStateChange }: U
                     handleGitMaterialsChange={handleGitMaterialsChange}
                     setRepo={noop}
                     toggleRepoSelectionTippy={noop}
+                    isTemplateView
                 />
             </div>
             <div className="br-8 border__secondary bg__primary p-20 flexbox-col dc__gap-16">
                 <h4 className="fs-14 fw-6 lh-20 cn-9 m-0">Build Configuration</h4>
                 <CIConfig
                     isCreateAppView
+                    isTemplateView
                     appId={stringTemplateDbId}
                     configOverrideView={false}
                     allowOverride={false}

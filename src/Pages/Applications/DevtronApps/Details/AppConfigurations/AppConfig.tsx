@@ -27,19 +27,14 @@ import {
     ToastManager,
     ToastVariantType,
     ResourceIdToResourceApprovalPolicyConfigMapType,
+    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS, getAppComposeURL, APP_COMPOSE_STAGE, ViewType } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { getAppOtherEnvironmentMin, getJobOtherEnvironmentMin, getWorkflowList } from '../../../../../services/service'
 import warn from '../../../../../assets/icons/ic-warning.svg'
 import './appConfig.scss'
-import {
-    AppConfigProps,
-    AppConfigState,
-    AppStageUnlockedType,
-    STAGE_NAME,
-    DEFAULT_LANDING_STAGE,
-} from './AppConfig.types'
+import { AppConfigState, AppStageUnlockedType, STAGE_NAME, DEFAULT_LANDING_STAGE } from './AppConfig.types'
 import { getUserRole } from '../../../../GlobalConfigurations/Authorization/authorization.service'
 import { isCIPipelineCreated, isCDPipelineCreated, getNavItems, isUnlocked } from './AppConfig.utils'
 import AppComposeRouter from './MainContent/AppComposeRouter'
@@ -55,7 +50,7 @@ const getApprovalPolicyConfigForApp: (appId: number) => Promise<ResourceIdToReso
     importComponentFromFELibrary('getApprovalPolicyConfigForApp', null, 'function')
 const isFELibAvailable: boolean = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
-export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigProps) => {
+export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateView }: AppConfigProps) => {
     // HOOKS
     const { appId } = useParams<{ appId: string }>()
     const match = useRouteMatch()
@@ -112,8 +107,8 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
         envIdToEnvApprovalConfigurationMap: ResourceIdToResourceApprovalPolicyConfigMapType
     }> =>
         Promise.all([
-            isJob ? getJobOtherEnvironmentMin(appId) : getAppOtherEnvironmentMin(appId),
-            typeof getApprovalPolicyConfigForApp === 'function' && !isJob
+            isJob ? getJobOtherEnvironmentMin(appId) : getAppOtherEnvironmentMin(appId, isTemplateView),
+            typeof getApprovalPolicyConfigForApp === 'function' && !isJob && !isTemplateView
                 ? getApprovalPolicyConfigForApp(Number(appId))
                 : null,
         ]).then(([envResult, envIdToEnvApprovalConfigurationMap]) => {
@@ -144,7 +139,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
         setState((prevState) => ({ ...prevState, envConfig: { ...prevState.envConfig, isLoading: true } }))
 
         // Fetch environment configuration
-        getEnvConfig(+appId, envId)
+        getEnvConfig(+appId, envId, isTemplateView)
             .then((res) => {
                 setState((prevState) => ({
                     ...prevState,
@@ -165,14 +160,21 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
     // ASYNC CALLS
     const [, userRoleRes, userRoleErr] = useAsync(() => getUserRole(appName), [appName])
     const [, appConfigData, appConfigError] = useAsync(
-        () => Promise.all([getAppConfigStatus(+appId, resourceKind), getWorkflowList(appId), fetchEnvironments()]),
+        () =>
+            Promise.all([
+                getAppConfigStatus(+appId, resourceKind, isTemplateView),
+                getWorkflowList(appId, '', isTemplateView),
+                fetchEnvironments(),
+            ]),
         [appId, filteredEnvIds, reload, resourceKind],
     )
 
     // CONSTANTS
     const userRole = userRoleRes?.result.role
     const canShowExternalLinks =
-        userRole === UserRoleType.SuperAdmin || userRole === UserRoleType.Admin || userRole === UserRoleType.Manager
+        !isTemplateView &&
+        (userRole === UserRoleType.SuperAdmin || userRole === UserRoleType.Admin || userRole === UserRoleType.Manager)
+
     const hideConfigHelp = isJob ? state.isCiPipeline : state.isCDPipeline
     const isGitOpsConfigurationRequired = state.navItems.find(
         ({ stage }) => stage === STAGE_NAME.GITOPS_CONFIG,
@@ -268,6 +270,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
             resourceKind,
             isGitOpsConfigurationRequired: _isGitOpsConfigurationRequired,
             envIdToEnvApprovalConfigurationMap,
+            isTemplateView,
         })
         // Finding index of navItem which is locked and is not of alternate nav menu (nav-item rendering on different path)
         let index = navItems.findIndex((item) => !item.altNavKey && item.isLocked)
@@ -318,7 +321,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
     }
 
     const reloadWorkflows = async () => {
-        const response = await getWorkflowList(appId)
+        const response = await getWorkflowList(appId, null, isTemplateView)
         setState((prevState) => ({
             ...prevState,
             canDeleteApp: response.result.workflows.length === 0,
@@ -353,7 +356,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
     }
 
     const respondOnSuccess = (redirection: boolean = false) => {
-        getAppConfigStatus(+appId, resourceKind)
+        getAppConfigStatus(+appId, resourceKind, isTemplateView)
             .then((configStatusRes) => {
                 const { navItems, isCDPipeline, isCiPipeline, configs, redirectUrl } = processConfigStatusData(
                     configStatusRes.result,
@@ -397,7 +400,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
 
     const renderDeleteDialog = () => {
         if (state.showDeleteConfirm) {
-            return state.canDeleteApp ? (
+            return state.canDeleteApp || isTemplateView ? (
                 <DeleteDialog
                     title={`Delete '${appName}'?`}
                     delete={deleteAppHandler}
@@ -499,6 +502,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
             filteredEnvIds={filteredEnvIds}
             reloadAppConfig={reloadAppConfig}
             fetchEnvConfig={fetchEnvConfig}
+            isTemplateView={isTemplateView}
         >
             <>
                 <div className={`app-compose ${getAdditionalParentClass()}`}>

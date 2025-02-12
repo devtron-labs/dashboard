@@ -26,6 +26,7 @@ import {
     getIsApprovalPolicyConfigured,
     sanitizeApprovalConfigData,
     TriggerType,
+    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCDConfig, getCIConfig, getWorkflowList, getWorkflowViewList } from '../../../../services/service'
 import {
@@ -65,12 +66,14 @@ export const getTriggerWorkflows = (
         useAppWfViewAPI,
         isJobView,
         filteredEnvIds,
+        isTemplateView: false,
     })
 
 export const getCreateWorkflows = (
     appId,
     isJobView: boolean,
-    filteredEnvIds?: string,
+    filteredEnvIds: string,
+    isTemplateView: AppConfigProps['isTemplateView'],
 ): Promise<{
     isGitOpsRepoNotConfigured: boolean
     appName: string
@@ -86,6 +89,7 @@ export const getCreateWorkflows = (
         useAppWfViewAPI: false,
         isJobView,
         filteredEnvIds,
+        isTemplateView,
     })
 
 export const getInitialWorkflows = ({
@@ -97,6 +101,7 @@ export const getInitialWorkflows = ({
     filteredEnvIds,
     shouldCheckDeploymentWindow = true,
     offending = null,
+    isTemplateView,
 }: GetInitialWorkflowsParamsType): Promise<{
     isGitOpsRepoNotConfigured: boolean
     appName: string
@@ -105,13 +110,13 @@ export const getInitialWorkflows = ({
     cachedCDConfigResponse: CdPipelineResult
     blackListedCI: BlackListedCI
 }> => {
+    const shouldCheckDeploymentWindowState = shouldCheckDeploymentWindow && getDeploymentWindowState && !isTemplateView
+
     if (useAppWfViewAPI) {
         // TODO: Seems like a good candidate for Promise.allSettled
         return Promise.all([
             getWorkflowViewList(id, filteredEnvIds, offending),
-            shouldCheckDeploymentWindow && getDeploymentWindowState
-                ? getDeploymentWindowState(id, filteredEnvIds)
-                : null,
+            shouldCheckDeploymentWindowState ? getDeploymentWindowState(id, filteredEnvIds) : null,
         ]).then((response) => {
             const workflows = {
                 appId: id,
@@ -142,23 +147,25 @@ export const getInitialWorkflows = ({
         })
     }
     if (isJobView) {
-        return Promise.all([getWorkflowList(id), getCIConfig(id)]).then(([workflow, ciConfig]) => {
-            return processWorkflow(
-                workflow.result as WorkflowResult,
-                ciConfig.result as CiPipelineResult,
-                null,
-                null,
-                dimensions,
-                workflowOffset,
-            )
-        })
+        return Promise.all([getWorkflowList(id, null, false), getCIConfig(id, false)]).then(
+            ([workflow, ciConfig]) => {
+                return processWorkflow(
+                    workflow.result as WorkflowResult,
+                    ciConfig.result as CiPipelineResult,
+                    null,
+                    null,
+                    dimensions,
+                    workflowOffset,
+                )
+            },
+        )
     }
     return Promise.all([
-        getWorkflowList(id, filteredEnvIds),
-        getCIConfig(id),
-        getCDConfig(id),
-        getExternalCIList(id),
-        shouldCheckDeploymentWindow && getDeploymentWindowState ? getDeploymentWindowState(id, filteredEnvIds) : null,
+        getWorkflowList(id, filteredEnvIds, isTemplateView),
+        getCIConfig(id, isTemplateView),
+        getCDConfig(id, isTemplateView),
+        getExternalCIList(id, isTemplateView),
+        shouldCheckDeploymentWindowState ? getDeploymentWindowState(id, filteredEnvIds) : null,
     ]).then(([workflow, ciConfig, cdConfig, externalCIConfig, deploymentWindowState]) => {
         if (Object.keys(deploymentWindowState?.result || {}).length > 0 && cdConfig) {
             cdConfig.pipelines?.forEach((pipeline) => {

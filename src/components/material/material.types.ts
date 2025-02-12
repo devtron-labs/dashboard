@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-export interface MaterialListProps extends Pick<MaterialViewProps, 'isCreateAppView'> {
+import { AppConfigProps } from '@devtron-labs/devtron-fe-common-lib'
+
+export interface MaterialListProps extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     appId: string
     respondOnSuccess: () => void
     toggleRepoSelectionTippy: () => void
     setRepo: React.Dispatch<React.SetStateAction<string>>
     isJobView?: boolean
     handleGitMaterialsChange: (updatedGitMaterial: GitMaterialType[], isError: boolean) => void
+    isCreateAppView: boolean
+}
+
+export interface MaterialServiceProps extends Pick<MaterialListProps, 'isTemplateView'> {
+    request: any
 }
 
 export interface GitMaterialType {
@@ -77,7 +84,7 @@ export interface UpdateMaterialState {
     isError: MaterialError
 }
 
-export interface MaterialViewProps {
+export interface MaterialViewProps extends Pick<MaterialListProps, 'isTemplateView'> {
     isMultiGit: boolean
     isChecked: boolean
     isLearnHowClicked: boolean

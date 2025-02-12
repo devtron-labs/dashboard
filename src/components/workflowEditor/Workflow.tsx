@@ -46,6 +46,8 @@ import {
     ConditionalWrap,
     ChangeCIPayloadType,
     CIPipelineNodeType,
+    URLS as CommonURLS,
+    AppConfigProps
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
 import { ReactComponent as ICMoreOption } from '../../assets/icons/ic-more-option.svg'
@@ -63,7 +65,7 @@ const getParsedPluginPolicyConsequenceData = importComponentFromFELibrary(
 )
 
 export interface WorkflowProps
-    extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }> {
+    extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }>, Required<Pick<AppConfigProps, 'isTemplateView'>> {
     nodes: CommonNodeAttr[]
     id: number
     name: string
@@ -445,7 +447,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 height={node.height}
                 configDiffView={this.props.cdWorkflowList?.length > 0}
                 title={node.title}
-                redirectTo={`${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${
+                redirectTo={`${URLS.APP}/${this.props.match.params.appId}/${CommonURLS.APP_CONFIG}/${
                     URLS.APP_WORKFLOW_CONFIG
                 }/${this.props.id ?? 0}/${URLS.LINKED_CD}?changeCi=0&switchFromCiPipelineId=${
                     node.id
@@ -510,6 +512,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 handleDisplayLoader={this.props.handleDisplayLoader}
                 showPluginWarning={node.showPluginWarning}
                 isOffendingPipelineView={this.props.isOffendingPipelineView}
+                isTemplateView={this.props.isTemplateView}
             />
         )
     }
@@ -577,6 +580,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         workflowId={this.props.id}
                         isWebhookCD={isWebhookCD}
                         showApprovalConfigInfoTippy
+                        isTemplateView={this.props.isTemplateView}
                     />
                 )
             }
@@ -637,6 +641,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         isWebhookCD={isWebhookCD}
                         leftTooltipContent={leftTooltipContent}
                         showApprovalConfigInfoTippy
+                        isTemplateView={this.props.isTemplateView}
                     />,
                 )
             } else {
@@ -694,7 +699,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
     handleNewJobRedirection = () => {
         this.props.history.push(
-            `${URLS.JOB}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${this.props.id}/${URLS.APP_CI_CONFIG}/0`,
+            `${URLS.JOB}/${this.props.match.params.appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${this.props.id}/${URLS.APP_CI_CONFIG}/0`,
         )
     }
 

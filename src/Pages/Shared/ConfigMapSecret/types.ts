@@ -31,6 +31,7 @@ import {
     CMSecretComponentType,
     CM_SECRET_STATE,
     CMSecretPayloadType,
+    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ConfigToolbarProps } from '@Pages/Applications'
@@ -78,6 +79,7 @@ export interface CMSecretWrapperProps
     isApprovalPolicyConfigured?: boolean
     envName: string
     appName: string
+    isTemplateView: AppConfigProps['isTemplateView']
 }
 
 export interface ConfigMapSecretContainerProps extends Omit<CMSecretWrapperProps, 'parentState' | 'setParentState'> {
@@ -133,7 +135,8 @@ export interface ConfigMapSecretDataProps extends Pick<ConfigMapSecretFormProps,
 export type CMSecretDeleteModalType = 'deleteModal' | 'protectedDeleteModal'
 
 export interface ConfigMapSecretDeleteModalProps
-    extends Pick<ConfigMapSecretFormProps, 'componentType' | 'cmSecretStateLabel'> {
+    extends Pick<ConfigMapSecretFormProps, 'componentType' | 'cmSecretStateLabel'>,
+        Pick<ConfigMapSecretContainerProps, 'isTemplateView'> {
     appId: number
     envId: number
     id: number
@@ -229,16 +232,21 @@ export interface ConfigMapSecretCommonAPIProps {
 }
 
 export interface UpdateConfigMapSecretProps
-    extends Pick<ConfigMapSecretCommonAPIProps, 'appId' | 'id' | 'payload' | 'signal'> {}
+    extends Pick<ConfigMapSecretCommonAPIProps, 'appId' | 'id' | 'payload' | 'signal'> {
+    isTemplateView: AppConfigProps['isTemplateView']
+}
 
-export interface DeleteConfigMapSecretProps extends Pick<ConfigMapSecretCommonAPIProps, 'id' | 'appId' | 'name'> {}
+export interface DeleteConfigMapSecretProps
+    extends Pick<ConfigMapSecretCommonAPIProps, 'id' | 'appId' | 'name'>,
+        Pick<UpdateConfigMapSecretProps, 'isTemplateView'> {}
 
 export interface DeleteEnvConfigMapSecretProps
     extends DeleteConfigMapSecretProps,
         Pick<ConfigMapSecretCommonAPIProps, 'envId'> {}
 
 export interface OverrideConfigMapSecretProps
-    extends Pick<ConfigMapSecretCommonAPIProps, 'appId' | 'envId' | 'payload' | 'signal'> {}
+    extends Pick<ConfigMapSecretCommonAPIProps, 'appId' | 'envId' | 'payload' | 'signal'>,
+        Pick<UpdateConfigMapSecretProps, 'isTemplateView'> {}
 
 export interface GetCMSecretProps extends Pick<ConfigMapSecretCommonAPIProps, 'id' | 'appId' | 'name' | 'signal'> {
     componentType: CMSecretComponentType

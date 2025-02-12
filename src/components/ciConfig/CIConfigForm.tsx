@@ -53,6 +53,7 @@ export default function CIConfigForm({
     setParentState,
     loadingStateFromParent,
     setLoadingStateFromParent,
+    isTemplateView,
     isCreateAppView,
 }: CIConfigFormProps) {
     const currentMaterial: CurrentMaterialType =
@@ -247,7 +248,7 @@ export default function CIConfigForm({
         setApiInProgress(true)
         try {
             const saveOrUpdate = ciConfig && ciConfig.id ? updateCIConfig : saveCIConfig
-            await saveOrUpdate(requestBody)
+            await saveOrUpdate(requestBody, isTemplateView)
             ToastManager.showToast({
                 variant: ToastVariantType.success,
                 description: 'Successfully saved',
@@ -433,6 +434,7 @@ export default function CIConfigForm({
                             toggleConfigOverrideDiffModal={toggleConfigOverrideDiffModal}
                             reload={reload}
                             gitMaterials={sourceConfig.material}
+                            isTemplateView={isTemplateView}
                         />
                     )}
                 </>

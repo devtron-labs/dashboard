@@ -28,6 +28,7 @@ import {
     WorkflowType,
     ToastVariantType,
     ToastManager,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -52,6 +53,7 @@ export default function CIConfigDiffView({
     toggleConfigOverrideDiffModal,
     reload,
     gitMaterials,
+    isTemplateView,
 }: CIConfigDiffViewProps) {
     const history = useHistory()
     const location = useLocation()
@@ -77,7 +79,7 @@ export default function CIConfigDiffView({
         try {
             const [{ result: _configOverridenWorkflows }, { result: _processedWorkflows }] = await Promise.all([
                 getConfigOverrideWorkflowDetails(appId),
-                getWorkflowList(appId),
+                getWorkflowList(appId, null, isTemplateView),
             ])
 
             const { workflows = [] } =
@@ -144,14 +146,14 @@ export default function CIConfigDiffView({
         }
 
         if (ciNode.isLinkedCI) {
-            return `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${getLinkedCIPipelineURL(
+            return `${URLS.APP}/${appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${getLinkedCIPipelineURL(
                 appId,
                 workflowId,
                 ciNode.id,
             )}`
         }
 
-        return `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${workflowId}/${
+        return `${URLS.APP}/${appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${workflowId}/${
             URLS.APP_CI_CONFIG
         }/${wfCIMap.get(workflowId)}/build`
     }
@@ -224,7 +226,12 @@ export default function CIConfigDiffView({
         if (ciPipelineId) {
             setDeleteInProgress(true)
             try {
-                const { form, ciPipeline } = await getInitDataWithCIPipeline(appId, `${ciPipelineId}`, true)
+                const { form, ciPipeline } = await getInitDataWithCIPipeline(
+                    appId,
+                    `${ciPipelineId}`,
+                    true,
+                    isTemplateView,
+                )
                 if (form && ciPipeline) {
                     const response = await saveCIPipeline(
                         {
@@ -240,6 +247,8 @@ export default function CIConfigDiffView({
                         false,
                         form.webhookConditionList,
                         form.ciPipelineSourceTypeOptions,
+                        null,
+                        isTemplateView,
                     )
 
                     if (response) {
@@ -299,6 +308,7 @@ export default function CIConfigDiffView({
                     addCIPipeline={noop}
                     addWebhookCD={noop}
                     cdWorkflowList={_configOverridenWorkflows}
+                    isTemplateView={isTemplateView}
                 />
                 {renderViewBuildPipelineRow(+_wf.id, _wf.nodes)}
                 <CIBuildConfigDiff

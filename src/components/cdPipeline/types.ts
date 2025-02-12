@@ -20,10 +20,11 @@ import {
     PluginDetailPayloadType,
     ReleaseMode,
     ChangeCIPayloadType,
+    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 // Have added any type for most of these since they were legacy do not know the implications of changing them
-export interface CDPipelineProps {
+export interface CDPipelineProps extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     match: any
     location: any
     appName: any

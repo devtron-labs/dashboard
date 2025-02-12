@@ -31,6 +31,7 @@ import {
     ProtectConfigTabsType,
     DraftMetadataDTO,
     OverrideMergeStrategyType,
+    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 export enum ConfigEditorStatesType {
@@ -62,7 +63,7 @@ type EnvOverrideDeploymentTemplateProps = {
     isCiPipeline?: never
 }
 
-export type DeploymentTemplateProps = {
+export type DeploymentTemplateProps = Required<Pick<AppConfigProps, 'isTemplateView'>> & {
     isApprovalPolicyConfigured: boolean
     reloadEnvironments: () => void
     fetchEnvConfig: (environmentId: number) => void
@@ -253,7 +254,7 @@ export interface DeploymentTemplateCTAProps
     isDryRunView: boolean
 }
 
-export interface DeleteOverrideDialogProps {
+export interface DeleteOverrideDialogProps extends Pick<DeploymentTemplateProps, 'isTemplateView'> {
     environmentConfigId: number
     handleReload: () => void
     handleClose: () => void

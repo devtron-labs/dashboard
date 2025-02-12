@@ -60,7 +60,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
         [filteredAppIds],
     )
     const [envConfigLoading, envConfigRes, , refetch] = useAsync(
-        () => (appId ? getEnvConfig(+appId, +envId) : null),
+        () => (appId ? getEnvConfig(+appId, +envId, false) : null),
         [],
     )
 
@@ -171,6 +171,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
                                 fetchEnvConfig={refetch}
                                 onErrorRedirectURL={generatePath(path, { envId })}
                                 appOrEnvIdToResourceApprovalConfigurationMap={appIdToAppApprovalConfigMap}
+                                isTemplateView={false}
                             />
                         </div>
                     ) : (

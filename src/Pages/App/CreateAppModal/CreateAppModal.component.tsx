@@ -165,10 +165,23 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                     case CreateAppFormStateActionType.updateBuildConfiguration:
                         updatedFormState.buildConfiguration = value
                         break
-                    case CreateAppFormStateActionType.updateWorkflowConfig:
-                        updatedFormState.workflowConfig = value.data
+                    case CreateAppFormStateActionType.updateWorkflowConfig: {
+                        const updatedPipelineToEnvMap = value.data.cd.reduce((acc, { pipelineId, environmentId }) => {
+                            acc[pipelineId] = environmentId
+                            return acc
+                        }, {})
+                        updatedFormState.workflowConfig = {
+                            // If cd is not present initially use the data.cd
+                            cd: updatedFormState.workflowConfig?.cd?.length
+                                ? updatedFormState.workflowConfig.cd.map(({ environmentId, pipelineId }) => ({
+                                      pipelineId,
+                                      environmentId: updatedPipelineToEnvMap[pipelineId] ?? environmentId,
+                                  }))
+                                : value.data.cd,
+                        }
                         updatedFormErrorState.workflowConfig = value.isError
                         break
+                    }
                     case CreateAppFormStateActionType.updateTemplateConfig:
                         updatedFormState.templateConfig = value
                         break
@@ -284,6 +297,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                       templatePatch: {
                           gitMaterial: formState.gitMaterials,
                           buildConfiguration: formState.buildConfiguration,
+                          workflowConfig: formState.workflowConfig,
                       },
                   }
                 : null),

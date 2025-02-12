@@ -48,6 +48,7 @@ import { BodyType, ProtectedInputType } from './globalConfiguration.type'
 import { GlobalConfigurationProvider, useGlobalConfiguration } from './GlobalConfigurationProvider'
 import { OffendingPipelineModalAppView } from '@Pages/GlobalConfigurations/PluginPolicy/OffendingPipelineModal'
 import { getShouldHidePageHeaderAndSidebar } from './utils'
+import AppConfig from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -777,7 +778,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 ),
                 window._env_.FEATURE_APPLICATION_TEMPLATES_ENABLE && DevtronAppTemplates && (
                     <Route path={CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP}>
-                        <DevtronAppTemplates />
+                        <DevtronAppTemplates AppConfig={AppConfig} />
                     </Route>
                 )
             ]}

@@ -26,6 +26,7 @@ import {
     Material,
     SelectPickerOptionType,
     CiPipeline,
+    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { OptionTypeWithIcon } from '@Components/externalLinks/ExternalLinks.type'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
@@ -96,7 +97,9 @@ export interface LoadingState {
     failed: boolean
 }
 
-export interface CIConfigProps extends Pick<CIContainerRegistryConfigProps, 'isCreateAppView'> {
+export interface CIConfigProps
+    extends Pick<CIContainerRegistryConfigProps, 'isCreateAppView'>,
+        Required<Pick<AppConfigProps, 'isTemplateView'>> {
     respondOnSuccess: (redirection?: boolean) => void
     configOverrideView?: boolean
     allowOverride?: boolean
@@ -110,7 +113,7 @@ export interface CIConfigProps extends Pick<CIContainerRegistryConfigProps, 'isC
     appId: string
 }
 
-export interface CIConfigDiffViewProps {
+export interface CIConfigDiffViewProps extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     parentReloading: boolean
     ciConfig: CiPipelineResult
     configOverridenPipelines: CiPipeline[]
@@ -142,7 +145,8 @@ export interface SourceConfigType {
     material: SelectedGitMaterialType[]
 }
 export interface CIConfigFormProps
-    extends Required<Pick<CIConfigProps, 'isCreateAppView' | 'parentState' | 'setParentState'>> {
+    extends Required<Pick<CIConfigProps, 'isCreateAppView' | 'parentState' | 'setParentState'>>,
+        Pick<CIConfigProps, 'isTemplateView'> {
     parentReloading: boolean
     dockerRegistries: any
     sourceConfig: SourceConfigType
@@ -160,7 +164,9 @@ export interface CIConfigFormProps
     setLoadingStateFromParent?: React.Dispatch<React.SetStateAction<LoadingState>>
 }
 
-export interface AdvancedConfigOptionsProps extends Pick<CIConfigProps, 'appId'> {
+export interface AdvancedConfigOptionsProps
+    extends Pick<CIConfigProps, 'appId'>,
+        Required<Pick<AppConfigProps, 'isTemplateView'>> {
     ciPipeline: CIPipelineDataType
 }
 

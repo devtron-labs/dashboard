@@ -32,6 +32,8 @@
  */
 
 import {
+    AppConfigProps,
+    GetTemplateAPIRouteType,
     ResourceKindType,
     ResponseType,
     get,
@@ -41,24 +43,43 @@ import {
 
 import { Routes } from '@Config/constants'
 
+import { getTemplateAPIRoute } from '@Components/common'
 import { AppConfigStatusItemType } from './service.types'
 import { DEFAULT_LANDING_STAGE } from './Details/AppConfigurations/AppConfig.types'
 import { transformEnvConfig } from './Details/AppConfigurations/AppConfig.utils'
 
 export const getAppConfigStatus = (
     appId: number,
-    resourceKind?: ResourceKindType,
-): Promise<ResponseType<AppConfigStatusItemType[]>> =>
-    get(
-        getUrlWithSearchParams(Routes.APP_CONFIG_STATUS, {
-            'app-id': appId,
-            appType: resourceKind === ResourceKindType.job ? DEFAULT_LANDING_STAGE.JOB_VIEW : undefined,
-        }),
-    )
+    resourceKind: ResourceKindType,
+    isTemplateView: AppConfigProps['isTemplateView'],
+): Promise<ResponseType<AppConfigStatusItemType[]>> => {
+    const queryParams = {
+        'app-id': appId,
+        appType: resourceKind === ResourceKindType.job ? DEFAULT_LANDING_STAGE.JOB_VIEW : undefined,
+    }
 
-export const getEnvConfig = async (appId: number, envId: number) => {
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.STAGE_STATUS,
+              queryParams: { id: String(appId), ...queryParams },
+          })
+        : getUrlWithSearchParams(Routes.APP_CONFIG_STATUS, queryParams)
+
+    return get(URL)
+}
+
+export const getEnvConfig = async (appId: number, envId: number, isTemplateView: AppConfigProps['isTemplateView']) => {
     try {
-        const res = await get(getUrlWithSearchParams(Routes.ENV_CONFIG, { appId, envId }))
+        const queryParams = { appId, envId }
+
+        const URL = isTemplateView
+            ? getTemplateAPIRoute({
+                  type: GetTemplateAPIRouteType.CD_DEPLOY_CONFIG,
+                  queryParams: { id: String(appId), ...queryParams },
+              })
+            : getUrlWithSearchParams(Routes.ENV_CONFIG, queryParams)
+
+        const res = await get(URL)
         return transformEnvConfig(res.result)
     } catch (err) {
         showError(err)

@@ -81,6 +81,7 @@ export const AppNavigation = () => {
         isUnlocked,
         lastUnlockedStage,
         envIdToEnvApprovalConfigurationMap,
+        isTemplateView,
     } = useAppConfigurationContext()
 
     // CONSTANTS
@@ -141,6 +142,14 @@ export const AppNavigation = () => {
         return secondLastUnlockedStage || lastUnlockedStage
     }
 
+    const getDeleteButtonText = () => {
+        if (isJobView) {
+            return 'Job'
+        }
+
+        return isTemplateView ? 'Template' : 'Application'
+    }
+
     return (
         <Switch>
             <Route
@@ -165,6 +174,7 @@ export const AppNavigation = () => {
                         showComparison={!isJobView && isUnlocked.workflowEditor}
                         isCMSecretLocked={!isUnlocked.workflowEditor}
                         appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                        isTemplateView={isTemplateView}
                     />
                 )}
             </Route>
@@ -233,17 +243,19 @@ export const AppNavigation = () => {
                         )
                     })}
                     {isJobView && <div className="h-100" />}
-                    <div className="dc__align-self-end">
-                        <Button
-                            dataTestId="delete-job-app-button"
-                            variant={ButtonVariantType.secondary}
-                            size={ComponentSizeType.medium}
-                            style={ButtonStyleType.negative}
-                            onClick={deleteApp}
-                            text={`Delete ${isJobView ? 'Job' : 'Application'}`}
-                            fullWidth
-                        />
-                    </div>
+                    {!isTemplateView && (
+                        <div className="dc__align-self-end">
+                            <Button
+                                dataTestId="delete-job-app-button"
+                                variant={ButtonVariantType.secondary}
+                                size={ComponentSizeType.medium}
+                                style={ButtonStyleType.negative}
+                                onClick={deleteApp}
+                                text={`Delete ${getDeleteButtonText()}`}
+                                fullWidth
+                            />
+                        </div>
+                    )}
                 </>
             </Route>
         </Switch>

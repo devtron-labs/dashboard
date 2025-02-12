@@ -29,6 +29,9 @@ import {
     ACCESS_TYPE_MAP,
     ModuleNameMap,
     stringComparatorBySortOrder,
+    AppConfigProps,
+    noop,
+    GetTemplateAPIRouteType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../config'
 import {
@@ -50,19 +53,40 @@ import { ModuleStatus } from '../components/v2/devtronStackManager/DevtronStackM
 import { LOGIN_COUNT } from '../components/onboardingGuide/onboarding.utils'
 import { getProjectList } from '@Components/project/service'
 import { OffendingWorkflowQueryParamType } from '@Components/app/details/triggerView/types'
+import { getTemplateAPIRoute } from '@Components/common'
 
-export function getAppConfigStatus(appId: number, isJobView?: boolean): Promise<any> {
-    return get(`${Routes.APP_CONFIG_STATUS}?app-id=${appId}${isJobView ? '&appType=2' : ''}`)
+export function getAppConfigStatus(appId: number, isJobView: boolean, isTemplateView: AppConfigProps['isTemplateView']): Promise<any> {
+    const queryParams = {
+        'app-id': appId,
+        appType: isJobView ? '2' : undefined,
+    }
+
+    const url = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.STAGE_STATUS,
+              queryParams: { id: String(appId), ...queryParams },
+          })
+        : getUrlWithSearchParams(Routes.APP_CONFIG_STATUS, queryParams)
+
+    return get(url)
 }
 
 // NOTE: sending pipelineType to fetch workflowCacheConfig based on that
-export const getSourceConfig = (id: string, queryParams?: Record<'pipelineType', string>) => {
-    const URL = getUrlWithSearchParams<'pipelineType'>(`${Routes.SOURCE_CONFIG_GET}/${id}`, queryParams ?? {})
+export const getSourceConfig = (
+    id: string,
+    queryParams: Record<'pipelineType', string>,
+    isTemplateView: AppConfigProps['isTemplateView'],
+) => {
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({ type: GetTemplateAPIRouteType.GIT_MATERIAL, queryParams: { id, ...queryParams } })
+        : getUrlWithSearchParams<'pipelineType'>(`${Routes.SOURCE_CONFIG_GET}/${id}`, queryParams ?? {})
     return get(URL)
 }
 
-export function getCIConfig(appId: number) {
-    const URL = `${Routes.CI_CONFIG_GET}/${appId}`
+export function getCIConfig(appId: number, isTemplateView: AppConfigProps['isTemplateView']) {
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({ type: GetTemplateAPIRouteType.CI_BUILD_CONFIG, queryParams: { id: String(appId) } })
+        : `${Routes.CI_CONFIG_GET}/${appId}`
     return get(URL)
 }
 
@@ -70,8 +94,15 @@ export function getConfigOverrideWorkflowDetails(appId: string): Promise<ConfigO
     return get(`${Routes.CI_CONFIG_OVERRIDE_GET}/${appId}`)
 }
 
-export function getCDConfig(appId: number | string): Promise<CDPipelines> {
-    const URL = `${Routes.CD_CONFIG}/${appId}`
+export function getCDConfig(appId: number | string, isTemplateView: AppConfigProps['isTemplateView']): Promise<CDPipelines> {
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({
+            type: GetTemplateAPIRouteType.CD_PIPELINE_LIST,
+            queryParams: {
+                id: appId,
+            }
+          })
+        : `${Routes.CD_CONFIG}/${appId}`
     return get(URL).then((response) => response.result)
 }
 
@@ -144,7 +175,7 @@ export async function getProjectFilteredApps(
 ): Promise<ProjectFilteredApps> {
     const chartOnlyQueryParam = accessType === ACCESS_TYPE_MAP.HELM_APPS ? '&appType=DevtronChart' : ''
     const response = await get(`app/min?teamIds=${projectIds.join(',')}${chartOnlyQueryParam}`)
-    
+
     return {
         ...response,
         result: (response.result || [])
@@ -214,10 +245,7 @@ export const getCommonAppFilters = async (
             appListFilters: response[0],
         }
     }
-    const response = await Promise.all([
-        getProjectList(),
-        getClusterListMinWithoutAuth(),
-    ])
+    const response = await Promise.all([getProjectList(), getClusterListMinWithoutAuth()])
     return {
         isFullMode: false,
         clusterList: response[1],
@@ -245,8 +273,21 @@ export function getDockerRegistryList(): Promise<ResponseType> {
     return get(URL)
 }
 
-export function getAppOtherEnvironmentMin(appId): Promise<AppOtherEnvironment> {
-    const URL = `${Routes.APP_OTHER_ENVIRONMENT_MIN}?app-id=${appId}`
+export function getAppOtherEnvironmentMin(
+    appId,
+    isTemplateView: AppConfigProps['isTemplateView'],
+): Promise<AppOtherEnvironment> {
+    const queryParams = {
+        'app-id': appId,
+    }
+
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CD_ENV_LIST,
+              queryParams: { id: String(appId), ...queryParams },
+          })
+        : getUrlWithSearchParams(Routes.APP_OTHER_ENVIRONMENT_MIN, queryParams)
+
     return get(URL)
 }
 
@@ -282,23 +323,46 @@ export function getJobCIPipeline(jobId) {
     return get(`${Routes.JOB_CI_DETAIL}/${jobId}`)
 }
 
-export function getEnvironmentConfigs(appId, envId, option?) {
-    return get(`${Routes.APP_CREATE_ENV_CONFIG_MAP}/${appId}/${envId}`, option)
+export function getEnvironmentConfigs(appId, envId, isTemplateView: AppConfigProps['isTemplateView']) {
+    const url = isTemplateView ? getTemplateAPIRoute({
+        type: GetTemplateAPIRouteType.CONFIG_CM,
+        queryParams: {
+            id: appId,
+            envId,
+        }
+    }) : `${Routes.APP_CREATE_ENV_CONFIG_MAP}/${appId}/${envId}`
+
+    return get(url)
 }
 
-export function getEnvironmentSecrets(appId, envId) {
-    return get(`${Routes.APP_CREATE_ENV_SECRET}/${appId}/${envId}`)
+export function getEnvironmentSecrets(appId, envId, isTemplateView: AppConfigProps['isTemplateView']) {
+    const url = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CONFIG_CS,
+              queryParams: {
+                  id: appId,
+                  envId,
+              },
+          })
+        : `${Routes.APP_CREATE_ENV_SECRET}/${appId}/${envId}`
+
+    return get(url)
 }
 export const getAllWorkflowsForAppNames = (appNames: string[], signal?: AbortSignal): Promise<AllWorkflows> => {
     return post(`${Routes.WORKFLOW}/all`, { appNames }, { signal })
 }
 
-export function getWorkflowList(appId, filteredEnvIds?: string) {
-    let filteredEnvParams = ''
-    if (filteredEnvIds) {
-        filteredEnvParams = `?envIds=${filteredEnvIds}`
+export function getWorkflowList(appId, filteredEnvIds: string, isTemplateView: AppConfigProps['isTemplateView']) {
+    const queryParams = {
+        envIds: filteredEnvIds,
     }
-    const URL = `${Routes.WORKFLOW}/${appId}${filteredEnvParams}`
+
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.WORKFLOW_LIST,
+              queryParams: { id: appId, ...queryParams },
+          })
+        : getUrlWithSearchParams(`${Routes.WORKFLOW}/${appId}`, queryParams)
     return get(URL)
 }
 

@@ -36,6 +36,7 @@ export default function CIConfig({
     isCiPipeline,
     loadingStateFromParent,
     setLoadingStateFromParent,
+    isTemplateView,
     appId,
     isCreateAppView,
 }: CIConfigProps) {
@@ -59,8 +60,8 @@ export default function CIConfig({
             setLoading(true)
             const [{ result: dockerRegistries }, { result: sourceConfig }, { result: ciConfig }] = await Promise.all([
                 getDockerRegistryMinAuth(appId),
-                getSourceConfig(appId),
-                getCIConfig(+appId),
+                getSourceConfig(appId, null, isTemplateView),
+                getCIConfig(+appId, isTemplateView),
             ])
             Array.isArray(dockerRegistries) && sortObjectArrayAlphabetically(dockerRegistries, 'id')
             setDockerRegistries(dockerRegistries || [])
@@ -118,7 +119,7 @@ export default function CIConfig({
     async function reload(skipPageReload?: boolean, redirection: boolean = false) {
         try {
             updateLoadingState(true, skipPageReload)
-            const { result } = await getCIConfig(+appId)
+            const { result } = await getCIConfig(+appId, isTemplateView)
             setCIConfig(result)
 
             if (!skipPageReload) {
@@ -163,6 +164,7 @@ export default function CIConfig({
             setParentState={setParentState}
             loadingStateFromParent={loadingStateFromParent}
             setLoadingStateFromParent={setLoadingStateFromParent}
+            isTemplateView={isTemplateView}
             isCreateAppView={isCreateAppView}
         />
     )

@@ -49,7 +49,10 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
     }
 
     getGitProviderConfig = () => {
-        Promise.all([getSourceConfig(this.props.appId), getGitProviderListAuth(this.props.appId)])
+        Promise.all([
+            getSourceConfig(this.props.appId, null, this.props.isTemplateView),
+            getGitProviderListAuth(this.props.appId),
+        ])
             .then(([sourceConfigRes, providersRes]) => {
                 let materials = sourceConfigRes.result.material || []
                 const providers = providersRes.result
@@ -110,7 +113,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
         if (this.state.materials.length < 1) {
             this.props.respondOnSuccess()
         }
-        getSourceConfig(this.props.appId).then((response) => {
+        getSourceConfig(this.props.appId, null, this.props.isTemplateView).then((response) => {
             const materials = response.result.material.map((mat) => {
                 return {
                     ...mat,
@@ -229,13 +232,14 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                             isCheckoutPathValid={this.isCheckoutPathValid}
                             reload={this.getGitProviderConfig}
                             isJobView={this.props.isJobView}
+                            isTemplateView={this.props.isTemplateView}
                         />
                     </>
                 )}
                 {this.state.materials.map((mat) => {
                     return (
                         <UpdateMaterial
-                            key={mat.name}
+                            key={mat.id}
                             appId={Number(this.props.appId)}
                             isMultiGit={this.state.materials.length > 0}
                             preventRepoDelete={this.state.materials.length === 1}
@@ -248,6 +252,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                             toggleRepoSelectionTippy={this.props.toggleRepoSelectionTippy}
                             setRepo={this.props.setRepo}
                             isJobView={this.props.isJobView}
+                            isTemplateView={this.props.isTemplateView}
                             isCreateAppView={this.props.isCreateAppView}
                             handleSingleGitMaterialUpdate={this.handleSingleGitMaterialUpdate(mat.id)}
                         />

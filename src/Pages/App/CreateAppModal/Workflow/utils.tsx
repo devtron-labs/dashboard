@@ -40,7 +40,9 @@ const getWorkflowCDNodeEnvironments = (
         })),
     }))
 
-const getNodeId = (node: CommonNodeAttr) => `${node.id}-${node.type}`
+export const getNodeId = (node: CommonNodeAttr) => `${node.id}-${node.type}`
+
+export const getPipelineIdFromNodeId = (nodeId: string) => nodeId.split('-')[0]
 
 const getSourceNodeConfig = (node: CommonNodeAttr): GraphVisualizerNode => ({
     id: node.id,

@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-import { get, post } from '@devtron-labs/devtron-fe-common-lib'
+import { AppConfigProps, get, GetTemplateAPIRouteType, post } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
+import { getTemplateAPIRoute } from '@Components/common'
 
-export function saveCIConfig(request) {
-    return post(Routes.CI_CONFIG_GET, request)
+export function saveCIConfig(request, isTemplateView: AppConfigProps['isTemplateView']) {
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({ type: GetTemplateAPIRouteType.CI_BUILD_CONFIG, queryParams: { id: String(request.appId) } })
+        : Routes.CI_CONFIG_GET
+    return post(URL, request)
 }
 
-export function updateCIConfig(request) {
-    return post(Routes.CI_CONFIG_UPDATE, request)
+export function updateCIConfig(request, isTemplateView: AppConfigProps['isTemplateView']) {
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({ type: GetTemplateAPIRouteType.CI_BUILD_CONFIG, queryParams: { id: String(request.appId) } })
+        : Routes.CI_CONFIG_UPDATE
+    return post(URL, request)
 }
 
 export function getDockerRegistryMinAuth(appId: string, isStorageActionPush?: boolean) {

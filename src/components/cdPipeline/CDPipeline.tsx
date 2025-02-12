@@ -58,6 +58,7 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { CDDeploymentTabText, RegistryPayloadType, SourceTypeMap, ViewType } from '../../config'
 import {
     getPluginIdsFromBuildStage,
+    getTemplateAPIRoute,
     importComponentFromFELibrary,
     sortObjectArrayAlphabetically,
 } from '../common'
@@ -127,6 +128,7 @@ export default function CDPipeline({
     isGitOpsRepoNotConfigured,
     reloadAppConfig,
     handleDisplayLoader,
+    isTemplateView,
 }: CDPipelineProps) {
     const isCdPipeline = true
     const urlParams = new URLSearchParams(location.search)
@@ -345,7 +347,7 @@ export default function CDPipeline({
 
     const getInit = () => {
         Promise.all([
-            getDeploymentStrategyList(appId),
+            getDeploymentStrategyList(appId, isTemplateView),
             getGlobalVariables({ appId: Number(appId), isCD: true }),
             getDockerRegistryMinAuth(appId, true),
         ])
@@ -449,7 +451,7 @@ export default function CDPipeline({
     }
 
     const getCDPipeline = (form, dockerRegistries): void => {
-        getCDPipelineConfig(appId, cdPipelineId)
+        getCDPipelineConfig(appId, cdPipelineId, isTemplateView)
             .then(async (result) => {
                 const pipelineConfigFromRes = result.pipelineConfig
                 updateStateFromResponse(pipelineConfigFromRes, result.environments, form, dockerRegistries)
@@ -490,7 +492,7 @@ export default function CDPipeline({
     }
 
     const getConfigMapSecrets = () => {
-        getConfigMapAndSecrets(appId, formData.environmentId)
+        getConfigMapAndSecrets(appId, formData.environmentId, isTemplateView)
             .then((response) => {
                 setConfigMapAndSecrets(response.list)
             })
@@ -951,7 +953,12 @@ export default function CDPipeline({
 
         const _form = { ...formData }
 
-        const promise = cdPipelineId ? updateCDPipeline(request) : saveCDPipeline(request)
+        const promise = cdPipelineId
+            ? updateCDPipeline(request, isTemplateView)
+            : saveCDPipeline(request, {
+                isTemplateView,
+                getTemplateAPIRoute,
+              })
         promise
             .then((response) => {
                 if (response.result) {
@@ -1019,7 +1026,11 @@ export default function CDPipeline({
                 id: +cdPipelineId,
             },
         }
-        deleteCDPipeline(payload, force, cascadeDelete)
+        deleteCDPipeline(payload, {
+            force,
+            cascadeDelete,
+            isTemplateView,
+        })
             .then((response) => {
                 if (response.result) {
                     if (

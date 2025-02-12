@@ -29,7 +29,7 @@ import { getTargetPlatformMap } from '../ciConfig/CIConfig.utils'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import '../ciConfig/CIConfig.scss'
 
-export default function AdvancedConfigOptions({ ciPipeline, appId }: AdvancedConfigOptionsProps) {
+export default function AdvancedConfigOptions({ ciPipeline, appId, isTemplateView }: AdvancedConfigOptionsProps) {
     const { formData, setFormData, loadingState, setLoadingState, formDataErrorObj, setFormDataErrorObj } =
         useContext(pipelineContext)
     const [collapsedSection, setCollapsedSection] = useState<boolean>(false)
@@ -208,6 +208,7 @@ export default function AdvancedConfigOptions({ ciPipeline, appId }: AdvancedCon
                     loadingStateFromParent={loadingState}
                     setLoadingStateFromParent={setLoadingState}
                     appId={appId}
+                    isTemplateView={isTemplateView}
                 />
 
                 {showNonBuildpackOptions && (
