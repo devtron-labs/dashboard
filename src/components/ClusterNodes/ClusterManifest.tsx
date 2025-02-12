@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import YAML from 'yaml'
-import { VisibleModal2, YAMLStringify, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
+import { VisibleModal2, YAMLStringify, CodeEditor, AppThemeType } from '@devtron-labs/devtron-fe-common-lib'
 import MessageUI, { MsgUIType } from '../v2/common/message.ui'
 import { getClusterManifest } from './clusterNodes.service'
 import { ManifestMessaging, MESSAGING_UI, MODES } from '../../config'
@@ -129,41 +129,53 @@ export default function ClusterManifest({
 
     const renderManifest = () => {
         if (isResourceMissing) {
-            return <MessageUI msg={MESSAGING_UI.MANIFEST_NOT_AVAILABLE} size={24} minHeight="100%" />
+            return <MessageUI msg={MESSAGING_UI.MANIFEST_NOT_AVAILABLE} size={24} />
         }
         if (loading) {
             return (
-                <MessageUI msg={MESSAGING_UI.FETCHING_MANIFEST} icon={MsgUIType.LOADING} size={24} minHeight="100%" />
+                <MessageUI msg={MESSAGING_UI.FETCHING_MANIFEST} icon={MsgUIType.LOADING} size={24} />
             )
         }
         return (
             <div className="h-100 flexbox-col">
-                {manifestMode === EditModeType.REVIEW && (
-                    <div className="cluster-manifest-header pt-4 pb-4 cn-0 flex">
-                        <div className="pl-12 flex dc__content-space">
-                            Pod manifest
-                            <span className="flex" data-testid="close-to-edit-manifest" onClick={switchToEditMode}>
-                                <Close className="icon-dim-16 cursor fcn-0" />
-                            </span>
-                        </div>
-                        <div className="pl-12 flex left">
-                            <Pencil className="icon-dim-16 mr-10 scn-0" /> Manifest (Editing)
-                        </div>
-                    </div>
-                )}
-                <div className="pt-8 pb-8 flex-1 dc__overflow-hidden">
-                    <CodeEditor
-                        defaultValue={defaultManifest}
-                        theme="vs-dark--dt"
-                        height="100%"
-                        value={manifestValue}
-                        mode={MODES.YAML}
-                        noParsing
-                        onChange={setManifest}
-                        readOnly={manifestMode !== EditModeType.EDIT && manifestMode !== EditModeType.REVIEW}
-                        diffView={manifestMode === EditModeType.REVIEW}
-                    />
-                </div>
+                <CodeEditor
+                    theme={AppThemeType.dark}
+                    height="100%"
+                    mode={MODES.YAML}
+                    noParsing
+                    readOnly={manifestMode !== EditModeType.EDIT && manifestMode !== EditModeType.REVIEW}
+                    diffView={manifestMode === EditModeType.REVIEW}
+                    {...(manifestMode === EditModeType.REVIEW
+                        ? {
+                              diffView: true,
+                              originalValue: defaultManifest,
+                              modifiedValue: manifestValue,
+                              onModifiedValueChange: setManifest,
+                          }
+                        : {
+                              diffView: false,
+                              value: manifestValue,
+                              onChange: setManifest,
+                          })}
+                >
+                    {manifestMode === EditModeType.REVIEW && (
+                        <CodeEditor.Header
+                            hideDefaultSplitHeader
+                            className="dc__grid-half py-4 text__white vertical-divider"
+                        >
+                            <div className="flex dc__content-space px-12">
+                                <span>Pod manifest</span>
+                                <span className="flex" data-testid="close-to-edit-manifest" onClick={switchToEditMode}>
+                                    <Close className="icon-dim-16 cursor icon-fill__white" />
+                                </span>
+                            </div>
+                            <div className="flex left px-12">
+                                <Pencil className="icon-dim-16 mr-10 icon-stroke__white" />
+                                <span>Manifest (Editing)</span>
+                            </div>
+                        </CodeEditor.Header>
+                    )}
+                </CodeEditor>
             </div>
         )
     }

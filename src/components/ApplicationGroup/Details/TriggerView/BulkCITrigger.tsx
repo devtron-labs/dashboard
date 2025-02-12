@@ -53,9 +53,9 @@ import { ReactComponent as ICError } from '../../../../assets/icons/ic-alert-tri
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
-import externalCiImg from '../../../../assets/img/external-ci.png'
-import linkedCDBuildCIImg from '../../../../assets/img/linked-cd-bulk-ci.png'
-import linkedCiImg from '../../../../assets/img/linked-ci.png'
+import externalCiImg from '../../../../assets/img/external-ci.webp'
+import linkedCDBuildCIImg from '../../../../assets/img/linked-cd-bulk-ci.webp'
+import linkedCiImg from '../../../../assets/img/linked-ci.webp'
 import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
 import { DOCUMENTATION, SOURCE_NOT_CONFIGURED, URLS, ViewType } from '../../../../config'
 import MaterialSource from '../../../app/details/triggerView/MaterialSource'
@@ -321,7 +321,7 @@ const BulkCITrigger = ({
             return null
         }
         return (
-            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
+            <div className="flex flex-align-center flex-justify dc__border-bottom bg__primary pt-16 pr-20 pb-16 pl-20">
                 <div className="flex left dc__gap-12">
                     {isWebhookBulkCI && (
                         <Button
@@ -556,8 +556,8 @@ const BulkCITrigger = ({
     const tippyContent = (tippyTile: string, tippyDescription: string): JSX.Element => {
         return (
             <div>
-                <div className="fs-12 fw-6 cn-0">{tippyTile}</div>
-                <div className="fs-12 fw-4 cn-0">{tippyDescription}</div>
+                <div className="fs-12 fw-6">{tippyTile}</div>
+                <div className="fs-12 fw-4">{tippyDescription}</div>
             </div>
         )
     }
@@ -718,9 +718,9 @@ const BulkCITrigger = ({
                 {isWebhookBulkCI ? (
                     renderWebhookModal(selectedMaterialList)
                 ) : (
-                    <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
+                    <div className="sidebar bg__primary dc__height-inherit dc__overflow-auto">
                         <div
-                            className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom fw-6 fs-13 cn-9 p-12 "
+                            className="dc__position-sticky dc__top-0 bg__primary dc__border-bottom fw-6 fs-13 cn-9 p-12 "
                             style={{ zIndex: 1 }}
                         >
                             {RuntimeParamTabs ? (
@@ -742,7 +742,7 @@ const BulkCITrigger = ({
                         {appList.map((app, index) => (
                             <div
                                 className={`material-list pr-12 pl-12 pb-12 ${
-                                    app.appId === selectedApp.appId ? 'dc__window-bg' : 'dc__border-bottom-n1 cursor'
+                                    app.appId === selectedApp.appId ? 'bg__tertiary' : 'dc__border-bottom-n1 cursor'
                                 }`}
                                 key={`app-${app.appId}`}
                             >
@@ -752,7 +752,7 @@ const BulkCITrigger = ({
                         ))}
                     </div>
                 )}
-                <div className="main-content dc__window-bg dc__height-inherit">
+                <div className="main-content bg__tertiary dc__height-inherit">
                     {renderMainContent(selectedMaterialList)}
                 </div>
             </div>
@@ -784,7 +784,7 @@ const BulkCITrigger = ({
     const renderFooterSection = (): JSX.Element => {
         return (
             <div
-                className={`dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width ${
+                className={`dc__border-top flex right bg__primary pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width ${
                     !blobStorageConfigurationLoading && !blobStorageConfiguration?.result?.enabled
                         ? 'dc__content-space'
                         : ''
@@ -832,7 +832,7 @@ const BulkCITrigger = ({
 
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            <div className="dc__window-bg h-100 bulk-ci-trigger-container">
+            <div className="bg__tertiary h-100 bulk-ci-trigger-container">
                 {renderHeaderSection()}
                 {responseList.length ? (
                     <TriggerResponseModal

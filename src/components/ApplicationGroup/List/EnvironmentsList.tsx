@@ -104,9 +104,9 @@ const EnvironmentsList = ({ isSuperAdmin }: AppGroupAdminType) => {
     )
 
     return (
-        <div className="flexbox-col h-100 dc__overflow-scroll">
+        <div className="flexbox-col h-100 dc__overflow-auto">
             <PageHeader headerName="Application Groups" showAnnouncementHeader />
-            <div className="env-list bcn-0">
+            <div className="env-list bg__primary">
                 <div className="flex dc__content-space pl-20 pr-20 pt-16 pb-16" data-testid="search-env-and-cluster">
                     {renderSearch()}
                     <FilterSelectPicker

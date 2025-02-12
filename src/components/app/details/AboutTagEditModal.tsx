@@ -132,7 +132,7 @@ export default function AboutTagEditModal({
         return (
             <>
                 <div
-                    className="cn-7 p-20 dc__overflow-scroll"
+                    className="cn-7 p-20 dc__overflow-auto"
                     data-testid="tag-input-form"
                     style={{ height: 'calc(100vh - 122px)' }}
                 >
@@ -182,7 +182,7 @@ export default function AboutTagEditModal({
 
     return (
         <Drawer position="right" width="800px" onClose={onClose} onEscape={onClose}>
-            <div className="h-100 bcn-0 create-app-container" onClick={stopPropagation}>
+            <div className="h-100 bg__primary create-app-container" onClick={stopPropagation}>
                 <div className="flex dc__content-space pt-16 pb-16 pl-20 pr-20 dc__border-bottom">
                     <h2 className="fs-16 cn-9 fw-6 m-0">Manage tags</h2>
                     <Close className="icon-dim-20 cursor" onClick={onClose} />

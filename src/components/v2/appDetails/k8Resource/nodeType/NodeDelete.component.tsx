@@ -18,7 +18,6 @@ import { useState } from 'react'
 import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router-dom'
 import {
     showError,
-    DeleteDialog,
     PopupMenu,
     Checkbox,
     CHECKBOX_VALUE,
@@ -31,10 +30,12 @@ import {
     ResponseType,
     useAsync,
     ScanResultDTO,
+    noop,
+    ConfirmationModal,
+    ConfirmationModalVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import PodPopup from './PodPopup'
-import AppDetailsStore from '../../appDetails.store'
 import { ReactComponent as ICMoreOption } from '@Icons/ic-more-option.svg'
+import PodPopup from './PodPopup'
 import './nodeType.scss'
 import { deleteResource } from '../../appDetails.api'
 import { NodeDeleteComponentType, NodeType } from '../../appDetails.type'
@@ -61,7 +62,13 @@ const getResourceScanDetails: ({
     'function',
 )
 
-const NodeDeleteComponent = ({ nodeDetails, appDetails, isDeploymentBlocked }: NodeDeleteComponentType) => {
+const NodeDeleteComponent = ({
+    nodeDetails,
+    appDetails,
+    isDeploymentBlocked,
+    tabs,
+    removeTabByIdentifier,
+}: NodeDeleteComponentType) => {
     const { path } = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
@@ -73,13 +80,11 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails, isDeploymentBlocked }: N
 
     const [resourceScanLoading, resourceScanResponse, resourceScanError] = useAsync(
         () =>
-            getResourceScanDetails(
-                {
-                    ...nodeDetails,
-                    ...manifestPayload,
-                    isAppDetailView: true,
-                }
-            ),
+            getResourceScanDetails({
+                ...nodeDetails,
+                ...manifestPayload,
+                isAppDetailView: true,
+            }),
         [manifestPayload],
         manifestPayload && !!getResourceScanDetails,
     )
@@ -105,6 +110,38 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails, isDeploymentBlocked }: N
         history.push(generatePath(updatedPath, { ...params, tab }))
     }
 
+    const deleteResourceAction = async () => {
+        try {
+            setApiCallInProgress(true)
+            await deleteResource(nodeDetails, appDetails, params.envId, forceDelete)
+            setShowDeleteConfirmation(false)
+            setForceDelete(false)
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Deletion initiated successfully.',
+            })
+            tabs.forEach((tab) => {
+                if (tab.name === nodeDetails.name) {
+                    removeTabByIdentifier(tab.id).then(noop).catch(noop)
+                }
+            })
+            appendRefetchDataToUrl(history, location)
+        } catch (err) {
+            showError(err)
+        } finally {
+            setApiCallInProgress(false)
+            setShowDeleteConfirmation(false)
+        }
+    }
+
+    const toggleShowDeleteConfirmation = () => {
+        setShowDeleteConfirmation(!showDeleteConfirmation)
+    }
+
+    const forceDeleteHandler = () => {
+        setForceDelete(!forceDelete)
+    }
+
     const renderDeleteResourcePopup = () => {
         if (!showDeleteConfirmation) {
             return null
@@ -128,61 +165,36 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails, isDeploymentBlocked }: N
             )
         }
         return (
-            <DeleteDialog
+            <ConfirmationModal
                 title={`Delete ${nodeDetails?.kind} "${nodeDetails?.name}"`}
-                delete={deleteResourceAction}
-                closeDelete={toggleShowDeleteConfirmation}
-                apiCallInProgress={apiCallInProgress}
+                showConfirmationModal={showDeleteConfirmation}
+                subtitle={`Are you sure you want to delete this ${nodeDetails?.kind}?`}
+                variant={ConfirmationModalVariantType.delete}
+                buttonConfig={{
+                    secondaryButtonConfig: {
+                        text: 'Cancel',
+                        onClick: toggleShowDeleteConfirmation,
+                    },
+                    primaryButtonConfig: {
+                        text: 'Delete',
+                        onClick: deleteResourceAction,
+                        isLoading: apiCallInProgress,
+                        disabled: apiCallInProgress,
+                    },
+                }}
+                handleClose={toggleShowDeleteConfirmation}
             >
-                <DeleteDialog.Description>
-                    <p className="mb-12">Are you sure, you want to delete this resource?</p>
-                    <Checkbox
-                        rootClassName="resource-force-delete"
-                        isChecked={forceDelete}
-                        value={CHECKBOX_VALUE.CHECKED}
-                        disabled={apiCallInProgress}
-                        onChange={forceDeleteHandler}
-                    >
-                        Force delete resource
-                    </Checkbox>
-                </DeleteDialog.Description>
-            </DeleteDialog>
+                <Checkbox
+                    rootClassName="resource-force-delete"
+                    isChecked={forceDelete}
+                    value={CHECKBOX_VALUE.CHECKED}
+                    disabled={apiCallInProgress}
+                    onChange={forceDeleteHandler}
+                >
+                    Force delete resource
+                </Checkbox>
+            </ConfirmationModal>
         )
-    }
-
-    async function asyncDeletePod(nodeDetails) {
-        try {
-            setApiCallInProgress(true)
-            await deleteResource(nodeDetails, appDetails, params.envId, forceDelete)
-            setShowDeleteConfirmation(false)
-            setForceDelete(false)
-            ToastManager.showToast({
-                variant: ToastVariantType.success,
-                description: 'Deletion initiated successfully.',
-            })
-            const _tabs = AppDetailsStore.getAppDetailsTabs()
-            const appDetailsTabs = _tabs.filter((_tab) => _tab.name === nodeDetails.name)
-
-            appDetailsTabs.forEach((_tab) => AppDetailsStore.removeAppDetailsTabByIdentifier(_tab.title))
-            appendRefetchDataToUrl(history, location)
-        } catch (err) {
-            showError(err)
-        } finally {
-            setApiCallInProgress(false)
-            setShowDeleteConfirmation(false)
-        }
-    }
-
-    const deleteResourceAction = () => {
-        asyncDeletePod(nodeDetails)
-    }
-
-    const toggleShowDeleteConfirmation = () => {
-        setShowDeleteConfirmation(!showDeleteConfirmation)
-    }
-
-    const forceDeleteHandler = (e) => {
-        setForceDelete(!forceDelete)
     }
 
     return (
@@ -201,6 +213,7 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails, isDeploymentBlocked }: N
                 <PopupMenu.Body>
                     <PodPopup
                         kind={nodeDetails?.kind}
+                        // eslint-disable-next-line react/jsx-no-bind
                         describeNode={describeNodeWrapper}
                         toggleShowDeleteConfirmation={toggleShowDeleteConfirmation}
                         handleShowVulnerabilityModal={handleShowVulnerabilityModal}

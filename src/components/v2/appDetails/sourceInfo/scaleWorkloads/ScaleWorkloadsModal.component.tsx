@@ -375,7 +375,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                             <>
                                 <div className="check-all-workloads cn-7 fw-6 dc__border-bottom">
                                     <Checkbox
-                                        rootClassName="mb-0 fs-13 cursor bcn-0 p"
+                                        rootClassName="mb-0 fs-13 cursor bg__primary p"
                                         isChecked={_nameSelection.isChecked}
                                         value={_nameSelection.value}
                                         onChange={(e) => {
@@ -388,11 +388,11 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                                         </div>
                                     </Checkbox>
                                 </div>
-                                <div style={{ height: '192px', overflow: 'scroll' }}>
+                                <div  className="h-192 dc__overflow-auto">
                                     {Array.from(_workloadsList.values()).map((item) => (
                                         <div key={`${item.kind}/${item.name}`} className="check-single-workload">
                                             <Checkbox
-                                                rootClassName={`mb-0 fs-13 cursor bcn-0 p${
+                                                rootClassName={`mb-0 fs-13 cursor bg__primary p${
                                                     item.errorMessage ? ' dc__align-baseline' : ''
                                                 }`}
                                                 isChecked={item.isChecked}
@@ -426,15 +426,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                                 size={20}
                                 theme="white"
                                 iconClassName="no-readme-icon"
-                                msgStyle={{ color: 'var(--N700)', marginTop: '0' }}
-                                bodyStyle={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    justifyContent: 'center',
-                                    minHeight: '0',
-                                    height: !canScaleWorkloads ? '275px' : '234px',
-                                    paddingTop: 0,
-                                }}
+                                centerMessage
                             />
                         )}
                     </>

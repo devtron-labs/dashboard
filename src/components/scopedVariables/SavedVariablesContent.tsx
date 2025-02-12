@@ -21,6 +21,7 @@ import {
     PopupMenu,
     ScopedVariablesFileViewType,
     SavedVariablesViewParamsType,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import Descriptor from './Descriptor'
@@ -71,7 +72,7 @@ const YAMLEditorDropdownItem = ({ item, scopedVariablesYAML }: YAMLEditorDropdow
     return (
         <button
             key={item}
-            className="scoped-variables-editor-infobar__dropdown-item bcn-0 p-8 flex center dc__align-self-stretch dc__gap-12 dc__content-start cursor cn-9 fs-13 lh-20 fw-4 dc__hover-n50 dc__outline-none-imp dc__no-border"
+            className="scoped-variables-editor-infobar__dropdown-item bg__primary p-8 flex center dc__align-self-stretch dc__gap-12 dc__content-start cursor cn-9 fs-13 lh-20 fw-4 dc__hover-n50 dc__outline-none-imp dc__no-border"
             onClick={handleDownloadFileClick}
             type="button"
         >
@@ -107,9 +108,9 @@ const SavedVariablesContent = ({
     }
 
     const renderYAMLView = () => (
-        <div className="dc__window-bg flex-grow-1 dc__no-shrink p-8 flex column dc__align-start dc__content-start dc__gap-16 dc__align-self-stretch">
+        <div className="bg__tertiary flex-grow-1 dc__no-shrink p-8 flex column dc__align-start dc__content-start dc__gap-16 dc__align-self-stretch">
             <div className="flex-grow-1 dc__no-shrink dc__border dc__border-radius-4-imp flex column dc__content-space dc__align-self-stretch dc__align-start">
-                <div className="dc__position-rel dc__top-radius-4 dc__border-bottom flex pt-8 pb-8 pl-12 pr-12 bcn-0 dc__gap-16 dc__content-space dc__align-items-center dc__align-self-stretch">
+                <div className="dc__position-rel dc__top-radius-4 dc__border-bottom flex pt-8 pb-8 pl-12 pr-12 bg__primary dc__gap-16 dc__content-space dc__align-items-center dc__align-self-stretch">
                     <p className="flex-grow-1 dc__no-shrink cn-9 fs-13 fw-4 lh-20 m-0">Last saved file</p>
                     <Tippy className="default-tt" arrow placement="top" content="Edit">
                         <button
@@ -136,7 +137,7 @@ const SavedVariablesContent = ({
                             </Tippy>
                         </PopupMenu.Button>
 
-                        <PopupMenu.Body rootClassName="scoped-variables-editor-infobar__dropdown pt-4 pb-4 pl-0 pr-0 bcn-0 flex column dc__content-start dc__align-start dc__position-abs bcn-0 dc__border dc__border-radius-4-imp">
+                        <PopupMenu.Body rootClassName="scoped-variables-editor-infobar__dropdown pt-4 pb-4 pl-0 pr-0 bg__primary flex column dc__content-start dc__align-start dc__position-abs bg__primary dc__border dc__border-radius-4-imp">
                             {DROPDOWN_ITEMS.map((item) => (
                                 <YAMLEditorDropdownItem
                                     key={item}
@@ -148,7 +149,7 @@ const SavedVariablesContent = ({
                     </PopupMenu>
                 </div>
 
-                <CodeEditor value={scopedVariablesYAML} mode="yaml" height="100%" readOnly noParsing />
+                <CodeEditor value={scopedVariablesYAML} mode={MODES.YAML} height="fitToParent" readOnly noParsing />
             </div>
         </div>
     )
@@ -177,7 +178,7 @@ const SavedVariablesContent = ({
                 onSearch={currentView === ScopedVariablesFileViewType.SAVED ? onSearch : null}
                 readFile={readFile}
             >
-                <div className="dc__border-bottom bcn-0 pt-0 pb-0 pl-20 pr-20 flexbox dc__align-self-stretch dc__align-items-center">
+                <div className="dc__border-bottom bg__primary pt-0 pb-0 pl-20 pr-20 flexbox dc__align-self-stretch dc__align-items-center">
                     {Object.values(ScopedVariablesFileViewType).map((view) => {
                         if (view === ScopedVariablesFileViewType.ENVIRONMENT_LIST && !isEnvironmentListEnabled) {
                             return null

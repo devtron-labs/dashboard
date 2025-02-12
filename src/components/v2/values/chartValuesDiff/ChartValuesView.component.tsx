@@ -19,7 +19,6 @@ import { GroupBase } from 'react-select'
 import { useParams } from 'react-router-dom'
 import {
     Progressing,
-    DeleteDialog,
     RadioGroup,
     RadioGroupItem,
     ConditionalWrap,
@@ -52,22 +51,17 @@ import {
     ChartVersionSelectorType,
     ChartVersionValuesSelectorType,
     DeleteApplicationButtonProps,
-    DeleteChartDialogProps,
     DeploymentAppRadioGroupType,
     DeploymentAppSelectorType,
     UpdateApplicationButtonProps,
     ValueNameInputType,
     gitOpsDrawerType,
 } from './ChartValuesView.type'
-import {
-    DELETE_CHART_APP_DESCRIPTION_LINES,
-    DELETE_PRESET_VALUE_DESCRIPTION_LINES,
-    UPDATE_APP_BUTTON_TEXTS,
-} from './ChartValuesView.constants'
+import { UPDATE_APP_BUTTON_TEXTS } from './ChartValuesView.constants'
 import { DeploymentAppTypeNameMapping, REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
-import { DELETE_ACTION, repoType } from '../../../../config'
+import { repoType } from '../../../../config'
 import UserGitRepo from '../../../gitOps/UserGitRepo'
 import { getChartValuesFiltered } from '@Components/charts/charts.helper'
 import { ChartValuesType } from '@Components/charts/charts.types'
@@ -366,8 +360,8 @@ export const GitOpsDrawer = ({
             {(isDeploymentAllowed || isDrawerOpen) && (
                 <div>
                     <Drawer onEscape={handleCloseButton} position="right" width="800px">
-                        <div className="cluster-form dc__position-rel h-100 bcn-0">
-                            <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
+                        <div className="cluster-form dc__position-rel h-100 bg__primary">
+                            <div className="flex flex-align-center dc__border-bottom flex-justify bg__primary pb-12 pt-12 pl-20 pr-20">
                                 <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
                                     <span className="fw-6 fs-16 cn-9">Git Repository</span>
                                 </h2>
@@ -391,7 +385,7 @@ export const GitOpsDrawer = ({
                                 />
                             </div>
                         </div>
-                        <div className="w-100 dc__border-top flex right pb-12 pt-12 pl-20 pr-20 dc__position-fixed dc__position-abs bcn-0 dc__bottom-0">
+                        <div className="w-100 dc__border-top flex right pb-12 pt-12 pl-20 pr-20 dc__position-fixed dc__position-abs bg__primary dc__bottom-0">
                             <button
                                 data-testid="cancel_button"
                                 className="cta cancel h-36 lh-36 mr-10"
@@ -415,7 +409,7 @@ export const GitOpsDrawer = ({
             )}
             {(gitOpsState && allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) !== -1) ||
             (showRepoSelector && window._env_.HIDE_GITOPS_OR_HELM_OPTION) ? (
-                <div className="form__input dashed mt-10 flex bc-n50">
+                <div className="form__input dashed mt-10 flex bg__secondary">
                     <div className="">
                         <span>
                             Commit deployment manifests to
@@ -434,7 +428,6 @@ export const GitOpsDrawer = ({
                         renderValidationErrorLabel()}
                 </div>
             ) : null}
-            <hr />
         </>
     )
 }
@@ -620,7 +613,7 @@ export const ChartVersionValuesSelector = ({
 
 export const ActiveReadmeColumn = ({ fetchingReadMe, activeReadMe }: ActiveReadmeColumnProps) => {
     return (
-        <div className="chart-values-view__readme dc__overflow-scroll dc__border-right">
+        <div className="chart-values-view__readme dc__overflow-auto dc__border-right">
             <div
                 className="code-editor__header flex left fs-12 fw-6 cn-7 dc__position-sticky dc__top-0 dc__zi-1"
                 data-testid="readme-heading"
@@ -628,52 +621,6 @@ export const ActiveReadmeColumn = ({ fetchingReadMe, activeReadMe }: ActiveReadm
                 Readme
             </div>
             {fetchingReadMe ? <Progressing pageLoader /> : <MarkDown markdown={activeReadMe} />}
-        </div>
-    )
-}
-
-export const DeleteChartDialog = ({
-    appName,
-    handleDelete,
-    toggleConfirmation,
-    isCreateValueView,
-    disableButton,
-}: DeleteChartDialogProps) => {
-    const closeConfirmation = () => {
-        toggleConfirmation(false)
-    }
-    const handleForceDelete = () => {
-        handleDelete(DELETE_ACTION.DELETE)
-    }
-    return (
-        <DeleteDialog
-            apiCallInProgress={disableButton}
-            title={`Delete '${appName}' ?`}
-            delete={handleForceDelete}
-            closeDelete={closeConfirmation}
-        >
-            {isCreateValueView ? (
-                <DeleteDialog.Description>
-                    <p>{DELETE_PRESET_VALUE_DESCRIPTION_LINES.First}</p>
-                    <p>{DELETE_PRESET_VALUE_DESCRIPTION_LINES.Second}</p>
-                </DeleteDialog.Description>
-            ) : (
-                <DeleteDialog.Description>
-                    <p>{DELETE_CHART_APP_DESCRIPTION_LINES.First}</p>
-                    <p>{DELETE_CHART_APP_DESCRIPTION_LINES.Second}</p>
-                </DeleteDialog.Description>
-            )}
-        </DeleteDialog>
-    )
-}
-
-const renderValidationErrorLabel = (message?: string): JSX.Element => {
-    return (
-        <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6">
-            <div className="error-label-icon">
-                <Error className="icon-dim-16" />
-            </div>
-            <div className="ml-4 cr-5">{message || REQUIRED_FIELD_MSG}</div>
         </div>
     )
 }

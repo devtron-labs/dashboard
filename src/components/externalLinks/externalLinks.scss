@@ -98,7 +98,7 @@
                     height: 32px;
                     outline: none;
                     border: solid 1px var(--N200);
-                    background-color: var(--N50);
+                    background-color: var(--bg-secondary);
 
                     &:hover,
                     &:focus {
@@ -120,7 +120,7 @@
         }
 
         .saved-filters__wrap {
-            background-color: var(--window-bg);
+            background-color: var(--bg-tertiary);
             z-index: 0;
             padding: 0;
 
@@ -141,7 +141,7 @@
                     margin-left: 4px;
                     padding: 0;
                     line-height: 0;
-                    background-color: #f7fafc;
+                    background-color: var(--bg-secondary);
 
                     svg {
                         stroke: var(--N600);
@@ -180,19 +180,6 @@
                 grid-template-columns: 24px 144px minmax(100px, calc(59% - 310px)) 100px minmax(100px, 59%) 56px;
                 column-gap: 16px;
                 padding: 12px 20px;
-
-                .external-link-actions {
-                    display: none;
-                    width: 56px;
-                }
-
-                &:hover {
-                    background-color: var(--N50);
-
-                    .external-link-actions {
-                        display: flex;
-                    }
-                }
 
                 &.app-config-view {
                     grid-template-columns: 24px 144px minmax(100px, calc(59% - 310px)) minmax(100px, 59%) 56px;

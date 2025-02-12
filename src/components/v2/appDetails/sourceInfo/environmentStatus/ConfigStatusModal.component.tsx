@@ -23,7 +23,7 @@ const ConfigStatusModalComponent = ({ close, status }) => {
     return (
         <div>
             <Drawer position="right" width="50%" onClose={close}>
-                <div className="app-status-detail-modal bcn-0 pt-12">
+                <div className="app-status-detail-modal bg__primary pt-12">
                     <div className="app-status-detail__header dc__box-shadow pb-12">
                         <div className="title flex dc__content-space cn-9 fs-16 fw-6 pl-20 pr-20 ">
                             Config apply: mrinalinin-test default_cluster/devtroncd

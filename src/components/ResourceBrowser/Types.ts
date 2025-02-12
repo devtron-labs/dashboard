@@ -29,9 +29,9 @@ import {
     ResourceDetail,
     SelectedResourceType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 import { LogSearchTermType } from '../v2/appDetails/appDetails.type'
 import { ClusterListType } from '../ClusterNodes/types'
-import { useTabs } from '../common/DynamicTabs'
 import { BaseResourceListProps } from './ResourceList/types'
 
 export interface K8SObjectType extends K8SObjectBaseType {
@@ -122,7 +122,7 @@ export interface ResourceFilterOptionsProps extends Pick<SidebarType, 'updateK8s
 }
 
 export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden'> {
-    addTab: ReturnType<typeof useTabs>['addTab']
+    addTab: UseTabsReturnType['addTab']
     showStaleDataWarning: boolean
     setWidgetEventDetails: React.Dispatch<WidgetEventDetails>
     handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>, shouldOverrideSelectedResourceKind?: boolean) => void
@@ -135,7 +135,8 @@ export interface ResourceBrowserActionMenuType {
     resourceData: K8sResourceDetailDataType
     selectedResource: ApiResourceGroupType
     handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
-    removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
+    handleClearBulkSelection: () => void
+    removeTabByIdentifier?: UseTabsReturnType['removeTabByIdentifier']
     getResourceListData?: () => Promise<void>
     /**
      * If true, the delete resource option is hidden in pop up menu
@@ -148,9 +149,15 @@ export interface ResourceBrowserActionMenuType {
 export interface DeleteResourcePopupType
     extends Pick<
         ResourceBrowserActionMenuType,
-        'clusterId' | 'resourceData' | 'selectedResource' | 'getResourceListData' | 'removeTabByIdentifier'
+        | 'clusterId'
+        | 'resourceData'
+        | 'selectedResource'
+        | 'getResourceListData'
+        | 'removeTabByIdentifier'
+        | 'handleClearBulkSelection'
     > {
     toggleDeleteDialog: () => void
+    showConfirmationModal: boolean
 }
 
 export interface ResourceListEmptyStateType {
@@ -200,7 +207,7 @@ export interface K8SResourceTabComponentProps
         > {
     selectedCluster: ClusterOptionType
     renderRefreshBar: () => JSX.Element
-    addTab: ReturnType<typeof useTabs>['addTab']
+    addTab: UseTabsReturnType['addTab']
     showStaleDataWarning: boolean
     updateK8sResourceTabLastSyncMoment: () => void
     isOpen: boolean
@@ -290,9 +297,10 @@ export enum NODE_SEARCH_KEYS {
 export interface ColumnSelectorType extends Pick<NodeListSearchFilterType, 'visibleColumns' | 'setVisibleColumns'> {}
 
 export interface NodeActionsMenuProps {
-    addTab: ReturnType<typeof useTabs>['addTab']
+    addTab: UseTabsReturnType['addTab']
     nodeData: K8sResourceDetailDataType
     getNodeListData: () => void
+    handleClearBulkSelection: () => void
 }
 
 export interface GetResourceDataType {

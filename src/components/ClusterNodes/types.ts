@@ -23,12 +23,12 @@ import {
     NodeTaintType,
     NodeActionRequest,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/Types'
+import { UpdateTabUrlParamsType, UseTabsReturnType } from '@Components/common/DynamicTabs/types'
+import { DeleteConfirmationModalProps } from '@devtron-labs/devtron-fe-common-lib/dist/Shared/Components/ConfirmationModal/types'
 import { LabelTag, OptionType } from '../app/types'
 import { CLUSTER_PAGE_TAB } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
-import { ClusterOptionType, K8SResourceListType } from '../ResourceBrowser/Types'
-import { useTabs } from '../common/DynamicTabs'
+import { ClusterOptionType, K8SResourceListType, ResourceBrowserActionMenuType } from '../ResourceBrowser/Types'
 
 export enum ERROR_TYPE {
     VERSION_ERROR = 'K8s Version diff',
@@ -131,7 +131,7 @@ export interface ColumnMetadataType {
 }
 
 export interface ClusterListType extends Pick<K8SResourceListType, 'lowercaseKindToResourceGroupMap'> {
-    addTab?: ReturnType<typeof useTabs>['addTab']
+    addTab?: UseTabsReturnType['addTab']
     updateTabUrl: (params: Omit<UpdateTabUrlParamsType, 'id'>) => void
 }
 
@@ -177,20 +177,17 @@ export interface NodeActionModalPropType extends NodeActionRequest {
     closePopup: (refreshData?: boolean) => void
 }
 
+export interface DeleteNodeModalProps
+    extends NodeActionModalPropType,
+        Pick<ResourceBrowserActionMenuType, 'handleClearBulkSelection'>,
+        Pick<DeleteConfirmationModalProps, 'showConfirmationModal'> {}
+
 export interface CordonNodeModalType extends NodeActionModalPropType {
     unschedulable: boolean
 }
 
 export interface EditTaintsModalType extends NodeActionModalPropType {
     taints: TaintType[]
-}
-
-interface NodeCordonOptions {
-    unschedulableDesired: boolean
-}
-
-export interface NodeCordonRequest extends NodeActionRequest {
-    nodeCordonOptions: NodeCordonOptions
 }
 
 export interface ClusteNotePatchRequest {
@@ -202,18 +199,6 @@ export interface ClusteNotePatchRequest {
 export interface ClusterShortDescriptionPatchRequest {
     id: number
     description: string
-}
-
-interface NodeDrainOptions {
-    gracePeriodSeconds: number
-    deleteEmptyDirData: boolean
-    disableEviction: boolean
-    force: boolean
-    ignoreAllDaemonSets: boolean
-}
-
-export interface NodeDrainRequest extends NodeActionRequest {
-    nodeDrainOptions: NodeDrainOptions
 }
 
 export interface EditTaintsRequest extends NodeActionRequest {
@@ -302,7 +287,7 @@ export interface ClusterErrorType {
 }
 export interface ClusterOverviewProps {
     selectedCluster: ClusterOptionType
-    addTab: ReturnType<typeof useTabs>['addTab']
+    addTab: UseTabsReturnType['addTab']
 }
 
 export interface ClusterMapInitialStatusType {

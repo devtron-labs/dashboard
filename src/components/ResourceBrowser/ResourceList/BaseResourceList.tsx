@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
     Pagination,
     Progressing,
@@ -292,16 +308,8 @@ const BaseResourceListContent = ({
         }
     }
 
-    const handleCloseRBBulkOperationsModal = () => {
-        setBulkOperationModalState('closed')
-    }
-
-    const handleOpenRestartBulkOperationsModal = () => {
-        setBulkOperationModalState('restart')
-    }
-
-    const handleOpenDeleteBulkOperationsModal = () => {
-        setBulkOperationModalState('delete')
+    const getBulkOperationsModalStateSetter = (option: BulkOperationsModalState) => () => {
+        setBulkOperationModalState(option)
     }
 
     const handleClearBulkSelection = () => {
@@ -360,12 +368,23 @@ const BaseResourceListContent = ({
             .catch(noop)
     }
 
+    // This should be used only if shouldOverrideSelectedResourceKind is true
+    // Group and version are not available for Events / shouldOverrideSelectedResourceKind is true
+    const getSelectedResourceKindOverride = (lowercaseKind: string) => {
+        const gvkFromRawData: GVKType =
+            getFirstResourceFromKindResourceMap(lowercaseKindToResourceGroupMap, lowercaseKind)?.gvk ?? ({} as GVKType)
+
+        return {
+            gvk: {
+                Group: gvkFromRawData.Group ?? selectedResource.gvk.Group,
+                Kind: gvkFromRawData.Kind ?? selectedResource.gvk.Kind,
+                Version: gvkFromRawData.Version ?? selectedResource.gvk.Version,
+            } as GVKType,
+        }
+    }
+
     const renderResourceRow = (resourceData: K8sResourceDetailDataType): JSX.Element => {
         const lowercaseKind = (resourceData.kind as string)?.toLowerCase()
-        // This should be used only if shouldOverrideSelectedResourceKind is true
-        // Group and version are not available for Events / shouldOverrideSelectedResourceKind is true
-        const gvkFromRawData =
-            getFirstResourceFromKindResourceMap(lowercaseKindToResourceGroupMap, lowercaseKind)?.gvk ?? ({} as GVKType)
         // Redirection and actions are not possible for Events since the required data for the same is not available
         const shouldShowRedirectionAndActions = lowercaseKind !== Nodes.Event.toLowerCase()
         const isNodeUnschedulable = isNodeListing && !!resourceData.unschedulable
@@ -434,22 +453,19 @@ const BaseResourceListContent = ({
                                         getResourceListData={reloadResourceListData as () => Promise<void>}
                                         selectedResource={{
                                             ...selectedResource,
-                                            ...(shouldOverrideSelectedResourceKind && {
-                                                gvk: {
-                                                    Group: gvkFromRawData.Group ?? selectedResource.gvk.Group,
-                                                    Kind: gvkFromRawData.Kind ?? selectedResource.gvk.Kind,
-                                                    Version: gvkFromRawData.Version ?? selectedResource.gvk.Version,
-                                                } as GVKType,
-                                            }),
+                                            ...(shouldOverrideSelectedResourceKind &&
+                                                getSelectedResourceKindOverride(lowercaseKind)),
                                         }}
                                         handleResourceClick={handleResourceClick}
                                         hideDeleteResource={hideDeleteResource}
+                                        handleClearBulkSelection={handleClearBulkSelection}
                                     />
                                 ) : (
                                     <NodeActionsMenu
                                         getNodeListData={reloadResourceListData as () => Promise<void>}
                                         addTab={addTab}
                                         nodeData={resourceData}
+                                        handleClearBulkSelection={handleClearBulkSelection}
                                     />
                                 ))}
                         </div>
@@ -458,9 +474,9 @@ const BaseResourceListContent = ({
                             key={`${resourceData.id}-${columnName}`}
                             className={`flexbox dc__align-items-center ${
                                 columnName === 'status'
-                                    ? ` app-summary__status-name ${getStatusClass(String(resourceData[columnName]))}`
+                                    ? `app-summary__status-name dc__no-text-transform ${getStatusClass(String(resourceData[columnName]))}`
                                     : ''
-                            } ${columnName === 'errors' ? 'app-summary__status-name f-error' : ''}`}
+                            } ${columnName === 'errors' ? 'app-summary__status-name f-error dc__no-text-transform' : ''}`}
                         >
                             <ConditionalWrap
                                 condition={columnName === 'node'}
@@ -577,10 +593,10 @@ const BaseResourceListContent = ({
                             'scrollable-resource-list',
                             showPaginatedView,
                             showStaleDataWarning,
-                        )} dc__overflow-scroll`}
+                        )} dc__overflow-auto`}
                     >
                         <div
-                            className="scrollable-resource-list__row no-hover-bg h-36 fw-6 cn-7 fs-12 dc__gap-16 dc__zi-2 dc__position-sticky dc__border-bottom dc__uppercase bcn-0 dc__top-0"
+                            className="scrollable-resource-list__row no-hover-bg h-36 fw-6 cn-7 fs-12 dc__gap-16 dc__zi-2 dc__position-sticky dc__border-bottom dc__uppercase bg__primary dc__top-0"
                             style={{ gridTemplateColumns }}
                         >
                             {headers.map((columnName, index) => (
@@ -668,19 +684,23 @@ const BaseResourceListContent = ({
                                     : getSelectedIdentifiersCount()
                             }
                             handleClearBulkSelection={handleClearBulkSelection}
-                            handleOpenBulkDeleteModal={handleOpenDeleteBulkOperationsModal}
-                            handleOpenRestartWorkloadModal={handleOpenRestartBulkOperationsModal}
+                            handleOpenBulkDeleteModal={getBulkOperationsModalStateSetter('delete')}
+                            handleOpenRestartWorkloadModal={getBulkOperationsModalStateSetter('restart')}
                             showBulkRestartOption={
                                 window._env_.FEATURE_BULK_RESTART_WORKLOADS_FROM_RB.split(',')
                                     .map((feat: string) => feat.trim().toUpperCase())
                                     .indexOf(selectedResource.gvk.Kind.toUpperCase()) > -1
                             }
+                            showNodeListingOptions={isNodeListing}
+                            handleOpenCordonNodeModal={getBulkOperationsModalStateSetter('cordon')}
+                            handleOpenUncordonNodeModal={getBulkOperationsModalStateSetter('uncordon')}
+                            handleOpenDrainNodeModal={getBulkOperationsModalStateSetter('drain')}
                         />
                     )}
 
                     {RBBulkOperations && bulkOperationModalState !== 'closed' && (
                         <RBBulkOperations
-                            handleModalClose={handleCloseRBBulkOperationsModal}
+                            handleModalClose={getBulkOperationsModalStateSetter('closed')}
                             handleReloadDataAfterBulkOperation={handleReloadDataAfterBulkDelete}
                             operationType={bulkOperationModalState}
                             allResources={filteredResourceList}

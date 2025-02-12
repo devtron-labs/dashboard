@@ -30,7 +30,7 @@ import { ReactComponent as Info } from '@Icons/ic-info-outline.svg'
 import { useSharedState } from '@Components/v2/utils/useSharedState'
 import { URLS } from '@Config/routes'
 import IndexStore from '../index.store'
-import AppDetailsStore, { AppDetailsTabs } from '../appDetails.store'
+import { AppDetailsTabs } from '../appDetails.store'
 import { K8ResourceComponentProps } from '../appDetails.type'
 import NodeTreeComponent from './nodeType/NodeTree.component'
 import NodeComponent from './nodeType/Node.component'
@@ -40,13 +40,16 @@ import { doesNodeSatisfiesFilter } from './utils'
 export const K8ResourceComponent = ({
     clickedNodes,
     registerNodeClick,
-    handleFocusTabs,
     externalLinks,
     monitoringTools,
     isDevtronApp,
     clusterId,
     isDeploymentBlocked,
-    isExternalApp,
+    handleMarkK8sResourceTabSelected,
+    addTab,
+    removeTabByIdentifier,
+    tabs,
+    handleUpdateK8sResourceTabUrl,
 }: K8ResourceComponentProps) => {
     const history = useHistory()
     const location = useLocation()
@@ -55,7 +58,7 @@ export const K8ResourceComponent = ({
     const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
     const { isSuperAdmin } = useMainContext()
     useEffect(() => {
-        AppDetailsStore.markAppDetailsTabActiveByIdentifier(AppDetailsTabs.k8s_Resources)
+        handleMarkK8sResourceTabSelected()
     }, [])
 
     useEffect(() => {
@@ -77,9 +80,13 @@ export const K8ResourceComponent = ({
             return
         }
         if (!currentFilteredNodes.length) {
-            history.push({ pathname: location.pathname, search: `filterType=${ALL_RESOURCE_KIND_FILTER}` })
+            history.push({ pathname: location.pathname, search: '' })
         }
     }, [nodes])
+
+    useEffect(() => {
+        handleUpdateK8sResourceTabUrl({ url: `${location.pathname}${location.search}` })
+    }, [location.pathname, location.search])
 
     const getPodNameForSelectedFilter = (selectedFilter: string) => {
         const podParents = getPodsRootParentNameAndStatus(nodes)
@@ -109,7 +116,7 @@ export const K8ResourceComponent = ({
         const searchParams = new URLSearchParams([['filterType', selectedFilter]])
         IndexStore.updateFilterType(selectedFilter.toUpperCase())
         if (selectedFilter === ALL_RESOURCE_KIND_FILTER) {
-            history.push({ search: `${searchParams}` })
+            history.push({ search: '' })
             return
         }
         // current selected node exist in new selected filter or not
@@ -128,38 +135,39 @@ export const K8ResourceComponent = ({
     }
 
     return (
-        <div className="bcn-0" style={{ justifyContent: 'space-between' }}>
+        <div className="bg__primary flexbox flex-grow-1" style={{ justifyContent: 'space-between' }}>
             {nodes.length > 0 ? (
                 <div
-                    className={`resource-node-wrapper flexbox ${isSuperAdmin ? 'pb-28' : ''}`}
+                    className={`flex-grow-1 flexbox ${isSuperAdmin ? 'pb-28' : ''}`}
                     data-testid="resource-node-wrapper"
                 >
-                    <div
-                        className="k8-resources-node-tree p-8 dc__border-right--n1"
-                        data-testid="k8-resources-node-tree"
-                    >
-                        <div className="flexbox mb-8 px-12">
+                    <div className="k8-resources-node-tree dc__border-right--n1" data-testid="k8-resources-node-tree">
+                        <div className="pt-16 pb-15 px-16 border__secondary--bottom">
                             <StatusFilterButtonComponent
                                 nodes={nodes}
                                 selectedTab={currentFilter}
                                 handleFilterClick={handleFilterClick}
+                                maxInlineFiltersCount={3}
                             />
                         </div>
-                        <NodeTreeComponent
-                            clickedNodes={clickedNodes}
-                            registerNodeClick={registerNodeClick}
-                            isDevtronApp={isDevtronApp}
-                        />
+                        <div className="py-8 px-12">
+                            <NodeTreeComponent
+                                clickedNodes={clickedNodes}
+                                registerNodeClick={registerNodeClick}
+                                isDevtronApp={isDevtronApp}
+                            />
+                        </div>
                     </div>
                     <div className="flex-grow-1-imp p-0" data-testid="k8-resources-node-details">
                         <NodeComponent
-                            handleFocusTabs={handleFocusTabs}
                             externalLinks={externalLinks}
                             monitoringTools={monitoringTools}
                             isDevtronApp={isDevtronApp}
                             clusterId={clusterId}
                             isDeploymentBlocked={isDeploymentBlocked}
-                            isExternalApp={isExternalApp}
+                            addTab={addTab}
+                            tabs={tabs}
+                            removeTabByIdentifier={removeTabByIdentifier}
                         />
                     </div>
                 </div>
@@ -180,7 +188,7 @@ export const EmptyK8sResourceComponent = ({ emptyStateMessage }: { emptyStateMes
             <ul className="tab-list">
                 <li className="flex left dc__ellipsis-right">
                     <div className="flex">
-                        <div className="resource-tree-tab bcn-0 cn-9 left pl-12 pt-8 pb-8 pr-12">
+                        <div className="resource-tree-tab bg__primary cn-9 left pl-12 pt-8 pb-8 pr-12">
                             <div className="resource-tree__tab-hover tab-list__tab resource-tab__node cursor cn-9 fw-6 dc__no-decor m-0-imp">
                                 <div className="flex left cn-9">
                                     <span className="icon-dim-16 resource-tree__tab-hover fcn-9">
@@ -194,7 +202,7 @@ export const EmptyK8sResourceComponent = ({ emptyStateMessage }: { emptyStateMes
                 </li>
             </ul>
         </div>
-        <div className="bcn-0 flex h-100">
+        <div className="bg__primary flex h-100">
             <div className="flex column h-100">
                 <Info className="icon-dim-20 icon-n5" />
                 <span className="mt-10">{emptyStateMessage}</span>

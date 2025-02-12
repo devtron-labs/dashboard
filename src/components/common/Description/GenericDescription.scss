@@ -60,17 +60,17 @@
         line-height: 1.67;
 
         .mark-down-editor-preview {
-            background-color: white !important;
+            background-color: var(--bg-primary) !important;
         }
 
         .mark-down-editor-textarea-wrapper {
             border-radius: 3px !important;
             border: 1px solid var(--N200) !important;
-            background-color: var(--N50) !important;
+            background-color: var(--bg-secondary) !important;
         }
 
         .mde-textarea-wrapper {
-            background-color: white !important;
+            background-color: var(--bg-primary) !important;
             padding: 10px !important;
         }
 
@@ -78,7 +78,7 @@
             justify-content: space-between !important;
             padding-left: 16px !important;
             padding-right: 16px !important;
-            background-color: white !important;
+            background-color: var(--bg-primary) !important;
         }
 
         .mde-header {
@@ -137,11 +137,6 @@
     max-height: 100%;
     flex-basis: 250px;
     flex-shrink: 0;
-}
-
-.cluster-manifest-header {
-    display: grid;
-    grid-template-columns: 1fr 1fr 30px;
 }
 
 .cluster__description-footer {

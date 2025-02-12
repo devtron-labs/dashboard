@@ -23,6 +23,7 @@ import {
     CustomInput,
     CodeEditor,
     MarkDown,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import { Select, mapByKey, useKeyDown, Info, Pencil } from '../common'
@@ -189,7 +190,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({
 
     return (
         <>
-            <div className="advanced-config flex">
+            <div className="advanced-config">
                 <form action="" className="advanced-config__form">
                     <h1 className="form__title form__title--mb-24" data-testid="advanced-option-heading">
                         {chartName}
@@ -326,7 +327,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({
                                                         {name} ({chartVersion})
                                                     </span>
                                                     {environmentName && (
-                                                        <span style={{ color: '#404040', fontSize: '12px' }}>
+                                                        <span style={{ color: 'var(--N700)', fontSize: '12px' }}>
                                                             {environmentName}
                                                         </span>
                                                     )}
@@ -365,7 +366,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({
                             </div>
                         </div>
                     )}
-                    <div className="code-editor-container" data-testid="code-editor-code-editor-container">
+                    <CodeEditor.Container>
                         <CodeEditor
                             value={valuesYaml}
                             noParsing
@@ -378,10 +379,11 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({
                                       }
                                     : () => {}
                             }
-                            mode="yaml"
+                            mode={MODES.YAML}
+                            height="auto"
                         >
                             <CodeEditor.Header>
-                                <div className="flex" style={{ justifyContent: 'space-between', width: '100%' }}>
+                                <div className="flex dc__content-space w-100">
                                     <span data-testid="code-editor-code-editor-container-heading">
                                         {appName.value}.yaml
                                     </span>
@@ -412,7 +414,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({
                                 <CodeEditor.Warning text="The values configuration was created for a different chart version. Review the diff before continuing." />
                             ) : null}
                         </CodeEditor>
-                    </div>
+                    </CodeEditor.Container>
                 </form>
             </div>
             {showReadme && (
@@ -469,7 +471,7 @@ const ReadmeCharts = ({ readme, valuesYaml, onChange, handleClose, chart }) => {
         <div className="advanced-config__readme">
             <h3>{chart.chartMetaData.chartName}</h3>
             <div className="readme-config-container" data-testid="readme-container">
-                <div className="readme-config--header">
+                <div className="readme-config--header vertical-divider">
                     <h5 className="flex left">Readme.md</h5>
                     <h5 className="flex left">
                         {chart?.name?.value}.yaml
@@ -483,11 +485,11 @@ const ReadmeCharts = ({ readme, valuesYaml, onChange, handleClose, chart }) => {
                     <div className="right column">
                         <CodeEditor
                             value={valuesYaml}
-                            mode="yaml"
+                            mode={MODES.YAML}
                             noParsing
                             readOnly={!onChange}
                             height="100%"
-                            onChange={onChange ? (valuesYaml) => onChange(valuesYaml) : () => {}}
+                            onChange={onChange ? onChange : () => {}}
                         />
                     </div>
                 </div>
@@ -563,7 +565,7 @@ const ValuesDiffViewer = ({
             <h3>{chartName}</h3>
             <div className="readme-config-container" data-testid="check-diff-container">
                 {/* TODO: use code editor header */}
-                <div className="readme-config--header">
+                <div className="readme-config--header vertical-divider">
                     <h5 className="flex left">
                         <Select
                             rootClassName="values-select"
@@ -625,17 +627,17 @@ const ValuesDiffViewer = ({
                         <Pencil style={{ marginLeft: 'auto' }} />
                     </h5>
                 </div>
-                <div className="readme-config--body" style={{ gridTemplateColumns: '1fr' }}>
+                <div className="mw-none mh-0">
                     <CodeEditor
-                        defaultValue={originalValuesYaml}
-                        value={valuesYaml}
-                        mode="yaml"
+                        originalValue={originalValuesYaml}
+                        modifiedValue={valuesYaml}
+                        mode={MODES.YAML}
                         noParsing
                         loading={loading && !originalValuesYaml}
                         readOnly={!onChange}
                         height="100%"
                         diffView
-                        onChange={onChange ? (valuesYaml) => onChange(valuesYaml) : () => {}}
+                        onModifiedValueChange={onChange ? (valuesYaml) => onChange(valuesYaml) : () => {}}
                     />
                 </div>
             </div>

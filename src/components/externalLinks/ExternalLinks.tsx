@@ -22,12 +22,17 @@ import {
     InfoIconTippy,
     useMainContext,
     getClusterListMin,
+    Button,
+    ButtonVariantType,
+    ButtonStyleType,
+    ComponentSizeType,
+    DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { sortOptionsByLabel, sortOptionsByValue } from '../common'
 import { AddLinkButton, NoExternalLinksView, NoMatchingResults, RoleBasedInfoNote } from './ExternalLinks.component'
-import { getAllApps, getExternalLinks } from './ExternalLinks.service'
+import { deleteExternalLink, getAllApps, getExternalLinks } from './ExternalLinks.service'
 import {
     ExternalLink,
     ExternalLinkIdentifierType,
@@ -36,14 +41,14 @@ import {
     IdentifierOptionType,
     OptionTypeWithIcon,
 } from './ExternalLinks.type'
-import { ReactComponent as EditIcon } from '../../assets/icons/ic-pencil.svg'
-import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
+import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { getMonitoringToolIcon, onImageLoadError, sortByUpdatedOn } from './ExternalLinks.utils'
 import { DOCUMENTATION, SERVER_MODE } from '../../config'
 import { ApplicationFilter, AppliedFilterChips, ClusterFilter, SearchInput } from './ExternalLinksFilters'
 import AddExternalLink from './ExternalLinksCRUD/AddExternalLink'
-import DeleteExternalLinkDialog from './ExternalLinksCRUD/DeleteExternalLinkDialog'
 import './externalLinks.scss'
+import { DeleteComponentsName } from '@Config/constantMessaging'
 
 const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
     const { appId } = useParams<{ appId: string }>()
@@ -302,15 +307,10 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
         return `${_identifiersLen} ${_labelPostfix}`
     }
 
-    const editLink = (link: ExternalLink): void => {
-        setSelectedLink(link)
-        setShowAddLinkDialog(true)
-    }
-
     const renderExternalLinksHeader = (): JSX.Element => {
         return (
             <div
-                className={`external-links__header h-40 fs-12 fw-6 pl-20 bcn-0 dc__uppercase ${
+                className={`external-links__header h-40 fs-12 fw-6 pl-20 bg__primary dc__uppercase ${
                     isAppConfigView ? 'app-config-view' : ''
                 }`}
             >
@@ -333,13 +333,25 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
         )
     }
 
+    const onClickEditLink = (link: ExternalLink): void => {
+        setSelectedLink(link)
+        setShowAddLinkDialog(true)
+    }
+
+    const onClickDeleteLink = (link: ExternalLink): void => {
+        setSelectedLink(link)
+        setShowDeleteDialog(true)
+    }
+
     const renderExternalLinks = (filteredLinksLen: number): JSX.Element => {
         return (
             <>
                 {filteredExternalLinks.map((link, idx) => {
                     return (
                         <Fragment key={`external-link-${idx}`}>
-                            <div className={`external-link ${isAppConfigView ? 'app-config-view' : ''}`}>
+                            <div
+                                className={`dc__visible-hover dc__visible-hover--parent external-link dc__ ${isAppConfigView ? 'app-config-view' : ''}`}
+                            >
                                 <div className="external-links__cell--icon">
                                     <img
                                         src={getMonitoringToolIcon(monitoringTools, link.monitoringToolId)}
@@ -390,22 +402,28 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                                         <span data-testid={`external-link-url-${link.name}`}>{link.url}</span>
                                     </Tippy>
                                 </div>
-                                <div className="external-link-actions">
-                                    <EditIcon
-                                        className="icon-dim-20 cursor mr-16"
-                                        onClick={() => {
-                                            editLink(link)
-                                        }}
-                                        data-testid={`external-link-edit-button-${link.name}`}
-                                    />
-                                    <DeleteIcon
-                                        className="icon-dim-20 cursor"
-                                        onClick={() => {
-                                            setSelectedLink(link)
-                                            setShowDeleteDialog(true)
-                                        }}
-                                        data-testid={`external-link-delete-button-${link.name}`}
-                                    />
+                                <div className="flex dc__visible-hover--child">
+                                    <div className="flex dc__gap-4">
+                                        <Button
+                                            icon={<Edit />}
+                                            variant={ButtonVariantType.borderLess}
+                                            style={ButtonStyleType.neutral}
+                                            size={ComponentSizeType.xs}
+                                            ariaLabel="Edit"
+                                            data-link={link}
+                                            dataTestId={`external-link-edit-button-${link.name}`}
+                                            onClick={() => onClickEditLink(link)}
+                                        />
+                                        <Button
+                                            icon={<Trash />}
+                                            variant={ButtonVariantType.borderLess}
+                                            style={ButtonStyleType.negativeGrey}
+                                            size={ComponentSizeType.xs}
+                                            ariaLabel="Delete"
+                                            dataTestId={`external-link-delete-button-${link.name}`}
+                                            onClick={() => onClickDeleteLink(link)}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                             {idx !== filteredLinksLen - 1 && <div className="external-link__divider w-100 bcn-1" />}
@@ -450,7 +468,9 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                         url={url}
                     />
                 )}
-                <div className={`external-links dc__border bcn-0 ${isAppConfigView ? 'app-config-view__listing' : ''}`}>
+                <div
+                    className={`external-links dc__border bg__primary ${isAppConfigView ? 'app-config-view__listing' : ''}`}
+                >
                     {isAPICallInProgress ? (
                         <Progressing pageLoader />
                     ) : (
@@ -461,7 +481,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                             {filteredLinksLen > 0 && (
                                 <>
                                     {renderExternalLinksHeader()}
-                                    <div className="external-links__list dc__overflow-scroll">
+                                    <div className="external-links__list dc__overflow-auto">
                                         {renderExternalLinks(filteredLinksLen)}
                                     </div>
                                 </>
@@ -498,6 +518,30 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
         return renderExternalLinksView()
     }
 
+    const renderSubTitle = (): JSX.Element => (
+        <>
+            <p className="m-0 ls-20 fs-13 cn-7">'{selectedLink?.name}' links will no longer be shown in applications.</p>
+            <p className="m-0 ls-20 fs-13 cn-7">Are you sure ?</p>
+        </>
+    )
+
+    const hideDeleteConfirmationModal = () => setShowDeleteDialog(false)
+
+    const onDelete = async (): Promise<void> => {
+        await deleteExternalLink(selectedLink.id, isAppConfigView ? appId : '')
+        if (isAppConfigView) {
+            const { result } = await getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp)
+            setExternalLinks(
+                result?.ExternalLinks?.filter(
+                    (_link) => _link.isEditable && _link.type === ExternalLinkScopeType.AppLevel,
+                ).sort(sortByUpdatedOn) || [],
+            )
+        } else {
+            const { result } = await getExternalLinks()
+            setExternalLinks(result?.ExternalLinks?.sort(sortByUpdatedOn) || [])
+        }
+    }
+
     return isLoading ? (
         <Progressing pageLoader />
     ) : (
@@ -532,17 +576,15 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                     setExternalLinks={setExternalLinks}
                 />
             )}
-            {showDeleteDialog && selectedLink && (
-                <DeleteExternalLinkDialog
-                    appId={appId}
-                    isAppConfigView={isAppConfigView}
-                    selectedLink={selectedLink}
-                    isAPICallInProgress={isAPICallInProgress}
-                    setAPICallInProgress={setAPICallInProgress}
-                    setExternalLinks={setExternalLinks}
-                    setShowDeleteConfirmation={setShowDeleteDialog}
-                />
-            )}
+            <DeleteConfirmationModal
+                title={selectedLink?.name}
+                component={DeleteComponentsName.Link}
+                subtitle={renderSubTitle()}
+                onDelete={onDelete}
+                isDeleting={isAPICallInProgress}
+                showConfirmationModal={selectedLink && showDeleteDialog}
+                closeConfirmationModal={hideDeleteConfirmationModal}
+            />
         </div>
     )
 }

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { RouteComponentProps, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { CIMaterialType, ConsequenceType } from '@devtron-labs/devtron-fe-common-lib'
+import { CIMaterialType, ConsequenceType, getWorkflowNodeStatusTitle } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerStatus } from '../../../../config'
 import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
 import { ReactComponent as IcLink } from '../../../../../../assets/icons/ic-link.svg'
@@ -106,7 +106,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                 className="dc__cd-trigger-status mb-6"
                 style={{ color: TriggerStatus[status] }}
             >
-                {this.props.status && this.props.status.toLowerCase() === 'cancelled' ? 'ABORTED' : this.props.status}
+                {getWorkflowNodeStatusTitle(this.props.status)}
                 {this.props.status && <span className="mr-5 ml-5">/</span>}
                 <Link
                     data-testid={`ci-trigger-select-details-button-${this.props.title}`}
@@ -164,9 +164,6 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                     className={`workflow-node__trigger-type workflow-node__trigger-type--ci fw-6 ${
                         this.props.isCITriggerBlocked ? 'flex bcr-1 er-2 bw-1 cr-5' : ''
                     }`}
-                    style={{
-                        opacity: this.props.isCITriggerBlocked ? 1 : 0.4,
-                    }}
                 >
                     {this.props.isCITriggerBlocked ? 'BLOCKED' : this.props.triggerType}
                 </div>

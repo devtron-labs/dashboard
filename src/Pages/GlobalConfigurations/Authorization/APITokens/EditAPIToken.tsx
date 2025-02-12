@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable jsx-a11y/tabindex-no-positive */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useEffect, useState } from 'react'
 import {
@@ -24,11 +23,11 @@ import {
     CustomInput,
     noop,
     ClipboardButton,
-    ResizableTextarea,
     useMainContext,
     ButtonWithLoader,
     ToastVariantType,
     ToastManager,
+    Textarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
 import moment from 'moment'
@@ -42,7 +41,6 @@ import { MomentDateFormat } from '../../../../config'
 import { importComponentFromFELibrary } from '../../../../components/common'
 import { updateGeneratedAPIToken } from './service'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
-import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
 import { renderQuestionwithTippy } from './CreateAPIToken'
 import { createOrUpdateUser, getUserById } from '../authorization.service'
@@ -86,7 +84,7 @@ const EditAPIToken = ({
     const [loader, setLoader] = useState(false)
 
     const [customDate, setCustomDate] = useState<number>(undefined)
-    const [deleteConfirmation, setDeleteConfirmation] = useState(false)
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
     const [invalidDescription, setInvalidDescription] = useState(false)
 
     const renderActionButton = () => (
@@ -110,7 +108,7 @@ const EditAPIToken = ({
     }
 
     const handleDeleteButton = () => {
-        setDeleteConfirmation(true)
+        setShowDeleteConfirmation(true)
     }
 
     const handleUpdatedToken = async (tokenId) => {
@@ -229,34 +227,22 @@ const EditAPIToken = ({
                 </div>
                 <div className="flexbox-col dc__gap-16">
                     {renderRegenerateInfoBar()}
-                    <label className="form__row">
-                        <CustomInput
-                            label="Name"
-                            data-testid="api-token-name-textbox"
-                            value={editData.name}
-                            disabled
-                            name="name"
-                            onChange={noop}
-                        />
-                    </label>
-                    <label className="form__row">
-                        <span className="form__label">Description</span>
-                        <ResizableTextarea
-                            name="description"
-                            maxHeight={300}
-                            className="w-100"
-                            value={editData.description}
-                            onChange={onChangeEditData}
-                            data-testid="api-token-description-textbox"
-                            placeholder="Enter a description to remember where you have used this token"
-                        />
-                        {invalidDescription && (
-                            <span className="form__error flexbox-imp flex-align-center">
-                                <Warn className="form__icon--error icon-dim-16 mr-4" />
-                                Max 350 characters allowed.
-                            </span>
-                        )}
-                    </label>
+                    <CustomInput
+                        label="Name"
+                        data-testid="api-token-name-textbox"
+                        value={editData.name}
+                        disabled
+                        name="name"
+                        onChange={noop}
+                    />
+                    <Textarea
+                        label="Description"
+                        name="description"
+                        value={editData.description}
+                        onChange={onChangeEditData}
+                        placeholder="Enter a description to remember where you have used this token"
+                        error={invalidDescription ? 'Max 350 characters allowed.' : null}
+                    />
                     <label className="form__row">
                         <span className="form__label">Token</span>
                         <div className="flex dc__content-space top cn-9">
@@ -290,14 +276,13 @@ const EditAPIToken = ({
                 buttonText="Update token"
                 disabled={isSaveDisabled}
             />
-            {deleteConfirmation && (
-                <DeleteAPITokenModal
-                    isEditView
-                    tokenData={editData}
-                    reload={reload}
-                    setDeleteConfirmation={setDeleteConfirmation}
-                />
-            )}
+            <DeleteAPITokenModal
+                isEditView
+                tokenData={editData}
+                reload={reload}
+                showDeleteConfirmation={showDeleteConfirmation}
+                setDeleteConfirmation={setShowDeleteConfirmation}
+            />
             {showRegeneratedModal && (
                 <RegeneratedModal
                     close={handleRegenerateActionButton}

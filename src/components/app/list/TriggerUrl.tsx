@@ -92,7 +92,7 @@ export const TriggerUrlModal = ({ appId, envId, installedAppId, isExternalApp, c
                     </button>
                 </div>
 
-                <div className="dc__overflow-scroll" style={{ height: 'calc(100% - 67px)' }}>
+                <div className="dc__overflow-auto" style={{ height: 'calc(100% - 67px)' }}>
                     {loading ? (
                         <Progressing pageLoader />
                     ) : Object.values(data).every((value) => !value.length) ? (

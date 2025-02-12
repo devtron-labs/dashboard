@@ -169,7 +169,7 @@ const Sidebar = ({
             /* NOTE: if we push here the history will be lost */
             !selectedResource,
         )
-    }, [nodeType, k8sObjectOptionsList])
+    }, [nodeType, k8sObjectOptionsList, isOpen])
 
     const selectedChildRef: React.Ref<HTMLButtonElement> = (node) => {
         /**
@@ -309,7 +309,7 @@ const Sidebar = ({
 
     return (
         <div className="k8s-object-container">
-            <div className="k8s-object-kind-search bcn-0 pt-16 pb-8 w-200 dc__m-auto cursor">
+            <div className="k8s-object-kind-search bg__primary pt-16 pb-8 w-200 dc__m-auto cursor">
                 <ReactSelect
                     ref={searchInputRef}
                     placeholder="Jump to Kind"
@@ -385,7 +385,7 @@ const Sidebar = ({
                             <div key={`${k8sObject.name}-parent`}>
                                 <button
                                     type="button"
-                                    className={`dc__unset-button-styles dc__zi-1 bcn-0 w-100 ${k8sObject.isExpanded ? 'dc__position-sticky' : ''}`}
+                                    className={`dc__unset-button-styles dc__zi-1 bg__primary w-100 ${k8sObject.isExpanded ? 'dc__position-sticky' : ''}`}
                                     style={{ top: '-8px' }}
                                     data-group-name={k8sObject.name}
                                     onClick={getGroupHeadingClickHandler(false, true)}

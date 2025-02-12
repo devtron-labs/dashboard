@@ -361,9 +361,11 @@ export class Workflow extends Component<WorkflowProps> {
             (node) => node.isExternalCI && !node.isLinkedCI && node.type === WorkflowNodeType.CI,
         )
 
+        const numberOfCDNodes = this.props.nodes.reduce((acc, node) => acc + (node.type === 'CD' ? 1 : 0), 0)
+
         return (
             <div className="workflow--trigger flexbox-col mb-16 dc__gap-6" style={{ minWidth: 'auto' }}>
-                <div className="bcn-0 cn-9 fs-13 fw-6 lh-20 flexbox dc__align-items-center dc__content-space">
+                <div className="bg__primary cn-9 fs-13 fw-6 lh-20 flexbox dc__align-items-center dc__content-space">
                     {this.props.fromAppGrouping ? (
                         <Checkbox
                             rootClassName="mb-0 app-group-checkbox"
@@ -381,7 +383,7 @@ export class Workflow extends Component<WorkflowProps> {
                             </span>
 
                             <div className="dc__separated-flexbox">
-                                {BulkDeployLink && !!this.props.nodes.some((node) => node.type === 'CD') && (
+                                {BulkDeployLink && numberOfCDNodes > 1 && (
                                     <BulkDeployLink
                                         workflowId={this.props.id}
                                     />
@@ -403,7 +405,7 @@ export class Workflow extends Component<WorkflowProps> {
                 </div>
                 {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
                 <div
-                    className={`workflow__body bc-n50 dc__overflow-scroll dc__border-n1 br-4 ${this.props.isSelected ? 'eb-2' : ''}`}
+                    className={`workflow__body bg__secondary dc__overflow-auto dc__border-n1 br-4 ${this.props.isSelected ? 'eb-2' : ''}`}
                 >
                     <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
                         {this.renderEdgeList()}

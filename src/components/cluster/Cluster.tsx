@@ -25,13 +25,16 @@ import {
     noop,
     DEFAULT_SECRET_PLACEHOLDER,
     FeatureTitleWithInfo,
-    DeleteComponent,
     ToastVariantType,
     ToastManager,
+    Button,
+    ButtonVariantType,
+    ButtonStyleType,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react/headless'
-import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
+import { ReactComponent as ClusterIcon } from '@Icons/ic-cluster.svg'
 import { importComponentFromFELibrary, useForm } from '../common'
 import { List } from '../globalConfigurations/GlobalConfiguration'
 import {
@@ -41,20 +44,20 @@ import {
     retryClusterInstall,
     deleteEnvironment,
 } from './cluster.service'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as Database } from '../../assets/icons/ic-env.svg'
-import { ReactComponent as PencilEdit } from '../../assets/icons/ic-pencil.svg'
-import { ReactComponent as DeleteEnvironment } from '../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as VirtualClusterIcon } from '../../assets/icons/ic-virtual-cluster.svg'
-import { ReactComponent as VirtualEnvIcon } from '../../assets/icons/ic-environment-temp.svg'
+import { ReactComponent as Add } from '@Icons/ic-add.svg'
+import { ReactComponent as Database } from '@Icons/ic-env.svg'
+import { ReactComponent as PencilEdit } from '@Icons/ic-pencil.svg'
+import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
+import { ReactComponent as VirtualClusterIcon } from '@Icons/ic-virtual-cluster.svg'
+import { ReactComponent as VirtualEnvIcon } from '@Icons/ic-environment-temp.svg'
 import { ClusterComponentModal } from './ClusterComponentModal'
 import { ClusterInstallStatus } from './ClusterInstallStatus'
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type'
 import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, CONFIGURATION_TYPES, AppCreationType } from '../../config'
 import { getEnvName } from './cluster.util'
-import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import ClusterForm from './ClusterForm'
 import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
+import { EnvironmentDeleteComponent } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/EnvironmentDeleteComponent'
 
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 const getSSHConfig = importComponentFromFELibrary('getSSHConfig', noop, 'function')
@@ -348,8 +351,7 @@ const Cluster = ({
     const [prometheusAuth, setPrometheusAuth] = useState(undefined)
     const [showClusterComponentModal, toggleClusterComponentModal] = useState(false)
     const [showWindow, setShowWindow] = useState(false)
-    const [envDelete, setDeleteEnv] = useState(false)
-    const [confirmation, toggleConfirmation] = useState(false)
+    const [confirmation, setConfirmation] = useState(false)
     const [prometheusToggleEnabled] = useState(!!prometheus_url)
 
     const [prometheusAuthenticationType] = useState({
@@ -521,19 +523,6 @@ const Cluster = ({
         setShowWindow(false)
     }
 
-    const getEnvironmentPayload = () => {
-        return {
-            id: environment.id,
-            environment_name: environment.environmentName,
-            cluster_id: environment.clusterId,
-            prometheus_endpoint: environment.prometheusEndpoint,
-            namespace: environment.namespace || '',
-            active: true,
-            default: environment.isProduction,
-            description: environment.description || '',
-        }
-    }
-
     async function onValidation() {
         const payload = getClusterPayload()
         const urlValue = state.url.value?.trim() ?? ''
@@ -585,7 +574,7 @@ const Cluster = ({
 
     const renderNoEnvironmentTab = () => {
         return (
-            <div className="br-4 dashed dc__border flex bc-n50 pb-16 pt-16 m-16 fs-12 fw-4">
+            <div className="br-4 dashed dc__border flex bg__secondary pb-16 pt-16 m-16 fs-12 fw-4">
                 <div className="dc__align-center">
                     <div className="fw-6">No Environments Added</div>
                     <div>This cluster doesn't have any environments yet</div>
@@ -594,16 +583,12 @@ const Cluster = ({
         )
     }
 
-    const showToggleConfirmation = (): void => {
-        toggleConfirmation(true)
-    }
+    const showToggleConfirmation = () => setConfirmation(true)
+
+    const hideConfirmationModal = () => setConfirmation(false)
 
     const showWindowModal = (): void => {
         setShowWindow(true)
-    }
-
-    const clusterDelete = (): void => {
-        setDeleteEnv(false)
     }
 
     const addCluster = () => {
@@ -648,12 +633,28 @@ const Cluster = ({
 
     const subTitle: string = isVirtualCluster ? 'Isolated cluster' : server_url
 
+    const onDelete = async () => {
+        const deletePayload = {
+            id: environment.id,
+            environment_name: environment.environmentName,
+            cluster_id: environment.clusterId,
+            prometheus_endpoint: environment.prometheusEndpoint,
+            namespace: environment.namespace || '',
+            active: true,
+            default: environment.isProduction,
+            description: environment.description || '',
+        }
+        await deleteEnvironment(deletePayload)
+        reload()
+    }
+
     return (
         <>
             <article
                 data-testid={`${cluster_name ?? 'create'}-cluster-container`}
                 className={`cluster-list ${
-                    clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list collapsed-list--create'
+                    // FIXME: clusterId is always truthy, so the below condition is always true
+                    clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list'
                 }`}
             >
                 <List className="dc__border dc__position-sticky dc__top-0" key={clusterId} onClick={editModeToggle}>
@@ -760,7 +761,7 @@ const Cluster = ({
                                                 {environment_name}
 
                                                 {isProduction && (
-                                                    <div className="bc-n50 dc__border pr-6 pl-6 fs-12 h-20 ml-8 flex cn-7 br-4 ">
+                                                    <div className="bg__secondary dc__border pr-6 pl-6 fs-12 h-20 ml-8 flex cn-7 br-4 ">
                                                         Prod
                                                     </div>
                                                 )}
@@ -770,60 +771,44 @@ const Cluster = ({
                                                 {description}
                                             </div>
                                             <div className="dc__visible-hover--child">
-                                                <div className="flex">
-                                                    <Tippy
-                                                        className="default-tt cursor"
-                                                        arrow={false}
-                                                        content="Edit Environment"
-                                                    >
-                                                        <div className="flex p-4 mr-4">
-                                                            <PencilEdit
-                                                                className="icon-dim-16 cursor"
-                                                                onClick={showWindowModal}
-                                                            />
-                                                        </div>
-                                                    </Tippy>
-                                                    {envDelete ? (
-                                                        <Progressing size={20} />
-                                                    ) : (
-                                                        <Tippy
-                                                            className="default-tt cursor"
-                                                            arrow={false}
-                                                            content="Delete Environment"
-                                                        >
-                                                            <div className="flex p-4">
-                                                                <DeleteEnvironment
-                                                                    data-testid={`env-delete-button-${environment_name}`}
-                                                                    className="icon-dim-16 cursor"
-                                                                    onClick={showToggleConfirmation}
-                                                                />
-                                                            </div>
-                                                        </Tippy>
-                                                    )}
+                                                <div className="flex dc__gap-4">
+                                                    <Button
+                                                        dataTestId={`env-edit-button-${environment_name}`}
+                                                        icon={<PencilEdit />}
+                                                        ariaLabel="Edit Environment"
+                                                        variant={ButtonVariantType.borderLess}
+                                                        style={ButtonStyleType.neutral}
+                                                        size={ComponentSizeType.xs}
+                                                        onClick={showWindowModal}
+                                                    />
+                                                    <Button
+                                                        dataTestId={`env-delete-button-${environment_name}`}
+                                                        icon={<Trash />}
+                                                        onClick={showToggleConfirmation}
+                                                        variant={ButtonVariantType.borderLess}
+                                                        style={ButtonStyleType.negativeGrey}
+                                                        size={ComponentSizeType.xs}
+                                                        ariaLabel="Delete"
+                                                    />
                                                 </div>
                                             </div>
                                         </div>
                                     ) : null,
                             )}
-                        {confirmation && (
-                            <DeleteComponent
-                                setDeleting={clusterDelete}
-                                deleteComponent={deleteEnvironment}
-                                payload={getEnvironmentPayload()}
-                                title={environment.environmentName}
-                                toggleConfirmation={toggleConfirmation}
-                                component={DeleteComponentsName.Environment}
-                                confirmationDialogDescription={DC_ENVIRONMENT_CONFIRMATION_MESSAGE}
-                                reload={reload}
-                            />
-                        )}
+
+                        <EnvironmentDeleteComponent
+                            environmentName={environment?.environmentName}
+                            showConfirmationModal={confirmation}
+                            onDelete={onDelete}
+                            closeConfirmationModal={hideConfirmationModal}
+                        />
                     </div>
                 ) : (
                     clusterId && renderNoEnvironmentTab()
                 )}
                 {editMode && (
                     <Drawer position="right" width="1000px" onEscape={DisableEditMode}>
-                        <div className="h-100 bcn-0" ref={drawerRef}>
+                        <div className="h-100 bg__primary" ref={drawerRef}>
                             <ClusterForm
                                 {...getSSHConfig(sshTunnelConfig)}
                                 id={clusterId}

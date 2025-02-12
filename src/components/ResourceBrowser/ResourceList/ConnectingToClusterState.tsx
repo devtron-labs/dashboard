@@ -18,7 +18,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import { TAKING_LONGER_TO_CONNECT, TRYING_TO_CONNECT, CONNECTION_TIMEOUT_TIME } from '../Constants'
 import { ConnectingToClusterStateProps, URLParams } from '../Types'
-import CouldNotConnectImg from '../../../assets/img/app-not-deployed.png'
+import CouldNotConnectImg from '../../../assets/img/app-not-deployed.svg'
 import { StyledProgressBar } from '../../common/formFields/Widgets/Widgets'
 import { URLS } from '../../../config'
 
@@ -127,7 +127,7 @@ const ConnectingToClusterState: React.FC<ConnectingToClusterStateProps> = ({
 
     return (
         <div
-            className="flex column bcn-0"
+            className="flex column bg__primary"
             style={{
                 height: 'calc(100vh - 84px)',
             }}

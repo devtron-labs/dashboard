@@ -43,6 +43,7 @@ import {
     TRIGGER_STATUS_PROGRESSING,
     ErrorScreenManager,
     SecurityDetailsCards,
+    sanitizeTargetPlatforms,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, Redirect, useRouteMatch, useParams, useHistory, generatePath } from 'react-router-dom'
 import {
@@ -243,7 +244,7 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
                 </div>
             )}
             <div className="ci-details__body">
-                <div className="flexbox-col flex-grow-1 dc__overflow-scroll" ref={scrollableParentRef}>
+                <div className="flexbox-col flex-grow-1 dc__overflow-auto" ref={scrollableParentRef}>
                     {!pipelineId ? (
                         // Empty state if there is no pipeline
                         <GenericEmptyState
@@ -439,12 +440,14 @@ export const Details = ({
                         podStatus={triggerDetails.podStatus}
                         stage={triggerDetails.stage}
                         artifact={triggerDetails.artifact}
+                        namespace={triggerDetails.namespace}
                         environmentName={triggerDetails.environmentName}
                         isJobView={isJobView}
                         workerPodName={triggerDetails.podName}
                         renderDeploymentHistoryTriggerMetaText={renderDeploymentHistoryTriggerMetaText}
+                        workflowExecutionStages={triggerDetails.workflowExecutionStages}
                     />
-                    <div className="dc__border-bottom pl-50 pr-20 dc__position-sticky dc__top-0 bcn-0 dc__zi-3">
+                    <div className="dc__border-bottom pl-50 pr-20 dc__position-sticky dc__top-0 bg__primary dc__zi-3">
                         <TabGroup
                             tabs={[
                                 {
@@ -535,12 +538,15 @@ const HistoryLogs = ({
     const [ciJobArtifact, setciJobArtifact] = useState<string[]>([])
     const [loading, setLoading] = useState<boolean>(false)
     const downloadArtifactUrl = `${Routes.CI_CONFIG_GET}/${pipelineId}/artifacts/${buildId}`
+    const targetPlatforms = sanitizeTargetPlatforms(triggerDetails.targetPlatforms)
+
     useEffect(() => {
         if (isJobCI) {
             setLoading(true)
             getArtifactsForCiJobRes()
         }
     }, [triggerDetails])
+
     const getArtifactsForCiJobRes = async () => {
         try {
             const { result } = await getArtifactForJobCi(pipelineId, buildId)
@@ -555,6 +561,7 @@ const HistoryLogs = ({
     }
 
     const CiArtifactsArrayCards = Array.from({ length: ciJobArtifact?.length }, (_, index) => {
+        // TargetPlatforms are not supported for Artifacts in case of JobCI
         return (
             <Artifacts
                 status={triggerDetails.status}
@@ -572,6 +579,7 @@ const HistoryLogs = ({
                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                 rootClassName="pb-0-imp"
                 renderCIListHeader={renderCIListHeader}
+                targetPlatforms={[]}
             />
         )
     })
@@ -593,11 +601,7 @@ const HistoryLogs = ({
                     )}
                 </Route>
                 <Route path={`${path}/source-code`}>
-                    <GitChanges
-                        gitTriggers={triggerDetails.gitTriggers}
-                        ciMaterials={triggerDetails.ciMaterials}
-                        renderCIListHeader={renderCIListHeader}
-                    />
+                    <GitChanges gitTriggers={triggerDetails.gitTriggers} ciMaterials={triggerDetails.ciMaterials} />
                 </Route>
                 <Route path={`${path}/artifacts`}>
                     {loading && <Progressing pageLoader />}
@@ -619,6 +623,7 @@ const HistoryLogs = ({
                                 appReleaseTagNames={appReleaseTags}
                                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                                 renderCIListHeader={renderCIListHeader}
+                                targetPlatforms={targetPlatforms}
                             />
                         </div>
                     )}
@@ -626,7 +631,6 @@ const HistoryLogs = ({
                 {
                     <Route path={`${path}/security`}>
                         <SecurityTab
-                            ciPipelineId={triggerDetails.ciPipelineId}
                             artifactId={triggerDetails.artifactId}
                             status={triggerDetails.status}
                             appIdFromParent={appIdFromParent}
@@ -645,9 +649,8 @@ const HistoryLogs = ({
     )
 }
 
-const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: SecurityTabType) => {
+const SecurityTab = ({ artifactId, status, appIdFromParent }: SecurityTabType) => {
     const { appId } = useParams<{ appId: string }>()
-    const { push } = useHistory()
 
     const computedAppId = appId ?? appIdFromParent
 
@@ -656,22 +659,11 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
         artifactId,
     })
 
-    const redirectToCreate = () => {
-        if (!ciPipelineId) {
-            return
-        }
-        push(
-            `${URLS.APP}/${computedAppId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${ciPipelineId}/${
-                URLS.APP_CI_CONFIG
-            }/${ciPipelineId}/build`,
-        )
-    }
-
     if (['starting', 'running'].includes(status.toLowerCase())) {
         return <CIRunningView isSecurityTab />
     }
 
-    if (!artifactId || ['failed', 'cancelled'].includes(status.toLowerCase())) {
+    if (!artifactId) {
         return (
             <GenericEmptyState
                 title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
@@ -681,7 +673,11 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     }
 
     if (scanResultLoading) {
-        return <div className='bcn-0 flex-grow-1'><Progressing pageLoader /></div>
+        return (
+            <div className="bg__primary flex-grow-1">
+                <Progressing pageLoader />
+            </div>
+        )
     }
     if (scanResultError) {
         return <ErrorScreenManager code={scanResultError.code} reload={reloadScanResult} />
@@ -691,7 +687,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     }
 
     return (
-        <div className="p-20 bcn-0 flex-grow-1">
+        <div className="p-20 bg__primary flex-grow-1">
             <SecurityDetailsCards scanResult={scanResultResponse?.result} Sidebar={SecurityModalSidebar} />
         </div>
     )

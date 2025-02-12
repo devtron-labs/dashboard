@@ -57,7 +57,7 @@
             fill: var(--N0);
         }
         path {
-            fill: var(--y500);
+            fill: var(--Y500);
         }
     }
     .no-data-icon {
@@ -100,7 +100,7 @@
             grid-template-columns: 20px minmax(auto, 200px) repeat(5, 100px);
             column-gap: 12px;
             &:hover:not(:first-of-type) {
-                background-color: var(--N50);
+                background-color: var(--bg-secondary);
             }
         }
         .pod-container {
@@ -108,7 +108,7 @@
                 top: 0px;
                 z-index: 1;
                 padding-top: 10px;
-                background-color: var(--N0);
+                background-color: var(--bg-primary);
             }
             .pods-grid {
                 display: grid;
@@ -137,12 +137,8 @@
                     gap: 8px;
                 }
                 .row-wrapper:hover {
-                    background-color: var(--N50);
+                    background-color: var(--bg-secondary);
                 }
-            }
-            .scrollable-pod-list {
-                max-height: 700px;
-                overflow: scroll;
             }
         }
     }
@@ -163,9 +159,9 @@
 
     .hover-class {
         &:hover {
-            background-color: var(--N50);
+            background-color: var(--bg-secondary);
             .sticky-column {
-                background-color: var(--N50);
+                background-color: var(--bg-secondary);
             }
         }
     }
@@ -199,7 +195,10 @@
 }
 
 .cluster-terminal-view-container {
-    height: 50vh;
+    // NOTE: this component is only visible in resource browser
+    // and at the time of writing this only the page header and dynamic tabs
+    // appear above it which amount to 48px and 36px respectively (48 + 36 = 84)
+    height: calc(100vh - 84px);
 }
 
 .cluster-terminal__wrapper {
@@ -257,12 +256,12 @@
 
         .grace-period-input {
             width: 98px;
-            background-color: var(--N50);
+            background-color: var(--bg-secondary);
             outline: none;
         }
 
         .grace-period-input-unit {
-            background-color: white;
+            background-color: var(--bg-primary);
             border-left: none;
         }
     }
@@ -303,22 +302,22 @@
             font-size: 13px !important;
             line-height: 1.67;
             .mark-down-editor-preview {
-                background-color: white !important;
+                background-color: var(--bg-primary) !important;
             }
             .mark-down-editor-textarea-wrapper {
                 border-radius: 3px !important;
                 border: 1px solid var(--N200) !important;
-                background-color: var(--N50) !important;
+                background-color: var(--bg-secondary) !important;
             }
             .mde-textarea-wrapper {
-                background-color: white !important;
+                background-color: var(--bg-primary) !important;
                 padding: 10px !important;
             }
             .mark-down-editor-toolbar {
                 justify-content: space-between !important;
                 padding-left: 16px !important;
                 padding-right: 16px !important;
-                background-color: white !important;
+                background-color: var(--bg-primary) !important;
             }
             .mde-header {
                 height: 36px !important;
@@ -373,11 +372,6 @@
     max-height: 100%;
     flex-basis: 250px;
     flex-shrink: 0;
-}
-
-.cluster-manifest-header {
-    display: grid;
-    grid-template-columns: 1fr 1fr 30px;
 }
 
 .node-data-container {

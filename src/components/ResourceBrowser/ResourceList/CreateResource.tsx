@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -25,6 +25,7 @@ import {
     CodeEditor,
     createNewResource,
     CreateResourceDTO,
+    AppThemeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { APP_STATUS_HEADERS, MODES } from '../../../config'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
@@ -43,39 +44,12 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
     const [resourceYAML, setResourceYAML] = useState('')
     const [resourceResponse, setResourceResponse] = useState<CreateResourceDTO[]>(null)
 
-    const appStatusDetailRef = useRef<HTMLDivElement>(null)
-
     const onClose = (): void => {
         if (loader) {
             return
         }
         closePopup(true)
     }
-
-    const escKeyPressHandler = (evt): void => {
-        if (evt && evt.key === 'Escape') {
-            evt.preventDefault()
-            onClose()
-        }
-    }
-    const outsideClickHandler = (evt): void => {
-        if (appStatusDetailRef.current && !appStatusDetailRef.current.contains(evt.target)) {
-            onClose()
-        }
-    }
-    useEffect(() => {
-        document.addEventListener('keydown', escKeyPressHandler)
-        return (): void => {
-            document.removeEventListener('keydown', escKeyPressHandler)
-        }
-    }, [escKeyPressHandler])
-
-    useEffect(() => {
-        document.addEventListener('click', outsideClickHandler)
-        return (): void => {
-            document.removeEventListener('click', outsideClickHandler)
-        }
-    }, [outsideClickHandler])
 
     useEffect(() => {
         setDisableShortcuts(true)
@@ -173,14 +147,14 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
                         Icon={InfoIcon}
                     />
                     <CodeEditor
-                        theme="vs-dark--dt"
+                        theme={AppThemeType.dark}
                         value={resourceYAML}
                         mode={MODES.YAML}
                         noParsing
-                        height="calc(100vh - 165px)"
+                        height="fitToParent"
                         onChange={handleEditorValueChange}
                         loading={loader}
-                        focus
+                        autoFocus
                     />
                 </>
             )
@@ -236,9 +210,9 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
     }
 
     return (
-        <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            <div className="create-resource-container bcn-0 h-100" ref={appStatusDetailRef}>
-                <div className="flex flex-align-center flex-justify bcn-0 pt-16 pr-20 pb-16 pl-20 dc__border-bottom">
+        <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px" onEscape={onClose}>
+            <div className="create-resource-container bg__primary h-100 flexbox-col">
+                <div className="flex flex-align-center flex-justify bg__primary pt-16 pr-20 pb-16 pl-20 dc__border-bottom">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0">{CREATE_RESOURCE_MODAL_MESSAGING.title}</h2>
                     <button
                         type="button"
@@ -249,7 +223,7 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
                         <CloseIcon className="icon-dim-24" />
                     </button>
                 </div>
-                <div style={{ height: 'calc(100vh - 127px)' }}>{renderPageContent()}</div>
+                <div className="flex-grow-1 flexbox-col">{renderPageContent()}</div>
                 {renderFooter()}
             </div>
         </Drawer>

@@ -183,7 +183,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
 
     renderReadOnlyCard() {
         return (
-            <div className="workflow-node dc__overflow-scroll">
+            <div className="workflow-node dc__overflow-auto">
                 <div className="workflow-node__title flex">
                     <div className="workflow-node__full-width-minus-Icon">
                         <span className="workflow-node__text-light">Deploy</span>
@@ -267,7 +267,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         />
     )
 
-    renderDeleteConformationDialog = () => {
+    renderDeleteConfirmationDialog = () => {
         if (this.state.showDeploymentConfirmationDeleteDialog && DeploymentWindowConfirmationDialog) {
             return this.renderDeploymentWindowConfirmationModal()
         } else if (this.state.showDeletePipelinePopup) {
@@ -364,7 +364,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                                     <div className="flex h-100 w-100 dc__border-bottom-n1--important">
                                         <button
                                             type="button"
-                                            className="flex h-100 w-100 p-0 dc__outline-none-imp bcn-0 dc__no-border workflow-node__title--add-cd-icon dc__hover-b500  pt-4 pb-4 pl-6 pr-6 workflow-node__title--top-right-rad-8"
+                                            className="flex h-100 w-100 p-0 dc__outline-none-imp bg__primary dc__no-border workflow-node__title--add-cd-icon dc__hover-b500  pt-4 pb-4 pl-6 pr-6 workflow-node__title--top-right-rad-8"
                                             disabled={this.props.addNewPipelineBlocked}
                                             onClick={this.handleAddNewNode}
                                         >
@@ -376,7 +376,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                                 <Tippy placement="right" content="Delete pipeline" className="default-tt">
                                     <button
                                         type="button"
-                                        className="flex h-100 w-100 dc__hover-r500 workflow-node__title--bottom-right-rad-8 pt-4 pb-4 pl-6 pr-6 dc__outline-none-imp bcn-0 dc__no-border workflow-node__title--delete-cd-icon"
+                                        className="flex h-100 w-100 dc__hover-r500 workflow-node__title--bottom-right-rad-8 pt-4 pb-4 pl-6 pr-6 dc__outline-none-imp bg__primary dc__no-border workflow-node__title--delete-cd-icon"
                                         onClick={this.handleDeleteCDNode}
                                     >
                                         <ICDelete className="icon-dim-12" />
@@ -404,7 +404,6 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                 >
                     {this.props.cdNamesList?.length > 0 ? this.renderReadOnlyCard() : this.renderCardContent()}
                 </foreignObject>
-                
                 <DeleteCDNode
                     showDeleteDialog={this.state.showDeleteDialog}
                     deleteDialog={this.state.deleteDialog}
@@ -418,7 +417,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                     deleteTitleName={this.props.environmentName}
                     isLoading={this.state.deleteInProgress}
                 />
-                {this.renderDeleteConformationDialog()}
+                {this.renderDeleteConfirmationDialog()}
             </>
         )
     }

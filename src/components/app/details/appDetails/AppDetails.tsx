@@ -20,8 +20,6 @@ import {
     Progressing,
     noop,
     stopPropagation,
-    multiSelectStyles,
-    useEffectAfterMount,
     DeploymentAppTypes,
     useSearchString,
     useAsync,
@@ -40,8 +38,6 @@ import {
     getIsRequestAborted,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
-import Select from 'react-select'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
 import {
     URLS,
@@ -56,32 +52,17 @@ import {
     DEFAULT_STATUS_TEXT,
 } from '../../../../config'
 import { NavigationArrow, useAppContext, FragmentHOC } from '../../../common'
-import { groupHeaderStyle, Option } from '../../../v2/common/ReactSelect.utils'
 import { getAppConfigStatus, getAppOtherEnvironmentMin, stopStartApp } from '../../../../services/service'
-// @ts-check
-import AppNotDeployedIcon from '@Images/app-not-deployed.png'
+import AppNotDeployedIcon from '@Images/app-not-deployed.svg'
 import AppNotConfiguredIcon from '@Images/app-not-configured.png'
 import { ReactComponent as ICHibernate } from '@Icons/ic-medium-hibernate.svg'
 import { ReactComponent as ICUnhibernate } from '@Icons/ic-medium-unhibernate.svg'
-import { ReactComponent as PlayButton } from '@Icons/ic-play.svg'
-import { ReactComponent as Connect } from '@Icons/ic-connected.svg'
-import { ReactComponent as Disconnect } from '@Icons/ic-disconnected.svg'
-import { ReactComponent as Abort } from '@Icons/ic-abort.svg'
-import { ReactComponent as StopButton } from '@Icons/ic-stop.svg'
 import { ReactComponent as ForwardArrow } from '@Icons/ic-arrow-forward.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
 
 import { SourceInfo } from './SourceInfo'
 import { Application, Nodes, AggregatedNodes, NodeDetailTabs } from '../../types'
-import {
-    getSelectedNodeItems,
-    getPodNameSuffix,
-    ValueContainer,
-    NoParamsNoEnvContext,
-    NoParamsWithEnvContext,
-    ParamsNoEnvContext,
-    ParamsAndEnvContext,
-} from './utils'
+import { NoParamsNoEnvContext, NoParamsWithEnvContext, ParamsNoEnvContext, ParamsAndEnvContext } from './utils'
 import { AppMetrics } from './AppMetrics'
 import IndexStore from '../../../v2/appDetails/index.store'
 import {
@@ -104,7 +85,6 @@ import {
     DeploymentStatusDetailsType,
     DetailsType,
     ErrorItem,
-    NodeSelectorsType,
 } from './appDetails.type'
 import { TriggerUrlModal } from '../../list/TriggerUrl'
 import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
@@ -120,7 +100,7 @@ import { renderCIListHeader } from '../cdDetails/utils'
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 const DeploymentWindowStatusModal = importComponentFromFELibrary('DeploymentWindowStatusModal')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
-const ConfigDriftModalRoute = importComponentFromFELibrary('ConfigDriftModalRoute', null, 'function')
+const ConfigDriftModal = importComponentFromFELibrary('ConfigDriftModal', null, 'function')
 const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
     'processVirtualEnvironmentDeploymentData',
     null,
@@ -223,7 +203,7 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
     }, [envList, params.envId])
 
     return (
-        <div data-testid="app-details-wrapper" className="app-details-page-wrapper">
+        <div data-testid="app-details-wrapper" className="app-details-page-wrapper mw-none">
             {!params.envId && envList.length > 0 && (
                 <div className="w-100 pt-16 pr-20 pb-20 pl-20">
                     <SourceInfo
@@ -278,6 +258,7 @@ export const Details: React.FC<DetailsType> = ({
     // fixme: the state is not being set anywhere and just being drilled down
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false)
     const [resourceTreeFetchTimeOut, setResourceTreeFetchTimeOut] = useState<boolean>(false)
+    const [showConfigDriftModal, setShowConfigDriftModal] = useState<boolean>(false)
     const [urlInfo, setUrlInfo] = useState<boolean>(false)
     const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<'' | 'resume' | 'hibernate'>('')
     const [rotateModal, setRotateModal] = useState<boolean>(false)
@@ -314,7 +295,7 @@ export const Details: React.FC<DetailsType> = ({
             deploymentStatus: DEFAULT_STATUS,
             deploymentStatusText: DEFAULT_STATUS_TEXT,
         })
-    const isConfigDriftEnabled: boolean = window._env_.FEATURE_CONFIG_DRIFT_ENABLE
+    const isConfigDriftEnabled: boolean = window._env_.FEATURE_CONFIG_DRIFT_ENABLE && !!ConfigDriftModal
     const isExternalToolAvailable: boolean =
         externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0
     const interval = Number(window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL) || 30000
@@ -392,10 +373,14 @@ export const Details: React.FC<DetailsType> = ({
         ],
     )
 
-    useEffect(() => () => {
-        clearPollingInterval()
-        IndexStore.clearAppDetails()
-    }, [])
+    useEffect(
+        () => () => {
+            clearPollingInterval()
+            clearDeploymentStatusTimer()
+            IndexStore.clearAppDetails()
+        },
+        [],
+    )
 
     useEffect(() => {
         appDetailsAbortRef.current = new AbortController()
@@ -409,8 +394,11 @@ export const Details: React.FC<DetailsType> = ({
             if (setIsAppDeleted) {
                 setIsAppDeleted(true)
             }
-            // NOTE: BE sends  string representation of 7000 instead of number 7000 
-            if (getIsRequestAborted(error) || (error instanceof ServerErrors && String(error.errors?.[0]?.code ?? '') === "7000")) {
+            // NOTE: BE sends  string representation of 7000 instead of number 7000
+            if (
+                getIsRequestAborted(error) ||
+                (error instanceof ServerErrors && String(error.errors?.[0]?.code ?? '') === '7000')
+            ) {
                 setResourceTreeFetchTimeOut(true)
             } else {
                 setResourceTreeFetchTimeOut(false)
@@ -623,11 +611,7 @@ export const Details: React.FC<DetailsType> = ({
             <>
                 {environments?.length > 0 && (
                     <div className="flex left ml-20 mt-16">
-                        <EnvSelector
-                            environments={environments}
-                            disabled={params.envId && !showCommitInfo}
-                            controlStyleOverrides={{ backgroundColor: 'white' }}
-                        />
+                        <EnvSelector environments={environments} />
                         {isAppDeleted && appDetails?.deploymentAppDeleteRequest && (
                             <div data-testid="deleteing-argocd-pipeline" className="flex left">
                                 <Trash className="icon-dim-16 mr-8 ml-12" />
@@ -712,7 +696,7 @@ export const Details: React.FC<DetailsType> = ({
         return (
             <ConfirmationModal
                 variant={ConfirmationModalVariantType.custom}
-                Icon={hibernateConfirmationModal === 'hibernate' ? ICHibernate : ICUnhibernate}
+                Icon={hibernateConfirmationModal === 'hibernate' ? <ICHibernate /> : <ICUnhibernate />}
                 title={`${hibernateConfirmationModal === 'hibernate' ? 'Hibernate' : 'Restore'} '${appDetails.appName}' on '${appDetails.environmentName}'`}
                 subtitle={
                     <p className="m-0-imp fs-13">
@@ -745,20 +729,30 @@ export const Details: React.FC<DetailsType> = ({
         )
     }
 
+    const handleOpenConfigDriftModal = () => {
+        setShowConfigDriftModal(true)
+    }
+
+    const handleCloseConfigDriftModal = () => {
+        setShowConfigDriftModal(false)
+    }
+
+    const onClickRotatePodClose = () => setRotateModal(false)
+
     const renderRestartWorkload = () => {
         return (
             <RotatePodsModal
-                onClose={() => setRotateModal(false)}
+                onClose={onClickRotatePodClose}
                 callAppDetailsAPI={callAppDetailsAPI}
                 isDeploymentBlocked={isDeploymentBlocked}
             />
         )
     }
-    const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
+    const isDeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     return (
         <>
             <div
-                className={`w-100 pt-16 pr-20 pb-16 pl-20 dc__gap-16 ${isdeploymentAppDeleting ? 'app-info-bg' : 'app-info-bg-gradient'}`}
+                className={`w-100 pt-16 pr-20 pb-16 pl-20 dc__gap-16 ${isDeploymentAppDeleting ? 'app-info-bg' : 'app-info-bg-gradient'}`}
             >
                 <SourceInfo
                     appDetails={appDetails}
@@ -779,6 +773,7 @@ export const Details: React.FC<DetailsType> = ({
                     ciArtifactId={appDetails?.ciArtifactId}
                     setErrorsList={setErrorsList}
                     deploymentUserActionState={deploymentUserActionState}
+                    handleOpenConfigDriftModal={handleOpenConfigDriftModal}
                 />
             </div>
             {!loadingDetails && !loadingResourceTree && !appDetails?.deploymentAppDeleteRequest && (
@@ -802,7 +797,7 @@ export const Details: React.FC<DetailsType> = ({
                 </>
             )}
             {loadingResourceTree ? (
-                <div className="bcn-0 h-100">
+                <div className="bg__primary h-100">
                     <Progressing pageLoader fullHeight size={32} fillColor="var(--N500)" />
                 </div>
             ) : (
@@ -812,7 +807,11 @@ export const Details: React.FC<DetailsType> = ({
                 <AppStatusDetailModal
                     close={hideAppDetailsStatus}
                     showAppStatusMessage={false}
-                    showConfigDriftInfo={isConfigDriftEnabled && !!ConfigDriftModalRoute}
+                    {...(isConfigDriftEnabled
+                        ? {
+                              handleOpenConfigDriftModal,
+                          }
+                        : {})}
                 />
             )}
             {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
@@ -856,8 +855,8 @@ export const Details: React.FC<DetailsType> = ({
                     isVirtualEnvironment={isVirtualEnvRef.current}
                 />
             }
-            {isConfigDriftEnabled && ConfigDriftModalRoute && !isVirtualEnvRef.current && (
-                <ConfigDriftModalRoute path={path} />
+            {isConfigDriftEnabled && showConfigDriftModal && !isVirtualEnvRef.current && (
+                <ConfigDriftModal handleCloseModal={handleCloseConfigDriftModal} />
             )}
         </>
     )
@@ -880,15 +879,7 @@ const DeletedAppComponent: React.FC<DeletedAppComponentType> = ({
     return <AppDetailsEmptyState envType={EnvType.APPLICATION} />
 }
 
-export const EnvSelector = ({
-    environments,
-    disabled,
-    controlStyleOverrides,
-}: {
-    environments: any
-    disabled: boolean
-    controlStyleOverrides?: React.CSSProperties
-}) => {
+export const EnvSelector = ({ environments }: { environments: any }) => {
     const { push } = useHistory()
     const { path } = useRouteMatch()
     const { appId, envId } = useParams<{ appId: string; envId?: string }>()
@@ -904,22 +895,6 @@ export const EnvSelector = ({
           }, {})
         : {}
     const environmentName = environmentsMap[+envId]
-    const envSelectorStyle = {
-        ...multiSelectStyles,
-        ...groupHeaderStyle,
-        control: (base, state) => ({
-            ...base,
-            border: '1px solid var(--B500)',
-            backgroundColor: 'white',
-            minHeight: '32px',
-            height: '32px',
-            cursor: state.isDisabled ? 'not-allowed' : 'pointer',
-            ...controlStyleOverrides,
-        }),
-        singleValue: (base, state) => ({ ...base, textAlign: 'left', fontWeight: 600, color: 'var(--B500)' }),
-        indicatorsContainer: (base, state) => ({ ...base, height: '32px' }),
-        menu: (base) => ({ ...base, width: '280px', zIndex: 12 }),
-    }
 
     const sortedEnvironments =
         environments && !environments.deploymentAppDeleteRequest
@@ -972,8 +947,8 @@ export const EnvSelector = ({
                     preserveAspectRatio="none"
                     style={{ width: '100%', height: '100%', display: 'flex' }}
                 >
-                    <path d="M0 20 L200 20 Z" strokeWidth="1" stroke="#0066cc" />
-                    <path d="M0 10 L0, 30" strokeWidth="2" stroke="#0066cc" />
+                    <path d="M0 20 L200 20 Z" strokeWidth="1" stroke="var(--B500)" />
+                    <path d="M0 10 L0, 30" strokeWidth="2" stroke="var(--B500)" />
                 </svg>
                 <div
                     className="bcb-5 br-10 cn-0 pl-8 pr-8"
@@ -1066,348 +1041,6 @@ export const EventsLogsTabSelector = ({ onMouseDown = null }) => {
     )
 }
 
-export const NodeSelectors: React.FC<NodeSelectorsType> = ({
-    logsPaused = false,
-    socketConnection = true,
-    nodeName,
-    selectedNodes,
-    nodes,
-    containerName,
-    selectedContainer,
-    shell,
-    isReconnection,
-    nodeItems,
-    logsCleared,
-    isAppDeployment,
-    setIsReconnection,
-    selectShell,
-    setTerminalCleared,
-    handleLogsPause = null,
-    setSocketConnection,
-    selectNode,
-    setSelectNode,
-    selectContainer,
-    setLogsCleared,
-    children = null,
-}) => {
-    const params = useParams<{ appId: string; envId: string; kind: Nodes; tab: NodeDetailTabs; showOldOrNewSuffix }>()
-    const { queryParams, searchParams } = useSearchString()
-    const { url, path } = useRouteMatch()
-    const history = useHistory()
-
-    if (!searchParams?.kind) {
-        queryParams.set('kind', params.kind)
-        history.replace(`${url}?${queryParams.toString()}`)
-        return null
-    }
-    const kind: Nodes = searchParams.kind as Nodes
-
-    const nodesMap = nodes.nodes[kind] || new Map()
-
-    let containers = []
-    let initContainers = []
-    let selectedNodesItem = []
-    if (selectedNodes) {
-        selectedNodesItem = getSelectedNodeItems(selectedNodes, nodeItems, isAppDeployment, nodesMap, kind)
-    }
-
-    if (selectedNodesItem) {
-        selectedNodesItem.forEach((item) => {
-            if ((kind === Nodes.Pod || searchParams.kind === Nodes.Pod) && nodesMap && nodesMap.has(item.value)) {
-                containers.push(nodesMap.get(item.value)?.containers)
-                initContainers.push(nodesMap.get(item.value)?.initContainers)
-            } else {
-                containers.push(null)
-                initContainers.push(null)
-            }
-        })
-    }
-
-    const additionalOptions = [
-        { label: 'All pods', value: 'All pods' },
-        { label: 'All new pods', value: 'All new pods' },
-        { label: 'All old pods', value: 'All old pods' },
-    ]
-    let options = []
-    if (nodeItems?.length > 1) {
-        options = additionalOptions.concat(nodeItems)
-    } else {
-        options = nodeItems
-    }
-
-    if (!containers) {
-        containers = []
-    }
-    if (!initContainers) {
-        initContainers = []
-    }
-
-    if (params.tab === NodeDetailTabs.TERMINAL) {
-        initContainers = []
-    }
-
-    const total = containers.concat(initContainers)
-    const allContainers = total.filter((item) => !!item)
-
-    allContainers.forEach((item) => {
-        if (item?.length < 2) {
-            const contAvailable = allContainers[0]
-            if (contAvailable && !selectedContainer) {
-                selectContainer(contAvailable[0])
-            }
-        } else if (!selectedContainer) {
-            selectContainer(null)
-        }
-    })
-
-    function selectPod(selected) {
-        setSelectNode(selected.value)
-        onLogsCleared()
-    }
-
-    function onLogsCleared() {
-        setLogsCleared(true)
-        setTimeout(() => setLogsCleared(false), 1000)
-    }
-
-    const onClickDisconnectTab = () => {
-        setSocketConnection('DISCONNECTING')
-        setIsReconnection(true)
-    }
-
-    const onClickConnectTab = () => {
-        setSocketConnection('CONNECTING')
-    }
-
-    const onClickAbort = () => {
-        setTerminalCleared(true)
-    }
-
-    const onClickPlayStop = () => {
-        handleLogsPause(!logsPaused)
-    }
-
-    const isSocketConnecting = socketConnection === 'CONNECTING' || socketConnection === 'CONNECTED'
-    const podItems = params.tab?.toLowerCase() == 'logs' ? selectedNodes : nodeName
-    return (
-        <div className="pl-20 flex left" style={{ background: '#2c3354' }}>
-            {params.tab === NodeDetailTabs.TERMINAL && (
-                <>
-                    <div className="flex mr-12">
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="bottom"
-                            content={isSocketConnecting ? 'Disconnect' : 'Connect'}
-                        >
-                            <div className="flex">
-                                {isSocketConnecting ? (
-                                    <Disconnect className="icon-dim-20 mr-5" onClick={onClickDisconnectTab} />
-                                ) : (
-                                    <Connect className="icon-dim-20 mr-5" onClick={onClickConnectTab} />
-                                )}
-                            </div>
-                        </Tippy>
-
-                        <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
-                            <div className="flex">
-                                <Abort className="icon-dim-20 mr-8 ml-8" onClick={onClickAbort} />
-                            </div>
-                        </Tippy>
-                    </div>
-                    <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
-                </>
-            )}
-            {handleLogsPause && params.tab === NodeDetailTabs.LOGS && (
-                <>
-                    <Tippy
-                        className="default-tt"
-                        arrow={false}
-                        placement="bottom"
-                        content={logsPaused ? 'Resume logs (Ctrl+C)' : 'Stop logs (Ctrl+C)'}
-                    >
-                        <div className={`toggle-logs mr-8 ${logsPaused ? 'play' : 'stop'}`} onClick={onClickPlayStop}>
-                            {logsPaused ? (
-                                <PlayButton className="icon-dim-20" />
-                            ) : (
-                                <StopButton className="stop-btn fcr-5" />
-                            )}
-                        </div>
-                    </Tippy>
-
-                    <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
-                        <div className="flex">
-                            <Abort className="icon-dim-20 mr-16 ml-8" onClick={onLogsCleared} />
-                        </div>
-                    </Tippy>
-                    <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
-                </>
-            )}
-            <div className="events-logs__dropdown-selector pods">
-                <span className="events-logs__label">{kind}</span>
-                <div style={{ width: '175px', zIndex: 1000 }}>
-                    <Select
-                        placeholder={`Select ${kind}`}
-                        name="pods"
-                        value={
-                            podItems
-                                ? {
-                                      label: podItems + getPodNameSuffix(podItems, isAppDeployment, nodesMap, kind),
-                                      value: podItems,
-                                  }
-                                : null
-                        }
-                        options={
-                            params.tab?.toLowerCase() == 'logs'
-                                ? options
-                                : Array.from(nodesMap).map(([name, data]) => ({
-                                      label: name + getPodNameSuffix(selectedNodes, isAppDeployment, nodesMap, kind),
-                                      value: name,
-                                  }))
-                        }
-                        closeMenuOnSelect={false}
-                        onChange={(selected) => {
-                            params.tab?.toLowerCase() == 'logs' ? selectPod(selected) : selectNode(selected.value)
-                        }}
-                        components={{
-                            IndicatorSeparator: null,
-                            Option,
-                        }}
-                        styles={{
-                            ...multiSelectStyles,
-                            menu: (base) => ({ ...base, zIndex: 12, textAlign: 'left' }),
-                            control: (base, state) => ({
-                                ...base,
-                                backgroundColor: 'transparent',
-                                borderColor: 'transparent',
-                            }),
-                            singleValue: (base, state) => ({
-                                ...base,
-                                marginLeft: '0',
-                                marginRight: '0',
-                                textAlign: 'left',
-                                direction: 'rtl',
-                                color: 'var(--N000)',
-                            }),
-                            input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
-                            option: (base, state) => ({
-                                ...base,
-                                backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                color: 'var(--N900)',
-                                textOverflow: 'ellipsis',
-                                overflow: 'hidden',
-                                whiteSpace: 'nowrap',
-                                direction: 'rtl',
-                            }),
-                        }}
-                    />
-                </div>
-            </div>
-            {Array.isArray(allContainers) &&
-                (params.tab === NodeDetailTabs.LOGS || params.tab === NodeDetailTabs.TERMINAL) && (
-                    <>
-                        <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
-                        <div className="events-logs__dropdown-selector">
-                            <span className="events-logs__label">Containers</span>
-                            <div style={{ width: '175px' }}>
-                                <Select
-                                    placeholder="Select Container"
-                                    options={
-                                        allContainers[0] &&
-                                        allContainers[0].map((container) => ({ label: container, value: container }))
-                                    }
-                                    value={containerName ? { label: containerName, value: containerName } : null}
-                                    onChange={(selected) => {
-                                        selectContainer(selected.value)
-                                        onLogsCleared()
-                                    }}
-                                    styles={{
-                                        ...multiSelectStyles,
-                                        menu: (base) => ({ ...base, zIndex: 12, textAlign: 'left' }),
-                                        control: (base, state) => ({
-                                            ...base,
-                                            backgroundColor: 'transparent',
-                                            borderColor: 'transparent',
-                                        }),
-                                        singleValue: (base, state) => ({
-                                            ...base,
-                                            direction: 'rtl',
-                                            textAlign: 'left',
-                                            color: 'var(--N000)',
-                                        }),
-                                        input: (base, state) => ({
-                                            ...base,
-                                            caretColor: 'var(--N000)',
-                                            color: 'var(--N000)',
-                                        }),
-                                        option: (base, state) => ({
-                                            ...base,
-                                            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                            color: 'var(--N900)',
-                                            textOverflow: 'ellipsis',
-                                            overflow: 'hidden',
-                                            whiteSpace: 'nowrap',
-                                            direction: 'rtl',
-                                        }),
-                                    }}
-                                    components={{
-                                        IndicatorSeparator: null,
-                                        Option,
-                                    }}
-                                />
-                            </div>
-                        </div>
-                    </>
-                )}
-            {params.tab === NodeDetailTabs.TERMINAL && (
-                <>
-                    <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
-                    <div style={{ width: '130px' }} data-testid="terminal-select-dropdown">
-                        <Select
-                            placeholder="Select shell"
-                            className="pl-20"
-                            options={[
-                                { label: 'bash', value: 'bash' },
-                                { label: 'sh', value: 'sh' },
-                                { label: 'powershell', value: 'powershell' },
-                                { label: 'cmd', value: 'cmd' },
-                            ]}
-                            value={shell}
-                            onChange={(selected) => {
-                                selectShell(selected)
-                            }}
-                            styles={{
-                                menu: (base) => ({ ...base, zIndex: 12 }),
-                                control: (base, state) => ({
-                                    ...base,
-                                    backgroundColor: 'transparent',
-                                    borderColor: 'transparent',
-                                }),
-                                singleValue: (base, state) => ({
-                                    ...base,
-                                    textAlign: 'left',
-                                    color: 'var(--N000)',
-                                }),
-                                input: (base, state) => ({ ...base, caretColor: 'var(--N000)', color: 'var(--N000)' }),
-                                option: (base, state) => ({
-                                    ...base,
-                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--N000)',
-                                    color: 'var(--N900)',
-                                }),
-                            }}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option,
-                            }}
-                        />
-                    </div>
-                </>
-            )}
-            {children}
-        </div>
-    )
-}
-
 export const AppNotConfigured = ({
     image,
     title,
@@ -1490,53 +1123,6 @@ export const EnvironmentNotConfigured = ({ environments, ...props }) => {
                 )}
             </div>
         </section>
-    )
-}
-
-export const TimeRangeSelector = ({
-    value = '',
-    onSelect = null,
-    options = [
-        '5 minutes',
-        '15 minutes',
-        '30 minutes',
-        '1 hour',
-        '3 hours',
-        '6 hours',
-        '12 hours',
-        '24 hours',
-        '2 days',
-        '7 days',
-    ],
-    prefix = '',
-}) => {
-    const [selectedRange, selectRange] = React.useState<string>(value)
-
-    useEffectAfterMount(() => {
-        if (typeof onSelect === 'function') {
-            if (selectedRange === value) {
-                return
-            }
-            const [quantity, unit] = selectedRange.split(' ')
-            onSelect([quantity, unit])
-        }
-    }, [selectedRange])
-
-    return (
-        <div style={{ width: '210px' }}>
-            <Select
-                options={options.map((time) => ({ label: time, value: time }))}
-                value={{ label: selectedRange, value: selectedRange }}
-                onChange={(selected) => selectRange(selected.value)}
-                menuPosition="fixed"
-                components={{ IndicatorSeparator: null, ValueContainer, Option }}
-                styles={{
-                    ...multiSelectStyles,
-                    valueContainer: (base, state) => ({ ...base, color: 'var(--N900)' }),
-                }}
-                isSearchable={false}
-            />
-        </div>
     )
 }
 

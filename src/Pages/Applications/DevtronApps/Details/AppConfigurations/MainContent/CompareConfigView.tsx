@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as ICCheck } from '@Icons/ic-check.svg'
 import { ReactComponent as ICFileEdit } from '@Icons/ic-file-edit.svg'
@@ -18,14 +34,13 @@ const CompareConfigView = ({
     selectedChartVersion,
     draftChartVersion,
     isDeleteOverrideView,
-    editorKey = `${compareFromSelectedOptionValue || 'compare'}-draft-editor-key`,
     className = '',
     errorInfo,
     handleErrorReload,
     displayName,
 }: CompareConfigViewProps) => (
     <div className={`flexbox-col ${className ?? ''}`}>
-        <div className="dc__grid-half bcn-0 dc__position-sticky dc__top-0 dc__zi-10">
+        <div className="dc__grid-half bg__primary dc__position-sticky dc__top-0 dc__zi-10">
             <div className="dc__border-right px-12 py-6 flexbox dc__gap-8 dc__border-bottom dc__align-items-center">
                 <ICCheck className="scn-9 icon-dim-16 dc__no-shrink" />
                 <span className="cn-9 fs-12 fw-6 lh-20">Published</span>
@@ -56,7 +71,6 @@ const CompareConfigView = ({
         ) : (
             <div className="p-16">
                 <DeploymentHistoryDiffView
-                    key={editorKey}
                     currentConfiguration={getCompareViewHistoryDiffConfigProps(
                         publishedEditorTemplate,
                         publishedEditorConfig,

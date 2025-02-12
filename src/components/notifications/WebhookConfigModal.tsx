@@ -21,6 +21,7 @@ import {
     CodeEditor,
     ToastVariantType,
     ToastManager,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import { ReactComponent as ErrorIcon } from '@Icons/ic-warning.svg'
@@ -149,7 +150,7 @@ export const WebhookConfigModal = ({
 
     const renderConfigureLinkInfoColumn = () => (
         <div
-            className="h-100 w-280 flexbox-col left mh-0 p-16 dc__overflow-scroll dc__gap-16 fs-13"
+            className="h-100 w-280 flexbox-col left mh-0 p-16 dc__overflow-auto dc__gap-16 fs-13"
             data-testid="available-webhook-data"
         >
             <div className="flexbox lh-20 fw-6">
@@ -244,15 +245,14 @@ export const WebhookConfigModal = ({
 
                 <div className="flexbox-col dc__gap-6">
                     <div className="fs-13 cn-7 lh-20 dc__required-field">Data to be shared through webhook</div>
-                    <div className="en-2 bw-1 br-4 p-6">
+                    <CodeEditor.Container>
                         <CodeEditor
                             value={form.payload}
-                            mode="json"
+                            mode={MODES.JSON}
                             onChange={handleIncomingPayloadChange}
-                            inline
-                            height={150}
+                            height="100%"
                         />
-                    </div>
+                    </CodeEditor.Container>
                     {isFormValid[ConfigurationFieldKeys.PAYLOAD].message && (
                         <div className="flex left dc__gap-4 cr-5 fs-11 lh-16 fw-4">
                             <ErrorIcon className="icon-dim-16 p-1 form__icon--error dc__no-shrink dc__align-self-start" />

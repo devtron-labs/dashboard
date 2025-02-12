@@ -14,58 +14,56 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { useRouteMatch, useParams, useHistory, useLocation } from 'react-router-dom'
 import {
     TippyCustomized,
     TippyTheme,
     ClipboardButton,
-    stopPropagation,
-    ToastManager,
-    ToastVariantType,
     SortableTableHeaderCell,
     Tooltip,
     TabGroup,
     ComponentSizeType,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as ICExpand } from '@Icons/ic-expand.svg'
+import { followCursor } from 'tippy.js'
 import IndexStore from '../../index.store'
 import { getElapsedTime, importComponentFromFELibrary, Pod as PodIcon } from '../../../../common'
 import PodHeaderComponent from './PodHeader.component'
 import { Node, iNode, NodeComponentProps, NodeType } from '../../appDetails.type'
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util'
 import NodeDeleteComponent from './NodeDelete.component'
-import AppDetailsStore from '../../appDetails.store'
 import { getNodeStatus, nodeRowClassModifierMap } from './nodeType.util'
 import { useSharedState } from '../../../utils/useSharedState'
 import { getExternalLinkIcon, NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component'
 import { OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type'
 import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils'
-import { ReactComponent as ICExpand } from '@Icons/ic-expand.svg'
 import { getPodRestartRBACPayload } from '../nodeDetail/nodeDetail.api'
+import { AppDetailsTabs } from '../../appDetails.store'
+import { NoPodProps } from './types'
 import './nodeType.scss'
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { followCursor } from 'tippy.js'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const PodRestart = importComponentFromFELibrary('PodRestart')
 const renderConfigDriftDetectedText = importComponentFromFELibrary('renderConfigDriftDetectedText', null, 'function')
 
-const NoPod = ({ selectMessage = 'Select a pod to view events', style = {} }) => {
-    return (
-        <div data-testid="no-pod" className="no-pod no-pod-list no-pod--pod" style={{ ...style }}>
-            <PodIcon color="var(--N400)" style={{ width: '48px', height: '48px', marginBottom: '12px' }} />
-            <p>{selectMessage}</p>
-        </div>
-    )
-}
+const NoPod = ({ selectMessage = 'Select a pod to view events', style = {} }: NoPodProps) => (
+    <div data-testid="no-pod" className="no-pod no-pod-list no-pod--pod" style={{ ...style }}>
+        <PodIcon color="var(--N400)" style={{ width: '48px', height: '48px', marginBottom: '12px' }} />
+        <p>{selectMessage}</p>
+    </div>
+)
 
 const NodeComponent = ({
-    handleFocusTabs,
     externalLinks,
     monitoringTools,
     isDevtronApp,
     clusterId,
     isDeploymentBlocked,
+    addTab,
+    tabs,
+    removeTabByIdentifier,
 }: NodeComponentProps) => {
     const { url } = useRouteMatch()
     const history = useHistory()
@@ -121,26 +119,26 @@ const NodeComponent = ({
 
     useEffect(() => {
         if (params.nodeType) {
-            let tableHeader: string[]
+            let tableHeaders: string[]
 
             switch (params.nodeType) {
                 case NodeType.Pod.toLowerCase():
-                    tableHeader = ['Name', 'Ready', 'Restarts', 'Age', '', '']
+                    tableHeaders = ['Name', 'Ready', 'Restarts', 'Age', '', '']
                     if (podLevelExternalLinks.length > 0) {
-                        tableHeader = ['Name', 'Ready', 'Restarts', 'Age', 'Links', '']
+                        tableHeaders = ['Name', 'Ready', 'Restarts', 'Age', 'Links', '']
                     }
                     break
                 case NodeType.Service.toLowerCase():
-                    tableHeader = ['Name', 'URL', '']
+                    tableHeaders = ['Name', 'URL', '']
                     break
                 default:
-                    tableHeader = ['Name', '', '']
+                    tableHeaders = ['Name', '', '']
                     break
             }
 
-            setTableHeader(tableHeader)
+            setTableHeader(tableHeaders)
 
-            let [_ignore, _selectedResource] = url.split('group/')
+            let [, _selectedResource] = url.split('group/')
             let _selectedNodes: Array<iNode>
             if (_selectedResource) {
                 _selectedResource = _selectedResource.replace(/\/$/, '')
@@ -154,17 +152,13 @@ const NodeComponent = ({
 
             _selectedNodes.forEach((node: Node) => {
                 if (node.health?.status.toLowerCase() === 'healthy') {
-                    _healthyNodeCount++
+                    _healthyNodeCount += 1
                 }
             })
             let podsType = []
             if (isPodAvailable) {
                 podsType = _selectedNodes.filter((el) =>
-                    podMetaData?.some((f) => {
-                        // Set f.isNew to false if it is undefined
-                        f.isNew = f.isNew || false
-                        return f.name === el.name && f.isNew === podType
-                    }),
+                    podMetaData?.some((f) => f.name === el.name && !!f.isNew === podType),
                 )
             }
 
@@ -177,12 +171,11 @@ const NodeComponent = ({
     const getPodRestartCount = (node: iNode) => {
         let restartCount = '0'
         if (node.info) {
-            for (const ele of node.info) {
-                if (ele.name === 'Restart Count') {
-                    restartCount = ele.value
-                    break
+            node.info.forEach((element) => {
+                if (element.name === 'Restart Count') {
+                    restartCount = element.value
                 }
-            }
+            })
         }
         return restartCount
     }
@@ -190,12 +183,20 @@ const NodeComponent = ({
     const markNodeSelected = (nodes: Array<iNode>, nodeName: string) => {
         const updatedNodes = nodes.map((node) => {
             if (node.name === nodeName) {
-                node.isSelected = !node.isSelected
+                const newSelectionStatus = !node.isSelected
+
                 markedNodes.current.set(
                     node.name,
-                    markedNodes.current.has(node.name) ? !markedNodes.current.get(node.name) : node.isSelected,
+                    markedNodes.current.has(node.name) ? !markedNodes.current.get(node.name) : newSelectionStatus,
                 )
-            } else if (node.childNodes?.length > 0) {
+
+                return {
+                    ...node,
+                    isSelected: newSelectionStatus,
+                }
+            }
+
+            if (node.childNodes?.length > 0) {
                 markNodeSelected(node.childNodes, nodeName)
             }
 
@@ -206,7 +207,7 @@ const NodeComponent = ({
     }
 
     const handleActionTabClick = (node: iNode, _tabName: string, containerName?: string) => {
-        let [_url, _ignore] = url.split('/group/')
+        let [_url] = url.split('/group/')
         _url = `${_url.split('/').slice(0, -1).join('/')}/${node.kind.toLowerCase()}/${
             node.name
         }/${_tabName.toLowerCase()}`
@@ -217,18 +218,16 @@ const NodeComponent = ({
             }
             return location.search
         }
-
-        const isAdded = AppDetailsStore.addAppDetailsTab(node.kind, node.name, _url)
-
-        if (isAdded) {
-            history.push({ pathname: _url, search: getSearchString() })
-        } else {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                title: 'Max 5 tabs allowed',
-                description: 'Please close an open tab and try again.',
+        addTab({
+            idPrefix: AppDetailsTabs.k8s_Resources,
+            kind: node.kind.toLowerCase(),
+            name: node.name.toLowerCase(),
+            url: _url,
+        })
+            .then(() => {
+                history.push({ pathname: _url, search: getSearchString() })
             })
-        }
+            .catch(noop)
     }
 
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
@@ -238,20 +237,19 @@ const NodeComponent = ({
                 <>
                     {portList.map((val, idx) => {
                         const text = `${node.name}.${node.namespace}:${val}`
+
                         if (idx > 0) {
                             return (
-                                <div className="flex left cn-9 m-0 dc__no-decore">
-                                    <div className="" key={node.name}>
-                                        {text}
+                                <div className="flex left cn-9 m-0 dc__no-decore" key={node.name}>
+                                    <div>{text}</div>
+                                    <div className="ml-0 fs-13 dc__truncate-text pt-4 pl-4">
+                                        <ClipboardButton content={text} />
                                     </div>
-                                    <button type="button" className="dc__unset-button-styles" onClick={stopPropagation}>
-                                        <div className="ml-0 fs-13 dc__truncate-text pt-4 pl-4">
-                                            <ClipboardButton content={text} />
-                                        </div>
-                                    </button>
                                 </div>
                             )
                         }
+
+                        return null
                     })}
                 </>
             )
@@ -305,11 +303,10 @@ const NodeComponent = ({
             const onClickNodeDetailsTab = (e) => {
                 const _kind = e.target.dataset.name
                 if (node.kind === NodeType.Containers) {
-                    handleActionTabClick(node['pNode'], _kind, node.name)
+                    handleActionTabClick(node.pNode, _kind, node.name)
                 } else {
                     handleActionTabClick(node, _kind)
                 }
-                handleFocusTabs()
             }
 
             const getWidthClassnameForTabs = (): string => {
@@ -326,7 +323,8 @@ const NodeComponent = ({
             }
 
             return (
-                <React.Fragment key={`grt${index}`}>
+                // eslint-disable-next-line react/no-array-index-key
+                <Fragment key={`grt${index}`}>
                     {showHeader && !!_currentNodeHeader && (
                         <div className="node-row dc__border-bottom-n1 pt-6 pb-5 pl-18 pr-16">
                             <div className="fw-6">
@@ -358,14 +356,14 @@ const NodeComponent = ({
                             )}
                             <div>
                                 <div className="resource__title-name flex left">
-                                    <Tooltip content={node.name} followCursor={"horizontal"} plugins={[followCursor]}>
+                                    <Tooltip content={node.name} followCursor="horizontal" plugins={[followCursor]}>
                                         <span data-testid="resource-node-name" className="fs-13 lh-20 dc__truncate">
                                             {node.name}
                                         </span>
                                     </Tooltip>
                                     <div
                                         className={`flex left ${
-                                            node.kind.toLowerCase() == NodeType.Pod.toLowerCase() ? 'mw-264' : 'mw-152'
+                                            node.kind.toLowerCase() === NodeType.Pod.toLowerCase() ? 'mw-264' : 'mw-152'
                                         }`}
                                     >
                                         <div className="px-8">
@@ -379,28 +377,27 @@ const NodeComponent = ({
                                                         node.kind === NodeType.Containers ? '' : 'node__tabs'
                                                     } dc__border br-4 dc__w-fit-content lh-18`}
                                                 >
-                                                    {getNodeDetailTabs(node.kind as NodeType).map((kind, index) => {
-                                                        return (
-                                                            <div
-                                                                key={`tab__${index}`}
-                                                                data-name={kind}
-                                                                data-testid={`${kind.toLowerCase()}-tab`}
-                                                                onClick={onClickNodeDetailsTab}
-                                                                className={`dc__capitalize flex cn-7 fw-6 cursor bcn-0 ${
-                                                                    node.kind === NodeType.Containers
-                                                                        ? ''
-                                                                        : 'resource-action-tabs__active'
-                                                                }  ${
-                                                                    index ===
-                                                                    getNodeDetailTabs(node.kind as NodeType)?.length - 1
-                                                                        ? ''
-                                                                        : 'dc__border-right'
-                                                                } px-6`}
-                                                            >
-                                                                {kind.toLowerCase()}
-                                                            </div>
-                                                        )
-                                                    })}
+                                                    {getNodeDetailTabs(node.kind as NodeType).map((kind, idx) => (
+                                                        <div
+                                                            // eslint-disable-next-line react/no-array-index-key
+                                                            key={`tab__${idx}`}
+                                                            data-name={kind}
+                                                            data-testid={`${kind.toLowerCase()}-tab`}
+                                                            onClick={onClickNodeDetailsTab}
+                                                            className={`dc__capitalize flex cn-7 fw-6 cursor bg__primary ${
+                                                                node.kind === NodeType.Containers
+                                                                    ? ''
+                                                                    : 'resource-action-tabs__active'
+                                                            }  ${
+                                                                idx ===
+                                                                getNodeDetailTabs(node.kind as NodeType).length - 1
+                                                                    ? ''
+                                                                    : 'dc__border-right'
+                                                            } px-6`}
+                                                        >
+                                                            {kind.toLowerCase()}
+                                                        </div>
+                                                    ))}
                                                 </div>
                                                 {node.kind !== NodeType.Containers && (
                                                     <>
@@ -435,7 +432,7 @@ const NodeComponent = ({
                                                 interactive
                                                 content={node.health.message.toLowerCase()}
                                                 className="dc__mxw-250--imp"
-                                                followCursor={"horizontal"}
+                                                followCursor="horizontal"
                                                 plugins={[followCursor]}
                                             >
                                                 <span className="dc__truncate">
@@ -490,7 +487,7 @@ const NodeComponent = ({
                                     <NodeLevelExternalLinks
                                         helmAppDetails={appDetails}
                                         nodeLevelExternalLinks={containerLevelExternalLinks}
-                                        podName={node['pNode']?.name}
+                                        podName={node.pNode?.name}
                                         containerName={node.name}
                                         addExtraSpace
                                     />
@@ -505,6 +502,8 @@ const NodeComponent = ({
                                     nodeDetails={node}
                                     appDetails={appDetails}
                                     isDeploymentBlocked={isDeploymentBlocked}
+                                    tabs={tabs}
+                                    removeTabByIdentifier={removeTabByIdentifier}
                                 />
                             )}
                     </div>
@@ -513,7 +512,7 @@ const NodeComponent = ({
                             <div>{makeNodeTree(node.childNodes, true)}</div>
                         </div>
                     )}
-                </React.Fragment>
+                </Fragment>
             )
         })
     }
@@ -545,16 +544,15 @@ const NodeComponent = ({
                     )}
 
                     <div className={`node-row dc__border-bottom-n1 pt-6 pb-5 pl-8 pr-16 ${nodeRowClassModifier}`}>
-                        {tableHeader.map((cell, index) => {
-                            return (
-                                <div
-                                    key={`gpt_${index}`}
-                                    className={`fw-6 ${index === 0 && selectedNodes[0]?.childNodes?.length ? 'pl-28' : ''} ${index === 0 && !selectedNodes[0]?.childNodes?.length ? 'pl-10' : ''}`}
-                                >
-                                    <SortableTableHeaderCell isSortable={false} title={cell} />
-                                </div>
-                            )
-                        })}
+                        {tableHeader.map((cell, index) => (
+                            <div
+                                // eslint-disable-next-line react/no-array-index-key
+                                key={`${cell}-${index}`} // NOTE: cell can be empty string therefore need to put index in key
+                                className={`fw-6 ${index === 0 && selectedNodes[0]?.childNodes?.length ? 'pl-28' : ''} ${index === 0 && !selectedNodes[0]?.childNodes?.length ? 'pl-10' : ''}`}
+                            >
+                                <SortableTableHeaderCell isSortable={false} title={cell} />
+                            </div>
+                        ))}
                     </div>
                     {params.nodeType === NodeType.Pod.toLowerCase() && containerLevelExternalLinks.length > 0 && (
                         <div className="fs-12 fw-4 cn-9 bcn-1 lh-18 py-4 px-36">

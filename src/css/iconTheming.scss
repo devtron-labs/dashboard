@@ -1,0 +1,137 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// This file is a hack that should be removed once the icons are cleaned up
+
+$svg-stroke-hex-to-var: (
+    "#FFBF00": --Y500,
+    "white": --white,
+    "#FF5656": --R500,
+    "#596168": --N600,
+    "#fff": --white,
+    "#0066CC": --B500,
+    "#3B444C": --N700,
+    "#000A14": --N900,
+    "#664BEE": --V500,
+    "#1DAD70": --G500,
+    "#959BA1": --N400,
+    "#D0D4D9": --N200,
+    "#767D84": --N500,
+    "#404040": --N700,
+    "#F33E3E": --R500,
+    "#06C": --B500,
+    "#F32E2E": --R500,
+    "#5865F2": --V500,
+    "#B1B7BC": --N300,
+    "#C58D36": --Y600,
+    "#8C6324": --Y700,
+    "#423BD1": --V600,
+    "#D2D2D2": --N200,
+    "#FDE7E7": --R100,
+    "#FF7E5B": --O500,
+    "#231F20": --N900,
+    "#AFAFAF": --N300,
+    "#ABCFF3": --B200,
+    "#E6EEFC": --N100,
+    "#1D2730": --N800,
+    "#106240": --G700,
+    "#B21212": --R700,
+    "#B23412": --O700,
+    "#FF9900": --Y500,
+    "#3989D9": --B400,
+    "#FFB549": --Y500,
+    "#E9FBF4": --G100,
+);
+
+$svg-fill-hex-to-var: (
+    "#0F1689": --B700,
+    "#1A1919": --N800,
+    "#D0D4D9": --N200,
+    "#E5F2FF": --B100,
+    "#72ACE6": --B300,
+    "#ABCFF3": --B200,
+    "#3989D9": --B400,
+    "#0066CC": --B500,
+    "#596168": --N600,
+    "#4A4A4A": --N700,
+    "#959BA1": --N400,
+    "#F33E3E": --R500,
+    "#E6F5F8": --B100,
+    "#767D84": --N500,
+    "#000A14": --N800,
+    "#1D2730": --N800,
+    "#8C6324": --Y700,
+    "#3B444C": --N700,
+    "#F7FAFC": --N50,
+    "#1DAD70": --G500,
+    "#EBE8F8": --V50,
+    "#664BEE": --V500,
+    "#EDF1F5": --N100,
+    "#E6EEFF": --B100,
+    "#B1B7BC": --N300,
+    "#FFB549": --Y500,
+    "#FFFFFF": --white,
+    "#FF7E5B": --O500,
+    "#F3F0FF": --V100,
+    "#E9FBF4": --G100,
+    "#9FA4A9": --N600,
+    "#080A2D": --N800,
+    "#C58D36": --Y600,
+);
+
+// Using where to have lowest specificity (0,0,0)
+:where(svg:not([data-style-override="false"])) {
+    @each $hex, $var in $svg-stroke-hex-to-var {
+        :where([stroke="#{$hex}" i]:not([data-style-override="false"])) {
+            stroke: var($var);
+        }
+    }
+
+    @each $hex, $var in $svg-fill-hex-to-var {
+        :where([fill="#{$hex}" i]:not([data-style-override="false"])) {
+            fill: var($var);
+        }
+    }
+}
+
+// These are just hack, not to be further extended
+.theme {
+    &__dark {
+        .github {
+            background-image: url('../assets/icons/dark/ic-github.svg') !important;
+        }
+
+        .form__checkbox-container {
+            background-image: url('../assets/icons/dark/ic-checkbox-unselected.svg');
+
+            &:hover {
+                background-image: url('../assets/icons/dark/ic-checkbox-hover.svg');
+            }
+        }
+
+        .form__checkbox:checked[value='INTERMEDIATE']~.form__checkbox-container {
+            background-image: url('../assets/icons/dark/ic-checkbox-intermediate.svg');
+        }
+
+        .form__checkbox:checked[value='CHECKED']~.form__checkbox-container {
+            background-image: url('../assets/icons/dark/ic-checkbox-selected.svg');
+        }
+
+        .form__checkbox:checked[value='BULK_CHECKED']~.form__checkbox-container {
+            background-image: url('../assets/icons/dark/ic-bulk-check.svg');
+        }
+    }
+}

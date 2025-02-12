@@ -21,13 +21,14 @@ import {
     Progressing,
     DEFAULT_BASE_PAGE_SIZE,
     Pagination,
+    SortableTableHeaderCell,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory, useLocation } from 'react-router-dom'
 import { trackByGAEvent } from '../../common'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg'
 import { ReactComponent as JobIcon } from '../../../assets/icons/ic-job-node.svg'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
-import { OrderBy, SortBy } from '../../app/list/types'
+import { SortBy } from '../../app/list/types'
 import { Job, JobListViewProps, JobsListSortableKeys } from '../Types'
 import { JobListViewType, JOB_LIST_HEADERS } from '../Constants'
 import ExpandedRow from '../ExpandedRow/ExpandedRow'
@@ -148,47 +149,23 @@ export default function JobListView(props: JobListViewProps) {
             return null
         }
 
-        const icon = props.sortRule.order == OrderBy.ASC ? '' : 'sort-up'
         return (
             <div className="app-list" data-testid="job-list-container">
                 <div className="app-list__header dc__border-bottom dc__position-sticky dc__top-47">
                     <div className="app-list__cell--icon flex left cursor" onClick={toggleAllExpandRow}>
                         <Arrow className={`icon-dim-24 p-2 ${arrowIcon()}`} />
                     </div>
-                    <div className="app-list__cell">
-                        <button
-                            className="app-list__cell-header flex"
-                            onClick={handleJobNameSorting}
-                            data-testid="job-name-header"
-                        >
-                            {JOB_LIST_HEADERS.Name}
-                            {props.sortRule.key == SortBy.APP_NAME ? (
-                                <span data-testid="sort-job-list" className={`sort ${icon} ml-4`} />
-                            ) : (
-                                <span className="sort-col" />
-                            )}
-                        </button>
-                    </div>
-                    <div className="app-list__cell">
-                        <span className="app-list__cell-header" data-testid="last-run-header">
-                            {JOB_LIST_HEADERS.LastJobStatus}
-                        </span>
-                    </div>
-                    <div className="app-list__cell">
-                        <span className="app-list__cell-header" data-testid="run-environment-header">
-                            {JOB_LIST_HEADERS.RUN_IN_ENVIRONMENT}
-                        </span>
-                    </div>
-                    <div className="app-list__cell">
-                        <span className="app-list__cell-header" data-testid="last-run-at-header">
-                            {JOB_LIST_HEADERS.LastRunAt}
-                        </span>
-                    </div>
-                    <div className="app-list__cell">
-                        <span className="app-list__cell-header" data-testid="last-success-at-header">
-                            {JOB_LIST_HEADERS.LastSuccessAt}
-                        </span>
-                    </div>
+                    <SortableTableHeaderCell
+                        triggerSorting={handleJobNameSorting}
+                        title={JOB_LIST_HEADERS.Name}
+                        disabled={false}
+                        isSorted={props.sortRule.key == SortBy.APP_NAME}
+                        sortOrder={props.sortRule.order}
+                    />
+                    <SortableTableHeaderCell isSortable={false} title={JOB_LIST_HEADERS.LastJobStatus} />
+                    <SortableTableHeaderCell isSortable={false} title={JOB_LIST_HEADERS.RUN_IN_ENVIRONMENT} />
+                    <SortableTableHeaderCell isSortable={false} title={JOB_LIST_HEADERS.LastRunAt} />
+                    <SortableTableHeaderCell isSortable={false} title={JOB_LIST_HEADERS.LastSuccessAt} />
                     <div className="app-list__cell app-list__cell--action" />
                 </div>
                 {renderJobPipelines()}
@@ -200,7 +177,7 @@ export default function JobListView(props: JobListViewProps) {
         if (props.size > DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
-                    rootClassName="flex dc__content-space px-20 bcn-0"
+                    rootClassName="flex dc__content-space px-20 bg__primary"
                     size={props.size}
                     pageSize={props.pageSize}
                     offset={props.offset}

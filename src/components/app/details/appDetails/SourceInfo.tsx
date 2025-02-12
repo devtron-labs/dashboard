@@ -74,6 +74,7 @@ export const SourceInfo = ({
     setErrorsList,
     filteredEnvIds,
     deploymentUserActionState,
+    handleOpenConfigDriftModal,
 }: SourceInfoType) => {
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
@@ -130,10 +131,7 @@ export const SourceInfo = ({
 
         return (
             <div className="flex left w-100">
-                <EnvSelector
-                    environments={environments}
-                    disabled={loadingDetails || loadingResourceTree || (params.envId && !showCommitInfo)}
-                />
+                <EnvSelector environments={environments} />
                 {appDetails?.deploymentAppType && (
                     <Tooltip
                         placement="top"
@@ -155,8 +153,7 @@ export const SourceInfo = ({
                         <div className="pl-8">
                             <ConfigSyncStatusButton
                                 areConfigurationsDrifted={appDetails.resourceTree.hasDrift}
-                                appId={appDetails.appId}
-                                envId={envId}
+                                handleOpenModal={handleOpenConfigDriftModal}
                             />
                         </div>
                     )}
@@ -172,8 +169,8 @@ export const SourceInfo = ({
                     <Tooltip
                         content={
                             <div className="fw-4 lh-18 flexbox-col dc__ga-2">
-                                <h6 className="fs-12 fw-6 cn-0 m-0">Last snapshot received</h6>
-                                <p className="m-0 fs-12 cn-50">
+                                <h6 className="fs-12 fw-6 m-0">Last snapshot received</h6>
+                                <p className="m-0 fs-12">
                                     {moment(appDetails.resourceTree.lastSnapshotTime).format(
                                         DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT,
                                     )}
@@ -207,18 +204,6 @@ export const SourceInfo = ({
                                         style={ButtonStyleType.neutral}
                                     />
                                 )}
-                                {window._env_.FEATURE_SWAP_TRAFFIC_ENABLE &&
-                                    SwapTraffic &&
-                                    !!appDetails.pcoId &&
-                                    !appDetails.trafficSwitched && (
-                                        <SwapTraffic
-                                            appName={appDetails.appName}
-                                            envName={appDetails.environmentName}
-                                            appId={appDetails.appId}
-                                            envId={appDetails.environmentId}
-                                            pcoId={appDetails.pcoId}
-                                        />
-                                    )}
                                 {!isVirtualEnvironment && showHibernateModal && (
                                     <Button
                                         dataTestId="app-details-hibernate-modal-button"
@@ -259,6 +244,18 @@ export const SourceInfo = ({
                                         }}
                                     />
                                 )}
+                                {window._env_.FEATURE_SWAP_TRAFFIC_ENABLE &&
+                                    SwapTraffic &&
+                                    !!appDetails.pcoId &&
+                                    !appDetails.trafficSwitched && (
+                                        <SwapTraffic
+                                            appName={appDetails.appName}
+                                            envName={appDetails.environmentName}
+                                            appId={appDetails.appId}
+                                            envId={appDetails.environmentId}
+                                            pcoId={appDetails.pcoId}
+                                        />
+                                    )}
                                 <AppDetailsCDButton
                                     appId={appDetails.appId}
                                     environmentId={appDetails.environmentId}

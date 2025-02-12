@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { useMemo } from 'react'
 import { generatePath, Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
 
@@ -9,11 +25,12 @@ import {
     getIsApprovalPolicyConfigured,
     Progressing,
     useAsync,
+    CMSecretComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
 import { importComponentFromFELibrary } from '@Components/common'
-import { ConfigMapSecretWrapper, CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret'
+import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret'
 import { DeploymentConfigCompare, DeploymentTemplate } from '@Pages/Applications'
 import { getEnvConfig } from '@Pages/Applications/DevtronApps/service'
 import { EnvConfigurationsNav } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/Navigation/EnvConfigurationsNav'
@@ -26,7 +43,7 @@ const useReleaseConfigurationContext = importComponentFromFELibrary('useReleaseC
 const ConfigurationsAppEnvSelector = importComponentFromFELibrary('ConfigurationsAppEnvSelector', null, 'function')
 
 const renderNullState = () => (
-    <div className="bcn-0">
+    <div className="bg__primary">
         <GenericEmptyState
             title="No application x environment selected"
             subTitle="Select application and environment to view configurations"
@@ -178,7 +195,7 @@ export const Configurations = () => {
             </Route>
             <Route>
                 <div className="release-configurations dc__grid h-100 dc__overflow-hidden">
-                    <div className="flexbox-col min-h-100 bcn-0 dc__border-right">
+                    <div className="flexbox-col min-h-100 bg__primary dc__border-right">
                         <ConfigurationsAppEnvSelector />
                         {showConfig ? renderConfigSideNav() : null}
                     </div>

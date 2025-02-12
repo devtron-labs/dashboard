@@ -33,8 +33,13 @@ import {
     useUrlFilters,
     DynamicTabType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/Types'
+import { UpdateTabUrlParamsType, DynamicTabsVariantType, DynamicTabsProps } from '@Components/common/DynamicTabs/types'
 import { ClusterListType } from '@Components/ClusterNodes/types'
+import { ReactComponent as ICArrowUpCircle } from '@Icons/ic-arrow-up-circle.svg'
+import { ReactComponent as ICTerminalFill } from '@Icons/ic-terminal-fill.svg'
+import { ReactComponent as ICObject } from '@Icons/ic-object.svg'
+import { ReactComponent as ICWorldBlack } from '@Icons/ic-world-black.svg'
+import { ReactComponent as ICChartLineUp } from '@Icons/ic-chart-line-up.svg'
 import { ClusterOptionType, K8SResourceListType, URLParams } from '../Types'
 import {
     K8S_EMPTY_GROUP,
@@ -92,7 +97,10 @@ const ResourceList = () => {
     const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>(null)
     const { targetK8sVersion } = useUrlFilters<never, ResourceListUrlFiltersType>({ parseSearchParams })
 
-    const [rawGVKLoader, k8SObjectMapRaw] = useAsync(() => getResourceGroupListRaw(clusterId), [clusterId])
+    const [rawGVKLoader, k8SObjectMapRaw, , reloadK8sObjectMapRaw] = useAsync(
+        () => getResourceGroupListRaw(clusterId),
+        [clusterId],
+    )
 
     const [loading, clusterListData, error] = useAsync(() => getClusterListMin())
 
@@ -202,7 +210,7 @@ const ResourceList = () => {
             isOverviewSelected: isOverviewNodeType,
             isMonitoringDashBoardSelected: isMonitoringNodeType,
         })
-        initTabs(_tabs, reInit)
+        initTabs(_tabs, reInit, null, true)
     }
 
     useEffect(() => initTabsBasedOnRole(false), [])
@@ -234,7 +242,7 @@ const ResourceList = () => {
             const match = getTabById(tabId)
             if (match) {
                 if (!match.isSelected) {
-                    markTabActiveById(match.id)
+                    markTabActiveById(match.id).catch(noop)
                 }
                 return
             }
@@ -263,13 +271,13 @@ const ResourceList = () => {
             const selectedTabFromNodeType = getTabById(nodeTypeToTabIdMap[nodeType]) ?? ({} as DynamicTabType)
             // Explicitly not using optional chaining to ensure to check the tab exists
             if (selectedTabFromNodeType && !selectedTabFromNodeType.isSelected) {
-                markTabActiveById(selectedTabFromNodeType.id)
+                markTabActiveById(selectedTabFromNodeType.id).catch(noop)
             }
 
             return
         }
 
-        markTabActiveById(ResourceBrowserTabsId.k8s_Resources)
+        markTabActiveById(ResourceBrowserTabsId.k8s_Resources).catch(noop)
     }, [location.pathname])
 
     const onClusterChange = (selected) => {
@@ -323,16 +331,33 @@ const ResourceList = () => {
         [clusterId, clusterOptions],
     )
 
-    const refreshData = (): void => {
+    const refreshData = () => {
         const activeTab = tabs.find((tab) => tab.isSelected)
         updateTabComponentKey(activeTab.id)
         updateTabLastSyncMoment(activeTab.id)
         setIsDataStale(false)
     }
 
-    const closeResourceModal = (_refreshData: boolean): void => {
+    const dynamicTabsTimerConfig = useMemo(
+        () =>
+            tabs.reduce(
+                (acc, tab) => {
+                    acc[tab.id] = {
+                        reload: refreshData,
+                        showTimeSinceLastSync: tab.id === ResourceBrowserTabsId.k8s_Resources,
+                    }
+
+                    return acc
+                },
+                {} as DynamicTabsProps['timerConfig'],
+            ),
+        [tabs],
+    )
+
+    const closeResourceModal = (_refreshData: boolean) => {
         if (_refreshData) {
             refreshData()
+            reloadK8sObjectMapRaw()
         }
     }
 
@@ -490,25 +515,31 @@ const ResourceList = () => {
         }
 
         if (loading || !tabs.length) {
-            return <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
+            return <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />
         }
 
         return (
             <>
-                <div
-                    className="h-36 resource-browser-tab flex left w-100 dc__window-bg"
-                    style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}
-                >
-                    <DynamicTabs
-                        tabs={tabs}
-                        removeTabByIdentifier={removeTabByIdentifier}
-                        markTabActiveById={markTabActiveById}
-                        stopTabByIdentifier={stopTabByIdentifier}
-                        refreshData={refreshData}
-                        setIsDataStale={setIsDataStale}
-                        hideTimer={isOverviewNodeType || isMonitoringNodeType || isUpgradeClusterNodeType}
-                    />
-                </div>
+                <DynamicTabs
+                    tabs={tabs}
+                    variant={DynamicTabsVariantType.RECTANGULAR}
+                    removeTabByIdentifier={removeTabByIdentifier}
+                    markTabActiveById={markTabActiveById}
+                    stopTabByIdentifier={stopTabByIdentifier}
+                    setIsDataStale={setIsDataStale}
+                    timerConfig={dynamicTabsTimerConfig}
+                    iconsConfig={{
+                        [getTabId(
+                            UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX,
+                            UPGRADE_CLUSTER_CONSTANTS.NAME,
+                            SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase(),
+                        )]: <ICArrowUpCircle className="scn-7" />,
+                        [ResourceBrowserTabsId.terminal]: <ICTerminalFill className="fcn-7" />,
+                        [ResourceBrowserTabsId.cluster_overview]: <ICWorldBlack className="scn-7" />,
+                        [ResourceBrowserTabsId.k8s_Resources]: <ICObject className="fcn-7" />,
+                        [MONITORING_DASHBOARD_TAB_ID]: <ICChartLineUp className="scn-7" />,
+                    }}
+                />
                 {/* NOTE: since the terminal is only visibly hidden; we need to make sure it is rendered at the end of the page */}
                 {dynamicActiveTab && renderDynamicTabComponent(dynamicActiveTab.id)}
                 {tabs.length > 0 &&
@@ -548,7 +579,7 @@ const ResourceList = () => {
     }
 
     return (
-        <div className="resource-browser-container flexbox-col h-100 bcn-0" ref={resourceBrowserRef}>
+        <div className="resource-browser-container flexbox-col h-100 bg__primary" ref={resourceBrowserRef}>
             <PageHeader
                 isBreadcrumbs
                 breadCrumbs={renderBreadcrumbs}

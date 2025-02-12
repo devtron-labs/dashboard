@@ -112,7 +112,7 @@
         }
 
         .rotate.not-available {
-            color: #f32e2e;
+            color: var(--R500);
             font-weight: 600;
         }
     }
@@ -138,12 +138,6 @@
                 transition: all 0.2s ease-out;
             }
         }
-
-        .code-editor-container {
-            .react-monaco-editor-container {
-                min-height: 450px;
-            }
-        }
     }
 
     .cta-container {
@@ -158,12 +152,6 @@
         .cta.delete {
             width: 200px;
         }
-    }
-}
-
-.code-editor-container {
-    .react-monaco-editor-container {
-        height: calc(100vh - 170px) !important;
     }
 }
 
@@ -276,8 +264,8 @@
 .info__container--update-chart {
     padding: 16px;
     align-items: center;
-    background-color: #fff8eb;
-    border: solid 1px #ffcb5d;
+    background-color: var(--Y100);
+    border: solid 1px var(--Y400);
     border-radius: 4px;
     margin: 0 0 20px 0;
     width: 100%;

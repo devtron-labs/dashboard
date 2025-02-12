@@ -22,11 +22,8 @@ export const EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT =
 export const DC_MATERIAL_VIEW_CONFIRMATION_MESSAGE =
     'Checkout path for this repository is being used in docker build config. Please change checkout path in use and try again.'
 export const DC_CHART_REPO_CONFIRMATION_MESSAGE = 'Some deployed helm apps are using this repository.'
-export const DC_CLUSTER_CONFIRMATION_MESSAGE = 'Please delete environments on this cluster and try again.'
 export const DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE =
     'Some applications are currently using this container registry. Please change the container registry in use and try again.'
-export const DC_ENVIRONMENT_CONFIRMATION_MESSAGE =
-    'Please delete applications deployed on this environment and try again.'
 export const DOCKER =
     'Some applications are currently using this container registry. Please change the container registry in use and try again.'
 export const DC_GIT_PROVIDER_CONFIRMATION_MESSAGE =
@@ -37,34 +34,49 @@ export const DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE =
     'Please select another repository containing Dockerfile and try again.'
 export const DC_CONFIGURATION_CONFIRMATION_MESSAGE =
     'This configuration is being used in some notifications. Please delete notifications using this configuration and try again.'
-export const DC_PROJECT_CONFIRMATION_MESSAGE = 'Please delete applications assigned to this project and try again.'
 export const GITOPS_FQDN_MESSAGE = 'This is not a Fully Qualified Domain Name (FQDN).'
 export const GITOPS_HTTP_MESSAGE = 'Http protocol is not supported.'
+export const USER_PERMISSION_DELETE_CONFIRMATION_MESSAGE =
+    'Deleting this user will remove the user and revoke all their permissions.'
+export const USER_PERMISSION_GROUP_DELETE_CONFIRMATION_MESSAGE =
+    'Deleting this group will revoke permissions from users added to this group..'
 
 export const CONTEXT_NOT_AVAILABLE_ERROR = 'cannot be rendered outside the component'
 export const GIT_MATERIAL_IN_USE_MESSAGE =
     'This repository is being used as source for Dockerfile or as Build Context. Please select another repository and try again'
+
 export const enum DeleteComponentsName {
+    API_TOKEN = 'API token',
+    Application = 'application',
+    BuildPipeline = 'build pipeline',
     ChartGroup = 'chart group',
     ContainerRegistry = 'container registry',
     ChartRepository = 'chart repository',
     Cluster = 'cluster',
     Environment = 'environment',
+    Filter = 'filter',
     GitProvider = 'git account',
+    GitRepo = 'repo',
+    GROUP = 'group',
+    Job = 'job pipeline',
+    Link = 'link',
+    LinkedBuildPipeline = 'linked build pipeline',
     MaterialView = 'git repository',
+    Node = 'node',
     SlackConfigurationTab = 'slack',
     SesConfigurationTab = 'ses',
     SMTPConfigurationTab = 'smtp',
     WebhookConfigurationTab = 'webhook',
+    Preset = 'preset value',
     Project = 'project',
-    GitRepo = 'Repo',
+    Override = 'override',
+    USER = 'user',
 }
 
 // DELETE COMPONENT ENDS
 
 export const LEARN_MORE = 'Learn more'
 export const REQUIRED_FIELD_MSG = 'This is a required field'
-export const INVALID_VOLUME_MOUNT_PATH_IN_CM_CS = 'Use only alphanumeric, (/), (-), (_); Do not use "spaces"'
 export const MAX_LENGTH_30 = 'Max 30 characters allowed'
 export const MAX_LENGTH_350 = 'Max 350 characters allowed'
 export const REPO_NAME_VALIDATION = 'Repository name is not valid; Invalid character(s) "_"'
@@ -134,11 +146,10 @@ export const CONFIRMATION_DIALOG_MESSAGING = {
     DELETION_IN_PROGRESS: 'Deployment pipeline configurations cannot be edited when deletion is in progress.',
 }
 
-export const NONCASCADE_DELETE_DIALOG_INTERNAL_MESSAGE = [
-    'The underlying resources cannot be deleted as the cluster is not reachable at the moment.',
-    'Do you still want to delete the deployment without deleting the resources? ',
-]
-
+export const NON_CASCADE_DELETE_DIALOG_INTERNAL_MESSAGE = {
+    PARA1: 'The underlying resources cannot be deleted as the cluster is not reachable at the moment.',
+    PARA2: 'Do you still want to delete the deployment without deleting the resources? ',
+}
 // Toast messages
 
 export const TOAST_INFO = {

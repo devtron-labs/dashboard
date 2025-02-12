@@ -32,13 +32,15 @@ import {
     ToastManager,
     ComponentSizeType,
     showError,
+    MODES,
+    TriggerType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useContext, useState } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
 import yamlJsParser from 'yaml'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { ENV_ALREADY_EXIST_ERROR, RegistryPayloadWithSelectType, TriggerType, URLS, ViewType } from '../../config'
+import { ENV_ALREADY_EXIST_ERROR, RegistryPayloadWithSelectType, URLS, ViewType } from '../../config'
 import { GeneratedHelmPush } from './cdPipeline.types'
 import { createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary, Select } from '../common'
 import { Info } from '../common/icons/Icons'
@@ -740,13 +742,11 @@ export default function BuildCD({
                                     <CodeEditor
                                         height={300}
                                         value={strategy.yamlStr}
-                                        mode="yaml"
+                                        mode={MODES.YAML}
                                         onChange={(event) =>
                                             handleStrategyChange(event, strategy.deploymentTemplate, 'yaml')
                                         }
-                                    >
-                                        <CodeEditor.Header className="code-editor" />
-                                    </CodeEditor>
+                                    />
                                 </div>
                             )}
                         </div>

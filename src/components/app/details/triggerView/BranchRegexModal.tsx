@@ -105,13 +105,13 @@ const BranchRegexModal = ({
     }
 
     const renderBranchRegexContent = () => (
-        <div className="ci-trigger__branch-regex-wrapper px-20 fs-13 dc__overflow-scroll mxh-500 mh-200">
+        <div className="ci-trigger__branch-regex-wrapper px-20 fs-13 dc__overflow-auto mxh-500 mh-200">
             <div className="bcn-2 flexbox-col dc__gap-1">
                 {material.map((mat, index) => {
                     const _regexValue = regexValue[mat.gitMaterialId] || {}
                     return (
                         mat.regex && (
-                            <div className="flex left column dc__gap-6 pt-16 pb-16 bcn-0" key={`regex_${mat.id}`}>
+                            <div className="flex left column dc__gap-6 pt-16 pb-16 bg__primary" key={`regex_${mat.id}`}>
                                 <div className="flex left dc__gap-14">
                                     {getGitProviderIcon(mat.gitMaterialUrl, 'icon-dim-24')}
                                     <div>

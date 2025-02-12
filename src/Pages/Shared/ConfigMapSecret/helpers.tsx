@@ -1,15 +1,29 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { Link } from 'react-router-dom'
 
-import { CMSecretExternalType, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import { CMSecretExternalType, InfoColourBar, CMSecretComponentType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as InfoIcon } from '@Icons/info-filled.svg'
 import { ReactComponent as InfoIconN7 } from '@Icons/info-filled-n7.svg'
-import { ReactComponent as ICWarningY5 } from '@Icons/ic-warning-y5.svg'
 import { URLS } from '@Config/routes'
 import { DOCUMENTATION } from '@Config/constants'
 
 import { EXTERNAL_INFO_TEXT } from './constants'
-import { CMSecretComponentType } from './types'
 
 export const renderESOInfo = (isESO: boolean) =>
     isESO ? (
@@ -44,11 +58,12 @@ export const renderExternalInfo = (
     externalType: CMSecretExternalType,
     external: boolean,
     componentType: CMSecretComponentType,
+    className?: string,
 ) =>
     externalType === CMSecretExternalType.KubernetesSecret ||
     (componentType === CMSecretComponentType.ConfigMap && external) ? (
         <InfoColourBar
-            classname="info_bar"
+            classname={`info_bar ${className || ''}`}
             message={
                 <div className="flex column left">
                     <h4 className="m-0 lh-20 dc__info-title">{EXTERNAL_INFO_TEXT[componentType].title}</h4>
@@ -59,31 +74,6 @@ export const renderExternalInfo = (
             iconSize={20}
         />
     ) : null
-
-export const renderHashiOrAwsDeprecatedInfo = () => (
-    <InfoColourBar
-        classname="warn"
-        message={
-            <p className="m-0 cn-9 fs-13 lh-20">
-                <span>
-                    Kubernetes External Secret (KES) has been deprecated and will be removed in the next Devtron
-                    version. You can delete this file and create a secret using
-                </span>
-                &nbsp;
-                <a
-                    className="anchor"
-                    href="https://github.com/external-secrets/external-secrets"
-                    rel="noreferrer noopener"
-                    target="_blank"
-                >
-                    External Secret Operator (ESO).
-                </a>
-            </p>
-        }
-        Icon={ICWarningY5}
-        iconSize={20}
-    />
-)
 
 export const renderChartVersionBelow3090NotSupportedText = () => (
     <span className="fs-12 fw-4">
@@ -101,7 +91,7 @@ export const renderChartVersionBelow3090NotSupportedText = () => (
 )
 
 export const renderYamlInfoText = () => (
-    <p className="m-0 py-6 px-10 flex left dc__gap-6 fs-12 lh-20 cn-8 bcn-50 dc__border-top-n1">
+    <p className="m-0 py-6 px-10 flex left dc__gap-6 fs-12 lh-20 cn-8 bg__secondary dc__border-top-n1 dc__bottom-radius-4">
         <InfoIconN7 className="icon-dim-16 dc__no-shrink" />
         <span>
             GUI Recommended for multi-line data. Boolean and numeric values must be wrapped in double quotes Eg.

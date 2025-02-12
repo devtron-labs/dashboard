@@ -15,12 +15,11 @@
  */
 
 import {
-    DeploymentAppTypes,
-    ForceDeleteDialog,
     ConfirmationModal,
     ConfirmationModalVariantType,
+    DeploymentAppTypes,
+    ForceDeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
-import ClusterNotReachableDailog from '../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 import { DELETE_ACTION } from '../../config'
 import { DeleteCDNodeProps, DeleteDialogType } from './types'
 import { handleDeleteCDNodePipeline, handleDeletePipeline } from './cdpipeline.util'
@@ -38,41 +37,64 @@ const DeleteCDNode = ({
     deleteTitleName,
     isLoading,
 }: Readonly<DeleteCDNodeProps>) => {
+    const onClickDeleteCDNode = () => handleDeleteCDNodePipeline(deleteCD, deploymentAppType as DeploymentAppTypes)
+
     const onClickHideNonCascadeDeletePopup = () => {
         setDeleteDialog(DeleteDialogType.showNormalDeleteDialog)
     }
 
     const onClickNonCascadeDelete = () => {
-        onClickHideNonCascadeDeletePopup()
         handleDeletePipeline(DELETE_ACTION.NONCASCADE_DELETE, deleteCD, deploymentAppType)
     }
 
     const handleForceDeleteCDNode = () => {
+        onClickHideNonCascadeDeletePopup()
         handleDeletePipeline(DELETE_ACTION.FORCE_DELETE, deleteCD, deploymentAppType)
     }
 
-    if (deleteDialog === DeleteDialogType.showForceDeleteDialog && showDeleteDialog) {
-        return (
-            <ForceDeleteDialog
-                forceDeleteDialogTitle={forceDeleteData.forceDeleteDialogTitle}
-                onClickDelete={handleForceDeleteCDNode}
-                closeDeleteModal={hideDeleteModal}
-                forceDeleteDialogMessage={forceDeleteData.forceDeleteDialogMessage}
-            />
-        )
-    }
+    const renderForceDeleteConfirmationModal = () => (
+        <ForceDeleteConfirmationModal
+            title={forceDeleteData.forceDeleteDialogTitle}
+            onDelete={handleForceDeleteCDNode}
+            closeConfirmationModal={hideDeleteModal}
+            subtitle={forceDeleteData.forceDeleteDialogMessage}
+            showConfirmationModal={deleteDialog === DeleteDialogType.showForceDeleteDialog && showDeleteDialog}
+        />
+    )
 
-    if (deleteDialog === DeleteDialogType.showNonCascadeDeleteDialog && showDeleteDialog) {
-        return (
-            <ClusterNotReachableDailog
-                clusterName={clusterName}
-                onClickCancel={onClickHideNonCascadeDeletePopup}
-                onClickDelete={onClickNonCascadeDelete}
-            />
-        )
-    }
+    const renderNonCascadeDescription = () => (
+        <div className="flexbox-col dc__gap-12">
+            <p className="fs-14 cn-7 lh-20 m-0">
+                The underlying resources cannot be deleted as the cluster is not reachable at the moment.
+            </p>
+            <p className="fs-14 cn-7 lh-20 m-0">
+                Do you still want to delete the deployment without deleting the resources?
+            </p>
+        </div>
+    )
 
-    return (
+    const renderUnreachableClusterModal = () => (
+        <ConfirmationModal
+            variant={ConfirmationModalVariantType.warning}
+            title={`The cluster ${clusterName} is not reachable`}
+            buttonConfig={{
+                secondaryButtonConfig: {
+                    text: 'Cancel',
+                    onClick: onClickHideNonCascadeDeletePopup,
+                },
+                primaryButtonConfig: {
+                    text: 'Force Delete',
+                    onClick: onClickNonCascadeDelete,
+                    isLoading,
+                },
+            }}
+            subtitle={renderNonCascadeDescription()}
+            showConfirmationModal={deleteDialog === DeleteDialogType.showNonCascadeDeleteDialog && showDeleteDialog}
+            handleClose={onClickHideNonCascadeDeletePopup}
+        />
+    )
+
+    const renderConfirmationDeleteModal = () => (
         <ConfirmationModal
             variant={ConfirmationModalVariantType.delete}
             title={`Delete pipeline for '${deleteTitleName}' environment ?`}
@@ -85,17 +107,25 @@ const DeleteCDNode = ({
                 },
                 primaryButtonConfig: {
                     text: 'Delete',
-                    onClick: () => handleDeleteCDNodePipeline(deleteCD, deploymentAppType as DeploymentAppTypes),
+                    onClick: onClickDeleteCDNode,
                     isLoading,
                 },
             }}
-            customInputConfig={{
+            confirmationConfig={{
                 identifier: 'delete-cd-node-input',
                 confirmationKeyword: deleteTitleName,
             }}
-            showConfirmationModal={showDeleteDialog}
+            showConfirmationModal={deleteDialog === DeleteDialogType.showNormalDeleteDialog && showDeleteDialog}
             handleClose={hideDeleteModal}
         />
+    )
+
+    return (
+        <>
+            {renderConfirmationDeleteModal()}
+            {renderForceDeleteConfirmationModal()}
+            {renderUnreachableClusterModal()}
+        </>
     )
 }
 

@@ -16,7 +16,15 @@
 
 import { useState } from 'react'
 import Tippy from '@tippyjs/react'
-import { InfoColourBar, ServerErrors, ButtonWithLoader, CodeEditor, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    InfoColourBar,
+    ServerErrors,
+    ButtonWithLoader,
+    CodeEditor,
+    ToastManager,
+    ToastVariantType,
+    MODES,
+} from '@devtron-labs/devtron-fe-common-lib'
 import Descriptor from './Descriptor'
 import { parseYAMLStringToObj, parseIntoYAMLString, sortVariables } from './utils'
 import { postScopedVariables, getScopedVariablesJSON } from './service'
@@ -147,11 +155,11 @@ export default function ScopedVariablesEditor({
     }
 
     return (
-        <div className="flex column dc__content-space h-100 bcn-0 saved-variables-editor">
+        <div className="flex column dc__content-space h-100 bg__primary saved-variables-editor">
             <Descriptor />
-            <div className="flexbox-col p-8 dc__align-start dc__gap-16 dc__align-self-stretch dc__window-bg flex-grow-1 dc__no-shrink">
+            <div className="flexbox-col p-8 dc__align-start dc__gap-16 dc__align-self-stretch bg__tertiary flex-grow-1 dc__no-shrink">
                 <div className="flexbox-col dc__content-space dc__align-start flex-grow-1 dc__no-shrink dc__align-self-stretch dc__border-radius-4-imp dc__border">
-                    <div className="flexbox pt-8 pb-8 pl-12 pr-12 bcn-0 dc__border-bottom dc__gap-16 dc__align-self-stretch dc__align-start dc__top-radius-4">
+                    <div className="flexbox pt-8 pb-8 pl-12 pr-12 bg__primary dc__border-bottom dc__gap-16 dc__align-self-stretch dc__align-start dc__top-radius-4">
                         {setShowEditView ? (
                             <p
                                 data-testid={`${showSaveView ? 'review-variables' : 'edit-variables'}`}
@@ -189,38 +197,44 @@ export default function ScopedVariablesEditor({
                         />
                     )}
 
-                    {showSaveView && (
-                        <div className="bcn-1 flexbox dc__content-space w-100 h-32 dc__align-items-center">
-                            <div
-                                className="dc__border-right fs-12 fw-6 cn-7 pt-8 pb-8 pl-12 pr-12 flexbox"
-                                style={{ width: '48.5%' }}
-                            >
-                                Last Saved File
-                            </div>
-                            <div className="fs-12 fw-6 cn-7 flex-grow-1 dc__gap-4 flexbox pt-8 pb-8 pl-12 pr-12">
-                                <div className="flex">
-                                    <ICPencil className="icon-dim-16" />
-                                </div>
-                                Edit File
-                            </div>
-                        </div>
-                    )}
-
                     <CodeEditor
-                        mode="yaml"
-                        value={editorData}
+                        mode={MODES.YAML}
                         noParsing
-                        diffView={showSaveView}
-                        defaultValue={savedScopedVariables || ''}
-                        height="100%"
-                        onChange={handleEditorChange}
-                        validatorSchema={jsonSchema}
-                    />
+                        height="fitToParent"
+                        {...(showSaveView
+                            ? {
+                                  diffView: true,
+                                  originalValue: savedScopedVariables || '',
+                                  modifiedValue: editorData,
+                                  onModifiedValueChange: handleEditorChange,
+                              }
+                            : {
+                                  diffView: false,
+                                  value: editorData,
+                                  onChange: handleEditorChange,
+                                  validatorSchema: jsonSchema,
+                              })}
+                    >
+                        {showSaveView && (
+                            <CodeEditor.Header
+                                hideDefaultSplitHeader
+                                className="bg__primary w-100 h-32 dc__grid-half vertical-divider"
+                            >
+                                <div className="fs-12 fw-6 cn-7 pt-8 pb-8 pl-12 pr-12 flexbox">Last Saved File</div>
+                                <div className="fs-12 fw-6 cn-7 flex-grow-1 dc__gap-4 flexbox pt-8 pb-8 pl-12 pr-12">
+                                    <div className="flex">
+                                        <ICPencil className="icon-dim-16" />
+                                    </div>
+                                    Edit File
+                                </div>
+                            </CodeEditor.Header>
+                        )}
+                    </CodeEditor>
 
-                    <div className="flexbox pt-13 pb-13 pl-12 pr-12 bcn-0 dc__border-top dc__content-end dc__align-items-center dc__align-self-stretch dc__gap-12">
+                    <div className="flexbox pt-13 pb-13 pl-12 pr-12 bg__primary dc__border-top dc__content-end dc__align-items-center dc__align-self-stretch dc__gap-12">
                         <button
                             type="button"
-                            className="flex pt-8 pb-8 pl-16 pr-16 dc__gap-8 dc__border-radius-4-imp dc__border bcn-0 cn-7 fs-13 fw-6 lh-20 mw-56 dc__outline-none-imp h-32"
+                            className="flex pt-8 pb-8 pl-16 pr-16 dc__gap-8 dc__border-radius-4-imp dc__border bg__primary cn-7 fs-13 fw-6 lh-20 mw-56 dc__outline-none-imp h-32"
                             onClick={handleAbort}
                             disabled={showSaveView ? isSaving : loadingSavedScopedVariables}
                         >

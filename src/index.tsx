@@ -26,6 +26,7 @@ import {
     UseRegisterShortcutProvider,
     UserEmailProvider,
     customEnv,
+    ThemeProvider,
 } from '@devtron-labs/devtron-fe-common-lib'
 import App from './App'
 
@@ -129,7 +130,7 @@ if (!window || !window._env_) {
         CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL: 7000,
         CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT: 7,
         ENABLE_CHART_SEARCH_IN_HELM_DEPLOY: false,
-        HIDE_EXCLUDE_INCLUDE_GIT_COMMITS: true,
+        HIDE_EXCLUDE_INCLUDE_GIT_COMMITS: false,
         ENABLE_BUILD_CONTEXT: false,
         CLAIR_TOOL_VERSION: 'V4',
         ENABLE_RESTART_WORKLOAD: false,
@@ -148,10 +149,10 @@ if (!window || !window._env_) {
         SERVICE_WORKER_TIMEOUT: '3',
         FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE: false,
         HIDE_RELEASES: false,
-        HIDE_RESOURCE_WATCHER: true,
+        HIDE_RESOURCE_WATCHER: false,
         ORGANIZATION_NAME: '',
         FEATURE_EXTERNAL_FLUX_CD_ENABLE: false,
-        FEATURE_SCOPED_VARIABLE_ENVIRONMENT_LIST_ENABLE: false,
+        FEATURE_SCOPED_VARIABLE_ENVIRONMENT_LIST_ENABLE: true,
         HIDE_NETWORK_STATUS_INTERFACE: true,
         SYSTEM_CONTROLLER_LISTING_TIMEOUT: 60000 * 5,
         FEATURE_IMAGE_PROMOTION_ENABLE: false,
@@ -168,20 +169,23 @@ if (!window || !window._env_) {
         FEATURE_DEFAULT_LANDING_RB_ENABLE: false,
         FEATURE_CLUSTER_MAP_ENABLE: true,
         FEATURE_ACTION_AUDIOS_ENABLE: true,
+        FEATURE_EXPERIMENTAL_THEMING_ENABLE: import.meta.env.DEV,
     }
 }
 
 ReactDOM.render(
     <React.StrictMode>
         {window.top === window.self ? (
-            <BrowserRouter basename={window.__BASE_URL__}>
-                <UseRegisterShortcutProvider>
-                    <UserEmailProvider>
-                        <App />
-                    </UserEmailProvider>
-                </UseRegisterShortcutProvider>
-                <ToastManagerContainer />
-            </BrowserRouter>
+            <ThemeProvider>
+                <BrowserRouter basename={window.__BASE_URL__}>
+                    <UseRegisterShortcutProvider>
+                        <UserEmailProvider>
+                            <App />
+                        </UserEmailProvider>
+                    </UseRegisterShortcutProvider>
+                    <ToastManagerContainer />
+                </BrowserRouter>
+            </ThemeProvider>
         ) : null}
     </React.StrictMode>,
     root,

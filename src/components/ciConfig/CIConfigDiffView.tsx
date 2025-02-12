@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
     Drawer,
-    DeleteDialog,
     noop,
     DockerConfigOverrideType,
     Reload,
@@ -28,6 +27,8 @@ import {
     WorkflowType,
     ToastVariantType,
     ToastManager,
+    ConfirmationModal,
+    ConfirmationModalVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -121,7 +122,7 @@ export default function CIConfigDiffView({
 
     const renderConfigDiffModalTitle = (): JSX.Element => {
         return (
-            <div className="flex flex-align-center flex-justify bcn-0 pr-20 dc__border-bottom">
+            <div className="flex flex-align-center flex-justify bg__primary pr-20 dc__border-bottom">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0 pt-16 pb-16 pl-20 pr-20">Override Details</h2>
                 <button
                     type="button"
@@ -313,23 +314,33 @@ export default function CIConfigDiffView({
         ))
     }
 
+
     return (
         <Drawer parentClassName="dc__overflow-hidden" position="right" width="87%" minWidth="1024px" maxWidth="1246px">
             <div className="modal__body modal__config-override-diff br-0 modal__body--p-0 dc__overflow-hidden">
                 {renderConfigDiffModalTitle()}
-                <div className="config-override-diff__view h-100 p-20 dc__window-bg dc__overflow-scroll">
+                <div className="config-override-diff__view h-100 p-20 bg__tertiary dc__overflow-auto">
                     {renderBodyContent()}
                 </div>
-                {showDeleteDialog && (
-                    <DeleteDialog
-                        title="Delete Override"
-                        description="Are you sure you want to delete override for this pipeline"
-                        deletePrefix="Confirm "
-                        closeDelete={toggleDeleteDialogVisibility}
-                        delete={deleteOverride}
-                        apiCallInProgress={deleteInProgress}
-                    />
-                )}
+                <ConfirmationModal
+                    variant={ConfirmationModalVariantType.delete}
+                    title="Delete Override"
+                    subtitle="Are you sure you want to delete override for this pipeline"
+                    buttonConfig={{
+                        secondaryButtonConfig: {
+                            text: 'Cancel',
+                            onClick: toggleConfigOverrideDiffModal,
+                            disabled: deleteInProgress,
+                        },
+                        primaryButtonConfig: {
+                            text: 'Confirm Delete',
+                            onClick: deleteOverride,
+                            isLoading: deleteInProgress,
+                        },
+                    }}
+                    showConfirmationModal={showDeleteDialog}
+                    handleClose={toggleConfigOverrideDiffModal}
+                />
             </div>
         </Drawer>
     )

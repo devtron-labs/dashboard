@@ -22,8 +22,6 @@ import {
     ConditionalWrap,
     VisibleModal,
     Drawer,
-    DeleteDialog,
-    RefVariableType,
     VariableType,
     MandatoryPluginDataType,
     ButtonWithLoader,
@@ -48,16 +46,19 @@ import {
     ResourceKindType,
     uploadCIPipelineFile,
     getGlobalVariables,
+    FloatingVariablesSuggestions,
+    TriggerType,
+    ERROR_STATUS_CODE,
+    DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
-    FloatingVariablesSuggestions,
     getParsedBranchValuesForPlugin,
     getPluginIdsFromBuildStage,
     importComponentFromFELibrary,
     sortObjectArrayAlphabetically,
 } from '../common'
-import { BuildStageVariable, BuildTabText, JobPipelineTabText, TriggerType, URLS, ViewType } from '../../config'
+import { BuildStageVariable, BuildTabText, JobPipelineTabText, URLS, ViewType } from '../../config'
 import {
     deleteCIPipeline,
     getInitData,
@@ -72,7 +73,7 @@ import { Sidebar } from './Sidebar'
 import { Build } from './Build'
 import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning.svg'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
+import { DeleteComponentsName, MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
 import { LoadingState } from '../ciConfig/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from '../cdPipeline/cdpipeline.util'
@@ -535,8 +536,8 @@ export default function CIPipeline({
         close()
     }
 
-    const deletePipeline = (): void => {
-        deleteCIPipeline(
+    const onDelete = async () => {
+        await deleteCIPipeline(
             formData,
             ciPipeline,
             formData.materials,
@@ -545,36 +546,28 @@ export default function CIPipeline({
             false,
             formData.webhookConditionList,
         )
-            .then((response) => {
-                if (response) {
-                    ToastManager.showToast({
-                        variant: ToastVariantType.success,
-                        description: 'Pipeline Deleted',
-                    })
-                    setPageState(ViewType.FORM)
-                    handleClose()
-                    deleteWorkflow(appId, Number(workflowId))
-                }
-            })
-            .catch((error: ServerErrors) => {
-                showError(error)
-            })
+        setPageState(ViewType.FORM)
+        handleClose()
+        deleteWorkflow(appId, Number(workflowId))
     }
 
     const closeCIDeleteModal = (): void => {
         setShowDeleteModal(false)
     }
 
-    const renderDeleteCIModal = () => {
-        return (
-            <DeleteDialog
-                title={`Delete '${formData.name}' ?`}
-                description={`Are you sure you want to delete this CI Pipeline from '${appName}' ?`}
-                closeDelete={closeCIDeleteModal}
-                delete={deletePipeline}
-            />
-        )
-    }
+    const renderDeleteCIModal = () => (
+        <DeleteConfirmationModal
+            title={formData.name}
+            component={isJobView ? DeleteComponentsName.Job : DeleteComponentsName.BuildPipeline}
+            subtitle={`Are you sure you want to delete this pipeline from '${appName}' ?`}
+            showConfirmationModal={ciPipelineId && showDeleteModal}
+            closeConfirmationModal={closeCIDeleteModal}
+            onDelete={onDelete}
+            errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.BAD_REQUEST}
+            renderCannotDeleteConfirmationSubTitle="Please delete deployment pipelines for this workflow first and try again."
+            successToastMessage="Pipeline Deleted"
+        />
+    )
 
     const renderSecondaryButton = () => {
         if (ciPipelineId) {
@@ -902,7 +895,7 @@ export default function CIPipeline({
                 </pipelineContext.Provider>
                 {pageState !== ViewType.LOADING && (
                     <div
-                        className={`ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
+                        className={`ci-button-container bg__primary pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
                             ciPipelineId || !isAdvanced ? 'flex-justify' : 'justify-right'
                         } `}
                     >
@@ -929,7 +922,7 @@ export default function CIPipeline({
                         )}
                     </div>
                 )}
-                {ciPipelineId && showDeleteModal && renderDeleteCIModal()}
+                {renderDeleteCIModal()}
             </>
         )
     }
@@ -941,7 +934,7 @@ export default function CIPipeline({
                     isAdvanced ? 'advanced-option-container' : 'bottom-border-radius'
                 }`}
             >
-                <div className="flex flex-align-center flex-justify bcn-0 py-12 px-20">
+                <div className="flex flex-align-center flex-justify bg__primary py-12 px-20">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
                         {title}
                     </h2>

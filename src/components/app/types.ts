@@ -43,12 +43,6 @@ export interface OptionType {
     value: string
 }
 
-export interface ExtendedOptionType extends OptionType {
-    format?: string
-    variableType?: string
-    refVariableStage?: string
-}
-
 export interface NumberOptionType {
     label: string
     value: number
@@ -548,22 +542,6 @@ export interface AboutAppInfoModalProps extends Pick<AppOverviewProps, 'appType'
     projectsList?: Teams[]
 }
 
-export interface DeleteComponentProps {
-    setDeleting: (boolean) => void
-    toggleConfirmation: any
-    deleteComponent: (any) => Promise<any>
-    title: string
-    component: string
-    payload: any
-    confirmationDialogDescription?: string
-    redirectTo?: boolean
-    url?: string
-    reload?: () => void
-    configuration?: string
-    dataTestid?: string
-    closeCustomComponent?: () => void
-}
-
 export interface JobPipeline {
     ciPipelineID: number
     ciPipelineName: string
@@ -605,6 +583,7 @@ export interface SourceInfoType {
     setErrorsList?: React.Dispatch<React.SetStateAction<ErrorItem[]>>
     filteredEnvIds?: string
     deploymentUserActionState?: ACTION_STATE
+    handleOpenConfigDriftModal?: () => void
 }
 
 export interface AppDetailsCDButtonType

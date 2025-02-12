@@ -17,7 +17,11 @@
 import YAML from 'yaml'
 import { Operation } from 'fast-json-patch'
 import { JSONPath } from 'jsonpath-plus'
-import { convertJSONPointerToJSONPath, getDefaultValueFromType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    convertJSONPointerToJSONPath,
+    doesJSONConformToSchema07,
+    getDefaultValueFromType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ChartValuesViewAction, ChartValuesViewActionTypes, ChartValuesViewState } from './ChartValuesView.type'
 import { getGeneratedHelmManifest } from '../common/chartValues.api'
 import {
@@ -36,12 +40,13 @@ export const getCompareValuesSelectStyles = () => ({
     option: (base, state) => ({
         ...base,
         color: 'var(--N900)',
-        backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+        backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--bg-primary)',
     }),
     menu: (base) => ({
         ...base,
         marginTop: '2px',
         minWidth: '240px',
+        backgroundColor: 'var(--bg-menu)',
     }),
     menuList: (base) => ({
         ...base,
@@ -172,7 +177,7 @@ export const getAndUpdateSchemaValue = (
         type: ChartValuesViewActionTypes.multipleOptions,
         payload: {
             valuesYamlDocument: parsedValuesYamlDocument,
-            schemaJson,
+            schemaJson: doesJSONConformToSchema07(schemaJson).isValid ? schemaJson : null,
         },
     })
 }

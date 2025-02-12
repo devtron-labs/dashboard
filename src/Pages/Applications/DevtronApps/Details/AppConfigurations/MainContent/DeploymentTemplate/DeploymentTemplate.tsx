@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { useEffect, SyntheticEvent, useMemo, useReducer, Reducer, useRef } from 'react'
 import ReactGA from 'react-ga4'
 import {
@@ -43,15 +59,16 @@ import {
     getIsRequestAborted,
     DraftAction,
     checkIfPathIsMatching,
+    FloatingVariablesSuggestions,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt, useLocation, useParams } from 'react-router-dom'
 import YAML from 'yaml'
-import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
+import { importComponentFromFELibrary } from '@Components/common'
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
 import { URLS } from '@Config/routes'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
-import deleteOverrideEmptyStateImage from '@Images/no-artifact@2x.png'
+import deleteOverrideEmptyStateImage from '@Images/no-artifact.webp'
 import {
     ConfigEditorStatesType,
     DeploymentTemplateProps,
@@ -1497,7 +1514,7 @@ const DeploymentTemplate = ({
     const renderEditorComponent = () => {
         if (isResolvingVariables || isLoadingChangedChartDetails || !!isLoadingMergedTemplate) {
             return (
-                <div className="flex h-100 flex-grow-1 dc__overflow-scroll">
+                <div className="flex h-100 flex-grow-1 dc__overflow-auto">
                     <Progressing pageLoader />
                 </div>
             )
@@ -1527,7 +1544,7 @@ const DeploymentTemplate = ({
         if (isCompareView) {
             return (
                 <CompareConfigView
-                    className="flex-grow-1 dc__overflow-scroll"
+                    className="flex-grow-1 dc__overflow-auto"
                     compareFromSelectedOptionValue={compareFromSelectedOptionValue}
                     handleCompareFromOptionSelection={handleCompareFromOptionSelection}
                     isApprovalView={isApprovalView}
@@ -1539,7 +1556,6 @@ const DeploymentTemplate = ({
                     }
                     draftChartVersion={draftTemplateData?.selectedChart?.version}
                     isDeleteOverrideView={isDeleteOverrideDraft}
-                    editorKey={`${compareFromSelectedOptionValue || 'compare'}-draft-editor-key-${Number(!!hideLockedKeys)}-${shouldMergeTemplateWithPatches ? 'with-merged-values' : 'without-merged-values'}-${resolveScopedVariables ? 'in-resolved-view' : 'in-unresolved-view'}`}
                     {...getCompareFromEditorConfig({
                         envId,
                         isDeleteOverrideDraft,
@@ -1678,7 +1694,7 @@ const DeploymentTemplate = ({
         }
 
         return (
-            <div className="flexbox dc__gap-6 dc__align-items-center dc__border-top-n1 bc-n50 py-6 px-10">
+            <div className="flexbox dc__gap-6 dc__align-items-center dc__border-top-n1 bg__secondary py-6 px-10">
                 <ICInfoOutlineGrey className="flex icon-dim-16 dc__no-shrink scn-6" />
                 <div className="flexbox">
                     <span className="cn-8 fs-12 fw-4 lh-20 dc__truncate">
@@ -1693,7 +1709,7 @@ const DeploymentTemplate = ({
     }
 
     const renderValuesView = () => (
-        <div className="flexbox-col flex-grow-1 dc__overflow-scroll">
+        <div className="flexbox-col flex-grow-1 dc__overflow-auto">
             {window._env_.ENABLE_SCOPED_VARIABLES && (
                 <div className="app-config-variable-widget-position">
                     <FloatingVariablesSuggestions
@@ -1827,18 +1843,18 @@ const DeploymentTemplate = ({
         }
 
         return (
-            <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-scroll bcn-0">
+            <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-auto bg__primary">
                 {renderBody()}
 
-                {showDeleteOverrideDialog && (
-                    <DeleteOverrideDialog
-                        environmentConfigId={currentEditorTemplateData?.environmentConfig?.id}
-                        handleReload={handleReload}
-                        handleClose={handleCloseDeleteOverrideDialog}
-                        handleProtectionError={handleDeleteOverrideProtectionError}
-                        reloadEnvironments={reloadEnvironments}
-                    />
-                )}
+                <DeleteOverrideDialog
+                    environmentConfigId={currentEditorTemplateData?.environmentConfig?.id}
+                    handleReload={handleReload}
+                    handleClose={handleCloseDeleteOverrideDialog}
+                    handleProtectionError={handleDeleteOverrideProtectionError}
+                    reloadEnvironments={reloadEnvironments}
+                    showConfirmationModal={showDeleteOverrideDialog}
+                    environmentName={environmentName}
+                />
 
                 {DeleteOverrideDraftModal && showDeleteDraftOverrideDialog && (
                     <DeleteOverrideDraftModal
@@ -1891,7 +1907,7 @@ const DeploymentTemplate = ({
     return (
         <>
             <div
-                className={`h-100 dc__window-bg ${showDraftComments ? 'deployment-template__comments-view' : 'flexbox'}`}
+                className={`h-100 bg__tertiary ${showDraftComments ? 'deployment-template__comments-view' : 'flexbox'}`}
             >
                 {renderDeploymentTemplate()}
 

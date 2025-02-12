@@ -19,21 +19,6 @@
 .resource-browser-container {
     min-width: 1024px;
 
-    .resource-browser-tab {
-        .dynamic-tabs-section {
-            .dynamic-tabs-container,
-            .fixed-tabs-container {
-                .dynamic-tabs-wrapper,
-                .fixed-tabs-wrapper {
-                    .dynamic-tab-selected {
-                        border-top: none;
-                        border-radius: 0;
-                    }
-                }
-            }
-        }
-    }
-
     .resource-browser {
         display: grid;
         grid-template-columns: 220px auto;
@@ -91,7 +76,7 @@
                 overflow: auto;
 
                 .resource-tree-object:hover {
-                    background-color: var(--N50);
+                    background-color: var(--bg-secondary);
                     color: var(--N900);
                 }
             }
@@ -144,14 +129,14 @@
                     display: grid;
 
                     &:hover > :first-child {
-                        background-color: var(--N50);
+                        background-color: var(--bg-secondary);
                     }
 
                     & > :first-child {
                         position: sticky;
                         left: 0;
                         z-index: 1;
-                        background-color: var(--N0);
+                        background-color: var(--bg-primary);
                         border-right: 1px solid var(--N200);
                         padding-left: 20px;
                     }
@@ -162,7 +147,7 @@
 
                     &.no-hover-bg {
                         &:hover > :first-child {
-                            background-color: var(--N0);
+                            background-color: var(--bg-primary);
                         }
                     }
                 }
@@ -171,7 +156,7 @@
             .scrollable-event-list {
                 height: calc(100vh - 180px);
                 &.paginated-list-view {
-                    height: calc(100vh - 237px);
+                    height: calc(100vh - 201px);
                 }
 
                 &.sync-error {
@@ -187,9 +172,9 @@
             .scrollable-event-list {
                 .hover-class {
                     &:hover {
-                        background-color: var(--N50);
+                        background-color: var(--bg-secondary);
                         .sticky-column {
-                            background-color: var(--N50);
+                            background-color: var(--bg-secondary);
                         }
 
                         .restart-icon path {
@@ -210,7 +195,7 @@
             .sticky-column {
                 left: 0;
                 z-index: 1;
-                background-color: var(--N0);
+                background-color: var(--bg-primary);
             }
 
             .event-list-row {
@@ -258,7 +243,7 @@
 
         .created-resource-row {
             &:hover {
-                background-color: var(--N50);
+                background-color: var(--bg-secondary);
             }
         }
     }

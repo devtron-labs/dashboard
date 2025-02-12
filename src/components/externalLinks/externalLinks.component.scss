@@ -55,7 +55,7 @@
             .configure-link-action-container,
             .configure-link-info-container {
                 overflow-wrap: break-word;
-                overflow-y: scroll;
+                overflow-y: auto;
             }
 
             .configure-link-action-container {
@@ -106,7 +106,7 @@
                                 width: 200px;
                                 height: 32px;
                                 padding: 10px 6px;
-                                background-color: var(--N50);
+                                background-color: var(--bg-secondary);
                                 color: var(--N900);
                                 border: 1px solid var(--N200);
                                 border-radius: 4px;
@@ -129,30 +129,6 @@
                         .link-delete {
                             width: 20px;
                             height: 20px;
-                        }
-                    }
-                }
-
-                .link-text-area {
-                    display: flex;
-                    flex-direction: column;
-
-                    textarea {
-                        width: 648px;
-                        min-height: 72px;
-                        resize: vertical;
-                        padding: 10px 8px;
-                        background-color: var(--N50);
-                        color: var(--N900);
-                        border: 1px solid var(--N200);
-                        border-radius: 4px;
-
-                        &::placeholder {
-                            color: var(--N500);
-                        }
-
-                        &:-ms-input-placeholder {
-                            color: var(--N500);
                         }
                     }
                 }
@@ -280,7 +256,7 @@
         padding: 6px 10px;
 
         &:hover {
-            background-color: var(--N50);
+            background-color: var(--bg-secondary);
         }
     }
 }

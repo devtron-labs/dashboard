@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { generatePath, Prompt, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import ReactGA from 'react-ga4'
@@ -26,16 +42,27 @@ import {
     usePrompt,
     checkIfPathIsMatching,
     useUrlFilters,
+    ConfigMapSecretUseFormProps,
+    CMSecretComponentType,
+    CM_SECRET_STATE,
+    getConfigMapSecretFormInitialValues,
+    getConfigMapSecretPayload,
+    CMSecretPayloadType,
+    getConfigMapSecretFormValidations,
+    ConfigMapSecretReadyOnly,
+    FloatingVariablesSuggestions,
     UseFormErrorHandler,
     UseFormSubmitHandler,
+    isNullOrUndefined,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
 import { ConfigHeader, ConfigToolbar, ConfigToolbarProps, NoOverrideEmptyState } from '@Pages/Applications'
 import { getConfigToolbarPopupConfig } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/utils'
-import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
+import { importComponentFromFELibrary } from '@Components/common'
 import { EnvConfigObjectKey } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 
+import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
 import {
     getConfigMapSecretConfigData,
     getConfigMapSecretConfigDraftData,
@@ -48,31 +75,23 @@ import {
 import {
     getConfigMapSecretDraftAndPublishedData,
     getConfigMapSecretError,
-    getConfigMapSecretFormInitialValues,
     getConfigMapSecretInheritedData,
-    getConfigMapSecretPayload,
     getConfigMapSecretResolvedData,
     getConfigMapSecretResolvedDataPayload,
     getConfigMapSecretStateLabel,
     parseConfigMapSecretSearchParams,
 } from './utils'
-import { getConfigMapSecretFormValidations } from './validations'
 import { CM_SECRET_COMPONENT_NAME, CONFIG_MAP_SECRET_NO_DATA_ERROR } from './constants'
 import {
-    CM_SECRET_STATE,
-    CMSecretComponentType,
     CMSecretDeleteModalType,
     CMSecretDraftPayloadType,
-    CMSecretPayloadType,
     ConfigMapSecretContainerProps,
     ConfigMapSecretFormProps,
     ConfigMapSecretQueryParamsType,
-    ConfigMapSecretUseFormProps,
 } from './types'
 
 import { ConfigMapSecretDeleteModal } from './ConfigMapSecretDeleteModal'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
-import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
 import { ConfigMapSecretProtected } from './ConfigMapSecretProtected'
 import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'
 import { ConfigMapSecretDryRun } from './ConfigMapSecretDryRun'
@@ -135,8 +154,10 @@ export const ConfigMapSecretContainer = ({
             componentType,
             cmSecretStateLabel: envId ? CM_SECRET_STATE.ENV : CM_SECRET_STATE.BASE,
             isJob,
+            fallbackMergeStrategy: DEFAULT_MERGE_STRATEGY,
         }),
     })
+
     const { data: formData, errors: formErrors, formState, setValue, handleSubmit, reset } = useFormProps
 
     // CONSTANTS
@@ -356,6 +377,7 @@ export const ConfigMapSecretContainer = ({
             cmSecretStateLabel,
             skipValidation: !isCreateState && !formInitialData,
             isJob,
+            fallbackMergeStrategy: DEFAULT_MERGE_STRATEGY,
         })
     }, [configMapSecretData, draftData])
 
@@ -615,6 +637,7 @@ export const ConfigMapSecretContainer = ({
                 cmSecretStateLabel,
                 componentType,
                 configMapSecretData: { ...configMapSecretData, mergeStrategy: OverrideMergeStrategyType.REPLACE },
+                fallbackMergeStrategy: DEFAULT_MERGE_STRATEGY,
             })
             setValue('yaml', yaml)
             setValue('currentData', currentData)
@@ -627,6 +650,7 @@ export const ConfigMapSecretContainer = ({
                               cmSecretStateLabel,
                               componentType,
                               configMapSecretData: inheritedConfigMapSecretData,
+                              fallbackMergeStrategy: DEFAULT_MERGE_STRATEGY,
                           })
                         : formInitialValues),
                     mergeStrategy: strategy,
@@ -831,7 +855,7 @@ export const ConfigMapSecretContainer = ({
             />
         ) : (
             <ConfigMapSecretForm
-                id={id}
+                isCreateView={isNullOrUndefined(id)}
                 cmSecretStateLabel={cmSecretStateLabel}
                 componentType={componentType}
                 configMapSecretData={configMapSecretData}
@@ -876,6 +900,7 @@ export const ConfigMapSecretContainer = ({
                         isJob={isJob}
                         configMapSecretData={resolvedInheritedConfigMapSecretData ?? inheritedConfigMapSecretData}
                         areScopeVariablesResolving={resolvedScopeVariablesResLoading}
+                        fallbackMergeStrategy={DEFAULT_MERGE_STRATEGY}
                     />
                 )
             case ConfigHeaderTabType.DRY_RUN:
@@ -1020,8 +1045,8 @@ export const ConfigMapSecretContainer = ({
             <div
                 className={`configmap-secret-container p-8 h-100 dc__position-rel ${showComments ? 'with-comment-drawer' : ''}`}
             >
-                <div className="dc__border br-4 dc__overflow-hidden h-100 bcn-0">{renderContent()}</div>
-                {openDeleteModal && renderDeleteModal()}
+                <div className="dc__border br-4 dc__overflow-hidden h-100 bg__primary">{renderContent()}</div>
+                {renderDeleteModal()}
                 {SaveChangesModal && showDraftSaveModal && (
                     <SaveChangesModal
                         appId={+appId}

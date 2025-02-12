@@ -30,7 +30,7 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { JSONPath } from 'jsonpath-plus'
-import EmptyFolderImage from '@Images/Empty-folder.png'
+import EmptyFolderImage from '@Images/empty-folder.webp'
 import { ReactComponent as Help } from '@Icons/ic-help.svg'
 import { ReactComponent as ICWarningY5 } from '@Icons/ic-warning-y5.svg'
 import { ReactComponent as ICArrow } from '@Icons/ic-arrow-forward.svg'
@@ -189,7 +189,7 @@ const GUIView = ({
         }
 
         return (
-            <div className="dc__overflow-scroll">
+            <div className="dc__overflow-auto">
                 <RJSFForm
                     schema={state.guiSchema}
                     className={!modelRef.current ? 'dc__mxw-960' : ''}
@@ -209,7 +209,7 @@ const GUIView = ({
     return (
         <>
             {isUnSet && (
-                <div className="flexbox dc__gap-8 dc__align-items-center code-editor__warning">
+                <div className="flexbox dc__gap-8 dc__align-items-center fs-12 fw-4 lh-16 cn-9 py-8 px-16 bcy-1 dc__border-bottom-y2">
                     <ICWarningY5 className="icon-dim-16 dc__no-shrink" />
                     {DEPLOYMENT_TEMPLATE_LABELS_KEYS.codeEditor.warning}
                 </div>

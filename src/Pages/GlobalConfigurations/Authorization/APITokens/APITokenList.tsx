@@ -17,7 +17,14 @@
 import moment from 'moment'
 import { useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { GenericFilterEmptyState, FeatureTitleWithInfo } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    GenericFilterEmptyState,
+    FeatureTitleWithInfo,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { HEADER_TEXT, MomentDateFormat } from '../../../../config'
 import { ReactComponent as Key } from '../../../../assets/icons/ic-key-bulb.svg'
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
@@ -29,7 +36,7 @@ import './apiToken.scss'
 
 const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType) => {
     const history = useHistory()
-    const [showDeleteConfirmation, setDeleteConfirmation] = useState(false)
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
     const [selectedToken, setSelectedToken] = useState<TokenListType>()
 
     const handleGenerateRowActionButton = (key: 'create' | 'edit', id?) => {
@@ -38,7 +45,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
 
     const handleDeleteButton = (_tokenList) => {
         setSelectedToken(_tokenList)
-        setDeleteConfirmation(true)
+        setShowDeleteConfirmation(true)
     }
 
     const handleGenerateRowAction = () => {
@@ -58,7 +65,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
     const noMatchingResults = () => <GenericFilterEmptyState />
 
     return (
-        <div className="bcn-0">
+        <div className="bg__primary">
             <div data-testid="api-token-page-header" className="flex dc__content-space pl-20 pr-20 pb-16">
                 <FeatureTitleWithInfo
                     title={HEADER_TEXT.API_TOKEN.title}
@@ -88,7 +95,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                     <div>Expires on</div>
                     <div />
                 </div>
-                <div className="dc__overflow-scroll api__list__height dc__position-rel">
+                <div className="dc__overflow-auto api__list__height dc__position-rel">
                     {!tokenList || tokenList.length === 0
                         ? noMatchingResults()
                         : tokenList.map((list, index) => (
@@ -131,35 +138,37 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                                       )}
                                   </div>
                                   <div className="api__row-actions flex right dc__gap-8">
-                                      <button
-                                          type="button"
-                                          className="dc__transparent flex p-4"
+                                      <Button
+                                          icon={<Edit />}
+                                          ariaLabel="Edit api token"
+                                          variant={ButtonVariantType.borderLess}
+                                          style={ButtonStyleType.neutral}
+                                          size={ComponentSizeType.xs}
                                           data-index={index}
-                                          data-testid="api-token-edit-button"
+                                          dataTestId="api-token-edit-button"
                                           onClick={handleEditRowAction}
-                                          aria-label="Edit api token"
-                                      >
-                                          <Edit className="scn-6 icon-dim-16" />
-                                      </button>
-                                      <button
-                                          type="button"
-                                          className="dc__transparent flex p-4 icon-delete"
+                                      />
+
+                                      <Button
+                                          icon={<Trash />}
+                                          variant={ButtonVariantType.borderLess}
+                                          style={ButtonStyleType.negativeGrey}
+                                          size={ComponentSizeType.xs}
+                                          ariaLabel="Delete api token"
                                           data-index={index}
-                                          data-testid="api-token-delete-button"
+                                          dataTestId="api-token-delete-button"
                                           onClick={handleDelete}
-                                          aria-label="Delete api token"
-                                      >
-                                          <Trash className="scn-6 icon-dim-16" />
-                                      </button>
+                                      />
                                   </div>
                               </div>
                           ))}
                 </div>
-                {showDeleteConfirmation && selectedToken && (
+                {selectedToken && (
                     <DeleteAPITokenModal
                         tokenData={selectedToken}
                         reload={reload}
-                        setDeleteConfirmation={setDeleteConfirmation}
+                        showDeleteConfirmation={showDeleteConfirmation}
+                        setDeleteConfirmation={setShowDeleteConfirmation}
                     />
                 )}
             </div>

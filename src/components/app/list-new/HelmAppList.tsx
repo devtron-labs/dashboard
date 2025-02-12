@@ -380,7 +380,7 @@ const HelmAppList = ({
     }
 
     const renderFetchError = (externalHelmListFetchError: string, index: number) => (
-        <div className="bcn-0" key={index}>
+        <div className="bg__primary" key={index}>
             <div className="h-8" />
             <div className="ea-fetch-error-message above-header-message flex left">
                 <span className="mr-8 flex">
@@ -453,7 +453,7 @@ const HelmAppList = ({
         return (
             <div data-testid="helm-app-list-container">
                 {!clusterIdsCsv && (
-                    <div className="bcn-0" data-testid="helm-app-list">
+                    <div className="bg__primary" data-testid="helm-app-list">
                         <div className="h-8" />
                         <div className="cluster-select-message-strip above-header-message flex left">
                             <span className="mr-8 flex">
@@ -510,7 +510,7 @@ const HelmAppList = ({
         return (
             <div
                 style={{ width: '600px', margin: 'auto', marginTop: '20px' }}
-                className="bcn-0 pt-20 pb-20 pl-20 pr-20 br-8 en-1 bw-1 mt-20"
+                className="bg__primary pt-20 pb-20 pl-20 pr-20 br-8 en-1 bw-1 mt-20"
             >
                 <AllCheckModal />
             </div>

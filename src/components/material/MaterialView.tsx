@@ -16,11 +16,9 @@
 
 import { Component } from 'react'
 import {
-    Progressing,
     ConditionalWrap,
     Checkbox,
     InfoColourBar,
-    multiSelectStyles,
     TippyCustomized,
     TippyTheme,
     stopPropagation,
@@ -29,7 +27,14 @@ import {
     SelectPicker,
     ComponentSizeType,
     SelectPickerProps,
-    DeleteComponent,
+    renderMaterialIcon,
+    isAWSCodeCommitURL,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    DeleteConfirmationModal,
+    Textarea,
+    ERROR_STATUS_CODE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -41,7 +46,7 @@ import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outl
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as Check } from '../../assets/icons/ic-check-circle-green.svg'
 import { ReactComponent as Wrong } from '../../assets/icons/ic-close-circle.svg'
-import { isAWSCodeCommitURL, renderMaterialIcon, sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
+import { sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
 import { deleteMaterial } from './material.service'
 import {
     DeleteComponentsName,
@@ -132,24 +137,11 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         }
     }
 
-    getMaterialPayload = () => {
-        return {
-            appId: this.props.appId,
-            material: {
-                id: this.props.material.id,
-                url: this.props.material.url,
-                checkoutPath: this.props.material.checkoutPath,
-                gitProviderId: this.props.material.gitProvider.id,
-                fetchSubmodules: !!this.props.material.fetchSubmodules,
-            },
-        }
-    }
-
     preventRepoDeleteContent = () => {
         return (
             <>
-                <h2 className="fs-13 fw-4 lh-20 cn-0 m-0 p-0">Cannot Delete!</h2>
-                <p className="fs-13 fw-4 lh-20 cn-0 m-0 p-0">At least one repository is required.</p>
+                <h2 className="fs-13 fw-4 lh-20 m-0">Cannot Delete!</h2>
+                <p className="fs-13 fw-4 lh-20 m-0">At least one repository is required.</p>
             </>
         )
     }
@@ -167,15 +159,15 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
 
     regexInfoSteps = (): JSX.Element => {
         return (
-            <div data-testid="exclude-include-use-regex-info" className="w-500 h-380 fs-13 bcn-0">
-                <div className="h-365 dc__align-start p-12 dc__gap-12 dc__position-sticky dc__overflow-scroll">
+            <div data-testid="exclude-include-use-regex-info" className="w-500 h-380 fs-13 bg__primary">
+                <div className="h-365 dc__align-start p-12 dc__gap-12 dc__position-sticky dc__overflow-auto">
                     <div className="w-476 h-112 flex column dc__align-start p-0 dc__gap-4">
                         {USE_REGEX_TIPPY_CONTENT.insructionsList.regexInfo.map((item, index) => (
                             <div
                                 key={item.info}
                                 className={`${index === 2 ? 'h-24' : 'h-40'} dc__gap-12 w-476 fs-13 fw-4 flex dc__align-start p-0`}
                             >
-                                <div className="w-28 h-24 flex column dc__content-center dc__align-items-center p-10 dc__gap-10 bcn-1 br-4 dc__ff-monospace dc__no-border">
+                                <div className="w-28 h-24 flex column dc__content-center dc__align-items-center p-10 dc__gap-10 bcn-1 br-4 mono dc__no-border">
                                     {item.regex}
                                 </div>
                                 <span className={`${index === 2 ? 'h-20' : 'h-40'} w-436 lh-20`}>{item.info}</span>
@@ -193,7 +185,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         </div>
                         <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
                             <div className="flex left">
-                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 cn-7">
                                     {
                                         USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
                                             .regexExample1
@@ -270,7 +262,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         </div>
                         <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
                             <div className="flex left">
-                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 cn-7">
                                     {
                                         USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
                                             .regexExample2
@@ -347,7 +339,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         </div>
                         <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
                             <div className="flex left">
-                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 cn-7">
                                     {
                                         USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
                                             .regexExample3.partOne
@@ -359,7 +351,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                             .regexExample3.partTwo
                                     }
                                 </span>
-                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                     {
                                         USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
                                             .regexExample3.partThree
@@ -418,7 +410,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         </div>
                         <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
                             <div className="flex left">
-                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 cn-7">
                                     {
                                         USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
                                             .regexExample4
@@ -483,7 +475,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                             .regexExample5.partOne
                                     }
                                 </span>
-                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                     {
                                         USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
                                             .regexExample5.partTwo
@@ -495,7 +487,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                             .regexExample5.partThree
                                     }
                                 </span>
-                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                     {
                                         USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
                                             .regexExample5.partFour
@@ -533,7 +525,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                             .regexExample6.partOne
                                     }
                                 </span>
-                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                     {
                                         USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
                                             .regexExample6.partTwo
@@ -572,8 +564,10 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         )
     }
 
+    getShouldRenderIncludeExcludeInfoBar = () => this.props.material.includeExcludeFilePath?.trim() !== ''
+
     renderIncludeExcludeInfoBar = (): JSX.Element => {
-        if (this.props.material.includeExcludeFilePath?.trim() === '') {
+        if (!this.getShouldRenderIncludeExcludeInfoBar()) {
             return null
         }
         const filePath = this.props.material.includeExcludeFilePath.split(/\r?\n/)
@@ -585,7 +579,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             }
         }
         return (
-            <div className="flex left h-36 p-8 bcy-1 dc__border-top">
+            <div className="flex left h-36 p-8 bcy-1 border__primary dc__no-border-top-imp dc__bottom-radius-4">
                 <span className="fw-4 fs-13">
                     <InfoOutlined className="icon-dim-16 mr-6 mt-6 fcn-6" />
                 </span>
@@ -621,12 +615,28 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
     renderGitProviderOptionsFooter = () => (
         <NavLink
             to={URLS.GLOBAL_CONFIG_GIT}
-            className="flex left dc__gap-8 dc__border-top bcn-0 px-8 py-10 cb-5 dc__block fw-6 fs-13 lh-20 anchor cursor dc__no-decor dc__hover-n50"
+            className="flex left dc__gap-8 dc__border-top bg__primary px-8 py-10 cb-5 dc__block fw-6 fs-13 lh-20 anchor cursor dc__no-decor dc__hover-n50"
         >
             <Add className="icon-dim-20 dc__no-shrink fcb-5" data-testid="add-git-account-option" />
             <span>Add Git Account</span>
         </NavLink>
     )
+
+    onDelete = async () => {
+        const deletePayload = {
+            appId: this.props.appId,
+            material: {
+                id: this.props.material.id,
+                url: this.props.material.url,
+                checkoutPath: this.props.material.checkoutPath,
+                gitProviderId: this.props.material.gitProvider.id,
+                fetchSubmodules: !!this.props.material.fetchSubmodules,
+            },
+        }
+
+        await deleteMaterial(deletePayload)
+        this.props.reload()
+    }
 
     renderForm() {
         const sortedProviders: any[] = this.props.providers
@@ -712,7 +722,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 <TippyCustomized
                                     theme={TippyTheme.white}
                                     iconClass="fcv-5"
-                                    className="bcn-0 deafult-tt"
+                                    className="bg__primary deafult-tt"
                                     placement="bottom"
                                     Icon={Help}
                                     heading="Exclude file/folders"
@@ -729,8 +739,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             </span>
                         </div>
                         {this.props.material.isExcludeRepoChecked && (
-                            <div className="dc__border br-4 mt-8 ml-35">
-                                <div className="p-8 dc__border-bottom">
+                            <div className="mt-8 ml-35">
+                                <div className="p-8 dc__top-radius-4 border__primary dc__no-bottom-border">
                                     <p className="fw-4 fs-13 mb-0-imp">
                                         Enter file or folder paths to be included or excluded.
                                         <a
@@ -754,13 +764,13 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 <span className="fs-13 fw-4">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partOne}
                                                 </span>
-                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partTwo}
                                                 </span>
                                                 <span className="ml-4 fs-13 fw-4">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partThree}
                                                 </span>
-                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partFour}
                                                 </span>
                                                 <br />
@@ -770,21 +780,21 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 <span className="fs-13 fw-4">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partOne}
                                                 </span>
-                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partTwo}
                                                 </span>
                                                 <span className="fs-13 fw-4 ml-2">,</span>
-                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partThree}
                                                 </span>
                                                 <span className="fs-13 fw-4 ml-2">,</span>
-                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFour}
                                                 </span>
                                                 <TippyCustomized
                                                     theme={TippyTheme.white}
                                                     iconClass="fcv-5"
-                                                    className="dc__mxw-none w-505 bcn-0 dc__border-radius-8-imp tippy-box default-white tippy-shadow"
+                                                    className="dc__mxw-none w-505 bg__primary dc__border-radius-8-imp tippy-box default-white tippy-shadow"
                                                     heading={USE_REGEX_TIPPY_CONTENT.insructionsList.heading}
                                                     placement="bottom"
                                                     Icon={Help}
@@ -810,7 +820,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 </span>
                                                 <br />
                                             </div>
-                                            <div className="ml-10 mt-4 dc__ff-monospace fs-13 fw-4">
+                                            <div className="ml-10 mt-4 mono fs-13 fw-4">
                                                 {INCLUDE_EXCLUDE_COMMIT_INFO.example.lineOne}
                                                 <br />
                                                 {INCLUDE_EXCLUDE_COMMIT_INFO.example.lineTwo}
@@ -819,15 +829,16 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                         </div>
                                     )}
                                 </div>
-                                <textarea
-                                    data-testid="exclude-include-commit-textbox"
-                                    className="form__textarea dc__no-border-imp mxh-140"
-                                    autoComplete="off"
+                                <Textarea
+                                    name="exclude-include-commit-textbox"
                                     autoFocus
                                     placeholder={INCLUDE_EXCLUDE_PLACEHOLDER}
-                                    rows={3}
                                     value={this.props.material.includeExcludeFilePath}
                                     onChange={this.props.handleFileChange}
+                                    borderRadiusConfig={{
+                                        top: false,
+                                        ...(this.getShouldRenderIncludeExcludeInfoBar() && { bottom: false }),
+                                    }}
                                 />
                                 {this.renderIncludeExcludeInfoBar()}
                             </div>
@@ -913,7 +924,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         </Checkbox>
                     </div>
                 </label>
-                <div className="form__buttons">
+                <div className="flexbox dc__content-space pt-20">
                     {this.props.material.id && (
                         <ConditionalWrap
                             condition={this.props.preventRepoDelete}
@@ -928,53 +939,50 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 </Tippy>
                             )}
                         >
-                            <button
-                                className="cta delete dc__m-auto ml-0"
-                                type="button"
+                            <Button
+                                style={ButtonStyleType.negative}
+                                variant={ButtonVariantType.secondary}
                                 onClick={this.onClickDelete}
                                 disabled={this.props.preventRepoDelete}
-                                data-testid="git-repository-delete-button"
-                            >
-                                {this.state.deleting ? <Progressing /> : 'Delete'}
-                            </button>
+                                dataTestId="git-repository-delete-button"
+                                isLoading={this.state.deleting}
+                                text="Delete"
+                            />
                         </ConditionalWrap>
                     )}
-                    {this.props.isMultiGit ? (
-                        <button
-                            type="button"
-                            className="cta cancel mr-16"
-                            onClick={this.props.cancel}
-                            data-testid="git-repository-cancel-button"
-                        >
-                            Cancel
-                        </button>
-                    ) : null}
-                    <button
-                        type="button"
-                        className="cta"
-                        disabled={this.props.isLoading}
-                        onClick={this.props.save}
-                        data-testid="git-repository-save-button"
-                    >
-                        {this.props.isLoading ? <Progressing /> : 'Save'}
-                    </button>
+                    <div className='flex w-100 dc__gap-12 right'>
+                        {this.props.isMultiGit ? (
+                            <Button
+                                text="Cancel"
+                                style={ButtonStyleType.neutral}
+                                variant={ButtonVariantType.secondary}
+                                onClick={this.props.cancel}
+                                dataTestId="git-repository-cancel-button"
+                            />
+                        ) : null}
+                        <Button
+                            text={this.props.material.id ? 'Update' : 'Save'}
+                            variant={ButtonVariantType.primary}
+                            disabled={this.props.isLoading}
+                            onClick={this.props.save}
+                            dataTestId="git-repository-save-button"
+                            isLoading={this.props.isLoading}
+                        />
+                    </div>
                 </div>
-                {this.state.confirmation && (
-                    <DeleteComponent
-                        setDeleting={this.setDeleting}
-                        deleteComponent={deleteMaterial}
-                        payload={this.getMaterialPayload()}
-                        title={this.props.material.name}
-                        toggleConfirmation={this.toggleConfirmation}
-                        component={DeleteComponentsName.GitRepo}
-                        confirmationDialogDescription={
-                            this.props.isMultiGit
-                                ? DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE
-                                : DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE
-                        }
-                        reload={this.props.reload}
-                    />
-                )}
+                <DeleteConfirmationModal
+                    title={this.props.material.name}
+                    component={DeleteComponentsName.GitRepo}
+                    showConfirmationModal={this.state.confirmation}
+                    closeConfirmationModal={this.toggleConfirmation}
+                    onDelete={this.onDelete}
+                    errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+                    renderCannotDeleteConfirmationSubTitle={
+                        this.props.isMultiGit
+                            ? DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE
+                            : DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE
+                    }
+                />
             </form>
         )
     }

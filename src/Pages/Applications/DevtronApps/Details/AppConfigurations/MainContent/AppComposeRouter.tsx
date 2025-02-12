@@ -16,20 +16,19 @@
 
 import React, { lazy, Suspense } from 'react'
 import { useRouteMatch, useHistory, Route, Switch, Redirect, useLocation, generatePath } from 'react-router-dom'
-
 import {
     Progressing,
     EnvResourceType,
     BASE_CONFIGURATION_ENV_ID,
     ApprovalConfigDataKindType,
     getIsApprovalPolicyConfigured,
+    CMSecretComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Next } from '@Icons/ic-arrow-forward.svg'
 import { URLS } from '@Config/index'
 import { ErrorBoundary, useAppContext } from '@Components/common'
 import ExternalLinks from '@Components/externalLinks/ExternalLinks'
-import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/types'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
 
 import { NextButtonProps, STAGE_NAME } from '../AppConfig.types'

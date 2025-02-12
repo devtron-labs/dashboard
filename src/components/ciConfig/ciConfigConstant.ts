@@ -66,7 +66,7 @@ export const BUILDER_SELECT_STYLES = {
         ...base,
         minHeight: '36px',
         boxShadow: 'none',
-        backgroundColor: 'var(--N50)',
+        backgroundColor: 'var(--bg-secondary)',
         border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
         cursor: 'pointer',
     }),

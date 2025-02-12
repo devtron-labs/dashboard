@@ -15,6 +15,7 @@
  */
 
 import { ACCESS_TYPE_MAP, EntityTypes, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { StylesConfig } from 'react-select'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
 import { ActionTypes, authorizationSelectStyles } from '../../../constants'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
@@ -22,10 +23,10 @@ import { DirectPermissionsRoleFilter } from '../../../types'
 
 export const ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE = '#'
 
-export const allApplicationsOption = (entity): SelectPickerOptionType => ({
+export const allApplicationsOption = ({ entity, team }: DirectPermissionsRoleFilter): SelectPickerOptionType => ({
     label: entity === EntityTypes.JOB ? 'All Jobs' : 'All applications',
     value: SELECT_ALL_VALUE,
-    description: `Allow access to existing and new ${entity === EntityTypes.JOB ? 'jobs' : 'apps'} for this project`,
+    description: `All ${entity === EntityTypes.JOB ? 'jobs' : 'applications'} in '${team?.label}'`,
 })
 
 export const SELECT_ALL_OPTION = {
@@ -72,10 +73,10 @@ export enum DirectPermissionFieldName {
     status = 'status',
 }
 
-export const roleSelectStyles = {
+export const roleSelectStyles: StylesConfig = {
     ...authorizationSelectStyles,
-    valueContainer: (base) => ({
-        ...authorizationSelectStyles.valueContainer(base),
+    valueContainer: (base, state) => ({
+        ...authorizationSelectStyles.valueContainer(base, state),
         display: 'flex',
         flexWrap: 'nowrap',
         textOverflow: 'ellipsis',

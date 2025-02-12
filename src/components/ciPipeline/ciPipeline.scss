@@ -45,7 +45,7 @@
 .select-button--source-info {
     height: 40px;
     padding: 12px 10px;
-    background-color: var(--white);
+    background-color: var(--bg-primary);
 }
 
 .disabled {
@@ -68,7 +68,7 @@
 }
 
 .ci-artifact {
-    border: solid 1px #d5dbdf;
+    border: solid 1px var(--N200);
     margin-bottom: 12px;
     border-radius: 4px;
 
@@ -87,44 +87,15 @@
     padding: 14px 16px;
     display: flex;
     background-blend-mode: multiply;
-    background-image: linear-gradient(to bottom, #f2f4f7, #f2f4f7);
-    border-top: solid 1px #d5dbdf;
+    background-image: linear-gradient(to bottom, var(--bg-tertiary), var(--bg-tertiary));
+    border-top: solid 1px var(--N200);
     border-radius: 0 0 4px 4px;
-}
-
-.docker-build-args {
-    border: solid 1px #d5dbdf;
-    border-radius: 4px;
-    margin-bottom: 24px;
-}
-
-.docker-build-args__header {
-    padding: 12px 16px;
-    display: flex;
-    justify-content: space-between;
-    cursor: pointer;
-}
-
-.docker-build-args__wrapper {
-    border-top: solid 1px #d5dbdf;
-}
-
-.docker-build-args__text {
-    line-height: 24px;
-}
-
-.form__key-value-inputs--docker-build {
-    margin: 16px;
-}
-
-.form__add-parameter--docker-build {
-    margin: 16px;
 }
 
 .ext-ci-config {
     border-radius: 8px;
     border: solid 1px var(--N200);
-    background-color: var(--window-bg);
+    background-color: var(--bg-tertiary);
     padding: 16px 20px;
     border-style: dashed;
 }
@@ -150,52 +121,9 @@
     margin-bottom: 24px;
 }
 
-.copy-button--ext-ci {
-    position: absolute;
-    top: 32px;
-    right: 5px;
-}
-
-.ci-stage__title {
-    font-size: 16px;
-    font-weight: 600;
-    line-height: 1.25;
-    letter-spacing: normal;
-    color: var(--N900);
-    margin-bottom: 4px;
-}
-
-.ci-stage__description {
-    font-size: 12px;
-    font-weight: normal;
-    line-height: 1.67;
-    letter-spacing: normal;
-    color: var(--N700);
-}
-
 .ci-file-icon {
     transform: rotate(+90deg);
     margin-right: 10px;
-}
-
-.script-container {
-    border: 1px solid #d6dbdf;
-    padding: 8px 0;
-    border-radius: 4px;
-    background: var(--N50);
-
-    &.no-padding-script-container {
-        padding: 0px;
-    }
-
-    .react-monaco-editor-container {
-        min-height: 300px;
-    }
-
-    .code-editor__shebang {
-        color: #e00000;
-        opacity: 1;
-    }
 }
 
 .configure-ci-webhook {
@@ -205,7 +133,7 @@
 
 .ci-webhook-condition {
     display: grid;
-    grid-template-columns: 200px 500px 30px;
+    grid-template-columns: 200px 1fr 30px;
     gap: 16px;
 }
 
@@ -246,7 +174,7 @@
     display: grid;
     grid-template-columns: 280px 1fr;
     height: calc(100vh - 138px);
-    background: var(--white);
+    background: var(--bg-primary);
     overflow: hidden;
 
     .sidebar-container {
@@ -355,7 +283,7 @@
             text-align: center;
             display: table;
             padding: 2px 8px;
-            background: var(--N0);
+            background: var(--bg-primary);
             border: 1px solid var(--N200);
             color: var(--N400);
         }
@@ -505,13 +433,9 @@
     font-size: 12px;
     font-weight: 600;
     color: var(--N900);
-    background: var(--window-bg);
+    background: var(--bg-tertiary);
     padding: 4px 10px;
     text-transform: none;
-}
-
-.build__value {
-    background-color: var(--N50);
 }
 
 .format-grid {
@@ -554,8 +478,4 @@
             }
         }
     }
-}
-
-.custom-tag__text-area {
-    resize: none;
 }

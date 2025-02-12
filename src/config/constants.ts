@@ -208,7 +208,6 @@ export const Routes = {
     NODE_LIST: 'k8s/capacity/node/list',
     TAINTS_EDIT: 'k8s/capacity/node/taints/edit',
     HELM_APP_TEMPLATE_CHART: 'application/template-chart',
-    TELEMETRY_EVENT: 'telemetry/event',
     DEPLOYMENT_STATUS: 'app/deployment-status/timeline',
     HELM_DEPLOYMENT_STATUS_TIMELINE_INSTALLED_APP: 'app-store/deployment-status/timeline',
     MANUAL_SYNC: 'app/deployment-status/manual-sync',
@@ -249,7 +248,6 @@ export const Routes = {
     EDIT: 'edit',
     JOB_CONFIG_ENVIRONMENTS: 'config/environment',
     PERMISSION: 'permission/check',
-    SCOPED_GLOBAL_VARIABLES: 'global/variables',
     SCOPED_GLOBAL_VARIABLES_DETAIL: 'global/variables/detail',
     GVK: 'gvk',
     USER: 'user',
@@ -282,11 +280,7 @@ export const PATTERNS = {
     STRING: /[A-Za-z0-9]+$/,
     APP_NAME: '^[a-z][a-z0-9-]*[a-z0-9]$/*',
     CD_PIPELINE_NAME: `^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`,
-    CONFIG_MAP_AND_SECRET_KEY: /^[-._a-zA-Z0-9]+$/,
-    CONFIGMAP_AND_SECRET_NAME: /^[a-z0-9][a-z0-9-.]*[a-z0-9]$/,
-    ALL_DIGITS_BETWEEN_0_AND_7: /^[0-7]*$/,
     APP_LABEL_CHIP: /^.+:.+$/,
-    CONFIG_MAP_AND_SECRET_MULTPLS_KEYS: /^[-._a-zA-Z0-9\,\?\s]*[-._a-zA-Z0-9\s]$/,
     VARIABLE: /^[A-z0-9-_]+$/,
     API_TOKEN: '^[a-z0-9][a-z0-9_-]*[a-z0-9]$/*',
     NAMESPACE: '^[a-z0-9]+([a-z0-9-?]*[a-z0-9])?$',
@@ -299,14 +293,8 @@ export const PATTERNS = {
     START_END_ALPHANUMERIC: /^([A-Za-z0-9]).*[A-Za-z0-9]$|^[A-Za-z0-9]{1}$/,
     ALPHANUMERIC_WITH_SPECIAL_CHAR: /^[A-Za-z0-9._-]+$/, // allow alphanumeric,(.) ,(-),(_)
     CUSTOM_TAG: /^(?![.-])([a-zA-Z0-9_.-]*\{[Xx]\}[a-zA-Z0-9_.-]*)(?<![.-])$/, // Allowed: Alphanumeric characters, including (_) (.) (-) {x} {X} but cannot begin or end with (.) or (-)
-    ALPHANUMERIC_WITH_SPECIAL_CHAR_AND_SLASH: /^[A-Za-z0-9._/-]+$/, // allow alphanumeric,(.) ,(-),(_),(/)
     ESCAPED_CHARACTERS: /[.*+?^${}()|[\]\\]/g,
 }
-
-export const TriggerType = {
-    Auto: 'AUTOMATIC',
-    Manual: 'MANUAL',
-} as const
 
 export const repoType = {
     DEFAULT: 'DEFAULT',

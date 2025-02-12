@@ -29,9 +29,9 @@
 }
 
 .tooltip-graph {
-    border: solid 1px #b5b5b5;
-    background-color: white;
-    color: #363636;
+    border: solid 1px var(--N200);
+    background-color: var(--bg-primary);
+    color: var(--N700);
     display: none;
     position: absolute;
     top: 0;
@@ -39,7 +39,7 @@
     padding: 6px 12px;
     border-radius: 2px;
     z-index: 10;
-    box-shadow: 0 0 6px 4px #f5f5f5;
+    box-shadow: 0 0 6px 4px var(--N100);
     font-size: 11px;
     pointer-events: none;
 }

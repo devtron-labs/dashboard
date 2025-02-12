@@ -28,11 +28,17 @@ import {
     CustomInput,
     DEFAULT_SECRET_PLACEHOLDER,
     FeatureTitleWithInfo,
-    DeleteComponent,
     ToastVariantType,
     ToastManager,
     SelectPicker,
     ComponentSizeType,
+    renderMaterialIcon,
+    ERROR_STATUS_CODE,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    DeleteConfirmationModal,
+    Textarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -46,7 +52,6 @@ import {
     handleOnBlur,
     handleOnFocus,
     parsePassword,
-    renderMaterialIcon,
     TLSConnectionForm,
 } from '@Components/common'
 import { getGitHostList, getGitProviderList } from '../../services/service'
@@ -55,11 +60,12 @@ import { List } from '../globalConfigurations/GlobalConfiguration'
 import { HEADER_TEXT } from '../../config'
 import './gitProvider.scss'
 import { GitHostConfigModal } from './AddGitHostConfigModal'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg'
+import { ReactComponent as Add } from '@Icons/ic-add.svg'
+import { ReactComponent as Warn } from '@Icons/ic-info-warn.svg'
+import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { DC_GIT_PROVIDER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { AuthenticationType } from '../cluster/cluster.type'
-import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
+import { ReactComponent as Info } from '@Icons/info-filled.svg'
 import { safeTrim } from '../../util/Util'
 import { TLSInputType } from './types'
 
@@ -466,7 +472,7 @@ const GitForm = ({
     })
 
     const [deleting, setDeleting] = useState(false)
-    const [confirmation, toggleConfirmation] = useState(false)
+    const [confirmation, setConfirmation] = useState(false)
 
     const isTLSInitiallyConfigured = id && enableTLSVerification
 
@@ -624,7 +630,7 @@ const GitForm = ({
     const renderGitHostBottom = () => {
         return (
             <button
-                className="flex left dc__gap-8 px-10 py-8 cb-5 cursor bcn-0 dc__react-select__bottom dc__border-top dc__transparent fw-6"
+                className="flex left dc__gap-8 px-10 py-8 cb-5 cursor bg__primary dc__react-select__bottom dc__border-top dc__transparent fw-6"
                 onClick={onClickAddGitAccountHandler}
             >
                 <Add className="icon-dim-20 fcb-5 dc__vertical-align-bottom" /> <span>Add Git Host</span>
@@ -777,18 +783,28 @@ const GitForm = ({
         }
     }
 
-    const deletePayload = {
-        id: id || 0,
-        name: state.name.value,
-        url: state.url.value,
-        gitHostId: gitHost?.value?.value || 0,
-        authMode: state.auth.value || '',
-        active,
-        username: customState.username.value || '',
-        password: customState.password.value || '',
-        accessToken: customState.accessToken.value || '',
-        sshPrivateKey: customState.sshInput.value || '',
+    const collapseForm = () => toggleCollapse((t) => !t)
+
+    const onDelete = async () => {
+        const deletePayload = {
+            id: id || 0,
+            name: state.name.value,
+            url: state.url.value,
+            gitHostId: gitHost?.value?.value || 0,
+            authMode: state.auth.value || '',
+            active,
+            username: customState.username.value || '',
+            password: customState.password.value || '',
+            accessToken: customState.accessToken.value || '',
+            sshPrivateKey: customState.sshInput.value || '',
+        }
+        await deleteGitProvider(deletePayload)
+        reload()
     }
+
+    const closeConfirmationModal = () => setConfirmation(false)
+    const showConfirmationModal = () => setConfirmation(true)
+
 
     return (
         <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
@@ -840,7 +856,7 @@ const GitForm = ({
                         data-testid={`git-account-auth-type-${index}`}
                         className={` ${canSelectAuth(value) ? 'pointer' : 'wrapper-pointer-disabled'}`}
                         onChange={handleOnChange}
-                        style={{ borderRight: '1px solid #d6d4d9', height: '48px' }}
+                        style={{ borderRight: '1px solid var(--N200)', height: '48px' }}
                     >
                         <Tippy
                             className={` default-tt ${canSelectAuth(value) ? 'w-0 h-0' : 'w-200'}`}
@@ -859,7 +875,7 @@ const GitForm = ({
                     </div>
                 ))}
             </div>
-            <div className="flex fs-12 left pt-4 mb-16" style={{ color: '#6b778c' }}>
+            <div className="flex fs-12 left pt-4 mb-16" style={{ color: 'var(--N700)' }}>
                 <Warn className="icon-dim-16 mr-4 " />
                 Once configured, authentication type cannot be switched from HTTPS (user auth/anonymous) to SSH or vice
                 versa.
@@ -896,7 +912,7 @@ const GitForm = ({
                             isRequiredField
                             onBlur={id && handleOnBlur}
                         />
-                        <div className="flex fs-12 left pt-4 mb-20" style={{ color: '#6b778c' }}>
+                        <div className="flex fs-12 left pt-4 mb-20" style={{ color: 'var(--N700)' }}>
                             <Warn className="icon-dim-16 mr-4 " />
                             If using Github, use token instead of password.
                         </div>
@@ -904,20 +920,19 @@ const GitForm = ({
                 </div>
             )}
             {state.auth.value === 'SSH' && (
-                <div className="form__row ">
-                    <div className="form__label dc__required-field">Private SSH key</div>
-                    <textarea
-                        data-testid="git-account-ssh-key-textbox"
+                <div className="mb-16">
+                    <Textarea
+                        label="Private SSH key"
                         placeholder="Enter key text"
-                        className="form__input w-100"
-                        style={{ height: '100px', backgroundColor: '#f7fafc' }}
                         onChange={customHandleChange}
                         onBlur={id && handleOnBlur}
                         onFocus={handleOnFocus}
                         name="sshInput"
                         value={customState.sshInput.value}
+                        error={customState.sshInput.error}
+                        required
+                        shouldTrim={false}
                     />
-                    {customState.sshInput.error && <div className="form__error">{customState.sshInput.error}</div>}
                 </div>
             )}
 
@@ -936,41 +951,47 @@ const GitForm = ({
                 />
             )}
 
-            <div className="form__row form__buttons">
+            <div className="flex py-16 dc__content-space dc__border-top">
                 {id && (
-                    <button
-                        className="cta delete dc__m-auto ml-0"
-                        data-testid="delete-git-repo"
-                        type="button"
-                        onClick={() => toggleConfirmation(true)}
-                    >
-                        {deleting ? <Progressing /> : 'Delete'}
-                    </button>
+                    <Button
+                        text="Delete"
+                        variant={ButtonVariantType.secondary}
+                        style={ButtonStyleType.negative}
+                        startIcon={<Trash />}
+                        dataTestId="delete-git-repo"
+                        onClick={showConfirmationModal}
+                    />
                 )}
-                <button
-                    className="cta cancel"
-                    data-testid="add-git-account-cancel-button"
-                    type="button"
-                    onClick={(e) => toggleCollapse((t) => !t)}
-                >
-                    Cancel
-                </button>
-                <button className="cta" data-testid="add-git-account-save-button" type="submit" disabled={loading}>
-                    {loading ? <Progressing /> : id ? 'Update' : 'Save'}
-                </button>
+
+                <div className="flex right w-100 dc__gap-12">
+                    <Button
+                        text="Cancel"
+                        variant={ButtonVariantType.secondary}
+                        style={ButtonStyleType.neutral}
+                        dataTestId="add-git-account-cancel-button"
+                        onClick={collapseForm}
+                    />
+                    <Button
+                        text={id ? 'Update' : 'Save'}
+                        dataTestId="add-git-account-save-button"
+                        isLoading={loading}
+                        disabled={loading}
+                        buttonProps={{
+                            type: 'submit',
+                        }}
+                    />
+                </div>
             </div>
-            {confirmation && (
-                <DeleteComponent
-                    setDeleting={setDeleting}
-                    deleteComponent={deleteGitProvider}
-                    payload={deletePayload}
-                    title={state.name.value}
-                    toggleConfirmation={toggleConfirmation}
-                    component={DeleteComponentsName.GitProvider}
-                    confirmationDialogDescription={DC_GIT_PROVIDER_CONFIRMATION_MESSAGE}
-                    reload={reload}
-                />
-            )}
+
+            <DeleteConfirmationModal
+                title={state.name.value}
+                onDelete={onDelete}
+                component={DeleteComponentsName.GitProvider}
+                renderCannotDeleteConfirmationSubTitle={DC_GIT_PROVIDER_CONFIRMATION_MESSAGE}
+                showConfirmationModal={confirmation}
+                closeConfirmationModal={closeConfirmationModal}
+                errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+            />
         </form>
     )
 }

@@ -60,7 +60,7 @@ const ApplicationRoute = ({
                         APPLICATIONS
                     </h4>
                 </div>
-                <div className="px-8 dc__overflow-auto">
+                <div className="px-8 pb-8 dc__overflow-auto">
                     {envAppList.map(({ name, id }) => (
                         <Fragment key={id}>
                             {renderNavItem({
