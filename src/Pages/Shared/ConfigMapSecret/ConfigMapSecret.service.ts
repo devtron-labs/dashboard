@@ -213,6 +213,7 @@ export const getConfigMapSecretConfigData = async <IsJob extends boolean = false
     name,
     resourceId,
     abortControllerRef,
+    isTemplateView,
 }: GetConfigMapSecretConfigDataProps<IsJob>) => {
     try {
         const { result } = await (isJob
@@ -236,6 +237,8 @@ export const getConfigMapSecretConfigData = async <IsJob extends boolean = false
                               ? ConfigResourceType.ConfigMap
                               : ConfigResourceType.Secret,
                   },
+                  appId,
+                  isTemplateView,
                   signal: abortControllerRef.current.signal,
               }))
 

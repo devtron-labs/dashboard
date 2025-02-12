@@ -290,9 +290,13 @@ export const DeploymentConfigCompare = ({
             !isSuperAdmin ? getCompareSecretsData([...payloads]) : null,
             getAppEnvDeploymentConfig({
                 params: payloads[0],
+                appId,
+                isTemplateView: false,
             }),
             getAppEnvDeploymentConfig({
                 params: payloads[1],
+                appId,
+                isTemplateView: false,
             }),
         ])
 

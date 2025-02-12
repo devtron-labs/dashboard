@@ -957,7 +957,6 @@ export default function CDPipeline({
             ? updateCDPipeline(request, isTemplateView)
             : saveCDPipeline(request, {
                 isTemplateView,
-                getTemplateAPIRoute,
               })
         promise
             .then((response) => {

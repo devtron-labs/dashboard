@@ -1002,7 +1002,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         getWorkflows={this.getWorkflows}
                         resetChangeCIPayload={this.resetChangeCIPayload}
                         linkedCDSourceVariant={LINKED_CD_SOURCE_VARIANT}
-                        getTemplateAPIRoute={getTemplateAPIRoute}
                         isTemplateView={this.props.isTemplateView}
                     />
                 )}

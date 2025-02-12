@@ -69,7 +69,7 @@ const EnvironmentOverride = ({
     const isDeploymentOverride = !!location.pathname.includes(URLS.APP_DEPLOYMENT_CONFIG)
 
     useEffect(() => {
-        if (params.envId) {
+        if (params.envId && setEnvironmentId) {
             setEnvironmentId(+params.envId)
         }
     }, [params.envId])

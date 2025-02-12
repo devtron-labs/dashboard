@@ -29,8 +29,7 @@ import {
     PipelineBuildStageType,
     SeverityCount,
     useMainContext,
-    noop,
-    GetTemplateAPIRouteProps,
+    getTemplateAPIRoute as getTemplateAPIRouteCommon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link, PromptProps } from 'react-router-dom'
@@ -1274,6 +1273,7 @@ export const setAppGroupFilterInLocalStorage = ({
     }
 }
 
-const getTemplateAPIRouteFELib = importComponentFromFELibrary('getTemplateAPIRoute', noop, 'function')
-
-export const getTemplateAPIRoute = (props: GetTemplateAPIRouteProps): string => getTemplateAPIRouteFELib(props)
+/**
+ * @deprecated
+ */
+export const getTemplateAPIRoute = getTemplateAPIRouteCommon

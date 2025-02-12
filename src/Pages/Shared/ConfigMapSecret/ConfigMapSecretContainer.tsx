@@ -230,6 +230,7 @@ export const ConfigMapSecretContainer = ({
                                   resourceId: id,
                                   isJob,
                                   abortControllerRef,
+                                  isTemplateView,
                               })
                             : null,
                         // Fetch Base Configuration (Inherited Tab Data)
@@ -247,6 +248,7 @@ export const ConfigMapSecretContainer = ({
                                   resourceId: isJob ? id : null,
                                   isJob,
                                   abortControllerRef,
+                                  isTemplateView,
                               })
                             : null,
                         // Fetch Draft Configuration
