@@ -14,6 +14,7 @@ import { getEnvironmentListMin } from '@Services/service'
 
 import {
     getCDNodeIcon,
+    getPipelineIdFromNodeId,
     getValidatedNodes,
     getWorkflowGraphVisualizerEdges,
     getWorkflowGraphVisualizerNodes,
@@ -57,16 +58,18 @@ export const Workflow = ({ templateId, onChange }: WorkflowProps) => {
             case NodeUpdateActionType.UPDATE_CD_PIPELINE:
                 {
                     const { id, value, wfId } = nodeAction
+
                     setNodes((prev) => {
                         const changedNodes: Parameters<WorkflowProps['onChange']>[0]['cd'] = []
 
                         const updatedNodes = {
                             ...prev,
                             [wfId]: prev[wfId].map((node) => {
-                                if (node.id === id && node.type === 'dropdownNode') {
+                                const nodeId = getPipelineIdFromNodeId(node.id)
+                                if (nodeId === id && node.type === 'dropdownNode') {
                                     changedNodes.push({
                                         environmentId: Number(value.value),
-                                        pipelineId: Number(node.id),
+                                        pipelineId: Number(nodeId),
                                     })
 
                                     return {
@@ -90,7 +93,7 @@ export const Workflow = ({ templateId, onChange }: WorkflowProps) => {
                         if (linkedCDNodesMap.size) {
                             Array.from(linkedCDNodesMap.entries()).forEach(([parentWfId, linkedCDNode]) => {
                                 updatedNodes[parentWfId] = updatedNodes[parentWfId].map((node) =>
-                                    node.id === linkedCDNode.id && node.type === 'textNode'
+                                    getPipelineIdFromNodeId(node.id) === linkedCDNode.id && node.type === 'textNode'
                                         ? {
                                               ...node,
                                               data: { ...node.data, text: value.label as string },
@@ -101,7 +104,7 @@ export const Workflow = ({ templateId, onChange }: WorkflowProps) => {
                         }
 
                         const { isValid, validatedNodes } = getValidatedNodes(updatedNodes)
-                        onChange?.({ cd: changedNodes }, !isValid)
+                        onChange({ cd: changedNodes }, !isValid)
 
                         return validatedNodes
                     })
@@ -116,14 +119,26 @@ export const Workflow = ({ templateId, onChange }: WorkflowProps) => {
     // UPDATE NODES & EDGES AFTER API RESPONSE
     useEffect(() => {
         if (!isWorkflowDataLoading && workflowData) {
-            setNodes(
-                getWorkflowGraphVisualizerNodes({
-                    workflows: workflowData[0].workflows,
-                    environmentList: workflowData[1].result,
-                    handleNodeUpdateAction,
-                }),
-            )
+            const updatedNodes = getWorkflowGraphVisualizerNodes({
+                workflows: workflowData[0].workflows,
+                environmentList: workflowData[1].result,
+                handleNodeUpdateAction,
+            })
+            setNodes(updatedNodes)
             setEdges(getWorkflowGraphVisualizerEdges(workflowData[0].workflows))
+
+            onChange(
+                {
+                    cd: workflowData[0].workflows
+                        .flatMap(({ nodes: workflowNodes }) => workflowNodes)
+                        .filter(({ type }) => type === 'CD')
+                        .map(({ id, environmentId }) => ({
+                            pipelineId: +id,
+                            environmentId,
+                        })),
+                },
+                false,
+            )
         }
     }, [isWorkflowDataLoading, workflowData])
 
