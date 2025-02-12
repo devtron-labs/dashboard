@@ -2265,9 +2265,16 @@ button.anchor {
 }
 
 .dc__no-border-right-imp {
-    border-top: none !important;
+    border-right: none !important;
 }
 
+.dc__no-border-bottom-imp {
+    border-bottom: none !important;
+}
+
+.dc__no-border-left-imp {
+    border-left: none !important;
+}
 
 .dc__box-shadow {
     box-shadow: inset 0 -1px 0 0 var(--N200);
