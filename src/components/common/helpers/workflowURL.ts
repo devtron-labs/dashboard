@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { URLS as CommonURLS } from '@devtron-labs/devtron-fe-common-lib'
+import { AppConfigProps, URLS as CommonURLS } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
+import { generatePath } from 'react-router-dom'
 
 export function getCDPipelineURL(
     appId: string,
@@ -42,12 +43,15 @@ export function getCIPipelineURL(
     workflowId: string,
     addPrefix: boolean,
     ciPipelineId: string | number = null,
-    isJobView?: boolean,
-    isCIJob?: boolean,
+    isJobView: boolean,
+    isCIJob: boolean,
+    isTemplateView: AppConfigProps['isTemplateView']
 ) {
     let prefixURL = ''
     if (addPrefix) {
-        prefixURL = `/${isJobView ? 'job' : 'app'}/${appId}/edit/workflow/`
+        prefixURL = `${isTemplateView ? generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+            appId,
+        }) : `/${isJobView ? 'job' : 'app'}/${appId}`}/edit/workflow/`
     }
     const ciPipelineSuffix = ciPipelineId ? `/${ciPipelineId}` : ''
     const ciPipelineType = isCIJob ? URLS.APP_JOB_CI_CONFIG : URLS.APP_CI_CONFIG
