@@ -349,8 +349,6 @@ export default function NavigationRoutes() {
                 isManifestScanningEnabled: environmentDataResponse.isManifestScanningEnabled,
                 isOrgLevelRBACViewEnforced: environmentDataResponse.canOnlyViewPermittedEnvOrgLevel,
             })
-            // Haven't found an instance where we are consuming this from localStorage
-            localStorage.setItem('isAirGapped', String(environmentDataResponse.isAirGapEnvironment))
 
             setServerMode(serverModeResponse)
             setPageState(ViewType.FORM)
