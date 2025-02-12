@@ -12,6 +12,27 @@ const SIZE_VARIANTS: InfoBlockProps['size'][] = [ComponentSizeType.large, Compon
 const LAYOUT_VARIANTS: InfoBlockProps['layout'][] = ['column', 'row']
 const DEFAULT_TITLE = 'Title'
 const DEFAULT_DESCRIPTION = 'Description'
+const INFO_BLOCK_TEMPLATE: Story = {
+    args: {
+        variant: 'information',
+        heading: DEFAULT_TITLE,
+        description: DEFAULT_DESCRIPTION,
+        size: ComponentSizeType.large,
+        layout: 'row',
+        borderConfig: {
+            top: true,
+            bottom: true,
+            left: true,
+            right: true,
+        },
+        borderRadiusConfig: {
+            top: true,
+            bottom: true,
+            left: true,
+            right: true,
+        },
+    } satisfies InfoBlockProps,
+}
 
 const meta = {
     component: InfoBlock,
@@ -39,38 +60,21 @@ const meta = {
             },
         },
     },
-    args: {
-        heading: DEFAULT_TITLE,
-        description: DEFAULT_DESCRIPTION,
-        variant: 'information',
-        size: ComponentSizeType.large,
-        layout: 'row',
-        borderConfig: {
-            top: true,
-            bottom: true,
-            left: true,
-            right: true,
-        },
-        borderRadiusConfig: {
-            top: true,
-            bottom: true,
-            left: true,
-            right: true,
-        },
-    },
 } satisfies Meta<InfoBlockProps>
 
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
+    ...INFO_BLOCK_TEMPLATE,
     args: {
-        heading: DEFAULT_TITLE,
-        description: DEFAULT_DESCRIPTION,
-    } as InfoBlockProps,
+        ...INFO_BLOCK_TEMPLATE.args,
+    } satisfies InfoBlockProps,
 }
 
 export const InfoBlockWithTextButton: Story = {
+    ...INFO_BLOCK_TEMPLATE,
     args: {
+        ...INFO_BLOCK_TEMPLATE.args,
         heading: DEFAULT_TITLE,
         description: DEFAULT_DESCRIPTION,
         buttonProps: {
@@ -79,7 +83,7 @@ export const InfoBlockWithTextButton: Story = {
             onClick: noop,
             variant: ButtonVariantType.text,
         },
-    } as InfoBlockProps,
+    } satisfies InfoBlockProps,
 }
 
 export default meta
