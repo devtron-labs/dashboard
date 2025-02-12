@@ -433,16 +433,21 @@ export function isGitOpsModuleInstalledAndConfigured(): Promise<ResponseType> {
         })
 }
 
-export function getChartReferencesForAppAndEnv(appId: number, envId?: number): Promise<ResponseType<MinChartRefDTO>> {
-    let envParam = ''
-    if (envId) {
-        envParam = `/${envId}`
-    }
-    return get(`${Routes.CHART_REFERENCES_MIN}/${appId}${envParam}`)
+export function getChartReferencesForAppAndEnv(appId: number, envId: number | null, isTemplateView: AppConfigProps['isTemplateView']): Promise<ResponseType<MinChartRefDTO>> {
+    const url = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CHART_REF,
+              queryParams: {
+                  id: appId,
+                  envId,
+              },
+          })
+        : `${Routes.CHART_REFERENCES_MIN}/${appId}${envId ? `/${envId}` : ''}`
+    return get(url)
 }
 
-export function getAppChartRefForAppAndEnv(appId: number, envId?: number): Promise<ResponseType> {
-    return getChartReferencesForAppAndEnv(appId, envId).then((response) => {
+export function getAppChartRefForAppAndEnv(appId: number, envId: number  | null, isTemplateView: AppConfigProps['isTemplateView']): Promise<ResponseType> {
+    return getChartReferencesForAppAndEnv(appId, envId, isTemplateView).then((response) => {
         const {
             result: { chartRefs, latestEnvChartRef, latestAppChartRef },
         } = response

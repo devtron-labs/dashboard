@@ -994,7 +994,7 @@ const DeploymentTemplate = ({
         try {
             reloadEnvironments()
             const [chartRefsDataResponse, lockedKeysConfigResponse] = await Promise.allSettled([
-                getChartList({ appId, envId }),
+                getChartList({ appId, envId, isTemplateView }),
                 getJsonPath && !isTemplateView
                     ? getJsonPath(appId, envId || BASE_CONFIGURATION_ENV_ID)
                     : Promise.resolve(null),
