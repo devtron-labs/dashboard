@@ -770,7 +770,7 @@ const DeploymentTemplate = ({
 
         const {
             result: { globalConfig, environmentConfig, guiSchema, IsOverride, schema, readme, appMetrics },
-        } = await getEnvOverrideDeploymentTemplate(+appId, +envId, +chartInfo.id, chartInfo.name)
+        } = await getEnvOverrideDeploymentTemplate(+appId, +envId, +chartInfo.id, chartInfo.name, isTemplateView)
 
         const {
             id,
@@ -1093,7 +1093,13 @@ const DeploymentTemplate = ({
         return isUpdateView
             ? updateEnvDeploymentTemplate
             : (payload, abortSignal) =>
-                  createEnvDeploymentTemplate(+appId, +envId, payload as UpdateEnvironmentDTPayloadType, abortSignal)
+                  createEnvDeploymentTemplate(
+                      +appId,
+                      +envId,
+                      payload as UpdateEnvironmentDTPayloadType,
+                      abortSignal,
+                      isTemplateView,
+                  )
     }
 
     const getSuccessToastMessage = (): string => {
@@ -1866,6 +1872,7 @@ const DeploymentTemplate = ({
                         handleClose={handleCloseDeleteOverrideDialog}
                         handleProtectionError={handleDeleteOverrideProtectionError}
                         reloadEnvironments={reloadEnvironments}
+                        isTemplateView={isTemplateView}
                     />
                 )}
 
