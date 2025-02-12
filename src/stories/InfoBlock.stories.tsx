@@ -5,9 +5,7 @@ import {
     InfoBlockProps,
     noop,
     ButtonVariantType,
-    ButtonStyleType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 
 const COMPONENT_VARIANTS: InfoBlockProps['variant'][] = ['error', 'help', 'information', 'success', 'warning']
 const SIZE_VARIANTS: InfoBlockProps['size'][] = [ComponentSizeType.large, ComponentSizeType.medium]
@@ -30,6 +28,35 @@ const meta = {
             options: LAYOUT_VARIANTS,
             control: { type: 'radio' },
         },
+        borderConfig: {
+            control: {
+                type: 'object',
+            },
+        },
+        borderRadiusConfig: {
+            control: {
+                type: 'object',
+            },
+        },
+    },
+    args: {
+        heading: DEFAULT_TITLE,
+        description: DEFAULT_DESCRIPTION,
+        variant: 'information',
+        size: ComponentSizeType.medium,
+        layout: 'row',
+        borderConfig: {
+            top: true,
+            bottom: true,
+            left: true,
+            right: true,
+        },
+        borderRadiusConfig: {
+            top: true,
+            bottom: true,
+            left: true,
+            right: true,
+        },
     },
 } satisfies Meta<InfoBlockProps>
 
@@ -51,23 +78,6 @@ export const InfoBlockWithTextButton: Story = {
             text: 'Button',
             onClick: noop,
             variant: ButtonVariantType.text,
-        },
-    } as InfoBlockProps,
-}
-
-export const InfoBlockWithIconButton: Story = {
-    args: {
-        heading: DEFAULT_TITLE,
-        description: DEFAULT_DESCRIPTION,
-        buttonProps: {
-            dataTestId: 'info-block-icon-button',
-            onClick: noop,
-            variant: ButtonVariantType.borderLess,
-            style: ButtonStyleType.neutral,
-            icon: <ICClose />,
-            ariaLabel: 'Close',
-            showAriaLabelInTippy: false,
-            size: ComponentSizeType.small,
         },
     } as InfoBlockProps,
 }
