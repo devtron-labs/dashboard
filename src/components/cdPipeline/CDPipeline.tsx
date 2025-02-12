@@ -58,7 +58,6 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { CDDeploymentTabText, RegistryPayloadType, SourceTypeMap, ViewType } from '../../config'
 import {
     getPluginIdsFromBuildStage,
-    getTemplateAPIRoute,
     importComponentFromFELibrary,
     sortObjectArrayAlphabetically,
 } from '../common'

@@ -31,11 +31,12 @@ import {
     JobCMSecretDataDTO,
     CMSecretComponentType,
     GetTemplateAPIRouteType,
+    getTemplateAPIRoute,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '@Config/constants'
 
-import { getTemplateAPIRoute, importComponentFromFELibrary } from '@Components/common'
+import { importComponentFromFELibrary } from '@Components/common'
 import {
     GetConfigMapSecretConfigDataProps,
     GetConfigMapSecretConfigDataReturnType,

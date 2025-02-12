@@ -24,9 +24,9 @@ import {
     put,
     ResponseType,
     trash,
+    getTemplateAPIRoute,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getChartReferencesForAppAndEnv } from '@Services/service'
-import { getTemplateAPIRoute } from '@Components/common'
 import {
     DeploymentTemplateConfigDTO,
     EnvironmentOverrideDeploymentTemplateDTO,

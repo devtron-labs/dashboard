@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-import { AppConfigProps, get, GetTemplateAPIRouteType, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AppConfigProps,
+    get,
+    GetTemplateAPIRouteType,
+    ResponseType,
+    getTemplateAPIRoute,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../../config'
 import { WebhookDetailsResponse, WebhookDetailsType, WebhookListResponse } from './types'
-import { getTemplateAPIRoute } from '@Components/common'
 
 export function getExternalCIList(appId: number | string, isTemplateView: AppConfigProps['isTemplateView']): Promise<WebhookListResponse> {
     const url = isTemplateView ? getTemplateAPIRoute({

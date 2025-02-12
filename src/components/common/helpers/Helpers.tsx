@@ -19,7 +19,6 @@ import {
     showError,
     OptionType,
     DeploymentAppTypes,
-    APIOptions,
     useWindowSize,
     APPROVAL_MODAL_TYPE,
     YAMLStringify,
@@ -29,10 +28,9 @@ import {
     PipelineBuildStageType,
     SeverityCount,
     useMainContext,
-    getTemplateAPIRoute as getTemplateAPIRouteCommon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
-import { Link, PromptProps } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { getDateInMilliseconds } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/apiToken.utils'
 import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
@@ -1272,8 +1270,3 @@ export const setAppGroupFilterInLocalStorage = ({
         localStorage.setItem(localStorageKey, '')
     }
 }
-
-/**
- * @deprecated
- */
-export const getTemplateAPIRoute = getTemplateAPIRouteCommon
