@@ -88,7 +88,7 @@ const UpdateTemplateConfig = ({ formState, isJobView, handleFormStateChange }: U
     return (
         <>
             <div className="divider__secondary--horizontal" />
-            <div className="br-8 border__secondary bg__primary p-20 flexbox-col dc__gap-16">
+            <div className="br-8 border__secondary bg__primary p-20 pb-0-imp flexbox-col dc__gap-16">
                 <h4 className="fs-14 fw-6 lh-20 cn-9 m-0">Code Source</h4>
                 <MaterialList
                     isCreateAppView
