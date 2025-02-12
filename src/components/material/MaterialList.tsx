@@ -239,7 +239,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                 {this.state.materials.map((mat) => {
                     return (
                         <UpdateMaterial
-                            key={mat.name}
+                            key={mat.id}
                             appId={Number(this.props.appId)}
                             isMultiGit={this.state.materials.length > 0}
                             preventRepoDelete={this.state.materials.length === 1}

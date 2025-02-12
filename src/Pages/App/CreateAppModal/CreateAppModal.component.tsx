@@ -171,10 +171,13 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                             return acc
                         }, {})
                         updatedFormState.workflowConfig = {
-                            cd: updatedFormState.workflowConfig.cd.map(({ environmentId, pipelineId }) => ({
-                                pipelineId,
-                                environmentId: updatedPipelineToEnvMap[pipelineId] ?? environmentId,
-                            })),
+                            // If cd is not present initially use the data.cd
+                            cd: updatedFormState.workflowConfig?.cd?.length
+                                ? updatedFormState.workflowConfig.cd.map(({ environmentId, pipelineId }) => ({
+                                      pipelineId,
+                                      environmentId: updatedPipelineToEnvMap[pipelineId] ?? environmentId,
+                                  }))
+                                : value.data.cd,
                         }
                         updatedFormErrorState.workflowConfig = value.isError
                         break
