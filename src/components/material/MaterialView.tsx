@@ -692,16 +692,16 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         />
                     </div>
                 </div>
-                {this.props.material.gitProvider?.authMode === AuthenticationType.ANONYMOUS && (
-                    <InfoColourBar
-                        message="This git account has anonymous read access. Only public repositories can be accessed with anonymous authentication."
-                        classname="info_bar cn-9 mb-20 lh-20"
-                        Icon={Info}
-                        iconClass="icon-dim-20"
-                    />
-                )}
                 {!this.props.isCreateAppView && (
                     <>
+                        {this.props.material.gitProvider?.authMode === AuthenticationType.ANONYMOUS && (
+                            <InfoColourBar
+                                message="This git account has anonymous read access. Only public repositories can be accessed with anonymous authentication."
+                                classname="info_bar cn-9 mb-20 lh-20"
+                                Icon={Info}
+                                iconClass="icon-dim-20"
+                            />
+                        )}
                         {!window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS && (
                             <>
                                 <div className="flex left">

@@ -152,8 +152,10 @@ export async function getBaseDeploymentTemplate(
 export const getChartList = async ({
     appId,
     envId,
-}: Pick<BaseURLParams, 'appId' | 'envId'>): Promise<GetChartListReturnType> => {
-    const chartRefResp = await getChartReferencesForAppAndEnv(+appId, +envId)
+    isTemplateView,
+}: Pick<BaseURLParams, 'appId' | 'envId'> &
+    Required<Pick<AppConfigProps, 'isTemplateView'>>): Promise<GetChartListReturnType> => {
+    const chartRefResp = await getChartReferencesForAppAndEnv(+appId, +envId, isTemplateView)
 
     const { chartRefs, latestAppChartRef, latestChartRef, latestEnvChartRef, chartMetadata } = chartRefResp.result
     // Adding another layer of security

@@ -21,7 +21,7 @@ import { useHistory } from 'react-router-dom'
 import { REQUIRED_FIELDS_MISSING } from '@Config/constants'
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
-import { ReactComponent as ICDevtronApp } from '@Icons/ic-devtron-app.svg'
+import { ReactComponent as ICAppTemplate } from '@Icons/ic-app-template.svg'
 
 import {
     ApplicationInfoFormProps,
@@ -371,7 +371,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                                             />
                                             <span>/</span>
                                             <p className="m-0 flex left dc__gap-6">
-                                                <ICDevtronApp className="icon-dim-20 p-1" />
+                                                <ICAppTemplate className="icon-dim-20 p-1" />
                                                 <span className="fs-13 lh-20 fw-6 cn-9">
                                                     {formState.templateConfig.name}
                                                 </span>

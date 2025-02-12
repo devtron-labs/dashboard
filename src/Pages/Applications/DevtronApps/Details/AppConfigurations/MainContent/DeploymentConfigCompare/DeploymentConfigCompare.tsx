@@ -213,10 +213,10 @@ export const DeploymentConfigCompare = ({
         // This applies when the config type is either 'PUBLISHED_ONLY' or 'PUBLISHED_WITH_DRAFT' (Saved with draft).
         const chartReferences = await Promise.all([
             !currentManifestRequestValues?.chartRefId && isConfigTypePublished(configType)
-                ? getChartReferencesForAppAndEnv(compareToAppId, compareToEnvId)
+                ? getChartReferencesForAppAndEnv(compareToAppId, compareToEnvId, false)
                 : null,
             !compareManifestRequestValues?.chartRefId && isConfigTypePublished(compareWithConfigType)
-                ? getChartReferencesForAppAndEnv(compareWithAppId, compareWithEnvId)
+                ? getChartReferencesForAppAndEnv(compareWithAppId, compareWithEnvId, false)
                 : null,
         ])
         const currentChartRefId = chartReferences[0] ? getConfigChartRefId(chartReferences[0].result) : null

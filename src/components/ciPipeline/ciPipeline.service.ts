@@ -126,8 +126,8 @@ export function getCIPipeline(
 ): Promise<any> {
     const URL = isTemplateView
         ? getTemplateAPIRoute({
-              type: GetTemplateAPIRouteType.CI_BUILD_CONFIG,
-              queryParams: { id: String(appId), ciPipelineId },
+              type: GetTemplateAPIRouteType.CI_PIPELINE,
+              queryParams: { id: String(appId), pipelineId: ciPipelineId },
           })
         : `${Routes.CI_CONFIG_GET}/${appId}/${ciPipelineId}`
     return get(URL)
