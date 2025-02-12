@@ -52,6 +52,7 @@ const EnvironmentOverride = ({
     envConfig,
     fetchEnvConfig,
     appOrEnvIdToResourceApprovalConfigurationMap,
+    isTemplateView,
 }: EnvironmentOverrideComponentProps) => {
     const isAppGroupView = !!envName
     const params = useParams<{ appId: string; envId: string }>()
@@ -159,6 +160,7 @@ const EnvironmentOverride = ({
                             reloadEnvironments={reloadEnvironments}
                             clusterId={clusterId}
                             fetchEnvConfig={fetchEnvConfig}
+                            isTemplateView={isTemplateView}
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
@@ -178,7 +180,7 @@ const EnvironmentOverride = ({
                             isJob={isJob}
                             appName={getAppName()}
                             envName={getEnvName()}
-                            isTemplateView={false}
+                            isTemplateView={isTemplateView}
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
@@ -199,7 +201,7 @@ const EnvironmentOverride = ({
                             isJob={isJob}
                             appName={getAppName()}
                             envName={getEnvName()}
-                            isTemplateView={false}
+                            isTemplateView={isTemplateView}
                         />
                     </Route>
                     <Redirect to={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`} />

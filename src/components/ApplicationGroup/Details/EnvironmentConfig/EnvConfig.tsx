@@ -171,6 +171,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
                                 fetchEnvConfig={refetch}
                                 onErrorRedirectURL={generatePath(path, { envId })}
                                 appOrEnvIdToResourceApprovalConfigurationMap={appIdToAppApprovalConfigMap}
+                                isTemplateView={false}
                             />
                         </div>
                     ) : (

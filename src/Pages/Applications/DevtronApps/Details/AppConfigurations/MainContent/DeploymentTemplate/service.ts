@@ -46,7 +46,7 @@ export const updateBaseDeploymentTemplate = (request: UpdateBaseDTPayloadType, a
 export const createBaseDeploymentTemplate = (
     request: UpdateBaseDTPayloadType,
     abortSignal: AbortSignal,
-    isTemplateView?: AppConfigProps['isTemplateView'],
+    isTemplateView: AppConfigProps['isTemplateView'],
 ) => {
     const URL = isTemplateView
         ? getTemplateAPIRoute({
@@ -96,7 +96,7 @@ export async function getBaseDeploymentTemplate(
     chartRefId: number,
     abortSignal: AbortSignal,
     chartName: string,
-    isTemplateView?: AppConfigProps['isTemplateView'],
+    isTemplateView: AppConfigProps['isTemplateView'],
 ): Promise<ResponseType<DeploymentTemplateConfigDTO>> {
     const URL = isTemplateView
         ? getTemplateAPIRoute({

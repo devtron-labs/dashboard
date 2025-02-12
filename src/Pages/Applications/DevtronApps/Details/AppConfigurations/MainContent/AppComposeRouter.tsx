@@ -176,6 +176,7 @@ const AppComposeRouter = () => {
                             onErrorRedirectURL={lastUnlockedStage}
                             appName={currentAppName}
                             appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                            isTemplateView={isTemplateView}
                         />
                     )}
                 </Route>,
@@ -224,6 +225,7 @@ const AppComposeRouter = () => {
                         )}
                         reloadEnvironments={reloadEnvironments}
                         fetchEnvConfig={fetchEnvConfig}
+                        isTemplateView={isTemplateView}
                     />
                 </Route>
             )}
@@ -300,6 +302,7 @@ const AppComposeRouter = () => {
                             onErrorRedirectURL={lastUnlockedStage}
                             appName={currentAppName}
                             appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                            isTemplateView={isTemplateView}
                         />
                     )}
                 </Route>,

@@ -120,6 +120,7 @@ export const Configurations = () => {
                         reloadEnvironments={reloadEnvironments}
                         environmentName={selectedEnv.name}
                         clusterId={null}
+                        isTemplateView={false}
                     />
                 </div>
             </Route>
