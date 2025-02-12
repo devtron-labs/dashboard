@@ -43,7 +43,7 @@ const meta = {
         heading: DEFAULT_TITLE,
         description: DEFAULT_DESCRIPTION,
         variant: 'information',
-        size: ComponentSizeType.medium,
+        size: ComponentSizeType.large,
         layout: 'row',
         borderConfig: {
             top: true,
