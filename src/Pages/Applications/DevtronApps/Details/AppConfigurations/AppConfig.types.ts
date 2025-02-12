@@ -199,7 +199,7 @@ export interface EnvironmentOptionType {
     id: number
 }
 
-export interface EnvConfigurationsNavProps {
+export interface EnvConfigurationsNavProps extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     envConfig: EnvConfigurationState
     fetchEnvConfig: (envId: number) => void
     environments: EnvironmentOptionType[]

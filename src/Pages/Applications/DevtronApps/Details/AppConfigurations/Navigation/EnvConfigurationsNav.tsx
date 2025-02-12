@@ -47,7 +47,6 @@ import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.typ
 import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
 import { EnvConfigRouteParams, EnvConfigurationsNavProps, EnvConfigObjectKey } from '../AppConfig.types'
 import { getEnvConfiguration, getNavigationPath, resourceTypeBasedOnPath } from './Navigation.helper'
-import { useAppConfigurationContext } from '../AppConfiguration.provider'
 
 // LOADING SHIMMER
 const ShimmerText = ({ width }: { width: string }) => (
@@ -69,6 +68,7 @@ export const EnvConfigurationsNav = ({
     hideEnvSelector,
     compareWithURL,
     appOrEnvIdToResourceApprovalConfigurationMap,
+    isTemplateView,
 }: EnvConfigurationsNavProps) => {
     // HOOKS
     const history = useHistory()
@@ -76,7 +76,6 @@ export const EnvConfigurationsNav = ({
     const { path, params } = useRouteMatch<EnvConfigRouteParams>()
     const { envId } = params
     const parsedResourceId = +params[paramToCheck]
-    const { isTemplateView } = useAppConfigurationContext()
 
     // STATES
     const [expandedIds, setExpandedIds] =

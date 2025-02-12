@@ -174,6 +174,7 @@ export const AppNavigation = () => {
                         showComparison={!isJobView && isUnlocked.workflowEditor}
                         isCMSecretLocked={!isUnlocked.workflowEditor}
                         appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                        isTemplateView={isTemplateView}
                     />
                 )}
             </Route>

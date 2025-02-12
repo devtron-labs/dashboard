@@ -103,6 +103,7 @@ export const Configurations = () => {
                     showComparison
                     hideEnvSelector
                     appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                    isTemplateView={false}
                 />
             </Route>
         </Switch>
