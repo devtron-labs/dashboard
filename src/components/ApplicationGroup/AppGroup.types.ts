@@ -272,6 +272,8 @@ export interface EnvironmentsListViewType
     extends Partial<Pick<UseUrlFiltersReturnType<never>, 'changePage' | 'changePageSize' | 'clearFilters'>> {
     isSuperAdmin: boolean
     filterConfig?: AppGroupFilterConfig
+    appListResponse: EnvAppType
+    appListLoading: boolean
 }
 
 export interface EnvironmentLinkProps {
