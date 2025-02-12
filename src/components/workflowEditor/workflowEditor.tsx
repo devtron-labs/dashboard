@@ -341,7 +341,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         const ciURL = isWebhookCD
             ? `${PipelineType.WEBHOOK.toLowerCase()}/0`
             : `${URLS.APP_CI_CONFIG.toLowerCase()}/${ciPipelineId}`
-        let LINK = `${URLS.APP}/${this.props.match.params.appId}/${CommonURLS.APP_CONFIG}/${
+        let LINK = `${
+            this.props.isTemplateView
+                ? `${generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+                      appId: this.props.match.params.appId,
+                  })}`
+                : `${URLS.APP}/${this.props.match.params.appId}`
+        }/${CommonURLS.APP_CONFIG}/${
             URLS.APP_WORKFLOW_CONFIG
         }/${workflowId}/${ciURL}/${URLS.APP_CD_CONFIG}/0/build?parentPipelineType=${parentPipelineType}&addType=${
             addType ?? AddPipelineType.PARALLEL
