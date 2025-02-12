@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { Component, createContext } from 'react'
-import { Route, Switch, withRouter, NavLink } from 'react-router-dom'
+import { Component, createContext } from 'react'
+import { Route, Switch, withRouter, NavLink, generatePath } from 'react-router-dom'
 import {
     showError,
     Progressing,
@@ -387,9 +387,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         successTitle?: string,
         showWebhookTippy?: boolean,
     ) => {
-        const _url = `${this.props.isJobView ? URLS.JOB : URLS.APP}/${this.props.match.params.appId}/${
-            CommonURLS.APP_CONFIG
-        }/${URLS.APP_WORKFLOW_CONFIG}`
+        const _url = this.props.isTemplateView
+            ? `${generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+                  appId: this.props.match.params.appId,
+              })}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`
+            : `${this.props.isJobView ? URLS.JOB : URLS.APP}/${this.props.match.params.appId}/${
+                  CommonURLS.APP_CONFIG
+              }/${URLS.APP_WORKFLOW_CONFIG}`
         this.props.history.push(_url)
 
         if (showSuccessCD) {
