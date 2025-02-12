@@ -242,17 +242,19 @@ export const AppNavigation = () => {
                         )
                     })}
                     {isJobView && <div className="h-100" />}
-                    <div className="dc__align-self-end">
-                        <Button
-                            dataTestId="delete-job-app-button"
-                            variant={ButtonVariantType.secondary}
-                            size={ComponentSizeType.medium}
-                            style={ButtonStyleType.negative}
-                            onClick={deleteApp}
-                            text={`Delete ${getDeleteButtonText()}`}
-                            fullWidth
-                        />
-                    </div>
+                    {!isTemplateView && (
+                        <div className="dc__align-self-end">
+                            <Button
+                                dataTestId="delete-job-app-button"
+                                variant={ButtonVariantType.secondary}
+                                size={ComponentSizeType.medium}
+                                style={ButtonStyleType.negative}
+                                onClick={deleteApp}
+                                text={`Delete ${getDeleteButtonText()}`}
+                                fullWidth
+                            />
+                        </div>
+                    )}
                 </>
             </Route>
         </Switch>
