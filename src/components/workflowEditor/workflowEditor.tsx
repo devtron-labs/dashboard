@@ -35,7 +35,6 @@ import {
     ChangeCIPayloadType,
     WorkflowOptionsModal,
     URLS as CommonURLS,
-    getTemplateAPIRoute,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
