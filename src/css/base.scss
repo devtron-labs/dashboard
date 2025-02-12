@@ -2178,6 +2178,10 @@ button.anchor {
     &--n7 {
         border-left: solid 1px var(--N700);
     }
+
+    &--n3 {
+        border-left: solid 1px var(--N300);
+    }
 }
 
 .dc__border-left-n0 {
@@ -2263,6 +2267,7 @@ button.anchor {
 .dc__no-border-right-imp {
     border-top: none !important;
 }
+
 
 .dc__box-shadow {
     box-shadow: inset 0 -1px 0 0 var(--N200);
@@ -5036,6 +5041,12 @@ textarea::placeholder {
 
 .dc__grid {
     display: grid;
+}
+
+.dc__icon-text-layout {
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    gap: 4px;
 }
 
 .dc__contents {

@@ -32,6 +32,7 @@ import {
     ToastManager,
     SelectPicker,
     ComponentSizeType,
+    renderMaterialIcon,
     ERROR_STATUS_CODE,
     Button,
     ButtonStyleType,
@@ -51,7 +52,6 @@ import {
     handleOnBlur,
     handleOnFocus,
     parsePassword,
-    renderMaterialIcon,
     TLSConnectionForm,
 } from '@Components/common'
 import { getGitHostList, getGitProviderList } from '../../services/service'
