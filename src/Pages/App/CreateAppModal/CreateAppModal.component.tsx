@@ -4,6 +4,7 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     Drawer,
+    Progressing,
     showError,
     ToastManager,
     ToastVariantType,
@@ -37,6 +38,8 @@ import ApplicationInfoForm from './ApplicationInfoForm'
 import HeaderSection from './HeaderSection'
 import Sidebar from './Sidebar'
 import UpdateTemplateConfig from './UpdateTemplateConfig'
+
+import './styles.scss'
 
 const TemplateList = importComponentFromFELibrary('TemplateList', null, 'function')
 const createDevtronAppUsingTemplate = importComponentFromFELibrary('createDevtronAppUsingTemplate', null, 'function')
@@ -376,20 +379,25 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                                         </div>
                                     </div>
                                     <div className="divider__secondary--horizontal" />
-                                    <div className="flexbox-col dc__gap-20 flex-grow-1 bg__secondary dc__overflow-auto p-20">
-                                        <ApplicationInfoForm
-                                            formState={formState}
-                                            handleFormStateChange={handleFormStateChange}
-                                            formErrorState={formErrorState}
-                                            handleTagErrorChange={handleTagErrorChange}
-                                            isJobView={isJobView}
-                                            selectedCreationMethod={selectedCreationMethod}
-                                        />
-                                        <UpdateTemplateConfig
-                                            formState={formState}
-                                            isJobView={isJobView}
-                                            handleFormStateChange={handleFormStateChange}
-                                        />
+                                    <div className="create-app-modal__template">
+                                        <div className="create-app-modal__template__loader">
+                                            <Progressing size={32} />
+                                        </div>
+                                        <div className="create-app-modal__template__content flexbox-col dc__gap-20 flex-grow-1 bg__secondary dc__overflow-auto p-20">
+                                            <ApplicationInfoForm
+                                                formState={formState}
+                                                handleFormStateChange={handleFormStateChange}
+                                                formErrorState={formErrorState}
+                                                handleTagErrorChange={handleTagErrorChange}
+                                                isJobView={isJobView}
+                                                selectedCreationMethod={selectedCreationMethod}
+                                            />
+                                            <UpdateTemplateConfig
+                                                formState={formState}
+                                                isJobView={isJobView}
+                                                handleFormStateChange={handleFormStateChange}
+                                            />
+                                        </div>
                                     </div>
                                 </>
                             ) : (
