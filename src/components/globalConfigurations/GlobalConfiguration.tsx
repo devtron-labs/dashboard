@@ -26,7 +26,6 @@ import {
     useMainContext,
     PageHeader,
     URLS as CommonURLS,
-    ResourceKindType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { ErrorBoundary, importComponentFromFELibrary } from '../common'
