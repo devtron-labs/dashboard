@@ -25,8 +25,9 @@ import {
     FilterChips,
     GenericEmptyState,
     ErrorScreenManager,
+    ImageType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import noEnvList from '@Images/no-artifact.webp'
+import appGroupEmpty from '@Images/application-group-empty-state.webp'
 import './EnvironmentsList.scss'
 import EnvironmentsListView from './EnvironmentListView'
 import { getClusterListMinWithoutAuth } from '../../../services/service'
@@ -151,9 +152,10 @@ const EnvironmentsList = ({ isSuperAdmin }: AppGroupAdminType) => {
                 return (
                     <div className="h-100">
                         <GenericEmptyState
-                            image={noEnvList}
+                            image={appGroupEmpty}
+                            imageType={ImageType.Large}
                             title="Your Applications, Organized by Environments"
-                            subTitle="Application Groups list deployed applications by environment. If you don't see any, check your access with your manager."
+                            subTitle="Application Groups show deployed applications by environment. If you don't see any, you either lack access or no applications are deployed in your environments."
                         />
                     </div>
                 )
