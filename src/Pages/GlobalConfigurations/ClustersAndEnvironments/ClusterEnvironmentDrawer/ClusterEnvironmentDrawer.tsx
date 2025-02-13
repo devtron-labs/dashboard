@@ -21,7 +21,6 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     CustomInput,
-    DeleteComponent,
     noop,
     showError,
     TagType,
@@ -35,14 +34,14 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
-import { ReactComponent as DeleteEnvironment } from '@Icons/ic-delete-interactive.svg'
+import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 import { saveEnvironment, updateEnvironment, deleteEnvironment } from '@Components/cluster/cluster.service'
-import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '@Config/constantMessaging'
 
 import { ClusterEnvironmentDrawerFormProps, ClusterEnvironmentDrawerProps, ClusterNamespacesDTO } from './types'
 import { getClusterNamespaceByName, getClusterEnvironmentUpdatePayload, getNamespaceLabels } from './utils'
 import { clusterEnvironmentDrawerFormValidationSchema } from './schema'
+import { EnvironmentDeleteComponent } from '../EnvironmentDeleteComponent'
 
 const virtualClusterSaveUpdateApi = importComponentFromFELibrary('virtualClusterSaveUpdateApi', null, 'function')
 const getClusterNamespaces = importComponentFromFELibrary('getClusterNamespaces', noop, 'function')
@@ -205,7 +204,7 @@ export const ClusterEnvironmentDrawer = ({
     }
 
     // METHODS
-    const deleteEnv = () => {
+    const redirectToListAfterReload = () => {
         hideClusterDrawer()
         reload()
     }
@@ -221,6 +220,21 @@ export const ClusterEnvironmentDrawer = ({
         if (!nameSpaceErr) {
             await refetchNamespaceLabels()
         }
+    }
+
+    const showConfirmationModal = () => setShowDeleteConfirmation(true)
+    const closeConfirmationModal = () => setShowDeleteConfirmation(false)
+
+    const onDelete = async () => {
+        const payload = getClusterEnvironmentUpdatePayload({
+            data,
+            clusterId,
+            id,
+            prometheusEndpoint,
+            isVirtual,
+        })
+        await deleteEnvironment(payload)
+        redirectToListAfterReload()
     }
 
     return (
@@ -319,19 +333,19 @@ export const ClusterEnvironmentDrawer = ({
                     <div className="dc__border-top flexbox dc__align-items-center dc__content-space py-16 px-20 dc__bottom-0 bg__primary">
                         {id && (
                             <Button
+                                text="Delete"
                                 variant={ButtonVariantType.secondary}
                                 style={ButtonStyleType.negative}
-                                text="Delete"
-                                startIcon={<DeleteEnvironment />}
+                                startIcon={<Trash />}
                                 dataTestId="environment-delete-btn"
-                                onClick={() => setShowDeleteConfirmation(true)}
+                                onClick={showConfirmationModal}
                             />
                         )}
-                        <div className="flex dc__gap-12 ml-auto">
+                        <div className="flex right w-100 dc__gap-12">
                             <Button
+                                text="Cancel"
                                 variant={ButtonVariantType.secondary}
                                 style={ButtonStyleType.neutral}
-                                text="Cancel"
                                 dataTestId="environment-cancel-btn"
                                 onClick={hideClusterDrawer}
                             />
@@ -348,24 +362,12 @@ export const ClusterEnvironmentDrawer = ({
                     </div>
                 </form>
 
-                {showDeleteConfirmation && (
-                    <DeleteComponent
-                        deleteComponent={deleteEnvironment}
-                        payload={getClusterEnvironmentUpdatePayload({
-                            data,
-                            clusterId,
-                            id,
-                            prometheusEndpoint,
-                            isVirtual,
-                        })}
-                        title={data.environmentName}
-                        toggleConfirmation={setShowDeleteConfirmation}
-                        component={DeleteComponentsName.Environment}
-                        confirmationDialogDescription={DC_ENVIRONMENT_CONFIRMATION_MESSAGE}
-                        closeCustomComponent={deleteEnv}
-                        reload={deleteEnv}
-                    />
-                )}
+                <EnvironmentDeleteComponent
+                    environmentName={data.environmentName}
+                    onDelete={onDelete}
+                    showConfirmationModal={showDeleteConfirmation}
+                    closeConfirmationModal={closeConfirmationModal}
+                />
             </div>
         </Drawer>
     )

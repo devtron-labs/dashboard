@@ -61,7 +61,6 @@ src/components/ClusterNodes/ClusterEvents.tsx
 src/components/ClusterNodes/ClusterManifest.tsx
 src/components/ClusterNodes/ClusterNodeEmptyStates.tsx
 src/components/ClusterNodes/ClusterOverview.tsx
-src/components/ClusterNodes/NodeActions/DeleteNodeModal.tsx
 src/components/ClusterNodes/NodeActions/EditTaintsModal.tsx
 src/components/ClusterNodes/NodeActions/NodeActionsMenu.tsx
 src/components/ClusterNodes/NodeActions/validationRules.ts
@@ -78,7 +77,6 @@ src/components/Jobs/JobsEmptyState.tsx
 src/components/Jobs/Service.ts
 src/components/Jobs/Utils.ts
 src/components/LogViewer/LogViewer.tsx
-src/components/ResourceBrowser/ResourceList/ResourceList.component.tsx
 src/components/ResourceBrowser/ResourceList/__tests__/Sidebar.test.tsx
 src/components/__mocks__/xterm-webfont.js
 src/components/app/LogFilter.test.ts
@@ -233,7 +231,6 @@ src/components/command/command.util.ts
 src/components/common/Accordian/Accordian.tsx
 src/components/common/AppDetailsEmptyState.tsx
 src/components/common/Carousel/Carousel.tsx
-src/components/common/ClusterNotReachableDailog/ClusterNotReachableDialog.tsx
 src/components/common/ContentCard/ContentCard.tsx
 src/components/common/Contexts/AppContext.ts
 src/components/common/DatePickers/Calender.tsx

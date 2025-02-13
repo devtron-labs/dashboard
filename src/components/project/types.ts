@@ -38,3 +38,22 @@ export interface ProjectType {
     active: boolean
     isCollapsed: boolean
 }
+
+export interface ProjectProps {
+    id: number
+    name: string
+    active: boolean
+    isCollapsed: boolean
+    saveProject: (index: number, key: 'name') => void
+    onCancel: (index) => void
+    handleChange: (Event, index: number, key: 'name') => void
+    loadingData: boolean
+    index: number
+    isValid: { name: boolean }
+    errorMessage: { name: string }
+    reload: () => void
+}
+
+export interface ProjectState {
+    confirmation: boolean
+}

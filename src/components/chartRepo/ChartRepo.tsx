@@ -26,13 +26,23 @@ import {
     RadioGroupItem,
     CustomInput,
     FeatureTitleWithInfo,
-    DeleteComponent,
     ToastManager,
     ToastVariantType,
     PasswordField,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    ERROR_STATUS_CODE,
+    DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { NavLink } from 'react-router-dom'
+import { ReactComponent as Add } from '@Icons/ic-add.svg'
+import { ReactComponent as Helm } from '@Icons/ic-helmchart.svg'
+import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
+import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
+
 import { useForm } from '../common'
 import { List } from '../globalConfigurations/GlobalConfiguration'
 import {
@@ -42,15 +52,12 @@ import {
     deleteChartRepo,
 } from './chartRepo.service'
 import { getChartRepoList } from '../../services/service'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg'
 import { PATTERNS, CHART_REPO_TYPE, CHART_REPO_AUTH_TYPE, CHART_REPO_LABEL, URLS, HEADER_TEXT } from '../../config'
 import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm'
 import './chartRepo.scss'
 import { DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { ChartFormFields } from './ChartRepoType'
 import { ChartRepoType } from './chartRepo.types'
-import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 
 export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
     const [loading, result, error, reload] = useAsync(getChartRepoList, [], isSuperAdmin)
@@ -137,13 +144,7 @@ const CollapsedList = ({
 }) => {
     const [collapsed, toggleCollapse] = useState(true)
 
-    const setToggleCollapse = () => {
-        if (!id) {
-            toggleCollapse(false)
-        }
-    }
-
-    const handleCollapse = (e) => {
+    const setToggleCollapse = (e) => {
         e.stopPropagation()
         toggleCollapse((t) => !t)
     }
@@ -177,7 +178,6 @@ const CollapsedList = ({
                 </div>
                 {id && (
                     <List.DropDown
-                        onClick={handleCollapse}
                         dataTestid="select-existing-repository-button"
                         className="rotate"
                         style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }}
@@ -266,8 +266,7 @@ const ChartForm = ({
     const customHandleChange = (e) =>
         setCustomState((state) => ({ ...state, [e.target.name]: { value: e.target.value, error: '' } }))
 
-    const [deleting, setDeleting] = useState(false)
-    const [confirmation, toggleConfirmation] = useState(false)
+    const [confirmation, setConfirmation] = useState(false)
     const [chartRepoType, setChartRepoType] = useState<string>(CHART_REPO_TYPE.PUBLIC)
 
     if (chartRepoType === CHART_REPO_TYPE.PUBLIC) {
@@ -415,7 +414,9 @@ const ChartForm = ({
     function allowInsecureConnectionHandler(e) {
         setAllowInsecure(!allowInsecure)
     }
-    const handleDeleteClick = () => toggleConfirmation(true)
+    const showConfirmationModal = () => setConfirmation(true)
+    const closeConfirmationModal = () => setConfirmation(false)
+
     const handleCancelClick = () => toggleCollapse((t) => !t)
 
     const renderChartInputElement = (field: string) => {
@@ -434,8 +435,8 @@ const ChartForm = ({
         )
     }
 
-    const renderModifiedChartInputElement = (field: string, isEditable: boolean) => {
-        return !isEditable ? (
+    const renderModifiedChartInputElement = (field: string, isEditable: boolean) =>
+        !isEditable ? (
             <Tippy
                 className="default-tt w-200"
                 arrow={false}
@@ -447,6 +448,10 @@ const ChartForm = ({
         ) : (
             renderChartInputElement(field)
         )
+
+    const onDelete = async () => {
+        await deleteChartRepo(chartRepoPayload)
+        reload()
     }
 
     return (
@@ -531,42 +536,42 @@ const ChartForm = ({
                     </div>
                 )}
 
-                <div className=" form__buttons">
+                <div className="flex dc__content-space">
                     {id && (
-                        <button
-                            data-testid="chart-repo-delete-button"
-                            className="cta delete dc__m-auto chart_repo__delete-button"
-                            type="button"
-                            onClick={handleDeleteClick}
-                        >
-                            {deleting ? <Progressing /> : 'Delete'}
-                        </button>
+                        <Button
+                            text="Delete"
+                            variant={ButtonVariantType.secondary}
+                            style={ButtonStyleType.negative}
+                            size={ComponentSizeType.large}
+                            startIcon={<Trash />}
+                            dataTestId="chart-repo-delete-button"
+                            onClick={showConfirmationModal}
+                        />
                     )}
-                    <button
-                        data-testid="chart-repo-cancel-button"
-                        className="cta cancel"
-                        type="button"
-                        onClick={handleCancelClick}
-                    >
-                        Cancel
-                    </button>
-                    <button data-testid="chart-repo-save-button" className="cta" type="submit" disabled={loading}>
-                        {loading ? <Progressing /> : id ? 'Update' : 'Save'}
-                    </button>
+                    <div className="flex right w-100 dc__gap-12">
+                        <button
+                            data-testid="chart-repo-cancel-button"
+                            className="cta cancel"
+                            type="button"
+                            onClick={handleCancelClick}
+                        >
+                            Cancel
+                        </button>
+                        <button data-testid="chart-repo-save-button" className="cta" type="submit" disabled={loading}>
+                            {loading ? <Progressing /> : id ? 'Update' : 'Save'}
+                        </button>
+                    </div>
                 </div>
             </div>
-            {confirmation && (
-                <DeleteComponent
-                    setDeleting={setDeleting}
-                    deleteComponent={deleteChartRepo}
-                    payload={chartRepoPayload}
-                    title={state.name?.value}
-                    toggleConfirmation={toggleConfirmation}
-                    component={DeleteComponentsName.ChartRepository}
-                    confirmationDialogDescription={DC_CHART_REPO_CONFIRMATION_MESSAGE}
-                    reload={reload}
-                />
-            )}
+            <DeleteConfirmationModal
+                title={state.name.value}
+                component={DeleteComponentsName.ChartRepository}
+                renderCannotDeleteConfirmationSubTitle={DC_CHART_REPO_CONFIRMATION_MESSAGE}
+                errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+                onDelete={onDelete}
+                showConfirmationModal={confirmation}
+                closeConfirmationModal={closeConfirmationModal}
+            />
         </form>
     )
 }

@@ -53,6 +53,7 @@ import {
     FloatingVariablesSuggestions,
     UseFormErrorHandler,
     UseFormSubmitHandler,
+    isNullOrUndefined,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
@@ -854,7 +855,7 @@ export const ConfigMapSecretContainer = ({
             />
         ) : (
             <ConfigMapSecretForm
-                isCreateView={!id}
+                isCreateView={isNullOrUndefined(id)}
                 cmSecretStateLabel={cmSecretStateLabel}
                 componentType={componentType}
                 configMapSecretData={configMapSecretData}
@@ -1045,7 +1046,7 @@ export const ConfigMapSecretContainer = ({
                 className={`configmap-secret-container p-8 h-100 dc__position-rel ${showComments ? 'with-comment-drawer' : ''}`}
             >
                 <div className="dc__border br-4 dc__overflow-hidden h-100 bg__primary">{renderContent()}</div>
-                {openDeleteModal && renderDeleteModal()}
+                {renderDeleteModal()}
                 {SaveChangesModal && showDraftSaveModal && (
                     <SaveChangesModal
                         appId={+appId}

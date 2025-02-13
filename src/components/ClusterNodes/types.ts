@@ -24,6 +24,7 @@ import {
     NodeActionRequest,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { UpdateTabUrlParamsType, UseTabsReturnType } from '@Components/common/DynamicTabs/types'
+import { DeleteConfirmationModalProps } from '@devtron-labs/devtron-fe-common-lib/dist/Shared/Components/ConfirmationModal/types'
 import { LabelTag, OptionType } from '../app/types'
 import { CLUSTER_PAGE_TAB } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
@@ -178,7 +179,8 @@ export interface NodeActionModalPropType extends NodeActionRequest {
 
 export interface DeleteNodeModalProps
     extends NodeActionModalPropType,
-        Pick<ResourceBrowserActionMenuType, 'handleClearBulkSelection'> {}
+        Pick<ResourceBrowserActionMenuType, 'handleClearBulkSelection'>,
+        Pick<DeleteConfirmationModalProps, 'showConfirmationModal'> {}
 
 export interface CordonNodeModalType extends NodeActionModalPropType {
     unschedulable: boolean
