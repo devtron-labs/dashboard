@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-import { AppConfigProps, GetTemplateAPIRouteType, post, trash } from '@devtron-labs/devtron-fe-common-lib'
-import { getTemplateAPIRoute } from '@Components/common'
+import {
+    AppConfigProps,
+    GetTemplateAPIRouteType,
+    post,
+    trash,
+    getTemplateAPIRoute,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 
 export function createWorkflow(request, isTemplateView: AppConfigProps['isTemplateView']) {

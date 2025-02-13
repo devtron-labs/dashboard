@@ -141,6 +141,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 parentCiPipelineId,
                 false,
                 false,
+                this.props.isTemplateView,
             )
             this.setState({
                 sourcePipelineURL: `${URLS.APP}/${this.state.ciPipeline.parentAppId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${url}`,

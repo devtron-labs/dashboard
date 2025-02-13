@@ -328,7 +328,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
         <Drawer position="right" width="1024px">
             <div className="h-100 bg__modal flexbox-col dc__overflow-hidden">
                 <HeaderSection isJobView={isJobView} handleClose={handleClose} isCloseDisabled={isSubmitting} />
-                <div className="flexbox flex-grow-1 dc__overflow-auto">
+                <div className="flexbox flex-grow-1 dc__overflow-hidden">
                     <Sidebar
                         selectedCreationMethod={selectedCreationMethod}
                         handleCreationMethodChange={setSelectedCreationMethod}
@@ -348,7 +348,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                         </div>
                     )}
                     {isCreationMethodTemplate && (
-                        <div className="flexbox-col flex-grow-1 bg__secondary">
+                        <div className="flexbox-col flex-grow-1 bg__secondary dc__overflow-auto">
                             {formState.templateConfig ? (
                                 <>
                                     <div className="flex left dc__gap-12 py-12 px-20">

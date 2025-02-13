@@ -47,7 +47,8 @@ export interface CMSecretDraftPayloadType {
 }
 
 export interface GetConfigMapSecretConfigDataProps<IsJob extends boolean>
-    extends Pick<ConfigMapSecretContainerProps, 'appName' | 'envName' | 'componentType'> {
+    extends Pick<ConfigMapSecretContainerProps, 'appName' | 'envName' | 'componentType'>,
+        Required<Pick<AppConfigProps, 'isTemplateView'>> {
     envId: number
     appId: number
     name: string

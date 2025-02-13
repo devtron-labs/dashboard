@@ -30,8 +30,8 @@ import {
     ModuleNameMap,
     stringComparatorBySortOrder,
     AppConfigProps,
-    noop,
     GetTemplateAPIRouteType,
+    getTemplateAPIRoute,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../config'
 import {
@@ -53,7 +53,6 @@ import { ModuleStatus } from '../components/v2/devtronStackManager/DevtronStackM
 import { LOGIN_COUNT } from '../components/onboardingGuide/onboarding.utils'
 import { getProjectList } from '@Components/project/service'
 import { OffendingWorkflowQueryParamType } from '@Components/app/details/triggerView/types'
-import { getTemplateAPIRoute } from '@Components/common'
 
 export function getAppConfigStatus(appId: number, isJobView: boolean, isTemplateView: AppConfigProps['isTemplateView']): Promise<any> {
     const queryParams = {

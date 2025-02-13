@@ -19,7 +19,6 @@ import {
     showError,
     OptionType,
     DeploymentAppTypes,
-    APIOptions,
     useWindowSize,
     APPROVAL_MODAL_TYPE,
     YAMLStringify,
@@ -29,11 +28,9 @@ import {
     PipelineBuildStageType,
     SeverityCount,
     useMainContext,
-    noop,
-    GetTemplateAPIRouteProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
-import { Link, PromptProps } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { getDateInMilliseconds } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/apiToken.utils'
 import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
@@ -1273,7 +1270,3 @@ export const setAppGroupFilterInLocalStorage = ({
         localStorage.setItem(localStorageKey, '')
     }
 }
-
-const getTemplateAPIRouteFELib = importComponentFromFELibrary('getTemplateAPIRoute', noop, 'function')
-
-export const getTemplateAPIRoute = (props: GetTemplateAPIRouteProps): string => getTemplateAPIRouteFELib(props)

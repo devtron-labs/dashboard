@@ -31,11 +31,12 @@ import {
     JobCMSecretDataDTO,
     CMSecretComponentType,
     GetTemplateAPIRouteType,
+    getTemplateAPIRoute,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '@Config/constants'
 
-import { getTemplateAPIRoute, importComponentFromFELibrary } from '@Components/common'
+import { importComponentFromFELibrary } from '@Components/common'
 import {
     GetConfigMapSecretConfigDataProps,
     GetConfigMapSecretConfigDataReturnType,
@@ -213,6 +214,7 @@ export const getConfigMapSecretConfigData = async <IsJob extends boolean = false
     name,
     resourceId,
     abortControllerRef,
+    isTemplateView,
 }: GetConfigMapSecretConfigDataProps<IsJob>) => {
     try {
         const { result } = await (isJob
@@ -236,6 +238,8 @@ export const getConfigMapSecretConfigData = async <IsJob extends boolean = false
                               ? ConfigResourceType.ConfigMap
                               : ConfigResourceType.Secret,
                   },
+                  appId,
+                  isTemplateView,
                   signal: abortControllerRef.current.signal,
               }))
 

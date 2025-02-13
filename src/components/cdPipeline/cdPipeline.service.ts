@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
-import { post, get, sortCallback, getEnvironmentListMinPublic, TriggerType, GetTemplateAPIRouteType, AppConfigProps } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    post,
+    get,
+    sortCallback,
+    getEnvironmentListMinPublic,
+    TriggerType,
+    GetTemplateAPIRouteType,
+    AppConfigProps,
+    getTemplateAPIRoute,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { getEnvironmentSecrets, getEnvironmentConfigs } from '../../services/service'
-import { getTemplateAPIRoute } from '@Components/common'
 
 export function getCDPipelineNameSuggestion(appId: string | number): Promise<any> {
     const URL = `app/pipeline/suggest/cd/${appId}`

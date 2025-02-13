@@ -30,13 +30,13 @@ import {
     ChangeCIPayloadType,
     AppConfigProps,
     GetTemplateAPIRouteType,
+    getTemplateAPIRoute,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes, SourceTypeMap, ViewType } from '../../config'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
 import { CIPipelineBuildType, PatchAction } from './types'
 import { safeTrim } from '../../util/Util'
-import { getTemplateAPIRoute } from '@Components/common'
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }

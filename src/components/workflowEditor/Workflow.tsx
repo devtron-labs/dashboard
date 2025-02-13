@@ -167,6 +167,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     node.downstreams[0].split('-')[1],
                     this.props.isJobView,
                     node.isJobCI,
+                    this.props.isTemplateView,
                 ),
             )
         }
@@ -381,6 +382,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 node.id,
                 this.props.isJobView,
                 node.isJobCI,
+                this.props.isTemplateView,
             )
         }
 

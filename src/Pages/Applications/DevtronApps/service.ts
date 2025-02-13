@@ -39,11 +39,11 @@ import {
     get,
     getUrlWithSearchParams,
     showError,
+    getTemplateAPIRoute,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '@Config/constants'
 
-import { getTemplateAPIRoute } from '@Components/common'
 import { AppConfigStatusItemType } from './service.types'
 import { DEFAULT_LANDING_STAGE } from './Details/AppConfigurations/AppConfig.types'
 import { transformEnvConfig } from './Details/AppConfigurations/AppConfig.utils'

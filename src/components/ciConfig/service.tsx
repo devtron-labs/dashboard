@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import { AppConfigProps, get, GetTemplateAPIRouteType, post } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AppConfigProps,
+    get,
+    GetTemplateAPIRouteType,
+    post,
+    getTemplateAPIRoute,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
-import { getTemplateAPIRoute } from '@Components/common'
 
 export function saveCIConfig(request, isTemplateView: AppConfigProps['isTemplateView']) {
     const URL = isTemplateView
