@@ -69,7 +69,6 @@ const MountFromHost = () => {
                             <div className="mount-row mb-4 mt-4">
                                 <div className="fw-6 fs-13 lh-32 cn-7 " />
                                 <CustomInput
-                                    data-testid="script-mount-host-file-path-host"
                                     borderRadiusConfig={{
                                         right: false,
                                     }}
@@ -80,7 +79,6 @@ const MountFromHost = () => {
                                 />
                                 <div className="flex bw-1 en-2">:</div>
                                 <CustomInput
-                                    data-testid="script-mount-host-file-path-container"
                                     borderRadiusConfig={{
                                         left: false,
                                     }}

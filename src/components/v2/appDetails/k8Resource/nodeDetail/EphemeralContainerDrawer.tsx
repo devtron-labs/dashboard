@@ -262,32 +262,23 @@ const EphemeralContainerDrawer = ({
     const renderBasicEphemeral = (): JSX.Element => {
         return (
             <div className="p-20 flex-grow-1">
-                <div className="dc__row-container mb-12">
-                    {/* TODO: Update */}
-                    <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            content={
-                                <span style={{ display: 'block', width: '220px' }}>
-                                    {EPHEMERAL_CONTAINER.CONTAINER_NAME}
-                                </span>
-                            }
-                        >
-                            <span className="text-underline-dashed">Container name prefix</span>
-                        </Tippy>
-                    </div>
+                <div className="mb-12">
                     <CustomInput
                         name="container-name"
                         fullWidth
                         placeholder="Enter container name"
                         onChange={handleContainerChange}
                         value={ephemeralForm.basicData.containerName}
+                        layout="row"
+                        label="Container name prefix"
+                        labelTooltipConfig={{
+                            content: EPHEMERAL_CONTAINER.CONTAINER_NAME,
+                        }}
+                        required
                     />
                 </div>
 
                 <div className="dc__row-container mb-12">
-                    {/* TODO: Update */}
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
                         <Tippy
                             className="default-tt"
@@ -323,21 +314,7 @@ const EphemeralContainerDrawer = ({
                     />
                 </div>
 
-                <div className="dc__row-container mb-12">
-                    {/* TODO: Update */}
-                    <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            content={
-                                <span style={{ display: 'block', width: '220px' }}>
-                                    {EPHEMERAL_CONTAINER.TARGET_CONTAINER_NAME}
-                                </span>
-                            }
-                        >
-                            <span className="text-underline-dashed">Target Container Name</span>
-                        </Tippy>
-                    </div>
+                <div className="mb-12">
                     <SelectPicker
                         inputId="target-container-name"
                         name="target-container-name"
@@ -346,6 +323,11 @@ const EphemeralContainerDrawer = ({
                         classNamePrefix="select-token-expiry-duration"
                         isSearchable={false}
                         onChange={(e) => handleEphemeralChange(e, 'targetContainerName', targetContainerOption[0])}
+                        labelTooltipConfig={{
+                            content: EPHEMERAL_CONTAINER.TARGET_CONTAINER_NAME,
+                        }}
+                        required
+                        label="Target Container Name"
                     />
                 </div>
             </div>

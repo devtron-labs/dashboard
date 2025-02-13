@@ -885,7 +885,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     placeholder="e.g. /abc"
                                     value={this.props.material.checkoutPath}
                                     onChange={this.props.handlePathChange}
-                                    data-testid="clone-directory-path"
                                     name="clone-directory-path"
                                     error={this.props.isError.checkoutPath}
                                 />

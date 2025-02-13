@@ -67,7 +67,6 @@ const OutputDirectoryPath = () => {
                 return (
                     <div className="custom-script__output-directory pl-220 mt-8" key={`output-directory-${index}`}>
                         <CustomInput
-                            data-testid="output-directory-path-add-path-textbox"
                             placeholder="Enter directory path"
                             value={elm}
                             onChange={(e) => handleStoreArtifact(e, index)}
