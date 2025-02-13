@@ -32,6 +32,7 @@ import {
     ImageChipCell,
     RegistryType,
     AppEnvironment,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory } from 'react-router-dom'
 import { ReactComponent as ActivityIcon } from '../../../assets/icons/ic-activity.svg'
@@ -108,7 +109,7 @@ export const EnvironmentList = ({
         <button
             className="flex cta dc__gap-4"
             onClick={() => {
-                history.push(`${URLS.APP}/${appId}/${URLS.APP_CONFIG}`)
+                history.push(`${URLS.APP}/${appId}/${CommonURLS.APP_CONFIG}`)
             }}
         >
             Continue App Configuration <IconForward className="icon-dim-12" />

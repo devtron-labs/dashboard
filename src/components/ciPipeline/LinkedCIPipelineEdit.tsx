@@ -25,6 +25,7 @@ import {
     ButtonWithLoader,
     ToastManager,
     ToastVariantType,
+    AppSelectorNoOptionsMessage
 } from '@devtron-labs/devtron-fe-common-lib'
 import AsyncSelect from 'react-select/async'
 import { saveLinkedCIPipeline } from './ciPipeline.service'
@@ -37,7 +38,7 @@ import { getCIConfig } from '../../services/service'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import './ciPipeline.scss'
-import { appListOptions, noOptionsMessage } from '../AppSelector/AppSelectorUtil'
+import { appListOptions } from '../AppSelector/AppSelectorUtil'
 import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
 import { DUPLICATE_PIPELINE_NAME_VALIDATION, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
@@ -101,7 +102,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
         isValid.parentAppId = true
         isValid.parentCIPipelineId = false
         this.setState({ form, isValid, loadingPipelines: true }, () => {
-            getCIConfig(this.state.form.parentAppId)
+            getCIConfig(this.state.form.parentAppId, this.props.isTemplateView)
                 .then((response) => {
                     let pipelines = response.result && response.result.ciPipelines ? response.result.ciPipelines : []
                     pipelines = pipelines.filter(
@@ -146,6 +147,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
             appId: +this.props.match.params.appId,
             workflowId: +this.props.match.params.workflowId,
             name: this.state.form.name,
+            isTemplateView: this.props.isTemplateView,
         }
         saveLinkedCIPipeline(parentCIPipeline, params, this.props.changeCIPayload)
             .then((response) => {
@@ -333,7 +335,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                     <span className="form__label">Filter By Application</span>
                     <AsyncSelect
                         loadOptions={this.loadAppListOptions}
-                        noOptionsMessage={noOptionsMessage}
+                        noOptionsMessage={AppSelectorNoOptionsMessage}
                         classNamePrefix="link-pipeline-filter-application"
                         onChange={this.selectApp}
                         styles={this._multiSelectStyles}

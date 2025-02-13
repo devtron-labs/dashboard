@@ -137,7 +137,11 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
             },
         }
         this.setState({ deleteInProgress: true })
-        deleteCDPipeline(payload, force, cascadeDelete)
+        deleteCDPipeline(payload, {
+            force,
+            cascadeDelete,
+            isTemplateView: this.props.isTemplateView,
+        })
             .then((response) => {
                 if (response.result) {
                     this.handleClusterNameUpdate(response.result.deleteResponse?.clusterName)

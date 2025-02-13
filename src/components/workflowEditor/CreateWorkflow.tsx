@@ -38,7 +38,7 @@ export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflow
     }
 
     getWorkflow(): void {
-        getWorkflowList(this.props.match.params.appId)
+        getWorkflowList(this.props.match.params.appId, '', this.props.isTemplateView)
             .then((response) => {
                 if (response.result) {
                     const workflows = response.result.workflows || []
@@ -74,7 +74,9 @@ export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflow
             return
         }
         const message = this.state.id ? 'Workflow Updated Successfully' : 'Workflow Created successfully'
-        const promise = this.props.match.params.workflowId ? updateWorkflow(request) : createWorkflow(request)
+        const promise = this.props.match.params.workflowId
+            ? updateWorkflow(request, this.props.isTemplateView)
+            : createWorkflow(request, this.props.isTemplateView)
         promise
             .then((response) => {
                 ToastManager.showToast({

@@ -19,6 +19,7 @@ import {
     AppConfigState,
     EnvConfigurationState,
 } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
+import { AppConfigProps } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION, URLS } from '../../../config'
 import { ConfigAppList } from '../../../components/ApplicationGroup/AppGroup.types'
 
@@ -50,7 +51,7 @@ export const SECTION_HEADING_INFO: Record<string, SectionHeadingType> = {
     },
 }
 
-export interface EnvironmentOverrideComponentProps {
+export interface EnvironmentOverrideComponentProps extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     appList?: ConfigAppList[]
     environments: AppConfigState['environmentList']
     reloadEnvironments: () => void

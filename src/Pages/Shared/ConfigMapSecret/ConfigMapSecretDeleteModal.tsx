@@ -47,6 +47,7 @@ export const ConfigMapSecretDeleteModal = ({
     closeDeleteModal,
     updateCMSecret,
     handleError,
+    isTemplateView,
 }: ConfigMapSecretDeleteModalProps) => {
     // STATES
     const [isDeleting, setIsDeleting] = useState(false)
@@ -60,7 +61,7 @@ export const ConfigMapSecretDeleteModal = ({
         setIsDeleting(true)
         try {
             if (envId) {
-                const deleteEnvConfigMapSecretParams = { id, appId, envId, name: configName }
+                const deleteEnvConfigMapSecretParams = { id, appId, envId, name: configName, isTemplateView }
                 await (isSecret ? deleteEnvSecret : deleteEnvConfigMap)(deleteEnvConfigMapSecretParams)
 
                 ToastManager.showToast({
@@ -68,7 +69,7 @@ export const ConfigMapSecretDeleteModal = ({
                     description: isDeleteOverride ? 'Restored to global.' : 'Successfully Deleted',
                 })
             } else {
-                const deleteConfigMapSecretParams = { id, appId, name: configName }
+                const deleteConfigMapSecretParams = { id, appId, name: configName, isTemplateView }
                 await (isSecret ? deleteSecret : deleteConfigMap)(deleteConfigMapSecretParams)
 
                 ToastManager.showToast({

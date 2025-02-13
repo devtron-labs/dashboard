@@ -433,7 +433,10 @@ const BulkCITrigger = ({
             }
         }
 
-        savePipeline(payload, true)
+        savePipeline(payload, {
+            isRegexMaterial: true,
+            isTemplateView: false,
+        })
             .then((response) => {
                 if (response) {
                     getMaterialData()
@@ -670,6 +673,7 @@ const BulkCITrigger = ({
                             app.ciPipelineId,
                             false,
                             app.isJobCI,
+                            false,
                         )}
                         nodeType={nodeType}
                         shouldRenderAdditionalInfo={app.appId === selectedApp.appId}

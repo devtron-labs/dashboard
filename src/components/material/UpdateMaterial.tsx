@@ -15,13 +15,13 @@
  */
 
 import React, { Component } from 'react'
-import { showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import { AppConfigProps, showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { updateMaterial } from './material.service'
-import { GitMaterialType, UpdateMaterialState } from './material.types'
+import { GitMaterialType, MaterialViewProps, UpdateMaterialState } from './material.types'
 import { MaterialView } from './MaterialView'
 import { isAWSCodeCommitURL } from '../common'
 
-interface UpdateMaterialProps {
+export interface UpdateMaterialProps extends Required<Pick<AppConfigProps, 'isTemplateView'>>, Pick<MaterialViewProps, 'isCreateAppView'> {
     appId: number
     isMultiGit: boolean
     preventRepoDelete: boolean
@@ -30,11 +30,11 @@ interface UpdateMaterialProps {
     isGitProviderValid
     isCheckoutPathValid
     refreshMaterials: () => void
-    isWorkflowEditorUnlocked: boolean
     reload: () => void
     toggleRepoSelectionTippy: () => void
     setRepo?: React.Dispatch<React.SetStateAction<string>>
     isJobView?: boolean
+    handleSingleGitMaterialUpdate: (updatedMaterial: GitMaterialType, isError: boolean) => void
 }
 export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMaterialState> {
     constructor(props) {
@@ -94,6 +94,16 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 isCollapsed: true,
                 isLoading: false,
             })
+        }
+
+        // This is for syncing the state with the parent state
+        if (
+            prevState.material.gitProvider.id !== this.state.material.gitProvider.id ||
+            prevState.material.url !== this.state.material.url ||
+            prevState.isError.gitProvider !== this.state.isError.gitProvider ||
+            prevState.isError.url !== this.state.isError.url
+        ) {
+            this.props.handleSingleGitMaterialUpdate(this.state.material, !!(this.state.isError.gitProvider || this.state.isError.url))
         }
     }
 
@@ -241,7 +251,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                         fetchSubmodules: !!this.state.material.fetchSubmodules,
                     },
                 }
-                updateMaterial(payload)
+                updateMaterial({ request: payload, isTemplateView: this.props.isTemplateView })
                     .then((response) => {
                         this.props.refreshMaterials()
                         ToastManager.showToast({
@@ -299,7 +309,6 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 toggleCollapse={this.toggleCollapse}
                 save={this.save}
                 cancel={this.cancel}
-                isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
                 handleSubmoduleCheckbox={this.handleSubmoduleCheckbox}
                 appId={this.props.appId}
                 reload={this.props.reload}
@@ -307,6 +316,8 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 toggleRepoSelectionTippy={this.props.toggleRepoSelectionTippy}
                 setRepo={this.props.setRepo}
                 isJobView={this.props.isJobView}
+                isTemplateView={this.props.isTemplateView}
+                isCreateAppView={this.props.isCreateAppView}
             />
         )
     }

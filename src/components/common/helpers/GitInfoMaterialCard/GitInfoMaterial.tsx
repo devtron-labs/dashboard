@@ -214,7 +214,15 @@ export const GitInfoMaterial = ({
     )
 
     const goToWorkFlowEditor = () => {
-        const ciPipelineURL = getCIPipelineURL(appId, workflowId.toString(), true, pipelineId, isJobView, isJobCI)
+        const ciPipelineURL = getCIPipelineURL(
+            appId,
+            workflowId.toString(),
+            true,
+            pipelineId,
+            isJobView,
+            isJobCI,
+            false,
+        )
         if (fromAppGrouping) {
             window.open(window.location.href.replace(location.pathname, ciPipelineURL), '_blank', 'noreferrer')
         } else {
@@ -432,6 +440,7 @@ export const GitInfoMaterial = ({
                         pipelineId,
                         false,
                         isJobCI,
+                        false,
                     )}
                     nodeType={nodeType}
                     isJobView={isJobCI}

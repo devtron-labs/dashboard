@@ -17,9 +17,8 @@
 import React from 'react'
 import { useParams, useHistory, generatePath, useRouteMatch } from 'react-router-dom'
 import Select from 'react-select'
-import { useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { useAsync, APP_SELECTOR_STYLES, AppSelectorDropdownIndicator } from '@devtron-labs/devtron-fe-common-lib'
 import { mapByKey } from '../common'
-import { appSelectorStyle, DropdownIndicator } from './AppSelectorUtil'
 
 interface ChartSelectorType {
     primaryKey: string // url match
@@ -73,9 +72,9 @@ export default function ChartSelector({
             onChange={selectApp}
             components={{
                 IndicatorSeparator: null,
-                DropdownIndicator,
+                DropdownIndicator: AppSelectorDropdownIndicator,
             }}
-            styles={appSelectorStyle}
+            styles={APP_SELECTOR_STYLES}
         />
     )
 }

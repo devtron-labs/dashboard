@@ -33,6 +33,7 @@ const DeleteOverrideDialog = ({
     handleClose,
     handleProtectionError,
     reloadEnvironments,
+    isTemplateView,
 }: DeleteOverrideDialogProps) => {
     const { appId, envId } = useParams<BaseURLParams>()
     const [isDeletingOverride, setIsDeletingOverride] = useState<boolean>(false)
@@ -40,7 +41,7 @@ const DeleteOverrideDialog = ({
     const handleDelete = async () => {
         try {
             setIsDeletingOverride(true)
-            await deleteOverrideDeploymentTemplate(environmentConfigId, Number(appId), Number(envId))
+            await deleteOverrideDeploymentTemplate(environmentConfigId, Number(appId), Number(envId), isTemplateView)
             ToastManager.showToast({
                 variant: ToastVariantType.success,
                 description: 'Restored to global.',

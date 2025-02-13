@@ -157,7 +157,7 @@ const NavigationList = [
         title: 'Global Configurations',
         dataTestId: 'click-on-global-configuration',
         type: 'link',
-        href: URLS.GLOBAL_CONFIG,
+        href: CommonURLS.GLOBAL_CONFIG,
         iconClass: 'nav-short-global',
         icon: GlobalConfigIcon,
         isAvailableInEA: true,

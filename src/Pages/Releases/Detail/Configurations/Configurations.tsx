@@ -68,7 +68,7 @@ export const Configurations = () => {
 
     // ASYNC CALLS
     const [envConfigResLoading, envConfigRes, , fetchEnvConfig] = useAsync(
-        () => getEnvConfig(+appId, +envId),
+        () => getEnvConfig(+appId, +envId, false),
         [appId, envId],
         !!(appId && envId),
     )
@@ -103,6 +103,7 @@ export const Configurations = () => {
                     showComparison
                     hideEnvSelector
                     appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                    isTemplateView={false}
                 />
             </Route>
         </Switch>
@@ -120,6 +121,7 @@ export const Configurations = () => {
                         reloadEnvironments={reloadEnvironments}
                         environmentName={selectedEnv.name}
                         clusterId={null}
+                        isTemplateView={false}
                     />
                 </div>
             </Route>
@@ -136,6 +138,7 @@ export const Configurations = () => {
                             approvalConfigForEnv?.[ApprovalConfigDataKindType.configMap],
                         )}
                         clusterId={null}
+                        isTemplateView={false}
                     />
                 </div>
             </Route>
@@ -153,6 +156,7 @@ export const Configurations = () => {
                             approvalConfigForEnv?.[ApprovalConfigDataKindType.configSecret],
                         )}
                         clusterId={null}
+                        isTemplateView={false}
                     />
                 </div>
             </Route>

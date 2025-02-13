@@ -71,7 +71,7 @@ import {
     getDefaultUserStatusAndTimeout,
 } from '../../../Pages/GlobalConfigurations/Authorization/libUtils'
 
-export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
+export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType) => {
     const { appId, webhookId } = useParams<{
         appId: string
         webhookId: string
@@ -160,7 +160,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
         try {
             const [{ result: _userRole }, { result: _webhookDetails }] = await Promise.all([
                 getUserRole(),
-                getExternalCIConfig(appId, webhookId),
+                getExternalCIConfig(appId, webhookId, isTemplateView),
             ])
             const _isSuperAdmin = _userRole?.superAdmin
             setIsSuperAdmin(_isSuperAdmin)

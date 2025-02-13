@@ -39,6 +39,7 @@ import {
     TabProps,
     ToastManager,
     ToastVariantType,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { MultiValue } from 'react-select'
@@ -461,7 +462,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                         >
                             <EnvCDDetails filteredAppIds={_filteredAppsIds} />
                         </Route>
-                        <Route path={`${path}/${URLS.APP_CONFIG}/:appId(\\d+)?`}>
+                        <Route path={`${path}/${CommonURLS.APP_CONFIG}/:appId(\\d+)?`}>
                             <EnvConfig filteredAppIds={_filteredAppsIds} envName={envName} />
                         </Route>
                         <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />
@@ -681,7 +682,7 @@ export const EnvHeader = ({
                 tabType: 'navLink',
                 icon: Settings,
                 props: {
-                    to: `${match.url}/${URLS.APP_CONFIG}`,
+                    to: `${match.url}/${CommonURLS.APP_CONFIG}`,
                     onClick: (event) =>
                         handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.ConfigurationClicked.action),
                     'data-testid': 'group-configuration',

@@ -123,7 +123,7 @@ function getAppArguments(args, options): Promise<CommandSuggestionType> {
     }
     if (args[1] && args.length === 2) {
         // args[1] --> appName
-        return getAppOtherEnvironmentMin(args[1].data.value).then((response) => {
+        return getAppOtherEnvironmentMin(args[1].data.value, false).then((response) => {
             let list
             list = response?.result?.map((a) => {
                 return {
@@ -274,7 +274,7 @@ function getAppArguments(args, options): Promise<CommandSuggestionType> {
     if (args[3] && args.length === 4) {
         // args[3] --> pod
         if (args[3].value === 'env-override') {
-            return getAppOtherEnvironmentMin(args[1].data.value).then((response) => {
+            return getAppOtherEnvironmentMin(args[1].data.value, false).then((response) => {
                 let list = response?.result?.map((a) => {
                     return {
                         value: a.environmentName,
