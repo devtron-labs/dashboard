@@ -26,7 +26,6 @@ import {
     TemplateListDTO,
     getUrlWithSearchParams,
     SERVER_MODE,
-    ACCESS_TYPE_MAP,
     ModuleNameMap,
     stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -136,24 +135,6 @@ export function getAppListMin(
             result: list,
         }
     })
-}
-
-export async function getProjectFilteredApps(
-    projectIds: number[] | string[],
-    accessType?: string,
-): Promise<ProjectFilteredApps> {
-    const chartOnlyQueryParam = accessType === ACCESS_TYPE_MAP.HELM_APPS ? '&appType=DevtronChart' : ''
-    const response = await get(`app/min?teamIds=${projectIds.join(',')}${chartOnlyQueryParam}`)
-    
-    return {
-        ...response,
-        result: (response.result || [])
-            .map((project) => ({
-                ...project,
-                appList: (project.appList ?? []).sort((a, b) => stringComparatorBySortOrder(a.name, b.name)),
-            }))
-            .sort((a, b) => stringComparatorBySortOrder(a.projectName, b.projectName)),
-    }
 }
 
 export function getAvailableCharts(

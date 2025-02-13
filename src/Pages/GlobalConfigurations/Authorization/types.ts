@@ -27,6 +27,8 @@ import {
     ACCESS_TYPE_MAP,
     EntityTypes,
     CustomRoleAndMeta,
+    ResourceKindType,
+    K8sResourceListPayloadType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DeleteConfirmationModalProps } from '@devtron-labs/devtron-fe-common-lib/dist/Shared/Components/ConfirmationModal/types'
 import { SERVER_MODE } from '../../../config'
@@ -297,4 +299,32 @@ export interface DeleteUserPermissionProps
         Pick<DeleteConfirmationModalProps, 'title' | 'onDelete' | 'showConfirmationModal' | 'closeConfirmationModal'>
     > {
     isUserGroup?: boolean
+}
+
+export enum UserAccessResourceKind {
+    TEAM = 'team',
+    ENVIRONMENT = ResourceKindType.environment,
+    DEVTRON_APPS = ResourceKindType.devtronApplication,
+    HELM_APPS = ResourceKindType.helmChart,
+    HELM_ENVS = 'environment/helm',
+    CLUSTER = ResourceKindType.cluster,
+    CHART_GROUP = 'chartGroup',
+    JOBS = 'jobs',
+    WORKFLOW = 'workflow',
+    NAMESPACES = 'cluster/namespaces',
+    API_RESOURCES = 'cluster/apiResources',
+    CLUSTER_RESOURCES = 'cluster/resources',
+}
+
+export interface GetUserPermissionResourcesPayload
+    extends Partial<Pick<K8sResourceListPayloadType, 'clusterId' | 'k8sRequest'>> {
+    entity: EntityTypes
+    accessType?: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS
+    teamIds?: number[]
+    appIds?: string[]
+}
+
+export interface GetUserResourceOptionsProps {
+    kind: UserAccessResourceKind
+    payload: GetUserPermissionResourcesPayload
 }

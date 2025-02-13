@@ -22,7 +22,6 @@ import {
     InfoColourBar,
     OptionType,
     GVKType,
-    getK8sResourceList,
     EntityTypes,
     ApiResourceGroupType,
     Button,
@@ -34,17 +33,18 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
 import {
+    getUserAccessClusterList,
+    getUserAccessK8sResourceList,
+    getUserAccessNamespaceList,
+    getUserAccessResourceGroupList,
+} from '@Pages/GlobalConfigurations/Authorization/authorization.service'
+import {
     processK8SObjects,
     convertToOptionsList,
     sortObjectArrayAlphabetically,
     sortOptionsByLabel,
     importComponentFromFELibrary,
 } from '../../../../../../components/common'
-import {
-    getClusterList,
-    getResourceGroupList,
-    namespaceListByClusterId,
-} from '../../../../../../components/ResourceBrowser/ResourceBrowser.service'
 import { K8SObjectType } from '../../../../../../components/ResourceBrowser/Types'
 import { formatOptionLabel } from '../../../../../../components/v2/common/ReactSelect.utils'
 import { ReactComponent as Clone } from '../../../../../../assets/icons/ic-copy.svg'
@@ -104,7 +104,7 @@ const K8sListItemCard = ({
             isNamespaceListLoading: true,
         })
         try {
-            const { result } = await namespaceListByClusterId(clusterId)
+            const result = await getUserAccessNamespaceList({ clusterId: +clusterId })
             const options = [ALL_NAMESPACE, ...(result ? convertToOptionsList(result.sort()) : [])]
             setNamespaceMapping((prevMapping) => ({ ...prevMapping, [clusterId]: options }))
         } catch (err) {
@@ -145,10 +145,10 @@ const K8sListItemCard = ({
                     },
                 },
             }
-            const { result } = await getK8sResourceList(resourceListPayload)
-            if (result) {
+            const data = await getUserAccessK8sResourceList(resourceListPayload)
+            if (data) {
                 const _data =
-                    result.data?.map((ele) => ({ label: ele.name, value: ele.name })).sort(sortOptionsByLabel) ?? []
+                    data.data?.map((ele) => ({ label: ele.name, value: ele.name })).sort(sortOptionsByLabel) ?? []
                 const _optionList = [{ label: 'All resources', value: SELECT_ALL_VALUE }, ..._data]
                 setObjectMapping((prevMapping) => ({
                     ...prevMapping,
@@ -218,7 +218,7 @@ const K8sListItemCard = ({
             isApiGroupListLoading: true,
         })
         try {
-            const { result: resourceGroupList } = await getResourceGroupList(clusterId)
+            const resourceGroupList = await getUserAccessResourceGroupList({ clusterId })
             if (resourceGroupList.apiResources) {
                 const _processedData = processK8SObjects(resourceGroupList.apiResources, '', true)
                 const _k8SObjectMap = _processedData.k8SObjectMap
@@ -272,7 +272,7 @@ const K8sListItemCard = ({
             isClusterListLoading: true,
         })
         try {
-            const { result } = await getClusterList()
+            const result = await getUserAccessClusterList()
             if (result) {
                 const filteredClusterList = result.filter((item) => !item?.isVirtualCluster)
                 const _clusterOptions = convertToOptionsList(

@@ -48,7 +48,7 @@ const AppOrJobSelector = ({
     const isAccessTypeJob = permission.accessType === ACCESS_TYPE_MAP.JOBS
     const projectId =
         permission.team && permission.team.value !== HELM_APP_UNASSIGNED_PROJECT
-            ? projectsList.find((project) => project.name === permission.team.value)?.id
+            ? projectsList[permission.accessType].find((project) => project.name === permission.team.value)?.id
             : null
     const listForAccessType = getListForAccessType(permission.accessType)
     const appOrJobSelectorName = isAccessTypeJob ? DirectPermissionFieldName.jobs : DirectPermissionFieldName.apps

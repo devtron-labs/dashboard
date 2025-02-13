@@ -253,7 +253,8 @@ export const Routes = {
     USER: 'user',
     ENV_CONFIG: 'config/autocomplete',
     SECURITY_SCAN_CVE_EXPOSURE: 'security/scan/cve/exposure',
-    CONFIG_MANIFEST: 'config/manifest'
+    CONFIG_MANIFEST: 'config/manifest',
+    USER_RESOURCE_OPTIONS: 'user/resource/options'
 }
 
 export enum ViewType {
@@ -457,7 +458,7 @@ export enum MODES {
     DOCKERFILE = 'dockerfile',
 }
 
-export const HELM_APP_UNASSIGNED_PROJECT = 'unassigned'
+export const HELM_APP_UNASSIGNED_PROJECT = 'Unassigned'
 export type OCIRegistryStorageActionType = 'PULL' | 'PUSH' | 'PULL/PUSH'
 export type OCIRegistryStorageConfigType = {
     CONTAINER?: OCIRegistryStorageActionType
