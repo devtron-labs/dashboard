@@ -146,13 +146,32 @@ export enum MigrationSourceValidationReasonType {
     ENFORCED_POLICY_VIOLATION = 'EnforcedPolicyViolation',
 }
 
-export interface ValidateMigrateToDevtronPayloadType {
-    deploymentAppType: DeploymentAppTypes
-    applicationObjectClusterId: number
-    applicationObjectNamespace: string
+interface ValidateMigrateToDevtronCommonPayloadType {
     deploymentAppName: string
     appId: number
 }
+
+interface ValidationPayloadApplicationMetaDataType {
+    applicationObjectClusterId: number
+    applicationObjectNamespace: string
+}
+
+export type ValidateMigrateToDevtronPayloadType = ValidateMigrateToDevtronCommonPayloadType &
+    (
+        | {
+              deploymentAppType: DeploymentAppTypes.GITOPS
+              applicationMetadata: ValidationPayloadApplicationMetaDataType
+              helmReleaseMetaData?: never
+          }
+        | {
+              deploymentAppType: DeploymentAppTypes.HELM
+              helmReleaseMetaData: {
+                  releaseClusterId: number
+                  releaseNamespace: string
+              }
+              applicationMetadata?: never
+          }
+    )
 
 interface ValidateMigrationDestinationDetailsDTO {
     clusterName: string
@@ -171,6 +190,11 @@ interface ValidateMigrationSourceDetailsDTO {
         valuesFileName: string
         requiredChartName: string
     }
+}
+
+export interface ValidateMigrationSourceServiceParamsType {
+    migrateToDevtronFormState: MigrateToDevtronFormState
+    appId: number
 }
 
 export interface ValidateMigrationSourceDTO {
@@ -200,10 +224,14 @@ export interface MigrateToDevtronFormState {
     triggerType: (typeof TriggerType)[keyof typeof TriggerType]
 }
 
+// Will generalize this type as per helm in next PR of migrating helm release to devtron
 export interface MigrateArgoAppToCDPipelineRequiredPayloadType
-    extends Omit<ValidateMigrateToDevtronPayloadType, 'appId'>,
-        Pick<MigrateToDevtronFormState, 'triggerType'>,
-        Pick<CDFormType, 'environmentId' | 'environmentName' | 'namespace'> {}
+    extends Pick<MigrateToDevtronFormState, 'triggerType'>,
+        Pick<CDFormType, 'environmentId' | 'environmentName' | 'namespace'>,
+        ValidationPayloadApplicationMetaDataType {
+    deploymentAppName: ValidateMigrateToDevtronPayloadType['deploymentAppName']
+    deploymentAppType: DeploymentAppTypes
+}
 
 export interface TriggerTypeRadioProps {
     value: (typeof TriggerType)[keyof typeof TriggerType]

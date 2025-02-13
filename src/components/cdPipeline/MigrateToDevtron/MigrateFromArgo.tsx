@@ -68,7 +68,7 @@ const MigrateFromArgo = ({ migrateToDevtronFormState, setMigrateToDevtronFormSta
             },
         }))
 
-        const validationResponse = await validateMigrationSource(migrateToDevtronFormState, +appId)
+        const validationResponse = await validateMigrationSource({ migrateToDevtronFormState, appId: +appId })
         setMigrateToDevtronFormState((prevState) => ({
             ...prevState,
             migrateFromArgoFormState: {

@@ -1,7 +1,12 @@
 import { Link } from 'react-router-dom'
 import { GenericAppType } from '@Components/app/list-new/AppListType'
 import { URLS } from '@Config/routes'
-import { ValidateMigrationSourceDTO } from '../cdPipeline.types'
+import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ValidateMigrateToDevtronPayloadType,
+    ValidateMigrationSourceDTO,
+    ValidateMigrationSourceServiceParamsType,
+} from '../cdPipeline.types'
 import { SelectArgoAppOptionType, SelectClusterOptionType } from './types'
 
 export const sanitizeValidateMigrationSourceResponse = (
@@ -65,3 +70,22 @@ export const renderGitOpsNotConfiguredDescription = () => (
         &nbsp;and try again.
     </p>
 )
+
+export const getValidateMigrationSourcePayload = ({
+    migrateToDevtronFormState,
+    appId,
+}: ValidateMigrationSourceServiceParamsType): ValidateMigrateToDevtronPayloadType => {
+    if (migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.GITOPS) {
+        return {
+            appId,
+            deploymentAppType: migrateToDevtronFormState.deploymentAppType,
+            deploymentAppName: migrateToDevtronFormState.migrateFromArgoFormState.appName,
+            applicationMetadata: {
+                applicationObjectClusterId: migrateToDevtronFormState.migrateFromArgoFormState.clusterId,
+                applicationObjectNamespace: migrateToDevtronFormState.migrateFromArgoFormState.namespace,
+            },
+        }
+    }
+
+    return null
+}

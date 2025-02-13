@@ -287,12 +287,10 @@ class ClusterList extends Component<ClusterListProps, any> {
                     <Drawer position="right" width="1000px" onEscape={this.handleRedirectToClusterList}>
                         <ClusterForm
                             {...getSSHConfig(this.state)}
-                            id={null}
                             cluster_name={this.state.cluster_name}
                             server_url={this.state.server_url}
                             active
                             config={{}}
-                            toggleEditMode={() => {}}
                             reload={this.initialise}
                             prometheus_url=""
                             prometheusAuth={this.state.prometheus}
@@ -851,7 +849,6 @@ const Cluster = ({
                                 toggleEditMode={toggleEditMode}
                                 toggleClusterDetails
                                 isVirtualCluster={isVirtualCluster}
-                                handleCloseCreateClusterForm={handleToggleEditMode}
                                 isProd={isProd}
                             />
                         </div>
