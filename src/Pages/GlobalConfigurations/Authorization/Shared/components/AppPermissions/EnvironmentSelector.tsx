@@ -67,6 +67,7 @@ const EnvironmentSelector = ({
                     ? getEnvironmentDisplayText(options, permission.environment)
                     : getDisplayTextByName(DirectPermissionFieldName.environment, options, permission.environment),
             }}
+            disableDescriptionEllipsis
         />
     )
 }

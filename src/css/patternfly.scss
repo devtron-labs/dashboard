@@ -211,9 +211,6 @@ legend {
     border: 0;
     padding: 0;
 }
-textarea {
-    overflow: auto;
-}
 optgroup {
     font-weight: bold;
 }
@@ -244,8 +241,7 @@ body {
 }
 input,
 button,
-select,
-textarea {
+select {
     font-family: inherit;
     font-size: inherit;
     line-height: inherit;
@@ -654,10 +650,6 @@ pre code {
     white-space: pre-wrap;
     background-color: transparent;
     border-radius: 0;
-}
-.pre-scrollable {
-    max-height: 340px;
-    overflow-y: scroll;
 }
 .container {
     padding-right: 20px;
@@ -1403,7 +1395,7 @@ select[multiple].input-lg {
 .btn:hover,
 .btn:focus,
 .btn.focus {
-    color: #4d5258;
+    color: var(--N700);
     text-decoration: none;
 }
 .btn:active,
@@ -3215,13 +3207,6 @@ button.close {
 }
 .modal-footer .btn-block + .btn-block {
     margin-left: 0;
-}
-.modal-scrollbar-measure {
-    position: absolute;
-    top: -9999px;
-    width: 50px;
-    height: 50px;
-    overflow: scroll;
 }
 @media (min-width: 768px) {
     .modal-dialog {

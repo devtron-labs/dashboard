@@ -36,6 +36,24 @@ const linkProps: ButtonProps['linkProps'] = {
 
 const meta = {
     component: Button,
+    argTypes: {
+        variant: {
+            options: Object.values(ButtonVariantType),
+            control: { type: 'radio' },
+        },
+        component: {
+            options: Object.values(ButtonComponentType),
+            control: { type: 'radio' },
+        },
+        style: {
+            options: Object.values(ButtonStyleType),
+            control: { type: 'radio' },
+        },
+        size: {
+            options: Object.values(ComponentSizeType),
+            control: { type: 'radio' },
+        },
+    },
 } satisfies Meta<ButtonProps>
 
 export default meta
@@ -43,176 +61,20 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 const ButtonTemplate: Story = {
-    render: ({ text, icon, ariaLabel }: Pick<ButtonProps, 'text' | 'icon' | 'ariaLabel' | 'variant'>) => (
-        <div className="flex left column dc__gap-12 p-20">
-            {Object.keys(ButtonVariantType).map((variant) =>
-                Object.keys(ButtonComponentType).map((buttonComponent) =>
-                    Object.keys(ComponentSizeType).map((size) => (
-                        <div className="dc__border p-8 br-4">
-                            <div className="mt-0 dc__capitalize">
-                                Variant: {ButtonVariantType[variant]} Size: {ComponentSizeType[size]}; component:{' '}
-                                {ButtonComponentType[buttonComponent]}
-                            </div>
-                            <div className="flex left dc__gap-8 flex-wrap">
-                                {Object.keys(ButtonStyleType).map((style) => (
-                                    <div className="flex column left dc__gap-12">
-                                        <div className="w-200 dc__capitalize">Style: {ButtonStyleType[style]}</div>
-                                        <Button
-                                            variant={ButtonVariantType[variant]}
-                                            size={ComponentSizeType[size]}
-                                            style={ButtonStyleType[style]}
-                                            dataTestId={`${variant}-${size}-${style}-1`}
-                                            onClick={action('button-clicked')}
-                                            component={ButtonComponentType[buttonComponent]}
-                                            linkProps={linkProps}
-                                            {...(text
-                                                ? { text }
-                                                : {
-                                                      icon,
-                                                      ariaLabel,
-                                                  })}
-                                        />
-                                        <Button
-                                            variant={ButtonVariantType[variant]}
-                                            size={ComponentSizeType[size]}
-                                            style={ButtonStyleType[style]}
-                                            disabled
-                                            dataTestId={`${variant}-${size}-${style}-2`}
-                                            onClick={action('button-clicked')}
-                                            component={ButtonComponentType[buttonComponent]}
-                                            linkProps={linkProps}
-                                            {...(text
-                                                ? { text }
-                                                : {
-                                                      icon,
-                                                      ariaLabel,
-                                                  })}
-                                        />
-                                        <Button
-                                            variant={ButtonVariantType[variant]}
-                                            size={ComponentSizeType[size]}
-                                            style={ButtonStyleType[style]}
-                                            isLoading
-                                            dataTestId={`${variant}-${size}-${style}-3`}
-                                            onClick={action('button-clicked')}
-                                            component={ButtonComponentType[buttonComponent]}
-                                            linkProps={linkProps}
-                                            {...(text
-                                                ? { text }
-                                                : {
-                                                      icon,
-                                                      ariaLabel,
-                                                  })}
-                                        />
-                                        <Button
-                                            variant={ButtonVariantType[variant]}
-                                            size={ComponentSizeType[size]}
-                                            style={ButtonStyleType[style]}
-                                            dataTestId={`${variant}-${size}-${style}-4`}
-                                            onClick={action('button-clicked')}
-                                            component={ButtonComponentType[buttonComponent]}
-                                            linkProps={linkProps}
-                                            {...(text
-                                                ? {
-                                                      text,
-                                                      startIcon: <ICDeleteInteractive />,
-                                                  }
-                                                : {
-                                                      icon,
-                                                      ariaLabel,
-                                                  })}
-                                        />
-                                        <Button
-                                            variant={ButtonVariantType[variant]}
-                                            size={ComponentSizeType[size]}
-                                            style={ButtonStyleType[style]}
-                                            dataTestId={`${variant}-${size}-${style}-5`}
-                                            onClick={action('button-clicked')}
-                                            component={ButtonComponentType[buttonComponent]}
-                                            linkProps={linkProps}
-                                            {...(text
-                                                ? {
-                                                      text,
-                                                      endIcon: <ICDeleteInteractive />,
-                                                  }
-                                                : {
-                                                      icon,
-                                                      ariaLabel,
-                                                  })}
-                                        />
-                                        <Button
-                                            variant={ButtonVariantType[variant]}
-                                            size={ComponentSizeType[size]}
-                                            style={ButtonStyleType[style]}
-                                            disabled
-                                            dataTestId={`${variant}-${size}-${style}-6`}
-                                            onClick={action('button-clicked')}
-                                            component={ButtonComponentType[buttonComponent]}
-                                            linkProps={linkProps}
-                                            {...(text
-                                                ? {
-                                                      text,
-                                                      startIcon: <ICDeleteInteractive />,
-                                                      endIcon: <ICDeleteInteractive />,
-                                                  }
-                                                : {
-                                                      icon,
-                                                      ariaLabel,
-                                                  })}
-                                        />
-                                        <Button
-                                            variant={ButtonVariantType[variant]}
-                                            size={ComponentSizeType[size]}
-                                            style={ButtonStyleType[style]}
-                                            showTooltip
-                                            tooltipProps={{
-                                                content:
-                                                    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
-                                            }}
-                                            dataTestId={`${variant}-${size}-${style}-7`}
-                                            onClick={action('button-clicked')}
-                                            component={ButtonComponentType[buttonComponent]}
-                                            linkProps={linkProps}
-                                            {...(text
-                                                ? {
-                                                      text,
-                                                      startIcon: <ICDeleteInteractive />,
-                                                      endIcon: <ICDeleteInteractive />,
-                                                  }
-                                                : {
-                                                      icon,
-                                                      ariaLabel,
-                                                  })}
-                                        />
-                                        <Button
-                                            variant={ButtonVariantType[variant]}
-                                            size={ComponentSizeType[size]}
-                                            style={ButtonStyleType[style]}
-                                            dataTestId={`${variant}-${size}-${style}-8`}
-                                            onClick={action('button-clicked')}
-                                            component={ButtonComponentType[buttonComponent]}
-                                            linkProps={linkProps}
-                                            {...(text
-                                                ? {
-                                                      text,
-                                                      startIcon: <ICDeleteInteractive />,
-                                                      endIcon: <ICDeleteInteractive />,
-                                                  }
-                                                : {
-                                                      icon,
-                                                      ariaLabel,
-                                                  })}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )),
-                ),
-            )}
-        </div>
-    ),
-    args: {} as ButtonProps,
+    args: {
+        variant: ButtonVariantType.primary,
+        component: ButtonComponentType.button,
+        style: ButtonStyleType.default,
+        size: ComponentSizeType.large,
+        linkProps,
+        onClick: action('Button clicked'),
+        disabled: false,
+        isLoading: false,
+        fullWidth: false,
+        startIcon: <ICDeleteInteractive />,
+        endIcon: <ICAbort />,
+        dataTestId: 'button-story',
+    } as ButtonProps,
 }
 
 export const Default: Story = {
@@ -238,5 +100,13 @@ export const FillIconButton: Story = {
         ...ButtonTemplate.args,
         icon: <ICAbort />,
         ariaLabel: BUTTON_TEXT,
+    } as ButtonProps,
+}
+
+export const AutoClick: Story = {
+    ...Default,
+    args: {
+        ...Default.args,
+        triggerAutoClickTimestamp: Date.now(),
     } as ButtonProps,
 }

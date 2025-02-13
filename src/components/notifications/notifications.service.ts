@@ -16,9 +16,8 @@
 
 import { get, post, trash, put, ResponseType, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config/constants'
-import { NotificationConfiguration } from './NotificationTab'
 import { FilterOptions, PipelineType } from './AddNotification'
-import { SMTPConfigResponseType, WebhookAttributesResponseType } from './types'
+import { NotificationConfiguration, SMTPConfigResponseType, WebhookAttributesResponseType } from './types'
 
 interface UpdateNotificationEvent {
     id: number
@@ -35,7 +34,6 @@ interface SaveNotificationPayload {
         eventTypeIds: number[]
     }[]
     providers: { configId: number; dest: 'ses' | 'slack' | ''; recipient: string }[]
-    sesConfigId: number
 }
 
 interface SaveNotificationResponseType extends ResponseType {
@@ -84,7 +82,7 @@ interface SESConfigResponseType extends ResponseType {
     }
 }
 
-function createSaveNotificationPayload(selectedPipelines, providers, sesConfigId: number): SaveNotificationPayload {
+function createSaveNotificationPayload(selectedPipelines, providers): SaveNotificationPayload {
     const allPipelines = selectedPipelines.map((config) => {
         const eventTypeIds = []
         if (config.trigger) {
@@ -119,30 +117,21 @@ function createSaveNotificationPayload(selectedPipelines, providers, sesConfigId
         }
     })
     providers = providers.map((p) => {
-        if (p.data.configId) {
-            return {
-                configId: p.data.configId,
-                dest: p.data.dest,
-                recipient: '',
-            }
-        }
         return {
-            configId: 0,
+            configId: p.data.configId || 0,
             dest: p.data.dest || '',
-            recipient: p.data.recipient,
+            recipient: p.data.recipient || '',
         }
     })
     return {
         notificationConfigRequest: allPipelines,
         providers,
-        sesConfigId,
     }
 }
 
-export function saveNotification(selectedPipelines, providers, sesConfigId): Promise<SaveNotificationResponseType> {
-    const URL = `${Routes.NOTIFIER}`
-    const payload = createSaveNotificationPayload(selectedPipelines, providers, sesConfigId)
-    return post(URL, payload)
+export function saveNotification(selectedPipelines, providers): Promise<SaveNotificationResponseType> {
+    const payload = createSaveNotificationPayload(selectedPipelines, providers)
+    return post<SaveNotificationResponseType['result'] , SaveNotificationPayload>(Routes.NOTIFIER, payload)
 }
 
 export function getChannelConfigs(): Promise<ResponseType> {

@@ -403,12 +403,14 @@ const NodeDetailComponent = ({
         setUnableToParseManifest(value)
     }
 
+    const isManifestEditable =
+        isExternalApp ||
+        isResourceBrowserView ||
+        (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS && appDetails.deploymentAppDeleteRequest)
+
     const renderManifestTabHeader = () => (
         <>
-            {(isExternalApp ||
-                isResourceBrowserView ||
-                (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&
-                    appDetails.deploymentAppDeleteRequest)) &&
+            {isManifestEditable &&
                 manifestCodeEditorMode &&
                 !showManifestCompareView &&
                 !isResourceMissing && (
@@ -416,7 +418,7 @@ const NodeDetailComponent = ({
                         <div className="ml-12 mr-12 tab-cell-border" />
                         {manifestCodeEditorMode === ManifestCodeEditorMode.EDIT ? (
                             <div className="flex dc__gap-12">
-                                {ToggleManifestConfigurationMode && !isExternalApp && (
+                                {ToggleManifestConfigurationMode && isManifestEditable && (
                                     <ToggleManifestConfigurationMode
                                         mode={manifestFormConfigurationType}
                                         handleToggle={handleToggleManifestConfigurationMode}
@@ -556,7 +558,7 @@ const NodeDetailComponent = ({
                             handleUpdateUnableToParseManifest={handleUpdateUnableToParseManifest}
                             handleManifestGUIErrors={handleManifestGUIError}
                             manifestGUIFormRef={manifestGUIFormRef}
-                            isExternalApp={isExternalApp}
+                            isManifestEditable={isManifestEditable}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`}>
@@ -613,24 +615,23 @@ const NodeDetailComponent = ({
                     } : {}}
                 />
             )}
-            {isResourceBrowserView && showDeleteDialog && (
-                <DeleteResourcePopup
-                    clusterId={`${selectedResource.clusterId}`}
-                    resourceData={selectedResource}
-                    selectedResource={{
-                        gvk: {
-                            Group: selectedResource.group,
-                            Version: selectedResource.version,
-                            Kind: selectedResource.kind as NodeType,
-                        },
-                        namespaced: false,
-                    }}
-                    getResourceListData={getContainersFromManifest}
-                    toggleDeleteDialog={toggleDeleteDialog}
-                    removeTabByIdentifier={removeTabByIdentifier}
-                    handleClearBulkSelection={noop}
-                />
-            )}
+            <DeleteResourcePopup
+                clusterId={`${selectedResource.clusterId}`}
+                resourceData={selectedResource}
+                selectedResource={{
+                    gvk: {
+                        Group: selectedResource.group,
+                        Version: selectedResource.version,
+                        Kind: selectedResource.kind as NodeType,
+                    },
+                    namespaced: false,
+                }}
+                getResourceListData={getContainersFromManifest}
+                toggleDeleteDialog={toggleDeleteDialog}
+                removeTabByIdentifier={removeTabByIdentifier}
+                handleClearBulkSelection={noop}
+                showConfirmationModal={isResourceBrowserView && showDeleteDialog}
+            />
         </>
     )
 }
