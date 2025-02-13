@@ -15,6 +15,7 @@
  */
 
 import { RouteComponentProps } from 'react-router-dom'
+import { Dispatch, SetStateAction } from 'react'
 import { SERVER_MODE_TYPE } from '../../config'
 import { OptionType } from '../app/types'
 
@@ -180,13 +181,10 @@ export type ClusterFormProps = {
      * @default false
      */
     isProd?: boolean
-    handleCloseCreateClusterForm: () => void
-    id: number
     cluster_name: string
     server_url: string
     active: boolean
     config: any
-    toggleEditMode: any
     reload: () => void
     prometheus_url: string
     prometheusAuth: any
@@ -206,7 +204,18 @@ export type ClusterFormProps = {
     isClusterDetails: boolean
     toggleClusterDetails: any
     isVirtualCluster: boolean
-}
+} & (
+    | {
+          id: number
+          toggleEditMode: Dispatch<SetStateAction<boolean>>
+          handleCloseCreateClusterForm?: never
+      }
+    | {
+          handleCloseCreateClusterForm: () => void
+          id?: never
+          toggleEditMode?: never
+      }
+)
 
 export interface AddClusterFormPrefilledInfoType {
     serverURL: string
