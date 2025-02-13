@@ -34,7 +34,7 @@ import {
     ToastManager,
     ToastVariantType,
     ResourceDetail,
-    AppThemeType,
+    CodeEditorThemesKeys,
     noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
@@ -906,25 +906,27 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         }
     }
 
+    const getCodeEditorHeight = (): string => {
+        if (!isReviewState) {
+            return 'calc(100vh - 115px)'
+        }
+        if (isShowWarning) {
+            return `calc(100vh - 180px)`
+        }
+        return `calc(100vh - 148px)`
+    }
+
     const renderYAMLEditor = (): JSX.Element => {
         return (
-            <div className="node-details-container flexbox-col flex-grow-1">
+            <div className="node-details-container">
                 <CodeEditor
-                    theme={AppThemeType.dark}
-                    {...(isReviewState
-                        ? {
-                              diffView: true,
-                              originalValue: (nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || '',
-                              modifiedValue: modifiedManifest,
-                              onModifiedValueChange: handleEditorValueChange,
-                          }
-                        : {
-                              diffView: false,
-                              value: modifiedManifest,
-                              onChange: handleEditorValueChange,
-                          })}
-                    height="fitToParent"
+                    value={modifiedManifest}
+                    defaultValue={(nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || ''}
+                    height={getCodeEditorHeight()}
                     readOnly={!isEdit}
+                    theme={CodeEditorThemesKeys.vsDarkDT}
+                    diffView={isReviewState}
+                    onChange={handleEditorValueChange}
                     mode={MODES.YAML}
                     noParsing
                 >
@@ -1046,7 +1048,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     }
 
     return (
-        <div className="bg__primary node-data-container flexbox-col">
+        <div className="bg__primary node-data-container">
             {loader ? (
                 <Progressing pageLoader size={32} />
             ) : (

@@ -25,7 +25,6 @@ import {
     ComponentSizeType,
     KeyValueConfig,
     KeyValueTable,
-    MODES,
     noop,
     StyledRadioGroup,
     ToastManager,
@@ -294,15 +293,16 @@ export const ConfigMapSecretData = ({
         })
 
         return (
-            <CodeEditor.Container>
+            <div className="dc__border br-4 dc__overflow-hidden">
                 <CodeEditor
                     key={codeEditorRadio}
                     value={getCodeEditorValue()}
                     // Skip calling onChange if resolvedData exists
                     onChange={!isLocked && !data.isResolvedData ? onChange : noop}
                     onFocus={onFocus}
-                    mode={MODES.YAML}
-                    height="100%"
+                    mode="yaml"
+                    inline
+                    height={350}
                     shebang={sheBangText}
                     readOnly={
                         readOnly || isHashiOrAWS || isLocked || codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE
@@ -338,7 +338,7 @@ export const ConfigMapSecretData = ({
                     )}
                 </CodeEditor>
                 {!data.external && data.yamlMode && renderYamlInfoText()}
-            </CodeEditor.Container>
+            </div>
         )
     }
 

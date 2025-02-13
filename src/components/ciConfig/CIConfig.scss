@@ -132,6 +132,11 @@
             }
         }
     }
+    .create-dockerfile-option {
+      .code-editor__header {
+          background-color: var(--bg-primary);
+      }
+    }
 }
 
 .docker__dropdown {
