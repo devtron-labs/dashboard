@@ -31,6 +31,7 @@ import {
     FeatureTitleWithInfo,
     ToastVariantType,
     ToastManager,
+    CustomInputProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     TLSConnectionFormActionType,
@@ -1056,15 +1057,23 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
         const initialGitOps = this.state.gitList.find((item) => item.provider === this.state.form.provider)
 
-        const renderInputLabels = (label: string, link: string, linkText: string) => {
-            return (
-                <div className="flex">
-                    <span className="dc__required-field">{label}</span>&nbsp;
-                    <a target="_blank" href={link} className="cursor fs-13 onlink ml-4" rel="noreferrer">
-                        {linkText}
-                    </a>
-                </div>
-            )
+        const getInputLabelProps = (
+            label: string,
+            link: string,
+            linkText: string,
+        ): Pick<CustomInputProps, 'labelTippyCustomizedConfig' | 'label' | 'required'> => {
+            return {
+                label,
+                required: true,
+                labelTippyCustomizedConfig: {
+                    heading: label,
+                    infoText: (
+                        <a target="_blank" href={link} className="cursor fs-13 onlink ml-4" rel="noreferrer">
+                            {linkText}
+                        </a>
+                    ),
+                },
+            }
         }
 
         const renderGitOpsTabs = () => (
@@ -1202,33 +1211,31 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             <CustomInput
                                 name="workspaceID"
                                 placeholder="Enter Bitbucket Workspace ID"
-                                label={renderInputLabels(
-                                    'Bitbucket Workspace ID',
-                                    GitLink.BITBUCKET_WORKSPACE,
-                                    '(How to create workspace in bitbucket?)',
-                                )}
                                 value={this.state.form.bitBucketWorkspaceId}
                                 onChange={(event) => this.handleChange(event, 'bitBucketWorkspaceId')}
                                 error={this.state.isError.bitBucketWorkspaceId}
-                                required
+                                {...getInputLabelProps(
+                                    'Bitbucket Workspace ID',
+                                    GitLink.BITBUCKET_WORKSPACE,
+                                    'How to create workspace in bitbucket?',
+                                )}
                             />
                         </div>
                     )}
                     <div className="w-100">
                         <CustomInput
                             name="groupID"
-                            label={renderInputLabels(
-                                LinkAndLabelSpec[this.state.providerTab].label,
-                                LinkAndLabelSpec[this.state.providerTab].link,
-                                LinkAndLabelSpec[this.state.providerTab].linkText,
-                            )}
                             placeholder={`Enter ${LinkAndLabelSpec[this.state.providerTab].label}`}
                             value={this.state.form[key]}
                             error={this.state.isError[key]}
                             onChange={(event) => {
                                 this.handleChange(event, key)
                             }}
-                            required
+                            {...getInputLabelProps(
+                                LinkAndLabelSpec[this.state.providerTab].label,
+                                LinkAndLabelSpec[this.state.providerTab].link,
+                                LinkAndLabelSpec[this.state.providerTab].linkText,
+                            )}
                         />
                     </div>
                     <div
@@ -1285,19 +1292,18 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 <CustomInput
                                     name="token"
                                     placeholder="Enter access token"
-                                    label={renderInputLabels(
-                                        this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                            ? 'Azure DevOps Access Token '
-                                            : 'Personal Access Token ',
-                                        PROVIDER_DOC_LINK_MAP[this.state.providerTab],
-                                        '(Check permissions required for PAT)',
-                                    )}
                                     value={this.state.form.token}
                                     onChange={(event) => this.handleChange(event, 'token')}
                                     error={this.state.isError.token}
                                     onFocus={handleOnFocus}
-                                    required
                                     onBlur={this.handleOnBlur}
+                                    {...getInputLabelProps(
+                                        this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                            ? 'Azure DevOps Access Token '
+                                            : 'Personal Access Token ',
+                                        PROVIDER_DOC_LINK_MAP[this.state.providerTab],
+                                        'Check permissions required for PAT',
+                                    )}
                                 />
                             </div>
                         </div>

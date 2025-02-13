@@ -23,18 +23,15 @@ import {
     YAMLStringify,
     InfoIconTippy,
     CodeEditor,
-    SelectOption,
     ToastManager,
     ToastVariantType,
     TabGroup,
     SelectPicker,
     MODES,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
-import ReactSelect from 'react-select'
-import Tippy from '@tippyjs/react'
-import CreatableSelect from 'react-select/creatable'
 import {
     EphemeralContainerDrawerType,
     EphemeralForm,
@@ -51,12 +48,10 @@ import {
 import sampleConfig from './sampleConfig.json'
 import IndexStore from '../../index.store'
 import { generateEphemeralUrl } from './nodeDetail.api'
-import { menuComponentForImage } from '../../../common/ReactSelect.utils'
 import { getHostURLConfiguration } from '../../../../../services/service'
-import { IMAGE_LIST } from '../../../../ClusterNodes/constants'
+import { CLUSTER_TERMINAL_MESSAGING, IMAGE_LIST } from '../../../../ClusterNodes/constants'
 import { Options } from '../../appDetails.type'
 import { EPHEMERAL_CONTAINER } from '../../../../../config/constantMessaging'
-import { selectStyles } from './nodeDetail.util'
 import { DEFAULT_CONTAINER_NAME, SwitchItemValues, DOCUMENTATION, EDITOR_VIEW } from '../../../../../config'
 
 const EphemeralContainerDrawer = ({
@@ -208,10 +203,7 @@ const EphemeralContainerDrawer = ({
     const handleEphemeralChange = (selected, key, defaultOptions) => {
         const defaultVal = defaultOptions.length && defaultOptions[0]
         if (key === 'image') {
-            const newImageOption = {
-                value: selected.value,
-                label: selected.value,
-            }
+            const newImageOption = selected
             const existingImageOption = imageListOption.find((option) => option.value === selected.value)
             const newImageListOption = [newImageOption, ...imageListOption]
             if (!existingImageOption) {
@@ -251,14 +243,6 @@ const EphemeralContainerDrawer = ({
         }
     }
 
-    const getImageTippyContent = (data) => {
-        return (
-            <span style={{ display: 'block', width: '220px' }}>
-                <span className="fs-12 fw-4">{data.description}</span>
-            </span>
-        )
-    }
-
     const renderBasicEphemeral = (): JSX.Element => {
         return (
             <div className="p-20 flex-grow-1">
@@ -278,39 +262,36 @@ const EphemeralContainerDrawer = ({
                     />
                 </div>
 
-                <div className="dc__row-container mb-12">
-                    <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            content={
-                                <span style={{ display: 'block', width: '220px' }}>{EPHEMERAL_CONTAINER.IMAGE}</span>
-                            }
-                        >
-                            <span className="text-underline-dashed">Image</span>
-                        </Tippy>
-                    </div>
-
-                    <CreatableSelect
+                <div className="mb-12">
+                    <SelectPicker
                         value={selectedImageList || imageListOption[0]}
                         options={imageListOption}
-                        className="select-width"
-                        classNamePrefix="select-token-expiry-duration"
+                        inputId="select-token-expiry-duration"
                         onChange={(e) => handleEphemeralChange(e, 'image', imageListOption)}
-                        components={{
-                            IndicatorSeparator: null,
-                            MenuList: menuComponentForImage,
-                            Option: (props) => (
-                                <SelectOption
-                                    showTippy
-                                    tippyClass="default-tt"
-                                    tippyContent={getImageTippyContent(props.data)}
-                                    {...props}
-                                />
-                            ),
-                        }}
-                        styles={selectStyles}
                         onKeyDown={handleKeyDown}
+                        label="Image"
+                        labelTooltipConfig={{
+                            content: EPHEMERAL_CONTAINER.IMAGE,
+                        }}
+                        required
+                        renderMenuListFooter={() => (
+                            <div className="fw-4 lh-20 pl-8 pr-8 pt-6 pb-6 cn-7 fs-13 dc__italic-font-style">
+                                {CLUSTER_TERMINAL_MESSAGING.CUSTOM_PATH}
+                            </div>
+                        )}
+                        isCreatable
+                        size={ComponentSizeType.large}
+                        layout="row"
+                        onCreateOption={(inputValue) =>
+                            handleEphemeralChange(
+                                {
+                                    label: inputValue,
+                                    value: inputValue,
+                                },
+                                'image',
+                                imageListOption,
+                            )
+                        }
                     />
                 </div>
 
@@ -328,6 +309,7 @@ const EphemeralContainerDrawer = ({
                         }}
                         required
                         label="Target Container Name"
+                        layout="row"
                     />
                 </div>
             </div>
