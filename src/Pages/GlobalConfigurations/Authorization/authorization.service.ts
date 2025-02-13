@@ -27,9 +27,21 @@ import {
     UserListFilterParams,
     UserStatus,
     CustomRoles,
+    ResourceVersionType,
+    ACCESS_TYPE_MAP,
+    EntityTypes,
+    EnvironmentListHelmResult,
+    K8sResourceDetailType,
+    ApiResourceType,
+    Teams,
+    EnvListMinDTO,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { ChartGroup } from '@Components/charts/charts.types'
+import { AppIdWorkflowNamesMapping, Cluster, ProjectFilteredApps } from '@Services/service.types'
+import { JobList } from '@Components/Jobs/Types'
 import { Routes } from '../../../config'
 import {
+    GetUserResourceOptionsProps,
     PermissionGroup,
     PermissionGroupBulkDeletePayload,
     PermissionGroupCreateOrUpdatePayload,
@@ -39,12 +51,15 @@ import {
     UserCreateOrUpdateParamsType,
     UserCreateOrUpdatePayloadType,
     UserDto,
+    UserAccessResourceKind,
     UserRole,
+    GetUserPermissionResourcesPayload,
 } from './types'
 import { transformPermissionGroupResponse, transformUserResponse } from './utils'
 import { SortableKeys as PermissionGroupListSortableKeys } from './PermissionGroups/List/constants'
 import { importComponentFromFELibrary } from '../../../components/common'
 import { getUserGroupsPayload } from './libUtils'
+import { ProjectsList } from './Shared/components/AppPermissions/types'
 
 const getUserStatusAndTimeoutPayload: (
     userStatus: UserStatus,
@@ -237,3 +252,117 @@ export const getCustomRoles = async (): Promise<ResponseType<CustomRoles[]>> => 
 
 export const getUserRole = (appName?: string): Promise<ResponseType<UserRole>> =>
     get(getUrlWithSearchParams(Routes.USER_CHECK_ROLE, { appName }))
+
+const getUserResourceOptions = async <T>({ kind, payload }: GetUserResourceOptionsProps): Promise<T> => {
+    const url = `${Routes.USER_RESOURCE_OPTIONS}/${kind}/${ResourceVersionType.alpha1}`
+    const { result } = await post<{ data: T }>(url, payload)
+    return result.data
+}
+
+export const getUserAccessChartGroups = async () =>
+    getUserResourceOptions<{ groups: ChartGroup[] }>({
+        kind: UserAccessResourceKind.CHART_GROUP,
+        payload: { entity: EntityTypes.CHART_GROUP },
+    })
+
+export const getUserAccessEnvListForHelmApps = async () =>
+    getUserResourceOptions<EnvironmentListHelmResult[]>({
+        kind: UserAccessResourceKind.HELM_ENVS,
+        payload: { entity: EntityTypes.DIRECT, accessType: ACCESS_TYPE_MAP.HELM_APPS },
+    })
+
+export const getUserAccessJobList = async ({ teamIds }: Pick<GetUserPermissionResourcesPayload, 'teamIds'>) =>
+    getUserResourceOptions<JobList['result']['jobContainers']>({
+        kind: UserAccessResourceKind.JOBS,
+        payload: { entity: EntityTypes.JOB, teamIds },
+    })
+
+export const getUserAccessK8sResourceList = async ({
+    clusterId,
+    k8sRequest,
+}: Pick<GetUserPermissionResourcesPayload, 'clusterId' | 'k8sRequest'>) =>
+    getUserResourceOptions<K8sResourceDetailType>({
+        kind: UserAccessResourceKind.CLUSTER_RESOURCES,
+        payload: { entity: EntityTypes.CLUSTER, k8sRequest, clusterId },
+    })
+
+export const getUserAccessResourceGroupList = async ({
+    clusterId,
+}: Pick<GetUserPermissionResourcesPayload, 'clusterId'>) =>
+    getUserResourceOptions<ApiResourceType>({
+        kind: UserAccessResourceKind.API_RESOURCES,
+        payload: { entity: EntityTypes.CLUSTER, clusterId },
+    })
+
+export const getUserAccessNamespaceList = async ({ clusterId }: Pick<GetUserPermissionResourcesPayload, 'clusterId'>) =>
+    getUserResourceOptions<string[]>({
+        kind: UserAccessResourceKind.NAMESPACES,
+        payload: { entity: EntityTypes.CLUSTER, clusterId },
+    })
+
+export const getUserAccessClusterList = async () =>
+    getUserResourceOptions<Cluster[]>({
+        kind: UserAccessResourceKind.CLUSTER,
+        payload: { entity: EntityTypes.CLUSTER },
+    })
+
+export const getUserAccessAllWorkflows = async ({ appIds }: Pick<GetUserPermissionResourcesPayload, 'appIds'>) =>
+    getUserResourceOptions<AppIdWorkflowNamesMapping>({
+        kind: UserAccessResourceKind.JOBS,
+        payload: { entity: EntityTypes.JOB, appIds },
+    })
+
+export const getUserAccessProjectFilteredApps = async ({
+    accessType,
+    teamIds,
+}: Pick<GetUserPermissionResourcesPayload, 'accessType' | 'teamIds'>) =>
+    getUserResourceOptions<ProjectFilteredApps['result']>({
+        kind:
+            accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
+                ? UserAccessResourceKind.DEVTRON_APPS
+                : UserAccessResourceKind.HELM_APPS,
+        payload: { entity: EntityTypes.DIRECT, accessType, teamIds },
+    })
+
+export const getUserAccessEnvironmentList = async (): Promise<
+    Record<ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.JOBS, EnvListMinDTO[]>
+> => {
+    const [devtronEnvironments, jobEnvironments] = await Promise.all([
+        getUserResourceOptions<EnvListMinDTO[]>({
+            kind: UserAccessResourceKind.ENVIRONMENT,
+            payload: { entity: EntityTypes.DIRECT, accessType: ACCESS_TYPE_MAP.DEVTRON_APPS },
+        }),
+        getUserResourceOptions<EnvListMinDTO[]>({
+            kind: UserAccessResourceKind.ENVIRONMENT,
+            payload: { entity: EntityTypes.JOB },
+        }),
+    ])
+
+    return {
+        [ACCESS_TYPE_MAP.DEVTRON_APPS]: devtronEnvironments,
+        [ACCESS_TYPE_MAP.JOBS]: jobEnvironments,
+    }
+}
+
+export const getUserAccessProjectList = async (): Promise<ProjectsList> => {
+    const [devtronProjects, helmProjects, jobProjects] = await Promise.all([
+        getUserResourceOptions<Teams[]>({
+            kind: UserAccessResourceKind.TEAM,
+            payload: { entity: EntityTypes.DIRECT, accessType: ACCESS_TYPE_MAP.DEVTRON_APPS },
+        }),
+        getUserResourceOptions<Teams[]>({
+            kind: UserAccessResourceKind.TEAM,
+            payload: { entity: EntityTypes.DIRECT, accessType: ACCESS_TYPE_MAP.HELM_APPS },
+        }),
+        getUserResourceOptions<Teams[]>({
+            kind: UserAccessResourceKind.TEAM,
+            payload: { entity: EntityTypes.JOB },
+        }),
+    ])
+
+    return {
+        [ACCESS_TYPE_MAP.DEVTRON_APPS]: devtronProjects,
+        [ACCESS_TYPE_MAP.HELM_APPS]: helmProjects,
+        [ACCESS_TYPE_MAP.JOBS]: jobProjects,
+    }
+}

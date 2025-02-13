@@ -32,7 +32,7 @@ const EnvironmentSelector = ({
     const isAccessTypeHelm = permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
 
     const options = useMemo(() => {
-        const environments = getEnvironmentOptions(permission.entity)
+        const environments = getEnvironmentOptions(permission.entity, permission.accessType)
 
         return isAccessTypeHelm
             ? environmentClusterOptions.map((groupOption) => ({

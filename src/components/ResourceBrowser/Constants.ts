@@ -168,14 +168,6 @@ export const EVENT_LIST = {
     },
 }
 
-export const K8S_RESOURCE_LIST = {
-    tabError: {
-        maxTabTitle: 'Max 5 tabs allowed',
-        maxTabSubTitle: 'Please close an open tab and try again.',
-    },
-    createResource: 'Create / Update Kubernetes Resources',
-}
-
 export const SIDEBAR_KEYS: RBSidebarKeysType = {
     nodes: 'Nodes',
     events: 'Events',

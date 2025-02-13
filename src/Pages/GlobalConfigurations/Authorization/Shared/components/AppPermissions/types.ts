@@ -16,12 +16,13 @@
 
 import { Dispatch, SetStateAction } from 'react'
 import { GroupBase } from 'react-select'
-import { ServerError, ACCESS_TYPE_MAP, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { ServerError, ACCESS_TYPE_MAP, SelectPickerOptionType, Teams } from '@devtron-labs/devtron-fe-common-lib'
 import { JobList } from '../../../../../../components/Jobs/Types'
 import { DirectPermissionsRoleFilter } from '../../../types'
 
 type AppsList = Map<number, { loading: boolean; result: { id: number; name: string }[]; error: ServerError }>
 type JobsList = Map<number, { loading: boolean; result: JobList['result']['jobContainers']; error: ServerError }>
+export type ProjectsList = Record<ACCESS_TYPE_MAP, Teams[]>
 
 export interface AppPermissionsDetailType {
     accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
@@ -35,8 +36,7 @@ export interface AppPermissionsDetailType {
     appsList: AppsList
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getEnvironmentOptions: any
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    projectsList: any[]
+    projectsList: ProjectsList
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     environmentClusterOptions: any
     getListForAccessType: (accessType: ACCESS_TYPE_MAP) => AppsList | JobsList
