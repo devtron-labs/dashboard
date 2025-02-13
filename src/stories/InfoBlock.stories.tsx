@@ -7,9 +7,28 @@ import {
     ButtonVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-const COMPONENT_VARIANTS: InfoBlockProps['variant'][] = ['error', 'help', 'information', 'success', 'warning']
-const SIZE_VARIANTS: InfoBlockProps['size'][] = [ComponentSizeType.large, ComponentSizeType.medium]
-const LAYOUT_VARIANTS: InfoBlockProps['layout'][] = ['column', 'row']
+const componentVariantMap: Record<InfoBlockProps['variant'], null> = {
+    error: null,
+    help: null,
+    information: null,
+    success: null,
+    warning: null,
+}
+
+const layoutMap: Record<InfoBlockProps['layout'], null> = {
+    column: null,
+    row: null,
+}
+
+const sizeVariantMap: Record<InfoBlockProps['size'], null> = {
+    [ComponentSizeType.large]: null,
+    [ComponentSizeType.medium]: null,
+}
+
+const COMPONENT_VARIANTS = Object.keys(componentVariantMap) as Array<InfoBlockProps['variant']>
+const SIZE_VARIANTS = Object.keys(sizeVariantMap) as Array<InfoBlockProps['size']>
+const LAYOUT_VARIANTS = Object.keys(layoutMap) as Array<InfoBlockProps['layout']>
+
 const DEFAULT_TITLE = 'Title'
 const DEFAULT_DESCRIPTION = 'Description'
 const INFO_BLOCK_TEMPLATE: Story = {
