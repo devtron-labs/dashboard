@@ -320,16 +320,15 @@ const AppComposeRouter = () => {
                         const envOverridePath = match.params.envId
                             ? `/${URLS.APP_ENV_OVERRIDE_CONFIG}/${match.params.envId}`
                             : `/${URLS.BASE_CONFIG}`
-                        // Set the resourceTypePath based on the resourceType from the URL parameters.
-                        // If the resourceType is 'Manifest' or 'PipelineStrategy', use 'deployment-template' as the back URL.
-                        // Otherwise, use the actual resourceType from the URL, which could be 'deployment-template', 'configmap', or 'secrets'.
-                        const resourceTypePath = `/${match.params.resourceType === EnvResourceType.Manifest || match.params.resourceType === EnvResourceType.PipelineStrategy ? EnvResourceType.DeploymentTemplate : match.params.resourceType}`
+
+                        // Used in CM/CS
                         const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
 
                         const goBackURL =
-                            match.params.resourceType === EnvResourceType.Manifest
+                            match.params.resourceType === EnvResourceType.Manifest ||
+                            match.params.resourceType === EnvResourceType.PipelineStrategy
                                 ? `${basePath}${envOverridePath}`
-                                : `${basePath}${envOverridePath}${resourceTypePath}${resourceNamePath}`
+                                : `${basePath}${envOverridePath}/${match.params.resourceType}${resourceNamePath}`
 
                         return (
                             <DeploymentConfigCompare
