@@ -161,7 +161,6 @@ export default function CIContainerRegistryConfig({
                         <span className="fs-14 fw-4 lh-20 cn-9">{ciConfig?.dockerRepository}</span>
                     ) : (
                         <CustomInput
-                            tabIndex={2}
                             placeholder={
                                 (selectedRegistry &&
                                     REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.placeholderText) ||
@@ -178,7 +177,6 @@ export default function CIContainerRegistryConfig({
                             disabled={configOverrideView && !allowOverride}
                             data-testid="container-repository-textbox"
                             error={repository_name.error}
-                            rootClassName="h-36"
                         />
                     )}
                     {!ciConfig && selectedRegistry?.registryType === 'ecr' && (

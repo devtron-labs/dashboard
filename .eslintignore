@@ -248,7 +248,6 @@ src/components/common/edge/rectangularEdge.tsx
 src/components/common/edge/straightEdge.tsx
 src/components/common/errorBoundary.tsx
 src/components/common/formFields/CopyButton.tsx
-src/components/common/formFields/CustomPassword.tsx
 src/components/common/formFields/DevtronSwitch.tsx
 src/components/common/formFields/Typeahead.tsx
 src/components/common/helpers/Helpers.tsx

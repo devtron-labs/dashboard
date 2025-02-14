@@ -150,17 +150,16 @@ const UploadChartModal = ({ closeUploadPopup }: UploadChartModalType) => {
                 </div>
             )}
             <div>
-                <div>
-                    <CustomInput
-                        label="Chart Name"
-                        name="chartName"
-                        onChange={noop}
-                        rootClassName="w-100 br-4 en-2 bw-1 mt-6 form__input"
-                        disabled
-                        value={chartDetail.chartName}
-                        isRequiredField
-                    />
-                </div>
+                <CustomInput
+                    placeholder="Enter chart name"
+                    label="Chart Name"
+                    name="chartName"
+                    onChange={noop}
+                    fullWidth
+                    disabled
+                    value={chartDetail.chartName}
+                    required
+                />
                 <div className="mt-16">
                     <Textarea
                         placeholder="Enter description"

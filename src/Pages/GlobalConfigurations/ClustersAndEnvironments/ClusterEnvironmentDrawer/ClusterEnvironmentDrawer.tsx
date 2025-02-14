@@ -258,8 +258,6 @@ export const ClusterEnvironmentDrawer = ({
                     <div className="dc__overflow-auto p-20 flex-grow-1">
                         <div className="mb-16">
                             <CustomInput
-                                dataTestid="environment-name"
-                                labelClassName="dc__required-field"
                                 disabled={!!environmentName}
                                 placeholder={id ? 'sample-env-name' : 'Eg. production'}
                                 value={data.environmentName}
@@ -267,20 +265,19 @@ export const ClusterEnvironmentDrawer = ({
                                 {...register('environmentName')}
                                 label="Environment Name"
                                 autoFocus={!id}
-                                noTrim
+                                shouldTrim={false}
                             />
                         </div>
                         <div className="mb-16">
                             <CustomInput
-                                dataTestid="enter-namespace"
-                                labelClassName={isVirtual ? '' : 'dc__required-field'}
                                 disabled={!!namespace}
                                 placeholder={id ? 'sample-namespace' : 'Eg. prod'}
                                 value={data.namespace}
                                 error={errors.namespace}
                                 {...register('namespace')}
                                 label="Namespace"
-                                noTrim
+                                shouldTrim={false}
+                                required={!isVirtual}
                             />
                         </div>
                         {!isVirtual && (
@@ -317,7 +314,7 @@ export const ClusterEnvironmentDrawer = ({
                                 {...register('description')}
                                 label="Description (Maximum 40 characters allowed)"
                                 autoFocus={!!id}
-                                noTrim
+                                shouldTrim={false}
                             />
                         </div>
                         {EnvironmentLabels && !isVirtual && (

@@ -163,11 +163,10 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
                                     name="cve"
                                     label="CVE ID"
                                     autoFocus
-                                    tabIndex={1}
                                     placeholder="Enter CVE ID"
                                     value={this.state.cve}
                                     onChange={this.handleCveChange}
-                                    isRequiredField
+                                    required
                                     error={this.state.isCveError && CVE_ID_NOT_FOUND}
                                 />
                             </label>

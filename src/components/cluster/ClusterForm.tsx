@@ -40,12 +40,13 @@ import {
     DeleteConfirmationModal,
     DC_DELETE_SUBTITLES,
     Textarea,
+    PasswordField,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import TippyHeadless from '@tippyjs/react/headless'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
 import { ReactComponent as ErrorIcon } from '@Icons/ic-warning-y6.svg'
-import { useForm, CustomPassword, importComponentFromFELibrary } from '../common'
+import { useForm, importComponentFromFELibrary } from '../common'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { saveCluster, updateCluster, deleteCluster, validateCluster, saveClusters } from './cluster.service'
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
@@ -692,7 +693,7 @@ export default function ClusterForm({
             <>
                 <div className="form__row">
                     <CustomInput
-                        labelClassName="dc__required-field"
+                        required
                         name="cluster_name"
                         disabled={isDefaultCluster()}
                         value={state.cluster_name.value}
@@ -700,7 +701,6 @@ export default function ClusterForm({
                         onChange={handleOnChange}
                         label="Cluster Name"
                         placeholder="Cluster Name"
-                        dataTestid="cluster_name_input"
                     />
                 </div>
                 <div className="form__row mb-8-imp">
@@ -712,7 +712,6 @@ export default function ClusterForm({
                         label={clusterLabel()}
                         disabled={isDefaultCluster()}
                         placeholder="Enter server URL"
-                        dataTestid="enter_server_url_input"
                     />
                 </div>
                 <div className="form__row">
@@ -862,7 +861,8 @@ export default function ClusterForm({
                         )}
                         <div className="form__row">
                             <CustomInput
-                                labelClassName="dc__required-field"
+                                required
+                                placeholder="Enter endpoint"
                                 name="endpoint"
                                 value={state.endpoint.value}
                                 error={state.endpoint.error}
@@ -885,6 +885,7 @@ export default function ClusterForm({
                             <div className="form__row form__row--flex">
                                 <div className="w-50 mr-8 ">
                                     <CustomInput
+                                        placeholder="Enter username"
                                         name="userName"
                                         value={state.userName.value}
                                         error={state.userName.error}
@@ -893,12 +894,14 @@ export default function ClusterForm({
                                     />
                                 </div>
                                 <div className="w-50 ml-8">
-                                    <CustomPassword
+                                    <PasswordField
+                                        placeholder="Enter password"
                                         name="password"
                                         value={state.password.value}
                                         error={state.userName.error}
                                         onChange={handleOnChange}
                                         label="Password"
+                                        shouldShowDefaultPlaceholderOnBlur={false}
                                     />
                                 </div>
                             </div>

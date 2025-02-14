@@ -26,12 +26,16 @@ import {
     SelectPicker,
     ToastVariantType,
     ToastManager,
+    CustomInput,
+    ComponentSizeType,
+    Button,
+    ButtonVariantType,
+    ButtonStyleType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { updateTaints } from '../clusterNodes.service'
@@ -199,45 +203,32 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
                     {taintList?.map((taintDetails, index) => {
                         const _errorObj = errorObj?.taintErrorList[index]
                         return (
-                            <div className="flexbox mb-8">
-                                <div className="w-100 mr-8">
-                                    <input
-                                        type="text"
-                                        name="key"
-                                        data-index={index}
-                                        value={taintDetails.key}
-                                        className="form__input h-32"
-                                        onChange={handleInputChange}
-                                        placeholder="Key"
-                                    />
-                                    {_errorObj && !_errorObj['key'].isValid && (
-                                        <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
-                                            <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                                            <span>{_errorObj['key'].message}</span>
-                                        </span>
-                                    )}
-                                </div>
-                                <div className="w-100 mr-8">
-                                    <input
-                                        type="text"
-                                        name="value"
-                                        data-index={index}
-                                        value={taintDetails.value}
-                                        className="form__input h-32"
-                                        onChange={handleInputChange}
-                                        placeholder="Value"
-                                    />
-                                    {_errorObj && !_errorObj['value'].isValid && (
-                                        <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
-                                            <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                                            <span>{_errorObj['value'].message}</span>
-                                        </span>
-                                    )}
-                                </div>
-
-                                <div className="w-70 mr-8">
+                            <div className="flex left dc__gap-8 mb-8">
+                                <CustomInput
+                                    type="text"
+                                    name="key"
+                                    data-index={index}
+                                    value={taintDetails.key}
+                                    onChange={handleInputChange}
+                                    placeholder="Key"
+                                    error={errorObj && !_errorObj['key'].isValid ? _errorObj['key'].message : null}
+                                    fullWidth
+                                />
+                                <CustomInput
+                                    type="text"
+                                    name="value"
+                                    data-index={index}
+                                    value={taintDetails.value}
+                                    onChange={handleInputChange}
+                                    placeholder="Value"
+                                    error={
+                                        errorObj && !_errorObj['value'].isValid ? _errorObj['value'].message : null
+                                    }
+                                    fullWidth
+                                />
+                                <div className="w-70">
                                     <SelectPicker
-                                        inputId='select-taint-effect'
+                                        inputId="select-taint-effect"
                                         options={TAINT_OPTIONS}
                                         onChange={(selectedValue: OptionType) => {
                                             onEffectChange(selectedValue, index)
@@ -247,15 +238,20 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
                                             label: taintDetails.effect,
                                             value: taintDetails.effect,
                                         }}
+                                        size={ComponentSizeType.large}
                                     />
                                 </div>
-                                <div>
-                                    <DeleteIcon
-                                        className="icon-dim-20 mt-4 pointer"
-                                        data-index={index}
-                                        onClick={deleteTaint}
-                                    />
-                                </div>
+                                <Button
+                                    icon={<DeleteIcon />}
+                                    dataTestId={`delete-taint-${index}`}
+                                    onClick={deleteTaint}
+                                    data-index={index}
+                                    ariaLabel="Delete Taint"
+                                    showAriaLabelInTippy={false}
+                                    size={ComponentSizeType.small}
+                                    variant={ButtonVariantType.borderLess}
+                                    style={ButtonStyleType.negativeGrey}
+                                />
                             </div>
                         )
                     })}

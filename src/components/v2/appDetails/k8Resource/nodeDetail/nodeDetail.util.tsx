@@ -361,21 +361,6 @@ export const getGroupedContainerOptions = (containers: Options[],isTerminal?, is
     return []
 }
 
-export const selectStyles = {
-    ...multiSelectStyles,
-    control: (base) => ({
-        ...base,
-        minHeight: '36px',
-        fontWeight: '400',
-        backgroundColor: 'var(--bg-secondary)',
-        cursor: 'pointer',
-    }),
-    dropdownIndicator: (base) => ({
-        ...base,
-        padding: '0 8px',
-    }),
-}
-
 /**
  * @description This function is used to trim the manifest data by removing the managed fields from the manifest data
  */

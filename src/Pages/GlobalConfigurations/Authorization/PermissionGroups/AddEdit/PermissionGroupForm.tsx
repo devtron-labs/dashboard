@@ -178,7 +178,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
                         value={name.value}
                         data-testid="permission-group-name-textbox"
                         onChange={handleGroupNameChange}
-                        isRequiredField
+                        required
                         error={name.error}
                         placeholder="Eg. Project managers"
                     />

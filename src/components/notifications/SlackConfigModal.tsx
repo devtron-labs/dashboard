@@ -25,10 +25,8 @@ import {
     ComponentSizeType,
     OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
 import { useHistory } from 'react-router-dom'
 import { saveSlackConfiguration, getSlackConfiguration } from './notifications.service'
-import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { ProjectListTypes, SlackConfigModalProps, SlackFormType } from './types'
 import {
     ConfigurationFieldKeys,
@@ -146,37 +144,6 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
         }
     }
 
-    const renderInfoText = () => (
-        <a href={SlackIncomingWebhookUrl} target="_blank" rel="noopener noreferrer">
-            <span className="dc__link">How to setup slack webhooks?</span>
-        </a>
-    )
-
-    const renderWebhookUrlLabel = () => (
-        <div className="flex left dc__gap-6">
-            <div className="dc__required-field">Webhook URL </div>
-            {renderInfoText()}
-        </div>
-    )
-
-    const renderProjectLabel = () => (
-        <div className="flex dc__gap-6 left">
-            <span className="dc__required-field">Project</span>
-            <Tippy
-                className="default-tt"
-                arrow
-                trigger="click"
-                interactive
-                placement="top"
-                content="Required to control user Access"
-            >
-                <span>
-                    <ICHelpOutline className="icon-dim-16 cursor flex" />
-                </span>
-            </Tippy>
-        </div>
-    )
-
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target
         setForm((prevForm) => ({ ...prevForm, [name]: value }))
@@ -225,23 +192,31 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
                 onBlur={handleBlur}
                 placeholder="Enter channel name"
                 autoFocus
-                isRequiredField
+                required
                 error={isFormValid[ConfigurationFieldKeys.CONFIG_NAME].message}
             />
             <CustomInput
                 data-testid="add-webhook-url"
-                label={renderWebhookUrlLabel()}
+                label="Webhook URL"
                 name={ConfigurationFieldKeys.WEBHOOK_URL}
                 value={form.webhookUrl}
                 placeholder="Enter incoming webhook URL"
                 onChange={handleInputChange}
                 onBlur={handleBlur}
-                isRequiredField
+                required
                 error={isFormValid[ConfigurationFieldKeys.WEBHOOK_URL].message}
+                labelTippyCustomizedConfig={{
+                    heading: 'Setup webhooks',
+                    infoText: (
+                        <a href={SlackIncomingWebhookUrl} target="_blank" rel="noopener noreferrer">
+                            <span className="dc__link">How to setup slack webhooks?</span>
+                        </a>
+                    ),
+                }}
             />
             <SelectPicker
                 name={ConfigurationFieldKeys.PROJECT_ID}
-                label={renderProjectLabel()}
+                label="Project"
                 inputId="slack-project"
                 value={selectedProject}
                 onChange={handleProjectChange}
@@ -251,6 +226,10 @@ export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
                 error={isFormValid[ConfigurationFieldKeys.PROJECT_ID].message}
                 onBlur={handleProjectBlur}
                 selectRef={projectRef}
+                labelTippyCustomizedConfig={{
+                    heading: 'Why is project required?',
+                    infoText: 'Required to control user Access',
+                }}
             />
         </div>
     )

@@ -1,56 +1,64 @@
-/*
- * Copyright (c) 2024. Devtron Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
+import { useEffect, useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
-import { ComponentSizeType, Textarea, TextareaProps } from '@devtron-labs/devtron-fe-common-lib'
-import { useEffect, useState } from 'react'
+import { ComponentSizeType, CustomInput, CustomInputProps } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as ICKeyBulb } from '@Icons/ic-key-bulb.svg'
+
+const TEXT_FIELD_LAYOUT_MAP: Record<CustomInputProps['layout'], null> = {
+    row: null,
+    column: null,
+}
+
+const TEXT_FIELD_SIZE_MAP: Record<CustomInputProps['size'], null> = {
+    medium: null,
+    large: null,
+}
 
 const meta = {
-    component: Textarea,
-} satisfies Meta<TextareaProps>
+    component: CustomInput,
+    argTypes: {
+        layout: {
+            options: Object.keys(TEXT_FIELD_LAYOUT_MAP),
+            control: { type: 'radio' },
+        },
+        size: {
+            options: Object.keys(TEXT_FIELD_SIZE_MAP),
+            control: { type: 'radio' },
+        },
+    },
+} satisfies Meta<CustomInputProps>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
-const TextareaTemplate: Story = {
+const TextFieldTemplate: Story = {
     render: (props) => {
-        const [value, setValue] = useState<TextareaProps['value']>(props.value)
+        const [value, setValue] = useState<CustomInputProps['value']>(props.value)
 
         useEffect(() => {
             setValue(props.value)
         }, [props.value])
 
-        const handleChange: TextareaProps['onChange'] = (e) => {
+        const handleChange: CustomInputProps['onChange'] = (e) => {
             setValue(e.target.value)
             action('changed')(e)
         }
 
-        return <Textarea {...props} value={value} onChange={handleChange} />
+        return <CustomInput {...props} value={value} onChange={handleChange} />
     },
     args: {
-        name: 'textarea',
-        label: 'Description',
+        name: 'text-field',
+        label: 'Text Field',
         value: '',
-        placeholder: 'Enter description',
-    } as TextareaProps,
+        placeholder: 'Enter value',
+        onChange: null,
+        layout: 'column',
+        size: ComponentSizeType.large,
+    },
 }
 
 export const Default: Story = {
-    ...TextareaTemplate,
+    ...TextFieldTemplate,
 }
 
 export const WithMediumSize: Story = {
@@ -66,6 +74,14 @@ export const WithOnBlur: Story = {
     args: {
         ...Default.args,
         onBlur: action('onBlur'),
+    },
+}
+
+export const WithOnKeyDown: Story = {
+    ...Default,
+    args: {
+        ...Default.args,
+        onKeyDown: action('onKeyDown'),
     },
 }
 
@@ -166,20 +182,35 @@ export const WithAutoFocus: Story = {
     },
 }
 
-export const WithLargeValueForAutoExpansion: Story = {
-    ...Default,
-    args: {
-        ...Default.args,
-        value: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.\nIt is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).",
-    },
-}
-
 export const WithNoTopBorderRadius: Story = {
     ...Default,
     args: {
         ...Default.args,
         borderRadiusConfig: {
             top: false,
+        },
+    },
+}
+
+export const WithNumberType: Story = {
+    ...Default,
+    args: {
+        ...Default.args,
+        label: 'Age',
+        placeholder: 'Enter age',
+        type: 'number',
+    },
+}
+
+export const WithEndIcon: Story = {
+    ...Default,
+    args: {
+        ...Default.args,
+        endIconButtonConfig: {
+            icon: <ICKeyBulb />,
+            onClick: action('end icon clicked'),
+            ariaLabel: 'End icon',
+            showAriaLabelInTippy: false,
         },
     },
 }

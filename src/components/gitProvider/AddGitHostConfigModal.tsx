@@ -77,8 +77,7 @@ export class GitHostConfigModal extends Component<GitHostConfigModalProps, GitHo
                         onChange={this.handleFilterInput}
                         placeholder="Enter name"
                         autoFocus
-                        tabIndex={1}
-                        isRequiredField
+                        required
                     />
                 </div>
                 <div className="flex right pt-12 pb-12 pl-20 pr-20">

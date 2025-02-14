@@ -179,14 +179,13 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
             return (
                 <div className="dc__overflow-auto p-12 flex-grow-1 flexbox-col dc__gap-12">
                     <CustomInput
-                        name="fileMount"
+                        name={`file-mount-${rowId}`}
                         label="File mount path"
                         placeholder="Enter file mount path"
                         value={fileInfo.fileMountDir}
                         onChange={handleFileMountChange}
-                        dataTestid={`file-mount-${rowId}`}
-                        inputWrapClassName="w-100"
-                        isRequiredField
+                        fullWidth
+                        required
                         error={hasFileMountError ? 'This field is required' : ''}
                         autoFocus
                     />
@@ -264,8 +263,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
                                     autoFocus={index === 0}
                                     value={value}
                                     onChange={handleChoiceChange(id)}
-                                    dataTestid={`choice-${id}`}
-                                    inputWrapClassName="w-100"
+                                    fullWidth
                                     error={error}
                                 />
                                 <div className="mt-2 dc__align-self-start">

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { NodeTaintType } from '@devtron-labs/devtron-fe-common-lib'
+import { NodeTaintType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { OptionType } from '../app/types'
 import {
     ClusterComponentType,
@@ -56,7 +56,7 @@ export function getEnvName(components: ClusterComponentType[], agentInstallation
 
 export function getClusterTerminalParamsData(
     params: URLSearchParams,
-    imageList: OptionType[],
+    imageList: SelectPickerOptionType<string>[],
     namespaceList: OptionType[],
     nodeList: { options: OptionType[]; label: string }[],
     clusterShellList: OptionType[],

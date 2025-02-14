@@ -28,6 +28,7 @@ import {
     PipelineBuildStageType,
     SeverityCount,
     useMainContext,
+    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
@@ -766,12 +767,12 @@ export const convertToOptionsList = (
     customValue?: string,
     customDescription?: string,
     customFieldKey?: string,
-): OptionType[] => {
+): SelectPickerOptionType<string>[] => {
     if (!Array.isArray(arr) || !arr) {
         return []
     }
     return arr.map((ele) => {
-        const _option = {
+        const _option: SelectPickerOptionType<string> = {
             label: customLabel ? ele[customLabel] : ele,
             value: customValue ? ele[customValue] : ele,
             description: customDescription ? ele[customDescription] : '',

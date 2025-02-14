@@ -28,6 +28,7 @@ import {
     ComponentSizeType,
     TabProps,
     NodeTaintType,
+    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useParams, useHistory } from 'react-router-dom'
 import { BUSYBOX_LINK, DEFAULT_CONTAINER_NAME, NETSHOOT_LINK, shellTypes } from '../../config/constants'
@@ -92,7 +93,7 @@ const ClusterTerminal = ({
     const queryParamsData = getClusterTerminalParamsData(
         queryParams,
         imageList,
-        defaultNamespaceList,
+        defaultNamespaceList as OptionType[],
         nodeGroups,
         clusterShellTypes,
     )
@@ -103,7 +104,9 @@ const ClusterTerminal = ({
     const [terminalCleared, setTerminalCleared] = useState<boolean>(false)
     const [isPodCreated, setPodCreated] = useState<boolean>(true)
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING)
-    const [selectedImage, setImage] = useState<OptionType>(queryParamsData.selectedImage || imageList[0])
+    const [selectedImage, setImage] = useState<SelectPickerOptionType<string>>(
+        queryParamsData.selectedImage || imageList[0],
+    )
     const [selectedNamespace, setNamespace] = useState(queryParamsData.selectedNamespace || defaultNameSpace)
     const [resourceData, setResourceData] = useState(null)
     const [update, setUpdate] = useState<boolean>(false)
@@ -1024,7 +1027,7 @@ node-details-full-screen
         },
         metadata: {
             node: selectedNodeName?.label ?? '',
-            namespace: selectedNamespace?.label ?? '',
+            namespace: (selectedNamespace?.label as string) ?? '',
         },
     }
 

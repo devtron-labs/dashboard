@@ -112,7 +112,7 @@ export class Project extends Component<ProjectProps, ProjectState> {
                         onChange={this.handleActionChange}
                         autoFocus
                         data-testid="project-name-input"
-                        isRequiredField
+                        required
                         error={!isValid.name && errorMessage.name}
                     />
                     <div className="form__buttons mt-16">

@@ -96,7 +96,9 @@ const CISelfDockerBuildOption: FunctionComponent<CISelfDockerBuildOptionProps> =
                     </Tippy>
 
                     <CustomInput
-                        rootClassName="file-name h-36"
+                        borderRadiusConfig={{
+                            left: false,
+                        }}
                         data-testid="dockerfile-path-text-box"
                         placeholder="Dockerfile"
                         name="dockerfile"

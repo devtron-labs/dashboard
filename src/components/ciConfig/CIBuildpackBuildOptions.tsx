@@ -608,8 +608,9 @@ export default function CIBuildpackBuildOptions({
                         </span>
                         <CustomInput
                             data-testid="build-pack-project-path-textbox"
-                            tabIndex={4}
-                            rootClassName="file-name"
+                            borderRadiusConfig={{
+                                left: false,
+                            }}
                             placeholder="Project path"
                             name="projectPath"
                             value={projectPathVal === './' ? '' : projectPathVal}

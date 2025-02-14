@@ -231,7 +231,7 @@
 
 // This is intended to be removed once login page is revamped before shipping dark mode
 .login-dt__form {
-    & .form__input {
+    & input {
         color-scheme: light;
         background: #f7fafc;
         border-color: #d0d4d9;

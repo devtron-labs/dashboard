@@ -112,13 +112,11 @@ export default function EmptyWorkflow(props: EmptyWorkflowProps) {
         >
             <label className="form__row" htmlFor="workflow-name">
                 <CustomInput
-                    autoComplete="off"
-                    dataTestid="workflow-name"
                     name="workflow-name"
                     value={state.name}
                     placeholder="Eg. my-job-workflow"
                     onChange={handleWorkflowName}
-                    isRequiredField
+                    required
                     error={state.showError && !isNameValid().isValid && isNameValid().errorMsg}
                 />
             </label>

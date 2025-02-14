@@ -358,13 +358,12 @@ export default function CreateAppGroup({
                 <div className="form__row mb-16">
                     <CustomInput
                         label="Name"
-                        tabIndex={1}
                         placeholder="Enter filter name"
                         value={appGroupName}
                         name="name"
                         onChange={onInputChange}
                         disabled={selectedAppGroup && !!selectedAppGroup.value}
-                        isRequiredField
+                        required
                         error={showErrorMsg && nameErrorMessage()}
                     />
                 </div>

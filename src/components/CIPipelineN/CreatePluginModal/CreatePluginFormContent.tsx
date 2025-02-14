@@ -274,7 +274,7 @@ const CreatePluginFormContent = ({
                             action={CreatePluginActionType.UPDATE_PLUGIN_VERSION}
                             handleChange={handleChange}
                             helperText={
-                                <span className="fs-11">
+                                <span>
                                     Using&nbsp;
                                     <a
                                         href={SEMANTIC_VERSION_DOCUMENTATION_LINK}
@@ -289,7 +289,7 @@ const CreatePluginFormContent = ({
                             }
                             placeholder="Eg. 1.0.0"
                             required
-                            labelClassName="w-100"
+                            fullWidth
                         />
 
                         {/* Documentation Link */}

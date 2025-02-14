@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react'
-import { RadioGroupItem, VisibleModal, RadioGroup, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import { RadioGroupItem, VisibleModal, RadioGroup, InfoColourBar, SelectPicker, ComponentSizeType, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import Select from 'react-select'
 import { SingleDatePicker } from 'react-dates'
 import 'react-dates/initialize'
@@ -144,52 +144,42 @@ export const InputForSelectedOption = ({
         case CUSTOM_LOGS_FILTER.LINES:
             return (
                 <div className="flexbox-col cn-7">
+                    {/* TODO:  */}
                     <div className="dc__required-field mb-6 fs-13">
                         {filterTypeRadio === CUSTOM_LOGS_FILTER.DURATION ? 'View logs for last' : 'Set number of lines'}
                     </div>
-                    <div className="flex dc__align-start">
-                        <div className="flexbox-col dc__gap-8">
-                            <input
+                    <div className="flex left dc__align-start">
+                        <div className="flex-grow-1">
+                            <CustomInput
+                                name="range-input"
                                 type="number"
-                                autoComplete="off"
-                                min={1}
-                                className="input-focus-none"
                                 value={customLogFilterOptions[filterTypeRadio].value}
                                 onChange={handleInputChange}
                                 onBlur={checkInputError}
+                                error={customLogFilterOptions[filterTypeRadio].error}
+                                placeholder="Enter value"
+                                borderRadiusConfig={{
+                                    right: false,
+                                }}
                             />
-                            {customLogFilterOptions[filterTypeRadio].error && (
-                                <div className="fs-11 cr-5 flex flex-justify-start">
-                                    <Warn className="form__icon form__icon--error mr-4" />
-                                    {customLogFilterOptions[filterTypeRadio].error}
-                                </div>
-                            )}
                         </div>
-                        <div className="flex-grow-1">
+                        <div>
                             {filterTypeRadio === CUSTOM_LOGS_FILTER.DURATION ? (
-                                <Select
+                                <SelectPicker
                                     options={getDurationUnits()}
                                     onChange={changeTimeUnits}
                                     value={getDurationUnits().find(
                                         (option) => option.value === customLogFilterOptions[filterTypeRadio].unit,
                                     )}
-                                    styles={{
-                                        ...multiSelectStyles,
-                                        control: (base) => ({
-                                            ...base,
-                                            border: '1px solid var(--N200)',
-                                            borderRadius: '0 4px 4px 0',
-                                            boxShadow: 'none',
-                                            cursor: 'pointer',
-                                        }),
-                                    }}
-                                    components={{
-                                        IndicatorSeparator: null,
-                                        Option: (props) => <Option {...props} style={{ direction: 'rtl' }} />,
+                                    inputId="time-selector"
+                                    size={ComponentSizeType.large}
+                                    menuSize={ComponentSizeType.xs}
+                                    borderRadiusConfig={{
+                                        left: false,
                                     }}
                                 />
                             ) : (
-                                <div className="dc__border h-38 dc__right-radius-4 flex fs-13 flex-justify-start pl-8 cn-9">
+                                <div className="dc__border h-36 dc__right-radius-4 flex fs-13 flex-justify-start px-16 cn-9 dc__no-shrink">
                                     Lines
                                 </div>
                             )}

@@ -167,9 +167,9 @@ export const ConfigMapSecretForm = ({
             label="Name"
             placeholder={`Eg. ${!data.isSecret ? 'sample-configmap' : 'sample-secret'}`}
             disabled={!isCreateView || isFormDisabled}
-            isRequiredField
+            required
             error={errors.name}
-            noTrim
+            shouldTrim={false}
         />
     )
 
@@ -245,11 +245,10 @@ export const ConfigMapSecretForm = ({
                         <CustomInput
                             {...register('externalSubpathValues')}
                             value={data.externalSubpathValues}
-                            tabIndex={0}
                             placeholder="Enter keys (Eg. username,configs.json)"
                             disabled={isFormDisabled}
                             error={errors.externalSubpathValues}
-                            noTrim
+                            shouldTrim={false}
                         />
                     </div>
                 )}
@@ -287,13 +286,10 @@ export const ConfigMapSecretForm = ({
                     <CustomInput
                         value={data.filePermission}
                         {...register('filePermission')}
-                        autoComplete="off"
-                        tabIndex={0}
-                        dataTestid="configmap-file-permission-textbox"
                         placeholder="eg. 0400 or 400"
                         disabled={isFormDisabled || isChartVersion309OrBelow}
                         error={errors.filePermission}
-                        noTrim
+                        shouldTrim={false}
                     />
                 </div>
             )}
@@ -311,8 +307,8 @@ export const ConfigMapSecretForm = ({
                     helperText="Keys are mounted as files to volume"
                     disabled={isFormDisabled}
                     error={errors.volumeMountPath}
-                    isRequiredField
-                    noTrim
+                    required
+                    shouldTrim={false}
                 />
                 {renderSubPath()}
                 {renderFilePermission()}
@@ -323,15 +319,13 @@ export const ConfigMapSecretForm = ({
         (isHashiOrAWS || isESO) && (
             <div className="w-50">
                 <CustomInput
-                    dataTestid="enter-role-ARN"
                     {...register('roleARN')}
                     value={data.roleARN}
-                    autoComplete="off"
                     label="Role ARN"
                     placeholder="Enter Role ARN"
                     disabled={isFormDisabled}
                     error={errors.roleARN}
-                    noTrim
+                    shouldTrim={false}
                 />
             </div>
         )

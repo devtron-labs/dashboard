@@ -68,8 +68,8 @@ export interface EphemeralContainerDrawerType {
     setEphemeralContainerType: React.Dispatch<React.SetStateAction<string>>
     targetContainerOption: OptionType[]
     setTargetContainerOption?: React.Dispatch<React.SetStateAction<OptionType[]>>
-    imageListOption: OptionType[]
-    setImageListOption?: React.Dispatch<React.SetStateAction<OptionType[]>>
+    imageListOption: SelectPickerOptionType<string>[]
+    setImageListOption?: React.Dispatch<React.SetStateAction<SelectPickerOptionType<string>[]>>
     isResourceBrowserView: boolean
     containers?: Options[]
     setContainers?: React.Dispatch<React.SetStateAction<Options[]>>
