@@ -1265,7 +1265,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             />
                         </div>
                     ) : (
-                        <div className="form__row--two-third gitops__id fs-13 w-100">
+                        <div className="form__row--two-third w-100">
                             <div>
                                 <CustomInput
                                     value={this.state.form.username}
