@@ -27,6 +27,7 @@ import {
     ResourceIdToResourceApprovalPolicyConfigMapType,
     ConfirmationModal,
     ConfirmationModalVariantType,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DeleteComponentsName } from '@Config/constantMessaging'
 import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo/ApplicationDeletionInfo'
@@ -40,6 +41,7 @@ import {
     AppStageUnlockedType,
     STAGE_NAME,
     DEFAULT_LANDING_STAGE,
+    EnvConfigType,
 } from './AppConfig.types'
 import { getUserRole } from '../../../../GlobalConfigurations/Authorization/authorization.service'
 import { isCIPipelineCreated, isCDPipelineCreated, getNavItems, isUnlocked } from './AppConfig.utils'
@@ -140,12 +142,12 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
      *
      * @param envId - The ID of the environment for which the configuration is to be fetched.
      */
-    const fetchEnvConfig = (envId: number) => {
+    const fetchEnvConfig = (envId: number, callback: (res: EnvConfigType) => void = noop) => {
         // Set loading state to true
         setState((prevState) => ({ ...prevState, envConfig: { ...prevState.envConfig, isLoading: true } }))
 
         // Fetch environment configuration
-        getEnvConfig(+appId, envId)
+        getEnvConfig(+appId, envId, callback)
             .then((res) => {
                 setState((prevState) => ({
                     ...prevState,

@@ -17,7 +17,6 @@
 import { useState, useEffect, Fragment } from 'react'
 import { useParams, useLocation, useRouteMatch, NavLink, Link } from 'react-router-dom'
 import {
-    EnvResourceType,
     showError,
     ConfirmationDialog,
     InfoColourBar,
@@ -28,6 +27,7 @@ import {
     ToastManager,
     SelectPicker,
     DeleteConfirmationModal,
+    EnvResourceType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICStamp } from '@Icons/ic-stamp.svg'
 import { URLS, DOCUMENTATION } from '../../../../../../config'
@@ -61,6 +61,7 @@ const EnvOverridesHelpNote = () => (
 const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected }: JobEnvOverrideRouteProps) => {
     const { url } = useRouteMatch()
     const { appId, workflowsRes } = useAppConfigurationContext()
+
     const [showConfirmationDialog, setConfirmationDialog] = useState(false)
     const [showDelete, setDeleteView] = useState(false)
     const [deletePipeline, setDeletePipeline] = useState()
@@ -182,7 +183,7 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
         <div className="flexbox dc__align-items-center dc__content-space pr-8">
             <NavLink
                 data-testid="env-deployment-template"
-                className="app-compose__nav-item  app-compose__nav-item--job cursor dc__gap-8"
+                className="app-compose__nav-item app-compose__nav-item--job cursor dc__gap-8"
                 to={`${URLS.APP_ENV_OVERRIDE_CONFIG}/${envOverride.environmentId}/${EnvResourceType.ConfigMap}`}
             >
                 <span className="dc__truncate">{envOverride.environmentName}</span>
@@ -322,7 +323,7 @@ const EnvironmentOverrideRouter = ({
                                         renderNavItem({
                                             title: env.environmentName,
                                             isProtectionAllowed: isApprovalApplicable,
-                                            href: `${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}/${EnvResourceType.DeploymentTemplate}`,
+                                            href: `${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}`,
                                         })
                                     )}
                                 </Fragment>

@@ -36,13 +36,14 @@ import {
     ResponseType,
     get,
     getUrlWithSearchParams,
+    noop,
     showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '@Config/constants'
 
 import { AppConfigStatusItemType } from './service.types'
-import { DEFAULT_LANDING_STAGE } from './Details/AppConfigurations/AppConfig.types'
+import { DEFAULT_LANDING_STAGE, EnvConfigType } from './Details/AppConfigurations/AppConfig.types'
 import { transformEnvConfig } from './Details/AppConfigurations/AppConfig.utils'
 
 export const getAppConfigStatus = (
@@ -56,12 +57,17 @@ export const getAppConfigStatus = (
         }),
     )
 
-export const getEnvConfig = async (appId: number, envId: number) => {
+export const getEnvConfig = async (appId: number, envId: number, callback: (res: EnvConfigType) => void = noop) => {
     try {
         const res = await get(getUrlWithSearchParams(Routes.ENV_CONFIG, { appId, envId }))
-        return transformEnvConfig(res.result)
+        const envConfig = transformEnvConfig(res.result)
+        callback(envConfig)
+
+        return envConfig
     } catch (err) {
         showError(err)
+        callback(null)
+
         throw err
     }
 }

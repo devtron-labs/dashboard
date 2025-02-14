@@ -39,14 +39,13 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     ConditionalWrap,
-    EnvResourceType,
     TippyCustomized,
     TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as ICArrowSquareOut } from '@Icons/ic-arrow-square-out.svg'
 import { DEVTRON_APPS_STEPS, STAGE_NAME } from '../AppConfig.types'
-import { URLS } from '../../../../../../config'
+import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE, URLS } from '../../../../../../config'
 import AppConfigurationCheckBox from './AppConfigurationCheckBox'
 import { GIT_MATERIAL_IN_USE_MESSAGE } from '../../../../../../config/constantMessaging'
 import DockerFileInUse from '../../../../../../assets/img/ic-dockerfile-in-use.png'
@@ -115,9 +114,11 @@ export const AppNavigation = () => {
     )
 
     const getValidBackURL = () => {
-        const isBackURLLocked = location.pathname === lastUnlockedStage
-        const secondLastUnlockedStage = isBackURLLocked
-            ? navItems.reduce(
+        const isCurrentPathLastUnlockedStage = location.pathname === lastUnlockedStage
+        const eligibleNavItems = navItems.filter((navItem) => navItem.stage !== STAGE_NAME.REDIRECT_ITEM)
+
+        const secondLastUnlockedStage = isCurrentPathLastUnlockedStage
+            ? eligibleNavItems.reduce(
                   (acc, curr) => {
                       if (curr.href === lastUnlockedStage) {
                           acc.found = true
@@ -145,8 +146,8 @@ export const AppNavigation = () => {
         <Switch>
             <Route
                 path={[
-                    `${path}/:resourceType(${Object.values(EnvResourceType).join('|')})`,
-                    `${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)/:resourceType(${Object.values(EnvResourceType).join('|')})`,
+                    `${path}/${URLS.BASE_CONFIG}/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?`,
+                    `${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?`,
                 ]}
             >
                 {({ match }) => (
@@ -168,6 +169,7 @@ export const AppNavigation = () => {
                     />
                 )}
             </Route>
+
             <Route key="default-navigation">
                 <>
                     <div className="flexbox-col flex-grow-1 dc__overflow-auto w-100 pt-16 px-12">
