@@ -484,13 +484,14 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                     filterParentType={filterParentType}
                 />
             )}
-            <DeleteConfirmationModal
-                title={clickedGroup?.label}
-                component={DeleteComponentsName.Filter}
-                onDelete={onDelete}
-                showConfirmationModal={showDeleteGroup && isPopupBox}
-                closeConfirmationModal={closeDeleteGroup}
-            />
+            {showDeleteGroup && isPopupBox && (
+                <DeleteConfirmationModal
+                    title={clickedGroup?.label}
+                    component={DeleteComponentsName.Filter}
+                    onDelete={onDelete}
+                    closeConfirmationModal={closeDeleteGroup}
+                />
+            )}
         </div>
     )
 }

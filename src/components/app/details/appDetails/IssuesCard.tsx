@@ -254,12 +254,13 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
                 subtitle={forceDeleteDialogMessage}
             />
 
-            <ClusterNotReachableDialog
-                clusterName={clusterName}
-                onClickCancel={onClickHideNonCascadeDeletePopup}
-                onClickDelete={onClickNonCascadeDelete}
-                showConfirmationModal={nonCascadeDeleteDialog}
-            />
+            {nonCascadeDeleteDialog && (
+                <ClusterNotReachableDialog
+                    clusterName={clusterName}
+                    onClickCancel={onClickHideNonCascadeDeletePopup}
+                    onClickDelete={onClickNonCascadeDelete}
+                />
+            )}
         </div>
     )
 }

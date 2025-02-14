@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { DeleteConfirmationModalProps } from '@devtron-labs/devtron-fe-common-lib/dist/Shared/Components/ConfirmationModal/types'
-
-export interface ClusterNotReachableDialogType extends Pick<DeleteConfirmationModalProps, 'showConfirmationModal'> {
+export interface ClusterNotReachableDialogType {
     clusterName: string
     onClickCancel: () => void
     onClickDelete: () => void

@@ -755,13 +755,14 @@ const ChartDeploymentHistory = ({
                     </div>
                 </div>
                 <div className="ci-details__body dc__overflow-auto">{renderSelectedDeploymentDetail()}</div>
-                <RollbackConfirmationDialog
-                    deploying={deploying}
-                    rollbackDialogTitle={rollbackDialogTitle}
-                    setShowRollbackConfirmation={setShowRollbackConfirmation}
-                    handleDeployClick={handleDeployClick}
-                    showRollbackConfirmation={showRollbackConfirmation}
-                />
+                {showRollbackConfirmation && (
+                    <RollbackConfirmationDialog
+                        deploying={deploying}
+                        rollbackDialogTitle={rollbackDialogTitle}
+                        setShowRollbackConfirmation={setShowRollbackConfirmation}
+                        handleDeployClick={handleDeployClick}
+                    />
+                )}
             </div>
         )
     }

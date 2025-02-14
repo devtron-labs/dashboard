@@ -404,19 +404,20 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                 >
                     {this.props.cdNamesList?.length > 0 ? this.renderReadOnlyCard() : this.renderCardContent()}
                 </foreignObject>
-                <DeleteCDNode
-                    showDeleteDialog={this.state.showDeleteDialog}
-                    deleteDialog={this.state.deleteDialog}
-                    setDeleteDialog={this.handleDeleteDialogUpdate}
-                    clusterName={this.state.clusterName}
-                    appName={this.props.appName}
-                    hideDeleteModal={this.handleHideDeleteModal}
-                    deleteCD={this.deleteCD}
-                    deploymentAppType={this.props.deploymentAppType ?? ''}
-                    forceDeleteData={this.state.forceDeleteData}
-                    deleteTitleName={this.props.environmentName}
-                    isLoading={this.state.deleteInProgress}
-                />
+                {this.state.showDeleteDialog && (
+                    <DeleteCDNode
+                        deleteDialog={this.state.deleteDialog}
+                        setDeleteDialog={this.handleDeleteDialogUpdate}
+                        clusterName={this.state.clusterName}
+                        appName={this.props.appName}
+                        hideDeleteModal={this.handleHideDeleteModal}
+                        deleteCD={this.deleteCD}
+                        deploymentAppType={this.props.deploymentAppType ?? ''}
+                        forceDeleteData={this.state.forceDeleteData}
+                        deleteTitleName={this.props.environmentName}
+                        isLoading={this.state.deleteInProgress}
+                    />
+                )}
                 {this.renderDeleteConfirmationDialog()}
             </>
         )

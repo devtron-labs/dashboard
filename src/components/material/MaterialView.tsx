@@ -970,10 +970,9 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         />
                     </div>
                 </div>
-                <DeleteConfirmationModal
+                {this.state.confirmation && <DeleteConfirmationModal
                     title={this.props.material.name}
                     component={DeleteComponentsName.GitRepo}
-                    showConfirmationModal={this.state.confirmation}
                     closeConfirmationModal={this.toggleConfirmation}
                     onDelete={this.onDelete}
                     errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
@@ -982,7 +981,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             ? DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE
                             : DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE
                     }
-                />
+                />}
             </form>
         )
     }

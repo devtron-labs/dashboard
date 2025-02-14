@@ -358,7 +358,6 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                 title={`Delete ${notificationCount.length} notification configuration(s)`}
                 variant={ConfirmationModalVariantType.delete}
                 subtitle="Recipients will stop receiving notifications for selected pipelines."
-                showConfirmationModal={this.state.showDeleteDialog}
                 buttonConfig={{
                     secondaryButtonConfig: {
                         text: 'Cancel',
@@ -844,7 +843,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             <div className="bg__primary pt-16" style={{ minHeight: 'calc(100vh - 215px)' }}>
                 {this.renderHostErrorMessage()}
                 {this.renderBody()}
-                {this.renderDeleteDialog()}
+                {this.state.showDeleteDialog && this.renderDeleteDialog()}
                 {this.renderModifyRecipients()}
             </div>
         )

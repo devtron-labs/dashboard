@@ -859,35 +859,35 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             <section className="bg__primary sso-login__wrapper min-h-100">
                 {renderSSOContent()}
                 {/* Confirmation Modal for SSO Change */}
-                <ConfirmationModal
-                    variant={ConfirmationModalVariantType.warning}
-                    title={`Use "${ssoProviderToDisplayNameMap[this.state.sso]}" instead of "${
-                        ssoProviderToDisplayNameMap[this.state.lastActiveSSO?.name]
-                    }" for login?`}
-                    subtitle="This will end all active user sessions. Users would have to login again using updated SSO service."
-                    buttonConfig={{
-                        secondaryButtonConfig: {
-                            text: 'Cancel',
-                            disabled: this.state.saveLoading,
-                            onClick: this.toggleWarningModal,
-                        },
-                        primaryButtonConfig: {
-                            text: 'Confirm',
-                            isLoading: this.state.saveLoading,
-                            onClick: this.saveNewSSO,
-                        },
-                    }}
-                    showConfirmationModal={showSSOChangeConfirmationModal}
-                    handleClose={this.toggleWarningModal}
-                />
+                {showSSOChangeConfirmationModal && (
+                    <ConfirmationModal
+                        variant={ConfirmationModalVariantType.warning}
+                        title={`Use "${ssoProviderToDisplayNameMap[this.state.sso]}" instead of "${
+                            ssoProviderToDisplayNameMap[this.state.lastActiveSSO?.name]
+                        }" for login?`}
+                        subtitle="This will end all active user sessions. Users would have to login again using updated SSO service."
+                        buttonConfig={{
+                            secondaryButtonConfig: {
+                                text: 'Cancel',
+                                disabled: this.state.saveLoading,
+                                onClick: this.toggleWarningModal,
+                            },
+                            primaryButtonConfig: {
+                                text: 'Confirm',
+                                isLoading: this.state.saveLoading,
+                                onClick: this.saveNewSSO,
+                            },
+                        }}
+                        handleClose={this.toggleWarningModal}
+                    />
+                )}
                 {/* Confirmation modal for permission auto-assignment */}
-                {UserPermissionConfirmationModal && (
+                {UserPermissionConfirmationModal && this.state.showAutoAssignConfirmationModal && (
                     <UserPermissionConfirmationModal
                         handleSave={this.saveNewSSO}
                         handleCancel={this.handleAutoAssignConfirmationModalClose}
                         ssoType={this.state.sso}
                         isLoading={this.state.saveLoading}
-                        showAutoAssignConfirmationModal={this.state.showAutoAssignConfirmationModal}
                     />
                 )}
             </section>

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import Help from '../../../assets/icons/ic-help-green.svg'
 import { ReactComponent as GreenCheck } from '../../../assets/icons/ic-check.svg'

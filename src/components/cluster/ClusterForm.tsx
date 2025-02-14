@@ -1515,15 +1515,16 @@ export default function ClusterForm({
                                 </div>
                             </div>
                         )}
-                        <DeleteConfirmationModal
-                            title={cluster_name}
-                            component={DeleteComponentsName.Cluster}
-                            subtitle={DC_DELETE_SUBTITLES.DELETE_ENVIRONMENT_SUBTITLE}
-                            onDelete={onDelete}
-                            showConfirmationModal={confirmation}
-                            closeConfirmationModal={hideConfirmationModal}
-                            errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
-                        />
+                        {confirmation && (
+                            <DeleteConfirmationModal
+                                title={cluster_name}
+                                component={DeleteComponentsName.Cluster}
+                                subtitle={DC_DELETE_SUBTITLES.DELETE_ENVIRONMENT_SUBTITLE}
+                                onDelete={onDelete}
+                                closeConfirmationModal={hideConfirmationModal}
+                                errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+                            />
+                        )}
                     </>
                 )}
             </div>

@@ -1070,14 +1070,15 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                             closePopup={hideDrainNodeModal}
                         />
                     )}
-                    <DeleteNodeModal
-                        name={node}
-                        version={nodeDetail.version}
-                        kind={nodeDetail.kind}
-                        closePopup={hideDeleteNodeModal}
-                        showConfirmationModal={showDeleteNodeDialog}
-                        handleClearBulkSelection={noop}
-                    />
+                    {showDeleteNodeDialog && (
+                        <DeleteNodeModal
+                            name={node}
+                            version={nodeDetail.version}
+                            kind={nodeDetail.kind}
+                            closePopup={hideDeleteNodeModal}
+                            handleClearBulkSelection={noop}
+                        />
+                    )}
                     {showEditTaints && (
                         <EditTaintsModal
                             name={node}

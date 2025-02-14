@@ -85,14 +85,15 @@ export class Project extends Component<ProjectProps, ProjectState> {
                         ariaLabel="Delete"
                     />
                 </div>
-                <DeleteConfirmationModal
-                    title={this.props.name}
-                    component={DeleteComponentsName.Project}
-                    onDelete={this.onDelete}
-                    showConfirmationModal={this.state.confirmation}
-                    closeConfirmationModal={this.toggleConfirmation}
-                    errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
-                />
+                {this.state.confirmation && (
+                    <DeleteConfirmationModal
+                        title={this.props.name}
+                        component={DeleteComponentsName.Project}
+                        onDelete={this.onDelete}
+                        closeConfirmationModal={this.toggleConfirmation}
+                        errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+                    />
+                )}
             </div>
         )
     }

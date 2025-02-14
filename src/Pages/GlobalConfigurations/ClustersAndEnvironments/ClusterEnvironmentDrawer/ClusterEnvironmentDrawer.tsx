@@ -365,12 +365,13 @@ export const ClusterEnvironmentDrawer = ({
                     </div>
                 </form>
 
-                <EnvironmentDeleteComponent
-                    environmentName={data.environmentName}
-                    onDelete={onDelete}
-                    showConfirmationModal={showDeleteConfirmation}
-                    closeConfirmationModal={closeConfirmationModal}
-                />
+                {showDeleteConfirmation && (
+                    <EnvironmentDeleteComponent
+                        environmentName={data.environmentName}
+                        onDelete={onDelete}
+                        closeConfirmationModal={closeConfirmationModal}
+                    />
+                )}
             </div>
         </Drawer>
     )

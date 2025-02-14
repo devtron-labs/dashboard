@@ -983,15 +983,14 @@ const GitForm = ({
                 </div>
             </div>
 
-            <DeleteConfirmationModal
+            {confirmation && <DeleteConfirmationModal
                 title={state.name.value}
                 onDelete={onDelete}
                 component={DeleteComponentsName.GitProvider}
                 renderCannotDeleteConfirmationSubTitle={DC_GIT_PROVIDER_CONFIRMATION_MESSAGE}
-                showConfirmationModal={confirmation}
                 closeConfirmationModal={closeConfirmationModal}
                 errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
-            />
+            />}
         </form>
     )
 }

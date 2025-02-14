@@ -796,12 +796,13 @@ const Cluster = ({
                                     ) : null,
                             )}
 
-                        <EnvironmentDeleteComponent
-                            environmentName={environment?.environmentName}
-                            showConfirmationModal={confirmation}
-                            onDelete={onDelete}
-                            closeConfirmationModal={hideConfirmationModal}
-                        />
+                        {confirmation && (
+                            <EnvironmentDeleteComponent
+                                environmentName={environment?.environmentName}
+                                onDelete={onDelete}
+                                closeConfirmationModal={hideConfirmationModal}
+                            />
+                        )}
                     </div>
                 ) : (
                     clusterId && renderNoEnvironmentTab()

@@ -255,39 +255,43 @@ export const DeploymentRow = ({
                     </PopupMenu>
                 </Td>
             </tr>
-            <ConfirmationModal
-                variant={ConfirmationModalVariantType.delete}
-                title={`Delete app ‘${appName}’`}
-                subtitle={<ApplicationDeletionInfo />}
-                showConfirmationModal={confirmation}
-                buttonConfig={{
-                    secondaryButtonConfig: {
-                        onClick: onCloseConfirmationModal,
-                        text: 'Cancel',
-                    },
-                    primaryButtonConfig: {
-                        isLoading: deleting,
-                        onClick: handleCascadeDelete,
-                        text: 'Delete',
-                    },
-                }}
-                handleClose={onCloseConfirmationModal}
-            />
 
-            <ForceDeleteConfirmationModal
-                title={forceDeleteDialogTitle}
-                subtitle={forceDeleteDialogMessage}
-                onDelete={handleForceDelete}
-                showConfirmationModal={showForceDeleteDialog}
-                closeConfirmationModal={closeForceDeleteModal}
-            />
+            {confirmation && (
+                <ConfirmationModal
+                    variant={ConfirmationModalVariantType.delete}
+                    title={`Delete app ‘${appName}’`}
+                    subtitle={<ApplicationDeletionInfo />}
+                    buttonConfig={{
+                        secondaryButtonConfig: {
+                            onClick: onCloseConfirmationModal,
+                            text: 'Cancel',
+                        },
+                        primaryButtonConfig: {
+                            isLoading: deleting,
+                            onClick: handleCascadeDelete,
+                            text: 'Delete',
+                        },
+                    }}
+                    handleClose={onCloseConfirmationModal}
+                />
+            )}
 
-            <ClusterNotReachableDialog
-                clusterName={clusterName}
-                onClickCancel={onClickHideNonCascadeDeletePopup}
-                onClickDelete={onClickNonCascadeDelete}
-                showConfirmationModal={nonCascadeDeleteDialog}
-            />
+            {showForceDeleteDialog && (
+                <ForceDeleteConfirmationModal
+                    title={forceDeleteDialogTitle}
+                    subtitle={forceDeleteDialogMessage}
+                    onDelete={handleForceDelete}
+                    closeConfirmationModal={closeForceDeleteModal}
+                />
+            )}
+
+            {nonCascadeDeleteDialog && (
+                <ClusterNotReachableDialog
+                    clusterName={clusterName}
+                    onClickCancel={onClickHideNonCascadeDeletePopup}
+                    onClickDelete={onClickNonCascadeDelete}
+                />
+            )}
         </>
     )
 }

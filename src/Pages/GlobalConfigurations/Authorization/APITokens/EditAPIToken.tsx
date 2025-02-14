@@ -276,13 +276,14 @@ const EditAPIToken = ({
                 buttonText="Update token"
                 disabled={isSaveDisabled}
             />
-            <DeleteAPITokenModal
-                isEditView
-                tokenData={editData}
-                reload={reload}
-                showDeleteConfirmation={showDeleteConfirmation}
-                setDeleteConfirmation={setShowDeleteConfirmation}
-            />
+            {showDeleteConfirmation && (
+                <DeleteAPITokenModal
+                    isEditView
+                    tokenData={editData}
+                    reload={reload}
+                    setDeleteConfirmation={setShowDeleteConfirmation}
+                />
+            )}
             {showRegeneratedModal && (
                 <RegeneratedModal
                     close={handleRegenerateActionButton}

@@ -422,7 +422,6 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
                         pluginDataStore={pluginDataStore}
                         resourceKindType={isCdPipeline ? ResourceKindType.cdPipeline : ResourceKindType.ciPipeline}
                         mandatoryPluginList={mandatoryPluginData?.pluginData || []}
-                        showConfirmationModal={taskActionModalState}
                     />
                 )}
             </div>

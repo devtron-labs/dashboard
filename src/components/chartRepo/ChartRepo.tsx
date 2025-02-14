@@ -560,15 +560,16 @@ const ChartForm = ({
                     </div>
                 </div>
             </div>
-            <DeleteConfirmationModal
-                title={state.name.value}
-                component={DeleteComponentsName.ChartRepository}
-                renderCannotDeleteConfirmationSubTitle={DC_CHART_REPO_CONFIRMATION_MESSAGE}
-                errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
-                onDelete={onDelete}
-                showConfirmationModal={confirmation}
-                closeConfirmationModal={closeConfirmationModal}
-            />
+            {confirmation && (
+                <DeleteConfirmationModal
+                    title={state.name.value}
+                    component={DeleteComponentsName.ChartRepository}
+                    renderCannotDeleteConfirmationSubTitle={DC_CHART_REPO_CONFIRMATION_MESSAGE}
+                    errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+                    onDelete={onDelete}
+                    closeConfirmationModal={closeConfirmationModal}
+                />
+            )}
         </form>
     )
 }
