@@ -433,6 +433,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                     ...element,
                     data: {
                         ...element.data,
+                        configId: this.state.emailAgentConfigId,
                         dest: this.state.selectedEmailAgent.toLowerCase(),
                     },
                 })
@@ -441,8 +442,8 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             }
         }
 
-        saveNotification(selectedPipelines, selectedChannels, this.state.emailAgentConfigId)
-            .then((response) => {
+        saveNotification(selectedPipelines, selectedChannels)
+            .then(() => {
                 this.props.history.push(`${URLS.GLOBAL_CONFIG_NOTIFIER}/channels`)
                 ToastManager.showToast({
                     variant: ToastVariantType.success,
