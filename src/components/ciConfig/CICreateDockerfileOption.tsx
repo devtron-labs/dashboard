@@ -262,41 +262,48 @@ export default function CICreateDockerfileOption({
         templateData && selectedLanguage ? templateData[getTemplateKey(selectedLanguage, selectedFramework)] : null
     return (
         <>
-            <div className={configOverrideView ? 'mb-12' : 'mb-16'}>
-                <CodeEditor.Container>
-                    <CodeEditor
-                        loading={editorData?.fetching}
-                        value={editorValue || editorData?.data}
-                        mode={MODES.DOCKERFILE}
-                        noParsing
-                        height={300}
-                        readOnly={configOverrideView && !allowOverride}
-                        onChange={handleEditorValueChange}
-                    >
-                        <CodeEditor.Header>
-                            <div className="flex dc__content-space w-100 fs-12 fw-6 cn-7">
-                                <CreateDockerFileLanguageOptions
-                                    editorData={editorData}
-                                    editorValue={editorValue}
-                                    handleGitRepoChange={handleGitRepoChange}
-                                    materialOptions={sourceConfig.material}
-                                    selectedMaterial={selectedMaterial}
-                                    languageFrameworks={languageFrameworks}
-                                    selectedLanguage={selectedLanguage}
-                                    resetChanges={resetChanges}
-                                    currentMaterial={currentMaterial}
-                                    languages={languages}
-                                    selectedFramework={selectedFramework}
-                                    handleLanguageSelection={handleLanguageSelection}
-                                    handleFrameworkSelection={handleFrameworkSelection}
-                                    readOnly={configOverrideView && !allowOverride}
-                                />
+            <div
+                className={`create-dockerfile-option dc__border br-4 dc__overflow-hidden ${
+                    configOverrideView ? 'mb-12' : 'mb-16'
+                }`}
+            >
+                <CodeEditor
+                    loading={editorData?.fetching}
+                    customLoader={
+                        <div className="h-300">
+                            <Progressing pageLoader fullHeight />
+                        </div>
+                    }
+                    value={editorValue || editorData?.data}
+                    mode={MODES.DOCKERFILE}
+                    noParsing
+                    height="300px"
+                    readOnly={configOverrideView && !allowOverride}
+                    onChange={handleEditorValueChange}
+                >
+                    <CodeEditor.Header>
+                        <div className="flex dc__content-space w-100 fs-12 fw-6 cn-7">
+                            <CreateDockerFileLanguageOptions
+                                editorData={editorData}
+                                editorValue={editorValue}
+                                handleGitRepoChange={handleGitRepoChange}
+                                materialOptions={sourceConfig.material}
+                                selectedMaterial={selectedMaterial}
+                                languageFrameworks={languageFrameworks}
+                                selectedLanguage={selectedLanguage}
+                                resetChanges={resetChanges}
+                                currentMaterial={currentMaterial}
+                                languages={languages}
+                                selectedFramework={selectedFramework}
+                                handleLanguageSelection={handleLanguageSelection}
+                                handleFrameworkSelection={handleFrameworkSelection}
+                                readOnly={configOverrideView && !allowOverride}
+                            />
 
-                                {(!configOverrideView || allowOverride) && <ClipboardButton content={editorValue} />}
-                            </div>
-                        </CodeEditor.Header>
-                    </CodeEditor>
-                </CodeEditor.Container>
+                            {(!configOverrideView || allowOverride) && <ClipboardButton content={editorValue} />}
+                        </div>
+                    </CodeEditor.Header>
+                </CodeEditor>
             </div>
 
             {window._env_.ENABLE_BUILD_CONTEXT && (
