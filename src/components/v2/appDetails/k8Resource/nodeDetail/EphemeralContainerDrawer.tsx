@@ -410,6 +410,7 @@ const EphemeralContainerDrawer = ({
                     mode="yaml"
                     onChange={handleManifestAdvanceConfiguration}
                     readOnly={switchManifest === SwitchItemValues.Sample}
+                    height="100%"
                 >
                     <CodeEditor.Header>
                         <Switch value={switchManifest} name="tab" onChange={handleManifestTabChange}>
