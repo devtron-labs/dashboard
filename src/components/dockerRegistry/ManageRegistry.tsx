@@ -435,7 +435,6 @@ const ManageRegistry = ({
                                 />
                             </div>
                             <div className="w-50">
-                                <div className="mb-6">Email</div>
                                 <CustomInput
                                     label="Email"
                                     placeholder="Enter email"
@@ -446,7 +445,6 @@ const ManageRegistry = ({
                             </div>
                         </div>
                         <div className="w-50 mr-8">
-                            <div className="mb-6">Username</div>
                             <CustomInput
                                 label="Username"
                                 placeholder="Enter username"
@@ -456,7 +454,6 @@ const ManageRegistry = ({
                             />
                         </div>
                         <div className="w-50">
-                            <div className="mb-6">Password</div>
                             <CustomInput
                                 placeholder="Enter password"
                                 name="password"
