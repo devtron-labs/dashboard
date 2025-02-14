@@ -432,7 +432,10 @@ export default function NavigationRoutes() {
                 isManifestScanningEnabled,
                 isOrgLevelRBACViewEnforced,
                 viewIsPipelineRBACConfiguredNode:
-                    serverMode === SERVER_MODE.FULL && ViewIsPipelineRBACConfigured && !isOrgLevelRBACViewEnforced ? (
+                    serverMode === SERVER_MODE.FULL &&
+                    ViewIsPipelineRBACConfigured &&
+                    !isOrgLevelRBACViewEnforced &&
+                    !isSuperAdmin ? (
                         <ViewIsPipelineRBACConfigured
                             userPreferences={userPreferences}
                             userPreferencesError={userPreferencesError}
