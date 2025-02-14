@@ -13,16 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
- .sso-login__wrapper {
-    .code-editor__text {
-        resize: none;
-        line-height: 1.4;
-        border: none;
-        padding: 0 35px;
-        overflow: hidden;
-        color: var(--R500);
-        font-size: 14px;
-        font-family: Consolas, "Courier New", monospace;
-    }
+
+module.exports = {
+    editor: {
+        getModelMarkers: jest.fn().mockReturnValue([]),
+        defineTheme: jest.fn(),
+    },
+    Position: {},
 }

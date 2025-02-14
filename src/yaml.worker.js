@@ -13,16 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
- .sso-login__wrapper {
-    .code-editor__text {
-        resize: none;
-        line-height: 1.4;
-        border: none;
-        padding: 0 35px;
-        overflow: hidden;
-        color: var(--R500);
-        font-size: 14px;
-        font-family: Consolas, "Courier New", monospace;
-    }
-}
+
+// NOTE: a workaround;
+// see https://github.com/remcohaszing/monaco-yaml?tab=readme-ov-file#why-doesnt-it-work-with-vite
+import 'monaco-yaml/yaml.worker'

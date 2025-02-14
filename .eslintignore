@@ -78,6 +78,7 @@ src/components/Jobs/Service.ts
 src/components/Jobs/Utils.ts
 src/components/LogViewer/LogViewer.tsx
 src/components/ResourceBrowser/ResourceList/__tests__/Sidebar.test.tsx
+src/components/__mocks__/monaco-editor.js
 src/components/__mocks__/xterm-webfont.js
 src/components/app/LogFilter.test.ts
 src/components/app/LogFilter.ts
@@ -218,6 +219,7 @@ src/components/ciPipeline/WebhookSelectorCondition.tsx
 src/components/ciPipeline/ciPipeline.service.ts
 src/components/ciPipeline/validationRules.ts
 src/components/cluster/Cluster.tsx
+src/components/cluster/ClusterCodeEditor.tsx
 src/components/cluster/ClusterComponentModal.tsx
 src/components/cluster/ClusterForm.tsx
 src/components/cluster/ClusterInfoStepsModal.tsx

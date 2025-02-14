@@ -47,7 +47,7 @@
     }
 
     .ci-details__body {
-        flex: 1 1;
+        flex-basis: calc(100% - 280px);
         transition: flex-basis 0.3s;
         display: flex;
         flex-direction: column;

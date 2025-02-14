@@ -58,12 +58,11 @@ export const renderExternalInfo = (
     externalType: CMSecretExternalType,
     external: boolean,
     componentType: CMSecretComponentType,
-    className?: string,
 ) =>
     externalType === CMSecretExternalType.KubernetesSecret ||
     (componentType === CMSecretComponentType.ConfigMap && external) ? (
         <InfoColourBar
-            classname={`info_bar ${className || ''}`}
+            classname="info_bar"
             message={
                 <div className="flex column left">
                     <h4 className="m-0 lh-20 dc__info-title">{EXTERNAL_INFO_TEXT[componentType].title}</h4>
@@ -91,7 +90,7 @@ export const renderChartVersionBelow3090NotSupportedText = () => (
 )
 
 export const renderYamlInfoText = () => (
-    <p className="m-0 py-6 px-10 flex left dc__gap-6 fs-12 lh-20 cn-8 bg__secondary dc__border-top-n1 dc__bottom-radius-4">
+    <p className="m-0 py-6 px-10 flex left dc__gap-6 fs-12 lh-20 cn-8 bg__secondary dc__border-top-n1">
         <InfoIconN7 className="icon-dim-16 dc__no-shrink" />
         <span>
             GUI Recommended for multi-line data. Boolean and numeric values must be wrapped in double quotes Eg.

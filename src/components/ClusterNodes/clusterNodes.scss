@@ -374,6 +374,11 @@
     flex-shrink: 0;
 }
 
+.cluster-manifest-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr 30px;
+}
+
 .node-data-container {
     height: calc(100vh - 84px);
     overflow: hidden;

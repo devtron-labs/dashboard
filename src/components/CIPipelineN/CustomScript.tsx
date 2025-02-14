@@ -15,7 +15,7 @@
  */
 
 import React, { useContext, useEffect, useState } from 'react'
-import { ScriptType, CodeEditor, MODES } from '@devtron-labs/devtron-fe-common-lib'
+import { ScriptType, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
 import { TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
@@ -44,15 +44,16 @@ const CustomScript = ({ handleScriptChange }: CustomScriptType) => {
                         contentDescription={TaskFieldDescription.SCRIPT}
                     />
                 )}
-                <CodeEditor.Container>
+                <div className="script-container no-padding-script-container">
                     <CodeEditor
-                        mode={MODES.SHELL}
+                        mode="shell"
                         noParsing
                         onChange={(value) => handleScriptChange({ target: { value } })}
+                        inline
                         height={300}
                         value={editorValue}
                     />
-                </CodeEditor.Container>
+                </div>
             </div>
 
             {formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail?.script &&
