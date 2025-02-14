@@ -277,7 +277,7 @@ export const ClusterEnvironmentDrawer = ({
                                 {...register('namespace')}
                                 label="Namespace"
                                 shouldTrim={false}
-                                required={isVirtual}
+                                required={!isVirtual}
                             />
                         </div>
                         {!isVirtual && (

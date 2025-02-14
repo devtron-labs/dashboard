@@ -177,7 +177,7 @@ type PluginTextFieldFieldType =
       } & Pick<CustomInputProps, 'helperText' | 'autoFocus'>)
 
 export type CreatePluginFormFieldProps = Pick<CreatePluginFormContentProps, 'handleChange'> &
-    Pick<CustomInputProps, 'placeholder' | 'label' | 'value' | 'error' | 'required' | 'disabled'> & {
+    Pick<CustomInputProps, 'placeholder' | 'label' | 'value' | 'error' | 'required' | 'disabled' | 'fullWidth'> & {
         action: CreatePluginSingleInputActionType
     } & PluginTextFieldFieldType
 

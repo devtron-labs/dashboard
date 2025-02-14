@@ -24,6 +24,7 @@ import {
     PipelineFormType,
     SelectPicker,
     SelectPickerVariantType,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ConditionContainerType } from '../ciPipeline/types'
@@ -346,6 +347,7 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
                                         onChange={(e) => {
                                             handleConditionalValueChange(e, index)
                                         }}
+                                        size={ComponentSizeType.medium}
                                     />
                                     <Close
                                         className="icon-dim-24 pointer mt-4"

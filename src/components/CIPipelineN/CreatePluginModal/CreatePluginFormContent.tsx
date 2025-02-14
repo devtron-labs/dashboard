@@ -289,6 +289,7 @@ const CreatePluginFormContent = ({
                             }
                             placeholder="Eg. 1.0.0"
                             required
+                            fullWidth
                         />
 
                         {/* Documentation Link */}

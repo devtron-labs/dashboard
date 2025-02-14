@@ -30,6 +30,7 @@ const CreatePluginFormField = ({
     useTextArea,
     helperText,
     autoFocus,
+    ...props
 }: CreatePluginFormFieldProps) => {
     const handleInputChange = (e: SyntheticEvent) => {
         handleChange({ action, payload: (e.target as HTMLInputElement).value })
@@ -38,6 +39,7 @@ const CreatePluginFormField = ({
     if (useTextArea) {
         return (
             <Textarea
+                {...props}
                 label={label}
                 required={required}
                 name={action}
@@ -53,6 +55,7 @@ const CreatePluginFormField = ({
 
     return (
         <CustomInput
+            {...props}
             name={action}
             label={label}
             value={value}
