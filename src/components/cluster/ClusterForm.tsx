@@ -40,12 +40,13 @@ import {
     DeleteConfirmationModal,
     DC_DELETE_SUBTITLES,
     Textarea,
+    PasswordField,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import TippyHeadless from '@tippyjs/react/headless'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
 import { ReactComponent as ErrorIcon } from '@Icons/ic-warning-y6.svg'
-import { useForm, CustomPassword, importComponentFromFELibrary } from '../common'
+import { useForm, importComponentFromFELibrary } from '../common'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { saveCluster, updateCluster, deleteCluster, validateCluster, saveClusters } from './cluster.service'
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
@@ -893,12 +894,14 @@ export default function ClusterForm({
                                     />
                                 </div>
                                 <div className="w-50 ml-8">
-                                    <CustomPassword
+                                    <PasswordField
+                                        placeholder="Enter password"
                                         name="password"
                                         value={state.password.value}
                                         error={state.userName.error}
                                         onChange={handleOnChange}
                                         label="Password"
+                                        shouldShowDefaultPlaceholderOnBlur={false}
                                     />
                                 </div>
                             </div>

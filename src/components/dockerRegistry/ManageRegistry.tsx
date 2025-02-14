@@ -425,56 +425,43 @@ const ManageRegistry = ({
                     <div className="flexbox w-100 cn-7">
                         <div className="flexbox w-100 mb-16">
                             <div className="w-50 mr-8">
-                                <div className="mb-6"> Registry URL</div>
-                                <input
-                                    tabIndex={3}
+                                <CustomInput
+                                    label="Registry URL"
                                     placeholder="Enter registry URL"
-                                    className="form__input"
                                     name="server"
                                     value={customCredential?.server}
                                     onChange={onClickSpecifyImagePullSecret}
                                     autoFocus
-                                    autoComplete="off"
                                 />
                             </div>
                             <div className="w-50">
                                 <div className="mb-6">Email</div>
-                                <input
-                                    tabIndex={4}
+                                <CustomInput
+                                    label="Email"
                                     placeholder="Enter email"
-                                    className="form__input"
                                     name="email"
                                     value={customCredential?.email}
                                     onChange={onClickSpecifyImagePullSecret}
-                                    autoFocus
-                                    autoComplete="off"
                                 />
                             </div>
                         </div>
                         <div className="w-50 mr-8">
                             <div className="mb-6">Username</div>
-                            <input
-                                tabIndex={5}
+                            <CustomInput
+                                label="Username"
                                 placeholder="Enter username"
-                                className="form__input"
                                 name="username"
                                 value={customCredential?.username}
                                 onChange={onClickSpecifyImagePullSecret}
-                                autoFocus
-                                autoComplete="off"
                             />
                         </div>
                         <div className="w-50">
                             <div className="mb-6">Password</div>
-                            <input
-                                tabIndex={6}
+                            <CustomInput
                                 placeholder="Enter password"
-                                className="form__input"
                                 name="password"
                                 value={customCredential?.password}
                                 onChange={onClickSpecifyImagePullSecret}
-                                autoFocus
-                                autoComplete="off"
                             />
                         </div>
                     </div>
