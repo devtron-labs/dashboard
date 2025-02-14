@@ -67,7 +67,9 @@ const EnvironmentsListView = ({
         : { title: '', subTitle: '' }
 
     useEffect(() => {
-        const appListResult: EnvApp = appListResponse?.result || { envCount: 0, envList: [] }
+        const appListResult: EnvApp = appListResponse?.result?.envList?.length
+            ? appListResponse.result
+            : { envCount: 0, envList: [] }
         setFilteredEnvList(appListResult.envList)
         setEnvCount(appListResult.envCount)
     }, [appListResponse?.result])
