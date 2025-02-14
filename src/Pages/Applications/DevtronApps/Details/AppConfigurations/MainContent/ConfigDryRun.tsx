@@ -155,7 +155,7 @@ const ConfigDryRun = ({
                     >
                         <CodeEditor
                             value={manifestResponse?.result?.data || ''}
-                            height="fitToParent"
+                            height="100%"
                             mode={MODES.YAML}
                             readOnly
                             noParsing
