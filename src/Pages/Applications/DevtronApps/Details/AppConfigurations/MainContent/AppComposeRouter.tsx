@@ -326,7 +326,10 @@ const AppComposeRouter = () => {
                         const resourceTypePath = `/${match.params.resourceType === EnvResourceType.Manifest || match.params.resourceType === EnvResourceType.PipelineStrategy ? EnvResourceType.DeploymentTemplate : match.params.resourceType}`
                         const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
 
-                        const goBackURL = `${basePath}${envOverridePath}${resourceTypePath}${resourceNamePath}`
+                        const goBackURL =
+                            match.params.resourceType === EnvResourceType.Manifest
+                                ? `${basePath}${envOverridePath}`
+                                : `${basePath}${envOverridePath}${resourceTypePath}${resourceNamePath}`
 
                         return (
                             <DeploymentConfigCompare
