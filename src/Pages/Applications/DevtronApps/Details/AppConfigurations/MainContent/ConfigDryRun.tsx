@@ -95,7 +95,7 @@ const ConfigDryRun = ({
         return (
             <CodeEditor
                 value={editorTemplate}
-                height="fitToParent"
+                height="100%"
                 readOnly
                 mode={MODES.YAML}
                 noParsing
