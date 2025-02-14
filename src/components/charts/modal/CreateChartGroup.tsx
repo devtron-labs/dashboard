@@ -199,7 +199,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                         autoFocus
                         onChange={this.handleNameChange}
                         required
-                        error={this.state.name.error}
+                        error={this.state.name.error?.length > 0 ? this.state.name.error : undefined}
                     />
                     <Textarea
                         label="Description"
