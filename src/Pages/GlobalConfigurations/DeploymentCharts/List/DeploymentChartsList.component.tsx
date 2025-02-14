@@ -30,7 +30,7 @@ import {
 import { DOCUMENTATION } from '@Config/constants'
 import emptyCustomChart from '@Images/ic-empty-custom-charts.webp'
 import { ReactComponent as ICFolderZip } from '@Icons/ic-folder-zip.svg'
-import { ReactComponent as ICDevtron } from '@Icons/ic-devtron.svg'
+import { ReactComponent as ICDevtronApp } from '@Icons/ic-devtron-app.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 import UploadChartModal from './UploadChartModal'
 import { getChartList } from './service'
@@ -142,7 +142,7 @@ const DeploymentChartsList = () => {
                                 return (
                                     <div
                                         key={`custom-chart_${chartData.name}`}
-                                        className="chart-list-row bg__primary fw-4 cn-9 fs-13 lh-20 fw-4 dc__grid dc__gap-16 dc__align-items-center px-20 py-10"
+                                        className="chart-list-row bg__primary fw-4 cn-9 fs-13 lh-20 fw-4 dc__grid dc__gap-16 dc__align-items-center px-20 py-10 dc__hover-n50"
                                     >
                                         <div className="icon-dim-24 p-2">
                                             <ICFolderZip className="icon-dim-20 fcb-5" />
@@ -156,17 +156,17 @@ const DeploymentChartsList = () => {
                                             </span>
                                         </div>
                                         <Tooltip content={description} placement="left">
-                                            <span className="dc__ellipsis-right">{description}</span>
+                                            <span className="dc__truncate">{description}</span>
                                         </Tooltip>
                                         <div>
-                                            <div className="flexbox dc__align-items-center dc__gap-4">
+                                            <div className="flexbox dc__align-items-center dc__gap-8">
                                                 {isUserUploaded ? (
-                                                    getAlphabetIcon(uploadedBy)
+                                                    getAlphabetIcon(uploadedBy, 'icon-dim-20 m-0-imp')
                                                 ) : (
-                                                    <ICDevtron className="icon-dim-20 fcb-5 dc__no-shrink" />
+                                                    <ICDevtronApp className="icon-dim-20 fcb-5 dc__no-shrink" />
                                                 )}
                                                 <Tooltip content={uploadedBy} placement="left">
-                                                    <span className="dc__ellipsis-right">{uploadedBy}</span>
+                                                    <span className="dc__truncate">{uploadedBy}</span>
                                                 </Tooltip>
                                             </div>
                                         </div>
