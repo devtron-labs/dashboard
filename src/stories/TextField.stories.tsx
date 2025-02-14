@@ -4,8 +4,28 @@ import { action } from '@storybook/addon-actions'
 import { ComponentSizeType, CustomInput, CustomInputProps } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICKeyBulb } from '@Icons/ic-key-bulb.svg'
 
+const TEXT_FIELD_LAYOUT_MAP: Record<CustomInputProps['layout'], null> = {
+    row: null,
+    column: null,
+}
+
+const TEXT_FIELD_SIZE_MAP: Record<CustomInputProps['size'], null> = {
+    medium: null,
+    large: null,
+}
+
 const meta = {
     component: CustomInput,
+    argTypes: {
+        layout: {
+            options: Object.keys(TEXT_FIELD_LAYOUT_MAP),
+            control: { type: 'radio' },
+        },
+        size: {
+            options: Object.keys(TEXT_FIELD_SIZE_MAP),
+            control: { type: 'radio' },
+        },
+    },
 } satisfies Meta<CustomInputProps>
 
 export default meta
@@ -32,6 +52,8 @@ const TextFieldTemplate: Story = {
         value: '',
         placeholder: 'Enter value',
         onChange: null,
+        layout: 'column',
+        size: ComponentSizeType.large,
     },
 }
 

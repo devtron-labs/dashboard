@@ -20,6 +20,7 @@ import { action } from '@storybook/addon-actions'
 import {
     Button,
     CustomInput,
+    PasswordField,
     useForm,
     UseFormSubmitHandler,
     UseFormValidations,
@@ -74,14 +75,14 @@ const FormComponent = ({ validationMode }: Pick<Parameters<typeof useForm>[0], '
                 />
                 {errors.email && <p className="m-0 cr-5">{errors.email}</p>}
             </div>
-            <CustomInput
+            <PasswordField
                 placeholder="Enter Password"
                 label="Password"
                 value={data.password}
                 {...register('password')}
-                type="password"
                 shouldTrim={false}
                 error={errors.password}
+                shouldShowDefaultPlaceholderOnBlur={false}
             />
             <Button dataTestId="useForm-story-submit-btn" buttonProps={{ type: 'submit' }} text="Submit" />
             <div style={{ marginTop: '20px' }}>
