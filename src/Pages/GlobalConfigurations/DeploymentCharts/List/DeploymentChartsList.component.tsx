@@ -26,7 +26,9 @@ import {
     getAlphabetIcon,
     useUrlFilters,
     GenericFilterEmptyState,
+    highlightSearchText,
 } from '@devtron-labs/devtron-fe-common-lib'
+import DOMPurify from 'dompurify'
 import { DOCUMENTATION } from '@Config/constants'
 import emptyCustomChart from '@Images/ic-empty-custom-charts.webp'
 import { ReactComponent as ICFolderZip } from '@Icons/ic-folder-zip.svg'
@@ -147,7 +149,19 @@ const DeploymentChartsList = () => {
                                         <div className="icon-dim-24 p-2">
                                             <ICFolderZip className="icon-dim-20 fcb-5" />
                                         </div>
-                                        <span className="dc__ellipsis-right">{chartData.name}</span>
+                                        <span
+                                            className="dc__truncate"
+                                            // eslint-disable-next-line react/no-danger
+                                            dangerouslySetInnerHTML={{
+                                                __html: DOMPurify.sanitize(
+                                                    highlightSearchText({
+                                                        searchText: searchKey,
+                                                        text: chartData.name,
+                                                        highlightClasses: 'bcy-2',
+                                                    }),
+                                                ),
+                                            }}
+                                        />
                                         <div className="flexbox dc__gap-8">
                                             <span>{version}</span>
                                             <span className="cn-6">
