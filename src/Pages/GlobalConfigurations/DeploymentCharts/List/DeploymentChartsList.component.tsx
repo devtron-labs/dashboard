@@ -150,12 +150,12 @@ const DeploymentChartsList = () => {
                                         <span className="dc__ellipsis-right">{chartData.name}</span>
                                         <div className="flexbox dc__gap-8">
                                             <span>{version}</span>
-                                            <span className="cn-5">
+                                            <span className="cn-6">
                                                 {!!(chartData.versions.length - 1) &&
                                                     `+${chartData.versions.length - 1} more`}
                                             </span>
                                         </div>
-                                        <Tooltip content={description} placement="left">
+                                        <Tooltip content={description} placement="top">
                                             <span className="dc__truncate">{description}</span>
                                         </Tooltip>
                                         <div>
