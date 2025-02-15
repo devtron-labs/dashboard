@@ -78,7 +78,6 @@ export const SourceInfo = ({
     setErrorsList,
     filteredEnvIds,
     deploymentUserActionState,
-    handleOpenConfigDriftModal,
     setHibernationPatchChartName,
 }: SourceInfoType) => {
     const [hibernationPatchResponseLoading, setHibernationPatchResponseLoading] = useState<boolean>(false)
@@ -183,7 +182,8 @@ export const SourceInfo = ({
                         <div className="pl-8">
                             <ConfigSyncStatusButton
                                 areConfigurationsDrifted={appDetails.resourceTree.hasDrift}
-                                handleOpenModal={handleOpenConfigDriftModal}
+                                appId={appDetails.appId}
+                                envId={envId}
                             />
                         </div>
                     )}
