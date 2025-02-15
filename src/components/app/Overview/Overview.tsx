@@ -31,6 +31,8 @@ import {
     EditableTextArea,
     ToastManager,
     ToastVariantType,
+    WorkflowStatusEnum,
+    getWorkflowNodeStatusTitle,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { getGitProviderIcon, handleUTCTime, importComponentFromFELibrary } from '../../common'
@@ -376,11 +378,13 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
         switch (status) {
             case 'Succeeded':
                 return <SucceededIcon className="dc__app-summary__icon icon-dim-16 mr-6" />
+            case WorkflowStatusEnum.TIMED_OUT:
             case 'Failed':
             case 'Error':
                 return <FailedIcon className="dc__app-summary__icon icon-dim-16 mr-6" />
             case 'InProgress':
                 return <InProgressIcon className="dc__app-summary__icon icon-dim-16 mr-6" />
+            case WorkflowStatusEnum.WAITING_TO_START:
             case 'Starting':
                 return <div className="dc__app-summary__icon icon-dim-16 mr-6 progressing" />
             case 'Running':
@@ -435,11 +439,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                                 className="mr-16 w-150 h-20 m-tb-8 fs-13 cn-9 flex dc__content-start"
                             >
                                 {getStatusIcon(jobPipeline.status)}
-                                {jobPipeline.status === 'CANCELLED' ? (
-                                    <div>Aborted</div>
-                                ) : (
-                                    <div>{jobPipeline.status}</div>
-                                )}
+                                {getWorkflowNodeStatusTitle(jobPipeline.status)}
                             </div>
                             <div
                                 data-testid={`${jobPipeline.environmentName}-${index}`}
