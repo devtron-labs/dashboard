@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { AppMetricsTabType, ChartTypes, StatusTypes } from './appDetails.type'
+import { SyntheticEvent } from 'react'
+import { AppMetricsTabType, ChartTypes, HibernationModalTypes, StatusTypes } from './appDetails.type'
 import { AppInfo } from './utils'
 
 export interface GetIFrameSrcParamsType {
@@ -26,4 +27,14 @@ export interface GetIFrameSrcParamsType {
     statusCode?: StatusTypes
     latency?: number
     grafanaTheme: 'light' | 'dark'
+}
+
+export interface HibernationModalProps {
+    appName: string
+    envName: string
+    hibernating: boolean
+    chartName: string
+    handleHibernate: () => Promise<void>
+    hibernateConfirmationModal: HibernationModalTypes
+    handleHibernateConfirmationModalClose: (e?: SyntheticEvent) => void
 }

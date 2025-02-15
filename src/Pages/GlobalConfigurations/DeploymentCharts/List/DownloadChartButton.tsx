@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
-import { useState, useRef } from 'react'
+import { useRef } from 'react'
 import Tippy, { TippyProps } from '@tippyjs/react'
 import {
-    Progressing,
-    showError,
-    Host,
-    Tooltip,
-    ToastManager,
-    ToastVariantType,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    useDownload,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICDownload } from '@Icons/ic-arrow-line-down.svg'
 import { Routes } from '@Config/constants'
 import { DownloadChartButtonProps } from '../types'
 
 const DownloadChartButton = ({ name, versions }: DownloadChartButtonProps) => {
-    // TODO: replace with useDownload
-    const [downloading, setDownloading] = useState(false)
+    const { isDownloading, handleDownload } = useDownload()
     const tippyRef = useRef<Parameters<TippyProps['onMount']>[0]>(null)
 
     const handleCloseTippy = () => {
@@ -45,22 +43,13 @@ const DownloadChartButton = ({ name, versions }: DownloadChartButtonProps) => {
         const chartRefId = e.currentTarget.dataset.versionid
         const chartVersion = e.currentTarget.dataset.version
         const chartName = e.currentTarget.dataset.name
-        try {
-            setDownloading(true)
-            const a = document.createElement('a')
-            a.href = `${Host}/${Routes.DOWNLOAD_CUSTOM_CHART}/${chartRefId}`
-            a.download = `${chartName}_${chartVersion}.tgz`
-            a.click()
-            ToastManager.showToast({
-                variant: ToastVariantType.success,
-                description: 'Chart Downloaded Successfully',
-            })
-            handleCloseTippy()
-        } catch (error) {
-            showError(error)
-        } finally {
-            setDownloading(false)
-        }
+        await handleDownload({
+            downloadUrl: `${Routes.DOWNLOAD_CUSTOM_CHART}/${chartRefId}`,
+            fileName: `${chartName}_${chartVersion}.tgz`,
+            showSuccessfulToast: true,
+            downloadSuccessToastContent: 'Chart Downloaded Successfully',
+        })
+        handleCloseTippy()
     }
 
     return (
@@ -100,16 +89,16 @@ const DownloadChartButton = ({ name, versions }: DownloadChartButtonProps) => {
             onClickOutside={handleCloseTippy}
             animation="fade"
         >
-            <div className="flex pointer p-4 dc__hover-n50 br-4">
-                {downloading ? (
-                    <Progressing pageLoader size={16} />
-                ) : (
-                    <Tooltip alwaysShowTippyOnHover content="Download Chart">
-                        <span>
-                            <ICDownload className="icon-dim-16 scn-6 dc__no-shrink" data-testid={`download-${name}`} />
-                        </span>
-                    </Tooltip>
-                )}
+            <div className="icon-dim-24">
+                <Button
+                    dataTestId={`download-${name}`}
+                    icon={<ICDownload />}
+                    ariaLabel="Download Chart"
+                    size={ComponentSizeType.xs}
+                    variant={ButtonVariantType.borderLess}
+                    isLoading={isDownloading}
+                    style={ButtonStyleType.neutral}
+                />
             </div>
         </Tippy>
     )

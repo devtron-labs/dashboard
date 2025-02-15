@@ -14,22 +14,10 @@
  * limitations under the License.
  */
 
-.chart-list {
-    margin: 20px 95px;
-    .chart-list-row {
-        display: grid;
-        gap: 16px;
-        grid-template-columns: 250px 150px 1fr auto;
-        align-items: center;
-        .devtron-tag {
-            white-space: nowrap;
-        }
-    }
-
-    .custom-chart-info-bar {
-        border-radius: 8px 8px 0px 0px;
-    }
+.chart-list-row {
+        grid-template-columns: 24px 250px 150px 1fr 200px 52px;
 }
+
 .upload-modal {
     width: 600px;
     position: relative;
