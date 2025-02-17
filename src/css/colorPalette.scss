@@ -95,6 +95,7 @@
     --bg-toast: var(--N800);
     --bg-sidebar: #0066cc;
     --bg-shimmer-loader: linear-gradient(90deg, var(--N200) 0%, var(--N50) 50%, var(--N200) 80%);
+    --bg-hover: #0000000f;
 
     --backdrop-bg: #000000bf;
 
@@ -173,12 +174,12 @@
     // Ensure to update in index.css at the root level as well
     --bg-tertiary: #15161F;
 
-    --bg-overlay-primary: var(--bg-primary);
-    --bg-overlay-secondary: var(--bg-secondary);
-    --bg-overlay-tertiary: var(--bg-tertiary);
+    --bg-overlay-primary: #36373E;
+    --bg-overlay-secondary: #36373E;
+    --bg-overlay-tertiary: #36373E;
 
-    --bg-menu-primary: #31323a;
-    --bg-menu-secondary: #31323a;
+    --bg-menu-primary: #31323A;
+    --bg-menu-secondary: #282931;
     --bg-menu-tertiary: #31323a;
 
     --bg-modal-primary: var(--bg-primary);
@@ -189,6 +190,7 @@
     --bg-toast: var(--N300);
     --bg-sidebar: #2E3142;
     --bg-shimmer-loader: linear-gradient(90deg, var(--N50) 0%, var(--N200) 50%, var(--N50) 80%);
+    --bg-hover: rgba(255, 255, 255, 0.07);
 
     --backdrop-bg: var(--black-60);
 

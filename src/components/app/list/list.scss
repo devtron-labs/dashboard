@@ -161,7 +161,6 @@
     display: flex;
     align-items: center;
     height: 100%;
-    background-color: inherit;
 }
 
 .app-list__cell-header {
@@ -335,7 +334,7 @@
 .app-list__row:hover {
     text-decoration: none;
     color: var(--N900);
-    background-color: var(--bg-secondary);
+    background-color: var(--bg-hover);
 }
 
 .app-list__row:hover .cell__link {
