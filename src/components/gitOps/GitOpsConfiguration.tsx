@@ -32,6 +32,7 @@ import {
     ToastManager,
     CustomInputProps,
     InfoBlock,
+    PasswordField,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     TLSConnectionFormActionType,
@@ -39,7 +40,6 @@ import {
     getCertificateAndKeyDependencyError,
     getIsTLSDataPresent,
     getTLSConnectionPayloadValues,
-    handleOnFocus,
     importComponentFromFELibrary,
     parsePassword,
     TLSConnectionForm,
@@ -368,17 +368,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             isFormEdited: false,
             isUrlValidationError: isURLValidationOptional ? false : this.state.isUrlValidationError,
         })
-    }
-
-    handleOnBlur = (event): void => {
-        if (!event.target.value && this.state.form.id) {
-            this.setState({
-                form: {
-                    ...this.state.form,
-                    token: DEFAULT_SECRET_PLACEHOLDER,
-                },
-            })
-        }
     }
 
     requiredFieldCheck(formValueType: string): string {
@@ -1286,14 +1275,13 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 />
                             </div>
                             <div>
-                                <CustomInput
+                                <PasswordField
+                                    shouldShowDefaultPlaceholderOnBlur={!!this.state.form.id}
                                     name="token"
                                     placeholder="Enter access token"
                                     value={this.state.form.token}
                                     onChange={(event) => this.handleChange(event, 'token')}
                                     error={this.state.isError.token}
-                                    onFocus={handleOnFocus}
-                                    onBlur={this.handleOnBlur}
                                     {...getInputLabelProps(
                                         this.state.providerTab === GitProvider.AZURE_DEVOPS
                                             ? 'Azure DevOps Access Token '

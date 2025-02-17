@@ -39,6 +39,7 @@ import {
     ButtonVariantType,
     DeleteConfirmationModal,
     Textarea,
+    PasswordField,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -890,7 +891,7 @@ const GitForm = ({
             )}
             {state.auth.error && <div className="form__error">{state.auth.error}</div>}
             {state.auth.value === 'USERNAME_PASSWORD' && (
-                <div className="form__row form__row--two-third">
+                <div className="mb-16 form__row--two-third">
                     <CustomInput
                         placeholder="Enter Username"
                         value={customState.username.value}
@@ -900,17 +901,16 @@ const GitForm = ({
                         label="Username"
                         required
                     />
-                    <CustomInput
+                    <PasswordField
                         placeholder="Enter Password/Auth token"
                         value={customState.password.value}
                         onChange={customHandleChange}
-                        onFocus={handleOnFocus}
                         name="password"
                         error={customState.password.error}
                         label="Password/Auth token"
                         required
-                        onBlur={id && handleOnBlur}
                         helperText="If using Github, use token instead of password."
+                        shouldShowDefaultPlaceholderOnBlur={!!id}
                     />
                 </div>
             )}

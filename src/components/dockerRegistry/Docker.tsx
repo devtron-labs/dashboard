@@ -49,6 +49,7 @@ import {
     DeleteConfirmationModal,
     Textarea,
     ComponentSizeType,
+    PasswordField,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
@@ -1588,13 +1589,12 @@ const DockerForm = ({
                                     />
                                 </div>
                                 <div className="form__row">
-                                    <CustomInput
+                                    <PasswordField
                                         name="awsSecretAccessKey"
                                         required
                                         value={customState.awsSecretAccessKey.value}
                                         error={customState.awsSecretAccessKey.error}
-                                        onBlur={id && handleOnBlur}
-                                        onFocus={handleOnFocus}
+                                        shouldShowDefaultPlaceholderOnBlur={!!id}
                                         onChange={customHandleChange}
                                         label={selectedDockerRegistryType.password.label}
                                         placeholder={selectedDockerRegistryType.password.placeholder}
@@ -1629,14 +1629,13 @@ const DockerForm = ({
                                 selectedDockerRegistryType.value === RegistryType.ACR ||
                                 selectedDockerRegistryType.value === RegistryType.QUAY ||
                                 selectedDockerRegistryType.value === RegistryType.OTHER) && (
-                                <CustomInput
+                                <PasswordField
+                                    shouldShowDefaultPlaceholderOnBlur={!!id}
                                     name="password"
                                     required
                                     value={customState.password.value}
                                     error={customState.password.error}
                                     onChange={customHandleChange}
-                                    onBlur={id && handleOnBlur}
-                                    onFocus={handleOnFocus}
                                     label={selectedDockerRegistryType.password.label}
                                     placeholder={
                                         selectedDockerRegistryType.password.placeholder
@@ -1695,14 +1694,13 @@ const DockerForm = ({
                                 selectedDockerRegistryType.value === RegistryType.ACR ||
                                 selectedDockerRegistryType.value === RegistryType.QUAY ||
                                 selectedDockerRegistryType.value === RegistryType.OTHER) && (
-                                <CustomInput
+                                <PasswordField
+                                    shouldShowDefaultPlaceholderOnBlur={!!id}
                                     name="password"
                                     required
                                     value={customState.password.value}
                                     error={customState.password.error}
                                     onChange={customHandleChange}
-                                    onBlur={id && handleOnBlur}
-                                    onFocus={handleOnFocus}
                                     label={selectedDockerRegistryType.password.label}
                                     placeholder={
                                         selectedDockerRegistryType.password.placeholder
