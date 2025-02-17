@@ -497,7 +497,7 @@ const AppPermissions = () => {
                 ?.map(async (directRoleFilter: APIRoleFilter) => {
                     const projectId =
                         directRoleFilter.team !== HELM_APP_UNASSIGNED_PROJECT &&
-                        getProjectIdForAccessType(directRoleFilter.accessType, directRoleFilter.team)
+                        getProjectIdForAccessType(directRoleFilter.accessType, directRoleFilter.team)?.id
 
                     // Fallback for access type
                     if (!directRoleFilter.accessType && directRoleFilter.entity !== EntityTypes.JOB) {

@@ -32,22 +32,23 @@ const EnvironmentSelector = ({
     const isAccessTypeHelm = permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
 
     const options = useMemo(() => {
-        const environments = getEnvironmentOptions(permission.entity, permission.accessType)
+        if (isAccessTypeHelm) {
+            return environmentClusterOptions.map((groupOption) => ({
+                label: groupOption.label,
+                options: groupOption.options.map((option) => ({
+                    label: option.label,
+                    value: option.value,
+                    description:
+                        option.clusterName +
+                        (option.clusterName && option.namespace ? '/' : '') +
+                        (option.namespace || ''),
+                    clusterName: option.clusterName,
+                })),
+            }))
+        }
 
-        return isAccessTypeHelm
-            ? environmentClusterOptions.map((groupOption) => ({
-                  label: groupOption.label,
-                  options: groupOption.options.map((option) => ({
-                      label: option.label,
-                      value: option.value,
-                      description:
-                          option.clusterName +
-                          (option.clusterName && option.namespace ? '/' : '') +
-                          (option.namespace || ''),
-                      clusterName: option.clusterName,
-                  })),
-              }))
-            : [ALL_ENVIRONMENTS_OPTION, ...environments]
+        const environments = getEnvironmentOptions(permission.entity, permission.accessType)
+        return [ALL_ENVIRONMENTS_OPTION, ...environments]
     }, [isAccessTypeHelm, environmentClusterOptions])
 
     return (
