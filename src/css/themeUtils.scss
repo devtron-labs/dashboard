@@ -28,15 +28,45 @@
     }
 
     &__overlay {
-        background: var(--bg-overlay);
+        &--primary {
+            background: var(--bg-overlay-primary);
+        }
+
+        &--secondary {
+            background: var(--bg-overlay-secondary);
+        }
+
+        &--tertiary {
+            background: var(--bg-overlay-tertiary);
+        }
     }
 
     &__menu {
-        background: var(--bg-menu);
+        &__primary {
+            background: var(--bg-menu-primary);
+        }
+
+        &__secondary {
+            background: var(--bg-menu-secondary);
+        }
+
+        &__tertiary {
+            background: var(--bg-menu-tertiary);
+        }
     }
 
     &__modal {
-        background: var(--bg-modal);
+        &--primary {
+            background: var(--bg-modal-primary);
+        }
+
+        &--secondary {
+            background: var(--bg-modal-secondary);
+        }
+
+        &--tertiary {
+            background: var(--bg-modal-tertiary);
+        }
     }
 
     &__white {

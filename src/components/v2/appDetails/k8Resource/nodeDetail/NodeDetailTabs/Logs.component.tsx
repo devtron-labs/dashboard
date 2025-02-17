@@ -556,7 +556,7 @@ const LogsComponent = ({
                                                     menu: (base) => ({
                                                         ...base,
                                                         zIndex: 9999,
-                                                        backgroundColor: 'var(--bg-menu)',
+                                                        backgroundColor: 'var(--bg-menu-primary)',
                                                         textAlign: 'left',
                                                     }),
                                                     control: (base, state) => ({
@@ -639,7 +639,7 @@ const LogsComponent = ({
                                                 zIndex: 9999,
                                                 textAlign: 'left',
                                                 width: '150px',
-                                                backgroundColor: 'var(--bg-menu)',
+                                                backgroundColor: 'var(--bg-menu-primary)',
                                             }),
                                             menuList: (base) => ({
                                                 ...base,

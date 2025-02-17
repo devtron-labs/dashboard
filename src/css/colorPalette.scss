@@ -78,9 +78,18 @@
     --bg-primary: var(--N0);
     --bg-secondary: var(--N50);
     --bg-tertiary: #f2f4f7;
-    --bg-overlay: var(--N0);
-    --bg-menu: var(--N0);
-    --bg-modal: var(--N0);
+
+    --bg-overlay-primary: var(--bg-primary);
+    --bg-overlay-secondary: var(--bg-secondary);
+    --bg-overlay-tertiary: var(--bg-tertiary);
+
+    --bg-menu-primary: var(--bg-primary);
+    --bg-menu-secondary: var(--bg-secondary);
+    --bg-menu-tertiary: var(--bg-tertiary);
+
+    --bg-modal-primary: var(--bg-primary);
+    --bg-modal-secondary: var(--bg-secondary);
+    --bg-modal-tertiary: var(--bg-tertiary);
 
     --bg-tooltip-black: var(--N900);
     --bg-toast: var(--N800);
@@ -159,20 +168,29 @@
     --bg-bulk-selection-widget: #141c26b8;
 
     // Color Tokens
-    --bg-primary: #1E1F28;
-    --bg-secondary: #1A1B23;
+    --bg-primary: #282931;
+    --bg-secondary: #1E1F28;
     // Ensure to update in index.css at the root level as well
     --bg-tertiary: #15161F;
-    --bg-overlay: #31323a;
-    --bg-menu: #31323a;
-    --bg-modal: #31323a;
+
+    --bg-overlay-primary: var(--bg-primary);
+    --bg-overlay-secondary: var(--bg-secondary);
+    --bg-overlay-tertiary: var(--bg-tertiary);
+
+    --bg-menu-primary: #31323a;
+    --bg-menu-secondary: #31323a;
+    --bg-menu-tertiary: #31323a;
+
+    --bg-modal-primary: var(--bg-primary);
+    --bg-modal-secondary: var(--bg-secondary);
+    --bg-modal-tertiary: var(--bg-tertiary);
 
     --bg-tooltip-black: var(--N200);
     --bg-toast: var(--N300);
     --bg-sidebar: #2E3142;
     --bg-shimmer-loader: linear-gradient(90deg, var(--N50) 0%, var(--N200) 50%, var(--N50) 80%);
 
-    --backdrop-bg: var(--white-20);
+    --backdrop-bg: var(--black-60);
 
     --border-primary: #FFFFFF33;
     --border-secondary: #FFFFFF1A;

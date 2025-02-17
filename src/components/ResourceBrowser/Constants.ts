@@ -26,7 +26,7 @@ export const FILTER_SELECT_COMMON_STYLES = {
         ...base,
         zIndex: 5,
         textAlign: 'left',
-        backgroundColor: 'var(--bg-menu)',
+        backgroundColor: 'var(--bg-menu-primary)',
         border: '1px solid var(--N200)',
     }),
     control: (base, state) => ({
