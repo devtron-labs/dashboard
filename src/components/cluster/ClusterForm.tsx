@@ -110,12 +110,12 @@ const PrometheusRequiredFieldInfo = () => {
 }
 
 export default function ClusterForm({
-    id,
+    id = null,
     cluster_name,
     server_url,
     active,
     config,
-    toggleEditMode,
+    toggleEditMode = noop,
     reload,
     prometheus_url,
     prometheusAuth,
@@ -130,7 +130,7 @@ export default function ClusterForm({
     isTlsConnection,
     toggleCheckTlsConnection,
     setTlsConnectionFalse,
-    handleCloseCreateClusterForm,
+    handleCloseCreateClusterForm = noop,
     toggleKubeConfigFile,
     isKubeConfigFile,
     isClusterDetails,
