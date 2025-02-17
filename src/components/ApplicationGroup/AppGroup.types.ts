@@ -35,7 +35,11 @@ import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
 import { MultiValue } from 'react-select'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
 import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
-import { AppConfigState, EnvConfigurationState } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
+import {
+    AppConfigState,
+    EnvConfigurationsNavProps,
+    EnvConfigurationState,
+} from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 import { WebhookPayloadType } from '@Components/app/details/triggerView/types'
 import { TIME_STAMP_ORDER } from '@Components/app/details/triggerView/Constants'
 
@@ -253,7 +257,7 @@ export interface EnvSelectorType {
 export interface ApplicationRouteType {
     envAppList: ConfigAppList[]
     envConfig: EnvConfigurationState
-    fetchEnvConfig: () => void
+    fetchEnvConfig: EnvConfigurationsNavProps['fetchEnvConfig']
     appIdToAppApprovalConfigMap: AppConfigState['envIdToEnvApprovalConfigurationMap']
 }
 

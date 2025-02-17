@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { DOCUMENTATION_HOME_PAGE, DOCUMENTATION_VERSION, SelectPickerOptionType, ToastManager, ROUTES as COMMON_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DOCUMENTATION_HOME_PAGE,
+    DOCUMENTATION_VERSION,
+    SelectPickerOptionType,
+    ToastManager,
+    ROUTES as COMMON_ROUTES,
+    EnvResourceType,
+} from '@devtron-labs/devtron-fe-common-lib'
 export const DEFAULT_STATUS = 'checking'
 export const DEFAULT_STATUS_TEXT = 'Checking Status'
 export const DEFAULTK8SVERSION = 'v1.16.0'
@@ -254,7 +261,7 @@ export const Routes = {
     USER: 'user',
     ENV_CONFIG: 'config/autocomplete',
     SECURITY_SCAN_CVE_EXPOSURE: 'security/scan/cve/exposure',
-    CONFIG_MANIFEST: 'config/manifest'
+    CONFIG_MANIFEST: 'config/manifest',
 }
 
 export enum ViewType {
@@ -914,7 +921,8 @@ export enum DEFAULT_CONTAINER_NAME {
     DEVTRON_DEBUG_TERMINAL = 'devtron-debug-terminal',
 }
 
-export const UPDATE_AVAILABLE_TOAST_PROGRESS_BG: Parameters<typeof ToastManager.showToast>[0]['progressBarBg'] = 'linear-gradient(90deg, #3A1C71 0%, #D76D77 49.95%, #FFAF7B 100%)'
+export const UPDATE_AVAILABLE_TOAST_PROGRESS_BG: Parameters<typeof ToastManager.showToast>[0]['progressBarBg'] =
+    'linear-gradient(90deg, #3A1C71 0%, #D76D77 49.95%, #FFAF7B 100%)'
 
 export const EDITOR_VIEW = {
     UNDEFINED: 'UNDEFINED',
@@ -923,3 +931,5 @@ export const EDITOR_VIEW = {
 }
 
 export const DEVTRON_IFRAME_PRIMARY: string = 'devtronIframePrimary'
+
+export const DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE = `:resourceType(${Object.values(EnvResourceType).join('|')})`
