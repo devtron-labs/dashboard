@@ -16,7 +16,12 @@
 
 import { Component } from 'react'
 import { Link } from 'react-router-dom'
-import { DeploymentAppTypes, Icon, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DeploymentAppTypes,
+    stopPropagation,
+    getWorkflowNodeStatusTitle,
+    Icon,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerPrePostCDNodeProps, TriggerPrePostCDNodeState } from '../../types'
 import { TriggerStatus } from '../../../../config'
 import { BUILD_STATUS, URLS, DEFAULT_STATUS } from '../../../../../../config'
@@ -63,7 +68,7 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
             return (
                 <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
                     <span data-testid={`${this.props.title}-trigger-status-${this.props.index}`}>
-                        {this.props.status}
+                        {getWorkflowNodeStatusTitle(this.props.status)}
                     </span>
                     <>
                         {this.props.status && <span className="mr-5 ml-5">/</span>}

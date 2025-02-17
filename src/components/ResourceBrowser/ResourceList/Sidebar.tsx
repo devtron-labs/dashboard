@@ -169,7 +169,7 @@ const Sidebar = ({
             /* NOTE: if we push here the history will be lost */
             !selectedResource,
         )
-    }, [nodeType, k8sObjectOptionsList])
+    }, [nodeType, k8sObjectOptionsList, isOpen])
 
     const selectedChildRef: React.Ref<HTMLButtonElement> = (node) => {
         /**

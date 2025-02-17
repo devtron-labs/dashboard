@@ -22,13 +22,15 @@ import {
     showError,
     Progressing,
     ConfirmationDialog,
-    ForceDeleteDialog,
     PopupMenu,
     ResponseType,
     DeploymentAppTypes,
     AppStatus,
     ToastManager,
     ToastVariantType,
+    ForceDeleteConfirmationModal,
+    ConfirmationModal,
+    ConfirmationModalVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Td } from '../../common'
 import { Routes, URLS, ViewType, SERVER_MODE, DELETE_ACTION } from '../../../config'
@@ -36,9 +38,9 @@ import { deleteInstalledChart } from '../charts.service'
 import AppNotDeployedIcon from '../../../assets/img/app-not-configured.png'
 import dots from '../../../assets/icons/appstatus/ic-menu-dots.svg'
 import trash from '../../../assets/icons/ic-delete.svg'
-import deleteIcon from '../../../assets/img/warning-medium.svg'
 import { getAppId } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
-import ClusterNotReachableDailog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
+import ClusterNotReachableDialog from '../../common/ClusterNotReachableDialog/ClusterNotReachableDialog'
+import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo/ApplicationDeletionInfo'
 
 export const ChartDeploymentList = ({ chartId }) => {
     const [installs, setInstalls] = React.useState([])
@@ -132,7 +134,7 @@ export const DeploymentRow = ({
     fetchDeployments,
 }) => {
     const link = _buildAppDetailUrl()
-    const [confirmation, toggleConfirmation] = useState(false)
+    const [confirmation, setConfirmation] = useState(false)
     const [deleting, setDeleting] = useState(false)
     const [showForceDeleteDialog, setForceDeleteDialog] = useState(false)
     const [forceDeleteDialogTitle, setForceDeleteDialogTitle] = useState('')
@@ -156,6 +158,8 @@ export const DeploymentRow = ({
         return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${installedAppId}/env/${environmentId}`
     }
 
+    const onCloseConfirmationModal = () => setConfirmation(false)
+
     async function handleDelete(deleteAction: DELETE_ACTION) {
         setDeleting(true)
         try {
@@ -169,7 +173,7 @@ export const DeploymentRow = ({
                     variant: ToastVariantType.success,
                     description: 'Successfully deleted',
                 })
-                toggleConfirmation(false)
+                setConfirmation(false)
                 showNonCascadeDeleteDialog(false)
                 setForceDeleteDialog(false)
                 setView(ViewType.LOADING)
@@ -180,12 +184,12 @@ export const DeploymentRow = ({
                 deploymentAppType === DeploymentAppTypes.GITOPS
             ) {
                 setClusterName(response.result.deleteResponse?.clusterName)
-                toggleConfirmation(false)
+                setConfirmation(false)
                 showNonCascadeDeleteDialog(true)
             }
         } catch (err: any) {
             if (deleteAction !== DELETE_ACTION.FORCE_DELETE && err.code != 403) {
-                toggleConfirmation(false)
+                setConfirmation(false)
                 showNonCascadeDeleteDialog(false)
                 setForceDeleteDialog(true)
                 setForceDeleteDialogData(err)
@@ -214,11 +218,9 @@ export const DeploymentRow = ({
         handleDelete(DELETE_ACTION.DELETE)
     }
 
-    const renderChartStatus = (status: string) => {
-        if (status === 'Not Found') {
-            return 'NOT AVAILABLE'
-        }
-        return status.toUpperCase()
+    const closeForceDeleteModal = () => {
+        setConfirmation(false)
+        setForceDeleteDialog(false)
     }
 
     return (
@@ -245,7 +247,7 @@ export const DeploymentRow = ({
                             <img src={dots} alt="" />
                         </PopupMenu.Button>
                         <PopupMenu.Body rootClassName="deployment-table-row__delete">
-                            <div className="flex left" onClick={(e) => toggleConfirmation(true)}>
+                            <div className="flex left" onClick={(e) => setConfirmation(true)}>
                                 <img src={trash} alt="delete" />
                                 Delete
                             </div>
@@ -253,43 +255,39 @@ export const DeploymentRow = ({
                     </PopupMenu>
                 </Td>
             </tr>
-            {confirmation && (
-                <ConfirmationDialog>
-                    <ConfirmationDialog.Icon src={deleteIcon} />
-                    <ConfirmationDialog.Body
-                        title={`Delete app ‘${appName}’`}
-                        subtitle="This will delete all resources associated with this application."
-                    >
-                        <p className="mt-20">Deleted applications cannot be restored.</p>
-                    </ConfirmationDialog.Body>
-                    <ConfirmationDialog.ButtonGroup>
-                        <button className="cta cancel" type="button" onClick={(e) => toggleConfirmation(false)}>
-                            Cancel
-                        </button>
-                        <button className="cta delete" type="button" onClick={handleCascadeDelete} disabled={deleting}>
-                            {deleting ? <Progressing /> : 'Delete'}
-                        </button>
-                    </ConfirmationDialog.ButtonGroup>
-                </ConfirmationDialog>
-            )}
-            {showForceDeleteDialog && (
-                <ForceDeleteDialog
-                    onClickDelete={handleForceDelete}
-                    closeDeleteModal={() => {
-                        toggleConfirmation(false)
-                        setForceDeleteDialog(false)
-                    }}
-                    forceDeleteDialogTitle={forceDeleteDialogTitle}
-                    forceDeleteDialogMessage={forceDeleteDialogMessage}
-                />
-            )}
-            {nonCascadeDeleteDialog && (
-                <ClusterNotReachableDailog
-                    clusterName={clusterName}
-                    onClickCancel={onClickHideNonCascadeDeletePopup}
-                    onClickDelete={onClickNonCascadeDelete}
-                />
-            )}
+            <ConfirmationModal
+                variant={ConfirmationModalVariantType.delete}
+                title={`Delete app ‘${appName}’`}
+                subtitle={<ApplicationDeletionInfo />}
+                showConfirmationModal={confirmation}
+                buttonConfig={{
+                    secondaryButtonConfig: {
+                        onClick: onCloseConfirmationModal,
+                        text: 'Cancel',
+                    },
+                    primaryButtonConfig: {
+                        isLoading: deleting,
+                        onClick: handleCascadeDelete,
+                        text: 'Delete',
+                    },
+                }}
+                handleClose={onCloseConfirmationModal}
+            />
+
+            <ForceDeleteConfirmationModal
+                title={forceDeleteDialogTitle}
+                subtitle={forceDeleteDialogMessage}
+                onDelete={handleForceDelete}
+                showConfirmationModal={showForceDeleteDialog}
+                closeConfirmationModal={closeForceDeleteModal}
+            />
+
+            <ClusterNotReachableDialog
+                clusterName={clusterName}
+                onClickCancel={onClickHideNonCascadeDeletePopup}
+                onClickDelete={onClickNonCascadeDelete}
+                showConfirmationModal={nonCascadeDeleteDialog}
+            />
         </>
     )
 }

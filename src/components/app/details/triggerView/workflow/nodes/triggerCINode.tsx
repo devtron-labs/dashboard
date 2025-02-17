@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { RouteComponentProps, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { CIMaterialType, ConsequenceType, Icon } from '@devtron-labs/devtron-fe-common-lib'
+import { CIMaterialType, ConsequenceType, Icon, getWorkflowNodeStatusTitle } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerStatus } from '../../../../config'
 import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
 import { ReactComponent as IcLink } from '../../../../../../assets/icons/ic-link.svg'
@@ -106,7 +106,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                 className="dc__cd-trigger-status mb-6"
                 style={{ color: TriggerStatus[status] }}
             >
-                {this.props.status && this.props.status.toLowerCase() === 'cancelled' ? 'ABORTED' : this.props.status}
+                {getWorkflowNodeStatusTitle(this.props.status)}
                 {this.props.status && <span className="mr-5 ml-5">/</span>}
                 <Link
                     data-testid={`ci-trigger-select-details-button-${this.props.title}`}

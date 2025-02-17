@@ -1382,8 +1382,8 @@ button.anchor {
 }
 
 .tippy-box.default-black {
-    color: var(--N0);
-    background-color: var(--N900);
+    color: var(--white);
+    background-color: var(--bg-tooltip-black);
 
     &.no-content-padding {
         .tippy-content {
@@ -1396,7 +1396,7 @@ button.anchor {
     }
 
     .tippy-arrow {
-        color: var(--N900);
+        color: var(--bg-tooltip-black);
 
         &::before {
             scale: 1.4;
@@ -2028,6 +2028,10 @@ button.anchor {
     &--n7 {
         border-left: solid 1px var(--N700);
     }
+
+    &--n3 {
+        border-left: solid 1px var(--N300);
+    }
 }
 
 .dc__border-left-n0 {
@@ -2111,7 +2115,15 @@ button.anchor {
 }
 
 .dc__no-border-right-imp {
-    border-top: none !important;
+    border-right: none !important;
+}
+
+.dc__no-border-bottom-imp {
+    border-bottom: none !important;
+}
+
+.dc__no-border-left-imp {
+    border-left: none !important;
 }
 
 .dc__box-shadow {
@@ -2484,6 +2496,7 @@ button.anchor {
     gap: 1px;
     background-color: var(--N700);
     padding-bottom: 1px;
+    padding-right: 30px;
     color: var(--N0);
     font-size: 12px;
     font-weight: 600;
@@ -4810,6 +4823,12 @@ textarea::placeholder {
     display: grid;
 }
 
+.dc__icon-text-layout {
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    gap: 4px;
+}
+
 .dc__contents {
     display: contents;
 }
@@ -5047,4 +5066,38 @@ details[open] {
 
 .dc__overscroll-none {
     overscroll-behavior: none;
+}
+
+.code-editor__warning {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.33;
+  letter-spacing: normal;
+  color: var(--N900);
+  height: auto;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--Y200);
+  background-color: var(--Y100);
+}
+
+.code-editor__error {
+  background-color: var(--O100);
+  color: var(--O500);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.33;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--N200);
+}
+
+.code-editor__information {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.33;
+  letter-spacing: normal;
+  color: var(--N900);
+  height: auto;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--N200);
+  background-color: var(--B100);
 }

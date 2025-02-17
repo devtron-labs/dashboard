@@ -35,7 +35,7 @@ import {
     YAMLStringify,
     InfoColourBar,
     logExceptionToSentry,
-    AppThemeType,
+    CodeEditorThemesKeys,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
@@ -70,6 +70,7 @@ import {
 } from '../../../../values/chartValuesDiff/ChartValuesView.constants'
 import { getDecodedEncodedSecretManifestData, getTrimmedManifestData } from '../nodeDetail.util'
 import { importComponentFromFELibrary } from '@Components/common'
+import { DEFAULT_CLUSTER_ID } from '@Components/cluster/cluster.type'
 
 const renderOutOfSyncWarning = importComponentFromFELibrary('renderOutOfSyncWarning', null, 'function')
 const getManifestGUISchema = importComponentFromFELibrary('getManifestGUISchema', null, 'function')
@@ -95,7 +96,7 @@ const ManifestComponent = ({
     handleUpdateUnableToParseManifest,
     handleManifestGUIErrors,
     manifestGUIFormRef,
-    isExternalApp,
+    isManifestEditable,
 }: ManifestActionPropsType) => {
     const location = useLocation()
     const history = useHistory()
@@ -196,7 +197,7 @@ const ManifestComponent = ({
     ])
 
     const handleInitializeGUISchema = async (abortSignal: AbortSignal) => {
-        if (!getManifestGUISchema || isExternalApp) {
+        if (!getManifestGUISchema || !isManifestEditable) {
             return
         }
 
@@ -209,7 +210,7 @@ const ManifestComponent = ({
         })
 
         const guiSchemaResponse = await getManifestGUISchema({
-            clusterId: resourceRequestPayload.clusterId,
+            clusterId: DEFAULT_CLUSTER_ID,
             gvk: resourceRequestPayload.k8sRequest.resourceIdentifier.groupVersionKind,
             signal: abortSignal,
         })
@@ -218,7 +219,8 @@ const ManifestComponent = ({
     }
 
     const handleInitializeLockedManifestKeys = async (signal: AbortSignal) => {
-        if (!getLockedManifestKeys || isExternalApp) {
+        // NOTE: this feature is only applicable to non-superadmins
+        if (!getLockedManifestKeys || !isManifestEditable || isSuperAdmin) {
             return
         }
 
@@ -231,7 +233,7 @@ const ManifestComponent = ({
         })
 
         const lockedKeysResponse = await getLockedManifestKeys({
-            clusterId: resourceRequestPayload.clusterId,
+            clusterId: DEFAULT_CLUSTER_ID,
             gvk: resourceRequestPayload.k8sRequest.resourceIdentifier.groupVersionKind,
             signal,
         })
@@ -646,7 +648,7 @@ const ManifestComponent = ({
         return (
             <InfoColourBar
                 message={message}
-                classname="w-100 m-0 code-editor__information dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
+                classname="w-100 m-0 fs-12 fw-4 lh-16 cn-9 py-8 px-16 bcb-1 dc__border-bottom dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
                 Icon={ICInfoFilled}
                 iconClass="icon-dim-16"
                 linkClass="dc__truncate--clamp-6"
@@ -666,7 +668,7 @@ const ManifestComponent = ({
         return (
             <InfoColourBar
                 message={errorText}
-                classname="w-100 m-0 code-editor__error dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
+                classname="w-100 m-0 fs-12 fw-4 lh-16 py-8 px-16 bco-1 co-5 dc__border-bottom dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
                 Icon={ICErrorExclamation}
                 iconClass="icon-dim-16"
                 linkClass="dc__truncate--clamp-6"
@@ -693,67 +695,56 @@ const ManifestComponent = ({
         }
 
         return (
-            <div style={{ height: isResourceBrowserView ? 'calc(100vh - 119px)' : 'calc(100vh - 77px)' }}>
-                <CodeEditor
-                    theme={AppThemeType.dark}
-                    {...(showManifestCompareView
-                        ? {
-                              diffView: true,
-                              originalValue: desiredManifest,
-                              modifiedValue: getCodeEditorValue(),
-                              onModifiedValueChange: handleEditorValueChange,
-                          }
-                        : {
-                              diffView: false,
-                              value: getCodeEditorValue(),
-                              onChange: handleEditorValueChange,
-                              autoFocus: isEditMode,
-                          })}
-                    cleanData={showManifestCompareView}
-                    mode={MODES.YAML}
-                    readOnly={isReadOnlyView}
-                    loading={loading}
-                    height="100%"
-                >
-                    {renderEditorInfo(true)}
-                    {!loading &&
-                        !error &&
-                        isConfigDriftEnabled &&
-                        'hasDrift' in _selectedResource &&
-                        _selectedResource.hasDrift &&
-                        !showManifestCompareView &&
-                        renderOutOfSyncWarning &&
-                        renderOutOfSyncWarning(handleDesiredManifestOpen)}
-                    {showManifestCompareView && (
-                        <CodeEditor.Header hideDefaultSplitHeader className="p-0">
-                            <div className="dc__split-header">
-                                <div className="dc__split-header__pane flexbox dc__align-items-center dc__content-space dc__gap-8">
-                                    <span>Desired manifest</span>
-                                    <button
-                                        className="dc__unset-button-styles flex"
-                                        aria-label="Close Desired Manifest"
-                                        onClick={handleDesiredManifestClose}
-                                    >
-                                        <ICClose className="icon-dim-16 scn-0" />
-                                    </button>
-                                </div>
-                                <div className="dc__split-header__pane">Live manifest</div>
-                            </div>
-                        </CodeEditor.Header>
-                    )}
+            <CodeEditor
+                defaultValue={showManifestCompareView && desiredManifest}
+                cleanData={showManifestCompareView}
+                diffView={showManifestCompareView}
+                theme={CodeEditorThemesKeys.vsDarkDT}
+                height={isResourceBrowserView ? 'calc(100vh - 119px)' : 'calc(100vh - 77px)'}
+                value={getCodeEditorValue()}
+                mode={MODES.YAML}
+                readOnly={isReadOnlyView}
+                onChange={handleEditorValueChange}
+                loading={loading}
+                customLoader={<MessageUI msg={loadingMsg} icon={MsgUIType.LOADING} size={24} />}
+                focus={isEditMode}
+            >
+                {renderEditorInfo(true)}
 
-                    {renderErrorBar(true)}
-                </CodeEditor>
-            </div>
+                {!loading &&
+                    !error &&
+                    isConfigDriftEnabled &&
+                    'hasDrift' in _selectedResource &&
+                    _selectedResource.hasDrift &&
+                    !showManifestCompareView &&
+                    renderOutOfSyncWarning &&
+                    renderOutOfSyncWarning(handleDesiredManifestOpen)}
+                {showManifestCompareView && (
+                    <CodeEditor.Header hideDefaultSplitHeader className="p-0">
+                        <div className="dc__split-header">
+                            <div className="dc__split-header__pane flexbox dc__align-items-center dc__content-space dc__gap-8">
+                                <span>Desired manifest</span>
+                                <button
+                                    className="dc__unset-button-styles flex"
+                                    aria-label="Close Desired Manifest"
+                                    onClick={handleDesiredManifestClose}
+                                >
+                                    <ICClose className="icon-dim-16 scn-0" />
+                                </button>
+                            </div>
+                            <div className="dc__split-header__pane">Live manifest</div>
+                        </div>
+                    </CodeEditor.Header>
+                )}
+
+                {renderErrorBar(true)}
+            </CodeEditor>
         )
     }
 
     return isDeleted ? (
         <div className="h-100 flex-grow-1">
-            <MessageUI
-                msg="This resource no longer exists"
-                size={32}
-            />
+            <MessageUI msg="This resource no longer exists" size={32} />
         </div>
     ) : (
         <div
@@ -761,12 +752,7 @@ const ManifestComponent = ({
             data-testid="app-manifest-container"
             style={{ background: '#0B0F22', ...(!isResourceBrowserView ? { minHeight: 'calc(100vh - 152px)' } : {}) }}
         >
-            {error && !loading && (
-                <MessageUI
-                    msg="Manifest not available"
-                    size={24}
-                />
-            )}
+            {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
             {!error && (
                 <div
                     className={`${

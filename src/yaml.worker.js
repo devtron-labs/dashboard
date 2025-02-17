@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-export interface ClusrerNotReachableDialogType {
-    clusterName: string
-    onClickCancel: () => void
-    onClickDelete: () => void
-}
+// NOTE: a workaround;
+// see https://github.com/remcohaszing/monaco-yaml?tab=readme-ov-file#why-doesnt-it-work-with-vite
+import 'monaco-yaml/yaml.worker'

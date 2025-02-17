@@ -32,7 +32,12 @@ interface TimerConfigType {
 
 export interface UseTabsReturnType {
     tabs: DynamicTabType[]
-    initTabs: (initTabsData: InitTabType[], reInit?: boolean, tabsToRemove?: string[]) => void
+    initTabs: (
+        initTabsData: InitTabType[],
+        reInit?: boolean,
+        tabsToRemove?: string[],
+        overrideSelectionStatus?: boolean,
+    ) => void
     addTab: (props: AddTabParamsType) => Promise<boolean>
     removeTabByIdentifier: (id: DynamicTabType['id']) => Promise<string>
     stopTabByIdentifier: (id: DynamicTabType['id']) => Promise<string>

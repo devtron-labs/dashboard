@@ -126,6 +126,26 @@
     margin-right: 10px;
 }
 
+.script-container {
+  border: 1px solid var(--N200);
+  padding: 8px 0;
+  border-radius: 4px;
+  background: var(--bg-secondary);
+
+  &.no-padding-script-container {
+      padding: 0px;
+  }
+
+  .react-monaco-editor-container {
+      min-height: 300px;
+  }
+
+  .code-editor__shebang {
+      color: var(--R500);
+      opacity: 1;
+  }
+}
+
 .configure-ci-webhook {
     display: grid;
     grid-template-columns: 32px auto;

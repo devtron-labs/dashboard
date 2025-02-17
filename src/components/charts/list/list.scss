@@ -310,11 +310,9 @@
 
 .advanced-config {
     width: 100%;
-    min-height: 100%;
     margin: 0 auto;
     padding: 24px 87px;
     background-color: var(--bg-primary);
-    display: flex;
 
     .half {
         width: 50%;
@@ -322,6 +320,10 @@
         &:nth-child(2) {
             margin-left: 20px;
         }
+    }
+
+    .code-editor-container .react-monaco-editor-container {
+        min-height: 450px;
     }
 }
 
@@ -468,7 +470,6 @@
         grid-template-rows: 40px 1fr;
         border: 1px solid var(--N200);
         border-radius: 4px;
-        overflow: hidden;
     }
 
     .readme-config--header {
@@ -484,6 +485,10 @@
             font-size: 12px;
             font-weight: 600;
             color: var(--N700);
+
+            &:nth-child(2) {
+                border-left: 1px solid var(--N200);
+            }
         }
     }
 

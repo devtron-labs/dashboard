@@ -268,7 +268,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         />
     )
 
-    renderDeleteConformationDialog = () => {
+    renderDeleteConfirmationDialog = () => {
         if (this.state.showDeploymentConfirmationDeleteDialog && DeploymentWindowConfirmationDialog) {
             return this.renderDeploymentWindowConfirmationModal()
         } else if (this.state.showDeletePipelinePopup) {
@@ -415,7 +415,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                     deleteTitleName={this.props.environmentName}
                     isLoading={this.state.deleteInProgress}
                 />
-                {this.renderDeleteConformationDialog()}
+                {this.renderDeleteConfirmationDialog()}
             </>
         )
     }

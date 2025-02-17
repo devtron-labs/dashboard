@@ -32,15 +32,14 @@ import {
     ShowMoreText,
     DEPLOYMENT_STATUS,
     EMPTY_STATE_STATUS,
-    MODES,
     AppStatus,
     StatusType,
+    Button,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
-import Tippy from '@tippyjs/react'
 import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
-import docker from '../../../assets/icons/misc/docker.svg'
-import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
+import docker from '@Icons/misc/docker.svg'
 import DataNotFound from '../../../assets/img/app-not-deployed.svg'
 import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
 import { Moment12HourFormat, SERVER_ERROR_CODES, URLS } from '../../../config'
@@ -474,18 +473,19 @@ const ChartDeploymentHistory = ({
             )
         }
         return (
-            <CodeEditor
-                key={selectedDeploymentTabName}
-                value={
-                    selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
-                        ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
-                        : getEditorValue(selectedDeploymentManifestDetail.manifest)
-                }
-                noParsing
-                mode={MODES.YAML}
-                height="fitToParent"
-                readOnly
-            />
+            <div className="bg__primary border-btm h-100">
+                <CodeEditor
+                    value={
+                        selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
+                            ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
+                            : getEditorValue(selectedDeploymentManifestDetail.manifest)
+                    }
+                    noParsing
+                    mode="yaml"
+                    height="100%"
+                    readOnly
+                />
+            </div>
         )
     }
 
@@ -502,7 +502,7 @@ const ChartDeploymentHistory = ({
 
         return (
             <div
-                className={`trigger-outputs-container flex-grow-1 flexbox-col ${
+                className={`trigger-outputs-container h-100 ${
                     selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SOURCE ? 'pt-20' : ''
                 }`}
                 data-testid="trigger-output-container"
@@ -613,6 +613,10 @@ const ChartDeploymentHistory = ({
         setShowDockerInfo(false)
     }
 
+    const handleOpenRollbackConfirmation = () => {
+        setShowRollbackConfirmation(true)
+    }
+
     function renderSelectedDeploymentDetailHeader() {
         const deployment: ChartDeploymentDetail = deploymentHistoryArr[selectedDeploymentHistoryIndex]
 
@@ -667,16 +671,17 @@ const ChartDeploymentHistory = ({
                     </div>
 
                     {!(selectedDeploymentHistoryIndex === 0 || isVirtualEnvironment) && (
-                        <Tippy className="default-tt" arrow={false} content="Re-deploy this version">
-                            <button
-                                className="flex cta deploy-button"
-                                onClick={() => setShowRollbackConfirmation(true)}
-                                data-testid="re-deployment-button"
-                            >
-                                <DeployButton className="deploy-button-icon" />
-                                <span className="ml-4">Deploy</span>
-                            </button>
-                        </Tippy>
+                        <Button
+                            dataTestId="re-deployment-button"
+                            text="Deploy"
+                            size={ComponentSizeType.medium}
+                            showTooltip
+                            tooltipProps={{
+                                content: 'Re-deploy this version',
+                            }}
+                            onClick={handleOpenRollbackConfirmation}
+                            startIcon={<Rocket />}
+                        />
                     )}
                     {showDockerInfo && (
                         <DockerListModal dockerList={deployment.dockerImages} closeTab={closeDockerInfoTab} />
@@ -757,14 +762,13 @@ const ChartDeploymentHistory = ({
                     </div>
                 </div>
                 <div className="ci-details__body dc__overflow-auto">{renderSelectedDeploymentDetail()}</div>
-                {showRollbackConfirmation && (
-                    <RollbackConfirmationDialog
-                        deploying={deploying}
-                        rollbackDialogTitle={rollbackDialogTitle}
-                        setShowRollbackConfirmation={setShowRollbackConfirmation}
-                        handleDeployClick={handleDeployClick}
-                    />
-                )}
+                <RollbackConfirmationDialog
+                    deploying={deploying}
+                    rollbackDialogTitle={rollbackDialogTitle}
+                    setShowRollbackConfirmation={setShowRollbackConfirmation}
+                    handleDeployClick={handleDeployClick}
+                    showRollbackConfirmation={showRollbackConfirmation}
+                />
             </div>
         )
     }

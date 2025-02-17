@@ -20,7 +20,6 @@ import {
     Progressing,
     noop,
     stopPropagation,
-    multiSelectStyles,
     DeploymentAppTypes,
     useSearchString,
     useAsync,
@@ -53,7 +52,6 @@ import {
     DEFAULT_STATUS_TEXT,
 } from '../../../../config'
 import { NavigationArrow, useAppContext, FragmentHOC } from '../../../common'
-import { groupHeaderStyle, Option } from '../../../v2/common/ReactSelect.utils'
 import { getAppConfigStatus, getAppOtherEnvironmentMin, stopStartApp } from '../../../../services/service'
 import AppNotDeployedIcon from '@Images/app-not-deployed.svg'
 import AppNotConfiguredIcon from '@Images/app-not-configured.png'
@@ -296,7 +294,7 @@ export const Details: React.FC<DetailsType> = ({
             deploymentStatus: DEFAULT_STATUS,
             deploymentStatusText: DEFAULT_STATUS_TEXT,
         })
-    const isConfigDriftEnabled: boolean = window._env_.FEATURE_CONFIG_DRIFT_ENABLE
+    const isConfigDriftEnabled: boolean = window._env_.FEATURE_CONFIG_DRIFT_ENABLE && !!ConfigDriftModalRoute
     const isExternalToolAvailable: boolean =
         externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0
     const interval = Number(window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL) || 30000
@@ -377,6 +375,7 @@ export const Details: React.FC<DetailsType> = ({
     useEffect(
         () => () => {
             clearPollingInterval()
+            clearDeploymentStatusTimer()
             IndexStore.clearAppDetails()
         },
         [],
@@ -798,7 +797,7 @@ export const Details: React.FC<DetailsType> = ({
                 <AppStatusDetailModal
                     close={hideAppDetailsStatus}
                     showAppStatusMessage={false}
-                    showConfigDriftInfo={isConfigDriftEnabled && !!ConfigDriftModalRoute}
+                    showConfigDriftInfo={isConfigDriftEnabled}
                 />
             )}
             {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
@@ -842,7 +841,7 @@ export const Details: React.FC<DetailsType> = ({
                     isVirtualEnvironment={isVirtualEnvRef.current}
                 />
             }
-            {isConfigDriftEnabled && ConfigDriftModalRoute && !isVirtualEnvRef.current && (
+            {isConfigDriftEnabled && !isVirtualEnvRef.current && (
                 <ConfigDriftModalRoute path={path} />
             )}
         </>

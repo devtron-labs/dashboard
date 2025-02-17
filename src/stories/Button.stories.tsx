@@ -102,3 +102,11 @@ export const FillIconButton: Story = {
         ariaLabel: BUTTON_TEXT,
     } as ButtonProps,
 }
+
+export const AutoClick: Story = {
+    ...Default,
+    args: {
+        ...Default.args,
+        triggerAutoClickTimestamp: Date.now(),
+    } as ButtonProps,
+}

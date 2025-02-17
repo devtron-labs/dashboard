@@ -30,7 +30,7 @@ jobs:
 
     - name: Set SENTRY_RELEASE_VERSION
       id: vars
-      run: echo "SENTRY_RELEASE_VERSION=dashboard@$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      run: echo "SENTRY_RELEASE_VERSION=dashboard@$(git rev-parse --short=9 HEAD)" >> $GITHUB_OUTPUT
 
     - name: Create Sentry release
       uses: getsentry/action-release@v1
