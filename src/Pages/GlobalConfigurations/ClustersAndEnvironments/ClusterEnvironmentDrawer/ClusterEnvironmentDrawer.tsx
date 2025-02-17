@@ -254,6 +254,7 @@ export const ClusterEnvironmentDrawer = ({
                 <form
                     className="flex-grow-1 flexbox-col mh-0"
                     onSubmit={handleSubmit(namespaceLabels.labels ? withLabelEditValidation : onValidation())}
+                    noValidate
                 >
                     <div className="dc__overflow-auto p-20 flex-grow-1">
                         <div className="mb-16">
@@ -266,6 +267,7 @@ export const ClusterEnvironmentDrawer = ({
                                 label="Environment Name"
                                 autoFocus={!id}
                                 shouldTrim={false}
+                                required
                             />
                         </div>
                         <div className="mb-16">

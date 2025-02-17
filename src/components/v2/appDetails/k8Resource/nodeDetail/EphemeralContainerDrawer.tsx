@@ -309,6 +309,7 @@ const EphemeralContainerDrawer = ({
                         required
                         label="Target Container Name"
                         layout="row"
+                        size={ComponentSizeType.large}
                     />
                 </div>
             </div>
