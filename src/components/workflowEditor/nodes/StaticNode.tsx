@@ -16,7 +16,7 @@
 
 import React, { Component } from 'react'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../../config'
-import { CiPipelineSourceConfig, Icon } from '@devtron-labs/devtron-fe-common-lib'
+import { CiPipelineSourceConfig, GitProviderIcon, GitProviderType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface StaticNodeProps {
     x: number
@@ -45,7 +45,7 @@ export class StaticNode extends Component<StaticNodeProps> {
                 }`}
                 onClick={this.props.handleGoToWorkFlowEditor}
             >
-                <Icon name="ic-git" size={20} color={null} />
+                <GitProviderIcon gitProvider={GitProviderType.GIT} />
                 <div className="workflow-node__title workflow-node__title--static">
                     <span>/{this.props.title}</span>
                     <CiPipelineSourceConfig

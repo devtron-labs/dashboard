@@ -225,7 +225,7 @@ export const EnvironmentList = ({
                                                         registryType={RegistryType.DOCKER}
                                                     />
                                                 ) : (
-                                                    <AppStatus status="Not Deployed" />
+                                                    <AppStatus status={StatusType.NOT_DEPLOYED} />
                                                 )}
                                                 <CommitChipCell
                                                     handleClick={openCommitInfoModal}

@@ -16,7 +16,7 @@
 
 import React, { useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
-import { getCITriggerInfo, Icon, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { getCITriggerInfo, GitProviderIcon, GitProviderType, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg'
 import { DeployedCommitCardType } from './appDetails.type'
@@ -88,7 +88,7 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
                         <div className="dc__ellipsis-right cn-7 ml-2 fw-4 fs-12 mono">{commitId}</div>
                     </div>
                 </div>
-                <Icon name="ic-git" size={24} color={null} />
+                <GitProviderIcon gitProvider={GitProviderType.GIT} size={24} />
                 {/* @TODO: This should be dynamic, dependent on the source */}
                 {/* <GitHub className="github-icon" /> */}
             </div>
