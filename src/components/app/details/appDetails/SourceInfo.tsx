@@ -74,7 +74,6 @@ export const SourceInfo = ({
     setErrorsList,
     filteredEnvIds,
     deploymentUserActionState,
-    handleOpenConfigDriftModal,
 }: SourceInfoType) => {
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
@@ -152,7 +151,8 @@ export const SourceInfo = ({
                         <div className="pl-8">
                             <ConfigSyncStatusButton
                                 areConfigurationsDrifted={appDetails.resourceTree.hasDrift}
-                                handleOpenModal={handleOpenConfigDriftModal}
+                                appId={appDetails.appId}
+                                envId={envId}
                             />
                         </div>
                     )}

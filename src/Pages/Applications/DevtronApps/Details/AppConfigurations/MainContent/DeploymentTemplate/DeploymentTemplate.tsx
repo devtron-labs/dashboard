@@ -1580,6 +1580,7 @@ const DeploymentTemplate = ({
                     }
                     draftChartVersion={draftTemplateData?.selectedChart?.version}
                     isDeleteOverrideView={isDeleteOverrideDraft}
+                    editorKey={`${compareFromSelectedOptionValue || 'compare'}-draft-editor-key-${Number(!!hideLockedKeys)}-${shouldMergeTemplateWithPatches ? 'with-merged-values' : 'without-merged-values'}-${resolveScopedVariables ? 'in-resolved-view' : 'in-unresolved-view'}`}
                     {...getCompareFromEditorConfig({
                         envId,
                         isDeleteOverrideDraft,

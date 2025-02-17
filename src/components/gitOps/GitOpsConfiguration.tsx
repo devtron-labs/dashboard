@@ -23,7 +23,6 @@ import {
     RadioGroup,
     RadioGroupItem,
     CustomInput,
-    InfoColourBar,
     GitOpsFieldKeyType,
     GitOpsAuthModeType,
     handleDisableSubmitOnEnter,
@@ -32,6 +31,7 @@ import {
     ToastVariantType,
     ToastManager,
     useMainContext,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     TLSConnectionFormActionType,
@@ -46,7 +46,6 @@ import {
 } from '@Components/common'
 import { ViewType, repoType, HEADER_TEXT } from '../../config'
 import { GitOpsState, GitOpsProps, GitOpsConfig, GitOpsOrganisationIdType } from './gitops.type'
-import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-purple.svg'
 import {
     updateGitOpsConfiguration,
     saveGitOpsConfiguration,
@@ -88,20 +87,16 @@ const GitInfoTab: React.FC<{ gitLink: string; gitProvider: string; gitProviderGr
     gitProvider,
     gitProviderGroupAlias,
 }) => {
-    return (
-        <div className="git_impt pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcv-1 flexbox-col w-100 flex-grow-1">
-            <div className="flex left ">
-                <Info className="icon-dim-20" style={{ marginTop: 1 }} />
-                <div className="ml-8 fs-13" data-testid="gitops-create-organisation-text">
-                    <span className="fw-6 dc__capitalize">Recommended: </span>Create a new {gitProvider}{' '}
-                    {gitProviderGroupAlias} for gitops. Avoid using {gitProvider} {gitProviderGroupAlias} containing
-                    your source code.
-                </div>
-            </div>
+    const renderDescription = () => (
+        <div>
+            <span className="fs-13 fw-4 lh-20" data-testid="gitops-create-organisation-text">
+                Create a new {gitProvider}&nbsp;{gitProviderGroupAlias} for gitops. Avoid using {gitProvider}&nbsp;
+                {gitProviderGroupAlias} containing your source code.&nbsp;
+            </span>
             <a
                 target="_blank"
                 href={gitLink}
-                className="ml-28 cursor fs-13 onlink"
+                className="anchor lh-20"
                 data-testid="gitops-create-organization-link"
                 rel="noreferrer"
             >
@@ -109,6 +104,8 @@ const GitInfoTab: React.FC<{ gitLink: string; gitProvider: string; gitProviderGr
             </a>
         </div>
     )
+
+    return <InfoBlock variant="help" heading="Recommended" description={renderDescription()} />
 }
 
 class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefinedGitOpsEnabled: boolean }, GitOpsState> {
@@ -1400,11 +1397,8 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
                         </div>
                     </RadioGroup>
                 ) : (
-                    <InfoColourBar
-                        classname="eb-2 bw-1 bcb-1 w-100"
-                        Icon={ICInfoFilled}
-                        iconClass="dc__no-shrink"
-                        message={
+                    <InfoBlock
+                        description={
                             this.state.selectedRepoType === repoType.DEFAULT
                                 ? 'Repository will be created automatically with application name to store deployment manifests for each application'
                                 : 'Desired git repository can be provided to store deployment manifests for each application'
