@@ -1759,7 +1759,8 @@ button.anchor {
     text-decoration-style: dotted;
     text-decoration-color: var(--N300);
     text-decoration-thickness: 12%;
-    text-underline-offset: 25%;
+    text-underline-offset: 20%;
+    text-decoration-skip-ink: auto;
 }
 
 .dc__strike-through {
