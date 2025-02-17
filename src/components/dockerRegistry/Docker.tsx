@@ -52,6 +52,7 @@ import {
     DeleteConfirmationModal,
     ComponentSizeType,
     Textarea,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import CreatableSelect from 'react-select/creatable'
@@ -1321,14 +1322,13 @@ const DockerForm = ({
                         <ConditionalWrap
                             condition={disabledFields.some((test) => test === RepositoryAction.CONTAINER)}
                             wrap={(children) => (
-                                <TippyCustomized
-                                    theme={TippyTheme.black}
-                                    className="w-200 dc__zi-4 mt-0-imp"
+                                <Tooltip
+                                    alwaysShowTippyOnHover
                                     placement="left"
-                                    infoText="Cannot be disabled as some build pipelines are using this registry to push container images."
+                                    content="Cannot be disabled as some build pipelines are using this registry to push container images."
                                 >
                                     <div>{children}</div>
-                                </TippyCustomized>
+                                </Tooltip>
                             )}
                         >
                             <div
@@ -1360,14 +1360,13 @@ const DockerForm = ({
                         <ConditionalWrap
                             condition={disabledFields.some((test) => test === RepositoryAction.CHART_PUSH)}
                             wrap={(children) => (
-                                <TippyCustomized
-                                    theme={TippyTheme.black}
-                                    className="w-200 dc__zi-4 pt-0-imp"
+                                <Tooltip
+                                    alwaysShowTippyOnHover
                                     placement="left"
-                                    infoText="Cannot be disabled as some deployment pipelines are using this registry to push helm packages."
+                                    content="Cannot be disabled as some deployment pipelines are using this registry to push helm packages."
                                 >
                                     <div>{children}</div>
-                                </TippyCustomized>
+                                </Tooltip>
                             )}
                         >
                             <div>
@@ -1384,14 +1383,13 @@ const DockerForm = ({
                     <ConditionalWrap
                         condition={disabledFields.some((test) => test === RepositoryAction.CHART_PULL)}
                         wrap={(children) => (
-                            <TippyCustomized
-                                theme={TippyTheme.black}
-                                className="w-200 dc__zi-4 pt-0 mt-0"
+                            <Tooltip
+                                alwaysShowTippyOnHover
                                 placement="left"
-                                infoText="Cannot be disabled as some applications are deployed using helm charts from this registry."
+                                content="Cannot be disabled as some applications are deployed using helm charts from this registry."
                             >
                                 <div>{children}</div>
-                            </TippyCustomized>
+                            </Tooltip>
                         )}
                     >
                         <div>
