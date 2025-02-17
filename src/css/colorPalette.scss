@@ -87,6 +87,8 @@
     --bg-sidebar: #0066cc;
     --bg-shimmer-loader: linear-gradient(90deg, var(--N200) 0%, var(--N50) 50%, var(--N200) 80%);
 
+    --backdrop-bg: #000000bf;
+
     --border-primary: var(--N200);
     --border-secondary: var(--N100);
 
@@ -170,6 +172,8 @@
     --bg-sidebar: #2E3142;
     --bg-shimmer-loader: linear-gradient(90deg, var(--N50) 0%, var(--N200) 50%, var(--N50) 80%);
 
+    --backdrop-bg: var(--white-20);
+
     --border-primary: #FFFFFF33;
     --border-secondary: #FFFFFF1A;
 
@@ -191,7 +195,6 @@
     --black: #000a14;
 
     --terminal-bg: #0b0f22;
-    --backdrop-bg: #000000bf;
     --transparent: transparent;
 
     --button-text-on-dark: #72ace6;
