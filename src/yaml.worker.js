@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 
-.config_failure {
-    border-bottom: 0px;
-    border-bottom-left-radius: 0px;
-    border-bottom-right-radius: 0px;
-}
-
-.config_failure-actions {
-    border-top-left-radius: 0px;
-    border-top-right-radius: 0px;
-}
-
-.success-warning {
-    border-top-left-radius: 0px;
-    border-top-right-radius: 0px;
-}
+// NOTE: a workaround;
+// see https://github.com/remcohaszing/monaco-yaml?tab=readme-ov-file#why-doesnt-it-work-with-vite
+import 'monaco-yaml/yaml.worker'
