@@ -941,10 +941,10 @@ export default function ClusterForm({
 
     const codeEditor = () => {
         return (
-            <CodeEditor.Container flexExpand>
+            <div className="code-editor-container">
                 <CodeEditor
                     value={saveYamlData}
-                    height="fitToParent"
+                    height="calc(100vh - 236px)"
                     diffView={false}
                     onChange={onChangeEditorValue}
                     mode={MODES.YAML}
@@ -975,7 +975,7 @@ export default function ClusterForm({
                     </CodeEditor.Header>
                     {hasValidationError && <CodeEditor.ErrorBar text={errorText} />}
                 </CodeEditor>
-            </CodeEditor.Container>
+            </div>
         )
     }
 

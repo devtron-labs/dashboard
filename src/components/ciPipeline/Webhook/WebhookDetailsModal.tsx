@@ -695,7 +695,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                 <CodeEditor
                     value={modifiedSampleString}
                     onChange={changePayload}
-                    height={300}
+                    height="300px"
                     mode={MODES.JSON}
                     noParsing
                 />
