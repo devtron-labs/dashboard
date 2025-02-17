@@ -18,20 +18,7 @@ import { SyntheticEvent } from 'react'
 import { CustomInput, Textarea } from '@devtron-labs/devtron-fe-common-lib'
 import { CreatePluginFormFieldProps } from './types'
 
-const CreatePluginFormField = ({
-    label,
-    value,
-    error,
-    action,
-    handleChange,
-    placeholder,
-    required,
-    disabled,
-    useTextArea,
-    helperText,
-    autoFocus,
-    ...props
-}: CreatePluginFormFieldProps) => {
+const CreatePluginFormField = ({ action, handleChange, useTextArea, ...props }: CreatePluginFormFieldProps) => {
     const handleInputChange = (e: SyntheticEvent) => {
         handleChange({ action, payload: (e.target as HTMLInputElement).value })
     }
@@ -40,34 +27,15 @@ const CreatePluginFormField = ({
         return (
             <Textarea
                 {...props}
-                label={label}
-                required={required}
+                value={props.value as string}
                 name={action}
-                placeholder={placeholder}
-                value={value as string}
                 onChange={handleInputChange}
                 onBlur={handleInputChange}
-                disabled={disabled}
-                error={error}
             />
         )
     }
 
-    return (
-        <CustomInput
-            {...props}
-            name={action}
-            label={label}
-            value={value}
-            error={error}
-            onChange={handleInputChange}
-            placeholder={placeholder}
-            required={required}
-            disabled={disabled}
-            autoFocus={autoFocus}
-            helperText={helperText}
-        />
-    )
+    return <CustomInput {...props} name={action} onChange={handleInputChange} />
 }
 
 export default CreatePluginFormField
