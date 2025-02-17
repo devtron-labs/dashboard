@@ -41,6 +41,7 @@ import {
     Button,
     ButtonVariantType,
     ComponentSizeType,
+    MODES,
     ConfirmationModal,
     ConfirmationModalVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -680,23 +681,20 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
         const shebangHtml = this.state.configMap === SwitchItemValues.Configuration ? presetConfig : null
 
-        const decorationWidth = this.state.sso !== OIDCType ? 50 : 25
         return (
-            <div className="br-4 dc__border w-100 dc__overflow-hidden">
+            <CodeEditor.Container>
                 <CodeEditor
                     value={codeEditorBody}
-                    mode="yaml"
+                    mode={MODES.YAML}
                     noParsing={this.state.sso === OIDCType}
-                    lineDecorationsWidth={this.state.configMap === SwitchItemValues.Configuration ? decorationWidth : 0}
                     shebang={shebangHtml}
                     readOnly={this.state.configMap !== SwitchItemValues.Configuration}
                     onChange={this.handleConfigChange}
                     onBlur={this.handleOnBlur}
-                    adjustEditorHeightToContent
+                    height="auto"
                 >
                     <CodeEditor.Header>
                         <div className="flex dc__content-space dc__gap-6">
-                            <CodeEditor.ValidationError />
                             <div className="dc__no-shrink">
                                 <Switch
                                     value={this.state.configMap}
@@ -712,7 +710,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </div>
                     </CodeEditor.Header>
                 </CodeEditor>
-            </div>
+            </CodeEditor.Container>
         )
     }
 

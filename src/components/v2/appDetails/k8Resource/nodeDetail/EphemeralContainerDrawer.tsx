@@ -28,9 +28,11 @@ import {
     ToastVariantType,
     TabGroup,
     SelectPicker,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
+import ReactSelect from 'react-select'
 import Tippy from '@tippyjs/react'
 import CreatableSelect from 'react-select/creatable'
 import {
@@ -404,22 +406,19 @@ const EphemeralContainerDrawer = ({
                 ? ephemeralFormAdvanced.advancedData.manifest
                 : YAMLStringify(sampleConfig?.sampleManifest)
         return (
-            <div className="mr-24 mb-24 code-editor-container">
+            <div className="flex-grow-1 flexbox-col">
                 <CodeEditor
                     value={codeEditorBody}
-                    mode="yaml"
+                    mode={MODES.YAML}
                     onChange={handleManifestAdvanceConfiguration}
                     readOnly={switchManifest === SwitchItemValues.Sample}
-                    height="100%"
+                    height="fitToParent"
                 >
                     <CodeEditor.Header>
                         <Switch value={switchManifest} name="tab" onChange={handleManifestTabChange}>
                             <SwitchItem value={SwitchItemValues.Configuration}> Manifest </SwitchItem>
                             <SwitchItem value={SwitchItemValues.Sample}> Sample manifest</SwitchItem>
                         </Switch>
-                        <div className="w-70 ml-8">
-                            <CodeEditor.ValidationError />
-                        </div>
                     </CodeEditor.Header>
                 </CodeEditor>
             </div>

@@ -28,6 +28,7 @@ import {
     ToastManager,
     ToastVariantType,
     MarkDown,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION, SERVER_MODE, ViewType } from '../../config'
 import {
@@ -255,11 +256,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderCodeEditorBody = () => {
         return (
-            <div className="code-editor-body">
+            <div className="code-editor-body bg__primary flexbox-col flex-grow-1">
                 <CodeEditor
-                    height="calc(60vh - 97px)"
+                    height="fitToParent"
                     value={this.state.codeEditorPayload}
-                    mode="yaml"
+                    mode={MODES.YAML}
                     onChange={(event) => {
                         this.handleConfigChange(event)
                     }}
@@ -670,7 +671,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderBulkCodeEditor = () => {
         return (
-            <div className="dc__border-right">
+            <div className="flexbox-col">
                 {this.renderCodeEditorHeader()}
                 {this.renderCodeEditorBody()}
             </div>
@@ -689,8 +690,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderCodeEditorAndReadme = () => {
         return (
             <div className="bulk-container vertical-divider">
-                <div>{this.renderBulkCodeEditor()}</div>
-                <div>{this.renderReadmeSection()}</div>
+                {this.renderBulkCodeEditor()}
+                {this.renderReadmeSection()}
             </div>
         )
     }

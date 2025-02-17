@@ -427,7 +427,7 @@ export interface AppStatusDetailType {
     appStatus?: string
     appStatusText?: string
     showFooter?: boolean
-    showConfigDriftInfo?: boolean
+    handleOpenConfigDriftModal?: () => void
 }
 
 export interface StatusFilterButtonType {
