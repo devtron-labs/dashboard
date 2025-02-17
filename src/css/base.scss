@@ -2265,7 +2265,15 @@ button.anchor {
 }
 
 .dc__no-border-right-imp {
-    border-top: none !important;
+    border-right: none !important;
+}
+
+.dc__no-border-bottom-imp {
+    border-bottom: none !important;
+}
+
+.dc__no-border-left-imp {
+    border-left: none !important;
 }
 
 .dc__box-shadow {
