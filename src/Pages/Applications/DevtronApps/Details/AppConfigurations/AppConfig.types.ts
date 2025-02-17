@@ -153,7 +153,7 @@ interface CommonAppConfigurationProps {
     deleteApp: () => void
     showCannotDeleteTooltip: boolean
     hideConfigHelp: boolean
-    fetchEnvConfig: (envId: number) => void
+    fetchEnvConfig: (envId: number, callback?: (res: EnvConfigType) => void) => void
 }
 
 export interface AppConfigurationContextType
@@ -206,7 +206,7 @@ export interface EnvironmentOptionType {
 
 export interface EnvConfigurationsNavProps {
     envConfig: EnvConfigurationState
-    fetchEnvConfig: (envId: number) => void
+    fetchEnvConfig: AppConfigurationContextType['fetchEnvConfig']
     environments: EnvironmentOptionType[]
     paramToCheck?: 'appId' | 'envId'
     goBackURL: string
@@ -228,7 +228,7 @@ export interface EnvConfigurationsNavProps {
 export interface EnvConfigRouteParams {
     appId: string
     envId: string
-    resourceType: string
+    resourceType?: EnvResourceType
 }
 
 export interface ExtendedCollapsibleListItem
