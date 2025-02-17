@@ -255,7 +255,6 @@ class Login extends Component<LoginProps, LoginFormState> {
                     height="120px"
                 />
                 <p className="login__text">Your tool for Rapid, Reliable & Repeatable deployments</p>
-                {/* @ts-ignore */}
                 <form className="login-dt__form" autoComplete="on" onSubmit={this.login}>
                     <div className="flexbox-col dc__gap-24">
                         <CustomInput
