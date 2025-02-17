@@ -57,10 +57,10 @@ export const CIBuildConfigDiff = ({
                 {showInEditor ? (
                     <td colSpan={2}>
                         <CodeEditor
-                            originalValue={baseValue}
-                            modifiedValue={overridenValue}
+                            defaultValue={baseValue}
+                            value={overridenValue}
                             mode={MODES.DOCKERFILE}
-                            height={300}
+                            height="300px"
                             readOnly
                             diffView
                             noParsing

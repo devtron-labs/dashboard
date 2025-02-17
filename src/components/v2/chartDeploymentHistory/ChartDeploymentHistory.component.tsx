@@ -467,18 +467,19 @@ const ChartDeploymentHistory = ({
             )
         }
         return (
-            <CodeEditor
-                key={selectedDeploymentTabName}
-                value={
-                    selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
-                        ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
-                        : getEditorValue(selectedDeploymentManifestDetail.manifest)
-                }
-                noParsing
-                mode={MODES.YAML}
-                height="fitToParent"
-                readOnly
-            />
+            <div className="bg__primary border-btm h-100">
+                <CodeEditor
+                    value={
+                        selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
+                            ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
+                            : getEditorValue(selectedDeploymentManifestDetail.manifest)
+                    }
+                    noParsing
+                    mode="yaml"
+                    height="100%"
+                    readOnly
+                />
+            </div>
         )
     }
 
@@ -495,7 +496,7 @@ const ChartDeploymentHistory = ({
 
         return (
             <div
-                className={`trigger-outputs-container flex-grow-1 flexbox-col ${
+                className={`trigger-outputs-container h-100 ${
                     selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SOURCE ? 'pt-20' : ''
                 }`}
                 data-testid="trigger-output-container"

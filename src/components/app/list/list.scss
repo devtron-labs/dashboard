@@ -118,6 +118,10 @@
     &__fluxcd {
         grid-template-columns: 24px 250px 150px 120px 200px repeat(2, 150px);
     }
+
+    &--argo-not-installed {
+        grid-template-columns: 24px 1.5fr repeat(3, 1fr) 1.5fr 76px;
+    }
 }
 
 .saved-filters + .app-list .app-list__header {
@@ -145,6 +149,10 @@
 
     &__fluxcd {
         grid-template-columns: 24px 250px 150px 120px 200px repeat(2, 150px);
+    }
+
+    &--argo-not-installed {
+        grid-template-columns: 24px 1.5fr repeat(3, 1fr) 1.5fr 76px;
     }
 }
 
