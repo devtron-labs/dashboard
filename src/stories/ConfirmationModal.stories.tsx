@@ -38,26 +38,27 @@ const BaseComponent = ({
                 variant={ButtonVariantType.text}
             />
 
-            <ConfirmationModal
-                title={title}
-                subtitle={subtitle}
-                confirmationConfig={confirmationConfig}
-                handleClose={handleClose}
-                showConfirmationModal={showDialog}
-                // If variant is custom then can provide icon
-                {...(variant === ConfirmationModalVariantType.custom
-                    ? {
-                          variant: ConfirmationModalVariantType.custom,
-                          Icon,
-                          buttonConfig,
-                      }
-                    : {
-                          variant,
-                          buttonConfig,
-                      })}
-            >
-                {children}
-            </ConfirmationModal>
+            {showDialog && (
+                <ConfirmationModal
+                    title={title}
+                    subtitle={subtitle}
+                    confirmationConfig={confirmationConfig}
+                    handleClose={handleClose}
+                    // If variant is custom then can provide icon
+                    {...(variant === ConfirmationModalVariantType.custom
+                        ? {
+                              variant: ConfirmationModalVariantType.custom,
+                              Icon,
+                              buttonConfig,
+                          }
+                        : {
+                              variant,
+                              buttonConfig,
+                          })}
+                >
+                    {children}
+                </ConfirmationModal>
+            )}
         </>
     )
 }

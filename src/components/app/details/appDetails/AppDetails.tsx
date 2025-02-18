@@ -32,8 +32,6 @@ import {
     ToastVariantType,
     ToastManager,
     SelectPicker,
-    ConfirmationModal,
-    ConfirmationModalVariantType,
     ServerErrors,
     getIsRequestAborted,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -684,6 +682,7 @@ export const Details: React.FC<DetailsType> = ({
                 />
             )
         }
+
         return (
             <HibernateModal
                 appName={appDetails.appName}
@@ -801,7 +800,7 @@ export const Details: React.FC<DetailsType> = ({
                     renderCIListHeader={renderCIListHeader}
                 />
             )}
-            {appDetails && renderHibernateModal()}
+            {appDetails && !!hibernateConfirmationModal && renderHibernateModal()}
             {rotateModal && renderRestartWorkload()}
             {
                 <ClusterMetaDataBar

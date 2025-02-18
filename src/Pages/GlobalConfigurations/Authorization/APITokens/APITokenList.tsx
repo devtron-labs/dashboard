@@ -163,11 +163,10 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                               </div>
                           ))}
                 </div>
-                {selectedToken && (
+                {selectedToken && showDeleteConfirmation && (
                     <DeleteAPITokenModal
                         tokenData={selectedToken}
                         reload={reload}
-                        showDeleteConfirmation={showDeleteConfirmation}
                         setDeleteConfirmation={setShowDeleteConfirmation}
                     />
                 )}

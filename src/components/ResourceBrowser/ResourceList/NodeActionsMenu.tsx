@@ -137,14 +137,15 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab, handleClearBulkSel
         }
 
         return (
-            <DeleteNodeModal
-                name={name}
-                version={version}
-                kind={kind}
-                closePopup={hideDeleteNodeModal}
-                showConfirmationModal={showDeleteNodeDialog}
-                handleClearBulkSelection={handleClearBulkSelection}
-            />
+            showDeleteNodeDialog && (
+                <DeleteNodeModal
+                    name={name}
+                    version={version}
+                    kind={kind}
+                    closePopup={hideDeleteNodeModal}
+                    handleClearBulkSelection={handleClearBulkSelection}
+                />
+            )
         )
     }
 

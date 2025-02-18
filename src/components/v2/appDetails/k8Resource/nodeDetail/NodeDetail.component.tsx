@@ -610,28 +610,31 @@ const NodeDetailComponent = ({
                     switchSelectedContainer={switchSelectedContainer}
                     selectedNamespaceByClickingPod={selectedResource?.namespace}
                     // getContainersFromManifest can only be used from resource browser
-                    {...isResourceBrowserView ? {
-                        handleSuccess: getContainersFromManifest
-                    } : {}}
+                    {...(isResourceBrowserView
+                        ? {
+                              handleSuccess: getContainersFromManifest,
+                          }
+                        : {})}
                 />
             )}
-            <DeleteResourcePopup
-                clusterId={`${selectedResource.clusterId}`}
-                resourceData={selectedResource}
-                selectedResource={{
-                    gvk: {
-                        Group: selectedResource.group,
-                        Version: selectedResource.version,
-                        Kind: selectedResource.kind as NodeType,
-                    },
-                    namespaced: false,
-                }}
-                getResourceListData={getContainersFromManifest}
-                toggleDeleteDialog={toggleDeleteDialog}
-                removeTabByIdentifier={removeTabByIdentifier}
-                handleClearBulkSelection={noop}
-                showConfirmationModal={isResourceBrowserView && showDeleteDialog}
-            />
+            {isResourceBrowserView && showDeleteDialog && (
+                <DeleteResourcePopup
+                    clusterId={`${selectedResource.clusterId}`}
+                    resourceData={selectedResource}
+                    selectedResource={{
+                        gvk: {
+                            Group: selectedResource.group,
+                            Version: selectedResource.version,
+                            Kind: selectedResource.kind as NodeType,
+                        },
+                        namespaced: false,
+                    }}
+                    getResourceListData={getContainersFromManifest}
+                    toggleDeleteDialog={toggleDeleteDialog}
+                    removeTabByIdentifier={removeTabByIdentifier}
+                    handleClearBulkSelection={noop}
+                />
+            )}
         </>
     )
 }

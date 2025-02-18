@@ -25,7 +25,6 @@ import { DeleteCDNodeProps, DeleteDialogType } from './types'
 import { handleDeleteCDNodePipeline, handleDeletePipeline } from './cdpipeline.util'
 
 const DeleteCDNode = ({
-    showDeleteDialog,
     deleteDialog,
     setDeleteDialog,
     clusterName,
@@ -58,7 +57,6 @@ const DeleteCDNode = ({
             onDelete={handleForceDeleteCDNode}
             closeConfirmationModal={hideDeleteModal}
             subtitle={forceDeleteData.forceDeleteDialogMessage}
-            showConfirmationModal={deleteDialog === DeleteDialogType.showForceDeleteDialog && showDeleteDialog}
         />
     )
 
@@ -89,7 +87,6 @@ const DeleteCDNode = ({
                 },
             }}
             subtitle={renderNonCascadeDescription()}
-            showConfirmationModal={deleteDialog === DeleteDialogType.showNonCascadeDeleteDialog && showDeleteDialog}
             handleClose={onClickHideNonCascadeDeletePopup}
         />
     )
@@ -115,18 +112,20 @@ const DeleteCDNode = ({
                 identifier: 'delete-cd-node-input',
                 confirmationKeyword: deleteTitleName,
             }}
-            showConfirmationModal={deleteDialog === DeleteDialogType.showNormalDeleteDialog && showDeleteDialog}
             handleClose={hideDeleteModal}
         />
     )
 
-    return (
-        <>
-            {renderConfirmationDeleteModal()}
-            {renderForceDeleteConfirmationModal()}
-            {renderUnreachableClusterModal()}
-        </>
-    )
+    switch (deleteDialog) {
+        case DeleteDialogType.showNormalDeleteDialog:
+            return renderConfirmationDeleteModal()
+        case DeleteDialogType.showForceDeleteDialog:
+            return renderForceDeleteConfirmationModal()
+        case DeleteDialogType.showNonCascadeDeleteDialog:
+            return renderUnreachableClusterModal()
+        default:
+            return null
+    }
 }
 
 export default DeleteCDNode

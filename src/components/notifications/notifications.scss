@@ -315,16 +315,6 @@
     }
 }
 
-.smtp-protected-input {
-    .protected-input__toggle {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        -webkit-transform: translateY(-50%);
-        transform: translateY(-50%);
-    }
-}
-
 .no-email-channel-warning {
     path {
         fill: var(--Y700);

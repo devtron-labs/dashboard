@@ -69,8 +69,9 @@ const MountFromHost = () => {
                             <div className="mount-row mb-4 mt-4">
                                 <div className="fw-6 fs-13 lh-32 cn-7 " />
                                 <CustomInput
-                                    data-testid="script-mount-host-file-path-host"
-                                    rootClassName="bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 dc__left-radius-4 dc__no-right-border"
+                                    borderRadiusConfig={{
+                                        right: false,
+                                    }}
                                     placeholder="File path on Host"
                                     onChange={(e) => handleMountPath(e, index)}
                                     value={mountPathMap[MountPathMap.FILEPATHONDISK]}
@@ -78,8 +79,9 @@ const MountFromHost = () => {
                                 />
                                 <div className="flex bw-1 en-2">:</div>
                                 <CustomInput
-                                    data-testid="script-mount-host-file-path-container"
-                                    rootClassName="bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 dc__right-radius-4 dc__no-left-border"
+                                    borderRadiusConfig={{
+                                        left: false,
+                                    }}
                                     placeholder="File path on container"
                                     onChange={(e) => handleMountPath(e, index)}
                                     value={mountPathMap[MountPathMap.FILEPATHONCONTAINER]}

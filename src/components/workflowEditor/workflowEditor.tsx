@@ -430,7 +430,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 variant={ConfirmationModalVariantType.delete}
                 subtitle={`Are you sure you want to delete this workflow from '${this.state.appName}'?`}
                 handleClose={this.closeDeleteModal}
-                showConfirmationModal={this.state.showDeleteDialog}
                 buttonConfig={{
                     secondaryButtonConfig: {
                         text: 'Cancel',
@@ -947,7 +946,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 {this.renderRouter()}
                 {this.renderHostErrorMessage()}
                 {this.renderWorkflows()}
-                {this.renderDeleteDialog()}
+                {this.state.showDeleteDialog && this.renderDeleteDialog()}
                 {this.state.showNoGitOpsWarningPopup && (
                     <NoGitOpsConfiguredWarning closePopup={this.hideNoGitOpsWarning} />
                 )}
