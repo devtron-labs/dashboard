@@ -32,7 +32,6 @@ const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
     getResourceListData,
     toggleDeleteDialog,
     removeTabByIdentifier,
-    showConfirmationModal,
     handleClearBulkSelection,
 }) => {
     const { push } = useHistory()
@@ -69,7 +68,6 @@ const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
             component={selectedResource.gvk.Kind}
             subtitle="Are you sure, you want to delete this resource?"
             onDelete={handleDelete}
-            showConfirmationModal={showConfirmationModal}
             closeConfirmationModal={toggleDeleteDialog}
             confirmationConfig={{
                 identifier: 'delete-resource-pod-input',

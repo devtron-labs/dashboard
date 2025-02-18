@@ -281,7 +281,6 @@ export default function CIConfigForm({
     const renderConfirmationModal = () => (
         <ConfirmationModal
             variant={ConfirmationModalVariantType.warning}
-            showConfirmationModal={showCustomPlatformConfirmation}
             title="Please ensure you have set valid target platform for the build"
             subtitle={
                 <div>
@@ -432,7 +431,7 @@ export default function CIConfigForm({
                     </button>
                 </div>
             )}
-            {renderConfirmationModal()}
+            {showCustomPlatformConfirmation && renderConfirmationModal()}
             {/* Might cause bug in future since we are toggling the state but directly closes the modal on empty workflow */}
             {/* TODO: Connect with product if empty state is better? */}
             {configOverridenPipelines?.length > 0 && showConfigOverrideDiff && (

@@ -84,5 +84,5 @@ export const getGitProviderIcon = (gitUrl: string, rootClassName?: string): JSX.
         IconComponent = BitBucket
     }
 
-    return <IconComponent className={`icon-dim-20 ${rootClassName} mw-20`} />
+    return <IconComponent className={`icon-dim-20 ${rootClassName || ''} mw-20`} />
 }

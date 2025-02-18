@@ -204,12 +204,9 @@ const UserPermissionRow = ({
                     </div>
                 )}
             </div>
-            <DeleteUserPermission
-                title={emailId}
-                onDelete={onDelete}
-                showConfirmationModal={isDeleteModalOpen}
-                closeConfirmationModal={toggleDeleteModal}
-            />
+            {isDeleteModalOpen && (
+                <DeleteUserPermission title={emailId} onDelete={onDelete} closeConfirmationModal={toggleDeleteModal} />
+            )}
         </>
     )
 }

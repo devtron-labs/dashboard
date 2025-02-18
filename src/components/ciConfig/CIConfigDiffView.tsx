@@ -322,25 +322,26 @@ export default function CIConfigDiffView({
                 <div className="config-override-diff__view h-100 p-20 bg__tertiary dc__overflow-auto">
                     {renderBodyContent()}
                 </div>
-                <ConfirmationModal
-                    variant={ConfirmationModalVariantType.delete}
-                    title="Delete Override"
-                    subtitle="Are you sure you want to delete override for this pipeline"
-                    buttonConfig={{
-                        secondaryButtonConfig: {
-                            text: 'Cancel',
-                            onClick: toggleConfigOverrideDiffModal,
-                            disabled: deleteInProgress,
-                        },
-                        primaryButtonConfig: {
-                            text: 'Confirm Delete',
-                            onClick: deleteOverride,
-                            isLoading: deleteInProgress,
-                        },
-                    }}
-                    showConfirmationModal={showDeleteDialog}
-                    handleClose={toggleConfigOverrideDiffModal}
-                />
+                {showDeleteDialog && (
+                    <ConfirmationModal
+                        variant={ConfirmationModalVariantType.delete}
+                        title="Delete Override"
+                        subtitle="Are you sure you want to delete override for this pipeline"
+                        buttonConfig={{
+                            secondaryButtonConfig: {
+                                text: 'Cancel',
+                                onClick: toggleConfigOverrideDiffModal,
+                                disabled: deleteInProgress,
+                            },
+                            primaryButtonConfig: {
+                                text: 'Confirm Delete',
+                                onClick: deleteOverride,
+                                isLoading: deleteInProgress,
+                            },
+                        }}
+                        handleClose={toggleConfigOverrideDiffModal}
+                    />
+                )}
             </div>
         </Drawer>
     )

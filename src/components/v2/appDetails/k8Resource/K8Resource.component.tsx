@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useMemo } from 'react'
-import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import {
     AppType,
     getPodsRootParentNameAndStatus,
@@ -25,12 +25,14 @@ import {
     useSearchString,
     ALL_RESOURCE_KIND_FILTER,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as K8ResourceIcon } from '@Icons/ic-object.svg'
+import { ReactComponent as ICObject } from '@Icons/ic-object.svg'
 import { ReactComponent as Info } from '@Icons/ic-info-outline.svg'
 import { useSharedState } from '@Components/v2/utils/useSharedState'
 import { URLS } from '@Config/routes'
+import { DynamicTabs, useTabs } from '@Components/common/DynamicTabs'
+import { DynamicTabsVariantType } from '@Components/common/DynamicTabs/types'
 import IndexStore from '../index.store'
-import { AppDetailsTabs } from '../appDetails.store'
+import { APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX, AppDetailsTabs, getInitialTabs } from '../appDetails.store'
 import { K8ResourceComponentProps } from '../appDetails.type'
 import NodeTreeComponent from './nodeType/NodeTree.component'
 import NodeComponent from './nodeType/Node.component'
@@ -178,35 +180,44 @@ export const K8ResourceComponent = ({
     )
 }
 
-export const EmptyK8sResourceComponent = ({ emptyStateMessage }: { emptyStateMessage: string }) => (
-    <>
-        <div
-            data-testid="resource-tree-wrapper"
-            className="resource-tree-wrapper flexbox pl-20 pr-20"
-            style={{ outline: 'none' }}
-        >
-            <ul className="tab-list">
-                <li className="flex left dc__ellipsis-right">
-                    <div className="flex">
-                        <div className="resource-tree-tab bg__primary cn-9 left pl-12 pt-8 pb-8 pr-12">
-                            <div className="resource-tree__tab-hover tab-list__tab resource-tab__node cursor cn-9 fw-6 dc__no-decor m-0-imp">
-                                <div className="flex left cn-9">
-                                    <span className="icon-dim-16 resource-tree__tab-hover fcn-9">
-                                        <K8ResourceIcon />
-                                    </span>
-                                    <span className="ml-8 dc__capitalize fs-12">{AppDetailsTabs.k8s_Resources}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-        </div>
-        <div className="bg__primary flex h-100">
-            <div className="flex column h-100">
-                <Info className="icon-dim-20 icon-n5" />
-                <span className="mt-10">{emptyStateMessage}</span>
+export const EmptyK8sResourceComponent = ({ emptyStateMessage }: { emptyStateMessage: string }) => {
+    const { url: routeMatchUrl } = useRouteMatch()
+    const {
+        tabs,
+        initTabs,
+        markTabActiveById,
+        removeTabByIdentifier,
+        stopTabByIdentifier,
+        // NOTE: fallback to 0th index since that is the k8s_resource tab
+    } = useTabs(routeMatchUrl, APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX)
+
+    const location = useLocation()
+
+    useEffect(() => {
+        initTabs(getInitialTabs(location.pathname, routeMatchUrl, false), true)
+    }, [])
+
+    return (
+        <>
+            <div className="bg__primary pt-10">
+                <DynamicTabs
+                    variant={DynamicTabsVariantType.ROUNDED}
+                    markTabActiveById={markTabActiveById}
+                    removeTabByIdentifier={removeTabByIdentifier}
+                    stopTabByIdentifier={stopTabByIdentifier}
+                    tabs={tabs}
+                    timerConfig={null}
+                    iconsConfig={{
+                        [AppDetailsTabs.k8s_Resources]: <ICObject className="fcn-7" />,
+                    }}
+                />
             </div>
-        </div>
-    </>
-)
+            <div className="bg__primary flex h-100">
+                <div className="flex column h-100">
+                    <Info className="icon-dim-20 icon-n5" />
+                    <span className="mt-10">{emptyStateMessage}</span>
+                </div>
+            </div>
+        </>
+    )
+}

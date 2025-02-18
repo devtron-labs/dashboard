@@ -688,9 +688,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             placeholder={this.gitAuthType('placeholder')}
                             value={`${this.props.material.url}`}
                             onChange={this.props.handleUrlChange}
-                            data-testid="git-repo-url-text-box"
                             error={this.props.isError.url}
-                            rootClassName="h-36"
                         />
                     </div>
                 </div>
@@ -882,13 +880,11 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             </div>
                         </Checkbox>
                         {this.props.isChecked && (
-                            <div className="ml-35">
+                            <div className="ml-35 w-885">
                                 <CustomInput
-                                    rootClassName="w-885"
                                     placeholder="e.g. /abc"
                                     value={this.props.material.checkoutPath}
                                     onChange={this.props.handlePathChange}
-                                    data-testid="clone-directory-path"
                                     name="clone-directory-path"
                                     error={this.props.isError.checkoutPath}
                                 />
@@ -970,10 +966,9 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         />
                     </div>
                 </div>
-                <DeleteConfirmationModal
+                {this.state.confirmation && <DeleteConfirmationModal
                     title={this.props.material.name}
                     component={DeleteComponentsName.GitRepo}
-                    showConfirmationModal={this.state.confirmation}
                     closeConfirmationModal={this.toggleConfirmation}
                     onDelete={this.onDelete}
                     errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
@@ -982,7 +977,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             ? DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE
                             : DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE
                     }
-                />
+                />}
             </form>
         )
     }

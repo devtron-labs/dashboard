@@ -210,20 +210,22 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ showApplicationDetailedMo
                 </table>
             )}
 
-            <ForceDeleteConfirmationModal
-                title={forceDeleteDialogTitle}
-                onDelete={handleForceDelete}
-                showConfirmationModal={forceDeleteDialog}
-                closeConfirmationModal={closeForceDeleteModal}
-                subtitle={forceDeleteDialogMessage}
-            />
+            {forceDeleteDialog && (
+                <ForceDeleteConfirmationModal
+                    title={forceDeleteDialogTitle}
+                    onDelete={handleForceDelete}
+                    closeConfirmationModal={closeForceDeleteModal}
+                    subtitle={forceDeleteDialogMessage}
+                />
+            )}
 
-            <ClusterNotReachableDialog
-                clusterName={clusterName}
-                onClickCancel={onClickHideNonCascadeDeletePopup}
-                onClickDelete={onClickNonCascadeDelete}
-                showConfirmationModal={nonCascadeDeleteDialog}
-            />
+            {nonCascadeDeleteDialog && (
+                <ClusterNotReachableDialog
+                    clusterName={clusterName}
+                    onClickCancel={onClickHideNonCascadeDeletePopup}
+                    onClickDelete={onClickNonCascadeDelete}
+                />
+            )}
         </div>
     )
 }

@@ -162,65 +162,9 @@
     margin-top: 0px;
 }
 
-.workflow-node__configure-btn {
-    border: none;
-    padding: 0px;
-    position: absolute;
-    right: 12px;
-    top: 12px;
-}
-
-.workflow-node__btn-icon {
-    width: 20px;
-    height: 20px;
-}
-
-.workflow-node__git-icon {
-    display: block;
-    width: 20px;
-    height: 20px;
-    background-image: url('../assets/icons/git/git.svg');
-    background-size: 100% 100%;
-}
-
-.workflow-node__CI-icon {
-    background-image: url('../assets/icons/ic-CI.svg');
-}
-
-.workflow-node__CD-pre-post-icon {
-    background-image: url('../assets/icons/ic-cd-stage.svg');
-}
-
-.workflow-node__CI-webhook-icon {
-    background-image: url('../assets/icons/ic-CIWebhook.svg');
-}
-
-.workflow-node__CI-linked-icon {
-    background-image: url('../assets/icons/ic-CILinked.svg');
-}
-
-.workflow-node__CD-icon {
-    background-image: url('../assets/icons/ic-CD.svg');
-}
-
-.workflow-node__CD-rocket-icon {
-    background-image: url('../assets/icons/ic-paper-rocket.svg');
-}
-
-.workflow-node__job-icon {
-    background-image: url('../assets/icons/ic-job-node.svg');
-}
-
 .workflow-node__full-width-minus-Icon {
     flex: 1;
     min-width: 0;
-}
-
-.workflow-node__icon-common {
-    display: block;
-    width: 20px;
-    height: 20px;
-    background-size: 100% 100%;
 }
 
 .workflow-node__add-cd-btn {

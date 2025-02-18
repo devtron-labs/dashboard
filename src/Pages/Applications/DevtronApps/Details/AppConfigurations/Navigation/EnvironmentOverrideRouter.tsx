@@ -91,7 +91,6 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
             component="configurations for environment"
             onDelete={deleteEnvHandler}
             closeConfirmationModal={handleCancelDelete}
-            showConfirmationModal={showDelete}
         >
             <p className="fs-13 cn-7 lh-1-54">Are you sure you want to delete configurations for this environment?</p>
         </DeleteConfirmationModal>

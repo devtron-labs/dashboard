@@ -178,16 +178,17 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
                     </div>
                 </PopupMenu.Body>
             </PopupMenu>
-            <DeleteResourcePopup
-                clusterId={clusterId}
-                resourceData={resourceData}
-                selectedResource={selectedResource}
-                getResourceListData={getResourceListData}
-                toggleDeleteDialog={toggleDeleteDialog}
-                removeTabByIdentifier={removeTabByIdentifier}
-                showConfirmationModal={showDeleteDialog}
-                handleClearBulkSelection={handleClearBulkSelection}
-            />
+            {showDeleteDialog && (
+                <DeleteResourcePopup
+                    clusterId={clusterId}
+                    resourceData={resourceData}
+                    selectedResource={selectedResource}
+                    getResourceListData={getResourceListData}
+                    toggleDeleteDialog={toggleDeleteDialog}
+                    removeTabByIdentifier={removeTabByIdentifier}
+                    handleClearBulkSelection={handleClearBulkSelection}
+                />
+            )}
 
             {showVulnerabilityModal && !!getResourceScanDetails && (
                 <SecurityModal

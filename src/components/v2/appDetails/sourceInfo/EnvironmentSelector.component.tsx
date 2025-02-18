@@ -393,29 +393,33 @@ const EnvironmentSelectorComponent = ({
                                 </PopupMenu.Body>
                             </PopupMenu>
 
-                            <DeleteChartDialog
-                                appName={appDetails.appName}
-                                handleDelete={handleDelete}
-                                toggleConfirmation={setShowDeleteConfirmation}
-                                isCreateValueView={false}
-                                showConfirmationModal={showDeleteConfirmation}
-                            />
+                            {showDeleteConfirmation && (
+                                <DeleteChartDialog
+                                    appName={appDetails.appName}
+                                    handleDelete={handleDelete}
+                                    toggleConfirmation={setShowDeleteConfirmation}
+                                    isCreateValueView={false}
+                                />
+                            )}
                         </div>
                     )}
-                    <ForceDeleteConfirmationModal
-                        title={forceDeleteDialogTitle}
-                        subtitle={forceDeleteDialogMessage}
-                        showConfirmationModal={forceDeleteDialog}
-                        onDelete={handleForceDelete}
-                        closeConfirmationModal={closeForceConfirmationModal}
-                    />
 
-                    <ClusterNotReachableDialog
-                        clusterName={clusterName}
-                        onClickCancel={onClickHideNonCascadeDeletePopup}
-                        onClickDelete={onClickNonCascadeDelete}
-                        showConfirmationModal={nonCascadeDeleteDialog}
-                    />
+                    {forceDeleteDialog && (
+                        <ForceDeleteConfirmationModal
+                            title={forceDeleteDialogTitle}
+                            subtitle={forceDeleteDialogMessage}
+                            onDelete={handleForceDelete}
+                            closeConfirmationModal={closeForceConfirmationModal}
+                        />
+                    )}
+
+                    {nonCascadeDeleteDialog && (
+                        <ClusterNotReachableDialog
+                            clusterName={clusterName}
+                            onClickCancel={onClickHideNonCascadeDeletePopup}
+                            onClickDelete={onClickNonCascadeDelete}
+                        />
+                    )}
                 </div>
             )}
             {urlInfo && (
