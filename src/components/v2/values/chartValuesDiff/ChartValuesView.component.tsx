@@ -65,6 +65,7 @@ import { repoType } from '../../../../config'
 import UserGitRepo from '../../../gitOps/UserGitRepo'
 import { getChartValuesFiltered } from '@Components/charts/charts.helper'
 import { ChartValuesType } from '@Components/charts/charts.types'
+import { ConfigureGitopsInfoBlock } from '@Components/workflowEditor/ConfigureGitopsInfoBlock'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
@@ -220,11 +221,29 @@ export const DeploymentAppRadioGroup = ({
     isFromCDPipeline,
     isGitOpsRepoNotConfigured,
     gitOpsRepoConfigInfoBar,
+    areGitopsCredentialsConfigured = true,
 }: DeploymentAppRadioGroupType): JSX.Element => {
-    const gitOpsNotCongiguredText =
+    const gitOpsNotConfiguredText =
         allowedDeploymentTypes.length == 1 ? GITOPS_REPO_REQUIRED_FOR_ENV : GITOPS_REPO_REQUIRED
+
+    const renderGitopsActionBlock = () => {
+        if (deploymentAppType !== DeploymentAppTypes.GITOPS) {
+            return null
+        }
+
+        if (!areGitopsCredentialsConfigured) {
+            return <ConfigureGitopsInfoBlock />
+        }
+
+        if (isGitOpsRepoNotConfigured) {
+            return gitOpsRepoConfigInfoBar(gitOpsNotConfiguredText)
+        }
+
+        return null
+    }
+
     return (
-        <>
+        <div className="flexbox-col dc__gap-16">
             <RadioGroup
                 value={deploymentAppType}
                 name="DeploymentAppTypeGroup"
@@ -269,10 +288,9 @@ export const DeploymentAppRadioGroup = ({
                     </RadioGroupItem>
                 </ConditionalWrap>
             </RadioGroup>
-            {deploymentAppType === DeploymentAppTypes.GITOPS && isGitOpsRepoNotConfigured && (
-                <div className="mt-16">{gitOpsRepoConfigInfoBar(gitOpsNotCongiguredText)}</div>
-            )}
-        </>
+
+            {renderGitopsActionBlock()}
+        </div>
     )
 }
 

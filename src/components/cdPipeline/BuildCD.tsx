@@ -37,29 +37,31 @@ import {
     useMainContext,
     useSuperAdmin,
     ErrorScreenNotAuthorized,
+    InfoBlock,
+    ButtonVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useHistory } from 'react-router-dom'
 import yamlJsParser from 'yaml'
-import error from '../../assets/icons/misc/errorInfo.svg'
-import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
+import { ReactComponent as ICArrowRight } from '@Icons/ic-arrow-right.svg'
+import { ReactComponent as Add } from '@Icons/ic-add.svg'
+import { ReactComponent as AlertTriangle } from '@Icons/ic-alert-triangle.svg'
+import { ReactComponent as Help } from '@Icons/ic-help.svg'
+import { ReactComponent as ICInfo } from '@Icons/ic-info-filled.svg'
+import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
+import settings from '@Icons/ic-settings.svg'
+import trash from '@Icons/misc/delete.svg'
+import error from '@Icons/misc/errorInfo.svg'
+import { Info } from '../common/icons/Icons'
 import { ENV_ALREADY_EXIST_ERROR, RegistryPayloadWithSelectType, URLS, ViewType } from '../../config'
 import { GeneratedHelmPush, MigrateToDevtronFormState, TriggerTypeRadioProps } from './cdPipeline.types'
 import { createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary, Select } from '../common'
-import { Info } from '../common/icons/Icons'
-import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
-import settings from '../../assets/icons/ic-settings.svg'
-import trash from '../../assets/icons/misc/delete.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { getNamespacePlaceholder } from './cdpipeline.util'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { DeploymentAppRadioGroup } from '../v2/values/chartValuesDiff/ChartValuesView.component'
 import CustomImageTags from '../CIPipelineN/CustomImageTags'
-import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { GITOPS_REPO_REQUIRED } from '../v2/values/chartValuesDiff/constant'
 import { getGitOpsRepoConfig } from '../../services/service'
-import { ReactComponent as ICInfo } from '../../assets/icons/ic-info-filled.svg'
 
 import PullImageDigestToggle from './PullImageDigestToggle'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
@@ -87,6 +89,7 @@ export default function BuildCD({
     getMandatoryPluginData,
     migrateToDevtronFormState,
     setMigrateToDevtronFormState,
+    isGitOpsInstalledButNotConfigured,
 }: BuildCDProps) {
     const {
         formData,
@@ -107,7 +110,9 @@ export default function BuildCD({
         setReloadNoGitOpsRepoConfiguredModal,
     } = useContext(pipelineContext)
 
-    const { featureGitOpsFlags: { isFeatureArgoCdMigrationEnabled } } = useMainContext()
+    const {
+        featureGitOpsFlags: { isFeatureArgoCdMigrationEnabled },
+    } = useMainContext()
     const { isSuperAdmin } = useSuperAdmin()
 
     const validationRules = new ValidationRules()
@@ -188,7 +193,7 @@ export default function BuildCD({
                 configMaps: [],
                 secrets: [],
             }
-            
+
             // Only readonly field not to be consumed while sending
             _form.isClusterCdActive = selection.isClusterCdActive
             _form.runPreStageInEnv = getPrePostStageInEnv(
@@ -300,6 +305,8 @@ export default function BuildCD({
             .catch((err) => {
                 if (err.code === 409) {
                     setReloadNoGitOpsRepoConfiguredModal(true)
+                } else {
+                    showError(err)
                 }
             })
             .finally(() => {
@@ -307,24 +314,24 @@ export default function BuildCD({
             })
     }
 
-    const gitOpsRepoConfigInfoBar = (content: string) => {
-        return (
-            <InfoColourBar
-                message={content}
-                classname="warn mb-16"
-                Icon={Warn}
-                iconClass="warning-icon"
-                linkClass={`flex ${gitopsConflictLoading ? 'loading-dots-cb5 cursor-not-allowed' : ''}`}
-                linkText="Configure GitOps Repository"
-                internalLink
-                linkOnClick={checkGitOpsRepoConflict}
-            />
-        )
-    }
+    const gitOpsRepoConfigInfoBar = (content: string) => (
+        <InfoBlock
+            description={content}
+            variant='warning'
+            buttonProps={{
+                dataTestId: 'configure-gitops-repo-button',
+                variant: ButtonVariantType.text,
+                text: 'Configure',
+                endIcon: <ICArrowRight />,
+                onClick: checkGitOpsRepoConflict,
+                isLoading: gitopsConflictLoading,  
+            }}
+        />
+    )
 
     const renderTriggerType = () => (
         <TriggerTypeRadio
-            value={formData.triggerType ? formData.triggerType as TriggerTypeRadioProps['value']  : TriggerType.Auto}
+            value={formData.triggerType ? (formData.triggerType as TriggerTypeRadioProps['value']) : TriggerType.Auto}
             onChange={handleTriggerTypeChange}
         />
     )
@@ -602,23 +609,22 @@ export default function BuildCD({
         setFormData(_form)
     }
 
-    const renderDeploymentAppType = () => {
-        return (
-            <div className="cd-pipeline__deployment-type mt-16">
-                <label className="form__label form__label--sentence dc__bold">How do you want to deploy?</label>
-                <DeploymentAppRadioGroup
-                    isDisabled={!!cdPipelineId}
-                    deploymentAppType={formData.deploymentAppType ?? DeploymentAppTypes.HELM}
-                    handleOnChange={handleDeploymentAppTypeChange}
-                    allowedDeploymentTypes={formData.allowedDeploymentTypes}
-                    rootClassName={`chartrepo-type__radio-group ${!cdPipelineId ? 'bcb-5' : ''}`}
-                    isFromCDPipeline
-                    isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
-                    gitOpsRepoConfigInfoBar={gitOpsRepoConfigInfoBar}
-                />
-            </div>
-        )
-    }
+    const renderDeploymentAppType = () => (
+        <div className="cd-pipeline__deployment-type mt-16">
+            <label className="form__label form__label--sentence dc__bold">How do you want to deploy?</label>
+            <DeploymentAppRadioGroup
+                isDisabled={!!cdPipelineId}
+                deploymentAppType={formData.deploymentAppType ?? DeploymentAppTypes.HELM}
+                handleOnChange={handleDeploymentAppTypeChange}
+                allowedDeploymentTypes={formData.allowedDeploymentTypes}
+                rootClassName={`chartrepo-type__radio-group ${!cdPipelineId ? 'bcb-5' : ''}`}
+                isFromCDPipeline
+                isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
+                gitOpsRepoConfigInfoBar={gitOpsRepoConfigInfoBar}
+                areGitopsCredentialsConfigured={!isGitOpsInstalledButNotConfigured}
+            />
+        </div>
+    )
 
     const renderStrategyOptions = () => {
         return (
@@ -858,17 +864,13 @@ export default function BuildCD({
                 {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
                     !isVirtualEnvironment &&
                     formData.allowedDeploymentTypes.length > 0 &&
-                    !noGitOpsModuleInstalledAndConfigured &&
+                    (!noGitOpsModuleInstalledAndConfigured || isGitOpsInstalledButNotConfigured) &&
                     renderDeploymentAppType()}
 
                 {isAdvanced ? renderAdvancedDeploymentStrategy() : renderBasicDeploymentStrategy()}
-
-                {isAdvanced &&
-                    ApprovalPolicyRedirectCard &&
-                    <ApprovalPolicyRedirectCard />}
-
                 {isAdvanced && (
                     <>
+                        {ApprovalPolicyRedirectCard && <ApprovalPolicyRedirectCard />}
                         <CustomImageTags
                             formData={formData}
                             setFormData={setFormData}

@@ -116,6 +116,10 @@ export interface DeploymentAppRadioGroupType {
     allowedDeploymentTypes?: DeploymentAppTypes[]
     rootClassName?: string
     isFromCDPipeline?: boolean
+    /**
+     * @default true
+     */
+    areGitopsCredentialsConfigured?: boolean
     isGitOpsRepoNotConfigured?: boolean
     gitOpsRepoConfigInfoBar?: (content: string) => JSX.Element
 }

@@ -132,6 +132,7 @@ export default function CDPipeline({
     isGitOpsRepoNotConfigured,
     reloadAppConfig,
     handleDisplayLoader,
+    isGitOpsInstalledButNotConfigured,
 }: CDPipelineProps) {
     const isCdPipeline = true
     const urlParams = new URLSearchParams(location.search)
@@ -1321,6 +1322,7 @@ export default function CDPipeline({
                                     getMandatoryPluginData={getMandatoryPluginData}
                                     migrateToDevtronFormState={migrateToDevtronFormState}
                                     setMigrateToDevtronFormState={setMigrateToDevtronFormState}
+                                    isGitOpsInstalledButNotConfigured={isGitOpsInstalledButNotConfigured}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />
