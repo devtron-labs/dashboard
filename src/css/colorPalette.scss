@@ -237,7 +237,8 @@
 // CODE MIRROR THEME
 .code-editor__shebang,
 .cm-theme,
-.cm-merge-theme {
+.cm-merge-theme,
+.component-specific-theme {
     &__light {
         @include theme-light;
         --bg-code-editor-base: var(--bg-primary);
