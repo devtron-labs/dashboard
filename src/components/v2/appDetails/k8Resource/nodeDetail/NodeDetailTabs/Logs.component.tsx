@@ -499,7 +499,7 @@ const LogsComponent = ({
     return isDeleted ? (
         <MessageUI msg="This resource no longer exists" size={32} />
     ) : (
-        <>
+        <div className={`flexbox-col flex-grow-1 ${getComponentSpecificThemeClass(AppThemeType.dark)}`}>
             <div className="node-container-fluid bg__primary">
                 <div data-testid="logs-container-header" className="pl-16 h-32 flexbox">
                     <div className="w-70 flexbox flex-align-center pt-2 pb-2">
@@ -763,7 +763,7 @@ const LogsComponent = ({
                     </form>
                 </div>
             </div>
-            <div className={`flexbox-col flex-grow-1 ${getComponentSpecificThemeClass(AppThemeType.dark)}`}>
+            <>
                 {podContainerOptions.containerOptions.filter((_co) => _co.selected).length > 0 &&
                     podContainerOptions.podOptions.filter((_po) => _po.selected).length > 0 && (
                         <div
@@ -853,7 +853,7 @@ const LogsComponent = ({
                         />
                     </div>
                 )}
-            </div>
+            </>
 
             {showCustomOptionsModal && (
                 <CustomLogsModal
@@ -864,7 +864,7 @@ const LogsComponent = ({
                     setShowCustomOptionsMoadal={setShowCustomOptionsMoadal}
                 />
             )}
-        </>
+        </div>
     )
 }
 

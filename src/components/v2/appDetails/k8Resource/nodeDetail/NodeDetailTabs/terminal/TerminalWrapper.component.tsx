@@ -21,6 +21,7 @@ import { TERMINAL_TEXT } from './constants'
 import TerminalView from './Terminal'
 import { ConnectionStripMessageType, TerminalWrapperProps } from './terminal.type'
 import terminalStripTypeData from './terminal.utils'
+import { AppThemeType, getComponentSpecificThemeClass } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function TerminalWrapper({
     selectionListData,
@@ -74,7 +75,7 @@ export default function TerminalWrapper({
     }
 
     return (
-        <div className={className} data-testid={dataTestId}>
+        <div className={`${className} ${getComponentSpecificThemeClass(AppThemeType.dark)}`} data-testid={dataTestId}>
             <div className="flex bg__primary pl-20 h-32 terminal-action-strip dc__zi-11">{firstStrip()}</div>
             {selectionListData.secondRow && (
                 <div className="flex left bg__primary pl-20 dc__border-top terminal-action-strip dc__gap-12">{secondStrip()}</div>
