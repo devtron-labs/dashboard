@@ -53,6 +53,7 @@ import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
@@ -108,6 +109,7 @@ import {
 } from '../gitOps/constants'
 import { BuildCDProps, CDPipelineProps, DeleteDialogType, ForceDeleteMessageType } from './types'
 import { MIGRATE_TO_DEVTRON_FORM_STATE } from './constants'
+import { getConfigureGitOpsCredentialsButtonProps } from '@Components/workflowEditor/ConfigureGitopsInfoBlock'
 
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 const processPluginData: (params: ProcessPluginDataParamsType) => Promise<ProcessPluginDataReturnType> =
@@ -949,6 +951,20 @@ export default function CDPipeline({
 
     const savePipeline = () => {
         if (!isMigratingFromArgoApp) {
+            if (formData.deploymentAppType === DeploymentAppTypes.GITOPS && isGitOpsInstalledButNotConfigured) {
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    title: 'GitOps credentials not configured',
+                    description: 'GitOps credentials is required to deploy applications via GitOps',
+                    buttonProps: getConfigureGitOpsCredentialsButtonProps({
+                        size: ComponentSizeType.small,
+                        style: ButtonStyleType.neutral,
+                    })
+                })
+
+                return
+            }
+
             if (checkForGitOpsRepoNotConfigured()) {
                 return
             }
