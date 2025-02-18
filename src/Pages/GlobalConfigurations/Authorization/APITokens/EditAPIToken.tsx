@@ -228,6 +228,7 @@ const EditAPIToken = ({
                 <div className="flexbox-col dc__gap-16">
                     {renderRegenerateInfoBar()}
                     <CustomInput
+                        placeholder="Enter name"
                         label="Name"
                         data-testid="api-token-name-textbox"
                         value={editData.name}

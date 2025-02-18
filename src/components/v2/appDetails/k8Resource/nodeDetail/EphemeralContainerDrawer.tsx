@@ -23,16 +23,14 @@ import {
     YAMLStringify,
     InfoIconTippy,
     CodeEditor,
-    SelectOption,
     ToastManager,
     ToastVariantType,
     TabGroup,
     SelectPicker,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
-import Tippy from '@tippyjs/react'
-import CreatableSelect from 'react-select/creatable'
 import {
     EphemeralContainerDrawerType,
     EphemeralForm,
@@ -49,12 +47,10 @@ import {
 import sampleConfig from './sampleConfig.json'
 import IndexStore from '../../index.store'
 import { generateEphemeralUrl } from './nodeDetail.api'
-import { menuComponentForImage } from '../../../common/ReactSelect.utils'
 import { getHostURLConfiguration } from '../../../../../services/service'
-import { IMAGE_LIST } from '../../../../ClusterNodes/constants'
+import { CLUSTER_TERMINAL_MESSAGING, IMAGE_LIST } from '../../../../ClusterNodes/constants'
 import { Options } from '../../appDetails.type'
 import { EPHEMERAL_CONTAINER } from '../../../../../config/constantMessaging'
-import { selectStyles } from './nodeDetail.util'
 import { DEFAULT_CONTAINER_NAME, SwitchItemValues, DOCUMENTATION, EDITOR_VIEW } from '../../../../../config'
 
 const EphemeralContainerDrawer = ({
@@ -206,10 +202,7 @@ const EphemeralContainerDrawer = ({
     const handleEphemeralChange = (selected, key, defaultOptions) => {
         const defaultVal = defaultOptions.length && defaultOptions[0]
         if (key === 'image') {
-            const newImageOption = {
-                value: selected.value,
-                label: selected.value,
-            }
+            const newImageOption = selected
             const existingImageOption = imageListOption.find((option) => option.value === selected.value)
             const newImageListOption = [newImageOption, ...imageListOption]
             if (!existingImageOption) {
@@ -249,90 +242,59 @@ const EphemeralContainerDrawer = ({
         }
     }
 
-    const getImageTippyContent = (data) => {
-        return (
-            <span style={{ display: 'block', width: '220px' }}>
-                <span className="fs-12 fw-4">{data.description}</span>
-            </span>
-        )
-    }
-
     const renderBasicEphemeral = (): JSX.Element => {
         return (
             <div className="p-20 flex-grow-1">
-                <div className="dc__row-container mb-12">
-                    <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            content={
-                                <span style={{ display: 'block', width: '220px' }}>
-                                    {EPHEMERAL_CONTAINER.CONTAINER_NAME}
-                                </span>
-                            }
-                        >
-                            <span className="text-underline-dashed">Container name prefix</span>
-                        </Tippy>
-                    </div>
+                <div className="mb-12">
                     <CustomInput
                         name="container-name"
-                        rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 h-36"
-                        data-testid="ephemeral-container-name"
+                        fullWidth
+                        placeholder="Enter container name"
                         onChange={handleContainerChange}
                         value={ephemeralForm.basicData.containerName}
+                        layout="row"
+                        label="Container name prefix"
+                        labelTooltipConfig={{
+                            content: EPHEMERAL_CONTAINER.CONTAINER_NAME,
+                        }}
+                        required
                     />
                 </div>
 
-                <div className="dc__row-container mb-12">
-                    <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            content={
-                                <span style={{ display: 'block', width: '220px' }}>{EPHEMERAL_CONTAINER.IMAGE}</span>
-                            }
-                        >
-                            <span className="text-underline-dashed">Image</span>
-                        </Tippy>
-                    </div>
-
-                    <CreatableSelect
+                <div className="mb-12">
+                    <SelectPicker
                         value={selectedImageList || imageListOption[0]}
                         options={imageListOption}
-                        className="select-width"
-                        classNamePrefix="select-token-expiry-duration"
+                        inputId="select-token-expiry-duration"
                         onChange={(e) => handleEphemeralChange(e, 'image', imageListOption)}
-                        components={{
-                            IndicatorSeparator: null,
-                            MenuList: menuComponentForImage,
-                            Option: (props) => (
-                                <SelectOption
-                                    showTippy
-                                    tippyClass="default-tt"
-                                    tippyContent={getImageTippyContent(props.data)}
-                                    {...props}
-                                />
-                            ),
-                        }}
-                        styles={selectStyles}
                         onKeyDown={handleKeyDown}
+                        label="Image"
+                        labelTooltipConfig={{
+                            content: EPHEMERAL_CONTAINER.IMAGE,
+                        }}
+                        required
+                        renderMenuListFooter={() => (
+                            <div className="fw-4 lh-20 pl-8 pr-8 pt-6 pb-6 cn-7 fs-13 dc__italic-font-style">
+                                {CLUSTER_TERMINAL_MESSAGING.CUSTOM_PATH}
+                            </div>
+                        )}
+                        isCreatable
+                        size={ComponentSizeType.large}
+                        layout="row"
+                        onCreateOption={(inputValue) =>
+                            handleEphemeralChange(
+                                {
+                                    label: inputValue,
+                                    value: inputValue,
+                                },
+                                'image',
+                                imageListOption,
+                            )
+                        }
                     />
                 </div>
 
-                <div className="dc__row-container mb-12">
-                    <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            content={
-                                <span style={{ display: 'block', width: '220px' }}>
-                                    {EPHEMERAL_CONTAINER.TARGET_CONTAINER_NAME}
-                                </span>
-                            }
-                        >
-                            <span className="text-underline-dashed">Target Container Name</span>
-                        </Tippy>
-                    </div>
+                <div className="mb-12">
                     <SelectPicker
                         inputId="target-container-name"
                         name="target-container-name"
@@ -341,6 +303,13 @@ const EphemeralContainerDrawer = ({
                         classNamePrefix="select-token-expiry-duration"
                         isSearchable={false}
                         onChange={(e) => handleEphemeralChange(e, 'targetContainerName', targetContainerOption[0])}
+                        labelTooltipConfig={{
+                            content: EPHEMERAL_CONTAINER.TARGET_CONTAINER_NAME,
+                        }}
+                        required
+                        label="Target Container Name"
+                        layout="row"
+                        size={ComponentSizeType.large}
                     />
                 </div>
             </div>

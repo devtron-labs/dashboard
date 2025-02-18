@@ -15,6 +15,7 @@
  */
 
 import { RouteComponentProps } from 'react-router-dom'
+import { SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { SERVER_MODE_TYPE } from '../../config'
 import { OptionType } from '../app/types'
 
@@ -148,7 +149,7 @@ export interface ClusterStepModal {
 }
 
 export interface ClusterTerminalParamsType {
-    selectedImage: OptionType
+    selectedImage: SelectPickerOptionType<string>
     selectedNamespace: OptionType
     selectedNode: OptionType
     selectedShell: OptionType

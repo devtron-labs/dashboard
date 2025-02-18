@@ -106,7 +106,7 @@ export default function JobListView(props: JobListViewProps) {
                                 </p>
                             </div>
                             <div className="app-list__cell">
-                                <AppStatus appStatus={job.defaultPipeline.status} isJobView />
+                                <AppStatus status={job.defaultPipeline.status} isJobView />
                             </div>
                             <div className="app-list__cell">
                                 <p className="dc__truncate-text m-0">
