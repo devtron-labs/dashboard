@@ -39,6 +39,7 @@ import {
     ButtonVariantType,
     DeleteConfirmationModal,
     Textarea,
+    PasswordField,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -810,13 +811,13 @@ const GitForm = ({
         <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
             <div className="mb-16">
                 <CustomInput
-                    dataTestid="git-account-name-textbox"
+                    placeholder="Enter name"
                     value={state.name.value}
                     onChange={handleOnChange}
                     name="name"
                     error={state.name.error}
                     label="Name"
-                    isRequiredField
+                    required
                 />
             </div>
             <div className="form__row--two-third mb-16">
@@ -840,13 +841,13 @@ const GitForm = ({
                     <div className="cr-5 fs-11">{gitHost.error}</div>
                 </div>
                 <CustomInput
-                    dataTestid="git-account-host-url-textbox"
+                    placeholder="Enter URL"
                     value={state.url.value}
                     onChange={handleOnChange}
                     name="url"
                     error={state.url.error}
                     label="URL"
-                    isRequiredField
+                    required
                 />
             </div>
             <div className="form__label dc__required-field">Authentication type</div>
@@ -890,33 +891,27 @@ const GitForm = ({
             )}
             {state.auth.error && <div className="form__error">{state.auth.error}</div>}
             {state.auth.value === 'USERNAME_PASSWORD' && (
-                <div className="form__row form__row--two-third">
+                <div className="mb-16 form__row--two-third">
                     <CustomInput
-                        dataTestid="git-account-user-auth-username"
+                        placeholder="Enter Username"
                         value={customState.username.value}
                         onChange={customHandleChange}
                         name="username"
                         error={customState.username.error}
                         label="Username"
-                        isRequiredField
+                        required
                     />
-                    <div>
-                        <CustomInput
-                            dataTestid="git-account-user-auth-password"
-                            value={customState.password.value}
-                            onChange={customHandleChange}
-                            onFocus={handleOnFocus}
-                            name="password"
-                            error={customState.password.error}
-                            label="Password/Auth token"
-                            isRequiredField
-                            onBlur={id && handleOnBlur}
-                        />
-                        <div className="flex fs-12 left pt-4 mb-20" style={{ color: 'var(--N700)' }}>
-                            <Warn className="icon-dim-16 mr-4 " />
-                            If using Github, use token instead of password.
-                        </div>
-                    </div>
+                    <PasswordField
+                        placeholder="Enter Password/Auth token"
+                        value={customState.password.value}
+                        onChange={customHandleChange}
+                        name="password"
+                        error={customState.password.error}
+                        label="Password/Auth token"
+                        required
+                        helperText="If using Github, use token instead of password."
+                        shouldShowDefaultPlaceholderOnBlur={!!id}
+                    />
                 </div>
             )}
             {state.auth.value === 'SSH' && (

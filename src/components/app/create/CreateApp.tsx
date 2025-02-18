@@ -367,25 +367,21 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         return (
             <div className="scrollable-content p-20">
                 <div className="form__row">
-                    <div className={`${this.props.isJobView ? 'mb-12' : ''}`}>
-                        <CustomInput
-                            data-testid={`${this.props.isJobView ? 'job' : 'app'}-name-textbox`}
-                            name="app-name"
-                            label={`${this.props.isJobView ? 'Job' : 'App'} Name`}
-                            value={this.state.form.appName}
-                            placeholder={`e.g. my-first-${this.props.isJobView ? 'job' : 'app'}`}
-                            autoFocus
-                            onChange={this.handleAppName}
-                            isRequiredField
-                            error={appNameErrors && !this.state.isValid.appName && errorObject[0].message}
-                        />
-                    </div>
-                    {!this.props.isJobView && (
-                        <span className="form__text-field-info form__text-field-info--create-app">
-                            <Info className="form__icon form__icon--info form__icon--create-app" />
-                            Apps are NOT env specific and can be used to deploy to multiple environments.
-                        </span>
-                    )}
+                    <CustomInput
+                        data-testid={`${this.props.isJobView ? 'job' : 'app'}-name-textbox`}
+                        name="app-name"
+                        label={`${this.props.isJobView ? 'Job' : 'App'} Name`}
+                        value={this.state.form.appName}
+                        placeholder={`e.g. my-first-${this.props.isJobView ? 'job' : 'app'}`}
+                        autoFocus
+                        onChange={this.handleAppName}
+                        required
+                        error={appNameErrors && !this.state.isValid.appName && errorObject[0].message}
+                        helperText={
+                            !this.props.isJobView &&
+                            'Apps are NOT env specific and can be used to deploy to multiple environments.'
+                        }
+                    />
                     <div className="mt-16">
                         <Textarea
                             label="Description"
@@ -470,8 +466,9 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 )}
 
                 <div className="form__row">
-                    <span className="form__label dc__required-field">Project</span>
                     <SelectPicker
+                        required
+                        label="Project"
                         classNamePrefix="create-app__select-project"
                         inputId="create-app__select-project"
                         name="create-app__select-project"
@@ -479,15 +476,8 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         options={this.state.projects}
                         onChange={(selected: OptionType) => this.handleProject(+selected.value)}
                         placeholder="Select project"
+                        error={showError && !this.state.isValid.projectId ? errorObject[1].message : null}
                     />
-                    <span className="form__error">
-                        {showError && !this.state.isValid.projectId ? (
-                            <>
-                                <Error className="form__icon form__icon--error" />
-                                {errorObject[1].message}
-                            </>
-                        ) : null}
-                    </span>
                 </div>
 
                 {MandatoryTagsContainer ? (

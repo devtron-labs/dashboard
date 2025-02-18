@@ -353,7 +353,7 @@ const DevtronAppList = ({
                                             data-testid="devtron-app-status"
                                         >
                                             <AppStatus
-                                                appStatus={app.defaultEnv.appStatus}
+                                                status={app.defaultEnv.appStatus}
                                                 isVirtualEnv={app.defaultEnv.isVirtualEnvironment}
                                             />
                                         </div>

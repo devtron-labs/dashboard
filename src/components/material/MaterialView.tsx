@@ -688,9 +688,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             placeholder={this.gitAuthType('placeholder')}
                             value={`${this.props.material.url}`}
                             onChange={this.props.handleUrlChange}
-                            data-testid="git-repo-url-text-box"
                             error={this.props.isError.url}
-                            rootClassName="h-36"
                         />
                     </div>
                 </div>
@@ -882,13 +880,11 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             </div>
                         </Checkbox>
                         {this.props.isChecked && (
-                            <div className="ml-35">
+                            <div className="ml-35 w-885">
                                 <CustomInput
-                                    rootClassName="w-885"
                                     placeholder="e.g. /abc"
                                     value={this.props.material.checkoutPath}
                                     onChange={this.props.handlePathChange}
-                                    data-testid="clone-directory-path"
                                     name="clone-directory-path"
                                     error={this.props.isError.checkoutPath}
                                 />
