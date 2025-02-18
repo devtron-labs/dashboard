@@ -1759,7 +1759,8 @@ button.anchor {
     text-decoration-style: dotted;
     text-decoration-color: var(--N300);
     text-decoration-thickness: 12%;
-    text-underline-offset: 25%;
+    text-underline-offset: 20%;
+    text-decoration-skip-ink: auto;
 }
 
 .dc__strike-through {
@@ -2871,12 +2872,6 @@ button.anchor {
 .info-icon-n6 {
     circle {
         fill: var(--N600);
-    }
-}
-
-.info-icon-n7 {
-    circle {
-        fill: var(--N700);
     }
 }
 
@@ -4707,19 +4702,6 @@ textarea::placeholder {
                 display: block;
             }
         }
-    }
-}
-
-.dc__row-container {
-    display: grid;
-    grid-template-columns: 220px auto;
-
-    .radio-group {
-        justify-content: flex-start;
-    }
-
-    .form__radio-item {
-        min-width: 0px !important;
     }
 }
 

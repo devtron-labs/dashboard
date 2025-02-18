@@ -291,7 +291,7 @@ export const TaskTypeDetailComponent = () => {
                             />
                             <div style={{ width: '80% !important' }}>
                                 <CustomInput
-                                    rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
+                                    fullWidth
                                     placeholder="Eg. /directory/filename"
                                     name="storeScriptAt"
                                     onChange={(e) => handleCustomChange(e, 'storeScriptAt')}
@@ -312,8 +312,7 @@ export const TaskTypeDetailComponent = () => {
                 <div className="row-container mb-12">
                     <TaskFieldTippyDescription taskField="Command" contentDescription={TaskFieldDescription.COMMAND} />
                     <CustomInput
-                        data-testid="custom-script-container-image-command-textbox"
-                        rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
+                        fullWidth
                         name="command"
                         placeholder="Eg. “echo”"
                         onChange={(e) => handleCommandArgs(e, TaskFieldLabel.COMMAND)}
@@ -328,8 +327,7 @@ export const TaskTypeDetailComponent = () => {
                     <TaskFieldTippyDescription taskField="Args" contentDescription={TaskFieldDescription.ARGS} />
                     <CustomInput
                         name="args"
-                        data-testid="custom-script-container-image-args-textbox"
-                        rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
+                        fullWidth
                         placeholder='Eg. "HOSTNAME", "KUBERNETES_PORT"'
                         onChange={(e) => handleCommandArgs(e, TaskFieldLabel.ARGS)}
                         value={
@@ -372,8 +370,7 @@ export const TaskTypeDetailComponent = () => {
                             <div className="fw-6 fs-13 lh-32 cn-7 " />
                             <CustomInput
                                 name="mountCodeToContainerPath"
-                                rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                                data-testid="script-mount-container-textbox"
+                                fullWidth
                                 placeholder="Eg file/folder"
                                 onChange={(e) => handleCustomChange(e, 'mountCodeToContainerPath')}
                                 value={
