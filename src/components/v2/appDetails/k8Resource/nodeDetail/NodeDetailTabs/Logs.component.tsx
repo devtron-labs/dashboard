@@ -28,6 +28,8 @@ import {
     SearchBar,
     ToastVariantType,
     ToastManager,
+    getComponentSpecificThemeClass,
+    AppThemeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Select from 'react-select'
 import ReactGA from 'react-ga4'
@@ -495,10 +497,7 @@ const LogsComponent = ({
     )
 
     return isDeleted ? (
-        <MessageUI
-            msg="This resource no longer exists"
-            size={32}
-        />
+        <MessageUI msg="This resource no longer exists" size={32} />
     ) : (
         <>
             <div className="node-container-fluid bg__primary">
@@ -764,97 +763,97 @@ const LogsComponent = ({
                     </form>
                 </div>
             </div>
-            {podContainerOptions.containerOptions.filter((_co) => _co.selected).length > 0 &&
-                podContainerOptions.podOptions.filter((_po) => _po.selected).length > 0 && (
-                    <div
-                        data-testid="app-logs-container"
-                        style={{
-                            gridColumn: '1 / span 2',
-                            background: 'var(--terminal-bg)',
-                            height:
-                                isResourceBrowserView || isLogAnalyzer ? 'calc(100vh - 152px)' : 'calc(100vh - 187px)',
-                        }}
-                        className="flex flex-grow-1 column log-viewer-container"
-                    >
+            <div className={getComponentSpecificThemeClass(AppThemeType.dark)}>
+                {podContainerOptions.containerOptions.filter((_co) => _co.selected).length > 0 &&
+                    podContainerOptions.podOptions.filter((_po) => _po.selected).length > 0 && (
                         <div
-                            className={`pod-readyState pod-readyState--top bcr-7 w-100 pl-20 ${
-                                logsPaused || readyState === 2 ? 'pod-readyState--show' : ''
-                            }`}
+                            data-testid="app-logs-container"
+                            style={{
+                                gridColumn: '1 / span 2',
+                                background: 'var(--terminal-bg)',
+                                height:
+                                    isResourceBrowserView || isLogAnalyzer
+                                        ? 'calc(100vh - 152px)'
+                                        : 'calc(100vh - 187px)',
+                            }}
+                            className="flex flex-grow-1 column log-viewer-container"
                         >
-                            {logsPaused && (
-                                <div className="w-100 cn-0">
-                                    Stopped printing logs.{' '}
-                                    <span onClick={(e) => handleLogsPause()} className="pointer dc__underline">
-                                        Resume ( Ctrl+c )
-                                    </span>
-                                </div>
-                            )}
-                            {readyState === 2 && (
-                                <div className="w-100 cn-0">
-                                    Disconnected.{' '}
-                                    <span onClick={(e) => fetchLogs()} className="pointer dc__underline">
-                                        Reconnect
-                                    </span>
-                                </div>
-                            )}
-                        </div>
-
-                        {prevContainer && showNoPrevContainer != '' ? (
-                            <MessageUI
-                                dataTestId="no-prev-container-logs"
-                                msg={showNoPrevContainer}
-                                size={24}
-                            />
-                        ) : (
-                            <div className="log-viewer">
-                                <LogViewerComponent
-                                    subject={subject}
-                                    highlightString={highlightString}
-                                    rootClassName="event-logs__logs"
-                                    reset={logsCleared}
-                                />
+                            <div
+                                className={`pod-readyState pod-readyState--top bcr-7 w-100 pl-20 ${
+                                    logsPaused || readyState === 2 ? 'pod-readyState--show' : ''
+                                }`}
+                            >
+                                {logsPaused && (
+                                    <div className="w-100 cn-0">
+                                        Stopped printing logs.{' '}
+                                        <span onClick={(e) => handleLogsPause()} className="pointer dc__underline">
+                                            Resume ( Ctrl+c )
+                                        </span>
+                                    </div>
+                                )}
+                                {readyState === 2 && (
+                                    <div className="w-100 cn-0">
+                                        Disconnected.{' '}
+                                        <span onClick={(e) => fetchLogs()} className="pointer dc__underline">
+                                            Reconnect
+                                        </span>
+                                    </div>
+                                )}
                             </div>
-                        )}
 
-                        <div
-                            className={`pod-readyState pod-readyState--bottom w-100 ${
-                                !logsPaused && [0, 1].includes(readyState) ? 'pod-readyState--show' : ''
-                            } ${isSuperAdmin && !isResourceBrowserView ? 'dc__bottom-30-imp' : ''}`}
-                        >
-                            {readyState === 0 && (
-                                <div
-                                    className="readyState dc__loading-dots"
-                                    style={{ color: 'orange' }}
-                                    data-testid="logs-connected-status"
-                                >
-                                    Connecting
+                            {prevContainer && showNoPrevContainer != '' ? (
+                                <MessageUI dataTestId="no-prev-container-logs" msg={showNoPrevContainer} size={24} />
+                            ) : (
+                                <div className="log-viewer">
+                                    <LogViewerComponent
+                                        subject={subject}
+                                        highlightString={highlightString}
+                                        rootClassName="event-logs__logs"
+                                        reset={logsCleared}
+                                    />
                                 </div>
                             )}
-                            {readyState === 1 && (
-                                <div
-                                    className="readyState dc__loading-dots cg-5 pl-20"
-                                    data-testid="logs-connected-status"
-                                >
-                                    Connected
-                                </div>
-                            )}
+
+                            <div
+                                className={`pod-readyState pod-readyState--bottom w-100 ${
+                                    !logsPaused && [0, 1].includes(readyState) ? 'pod-readyState--show' : ''
+                                } ${isSuperAdmin && !isResourceBrowserView ? 'dc__bottom-30-imp' : ''}`}
+                            >
+                                {readyState === 0 && (
+                                    <div
+                                        className="readyState dc__loading-dots"
+                                        style={{ color: 'orange' }}
+                                        data-testid="logs-connected-status"
+                                    >
+                                        Connecting
+                                    </div>
+                                )}
+                                {readyState === 1 && (
+                                    <div
+                                        className="readyState dc__loading-dots cg-5 pl-20"
+                                        data-testid="logs-connected-status"
+                                    >
+                                        Connected
+                                    </div>
+                                )}
+                            </div>
                         </div>
+                    )}
+
+                {podContainerOptions.containerOptions.filter((_co) => _co.selected).length == 0 && (
+                    <div className="no-pod no-pod--container flex-grow-1">
+                        <MessageUI
+                            icon={MsgUIType.MULTI_CONTAINER}
+                            msg={`${
+                                (podContainerOptions?.containerOptions ?? []).length > 0
+                                    ? 'Select a container to view logs'
+                                    : 'No container'
+                            }`}
+                            size={32}
+                        />
                     </div>
                 )}
-
-            {podContainerOptions.containerOptions.filter((_co) => _co.selected).length == 0 && (
-                <div className="no-pod no-pod--container flex-grow-1">
-                    <MessageUI
-                        icon={MsgUIType.MULTI_CONTAINER}
-                        msg={`${
-                            (podContainerOptions?.containerOptions ?? []).length > 0
-                                ? 'Select a container to view logs'
-                                : 'No container'
-                        }`}
-                        size={32}
-                    />
-                </div>
-            )}
+            </div>
 
             {showCustomOptionsModal && (
                 <CustomLogsModal

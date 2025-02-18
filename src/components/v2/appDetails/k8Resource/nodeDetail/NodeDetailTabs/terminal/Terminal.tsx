@@ -25,6 +25,8 @@ import {
     LogResizeButton,
     IS_PLATFORM_MAC_OS,
     UseRegisterShortcutProvider,
+    getComponentSpecificThemeClass,
+    AppThemeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CopyToast, { handleSelectionChange } from '../CopyToast'
 import { elementDidMount } from '../../../../../../common/helpers/Helpers'
@@ -122,7 +124,7 @@ export default function TerminalView({
             screenReaderMode: true,
             theme: {
                 // Cannot use variables here
-                background: '#0B0F22',
+                background: '#181920',
                 foreground: '#ffffff',
             },
         })
@@ -280,39 +282,41 @@ export default function TerminalView({
     // since terminal is a textarea we need to override the ignoreTags property
     return (
         <UseRegisterShortcutProvider ignoreTags={['input']}>
-            <div
-                className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ''} terminal-wrapper`}
-                data-testid={dataTestId}
-            >
-                {renderConnectionStrip()}
-                {fullScreenView && (
-                    <div className="w-100 flexbox dc__gap-6 dc__align-items-center px-12 py-4 terminal-wrapper__metadata">
-                        <ICDevtronLogo className="fcn-0 icon-dim-16 dc__no-shrink" />
-                        {Object.entries(metadata).map(([key, value], index, arr) => (
-                            <React.Fragment key={key}>
-                                <span className="dc__first-letter-capitalize fs-12 cn-0 lh-20">
-                                    {key}:&nbsp;{value || '-'}
-                                </span>
-                                {index < arr.length - 1 && <div className="dc__divider h12" />}
-                            </React.Fragment>
-                        ))}
-                    </div>
-                )}
+            <div className={getComponentSpecificThemeClass(AppThemeType.dark)}>
                 <div
-                    ref={termDivRef}
-                    id="terminal-id"
-                    data-testid="terminal-editor-container"
-                    className={`mt-8 mb-4 terminal-component ${
-                        fullScreenView ? 'terminal-component--fullscreen' : ''
-                    } ml-20 ${!isResourceBrowserView && !fullScreenView && isSuperAdmin ? 'terminal-component__zoom--bottom-41' : ''}`}
+                    className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ''} terminal-wrapper`}
+                    data-testid={dataTestId}
                 >
-                    <CopyToast showCopyToast={popupText} />
-                    <LogResizeButton
-                        shortcutCombo={[IS_PLATFORM_MAC_OS ? 'Meta' : 'Control', 'Shift', 'F']}
-                        showOnlyWhenPathIncludesLogs={false}
-                        fullScreenView={fullScreenView}
-                        setFullScreenView={handleToggleFullscreen}
-                    />
+                    {renderConnectionStrip()}
+                    {fullScreenView && (
+                        <div className="w-100 flexbox dc__gap-6 dc__align-items-center px-12 py-4 terminal-wrapper__metadata">
+                            <ICDevtronLogo className="fcn-0 icon-dim-16 dc__no-shrink" />
+                            {Object.entries(metadata).map(([key, value], index, arr) => (
+                                <React.Fragment key={key}>
+                                    <span className="dc__first-letter-capitalize fs-12 cn-0 lh-20">
+                                        {key}:&nbsp;{value || '-'}
+                                    </span>
+                                    {index < arr.length - 1 && <div className="dc__divider h12" />}
+                                </React.Fragment>
+                            ))}
+                        </div>
+                    )}
+                    <div
+                        ref={termDivRef}
+                        id="terminal-id"
+                        data-testid="terminal-editor-container"
+                        className={`mt-8 mb-4 terminal-component ${
+                            fullScreenView ? 'terminal-component--fullscreen' : ''
+                        } ml-20 ${!isResourceBrowserView && !fullScreenView && isSuperAdmin ? 'terminal-component__zoom--bottom-41' : ''}`}
+                    >
+                        <CopyToast showCopyToast={popupText} />
+                        <LogResizeButton
+                            shortcutCombo={[IS_PLATFORM_MAC_OS ? 'Meta' : 'Control', 'Shift', 'F']}
+                            showOnlyWhenPathIncludesLogs={false}
+                            fullScreenView={fullScreenView}
+                            setFullScreenView={handleToggleFullscreen}
+                        />
+                    </div>
                 </div>
             </div>
         </UseRegisterShortcutProvider>
