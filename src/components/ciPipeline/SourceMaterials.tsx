@@ -204,7 +204,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
                                                 )
                                             }}
                                             onBlur={onBlur}
-                                            isRequiredField
+                                            required
                                             error={
                                                 errorObj &&
                                                 !errorObj.isValid &&

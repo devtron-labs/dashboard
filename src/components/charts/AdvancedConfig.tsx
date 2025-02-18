@@ -197,19 +197,27 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({
                     {handleNameChange && (
                         <div className="mb-16">
                             <CustomInput
+                                placeholder="Enter app name"
                                 name="appName"
                                 label="App name"
-                                rootClassName={`${appName?.error ? 'form__input--error' : ''}`}
                                 value={appName.value}
                                 onChange={(e) => handleNameChange(index, e.target.value)}
                                 data-testid="advanced-option-app-name-box"
-                                isRequiredField
+                                required
                                 error={appName?.error}
-                                additionalErrorInfo={renderAdditionalErrorInfo(
-                                    handleNameChange,
-                                    appName.suggestedName,
-                                    index,
-                                )}
+                                helperText={
+                                    appName.suggestedName ? (
+                                        <>
+                                            Suggested Name:
+                                            <span
+                                                className="anchor pointer"
+                                                onClick={() => handleNameChange(index, appName.suggestedName)}
+                                            >
+                                                {appName.suggestedName}
+                                            </span>
+                                        </>
+                                    ) : null
+                                }
                             />
                         </div>
                     )}

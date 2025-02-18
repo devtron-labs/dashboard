@@ -407,12 +407,12 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
     const renderDeleteDialog = () => {
         // Using Confirmation Dialog Modal instead of Delete Confirmation as we are evaluating status on the basis of local variable despite of error code
         if (!state.showDeleteConfirm) return null
-        return (
-            <>
+
+        if (state.canDeleteApp) {
+            return (
                 <ConfirmationModal
                     title={`Delete ${isJob ? DeleteComponentsName.Job : DeleteComponentsName.Application} '${appName}' ?`}
                     variant={ConfirmationModalVariantType.delete}
-                    showConfirmationModal={state.canDeleteApp}
                     subtitle={<ApplicationDeletionInfo />}
                     buttonConfig={{
                         secondaryButtonConfig: {
@@ -427,24 +427,26 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
                     }}
                     handleClose={closeDeleteConfirmationModal}
                 />
-                <ConfirmationModal
-                    title={`Cannot Delete ${isJob ? DeleteComponentsName.Job : DeleteComponentsName.Application} '${appName}'`}
-                    variant={ConfirmationModalVariantType.warning}
-                    subtitle={`Delete all pipelines and workflows before deleting this ${isJob ? DeleteComponentsName.Job : DeleteComponentsName.Application}`}
-                    showConfirmationModal={!state.canDeleteApp}
-                    buttonConfig={{
-                        secondaryButtonConfig: {
-                            text: 'Cancel',
-                            onClick: onClickCloseCannotDeleteModal,
-                        },
-                        primaryButtonConfig: {
-                            text: 'View Workflows',
-                            onClick: redirectToWorkflowEditor,
-                        },
-                    }}
-                    handleClose={onClickCloseCannotDeleteModal}
-                />
-            </>
+            )
+        }
+
+        return (
+            <ConfirmationModal
+                title={`Cannot Delete ${isJob ? DeleteComponentsName.Job : DeleteComponentsName.Application} '${appName}'`}
+                variant={ConfirmationModalVariantType.warning}
+                subtitle={`Delete all pipelines and workflows before deleting this ${isJob ? DeleteComponentsName.Job : DeleteComponentsName.Application}`}
+                buttonConfig={{
+                    secondaryButtonConfig: {
+                        text: 'Cancel',
+                        onClick: onClickCloseCannotDeleteModal,
+                    },
+                    primaryButtonConfig: {
+                        text: 'View Workflows',
+                        onClick: redirectToWorkflowEditor,
+                    },
+                }}
+                handleClose={onClickCloseCannotDeleteModal}
+            />
         )
     }
 

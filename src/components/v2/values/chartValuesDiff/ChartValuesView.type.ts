@@ -449,7 +449,6 @@ export interface DeleteChartDialogProps {
     toggleConfirmation: (isDeleteConfirmation: boolean) => void
     isCreateValueView?: boolean
     disableButton?: boolean
-    showConfirmationModal: boolean
 }
 
 export interface DeleteApplicationButtonProps {

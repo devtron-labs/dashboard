@@ -31,7 +31,9 @@ import {
     ToastVariantType,
     ToastManager,
     useMainContext,
+    CustomInputProps,
     InfoBlock,
+    PasswordField,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     TLSConnectionFormActionType,
@@ -39,7 +41,6 @@ import {
     getCertificateAndKeyDependencyError,
     getIsTLSDataPresent,
     getTLSConnectionPayloadValues,
-    handleOnFocus,
     importComponentFromFELibrary,
     parsePassword,
     TLSConnectionForm,
@@ -368,17 +369,6 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
             isFormEdited: false,
             isUrlValidationError: isURLValidationOptional ? false : this.state.isUrlValidationError,
         })
-    }
-
-    handleOnBlur = (event): void => {
-        if (!event.target.value && this.state.form.id) {
-            this.setState({
-                form: {
-                    ...this.state.form,
-                    token: DEFAULT_SECRET_PLACEHOLDER,
-                },
-            })
-        }
     }
 
     requiredFieldCheck(formValueType: string): string {
@@ -1054,15 +1044,23 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
 
         const initialGitOps = this.state.gitList.find((item) => item.provider === this.state.form.provider)
 
-        const renderInputLabels = (label: string, link: string, linkText: string) => {
-            return (
-                <div className="flex">
-                    <span className="dc__required-field">{label}</span>&nbsp;
-                    <a target="_blank" href={link} className="cursor fs-13 onlink ml-4" rel="noreferrer">
-                        {linkText}
-                    </a>
-                </div>
-            )
+        const getInputLabelProps = (
+            label: string,
+            link: string,
+            linkText: string,
+        ): Pick<CustomInputProps, 'labelTippyCustomizedConfig' | 'label' | 'required'> => {
+            return {
+                label,
+                required: true,
+                labelTippyCustomizedConfig: {
+                    heading: label,
+                    infoText: (
+                        <a target="_blank" href={link} className="cursor fs-13 onlink ml-4" rel="noreferrer">
+                            {linkText}
+                        </a>
+                    ),
+                },
+            }
         }
 
         const renderGitOpsTabs = () => (
@@ -1160,18 +1158,16 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
                         <CustomInput
                             value={this.state.form.host}
                             onChange={(event) => this.handleChange(event, 'host')}
-                            name="Enter host"
-                            error={this.state.isError.host}
-                            label={getGitOpsLabel()}
-                            placeholder={`Enter ${getGitOpsLabelText(this.state.providerTab)}`}
-                            labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
-                            dataTestid={
+                            name={
                                 this.state.providerTab === GitProvider.AZURE_DEVOPS
                                     ? 'gitops-azure-organisation-url-textbox'
                                     : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
                                       ? 'gitops-bitbucket-host-url-textbox'
                                       : 'gitops-github-gitlab-host-url-textbox'
                             }
+                            error={this.state.isError.host}
+                            label={getGitOpsLabel()}
+                            placeholder={`Enter ${getGitOpsLabelText(this.state.providerTab)}`}
                             autoFocus
                         />
                     </div>
@@ -1202,45 +1198,31 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
                             <CustomInput
                                 name="workspaceID"
                                 placeholder="Enter Bitbucket Workspace ID"
-                                label={renderInputLabels(
-                                    'Bitbucket Workspace ID',
-                                    GitLink.BITBUCKET_WORKSPACE,
-                                    '(How to create workspace in bitbucket?)',
-                                )}
                                 value={this.state.form.bitBucketWorkspaceId}
                                 onChange={(event) => this.handleChange(event, 'bitBucketWorkspaceId')}
                                 error={this.state.isError.bitBucketWorkspaceId}
-                                labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
-                                dataTestid="gitops-bitbucket-workspace-id-textbox"
-                                isRequiredField
+                                {...getInputLabelProps(
+                                    'Bitbucket Workspace ID',
+                                    GitLink.BITBUCKET_WORKSPACE,
+                                    'How to create workspace in bitbucket?',
+                                )}
                             />
                         </div>
                     )}
                     <div className="w-100">
                         <CustomInput
                             name="groupID"
-                            label={renderInputLabels(
-                                LinkAndLabelSpec[this.state.providerTab].label,
-                                LinkAndLabelSpec[this.state.providerTab].link,
-                                LinkAndLabelSpec[this.state.providerTab].linkText,
-                            )}
                             placeholder={`Enter ${LinkAndLabelSpec[this.state.providerTab].label}`}
                             value={this.state.form[key]}
                             error={this.state.isError[key]}
                             onChange={(event) => {
                                 this.handleChange(event, key)
                             }}
-                            labelClassName="gitops__id form__label--fs-13 fw-5 fs-13"
-                            dataTestid={
-                                this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                    ? 'gitops-azure-project-name-textbox'
-                                    : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                      ? 'gitops-bitbucket-project-textbox'
-                                      : this.state.providerTab === GitProvider.GITLAB
-                                        ? 'gitops-gitlab-group-id-textbox'
-                                        : 'gitops-github-organisation-name-textbox'
-                            }
-                            isRequiredField
+                            {...getInputLabelProps(
+                                LinkAndLabelSpec[this.state.providerTab].label,
+                                LinkAndLabelSpec[this.state.providerTab].link,
+                                LinkAndLabelSpec[this.state.providerTab].linkText,
+                            )}
                         />
                     </div>
                     <div
@@ -1273,7 +1255,7 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
                             />
                         </div>
                     ) : (
-                        <div className="form__row--two-third gitops__id fs-13 w-100">
+                        <div className="form__row--two-third w-100">
                             <div>
                                 <CustomInput
                                     value={this.state.form.username}
@@ -1290,46 +1272,24 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
                                                 ? 'Bitbucket Username'
                                                 : 'GitHub Username'
                                     }
-                                    labelClassName="gitops__id form__label--fs-13 fw-5 fs-13"
-                                    dataTestid={
-                                        this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                            ? 'gitops-azure-username-textbox'
-                                            : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                              ? 'gitops-bitbucket-username-textbox'
-                                              : this.state.providerTab === GitProvider.GITLAB
-                                                ? 'gitops-gitlab-username-textbox'
-                                                : 'gitops-github-username-textbox'
-                                    }
-                                    isRequiredField
+                                    required
                                 />
                             </div>
                             <div>
-                                <CustomInput
+                                <PasswordField
+                                    shouldShowDefaultPlaceholderOnBlur={!!this.state.form.id}
                                     name="token"
                                     placeholder="Enter access token"
-                                    label={renderInputLabels(
+                                    value={this.state.form.token}
+                                    onChange={(event) => this.handleChange(event, 'token')}
+                                    error={this.state.isError.token}
+                                    {...getInputLabelProps(
                                         this.state.providerTab === GitProvider.AZURE_DEVOPS
                                             ? 'Azure DevOps Access Token '
                                             : 'Personal Access Token ',
                                         PROVIDER_DOC_LINK_MAP[this.state.providerTab],
-                                        '(Check permissions required for PAT)',
+                                        'Check permissions required for PAT',
                                     )}
-                                    value={this.state.form.token}
-                                    onChange={(event) => this.handleChange(event, 'token')}
-                                    error={this.state.isError.token}
-                                    onFocus={handleOnFocus}
-                                    labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13"
-                                    dataTestid={
-                                        this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                            ? 'gitops-azure-pat-textbox'
-                                            : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                              ? 'gitops-bitbucket-pat-textbox'
-                                              : this.state.providerTab === GitProvider.GITLAB
-                                                ? 'gitops-gitlab-pat-textbox'
-                                                : 'gitops-github-pat-textbox'
-                                    }
-                                    isRequiredField
-                                    onBlur={this.handleOnBlur}
                                 />
                             </div>
                         </div>

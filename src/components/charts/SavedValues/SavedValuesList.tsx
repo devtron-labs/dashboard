@@ -149,7 +149,6 @@ export default function SavedValuesList() {
                 subtitle={<ApplicationDeletionInfo isPresetValue />}
                 component={DeleteComponentsName.Preset}
                 onDelete={onDelete}
-                showConfirmationModal={showDeleteDialog}
                 closeConfirmationModal={hideDeleteModal}
             />
         )
@@ -363,7 +362,7 @@ export default function SavedValuesList() {
         <>
             <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
             {renderSavedValuesList()}
-            {renderDeleteDialog()}
+            {showDeleteDialog && renderDeleteDialog()}
         </>
     )
 }

@@ -270,7 +270,6 @@ export interface DeleteOverrideDialogProps extends Pick<DeploymentTemplateProps,
     handleClose: () => void
     handleProtectionError: () => void
     reloadEnvironments: () => void
-    showConfirmationModal: boolean
 }
 
 export interface DTChartSelectorProps

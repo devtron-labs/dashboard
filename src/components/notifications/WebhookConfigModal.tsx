@@ -224,8 +224,7 @@ export const WebhookConfigModal = ({
                     placeholder="Enter a name"
                     error={isFormValid[ConfigurationFieldKeys.CONFIG_NAME].message}
                     name={ConfigurationFieldKeys.CONFIG_NAME}
-                    dataTestid="webhook-modal__name"
-                    isRequiredField
+                    required
                     autoFocus
                     onBlur={handleBlur}
                 />
@@ -236,8 +235,7 @@ export const WebhookConfigModal = ({
                     placeholder="Enter incoming webhook URL"
                     error={isFormValid[ConfigurationFieldKeys.WEBHOOK_URL].message}
                     name={ConfigurationFieldKeys.WEBHOOK_URL}
-                    dataTestid="webhook-modal__url"
-                    isRequiredField
+                    required
                     onBlur={handleBlur}
                 />
                 <WebhookConfigDynamicDataTable rows={rows} setRows={setRows} />

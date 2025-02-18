@@ -104,7 +104,6 @@ export interface RegenerateModalType {
 export interface DeleteAPITokenModalProps {
     tokenData: TokenListType
     reload: () => void
-    showDeleteConfirmation: boolean
     setDeleteConfirmation: React.Dispatch<React.SetStateAction<boolean>>
     isEditView?: boolean
 }
