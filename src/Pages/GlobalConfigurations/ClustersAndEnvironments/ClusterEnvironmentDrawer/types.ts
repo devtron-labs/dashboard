@@ -54,6 +54,6 @@ export interface ClusterNamespacesDTO {
 }
 
 export interface EnvironmentDeleteComponentProps
-    extends Pick<DeleteConfirmationModalProps, 'showConfirmationModal' | 'closeConfirmationModal' | 'onDelete'> {
+    extends Pick<DeleteConfirmationModalProps, 'closeConfirmationModal' | 'onDelete'> {
     environmentName: string
 }

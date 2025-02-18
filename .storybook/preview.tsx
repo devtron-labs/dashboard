@@ -9,6 +9,8 @@ import {
     noop,
     customEnv,
     DEVTRON_BASE_MAIN_ID,
+    ConfirmationModalProvider,
+    BaseConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 const preview: Preview = {
@@ -29,17 +31,21 @@ const preview: Preview = {
 
         return (
             <ThemeProvider>
-                <div id={DEVTRON_BASE_MAIN_ID}>
-                    <div className="dc__border-bottom mb-10">
-                        <ThemeSwitcher onChange={noop} />
+                <ConfirmationModalProvider>
+                    <div id={DEVTRON_BASE_MAIN_ID}>
+                        <div className="dc__border-bottom mb-10">
+                            <ThemeSwitcher onChange={noop} />
+                        </div>
+                        <BrowserRouter>
+                            <Story />
+                        </BrowserRouter>
+                        <ToastManagerContainer />
                     </div>
-                    <BrowserRouter>
-                        <Story />
-                    </BrowserRouter>
-                    <ToastManagerContainer />
-                </div>
 
-                <div id="animated-dialog-backdrop" />
+                    <div id="animated-dialog-backdrop" />
+
+                    <BaseConfirmationModal />
+                </ConfirmationModalProvider>
             </ThemeProvider>
         )
     },

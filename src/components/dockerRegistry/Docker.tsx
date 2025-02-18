@@ -1969,15 +1969,16 @@ const DockerForm = ({
                     </div>
                 </div>
 
-                <DeleteConfirmationModal
-                    title={id}
-                    component={DeleteComponentsName.ContainerRegistry}
-                    renderCannotDeleteConfirmationSubTitle={DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE}
-                    errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
-                    onDelete={onDelete}
-                    showConfirmationModal={confirmationModal}
-                    closeConfirmationModal={closeConfirmationModal}
-                />
+                {confirmationModal && (
+                    <DeleteConfirmationModal
+                        title={id}
+                        component={DeleteComponentsName.ContainerRegistry}
+                        renderCannotDeleteConfirmationSubTitle={DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE}
+                        errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+                        onDelete={onDelete}
+                        closeConfirmationModal={closeConfirmationModal}
+                    />
+                )}
             </div>
         </form>
     )

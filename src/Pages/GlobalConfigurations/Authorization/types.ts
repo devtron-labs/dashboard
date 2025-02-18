@@ -295,9 +295,7 @@ export interface CreateUserPermissionPayloadParams extends Pick<User, 'userStatu
 }
 
 export interface DeleteUserPermissionProps
-    extends Partial<
-        Pick<DeleteConfirmationModalProps, 'title' | 'onDelete' | 'showConfirmationModal' | 'closeConfirmationModal'>
-    > {
+    extends Partial<Pick<DeleteConfirmationModalProps, 'title' | 'onDelete' | 'closeConfirmationModal'>> {
     isUserGroup?: boolean
 }
 

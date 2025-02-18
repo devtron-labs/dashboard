@@ -23,14 +23,7 @@ import { useParams } from 'react-router-dom'
 import { DeleteComponentsName } from '@Config/constantMessaging'
 import { DeleteNodeModalProps } from '../types'
 
-const DeleteNodeModal = ({
-    name,
-    version,
-    kind,
-    closePopup,
-    handleClearBulkSelection,
-    showConfirmationModal,
-}: DeleteNodeModalProps) => {
+const DeleteNodeModal = ({ name, version, kind, closePopup, handleClearBulkSelection }: DeleteNodeModalProps) => {
     const { clusterId } = useParams<{ clusterId: string }>()
 
     const onClose = (): void => {
@@ -56,7 +49,6 @@ const DeleteNodeModal = ({
             subtitle={DELETE_NODE_MODAL_MESSAGING.subtitle}
             onDelete={onDelete}
             closeConfirmationModal={onClose}
-            showConfirmationModal={showConfirmationModal}
             successToastMessage={DELETE_NODE_MODAL_MESSAGING.successInfoToastMessage}
             confirmationConfig={{
                 identifier: 'delete-cd-node-input',
