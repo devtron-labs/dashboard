@@ -1717,20 +1717,23 @@ const CDMaterial = ({
                 }`}
             >
                 {!hideConfigDiffSelector &&
-                    (state.isRollbackTrigger || state.isSelectImageTrigger) &&
-                    !showConfigDiffView &&
-                    stageType === DeploymentNodeType.CD && (
-                        <PipelineConfigDiffStatusTile
-                            isLoading={pipelineDeploymentConfigLoading}
-                            deploymentConfigSelectorProps={deploymentConfigSelectorProps}
-                            hasDiff={diffFound}
-                            onClick={() => onClickSetInitialParams('review-config')}
-                            noLastDeploymentConfig={noLastDeploymentConfig}
-                            canReviewConfig={canReviewConfig()}
-                            urlFilters={urlFilters}
-                            renderConfigNotAvailableTooltip={renderTippyContent}
-                        />
-                    )}
+                (state.isRollbackTrigger || state.isSelectImageTrigger) &&
+                !showConfigDiffView &&
+                stageType === DeploymentNodeType.CD ? (
+                    <PipelineConfigDiffStatusTile
+                        isLoading={pipelineDeploymentConfigLoading}
+                        deploymentConfigSelectorProps={deploymentConfigSelectorProps}
+                        hasDiff={diffFound}
+                        onClick={() => onClickSetInitialParams('review-config')}
+                        noLastDeploymentConfig={noLastDeploymentConfig}
+                        canReviewConfig={canReviewConfig()}
+                        urlFilters={urlFilters}
+                        renderConfigNotAvailableTooltip={renderTippyContent}
+                    />
+                ) : (
+                    // NOTE: needed so that the button is pushed to the right since justify-content is set to space-between
+                    <div />
+                )}
                 <ConditionalWrap
                     condition={!pipelineDeploymentConfigLoading && isDeployButtonDisabled()}
                     wrap={(children) => (
