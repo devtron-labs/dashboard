@@ -969,7 +969,7 @@ export const EventsLogsTabSelector = ({ onMouseDown = null }) => {
     return (
         <FragmentHOC
             onMouseDown={onMouseDown || noop}
-            style={{ background: '#2c3354', boxShadow: 'inset 0 -1px 0 0 #0b0f22' }}
+            style={{ background: '#2c3354', boxShadow: 'inset 0 -1px 0 0 var(--terminal-bg)' }}
             onClick={
                 params.tab
                     ? () => {}

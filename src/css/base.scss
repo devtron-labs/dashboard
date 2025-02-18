@@ -4296,10 +4296,10 @@ textarea::placeholder {
 .dc__divider {
     width: 1px;
     min-height: 16px;
-    background-color: var(--N200);
+    background-color: var(--divider-primary);
 
     &--n1 {
-        background-color: var(--N100);
+        background-color: var(--divider-secondary);
     }
 
     &.h12 {
