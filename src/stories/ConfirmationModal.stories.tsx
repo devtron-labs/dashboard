@@ -1,11 +1,9 @@
 import { useState } from 'react'
 import {
-    BaseConfirmationModal,
     Button,
     ButtonVariantType,
     ConfirmationModal,
     ConfirmationModalProps,
-    ConfirmationModalProvider,
     ConfirmationModalVariantType,
     ToastManager,
     ToastVariantType,
@@ -32,7 +30,7 @@ const BaseComponent = ({
     const handleClose = () => setShowDialog(false)
 
     return (
-        <ConfirmationModalProvider>
+        <>
             <Button
                 dataTestId="open-modal"
                 text={`Open ${variant} modal`}
@@ -61,9 +59,7 @@ const BaseComponent = ({
                     {children}
                 </ConfirmationModal>
             )}
-
-            <BaseConfirmationModal />
-        </ConfirmationModalProvider>
+        </>
     )
 }
 

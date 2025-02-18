@@ -116,13 +116,16 @@ const DeleteCDNode = ({
         />
     )
 
-    return (
-        <>
-            {deleteDialog === DeleteDialogType.showNormalDeleteDialog && renderConfirmationDeleteModal()}
-            {deleteDialog === DeleteDialogType.showForceDeleteDialog && renderForceDeleteConfirmationModal()}
-            {deleteDialog === DeleteDialogType.showNonCascadeDeleteDialog && renderUnreachableClusterModal()}
-        </>
-    )
+    switch (deleteDialog) {
+        case DeleteDialogType.showNormalDeleteDialog:
+            return renderConfirmationDeleteModal()
+        case DeleteDialogType.showForceDeleteDialog:
+            return renderForceDeleteConfirmationModal()
+        case DeleteDialogType.showNonCascadeDeleteDialog:
+            return renderUnreachableClusterModal()
+        default:
+            return null
+    }
 }
 
 export default DeleteCDNode

@@ -38,7 +38,6 @@ import { AppDetailsErrorType } from '../../../../config'
 import IndexStore from '../../../v2/appDetails/index.store'
 import LoadingCard from './LoadingCard'
 
-/* TODO: delete modals don't work as expected here! Need to be refactored later */
 const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed }: IssuesCardType) => {
     const [forceDeleteDialog, showForceDeleteDialog] = useState(false)
     const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState(false)
@@ -248,12 +247,14 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
                     Details
                 </div>
             </div>
-            {forceDeleteDialog && <ForceDeleteConfirmationModal
-                title={forceDeleteDialogTitle}
-                onDelete={handleForceDelete}
-                closeConfirmationModal={onCloseForceDeleteModal}
-                subtitle={forceDeleteDialogMessage}
-            />}
+            {forceDeleteDialog && (
+                <ForceDeleteConfirmationModal
+                    title={forceDeleteDialogTitle}
+                    onDelete={handleForceDelete}
+                    closeConfirmationModal={onCloseForceDeleteModal}
+                    subtitle={forceDeleteDialogMessage}
+                />
+            )}
 
             {nonCascadeDeleteDialog && (
                 <ClusterNotReachableDialog
