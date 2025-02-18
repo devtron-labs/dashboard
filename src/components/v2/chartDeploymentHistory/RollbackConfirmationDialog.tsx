@@ -30,7 +30,6 @@ interface RollbackConfirmationDialogProps {
     rollbackDialogTitle: string
     setShowRollbackConfirmation: React.Dispatch<React.SetStateAction<boolean>>
     handleDeployClick: () => Promise<void>
-    showRollbackConfirmation: boolean
 }
 
 const RollbackConfirmationDialog = ({
@@ -38,7 +37,6 @@ const RollbackConfirmationDialog = ({
     rollbackDialogTitle,
     setShowRollbackConfirmation,
     handleDeployClick,
-    showRollbackConfirmation,
 }: RollbackConfirmationDialogProps) => {
     usePrompt({ shouldPrompt: deploying })
 
@@ -53,7 +51,6 @@ const RollbackConfirmationDialog = ({
                 Icon={<ICRollback />}
                 title={rollbackDialogTitle}
                 subtitle="Are you sure you want to deploy a previous version?"
-                showConfirmationModal={showRollbackConfirmation}
                 buttonConfig={{
                     secondaryButtonConfig: {
                         text: 'Cancel',

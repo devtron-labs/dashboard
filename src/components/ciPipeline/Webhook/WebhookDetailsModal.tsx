@@ -348,7 +348,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
 
     const renderWebhookTokenLabel = (): JSX.Element => {
         return (
-            <div className="lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2 flex w-100px dc__border-right">
+            <div className="lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2 flex w-120 br-4 border__primary dc__no-right-radius dc__no-right-border">
                 api-token
                 <Tippy
                     className="default-white no-content-padding tippy-shadow w-300"
@@ -377,16 +377,19 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
 
     const renderWebhookURLTokenContainer = (): JSX.Element => {
         return (
-            <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32 mb-16">
+            <div className="flexbox w-100 dc__position-rel h-32 mb-16">
                 {renderWebhookTokenLabel()}
                 <CustomInput
                     name="api-token"
                     placeholder="Enter API token"
-                    rootClassName="bg__primary dc__no-border-imp w-100 h-32 pt-5-imp p-0-8-imp"
                     onChange={handleTokenChange}
                     value={tryoutAPIToken}
                     error={showTryoutAPITokenError && WEBHOOK_NO_API_TOKEN_ERROR}
-                    inputWrapClassName="w-100"
+                    fullWidth
+                    borderRadiusConfig={{
+                        left: false,
+                    }}
+                    size={ComponentSizeType.medium}
                 />
             </div>
         )
@@ -444,6 +447,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
             <div>
                 <div className="mt-16">
                     <CustomInput
+                        placeholder="Enter token name"
                         name="token-name"
                         label="Token name"
                         value={tokenName}
@@ -691,7 +695,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                 <CodeEditor
                     value={modifiedSampleString}
                     onChange={changePayload}
-                    height={300}
+                    height="300px"
                     mode={MODES.JSON}
                     noParsing
                 />

@@ -40,12 +40,14 @@ import {
     DeleteConfirmationModal,
     DC_DELETE_SUBTITLES,
     Textarea,
+    Icon,
+    PasswordField,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import TippyHeadless from '@tippyjs/react/headless'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
 import { ReactComponent as ErrorIcon } from '@Icons/ic-warning-y6.svg'
-import { useForm, CustomPassword, importComponentFromFELibrary } from '../common'
+import { useForm, importComponentFromFELibrary } from '../common'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { saveCluster, updateCluster, deleteCluster, validateCluster, saveClusters } from './cluster.service'
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
@@ -67,10 +69,7 @@ import {
 } from './cluster.type'
 
 import { CLUSTER_COMMAND, AppCreationType, MODES, ModuleNameMap } from '../../config'
-import {
-    DeleteComponentsName,
-    EMPTY_STATE_STATUS,
-} from '../../config/constantMessaging'
+import { DeleteComponentsName, EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
 import { ReactComponent as InfoIcon } from '@Icons/info-filled.svg'
 import ClusterInfoStepsModal from './ClusterInfoStepsModal'
@@ -695,7 +694,7 @@ export default function ClusterForm({
             <>
                 <div className="form__row">
                     <CustomInput
-                        labelClassName="dc__required-field"
+                        required
                         name="cluster_name"
                         disabled={isDefaultCluster()}
                         value={state.cluster_name.value}
@@ -703,7 +702,6 @@ export default function ClusterForm({
                         onChange={handleOnChange}
                         label="Cluster Name"
                         placeholder="Cluster Name"
-                        dataTestid="cluster_name_input"
                     />
                 </div>
                 <div className="form__row mb-8-imp">
@@ -715,7 +713,6 @@ export default function ClusterForm({
                         label={clusterLabel()}
                         disabled={isDefaultCluster()}
                         placeholder="Enter server URL"
-                        dataTestid="enter_server_url_input"
                     />
                 </div>
                 <div className="form__row">
@@ -727,8 +724,8 @@ export default function ClusterForm({
                                     ? id !== 1
                                         ? DEFAULT_SECRET_PLACEHOLDER
                                         : config?.bearer_token
-                                            ? config.bearer_token
-                                            : ''
+                                          ? config.bearer_token
+                                          : ''
                                     : state.token.value
                             }
                             onChange={handleOnChange}
@@ -865,7 +862,8 @@ export default function ClusterForm({
                         )}
                         <div className="form__row">
                             <CustomInput
-                                labelClassName="dc__required-field"
+                                required
+                                placeholder="Enter endpoint"
                                 name="endpoint"
                                 value={state.endpoint.value}
                                 error={state.endpoint.error}
@@ -888,6 +886,7 @@ export default function ClusterForm({
                             <div className="form__row form__row--flex">
                                 <div className="w-50 mr-8 ">
                                     <CustomInput
+                                        placeholder="Enter username"
                                         name="userName"
                                         value={state.userName.value}
                                         error={state.userName.error}
@@ -896,12 +895,14 @@ export default function ClusterForm({
                                     />
                                 </div>
                                 <div className="w-50 ml-8">
-                                    <CustomPassword
+                                    <PasswordField
+                                        placeholder="Enter password"
                                         name="password"
                                         value={state.password.value}
                                         error={state.userName.error}
                                         onChange={handleOnChange}
                                         label="Password"
+                                        shouldShowDefaultPlaceholderOnBlur={false}
                                     />
                                 </div>
                             </div>
@@ -941,10 +942,10 @@ export default function ClusterForm({
 
     const codeEditor = () => {
         return (
-            <CodeEditor.Container flexExpand>
+            <div className="code-editor-container">
                 <CodeEditor
                     value={saveYamlData}
-                    height="fitToParent"
+                    height="calc(100vh - 236px)"
                     diffView={false}
                     onChange={onChangeEditorValue}
                     mode={MODES.YAML}
@@ -975,7 +976,7 @@ export default function ClusterForm({
                     </CodeEditor.Header>
                     {hasValidationError && <CodeEditor.ErrorBar text={errorText} />}
                 </CodeEditor>
-            </CodeEditor.Container>
+            </div>
         )
     }
 
@@ -1046,12 +1047,10 @@ export default function ClusterForm({
                                     >
                                         <span className="dc__ellipsis-right">{clusterListDetail.clusterName}</span>
                                     </div>
-                                    <div className="flexbox dc__align-items-center">
-                                        <div
-                                            data-testid="status_icon_visibility"
-                                            className={`dc__app-summary__icon icon-dim-16 mr-2 ${
-                                                clusterListDetail.status === 'Failed' ? 'failed' : 'succeeded'
-                                            }`}
+                                    <div className="flexbox dc__align-items-center dc__gap-2">
+                                        <Icon
+                                            name={clusterListDetail.status === 'Failed' ? 'ic-error' : 'ic-success'}
+                                            color={null}
                                         />
                                         <div
                                             data-testid={`validate-cluster-${clusterListDetail.status}`}
@@ -1283,7 +1282,7 @@ export default function ClusterForm({
                                                                 columnGap: '6px',
                                                             }}
                                                         >
-                                                            <ErrorIcon className="dc__app-summary__icon icon-dim-16 m-2" />
+                                                            <ErrorIcon className="icon-dim-16 m-2" />
                                                             <span>
                                                                 {isClusterSelected[clusterDetail.cluster_name]
                                                                     ? 'Cluster already exists. Cluster will be updated'
@@ -1301,15 +1300,13 @@ export default function ClusterForm({
                                                                     columnGap: '6px',
                                                                 }}
                                                             >
-                                                                <div
-                                                                    className={`dc__app-summary__icon icon-dim-16 m-2 ${
-                                                                        selectedUserNameOptions[
-                                                                            clusterDetail.cluster_name
-                                                                        ].errorInConnecting.length !== 0
-                                                                            ? 'failed'
-                                                                            : ''
-                                                                    }`}
-                                                                />
+                                                                {selectedUserNameOptions[clusterDetail.cluster_name]
+                                                                    .errorInConnecting.length !== 0 && (
+                                                                    <div className="m-2">
+                                                                        <Icon name="ic-error" color={null} />
+                                                                    </div>
+                                                                )}
+
                                                                 <span>
                                                                     {selectedUserNameOptions[clusterDetail.cluster_name]
                                                                         ?.errorInConnecting || ' '}
@@ -1416,6 +1413,73 @@ export default function ClusterForm({
         reload()
     }
 
+    const renderNonVirtualFooter = () => {
+        if (isVirtual) {
+            return null
+        }
+
+        if (isKubeConfigFile) {
+            return (
+                <div className="dc__border-top flex right py-12 px-20">
+                    <button
+                        data-testid="cancel_kubeconfig_button"
+                        className="cta cancel h-36 lh-36"
+                        type="button"
+                        onClick={handleCloseButton}
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        className="cta ml-12 h-36 lh-36"
+                        type="button"
+                        onClick={handleGetClustersClick}
+                        disabled={!saveYamlData}
+                        data-testId="get_cluster_button"
+                    >
+                        <div className="flex">
+                            Get cluster
+                            <ForwardArrow className={`ml-5 ${!saveYamlData ? 'scn-4' : ''}`} />
+                        </div>
+                    </button>
+                </div>
+            )
+        }
+
+        return (
+            <div className="dc__border-top flexbox py-12 px-20 dc__content-space">
+                {id && (
+                    <Button
+                        text="Delete"
+                        variant={ButtonVariantType.secondary}
+                        style={ButtonStyleType.negative}
+                        startIcon={<Trash />}
+                        disabled={isDefaultCluster()}
+                        dataTestId="delete_cluster"
+                        onClick={showConfirmationModal}
+                    />
+                )}
+                <div className="flex dc__gap-12 right w-100">
+                    <Button
+                        text="Cancel"
+                        variant={ButtonVariantType.secondary}
+                        style={ButtonStyleType.neutral}
+                        dataTestId="cancel_button"
+                        onClick={handleCloseButton}
+                    />
+                    <Button
+                        dataTestId="save_cluster_after_entering_cluster_details"
+                        onClick={handleOnSubmit}
+                        text={id ? 'Update cluster' : 'Save cluster'}
+                        buttonProps={{
+                            type: 'submit',
+                        }}
+                    />
+                </div>
+            </div>
+        )
+    }
+
     return getClusterVar ? (
         displayClusterDetails()
     ) : (
@@ -1459,74 +1523,21 @@ export default function ClusterForm({
                             {isKubeConfigFile ? codeEditor() : renderUrlAndBearerToken()}
                         </div>
 
-                        {isKubeConfigFile ? (
-                            <div className="dc__border-top flex right py-12 px-20">
-                                <button
-                                    data-testid="cancel_kubeconfig_button"
-                                    className="cta cancel h-36 lh-36"
-                                    type="button"
-                                    onClick={handleCloseButton}
-                                >
-                                    Cancel
-                                </button>
-
-                                <button
-                                    className="cta ml-12 h-36 lh-36"
-                                    type="button"
-                                    onClick={handleGetClustersClick}
-                                    disabled={!saveYamlData}
-                                    data-testId="get_cluster_button"
-                                >
-                                    <div className="flex">
-                                        Get cluster
-                                        <ForwardArrow className={`ml-5 ${!saveYamlData ? 'scn-4' : ''}`} />
-                                    </div>
-                                </button>
-                            </div>
-                        ) : (
-                            <div className="dc__border-top flexbox py-12 px-20 dc__content-space">
-                                {id && (
-                                    <Button
-                                        text="Delete"
-                                        variant={ButtonVariantType.secondary}
-                                        style={ButtonStyleType.negative}
-                                        startIcon={<Trash />}
-                                        disabled={isDefaultCluster()}
-                                        dataTestId="delete_cluster"
-                                        onClick={showConfirmationModal}
-                                    />
-                                )}
-                                <div className="flex dc__gap-12 right w-100">
-                                    <Button
-                                        text="Cancel"
-                                        variant={ButtonVariantType.secondary}
-                                        style={ButtonStyleType.neutral}
-                                        dataTestId="cancel_button"
-                                        onClick={handleCloseButton}
-                                    />
-                                    <Button
-                                        dataTestId="save_cluster_after_entering_cluster_details"
-                                        onClick={handleOnSubmit}
-                                        text={id ? 'Update cluster' : 'Save cluster'}
-                                        buttonProps={{
-                                            type: 'submit',
-                                        }}
-                                    />
-                                </div>
-                            </div>
+                        {confirmation && (
+                            <DeleteConfirmationModal
+                                title={cluster_name}
+                                component={DeleteComponentsName.Cluster}
+                                subtitle={DC_DELETE_SUBTITLES.DELETE_ENVIRONMENT_SUBTITLE}
+                                onDelete={onDelete}
+                                closeConfirmationModal={hideConfirmationModal}
+                                errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+                            />
                         )}
-                        <DeleteConfirmationModal
-                            title={cluster_name}
-                            component={DeleteComponentsName.Cluster}
-                            subtitle={DC_DELETE_SUBTITLES.DELETE_ENVIRONMENT_SUBTITLE}
-                            onDelete={onDelete}
-                            showConfirmationModal={confirmation}
-                            closeConfirmationModal={hideConfirmationModal}
-                            errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
-                        />
                     </>
                 )}
             </div>
+
+            {renderNonVirtualFooter()}
         </div>
     )
 }

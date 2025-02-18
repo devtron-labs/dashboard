@@ -41,7 +41,6 @@ import {
     Button,
     ButtonVariantType,
     ComponentSizeType,
-    MODES,
     ConfirmationModal,
     ConfirmationModalVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -681,20 +680,23 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
         const shebangHtml = this.state.configMap === SwitchItemValues.Configuration ? presetConfig : null
 
+        const decorationWidth = this.state.sso !== OIDCType ? 50 : 25
         return (
-            <CodeEditor.Container>
+            <div className="br-4 dc__border w-100 dc__overflow-hidden">
                 <CodeEditor
                     value={codeEditorBody}
-                    mode={MODES.YAML}
+                    mode="yaml"
                     noParsing={this.state.sso === OIDCType}
+                    lineDecorationsWidth={this.state.configMap === SwitchItemValues.Configuration ? decorationWidth : 0}
                     shebang={shebangHtml}
                     readOnly={this.state.configMap !== SwitchItemValues.Configuration}
                     onChange={this.handleConfigChange}
                     onBlur={this.handleOnBlur}
-                    height="auto"
+                    adjustEditorHeightToContent
                 >
                     <CodeEditor.Header>
                         <div className="flex dc__content-space dc__gap-6">
+                            <CodeEditor.ValidationError />
                             <div className="dc__no-shrink">
                                 <Switch
                                     value={this.state.configMap}
@@ -710,7 +712,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </div>
                     </CodeEditor.Header>
                 </CodeEditor>
-            </CodeEditor.Container>
+            </div>
         )
     }
 
@@ -798,10 +800,10 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     <CustomInput
                         value={this.state.ssoConfig.url || window.__ORCHESTRATOR_ROOT__}
                         onChange={this.handleURLChange}
-                        data-testid="sso-url-input"
                         name="sso-url"
                         label="URL"
-                        isRequiredField
+                        placeholder="Enter URL"
+                        required
                         error={this.state.isError.url}
                     />
                     <div className="flex left fw-4 pt-4">
@@ -859,35 +861,35 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             <section className="bg__primary sso-login__wrapper min-h-100">
                 {renderSSOContent()}
                 {/* Confirmation Modal for SSO Change */}
-                <ConfirmationModal
-                    variant={ConfirmationModalVariantType.warning}
-                    title={`Use "${ssoProviderToDisplayNameMap[this.state.sso]}" instead of "${
-                        ssoProviderToDisplayNameMap[this.state.lastActiveSSO?.name]
-                    }" for login?`}
-                    subtitle="This will end all active user sessions. Users would have to login again using updated SSO service."
-                    buttonConfig={{
-                        secondaryButtonConfig: {
-                            text: 'Cancel',
-                            disabled: this.state.saveLoading,
-                            onClick: this.toggleWarningModal,
-                        },
-                        primaryButtonConfig: {
-                            text: 'Confirm',
-                            isLoading: this.state.saveLoading,
-                            onClick: this.saveNewSSO,
-                        },
-                    }}
-                    showConfirmationModal={showSSOChangeConfirmationModal}
-                    handleClose={this.toggleWarningModal}
-                />
+                {showSSOChangeConfirmationModal && (
+                    <ConfirmationModal
+                        variant={ConfirmationModalVariantType.warning}
+                        title={`Use "${ssoProviderToDisplayNameMap[this.state.sso]}" instead of "${
+                            ssoProviderToDisplayNameMap[this.state.lastActiveSSO?.name]
+                        }" for login?`}
+                        subtitle="This will end all active user sessions. Users would have to login again using updated SSO service."
+                        buttonConfig={{
+                            secondaryButtonConfig: {
+                                text: 'Cancel',
+                                disabled: this.state.saveLoading,
+                                onClick: this.toggleWarningModal,
+                            },
+                            primaryButtonConfig: {
+                                text: 'Confirm',
+                                isLoading: this.state.saveLoading,
+                                onClick: this.saveNewSSO,
+                            },
+                        }}
+                        handleClose={this.toggleWarningModal}
+                    />
+                )}
                 {/* Confirmation modal for permission auto-assignment */}
-                {UserPermissionConfirmationModal && (
+                {UserPermissionConfirmationModal && this.state.showAutoAssignConfirmationModal && (
                     <UserPermissionConfirmationModal
                         handleSave={this.saveNewSSO}
                         handleCancel={this.handleAutoAssignConfirmationModalClose}
                         ssoType={this.state.sso}
                         isLoading={this.state.saveLoading}
-                        showAutoAssignConfirmationModal={this.state.showAutoAssignConfirmationModal}
                     />
                 )}
             </section>

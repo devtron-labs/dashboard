@@ -32,7 +32,6 @@ const DeleteOverrideDialog = ({
     handleClose,
     handleProtectionError,
     reloadEnvironments,
-    showConfirmationModal,
     environmentName,
 }: DeleteOverrideDialogProps) => {
     const { appId, envId } = useParams<BaseURLParams>()
@@ -55,7 +54,6 @@ const DeleteOverrideDialog = ({
             title={environmentName}
             component={`${DeleteComponentsName.Override} for environment`}
             subtitle="This action will result in the removal of all overrides, and the original base configurations for this file will be reinstated."
-            showConfirmationModal={showConfirmationModal}
             onDelete={handleDelete}
             successToastMessage="Restored to global"
             closeConfirmationModal={handleClose}

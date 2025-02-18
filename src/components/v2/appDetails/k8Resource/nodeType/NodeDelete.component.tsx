@@ -146,6 +146,7 @@ const NodeDeleteComponent = ({
         if (!showDeleteConfirmation) {
             return null
         }
+
         if (isDeploymentBlocked && DeploymentWindowConfirmationDialog) {
             return (
                 <DeploymentWindowConfirmationDialog
@@ -164,10 +165,10 @@ const NodeDeleteComponent = ({
                 />
             )
         }
+
         return (
             <ConfirmationModal
                 title={`Delete ${nodeDetails?.kind} "${nodeDetails?.name}"`}
-                showConfirmationModal={showDeleteConfirmation}
                 subtitle={`Are you sure you want to delete this ${nodeDetails?.kind}?`}
                 variant={ConfirmationModalVariantType.delete}
                 buttonConfig={{

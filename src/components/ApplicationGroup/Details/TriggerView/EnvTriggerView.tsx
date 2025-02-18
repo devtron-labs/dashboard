@@ -33,7 +33,6 @@ import {
     WorkflowNodeType,
     CommonNodeAttr,
     WorkflowType,
-    getDefaultConfig,
     abortPreviousRequests,
     getIsRequestAborted,
     handleUTCTime,
@@ -189,8 +188,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [responseList, setResponseList] = useState<ResponseRowType[]>([])
     const [isSelectAll, setSelectAll] = useState(false)
     const [selectAllValue, setSelectAllValue] = useState<CHECKBOX_VALUE>(CHECKBOX_VALUE.CHECKED)
-    const [isConfigPresent, setConfigPresent] = useState<boolean>(false)
-    const [isDefaultConfigPresent, setDefaultConfig] = useState<boolean>(false)
     // Mapping pipelineId (in case of CI) and appId (in case of CD) to runtime params
     const [runtimeParams, setRuntimeParams] = useState<Record<string, RuntimePluginVariables[]>>({})
     const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<Record<string, RuntimeParamsErrorState>>({})
@@ -202,10 +199,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     usePrompt({ shouldPrompt: enableRoutePrompt })
 
     useEffect(() => {
-        if (ApprovalMaterialModal) {
-            getConfigs()
-        }
-
         return () => {
             handledLocation.current = false
         }
@@ -308,16 +301,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             }
         }
     }, [filteredWorkflows])
-
-    // TODO: This call should not be here rather inside ApprovalMaterialModal
-    const getConfigs = () => {
-        getDefaultConfig().then((response) => {
-            const isConfigPresent = response.result.isConfigured
-            const _isDefaultConfig = response.result.is_default_configured
-            setDefaultConfig(_isDefaultConfig)
-            setConfigPresent(isConfigPresent)
-        })
-    }
 
     const preserveSelection = (_workflows: WorkflowType[]) => {
         if (!workflows || !_workflows) {
@@ -2268,8 +2251,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     pipelineId={selectedCDNode?.id}
                     getModuleInfo={getModuleInfo}
                     ciPipelineId={node?.connectingCiPipelineId}
-                    configs={isConfigPresent}
-                    isDefaultConfigPresent={isDefaultConfigPresent}
                     history={history}
                 />
             )

@@ -698,12 +698,6 @@ button.anchor {
     background: transparent;
 }
 
-.dc__git-logo {
-    width: 24px;
-    height: 24px;
-    background: url('../assets/icons/git/git.svg');
-}
-
 .dc__cd-trigger-status {
     margin: 12px;
     margin-top: 6px;
@@ -767,22 +761,8 @@ button.anchor {
     }
 }
 
-.dc__app-summary__icon {
-    flex-shrink: 0;
-}
-
 .dc__no-shrink {
     flex-shrink: 0;
-}
-
-.app-summary__app-status {
-    display: flex;
-    align-items: center;
-
-    .dc__app-summary__icon {
-        position: unset;
-        margin: 0 4px 0 10px;
-    }
 }
 
 .app-summary__status-name {
@@ -1111,106 +1091,6 @@ button.anchor {
     background-repeat: no-repeat;
 }
 
-@mixin dc__app-status-icon($background) {
-    height: 24px;
-    width: 24px;
-    z-index: 2;
-
-    &.queued,
-    &.pending {
-        background: url('../assets/icons/ic-clock.svg'), $background;
-        background-size: contain, contain;
-    }
-
-    &.failed,
-    &.error {
-        background: url('../assets/icons/appstatus/ic-appstatus-failed.svg'), $background;
-        background-size: contain, contain;
-    }
-
-    &.cancelled,
-    &.aborted {
-        background: url('../assets/icons/ic-appstatus-cancelled.svg'), $background;
-        background-size: contain, contain;
-    }
-
-    &.not-ready {
-        background: url('../assets/icons/ic-error.svg');
-        background-size: contain, contain;
-    }
-
-    &.ready,
-    &.healthy,
-    &.synced,
-    &.sync.ok,
-    &.succeeded {
-        background: url('../assets/icons/appstatus/healthy.svg'), $background;
-        background-size: contain, contain;
-
-        &.healthy--node {
-            background: url('../assets/icons/appstatus/ic-heart-green.svg'), transparent;
-            background-size: contain, contain;
-        }
-    }
-
-    &.drifted {
-        background: url('../assets/icons/ic-out-of-sync.svg'), $background;
-        background-size: contain, contain;
-    }
-
-    &.missing {
-        background: url('../assets/icons/appstatus/missing.svg'), $background;
-        background-size: contain, contain;
-    }
-
-    &.unknown {
-        background: url('../assets/icons/appstatus/unknown.svg'), $background;
-        background-size: contain, contain;
-    }
-
-    &.not-deployed,
-    &.not-triggered {
-        background: url('../assets/icons/appstatus/notdeployed.svg'), $background;
-        background-size: contain, contain;
-
-        &.not-deployed--node {
-            background: url('../assets/icons/ic-close.svg'), transparent;
-            background-size: contain, contain;
-        }
-    }
-
-    &.suspended {
-        background: url('../assets/icons/appstatus/suspended.svg'), $background;
-        background-size: contain, contain;
-    }
-
-    &.degraded {
-        background: url('../assets/icons/appstatus/degraded.svg'), $background;
-        background-size: contain, contain;
-    }
-
-    &.initiating,
-    &.progressing,
-    &.running,
-    &.request_accepted,
-    &.starting {
-        background: url('../assets/icons/appstatus/progressing-rotating.svg'), $background;
-        background-size: contain, contain;
-        animation: unset;
-    }
-
-    &.hibernating,
-    &.hibernated {
-        background: url('../assets/icons/ic-hibernate-2.svg'), $background;
-        background-size: contain, contain;
-    }
-
-    &.timedout {
-        background: url('../assets/icons/ic-timeout-red.svg'), $background;
-        background-size: contain, contain;
-    }
-}
-
 @mixin dc__striped-row($background) {
     background-color: $background;
 }
@@ -1231,26 +1111,6 @@ button.anchor {
 
     div:hover {
         @include dc__striped-row(var(--B50));
-    }
-}
-
-.dc__app-summary__icon {
-    @include dc__app-status-icon(transparent);
-
-    &.icon-dim-20 {
-        width: 20px;
-        height: 20px;
-    }
-
-    &.icon-dim-16 {
-        width: 16px;
-        height: 16px;
-    }
-}
-
-.ci-details__build-card {
-    .app-status__icon {
-        @include dc__app-status-icon(transparent);
     }
 }
 
@@ -1759,7 +1619,8 @@ button.anchor {
     text-decoration-style: dotted;
     text-decoration-color: var(--N300);
     text-decoration-thickness: 12%;
-    text-underline-offset: 25%;
+    text-underline-offset: 20%;
+    text-decoration-skip-ink: auto;
 }
 
 .dc__strike-through {
@@ -1863,16 +1724,6 @@ button.anchor {
 
 .dc__cve-cell:hover a {
     color: var(--B500);
-}
-
-.dc__cve-cell::after {
-    content: '';
-    background-image: url('../assets/icons/ic-open-in-new.svg');
-    width: 14px;
-    height: 14px;
-    vertical-align: middle;
-    margin: 0 3px;
-    background-size: contain;
 }
 
 // End Security CSS
@@ -2265,7 +2116,15 @@ button.anchor {
 }
 
 .dc__no-border-right-imp {
-    border-top: none !important;
+    border-right: none !important;
+}
+
+.dc__no-border-bottom-imp {
+    border-bottom: none !important;
+}
+
+.dc__no-border-left-imp {
+    border-left: none !important;
 }
 
 .dc__box-shadow {
@@ -2483,84 +2342,6 @@ button.anchor {
     background-size: contain !important;
 }
 
-.dc__registry-icon,
-.repository-icon {
-    width: 20px;
-    height: 20px;
-    background-size: contain;
-    background-image: url('../assets/icons/container.svg');
-
-    &.git {
-        background-image: url('../assets/icons/git/git.svg');
-    }
-
-    &.github {
-        background-image: url('../assets/icons/git/github.svg');
-    }
-
-    &.gitlab {
-        background-image: url('../assets/icons/git/gitlab.svg');
-    }
-
-    &.bitbucket {
-        background-image: url('../assets/icons/git/bitbucket.svg');
-    }
-
-    &.docker {
-        background-image: url('../assets/icons/git/docker.svg');
-    }
-
-    &.docker-hub {
-        background-image: url('../assets/icons/git/docker.svg');
-    }
-
-    &.acr {
-        background-image: url('../assets/icons/ic-azure.svg');
-    }
-
-    &.quay {
-        background-image: url('../assets/icons/ic-quay.svg');
-    }
-
-    &.ecr {
-        background-image: url('../assets/icons/ic-ecr.svg');
-    }
-
-    &.artifact-registry {
-        background-image: url('../assets/icons/ic-google-artifact-registry.svg');
-    }
-
-    &.gcr {
-        background-image: url('../assets/icons/ic-google-container-registry.svg');
-    }
-
-    &.other {
-        background-image: url('../assets/icons/container.svg');
-    }
-}
-
-.dc__ci-pipeline-type-icon {
-    width: 20px;
-    height: 20px;
-    background-size: contain;
-    background-image: url('../assets/icons/ic-CI.svg');
-
-    &.normal {
-        background-image: url('../assets/icons/ic-CI.svg');
-    }
-
-    &.ci_job {
-        background-image: url('../assets/icons/ic-job-node.svg');
-    }
-}
-
-.dc__environment-icon {
-    width: 18px;
-    height: 18px;
-    background-size: contain;
-    background-image: url('../assets/icons/ic-env.svg');
-}
-
 .xterm .xterm-viewport {
     width: initial !important;
 }
@@ -2716,6 +2497,7 @@ button.anchor {
     gap: 1px;
     background-color: var(--N700);
     padding-bottom: 1px;
+    padding-right: 30px;
     color: var(--N0);
     font-size: 12px;
     font-weight: 600;
@@ -2862,12 +2644,6 @@ button.anchor {
 .info-icon-n6 {
     circle {
         fill: var(--N600);
-    }
-}
-
-.info-icon-n7 {
-    circle {
-        fill: var(--N700);
     }
 }
 
@@ -4701,19 +4477,6 @@ textarea::placeholder {
     }
 }
 
-.dc__row-container {
-    display: grid;
-    grid-template-columns: 220px auto;
-
-    .radio-group {
-        justify-content: flex-start;
-    }
-
-    .form__radio-item {
-        min-width: 0px !important;
-    }
-}
-
 .ci-cd-details__sidebar-typography {
     color: var(--N900);
     font-size: 13px;
@@ -5285,4 +5048,38 @@ details[open] {
 
 .dc__overscroll-none {
     overscroll-behavior: none;
+}
+
+.code-editor__warning {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.33;
+  letter-spacing: normal;
+  color: var(--N900);
+  height: auto;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--Y200);
+  background-color: var(--Y100);
+}
+
+.code-editor__error {
+  background-color: var(--O100);
+  color: var(--O500);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.33;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--N200);
+}
+
+.code-editor__information {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.33;
+  letter-spacing: normal;
+  color: var(--N900);
+  height: auto;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--N200);
+  background-color: var(--B100);
 }

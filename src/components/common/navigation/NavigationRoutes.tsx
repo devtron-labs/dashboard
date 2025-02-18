@@ -36,6 +36,7 @@ import {
     ResponseType,
     UserPreferencesType,
     getUserPreferences,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -67,7 +68,21 @@ import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.u
 import { HelmAppListResponse } from '../../app/list-new/AppListType'
 import { ExternalFluxAppDetailsRoute } from '../../../Pages/App/Details/ExternalFlux'
 
+// Monaco Editor worker dependency
+import 'monaco-editor'
+import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
+import YamlWorker from '../../../yaml.worker.js?worker'
 import { TAB_DATA_LOCAL_STORAGE_KEY } from '../DynamicTabs/constants'
+
+// Monaco Editor worker initialization
+self.MonacoEnvironment = {
+    getWorker(_, label) {
+        if (label === MODES.YAML) {
+            return new YamlWorker()
+        }
+        return new editorWorker()
+    },
+}
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))

@@ -73,7 +73,6 @@ const DrainNodeModal = ({ name, version, kind, closePopup }: NodeActionModalProp
     return (
         <ConfirmationModal
             handleClose={onClose}
-            showConfirmationModal
             variant={ConfirmationModalVariantType.custom}
             Icon={<DrainIcon className="scr-5" />}
             title={`${DRAIN_NODE_MODAL_MESSAGING.Actions.drain} ‘${name}’ ?`}

@@ -47,7 +47,7 @@ export class ExpandedRow extends Component<ExpandedRowProps> {
                     </div>
                     {this.props.isArgoInstalled && (
                         <div className="app-list__cell app-list__cell--app_status">
-                            <AppStatus appStatus={env.appStatus} isVirtualEnv={env.isVirtualEnvironment} />
+                            <AppStatus status={env.appStatus} isVirtualEnv={env.isVirtualEnvironment} />
                         </div>
                     )}
                     <div className="app-list__cell app-list__cell--env">{env.name}</div>

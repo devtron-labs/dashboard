@@ -28,6 +28,7 @@ import {
     FeatureTitleWithInfo,
     ToastManager,
     ToastVariantType,
+    PasswordField,
     Button,
     ButtonStyleType,
     ButtonVariantType,
@@ -43,7 +44,7 @@ import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
 
 import { useForm } from '../common'
-import { List, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
+import { List } from '../globalConfigurations/GlobalConfiguration'
 import {
     saveChartProviderConfig,
     updateChartProviderConfig,
@@ -422,7 +423,6 @@ const ChartForm = ({
         const isNameField: boolean = field === 'name'
         return (
             <CustomInput
-                dataTestid={isNameField ? 'add-chart-repo-name' : 'add-chart-repo-URL'}
                 value={isNameField ? state.name.value : state.url.value}
                 onChange={handleOnChange}
                 name={isNameField ? 'name' : 'url'}
@@ -430,7 +430,7 @@ const ChartForm = ({
                 label={isNameField ? 'Name' : 'URL'}
                 placeholder={isNameField ? 'Enter Repository name' : 'Enter repo URL'}
                 disabled={!isEditable}
-                isRequiredField
+                required
             />
         )
     }
@@ -487,26 +487,29 @@ const ChartForm = ({
                 {(chartRepoType !== CHART_REPO_TYPE.PUBLIC ||
                     (id && authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD)) && (
                     <>
-                        <CustomInput
-                            dataTestid="add-chart-repo-username"
-                            value={customState.username.value}
-                            onChange={customHandleChange}
-                            name="username"
-                            error={customState.username.error}
-                            label="Username"
-                            labelClassName="mt-12"
-                            isRequiredField
-                        />
-                        <ProtectedInput
-                            dataTestid="add-chart-repo-password"
-                            value={customState.password.value}
-                            onChange={customHandleChange}
-                            name="password"
-                            error={customState.password.error}
-                            label="Password"
-                            labelClassName="mt-12"
-                            isRequiredField
-                        />
+                        <div className="mt-12">
+                            <CustomInput
+                                placeholder="Enter username"
+                                value={customState.username.value}
+                                onChange={customHandleChange}
+                                name="username"
+                                error={customState.username.error}
+                                label="Username"
+                                required
+                            />
+                        </div>
+                        <div className="mt-12">
+                            <PasswordField
+                                value={customState.password.value}
+                                onChange={customHandleChange}
+                                name="password"
+                                error={customState.password.error}
+                                label="Password"
+                                required
+                                placeholder="Enter password"
+                                shouldShowDefaultPlaceholderOnBlur={false}
+                            />
+                        </div>
                     </>
                 )}
 
@@ -560,15 +563,16 @@ const ChartForm = ({
                     </div>
                 </div>
             </div>
-            <DeleteConfirmationModal
-                title={state.name.value}
-                component={DeleteComponentsName.ChartRepository}
-                renderCannotDeleteConfirmationSubTitle={DC_CHART_REPO_CONFIRMATION_MESSAGE}
-                errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
-                onDelete={onDelete}
-                showConfirmationModal={confirmation}
-                closeConfirmationModal={closeConfirmationModal}
-            />
+            {confirmation && (
+                <DeleteConfirmationModal
+                    title={state.name.value}
+                    component={DeleteComponentsName.ChartRepository}
+                    renderCannotDeleteConfirmationSubTitle={DC_CHART_REPO_CONFIRMATION_MESSAGE}
+                    errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+                    onDelete={onDelete}
+                    closeConfirmationModal={closeConfirmationModal}
+                />
+            )}
         </form>
     )
 }

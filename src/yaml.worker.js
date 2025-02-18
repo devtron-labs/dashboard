@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-.custom-password__show-btn {
-    position: absolute;
-    bottom: 7px;
-    right: 10px;
-    height: 28px;
-}
-
-.p-r-41 {
-    padding-right: 41px;
-}
+// NOTE: a workaround;
+// see https://github.com/remcohaszing/monaco-yaml?tab=readme-ov-file#why-doesnt-it-work-with-vite
+import 'monaco-yaml/yaml.worker'

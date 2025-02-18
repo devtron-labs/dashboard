@@ -1866,33 +1866,36 @@ const ChartValuesView = ({
                     />
                 </footer>
 
-                <DeleteChartDialog
-                    appName={
-                        (isCreateValueView && valueName) ||
-                        (isExternalApp && commonState.releaseInfo.deployedAppDetail.appName) ||
-                        commonState.installedConfig?.appName
-                    }
-                    handleDelete={onDelete}
-                    toggleConfirmation={toggleDeleteConfirmation}
-                    disableButton={commonState.isDeleteInProgress}
-                    isCreateValueView={isCreateValueView}
-                    showConfirmationModal={commonState.showDeleteAppConfirmationDialog}
-                />
+                {commonState.showDeleteAppConfirmationDialog && (
+                    <DeleteChartDialog
+                        appName={
+                            (isCreateValueView && valueName) ||
+                            (isExternalApp && commonState.releaseInfo.deployedAppDetail.appName) ||
+                            commonState.installedConfig?.appName
+                        }
+                        handleDelete={onDelete}
+                        toggleConfirmation={toggleDeleteConfirmation}
+                        disableButton={commonState.isDeleteInProgress}
+                        isCreateValueView={isCreateValueView}
+                    />
+                )}
 
-                <ForceDeleteConfirmationModal
-                    title={commonState.forceDeleteData.title}
-                    subtitle={commonState.forceDeleteData.message}
-                    onDelete={onForceDelete}
-                    showConfirmationModal={commonState.forceDeleteData.forceDelete}
-                    closeConfirmationModal={onCloseForceDelete}
-                />
+                {commonState.forceDeleteData.forceDelete && (
+                    <ForceDeleteConfirmationModal
+                        title={commonState.forceDeleteData.title}
+                        subtitle={commonState.forceDeleteData.message}
+                        onDelete={onForceDelete}
+                        closeConfirmationModal={onCloseForceDelete}
+                    />
+                )}
 
-                <ClusterNotReachableDialog
-                    clusterName={commonState.nonCascadeDeleteData.clusterName}
-                    onClickCancel={onClickHideNonCascadeDeletePopup}
-                    onClickDelete={onClickNonCascadeDelete}
-                    showConfirmationModal={commonState.nonCascadeDeleteData.nonCascade}
-                />
+                {commonState.nonCascadeDeleteData.nonCascade && (
+                    <ClusterNotReachableDialog
+                        clusterName={commonState.nonCascadeDeleteData.clusterName}
+                        onClickCancel={onClickHideNonCascadeDeletePopup}
+                        onClickDelete={onClickNonCascadeDelete}
+                    />
+                )}
 
                 {commonState.showNoGitOpsWarning && (
                     <NoGitOpsConfiguredWarning

@@ -378,12 +378,13 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                         )}
                 </div>
             </div>
-            <DeleteUserPermission
-                title={emailState.emails[0]?.value || ''}
-                onDelete={onDelete}
-                showConfirmationModal={deleteConfirmationModal}
-                closeConfirmationModal={toggleDeleteConfirmationModal}
-            />
+            {deleteConfirmationModal && (
+                <DeleteUserPermission
+                    title={emailState.emails[0]?.value || ''}
+                    onDelete={onDelete}
+                    closeConfirmationModal={toggleDeleteConfirmationModal}
+                />
+            )}
         </div>
     )
 }
