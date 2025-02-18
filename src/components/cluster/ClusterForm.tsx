@@ -40,6 +40,7 @@ import {
     DeleteConfirmationModal,
     DC_DELETE_SUBTITLES,
     Textarea,
+    Icon,
     PasswordField,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
@@ -1046,12 +1047,10 @@ export default function ClusterForm({
                                     >
                                         <span className="dc__ellipsis-right">{clusterListDetail.clusterName}</span>
                                     </div>
-                                    <div className="flexbox dc__align-items-center">
-                                        <div
-                                            data-testid="status_icon_visibility"
-                                            className={`dc__app-summary__icon icon-dim-16 mr-2 ${
-                                                clusterListDetail.status === 'Failed' ? 'failed' : 'succeeded'
-                                            }`}
+                                    <div className="flexbox dc__align-items-center dc__gap-2">
+                                        <Icon
+                                            name={clusterListDetail.status === 'Failed' ? 'ic-error' : 'ic-success'}
+                                            color={null}
                                         />
                                         <div
                                             data-testid={`validate-cluster-${clusterListDetail.status}`}
@@ -1283,7 +1282,7 @@ export default function ClusterForm({
                                                                 columnGap: '6px',
                                                             }}
                                                         >
-                                                            <ErrorIcon className="dc__app-summary__icon icon-dim-16 m-2" />
+                                                            <ErrorIcon className="icon-dim-16 m-2" />
                                                             <span>
                                                                 {isClusterSelected[clusterDetail.cluster_name]
                                                                     ? 'Cluster already exists. Cluster will be updated'
@@ -1301,15 +1300,13 @@ export default function ClusterForm({
                                                                     columnGap: '6px',
                                                                 }}
                                                             >
-                                                                <div
-                                                                    className={`dc__app-summary__icon icon-dim-16 m-2 ${
-                                                                        selectedUserNameOptions[
-                                                                            clusterDetail.cluster_name
-                                                                        ].errorInConnecting.length !== 0
-                                                                            ? 'failed'
-                                                                            : ''
-                                                                    }`}
-                                                                />
+                                                                {selectedUserNameOptions[clusterDetail.cluster_name]
+                                                                    .errorInConnecting.length !== 0 && (
+                                                                    <div className="m-2">
+                                                                        <Icon name="ic-error" color={null} />
+                                                                    </div>
+                                                                )}
+
                                                                 <span>
                                                                     {selectedUserNameOptions[clusterDetail.cluster_name]
                                                                         ?.errorInConnecting || ' '}

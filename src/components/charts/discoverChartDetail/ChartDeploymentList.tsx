@@ -230,7 +230,7 @@ export const DeploymentRow = ({
                     <div className="deployed-app-name dc__ellipsis-right">{appName}</div>
                 </Td>
                 <Td to={link} className="dc__ellipsis-right">
-                    <AppStatus appStatus={status} />
+                    <AppStatus status={status} />
                 </Td>
                 <Td to={link} className="dc__ellipsis-right">
                     {environmentName}

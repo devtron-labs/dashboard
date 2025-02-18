@@ -92,20 +92,6 @@
             display: flex;
             align-items: center;
             margin-top: 4px;
-
-            &.form__error--info {
-                color: var(--N700);
-
-                &:before {
-                    content: '';
-                    background: url('../../assets/icons/ic-info-warn.svg');
-                    height: 14px;
-                    width: 14px;
-                    display: inline-block;
-                    background-size: contain;
-                    margin-right: 4px;
-                }
-            }
         }
     }
 
