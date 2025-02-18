@@ -17,12 +17,8 @@ const HibernateModal = ({
     handleHibernateConfirmationModalClose,
 }: HibernationModalProps) => (
     <>
-        {ConfigurePatchDialog && (
-            <ConfigurePatchDialog
-                showDialog={hibernateConfirmationModal === HibernationModalTypes.CONFIGURE_PATCH}
-                chartName={chartName}
-                handleClose={handleHibernateConfirmationModalClose}
-            />
+        {ConfigurePatchDialog && hibernateConfirmationModal === HibernationModalTypes.CONFIGURE_PATCH && (
+            <ConfigurePatchDialog chartName={chartName} handleClose={handleHibernateConfirmationModalClose} />
         )}
         {hibernateConfirmationModal !== HibernationModalTypes.CONFIGURE_PATCH && (
             <ConfirmationModal
