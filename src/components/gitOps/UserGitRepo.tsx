@@ -15,7 +15,7 @@
  */
 
 import React, { FunctionComponent } from 'react'
-import { GitOpsAuthModeType, InfoColourBar, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, GitOpsAuthModeType, InfoColourBar, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import './gitops.scss'
 import { repoType } from '../../config/constants'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -57,18 +57,16 @@ const UserGitRepo: FunctionComponent<UserGitRepoProps> = ({
         const _repoUrl = repoURL
         return (
             <div className={`${!isAuthModeSSH ? 'ml-26' : ''} mt-8`}>
-                <div className="gitops__id fw-5 fs-13 mb-8 dc__required-field">Git Repo URL</div>
-                <input
-                    type="text"
-                    autoComplete="off"
+                <CustomInput
+                    label="Git Repo URL"
+                    required
                     name="name"
                     value={_repoUrl.trim()}
                     placeholder="Enter repository URL"
-                    className="form__input"
                     onChange={onChange}
                     disabled={staleData}
+                    error={_repoUrl.length === 0 ? REQUIRED_FIELD_MSG : null}
                 />
-                {_repoUrl.length === 0 && renderValidationErrorLabel()}
             </div>
         )
     }

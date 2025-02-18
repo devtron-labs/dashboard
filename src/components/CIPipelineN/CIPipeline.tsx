@@ -560,7 +560,6 @@ export default function CIPipeline({
             title={formData.name}
             component={isJobView ? DeleteComponentsName.Job : DeleteComponentsName.BuildPipeline}
             subtitle={`Are you sure you want to delete this pipeline from '${appName}' ?`}
-            showConfirmationModal={ciPipelineId && showDeleteModal}
             closeConfirmationModal={closeCIDeleteModal}
             onDelete={onDelete}
             errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.BAD_REQUEST}
@@ -922,7 +921,7 @@ export default function CIPipeline({
                         )}
                     </div>
                 )}
-                {renderDeleteCIModal()}
+                {ciPipelineId && showDeleteModal && renderDeleteCIModal()}
             </>
         )
     }

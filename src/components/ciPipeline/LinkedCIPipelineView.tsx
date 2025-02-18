@@ -292,21 +292,22 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                         placeholder="Name"
                         value={this.state.ciPipeline.name}
                         onChange={noop}
-                        isRequiredField
+                        required
                     />
                 </label>
                 {this.renderTriggerType()}
                 {this.renderMaterials()}
-                <DeleteConfirmationModal
-                    title={this.state.form.name}
-                    component={DeleteComponentsName.LinkedBuildPipeline}
-                    subtitle={`Are you sure you want to delete this linked CI Pipeline from '${this.props.appName}' ?`}
-                    showConfirmationModal={this.props.match.params.ciPipelineId && this.state.showDeleteModal}
-                    closeConfirmationModal={this.closeCIDeleteModal}
-                    onDelete={this.onDelete}
-                    successToastMessage="Pipeline Deleted"
-                    errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.BAD_REQUEST}
-                />
+                {this.props.match.params.ciPipelineId && this.state.showDeleteModal && (
+                    <DeleteConfirmationModal
+                        title={this.state.form.name}
+                        component={DeleteComponentsName.LinkedBuildPipeline}
+                        subtitle={`Are you sure you want to delete this linked CI Pipeline from '${this.props.appName}' ?`}
+                        closeConfirmationModal={this.closeCIDeleteModal}
+                        onDelete={this.onDelete}
+                        successToastMessage="Pipeline Deleted"
+                        errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.BAD_REQUEST}
+                    />
+                )}
             </>
         )
     }
