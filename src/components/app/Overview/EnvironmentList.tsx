@@ -32,6 +32,7 @@ import {
     ImageChipCell,
     RegistryType,
     AppEnvironment,
+    StatusType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory } from 'react-router-dom'
 import { ReactComponent as ActivityIcon } from '../../../assets/icons/ic-activity.svg'
@@ -44,7 +45,6 @@ import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 import { getAppOtherEnvironment } from '@Services/service'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
-import { StatusConstants } from '../list-new/Constants'
 import { AppMetaInfo, AppOverviewProps } from '../types'
 import { EnvironmentListSortableKeys, loadingEnvironmentList } from './constants'
 import { renderCIListHeader } from '../details/cdDetails/utils'
@@ -204,13 +204,11 @@ export const EnvironmentList = ({
                                                 {envIcon(_env.isVirtualEnvironment)}
                                                 {isArgoInstalled && (
                                                     <AppStatus
-                                                        appStatus={
-                                                            _env.lastDeployed
-                                                                ? _env.appStatus
-                                                                : StatusConstants.NOT_DEPLOYED.noSpaceLower
+                                                        status={
+                                                            _env.lastDeployed ? _env.appStatus : StatusType.NOT_DEPLOYED
                                                         }
                                                         isVirtualEnv={_env.isVirtualEnvironment}
-                                                        hideStatusMessage
+                                                        hideMessage
                                                     />
                                                 )}
                                                 <Link
@@ -227,10 +225,7 @@ export const EnvironmentList = ({
                                                         registryType={RegistryType.DOCKER}
                                                     />
                                                 ) : (
-                                                    <span className="fs-13 cn-6 flex left dc__gap-6">
-                                                        <span className="dc__app-summary__icon icon-dim-16 not-deployed not-deployed--node" />
-                                                        <span>Not Deployed</span>
-                                                    </span>
+                                                    <AppStatus status={StatusType.NOT_DEPLOYED} />
                                                 )}
                                                 <CommitChipCell
                                                     handleClick={openCommitInfoModal}

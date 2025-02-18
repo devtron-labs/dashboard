@@ -48,6 +48,8 @@ import {
     ERROR_STATUS_CODE,
     DeleteConfirmationModal,
     Textarea,
+    RegistryType as CommonRegistryType,
+    RegistryIcon,
     ComponentSizeType,
     PasswordField,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -282,7 +284,7 @@ const CollapsedList = ({
             >
                 {id && (
                     <List.Logo>
-                        <div className={`dc__registry-icon ${registryType}`} />
+                        <RegistryIcon registryType={registryType as CommonRegistryType} />
                     </List.Logo>
                 )}
                 {!id && collapsed && (
@@ -1742,7 +1744,9 @@ const DockerForm = ({
     }
 
     // For EA Mode GCR is not available as it is not OCI compliant
-    const EA_MODE_REGISTRY_TYPE_MAP = Object.fromEntries(Object.entries(REGISTRY_TYPE_MAP).filter(([key,_]) => key !== 'gcr'))
+    const EA_MODE_REGISTRY_TYPE_MAP = Object.fromEntries(
+        Object.entries(REGISTRY_TYPE_MAP).filter(([key, _]) => key !== 'gcr'),
+    )
     return (
         <form onSubmit={handleOnSubmit} className="docker-form divider" autoComplete="off" noValidate>
             <div className="pl-20 pr-20 pt-20 pb-20">
