@@ -17,7 +17,7 @@
 import { APIOptions } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppListMin, getAppOtherEnvironmentMin, getAvailableCharts } from '../../services/service'
 import { CommandSuggestionType, COMMAND, COMMAND_REV } from './command.types'
-import { URLS } from '../../config'
+import { APP_COMPOSE_STAGE, getAppComposeURL, URLS } from '../../config'
 
 export const AllSuggestedArguments = [
     {
@@ -225,7 +225,7 @@ function getAppArguments(args, options): Promise<CommandSuggestionType> {
                             ref: undefined,
                             data: {
                                 group: undefined,
-                                url: `/app/${args[1].data.value}/edit/deployment-template`,
+                                url: getAppComposeURL(args[1].data.value, APP_COMPOSE_STAGE.DEPLOYMENT_TEMPLATE),
                                 isEOC: true,
                             },
                         },
@@ -243,7 +243,7 @@ function getAppArguments(args, options): Promise<CommandSuggestionType> {
                             ref: undefined,
                             data: {
                                 group: undefined,
-                                url: `/app/${args[1].data.value}/edit/configmap`,
+                                url: getAppComposeURL(args[1].data.value, APP_COMPOSE_STAGE.CONFIG_MAPS),
                                 isEOC: true,
                             },
                         },
@@ -252,7 +252,7 @@ function getAppArguments(args, options): Promise<CommandSuggestionType> {
                             ref: undefined,
                             data: {
                                 group: undefined,
-                                url: `/app/${args[1].data.value}/edit/secrets`,
+                                url: getAppComposeURL(args[1].data.value, APP_COMPOSE_STAGE.SECRETS),
                                 isEOC: true,
                             },
                         },

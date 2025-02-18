@@ -272,3 +272,29 @@ export const CustomPlaceholder: Story = {
         placeholder: 'Custom Placeholder',
     },
 }
+
+export const WithLabelHelperTippy: Story = {
+    ...Required,
+    args: {
+        ...Required.args,
+        label: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis maiores natus dolorum porro vero ad quod suscipit. Eveniet quidem nemo assumenda, tempora dolore aliquam accusamus nam dolorum ad molestias libero.',
+        labelTippyCustomizedConfig: {
+            heading: 'Heading',
+            infoText: 'Info text',
+            documentationLink: 'https://www.devtron.ai',
+            documentationLinkText: 'Documentation',
+        },
+    },
+}
+
+export const WithLabelHelperTippyInRowLayout: Story = {
+    ...Required,
+    args: {
+        ...Required.args,
+        label: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis maiores natus dolorum porro vero ad quod suscipit. Eveniet quidem nemo assumenda, tempora dolore aliquam accusamus nam dolorum ad molestias libero.',
+        layout: 'row',
+        labelTooltipConfig: {
+            content: 'Helper Text',
+        },
+    },
+}

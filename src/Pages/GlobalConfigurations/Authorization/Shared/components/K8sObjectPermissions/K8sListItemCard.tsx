@@ -31,6 +31,7 @@ import {
     ButtonVariantType,
     ButtonStyleType,
     ResourceListPayloadType,
+    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
 import {
@@ -79,7 +80,7 @@ const K8sListItemCard = ({
 }: K8sListItemCardType) => {
     const { customRoles } = useAuthorizationContext()
     const { showStatus, userStatus } = usePermissionConfiguration()
-    const [clusterOptions, setClusterOptions] = useState<OptionType[]>([])
+    const [clusterOptions, setClusterOptions] = useState<SelectPickerOptionType<string>[]>([])
     const [processedData, setProcessedData] = useState<Map<string, K8SObjectType>>()
     const [allInKindMapping, setAllInKindMapping] = useState<OptionType[]>([])
     const [

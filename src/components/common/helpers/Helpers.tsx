@@ -28,6 +28,7 @@ import {
     PipelineBuildStageType,
     SeverityCount,
     useMainContext,
+    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
@@ -46,7 +47,10 @@ import { AUTO_SELECT } from '../../ClusterNodes/constants'
 import { PATTERNS } from '../../../config/constants'
 import { AppEnvLocalStorageKeyType, FilterParentType } from '@Components/ApplicationGroup/AppGroup.types'
 import { APP_GROUP_LOCAL_STORAGE_KEY, ENV_GROUP_LOCAL_STORAGE_KEY } from '@Components/ApplicationGroup/Constants'
-import { GetAndSetAppGroupFiltersParamsType, SetFiltersInLocalStorageParamsType } from './types'
+import {
+    GetAndSetAppGroupFiltersParamsType,
+    SetFiltersInLocalStorageParamsType,
+} from './types'
 
 let module
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -766,12 +770,12 @@ export const convertToOptionsList = (
     customValue?: string,
     customDescription?: string,
     customFieldKey?: string,
-): OptionType[] => {
+): SelectPickerOptionType<string>[] => {
     if (!Array.isArray(arr) || !arr) {
         return []
     }
     return arr.map((ele) => {
-        const _option = {
+        const _option: SelectPickerOptionType<string> = {
             label: customLabel ? ele[customLabel] : ele,
             value: customValue ? ele[customValue] : ele,
             description: customDescription ? ele[customDescription] : '',
