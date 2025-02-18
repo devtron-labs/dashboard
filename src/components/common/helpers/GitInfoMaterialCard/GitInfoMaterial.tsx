@@ -376,17 +376,19 @@ export const GitInfoMaterial = ({
 
         if (RuntimeParameters && currentSidebarTab === CIMaterialSidebarType.PARAMETERS) {
             return (
-                <RuntimeParameters
-                    // Have to add key for appId since key value config would not be updated incase of app change
-                    key={`runtime-parameters-${appId}`}
-                    appId={+appId}
-                    heading={getRuntimeParametersHeading()}
-                    parameters={runtimeParams}
-                    handleChange={handleRuntimeParamChange}
-                    errorState={runtimeParamsErrorState}
-                    handleError={handleRuntimeParamError}
-                    uploadFile={uploadFile}
-                />
+                <div className="bg__tertiary dc__overflow-auto flex-1 select-material--trigger-view p-16">
+                    <RuntimeParameters
+                        // Have to add key for appId since key value config would not be updated incase of app change
+                        key={`runtime-parameters-${appId}`}
+                        appId={+appId}
+                        heading={getRuntimeParametersHeading()}
+                        parameters={runtimeParams}
+                        handleChange={handleRuntimeParamChange}
+                        errorState={runtimeParamsErrorState}
+                        handleError={handleRuntimeParamError}
+                        uploadFile={uploadFile}
+                    />
+                </div>
             )
         }
 
