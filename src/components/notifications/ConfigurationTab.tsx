@@ -192,7 +192,6 @@ export const ConfigurationTab = () => {
             title={deletePayload.configName}
             component={ConfigurationTabText[state.activeTab.toUpperCase()]}
             onDelete={onClickDelete}
-            showConfirmationModal={state.confirmation}
             closeConfirmationModal={hideDeleteModal}
             renderCannotDeleteConfirmationSubTitle={DC_CONFIGURATION_CONFIRMATION_MESSAGE}
             errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
@@ -208,7 +207,7 @@ export const ConfigurationTab = () => {
             <ConfigurationTabSwitcher isEmptyView={isEmptyView} />
             {isEmptyView ? renderEmptyState() : renderTableComponent()}
             {renderModal()}
-            {renderDeleteModal()}
+            {state.confirmation && renderDeleteModal()}
         </div>
     )
 }

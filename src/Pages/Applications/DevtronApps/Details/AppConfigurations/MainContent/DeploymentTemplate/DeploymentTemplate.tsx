@@ -1847,15 +1847,16 @@ const DeploymentTemplate = ({
             <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-auto bg__primary">
                 {renderBody()}
 
-                <DeleteOverrideDialog
-                    environmentConfigId={currentEditorTemplateData?.environmentConfig?.id}
-                    handleReload={handleReload}
-                    handleClose={handleCloseDeleteOverrideDialog}
-                    handleProtectionError={handleDeleteOverrideProtectionError}
-                    reloadEnvironments={reloadEnvironments}
-                    showConfirmationModal={showDeleteOverrideDialog}
-                    environmentName={environmentName}
-                />
+                {showDeleteOverrideDialog && (
+                    <DeleteOverrideDialog
+                        environmentConfigId={currentEditorTemplateData?.environmentConfig?.id}
+                        handleReload={handleReload}
+                        handleClose={handleCloseDeleteOverrideDialog}
+                        handleProtectionError={handleDeleteOverrideProtectionError}
+                        reloadEnvironments={reloadEnvironments}
+                        environmentName={environmentName}
+                    />
+                )}
 
                 {DeleteOverrideDraftModal && showDeleteDraftOverrideDialog && (
                     <DeleteOverrideDraftModal

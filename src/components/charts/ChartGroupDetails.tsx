@@ -157,7 +157,6 @@ export default function ChartGroupDetails() {
                 title={state.name}
                 closeConfirmationModal={closeConfirmationModal}
                 component={DeleteComponentsName.ChartGroup}
-                showConfirmationModal={showConfirmationModal}
                 onDelete={onDelete}
             />
         )
@@ -319,7 +318,7 @@ export default function ChartGroupDetails() {
                         </div>
                     </div>
                 )}
-                {renderDeleteComponent()}
+                {showConfirmationModal && renderDeleteComponent()}
             </div>
             {showDeployModal ? (
                 <ChartGroupBasicDeploy

@@ -224,13 +224,14 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
                             </span>
                         )}
                 </div>
-                <DeleteUserPermission
-                    title={name.value}
-                    onDelete={onDelete}
-                    showConfirmationModal={deleteConfirmationModal}
-                    closeConfirmationModal={toggleDeleteConfirmationModal}
-                    isUserGroup
-                />
+                {deleteConfirmationModal && (
+                    <DeleteUserPermission
+                        title={name.value}
+                        onDelete={onDelete}
+                        closeConfirmationModal={toggleDeleteConfirmationModal}
+                        isUserGroup
+                    />
+                )}
             </div>
         </div>
     )

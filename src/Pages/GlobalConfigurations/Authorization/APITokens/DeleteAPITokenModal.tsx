@@ -20,13 +20,7 @@ import { DeleteConfirmationModal } from '@devtron-labs/devtron-fe-common-lib'
 import { deleteGeneratedAPIToken } from './service'
 import { DeleteAPITokenModalProps } from './apiToken.type'
 
-const DeleteAPITokenModal = ({
-    isEditView,
-    tokenData,
-    reload,
-    showDeleteConfirmation,
-    setDeleteConfirmation,
-}: DeleteAPITokenModalProps) => {
+const DeleteAPITokenModal = ({ isEditView, tokenData, reload, setDeleteConfirmation }: DeleteAPITokenModalProps) => {
     const match = useRouteMatch()
     const history = useHistory()
 
@@ -65,7 +59,6 @@ const DeleteAPITokenModal = ({
             subtitle={renderDescriptionContent()}
             component={DeleteComponentsName.API_TOKEN}
             onDelete={onDelete}
-            showConfirmationModal={showDeleteConfirmation}
             closeConfirmationModal={closeDeleteConfirmationModal}
         />
     )
