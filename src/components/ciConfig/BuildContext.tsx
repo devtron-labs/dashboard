@@ -210,8 +210,9 @@ const BuildContext: FunctionComponent<BuildContextProps> = ({
                             />
 
                             <CustomInput
-                                type="text"
-                                rootClassName="file-name"
+                                borderRadiusConfig={{
+                                    left: false,
+                                }}
                                 data-testid="build-context-path-text-box"
                                 placeholder="Project Path"
                                 name="buildContext"

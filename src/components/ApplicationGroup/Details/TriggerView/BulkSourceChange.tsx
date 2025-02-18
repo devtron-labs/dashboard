@@ -124,7 +124,7 @@ export default function BulkSourceChange({
             <div className="p-20">
                 <div className="form__row">
                     <CustomInput
-                        labelClassName="dc__required-field"
+                        required
                         name="branch_name"
                         disabled={false}
                         value={branchName}
