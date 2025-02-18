@@ -763,7 +763,7 @@ const LogsComponent = ({
                     </form>
                 </div>
             </div>
-            <div className={getComponentSpecificThemeClass(AppThemeType.dark)}>
+            <div className={`flexbox-col flex-grow-1 ${getComponentSpecificThemeClass(AppThemeType.dark)}`}>
                 {podContainerOptions.containerOptions.filter((_co) => _co.selected).length > 0 &&
                     podContainerOptions.podOptions.filter((_po) => _po.selected).length > 0 && (
                         <div

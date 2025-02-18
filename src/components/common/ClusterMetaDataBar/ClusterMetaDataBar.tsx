@@ -15,7 +15,12 @@
  */
 
 import { useHistory } from 'react-router-dom'
-import { AppThemeType, getComponentSpecificThemeClass, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AppThemeType,
+    getComponentSpecificThemeClass,
+    useMainContext,
+    useTheme,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterMetaDataBarProps } from './types'
 import { URLS } from '../../../config'
 import { K8S_EMPTY_GROUP } from '../../ResourceBrowser/Constants'
@@ -35,6 +40,7 @@ export const ClusterMetaDataBar = ({
     const { isSuperAdmin } = useMainContext()
     const history = useHistory()
     const { pathname } = history.location
+    const { appTheme } = useTheme()
     const darkTheme =
         pathname.includes(NodeDetailTabs.MANIFEST.toLowerCase()) ||
         pathname.includes(NodeDetailTabs.EVENTS.toLowerCase()) ||
@@ -70,7 +76,7 @@ export const ClusterMetaDataBar = ({
         return null
     }
     return (
-        <div className={getComponentSpecificThemeClass(darkTheme ? AppThemeType.dark : AppThemeType.light)}>
+        <div className={getComponentSpecificThemeClass(darkTheme ? AppThemeType.dark : appTheme)}>
             <div
                 className={`cluster-meta-data-wrapper ${darkTheme ? 'dark-theme cn-0' : 'cn-9 bg__primary resource-link__white-theme'} flex left dc__position-fixed dc__bottom-0 pl-16 w-100 fs-12 dc__border-top dc__gap-6 pt-4 pb-4 lh-20 cn-9`}
             >
