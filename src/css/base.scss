@@ -2067,7 +2067,7 @@ button.anchor {
 
 // Border
 .dc__border {
-    border: 1px solid var(--N200);
+    border: 1px solid var(--border-primary);
 
     &--n9 {
         border: 1px solid var(--N900);
@@ -2079,12 +2079,12 @@ button.anchor {
 
     &--left {
         border: none;
-        border-left: 1px solid var(--N200);
+        border-left: 1px solid var(--border-primary);
     }
 }
 
 .dc__border-dashed {
-    border: 1px dashed var(--N200);
+    border: 1px dashed var(--border-primary);
 
     &--n3 {
         border: 1px dashed var(--N300);
@@ -2100,7 +2100,7 @@ button.anchor {
 }
 
 .dc__border-n1 {
-    border: 1px solid var(--N100);
+    border: 1px solid var(--border-secondary);
 }
 
 .dc__border-n0 {
@@ -2116,7 +2116,7 @@ button.anchor {
 }
 
 .dc__border-top {
-    border-top: solid 1px var(--N200);
+    border-top: solid 1px var(--border-primary);
 }
 
 .dc__border-top-v1 {
@@ -2124,7 +2124,7 @@ button.anchor {
 }
 
 .dc__border-bottom {
-    border-bottom: solid 1px var(--N200);
+    border-bottom: solid 1px var(--border-primary);
 
     &--b1 {
         border-bottom: solid 1px var(--B100);
@@ -2158,11 +2158,11 @@ button.anchor {
 }
 
 .dc__border-bottom-imp {
-    border-bottom: solid 1px var(--N200) !important;
+    border-bottom: solid 1px var(--border-primary) !important;
 }
 
 .dc__border-bottom-2 {
-    border-bottom: 2px solid var(--N200);
+    border-bottom: 2px solid var(--border-primary);
 
     &--b5 {
         border-bottom: 2px solid var(--B500) !important;
@@ -2170,7 +2170,7 @@ button.anchor {
 }
 
 .dc__border-left {
-    border-left: solid 1px var(--N200);
+    border-left: solid 1px var(--border-primary);
 
     &--b1 {
         border-left: solid 1px var(--B100);
@@ -2198,10 +2198,10 @@ button.anchor {
 }
 
 .dc__border-right {
-    border-right: solid 1px var(--N200);
+    border-right: solid 1px var(--border-primary);
 
     &--n1 {
-        border-right: solid 1px var(--N100);
+        border-right: solid 1px var(--border-secondary);
     }
 
     &--b1 {
@@ -2214,10 +2214,10 @@ button.anchor {
 }
 
 .dc__border-top-n1 {
-    border-top: solid 1px var(--N100);
+    border-top: solid 1px var(--border-secondary);
 
     &--important {
-        border-top: solid 1px var(--N100) !important;
+        border-top: solid 1px var(--border-secondary) !important;
     }
 }
 
@@ -2230,22 +2230,22 @@ button.anchor {
 }
 
 .dc__border-bottom-n1 {
-    border-bottom: solid 1px var(--N100);
+    border-bottom: solid 1px var(--border-secondary);
 
     &--important {
-        border-bottom: solid 1px var(--N100) !important;
+        border-bottom: solid 1px var(--border-secondary) !important;
     }
 }
 
 .dc__border-right-n1 {
-    border-right: solid 1px var(--N100);
+    border-right: solid 1px var(--border-secondary);
 }
 
 .dc__border-left-n1 {
-    border-left: solid 1px var(--N100);
+    border-left: solid 1px var(--border-secondary);
 
     &--important {
-        border-left: solid 1px var(--N100) !important;
+        border-left: solid 1px var(--border-secondary) !important;
     }
 }
 
