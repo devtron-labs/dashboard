@@ -129,6 +129,10 @@
 .border {
     &__primary {
         border: 1px solid var(--border-primary);
+
+        &--left {
+            border-left: 1px solid var(--border-primary);
+        }
     }
 
     &__secondary {
