@@ -692,6 +692,7 @@ export const Details: React.FC<DetailsType> = ({
                 />
             )
         }
+
         return (
             <ConfirmationModal
                 variant={ConfirmationModalVariantType.custom}
@@ -720,7 +721,6 @@ export const Details: React.FC<DetailsType> = ({
                         text: getHibernateText(),
                     },
                 }}
-                showConfirmationModal={!!hibernateConfirmationModal}
                 handleClose={handleHibernateConfirmationModalClose}
             >
                 <span className="fs-13">Are you sure you want to continue?</span>
@@ -831,7 +831,7 @@ export const Details: React.FC<DetailsType> = ({
                     renderCIListHeader={renderCIListHeader}
                 />
             )}
-            {appDetails && renderHibernateModal()}
+            {appDetails && !!hibernateConfirmationModal && renderHibernateModal()}
             {rotateModal && renderRestartWorkload()}
             {
                 <ClusterMetaDataBar

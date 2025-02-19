@@ -125,7 +125,6 @@ const BulkDeleteModal = ({
                     text: buttonText,
                 },
             }}
-            showConfirmationModal
             confirmationConfig={{
                 identifier: 'delete-user-confirmation',
                 confirmationKeyword: confirmationText,
