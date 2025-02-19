@@ -48,7 +48,7 @@ import { Subject } from '../../../../../../util/Subject'
 import LogViewerComponent from './LogViewer.component'
 import { multiSelectStyles, podsDropdownStyles } from '../../../../common/ReactSelectCustomization'
 import { LogsComponentProps, Options } from '../../../appDetails.type'
-import { ReactComponent as QuestionIcon } from '../../../../assets/icons/ic-question.svg'
+import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { Option } from '../../../../common/ReactSelect.utils'
 import { AppDetailsTabs } from '../../../appDetails.store'
@@ -501,7 +501,7 @@ const LogsComponent = ({
     ) : (
         <div className={`flexbox-col flex-grow-1 ${getComponentSpecificThemeClass(AppThemeType.dark)}`}>
             <div className="node-container-fluid bg__primary">
-                <div data-testid="logs-container-header" className="pl-16 h-32 flexbox">
+                <div data-testid="logs-container-header" className="pl-16 h-32 flexbox border__secondary--bottom">
                     <div className="w-70 flexbox flex-align-center pt-2 pb-2">
                         <Tippy
                             className="default-tt"
@@ -756,8 +756,8 @@ const LogsComponent = ({
                                 </div>
                             }
                         >
-                            <div className="w-16 bg__primary h-100 flexbox flex-align-center">
-                                <QuestionIcon className="icon-dim-18 cursor ml-8 mr-8" />
+                            <div className="bg__primary flexbox flex-align-center dc__no-shrink p-8">
+                                <ICHelpOutline className="icon-dim-16 cursor fcn-7" />
                             </div>
                         </Tippy>
                     </form>

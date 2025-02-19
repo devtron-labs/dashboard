@@ -289,13 +289,13 @@ export default function TerminalView({
                 {renderConnectionStrip()}
                 {fullScreenView && (
                     <div className="w-100 flexbox dc__gap-6 dc__align-items-center px-12 py-4 terminal-wrapper__metadata">
-                        <ICDevtronLogo className="fcn-0 icon-dim-16 dc__no-shrink" />
+                        <ICDevtronLogo className="icon__white icon-dim-16 dc__no-shrink" />
                         {Object.entries(metadata).map(([key, value], index, arr) => (
                             <React.Fragment key={key}>
-                                <span className="dc__first-letter-capitalize fs-12 cn-0 lh-20">
+                                <span className="dc__first-letter-capitalize fs-12 text__white lh-20">
                                     {key}:&nbsp;{value || '-'}
                                 </span>
-                                {index < arr.length - 1 && <div className="dc__divider h12" />}
+                                {index < arr.length - 1 && <div className="divider__primary h12" />}
                             </React.Fragment>
                         ))}
                     </div>

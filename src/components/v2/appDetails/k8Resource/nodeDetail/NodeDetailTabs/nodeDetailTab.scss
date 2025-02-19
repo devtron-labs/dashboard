@@ -87,7 +87,7 @@
     .log-viewer {
         height: 100%;
         width: 100%;
-        padding: 0 0 0 20px;
+        padding: 8px 0 8px 16px;
         overflow: hidden;
         background-color: var(--terminal-bg);
         &:focus {
