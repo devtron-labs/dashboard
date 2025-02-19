@@ -771,9 +771,7 @@ const LogsComponent = ({
                             gridColumn: '1 / span 2',
                             background: 'var(--terminal-bg)',
                             height:
-                                isResourceBrowserView || isLogAnalyzer
-                                    ? 'calc(100vh - 152px)'
-                                    : 'calc(100vh - 187px)',
+                                isResourceBrowserView || isLogAnalyzer ? 'calc(100vh - 152px)' : 'calc(100vh - 187px)',
                         }}
                         className="flex flex-grow-1 column log-viewer-container"
                     >
@@ -803,13 +801,15 @@ const LogsComponent = ({
                         {prevContainer && showNoPrevContainer != '' ? (
                             <MessageUI dataTestId="no-prev-container-logs" msg={showNoPrevContainer} size={24} />
                         ) : (
-                            <div className={`log-viewer ${getComponentSpecificThemeClass(AppThemeType.dark)}`}>
-                                <LogViewerComponent
-                                    subject={subject}
-                                    highlightString={highlightString}
-                                    rootClassName="event-logs__logs"
-                                    reset={logsCleared}
-                                />
+                            <div className={`flexbox-col flex-grow-1 w-100 h-100 ${getComponentSpecificThemeClass(AppThemeType.dark)}`}>
+                                <div className="log-viewer">
+                                    <LogViewerComponent
+                                        subject={subject}
+                                        highlightString={highlightString}
+                                        rootClassName="event-logs__logs"
+                                        reset={logsCleared}
+                                    />
+                                </div>
                             </div>
                         )}
 
