@@ -226,6 +226,18 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
         return (matchesCluster || matchesApp) && matchesSearch
     })
 
+    const getFormattedFilterValue = (filterKey: keyof ExternalListUrlFiltersType, filterValue: string) => {
+        if (filterKey === 'apps') {
+            const [, appName] = filterValue.split('|')
+            return appName
+        }
+        if (filterKey === 'clusters') {
+            const cluster = clusterList.find((_cluster) => _cluster.value === filterValue)
+            return cluster?.label || ''
+        }
+        return ''
+    }
+
     const renderExternalLinksView = (): JSX.Element => (
         <div className="flexbox-col dc__gap-8 external-links-wrapper pt-16 flex-grow-1">
             <div className="flex dc__content-space px-20">
@@ -253,6 +265,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                     clearFilters={clearFilters}
                     className="px-20"
                     onRemoveFilter={updateSearchParams}
+                    getFormattedValue={getFormattedFilterValue}
                 />
             )}
             <ExternalLinkList
