@@ -396,12 +396,14 @@ export const GitInfoMaterial = ({
             <div className="select-material select-material--trigger-view">
                 {showHeader && renderMaterialHistoryHeader(selectedMaterial)}
                 {renderWebhookHeader()}
-                <MaterialHistory
-                    material={selectedMaterial}
-                    pipelineName={pipelineName}
-                    ciPipelineId={String(pipelineId)}
-                    selectCommit={triggerViewContext.selectCommit}
-                />
+                <div className="py-12 px-16">
+                    <MaterialHistory
+                        material={selectedMaterial}
+                        pipelineName={pipelineName}
+                        ciPipelineId={String(pipelineId)}
+                        selectCommit={triggerViewContext.selectCommit}
+                    />
+                </div>
             </div>
         )
     }
