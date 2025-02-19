@@ -239,7 +239,9 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
     }
 
     const renderExternalLinksView = (): JSX.Element => (
-        <div className="flexbox-col dc__gap-8 external-links-wrapper pt-16 flex-grow-1">
+        <div
+            className={`flexbox-col ${isAppConfigView ? 'dc__gap-16' : 'dc__gap-8'} external-links-wrapper pt-16 flex-grow-1 h-100`}
+        >
             <div className="flex dc__content-space px-20">
                 <h3 className="title flex left cn-9 fs-18 fw-6 lh-24 m-0" data-testid="external-links-heading">
                     External Links
@@ -251,7 +253,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                         iconClassName="icon-dim-20 fcn-6 ml-8"
                     />
                 </h3>
-                <div className="cta-search-filter-container flex">
+                <div className="cta-search-filter-container flex h-100">
                     {renderFilters()}
                     <div className="h-20 dc__border-right mr-8 ml-8" />
                     <AddLinkButton handleOnClick={handleAddLinkClick} />

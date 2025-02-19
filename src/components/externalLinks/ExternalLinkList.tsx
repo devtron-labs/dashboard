@@ -134,11 +134,9 @@ export const ExternalLinkList = ({
 
     if ((clusters.length || apps.length || searchKey) && filteredExternalLinks.length === 0) {
         return (
-            <GenericFilterEmptyState
-                classname="dc__align-reload-center"
-                isButtonAvailable
-                renderButton={renderClearFilterButton}
-            />
+            <div className="flex flex-grow-1">
+                <GenericFilterEmptyState isButtonAvailable renderButton={renderClearFilterButton} />
+            </div>
         )
     }
 

@@ -51,6 +51,7 @@ import {
     ButtonComponentType,
     ButtonStyleType,
     ImageWithFallback,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './externalLinks.component.scss'
 import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/constants'
@@ -58,6 +59,7 @@ import { ReactComponent as ICArrowOut } from '@Icons/ic-arrow-square-out.svg'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import ICWebpage from '@Icons/tools/ic-link-webpage.png'
 import { AddLinkButton } from './AddLinkButton'
+import { Link } from 'react-router-dom'
 
 export const ExternalLinksLearnMore = (): JSX.Element => {
     return (
@@ -99,22 +101,39 @@ export const NoExternalLinksView = ({
     )
 }
 
+const redirectToGlobalConfig = (linkText) => {
+    return <Link
+        to={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
+        data-testid="info-bar-internal-link"
+        className="cursor dc__link dc__underline-onhover mr-5 dc__no-decor"
+    >
+        {linkText}
+    </Link>
+}
+
+const renderInfoDescription = (userRole) => {
+    if (userRole === UserRoleType.SuperAdmin) {
+        return (
+            <span>
+                Only links editable by application admins are shown here. To check all configured links,&nbsp;
+                {redirectToGlobalConfig('Go to Global configuration')}
+            </span>
+        )
+    }
+    return (
+        <span>
+            Only links editable by application admins are shown here. All configured links are available to super admins
+            in&nbsp;{redirectToGlobalConfig('Global Configurations')}
+        </span>
+    )
+}
+
 export const RoleBasedInfoNote = ({ userRole, listingView }: RoleBasedInfoNoteProps) => {
     return (
         <div className="flexbox-col px-20">
-        <InfoColourBar
-            message={
-                userRole === UserRoleType.SuperAdmin
-                    ? 'Only links editable by application admins are shown here. To check all configured links,'
-                    : 'Only links editable by application admins are shown here. All configured links are available to super admins in'
-            }
-            classname={`info_bar fs-12 px-12 ${listingView ? '' : 'dc__mxw-300 m-20'}`}
-            Icon={InfoIcon}
-            iconClass="h-20"
-            linkText={userRole === UserRoleType.SuperAdmin ? 'Go to Global configurations' : 'Global Configurations.'}
-            internalLink
-            redirectLink={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
-        />
+            <InfoBlock
+                description={renderInfoDescription(userRole)}
+            />
         </div>
     )
 }
