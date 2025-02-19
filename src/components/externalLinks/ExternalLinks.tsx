@@ -179,34 +179,51 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
     }
 
     const filteredExternalLinks = externalLinks.filter((link) => {
-        if (clusters.length > 0) {
+        const hasClusters = clusters.length > 0
+        const hasApps = apps.length > 0
+        const hasSearchKey = !!searchKey
+
+        // If no filters are applied, return the full list
+        if (!hasClusters && !hasApps && !hasSearchKey) {
+            return true
+        }
+
+        let matchesCluster = false
+        let matchesApp = false
+        let matchesSearch = true // Default to true unless searchKey is provided
+
+        // Cluster filtering
+        if (hasClusters) {
             if (clusters.length === 1 && !clusters[0]) {
-                return !apps.length ? externalLinks : []
+                matchesCluster = true // If only an empty cluster is selected, show all links
+            } else {
+                matchesCluster =
+                    link.identifiers?.length === 0 || // No identifiers (global match)
+                    link.identifiers.some(({ clusterId }) => clusters.includes(`${clusterId}`))
             }
-            return (
-                link.identifiers?.length === 0 ||
-                !link.identifiers?.some((_identifier) => clusters.includes(`${_identifier.clusterId}`))
+        }
+
+        // App filtering
+        if (hasApps) {
+            const appliedApps = new Set(
+                apps.map((app) => {
+                    const [appId, , type] = app.split('|')
+                    return `${appId}|${type}`
+                }),
             )
+
+            matchesApp =
+                link.identifiers?.length === 0 || // No identifiers (global match)
+                link.identifiers.some(({ appId, type }) => appliedApps.has(`${appId}|${type}`))
         }
 
-        // if apps are selected, filter links based on selected apps
-
-        const appliedApps = apps.map((app) => `${app.split('|')[0]}|${app.split('|')[2]}`)
-
-        if (apps.length > 0) {
-            return (
-                link.identifiers?.length === 0 ||
-                link.identifiers?.some((_identifier) =>
-                    appliedApps.includes(`${_identifier.appId}|${_identifier.type}`),
-                )
-            )
+        // Search Key filtering
+        if (hasSearchKey) {
+            matchesSearch = link.name.toLowerCase().includes(searchKey.toLowerCase())
         }
 
-        if (searchKey && !link.name.toLowerCase().includes(searchKey.toLowerCase())) {
-            return false
-        }
-
-        return true
+        // Apply OR logic (if any of the conditions match, return true)
+        return (matchesCluster || matchesApp) && matchesSearch
     })
 
     const renderExternalLinksView = (): JSX.Element => (
