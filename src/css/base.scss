@@ -4710,9 +4710,9 @@ textarea::placeholder {
     }
 
     &:hover {
-        color: var(--N700);
+        color: var(--N900);
         text-decoration: none;
-        background: var(--bg-secondary);
+        background: var(--bg-hover);
     }
 
     &__text {
