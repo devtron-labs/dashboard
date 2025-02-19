@@ -287,34 +287,36 @@ export default function TerminalView({
                 data-testid={dataTestId}
             >
                 {renderConnectionStrip()}
-                {fullScreenView && (
-                    <div className="w-100 flexbox dc__gap-6 dc__align-items-center px-12 py-4 terminal-wrapper__metadata">
-                        <ICDevtronLogo className="icon__white icon-dim-16 dc__no-shrink" />
-                        {Object.entries(metadata).map(([key, value], index, arr) => (
-                            <React.Fragment key={key}>
-                                <span className="dc__first-letter-capitalize fs-12 text__white lh-20">
-                                    {key}:&nbsp;{value || '-'}
-                                </span>
-                                {index < arr.length - 1 && <div className="divider__primary h12" />}
-                            </React.Fragment>
-                        ))}
+                <div className={`flexbox-col flex-grow-1 ${getComponentSpecificThemeClass(AppThemeType.dark)}`}>
+                    {fullScreenView && (
+                        <div className="w-100 flexbox dc__gap-6 dc__align-items-center px-12 py-4 terminal-wrapper__metadata">
+                            <ICDevtronLogo className="icon__white icon-dim-16 dc__no-shrink" />
+                            {Object.entries(metadata).map(([key, value], index, arr) => (
+                                <React.Fragment key={key}>
+                                    <span className="dc__first-letter-capitalize fs-12 text__white lh-20">
+                                        {key}:&nbsp;{value || '-'}
+                                    </span>
+                                    {index < arr.length - 1 && <div className="divider__primary h12" />}
+                                </React.Fragment>
+                            ))}
+                        </div>
+                    )}
+                    <div
+                        ref={termDivRef}
+                        id="terminal-id"
+                        data-testid="terminal-editor-container"
+                        className={`mt-8 mb-4 terminal-component ${
+                            fullScreenView ? 'terminal-component--fullscreen' : ''
+                        } ml-20 ${!isResourceBrowserView && !fullScreenView && isSuperAdmin ? 'terminal-component__zoom--bottom-41' : ''}`}
+                    >
+                        <CopyToast showCopyToast={popupText} />
+                        <LogResizeButton
+                            shortcutCombo={[IS_PLATFORM_MAC_OS ? 'Meta' : 'Control', 'Shift', 'F']}
+                            showOnlyWhenPathIncludesLogs={false}
+                            fullScreenView={fullScreenView}
+                            setFullScreenView={handleToggleFullscreen}
+                        />
                     </div>
-                )}
-                <div
-                    ref={termDivRef}
-                    id="terminal-id"
-                    data-testid="terminal-editor-container"
-                    className={`mt-8 mb-4 terminal-component ${
-                        fullScreenView ? 'terminal-component--fullscreen' : ''
-                    } ml-20 ${!isResourceBrowserView && !fullScreenView && isSuperAdmin ? 'terminal-component__zoom--bottom-41' : ''}`}
-                >
-                    <CopyToast showCopyToast={popupText} />
-                    <LogResizeButton
-                        shortcutCombo={[IS_PLATFORM_MAC_OS ? 'Meta' : 'Control', 'Shift', 'F']}
-                        showOnlyWhenPathIncludesLogs={false}
-                        fullScreenView={fullScreenView}
-                        setFullScreenView={handleToggleFullscreen}
-                    />
                 </div>
             </div>
         </UseRegisterShortcutProvider>

@@ -75,10 +75,14 @@ export default function TerminalWrapper({
     }
 
     return (
-        <div className={`${className} ${getComponentSpecificThemeClass(AppThemeType.dark)}`} data-testid={dataTestId}>
-            <div className="flex bg__primary pl-20 h-32 terminal-action-strip dc__zi-11 border__secondary--bottom">{firstStrip()}</div>
+        <div className={className} data-testid={dataTestId}>
+            <div className="flex bg__primary pl-20 h-32 terminal-action-strip dc__zi-11 border__secondary--bottom">
+                {firstStrip()}
+            </div>
             {selectionListData.secondRow && (
-                <div className="flex left bg__primary pl-20 border__secondary--bottom terminal-action-strip dc__gap-12">{secondStrip()}</div>
+                <div className="flex left bg__primary pl-20 border__secondary--bottom terminal-action-strip dc__gap-12">
+                    {secondStrip()}
+                </div>
             )}
             {typeof selectionListData.tabSwitcher.terminalTabWrapper === 'function'
                 ? selectionListData.tabSwitcher.terminalTabWrapper(renderTerminalView())
