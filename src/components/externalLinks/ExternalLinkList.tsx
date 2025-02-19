@@ -20,7 +20,6 @@ import {
 } from './ExternalLinks.type'
 
 export const ExternalLinkList = ({
-    filteredLinksLen,
     filteredExternalLinks,
     isAppConfigView,
     setSelectedLink,
@@ -114,7 +113,7 @@ export const ExternalLinkList = ({
                         <InteractiveCellText text={link.url} data-testid={`external-link-url-${link.name}`} />
                         {renderActionButton(link)}
                     </div>
-                    {idx !== filteredLinksLen - 1 && <div className="external-link__divider w-100 bcn-1" />}
+                    {idx !== filteredExternalLinks.length - 1 && <div className="external-link__divider w-100 bcn-1" />}
                 </Fragment>
             ))}
         </div>
@@ -133,7 +132,7 @@ export const ExternalLinkList = ({
         </div>
     )
 
-    if ((clusters.length || apps.length || searchKey) && filteredLinksLen === 0) {
+    if ((clusters.length || apps.length || searchKey) && filteredExternalLinks.length === 0) {
         return (
             <GenericFilterEmptyState
                 classname="dc__align-reload-center"

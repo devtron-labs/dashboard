@@ -37,7 +37,7 @@ export interface ExpandedExternalLink extends OptionTypeWithIcon {
 
 export interface IdentifierOptionType {
     label: string
-    value: any
+    value: string
     type?: ExternalLinkIdentifierType
 }
 
@@ -57,6 +57,7 @@ export interface ExternalLinkIdentifierProps {
     type: string
     identifier: string
     clusterId: number
+    appId?: number
 }
 
 export interface ExternalLink extends Pick<OptionTypeWithIcon, 'openInNewTab'> {
@@ -242,7 +243,6 @@ export interface AddLinkButtonProps {
 export interface ExternalLinkListProps
     extends Pick<ExternalLinksProps, 'isAppConfigView'>,
         Pick<AddExternalLinkType, 'monitoringTools'> {
-    filteredLinksLen: number
     filteredExternalLinks: ExternalLink[]
     setSelectedLink: React.Dispatch<React.SetStateAction<ExternalLink>>
     setShowDeleteDialog: React.Dispatch<React.SetStateAction<boolean>>
