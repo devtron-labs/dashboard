@@ -306,10 +306,19 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
     }, {})
 
     const clusterFilterChip = clusters.map((cluster) => clusterMap[cluster])
+    const appMap = allApps.reduce((acc, app) => {
+        acc[app.value] = app.label
+        return acc
+    }, {})
+
+    const appFilterChip = apps?.map((app) => appMap[app])
+
+    console.log(appFilterChip)
+    console.log(apps, 'apps')
 
     const filterConfig = {
         clusters: clusterFilterChip,
-        apps,
+        apps: appFilterChip,
     }
 
     const renderExternalLinksView = (): JSX.Element => (
