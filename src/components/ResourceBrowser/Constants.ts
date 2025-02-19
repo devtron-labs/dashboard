@@ -88,7 +88,7 @@ export const KIND_SEARCH_COMMON_STYLES = {
     }),
     option: (base, state) => ({
         ...base,
-        backgroundColor: state.isFocused ? 'var(--bg-secondary)' : 'var(--bg-primary)',
+        backgroundColor: state.isFocused ? 'var(--bg-secondary)' : 'var(--bg-transparent)',
         color: 'var(--N900)',
         textOverflow: 'ellipsis',
         fontWeight: '500',
