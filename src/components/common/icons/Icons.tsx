@@ -16,22 +16,6 @@
 
 import React from 'react'
 
-export const NavigationArrow = ({ color = 'var(--B500)', style = {}, ...props }) => {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            style={{ width: '24px', height: '24px', ...style }}
-            viewBox="0 0 24 24"
-        >
-            <g fill="none" fillRule="evenodd">
-                <path d="M0 0h24v24H0z" />
-                <path fill={color} fillRule="nonzero" d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
-            </g>
-        </svg>
-    )
-}
-
 export const Pod = ({ color = 'var(--B500)', style = {}, onClick = null }) => {
     return (
         <svg xmlns="http://www.w3.org/2000/svg" style={{ width: '24px', height: '24px', ...style }} viewBox="0 0 24 24">
