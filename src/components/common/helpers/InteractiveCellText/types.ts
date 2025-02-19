@@ -1,5 +1,5 @@
 export interface InteractiveCellTextProps {
     text: string
-    linkRedirectsTo?: () => void
+    onClickHandler?: () => void
     dataTestId?: string
 }

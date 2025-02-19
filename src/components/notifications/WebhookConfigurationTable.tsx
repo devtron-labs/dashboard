@@ -57,7 +57,7 @@ export const WebhookConfigurationTable = ({ state, deleteClickHandler }: Configu
                         {getConfigTabIcons(ConfigurationsTabTypes.WEBHOOK)}
                         <InteractiveCellText
                             text={webhookConfig.name}
-                            linkRedirectsTo={onClickWebhookConfigEdit(webhookConfig.id)}
+                            onClickHandler={onClickWebhookConfigEdit(webhookConfig.id)}
                             dataTestId={`webhook-config-name-${webhookConfig.name}`}
                         />
                         <InteractiveCellText

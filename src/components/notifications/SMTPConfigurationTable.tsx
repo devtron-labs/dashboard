@@ -63,7 +63,7 @@ export const SMTPConfigurationTable = ({ state, deleteClickHandler }: Configurat
                         >
                             <InteractiveCellText
                                 text={smtpConfig.name}
-                                linkRedirectsTo={onClickEditRow(smtpConfig.id)}
+                                onClickHandler={onClickEditRow(smtpConfig.id)}
                             />
                             {renderDefaultTag(smtpConfig.isDefault)}
                         </div>

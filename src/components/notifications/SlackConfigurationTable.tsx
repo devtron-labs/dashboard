@@ -59,7 +59,7 @@ const SlackConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTab
                         <div className="flex left dc__gap-8">
                             <InteractiveCellText
                                 text={slackConfig.slackChannel}
-                                linkRedirectsTo={onClickSlackConfigEdit(slackConfig.id)}
+                                onClickHandler={onClickSlackConfigEdit(slackConfig.id)}
                             />
                         </div>
                         <InteractiveCellText text={slackConfig.webhookUrl} />

@@ -46,7 +46,7 @@ export const ExternalLinkList = ({
 
     const renderExternalLinksHeader = (): JSX.Element => (
         <div
-            className={`external-link-list__row dc__align-items-center h-40 fs-12 fw-6 dc__uppercase px-20 py-6 dc__gap-16 dc__border-bottom dc__position-sticky dc__top-0 cn-7 ${
+            className={`external-link-list__row dc__align-items-center h-40 fs-12 fw-6 dc__uppercase px-20 py-6 dc__gap-16 dc__border-bottom dc__position-sticky dc__top-0 cn-7 bg__primary ${
                 isAppConfigView ? 'app-config-view' : ''
             }`}
         >
@@ -101,7 +101,7 @@ export const ExternalLinkList = ({
                         </div>
                         <InteractiveCellText text={link.name} data-testid={`external-link-name-${link.name}`} />
                         <InteractiveCellText
-                            text={link.description}
+                            text={link.description || '-'}
                             data-testid={`external-link-description-${link.name}`}
                         />
 

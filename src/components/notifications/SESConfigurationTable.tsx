@@ -58,7 +58,7 @@ const SESConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTable
                         <div className=" flex left dc__gap-8">
                             <InteractiveCellText
                                 text={sesConfig.name}
-                                linkRedirectsTo={onClickSESConfigEdit(sesConfig.id)}
+                                onClickHandler={onClickSESConfigEdit(sesConfig.id)}
                             />
                             {renderDefaultTag(sesConfig.isDefault)}
                         </div>
