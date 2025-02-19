@@ -263,7 +263,7 @@ const CreateAPIToken = ({
                         onChange={onChangeHandler}
                         error={formDataErrorObj.invalidName && formDataErrorObj.invalidNameMessage}
                         label="Name"
-                        isRequiredField
+                        required
                     />
                     <Textarea
                         label="Description"

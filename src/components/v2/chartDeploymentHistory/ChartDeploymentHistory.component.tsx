@@ -32,7 +32,8 @@ import {
     ShowMoreText,
     DEPLOYMENT_STATUS,
     EMPTY_STATE_STATUS,
-    MODES,
+    AppStatus,
+    StatusType,
     Button,
     ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -303,13 +304,21 @@ const ChartDeploymentHistory = ({
         setDeploymentManifestDetails(_deploymentManifestDetail)
     }
 
+    const getDeploymentStatus = (deployment: ChartDeploymentDetail) => {
+        if (
+            (deployment?.status && installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS) ||
+            installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD
+        ) {
+            return deployment.status
+        } else {
+            return deployment?.status || StatusType.SUCCEEDED
+        }
+    }
+
     function renderDeploymentCards() {
         return (
             <>
                 {deploymentHistoryArr.map((deployment, index) => {
-                    const helmDeploymentStatus: string = deployment?.status
-                        ? deployment.status.toLowerCase()
-                        : 'succeeded'
                     return (
                         <React.Fragment key={deployment.version}>
                             <div
@@ -329,14 +338,11 @@ const ChartDeploymentHistory = ({
                                         gridColumnGap: '12px',
                                     }}
                                 >
-                                    <div
-                                        className={`dc__app-summary__icon icon-dim-22 ${
-                                            (deployment?.status &&
-                                                installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS) ||
-                                            installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD
-                                                ? deployment?.status.toLowerCase()
-                                                : ''
-                                        } ${deployment?.status ? helmDeploymentStatus : ''}`}
+                                    <AppStatus
+                                        status={getDeploymentStatus(deployment)}
+                                        hideMessage
+                                        iconSize={24}
+                                        hideIconTooltip
                                     />
                                     <div className="flex column left dc__ellipsis-right">
                                         <div className="cn-9 fs-14" data-testid="chart-deployment-time">
@@ -467,18 +473,19 @@ const ChartDeploymentHistory = ({
             )
         }
         return (
-            <CodeEditor
-                key={selectedDeploymentTabName}
-                value={
-                    selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
-                        ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
-                        : getEditorValue(selectedDeploymentManifestDetail.manifest)
-                }
-                noParsing
-                mode={MODES.YAML}
-                height="fitToParent"
-                readOnly
-            />
+            <div className="bg__primary border-btm h-100">
+                <CodeEditor
+                    value={
+                        selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
+                            ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
+                            : getEditorValue(selectedDeploymentManifestDetail.manifest)
+                    }
+                    noParsing
+                    mode="yaml"
+                    height="100%"
+                    readOnly
+                />
+            </div>
         )
     }
 
@@ -495,7 +502,7 @@ const ChartDeploymentHistory = ({
 
         return (
             <div
-                className={`trigger-outputs-container flex-grow-1 flexbox-col ${
+                className={`trigger-outputs-container h-100 ${
                     selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SOURCE ? 'pt-20' : ''
                 }`}
                 data-testid="trigger-output-container"
@@ -755,13 +762,14 @@ const ChartDeploymentHistory = ({
                     </div>
                 </div>
                 <div className="ci-details__body dc__overflow-auto">{renderSelectedDeploymentDetail()}</div>
-                <RollbackConfirmationDialog
-                    deploying={deploying}
-                    rollbackDialogTitle={rollbackDialogTitle}
-                    setShowRollbackConfirmation={setShowRollbackConfirmation}
-                    handleDeployClick={handleDeployClick}
-                    showRollbackConfirmation={showRollbackConfirmation}
-                />
+                {showRollbackConfirmation && (
+                    <RollbackConfirmationDialog
+                        deploying={deploying}
+                        rollbackDialogTitle={rollbackDialogTitle}
+                        setShowRollbackConfirmation={setShowRollbackConfirmation}
+                        handleDeployClick={handleDeployClick}
+                    />
+                )}
             </div>
         )
     }

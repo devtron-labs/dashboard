@@ -34,7 +34,6 @@ interface SaveNotificationPayload {
         eventTypeIds: number[]
     }[]
     providers: { configId: number; dest: 'ses' | 'slack' | ''; recipient: string }[]
-    sesConfigId: number
 }
 
 interface SaveNotificationResponseType extends ResponseType {
@@ -83,7 +82,7 @@ interface SESConfigResponseType extends ResponseType {
     }
 }
 
-function createSaveNotificationPayload(selectedPipelines, providers, sesConfigId: number): SaveNotificationPayload {
+function createSaveNotificationPayload(selectedPipelines, providers): SaveNotificationPayload {
     const allPipelines = selectedPipelines.map((config) => {
         const eventTypeIds = []
         if (config.trigger) {
@@ -118,30 +117,21 @@ function createSaveNotificationPayload(selectedPipelines, providers, sesConfigId
         }
     })
     providers = providers.map((p) => {
-        if (p.data.configId) {
-            return {
-                configId: p.data.configId,
-                dest: p.data.dest,
-                recipient: '',
-            }
-        }
         return {
-            configId: 0,
+            configId: p.data.configId || 0,
             dest: p.data.dest || '',
-            recipient: p.data.recipient,
+            recipient: p.data.recipient || '',
         }
     })
     return {
         notificationConfigRequest: allPipelines,
         providers,
-        sesConfigId,
     }
 }
 
-export function saveNotification(selectedPipelines, providers, sesConfigId): Promise<SaveNotificationResponseType> {
-    const URL = `${Routes.NOTIFIER}`
-    const payload = createSaveNotificationPayload(selectedPipelines, providers, sesConfigId)
-    return post(URL, payload)
+export function saveNotification(selectedPipelines, providers): Promise<SaveNotificationResponseType> {
+    const payload = createSaveNotificationPayload(selectedPipelines, providers)
+    return post<SaveNotificationResponseType['result'] , SaveNotificationPayload>(`${Routes.NOTIFIER}/${Routes.API_VERSION_V2}`, payload)
 }
 
 export function getChannelConfigs(): Promise<ResponseType> {

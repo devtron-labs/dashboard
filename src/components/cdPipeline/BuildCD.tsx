@@ -32,7 +32,6 @@ import {
     ToastManager,
     ComponentSizeType,
     showError,
-    MODES,
     TriggerType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useContext, useState } from 'react'
@@ -222,7 +221,7 @@ export default function BuildCD({
                     placeholder="Pipeline name"
                     value={formData.name}
                     onChange={handlePipelineName}
-                    isRequiredField
+                    required
                     error={formDataErrorObj.name && !formDataErrorObj.name.isValid && formDataErrorObj.name.message}
                 />
             </div>
@@ -461,10 +460,8 @@ export default function BuildCD({
                     <div className="flex-1 ml-8">
                         <CustomInput
                             name="namespace"
-                            rootClassName="h-36"
                             label="Namespace"
                             placeholder={getNamespacePlaceholder(isVirtualEnvironment, formData.namespace)}
-                            data-testid="cd-pipeline-namespace-textbox"
                             disabled={!namespaceEditable}
                             value={selectedEnv?.namespace ? selectedEnv.namespace : formData.namespace}
                             onChange={handleNamespaceChange}
@@ -742,11 +739,13 @@ export default function BuildCD({
                                     <CodeEditor
                                         height={300}
                                         value={strategy.yamlStr}
-                                        mode={MODES.YAML}
+                                        mode="yaml"
                                         onChange={(event) =>
                                             handleStrategyChange(event, strategy.deploymentTemplate, 'yaml')
                                         }
-                                    />
+                                    >
+                                        <CodeEditor.Header className="code-editor" />
+                                    </CodeEditor>
                                 </div>
                             )}
                         </div>

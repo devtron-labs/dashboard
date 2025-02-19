@@ -439,21 +439,22 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                     setExternalLinks={setExternalLinks}
                 />
             )}
-            <DeleteConfirmationModal
-                title={selectedLink?.name}
-                component={DeleteComponentsName.Link}
-                subtitle={
-                    <>
-                        <p className="m-0 ls-20 fs-13 cn-7">
-                            &apos;{selectedLink?.name}&apos; links will no longer be shown in applications.
-                        </p>
-                        <p className="m-0 ls-20 fs-13 cn-7">Are you sure ?</p>
-                    </>
-                }
-                onDelete={onDelete}
-                showConfirmationModal={selectedLink && showDeleteDialog}
-                closeConfirmationModal={hideDeleteConfirmationModal}
-            />
+            {selectedLink && showDeleteDialog && (
+                <DeleteConfirmationModal
+                    title={selectedLink?.name}
+                    component={DeleteComponentsName.Link}
+                    subtitle={
+                        <>
+                            <p className="m-0 ls-20 fs-13 cn-7">
+                                &apos;{selectedLink?.name}&apos; links will no longer be shown in applications.
+                            </p>
+                            <p className="m-0 ls-20 fs-13 cn-7">Are you sure ?</p>
+                        </>
+                    }
+                    onDelete={onDelete}
+                    closeConfirmationModal={hideDeleteConfirmationModal}
+                />
+            )}
         </div>
     )
 }

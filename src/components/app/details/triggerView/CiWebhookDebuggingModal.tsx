@@ -21,6 +21,7 @@ import {
     Progressing,
     sortCallback,
     CodeEditor,
+    ClipboardButton,
     getFormattedSchema,
     Button,
     ButtonVariantType,
@@ -29,7 +30,7 @@ import {
     useSearchString,
     getUrlWithSearchParams,
     Tooltip,
-    MODES,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
@@ -156,9 +157,7 @@ export const CiWebhookModal = ({
                                 onClick={() => getCIWebhookPayloadRes(ciPipelineMaterialId, webhookPayload)}
                             >
                                 <div className="flex left top dc__gap-8">
-                                    <div
-                                        className={`dc__app-summary__icon dc__no-shrink icon-dim-20  ${isPassed ? 'succeeded' : 'not-ready'}`}
-                                    />
+                                    <Icon name={isPassed ? 'ic-success' : 'ic-error'} size={20} color={null} />
                                     <div>
                                         <span className={`lh-20 ${isActive ? 'cb-5 fw-6' : 'cn-9'}`}>
                                             {moment(webhookPayload.eventTime).format(Moment12HourFormat)}
@@ -247,29 +246,33 @@ export const CiWebhookModal = ({
     const _value = webhookIncomingPayload?.payloadJson ? getFormattedSchema(webhookIncomingPayload.payloadJson) : ''
 
     const renderReceivedPayloadCodeEditor = () => (
-        <CodeEditor.Container flexExpand>
-            <CodeEditor value={_value} readOnly mode={MODES.YAML} height="fitToParent">
-                <CodeEditor.Header className="px-16 py-10 flex dc__content-space bg__secondary">
-                    <p className="m-0 fw-6">Payload</p>
-                    <CodeEditor.Clipboard />
-                </CodeEditor.Header>
-            </CodeEditor>
-        </CodeEditor.Container>
-    )
-
-    const renderTimeStampDetailedDescription = () => (
-        <div className="bg__primary mw-none flexbox-col dc__gap-16 px-20 py-16">
-            {renderFilterTable()}
-            {renderReceivedPayloadCodeEditor()}
+        <div className="dc__border br-4">
+            <div className="flex dc__content-space dc__gap-6 px-16 py-10 flexbox dc__align-items-center dc__gap-8 w-100 br-4 bg__secondary dc__position-sticky dc__top-0 dc__zi-10">
+                <div className="fw-6">Payload</div>
+                <ClipboardButton content={_value} rootClassName="p-4 dc__visible-hover--child" />
+            </div>
+            <CodeEditor value={_value} readOnly mode="yaml" adjustEditorHeightToContent />
         </div>
     )
 
-    const renderWebhookPayloadContent = () =>
-        isPayloadLoading ? (
-            <div className="flex payload-wrapper-no-header">{renderWebhookPayloadLoader()}</div>
-        ) : (
-            renderTimeStampDetailedDescription()
-        )
+    const renderTimeStampDetailedDescription = () => (
+        <div className="flex column top dc__gap-16 h-100 dc__overflow-auto">
+            <div className="flex column py-16 px-20 w-100 dc__gap-16">
+                {renderFilterTable()}
+                <div className="expand-incoming-payload  w-100 pb-20">{renderReceivedPayloadCodeEditor()}</div>
+            </div>
+        </div>
+    )
+
+    const renderWebhookPayloadContent = () => (
+        <div className="bg__primary dc__top-0 dc__right-0 timestamp-detail-container">
+            {isPayloadLoading ? (
+                <div className="flex payload-wrapper-no-header">{renderWebhookPayloadLoader()}</div>
+            ) : (
+                renderTimeStampDetailedDescription()
+            )}
+        </div>
+    )
 
     if (isWebhookPayloadLoading) {
         return (

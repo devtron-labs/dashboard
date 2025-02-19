@@ -356,13 +356,14 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 />
             )}
 
-            <DeleteConfirmationModal
-                title={clickedGroup?.label}
-                component={DeleteComponentsName.Filter}
-                onDelete={handleDelete}
-                closeConfirmationModal={closeDeleteGroup}
-                showConfirmationModal={showDeleteGroup && isPopupBox}
-            />
+            {showDeleteGroup && isPopupBox && (
+                <DeleteConfirmationModal
+                    title={clickedGroup?.label}
+                    component={DeleteComponentsName.Filter}
+                    onDelete={handleDelete}
+                    closeConfirmationModal={closeDeleteGroup}
+                />
+            )}
 
             <ErrorBoundary>
                 <Suspense fallback={<Progressing pageLoader />}>

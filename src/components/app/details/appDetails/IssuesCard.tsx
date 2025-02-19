@@ -247,19 +247,22 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
                     Details
                 </div>
             </div>
-            <ForceDeleteConfirmationModal
-                title={forceDeleteDialogTitle}
-                onDelete={handleForceDelete}
-                closeConfirmationModal={onCloseForceDeleteModal}
-                subtitle={forceDeleteDialogMessage}
-            />
+            {forceDeleteDialog && (
+                <ForceDeleteConfirmationModal
+                    title={forceDeleteDialogTitle}
+                    onDelete={handleForceDelete}
+                    closeConfirmationModal={onCloseForceDeleteModal}
+                    subtitle={forceDeleteDialogMessage}
+                />
+            )}
 
-            <ClusterNotReachableDialog
-                clusterName={clusterName}
-                onClickCancel={onClickHideNonCascadeDeletePopup}
-                onClickDelete={onClickNonCascadeDelete}
-                showConfirmationModal={nonCascadeDeleteDialog}
-            />
+            {nonCascadeDeleteDialog && (
+                <ClusterNotReachableDialog
+                    clusterName={clusterName}
+                    onClickCancel={onClickHideNonCascadeDeletePopup}
+                    onClickDelete={onClickNonCascadeDelete}
+                />
+            )}
         </div>
     )
 }

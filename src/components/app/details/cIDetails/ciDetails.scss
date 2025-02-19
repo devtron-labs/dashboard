@@ -47,7 +47,7 @@
     }
 
     .ci-details__body {
-        flex: 1 1;
+        flex-basis: calc(100% - 280px);
         transition: flex-basis 0.3s;
         display: flex;
         flex-direction: column;
@@ -127,16 +127,6 @@
     border-bottom: 1px solid var(--N100);
 }
 
-.build-card-popup {
-    box-shadow: 0 2px 4px -1px rgba(0, 56, 112, 0.3);
-
-    .ci-material-detail {
-        display: grid;
-        grid-template-columns: 20px 1fr;
-        column-gap: 8px;
-    }
-}
-
 .ci-details__build-card-container {
     text-decoration: unset;
     padding: 0 16px;
@@ -155,10 +145,6 @@
         grid-template-columns: 20px 1fr;
         padding: 12px 0;
         column-gap: 12px;
-    }
-
-    .app-status__icon {
-        position: unset;
     }
 }
 
@@ -244,7 +230,7 @@
     }
 
     svg path {
-        fill: var(--N0);
+        fill: var(--white);
     }
 }
 

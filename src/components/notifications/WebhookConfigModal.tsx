@@ -21,7 +21,6 @@ import {
     CodeEditor,
     ToastVariantType,
     ToastManager,
-    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import { ReactComponent as ErrorIcon } from '@Icons/ic-warning.svg'
@@ -225,8 +224,7 @@ export const WebhookConfigModal = ({
                     placeholder="Enter a name"
                     error={isFormValid[ConfigurationFieldKeys.CONFIG_NAME].message}
                     name={ConfigurationFieldKeys.CONFIG_NAME}
-                    dataTestid="webhook-modal__name"
-                    isRequiredField
+                    required
                     autoFocus
                     onBlur={handleBlur}
                 />
@@ -237,22 +235,22 @@ export const WebhookConfigModal = ({
                     placeholder="Enter incoming webhook URL"
                     error={isFormValid[ConfigurationFieldKeys.WEBHOOK_URL].message}
                     name={ConfigurationFieldKeys.WEBHOOK_URL}
-                    dataTestid="webhook-modal__url"
-                    isRequiredField
+                    required
                     onBlur={handleBlur}
                 />
                 <WebhookConfigDynamicDataTable rows={rows} setRows={setRows} />
 
                 <div className="flexbox-col dc__gap-6">
                     <div className="fs-13 cn-7 lh-20 dc__required-field">Data to be shared through webhook</div>
-                    <CodeEditor.Container>
+                    <div className="en-2 bw-1 br-4 dc__overflow-hidden">
                         <CodeEditor
                             value={form.payload}
-                            mode={MODES.JSON}
+                            mode="json"
                             onChange={handleIncomingPayloadChange}
-                            height="100%"
+                            inline
+                            height={150}
                         />
-                    </CodeEditor.Container>
+                    </div>
                     {isFormValid[ConfigurationFieldKeys.PAYLOAD].message && (
                         <div className="flex left dc__gap-4 cr-5 fs-11 lh-16 fw-4">
                             <ErrorIcon className="icon-dim-16 p-1 form__icon--error dc__no-shrink dc__align-self-start" />

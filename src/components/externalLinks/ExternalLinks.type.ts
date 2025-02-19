@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ImgHTMLAttributes, ReactElement } from 'react'
+import React, { ImgHTMLAttributes, ReactElement, ReactNode } from 'react'
 import { ResponseType, AppDetails as CommonAppDetails, UseUrlFiltersProps } from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetails } from '../app/types'
 import { ActionResponse } from '../external-apps/ExternalAppService'
@@ -214,7 +214,7 @@ export interface IdentifierSelectorProps {
         key?: number,
         value?: OptionTypeWithIcon | IdentifierOptionType[] | string | boolean | ExternalLinkScopeType | LinkAction,
     ) => void
-    getErrorLabel: (field: string, type?: string) => JSX.Element | string
+    getErrorLabel: (field: string, type?: string) => ReactNode
 }
 
 export enum LinkValidationKeys {

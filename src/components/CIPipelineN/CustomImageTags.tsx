@@ -16,7 +16,14 @@
 
 import { useState } from 'react'
 import Tippy from '@tippyjs/react'
-import { OptionType, SelectPicker, Textarea, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    OptionType,
+    RegistryIcon,
+    RegistryType,
+    SelectPicker,
+    Textarea,
+    Toggle,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { CustomImageTagsType } from './CustomImageTag.type'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { CustomErrorMessage, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
@@ -145,8 +152,8 @@ function CustomImageTags({
                 {!isCustomTagError && (
                     <div className="image-tag-preview pt-6 pb-6 cn-7 flexbox">
                         Tag Preview:
-                        <div className="ml-4 bg__secondary mono flexbox dc__w-fit-content pl-4 pr-4 br-4">
-                            <div className="dc__registry-icon docker mr-5" />
+                        <div className="ml-4 bg__secondary mono flexbox dc__w-fit-content pl-4 pr-4 br-4 dc__gap-4">
+                            <RegistryIcon registryType={RegistryType.DOCKER} />
                             {formData.customTag?.tagPattern?.replace(
                                 '{x}',
                                 formData.customTag?.counterX?.toString() ?? '0',

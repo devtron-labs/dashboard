@@ -19,7 +19,6 @@ import {
     showError,
     OptionType,
     DeploymentAppTypes,
-    APIOptions,
     useWindowSize,
     APPROVAL_MODAL_TYPE,
     YAMLStringify,
@@ -29,9 +28,10 @@ import {
     PipelineBuildStageType,
     SeverityCount,
     useMainContext,
+    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
-import { Link, PromptProps } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { getDateInMilliseconds } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/apiToken.utils'
 import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
@@ -45,14 +45,12 @@ import { getAggregator } from '../../app/details/appDetails/utils'
 import { JUMP_TO_KIND_SHORT_NAMES, SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
 import { PATTERNS } from '../../../config/constants'
-import { ReactComponent as GitLab } from '../../../assets/icons/git/gitlab.svg'
-import { ReactComponent as Git } from '../../../assets/icons/git/git.svg'
-import { ReactComponent as GitHub } from '../../../assets/icons/git/github.svg'
-import { ReactComponent as BitBucket } from '../../../assets/icons/git/bitbucket.svg'
-import { ReactComponent as ICAWSCodeCommit } from '../../../assets/icons/ic-aws-codecommit.svg'
 import { AppEnvLocalStorageKeyType, FilterParentType } from '@Components/ApplicationGroup/AppGroup.types'
 import { APP_GROUP_LOCAL_STORAGE_KEY, ENV_GROUP_LOCAL_STORAGE_KEY } from '@Components/ApplicationGroup/Constants'
-import { GetAndSetAppGroupFiltersParamsType, SetFiltersInLocalStorageParamsType } from './types'
+import {
+    GetAndSetAppGroupFiltersParamsType,
+    SetFiltersInLocalStorageParamsType,
+} from './types'
 
 let module
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -772,12 +770,12 @@ export const convertToOptionsList = (
     customValue?: string,
     customDescription?: string,
     customFieldKey?: string,
-): OptionType[] => {
+): SelectPickerOptionType<string>[] => {
     if (!Array.isArray(arr) || !arr) {
         return []
     }
     return arr.map((ele) => {
-        const _option = {
+        const _option: SelectPickerOptionType<string> = {
             label: customLabel ? ele[customLabel] : ele,
             value: customValue ? ele[customValue] : ele,
             description: customDescription ? ele[customDescription] : '',
@@ -1131,30 +1129,6 @@ export const getPluginIdsFromBuildStage = (
     })
 
     return pluginIds
-}
-// Should contain git-codecommit.*.amazonaws.com
-export const isAWSCodeCommitURL = (url: string = ''): boolean => {
-    return url.includes('git-codecommit.') && url.includes('.amazonaws.com')
-}
-
-export const renderMaterialIcon = (url: string = '') => {
-    if (url.includes('gitlab')) {
-        return <GitLab className="dc__vertical-align-middle icon-dim-20" />
-    }
-
-    if (url.includes('github')) {
-        return <GitHub className="dc__vertical-align-middle icon-dim-20 fcn-8" />
-    }
-
-    if (url.includes('bitbucket')) {
-        return <BitBucket className="dc__vertical-align-middle icon-dim-20" />
-    }
-
-    if (isAWSCodeCommitURL(url)) {
-        return <ICAWSCodeCommit className="dc__vertical-align-middle icon-dim-18" />
-    }
-
-    return <Git className="dc__vertical-align-middle icon-dim-20" />
 }
 
 export const getSeverityWithCount = (severityCount: SeverityCount) => {

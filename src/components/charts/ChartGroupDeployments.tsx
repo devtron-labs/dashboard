@@ -156,14 +156,15 @@ const CollapsibleDeployment: React.FC<{
                     )
                 })}
             </div>
-            <DeleteConfirmationModal
-                title={candidateChart.chartName}
-                component={DeleteComponentsName.ChartGroup}
-                onDelete={onDelete}
-                closeConfirmationModal={onCloseDeleteModal}
-                showConfirmationModal={!!candidateChart.installedAppId}
-                subtitle={<ApplicationDeletionInfo />}
-            />
+            {!!candidateChart.installedAppId && (
+                <DeleteConfirmationModal
+                    title={candidateChart.chartName}
+                    component={DeleteComponentsName.ChartGroup}
+                    onDelete={onDelete}
+                    closeConfirmationModal={onCloseDeleteModal}
+                    subtitle={<ApplicationDeletionInfo />}
+                />
+            )}
         </>
     )
 }

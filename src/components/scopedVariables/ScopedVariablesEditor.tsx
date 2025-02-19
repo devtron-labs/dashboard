@@ -15,24 +15,25 @@
  */
 
 import { useState } from 'react'
-import Tippy from '@tippyjs/react'
 import {
-    InfoColourBar,
     ServerErrors,
     ButtonWithLoader,
     CodeEditor,
     ToastManager,
     ToastVariantType,
-    MODES,
+    InfoBlock,
+    Button,
+    ComponentSizeType,
+    ButtonVariantType,
+    ButtonStyleType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Descriptor from './Descriptor'
 import { parseYAMLStringToObj, parseIntoYAMLString, sortVariables } from './utils'
 import { postScopedVariables, getScopedVariablesJSON } from './service'
 import { ScopedVariablesDataType, ScopedVariablesEditorProps } from './types'
-import { ReactComponent as ICClose } from '../../assets/icons/ic-close.svg'
-import { ReactComponent as ICArrowRight } from '../../assets/icons/ic-arrow-right.svg'
-import { ReactComponent as ICPencil } from '../../assets/icons/ic-pencil.svg'
-import { ReactComponent as ICError } from '../../assets/icons/ic-error-exclamation.svg'
+import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
+import { ReactComponent as ICArrowRight } from '@Icons/ic-arrow-right.svg'
+import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { SAVE_SUCCESS_TOAST_MESSAGE, GET_SCOPED_VARIABLES_ERROR, UPLOAD_FAILED_STANDARD_MESSAGE } from './constants'
 
 export default function ScopedVariablesEditor({
@@ -174,62 +175,62 @@ export default function ScopedVariablesEditor({
                             </p>
                         )}
 
-                        <Tippy className="default-tt" arrow placement="top" content="Close">
-                            <button
-                                type="button"
-                                className="p-0 h-20 dc__no-background dc__no-border dc__outline-none-imp"
-                                onClick={handleAbort}
-                                disabled={showSaveView ? isSaving : loadingSavedScopedVariables}
-                                data-testid="close-btn"
-                            >
-                                <ICClose className="icon-dim-20" />
-                            </button>
-                        </Tippy>
+                        <Button
+                            dataTestId="close-btn"
+                            ariaLabel="Close"
+                            icon={<ICClose />}
+                            onClick={handleAbort}
+                            disabled={showSaveView ? isSaving : loadingSavedScopedVariables}
+                            size={ComponentSizeType.xxs}
+                            variant={ButtonVariantType.borderLess}
+                            style={ButtonStyleType.negativeGrey}
+                        />
                     </div>
 
                     {infoError && (
-                        <InfoColourBar
-                            message={infoError}
-                            classname="w-100 bcr-1 mb-16 m-0 dc__border dc__border-bottom-r2 dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
-                            Icon={ICError}
-                            iconClass="icon-dim-20"
-                            linkClass="dc__truncate--clamp-6"
+                        <InfoBlock
+                            variant="error"
+                            description={infoError}
+                            borderRadiusConfig={{
+                                left: false,
+                                right: false,
+                                top: false,
+                            }}
+                            borderConfig={{
+                                top: false,
+                                right: false,
+                                left: false,
+                            }}
                         />
                     )}
 
-                    <CodeEditor
-                        mode={MODES.YAML}
-                        noParsing
-                        height="fitToParent"
-                        {...(showSaveView
-                            ? {
-                                  diffView: true,
-                                  originalValue: savedScopedVariables || '',
-                                  modifiedValue: editorData,
-                                  onModifiedValueChange: handleEditorChange,
-                              }
-                            : {
-                                  diffView: false,
-                                  value: editorData,
-                                  onChange: handleEditorChange,
-                                  validatorSchema: jsonSchema,
-                              })}
-                    >
-                        {showSaveView && (
-                            <CodeEditor.Header
-                                hideDefaultSplitHeader
-                                className="bg__primary w-100 h-32 dc__grid-half vertical-divider"
+                    {showSaveView && (
+                        <div className="bcn-1 flexbox dc__content-space w-100 h-32 dc__align-items-center">
+                            <div
+                                className="dc__border-right fs-12 fw-6 cn-7 pt-8 pb-8 pl-12 pr-12 flexbox"
+                                style={{ width: '48.5%' }}
                             >
-                                <div className="fs-12 fw-6 cn-7 pt-8 pb-8 pl-12 pr-12 flexbox">Last Saved File</div>
-                                <div className="fs-12 fw-6 cn-7 flex-grow-1 dc__gap-4 flexbox pt-8 pb-8 pl-12 pr-12">
-                                    <div className="flex">
-                                        <ICPencil className="icon-dim-16" />
-                                    </div>
-                                    Edit File
+                                Last Saved File
+                            </div>
+                            <div className="fs-12 fw-6 cn-7 flex-grow-1 dc__gap-4 flexbox pt-8 pb-8 pl-12 pr-12">
+                                <div className="flex">
+                                    <ICPencil className="icon-dim-16" />
                                 </div>
-                            </CodeEditor.Header>
-                        )}
-                    </CodeEditor>
+                                Edit File
+                            </div>
+                        </div>
+                    )}
+
+                    <CodeEditor
+                        mode="yaml"
+                        value={editorData}
+                        noParsing
+                        diffView={showSaveView}
+                        defaultValue={savedScopedVariables || ''}
+                        height="100%"
+                        onChange={handleEditorChange}
+                        validatorSchema={jsonSchema}
+                    />
 
                     <div className="flexbox pt-13 pb-13 pl-12 pr-12 bg__primary dc__border-top dc__content-end dc__align-items-center dc__align-self-stretch dc__gap-12">
                         <button

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { RouteComponentProps, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { CIMaterialType, ConsequenceType } from '@devtron-labs/devtron-fe-common-lib'
+import { CIMaterialType, ConsequenceType, Icon, getWorkflowNodeStatusTitle } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerStatus } from '../../../../config'
 import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
 import { ReactComponent as IcLink } from '../../../../../../assets/icons/ic-link.svg'
@@ -106,7 +106,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                 className="dc__cd-trigger-status mb-6"
                 style={{ color: TriggerStatus[status] }}
             >
-                {this.props.status && this.props.status.toLowerCase() === 'cancelled' ? 'ABORTED' : this.props.status}
+                {getWorkflowNodeStatusTitle(this.props.status)}
                 {this.props.status && <span className="mr-5 ml-5">/</span>}
                 <Link
                     data-testid={`ci-trigger-select-details-button-${this.props.title}`}
@@ -167,7 +167,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                 >
                     {this.props.isCITriggerBlocked ? 'BLOCKED' : this.props.triggerType}
                 </div>
-                <div className="workflow-node__title flex">
+                <div className="workflow-node__title flex dc__gap-8">
                     {/* <img src={build} className="icon-dim-24 mr-16" /> */}
                     <div className="workflow-node__full-width-minus-Icon">
                         {!this.props.isJobView && (
@@ -185,12 +185,10 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                             </>
                         )}
                     </div>
-                    <div
-                        className={`workflow-node__icon-common ml-8 ${
-                            this.props.isJobView || this.props.isJobCI
-                                ? 'workflow-node__job-icon'
-                                : 'workflow-node__CI-icon'
-                        }`}
+                    <Icon
+                        name={this.props.isJobView || this.props.isJobCI ? 'ic-job-color' : 'ic-build-color'}
+                        size={20}
+                        color={null}
                     />
                 </div>
                 {this.renderStatus()}

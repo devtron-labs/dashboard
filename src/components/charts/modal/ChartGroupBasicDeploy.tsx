@@ -255,23 +255,28 @@ const ApplicationNameList = ({ charts, handleNameChange, showAppNames }) => {
                             />
                             <div className="w-100">
                                 <CustomInput
-                                    name="name"
+                                    placeholder="Enter chart name"
+                                    name={`chart-name-edit-input-${index}`}
                                     label={`${chart.chartMetaData.chartRepoName}/${chart.chartMetaData.chartName}`}
-                                    labelClassName="form__label--lower"
-                                    rootClassName={`form__input ${chart?.name?.error ? 'form__input--error' : ''}`}
-                                    data-testid={`chart-name-edit-input-${index}`}
-                                    tabIndex={index + 1}
                                     value={chart.name.value}
                                     onChange={(event) => {
                                         handleNameChange(index, event.target.value)
                                     }}
                                     error={chart.name.error}
-                                    isRequiredField
-                                    additionalErrorInfo={renderAdditionalErrorInfo(
-                                        handleNameChange,
-                                        chart.name.suggestedName,
-                                        index,
-                                    )}
+                                    required
+                                    helperText={
+                                        chart.name.suggestedName ? (
+                                            <>
+                                                Suggested Name:
+                                                <span
+                                                    className="anchor pointer"
+                                                    onClick={(e) => handleNameChange(index, chart.name.suggestedName)}
+                                                >
+                                                    {chart.name.suggestedName}
+                                                </span>
+                                            </>
+                                        ) : null
+                                    }
                                 />
                             </div>
                         </div>

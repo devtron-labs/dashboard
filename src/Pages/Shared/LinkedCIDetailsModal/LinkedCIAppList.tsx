@@ -15,10 +15,9 @@
  */
 
 import { Link } from 'react-router-dom'
-import { SortableTableHeaderCell, AppStatus, GenericFilterEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { SortableTableHeaderCell, GenericFilterEmptyState, DeploymentStatus } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { LinkedCIApp, LinkedCIAppListProps } from './types'
-import { StatusConstants } from '../../../components/app/list-new/Constants'
 import { SortableKeys, appListLoading } from './constants'
 import { getLinkedCIAppUrl } from './utils'
 
@@ -34,14 +33,7 @@ const AppListRow = ({ appId, appName, deploymentStatus, environmentName, trigger
                 <>
                     <span className="dc__truncate dc__w-fit-content">{environmentName}</span>
                     <span className="dc__first-letter-capitalize">{triggerMode}</span>
-                    <AppStatus
-                        appStatus={
-                            deploymentStatus === StatusConstants.NOT_DEPLOYED.titleCase
-                                ? StatusConstants.NOT_DEPLOYED.noSpaceLower
-                                : deploymentStatus
-                        }
-                        isDeploymentStatus
-                    />
+                    <DeploymentStatus status={deploymentStatus} />
                 </>
             ) : (
                 <span className="cn-7">No deployment pipeline</span>

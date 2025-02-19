@@ -36,6 +36,7 @@ import { ToolSelectStyles } from '../ExternalLinks.utils'
 import { customOptionWithIcon, customValueContainerWithIcon, ToolsMenuList } from '../ExternalLinks.component'
 import IdentifierSelector from './IdentifierSelector'
 import { CONFIGURE_LINK_NO_NAME } from '../../../config'
+import { ReactNode } from 'react'
 
 export default function ConfigureLinkAction({
     isFullMode,
@@ -50,7 +51,7 @@ export default function ConfigureLinkAction({
     onToolSelection,
     handleLinksDataActions,
 }: ConfigureLinkActionType): JSX.Element {
-    const getErrorLabel = (field: string, type?: string): JSX.Element | string => {
+    const getErrorLabel = (field: string, type?: string): ReactNode => {
         const errorLabel = (label: string): JSX.Element => {
             return (
                 <div className="error-label flex left dc__align-start fs-11 mt-4">
@@ -62,16 +63,12 @@ export default function ConfigureLinkAction({
             )
         }
         switch (field) {
-            case 'tool':
-                return errorLabel('Please select monitoring tool')
-            case 'name':
-                return errorLabel('Please provide name for the tool you want to link')
             case 'identifiers':
                 return errorLabel(`Please select one or more ${type}`)
             case 'url':
                 return 'Please enter URL template'
             case 'invalidProtocol':
-                return errorLabel('The url should start with http:// or https://')
+                return 'The url should start with http:// or https://'
             default:
                 return <></>
         }
@@ -155,17 +152,14 @@ export default function ConfigureLinkAction({
                 />
             </div>
             <div className="configure-link-action-content">
-                <div className="link-name">
-                    <CustomInput
-                        name={LinkValidationKeys.name}
-                        placeholder="Link name"
-                        value={link.name}
-                        onChange={onNameChange}
-                        onBlur={validateAndUpdateLinksData}
-                        data-testid="external-link-name-input"
-                        error={link.invalidName && CONFIGURE_LINK_NO_NAME}
-                    />
-                </div>
+                <CustomInput
+                    name={LinkValidationKeys.name}
+                    placeholder="Link name"
+                    value={link.name}
+                    onChange={onNameChange}
+                    onBlur={validateAndUpdateLinksData}
+                    error={link.invalidName && CONFIGURE_LINK_NO_NAME}
+                />
                 <Textarea
                     name="external-link-description-input"
                     placeholder="Description"
