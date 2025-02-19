@@ -83,7 +83,7 @@
     --bg-overlay-secondary: var(--bg-secondary);
 
     --bg-menu-primary: var(--bg-primary);
-    --bg-menu-secondary: #edf1f5bf;
+    --bg-menu-secondary: var(--bg-secondary);
 
     --bg-modal-primary: var(--bg-primary);
     --bg-modal-secondary: var(--bg-secondary);
@@ -93,7 +93,7 @@
     --bg-toast: var(--N800);
     --bg-sidebar: var(--B500);
     --bg-shimmer-loader: linear-gradient(90deg, var(--N200) 0%, var(--N50) 50%, var(--N200) 80%);
-    --bg-hover: #0000000f;
+    --bg-hover: #edf1f5bf;
 
     --backdrop-bg: #000000bf;
 
