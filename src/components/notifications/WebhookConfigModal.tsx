@@ -21,6 +21,7 @@ import {
     CodeEditor,
     ToastVariantType,
     ToastManager,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import { ReactComponent as ErrorIcon } from '@Icons/ic-warning.svg'
@@ -244,11 +245,18 @@ export const WebhookConfigModal = ({
                     <div className="fs-13 cn-7 lh-20 dc__required-field">Data to be shared through webhook</div>
                     <div className="en-2 bw-1 br-4 dc__overflow-hidden">
                         <CodeEditor
-                            value={form.payload}
-                            mode="json"
-                            onChange={handleIncomingPayloadChange}
-                            inline
-                            height={150}
+                            mode={MODES.JSON}
+                            codeEditorProps={{
+                                value: form.payload,
+                                onChange: handleIncomingPayloadChange,
+                                inline: true,
+                                height: 150,
+                            }}
+                            codeMirrorProps={{
+                                value: form.payload,
+                                onChange: handleIncomingPayloadChange,
+                                height: 150,
+                            }}
                         />
                     </div>
                     {isFormValid[ConfigurationFieldKeys.PAYLOAD].message && (

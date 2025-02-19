@@ -26,6 +26,7 @@ import {
     createNewResource,
     CreateResourceDTO,
     CodeEditorThemesKeys,
+    AppThemeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { APP_STATUS_HEADERS, MODES } from '../../../config'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
@@ -147,14 +148,23 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
                         Icon={InfoIcon}
                     />
                     <CodeEditor
-                        theme={CodeEditorThemesKeys.vsDarkDT}
-                        value={resourceYAML}
                         mode={MODES.YAML}
                         noParsing
-                        height="calc(100vh - 165px)"
-                        onChange={handleEditorValueChange}
                         loading={loader}
-                        focus
+                        codeEditorProps={{
+                            theme: CodeEditorThemesKeys.vsDarkDT,
+                            value: resourceYAML,
+                            height: 'calc(100vh - 165px)',
+                            onChange: handleEditorValueChange,
+                            focus: true,
+                        }}
+                        codeMirrorProps={{
+                            theme: AppThemeType.dark,
+                            value: resourceYAML,
+                            height: 'fitToParent',
+                            onChange: handleEditorValueChange,
+                            autoFocus: true,
+                        }}
                     />
                 </>
             )

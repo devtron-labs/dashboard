@@ -36,6 +36,7 @@ import {
     StatusType,
     Button,
     ComponentSizeType,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
@@ -475,15 +476,23 @@ const ChartDeploymentHistory = ({
         return (
             <div className="bg__primary border-btm h-100">
                 <CodeEditor
-                    value={
-                        selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
-                            ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
-                            : getEditorValue(selectedDeploymentManifestDetail.manifest)
-                    }
                     noParsing
-                    mode="yaml"
-                    height="100%"
+                    mode={MODES.YAML}
                     readOnly
+                    codeEditorProps={{
+                        value:
+                            selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
+                                ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
+                                : getEditorValue(selectedDeploymentManifestDetail.manifest),
+                        height: '100%',
+                    }}
+                    codeMirrorProps={{
+                        value:
+                            selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
+                                ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
+                                : getEditorValue(selectedDeploymentManifestDetail.manifest),
+                        height: '100%',
+                    }}
                 />
             </div>
         )

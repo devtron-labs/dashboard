@@ -274,12 +274,19 @@ export default function CICreateDockerfileOption({
                             <Progressing pageLoader fullHeight />
                         </div>
                     }
-                    value={editorValue || editorData?.data}
                     mode={MODES.DOCKERFILE}
                     noParsing
-                    height="300px"
                     readOnly={configOverrideView && !allowOverride}
-                    onChange={handleEditorValueChange}
+                    codeEditorProps={{
+                        value: editorValue || editorData?.data,
+                        onChange: handleEditorValueChange,
+                        height: 300,
+                    }}
+                    codeMirrorProps={{
+                        value: editorValue || editorData?.data,
+                        onChange: handleEditorValueChange,
+                        height: 300,
+                    }}
                 >
                     <CodeEditor.Header>
                         <div className="flex dc__content-space w-100 fs-12 fw-6 cn-7">

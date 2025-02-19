@@ -16,7 +16,13 @@
 
 import React, { useState, useEffect } from 'react'
 import YAML from 'yaml'
-import { VisibleModal2, YAMLStringify, CodeEditor, CodeEditorThemesKeys } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    VisibleModal2,
+    YAMLStringify,
+    CodeEditor,
+    CodeEditorThemesKeys,
+    AppThemeType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import MessageUI, { MsgUIType } from '../v2/common/message.ui'
 import { getClusterManifest } from './clusterNodes.service'
 import { ManifestMessaging, MESSAGING_UI, MODES } from '../../config'
@@ -132,9 +138,7 @@ export default function ClusterManifest({
             return <MessageUI msg={MESSAGING_UI.MANIFEST_NOT_AVAILABLE} size={24} />
         }
         if (loading) {
-            return (
-                <MessageUI msg={MESSAGING_UI.FETCHING_MANIFEST} icon={MsgUIType.LOADING} size={24} />
-            )
+            return <MessageUI msg={MESSAGING_UI.FETCHING_MANIFEST} icon={MsgUIType.LOADING} size={24} />
         }
         return (
             <div className="h-100 flexbox-col">
@@ -153,15 +157,33 @@ export default function ClusterManifest({
                 )}
                 <div className="pt-8 pb-8 flex-1 dc__overflow-hidden">
                     <CodeEditor
-                        defaultValue={defaultManifest}
-                        theme={CodeEditorThemesKeys.vsDarkDT}
-                        height="100%"
-                        value={manifestValue}
                         mode={MODES.YAML}
                         noParsing
-                        onChange={setManifest}
                         readOnly={manifestMode !== EditModeType.EDIT && manifestMode !== EditModeType.REVIEW}
                         diffView={manifestMode === EditModeType.REVIEW}
+                        codeEditorProps={{
+                            defaultValue: defaultManifest,
+                            theme: CodeEditorThemesKeys.vsDarkDT,
+                            height: '100%',
+                            value: manifestValue,
+                            onChange: setManifest,
+                        }}
+                        codeMirrorProps={{
+                            theme: AppThemeType.dark,
+                            height: '100%',
+                            ...(manifestMode === EditModeType.REVIEW
+                                ? {
+                                      diffView: true,
+                                      originalValue: defaultManifest,
+                                      modifiedValue: manifestValue,
+                                      onModifiedValueChange: setManifest,
+                                  }
+                                : {
+                                      diffView: false,
+                                      value: manifestValue,
+                                      onChange: setManifest,
+                                  }),
+                        }}
                     />
                 </div>
             </div>

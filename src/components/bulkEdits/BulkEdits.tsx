@@ -28,6 +28,7 @@ import {
     ToastManager,
     ToastVariantType,
     MarkDown,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION, SERVER_MODE, ViewType } from '../../config'
 import {
@@ -257,13 +258,17 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div className="code-editor-body">
                 <CodeEditor
-                    height="calc(60vh - 97px)"
-                    value={this.state.codeEditorPayload}
-                    mode="yaml"
-                    onChange={(event) => {
-                        this.handleConfigChange(event)
+                    mode={MODES.YAML}
+                    codeEditorProps={{
+                        height: 'calc(60vh - 97px)',
+                        value: this.state.codeEditorPayload,
+                        onChange: this.handleConfigChange,
                     }}
-                    data-testid="code-editor"
+                    codeMirrorProps={{
+                        height: 'fitToParent',
+                        value: this.state.codeEditorPayload,
+                        onChange: this.handleConfigChange,
+                    }}
                 />
                 <div className="bulk-output-drawer bg__primary fs-13">
                     <div className="bulk-output-header flex left pl-20 pr-20 pt-6 dc__border-top dc__border-bottom bg__primary">

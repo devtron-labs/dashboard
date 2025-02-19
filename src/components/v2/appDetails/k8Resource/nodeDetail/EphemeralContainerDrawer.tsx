@@ -28,6 +28,7 @@ import {
     TabGroup,
     SelectPicker,
     ComponentSizeType,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
@@ -375,11 +376,18 @@ const EphemeralContainerDrawer = ({
         return (
             <div className="mr-24 mb-24 code-editor-container">
                 <CodeEditor
-                    value={codeEditorBody}
-                    mode="yaml"
-                    onChange={handleManifestAdvanceConfiguration}
+                    mode={MODES.YAML}
                     readOnly={switchManifest === SwitchItemValues.Sample}
-                    height="100%"
+                    codeEditorProps={{
+                        value: codeEditorBody,
+                        onChange: handleManifestAdvanceConfiguration,
+                        height: '100%',
+                    }}
+                    codeMirrorProps={{
+                        value: codeEditorBody,
+                        onChange: handleManifestAdvanceConfiguration,
+                        height: '100%',
+                    }}
                 >
                     <CodeEditor.Header>
                         <Switch value={switchManifest} name="tab" onChange={handleManifestTabChange}>

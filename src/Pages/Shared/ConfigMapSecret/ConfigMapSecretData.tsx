@@ -35,6 +35,7 @@ import {
     convertYAMLToKeyValuePair,
     CODE_EDITOR_RADIO_STATE,
     PATTERNS,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
@@ -296,17 +297,27 @@ export const ConfigMapSecretData = ({
             <div className="dc__border br-4 dc__overflow-hidden">
                 <CodeEditor
                     key={codeEditorRadio}
-                    value={getCodeEditorValue()}
-                    // Skip calling onChange if resolvedData exists
-                    onChange={!isLocked && !data.isResolvedData ? onChange : noop}
-                    onFocus={onFocus}
-                    mode="yaml"
-                    inline
-                    height={350}
-                    shebang={sheBangText}
+                    mode={MODES.YAML}
                     readOnly={
                         readOnly || isHashiOrAWS || isLocked || codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE
                     }
+                    codeEditorProps={{
+                        value: getCodeEditorValue(),
+                        // Skip calling onChange if resolvedData exists
+                        onChange: !isLocked && !data.isResolvedData ? onChange : noop,
+                        onFocus,
+                        inline: true,
+                        height: 350,
+                        shebang: sheBangText,
+                    }}
+                    codeMirrorProps={{
+                        value: getCodeEditorValue(),
+                        // Skip calling onChange if resolvedData exists
+                        onChange: !isLocked && !data.isResolvedData ? onChange : noop,
+                        onFocus,
+                        height: '100%',
+                        shebang: sheBangText,
+                    }}
                 >
                     <CodeEditor.Header className="configmap-secret-form__code-editor flex right dc__gap-6 py-6 px-12 bg__secondary dc__border-bottom fs-13 lh-20">
                         {!isHashiOrAWS && data.external ? (

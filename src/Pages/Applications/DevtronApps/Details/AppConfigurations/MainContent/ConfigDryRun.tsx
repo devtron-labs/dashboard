@@ -94,14 +94,22 @@ const ConfigDryRun = ({
 
         return (
             <CodeEditor
-                value={editorTemplate}
-                height="100%"
                 readOnly
                 mode={MODES.YAML}
                 noParsing
                 loading={isLoading}
-                {...(editorSchema && { validatorSchema: editorSchema })}
-                {...(selectedChartVersion && { chartVersion: selectedChartVersion?.replace(/\./g, '-') })}
+                codeEditorProps={{
+                    value: editorTemplate,
+                    height: '100%',
+                    ...(editorSchema && { validatorSchema: editorSchema }),
+                    ...(selectedChartVersion && { chartVersion: selectedChartVersion?.replace(/\./g, '-') }),
+                }}
+                codeMirrorProps={{
+                    value: editorTemplate,
+                    height: '100%',
+                    ...(editorSchema && { validatorSchema: editorSchema }),
+                    ...(selectedChartVersion && { chartVersion: selectedChartVersion?.replace(/\./g, '-') }),
+                }}
             />
         )
     }
@@ -154,11 +162,17 @@ const ConfigDryRun = ({
                         }}
                     >
                         <CodeEditor
-                            value={manifestResponse?.result?.data || ''}
-                            height="100%"
                             mode={MODES.YAML}
                             readOnly
                             noParsing
+                            codeEditorProps={{
+                                value: manifestResponse?.result?.data || '',
+                                height: '100%',
+                            }}
+                            codeMirrorProps={{
+                                value: manifestResponse?.result?.data || '',
+                                height: '100%',
+                            }}
                         />
                     </APIResponseHandler>
                 </div>

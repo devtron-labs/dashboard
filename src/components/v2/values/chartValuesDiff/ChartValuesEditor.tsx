@@ -22,6 +22,7 @@ import {
     YAMLStringify,
     CodeEditor,
     versionComparatorBySortOrder,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components } from 'react-select'
 import Tippy from '@tippyjs/react'
@@ -362,19 +363,9 @@ export default function ChartValuesEditor({
     return (
         <div className="code-editor-container" data-testid="code-editor-container">
             <CodeEditor
-                height="0"
-                defaultValue={
-                    comparisonView
-                        ? manifestView
-                            ? valuesForDiffState.selectedManifestForDiff
-                            : valuesForDiffState.selectedValuesForDiff
-                        : ''
-                }
-                value={manifestView ? generatedManifest : valuesText}
                 diffView={comparisonView}
                 noParsing
-                mode="yaml"
-                onChange={onChange}
+                mode={MODES.YAML}
                 loading={loading || valuesForDiffState.loadingValuesForDiff}
                 customLoader={
                     <DetailsProgressing size={32}>
@@ -386,6 +377,33 @@ export default function ChartValuesEditor({
                     </DetailsProgressing>
                 }
                 readOnly={manifestView}
+                codeEditorProps={{
+                    height: '0',
+                    defaultValue: comparisonView
+                        ? manifestView
+                            ? valuesForDiffState.selectedManifestForDiff
+                            : valuesForDiffState.selectedValuesForDiff
+                        : '',
+                    value: manifestView ? generatedManifest : valuesText,
+                    onChange: onChange,
+                }}
+                codeMirrorProps={{
+                    height: 'fitToParent',
+                    ...(comparisonView
+                        ? {
+                              diffView: true,
+                              originalValue: manifestView
+                                  ? valuesForDiffState.selectedManifestForDiff
+                                  : valuesForDiffState.selectedValuesForDiff,
+                              modifiedValue: manifestView ? generatedManifest : valuesText,
+                              onModifiedValueChange: onChange,
+                          }
+                        : {
+                              diffView: false,
+                              value: manifestView ? generatedManifest : valuesText,
+                              onChange,
+                          }),
+                }}
             >
                 {showEditorHeader && (
                     <CodeEditor.Header>

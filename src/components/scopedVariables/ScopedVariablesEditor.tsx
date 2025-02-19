@@ -26,6 +26,7 @@ import {
     ComponentSizeType,
     ButtonVariantType,
     ButtonStyleType,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Descriptor from './Descriptor'
 import { parseYAMLStringToObj, parseIntoYAMLString, sortVariables } from './utils'
@@ -222,14 +223,32 @@ export default function ScopedVariablesEditor({
                     )}
 
                     <CodeEditor
-                        mode="yaml"
-                        value={editorData}
+                        mode={MODES.YAML}
                         noParsing
                         diffView={showSaveView}
-                        defaultValue={savedScopedVariables || ''}
-                        height="100%"
-                        onChange={handleEditorChange}
-                        validatorSchema={jsonSchema}
+                        codeEditorProps={{
+                            value: editorData,
+                            defaultValue: savedScopedVariables || '',
+                            height: '100%',
+                            onChange: handleEditorChange,
+                            validatorSchema: jsonSchema,
+                        }}
+                        codeMirrorProps={{
+                            height: 'fitToParent',
+                            ...(showSaveView
+                                ? {
+                                      diffView: true,
+                                      originalValue: savedScopedVariables || '',
+                                      modifiedValue: editorData,
+                                      onModifiedValueChange: handleEditorChange,
+                                  }
+                                : {
+                                      diffView: false,
+                                      value: editorData,
+                                      onChange: handleEditorChange,
+                                      validatorSchema: jsonSchema,
+                                  }),
+                        }}
                     />
 
                     <div className="flexbox pt-13 pb-13 pl-12 pr-12 bg__primary dc__border-top dc__content-end dc__align-items-center dc__align-self-stretch dc__gap-12">

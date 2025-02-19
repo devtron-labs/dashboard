@@ -944,11 +944,18 @@ export default function ClusterForm({
         return (
             <div className="code-editor-container">
                 <CodeEditor
-                    value={saveYamlData}
-                    height="calc(100vh - 236px)"
                     diffView={false}
-                    onChange={onChangeEditorValue}
                     mode={MODES.YAML}
+                    codeEditorProps={{
+                        value: saveYamlData,
+                        onChange: onChangeEditorValue,
+                        height: 'calc(100vh - 236px)',
+                    }}
+                    codeMirrorProps={{
+                        value: saveYamlData,
+                        onChange: onChangeEditorValue,
+                        height: 'fitToParent',
+                    }}
                 >
                     <CodeEditor.Header>
                         <div className="user-list__subtitle flex fs-13 lh-20 w-100">
