@@ -89,7 +89,7 @@ export const ExternalLinkList = ({
             {filteredExternalLinks.map((link, idx) => (
                 <Fragment key={`external-link-${link.name}`}>
                     <div
-                        className={` dc__align-items-center dc__gap-16 dc__visible-hover dc__visible-hover--parent dc__hover-n50 cn-9 fs-13 px-20 py-10 ${isAppConfigView ? 'app-config-view external-link-list__row__app-config' : 'external-link-list__row '}`}
+                        className={` dc__align-items-center dc__gap-16 dc__visible-hover dc__visible-hover--parent dc__hover-n50 cn-9 fs-13 px-20 py-10 ${isAppConfigView ? 'app-config-view external-link-list__row__app-config' : 'external-link-list__row '} ${idx !== filteredExternalLinks.length - 1 ? 'border__secondary--bottom' : ''}`}
                     >
                         <div className="p-2 flex">
                             <img
@@ -113,7 +113,7 @@ export const ExternalLinkList = ({
                         <InteractiveCellText text={link.url} data-testid={`external-link-url-${link.name}`} />
                         {renderActionButton(link)}
                     </div>
-                    {idx !== filteredExternalLinks.length - 1 && <div className="external-link__divider w-100 bcn-1" />}
+                    {/* {idx !== filteredExternalLinks.length - 1 && <div className="external-link__divider w-100 bcn-1" />} */}
                 </Fragment>
             ))}
         </div>
