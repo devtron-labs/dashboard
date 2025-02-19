@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { SocketConnectionType } from '../../../../../../ClusterNodes/constants'
 import { useOnline } from '../../../../../../common'
 import { TERMINAL_TEXT } from './constants'
 import TerminalView from './Terminal'
 import { ConnectionStripMessageType, TerminalWrapperProps } from './terminal.type'
 import terminalStripTypeData from './terminal.utils'
-import { AppThemeType, getComponentSpecificThemeClass } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function TerminalWrapper({
     selectionListData,
