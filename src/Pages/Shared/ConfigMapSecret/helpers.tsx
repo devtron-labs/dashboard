@@ -91,7 +91,7 @@ export const renderChartVersionBelow3090NotSupportedText = () => (
 
 export const renderYamlInfoText = () => (
     <p className="m-0 py-6 px-10 flex left dc__gap-6 fs-12 lh-20 cn-8 bg__secondary dc__border-top-n1 dc__bottom-radius-4">
-        <Icon name="ic-info-filled-override" color={null} size={16} />
+        <Icon name="ic-info-filled" color={null} size={16} />
         <span>
             GUI Recommended for multi-line data. Boolean and numeric values must be wrapped in double quotes Eg.
             &quot;true&quot;, &quot;123&quot;
