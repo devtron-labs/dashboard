@@ -1733,8 +1733,6 @@ table.resource-tree {
     display: flex;
     flex-direction: column;
     flex: 1;
-    width: calc(100vw - 56px);
-    overflow-x: hidden;
 }
 
 .more-message::before {

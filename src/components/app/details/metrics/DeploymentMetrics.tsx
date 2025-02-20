@@ -544,8 +544,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
             <div>
                 {this.renderInputs()}
                 <div
-                    className="dc__position-rel"
-                    style={{ backgroundColor: 'var(--bg-primary)', height: 'calc(100vh - 150px' }}
+                    className="dc__position-rel bg__primary"
                 >
                     <GenericEmptyState
                         image={AppNotDeployed}
@@ -559,7 +558,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
 
     renderNoEnvironmentView() {
         return (
-            <div className="dc__position-rel" style={{ backgroundColor: 'var(--bg-primary)', height: 'calc(100vh - 80px' }}>
+            <div className="dc__position-rel bg__primary">
                 <GenericEmptyState
                     image={SelectEnvImage}
                     title={EMPTY_STATE_STATUS.RENDER_NO_ENVIORNMENT_STATE.TITLE}

@@ -26,8 +26,7 @@
 }
 
 .main {
-    height: 100vh;
-    width: 100%;
+    height: calc(100vh - 16px);
     overflow-y: auto;
 }
 
@@ -36,7 +35,7 @@
 }
 
 .title-container {
-    color: var(--white);
+    color: var(--N900);
     opacity: 1;
     font-size: 14px;
     width: 100%;
@@ -48,14 +47,17 @@
 
 #root > div > main {
     & > nav {
+        $transition-duration: 200ms;
+        $transition-delay: 700ms;
+
         width: 100%;
-        background: var(--bg-sidebar);
+        background: var(--transparent);
         position: sticky;
         top: 0;
         display: flex;
         overflow: hidden;
         z-index: var(--navigation-index);
-        transition: width 300ms ease-out;
+        transition: width $transition-duration ease-out, background 150ms ease-out 200ms;
 
         .nav-grid {
             display: grid;
@@ -66,7 +68,7 @@
             button {
                 &:hover {
                     text-decoration: none !important;
-                    color: var(--white);
+                    color: var(--N900);
                 }
 
                 &:focus {
@@ -100,20 +102,13 @@
             }
 
             a {
-                .short-nav-icon {
-                    width: 20px;
-                    height: 20px;
-                    fill: var(--white);
-                    opacity: 1;
-                }
-
                 .short-nav__item-selected {
                     display: none;
                 }
 
                 &:hover {
                     .svg-container {
-                        background: var(--black-40);
+                        background: var(--bg-hover);
                     }
                 }
 
@@ -122,7 +117,7 @@
                         display: inline-block;
                         width: 6px;
                         height: 32px;
-                        background-color: var(--white);
+                        background-color: var(--B500);
                         border-radius: 3px;
                         margin-left: -3px;
                     }
@@ -130,6 +125,10 @@
                     .short-nav--flex {
                         display: flex;
                         margin-left: 7px;
+                    }
+
+                    .title-container {
+                        color: var(--B500);
                     }
                 }
 
@@ -139,7 +138,7 @@
 
                 &:not(.active-nav):focus {
                     .svg-container {
-                        border: 1px solid var(--white);
+                        border: 1px solid var(--N900);
                         border-radius: 8px;
                     }
                 }
@@ -148,13 +147,20 @@
 
         .active-nav {
             .svg-container {
-                background: var(--black-40);
+                background: var(--B100);
+
+                svg {
+                    --iconColor: var(--B500) !important;
+                }
             }
         }
 
         &:hover {
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-primary);
             width: 252px;
-            transition: width 300ms ease-in 700ms;
+            box-shadow: var(--shadow-modal);
+            transition: width $transition-duration ease-in $transition-delay, background 150ms ease-in $transition-delay, border-right $transition-duration ease-in $transition-delay, box-shadow $transition-duration ease-in $transition-delay;
         }
 
         .short-nav__bottom-options {
@@ -320,7 +326,7 @@
     &:hover {
         .svg-container,
         .short-nav__icon-container {
-            background: #00000059;
+            // background: #00000059;
             border-radius: 8px;
         }
     }

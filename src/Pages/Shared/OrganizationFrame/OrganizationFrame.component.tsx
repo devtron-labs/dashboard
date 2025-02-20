@@ -21,12 +21,12 @@ import './organizationFrame.scss'
 const OrganizationFrame = () => (
     <div className="w-36 h-42 dc__no-shrink flexbox dc__position-rel dc__content-center">
         <div
-            className="icon-dim-28 dc__no-shrink dc__border--white flex py-3 px-1 br-4"
+            className="icon-dim-28 dc__no-shrink dc__border--n9 flex py-3 px-1 br-4"
             style={{
                 backgroundColor: getRandomColor(window._env_.ORGANIZATION_NAME || ''),
             }}
         >
-            <span className="text__white fs-13 fw-6 lh-16 h-16">
+            <span className="cn-9 fs-13 fw-6 lh-16 h-16">
                 {window._env_.ORGANIZATION_NAME?.slice(0, 2)?.toLocaleUpperCase()}
             </span>
         </div>
