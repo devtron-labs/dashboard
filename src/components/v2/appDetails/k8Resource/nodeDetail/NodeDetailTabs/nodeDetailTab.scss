@@ -87,9 +87,9 @@
     .log-viewer {
         height: 100%;
         width: 100%;
-        padding: 0 0 0 20px;
+        padding: 8px 0 8px 16px;
         overflow: hidden;
-        background-color: #0b0f22;
+        background-color: var(--terminal-bg);
         &:focus {
             outline: none;
         }
@@ -117,7 +117,7 @@
 }
 
 .event-row {
-    background: #0b0f22;
+    background: var(--terminal-bg);
     font-family: monospace;
     font-size: 13px;
     margin: 8px;
@@ -139,7 +139,7 @@
         }
     }
     &.alternate-row {
-        background: #171b2d;
+        background: var(--bg-primary);
     }
 }
 

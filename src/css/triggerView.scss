@@ -464,6 +464,7 @@
     right: 0;
     background: var(--bg-primary);
     top: 0;
+    border-left: 1px solid var(--border-primary);
 
     &.contains-diff-view {
         width: 100%;

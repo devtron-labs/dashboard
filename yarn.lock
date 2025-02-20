@@ -1001,7 +1001,7 @@
     "@jridgewell/trace-mapping" "0.3.9"
 
 "@devtron-labs/devtron-fe-common-lib@file:../devtron-fe-common-lib":
-  version "1.7.7"
+  version "1.7.10"
   resolved "file:../devtron-fe-common-lib"
   dependencies:
     "@codemirror/lang-json" "6.0.1"
@@ -1028,18 +1028,6 @@
     react-draggable "^4.4.5"
     react-monaco-editor "^0.54.0"
     react-virtualized-sticky-tree "^3.0.0-beta18"
-    sass "^1.69.7"
-    tslib "2.7.0"
-
-"@devtron-labs/devtron-fe-lib@file:../devtron-fe-lib":
-  version "1.7.0"
-  resolved "file:../devtron-fe-lib"
-  dependencies:
-    fast-json-patch "^3.1.1"
-    jsonpath-plus "^10.3.0"
-    moment-timezone "^0.5.45"
-    react-ga4 "^1.4.1"
-    react-grid-layout "^1.5.0"
     sass "^1.69.7"
     tslib "2.7.0"
 
