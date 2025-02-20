@@ -39,7 +39,7 @@
 }
 
 .title-container {
-    color: var(--N900);
+    color: var(--white);
     opacity: 1;
     font-size: 14px;
     width: 100%;
@@ -197,6 +197,10 @@
                         color: var(--N900);
                     }
                 }
+        }
+
+        .title-container {
+            color: var(--N900);
         }
 
         .short-nav {
