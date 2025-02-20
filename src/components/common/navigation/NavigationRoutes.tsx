@@ -409,7 +409,11 @@ export default function NavigationRoutes() {
                     />
                 )}
                 {serverMode && (
-                    <div className={`main bg__primary border__primary m-8 br-6 ${pageOverflowEnabled ? '' : 'main__overflow-disabled'}`}>
+                    <div
+                        className={`main ${window._env_.FEATURE_EXPERIMENTAL_MODERN_LAYOUT_ENABLE ? 'main__modern-layout bg__primary border__primary m-8 br-6' : `${location.pathname.startsWith('/app/list') || location.pathname.startsWith('/application-group/list') ? 'bg__primary' : ''}`} ${
+                            pageOverflowEnabled ? '' : 'main__overflow-disabled'
+                        }`}
+                    >
                         <Suspense
                             fallback={
                                 <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />

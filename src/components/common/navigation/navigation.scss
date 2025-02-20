@@ -26,8 +26,12 @@
 }
 
 .main {
-    height: calc(100vh - 16px);
+    height: 100vh;
     overflow-y: auto;
+
+    &__modern-layout {
+        height: calc(100vh - 16px);
+    }
 }
 
 .main__overflow-disabled {
@@ -47,17 +51,14 @@
 
 #root > div > main {
     & > nav {
-        $transition-duration: 200ms;
-        $transition-delay: 700ms;
-
         width: 100%;
-        background: var(--transparent);
+        background: var(--bg-sidebar);
         position: sticky;
         top: 0;
         display: flex;
         overflow: hidden;
         z-index: var(--navigation-index);
-        transition: width $transition-duration ease-out, background 150ms ease-out 200ms;
+        transition: width 300ms ease-out;
 
         .nav-grid {
             display: grid;
@@ -68,7 +69,7 @@
             button {
                 &:hover {
                     text-decoration: none !important;
-                    color: var(--N900);
+                    color: var(--white);
                 }
 
                 &:focus {
@@ -108,7 +109,7 @@
 
                 &:hover {
                     .svg-container {
-                        background: var(--bg-hover);
+                        background: var(--black-40);
                     }
                 }
 
@@ -117,7 +118,7 @@
                         display: inline-block;
                         width: 6px;
                         height: 32px;
-                        background-color: var(--B500);
+                        background-color: var(--white);
                         border-radius: 3px;
                         margin-left: -3px;
                     }
@@ -125,10 +126,6 @@
                     .short-nav--flex {
                         display: flex;
                         margin-left: 7px;
-                    }
-
-                    .title-container {
-                        color: var(--B500);
                     }
                 }
 
@@ -138,7 +135,7 @@
 
                 &:not(.active-nav):focus {
                     .svg-container {
-                        border: 1px solid var(--N900);
+                        border: 1px solid var(--white);
                         border-radius: 8px;
                     }
                 }
@@ -147,20 +144,13 @@
 
         .active-nav {
             .svg-container {
-                background: var(--B100);
-
-                svg {
-                    --iconColor: var(--B500) !important;
-                }
+                background: var(--black-40);
             }
         }
 
         &:hover {
-            background: var(--bg-sidebar);
-            border-right: 1px solid var(--border-primary);
             width: 252px;
-            box-shadow: var(--shadow-modal);
-            transition: width $transition-duration ease-in $transition-delay, background 150ms ease-in $transition-delay, border-right $transition-duration ease-in $transition-delay, box-shadow $transition-duration ease-in $transition-delay;
+            transition: width 300ms ease-in 700ms;
         }
 
         .short-nav__bottom-options {
@@ -191,6 +181,66 @@
     .hubspot-placeholder {
         height: 80px;
         width: 100%;
+    }
+
+    & .nav__modern-layout {
+        $transition-duration: 300ms;
+        $transition-delay: 700ms;
+
+        background: var(--transparent);
+        transition: width $transition-duration ease-out, background 150ms ease-out 200ms;
+
+        .nav-grid {
+                a,
+                button {
+                    &:hover {
+                        color: var(--N900);
+                    }
+                }
+        }
+
+        .short-nav {
+            a {
+                &:hover {
+                    .svg-container {
+                        background: var(--bg-hover);
+                    }
+                }
+
+                &.active-nav {
+                    .short-nav__item-selected {
+                        background-color: var(--B500);
+                    }
+
+                    .title-container {
+                        color: var(--B500);
+                    }
+                }
+
+                &:not(.active-nav):focus {
+                    .svg-container {
+                        border: 1px solid var(--N900);
+                    }
+                }
+            }
+        }
+
+        .active-nav {
+            .svg-container {
+                background: var(--B100);
+
+                svg {
+                    --iconColor: var(--B500) !important;
+                }
+            }
+        }
+
+        &:hover {
+            background: var(--bg-sidebar-modern-layout);
+            border-right: 1px solid var(--border-primary);
+            box-shadow: var(--shadow-modal);
+            transition: width $transition-duration ease-in $transition-delay, background 150ms ease-in $transition-delay, border-right $transition-duration ease-in $transition-delay, box-shadow $transition-duration ease-in $transition-delay;
+        }
     }
 }
 
