@@ -26,7 +26,6 @@
 | GTM_ENABLED                                  | "true"     | Enable GTM for tag manager                                                                                       |
 | GTM_ID                                       | ""         | Enable GTM_ID for tag manager args                                                                               |
 | HELM_APP_DETAILS_POLLING_INTERVAL            | 3000       | API polling interval for helm app details                                                                        |
-| HIDE_APPLICATION_GROUPS                      | "false"    | Hide application group from Devtron UI                                                                           |
 | HIDE_DISCORD                                 | "true"     | Hide Discord button from UI                                                                                      |
 | HIDE_DEFAULT_CLUSTER                         | "true"     | Hide default cluster                                                                                             |
 | HIDE_EXCLUDE_INCLUDE_GIT_COMMITS             | "true"     | Hide exclude include git commits                                                                                 |

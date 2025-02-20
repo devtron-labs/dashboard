@@ -28,6 +28,7 @@ import {
     SERVER_MODE,
     ModuleNameMap,
     stringComparatorBySortOrder,
+    ResourceVersionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../config'
 import {
@@ -293,7 +294,7 @@ export function getWorkflowViewList(appId, filteredEnvIds?: string, offending: O
 }
 
 export function stopStartApp(AppId, EnvironmentId, RequestType) {
-    return post(`app/stop-start-app`, { AppId, EnvironmentId, RequestType })
+    return post(`app/${ResourceVersionType.alpha1}/stop-start-app`, { AppId, EnvironmentId, RequestType })
 }
 
 export const validateToken = (): Promise<ResponseType<Record<'emailId' | 'isVerified' | 'isSuperAdmin', string>>> => {

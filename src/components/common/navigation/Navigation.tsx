@@ -79,7 +79,6 @@ const NavigationList = [
         icon: EnvIcon,
         href: URLS.APPLICATION_GROUP,
         isAvailableInEA: false,
-        forceHideEnvKey: 'HIDE_APPLICATION_GROUPS',
     },
     {
         title: 'Software Distribution Hub',

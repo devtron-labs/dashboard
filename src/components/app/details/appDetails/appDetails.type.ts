@@ -270,3 +270,9 @@ export interface UseGetAppSecurityDetailsReturnType {
     scanResultError: ServerErrors
     reloadScanResult: () => void
 }
+
+export enum HibernationModalTypes {
+    HIBERNATE = 'hibernate',
+    RESUME = 'resume',
+    CONFIGURE_PATCH = 'configurePatch',
+}
