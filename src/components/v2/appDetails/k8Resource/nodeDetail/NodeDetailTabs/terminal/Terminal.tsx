@@ -124,6 +124,7 @@ export default function TerminalView({
             screenReaderMode: true,
             theme: {
                 // Cannot use variables here
+                // Using hex code for --terminal-bg
                 background: '#181920',
                 foreground: '#ffffff',
             },
