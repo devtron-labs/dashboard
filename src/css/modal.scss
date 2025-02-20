@@ -136,8 +136,8 @@
 #visible-modal,
 #visible-modal-2 {
     &.show-with-bg {
-        -webkit-backdrop-filter: blur(1px);
-        backdrop-filter: blur(1px);
+        -webkit-backdrop-filter: blur(0.5px);
+        backdrop-filter: blur(0.5px);
         background-color: var(--backdrop-bg);
         visibility: visible;
         opacity: 1;

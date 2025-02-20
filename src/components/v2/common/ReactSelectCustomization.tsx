@@ -142,7 +142,7 @@ export const multiSelectStyles = {
     menu: (base, state) => ({
         ...base,
         top: `40px`,
-        backgroundColor: 'var(--bg-menu)',
+        backgroundColor: 'var(--bg-menu-primary)',
         border: '1px solid var(--N200)',
     }),
     option: (base, state) => {
@@ -181,7 +181,7 @@ export const podsDropdownStyles = {
         zIndex: 9999,
         width: '120px',
         borderRadius: '4px',
-        backgroundColor: 'var(--bg-menu)',
+        backgroundColor: 'var(--bg-menu-primary)',
     }),
     control: (base) => ({
         ...base,
