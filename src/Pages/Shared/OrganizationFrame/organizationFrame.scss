@@ -18,11 +18,11 @@
     &__logo {
         > path {
             &:first-child {
-                fill: var(--B500);
+                fill: var(--bg-tertiary);
             }
 
             &:last-child {
-                fill: var(--bg-tertiary);
+                fill: var(--B500);
             }
         }
     }
