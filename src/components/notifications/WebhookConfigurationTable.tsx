@@ -15,12 +15,13 @@
  */
 
 import { DeleteComponentsName } from '@Config/constantMessaging'
-import { noop, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
+import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
+import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 import { ConfigurationTableProps } from './types'
 import { ConfigurationsTabTypes } from './constants'
 import { ConfigTableRowActionButton } from './ConfigTableRowActionButton'
-import { getConfigTabIcons, renderText } from './notifications.util'
+import { getConfigTabIcons } from './notifications.util'
 
 export const WebhookConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTableProps) => {
     const { webhookConfigurationList } = state
@@ -54,13 +55,15 @@ export const WebhookConfigurationTable = ({ state, deleteClickHandler }: Configu
                         data-testid={`webhook-container-${webhookConfig.name}`}
                     >
                         {getConfigTabIcons(ConfigurationsTabTypes.WEBHOOK)}
-                        {renderText(
-                            webhookConfig.name,
-                            true,
-                            onClickWebhookConfigEdit(webhookConfig.id),
-                            `webhook-config-name-${webhookConfig.name}`,
-                        )}
-                        {renderText(webhookConfig.webhookUrl, false, noop, `webhook-url-${webhookConfig.webhookUrl}`)}
+                        <InteractiveCellText
+                            text={webhookConfig.name}
+                            onClickHandler={onClickWebhookConfigEdit(webhookConfig.id)}
+                            dataTestId={`webhook-config-name-${webhookConfig.name}`}
+                        />
+                        <InteractiveCellText
+                            text={webhookConfig.webhookUrl}
+                            dataTestId={`webhook-url-${webhookConfig.webhookUrl}`}
+                        />
                         <ConfigTableRowActionButton
                             onClickEditRow={onClickWebhookConfigEdit(webhookConfig.id)}
                             onClickDeleteRow={deleteClickHandler(

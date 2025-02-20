@@ -33,11 +33,11 @@ const getURLWithQueryParams = (clusterId?: number, identifier?: string, type?: E
             type: type?.toString(),
         }
 
-        for (const param in queryParams) {
-            if (!queryParams[param]) {
+        Object.entries(queryParams).forEach(([param, value]) => {
+            if (!value) {
                 delete queryParams[param]
             }
-        }
+        })
 
         _url += `?${new URLSearchParams(queryParams).toString()}`
     }
@@ -72,26 +72,18 @@ export const getExternalLinks = async (
                         openInNewTab: true,
                     }
                 }
-                
-                
-                
             }),
         },
     }
 }
 
-export const saveExternalLinks = (request: ExternalLink[], appId?: string): Promise<ExternalLinkUpdateResponse> => {
-    return post(`${Routes.EXTERNAL_LINKS_API}${appId ? `?appId=${appId}` : ''}`, request)
-}
+export const saveExternalLinks = (request: ExternalLink[], appId?: string): Promise<ExternalLinkUpdateResponse> =>
+    post(`${Routes.EXTERNAL_LINKS_API}${appId ? `?appId=${appId}` : ''}`, request)
 
-export const updateExternalLink = (request: ExternalLink, appId?: string): Promise<ExternalLinkUpdateResponse> => {
-    return put(`${Routes.EXTERNAL_LINKS_API}${appId ? `?appId=${appId}` : ''}`, request)
-}
+export const updateExternalLink = (request: ExternalLink, appId?: string): Promise<ExternalLinkUpdateResponse> =>
+    put(`${Routes.EXTERNAL_LINKS_API}${appId ? `?appId=${appId}` : ''}`, request)
 
-export const deleteExternalLink = (externalLinkId: number, appId?: string): Promise<ExternalLinkUpdateResponse> => {
-    return trash(`${Routes.EXTERNAL_LINKS_API}?id=${externalLinkId}${appId ? `&appId=${appId}` : ''}`)
-}
+export const deleteExternalLink = (externalLinkId: number, appId?: string): Promise<ExternalLinkUpdateResponse> =>
+    trash(`${Routes.EXTERNAL_LINKS_API}?id=${externalLinkId}${appId ? `&appId=${appId}` : ''}`)
 
-export const getAllApps = (): Promise<GetAllAppResponseType> => {
-    return get(Routes.GET_ALL_APPS)
-}
+export const getAllApps = (): Promise<GetAllAppResponseType> => get(Routes.GET_ALL_APPS)
