@@ -15,8 +15,8 @@
  */
 
 .dark-theme {
-    border-top: 1px solid #2c3354;
-    background: #0c0f21;
+    border-top: 1px solid var(--border-primary);
+    background: var(--terminal-bg);
     color: var(--white);
     z-index: 19;
 

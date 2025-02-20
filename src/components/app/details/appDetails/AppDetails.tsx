@@ -19,9 +19,7 @@ import {
     showError,
     Progressing,
     noop,
-    stopPropagation,
     DeploymentAppTypes,
-    useSearchString,
     useAsync,
     MODAL_TYPE,
     ACTION_STATE,
@@ -51,7 +49,7 @@ import {
     RESOURCES_NOT_FOUND,
     DEFAULT_STATUS_TEXT,
 } from '../../../../config'
-import { NavigationArrow, useAppContext, FragmentHOC } from '../../../common'
+import { useAppContext } from '../../../common'
 import { getAppConfigStatus, getAppOtherEnvironmentMin, stopStartApp } from '../../../../services/service'
 import AppNotDeployedIcon from '@Images/app-not-deployed.svg'
 import AppNotConfiguredIcon from '@Images/app-not-configured.png'
@@ -61,7 +59,7 @@ import { ReactComponent as ForwardArrow } from '@Icons/ic-arrow-forward.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
 
 import { SourceInfo } from './SourceInfo'
-import { Application, Nodes, AggregatedNodes, NodeDetailTabs } from '../../types'
+import { Application, AggregatedNodes } from '../../types'
 import { NoParamsNoEnvContext, NoParamsWithEnvContext, ParamsNoEnvContext, ParamsAndEnvContext } from './utils'
 import { AppMetrics } from './AppMetrics'
 import IndexStore from '../../../v2/appDetails/index.store'
@@ -956,74 +954,6 @@ export const EnvSelector = ({ environments }: { environments: any }) => {
                 />
             </div>
         </>
-    )
-}
-
-export const EventsLogsTabSelector = ({ onMouseDown = null }) => {
-    const params = useParams<{ appId: string; envId: string; tab?: NodeDetailTabs; kind?: NodeDetailTabs }>()
-    const { queryParams, searchParams } = useSearchString()
-    const history = useHistory()
-    const { path } = useRouteMatch()
-    const location = useLocation()
-    const kind = searchParams.kind || params.kind
-    return (
-        <FragmentHOC
-            onMouseDown={onMouseDown || noop}
-            style={{ background: '#2c3354', boxShadow: 'inset 0 -1px 0 0 #0b0f22' }}
-            onClick={
-                params.tab
-                    ? () => {}
-                    : (e) => {
-                          history.push(
-                              generatePath(path, { ...params, tab: NodeDetailTabs.MANIFEST }) + location.search,
-                          )
-                      }
-            }
-        >
-            <div className={`pl-20 flex left tab-container ${params.tab ? 'dc__cursor--ns-resize ' : 'pointer'}`}>
-                {[
-                    NodeDetailTabs.MANIFEST,
-                    NodeDetailTabs.EVENTS,
-                    ...(kind === Nodes.Pod ? [NodeDetailTabs.LOGS, NodeDetailTabs.TERMINAL] : []),
-                ].map((title, idx) => (
-                    <div
-                        key={`kind-${idx}`}
-                        className={`tab dc__first-letter-capitalize ${
-                            params.tab?.toUpperCase() === title ? 'active' : ''
-                        }`}
-                        onClick={(e) => {
-                            e.stopPropagation()
-                            history.push(generatePath(path, { ...params, tab: title }) + location.search)
-                        }}
-                        onMouseDown={stopPropagation}
-                    >
-                        {title}
-                    </div>
-                ))}
-            </div>
-            <div className={`flex right pr-20 ${params.tab ? 'dc__cursor--ns-resize ' : 'pointer'}`}>
-                <div
-                    className="flex pointer"
-                    style={{ height: '36px', width: '36px' }}
-                    onClick={(e) => {
-                        e.stopPropagation()
-                        queryParams.delete('kind')
-                        history.push(
-                            `${generatePath(path, {
-                                ...params,
-                                tab: params.tab ? null : NodeDetailTabs.MANIFEST,
-                            })}?${queryParams.toString()}`,
-                        )
-                    }}
-                >
-                    <NavigationArrow
-                        style={{ ['--rotateBy' as any]: params?.tab ? '0deg' : '180deg' }}
-                        color="#fff"
-                        className="icon-dim-20 rotate"
-                    />
-                </div>
-            </div>
-        </FragmentHOC>
     )
 }
 

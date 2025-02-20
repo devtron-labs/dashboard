@@ -23,12 +23,15 @@ export const EmptyConfigurationView = ({ activeTab, image }: EmptyConfigurationV
     const renderButton = () => <AddConfigurationButton activeTab={activeTab} />
     return (
         <GenericEmptyState
-            image={image}
+            SvgImage={image}
             title={`Send Email notifications via ${activeTab}`}
             subTitle={EmptyConfigurationSubTitle[activeTab]}
             imageClassName="w-160--imp dc__height-auto--imp"
             renderButton={renderButton}
             isButtonAvailable
+            imageStyles={{
+                height: 'auto',
+            }}
         />
     )
 }
