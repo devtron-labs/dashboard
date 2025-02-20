@@ -21,6 +21,7 @@ import {
     DynamicDataTableRowType,
     SelectPickerOptionType,
     PaginationProps,
+    GenericEmptyStateType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { VariableDataTableActionType } from '@Components/CIPipelineN/VariableDataTable/types'
 import { HostURLConfig } from '@Services/service.types'
@@ -119,7 +120,7 @@ export interface DefaultCheckboxProps {
 
 export interface EmptyConfigurationViewProps {
     activeTab: ConfigurationsTabTypes
-    image?: any
+    image?: GenericEmptyStateType['SvgImage']
 }
 
 export interface ConfigurationTabSwitcherProps {

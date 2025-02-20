@@ -16,7 +16,7 @@ COPY . .
 
 RUN echo `git rev-parse --short=9 HEAD` > health.html
 
-RUN echo "SENTRY_RELEASE_VERSION=dashboard@$(git rev-parse --short HEAD)" >> .env
+RUN echo "SENTRY_RELEASE_VERSION=dashboard@$(git rev-parse --short HEAD)\n" >> .env
 
 RUN yarn build
 

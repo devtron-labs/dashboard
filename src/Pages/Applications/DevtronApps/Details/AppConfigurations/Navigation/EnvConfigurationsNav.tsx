@@ -23,7 +23,6 @@ import {
     BASE_CONFIGURATION_ENV_ID,
     Button,
     ButtonComponentType,
-    ButtonStyleType,
     ButtonVariantType,
     CollapsibleList,
     CollapsibleListConfig,
@@ -45,10 +44,10 @@ import { URLS } from '@Config/routes'
 import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
 import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
+import ReactGA from 'react-ga4'
 import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
 import { EnvConfigRouteParams, EnvConfigurationsNavProps, EnvConfigObjectKey, EnvConfigType } from '../AppConfig.types'
 import { getEnvConfiguration, getNavigationPath } from './Navigation.helper'
-
 // LOADING SHIMMER
 const ShimmerText = ({ width }: { width: string }) => (
     <div className={`p-8 h-32 w-${width}`}>
@@ -415,6 +414,13 @@ export const EnvConfigurationsNav = ({
         </div>
     )
 
+    const onClickCompareWith = () => {
+        ReactGA.event({
+            category: 'DEVTRON_APP_COMPARE_WITH',
+            action: 'DEVTRON_APP_COMPARE_WITH',
+        })
+    }
+
     const renderCompareWithBtn = () => {
         const { name: compareTo } = resourceData
 
@@ -438,11 +444,11 @@ export const EnvConfigurationsNav = ({
                     component={ButtonComponentType.link}
                     variant={ButtonVariantType.secondary}
                     size={ComponentSizeType.medium}
-                    style={ButtonStyleType.neutral}
                     startIcon={<ICArrowsLeftRight />}
                     disabled={!isResourceTypeValid}
                     linkProps={{ to: compareWithHref }}
                     text="Compare with..."
+                    onClick={onClickCompareWith}
                 />
             </div>
         )

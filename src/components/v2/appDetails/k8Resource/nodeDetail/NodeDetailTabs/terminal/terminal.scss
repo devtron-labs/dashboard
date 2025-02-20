@@ -53,7 +53,7 @@
         top: 0;
         left: 0;
         z-index: calc(var(--modal-index) + 1);
-        border-bottom: 1px solid #2C3354;
+        border-bottom: 1px solid var(--border-primary);
         background: var(--terminal-bg);
         height: var(--metadata-header-height);
 

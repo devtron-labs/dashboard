@@ -111,7 +111,6 @@ if (!window || !window._env_) {
         SENTRY_PERFORMANCE_ENABLED: false,
         SENTRY_DSN: '',
         SENTRY_TRACES_SAMPLE_RATE: 0.2,
-        HOTJAR_ENABLED: false,
         GA_ENABLED: false,
         GTM_ENABLED: false,
         APPLICATION_METRICS_ENABLED: true,
@@ -172,6 +171,7 @@ if (!window || !window._env_) {
         FEATURE_CLUSTER_MAP_ENABLE: true,
         FEATURE_ACTION_AUDIOS_ENABLE: true,
         FEATURE_EXPERIMENTAL_THEMING_ENABLE: import.meta.env.DEV,
+        FEATURE_DEFAULT_AUTHENTICATED_VIEW_ENABLE: false,
     }
 }
 
