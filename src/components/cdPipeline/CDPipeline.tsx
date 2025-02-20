@@ -959,6 +959,7 @@ export default function CDPipeline({
                 })
                 return
             }
+            console.trace('test-1')
 
             setLoadingData(true)
             validateStage(BuildStageVariable.PreBuild, formData)
@@ -977,6 +978,7 @@ export default function CDPipeline({
                         description: MULTI_REQUIRED_FIELDS_MSG,
                     })
                 }
+                console.trace('test-2')
                 return
             }
         }
@@ -991,6 +993,7 @@ export default function CDPipeline({
                 if (response.result) {
                     const pipelineConfigFromRes = response.result.pipelines[0]
                     updateStateFromResponse(pipelineConfigFromRes, _form.environments, _form, dockerRegistries)
+                    console.trace('test-3')
                     let envName = pipelineConfigFromRes.environmentName
                     if (!envName) {
                         const selectedEnv: Environment = _form.environments.find((env) => env.id == _form.environmentId)
@@ -1007,9 +1010,11 @@ export default function CDPipeline({
                         !cdPipelineId,
                     )
                     getWorkflows()
+                    console.trace('test-4')
                 }
             })
             .catch((error: ServerErrors) => {
+                console.trace('test-5')
                 setLoadingData(false)
                 if (error.code === 409) {
                     setReloadNoGitOpsRepoConfiguredModal(true)

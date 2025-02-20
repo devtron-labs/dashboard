@@ -44,6 +44,7 @@ import { saveEnvironment, updateEnvironment, deleteEnvironment } from '@Componen
 import { getNamespaceFromLocalStorage } from '@Components/cluster/cluster.util'
 import { URLS } from '@Config/routes'
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
+import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Components/cluster/constants'
 import { ClusterEnvironmentDrawerFormProps, ClusterEnvironmentDrawerProps, ClusterNamespacesDTO } from './types'
 import { getClusterNamespaceByName, getClusterEnvironmentUpdatePayload, getNamespaceLabels } from './utils'
 import { clusterEnvironmentDrawerFormValidationSchema } from './schema'
@@ -178,6 +179,8 @@ export const ClusterEnvironmentDrawer = ({
                     variant: ToastVariantType.success,
                     description: `Successfully ${id ? 'updated' : 'saved'}`,
                 })
+                // Clear the local storage after successful save
+                localStorage.removeItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY)
                 reload()
                 hideClusterDrawer()
             } catch (err) {
