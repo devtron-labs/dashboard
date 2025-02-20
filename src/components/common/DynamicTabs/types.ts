@@ -72,9 +72,14 @@ export interface TimerType {
     format?: (start: Dayjs, now: Dayjs) => string
 }
 
-export type ParsedTabsData = {
+export type ParsedTabsDataV1 = {
     key: string
     data: DynamicTabType[]
+    version: 'v1'
+}
+
+export type ParsedTabsData = {
+    data: Record<string, DynamicTabType[]>
     version: typeof TAB_DATA_VERSION
 }
 
