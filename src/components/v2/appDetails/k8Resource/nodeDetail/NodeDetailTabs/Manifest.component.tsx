@@ -750,7 +750,10 @@ const ManifestComponent = ({
         <div
             className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ' '} manifest-container flexbox-col flex-grow-1 dc__overflow-auto`}
             data-testid="app-manifest-container"
-            style={{ background: '#0B0F22', ...(!isResourceBrowserView ? { minHeight: 'calc(100vh - 152px)' } : {}) }}
+            style={{
+                background: 'var(--terminal-bg)',
+                ...(!isResourceBrowserView ? { minHeight: 'calc(100vh - 152px)' } : {}),
+            }}
         >
             {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
             {!error && (

@@ -158,7 +158,7 @@ export const WebhookReceivedPayloadModal = ({
     return (
         <VisibleModal>
             <div
-                className="modal-body--ci-material h-100 w-100 flexbox-col dc__overflow-hidden"
+                className="modal-body--ci-material h-100 w-100 flexbox-col border__primary--left dc__overflow-hidden"
                 onClick={stopPropagation}
             >
                 {renderWebhookMaterialHeader()}
