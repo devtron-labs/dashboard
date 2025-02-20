@@ -47,6 +47,9 @@
 
 #root > div > main {
     & > nav {
+        $transition-duration: 200ms;
+        $transition-delay: 700ms;
+
         width: 100%;
         background: var(--transparent);
         position: sticky;
@@ -54,7 +57,7 @@
         display: flex;
         overflow: hidden;
         z-index: var(--navigation-index);
-        transition: width 200ms ease-out, background 150ms ease-out 200ms;
+        transition: width $transition-duration ease-out, background 150ms ease-out 200ms;
 
         .nav-grid {
             display: grid;
@@ -156,7 +159,8 @@
             background: var(--bg-sidebar);
             border-right: 1px solid var(--border-primary);
             width: 252px;
-            transition: width 200ms ease-in 700ms, background 150ms ease-in 700ms, border-right 200ms ease-in 700ms;
+            box-shadow: var(--shadow-modal);
+            transition: width $transition-duration ease-in $transition-delay, background 150ms ease-in $transition-delay, border-right $transition-duration ease-in $transition-delay, box-shadow $transition-duration ease-in $transition-delay;
         }
 
         .short-nav__bottom-options {
