@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { lazy, Suspense, useEffect, useState, useRef, useMemo } from 'react'
+import { lazy, Suspense, useEffect, useState, useRef, useMemo, FunctionComponent, Dispatch } from 'react'
 import {
     useUserEmail,
     showError,
@@ -27,10 +27,16 @@ import {
     ImageSelectionUtilityProvider,
     URLS as CommonURLS,
     AppListConstants,
-    MODES,
     DEVTRON_BASE_MAIN_ID,
     MainContext,
     getHashedValue,
+    ServerErrors,
+    ViewIsPipelineRBACConfiguredRadioTabs,
+    EnvironmentDataValuesDTO,
+    ResponseType,
+    UserPreferencesType,
+    getUserPreferences,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -93,7 +99,11 @@ const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/Devt
 const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
-const getEnvironmentData = importComponentFromFELibrary('getEnvironmentData', null, 'function')
+const getEnvironmentData: () => Promise<ResponseType<EnvironmentDataValuesDTO>> = importComponentFromFELibrary(
+    'getEnvironmentData',
+    null,
+    'function',
+)
 const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
 const SoftwareDistributionHub = importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
 const NetworkStatusInterface = importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
@@ -102,6 +112,14 @@ const SoftwareDistributionHubRenderProvider = importComponentFromFELibrary(
     null,
     'function',
 )
+const migrateUserPreferences: (userPreferences: UserPreferencesType) => Promise<UserPreferencesType> =
+    importComponentFromFELibrary('migrateUserPreferences', null, 'function')
+
+const ViewIsPipelineRBACConfigured: FunctionComponent<{
+    userPreferences: UserPreferencesType
+    userPreferencesError: ServerErrors
+    handleUpdatePipelineRBACViewSelectedTab: (selectedTab: ViewIsPipelineRBACConfiguredRadioTabs) => void
+}> = importComponentFromFELibrary('ViewIsPipelineRBACConfigured', null, 'function')
 
 export default function NavigationRoutes() {
     const history = useHistory()
@@ -119,7 +137,6 @@ export default function NavigationRoutes() {
     const [loginCount, setLoginCount] = useState(0)
     const [isSuperAdmin, setSuperAdmin] = useState(false)
     const [appListCount, setAppListCount] = useState(0)
-    const [loginLoader, setLoginLoader] = useState(true)
     const [showGettingStartedCard, setShowGettingStartedCard] = useState(true)
     const [isGettingStartedClicked, setGettingStartedClicked] = useState(false)
     const [moduleInInstallingState, setModuleInInstallingState] = useState('')
@@ -129,28 +146,29 @@ export default function NavigationRoutes() {
     }
     const [environmentId, setEnvironmentId] = useState(null)
     const contextValue = useMemo(() => ({ environmentId, setEnvironmentId }), [environmentId])
-    const [isAirgapped, setIsAirGapped] = useState(false)
-    const [isManifestScanningEnabled, setIsManifestScanningEnabled] = useState<boolean>(false)
+    const [environmentDataState, setEnvironmentDataState] = useState<
+        Pick<MainContext, 'isAirgapped' | 'isManifestScanningEnabled' | 'isOrgLevelRBACViewEnforced'>
+    >({
+        isAirgapped: false,
+        isManifestScanningEnabled: false,
+        isOrgLevelRBACViewEnforced: false,
+    })
+    const [userPreferences, setUserPreferences] = useState<UserPreferencesType>(null)
+    const [userPreferencesError, setUserPreferencesError] = useState<ServerErrors>(null)
+
+    const { isAirgapped, isManifestScanningEnabled, isOrgLevelRBACViewEnforced } = environmentDataState
 
     const getInit = async (_serverMode: string) => {
-        setLoginLoader(true)
-        const _expDate = localStorage.getItem('clickedOkay')
-        try {
-            const [userRole, appList, loginData] = await Promise.all([
-                getUserRole(),
-                _serverMode === SERVER_MODE.FULL ? getAppListMin() : null,
-                getLoginData(),
-            ])
-            const superAdmin = userRole?.result?.roles?.includes('role:super-admin___')
-            setSuperAdmin(superAdmin)
-            const appCount = appList?.result?.length || 0
-            setAppListCount(appCount)
-            processLoginData(loginData, superAdmin, appCount)
-            setLoginLoader(false)
-        } catch (err) {
-            setLoginLoader(false)
-            showError(err)
-        }
+        const [userRole, appList, loginData] = await Promise.all([
+            getUserRole(),
+            _serverMode === SERVER_MODE.FULL ? getAppListMin() : null,
+            getLoginData(),
+        ])
+        const superAdmin = userRole?.result?.roles?.includes('role:super-admin___')
+        setSuperAdmin(superAdmin)
+        const appCount = appList?.result?.length || 0
+        setAppListCount(appCount)
+        await processLoginData(loginData, superAdmin, appCount)
     }
 
     const processLoginData = async (response, superAdmin, appListCount) => {
@@ -258,74 +276,12 @@ export default function NavigationRoutes() {
         }
     }, [email])
 
-    async function getServerMode() {
-        try {
-            const response = await getAllModulesInfo()
-            let _serverMode = SERVER_MODE.EA_ONLY
-            if (response[ModuleNameMap.CICD] && response[ModuleNameMap.CICD].status === ModuleStatus.INSTALLED) {
-                _serverMode = SERVER_MODE.FULL
-            }
-            getInit(_serverMode)
-            setServerMode(_serverMode)
-            setPageState(ViewType.FORM)
-        } catch (err) {
-            setPageState(ViewType.ERROR)
-        }
+    const getServerMode = async (): Promise<SERVER_MODE> => {
+        const response = await getAllModulesInfo()
+        const isFullMode =
+            response[ModuleNameMap.CICD] && response[ModuleNameMap.CICD].status === ModuleStatus.INSTALLED
+        return isFullMode ? SERVER_MODE.FULL : SERVER_MODE.EA_ONLY
     }
-
-    async function getEnvironmentDataValues() {
-        try {
-            const { result } = await getEnvironmentData()
-            setIsAirGapped(result.isAirGapEnvironment)
-            setIsManifestScanningEnabled(result.isManifestScanningEnabled)
-            if (typeof Storage !== 'undefined') {
-                localStorage.setItem('isAirGapped', result.isAirGapEnvironment)
-            }
-        } catch {
-            setIsAirGapped(false)
-            setIsManifestScanningEnabled(false)
-        }
-    }
-
-    useEffect(() => {
-        if (window._env_.K8S_CLIENT) {
-            setPageState(ViewType.FORM)
-            setLoginLoader(false)
-            setServerMode(SERVER_MODE.EA_ONLY)
-        } else {
-            getServerMode()
-            if (getEnvironmentData) {
-                getEnvironmentDataValues()
-            }
-            getCurrentServerInfo()
-        }
-    }, [])
-
-    useEffect(() => {
-        const persistedTabs = localStorage.getItem(TAB_DATA_LOCAL_STORAGE_KEY)
-        if (persistedTabs) {
-            try {
-                const parsedTabsData: ParsedTabsData | ParsedTabsDataV1 = JSON.parse(persistedTabs)
-                if (parsedTabsData.version === 'v1') {
-                    if (
-                        location.pathname === parsedTabsData.key ||
-                        !location.pathname.startsWith(`${parsedTabsData.key}/`)
-                    ) {
-                        localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
-                    }
-                } else {
-                    const keys = Object.keys(parsedTabsData.data)
-                    if (
-                        keys.every((key) => location.pathname !== key && !location.pathname.startsWith(`${key}/`))
-                    ) {
-                        localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
-                    }
-                }
-            } catch {
-                localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
-            }
-        }
-    }, [location.pathname])
 
     const getCurrentServerInfo = async (section?: string) => {
         if (
@@ -355,12 +311,118 @@ export default function NavigationRoutes() {
         }
     }
 
+    const getEnvironmentDataValues = async (): Promise<EnvironmentDataValuesDTO> => {
+        const fallbackResponse: EnvironmentDataValuesDTO = {
+            isAirGapEnvironment: false,
+            isManifestScanningEnabled: false,
+            canOnlyViewPermittedEnvOrgLevel: false,
+        }
+
+        if (!getEnvironmentData) {
+            return fallbackResponse
+        }
+
+        try {
+            const { result } = await getEnvironmentData()
+            return {
+                isAirGapEnvironment: result.isAirGapEnvironment,
+                isManifestScanningEnabled: result.isManifestScanningEnabled,
+                canOnlyViewPermittedEnvOrgLevel: result.canOnlyViewPermittedEnvOrgLevel,
+            }
+        } catch {
+            return fallbackResponse
+        }
+    }
+
+    const handleFetchUserPreferences = async () => {
+        try {
+            setUserPreferencesError(null)
+            const userPreferencesResponse = await getUserPreferences()
+            if (migrateUserPreferences) {
+                const migratedUserPreferences = await migrateUserPreferences(userPreferencesResponse)
+                setUserPreferences(migratedUserPreferences)
+            } else {
+                setUserPreferences(userPreferencesResponse)
+            }
+        } catch (error) {
+            setUserPreferencesError(error)
+        }
+    }
+
+    const handleFetchInitialData = async () => {
+        try {
+            const [serverModeResponse, environmentDataResponse] = await Promise.all([
+                getServerMode(),
+                getEnvironmentDataValues(),
+                getCurrentServerInfo(),
+                handleFetchUserPreferences(),
+            ])
+
+            await getInit(serverModeResponse)
+
+            setEnvironmentDataState({
+                isAirgapped: environmentDataResponse.isAirGapEnvironment,
+                isManifestScanningEnabled: environmentDataResponse.isManifestScanningEnabled,
+                isOrgLevelRBACViewEnforced: environmentDataResponse.canOnlyViewPermittedEnvOrgLevel,
+            })
+
+            setServerMode(serverModeResponse)
+            setPageState(ViewType.FORM)
+        } catch (error) {
+            showError(error)
+            setPageState(ViewType.ERROR)
+        }
+    }
+
+    useEffect(() => {
+        if (window._env_.K8S_CLIENT) {
+            setPageState(ViewType.FORM)
+            setServerMode(SERVER_MODE.EA_ONLY)
+        } else {
+            handleFetchInitialData()
+        }
+    }, [])
+
+    useEffect(() => {
+        const persistedTabs = localStorage.getItem(TAB_DATA_LOCAL_STORAGE_KEY)
+        if (persistedTabs) {
+            try {
+                const parsedTabsData: ParsedTabsData | ParsedTabsDataV1 = JSON.parse(persistedTabs)
+                if (parsedTabsData.version === 'v1') {
+                    if (
+                        location.pathname === parsedTabsData.key ||
+                        !location.pathname.startsWith(`${parsedTabsData.key}/`)
+                    ) {
+                        localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
+                    }
+                } else {
+                    const keys = Object.keys(parsedTabsData.data)
+                    if (
+                        keys.every((key) => location.pathname !== key && !location.pathname.startsWith(`${key}/`))
+                    ) {
+                        localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
+                    }
+                }
+            } catch {
+                localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
+            }
+        }
+    }, [location.pathname])
+
     const isOnboardingPage = () => {
         const _pathname = location.pathname.endsWith('/') ? location.pathname.slice(0, -1) : location.pathname
         return _pathname === `/${URLS.GETTING_STARTED}` || _pathname === `/dashboard/${URLS.GETTING_STARTED}`
     }
 
-    if (pageState === ViewType.LOADING || loginLoader) {
+    // To handle in case through browser prompt user cancelled the refresh
+    const handleUpdatePipelineRBACViewSelectedTab = (selectedTab: ViewIsPipelineRBACConfiguredRadioTabs) => {
+        setUserPreferences((prev) => ({
+            ...prev,
+            pipelineRBACViewSelectedTab: selectedTab,
+        }))
+    }
+
+    if (pageState === ViewType.LOADING) {
         return (
             <div className="full-height-width">
                 <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />
@@ -371,6 +433,7 @@ export default function NavigationRoutes() {
         return <Reload />
     }
     const _isOnboardingPage = isOnboardingPage()
+
     return (
         <MainContextProvider
             value={{
@@ -389,9 +452,21 @@ export default function NavigationRoutes() {
                 setModuleInInstallingState,
                 installedModuleMap,
                 currentServerInfo,
-                isAirgapped,
                 isSuperAdmin,
+                isAirgapped,
                 isManifestScanningEnabled,
+                isOrgLevelRBACViewEnforced,
+                viewIsPipelineRBACConfiguredNode:
+                    serverMode === SERVER_MODE.FULL &&
+                    ViewIsPipelineRBACConfigured &&
+                    !isOrgLevelRBACViewEnforced &&
+                    !isSuperAdmin ? (
+                        <ViewIsPipelineRBACConfigured
+                            userPreferences={userPreferences}
+                            userPreferencesError={userPreferencesError}
+                            handleUpdatePipelineRBACViewSelectedTab={handleUpdatePipelineRBACViewSelectedTab}
+                        />
+                    ) : null,
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
@@ -415,7 +490,9 @@ export default function NavigationRoutes() {
                         }`}
                     >
                         <Suspense
-                            fallback={<DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />}
+                            fallback={
+                                <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />
+                            }
                         >
                             <ErrorBoundary>
                                 <Switch>
