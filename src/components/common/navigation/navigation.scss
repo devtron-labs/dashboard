@@ -28,9 +28,6 @@
 .main {
     height: calc(100vh - 16px);
     overflow-y: auto;
-    margin: 8px 8px 8px 0;
-    border-radius: 6px;
-    border: 1px solid var(--border-secondary);
 }
 
 .main__overflow-disabled {
@@ -38,7 +35,7 @@
 }
 
 .title-container {
-    color: var(--white);
+    color: var(--N900);
     opacity: 1;
     font-size: 14px;
     width: 100%;
@@ -68,7 +65,7 @@
             button {
                 &:hover {
                     text-decoration: none !important;
-                    color: var(--white);
+                    color: var(--N900);
                 }
 
                 &:focus {
@@ -115,7 +112,7 @@
 
                 &:hover {
                     .svg-container {
-                        background: var(--black-40);
+                        background: var(--B100);
                     }
                 }
 
@@ -150,7 +147,7 @@
 
         .active-nav {
             .svg-container {
-                background: var(--black-40);
+                background: var(--B100);
             }
         }
 
