@@ -6,7 +6,7 @@ import {
     ComponentSizeType,
     GenericFilterEmptyState,
     useUrlFilters,
-    stringComparatorBySortOrder,
+    SortableTableHeaderCell,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Fragment } from 'react'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
@@ -33,7 +33,7 @@ export const ExternalLinkList = ({
         parseSearchParams,
     })
 
-    const { clusters, apps, clearFilters, searchKey } = urlFilters
+    const { clusters, apps, clearFilters, searchKey, sortBy, sortOrder, handleSorting } = urlFilters
 
     const onClickEditLink = (link: ExternalLink): void => {
         setSelectedLink(link)
@@ -45,6 +45,10 @@ export const ExternalLinkList = ({
         setShowDeleteDialog(true)
     }
 
+    const handleAppNameSorting = () => {
+        handleSorting(ExternalLinkMapListSortableKeys.linkName)
+    }
+
     const renderExternalLinksHeader = (): JSX.Element => (
         <div
             className={`external-link-list__row dc__align-items-center h-40 fs-12 fw-6 dc__uppercase px-20 py-6 dc__gap-16 dc__border-bottom dc__position-sticky dc__top-0 cn-7 bg__primary ${
@@ -52,7 +56,15 @@ export const ExternalLinkList = ({
             }`}
         >
             <span className="icon-dim-24" />
-            <span className="lh-20">Name</span>
+            <span className="lh-20">
+                <SortableTableHeaderCell
+                    title="Name"
+                    isSorted={sortBy === ExternalLinkMapListSortableKeys.linkName}
+                    sortOrder={sortOrder}
+                    triggerSorting={handleAppNameSorting}
+                    disabled={false}
+                />
+            </span>
             <span className="lh-20">Description</span>
             {!isAppConfigView && <span className="lh-20">Scope</span>}
             <span className="lh-20">Url Template</span>
@@ -87,38 +99,35 @@ export const ExternalLinkList = ({
 
     const renderExternalListContent = () => (
         <div className="dc__overflow-auto">
-            {filteredExternalLinks
-                .sort((a, b) => stringComparatorBySortOrder(a.name, b.name))
-                .map((link, idx) => (
-                    <Fragment key={`external-link-${link.name}`}>
-                        <div
-                            className={` dc__align-items-center dc__gap-16 dc__visible-hover dc__visible-hover--parent dc__hover-n50 cn-9 fs-13 px-20 py-10 ${isAppConfigView ? 'app-config-view external-link-list__row__app-config' : 'external-link-list__row '} ${idx !== filteredExternalLinks.length - 1 ? 'border__secondary--bottom' : ''}`}
-                        >
-                            <div className="p-2 flex">
-                                <img
-                                    src={getMonitoringToolIcon(monitoringTools, link.monitoringToolId)}
-                                    className="flex icon-dim-20 dc__no-shrink"
-                                    onError={onImageLoadError}
-                                    alt="external-link-icon"
-                                />
-                            </div>
-                            <InteractiveCellText text={link.name} data-testid={`external-link-name-${link.name}`} />
-                            <InteractiveCellText
-                                text={link.description || '-'}
-                                data-testid={`external-link-description-${link.name}`}
+            {filteredExternalLinks.map((link, idx) => (
+                <Fragment key={`external-link-${link.name}-${link.id}`}>
+                    <div
+                        className={` dc__align-items-center dc__gap-16 dc__visible-hover dc__visible-hover--parent dc__hover-n50 cn-9 fs-13 px-20 py-10 ${isAppConfigView ? 'app-config-view external-link-list__row__app-config' : 'external-link-list__row '} ${idx !== filteredExternalLinks.length - 1 ? 'border__secondary--bottom' : ''}`}
+                    >
+                        <div className="p-2 flex">
+                            <img
+                                src={getMonitoringToolIcon(monitoringTools, link.monitoringToolId)}
+                                className="flex icon-dim-20 dc__no-shrink"
+                                onError={onImageLoadError}
+                                alt="external-link-icon"
                             />
-
-                            {!isAppConfigView && (
-                                <div className=" dc__ellipsis-right" data-testid={`external-link-scope-${link.name}`}>
-                                    {getScopeLabel(link)}
-                                </div>
-                            )}
-                            <InteractiveCellText text={link.url} data-testid={`external-link-url-${link.name}`} />
-                            {renderActionButton(link)}
                         </div>
-                        {/* {idx !== filteredExternalLinks.length - 1 && <div className="external-link__divider w-100 bcn-1" />} */}
-                    </Fragment>
-                ))}
+                        <InteractiveCellText text={link.name} data-testid={`external-link-name-${link.name}`} />
+                        <InteractiveCellText
+                            text={link.description || '-'}
+                            data-testid={`external-link-description-${link.name}`}
+                        />
+
+                        {!isAppConfigView && (
+                            <div className=" dc__ellipsis-right" data-testid={`external-link-scope-${link.name}`}>
+                                {getScopeLabel(link)}
+                            </div>
+                        )}
+                        <InteractiveCellText text={link.url} data-testid={`external-link-url-${link.name}`} />
+                        {renderActionButton(link)}
+                    </div>
+                </Fragment>
+            ))}
         </div>
     )
 

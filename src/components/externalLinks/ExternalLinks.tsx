@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
     showError,
     ErrorScreenManager,
@@ -26,6 +26,7 @@ import {
     SearchBar,
     useUrlFilters,
     FilterChips,
+    stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { DeleteComponentsName } from '@Config/constantMessaging'
@@ -71,7 +72,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
         parseSearchParams,
     })
 
-    const { searchKey, handleSearch, updateSearchParams, clusters, apps, clearFilters } = urlFilters
+    const { searchKey, handleSearch, updateSearchParams, clusters, apps, clearFilters, sortOrder } = urlFilters
 
     const initExternalLinksData = () => {
         setLoading(true)
@@ -178,53 +179,58 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
         apps,
     }
 
-    const filteredExternalLinks = externalLinks.filter((link) => {
+    const filteredExternalLinks = useMemo(() => {
         const hasClusters = clusters.length > 0
         const hasApps = apps.length > 0
         const hasSearchKey = !!searchKey
 
+        let filteredList = [...externalLinks]
+
         // If no filters are applied, return the full list
         if (!hasClusters && !hasApps && !hasSearchKey) {
-            return true
+            return filteredList.sort((a, b) => stringComparatorBySortOrder(a.name, b.name, sortOrder))
         }
 
-        let matchesCluster = false
-        let matchesApp = false
-        let matchesSearch = true // Default to true unless searchKey is provided
+        const parsedAppliedApps = new Set(
+            apps.map((app) => {
+                const [_appId, , type] = app.split('|')
+                return `${_appId}|${type}`
+            }),
+        )
 
-        // Cluster filtering
-        if (hasClusters) {
-            if (clusters.length === 1 && !clusters[0]) {
-                matchesCluster = true // If only an empty cluster is selected, show all links
-            } else {
-                matchesCluster =
-                    link.identifiers?.length === 0 || // No identifiers (global match)
-                    link.identifiers.some(({ clusterId }) => clusters.includes(`${clusterId}`))
+        filteredList = externalLinks.filter((link) => {
+            let matchesCluster = false
+            let matchesApp = false
+            let matchesSearch = true // Default to true unless searchKey is provided
+
+            // Cluster filtering
+            if (hasClusters) {
+                if (clusters.length === 1 && !clusters[0]) {
+                    matchesCluster = true // If only an empty cluster is selected, show all links
+                } else {
+                    matchesCluster =
+                        link.identifiers?.length === 0 || // No identifiers (global match)
+                        link.identifiers.some(({ clusterId }) => clusters.includes(`${clusterId}`))
+                }
             }
-        }
 
-        // App filtering
-        if (hasApps) {
-            const appliedApps = new Set(
-                apps.map((app) => {
-                    const [appId, , type] = app.split('|')
-                    return `${appId}|${type}`
-                }),
-            )
+            // App filtering
+            if (hasApps) {
+                matchesApp =
+                    link.identifiers?.length === 0 || // No identifiers (global match)
+                    link.identifiers.some(({ appId, type }) => parsedAppliedApps.has(`${appId}|${type}`))
+            }
 
-            matchesApp =
-                link.identifiers?.length === 0 || // No identifiers (global match)
-                link.identifiers.some(({ appId, type }) => appliedApps.has(`${appId}|${type}`))
-        }
+            // Search Key filtering
+            if (hasSearchKey) {
+                matchesSearch = link.name.toLowerCase().includes(searchKey.toLowerCase())
+            }
 
-        // Search Key filtering
-        if (hasSearchKey) {
-            matchesSearch = link.name.toLowerCase().includes(searchKey.toLowerCase())
-        }
-
-        // Apply OR logic (if any of the conditions match, return true)
-        return (matchesCluster || matchesApp) && matchesSearch
-    })
+            // Apply OR logic (if any of the conditions match, return true)
+            return (matchesCluster || matchesApp) && matchesSearch
+        })
+        return filteredList.sort((a, b) => stringComparatorBySortOrder(a.name, b.name, sortOrder))
+    }, [externalLinks, filterConfig, searchKey, sortOrder])
 
     const getFormattedFilterValue = (filterKey: keyof ExternalListUrlFiltersType, filterValue: string) => {
         if (filterKey === 'apps') {
