@@ -131,16 +131,6 @@ export interface AppliedApplicationsType {
     setAppliedApps: React.Dispatch<React.SetStateAction<IdentifierOptionType[]>>
 }
 
-export interface ClusterFilterType extends AppliedClustersType, URLModificationType {
-    clusterList: IdentifierOptionType[]
-    updateSearchParams
-}
-
-export interface ApplicationFilterType extends AppliedApplicationsType, URLModificationType {
-    allApps: IdentifierOptionType[]
-    updateSearchParams
-}
-
 export interface AddExternalLinkType extends Pick<ExternalLinksProps, 'isAppConfigView'> {
     appId: string
     isFullMode: boolean
@@ -281,4 +271,10 @@ export interface ExternalLinkFiltersProps {
     clusterList: IdentifierOptionType[]
     clusters: string[]
     apps: string[]
+}
+
+export interface NoExternalLinkViewProps {
+    handleAddLinkClick: () => void
+    isAppConfigView: boolean
+    userRole: UserRoleType
 }

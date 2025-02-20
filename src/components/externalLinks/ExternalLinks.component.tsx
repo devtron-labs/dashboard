@@ -28,6 +28,7 @@ import {
     ExternalLinkChipProps,
     ExternalLinkFallbackImageProps,
     NodeLevelExternalLinksType,
+    NoExternalLinkViewProps,
     OptionTypeWithIcon,
     RoleBasedInfoNoteProps,
 } from './ExternalLinks.type'
@@ -73,11 +74,7 @@ export const NoExternalLinksView = ({
     handleAddLinkClick,
     isAppConfigView,
     userRole,
-}: {
-    handleAddLinkClick: () => void
-    isAppConfigView: boolean
-    userRole: UserRoleType
-}): JSX.Element => {
+}: NoExternalLinkViewProps): JSX.Element => {
     const handleButton = () => {
         return <AddLinkButton handleOnClick={handleAddLinkClick} />
     }
