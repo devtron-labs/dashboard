@@ -73,6 +73,7 @@ import 'monaco-editor'
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import YamlWorker from '../../../yaml.worker.js?worker'
 import { TAB_DATA_LOCAL_STORAGE_KEY } from '../DynamicTabs/constants'
+import { ParsedTabsData, ParsedTabsDataV1 } from '../DynamicTabs/types'
 
 // Monaco Editor worker initialization
 self.MonacoEnvironment = {
@@ -386,12 +387,21 @@ export default function NavigationRoutes() {
         const persistedTabs = localStorage.getItem(TAB_DATA_LOCAL_STORAGE_KEY)
         if (persistedTabs) {
             try {
-                const parsedTabsData = JSON.parse(persistedTabs)
-                if (
-                    location.pathname === parsedTabsData.key ||
-                    !location.pathname.startsWith(`${parsedTabsData.key}/`)
-                ) {
-                    localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
+                const parsedTabsData: ParsedTabsData | ParsedTabsDataV1 = JSON.parse(persistedTabs)
+                if (parsedTabsData.version === 'v1') {
+                    if (
+                        location.pathname === parsedTabsData.key ||
+                        !location.pathname.startsWith(`${parsedTabsData.key}/`)
+                    ) {
+                        localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
+                    }
+                } else {
+                    const keys = Object.keys(parsedTabsData.data)
+                    if (
+                        keys.every((key) => location.pathname !== key && !location.pathname.startsWith(`${key}/`))
+                    ) {
+                        localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
+                    }
                 }
             } catch {
                 localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
