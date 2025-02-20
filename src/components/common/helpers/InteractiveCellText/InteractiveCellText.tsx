@@ -2,7 +2,7 @@ import { Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 import { InteractiveCellTextProps } from './types'
 
 export const InteractiveCellText = ({ text, onClickHandler, dataTestId }: InteractiveCellTextProps) => (
-    <Tooltip content={text} placement="bottom" showOnTruncate={!!text} className="mxh-210 dc__overflow-auto">
+    <Tooltip content={text} placement="top" showOnTruncate={!!text} className="mxh-210 dc__overflow-auto">
         {typeof onClickHandler === 'function' ? (
             <button
                 type="button"

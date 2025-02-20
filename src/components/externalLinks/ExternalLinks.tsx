@@ -184,11 +184,9 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
         const hasApps = apps.length > 0
         const hasSearchKey = !!searchKey
 
-        let filteredList = [...externalLinks]
-
-        // If no filters are applied, return the full list
+        // If no filters are applied, return the sorted full list
         if (!hasClusters && !hasApps && !hasSearchKey) {
-            return filteredList.sort((a, b) => stringComparatorBySortOrder(a.name, b.name, sortOrder))
+            return [...externalLinks].sort((a, b) => stringComparatorBySortOrder(a.name, b.name, sortOrder))
         }
 
         const parsedAppliedApps = new Set(
@@ -198,15 +196,16 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
             }),
         )
 
-        filteredList = externalLinks.filter((link) => {
+        // Filter based on clusters, apps, and search key
+        const filteredList = externalLinks.filter((link) => {
             let matchesCluster = false
             let matchesApp = false
-            let matchesSearch = true // Default to true unless searchKey is provided
+            let matchesSearch = !hasSearchKey // If searchKey is empty, default to true
 
             // Cluster filtering
             if (hasClusters) {
                 if (clusters.length === 1 && !clusters[0]) {
-                    matchesCluster = true // If only an empty cluster is selected, show all links
+                    matchesCluster = true // If empty cluster is selected, show all
                 } else {
                     matchesCluster =
                         link.identifiers?.length === 0 || // No identifiers (global match)
@@ -221,16 +220,22 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                     link.identifiers.some(({ appId, type }) => parsedAppliedApps.has(`${appId}|${type}`))
             }
 
-            // Search Key filtering
+            // If search is applied without cluster or app filters, still return results
+            if (hasSearchKey && !hasClusters && !hasApps) {
+                return link.name.toLowerCase().includes(searchKey.toLowerCase())
+            }
+            // Search Key filtering with AND logic where cluster and app filters are applied
             if (hasSearchKey) {
                 matchesSearch = link.name.toLowerCase().includes(searchKey.toLowerCase())
             }
 
-            // Apply OR logic (if any of the conditions match, return true)
+            // Apply OR logic: If any condition matches, return true
             return (matchesCluster || matchesApp) && matchesSearch
         })
+
+        // Sort after filtering
         return filteredList.sort((a, b) => stringComparatorBySortOrder(a.name, b.name, sortOrder))
-    }, [externalLinks, filterConfig, searchKey, sortOrder])
+    }, [externalLinks, clusters, apps, searchKey, sortOrder])
 
     const getFormattedFilterValue = (filterKey: keyof ExternalListUrlFiltersType, filterValue: string) => {
         if (filterKey === 'apps') {
