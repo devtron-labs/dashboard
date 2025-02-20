@@ -16,8 +16,14 @@
 
 .organization-frame {
     &__logo {
-        > path:first-child {
-            fill: var(--bg-sidebar);
+        > path {
+            &:first-child {
+                fill: var(--B500);
+            }
+
+            &:last-child {
+                fill: var(--bg-tertiary);
+            }
         }
     }
 }
