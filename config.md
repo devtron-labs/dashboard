@@ -31,7 +31,6 @@
 | HIDE_DEFAULT_CLUSTER                         | "true"     | Hide default cluster                                                                                             |
 | HIDE_EXCLUDE_INCLUDE_GIT_COMMITS             | "true"     | Hide exclude include git commits                                                                                 |
 | HIDE_GITOPS_OR_HELM_OPTION                   | "false"    | Enable GitOps and Helm option                                                                                    |
-| HOTJAR_ENABLED                               | "false"    | Hotjar integration status                                                                                        |
 | LOGIN_DT_LOGO                                | ""         | Devtron logo for login page                                                                                      |
 | LOGIN_PAGE_IMAGE                             | ""         | Login page image url                                                                                             |
 | LOGIN_PAGE_IMAGE_BG                          | ""         | Login page image background color code                                                                           |

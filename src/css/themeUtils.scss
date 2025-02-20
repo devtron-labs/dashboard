@@ -28,15 +28,37 @@
     }
 
     &__overlay {
-        background: var(--bg-overlay);
+        &--primary {
+            background: var(--bg-overlay-primary);
+        }
+
+        &--secondary {
+            background: var(--bg-overlay-secondary);
+        }
     }
 
     &__menu {
-        background: var(--bg-menu);
+        &--primary {
+            background: var(--bg-menu-primary);
+        }
+
+        &--secondary {
+            background: var(--bg-menu-secondary);
+        }
     }
 
     &__modal {
-        background: var(--bg-modal);
+        &--primary {
+            background: var(--bg-modal-primary);
+        }
+
+        &--secondary {
+            background: var(--bg-modal-secondary);
+        }
+
+        &--tertiary {
+            background: var(--bg-modal-tertiary);
+        }
     }
 
     &__white {
@@ -107,6 +129,10 @@
 .border {
     &__primary {
         border: 1px solid var(--border-primary);
+
+        &--left {
+            border-left: 1px solid var(--border-primary);
+        }
     }
 
     &__secondary {

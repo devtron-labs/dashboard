@@ -78,14 +78,24 @@
     --bg-primary: var(--N0);
     --bg-secondary: var(--N50);
     --bg-tertiary: #f2f4f7;
-    --bg-overlay: var(--N0);
-    --bg-menu: var(--N0);
-    --bg-modal: var(--N0);
+
+    --bg-overlay-primary: var(--bg-primary);
+    --bg-overlay-secondary: var(--bg-secondary);
+
+    --bg-menu-primary: var(--bg-primary);
+    --bg-menu-secondary: var(--bg-secondary);
+
+    --bg-modal-primary: var(--bg-primary);
+    --bg-modal-secondary: var(--bg-secondary);
+    --bg-modal-tertiary: var(--bg-tertiary);
 
     --bg-tooltip-black: var(--N900);
     --bg-toast: var(--N800);
     --bg-sidebar: #0066cc;
     --bg-shimmer-loader: linear-gradient(90deg, var(--N200) 0%, var(--N50) 50%, var(--N200) 80%);
+    --bg-hover: #edf1f5bf;
+
+    --backdrop-bg: #000000bf;
 
     --border-primary: var(--N200);
     --border-secondary: var(--N100);
@@ -161,14 +171,24 @@
     --bg-secondary: #1A1B23;
     // Ensure to update in index.css at the root level as well
     --bg-tertiary: #15161F;
-    --bg-overlay: #31323a;
-    --bg-menu: #31323a;
-    --bg-modal: #31323a;
+
+    --bg-overlay-primary: #31323A;
+    --bg-overlay-secondary: #282931;
+
+    --bg-menu-primary: #282931;
+    --bg-menu-secondary: #1E1F28;
+
+    --bg-modal-primary: var(--bg-primary);
+    --bg-modal-secondary: var(--bg-secondary);
+    --bg-modal-tertiary: var(--bg-tertiary);
 
     --bg-tooltip-black: var(--N200);
     --bg-toast: var(--N300);
     --bg-sidebar: #2E3142;
     --bg-shimmer-loader: linear-gradient(90deg, var(--N50) 0%, var(--N200) 50%, var(--N50) 80%);
+    --bg-hover: rgba(255, 255, 255, 0.07);
+
+    --backdrop-bg: var(--black-60);
 
     --border-primary: #FFFFFF33;
     --border-secondary: #FFFFFF1A;
@@ -190,8 +210,8 @@
     --black-80: #000a14cc;
     --black: #000a14;
 
-    --terminal-bg: #0b0f22;
-    --backdrop-bg: #000000bf;
+    // Being used as hex in LogViewer, Terminal for theming support
+    --terminal-bg: #181920;
     --transparent: transparent;
 
     --button-text-on-dark: #72ace6;
@@ -218,7 +238,8 @@
 // CODE MIRROR THEME
 .code-editor__shebang,
 .cm-theme,
-.cm-merge-theme {
+.cm-merge-theme,
+.component-specific-theme {
     &__light {
         @include theme-light;
         --bg-code-editor-base: var(--bg-primary);

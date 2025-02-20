@@ -658,11 +658,6 @@ export const Td = ({ children, to = null, ...props }) => {
     )
 }
 
-export const FragmentHOC = ({ children, ...props }) => {
-    // passes props to children
-    return <>{React.Children.map(children, (child) => React.cloneElement(child, { ...props }))}</>
-}
-
 export const sortOptionsByLabel = (optionA, optionB) => {
     if (optionA.label < optionB.label) {
         return -1

@@ -111,7 +111,6 @@ if (!window || !window._env_) {
         SENTRY_PERFORMANCE_ENABLED: false,
         SENTRY_DSN: '',
         SENTRY_TRACES_SAMPLE_RATE: 0.2,
-        HOTJAR_ENABLED: false,
         GA_ENABLED: false,
         GTM_ENABLED: false,
         APPLICATION_METRICS_ENABLED: true,
