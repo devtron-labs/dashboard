@@ -126,7 +126,6 @@ if (!window || !window._env_) {
         CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.ai',
         // Remove this in next sprint, have'nt removed yet for backward compatibility
         HIDE_GITOPS_OR_HELM_OPTION: false,
-        HIDE_APPLICATION_GROUPS: false,
         K8S_CLIENT: import.meta.env.VITE_K8S_CLIENT === 'true',
         CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL: 7000,
         CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT: 7,
