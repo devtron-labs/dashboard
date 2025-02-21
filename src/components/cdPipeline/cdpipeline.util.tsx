@@ -35,6 +35,11 @@ import { ValidationRules } from '../ciPipeline/validationRules'
 import { PipelineFormDataErrorType } from '../workflowEditor/types'
 import { DELETE_ACTION } from '../../config'
 import { PluginVariableType } from '@Components/ciPipeline/types'
+import {
+    MigrateArgoAppToCDPipelineRequiredBasePayloadType,
+    MigrateArgoAppToCDPipelineRequiredPayloadType,
+    MigrateToDevtronFormState,
+} from './cdPipeline.types'
 
 export const DropdownIndicator = (props) => {
     return (
@@ -431,4 +436,36 @@ export const getNamespacePlaceholder = (isVirtualEnvironment: boolean, namespace
         return 'Not available'
     }
     return 'Will be auto-populated based on environment'
+}
+
+export const getMigrateToDevtronRequiredPayload = (
+    migrateToDevtronFormState: MigrateToDevtronFormState,
+): MigrateArgoAppToCDPipelineRequiredPayloadType => {
+    const { migrateFromHelmFormState, migrateFromArgoFormState, deploymentAppType, triggerType } =
+        migrateToDevtronFormState
+    const requiredFormState =
+        deploymentAppType === DeploymentAppTypes.GITOPS ? migrateFromArgoFormState : migrateFromHelmFormState
+    const destinationDetails = requiredFormState.validationResponse.destination
+
+    const basePayload: MigrateArgoAppToCDPipelineRequiredBasePayloadType = {
+        triggerType,
+        environmentId: destinationDetails.environmentId,
+        environmentName: destinationDetails.environmentName,
+        namespace: destinationDetails.namespace,
+        deploymentAppName: requiredFormState.appName,
+    }
+
+    if (deploymentAppType === DeploymentAppTypes.GITOPS) {
+        return {
+            ...basePayload,
+            deploymentAppType,
+            applicationObjectClusterId: requiredFormState.clusterId,
+            applicationObjectNamespace: requiredFormState.namespace,
+        }
+    }
+
+    return {
+        ...basePayload,
+        deploymentAppType,
+    }
 }

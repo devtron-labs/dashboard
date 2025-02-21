@@ -7,9 +7,16 @@ export const MIGRATE_TO_DEVTRON_FORM_STATE: MigrateToDevtronFormState = {
     migrateFromArgoFormState: {
         appName: '',
         namespace: '',
-        clusterId: 0,
+        clusterId: null,
         clusterName: '',
-        validationResponse: sanitizeValidateMigrationSourceResponse(null),
+        validationResponse: sanitizeValidateMigrationSourceResponse(null, DeploymentAppTypes.GITOPS),
+    },
+    migrateFromHelmFormState: {
+        appName: '',
+        namespace: '',
+        clusterId: null,
+        clusterName: '',
+        validationResponse: sanitizeValidateMigrationSourceResponse(null, DeploymentAppTypes.HELM),
     },
     triggerType: TriggerType.Auto,
 }
