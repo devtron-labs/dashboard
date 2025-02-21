@@ -465,6 +465,10 @@ a:focus {
     left: 55px;
 }
 
+.dc__left-65 {
+    left: 65px;
+}
+
 .dc__left-150 {
     left: 150px;
 }
@@ -4151,6 +4155,10 @@ textarea::placeholder {
     background-color: var(--bg-hover);
 }
 
+.dc__hover-n100:hover {
+    background-color: var(--N100);
+}
+
 .dc__hover-text-n90:hover {
     color: var(--N900) !important;
 }
@@ -4208,10 +4216,6 @@ textarea::placeholder {
             stroke: var(--N800);
         }
     }
-}
-
-.dc__hover-n100:hover {
-    background-color: var(--N100);
 }
 
 .dc__hover-r100:hover {
