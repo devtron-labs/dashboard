@@ -84,11 +84,10 @@ const DirectPermission = ({
                   },
               ]
             : []),
-        ...projectsList,
+        ...projectsList[permission.accessType],
     ].map((project) => ({
         label: project.name === HELM_APP_UNASSIGNED_PROJECT ? capitalizeFirstLetter(project.name) : project.name,
         value: project.name,
-        description: project.description,
     }))
 
     const formatProjectOptionLabel: SelectPickerProps['formatOptionLabel'] = (option) =>
