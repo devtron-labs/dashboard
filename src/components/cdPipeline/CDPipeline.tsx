@@ -959,8 +959,6 @@ export default function CDPipeline({
                 })
                 return
             }
-            console.trace('test-1')
-
             setLoadingData(true)
             validateStage(BuildStageVariable.PreBuild, formData)
             validateStage(BuildStageVariable.Build, formData)
@@ -978,7 +976,6 @@ export default function CDPipeline({
                         description: MULTI_REQUIRED_FIELDS_MSG,
                     })
                 }
-                console.trace('test-2')
                 return
             }
         }
@@ -990,7 +987,7 @@ export default function CDPipeline({
         try {
             const promiseArr = cdPipelineId
                 ? [updateCDPipeline(request), null]
-                : [saveCDPipeline(request), isMigratingFromArgoApp ? getEnvironmentListMinPublic() : null]
+                : [saveCDPipeline(request), isMigratingFromArgoApp ? getEnvironmentListMinPublic(true) : null]
             const [response, environmentRes] = await Promise.all(promiseArr)
             if (response.result) {
                 const pipelineConfigFromRes = response.result.pipelines[0]
