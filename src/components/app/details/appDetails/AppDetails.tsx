@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react'
+import React, { useEffect, useState, useMemo, useRef, useCallback, SyntheticEvent } from 'react'
 import {
     showError,
     Progressing,
     noop,
-    stopPropagation,
     DeploymentAppTypes,
-    useSearchString,
     useAsync,
     MODAL_TYPE,
     ACTION_STATE,
@@ -32,8 +30,6 @@ import {
     ToastVariantType,
     ToastManager,
     SelectPicker,
-    ConfirmationModal,
-    ConfirmationModalVariantType,
     ServerErrors,
     getIsRequestAborted,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -51,17 +47,14 @@ import {
     RESOURCES_NOT_FOUND,
     DEFAULT_STATUS_TEXT,
 } from '../../../../config'
-import { NavigationArrow, useAppContext, FragmentHOC } from '../../../common'
+import { useAppContext } from '../../../common'
 import { getAppConfigStatus, getAppOtherEnvironmentMin, stopStartApp } from '../../../../services/service'
 import AppNotDeployedIcon from '@Images/app-not-deployed.svg'
 import AppNotConfiguredIcon from '@Images/app-not-configured.png'
-import { ReactComponent as ICHibernate } from '@Icons/ic-medium-hibernate.svg'
-import { ReactComponent as ICUnhibernate } from '@Icons/ic-medium-unhibernate.svg'
 import { ReactComponent as ForwardArrow } from '@Icons/ic-arrow-forward.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
-
 import { SourceInfo } from './SourceInfo'
-import { Application, Nodes, AggregatedNodes, NodeDetailTabs } from '../../types'
+import { Application, AggregatedNodes } from '../../types'
 import { NoParamsNoEnvContext, NoParamsWithEnvContext, ParamsNoEnvContext, ParamsAndEnvContext } from './utils'
 import { AppMetrics } from './AppMetrics'
 import IndexStore from '../../../v2/appDetails/index.store'
@@ -85,6 +78,7 @@ import {
     DeploymentStatusDetailsType,
     DetailsType,
     ErrorItem,
+    HibernationModalTypes,
 } from './appDetails.type'
 import { TriggerUrlModal } from '../../list/TriggerUrl'
 import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
@@ -96,6 +90,7 @@ import RotatePodsModal from '../../../v2/appDetails/sourceInfo/rotatePods/Rotate
 import IssuesListingModal from './IssuesListingModal'
 import { ClusterMetaDataBar } from '../../../common/ClusterMetaDataBar/ClusterMetaDataBar'
 import { renderCIListHeader } from '../cdDetails/utils'
+import HibernateModal from './HibernateModal'
 
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 const DeploymentWindowStatusModal = importComponentFromFELibrary('DeploymentWindowStatusModal')
@@ -241,7 +236,6 @@ export const Details: React.FC<DetailsType> = ({
     appDetailsAPI,
     setAppDetailResultInParent,
     environment,
-    isAppDeployment = false,
     environments,
     isPollingRequired = true,
     setIsAppDeleted,
@@ -259,12 +253,13 @@ export const Details: React.FC<DetailsType> = ({
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false)
     const [resourceTreeFetchTimeOut, setResourceTreeFetchTimeOut] = useState<boolean>(false)
     const [urlInfo, setUrlInfo] = useState<boolean>(false)
-    const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<'' | 'resume' | 'hibernate'>('')
+    const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<HibernationModalTypes>(null)
     const [rotateModal, setRotateModal] = useState<boolean>(false)
     const [hibernating, setHibernating] = useState<boolean>(false)
     const [showIssuesModal, toggleIssuesModal] = useState<boolean>(false)
     const [appDetailsError, setAppDetailsError] = useState(undefined)
     const [appDetails, setAppDetails] = useState(undefined)
+    const [hibernationPatchChartName, setHibernationPatchChartName] = useState<string>('')
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
         externalLinks: [],
         monitoringTools: [],
@@ -573,7 +568,7 @@ export const Details: React.FC<DetailsType> = ({
         }
     }, [isPollingRequired])
 
-    async function handleHibernate(e) {
+    async function handleHibernate() {
         try {
             setHibernating(true)
             const isUnHibernateReq = ['hibernating', 'hibernated'].includes(
@@ -589,7 +584,7 @@ export const Details: React.FC<DetailsType> = ({
             showError(err)
         } finally {
             setHibernating(false)
-            setHibernateConfirmationModal('')
+            setHibernateConfirmationModal(null)
         }
     }
 
@@ -665,16 +660,9 @@ export const Details: React.FC<DetailsType> = ({
         )
     }
 
-    const getHibernateText = () => {
-        if (hibernateConfirmationModal === 'hibernate') {
-            return `Hibernate App`
-        }
-        return 'Restore App'
-    }
-
-    const handleHibernateConfirmationModalClose = (e) => {
+    const handleHibernateConfirmationModalClose = (e?: SyntheticEvent) => {
         e?.stopPropagation()
-        setHibernateConfirmationModal('')
+        setHibernateConfirmationModal(null)
     }
 
     const renderHibernateModal = (): JSX.Element => {
@@ -692,39 +680,17 @@ export const Details: React.FC<DetailsType> = ({
                 />
             )
         }
+
         return (
-            <ConfirmationModal
-                variant={ConfirmationModalVariantType.custom}
-                Icon={hibernateConfirmationModal === 'hibernate' ? <ICHibernate /> : <ICUnhibernate />}
-                title={`${hibernateConfirmationModal === 'hibernate' ? 'Hibernate' : 'Restore'} '${appDetails.appName}' on '${appDetails.environmentName}'`}
-                subtitle={
-                    <p className="m-0-imp fs-13">
-                        Pods for this application will be
-                        <b className="mr-4 ml-4">
-                            scaled
-                            {hibernateConfirmationModal === 'hibernate' ? ' down to 0 ' : ' up to its original count '}
-                            on {appDetails.environmentName}
-                        </b>
-                        environment.
-                    </p>
-                }
-                buttonConfig={{
-                    secondaryButtonConfig: {
-                        disabled: hibernating,
-                        onClick: handleHibernateConfirmationModalClose,
-                        text: 'Cancel',
-                    },
-                    primaryButtonConfig: {
-                        isLoading: hibernating,
-                        onClick: handleHibernate,
-                        text: getHibernateText(),
-                    },
-                }}
-                showConfirmationModal={!!hibernateConfirmationModal}
-                handleClose={handleHibernateConfirmationModalClose}
-            >
-                <span className="fs-13">Are you sure you want to continue?</span>
-            </ConfirmationModal>
+            <HibernateModal
+                appName={appDetails.appName}
+                envName={appDetails.environmentName}
+                hibernating={hibernating}
+                handleHibernate={handleHibernate}
+                chartName={hibernationPatchChartName}
+                hibernateConfirmationModal={hibernateConfirmationModal}
+                handleHibernateConfirmationModalClose={handleHibernateConfirmationModalClose}
+            />
         )
     }
 
@@ -750,12 +716,12 @@ export const Details: React.FC<DetailsType> = ({
                     setDetailed={toggleDetailedStatus}
                     environment={environment}
                     environments={environments}
-                    showCommitInfo={isAppDeployment ? showCommitInfo : null}
-                    showUrlInfo={isAppDeployment ? setUrlInfo : null}
-                    showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
+                    showCommitInfo={showCommitInfo}
+                    showUrlInfo={setUrlInfo}
+                    showHibernateModal={setHibernateConfirmationModal}
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                     isVirtualEnvironment={isVirtualEnvRef.current}
-                    setRotateModal={isAppDeployment ? setRotateModal : null}
+                    setRotateModal={setRotateModal}
                     loadingDetails={loadingDetails}
                     loadingResourceTree={loadingResourceTree}
                     refetchDeploymentStatus={getDeploymentDetailStepsData}
@@ -764,6 +730,7 @@ export const Details: React.FC<DetailsType> = ({
                     ciArtifactId={appDetails?.ciArtifactId}
                     setErrorsList={setErrorsList}
                     deploymentUserActionState={deploymentUserActionState}
+                    setHibernationPatchChartName={setHibernationPatchChartName}
                 />
             </div>
             {!loadingDetails && !loadingResourceTree && !appDetails?.deploymentAppDeleteRequest && (
@@ -831,7 +798,7 @@ export const Details: React.FC<DetailsType> = ({
                     renderCIListHeader={renderCIListHeader}
                 />
             )}
-            {appDetails && renderHibernateModal()}
+            {appDetails && !!hibernateConfirmationModal && renderHibernateModal()}
             {rotateModal && renderRestartWorkload()}
             {
                 <ClusterMetaDataBar
@@ -956,74 +923,6 @@ export const EnvSelector = ({ environments }: { environments: any }) => {
                 />
             </div>
         </>
-    )
-}
-
-export const EventsLogsTabSelector = ({ onMouseDown = null }) => {
-    const params = useParams<{ appId: string; envId: string; tab?: NodeDetailTabs; kind?: NodeDetailTabs }>()
-    const { queryParams, searchParams } = useSearchString()
-    const history = useHistory()
-    const { path } = useRouteMatch()
-    const location = useLocation()
-    const kind = searchParams.kind || params.kind
-    return (
-        <FragmentHOC
-            onMouseDown={onMouseDown || noop}
-            style={{ background: '#2c3354', boxShadow: 'inset 0 -1px 0 0 #0b0f22' }}
-            onClick={
-                params.tab
-                    ? () => {}
-                    : (e) => {
-                          history.push(
-                              generatePath(path, { ...params, tab: NodeDetailTabs.MANIFEST }) + location.search,
-                          )
-                      }
-            }
-        >
-            <div className={`pl-20 flex left tab-container ${params.tab ? 'dc__cursor--ns-resize ' : 'pointer'}`}>
-                {[
-                    NodeDetailTabs.MANIFEST,
-                    NodeDetailTabs.EVENTS,
-                    ...(kind === Nodes.Pod ? [NodeDetailTabs.LOGS, NodeDetailTabs.TERMINAL] : []),
-                ].map((title, idx) => (
-                    <div
-                        key={`kind-${idx}`}
-                        className={`tab dc__first-letter-capitalize ${
-                            params.tab?.toUpperCase() === title ? 'active' : ''
-                        }`}
-                        onClick={(e) => {
-                            e.stopPropagation()
-                            history.push(generatePath(path, { ...params, tab: title }) + location.search)
-                        }}
-                        onMouseDown={stopPropagation}
-                    >
-                        {title}
-                    </div>
-                ))}
-            </div>
-            <div className={`flex right pr-20 ${params.tab ? 'dc__cursor--ns-resize ' : 'pointer'}`}>
-                <div
-                    className="flex pointer"
-                    style={{ height: '36px', width: '36px' }}
-                    onClick={(e) => {
-                        e.stopPropagation()
-                        queryParams.delete('kind')
-                        history.push(
-                            `${generatePath(path, {
-                                ...params,
-                                tab: params.tab ? null : NodeDetailTabs.MANIFEST,
-                            })}?${queryParams.toString()}`,
-                        )
-                    }}
-                >
-                    <NavigationArrow
-                        style={{ ['--rotateBy' as any]: params?.tab ? '0deg' : '180deg' }}
-                        color="#fff"
-                        className="icon-dim-20 rotate"
-                    />
-                </div>
-            </div>
-        </FragmentHOC>
     )
 }
 

@@ -42,7 +42,7 @@
 
             &:hover {
                 text-decoration: none;
-                background: var(--bg-secondary);
+                background: var(--bg-hover);
             }
 
             &.active-route {
@@ -80,13 +80,6 @@
                 border: 1px solid transparent;
             }
         }
-    }
-
-    .protected-input__toggle {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
     }
 }
 

@@ -178,7 +178,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
                         value={name.value}
                         data-testid="permission-group-name-textbox"
                         onChange={handleGroupNameChange}
-                        isRequiredField
+                        required
                         error={name.error}
                         placeholder="Eg. Project managers"
                     />
@@ -224,13 +224,14 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
                             </span>
                         )}
                 </div>
-                <DeleteUserPermission
-                    title={name.value}
-                    onDelete={onDelete}
-                    showConfirmationModal={deleteConfirmationModal}
-                    closeConfirmationModal={toggleDeleteConfirmationModal}
-                    isUserGroup
-                />
+                {deleteConfirmationModal && (
+                    <DeleteUserPermission
+                        title={name.value}
+                        onDelete={onDelete}
+                        closeConfirmationModal={toggleDeleteConfirmationModal}
+                        isUserGroup
+                    />
+                )}
             </div>
         </div>
     )

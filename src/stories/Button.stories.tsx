@@ -29,7 +29,7 @@ import { ReactComponent as ICAbort } from '@Icons/ic-abort.svg'
 
 const BUTTON_TEXT = 'Hello world'
 
-const linkProps: ButtonProps['linkProps'] = {
+const linkProps: ButtonProps<ButtonComponentType.link>['linkProps'] = {
     to: '#',
     target: '_blank',
 }
