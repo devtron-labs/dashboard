@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import {
     Button,
@@ -152,6 +152,15 @@ export const ClusterEnvironmentDrawer = ({
         validations: clusterEnvironmentDrawerFormValidationSchema({ isNamespaceMandatory: !isVirtual }),
     })
 
+    useEffect(
+        () => () => {
+            if (localStorage.getItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY)) {
+                localStorage.removeItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY)
+            }
+        },
+        [],
+    )
+
     const onValidation =
         (clusterNamespacesData = clusterNamespaces.data): UseFormSubmitHandler<ClusterEnvironmentDrawerFormProps> =>
         async (formData) => {
@@ -179,8 +188,6 @@ export const ClusterEnvironmentDrawer = ({
                     variant: ToastVariantType.success,
                     description: `Successfully ${id ? 'updated' : 'saved'}`,
                 })
-                // Clear the local storage after successful save
-                localStorage.removeItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY)
                 reload()
                 hideClusterDrawer()
             } catch (err) {
