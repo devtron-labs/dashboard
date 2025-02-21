@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import {
     Button,
@@ -44,6 +44,7 @@ import { saveEnvironment, updateEnvironment, deleteEnvironment } from '@Componen
 import { getNamespaceFromLocalStorage } from '@Components/cluster/cluster.util'
 import { URLS } from '@Config/routes'
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
+import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Components/cluster/constants'
 import { ClusterEnvironmentDrawerFormProps, ClusterEnvironmentDrawerProps, ClusterNamespacesDTO } from './types'
 import { getClusterNamespaceByName, getClusterEnvironmentUpdatePayload, getNamespaceLabels } from './utils'
 import { clusterEnvironmentDrawerFormValidationSchema } from './schema'
@@ -150,6 +151,15 @@ export const ClusterEnvironmentDrawer = ({
         },
         validations: clusterEnvironmentDrawerFormValidationSchema({ isNamespaceMandatory: !isVirtual }),
     })
+
+    useEffect(
+        () => () => {
+            if (localStorage.getItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY)) {
+                localStorage.removeItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY)
+            }
+        },
+        [],
+    )
 
     const onValidation =
         (clusterNamespacesData = clusterNamespaces.data): UseFormSubmitHandler<ClusterEnvironmentDrawerFormProps> =>
