@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import { SyntheticEvent, useContext, useState } from 'react'
+import { useContext, useState } from 'react'
 import {
     CustomInput,
     DeploymentAppTypes,
     InfoColourBar,
     Progressing,
-    RadioGroup,
-    RadioGroupItem,
     TippyCustomized,
     TippyTheme,
     YAMLStringify,
@@ -34,9 +32,6 @@ import {
     ComponentSizeType,
     showError,
     TriggerType,
-    useMainContext,
-    useSuperAdmin,
-    ErrorScreenNotAuthorized,
     InfoBlock,
     ButtonVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -66,12 +61,12 @@ import { getGitOpsRepoConfig } from '../../services/service'
 import PullImageDigestToggle from './PullImageDigestToggle'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
 import { BuildCDProps } from './types'
-import { MigrateFromArgo } from './MigrateToDevtron'
+import { MigrateToDevtron } from './MigrateToDevtron'
 import TriggerTypeRadio from './TriggerTypeRadio'
+import { MigrateToDevtronProps } from './MigrateToDevtron/types'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
-const MigrateHelmReleaseBody = importComponentFromFELibrary('MigrateHelmReleaseBody', null, 'function')
 const ApprovalPolicyRedirectCard = importComponentFromFELibrary('ApprovalPolicyRedirectCard', null, 'function')
 
 export default function BuildCD({
@@ -110,11 +105,6 @@ export default function BuildCD({
         setReloadNoGitOpsRepoConfiguredModal,
     } = useContext(pipelineContext)
 
-    const {
-        featureGitOpsFlags: { isFeatureArgoCdMigrationEnabled },
-    } = useMainContext()
-    const { isSuperAdmin } = useSuperAdmin()
-
     const validationRules = new ValidationRules()
     const history = useHistory()
 
@@ -146,13 +136,11 @@ export default function BuildCD({
 
     const handleTriggerTypeChange = (event) => {
         const _form = { ...formData }
-        const triggerType = event.target.value as MigrateToDevtronFormState['triggerType']
-
-        _form.triggerType = triggerType
+        _form.triggerType = event.target.value as MigrateToDevtronFormState['triggerType']
         setFormData(_form)
     }
 
-    const handleMigrateFromAppTypeChange = (event: SyntheticEvent) => {
+    const handleMigrateFromAppTypeChange: MigrateToDevtronProps['handleMigrateFromAppTypeChange'] = (event) => {
         const { value } = event.target as HTMLInputElement
         setMigrateToDevtronFormState((prevState) => ({
             ...prevState,
@@ -775,63 +763,13 @@ export default function BuildCD({
     }
 
     const renderBuild = () => {
-        if (releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && !isAdvanced && MigrateHelmReleaseBody) {
-            if (!isSuperAdmin) {
-                return <ErrorScreenNotAuthorized />
-            }
-
-            if (!isFeatureArgoCdMigrationEnabled) {
-                return (
-                    <MigrateHelmReleaseBody
-                        renderTriggerType={renderTriggerType}
-                        formData={formData}
-                        setFormData={setFormData}
-                        renderEnvSelector={renderEnvSelector}
-                    />
-                )
-            }
-
+        if (!isAdvanced && releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS) {
             return (
-                <div className="flexbox-col dc__gap-16">
-                    <div className="flexbox-col dc__gap-8">
-                        <span className="cn-7 fs-13 fw-4 lh-20">Select type of application to migrate</span>
-
-                        <RadioGroup
-                            className="radio-group-no-border migrate-to-devtron__deployment-app-type-radio-group"
-                            value={migrateToDevtronFormState.deploymentAppType}
-                            name="migrate-from-app-type"
-                            onChange={handleMigrateFromAppTypeChange}
-                        >
-                            <RadioGroupItem
-                                dataTestId={`${DeploymentAppTypes.HELM}-radio-item`}
-                                value={DeploymentAppTypes.HELM}
-                            >
-                                <span className="cn-9 fs-13 fw-4 lh-20 dc__underline-dotted">Helm Release</span>
-                            </RadioGroupItem>
-
-                            <RadioGroupItem
-                                dataTestId={`${DeploymentAppTypes.GITOPS}-radio-item`}
-                                value={DeploymentAppTypes.GITOPS}
-                            >
-                                <span className="cn-9 fs-13 fw-4 lh-20 dc__underline-dotted">Argo CD Application</span>
-                            </RadioGroupItem>
-                        </RadioGroup>
-                    </div>
-
-                    {migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.HELM ? (
-                        <MigrateHelmReleaseBody
-                            renderTriggerType={renderTriggerType}
-                            formData={formData}
-                            setFormData={setFormData}
-                            renderEnvSelector={renderEnvSelector}
-                        />
-                    ) : (
-                        <MigrateFromArgo
-                            migrateToDevtronFormState={migrateToDevtronFormState}
-                            setMigrateToDevtronFormState={setMigrateToDevtronFormState}
-                        />
-                    )}
-                </div>
+                <MigrateToDevtron
+                    migrateToDevtronFormState={migrateToDevtronFormState}
+                    setMigrateToDevtronFormState={setMigrateToDevtronFormState}
+                    handleMigrateFromAppTypeChange={handleMigrateFromAppTypeChange}
+                />
             )
         }
 

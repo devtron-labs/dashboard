@@ -9,6 +9,8 @@ import {
     URLS as COMMON_URLS,
     isNullOrUndefined,
     GenericSectionErrorState,
+    DeploymentAppTypes,
+    ImageWithFallback,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import { URLS } from '@Config/routes'
@@ -16,6 +18,7 @@ import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamatio
 import { ReactComponent as ICArgoCDApp } from '@Icons/ic-argocd-app.svg'
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
 import { ReactComponent as ICInfoFilled } from '@Icons/ic-info-filled.svg'
+import { ReactComponent as ICHelmChart } from '@Icons/ic-helmchart.svg'
 import { AddClusterFormPrefilledInfoType, AddEnvironmentFormPrefilledInfoType } from '@Components/cluster/cluster.type'
 import {
     ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY,
@@ -23,14 +26,13 @@ import {
 } from '@Components/cluster/constants'
 import { MigrationSourceValidationReasonType } from '../cdPipeline.types'
 import { MigrateToDevtronValidationFactoryProps, ValidationResponseContentRowProps } from './types'
-import {
-    GENERIC_SECTION_ERROR_STATE_COMMON_PROPS,
-    TARGET_CLUSTER_TOOLTIP_INFO,
-    TARGET_NAMESPACE_TOOLTIP_INFO,
-    TARGET_ENVIRONMENT_INFO_LIST,
-} from './constants'
+import { GENERIC_SECTION_ERROR_STATE_COMMON_PROPS, TARGET_ENVIRONMENT_INFO_LIST } from './constants'
 import './MigrateToDevtronValidationFactory.scss'
-import { renderGitOpsNotConfiguredDescription } from './utils'
+import {
+    getTargetClusterTooltipInfo,
+    getTargetNamespaceTooltipInfo,
+    renderGitOpsNotConfiguredDescription,
+} from './utils'
 
 const renderContentTooltip = (title: string, infoList: string[]) => (
     <div className="flexbox-col dc__gap-2">
@@ -75,14 +77,25 @@ const MigrateToDevtronValidationFactory = ({
         return null
     }
 
-    const { isLinkable, errorDetail, applicationMetadata } = validationResponse
+    const {
+        isLinkable,
+        errorDetail,
+        requiredChartName,
+        requiredChartVersion,
+        savedChartName,
+        destination,
+        status,
+        deploymentAppType,
+    } = validationResponse
     const { validationFailedReason, validationFailedMessage } = errorDetail || {}
-    const { source, status, destination } = applicationMetadata || {}
+    const isMigratingFromHelm = deploymentAppType === DeploymentAppTypes.HELM
+
+    const targetClusterTooltipInfo = getTargetClusterTooltipInfo(isMigratingFromHelm)
+    const targetNamespaceTooltipInfo = getTargetNamespaceTooltipInfo(isMigratingFromHelm)
 
     const renderChartVersionNotFoundDescription = () => (
         <p className="m-0">
-            Chart version &apos;{source.chartMetadata.requiredChartVersion}&apos; not found for &apos;
-            {source.chartMetadata.requiredChartName}&apos; chart.&nbsp;
+            Chart version &apos;{requiredChartVersion}&apos; not found for &apos;{requiredChartName}&apos; chart.&nbsp;
             <Link
                 to={COMMON_URLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST}
                 data-testid="upload-chart-button"
@@ -113,7 +126,7 @@ const MigrateToDevtronValidationFactory = ({
                 return (
                     <GenericSectionErrorState
                         title="Chart type mismatch"
-                        subTitle={`Argo CD application uses '${source.chartMetadata.savedChartName}' chart where as this application uses '${source.chartMetadata.requiredChartName}' chart. You can upload your own charts in Global Configuration > Deployment Charts.`}
+                        subTitle={`${isMigratingFromHelm ? 'This Helm Release' : 'Argo CD application'} uses '${savedChartName}' chart where as this application uses '${requiredChartName}' chart. You can upload your own charts in Global Configuration > Deployment Charts.`}
                         reload={refetchValidationResponse}
                         {...GENERIC_SECTION_ERROR_STATE_COMMON_PROPS}
                     />
@@ -158,19 +171,16 @@ const MigrateToDevtronValidationFactory = ({
     const renderAllContentFields = () => (
         <div className="display-grid dc__row-gap-8 dc__column-gap-16 validation-response__content-container">
             <ContentRow
-                title={TARGET_CLUSTER_TOOLTIP_INFO.heading}
+                title={targetClusterTooltipInfo.heading}
                 value={destination.clusterName || '--'}
-                titleTooltip={renderContentTooltip(
-                    TARGET_CLUSTER_TOOLTIP_INFO.heading,
-                    TARGET_CLUSTER_TOOLTIP_INFO.infoList,
-                )}
+                titleTooltip={renderContentTooltip(targetClusterTooltipInfo.heading, targetClusterTooltipInfo.infoList)}
             />
             <ContentRow
-                title={TARGET_NAMESPACE_TOOLTIP_INFO.heading}
+                title={targetNamespaceTooltipInfo.heading}
                 value={destination.namespace || '--'}
                 titleTooltip={renderContentTooltip(
-                    TARGET_NAMESPACE_TOOLTIP_INFO.heading,
-                    TARGET_NAMESPACE_TOOLTIP_INFO.infoList,
+                    targetNamespaceTooltipInfo.heading,
+                    targetNamespaceTooltipInfo.infoList,
                 )}
             />
             <ContentRow
@@ -206,7 +216,7 @@ const MigrateToDevtronValidationFactory = ({
                 return (
                     <div className="display-grid dc__row-gap-8 dc__column-gap-16 validation-response__content-container">
                         <ContentRow
-                            title={TARGET_CLUSTER_TOOLTIP_INFO.heading}
+                            title={targetClusterTooltipInfo.heading}
                             value={destination.clusterServerUrl}
                             buttonProps={{
                                 dataTestId: 'connect-cluster-button',
@@ -221,16 +231,16 @@ const MigrateToDevtronValidationFactory = ({
                                 },
                             }}
                             titleTooltip={renderContentTooltip(
-                                TARGET_CLUSTER_TOOLTIP_INFO.heading,
-                                TARGET_CLUSTER_TOOLTIP_INFO.infoList,
+                                targetClusterTooltipInfo.heading,
+                                targetClusterTooltipInfo.infoList,
                             )}
                         />
                         <ContentRow
-                            title={TARGET_NAMESPACE_TOOLTIP_INFO.heading}
+                            title={targetNamespaceTooltipInfo.heading}
                             value={destination.namespace || '--'}
                             titleTooltip={renderContentTooltip(
-                                TARGET_NAMESPACE_TOOLTIP_INFO.heading,
-                                TARGET_NAMESPACE_TOOLTIP_INFO.infoList,
+                                targetNamespaceTooltipInfo.heading,
+                                targetNamespaceTooltipInfo.infoList,
                             )}
                         />
                     </div>
@@ -240,19 +250,19 @@ const MigrateToDevtronValidationFactory = ({
                 return (
                     <div className="display-grid dc__row-gap-8 dc__column-gap-16 validation-response__content-container">
                         <ContentRow
-                            title={TARGET_CLUSTER_TOOLTIP_INFO.heading}
+                            title={targetClusterTooltipInfo.heading}
                             value={destination.clusterName || '--'}
                             titleTooltip={renderContentTooltip(
-                                TARGET_CLUSTER_TOOLTIP_INFO.heading,
-                                TARGET_CLUSTER_TOOLTIP_INFO.infoList,
+                                targetClusterTooltipInfo.heading,
+                                targetClusterTooltipInfo.infoList,
                             )}
                         />
                         <ContentRow
-                            title={TARGET_NAMESPACE_TOOLTIP_INFO.heading}
+                            title={targetNamespaceTooltipInfo.heading}
                             value={destination.namespace || '--'}
                             titleTooltip={renderContentTooltip(
-                                TARGET_NAMESPACE_TOOLTIP_INFO.heading,
-                                TARGET_NAMESPACE_TOOLTIP_INFO.infoList,
+                                targetNamespaceTooltipInfo.heading,
+                                targetNamespaceTooltipInfo.infoList,
                             )}
                         />
                         <ContentRow
@@ -302,11 +312,11 @@ const MigrateToDevtronValidationFactory = ({
         }
 
         if (validationFailedReason === MigrationSourceValidationReasonType.APPLICATION_ALREADY_LINKED) {
-            return 'This Argo CD application is already linked to a deployment pipeline'
+            return `This ${isMigratingFromHelm ? 'Helm Release' : 'Argo CD application'} is already linked to a deployment pipeline`
         }
 
         if (validationFailedReason === MigrationSourceValidationReasonType.ENFORCED_POLICY_VIOLATION) {
-            return 'Cannot migrate Argo CD Application. Deployment via Helm is enforced on the target environment.'
+            return `Cannot migrate ${isMigratingFromHelm ? 'Helm Release' : 'Argo CD Application'}. Deployment via Helm is enforced on the target environment.`
         }
 
         return validationFailedMessage
@@ -357,16 +367,28 @@ const MigrateToDevtronValidationFactory = ({
     }
 
     return (
-        <div className="flexbox-col dc__gap-16 br-8 bg__primary border__secondary w-100">
+        <div className="flexbox-col dc__gap-16 br-8 bg__primary border__secondary w-100 dc__overflow-hidden">
             <div className="flexbox px-16 pt-16 dc__content-space">
                 <div className="flexbox dc__gap-12">
-                    <ICArgoCDApp className="icon-dim-36 dc__no-shrink" />
+                    {isMigratingFromHelm ? (
+                        <ImageWithFallback
+                            imageProps={{
+                                height: 36,
+                                width: 36,
+                                alt: 'Helm Release',
+                            }}
+                            fallbackImage={<ICHelmChart className="icon-dim-36 dc__no-shrink" />}
+                        />
+                    ) : (
+                        <ICArgoCDApp className="icon-dim-36 dc__no-shrink" />
+                    )}
 
                     <div className="flexbox-col dc__gap-2">
                         <Tooltip content={appName}>
                             <h5 className="m-0 cn-9 fs-13 fw-6 lh-20 dc__truncate">{appName}</h5>
                         </Tooltip>
 
+                        {/* TODO: Need to look if helm statuses are supported by API and if possible get their enums */}
                         {status && (
                             <span
                                 data-testid="deployment-status-name"

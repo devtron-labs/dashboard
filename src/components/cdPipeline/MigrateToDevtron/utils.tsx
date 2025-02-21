@@ -5,42 +5,68 @@ import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ValidateMigrateToDevtronPayloadType,
     ValidateMigrationSourceDTO,
+    ValidateMigrationSourceInfoBaseType,
+    ValidateMigrationSourceInfoType,
     ValidateMigrationSourceServiceParamsType,
 } from '../cdPipeline.types'
-import { SelectArgoAppOptionType, SelectClusterOptionType } from './types'
+import { SelectMigrateAppOptionType, SelectClusterOptionType } from './types'
 
 export const sanitizeValidateMigrationSourceResponse = (
     response: ValidateMigrationSourceDTO,
-): ValidateMigrationSourceDTO => {
-    const { isLinkable, errorDetail, applicationMetadata } = response || {}
-    const { source, destination, status } = applicationMetadata || {}
+    deploymentAppType: ValidateMigrateToDevtronPayloadType['deploymentAppType'],
+): ValidateMigrationSourceInfoType => {
+    const { isLinkable, errorDetail, applicationMetadata, helmReleaseMetadata } = response || {}
+    const {
+        source: argoAppSourceDetails,
+        destination: argoChartDestination,
+        status: argoAppStatus,
+    } = applicationMetadata || {}
 
-    return {
+    const destination =
+        deploymentAppType === DeploymentAppTypes.GITOPS ? argoChartDestination : helmReleaseMetadata?.destination
+
+    const baseData: ValidateMigrationSourceInfoBaseType = {
         isLinkable: isLinkable || false,
         errorDetail: {
             validationFailedReason: errorDetail?.validationFailedReason,
             validationFailedMessage: errorDetail?.validationFailedMessage || '',
         },
-        applicationMetadata: {
-            status,
-            source: {
-                repoURL: source?.repoURL || '',
-                chartPath: source?.chartPath || '',
-                chartMetadata: {
-                    requiredChartVersion: source?.chartMetadata?.requiredChartVersion || '',
-                    savedChartName: source?.chartMetadata?.savedChartName || '',
-                    valuesFileName: source?.chartMetadata?.valuesFileName || '',
-                    requiredChartName: source?.chartMetadata?.requiredChartName || '',
-                },
-            },
-            destination: {
-                clusterName: destination?.clusterName || '',
-                clusterServerUrl: destination?.clusterServerUrl || '',
-                namespace: destination?.namespace || '',
-                environmentName: destination?.environmentName || '',
-                environmentId: destination?.environmentId || 0,
-            },
+        destination: {
+            clusterName: destination?.clusterName || '',
+            clusterServerUrl: destination?.clusterServerUrl || '',
+            namespace: destination?.namespace || '',
+            environmentName: destination?.environmentName || '',
+            environmentId: destination?.environmentId || null,
         },
+
+        requiredChartName:
+            deploymentAppType === DeploymentAppTypes.GITOPS
+                ? argoAppSourceDetails?.chartMetadata?.requiredChartName || ''
+                : helmReleaseMetadata?.chart?.metadata?.requiredChartName || '',
+
+        savedChartName:
+            deploymentAppType === DeploymentAppTypes.GITOPS
+                ? argoAppSourceDetails?.chartMetadata?.savedChartName || ''
+                : helmReleaseMetadata?.chart?.metadata?.savedChartName || '',
+
+        requiredChartVersion:
+            deploymentAppType === DeploymentAppTypes.GITOPS
+                ? argoAppSourceDetails?.chartMetadata?.requiredChartVersion || ''
+                : helmReleaseMetadata?.chart?.metadata?.version || '',
+    }
+
+    return {
+        ...baseData,
+        ...(deploymentAppType === DeploymentAppTypes.GITOPS
+            ? {
+                  deploymentAppType: DeploymentAppTypes.GITOPS,
+                  status: argoAppStatus,
+              }
+            : {
+                  deploymentAppType: DeploymentAppTypes.HELM,
+                  status: helmReleaseMetadata?.info?.status,
+                  chartIcon: helmReleaseMetadata?.chart?.metadata?.icon || null,
+              }),
     }
 }
 
@@ -49,10 +75,10 @@ export const generateClusterOption = (clusterName: string, clusterId: number): S
     value: clusterId,
 })
 
-export const generateArgoAppOption = ({
+export const generateMigrateAppOption = ({
     appName,
     namespace,
-}: Pick<GenericAppType, 'appName' | 'namespace'>): SelectArgoAppOptionType => ({
+}: Pick<GenericAppType, 'appName' | 'namespace'>): SelectMigrateAppOptionType => ({
     label: appName || '',
     value: {
         appName: appName || '',
@@ -87,5 +113,27 @@ export const getValidateMigrationSourcePayload = ({
         }
     }
 
-    return null
+    return {
+        appId,
+        deploymentAppType: DeploymentAppTypes.HELM,
+        deploymentAppName: migrateToDevtronFormState.migrateFromHelmFormState.appName,
+        helmReleaseMetadata: {
+            releaseClusterId: migrateToDevtronFormState.migrateFromHelmFormState.clusterId,
+            releaseNamespace: migrateToDevtronFormState.migrateFromHelmFormState.namespace,
+        },
+    }
 }
+
+export const getTargetClusterTooltipInfo = (isMigratingFromHelm: boolean) => ({
+    heading: 'Target cluster',
+    infoList: [
+        `Cluster in which the ${isMigratingFromHelm ? 'Helm Release' : 'Argo CD application'} is deploying your microservice`,
+    ],
+})
+
+export const getTargetNamespaceTooltipInfo = (isMigratingFromHelm: boolean) => ({
+    heading: 'Target Namespace',
+    infoList: [
+        `Namespace in which the ${isMigratingFromHelm ? 'Helm Release' : 'Argo CD application'} is deploying your microservice`,
+    ],
+})
