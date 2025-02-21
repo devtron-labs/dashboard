@@ -31,6 +31,7 @@ import {
     ProtectConfigTabsType,
     DraftMetadataDTO,
     OverrideMergeStrategyType,
+    PipelineMigratedFromType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 export enum ConfigEditorStatesType {
@@ -183,6 +184,15 @@ export interface DeploymentTemplateStateType {
      * Will send handler in DraftComment which onchange would update this state
      */
     areCommentsPresent: boolean
+    /**
+     * Readonly flag to show the user that the pipeline is migrated from external app to devtron, and can't change its version or delete override
+     */
+    migratedFrom: PipelineMigratedFromType
+}
+
+export interface HandleFetchDeploymentTemplateReturnType
+    extends Partial<Pick<DeploymentTemplateStateType, 'migratedFrom'>> {
+    deploymentTemplateConfigState: DeploymentTemplateConfigState
 }
 
 export interface DeploymentTemplateOptionsHeaderProps
@@ -198,6 +208,7 @@ export interface DeploymentTemplateOptionsHeaderProps
     areChartsLoading: boolean
     showDeleteOverrideDraftEmptyState: boolean
     isUnSet: boolean
+    migratedFrom: DeploymentTemplateStateType['migratedFrom']
 }
 
 // Can derive editMode from url as well, just wanted the typing to be more explicit
@@ -271,6 +282,7 @@ export interface DTChartSelectorProps
             | 'areChartsLoading'
             | 'parsingError'
             | 'restoreLastSavedTemplate'
+            | 'migratedFrom'
         > {
     selectChart: (selectedChart: DeploymentChartVersionType) => void
     selectedChartRefId: number
@@ -306,6 +318,7 @@ interface EnvironmentConfigDTO {
     status: number
     mergeStrategy: OverrideMergeStrategyType
     envOverridePatchValues: Record<string, string>
+    migratedFrom: PipelineMigratedFromType
 }
 
 export interface EnvironmentOverrideDeploymentTemplateDTO {
@@ -361,7 +374,8 @@ export interface DeploymentTemplateConfigDTO {
     guiSchema: string
 }
 
-export interface GetPublishedAndBaseDeploymentTemplateReturnType {
+export interface GetPublishedAndBaseDeploymentTemplateReturnType
+    extends Pick<HandleFetchDeploymentTemplateReturnType, 'migratedFrom'> {
     publishedTemplateState: DeploymentTemplateConfigState
     baseDeploymentTemplateState: DeploymentTemplateConfigState
 }
@@ -373,7 +387,8 @@ export interface GetChartListReturnType
             'charts' | 'chartsMetadata' | 'globalChartDetails' | 'latestAppChartRef'
         > {}
 
-export interface HandleInitializeTemplatesWithoutDraftParamsType {
+export interface HandleInitializeTemplatesWithoutDraftParamsType
+    extends Pick<DeploymentTemplateStateType, 'migratedFrom'> {
     baseDeploymentTemplateState: DeploymentTemplateStateType['baseDeploymentTemplateData']
     publishedTemplateState: DeploymentTemplateStateType['publishedTemplateData']
     chartDetailsState: DeploymentTemplateStateType['chartDetails']

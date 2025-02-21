@@ -78,6 +78,7 @@ import UserNameDropDownList from './UseNameListDropdown'
 import { clusterId } from '../ClusterNodes/__mocks__/clusterAbout.mock'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { RemoteConnectionType } from '../dockerRegistry/dockerType'
+import { getServerURLFromLocalStorage } from './cluster.util'
 
 const VirtualClusterSelectionTab = importComponentFromFELibrary('VirtualClusterSelectionTab')
 const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio')
@@ -111,12 +112,12 @@ const PrometheusRequiredFieldInfo = () => {
 }
 
 export default function ClusterForm({
-    id,
+    id = null,
     cluster_name,
     server_url,
     active,
     config,
-    toggleEditMode,
+    toggleEditMode = noop,
     reload,
     prometheus_url,
     prometheusAuth,
@@ -131,7 +132,7 @@ export default function ClusterForm({
     isTlsConnection,
     toggleCheckTlsConnection,
     setTlsConnectionFalse,
-    toggleShowAddCluster,
+    handleCloseCreateClusterForm = noop,
     toggleKubeConfigFile,
     isKubeConfigFile,
     isClusterDetails,
@@ -190,7 +191,7 @@ export default function ClusterForm({
     const { state, handleOnChange, handleOnSubmit } = useForm(
         {
             cluster_name: { value: cluster_name, error: '' },
-            url: { value: server_url, error: '' },
+            url: { value: !id ? getServerURLFromLocalStorage(server_url) : server_url, error: '' },
             userName: { value: prometheusAuth?.userName, error: '' },
             password: { value: prometheusAuth?.password, error: '' },
             prometheusTlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
@@ -535,7 +536,7 @@ export default function ClusterForm({
                 variant: ToastVariantType.success,
                 description: `Successfully ${id ? 'updated' : 'saved'}`,
             })
-            toggleShowAddCluster()
+            handleCloseCreateClusterForm()
             setRemoteConnectionFalse()
             setTlsConnectionFalse()
             reload()
@@ -638,7 +639,7 @@ export default function ClusterForm({
         }
         setRemoteConnectionFalse()
         setTlsConnectionFalse()
-        toggleShowAddCluster()
+        handleCloseCreateClusterForm()
 
         setLoadingState(false)
         reload()
@@ -1384,7 +1385,7 @@ export default function ClusterForm({
         toggleEditMode(e)
         setLoadingState(false)
         reload()
-        toggleShowAddCluster()
+        handleCloseCreateClusterForm()
     }
 
     const showConfirmationModal = () => setConfirmation(true)
