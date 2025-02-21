@@ -59,7 +59,7 @@ import { transformPermissionGroupResponse, transformUserResponse } from './utils
 import { SortableKeys as PermissionGroupListSortableKeys } from './PermissionGroups/List/constants'
 import { importComponentFromFELibrary } from '../../../components/common'
 import { getUserGroupsPayload } from './libUtils'
-import { ProjectsList } from './Shared/components/AppPermissions/types'
+import { ProjectsListType } from './Shared/components/AppPermissions/types'
 
 const getUserStatusAndTimeoutPayload: (
     userStatus: UserStatus,
@@ -344,7 +344,7 @@ export const getUserAccessEnvironmentList = async (): Promise<
     }
 }
 
-export const getUserAccessProjectList = async (): Promise<ProjectsList> => {
+export const getUserAccessProjectList = async (): Promise<ProjectsListType> => {
     const [devtronProjects, helmProjects, jobProjects] = await Promise.all([
         getUserResourceOptions<Teams[]>({
             kind: UserAccessResourceKind.TEAM,

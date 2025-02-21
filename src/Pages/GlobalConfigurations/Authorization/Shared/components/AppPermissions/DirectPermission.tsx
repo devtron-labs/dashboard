@@ -24,6 +24,8 @@ import {
     Button,
     ButtonVariantType,
     ButtonStyleType,
+    capitalizeFirstLetter,
+    SelectPickerProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { HELM_APP_UNASSIGNED_PROJECT } from '../../../../../../config'
@@ -84,9 +86,16 @@ const DirectPermission = ({
             : []),
         ...projectsList[permission.accessType],
     ].map((project) => ({
-        label: project.name,
+        label: project.name === HELM_APP_UNASSIGNED_PROJECT ? capitalizeFirstLetter(project.name) : project.name,
         value: project.name,
     }))
+
+    const formatProjectOptionLabel: SelectPickerProps['formatOptionLabel'] = (option) =>
+        option.label === HELM_APP_UNASSIGNED_PROJECT ? (
+            <span className="dc__first-letter-capitalize dc__inline-block">{option.label}</span>
+        ) : (
+            option.label
+        )
 
     return (
         <>
@@ -98,6 +107,7 @@ const DirectPermission = ({
                 options={projectOptions}
                 onChange={handleDirectPermissionChange}
                 size={ComponentSizeType.large}
+                formatOptionLabel={formatProjectOptionLabel}
             />
 
             <div style={{ order: isAccessTypeJob ? 3 : 0 }}>

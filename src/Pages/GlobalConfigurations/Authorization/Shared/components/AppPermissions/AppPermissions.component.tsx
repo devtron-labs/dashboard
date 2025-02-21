@@ -104,22 +104,32 @@ const AppPermissions = () => {
     )
 
     const isNonEAMode = serverMode !== SERVER_MODE.EA_ONLY
-    const projectsList = configData?.[0]
-    const environmentsList = configData?.[1]
-    const chartGroupsList = configData?.[2]?.groups ?? []
 
-    const [devtronAppsProjectsMap, helmAppsProjectsMap, jobsProjectsMap] = useMemo(
-        () => [
-            projectsList?.[ACCESS_TYPE_MAP.DEVTRON_APPS]
-                ? mapByKey(projectsList[ACCESS_TYPE_MAP.DEVTRON_APPS], 'name')
+    const {
+        projectsList,
+        environmentsList,
+        chartGroupsList,
+        devtronAppsProjectsMap,
+        helmAppsProjectsMap,
+        jobsProjectsMap,
+    } = useMemo(() => {
+        const projectList = configData?.[0]
+
+        return {
+            projectsList: projectList,
+            environmentsList: configData?.[1],
+            chartGroupsList: configData?.[2]?.groups ?? [],
+            devtronAppsProjectsMap: projectList?.[ACCESS_TYPE_MAP.DEVTRON_APPS]
+                ? mapByKey(projectList[ACCESS_TYPE_MAP.DEVTRON_APPS], 'name')
                 : new Map(),
-            projectsList?.[ACCESS_TYPE_MAP.HELM_APPS]
-                ? mapByKey(projectsList[ACCESS_TYPE_MAP.HELM_APPS], 'name')
+            helmAppsProjectsMap: projectList?.[ACCESS_TYPE_MAP.HELM_APPS]
+                ? mapByKey(projectList[ACCESS_TYPE_MAP.HELM_APPS], 'name')
                 : new Map(),
-            projectsList?.[ACCESS_TYPE_MAP.JOBS] ? mapByKey(projectsList[ACCESS_TYPE_MAP.JOBS], 'name') : new Map(),
-        ],
-        [configData],
-    )
+            jobsProjectsMap: projectList?.[ACCESS_TYPE_MAP.JOBS]
+                ? mapByKey(projectList[ACCESS_TYPE_MAP.JOBS], 'name')
+                : new Map(),
+        }
+    }, [configData])
 
     const { environmentClusterOptions, envClustersList } = useMemo(() => {
         const _envClustersList = configData?.[3] ?? []
@@ -438,14 +448,14 @@ const AppPermissions = () => {
         return []
     }
 
-    const getProjectIdForAccessType = (accessType: ACCESS_TYPE_MAP, team: string) => {
+    const getProjectForAccessType = (accessType: ACCESS_TYPE_MAP, teamName: string) => {
         switch (accessType) {
             case ACCESS_TYPE_MAP.DEVTRON_APPS:
-                return devtronAppsProjectsMap.get(team)
+                return devtronAppsProjectsMap.get(teamName)
             case ACCESS_TYPE_MAP.HELM_APPS:
-                return helmAppsProjectsMap.get(team)
+                return helmAppsProjectsMap.get(teamName)
             case ACCESS_TYPE_MAP.JOBS:
-                return jobsProjectsMap.get(team)
+                return jobsProjectsMap.get(teamName)
             default:
                 throw new Error(`Unknown access type ${accessType}`)
         }
@@ -464,7 +474,7 @@ const AppPermissions = () => {
 
         // Devtron apps, helm apps and jobs
         roleFilters?.forEach((roleFilter) => {
-            const projectId = getProjectIdForAccessType(roleFilter.accessType, roleFilter.team)?.id
+            const projectId = getProjectForAccessType(roleFilter.accessType, roleFilter.team)?.id
             if (projectId) {
                 switch (roleFilter.entity) {
                     case EntityTypes.DIRECT:
@@ -497,7 +507,7 @@ const AppPermissions = () => {
                 ?.map(async (directRoleFilter: APIRoleFilter) => {
                     const projectId =
                         directRoleFilter.team !== HELM_APP_UNASSIGNED_PROJECT &&
-                        getProjectIdForAccessType(directRoleFilter.accessType, directRoleFilter.team)?.id
+                        getProjectForAccessType(directRoleFilter.accessType, directRoleFilter.team)?.id
 
                     // Fallback for access type
                     if (!directRoleFilter.accessType && directRoleFilter.entity !== EntityTypes.JOB) {
@@ -725,7 +735,7 @@ const AppPermissions = () => {
         if (value === SELECT_ALL_VALUE) {
             if (action === ReactSelectInputAction.selectOption) {
                 if (tempPermissions[index].team.value !== HELM_APP_UNASSIGNED_PROJECT) {
-                    const projectId = getProjectIdForAccessType(
+                    const projectId = getProjectForAccessType(
                         tempPermissions[index].accessType,
                         tempPermissions[index].team.value,
                     )?.id
@@ -791,7 +801,7 @@ const AppPermissions = () => {
             tempPermissions[index].workflow = []
         }
         if (tempPermissions[index].team.value !== HELM_APP_UNASSIGNED_PROJECT) {
-            const projectId = getProjectIdForAccessType(
+            const projectId = getProjectForAccessType(
                 tempPermissions[index].accessType,
                 tempPermissions[index].team.value,
             )?.id
