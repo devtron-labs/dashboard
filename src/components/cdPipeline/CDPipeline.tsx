@@ -543,7 +543,7 @@ export default function CDPipeline({
     }
 
     const updateStateFromResponse = (pipelineConfigFromRes, environments, form, dockerRegistries): void => {
-        sortObjectArrayAlphabetically(environments, 'name')
+        sortObjectArrayAlphabetically(environments, 'environment_name')
         environments = environments.map((env) => {
             return {
                 ...env,
@@ -946,7 +946,7 @@ export default function CDPipeline({
         return false
     }
 
-    const savePipeline = () => {
+    const savePipeline = async () => {
         if (!isMigratingFromArgoApp) {
             if (checkForGitOpsRepoNotConfigured()) {
                 return
@@ -986,42 +986,38 @@ export default function CDPipeline({
         setLoadingData(true)
         const request = responseCode()
         const _form = { ...formData }
-        const promise = cdPipelineId ? updateCDPipeline(request) : saveCDPipeline(request)
 
-        promise
-            .then((response) => {
-                if (response.result) {
-                    const pipelineConfigFromRes = response.result.pipelines[0]
-                    updateStateFromResponse(pipelineConfigFromRes, _form.environments, _form, dockerRegistries)
-                    console.trace('test-3')
-                    let envName = pipelineConfigFromRes.environmentName
-                    if (!envName) {
-                        const selectedEnv: Environment = _form.environments.find((env) => env.id == _form.environmentId)
-                        envName = selectedEnv.name
-                    }
-                    setFormData(_form)
-                    close(
-                        pipelineConfigFromRes.parentPipelineType !== PipelineType.WEBHOOK,
-                        _form.environmentId,
-                        envName,
-                        pipelineConfigFromRes.cdPipelineId
-                            ? 'Deployment pipeline updated'
-                            : 'Deployment pipeline created',
-                        !cdPipelineId,
-                    )
-                    getWorkflows()
-                    console.trace('test-4')
+        try {
+            const promiseArr = cdPipelineId
+                ? [updateCDPipeline(request), null]
+                : [saveCDPipeline(request), isMigratingFromArgoApp ? getEnvironmentListMinPublic() : null]
+            const [response, environmentRes] = await Promise.all(promiseArr)
+            if (response.result) {
+                const pipelineConfigFromRes = response.result.pipelines[0]
+                updateStateFromResponse(pipelineConfigFromRes, environmentRes.result, _form, dockerRegistries)
+                let envName = pipelineConfigFromRes.environmentName
+                if (!envName) {
+                    const selectedEnv: Environment = environmentRes.result.find((env) => env.id == _form.environmentId)
+                    envName = selectedEnv.name
                 }
-            })
-            .catch((error: ServerErrors) => {
-                console.trace('test-5')
-                setLoadingData(false)
-                if (error.code === 409) {
-                    setReloadNoGitOpsRepoConfiguredModal(true)
-                } else {
-                    showError(error)
-                }
-            })
+                setFormData(_form)
+                close(
+                    pipelineConfigFromRes.parentPipelineType !== PipelineType.WEBHOOK,
+                    _form.environmentId,
+                    envName,
+                    pipelineConfigFromRes.cdPipelineId ? 'Deployment pipeline updated' : 'Deployment pipeline created',
+                    !cdPipelineId,
+                )
+                getWorkflows()
+            }
+        } catch (error) {
+            setLoadingData(false)
+            if (error.code === 409) {
+                setReloadNoGitOpsRepoConfiguredModal(true)
+            } else {
+                showError(error)
+            }
+        }
     }
 
     const hideDeleteModal = () => {
