@@ -1567,15 +1567,17 @@ const CDMaterial = ({
                             )}
                         </>
                     ) : (
-                        <RuntimeParameters
-                            appId={appId}
-                            parameters={parameters}
-                            handleChange={handleRuntimeParamsChange}
-                            errorState={errorState}
-                            handleError={handleRuntimeParamsError}
-                            uploadFile={uploadRuntimeParamsFile}
-                            isCD
-                        />
+                        <div className="bg__tertiary dc__overflow-auto flex-1 select-material--trigger-view">
+                            <RuntimeParameters
+                                appId={appId}
+                                parameters={parameters}
+                                handleChange={handleRuntimeParamsChange}
+                                errorState={errorState}
+                                handleError={handleRuntimeParamsError}
+                                uploadFile={uploadRuntimeParamsFile}
+                                isCD
+                            />
+                        </div>
                     )}
                 </ConditionalWrap>
             </div>

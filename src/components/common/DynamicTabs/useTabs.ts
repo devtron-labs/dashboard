@@ -176,7 +176,7 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
                 const persistedTabsData = getTabDataFromLocalStorage()
                 try {
                     parsedTabsData = convertV1TabsDataToV2(JSON.parse(persistedTabsData))
-                    _tabs = parsedTabsData ? parsedTabsData.data[persistenceKey] : prevTabs
+                    _tabs = parsedTabsData ? parsedTabsData.data[persistenceKey] ?? [] : prevTabs
                 } catch {
                     _tabs = prevTabs
                 }
