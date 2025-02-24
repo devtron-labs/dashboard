@@ -1329,8 +1329,7 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
         const renderDirectoryManagementInGitOps = () => (
             <div className="flex column left w-100 dc__gap-16 pb-16">
                 <div className="fw-6 cn-9 fs-14">Directory management in Git</div>
-                {window._env_.FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE &&
-                this.props.isFeatureUserDefinedGitOpsEnabled ? (
+                {this.props.isFeatureUserDefinedGitOpsEnabled ? (
                     <RadioGroup
                         className="radio-group-no-border"
                         name="trigger-type"
