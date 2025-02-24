@@ -65,7 +65,6 @@ const NavigationList: NavigationListItemType[] = [
         icon: 'ic-app-group',
         href: URLS.APPLICATION_GROUP,
         isAvailableInEA: false,
-        forceHideEnvKey: 'HIDE_APPLICATION_GROUPS',
     },
     {
         title: 'Software Distribution Hub',
