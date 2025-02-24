@@ -106,7 +106,6 @@ export const getServerURLFromLocalStorage = (fallbackServerUrl: string): string 
         } catch {}
     }
 
-    localStorage.removeItem(ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY)
     return fallbackServerUrl
 }
 
