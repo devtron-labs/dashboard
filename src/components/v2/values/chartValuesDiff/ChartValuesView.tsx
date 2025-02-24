@@ -1736,7 +1736,7 @@ const ChartValuesView = ({
                                 />
                             )}
 
-                            { showDeploymentTools && (
+                            {allowedCustomBool && showDeploymentTools && (
                                 <GitOpsDrawer
                                     commonState={commonState}
                                     deploymentAppType={commonState.deploymentAppType}
