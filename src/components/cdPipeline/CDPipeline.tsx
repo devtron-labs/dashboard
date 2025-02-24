@@ -991,9 +991,7 @@ export default function CDPipeline({
             const [response, environmentRes] = await Promise.all(promiseArr)
             if (response.result) {
                 const pipelineConfigFromRes = response.result.pipelines[0]
-                if (environmentRes) {
-                    updateStateFromResponse(pipelineConfigFromRes, environmentRes.result, _form, dockerRegistries)
-                }
+                    updateStateFromResponse(pipelineConfigFromRes, environmentRes?.result ?? _form.environments, _form, dockerRegistries)
                 let envName = pipelineConfigFromRes.environmentName
                 if (!envName) {
                     const selectedEnv: Environment = environmentRes.result.find((env) => env.id == _form.environmentId)
