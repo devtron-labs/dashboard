@@ -24,7 +24,7 @@ import { UserPermissionGroupsSelector } from '../UserPermissionGroupsSelector'
 import { usePermissionConfiguration } from './PermissionConfigurationFormProvider'
 import { PermissionConfigurationFormProps } from './types'
 
-const ToggleManageAllAccess = importComponentFromFELibrary('ToggleManageAllAccess', null, 'function')
+const ManageAllAccessToggle = importComponentFromFELibrary('ManageAllAccessToggle', null, 'function')
 
 const PermissionConfigurationForm = ({
     showUserPermissionGroupSelector = false,
@@ -107,8 +107,8 @@ const PermissionConfigurationForm = ({
                     >
                         <div className="flexbox dc__content-space">
                             <h3 className="cn-9 fs-13 lh-20 fw-6 m-0">Permissions</h3>
-                            {isLoggedInUserSuperAdmin && ToggleManageAllAccess && (
-                                <ToggleManageAllAccess
+                            {isLoggedInUserSuperAdmin && ManageAllAccessToggle && (
+                                <ManageAllAccessToggle
                                     allowManageAllAccess={allowManageAllAccess}
                                     setAllowManageAllAccess={setAllowManageAllAccess}
                                 />

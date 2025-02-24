@@ -86,7 +86,6 @@ export interface PermissionGroupDto extends Pick<UserRoleGroup, 'id' | 'name' | 
     roleFilters: APIRoleFilterDto[]
     /**
      * Access Role filters (access manager permissions) for the user
-     * ENT Only
      */
     accessRoleFilters?: APIRoleFilterDto[]
     /**
@@ -94,12 +93,10 @@ export interface PermissionGroupDto extends Pick<UserRoleGroup, 'id' | 'name' | 
      */
     superAdmin: boolean
     /**
-     * ENT Only
      * permission group manage all access
      */
     canManageAllAccess?: boolean
     /**
-     * ENT Only
      * permission group has some or all access manager permission
      */
     hasAccessManagerPermission?: boolean
