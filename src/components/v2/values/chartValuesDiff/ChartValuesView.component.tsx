@@ -165,7 +165,7 @@ export const DeploymentAppSelector = ({
                     )}
                 </span>
             </div>
-            {gitRepoURL && (
+            {gitRepoURL && allowedCustomBool && (
                 <div className="pt-12">
                     <div className="fs-14">
                         Manifests are committed to

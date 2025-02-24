@@ -248,7 +248,7 @@ const ChartValuesView = ({
     }
 
     useEffect(() => {
-        if (!isUpdateAppView) {
+        if (!isExternalApp) {
             checkGitOpsConfiguration()
         }
         if (isDeployChartView || isCreateValueView) {
