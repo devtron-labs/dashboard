@@ -543,7 +543,7 @@ export default function CDPipeline({
     }
 
     const updateStateFromResponse = (pipelineConfigFromRes, environments, form, dockerRegistries): void => {
-        sortObjectArrayAlphabetically(environments, 'environment_name')
+        sortObjectArrayAlphabetically(environments,isMigratingFromArgoApp ? 'environment_name' : 'name')
         environments = environments.map((env) => {
             return {
                 ...env,
