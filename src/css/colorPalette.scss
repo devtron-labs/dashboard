@@ -266,7 +266,7 @@
         @include theme-dark;
 
         // CODE-EDITOR COLORS
-        --fg-code-editor: #afd5fb;
+        --fg-code-editor: #a5d6ff;
         --bg-code-editor-base: #181920;
         --bg-code-editor-base-gutter: var(--bg-tertiary);
         --bg-code-editor-red: var(--R50);
@@ -279,8 +279,8 @@
         --bg-matching-keyword-selected: #0066cc;
         --active-line: var(--bg-hover);
         // CODE-EDITOR EDITOR COLORS
-        --code-editor-property-name: #98e491;
+        --code-editor-property-name: #7ee787;
         --code-editor-number: #79c0ff;
-        --code-editor-boolean: #9f90f8;
+        --code-editor-boolean: #c084fc;
     }
 }
