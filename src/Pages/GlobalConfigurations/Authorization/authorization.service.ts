@@ -74,7 +74,7 @@ const getStatusAndTimeoutPayload = importComponentFromFELibrary('getStatusAndTim
 // User Permissions
 export const getUserById = async (userId: User['id']): Promise<User> => {
     try {
-        const { result } = (await get(`${Routes.USER}/${userId}`)) as ResponseType<UserDto>
+        const { result } = (await get(`${Routes.USER}/${Routes.API_VERSION_V2}/${userId}`)) as ResponseType<UserDto>
 
         return transformUserResponse(result)
     } catch (error) {
@@ -164,7 +164,9 @@ export const deleteUserInBulk = (payload: UserBulkDeletePayload) =>
 // Permission Groups
 export const getPermissionGroupById = async (groupId: PermissionGroup['id']): Promise<PermissionGroup> => {
     try {
-        const { result } = (await get(`${Routes.USER_ROLE_GROUP}/${groupId}`)) as ResponseType<PermissionGroupDto>
+        const { result } = (await get(
+            `${Routes.USER_ROLE_GROUP}/${Routes.API_VERSION_V2}/${groupId}`,
+        )) as ResponseType<PermissionGroupDto>
         return transformPermissionGroupResponse(result)
     } catch (error) {
         showError(error)
