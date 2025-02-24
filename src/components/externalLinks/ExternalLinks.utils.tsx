@@ -80,7 +80,7 @@ export const ToolSelectStyles = {
         cursor: 'pointer',
         boxShadow: 'none',
         marginTop: '0',
-        width: '100%',
+        width: 'auto',
         backgroundColor: 'var(--bg-menu-primary)',
     }),
     control: (base) => ({
