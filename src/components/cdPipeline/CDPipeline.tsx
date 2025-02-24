@@ -543,7 +543,7 @@ export default function CDPipeline({
     }
 
     const updateStateFromResponse = (pipelineConfigFromRes, environments, form, dockerRegistries): void => {
-        sortObjectArrayAlphabetically(environments,isMigratingFromArgoApp ? 'environment_name' : 'name')
+        sortObjectArrayAlphabetically(environments, isMigratingFromArgoApp ? 'environment_name' : 'name')
         environments = environments.map((env) => {
             return {
                 ...env,
@@ -991,7 +991,7 @@ export default function CDPipeline({
             const [response, environmentRes] = await Promise.all(promiseArr)
             if (response.result) {
                 const pipelineConfigFromRes = response.result.pipelines[0]
-                updateStateFromResponse(pipelineConfigFromRes, environmentRes.result, _form, dockerRegistries)
+                    updateStateFromResponse(pipelineConfigFromRes, environmentRes.result, _form, dockerRegistries)
                 let envName = pipelineConfigFromRes.environmentName
                 if (!envName) {
                     const selectedEnv: Environment = environmentRes.result.find((env) => env.id == _form.environmentId)
