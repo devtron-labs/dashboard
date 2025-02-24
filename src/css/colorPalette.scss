@@ -242,6 +242,9 @@
 .component-specific-theme {
     &__light {
         @include theme-light;
+
+        // CODE-EDITOR COLORS
+        --fg-code-editor: #1a2f65;
         --bg-code-editor-base: var(--bg-primary);
         --bg-code-editor-base-gutter: var(--bg-secondary);
         --bg-code-editor-red: var(--R50);
@@ -250,11 +253,20 @@
         --bg-code-editor-green: var(--G50);
         --bg-code-editor-green-gutter: var(--G100);
         --bg-code-editor-green-highlight: var(--G200);
-        --active-line: var(--N100);
+        --bg-matching-keyword: #c58d36;
+        --bg-matching-keyword-selected: #0066cc;
+        --active-line: var(--bg-hover);
+        // CODE-EDITOR EDITOR COLORS
+        --code-editor-property-name: #008080;
+        --code-editor-number: #005cc5;
+        --code-editor-boolean: #6a5bcc;
     }
 
     &__dark {
         @include theme-dark;
+
+        // CODE-EDITOR COLORS
+        --fg-code-editor: #afd5fb;
         --bg-code-editor-base: #181920;
         --bg-code-editor-base-gutter: var(--bg-tertiary);
         --bg-code-editor-red: var(--R50);
@@ -263,6 +275,12 @@
         --bg-code-editor-green: var(--G50);
         --bg-code-editor-green-gutter: var(--G100);
         --bg-code-editor-green-highlight: var(--G200);
-        --active-line: var(--N200);
+        --bg-matching-keyword: #c58d36;
+        --bg-matching-keyword-selected: #0066cc;
+        --active-line: var(--bg-hover);
+        // CODE-EDITOR EDITOR COLORS
+        --code-editor-property-name: #98e491;
+        --code-editor-number: #79c0ff;
+        --code-editor-boolean: #9f90f8;
     }
 }
