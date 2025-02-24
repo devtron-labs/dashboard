@@ -109,7 +109,8 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
             cursorWidth: 1,
             // Cannot use variables here
             theme: {
-                background: '#0b0f22',
+                // Using hex code for --terminal-bg
+                background: '#181920',
                 foreground: '#FFFFFF',
                 // selection: '#0066cc4d',
             },

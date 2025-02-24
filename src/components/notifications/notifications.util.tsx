@@ -51,7 +51,7 @@ export const multiSelectStyles = {
     menu: (base, state) => ({
         ...base,
         top: `38px`,
-        backgroundColor: 'var(--bg-menu)',
+        backgroundColor: 'var(--bg-menu-primary)',
     }),
     option: (base, state) => ({
         ...commonSelectStyles.option(base, state),

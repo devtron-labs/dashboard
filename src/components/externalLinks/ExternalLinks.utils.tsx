@@ -74,14 +74,14 @@ export const ToolSelectStyles = {
     menu: (base, state) => ({
         ...base,
         top: 'auto',
-        width: 'auto',
         minHeight: '36px',
         border: `solid 1px ${state.isFocused ? 'var(--N400)' : 'var(--N200)'}`,
-        backgroundColor: 'var(--bg-secondary)',
         justifyContent: 'flex-start',
         cursor: 'pointer',
         boxShadow: 'none',
         marginTop: '0',
+        width: '100%',
+        backgroundColor: 'var(--bg-menu-primary)',
     }),
     control: (base) => ({
         ...base,
