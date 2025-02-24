@@ -53,7 +53,6 @@ import { ReactComponent as Delete } from '../../../../../../assets/icons/ic-dele
 import { ReactComponent as InfoIcon } from '../../../../../../assets/icons/info-filled.svg'
 import { multiSelectAllState } from './utils'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
-import { parseData } from '../../../utils'
 import { ALL_NAMESPACE } from '../../../constants'
 import { K8sPermissionActionType, K8S_PERMISSION_INFO_MESSAGE } from './constants'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
@@ -366,11 +365,13 @@ const K8sListItemCard = ({
         handleK8sPermission(action, index)
     }
 
-    const k8sOptions = parseData(customRoles.customRoles, EntityTypes.CLUSTER).map((role) => ({
-        label: role.roleDisplayName,
-        value: role.roleName,
-        description: role.roleDescription,
-    }))
+    const k8sOptions = customRoles.customRoles
+        .filter((role) => role.entity === EntityTypes.CLUSTER)
+        .map((role) => ({
+            label: role.roleDisplayName,
+            value: role.roleName,
+            description: role.roleDescription,
+        }))
 
     const handleUserStatusUpdate = (
         status: K8sPermissionFilter['status'],

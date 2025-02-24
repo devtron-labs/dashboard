@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-import { Dispatch, SetStateAction } from 'react'
-import { GroupBase } from 'react-select'
-import { ServerError, ACCESS_TYPE_MAP, SelectPickerOptionType, Teams } from '@devtron-labs/devtron-fe-common-lib'
+import { Dispatch, SetStateAction, ChangeEvent } from 'react'
+import { GroupBase, GroupProps } from 'react-select'
+import {
+    ServerError,
+    ACCESS_TYPE_MAP,
+    SelectPickerOptionType,
+    Teams,
+    UserRoleConfig,
+    CustomRoles,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { JobList } from '../../../../../../components/Jobs/Types'
 import { DirectPermissionsRoleFilter } from '../../../types'
 
@@ -81,4 +88,40 @@ export interface AppOrJobSelectorProps
         | 'appsListHelmApps'
     > {
     setWorkflowList: Dispatch<SetStateAction<WorkflowListType>>
+}
+
+export interface RoleSelectorToggleConfig {
+    baseRole: boolean
+    accessManagerRoles: boolean
+}
+
+export interface RoleSelectorProps {
+    permission: DirectPermissionsRoleFilter
+    handleUpdateDirectPermissionRoleConfig: (updatedRoleConfig: UserRoleConfig) => void
+}
+export interface JobRoleSelectorProps {
+    permission: DirectPermissionsRoleFilter
+    handleUpdateDirectPermissionRoleConfig: (updatedRoleConfig: UserRoleConfig) => void
+}
+
+export interface RoleSelectorGroupParams {
+    props: GroupProps
+    baseRoleValue: string
+    showToggle: boolean
+    toggleConfig: RoleSelectorToggleConfig
+    toggleBaseRole: () => void
+    toggleAccessManagerRoles: () => void
+    handleUpdateBaseRole: (event: ChangeEvent<HTMLInputElement>) => void
+}
+
+export interface RoleSelectorGroupHeaderProps extends Pick<RoleSelectorGroupParams, 'showToggle'> {
+    label: string
+    toggleSelected: boolean
+    onChange: () => void
+}
+
+export interface GetRoleConfigParams {
+    customRoles: CustomRoles[]
+    accessType: ACCESS_TYPE_MAP
+    showAccessRoles: boolean
 }

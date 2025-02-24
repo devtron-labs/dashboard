@@ -26,6 +26,7 @@ import {
     ButtonStyleType,
     capitalizeFirstLetter,
     SelectPickerProps,
+    UserRoleConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { HELM_APP_UNASSIGNED_PROJECT } from '../../../../../../config'
@@ -37,8 +38,9 @@ import { DirectPermissionsRoleFilter } from '../../../types'
 import { getIsStatusDropdownDisabled } from '../../../libUtils'
 import EnvironmentSelector from './EnvironmentSelector'
 import WorkflowSelector from './WorkflowSelector'
-import RoleSelector from './RoleSelector'
 import AppOrJobSelector from './AppOrJobSelector'
+import RoleSelector from './RoleSelector'
+import JobRoleSelector from './JobRoleSelector'
 
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
 
@@ -55,6 +57,7 @@ const DirectPermission = ({
     environmentClusterOptions,
     getListForAccessType,
 }: DirectPermissionRowProps) => {
+    const { setDirectPermission } = usePermissionConfiguration()
     const [workflowList, setWorkflowList] = useState<WorkflowListType>({ loading: false, options: [] })
 
     const { showStatus, userStatus } = usePermissionConfiguration()
@@ -73,6 +76,18 @@ const DirectPermission = ({
                 name: DirectPermissionFieldName.status,
             },
         )
+    }
+
+    const handleUpdateDirectPermissionRoleConfig = (updatedRoleConfig: UserRoleConfig) => {
+        const { baseRole, accessManagerRoles } = updatedRoleConfig
+        setDirectPermission((prevPermissions) => {
+            const tempPermissions = [...prevPermissions]
+            tempPermissions[index].roleConfig = updatedRoleConfig
+
+            tempPermissions[index].roleConfigError = !baseRole && !accessManagerRoles.size
+
+            return tempPermissions
+        })
     }
 
     const projectOptions: SelectPickerOptionType[] = [
@@ -140,7 +155,17 @@ const DirectPermission = ({
                 </div>
             )}
             <div style={{ order: isAccessTypeJob ? 4 : 0 }}>
-                <RoleSelector permission={permission} handleDirectPermissionChange={handleDirectPermissionChange} />
+                {isAccessTypeJob ? (
+                    <JobRoleSelector
+                        permission={permission}
+                        handleUpdateDirectPermissionRoleConfig={handleUpdateDirectPermissionRoleConfig}
+                    />
+                ) : (
+                    <RoleSelector
+                        permission={permission}
+                        handleUpdateDirectPermissionRoleConfig={handleUpdateDirectPermissionRoleConfig}
+                    />
+                )}
             </div>
             {showStatus && (
                 <div className="h-36 flexbox flex-align-center" style={{ order: 5 }}>

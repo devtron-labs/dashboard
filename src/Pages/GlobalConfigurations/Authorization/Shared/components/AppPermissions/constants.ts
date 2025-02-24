@@ -15,9 +15,9 @@
  */
 
 import { ACCESS_TYPE_MAP, EntityTypes, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
-import { StylesConfig } from 'react-select'
+import { importComponentFromFELibrary } from '@Components/common'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
-import { ActionTypes, authorizationSelectStyles } from '../../../constants'
+import { ActionTypes } from '../../../constants'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
 import { DirectPermissionsRoleFilter } from '../../../types'
 
@@ -44,11 +44,12 @@ export const emptyDirectPermissionDevtronApps: DirectPermissionsRoleFilter = {
     entityName: [],
     environment: [],
     team: null,
-    action: {
-        label: '',
-        value: ActionTypes.VIEW,
-    },
     accessType: ACCESS_TYPE_MAP.DEVTRON_APPS,
+    roleConfig: {
+        baseRole: ActionTypes.VIEW,
+        additionalRoles: new Set(),
+        accessManagerRoles: new Set(),
+    },
     ...getDefaultStatusAndTimeout(),
 }
 
@@ -73,14 +74,22 @@ export enum DirectPermissionFieldName {
     status = 'status',
 }
 
-export const roleSelectStyles: StylesConfig = {
-    ...authorizationSelectStyles,
-    valueContainer: (base, state) => ({
-        ...authorizationSelectStyles.valueContainer(base, state),
-        display: 'flex',
-        flexWrap: 'nowrap',
-        textOverflow: 'ellipsis',
-        overflow: 'hidden',
-        whiteSpace: 'nowrap',
-    }),
+export const MANGER_ROLE_DEPRECATION_WARNING = importComponentFromFELibrary(
+    'MANGER_ROLE_DEPRECATION_WARNING',
+    null,
+    'function',
+)
+
+export const ALLOWED_ADDITIONAL_ROLES_MAP = importComponentFromFELibrary(
+    'ALLOWED_ADDITIONAL_ROLES_MAP',
+    null,
+    'function',
+)
+
+export const BASE_ROLE_VALUE_TO_LABEL_MAP = {
+    [ActionTypes.MANAGER]: 'Manager',
+    [ActionTypes.ADMIN]: 'Admin',
+    [ActionTypes.VIEW]: 'View only',
+    [ActionTypes.EDIT]: 'View & edit',
+    [ActionTypes.TRIGGER]: 'Build & deploy',
 }

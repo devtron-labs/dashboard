@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UserStatus, EntityTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { UserStatus, EntityTypes, useSuperAdmin } from '@devtron-labs/devtron-fe-common-lib'
 import React, { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { ActionTypes, PermissionType } from '../../../constants'
@@ -45,9 +45,11 @@ export const PermissionConfigurationFormProvider = ({
     data: User | PermissionGroup
     showStatus: boolean
 }) => {
+    // isLoggedInUserSuperAdmin and canManageAllAccess here denotes permissions for the logged in user
+    const { isSuperAdmin: isLoggedInUserSuperAdmin, canManageAllAccess } = useSuperAdmin()
     const [isSaveDisabled, setIsSaveDisabled] = useState(false)
     const [permissionType, setPermissionType] = useState<PermissionType>(PermissionType.SPECIFIC)
-
+    const [allowManageAllAccess, setAllowManageAllAccess] = useState<boolean>(data?.canManageAllAccess)
     const [directPermission, setDirectPermission] = useState<DirectPermissionsRoleFilter[]>([])
     const [chartPermission, setChartPermission] = useState<ChartGroupPermissionsFilter>({
         entity: EntityTypes.CHART_GROUP,
@@ -130,6 +132,10 @@ export const PermissionConfigurationFormProvider = ({
             showStatus,
             isSaveDisabled,
             setIsSaveDisabled,
+            allowManageAllAccess,
+            setAllowManageAllAccess,
+            isLoggedInUserSuperAdmin,
+            canManageAllAccess,
         }),
         [
             permissionType,
@@ -149,6 +155,10 @@ export const PermissionConfigurationFormProvider = ({
             data,
             showStatus,
             isSaveDisabled,
+            allowManageAllAccess,
+            setAllowManageAllAccess,
+            isLoggedInUserSuperAdmin,
+            canManageAllAccess,
         ],
     )
 

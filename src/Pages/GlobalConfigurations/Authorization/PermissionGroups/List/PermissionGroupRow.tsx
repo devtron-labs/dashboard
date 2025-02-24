@@ -27,13 +27,14 @@ import {
     getRandomColor,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useRouteMatch } from 'react-router-dom'
-import { ReactComponent as Edit } from '../../../../../assets/icons/ic-pencil.svg'
-import { ReactComponent as Trash } from '../../../../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
+import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 
 import { PermissionGroupRowProps } from './types'
 import { deletePermissionGroup } from '../../authorization.service'
 import { useAuthorizationBulkSelection } from '../../Shared/components/BulkSelection'
 import { DeleteUserPermission } from '../../UserPermissions/DeleteUserPermission'
+import { getPermissionGroupIcon } from './utils'
 
 const PermissionGroupRow = ({
     id,
@@ -44,6 +45,8 @@ const PermissionGroupRow = ({
     isChecked = false,
     toggleChecked,
     showCheckbox,
+    superAdmin,
+    hasAccessManagerPermission,
 }: PermissionGroupRowProps) => {
     const { path } = useRouteMatch()
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
@@ -73,7 +76,7 @@ const PermissionGroupRow = ({
     return (
         <>
             <div
-                className={`user-permission__row dc__visible-hover dc__visible-hover--parent dc__opacity-hover dc__opacity-hover--parent pl-20 pr-20  dc__hover-n50 ${
+                className={`user-permission__row dc__visible-hover dc__visible-hover--parent dc__opacity-hover dc__opacity-hover--parent px-20 dc__hover-n50 ${
                     isChecked ? 'bc-b50' : ''
                 }`}
             >
@@ -95,11 +98,14 @@ const PermissionGroupRow = ({
                         value={CHECKBOX_VALUE.CHECKED}
                     />
                 </div>
-                <span className="dc__ellipsis-right">
-                    <Link className="anchor dc__ellipsis-right" to={`${path}/${id}`}>
-                        {name}
-                    </Link>
-                </span>
+                <div className="flexbox dc__align-items-center dc__gap-8">
+                    <span className="dc__ellipsis-right">
+                        <Link className="anchor dc__ellipsis-right" to={`${path}/${id}`}>
+                            {name}
+                        </Link>
+                    </span>
+                    {getPermissionGroupIcon({ superAdmin, hasAccessManagerPermission })}
+                </div>
                 <span className="dc__ellipsis-right">{description || '-'}</span>
                 <div className="flex dc__gap-4">
                     <Button

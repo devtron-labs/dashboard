@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { getCommonSelectStyle, EntityTypes, ACCESS_TYPE_MAP } from '@devtron-labs/devtron-fe-common-lib'
+import { EntityTypes, ACCESS_TYPE_MAP } from '@devtron-labs/devtron-fe-common-lib'
 import { SELECT_ALL_VALUE } from '../../../config'
 import { APIRoleFilter } from './types'
 import { getDefaultStatusAndTimeout } from './libUtils'
-import { importComponentFromFELibrary } from '../../../components/common'
-import { groupHeaderStyle } from '../../../components/v2/common/ReactSelect.utils'
 import { AccessTypeToErrorMapType } from './Shared/components/PermissionConfigurationForm/types'
 
 /**
@@ -66,32 +64,6 @@ export const ViewChartGroupPermission: APIRoleFilter = {
     action: ActionTypes.VIEW,
     ...getDefaultStatusAndTimeout(),
 }
-
-const _selectStyles = getCommonSelectStyle()
-
-export const authorizationSelectStyles = {
-    ..._selectStyles,
-    ...groupHeaderStyle,
-    control: (base, state) => ({
-        ..._selectStyles.control(base, state),
-        height: '36px',
-    }),
-    valueContainer: (base, state) => ({
-        ..._selectStyles.valueContainer(base, state),
-        maxHeight: '100%',
-    }),
-    option: (base, state) => ({
-        ..._selectStyles.option(base, state),
-        ...(state.isSelected && {
-            backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--bg-primary)',
-        }),
-    }),
-}
-
-export const IMAGE_APPROVER_ACTION = importComponentFromFELibrary('IMAGE_APPROVER_ACTION', {}, 'function')
-export const CONFIG_APPROVER_ACTION = importComponentFromFELibrary('CONFIG_APPROVER_ACTION', {}, 'function')
-export const ARTIFACT_PROMOTER_ACTION = importComponentFromFELibrary('ARTIFACT_PROMOTER_ACTION', {}, 'function')
-export const TERMINAL_EXEC_ACTION = importComponentFromFELibrary('TERMINAL_EXEC_ACTION', {}, 'function')
 
 export const DEFAULT_ACCESS_TYPE_TO_ERROR_MAP: AccessTypeToErrorMapType = {
     [ACCESS_TYPE_MAP.DEVTRON_APPS]: false,

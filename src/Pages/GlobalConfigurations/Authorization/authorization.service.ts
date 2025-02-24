@@ -116,7 +116,8 @@ export const createOrUpdateUser = ({
     const options: APIOptions = {
         timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : null,
     }
-    return isUpdate ? put(Routes.USER, _data, options) : post(Routes.USER, _data, options)
+    const url = `${Routes.USER}/${Routes.API_VERSION_V2}`
+    return isUpdate ? put(url, _data, options) : post(url, _data, options)
 }
 
 export const deleteUser = (userId: User['id']) => trash(`${Routes.USER}/${userId}`)
@@ -195,7 +196,8 @@ export const createOrUpdatePermissionGroup = ({
         timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : null,
     }
 
-    return isUpdate ? put(Routes.USER_ROLE_GROUP, _payload, options) : post(Routes.USER_ROLE_GROUP, _payload, options)
+    const url = `${Routes.USER_ROLE_GROUP}/${Routes.API_VERSION_V2}`
+    return isUpdate ? put(url, _payload, options) : post(url, _payload, options)
 }
 
 export const getPermissionGroupList = async (

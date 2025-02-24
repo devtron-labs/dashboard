@@ -29,6 +29,7 @@ import {
     CustomRoleAndMeta,
     ResourceKindType,
     K8sResourceListPayloadType,
+    UserRoleConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DeleteConfirmationModalProps } from '@devtron-labs/devtron-fe-common-lib/dist/Shared/Components/ConfirmationModal/types'
 import { SERVER_MODE } from '../../../config'
@@ -51,6 +52,10 @@ export interface APIRoleFilterDto {
     environment?: string
     action: string
     accessType?: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
+    /**
+     * denotes if the user has deploymentApprover role
+     */
+    approver?: boolean
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cluster?: any
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -64,6 +69,11 @@ export interface APIRoleFilterDto {
     workflow?: string
     status: UserStatusDto
     timeoutWindowExpression: string
+    /**
+     * Allowed roles which an access manager can give
+     * Used only for accessManagerFilters
+     */
+    subAction?: string
 }
 
 export type APIRoleFilter = Omit<APIRoleFilterDto, 'status' | 'timeoutWindowExpression'> & PermissionStatusAndTimeout
@@ -75,9 +85,24 @@ export interface PermissionGroupDto extends Pick<UserRoleGroup, 'id' | 'name' | 
      */
     roleFilters: APIRoleFilterDto[]
     /**
+     * Access Role filters (access manager permissions) for the user
+     * ENT Only
+     */
+    accessRoleFilters?: APIRoleFilterDto[]
+    /**
      * If true, the group has super admin access
      */
     superAdmin: boolean
+    /**
+     * ENT Only
+     * permission group manage all access
+     */
+    canManageAllAccess?: boolean
+    /**
+     * ENT Only
+     * permission group has some or all access manager permission
+     */
+    hasAccessManagerPermission?: boolean
 }
 
 export type PermissionGroup = Omit<PermissionGroupDto, 'roleFilters'> & {
@@ -86,11 +111,12 @@ export type PermissionGroup = Omit<PermissionGroupDto, 'roleFilters'> & {
 
 export type PermissionGroupCreateOrUpdatePayload = Pick<
     PermissionGroup,
-    'id' | 'name' | 'description' | 'roleFilters' | 'superAdmin'
+    'id' | 'name' | 'description' | 'roleFilters' | 'superAdmin' | 'accessRoleFilters' | 'canManageAllAccess'
 >
 
 // User Permissions
-export interface UserDto {
+export interface UserDto
+    extends Pick<PermissionGroupDto, 'roleFilters' | 'accessRoleFilters' | 'superAdmin' | 'canManageAllAccess'> {
     /**
      * ID of the user
      */
@@ -118,14 +144,6 @@ export interface UserDto {
      * @default ''
      */
     timeoutWindowExpression?: string
-    /**
-     * Role filters (direct permissions) for the user
-     */
-    roleFilters: APIRoleFilterDto[]
-    /**
-     * If true, the user is a super admin
-     */
-    superAdmin: boolean
     /**
      * List of permission groups assigned to the user
      */
@@ -158,7 +176,13 @@ export interface UserDto {
 export interface User
     extends Omit<
         UserDto,
-        'timeoutWindowExpression' | 'email_id' | 'userStatus' | 'userRoleGroups' | 'roleFilters' | 'userGroups'
+        | 'timeoutWindowExpression'
+        | 'email_id'
+        | 'userStatus'
+        | 'userRoleGroups'
+        | 'roleFilters'
+        | 'accessRoleFilters'
+        | 'userGroups'
     > {
     emailId: UserDto['email_id']
     /**
@@ -176,10 +200,17 @@ export interface User
 
 export type UserCreateOrUpdateParamsType = Pick<
     User,
-    'id' | 'emailId' | 'userStatus' | 'roleFilters' | 'superAdmin' | 'timeToLive' | 'userRoleGroups'
+    | 'id'
+    | 'emailId'
+    | 'userStatus'
+    | 'roleFilters'
+    | 'superAdmin'
+    | 'timeToLive'
+    | 'userRoleGroups'
+    | 'canManageAllAccess'
 > & {
     userGroups: Pick<UserGroupType, 'name' | 'userGroupId'>[]
-}
+} & Partial<Pick<UserDto, 'accessRoleFilters'>>
 
 export interface UserCreateOrUpdatePayloadType
     extends Omit<UserDto, 'userGroups' | 'createdOn' | 'updatedOn' | 'isDeleted'> {
@@ -232,12 +263,8 @@ export interface AuthorizationProviderProps {
 
 export type ActionRoleType = ActionTypes.MANAGER | ActionTypes.VIEW | ActionTypes.TRIGGER | ActionTypes.ADMIN
 
-export interface RoleFilter {
-    entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP | EntityTypes.CLUSTER | EntityTypes.JOB
-    team?: OptionType
+interface RoleFilter {
     entityName?: OptionType[]
-    environment?: OptionType[]
-    action?: OptionType
     cluster?: OptionType
     namespace?: OptionType
     group?: OptionType
@@ -247,22 +274,17 @@ export interface RoleFilter {
 
 export interface DirectPermissionsRoleFilter extends RoleFilter, PermissionStatusAndTimeout {
     entity: EntityTypes.DIRECT | EntityTypes.JOB
+    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
     team: OptionType
     entityName: OptionType[]
     entityNameError?: string
     environment: OptionType[]
     environmentError?: string
-    workflowError?: string
-    action: {
-        label: string
-        value: string
-        configApprover?: boolean
-        artifactPromoter?: boolean
-        terminalExec?: boolean
-    }
-    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
     workflow?: OptionType[]
+    workflowError?: string
     approver?: boolean
+    roleConfig: UserRoleConfig
+    roleConfigError?: boolean
 }
 
 export interface ChartGroupPermissionsFilter extends Omit<RoleFilter, 'action'>, PermissionStatusAndTimeout {
@@ -283,7 +305,8 @@ export interface K8sPermissionFilter extends PermissionStatusAndTimeout {
     key?: number
 }
 
-export interface CreateUserPermissionPayloadParams extends Pick<User, 'userStatus' | 'timeToLive' | 'userRoleGroups'> {
+export interface CreateUserPermissionPayloadParams
+    extends Pick<User, 'userStatus' | 'timeToLive' | 'userRoleGroups' | 'canManageAllAccess'> {
     id: number
     userGroups: Pick<UserGroupType, 'name' | 'userGroupId'>[]
     userIdentifier: string

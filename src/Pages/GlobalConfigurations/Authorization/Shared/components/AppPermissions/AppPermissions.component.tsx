@@ -27,6 +27,7 @@ import {
     ACCESS_TYPE_MAP,
     EntityTypes,
     mapByKey,
+    DEFAULT_ENV,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getUserAccessAllWorkflows,
@@ -39,10 +40,8 @@ import {
 } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
 import { ActionTypes, DEFAULT_ACCESS_TYPE_TO_ERROR_MAP } from '../../../constants'
 import { HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
-import { importComponentFromFELibrary } from '../../../../../../components/common'
 import K8sPermissions from '../K8sObjectPermissions/K8sPermissions.component'
 import { apiGroupAll } from '../K8sObjectPermissions/utils'
-import { DEFAULT_ENV } from '../../../../../../components/app/details/triggerView/Constants'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import {
@@ -60,6 +59,7 @@ import {
     getEnvironmentClusterOptions,
     getEnvironmentOptions,
     getNavLinksConfig,
+    getRoleConfigForRoleFilter,
 } from './utils'
 import { getWorkflowOptions, validateDirectPermissionForm } from '../../../utils'
 import { AppPermissionsDetailType, DirectPermissionRowProps } from './types'
@@ -67,8 +67,6 @@ import { APIRoleFilter, ChartGroupPermissionsFilter, DirectPermissionsRoleFilter
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
 import { JobList } from '../../../../../../components/Jobs/Types'
 import { AccessTypeToErrorMapType } from '../PermissionConfigurationForm/types'
-
-const handleApprovalPermissionChange = importComponentFromFELibrary('handleApprovalPermissionChange', null, 'function')
 
 const AppPermissions = () => {
     const { serverMode } = useMainContext()
@@ -555,6 +553,7 @@ const AppPermissions = () => {
                                       .map((workflow) => ({ value: workflow, label: workflow }))
                                 : await setAllWorkflows(updatedEntityName),
                         }),
+                        roleConfig: getRoleConfigForRoleFilter(directRoleFilter),
                     } as DirectPermissionsRoleFilter
                 }),
         )
@@ -837,21 +836,8 @@ const AppPermissions = () => {
             case DirectPermissionFieldName.team:
                 _handleTeamChange(index, selectedValue, actionMeta, tempPermissions)
                 break
-            default: {
-                if (handleApprovalPermissionChange) {
-                    const hasHandledApprovalCases = handleApprovalPermissionChange(
-                        index,
-                        selectedValue,
-                        name,
-                        tempPermissions,
-                    )
-
-                    if (hasHandledApprovalCases) {
-                        break
-                    }
-                }
-                tempPermissions[index][name] = selectedValue
-            }
+            default:
+                throw new Error('Invalid field')
         }
 
         setDirectPermission(tempPermissions)
