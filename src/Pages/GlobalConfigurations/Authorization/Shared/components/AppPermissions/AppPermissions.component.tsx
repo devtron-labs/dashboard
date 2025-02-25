@@ -53,8 +53,6 @@ import {
     emptyDirectPermissionHelmApps,
     emptyDirectPermissionJobs,
     SELECT_ALL_OPTION,
-    EMPTY_PROJECTS_LIST,
-    EMPTY_ENV_LIST,
 } from './constants'
 import AppPermissionDetail from './AppPermissionDetail'
 import { ChartPermission } from '../ChartPermission'
@@ -66,7 +64,7 @@ import {
     getRoleConfigForRoleFilter,
 } from './utils'
 import { getWorkflowOptions, validateDirectPermissionForm } from '../../../utils'
-import { AppPermissionsDetailType, DirectPermissionRowProps } from './types'
+import { AppPermissionsDetailType, DirectPermissionRowProps, EnvironmentsListType, ProjectsListType } from './types'
 import { APIRoleFilter, ChartGroupPermissionsFilter, DirectPermissionsRoleFilter } from '../../../types'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
 import { JobList } from '../../../../../../components/Jobs/Types'
@@ -115,11 +113,20 @@ const AppPermissions = () => {
         helmAppsProjectsMap,
         jobsProjectsMap,
     } = useMemo(() => {
-        const projectList = configData?.[0] ?? EMPTY_PROJECTS_LIST
+        const projectList: ProjectsListType = {
+            [ACCESS_TYPE_MAP.DEVTRON_APPS]: configData?.[0]?.[ACCESS_TYPE_MAP.DEVTRON_APPS] ?? [],
+            [ACCESS_TYPE_MAP.HELM_APPS]: configData?.[0]?.[ACCESS_TYPE_MAP.HELM_APPS] ?? [],
+            [ACCESS_TYPE_MAP.JOBS]: configData?.[0][ACCESS_TYPE_MAP.JOBS] ?? [],
+        }
+
+        const envList: EnvironmentsListType = {
+            [ACCESS_TYPE_MAP.DEVTRON_APPS]: configData?.[1]?.[ACCESS_TYPE_MAP.DEVTRON_APPS] ?? [],
+            [ACCESS_TYPE_MAP.JOBS]: configData?.[1][ACCESS_TYPE_MAP.JOBS] ?? [],
+        }
 
         return {
             projectsList: projectList,
-            environmentsList: configData?.[1] ?? EMPTY_ENV_LIST,
+            environmentsList: envList,
             chartGroupsList: configData?.[2]?.groups ?? [],
             devtronAppsProjectsMap: mapByKey(projectList[ACCESS_TYPE_MAP.DEVTRON_APPS], 'name'),
             helmAppsProjectsMap: mapByKey(projectList[ACCESS_TYPE_MAP.HELM_APPS], 'name'),

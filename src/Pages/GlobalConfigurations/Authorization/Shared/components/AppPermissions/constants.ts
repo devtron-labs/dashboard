@@ -18,7 +18,6 @@ import { ACCESS_TYPE_MAP, EntityTypes, SelectPickerOptionType, ActionTypes } fro
 import { SELECT_ALL_VALUE } from '../../../../../../config'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
 import { DirectPermissionsRoleFilter } from '../../../types'
-import { EnvironmentsListType, ProjectsListType } from './types'
 
 export const ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE = '#'
 
@@ -71,15 +70,4 @@ export enum DirectPermissionFieldName {
     workflow = 'workflow',
     team = 'team',
     status = 'status',
-}
-
-export const EMPTY_PROJECTS_LIST: ProjectsListType = {
-    [ACCESS_TYPE_MAP.DEVTRON_APPS]: [],
-    [ACCESS_TYPE_MAP.HELM_APPS]: [],
-    [ACCESS_TYPE_MAP.JOBS]: [],
-}
-
-export const EMPTY_ENV_LIST: EnvironmentsListType = {
-    [ACCESS_TYPE_MAP.DEVTRON_APPS]: [],
-    [ACCESS_TYPE_MAP.JOBS]: [],
 }
