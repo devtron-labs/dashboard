@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { ACCESS_TYPE_MAP, EntityTypes, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
-import { importComponentFromFELibrary } from '@Components/common'
+import { ACCESS_TYPE_MAP, EntityTypes, SelectPickerOptionType, ActionTypes } from '@devtron-labs/devtron-fe-common-lib'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
-import { ActionTypes } from '../../../constants'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
 import { DirectPermissionsRoleFilter } from '../../../types'
+import { EnvironmentsListType, ProjectsListType } from './types'
 
 export const ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE = '#'
 
@@ -74,22 +73,13 @@ export enum DirectPermissionFieldName {
     status = 'status',
 }
 
-export const MANGER_ROLE_DEPRECATION_WARNING = importComponentFromFELibrary(
-    'MANGER_ROLE_DEPRECATION_WARNING',
-    null,
-    'function',
-)
+export const EMPTY_PROJECTS_LIST: ProjectsListType = {
+    [ACCESS_TYPE_MAP.DEVTRON_APPS]: [],
+    [ACCESS_TYPE_MAP.HELM_APPS]: [],
+    [ACCESS_TYPE_MAP.JOBS]: [],
+}
 
-export const ALLOWED_ADDITIONAL_ROLES_MAP = importComponentFromFELibrary(
-    'ALLOWED_ADDITIONAL_ROLES_MAP',
-    null,
-    'function',
-)
-
-export const BASE_ROLE_VALUE_TO_LABEL_MAP = {
-    [ActionTypes.MANAGER]: 'Manager',
-    [ActionTypes.ADMIN]: 'Admin',
-    [ActionTypes.VIEW]: 'View only',
-    [ActionTypes.EDIT]: 'View & edit',
-    [ActionTypes.TRIGGER]: 'Build & deploy',
+export const EMPTY_ENV_LIST: EnvironmentsListType = {
+    [ACCESS_TYPE_MAP.DEVTRON_APPS]: [],
+    [ACCESS_TYPE_MAP.JOBS]: [],
 }

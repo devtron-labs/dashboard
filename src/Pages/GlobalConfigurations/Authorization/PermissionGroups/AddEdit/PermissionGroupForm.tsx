@@ -40,7 +40,7 @@ import {
     PermissionConfigurationForm,
     usePermissionConfiguration,
 } from '../../Shared/components/PermissionConfigurationForm'
-import { getIsSuperAdminPermission, getRoleFilters, validateDirectPermissionForm } from '../../utils'
+import { getIsSuperAdminPermission, getRolesAndAccessRoles, validateDirectPermissionForm } from '../../utils'
 import { excludeKeyAndClusterValue } from '../../Shared/components/K8sObjectPermissions/utils'
 import { DeleteUserPermission } from '../../UserPermissions/DeleteUserPermission'
 
@@ -104,7 +104,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
         }
         setSubmitting(true)
 
-        const { roleFilters, accessRoleFilters } = getRoleFilters({
+        const { roleFilters, accessRoleFilters } = getRolesAndAccessRoles({
             k8sPermission,
             directPermission,
             serverMode,

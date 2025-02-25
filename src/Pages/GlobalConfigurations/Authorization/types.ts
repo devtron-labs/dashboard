@@ -31,10 +31,11 @@ import {
     K8sResourceListPayloadType,
     UserRoleConfig,
     APIOptions,
+    ActionTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DeleteConfirmationModalProps } from '@devtron-labs/devtron-fe-common-lib/dist/Shared/Components/ConfirmationModal/types'
 import { SERVER_MODE } from '../../../config'
-import { ActionTypes, PermissionType, UserRoleType } from './constants'
+import { PermissionType, UserRoleType } from './constants'
 
 export interface UserAndGroupPermissionsWrapProps {
     children: ReactNode

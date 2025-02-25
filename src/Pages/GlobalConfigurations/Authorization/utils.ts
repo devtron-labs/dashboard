@@ -32,6 +32,7 @@ import {
     SelectPickerOptionType,
     stringComparatorBySortOrder,
     UserRoleConfig,
+    ActionTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { GroupBase } from 'react-select'
 import { Moment12HourFormat, REQUIRED_FIELDS_MISSING, SELECT_ALL_VALUE, SERVER_MODE } from '../../../config'
@@ -47,7 +48,7 @@ import {
 } from './types'
 import { LAST_LOGIN_TIME_NULL_STATE } from './UserPermissions/constants'
 import { useAuthorizationBulkSelection } from './Shared/components/BulkSelection'
-import { ActionTypes, PermissionType, ViewChartGroupPermission, DEFAULT_ACCESS_TYPE_TO_ERROR_MAP } from './constants'
+import { PermissionType, ViewChartGroupPermission, DEFAULT_ACCESS_TYPE_TO_ERROR_MAP } from './constants'
 import { AppIdWorkflowNamesMapping } from '../../../services/service.types'
 import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './Shared/components/AppPermissions/constants'
 import { importComponentFromFELibrary } from '../../../components/common'
@@ -68,11 +69,8 @@ const getStatusExportText: (status: UserStatus, timeToLive: string) => string = 
     'function',
 )
 
-const transformRoleFilters = (
-    roleFilters: APIRoleFilterDto[],
-    accessRoleFilters?: APIRoleFilterDto[],
-): APIRoleFilter[] => {
-    const accessRoleMap = accessRoleFilters?.reduce(
+const getAccessRoleMap = (accessRoleFilters: APIRoleFilterDto[]) =>
+    accessRoleFilters?.reduce(
         (agg, { entity, team, environment, accessType, entityName, workflow, subAction }) => {
             const key = `${entity}${accessType}${team}${environment}${entityName}${workflow}`
             // eslint-disable-next-line no-param-reassign
@@ -81,6 +79,12 @@ const transformRoleFilters = (
         },
         {} as Record<string, string>,
     )
+
+const transformRoleFilters = (
+    roleFilters: APIRoleFilterDto[],
+    accessRoleFilters?: APIRoleFilterDto[],
+): APIRoleFilter[] => {
+    const accessRoleMap = getAccessRoleMap(accessRoleFilters)
 
     return (
         roleFilters?.map(
@@ -166,7 +170,7 @@ export const transformPermissionGroupResponse = (_permissionGroup: PermissionGro
     }
 }
 
-export const reduceCustomRoles = (roleList: CustomRoles[]) =>
+export const getRoleNameToValueMap = (roleList: CustomRoles[]) =>
     roleList.reduce<MetaPossibleRoles>((agg, curr) => {
         // eslint-disable-next-line no-param-reassign
         agg[curr.roleName] = {
@@ -180,7 +184,7 @@ export const getMetaPossibleRoles = (customRoles: CustomRoles[]): CustomRoleAndM
     const filteredDevtronRoles = customRoles.filter((role) => role.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS)
     const filteredClusterRoles = customRoles.filter((role) => role.entity === EntityTypes.CLUSTER)
 
-    const possibleRolesMetaForDevtron = reduceCustomRoles(filteredDevtronRoles)
+    const possibleRolesMetaForDevtron = getRoleNameToValueMap(filteredDevtronRoles)
     const possibleJobRoles = customRoles
         .filter((role) => role.entity === EntityTypes.JOB)
         .map((jobRole) => ({
@@ -188,7 +192,7 @@ export const getMetaPossibleRoles = (customRoles: CustomRoles[]): CustomRoleAndM
             value: jobRole.roleName,
             description: jobRole.roleDescription,
         }))
-    const possibleRolesMetaForCluster = reduceCustomRoles(filteredClusterRoles)
+    const possibleRolesMetaForCluster = getRoleNameToValueMap(filteredClusterRoles)
 
     return {
         customRoles,
@@ -304,13 +308,17 @@ const getRoleAndAccessFiltersFromDirectPermission = ({
     const accessRoleFilters = []
 
     directPermission.forEach((permission) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { roleConfig, roleConfigError, workflowError, entityNameError, environmentError, ...restPermission } =
+            permission
+
         const commonPermissions = {
-            ...permission,
+            ...restPermission,
             team: permission.team.value,
             environment: getSelectedEnvironments(permission),
             entityName: getSelectedPermissionValues(permission.entityName),
             entity: permission.entity,
-            approver: permission.roleConfig.additionalRoles.has('deploymentApprover'),
+            approver: roleConfig.additionalRoles.has('deploymentApprover'),
             ...(permission.entity === EntityTypes.JOB && {
                 workflow: permission.workflow?.length ? getSelectedPermissionValues(permission.workflow) : '',
             }),
@@ -334,7 +342,7 @@ const getRoleAndAccessFiltersFromDirectPermission = ({
     return { roleFilters, accessRoleFilters }
 }
 
-export const getRoleFilters = ({
+export const getRolesAndAccessRoles = ({
     directPermission,
     k8sPermission,
     chartPermission,
@@ -399,7 +407,7 @@ export const createUserPermissionPayload = ({
     userGroups,
     canManageAllAccess,
 }: CreateUserPermissionPayloadParams): UserCreateOrUpdateParamsType => {
-    const { roleFilters, accessRoleFilters } = getRoleFilters({
+    const { roleFilters, accessRoleFilters } = getRolesAndAccessRoles({
         directPermission,
         k8sPermission,
         chartPermission,

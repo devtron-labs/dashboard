@@ -81,7 +81,7 @@ const DirectPermission = ({
     const handleUpdateDirectPermissionRoleConfig = (updatedRoleConfig: UserRoleConfig) => {
         const { baseRole, accessManagerRoles } = updatedRoleConfig
         setDirectPermission((prevPermissions) => {
-            const tempPermissions = [...prevPermissions]
+            const tempPermissions = [...structuredClone(prevPermissions)]
             tempPermissions[index].roleConfig = updatedRoleConfig
 
             tempPermissions[index].roleConfigError = !baseRole && !accessManagerRoles.size

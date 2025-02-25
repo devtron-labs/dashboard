@@ -28,6 +28,8 @@ import {
     EntityTypes,
     mapByKey,
     DEFAULT_ENV,
+    stringComparatorBySortOrder,
+    ActionTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getUserAccessAllWorkflows,
@@ -38,7 +40,7 @@ import {
     getUserAccessProjectFilteredApps,
     getUserAccessProjectList,
 } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
-import { ActionTypes, DEFAULT_ACCESS_TYPE_TO_ERROR_MAP } from '../../../constants'
+import { DEFAULT_ACCESS_TYPE_TO_ERROR_MAP } from '../../../constants'
 import { HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
 import K8sPermissions from '../K8sObjectPermissions/K8sPermissions.component'
 import { apiGroupAll } from '../K8sObjectPermissions/utils'
@@ -51,6 +53,8 @@ import {
     emptyDirectPermissionHelmApps,
     emptyDirectPermissionJobs,
     SELECT_ALL_OPTION,
+    EMPTY_PROJECTS_LIST,
+    EMPTY_ENV_LIST,
 } from './constants'
 import AppPermissionDetail from './AppPermissionDetail'
 import { ChartPermission } from '../ChartPermission'
@@ -111,26 +115,27 @@ const AppPermissions = () => {
         helmAppsProjectsMap,
         jobsProjectsMap,
     } = useMemo(() => {
-        const projectList = configData?.[0]
+        const projectList = configData?.[0] ?? EMPTY_PROJECTS_LIST
 
         return {
             projectsList: projectList,
-            environmentsList: configData?.[1],
+            environmentsList: configData?.[1] ?? EMPTY_ENV_LIST,
             chartGroupsList: configData?.[2]?.groups ?? [],
-            devtronAppsProjectsMap: projectList?.[ACCESS_TYPE_MAP.DEVTRON_APPS]
-                ? mapByKey(projectList[ACCESS_TYPE_MAP.DEVTRON_APPS], 'name')
-                : new Map(),
-            helmAppsProjectsMap: projectList?.[ACCESS_TYPE_MAP.HELM_APPS]
-                ? mapByKey(projectList[ACCESS_TYPE_MAP.HELM_APPS], 'name')
-                : new Map(),
-            jobsProjectsMap: projectList?.[ACCESS_TYPE_MAP.JOBS]
-                ? mapByKey(projectList[ACCESS_TYPE_MAP.JOBS], 'name')
-                : new Map(),
+            devtronAppsProjectsMap: mapByKey(projectList[ACCESS_TYPE_MAP.DEVTRON_APPS], 'name'),
+            helmAppsProjectsMap: mapByKey(projectList[ACCESS_TYPE_MAP.HELM_APPS], 'name'),
+            jobsProjectsMap: mapByKey(projectList[ACCESS_TYPE_MAP.JOBS], 'name'),
         }
     }, [configData])
 
     const { environmentClusterOptions, envClustersList } = useMemo(() => {
-        const _envClustersList = configData?.[3] ?? []
+        const _envClustersList = (configData?.[3] ?? [])
+            .map((cluster) => ({
+                ...cluster,
+                environments: (cluster.environments ?? []).sort((a, b) =>
+                    stringComparatorBySortOrder(a.environmentName, b.environmentName),
+                ),
+            }))
+            .sort((a, b) => stringComparatorBySortOrder(a.clusterName, b.clusterName))
 
         return {
             envClustersList: _envClustersList,
@@ -141,7 +146,7 @@ const AppPermissions = () => {
     const _getEnvironmentOptions = (
         entity: DirectPermissionRowProps['permission']['entity'],
         accessType: DirectPermissionRowProps['permission']['accessType'],
-    ) => getEnvironmentOptions(environmentsList[accessType], entity)
+    ) => getEnvironmentOptions(environmentsList[accessType] || [], entity)
 
     const appPermissionDetailConfig = getAppPermissionDetailConfig(path, serverMode)
     const navLinksConfig = getNavLinksConfig(serverMode, superAdmin)
@@ -322,8 +327,7 @@ const AppPermissions = () => {
     async function setAllWorkflows(jobOptions) {
         const jobNames = jobOptions.filter((job) => job.value !== SELECT_ALL_VALUE).map((job) => job.label)
         try {
-            const result = await getUserAccessAllWorkflows(jobNames)
-            const { appIdWorkflowNamesMapping } = result
+            const { appIdWorkflowNamesMapping } = await getUserAccessAllWorkflows(jobNames)
 
             const workflowOptions = getWorkflowOptions(appIdWorkflowNamesMapping)
             return [
@@ -377,7 +381,7 @@ const AppPermissions = () => {
             }
             return [
                 { label: 'All environments', value: SELECT_ALL_VALUE },
-                ...(environmentsList?.[ACCESS_TYPE_MAP.DEVTRON_APPS] || []).map((env) => ({
+                ...(environmentsList[ACCESS_TYPE_MAP.DEVTRON_APPS] || []).map((env) => ({
                     label: env.environment_name,
                     value: env.environmentIdentifier,
                 })),
@@ -427,7 +431,7 @@ const AppPermissions = () => {
                     .split(',')
                     .map((directRole) => ({ value: directRole, label: directRole }))
             }
-            const environmentListWithClusterCdActive = (environmentsList?.[ACCESS_TYPE_MAP.JOBS] || []).filter(
+            const environmentListWithClusterCdActive = (environmentsList[ACCESS_TYPE_MAP.JOBS] || []).filter(
                 (env) => env.isClusterCdActive,
             )
             return [
@@ -666,14 +670,14 @@ const AppPermissions = () => {
                 }
             } else if (action === ReactSelectInputAction.selectOption) {
                 // check all environments
-                const environmentListWithClusterCdActive = (environmentsList?.[currentAccessType] || []).filter(
+                const environmentListWithClusterCdActive = (environmentsList[currentAccessType] || []).filter(
                     (env) => env.isClusterCdActive,
                 )
                 tempPermissions[index][name] = [
                     { label: 'All environments', value: SELECT_ALL_VALUE },
                     ...(tempPermissions[index].entity === EntityTypes.JOB
                         ? environmentListWithClusterCdActive
-                        : environmentsList?.[currentAccessType] || []
+                        : environmentsList[currentAccessType] || []
                     ).map((env) => ({
                         label: env.environment_name,
                         value: env.environmentIdentifier,

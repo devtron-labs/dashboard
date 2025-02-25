@@ -27,16 +27,25 @@ import { OptionsOrGroups, GroupBase, Options } from 'react-select'
 import { APIRoleFilter } from '@Pages/GlobalConfigurations/Authorization/types'
 import { createClusterEnvGroup, importComponentFromFELibrary } from '../../../../../../components/common'
 import { SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
-import {
-    ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE,
-    ALLOWED_ADDITIONAL_ROLES_MAP,
-    BASE_ROLE_VALUE_TO_LABEL_MAP,
-    DirectPermissionFieldName,
-} from './constants'
+import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE, DirectPermissionFieldName } from './constants'
 import { DirectPermissionRowProps, GetRoleConfigParams, RoleSelectorToggleConfig } from './types'
 
 const getRoleConfig: (action: string, subAction: string, approver: boolean) => UserRoleConfig =
     importComponentFromFELibrary('getRoleConfig', null, 'function')
+
+const getAdditionalRolesAccordingToAccess = importComponentFromFELibrary(
+    'getAdditionalRolesAccordingToAccess',
+    null,
+    'function',
+)
+
+export const ALLOWED_ADDITIONAL_ROLES_MAP = importComponentFromFELibrary(
+    'ALLOWED_ADDITIONAL_ROLES_MAP',
+    null,
+    'function',
+)
+
+const getAccessManagerRoles = importComponentFromFELibrary('getAccessManagerRoles', null, 'function')
 
 export const getNavLinksConfig = (serverMode: SERVER_MODE, superAdmin: boolean) =>
     [
@@ -235,16 +244,7 @@ export const getRoleConfigForRoleFilter = (roleFilter: APIRoleFilter): UserRoleC
     return roleConfig
 }
 
-const getAdditionalRolesAccordingToAccess = importComponentFromFELibrary(
-    'getAdditionalRolesAccordingToAccess',
-    null,
-    'function',
-)
-
-const getAccessManagerRoles = importComponentFromFELibrary('getAccessManagerRoles', null, 'function')
-
-export const getSelectedRolesText = (roleConfig: UserRoleConfig): string => {
-    const baseRole = BASE_ROLE_VALUE_TO_LABEL_MAP[roleConfig.baseRole || '']
+export const getSelectedRolesText = (baseRole: string, roleConfig: UserRoleConfig): string => {
     const additionalRole = roleConfig.additionalRoles?.size > 0 ? 'Approver' : ''
     const accessManagerRole = roleConfig.accessManagerRoles?.size > 0 ? 'Access manager' : ''
 

@@ -29,12 +29,11 @@ import {
 import { Link, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
-
 import { PermissionGroupRowProps } from './types'
 import { deletePermissionGroup } from '../../authorization.service'
 import { useAuthorizationBulkSelection } from '../../Shared/components/BulkSelection'
 import { DeleteUserPermission } from '../../UserPermissions/DeleteUserPermission'
-import { getPermissionGroupIcon } from './utils'
+import { PermissionGroupIcon } from './PermissionGroupList.component'
 
 const PermissionGroupRow = ({
     id,
@@ -45,7 +44,7 @@ const PermissionGroupRow = ({
     isChecked = false,
     toggleChecked,
     showCheckbox,
-    superAdmin,
+    hasSuperAdminPermission,
     hasAccessManagerPermission,
 }: PermissionGroupRowProps) => {
     const { path } = useRouteMatch()
@@ -104,7 +103,10 @@ const PermissionGroupRow = ({
                             {name}
                         </Link>
                     </span>
-                    {getPermissionGroupIcon({ superAdmin, hasAccessManagerPermission })}
+                    <PermissionGroupIcon
+                        hasSuperAdminPermission={hasSuperAdminPermission}
+                        hasAccessManagerPermission={hasAccessManagerPermission}
+                    />
                 </div>
                 <span className="dc__ellipsis-right">{description || '-'}</span>
                 <div className="flex dc__gap-4">

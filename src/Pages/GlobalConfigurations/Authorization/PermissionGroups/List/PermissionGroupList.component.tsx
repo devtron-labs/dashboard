@@ -24,13 +24,36 @@ import {
     SelectAllDialogStatus,
     BulkSelectionProvider,
     BulkSelectionIdentifiersType,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
-
 import { getPermissionGroupList } from '../../authorization.service'
 import { SortableKeys } from './constants'
 import { PermissionGroup } from '../../types'
 import PermissionGroupContainer from './PermissionGroupContainer'
 import { BulkSelectionModalConfig, BulkSelectionModalTypes } from '../../Shared/components/BulkSelection'
+import { PermissionGroupRowProps } from './types'
+
+export const PermissionGroupIcon = ({
+    hasSuperAdminPermission,
+    hasAccessManagerPermission,
+}: Pick<PermissionGroupRowProps, 'hasSuperAdminPermission' | 'hasAccessManagerPermission'>) => {
+    if (!(hasAccessManagerPermission || hasAccessManagerPermission)) {
+        return null
+    }
+    return (
+        <Icon
+            name={hasSuperAdminPermission ? 'ic-crown' : 'ic-user-key'}
+            tooltipProps={{
+                content: hasSuperAdminPermission
+                    ? 'Group contains super admin permissions'
+                    : 'Group contains access manager permissions',
+                alwaysShowTippyOnHover: true,
+                placement: 'right',
+            }}
+            color={null}
+        />
+    )
+}
 
 const PermissionGroupList = () => {
     const [bulkSelectionModalConfig, setBulkSelectionModalConfig] = useState<BulkSelectionModalConfig>({

@@ -21,9 +21,9 @@ import {
     UserRoleConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
-import { JobRoleSelectorProps } from './types'
+import { RoleSelectorProps } from './types'
 
-const JobRoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: JobRoleSelectorProps) => {
+const JobRoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: RoleSelectorProps) => {
     const { customRoles } = useAuthorizationContext()
     const { possibleJobRoles } = customRoles
 
