@@ -14,90 +14,66 @@
  * limitations under the License.
  */
 
+ // Login css
 .login {
-    display: flex;
-    height: 100vh;
-    min-height: 600px;
     background-color: var(--white);
-}
-
-.login__bg {
-    background-color: #cee7ff;
-    width: 50%;
     min-height: 600px;
-}
 
-.login__image {
-    background-image: url('../../assets//img//bg-login.png');
-    min-height: 600px;
-    height: 100vh;
-    width: 100%;
-    background-size: auto 100%;
-    background-position: right;
-    background-repeat: no-repeat;
-}
-
-.login__section {
-    margin: auto;
-    width: 50%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.login__text {
-    width: 300px;
-    font-size: 16px;
-    font-weight: normal;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    text-align: center;
-    color: var(--black);
-    margin: auto;
-    margin-bottom: 48px;
-}
-
-.login__dt-logo {
-    display: block;
-    margin: auto;
-    margin-bottom: 24px;
-}
-
-.login__know-password {
-    color: var(--B500);
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 8px;
-    margin-left: 180px;
-}
-
-.login__know-password--link {
-    text-decoration: none !important;
-    line-height: 1.67;
-}
-
-.login__google {
-    width: 300px;
-    height: 48px;
-    text-align: center;
-    border-radius: 4px;
-    background-color: var(--white);
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 3.5;
-    letter-spacing: normal;
-    color: var(--black);
-    user-select: none;
-    margin: auto;
-    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.5);
-
-    &:hover {
-        text-decoration: none;
-        color: var(--black-80);
+    .login__bg {
+        background-color: #cee7ff;
     }
+
+    .login__image {
+        background-image: url('../../assets//img//bg-login.png');
+        min-height: 600px;
+        height: 100vh;
+        width: 100%;
+        background-size: auto 100%;
+        background-position: right;
+        background-repeat: no-repeat;
+    }
+
+    .login-card__wrapper {
+        border: 1px solid var(--border-primary);
+        box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.04), 0px 2px 6px 0px rgba(0, 0, 0, 0.04), 0px 4px 12px 0px rgba(0, 0, 0, 0.10);
+        color-scheme: dark;
+        background-color: var(--black);
+    }
+
+    .login__know-password--link {
+        text-decoration: none !important;
+        line-height: 1.67;
+    }
+}
+
+// SSO login & GitOps configuration css
+
+.login__btn {
+    border: none;
+    outline: none;
+    background: none;
+
+    &:focus {
+        outline: 0;
+    }
+}
+
+.login__auth-link {
+    text-decoration: none !important;
+    color: var(--B500);
+}
+
+
+.login__icon-alignment {
+    text-align: center;
+    padding: 2px;
+}
+
+.login__text-alignment {
+    text-align: center;
+    color: var(--N900);
+    margin: 8px 0 0;
+    font-size: 13px;
 }
 
 .text-input {
@@ -145,68 +121,22 @@
     }
 }
 
-.login__title {
-    padding: 22px 24px;
-    color: var(--N900);
-    font-weight: 600;
-    font-size: 16px;
-    height: 64px;
-    background-color: var(--bg-primary);
+.sso-icons {
+    position: relative;
+    border-radius: 4px;
+    border: solid 1px var(--N200);
+    cursor: pointer;
+    box-sizing: border-box;
+    display: block;
+    width: 96px;
+    padding: 12px 16px;
+    height: 84px;
 }
 
 .login__sso-flex {
-	display: flex;
-	flex-wrap: wrap;
-	flex-direction: row;
-}
-
-.login__flex {
     display: flex;
-    text-align: center;
-    justify-content: center;
-}
-
-.sso-icons {
-	position: relative;
-	border-radius: 4px;
-	border: solid 1px var(--N200);
-	cursor: pointer;
-	box-sizing: border-box;
-	display: block;
-	width: 96px;
-	padding: 12px 16px;
-	height: 84px;
-}
-
-.login__codeblock {
-    border-radius: 4px;
-    border: solid 1px var(--N200);
-    background-color: var(--N100);
-    padding-left: 16px;
-    margin: 0 24px 0 24px;
-}
-
-.login__text-alignment {
-    text-align: center;
-    color: var(--N900);
-    margin: 8px 0 0;
-    font-size: 13px;
-}
-
-.login__icon-alignment {
-    text-align: center;
-    padding: 2px;
-}
-
-.login__check-icon {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-}
-
-.login__auth-link {
-    text-decoration: none !important;
-    color: var(--B500);
+    flex-wrap: wrap;
+    flex-direction: row;
 }
 
 .sso__warn-button {
@@ -219,22 +149,16 @@
     }
 }
 
-.login__btn {
-    border: none;
-    outline: none;
-    background: none;
-
-    &:focus {
-        outline: 0;
-    }
-}
-
-// This is intended to be removed once login page is revamped before shipping dark mode
-.login-dt__form {
-    & input {
-        color-scheme: light;
-        background: #f7fafc;
-        border-color: #d0d4d9;
-        color: #3b444c;
-    }
+.login__text {
+    width: 300px;
+    font-size: 16px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    text-align: center;
+    color: var(--black);
+    margin: auto;
+    margin-bottom: 48px;
 }

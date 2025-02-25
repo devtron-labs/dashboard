@@ -37,3 +37,7 @@ export interface LoginFormState {
 export interface LoginProps extends RouteComponentProps<{}> {
     setEmail: UseUserEmailContextType['setEmail']
 }
+
+export interface LoginCardProps {
+    renderContent: () => JSX.Element
+}

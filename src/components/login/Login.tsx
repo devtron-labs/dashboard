@@ -15,12 +15,11 @@
  */
 
 import React, { Component } from 'react'
-import { Switch, Redirect, Route, NavLink } from 'react-router-dom'
+import { Switch, Redirect, Route } from 'react-router-dom'
 import {
     getCookie,
     ServerErrors,
     Host,
-    Progressing,
     showError,
     CustomInput,
     withUserEmail,
@@ -31,16 +30,17 @@ import {
     ComponentSizeType,
     ButtonComponentType,
     ButtonVariantType,
+    ButtonStyleType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
-import LoginIcons from '../../assets/icons/LoginSprite.svg'
-import dt from '../../assets/icons/logo/logo-dt.svg'
-import { URLS, DOCUMENTATION, TOKEN_COOKIE_NAME, PREVIEW_DEVTRON, PRIVACY_POLICY } from '../../config'
+import { URLS, DOCUMENTATION, TOKEN_COOKIE_NAME } from '../../config'
 import { LoginProps, LoginFormState } from './login.types'
 import { loginAsAdmin } from './login.service'
 import { dashboardAccessed } from '../../services/service'
 import './login.scss'
 import { getSSOConfigList } from '../../Pages/GlobalConfigurations/Authorization/SSOLoginServices/service'
+import { LoginCard } from './LoginCard'
+import { LoginIcons } from './LoginIcons'
 
 const NetworkStatusInterface = !importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
 
@@ -56,14 +56,12 @@ class Login extends Component<LoginProps, LoginFormState> {
                 password: '',
             },
         }
-        this.handleChange = this.handleChange.bind(this)
-        // this.autoFillLogin = this.autoFillLogin.bind(this)
-        this.login = this.login.bind(this)
-        this.isFormNotValid = this.isFormNotValid.bind(this)
     }
 
     componentDidMount() {
-        const queryString = new URLSearchParams(this.props.location.search)
+        const { location, history } = this.props
+        const { search, pathname } = location
+        const queryString = new URLSearchParams(search)
         let queryParam = queryString.get('continue')
 
         // 1. TOKEN_COOKIE_NAME= 'argocd.token', is the only token unique to a user generated as Cookie when they log in,
@@ -79,12 +77,14 @@ class Login extends Component<LoginProps, LoginFormState> {
                 variant: ToastVariantType.error,
                 description: 'Please login again',
             })
-
         }
         if (queryParam && queryParam.includes('login')) {
-            queryParam = window._env_.HIDE_NETWORK_STATUS_INTERFACE || !NetworkStatusInterface ? URLS.APP : CommonURL.NETWORK_STATUS_INTERFACE
-            const url = `${this.props.location.pathname}?continue=${queryParam}`
-            this.props.history.push(url)
+            queryParam =
+                window._env_.HIDE_NETWORK_STATUS_INTERFACE || !NetworkStatusInterface
+                    ? URLS.APP
+                    : CommonURL.NETWORK_STATUS_INTERFACE
+            const url = `${pathname}?continue=${queryParam}`
+            history.push(url)
         }
         if (!queryParam) {
             queryParam = ''
@@ -92,6 +92,7 @@ class Login extends Component<LoginProps, LoginFormState> {
         this.setState({
             continueUrl: encodeURI(`${window.location.origin}/orchestrator${window.__BASE_URL__}${queryParam}`),
         })
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         getSSOConfigList().then((response) => {
             const list = response.result || []
             this.setState({
@@ -112,37 +113,29 @@ class Login extends Component<LoginProps, LoginFormState> {
         }
     }
 
-    handleChange(e: React.ChangeEvent<HTMLInputElement>): void {
+    handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+        const { form } = this.state
         e.persist()
         this.setState({
             form: {
-                ...this.state.form,
+                ...form,
                 [e.target.name]: e.target.value,
             },
         })
     }
 
-    // autoFillLogin(): void {
-    //     this.setState({ form: { username: 'admin', password: import.meta.env.REACT_APP_PASSWORD } })
-    // }
-
-    isFormNotValid(): boolean {
+    isFormNotValid = (): boolean => {
+        const { form } = this.state
         let isValid = true
         const keys = ['username', 'password']
         keys.map((key) => {
             if (key === 'password') {
-                isValid = isValid && this.state.form[key]?.length >= 6
+                isValid = isValid && form[key]?.length >= 6
             } else {
-                isValid = isValid && this.state.form[key]?.length
+                isValid = isValid && form[key]?.length
             }
         })
         return !isValid
-    }
-
-    onClickSSO = (): void => {
-        if (typeof Storage !== 'undefined') {
-            localStorage.setItem('isSSOLogin', 'true')
-        }
     }
 
     getDefaultRedirectionURL = (): string => {
@@ -159,17 +152,19 @@ class Login extends Component<LoginProps, LoginFormState> {
         return window._env_.FEATURE_DEFAULT_LANDING_RB_ENABLE ? URLS.RESOURCE_BROWSER : URLS.APP
     }
 
-    login(e): void {
+    onSubmitLogin = (e): void => {
+        const { form } = this.state
+        const { setEmail, history } = this.props
         e.preventDefault()
-        const data = this.state.form
+        const data = form
         this.setState({ loading: true })
         loginAsAdmin(data)
             .then((response) => {
                 if (response.result.token) {
                     this.setState({ loading: false })
                     const url = this.getDefaultRedirectionURL()
-                    this.props.setEmail(data.username)
-                    this.props.history.push(url)
+                    setEmail(data.username)
+                    history.push(url)
                     localStorage.setItem('isAdminLogin', 'true')
                 }
             })
@@ -179,55 +174,51 @@ class Login extends Component<LoginProps, LoginFormState> {
             })
     }
 
-    renderLoginPrivacyText = () => {
-        if (window.location.origin === PREVIEW_DEVTRON) {
-            return (
-                <div className="flex mt-12">
-                    By logging in, you agree to our
-                    <a href={PRIVACY_POLICY} target="blank" className="ml-4 bc-5">
-                        Privacy Policy
-                    </a>
-                </div>
-            )
-        }
-    }
-
-    renderSSOLoginPage() {
+    renderSSOLoginPage = () => {
         const { search } = this.props.location
+        const { loginList, continueUrl } = this.state
 
+        const onClickSSO = (): void => {
+            if (typeof Storage !== 'undefined') {
+                localStorage.setItem('isSSOLogin', 'true')
+            }
+            return null
+        }
         return (
-            <div className="login__control">
-                <img
-                    src={window._env_.LOGIN_DT_LOGO || dt}
-                    alt="login-dt-logo"
-                    className="login__dt-logo"
-                    width="170px"
-                    height="120px"
-                />
-
-                <p className="login__text">Your tool for Rapid, Reliable & Repeatable deployments</p>
-                {this.state.loginList
+            <div className="flexbox-col dc__gap-12">
+                {loginList
                     .filter((sso) => sso.active)
-                    .map((item) => {
-                        return (
-                            <a
-                                href={`${Host}${URLS.AUTHENTICATE}?return_url=${this.state.continueUrl}`}
-                                className="login__google flex"
-                                onClick={this.onClickSSO}
-                                key={item.name}
-                            >
-                                <svg className="icon-dim-24 mr-8" viewBox="0 0 24 24">
-                                    <use href={`${LoginIcons}#${item.name}`} />
-                                </svg>
-                                Login with
-                                <span className="ml-5 dc__first-letter-capitalize" data-testid="login-with-text">
-                                    {item.name}
-                                </span>
-                            </a>
-                        )
-                    })}
-                {this.renderLoginPrivacyText()}
-                <div className="flex mt-20 mb-40">
+                    .map((item) => (
+                        //     <a
+                        //     href={`${Host}${URLS.AUTHENTICATE}?return_url=${this.state.continueUrl}`}
+                        //     className="login__google flex"
+                        //     onClick={this.onClickSSO}
+                        //     key={item.name}
+                        // >
+                        //     <svg className="icon-dim-24 mr-8" viewBox="0 0 24 24">
+                        //         <use href={`${LoginIcons}#${item.name}`} />
+                        //     </svg>
+                        //     Login with
+                        //     <span className="ml-5 dc__first-letter-capitalize" data-testid="login-with-text">
+                        //         {item.name}
+                        //     </span>
+                        // </a>
+
+                        <Button
+                            component={ButtonComponentType.link}
+                            variant={ButtonVariantType.secondary}
+                            linkProps={{
+                                to: `${Host}${URLS.AUTHENTICATE}?return_url=${continueUrl}`,
+                            }}
+                            text={`Login with ${item.name}`}
+                            key={item.name}
+                            onClick={onClickSSO}
+                            dataTestId={`login-with-${item.name}`}
+                            style={ButtonStyleType.neutral}
+                            startIcon={<LoginIcons ssoName={item.name} />}
+                        />
+                    ))}
+                <div className="flex">
                     <Button
                         component={ButtonComponentType.link}
                         variant={ButtonVariantType.text}
@@ -242,82 +233,75 @@ class Login extends Component<LoginProps, LoginFormState> {
         )
     }
 
-    renderAdminLoginPage() {
+    renderAdminLoginPage = () => {
         const { search } = this.props.location
+        const { form, loading, loginList } = this.state
 
         return (
-            <div className="login__control">
-                <img
-                    src={window._env_.LOGIN_DT_LOGO || dt}
-                    alt="login-dt-logo"
-                    className="login__dt-logo"
-                    width="170px"
-                    height="120px"
-                />
-                <p className="login__text">Your tool for Rapid, Reliable & Repeatable deployments</p>
-                <form className="login-dt__form" autoComplete="on" onSubmit={this.login}>
-                    <div className="flexbox-col dc__gap-24">
-                        <CustomInput
-                            data-testid="username-textbox"
-                            placeholder="Username"
-                            value={this.state.form.username}
-                            name="username"
-                            onChange={this.handleChange}
+            <form className="login-dt__form" autoComplete="on" onSubmit={this.onSubmitLogin}>
+                <div className="flexbox-col dc__gap-16">
+                    <CustomInput
+                        data-testid="username-textbox"
+                        placeholder="Enter username"
+                        value={form.username}
+                        name="username"
+                        onChange={this.handleChange}
+                        label="User ID"
+                        required
+                    />
+                    <CustomInput
+                        type={import.meta.env.PROD ? 'password' : 'text'}
+                        placeholder="Enter password"
+                        value={form.password}
+                        name="password"
+                        onChange={this.handleChange}
+                        label="Password"
+                        required
+                    />
+                </div>
+                <a
+                    className="login__know-password--link fs-12 cb-5"
+                    rel="noreferrer noopener"
+                    target="_blank"
+                    href={DOCUMENTATION.ADMIN_PASSWORD}
+                >
+                    What is my admin password?
+                </a>
+                <div className="flex column dc__gap-12">
+                    <div className="w-100">
+                        <Button
+                            disabled={this.isFormNotValid() || loading}
+                            isLoading={loading}
+                            dataTestId="login-button"
+                            text="Login"
+                            fullWidth
+                            size={ComponentSizeType.xl}
+                            buttonProps={{
+                                type: 'submit',
+                            }}
                         />
-                        <CustomInput
-                            type={import.meta.env.PROD ? 'password' : 'text'}
-                            placeholder="Password"
-                            value={this.state.form.password}
-                            name="password"
-                            onChange={this.handleChange}
+                    </div>
+                    {loginList.length > 0 && (
+                        <Button
+                            dataTestId="sso-login"
+                            text="Login using SSO service"
+                            component={ButtonComponentType.link}
+                            linkProps={{
+                                to: `${URLS.LOGIN_SSO}${search}`,
+                            }}
+                            variant={ButtonVariantType.text}
                         />
-                    </div>
-                    <div className="login__know-password">
-                        <a
-                            className="login__know-password--link fs-12 cb-5"
-                            rel="noreferrer noopener"
-                            target="_blank"
-                            href={DOCUMENTATION.ADMIN_PASSWORD}
-                        >
-                            What is my admin password?
-                        </a>
-                    </div>
-                    <div className="mt-32 flex column dc__gap-16">
-                        <div className="w-100">
-                            <Button
-                                disabled={this.isFormNotValid() || this.state.loading}
-                                isLoading={this.state.loading}
-                                dataTestId="login-button"
-                                text="Login"
-                                fullWidth
-                                size={ComponentSizeType.xl}
-                                buttonProps={{
-                                    type: 'submit',
-                                }}
-                            />
-                        </div>
-                        {this.state.loginList.length > 0 && (
-                            <Button
-                                dataTestId="sso-login"
-                                text="Login using SSO service"
-                                component={ButtonComponentType.link}
-                                linkProps={{
-                                    to: `${URLS.LOGIN_SSO}${search}`,
-                                }}
-                                variant={ButtonVariantType.text}
-                            />
-                        )}
-                    </div>
-                </form>
-            </div>
+                    )}
+                </div>
+            </form>
         )
     }
 
     render() {
         return (
-            <div className="login">
+            <div className="login flex">
                 <div
-                    className="login__bg"
+                    className="login__bg w-50"
                     style={
                         window?._env_?.LOGIN_PAGE_IMAGE_BG ? { backgroundColor: window._env_.LOGIN_PAGE_IMAGE_BG } : {}
                     }
@@ -331,20 +315,14 @@ class Login extends Component<LoginProps, LoginFormState> {
                         }
                     />
                 </div>
-                <div className="login__section">
+                <div className="w-50 flex">
                     <Switch>
-                        <Route
-                            path={`${URLS.LOGIN_SSO}`}
-                            render={(props) => {
-                                return this.renderSSOLoginPage()
-                            }}
-                        />
-                        <Route
-                            path={`${URLS.LOGIN_ADMIN}`}
-                            render={(props) => {
-                                return this.renderAdminLoginPage()
-                            }}
-                        />
+                        <Route path={`${URLS.LOGIN_SSO}`}>
+                            <LoginCard renderContent={this.renderSSOLoginPage} />
+                        </Route>
+                        <Route path={`${URLS.LOGIN_ADMIN}`}>
+                            <LoginCard renderContent={this.renderAdminLoginPage} />
+                        </Route>
                         <Redirect to={`${URLS.LOGIN_SSO}`} />
                     </Switch>
                 </div>
