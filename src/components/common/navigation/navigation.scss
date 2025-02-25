@@ -200,6 +200,12 @@
             }
         }
 
+        .active-nav {
+            .svg-container {
+                background: var(--bg-hover);
+            }
+        }
+
         &:hover {
             background: var(--bg-sidebar-modern-layout);
             border-right: 1px solid var(--border-primary);
@@ -341,7 +347,7 @@
     &:hover {
         .svg-container,
         .short-nav__icon-container {
-            // background: #00000059;
+            background: #00000059;
             border-radius: 8px;
         }
     }

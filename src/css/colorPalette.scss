@@ -100,10 +100,14 @@
     --backdrop-bg: #000000bf;
 
     --border-primary: var(--N200);
+    --border-primary-translucent: #FFFFFF33;
     --border-secondary: var(--N100);
+    --border-secondary-translucent: #FFFFFF1A;
 
-    --divider-primary: var(--N200);
-    --divider-secondary: var(--N100);
+    --divider-primary: var(--border-primary);
+    --divider-primary-translucent: var(--border-primary-translucent);
+    --divider-secondary: var(--border-secondary);
+    --divider-secondary-translucent: var(--border-secondary-translucent);
 }
 
 @mixin theme-dark {
@@ -194,11 +198,15 @@
 
     --backdrop-bg: var(--black-60);
 
-    --border-primary: #FFFFFF33;
-    --border-secondary: #FFFFFF1A;
+    --border-primary: var(--N200);
+    --border-primary-translucent: #FFFFFF33;
+    --border-secondary: var(--N100);
+    --border-secondary-translucent: #FFFFFF1A;
 
-    --divider-primary: #FFFFFF33;
-    --divider-secondary: #FFFFFF1A;
+    --divider-primary: var(--border-primary);
+    --divider-primary-translucent: var(--border-primary-translucent);
+    --divider-secondary: var(--border-secondary);
+    --divider-secondary-translucent: var(--border-secondary-translucent);
 }
 
 :root {
