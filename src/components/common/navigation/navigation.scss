@@ -244,6 +244,7 @@
             border-right: 1px solid var(--border-primary);
             box-shadow: var(--shadow-modal);
             transition: width $transition-duration ease-in $transition-delay, background 150ms ease-in $transition-delay, border-right $transition-duration ease-in $transition-delay, box-shadow $transition-duration ease-in $transition-delay;
+            box-shadow: 0 0 0 10000px var(--backdrop-bg);
         }
     }
 }
