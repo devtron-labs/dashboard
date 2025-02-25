@@ -190,51 +190,12 @@
         background: var(--transparent);
         transition: width $transition-duration ease-out, background 150ms ease-out 200ms;
 
-        .nav-grid {
-                a,
-                button {
-                    &:hover {
-                        color: var(--N900);
-                    }
-                }
-        }
-
-        .title-container {
-            color: var(--N900);
-        }
-
         .short-nav {
             a {
                 &:hover {
                     .svg-container {
                         background: var(--bg-hover);
                     }
-                }
-
-                &.active-nav {
-                    .short-nav__item-selected {
-                        background-color: var(--B500);
-                    }
-
-                    .title-container {
-                        color: var(--B500);
-                    }
-                }
-
-                &:not(.active-nav):focus {
-                    .svg-container {
-                        border: 1px solid var(--N900);
-                    }
-                }
-            }
-        }
-
-        .active-nav {
-            .svg-container {
-                background: var(--B100);
-
-                svg {
-                    --iconColor: var(--B500) !important;
                 }
             }
         }

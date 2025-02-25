@@ -19,15 +19,5 @@
         >path:first-child {
             fill: var(--bg-sidebar);
         }
-
-        &--modern-layout {
-            &:first-child {
-                fill: var(--bg-tertiary);
-            }
-        
-            &:last-child {
-                fill: var(--B500);
-            }
-        }
     }
 }

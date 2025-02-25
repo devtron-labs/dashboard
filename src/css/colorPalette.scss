@@ -92,9 +92,10 @@
     --bg-tooltip-black: var(--N900);
     --bg-toast: var(--N800);
     --bg-sidebar: var(--B500);
-    --bg-sidebar-modern-layout: var(--bg-tertiary);
+    --bg-sidebar-modern-layout: var(--B500);
     --bg-shimmer-loader: linear-gradient(90deg, var(--N200) 0%, var(--N50) 50%, var(--N200) 80%);
     --bg-hover: #edf1f5bf;
+    --bg-body: linear-gradient(90deg, var(--B500) 0%, #0052A5 10%, #002F5E 50%, #002141 100%);
 
     --backdrop-bg: #000000bf;
 
@@ -189,6 +190,7 @@
     --bg-sidebar-modern-layout: #2C2D35;
     --bg-shimmer-loader: linear-gradient(90deg, var(--N50) 0%, var(--N200) 50%, var(--N50) 80%);
     --bg-hover: rgba(255, 255, 255, 0.07);
+    --bg-body: var(--bg-tertiary);
 
     --backdrop-bg: var(--black-60);
 

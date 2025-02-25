@@ -18,24 +18,20 @@ import { getRandomColor } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICDevtron } from '../../../assets/icons/ic-devtron-blue-outline.svg'
 import './organizationFrame.scss'
 
-const isModernLayoutEnabled = window._env_.FEATURE_EXPERIMENTAL_MODERN_LAYOUT_ENABLE
-
 const OrganizationFrame = () => (
     <div className="w-36 h-42 dc__no-shrink flexbox dc__position-rel dc__content-center">
         <div
-            className={`icon-dim-28 dc__no-shrink ${isModernLayoutEnabled ? 'dc__border--n9' : 'border__white'} flex py-3 px-1 br-4`}
+            className="icon-dim-28 dc__no-shrink dc__border--white flex py-3 px-1 br-4"
             style={{
                 backgroundColor: getRandomColor(window._env_.ORGANIZATION_NAME || ''),
             }}
         >
-            <span className={`${isModernLayoutEnabled ? 'cn-9' : 'text__white'} fs-13 fw-6 lh-16 h-16`}>
+            <span className="text__white fs-13 fw-6 lh-16 h-16">
                 {window._env_.ORGANIZATION_NAME?.slice(0, 2)?.toLocaleUpperCase()}
             </span>
         </div>
 
-        <ICDevtron
-            className={`icon-dim-20 dc__no-shrink dc__position-abs dc__bottom-0 organization-frame__logo ${isModernLayoutEnabled ? 'organization-frame__logo--modern-layout' : ''}`}
-        />
+        <ICDevtron className="icon-dim-20 dc__no-shrink dc__position-abs dc__bottom-0 organization-frame__logo" />
     </div>
 )
 
