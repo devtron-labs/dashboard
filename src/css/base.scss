@@ -46,7 +46,8 @@ body {
         Cantarell,
         'Helvetica Neue',
         sans-serif;
-    background: var(--bg-body);
+    // Added fallback styling to bg tertiary (loaded from index.css)
+    background: var(--bg-body, var(--bg-tertiary));
 
     a {
         color: var(--B500);
