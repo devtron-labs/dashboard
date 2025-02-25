@@ -94,12 +94,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         }
     }
 
-    componentDidUpdate(prevProps) {
-        if (this.props.serverMode !== prevProps.serverMode) {
-            this.initialise()
-        }
-    }
-
     initialise() {
         if (this.timerRef) {
             clearInterval(this.timerRef)
