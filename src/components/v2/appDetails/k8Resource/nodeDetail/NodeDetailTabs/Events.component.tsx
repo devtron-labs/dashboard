@@ -96,13 +96,11 @@ const EventsComponent = ({
     }
 
     return (
-        <div className={`flexbox-col flex-grow-1 ${getComponentSpecificThemeClass(AppThemeType.dark)}`}>
-            <div
-                className="flex-grow-1"
-                style={{ background: 'var(--terminal-bg)' }}
-            >
-                {renderContent()}
-            </div>
+        <div
+            className="flex-grow-1"
+            style={{ background: 'var(--terminal-bg)' }}
+        >
+            {renderContent()}
         </div>
     )
 }
