@@ -194,7 +194,7 @@
             a {
                 &:hover {
                     .svg-container {
-                        background: var(--bg-hover);
+                        background: var(--bg-sidebar-item-selected);
                     }
                 }
             }
@@ -202,7 +202,7 @@
 
         .active-nav {
             .svg-container {
-                background: var(--bg-hover);
+                background: var(--bg-sidebar-item-selected);
             }
         }
 
