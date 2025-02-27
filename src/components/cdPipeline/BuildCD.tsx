@@ -751,9 +751,7 @@ export default function BuildCD({
                                             onChange: (event) =>
                                                 handleStrategyChange(event, strategy.deploymentTemplate, 'yaml'),
                                         }}
-                                    >
-                                        <CodeEditor.Header className="code-editor" />
-                                    </CodeEditor>
+                                    />
                                 </div>
                             )}
                         </div>

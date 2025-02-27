@@ -256,11 +256,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderCodeEditorBody = () => {
         return (
-            <div className="code-editor-body">
+            <div className="code-editor-body bg__primary flexbox-col flex-grow-1">
                 <CodeEditor
                     mode={MODES.YAML}
                     codeEditorProps={{
-                        height: 'calc(60vh - 97px)',
+                        height: '0',
                         value: this.state.codeEditorPayload,
                         onChange: this.handleConfigChange,
                     }}
@@ -675,7 +675,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderBulkCodeEditor = () => {
         return (
-            <div className="dc__border-right">
+            <div className="flexbox-col">
                 {this.renderCodeEditorHeader()}
                 {this.renderCodeEditorBody()}
             </div>
@@ -694,8 +694,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderCodeEditorAndReadme = () => {
         return (
             <div className="bulk-container vertical-divider">
-                <div>{this.renderBulkCodeEditor()}</div>
-                <div>{this.renderReadmeSection()}</div>
+                {this.renderBulkCodeEditor()}
+                {this.renderReadmeSection()}
             </div>
         )
     }

@@ -24,6 +24,7 @@ import {
     CodeEditor,
     MarkDown,
     MODES,
+    isCodeMirrorEnabled,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import { Select, mapByKey, useKeyDown, Info, Pencil } from '../common'
@@ -190,7 +191,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({
 
     return (
         <>
-            <div className="advanced-config flex">
+            <div className="advanced-config flexbox flex-grow-1">
                 <form action="" className="advanced-config__form">
                     <h1 className="form__title form__title--mb-24" data-testid="advanced-option-heading">
                         {chartName}
@@ -374,7 +375,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({
                             </div>
                         </div>
                     )}
-                    <div className="code-editor-container" data-testid="code-editor-code-editor-container">
+                    <CodeEditor.Container>
                         <CodeEditor
                             codeEditorProps={{
                                 value: valuesYaml,
@@ -430,7 +431,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({
                                 <CodeEditor.Warning text="The values configuration was created for a different chart version. Review the diff before continuing." />
                             ) : null}
                         </CodeEditor>
-                    </div>
+                    </CodeEditor.Container>
                 </form>
             </div>
             {showReadme && (
@@ -650,7 +651,16 @@ const ValuesDiffViewer = ({
                         <Pencil style={{ marginLeft: 'auto' }} />
                     </h5>
                 </div>
-                <div className="readme-config--body" style={{ gridTemplateColumns: '1fr' }}>
+                <div
+                    {...(isCodeMirrorEnabled()
+                        ? {
+                              className: 'mw-none mh-0',
+                          }
+                        : {
+                              className: 'readme-config--body',
+                              style: { gridTemplateColumns: '1fr' },
+                          })}
+                >
                     <CodeEditor
                         mode={MODES.YAML}
                         noParsing
@@ -661,13 +671,13 @@ const ValuesDiffViewer = ({
                             value: valuesYaml,
                             defaultValue: originalValuesYaml,
                             height: '100%',
-                            onChange: onChange ? (valuesYaml) => onChange(valuesYaml) : () => {}
+                            onChange: onChange ? (valuesYaml) => onChange(valuesYaml) : () => {},
                         }}
                         codeMirrorProps={{
                             modifiedValue: valuesYaml,
                             originalValue: originalValuesYaml,
                             height: '100%',
-                            onModifiedValueChange: onChange ? (valuesYaml) => onChange(valuesYaml) : () => {}
+                            onModifiedValueChange: onChange ? (valuesYaml) => onChange(valuesYaml) : () => {},
                         }}
                     />
                 </div>

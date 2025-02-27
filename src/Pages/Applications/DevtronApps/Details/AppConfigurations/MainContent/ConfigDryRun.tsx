@@ -106,7 +106,7 @@ const ConfigDryRun = ({
                 }}
                 codeMirrorProps={{
                     value: editorTemplate,
-                    height: '100%',
+                    height: 'fitToParent',
                     ...(editorSchema && { validatorSchema: editorSchema }),
                     ...(selectedChartVersion && { chartVersion: selectedChartVersion?.replace(/\./g, '-') }),
                 }}
@@ -171,7 +171,7 @@ const ConfigDryRun = ({
                             }}
                             codeMirrorProps={{
                                 value: manifestResponse?.result?.data || '',
-                                height: '100%',
+                                height: 'fitToParent',
                             }}
                         />
                     </APIResponseHandler>

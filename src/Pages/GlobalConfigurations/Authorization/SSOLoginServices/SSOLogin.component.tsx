@@ -44,6 +44,7 @@ import {
     ConfirmationModal,
     ConfirmationModalVariantType,
     MODES,
+    isCodeMirrorEnabled,
 } from '@devtron-labs/devtron-fe-common-lib'
 import yamlJsParser from 'yaml'
 import Check from '@Icons/ic-selected-corner.png'
@@ -631,17 +632,15 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }
         const value = YAMLStringify(newConfig)
 
-        setTimeout(() => {
-            this.setState({
-                ssoConfig: {
-                    ...this.state.ssoConfig,
-                    config: {
-                        ...this.state.ssoConfig.config,
-                        config: value,
-                    },
+        this.setState({
+            ssoConfig: {
+                ...this.state.ssoConfig,
+                config: {
+                    ...this.state.ssoConfig.config,
+                    config: value,
                 },
-            })
-        }, 0)
+            },
+        })
     }
 
     renderSSOCodeEditor() {
@@ -661,7 +660,9 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             this.state.configMap === SwitchItemValues.Configuration ? ssoConfig : YAMLStringify(sample[this.state.sso])
 
         let presetConfig = (
-            <div className="w-100 code-editor__text">
+            <div
+                className={`w-100 code-editor__text ${!isCodeMirrorEnabled() ? 'code-editor__text--monaco-editor' : ''}`}
+            >
                 <p className="m-0">config:</p>
                 <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
                 <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;name: {this.state.ssoConfig.config.name}</p>
@@ -672,7 +673,9 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
         if (this.state.configMap === SwitchItemValues.Configuration && this.state.sso === OIDCType) {
             presetConfig = (
-                <div className="w-100 code-editor__text">
+                <div
+                    className={`w-100 code-editor__text ${!isCodeMirrorEnabled() ? 'code-editor__text--monaco-editor' : ''}`}
+                >
                     <p className="m-0">config:</p>
                     <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
                 </div>
@@ -683,7 +686,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
         const decorationWidth = this.state.sso !== OIDCType ? 50 : 25
         return (
-            <div className="br-4 dc__border w-100 dc__overflow-hidden">
+            <CodeEditor.Container>
                 <CodeEditor
                     mode={MODES.YAML}
                     noParsing={this.state.sso === OIDCType}
@@ -702,7 +705,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         shebang: shebangHtml,
                         onChange: this.handleConfigChange,
                         onBlur: this.handleOnBlur,
-                        height: 'fitToParent',
+                        height: 'auto',
                     }}
                 >
                     <CodeEditor.Header>
@@ -723,7 +726,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </div>
                     </CodeEditor.Header>
                 </CodeEditor>
-            </div>
+            </CodeEditor.Container>
         )
     }
 

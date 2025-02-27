@@ -474,27 +474,26 @@ const ChartDeploymentHistory = ({
             )
         }
         return (
-            <div className="bg__primary border-btm h-100">
-                <CodeEditor
-                    noParsing
-                    mode={MODES.YAML}
-                    readOnly
-                    codeEditorProps={{
-                        value:
-                            selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
-                                ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
-                                : getEditorValue(selectedDeploymentManifestDetail.manifest),
-                        height: '100%',
-                    }}
-                    codeMirrorProps={{
-                        value:
-                            selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
-                                ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
-                                : getEditorValue(selectedDeploymentManifestDetail.manifest),
-                        height: '100%',
-                    }}
-                />
-            </div>
+            <CodeEditor
+                key={selectedDeploymentTabName}
+                noParsing
+                mode={MODES.YAML}
+                readOnly
+                codeEditorProps={{
+                    value:
+                        selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
+                            ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
+                            : getEditorValue(selectedDeploymentManifestDetail.manifest),
+                    height: '100%',
+                }}
+                codeMirrorProps={{
+                    value:
+                        selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
+                            ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
+                            : getEditorValue(selectedDeploymentManifestDetail.manifest),
+                    height: 'fitToParent',
+                }}
+            />
         )
     }
 
@@ -511,7 +510,7 @@ const ChartDeploymentHistory = ({
 
         return (
             <div
-                className={`trigger-outputs-container h-100 ${
+                className={`trigger-outputs-container flex-grow-1 flexbox-col ${
                     selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SOURCE ? 'pt-20' : ''
                 }`}
                 data-testid="trigger-output-container"

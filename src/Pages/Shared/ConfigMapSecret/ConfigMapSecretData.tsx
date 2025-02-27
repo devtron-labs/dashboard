@@ -307,7 +307,7 @@ export const ConfigMapSecretData = ({
                         onChange: !isLocked && !data.isResolvedData ? onChange : noop,
                         onFocus,
                         inline: true,
-                        height: 350,
+                        adjustEditorHeightToContent: true,
                         shebang: sheBangText,
                     }}
                     codeMirrorProps={{
