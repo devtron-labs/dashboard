@@ -149,6 +149,10 @@
 
     &__secondary-translucent {
         border: 1px solid var(--border-secondary-translucent);
+
+        &--bottom {
+            border-bottom: 1px solid var(--border-secondary-translucent);
+        }
     }
 
     &__white {
