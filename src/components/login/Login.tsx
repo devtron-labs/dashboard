@@ -35,6 +35,7 @@ import {
     useSearchString,
     getComponentSpecificThemeClass,
     AppThemeType,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as Help } from '@Icons/ic-help-outline.svg'
@@ -64,14 +65,7 @@ const Login = () => {
     const history = useHistory()
     const { setEmail } = useUserEmail()
 
-    const fetchSSOConfigList = async () => {
-        try {
-            const response = await getSSOConfigList()
-            setLoginList(response.result)
-        } catch {
-            showError('Failed to fetch SSO config list')
-        }
-    }
+    const [, initResult] = useAsync(() => Promise.allSettled([getSSOConfigList(), dashboardAccessed()]), [])
 
     const setLoginNavigationURL = () => {
         let queryParam = searchParams.continue
@@ -106,24 +100,19 @@ const Login = () => {
     }
 
     useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        fetchSSOConfigList()
-
-        setLoginNavigationURL()
-
+        if (initResult[0].status === 'fulfilled' && initResult[0].value.result) {
+            setLoginList(initResult[0].value.result || [])
+        }
         if (typeof Storage !== 'undefined') {
             if (localStorage.isDashboardAccessed) {
                 return
             }
-            try {
-                const response = dashboardAccessed()
-                if (response) {
-                    localStorage.isDashboardAccessed = true
-                }
-            } catch (e) {
-                showError(e)
+
+            if (initResult[1].status === 'fulfilled' && initResult[1].value.result) {
+                localStorage.isDashboardAccessed = true
             }
         }
+        setLoginNavigationURL()
     }, [])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
