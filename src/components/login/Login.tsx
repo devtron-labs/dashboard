@@ -31,6 +31,8 @@ import {
     ButtonVariantType,
     ButtonStyleType,
     useUserEmail,
+    PasswordField,
+    useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as Help } from '@Icons/ic-help-outline.svg'
@@ -41,61 +43,37 @@ import { dashboardAccessed } from '../../services/service'
 import './login.scss'
 import { getSSOConfigList } from '../../Pages/GlobalConfigurations/Authorization/SSOLoginServices/service'
 import { LoginCard } from './LoginCard'
-import { LoginFormState } from './login.types'
 import { SSOProvider } from './constants'
+import { SSOConfig } from './login.types'
 
 const NetworkStatusInterface = !importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
 
 const Login = () => {
-    const [state, setState] = useState<LoginFormState>({
-        continueUrl: '',
-        loginList: [],
-        loading: false,
-        form: {
-            username: 'admin',
-            password: '',
-        },
+    const [continueUrl, setContinueUrl] = useState('')
+    const [loginList, setLoginList] = useState<SSOConfig[]>([])
+    const [loading, setLoading] = useState(false)
+    const [form, setForm] = useState({
+        username: 'admin',
+        password: '',
     })
-    const { setEmail } = useUserEmail()
 
+    const { searchParams } = useSearchString()
     const location = useLocation()
     const history = useHistory()
+    const { setEmail } = useUserEmail()
 
     const fetchSSOConfigList = async () => {
         try {
             const response = await getSSOConfigList()
-            setState({
-                ...state,
-                loginList: response.result || [],
-            })
+            setLoginList(response.result)
         } catch {
             showError('Failed to fetch SSO config list')
         }
     }
 
-    useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        fetchSSOConfigList()
-
-        if (typeof Storage !== 'undefined') {
-            if (localStorage.isDashboardAccessed) {
-                return
-            }
-            try {
-                const response = dashboardAccessed()
-                if (response) {
-                    localStorage.isDashboardAccessed = true
-                }
-            } catch (e) {
-                showError(e)
-            }
-        }
-    }, [])
-
-    const setLoginURL = () => {
-        const { search, pathname } = location
-        const queryString = new URLSearchParams(search)
-        let queryParam = queryString.get('continue')
+    const setLoginNavigationURL = () => {
+        const { pathname } = location
+        let queryParam = searchParams.continue
 
         // 1. TOKEN_COOKIE_NAME= 'argocd.token', is the only token unique to a user generated as Cookie when they log in,
         // If a user is still at login page for the first time and getCookie(TOKEN_COOKIE_NAME) becomes false.
@@ -123,44 +101,53 @@ const Login = () => {
             queryParam = ''
         }
 
-        setState({
-            ...state,
-            continueUrl: encodeURI(`${window.location.origin}/orchestrator${window.__BASE_URL__}${queryParam}`),
-        })
+        setContinueUrl(encodeURI(`${window.location.origin}/orchestrator${window.__BASE_URL__}${queryParam}`))
     }
 
     useEffect(() => {
-        setLoginURL()
-    }, [location.search])
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        fetchSSOConfigList()
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-        const { form } = state
+        setLoginNavigationURL()
+
+        if (typeof Storage !== 'undefined') {
+            if (localStorage.isDashboardAccessed) {
+                return
+            }
+            try {
+                const response = dashboardAccessed()
+                if (response) {
+                    localStorage.isDashboardAccessed = true
+                }
+            } catch (e) {
+                showError(e)
+            }
+        }
+    }, [])
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.persist()
-
-        setState({
-            ...state,
-            form: {
-                ...form,
-                [e.target.name]: e.target.value,
-            },
+        setForm({
+            ...form,
+            [e.target.name]: e.target.value,
         })
     }
 
-    const isFormNotValid = (): boolean => {
-        const { form } = state
+    const isFormNotValid = () => {
+        const _form = { ...form }
         let isValid = true
         const keys = ['username', 'password']
         keys.forEach((key) => {
             if (key === 'password') {
-                isValid = isValid && form[key]?.length >= 6
+                isValid = isValid && _form[key]?.length >= 6
             } else {
-                isValid = isValid && form[key]?.length
+                isValid = isValid && _form[key]?.length
             }
         })
         return !isValid
     }
 
-    const getDefaultRedirectionURL = (): string => {
+    const getDefaultRedirectionURL = () => {
         const queryString = location.search.split('continue=')[1]
         if (queryString) {
             return queryString
@@ -175,14 +162,13 @@ const Login = () => {
     }
 
     const onSubmitLogin = (e): void => {
-        const { form } = state
         e.preventDefault()
         const data = form
-        setState({ ...state, loading: true })
+        setLoading(true)
         loginAsAdmin(data)
             .then((response) => {
                 if (response.result.token) {
-                    setState({ ...state, loading: false })
+                    setLoading(false)
                     const url = getDefaultRedirectionURL()
                     setEmail(data.username)
                     history.push(url)
@@ -191,24 +177,22 @@ const Login = () => {
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
-                setState({ ...state, loading: false })
+                setLoading(false)
             })
     }
 
-    const onClickSSO = async () => {
+    const onClickSSO = () => {
         if (typeof Storage !== 'undefined') {
             localStorage.setItem('isSSOLogin', 'true')
         }
 
-        await setLoginURL()
-
-        const url = `${window.location.origin}${Host}${URLS.AUTHENTICATE}?return_url=${state.continueUrl}`
+        const url = `${window.location.origin}${Host}${URLS.AUTHENTICATE}?return_url=${continueUrl}`
         window.location.replace(url)
     }
 
     const renderSSOLoginPage = () => (
         <div className="flexbox-col dc__gap-12">
-            {state.loginList
+            {loginList
                 .filter((sso) => sso.active)
                 .map((item) => (
                     <Button
@@ -238,7 +222,6 @@ const Login = () => {
 
     const renderAdminLoginPage = () => {
         const { search } = location
-        const { form, loading, loginList } = state
 
         return (
             <form className="flexbox-col dc__gap-32" autoComplete="on" onSubmit={onSubmitLogin}>
@@ -253,14 +236,14 @@ const Login = () => {
                         required
                     />
                     <div className="flexbox-col dc__gap-4">
-                        <CustomInput
-                            type={import.meta.env.PROD ? 'password' : 'text'}
+                        <PasswordField
                             placeholder="Enter password"
                             value={form.password}
                             name="password"
                             onChange={handleChange}
                             label="Password"
                             required
+                            shouldShowDefaultPlaceholderOnBlur={false}
                         />
 
                         <div className="flex left dc__gap-4">
@@ -304,7 +287,6 @@ const Login = () => {
             </form>
         )
     }
-
     return (
         <div className="login flex">
             <div
