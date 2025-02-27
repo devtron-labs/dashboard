@@ -1,7 +1,5 @@
-import { RadioGroup, RoleSelectorOptionType, Tooltip, UserRoleConfig } from '@devtron-labs/devtron-fe-common-lib'
-import { ValueContainerProps, components } from 'react-select'
+import { RadioGroup, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
-import { getSelectedRolesText } from './utils'
 import { RoleSelectorGroupHeaderProps, RoleSelectorGroupParams } from './types'
 
 const ToggleEnableRole = importComponentFromFELibrary('ToggleEnableRole', null, 'function')
@@ -88,25 +86,5 @@ export const renderGroup = ({
             />
             {toggleConfig.accessManagerRoles && children}
         </div>
-    )
-}
-
-export const renderValueContainer = (
-    baseRole: string,
-    roleConfig: UserRoleConfig,
-    props: ValueContainerProps<RoleSelectorOptionType>,
-) => {
-    const selectedRolesText = getSelectedRolesText(baseRole, roleConfig)
-
-    return (
-        <components.ValueContainer {...props}>
-            <div className="fs-13 fw-4 lh-20 ">
-                {selectedRolesText ? (
-                    <span className="cn-9 dc__truncate">{selectedRolesText}</span>
-                ) : (
-                    <span className="cn-5">{props.selectProps.placeholder}</span>
-                )}
-            </div>
-        </components.ValueContainer>
     )
 }

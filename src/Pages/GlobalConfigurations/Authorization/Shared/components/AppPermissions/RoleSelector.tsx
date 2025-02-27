@@ -10,15 +10,15 @@ import {
     Icon,
     ActionTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Select, { GroupProps, ValueContainerProps } from 'react-select'
+import Select, { GroupProps } from 'react-select'
 import './roleSelectorStyles.scss'
 import { useAuthorizationContext } from '@Pages/GlobalConfigurations/Authorization/AuthorizationProvider'
-import { ChangeEvent, useCallback, useMemo, useState } from 'react'
+import { ChangeEvent, useMemo, useState } from 'react'
 import { importComponentFromFELibrary } from '@Components/common'
-import { getDefaultRoleConfig, getRoleOptions, getRoleSelectorStyles } from './utils'
+import { getDefaultRoleConfig, getRoleOptions, getRoleSelectorStyles, getSelectedRolesText } from './utils'
 import { RoleSelectorProps, RoleSelectorToggleConfig } from './types'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
-import { renderGroup, renderRoleInfoTippy, renderValueContainer } from './roleSelectorHelpers'
+import { renderGroup, renderRoleInfoTippy } from './roleSelectorHelpers'
 
 const DeprecatedTag = importComponentFromFELibrary('DeprecatedTag', null, 'function')
 
@@ -85,14 +85,14 @@ const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: Ro
         })
     }
 
-    const baseRole =
-        customRoles.customRoles.find((role) => role.accessType === accessType && role.roleName === roleConfig.baseRole)
-            ?.roleDisplayName || ''
+    const selectText = useMemo(() => {
+        const baseRole =
+            customRoles.customRoles.find(
+                (role) => role.accessType === accessType && role.roleName === roleConfig.baseRole,
+            )?.roleDisplayName || ''
 
-    const ValueContainer = useCallback(
-        (props: ValueContainerProps<RoleSelectorOptionType>) => renderValueContainer(baseRole, roleConfig, props),
-        [roleConfig],
-    )
+        return getSelectedRolesText(baseRole, roleConfig)
+    }, [roleConfig])
 
     const Group = (props: GroupProps) =>
         renderGroup({
@@ -165,16 +165,16 @@ const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: Ro
                     ClearIndicator: null,
                     IndicatorSeparator: null,
                     Group,
-                    ValueContainer,
                 }}
                 styles={roleSelectorStyles}
                 closeMenuOnSelect={false}
                 isSearchable={false}
-                placeholder="Select roles"
+                placeholder={selectText}
                 menuPlacement="auto"
                 isDisabled={!team}
                 hideSelectedOptions={false}
                 isMulti
+                controlShouldRenderValue={false}
             />
             {roleConfigError && (
                 <div className="flexbox dc__align-items-center dc__gap-4">

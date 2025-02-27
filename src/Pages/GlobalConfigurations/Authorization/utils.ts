@@ -69,15 +69,26 @@ const getStatusExportText: (status: UserStatus, timeToLive: string) => string = 
     'function',
 )
 
+const getRoleFiltersMap = (roleFilters: APIRoleFilterDto[]) =>
+    roleFilters?.reduce<Record<string, true>>(
+        (agg, { entity, team, environment, accessType, entityName, workflow }) => {
+            const key = `${entity}${accessType}${team}${environment}${entityName}${workflow}`
+            // eslint-disable-next-line no-param-reassign
+            agg[key] = true
+            return agg
+        },
+        {},
+    )
+
 const getAccessRoleMap = (accessRoleFilters: APIRoleFilterDto[]) =>
-    accessRoleFilters?.reduce(
+    accessRoleFilters?.reduce<Record<string, string>>(
         (agg, { entity, team, environment, accessType, entityName, workflow, subAction }) => {
             const key = `${entity}${accessType}${team}${environment}${entityName}${workflow}`
             // eslint-disable-next-line no-param-reassign
             agg[key] = subAction
             return agg
         },
-        {} as Record<string, string>,
+        {},
     )
 
 const transformRoleFilters = (
@@ -85,8 +96,9 @@ const transformRoleFilters = (
     accessRoleFilters?: APIRoleFilterDto[],
 ): APIRoleFilter[] => {
     const accessRoleMap = getAccessRoleMap(accessRoleFilters)
+    const roleFiltersMap = accessRoleFilters ? getRoleFiltersMap(roleFilters) : {}
 
-    return (
+    const parsedRoleFilters =
         roleFilters?.map(
             ({
                 status: roleFilterStatus,
@@ -106,7 +118,33 @@ const transformRoleFilters = (
                 }
             },
         ) ?? []
-    )
+
+    if (accessRoleFilters) {
+        accessRoleFilters.forEach(
+            ({
+                status: roleFilterStatus,
+                timeoutWindowExpression: roleFilterTimeoutWindowExpression,
+                ...accessRole
+            }) => {
+                const { entity, accessType, team, environment, entityName, workflow } = accessRole
+                const roleFilterKey = `${entity}${accessType}${team}${environment}${entityName}${workflow}`
+
+                // this means accessRoleFilter has no corresponding roleFilter
+                // i.e. permission only has access manager role and not any base role or additional roles
+                if (!roleFiltersMap[roleFilterKey]) {
+                    const roleFilterTimeToLive = getFormattedTimeToLive(roleFilterTimeoutWindowExpression)
+
+                    parsedRoleFilters.push({
+                        ...accessRole,
+                        status: getUserStatus(roleFilterStatus, roleFilterTimeToLive),
+                        timeToLive: roleFilterTimeToLive,
+                    })
+                }
+            },
+        )
+    }
+
+    return parsedRoleFilters
 }
 
 export const transformUserResponse = (_user: UserDto): User => {
@@ -303,7 +341,10 @@ const getCommaSeparatedNamespaceList = (namespaces: OptionType[]) => {
 
 const getRoleAndAccessFiltersFromDirectPermission = ({
     directPermission,
-}: Pick<CreateUserPermissionPayloadParams, 'directPermission'>) => {
+}: Pick<CreateUserPermissionPayloadParams, 'directPermission'>): {
+    roleFilters
+    accessRoleFilters
+} => {
     const roleFilters = []
     const accessRoleFilters = []
 
@@ -318,7 +359,6 @@ const getRoleAndAccessFiltersFromDirectPermission = ({
             environment: getSelectedEnvironments(permission),
             entityName: getSelectedPermissionValues(permission.entityName),
             entity: permission.entity,
-            approver: roleConfig.additionalRoles.has('deploymentApprover'),
             ...(permission.entity === EntityTypes.JOB && {
                 workflow: permission.workflow?.length ? getSelectedPermissionValues(permission.workflow) : '',
             }),
@@ -332,11 +372,14 @@ const getRoleAndAccessFiltersFromDirectPermission = ({
             }
             accessRoleFilters.push(accessRole)
         }
-        const role = {
-            ...commonPermissions,
-            action: getPermissionActionValue(permission.roleConfig),
+        if (permission.roleConfig.baseRole || permission.roleConfig.additionalRoles.size > 0) {
+            const role = {
+                ...commonPermissions,
+                approver: roleConfig.additionalRoles.has('deploymentApprover'),
+                action: getPermissionActionValue(permission.roleConfig),
+            }
+            roleFilters.push(role)
         }
-        roleFilters.push(role)
     })
 
     return { roleFilters, accessRoleFilters }

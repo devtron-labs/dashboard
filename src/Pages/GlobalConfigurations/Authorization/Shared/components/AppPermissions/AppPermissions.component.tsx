@@ -30,6 +30,7 @@ import {
     DEFAULT_ENV,
     stringComparatorBySortOrder,
     ActionTypes,
+    logExceptionToSentry,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getUserAccessAllWorkflows,
@@ -80,9 +81,10 @@ const AppPermissions = () => {
         currentK8sPermissionRef,
         data,
         setIsSaveDisabled,
+        isLoggedInUserSuperAdmin,
+        canManageAllAccess,
     } = usePermissionConfiguration()
     const { customRoles } = useAuthorizationContext()
-    const { isSuperAdmin: superAdmin } = useMainContext()
     const { url, path } = useRouteMatch()
     const location = useLocation()
 
@@ -156,7 +158,7 @@ const AppPermissions = () => {
     ) => getEnvironmentOptions(environmentsList[accessType] || [], entity)
 
     const appPermissionDetailConfig = getAppPermissionDetailConfig(path, serverMode)
-    const navLinksConfig = getNavLinksConfig(serverMode, superAdmin)
+    const navLinksConfig = getNavLinksConfig(serverMode, isLoggedInUserSuperAdmin, canManageAllAccess)
 
     async function fetchJobsList(projectIds: number[]) {
         const missingProjects = projectIds.filter((projectId) => !jobsList.has(projectId))
@@ -513,7 +515,7 @@ const AppPermissions = () => {
                     (roleFilter: APIRoleFilter) =>
                         roleFilter.entity === EntityTypes.DIRECT || roleFilter.entity === EntityTypes.JOB,
                 )
-                ?.map(async (directRoleFilter: APIRoleFilter) => {
+                ?.map(async ({ subAction, ...directRoleFilter }: APIRoleFilter) => {
                     const projectId =
                         directRoleFilter.team !== HELM_APP_UNASSIGNED_PROJECT &&
                         getProjectForAccessType(directRoleFilter.accessType, directRoleFilter.team)?.id
@@ -564,22 +566,22 @@ const AppPermissions = () => {
                                       .map((workflow) => ({ value: workflow, label: workflow }))
                                 : await setAllWorkflows(updatedEntityName),
                         }),
-                        roleConfig: getRoleConfigForRoleFilter(directRoleFilter),
+                        roleConfig: getRoleConfigForRoleFilter(directRoleFilter, subAction),
                     } as DirectPermissionsRoleFilter
                 }),
         )
 
         if (isNonEAMode) {
             if (!foundDevtronApps) {
-                directPermissions.push(emptyDirectPermissionDevtronApps)
+                directPermissions.push(structuredClone(emptyDirectPermissionDevtronApps))
             }
 
             if (!foundJobs) {
-                directPermissions.push(emptyDirectPermissionJobs)
+                directPermissions.push(structuredClone(emptyDirectPermissionJobs))
             }
         }
         if (!foundHelmApps) {
-            directPermissions.push(emptyDirectPermissionHelmApps)
+            directPermissions.push(structuredClone(emptyDirectPermissionHelmApps))
         }
         setDirectPermission(directPermissions)
 
@@ -848,7 +850,7 @@ const AppPermissions = () => {
                 _handleTeamChange(index, selectedValue, actionMeta, tempPermissions)
                 break
             default:
-                throw new Error('Invalid field')
+                logExceptionToSentry('Invalid case in handleDirectPermissionChange')
         }
 
         setDirectPermission(tempPermissions)
@@ -874,14 +876,14 @@ const AppPermissions = () => {
 
             if (isNonEAMode) {
                 if (!foundDevtronApps) {
-                    permissionArr.push(emptyDirectPermissionDevtronApps)
+                    permissionArr.push(structuredClone(emptyDirectPermissionDevtronApps))
                 }
                 if (!foundJobs) {
-                    permissionArr.push(emptyDirectPermissionJobs)
+                    permissionArr.push(structuredClone(emptyDirectPermissionJobs))
                 }
             }
             if (!foundHelmApps) {
-                permissionArr.push(emptyDirectPermissionHelmApps)
+                permissionArr.push(structuredClone(emptyDirectPermissionHelmApps))
             }
             return permissionArr
         })
@@ -890,13 +892,13 @@ const AppPermissions = () => {
     const addNewPermissionRowLocal = (accessType) => {
         switch (accessType) {
             case ACCESS_TYPE_MAP.DEVTRON_APPS:
-                setDirectPermission((permission) => [...permission, emptyDirectPermissionDevtronApps])
+                setDirectPermission((permission) => [...permission, structuredClone(emptyDirectPermissionDevtronApps)])
                 break
             case ACCESS_TYPE_MAP.HELM_APPS:
-                setDirectPermission((permission) => [...permission, emptyDirectPermissionHelmApps])
+                setDirectPermission((permission) => [...permission, structuredClone(emptyDirectPermissionHelmApps)])
                 break
             case ACCESS_TYPE_MAP.JOBS:
-                setDirectPermission((permission) => [...permission, emptyDirectPermissionJobs])
+                setDirectPermission((permission) => [...permission, structuredClone(emptyDirectPermissionJobs)])
                 break
             default:
                 throw new Error(`Unsupported access type ${accessType}`)
@@ -1006,7 +1008,7 @@ const AppPermissions = () => {
                                 </Route>
                             ),
                     )}
-                    {superAdmin && (
+                    {isLoggedInUserSuperAdmin && canManageAllAccess && (
                         <Route path={`${path}/kubernetes-objects`}>
                             <K8sPermissions />
                         </Route>
