@@ -332,8 +332,8 @@ export default function App() {
                             <div className="full-height-width bg__tertiary">
                                 <Reload />
                             </div>
-                        ) : (
-                            <ErrorBoundary>
+                            ) : (
+                            <ErrorBoundary shouldAddFullScreenBg={window._env_.FEATURE_EXPERIMENTAL_MODERN_LAYOUT_ENABLE}>
                                 <BreadcrumbStore>
                                     <Switch>
                                         {isDirectApprovalNotification && GenericDirectApprovalModal && (
