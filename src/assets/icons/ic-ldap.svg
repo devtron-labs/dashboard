@@ -15,8 +15,8 @@
   -->
 
 <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <g id="SSO-Login-Services" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Global-Config/Login-Service/Configuration" transform="translate(-823.000000, -208.000000)" fill="#CB2026" fill-rule="nonzero">
+    <g  id="SSO-Login-Services" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g data-style-override="false" id="Global-Config/Login-Service/Configuration" transform="translate(-823.000000, -208.000000)" fill="#CB2026" fill-rule="nonzero">
             <g id="Text-Field/Default-Copy-5" transform="translate(439.000000, 168.000000)">
                 <g id="Account---Google-Copy-3" transform="translate(348.000000, 24.000000)">
                     <g id="Icon/Account/ic-ldap" transform="translate(36.000000, 16.000000)">

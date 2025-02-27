@@ -74,6 +74,25 @@ const Login = () => {
     }
 
     useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        fetchSSOConfigList()
+
+        if (typeof Storage !== 'undefined') {
+            if (localStorage.isDashboardAccessed) {
+                return
+            }
+            try {
+                const response = dashboardAccessed()
+                if (response) {
+                    localStorage.isDashboardAccessed = true
+                }
+            } catch (e) {
+                showError(e)
+            }
+        }
+    }, [])
+
+    const setLoginURL = () => {
         const { search, pathname } = location
         const queryString = new URLSearchParams(search)
         let queryParam = queryString.get('continue')
@@ -103,26 +122,16 @@ const Login = () => {
         if (!queryParam) {
             queryParam = ''
         }
+
         setState({
             ...state,
             continueUrl: encodeURI(`${window.location.origin}/orchestrator${window.__BASE_URL__}${queryParam}`),
         })
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        fetchSSOConfigList()
+    }
 
-        if (typeof Storage !== 'undefined') {
-            if (localStorage.isDashboardAccessed) {
-                return
-            }
-            dashboardAccessed()
-                .then((response) => {
-                    if (response.result) {
-                        localStorage.isDashboardAccessed = true
-                    }
-                })
-                .catch(() => {})
-        }
-    }, [])
+    useEffect(() => {
+        setLoginURL()
+    }, [location.search])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         const { form } = state
@@ -186,50 +195,46 @@ const Login = () => {
             })
     }
 
-    const onClickSSO = (): void => {
+    const onClickSSO = async () => {
         if (typeof Storage !== 'undefined') {
             localStorage.setItem('isSSOLogin', 'true')
         }
-        return null
+
+        await setLoginURL()
+
+        const url = `${window.location.origin}${Host}${URLS.AUTHENTICATE}?return_url=${state.continueUrl}`
+        window.location.replace(url)
     }
 
-    const renderSSOLoginPage = () => {
-        const { search } = location
-        const { loginList, continueUrl } = state
-
-        return (
-            <div className="flexbox-col dc__gap-12">
-                {loginList
-                    .filter((sso) => sso.active)
-                    .map((item) => (
-                        <Button
-                            component={ButtonComponentType.link}
-                            variant={ButtonVariantType.secondary}
-                            linkProps={{
-                                to: `${Host}${URLS.AUTHENTICATE}?return_url=${continueUrl}`,
-                            }}
-                            text={`Login with ${item.name}`}
-                            key={item.name}
-                            onClick={onClickSSO}
-                            dataTestId={`login-with-${item.name}`}
-                            style={ButtonStyleType.neutral}
-                            startIcon={<SSOTabIcons provider={item.name as SSOProvider} />}
-                        />
-                    ))}
-                <div className="flex">
+    const renderSSOLoginPage = () => (
+        <div className="flexbox-col dc__gap-12">
+            {state.loginList
+                .filter((sso) => sso.active)
+                .map((item) => (
                     <Button
-                        component={ButtonComponentType.link}
-                        variant={ButtonVariantType.text}
-                        linkProps={{
-                            to: `${URLS.LOGIN_ADMIN}${search}`,
-                        }}
-                        text="Login as administrator"
-                        dataTestId="login-as-admin"
+                        variant={ButtonVariantType.secondary}
+                        text={`Login with ${item.name}`}
+                        key={item.name}
+                        onClick={onClickSSO}
+                        dataTestId={`login-with-${item.name}`}
+                        style={ButtonStyleType.neutral}
+                        startIcon={<SSOTabIcons provider={item.name as SSOProvider} />}
+                        fullWidth
                     />
-                </div>
+                ))}
+            <div className="flex">
+                <Button
+                    component={ButtonComponentType.link}
+                    variant={ButtonVariantType.text}
+                    linkProps={{
+                        to: `${URLS.LOGIN_ADMIN}${location.search}`,
+                    }}
+                    text="Login as administrator"
+                    dataTestId="login-as-admin"
+                />
             </div>
-        )
-    }
+        </div>
+    )
 
     const renderAdminLoginPage = () => {
         const { search } = location
