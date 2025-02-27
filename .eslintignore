@@ -292,8 +292,6 @@ src/components/globalConfigurations/GlobalConfiguration.tsx
 src/components/globalConfigurations/GlobalConfigurationProvider.tsx
 src/components/hostURL/HostURL.tsx
 src/components/hyperion/EnvironmentSelect.tsx
-src/components/login/Login.tsx
-src/components/login/login.service.ts
 src/components/material/CreateMaterial.tsx
 src/components/material/MaterialList.tsx
 src/components/material/MaterialView.tsx

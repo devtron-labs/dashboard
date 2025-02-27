@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
-import { Switch, Redirect, Route } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { Switch, Redirect, Route, useLocation, useHistory } from 'react-router-dom'
 import {
     getCookie,
     ServerErrors,
     Host,
     showError,
     CustomInput,
-    withUserEmail,
     URLS as CommonURL,
     ToastVariantType,
     ToastManager,
@@ -31,35 +30,50 @@ import {
     ButtonComponentType,
     ButtonVariantType,
     ButtonStyleType,
+    useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
+import { ReactComponent as Help } from '@Icons/ic-help-outline.svg'
+import { SSOTabIcons } from '@Pages/GlobalConfigurations/Authorization/SSOLoginServices/utils'
 import { URLS, DOCUMENTATION, TOKEN_COOKIE_NAME } from '../../config'
-import { LoginProps, LoginFormState } from './login.types'
 import { loginAsAdmin } from './login.service'
 import { dashboardAccessed } from '../../services/service'
 import './login.scss'
 import { getSSOConfigList } from '../../Pages/GlobalConfigurations/Authorization/SSOLoginServices/service'
 import { LoginCard } from './LoginCard'
-import { LoginIcons } from './LoginIcons'
+import { LoginFormState } from './login.types'
+import { SSOProvider } from './constants'
 
 const NetworkStatusInterface = !importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
 
-class Login extends Component<LoginProps, LoginFormState> {
-    constructor(props) {
-        super(props)
-        this.state = {
-            continueUrl: '',
-            loginList: [],
-            loading: false,
-            form: {
-                username: 'admin',
-                password: '',
-            },
+const Login = () => {
+    const [state, setState] = useState<LoginFormState>({
+        continueUrl: '',
+        loginList: [],
+        loading: false,
+        form: {
+            username: 'admin',
+            password: '',
+        },
+    })
+    const { setEmail } = useUserEmail()
+
+    const location = useLocation()
+    const history = useHistory()
+
+    const fetchSSOConfigList = async () => {
+        try {
+            const response = await getSSOConfigList()
+            setState({
+                ...state,
+                loginList: response.result || [],
+            })
+        } catch {
+            showError('Failed to fetch SSO config list')
         }
     }
 
-    componentDidMount() {
-        const { location, history } = this.props
+    useEffect(() => {
         const { search, pathname } = location
         const queryString = new URLSearchParams(search)
         let queryParam = queryString.get('continue')
@@ -72,7 +86,7 @@ class Login extends Component<LoginProps, LoginFormState> {
         // becomes false but queryParam != "/" will be true and queryParam is also not null hence redirecting users to the
         // login page with Please login again toast appearing.
 
-        if (queryParam && (getCookie(TOKEN_COOKIE_NAME) || queryParam != '/')) {
+        if (queryParam && (getCookie(TOKEN_COOKIE_NAME) || queryParam !== '/')) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: 'Please login again',
@@ -89,16 +103,13 @@ class Login extends Component<LoginProps, LoginFormState> {
         if (!queryParam) {
             queryParam = ''
         }
-        this.setState({
+        setState({
+            ...state,
             continueUrl: encodeURI(`${window.location.origin}/orchestrator${window.__BASE_URL__}${queryParam}`),
         })
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        getSSOConfigList().then((response) => {
-            const list = response.result || []
-            this.setState({
-                loginList: list,
-            })
-        })
+        fetchSSOConfigList()
+
         if (typeof Storage !== 'undefined') {
             if (localStorage.isDashboardAccessed) {
                 return
@@ -109,14 +120,16 @@ class Login extends Component<LoginProps, LoginFormState> {
                         localStorage.isDashboardAccessed = true
                     }
                 })
-                .catch((errors) => {})
+                .catch(() => {})
         }
-    }
+    }, [])
 
-    handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-        const { form } = this.state
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+        const { form } = state
         e.persist()
-        this.setState({
+
+        setState({
+            ...state,
             form: {
                 ...form,
                 [e.target.name]: e.target.value,
@@ -124,11 +137,11 @@ class Login extends Component<LoginProps, LoginFormState> {
         })
     }
 
-    isFormNotValid = (): boolean => {
-        const { form } = this.state
+    const isFormNotValid = (): boolean => {
+        const { form } = state
         let isValid = true
         const keys = ['username', 'password']
-        keys.map((key) => {
+        keys.forEach((key) => {
             if (key === 'password') {
                 isValid = isValid && form[key]?.length >= 6
             } else {
@@ -138,8 +151,8 @@ class Login extends Component<LoginProps, LoginFormState> {
         return !isValid
     }
 
-    getDefaultRedirectionURL = (): string => {
-        const queryString = this.props.location.search.split('continue=')[1]
+    const getDefaultRedirectionURL = (): string => {
+        const queryString = location.search.split('continue=')[1]
         if (queryString) {
             return queryString
         }
@@ -152,17 +165,16 @@ class Login extends Component<LoginProps, LoginFormState> {
         return window._env_.FEATURE_DEFAULT_LANDING_RB_ENABLE ? URLS.RESOURCE_BROWSER : URLS.APP
     }
 
-    onSubmitLogin = (e): void => {
-        const { form } = this.state
-        const { setEmail, history } = this.props
+    const onSubmitLogin = (e): void => {
+        const { form } = state
         e.preventDefault()
         const data = form
-        this.setState({ loading: true })
+        setState({ ...state, loading: true })
         loginAsAdmin(data)
             .then((response) => {
                 if (response.result.token) {
-                    this.setState({ loading: false })
-                    const url = this.getDefaultRedirectionURL()
+                    setState({ ...state, loading: false })
+                    const url = getDefaultRedirectionURL()
                     setEmail(data.username)
                     history.push(url)
                     localStorage.setItem('isAdminLogin', 'true')
@@ -170,40 +182,26 @@ class Login extends Component<LoginProps, LoginFormState> {
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
-                this.setState({ loading: false })
+                setState({ ...state, loading: false })
             })
     }
 
-    renderSSOLoginPage = () => {
-        const { search } = this.props.location
-        const { loginList, continueUrl } = this.state
-
-        const onClickSSO = (): void => {
-            if (typeof Storage !== 'undefined') {
-                localStorage.setItem('isSSOLogin', 'true')
-            }
-            return null
+    const onClickSSO = (): void => {
+        if (typeof Storage !== 'undefined') {
+            localStorage.setItem('isSSOLogin', 'true')
         }
+        return null
+    }
+
+    const renderSSOLoginPage = () => {
+        const { search } = location
+        const { loginList, continueUrl } = state
+
         return (
             <div className="flexbox-col dc__gap-12">
                 {loginList
                     .filter((sso) => sso.active)
                     .map((item) => (
-                        //     <a
-                        //     href={`${Host}${URLS.AUTHENTICATE}?return_url=${this.state.continueUrl}`}
-                        //     className="login__google flex"
-                        //     onClick={this.onClickSSO}
-                        //     key={item.name}
-                        // >
-                        //     <svg className="icon-dim-24 mr-8" viewBox="0 0 24 24">
-                        //         <use href={`${LoginIcons}#${item.name}`} />
-                        //     </svg>
-                        //     Login with
-                        //     <span className="ml-5 dc__first-letter-capitalize" data-testid="login-with-text">
-                        //         {item.name}
-                        //     </span>
-                        // </a>
-
                         <Button
                             component={ButtonComponentType.link}
                             variant={ButtonVariantType.secondary}
@@ -215,7 +213,7 @@ class Login extends Component<LoginProps, LoginFormState> {
                             onClick={onClickSSO}
                             dataTestId={`login-with-${item.name}`}
                             style={ButtonStyleType.neutral}
-                            startIcon={<LoginIcons ssoName={item.name} />}
+                            startIcon={<SSOTabIcons provider={item.name as SSOProvider} />}
                         />
                     ))}
                 <div className="flex">
@@ -233,54 +231,59 @@ class Login extends Component<LoginProps, LoginFormState> {
         )
     }
 
-    renderAdminLoginPage = () => {
-        const { search } = this.props.location
-        const { form, loading, loginList } = this.state
+    const renderAdminLoginPage = () => {
+        const { search } = location
+        const { form, loading, loginList } = state
 
         return (
-            <form className="login-dt__form" autoComplete="on" onSubmit={this.onSubmitLogin}>
+            <form className="flexbox-col dc__gap-32" autoComplete="on" onSubmit={onSubmitLogin}>
                 <div className="flexbox-col dc__gap-16">
                     <CustomInput
                         data-testid="username-textbox"
                         placeholder="Enter username"
                         value={form.username}
                         name="username"
-                        onChange={this.handleChange}
+                        onChange={handleChange}
                         label="User ID"
                         required
                     />
-                    <CustomInput
-                        type={import.meta.env.PROD ? 'password' : 'text'}
-                        placeholder="Enter password"
-                        value={form.password}
-                        name="password"
-                        onChange={this.handleChange}
-                        label="Password"
-                        required
-                    />
-                </div>
-                <a
-                    className="login__know-password--link fs-12 cb-5"
-                    rel="noreferrer noopener"
-                    target="_blank"
-                    href={DOCUMENTATION.ADMIN_PASSWORD}
-                >
-                    What is my admin password?
-                </a>
-                <div className="flex column dc__gap-12">
-                    <div className="w-100">
-                        <Button
-                            disabled={this.isFormNotValid() || loading}
-                            isLoading={loading}
-                            dataTestId="login-button"
-                            text="Login"
-                            fullWidth
-                            size={ComponentSizeType.xl}
-                            buttonProps={{
-                                type: 'submit',
-                            }}
+                    <div className="flexbox-col dc__gap-4">
+                        <CustomInput
+                            type={import.meta.env.PROD ? 'password' : 'text'}
+                            placeholder="Enter password"
+                            value={form.password}
+                            name="password"
+                            onChange={handleChange}
+                            label="Password"
+                            required
                         />
+
+                        <div className="flex left dc__gap-4">
+                            <Help className="fcb-5 icon-dim-16" />
+
+                            <a
+                                className="login__know-password--link fs-11 cb-5 lh-20"
+                                rel="noreferrer noopener"
+                                target="_blank"
+                                href={DOCUMENTATION.ADMIN_PASSWORD}
+                            >
+                                What is my admin password?
+                            </a>
+                        </div>
                     </div>
+                </div>
+                <div className="flexbox-col dc__gap-12">
+                    <Button
+                        disabled={isFormNotValid() || loading}
+                        isLoading={loading}
+                        dataTestId="login-button"
+                        text="Login"
+                        fullWidth
+                        size={ComponentSizeType.xl}
+                        buttonProps={{
+                            type: 'submit',
+                        }}
+                    />
                     {loginList.length > 0 && (
                         <Button
                             dataTestId="sso-login"
@@ -297,38 +300,34 @@ class Login extends Component<LoginProps, LoginFormState> {
         )
     }
 
-    render() {
-        return (
-            <div className="login flex">
+    return (
+        <div className="login flex">
+            <div
+                className="login__bg w-50"
+                style={window?._env_?.LOGIN_PAGE_IMAGE_BG ? { backgroundColor: window._env_.LOGIN_PAGE_IMAGE_BG } : {}}
+            >
                 <div
-                    className="login__bg w-50"
+                    className="login__image"
                     style={
-                        window?._env_?.LOGIN_PAGE_IMAGE_BG ? { backgroundColor: window._env_.LOGIN_PAGE_IMAGE_BG } : {}
+                        window?._env_?.LOGIN_PAGE_IMAGE
+                            ? { backgroundImage: `url(${window._env_.LOGIN_PAGE_IMAGE})` }
+                            : {}
                     }
-                >
-                    <div
-                        className="login__image"
-                        style={
-                            window?._env_?.LOGIN_PAGE_IMAGE
-                                ? { backgroundImage: `url(${window._env_.LOGIN_PAGE_IMAGE})` }
-                                : {}
-                        }
-                    />
-                </div>
-                <div className="w-50 flex">
-                    <Switch>
-                        <Route path={`${URLS.LOGIN_SSO}`}>
-                            <LoginCard renderContent={this.renderSSOLoginPage} />
-                        </Route>
-                        <Route path={`${URLS.LOGIN_ADMIN}`}>
-                            <LoginCard renderContent={this.renderAdminLoginPage} />
-                        </Route>
-                        <Redirect to={`${URLS.LOGIN_SSO}`} />
-                    </Switch>
-                </div>
+                />
             </div>
-        )
-    }
+            <div className="w-50 flex">
+                <Switch>
+                    <Route path={`${URLS.LOGIN_SSO}`}>
+                        <LoginCard renderContent={renderSSOLoginPage} />
+                    </Route>
+                    <Route path={`${URLS.LOGIN_ADMIN}`}>
+                        <LoginCard renderContent={renderAdminLoginPage} />
+                    </Route>
+                    <Redirect to={`${URLS.LOGIN_SSO}`} />
+                </Switch>
+            </div>
+        </div>
+    )
 }
 
-export default withUserEmail(Login)
+export default Login

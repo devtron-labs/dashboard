@@ -16,8 +16,8 @@
 
  // Login css
 .login {
-    background-color: var(--white);
     min-height: 600px;
+    background-color: var(--white);
 
     .login__bg {
         background-color: #cee7ff;
@@ -34,10 +34,9 @@
     }
 
     .login-card__wrapper {
+        background: var(--bg-primary);
         border: 1px solid var(--border-primary);
         box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.04), 0px 2px 6px 0px rgba(0, 0, 0, 0.04), 0px 4px 12px 0px rgba(0, 0, 0, 0.10);
-        color-scheme: dark;
-        background-color: var(--black);
     }
 
     .login__know-password--link {

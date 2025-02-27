@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router-dom'
-import { UseUserEmailContextType } from '@devtron-labs/devtron-fe-common-lib'
+import { SSOProvider } from '@Pages/GlobalConfigurations/Authorization/SSOLoginServices/constants'
 
 export interface SSOConfig {
     id: number
-    name: string
+    name: SSOProvider
     label: string
     active: boolean
 }
@@ -32,10 +31,6 @@ export interface LoginFormState {
         password: string
     }
     loading: boolean
-}
-
-export interface LoginProps extends RouteComponentProps<{}> {
-    setEmail: UseUserEmailContextType['setEmail']
 }
 
 export interface LoginCardProps {

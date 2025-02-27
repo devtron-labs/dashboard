@@ -1,17 +1,21 @@
 import { PRIVACY_POLICY } from '@Config/constants'
-import dt from '@Icons/logo/logo-dt.svg'
+import { ReactComponent as DevtronLogo } from '@Icons/logo/logo-dt.svg'
 import { LoginCardProps } from './login.types'
 
 export const LoginCard = ({ renderContent }: LoginCardProps) => {
     const renderDevtronLogo = () => (
-        <div className="flexbox-col dc__gap-16 dc__text-center">
-            <img
-                src={window._env_.LOGIN_DT_LOGO || dt}
-                alt="login-dt-logo"
-                width="170px"
-                height="120px"
-                className="flexbox dc__align-self-center"
-            />
+        <div className="flex column dc__gap-16 dc__text-center">
+            {window._env_.LOGIN_DT_LOGO ? (
+                <img
+                    src={window._env_.LOGIN_DT_LOGO}
+                    alt="login-dt-logo"
+                    width="170px"
+                    height="120px"
+                    className="flexbox dc__align-self-center fcb-5"
+                />
+            ) : (
+                <DevtronLogo />
+            )}
 
             <p className="fs-16 lh-20 m-0 w-300 dc__align-self-center">
                 Your tool for Rapid, Reliable & Repeatable deployments
