@@ -25,8 +25,8 @@ export const LoginCard = ({ renderContent }: LoginCardProps) => {
 
     const renderTermsAndConditions = () => (
         <div className="dc__border-top flex dc__gap-4 p-12">
-            <p className=" m-0">By logging in, you agree to our </p>
-            <a href={PRIVACY_POLICY} target="blank" className="bc-5">
+            <p className="m-0">By logging in, you agree to our </p>
+            <a href={PRIVACY_POLICY} target="blank">
                 Terms of Service
             </a>
         </div>

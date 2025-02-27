@@ -33,6 +33,8 @@ import {
     useUserEmail,
     PasswordField,
     useSearchString,
+    getComponentSpecificThemeClass,
+    AppThemeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as Help } from '@Icons/ic-help-outline.svg'
@@ -204,6 +206,7 @@ const Login = () => {
                         style={ButtonStyleType.neutral}
                         startIcon={<SSOTabIcons provider={item.name as SSOProvider} />}
                         fullWidth
+                        size={ComponentSizeType.xl}
                     />
                 ))}
             <div className="flex">
@@ -288,7 +291,7 @@ const Login = () => {
         )
     }
     return (
-        <div className="login flex">
+        <div className={`login flex ${getComponentSpecificThemeClass(AppThemeType.light)}`}>
             <div
                 className="login__bg w-50"
                 style={window?._env_?.LOGIN_PAGE_IMAGE_BG ? { backgroundColor: window._env_.LOGIN_PAGE_IMAGE_BG } : {}}
