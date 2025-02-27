@@ -1008,7 +1008,7 @@ const AppPermissions = () => {
                                 </Route>
                             ),
                     )}
-                    {isLoggedInUserSuperAdmin && canManageAllAccess && (
+                    {(isLoggedInUserSuperAdmin || canManageAllAccess) && (
                         <Route path={`${path}/kubernetes-objects`}>
                             <K8sPermissions />
                         </Route>
