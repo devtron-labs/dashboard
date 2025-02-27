@@ -74,7 +74,6 @@ const Login = () => {
     }
 
     const setLoginNavigationURL = () => {
-        const { pathname } = location
         let queryParam = searchParams.continue
 
         // 1. TOKEN_COOKIE_NAME= 'argocd.token', is the only token unique to a user generated as Cookie when they log in,
@@ -96,7 +95,7 @@ const Login = () => {
                 window._env_.HIDE_NETWORK_STATUS_INTERFACE || !NetworkStatusInterface
                     ? URLS.APP
                     : CommonURL.NETWORK_STATUS_INTERFACE
-            const url = `${pathname}?continue=${queryParam}`
+            const url = `${location.pathname}?continue=${queryParam}`
             history.push(url)
         }
         if (!queryParam) {
