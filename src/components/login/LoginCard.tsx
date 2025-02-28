@@ -17,14 +17,14 @@ export const LoginCard = ({ renderContent }: LoginCardProps) => {
                 <DevtronLogo />
             )}
 
-            <p className="fs-16 lh-20 m-0 w-300 dc__align-self-center">
+            <p className="fs-16 lh-20 m-0 w-300 dc__align-self-center cn-9">
                 Your tool for Rapid, Reliable & Repeatable deployments
             </p>
         </div>
     )
 
     const renderTermsAndConditions = () => (
-        <div className="dc__border-top flex dc__gap-4 p-12">
+        <div className="dc__border-top flex dc__gap-4 p-12 cn-7">
             <p className="m-0 lh-18">By logging in, you agree to our </p>
             <a href={PRIVACY_POLICY} target="blank" rel="noreferrer">
                 Terms of Service
