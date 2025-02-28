@@ -202,6 +202,16 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
             let matchesApp = false
             let matchesSearch = !hasSearchKey // If searchKey is empty, default to true
 
+            // Search Key filtering with AND logic where cluster and app filters are applied
+            if (hasSearchKey) {
+                matchesSearch = link.name.toLowerCase().includes(searchKey.toLowerCase())
+            }
+
+            // If search is applied without cluster or app filters, still return results
+            if (hasSearchKey && !hasClusters && !hasApps) {
+                return link.name.toLowerCase().includes(searchKey.toLowerCase())
+            }
+
             // Cluster filtering
             if (hasClusters) {
                 if (clusters.length === 1 && !clusters[0]) {
@@ -218,15 +228,6 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                 matchesApp =
                     link.identifiers?.length === 0 || // No identifiers (global match)
                     link.identifiers.some(({ appId, type }) => parsedAppliedApps.has(`${appId}|${type}`))
-            }
-
-            // If search is applied without cluster or app filters, still return results
-            if (hasSearchKey && !hasClusters && !hasApps) {
-                return link.name.toLowerCase().includes(searchKey.toLowerCase())
-            }
-            // Search Key filtering with AND logic where cluster and app filters are applied
-            if (hasSearchKey) {
-                matchesSearch = link.name.toLowerCase().includes(searchKey.toLowerCase())
             }
 
             // Apply OR logic: If any condition matches, return true
