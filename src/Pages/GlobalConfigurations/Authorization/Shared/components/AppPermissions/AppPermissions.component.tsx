@@ -336,9 +336,9 @@ const AppPermissions = () => {
     async function setAllWorkflows(jobOptions) {
         const jobNames = jobOptions.filter((job) => job.value !== SELECT_ALL_VALUE).map((job) => job.label)
         try {
-            const { appIdWorkflowNamesMapping } = await getUserAccessAllWorkflows(jobNames)
+            const result = await getUserAccessAllWorkflows(jobNames)
 
-            const workflowOptions = getWorkflowOptions(appIdWorkflowNamesMapping)
+            const workflowOptions = getWorkflowOptions(result?.appIdWorkflowNamesMapping)
             return [
                 { label: 'All Workflows', value: SELECT_ALL_VALUE },
                 ...workflowOptions.reduce((acc, option) => {
