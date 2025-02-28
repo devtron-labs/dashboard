@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Dispatch, SetStateAction, ChangeEvent } from 'react'
-import { GroupBase, GroupProps } from 'react-select'
+import { Dispatch, SetStateAction } from 'react'
+import { GroupBase, GroupProps, OptionProps } from 'react-select'
 import {
     ServerError,
     ACCESS_TYPE_MAP,
@@ -24,6 +24,7 @@ import {
     UserRoleConfig,
     CustomRoles,
     EnvListMinDTO,
+    RoleSelectorOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { JobList } from '../../../../../../components/Jobs/Types'
 import { DirectPermissionsRoleFilter } from '../../../types'
@@ -109,7 +110,11 @@ export interface RoleSelectorGroupParams {
     toggleConfig: RoleSelectorToggleConfig
     toggleBaseRole: () => void
     toggleAccessManagerRoles: () => void
-    handleUpdateBaseRole: (event: ChangeEvent<HTMLInputElement>) => void
+}
+
+export interface RoleSelectorOptionParams extends Pick<RoleSelectorProps, 'handleUpdateDirectPermissionRoleConfig'> {
+    props: OptionProps<RoleSelectorOptionType>
+    roleConfig: UserRoleConfig
 }
 
 export interface RoleSelectorGroupHeaderProps extends Pick<RoleSelectorGroupParams, 'showToggle'> {

@@ -315,7 +315,7 @@ const getRoleSelectorStyleOverrides = (error?: boolean) => ({
         backgroundColor: 'var(--bg-menu-primary)',
         border: '1px solid var(--N200)',
         boxShadow: '0px 2px 4px 0px rgba(0, 0, 0, 0.20)',
-        width: 300,
+        minWidth: 240,
         maxHeight: 300,
         zIndex: 'var(--select-picker-menu-index)',
     }),
@@ -346,7 +346,7 @@ const getRoleSelectorStyleOverrides = (error?: boolean) => ({
         ...base,
         color: 'var(--N900)',
         backgroundColor: state.isFocussed ? 'var(--bg-secondary)' : 'var(--transparent)',
-        padding: '6px 8px',
+        padding: 0,
         cursor: 'pointer',
         fontSize: '13px',
         lineHeight: '20px',
@@ -357,7 +357,7 @@ const getRoleSelectorStyleOverrides = (error?: boolean) => ({
         },
 
         ':hover': {
-            backgroundColor: 'var(--bg-secondary)',
+            backgroundColor: 'var(--bg-hover)',
         },
 
         ...(state.isDisabled && {

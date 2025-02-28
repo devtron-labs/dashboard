@@ -1,6 +1,7 @@
-import { RadioGroup, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
+import { noop, RadioGroup, Tooltip, UserRoleConfig } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
-import { RoleSelectorGroupHeaderProps, RoleSelectorGroupParams } from './types'
+import { components } from 'react-select'
+import { RoleSelectorGroupHeaderProps, RoleSelectorGroupParams, RoleSelectorOptionParams } from './types'
 import { ACCESS_ROLE_OPTIONS_CONTAINER_ID } from './constants'
 
 const ToggleEnableRole = importComponentFromFELibrary('ToggleEnableRole', null, 'function')
@@ -27,7 +28,7 @@ const RoleSelectorGroupHeader = ({ label, showToggle, toggleSelected, onChange }
         alwaysShowTippyOnHover={label === 'Access Manager'}
         placement="left"
     >
-        <div className="flexbox dc__align-items-center dc__content-space px-8 py-6 bg__secondary br-4">
+        <div className="flexbox dc__align-items-center dc__content-space px-8 py-6 bg__menu--secondary br-4">
             <span className="fs-13 fw-4 lh-20">{label}</span>
             {ToggleEnableRole && showToggle && <ToggleEnableRole selected={toggleSelected} onChange={onChange} />}
         </div>
@@ -41,7 +42,6 @@ export const renderGroup = ({
     showToggle,
     toggleBaseRole,
     toggleAccessManagerRoles,
-    handleUpdateBaseRole,
 }: RoleSelectorGroupParams) => {
     const { children, data } = props
     const { label } = data
@@ -67,7 +67,7 @@ export const renderGroup = ({
                     <RadioGroup
                         name="base-role"
                         value={baseRoleValue}
-                        onChange={handleUpdateBaseRole}
+                        onChange={noop}
                         className="flexbox-imp flexbox-col dc__inline-radio-group dc__no-border-imp base-role-selector"
                     >
                         {children}
@@ -85,7 +85,54 @@ export const renderGroup = ({
                 onChange={toggleAccessManagerRoles}
                 toggleSelected={toggleConfig.accessManagerRoles}
             />
-            <div id={ACCESS_ROLE_OPTIONS_CONTAINER_ID}>{toggleConfig.accessManagerRoles && children}</div>
+            {toggleConfig.accessManagerRoles && <div id={ACCESS_ROLE_OPTIONS_CONTAINER_ID}>{children}</div>}
         </div>
+    )
+}
+
+export const renderOption = ({
+    props,
+    roleConfig,
+    handleUpdateDirectPermissionRoleConfig,
+}: RoleSelectorOptionParams) => {
+    const { children, data } = props
+    const { value, roleType } = data
+
+    const handleUpdateBaseRole = () => {
+        handleUpdateDirectPermissionRoleConfig({ ...roleConfig, baseRole: value })
+    }
+
+    const handleUpdateAdditionalRoles = (updatedAdditionalRoles: UserRoleConfig['additionalRoles']) => {
+        handleUpdateDirectPermissionRoleConfig({ ...roleConfig, additionalRoles: updatedAdditionalRoles })
+    }
+
+    const handleUpdateAccessManagerRoles = (updatedAccessRoles: UserRoleConfig['accessManagerRoles']) => {
+        handleUpdateDirectPermissionRoleConfig({ ...roleConfig, accessManagerRoles: updatedAccessRoles })
+    }
+
+    const handleChangeAdditionalOrAccessRole = () => {
+        const currentSet = roleType !== 'baseRole' && roleConfig[roleType]
+        if (currentSet.has(value)) {
+            currentSet.delete(value)
+        } else {
+            currentSet.add(value)
+        }
+
+        if (roleType === 'additionalRoles') {
+            handleUpdateAdditionalRoles(currentSet)
+            return
+        }
+        handleUpdateAccessManagerRoles(currentSet)
+    }
+
+    return (
+        <components.Option {...props}>
+            <div
+                className="px-8 py-6"
+                onClick={roleType === 'baseRole' ? handleUpdateBaseRole : handleChangeAdditionalOrAccessRole}
+            >
+                {children}
+            </div>
+        </components.Option>
     )
 }

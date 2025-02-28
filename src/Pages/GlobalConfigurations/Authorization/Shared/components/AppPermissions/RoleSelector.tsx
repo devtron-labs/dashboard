@@ -5,21 +5,19 @@ import {
     RadioGroupItem,
     Tooltip,
     RoleSelectorOptionType,
-    UserRoleConfig,
-    RoleType,
     Icon,
     ActionTypes,
     ACCESS_TYPE_MAP,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Select, { GroupProps } from 'react-select'
+import Select, { GroupProps, OptionProps } from 'react-select'
 import './roleSelectorStyles.scss'
 import { useAuthorizationContext } from '@Pages/GlobalConfigurations/Authorization/AuthorizationProvider'
-import { ChangeEvent, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { importComponentFromFELibrary } from '@Components/common'
 import { getDefaultRolesToggleConfig, getRoleOptions, getRoleSelectorStyles, getSelectedRolesText } from './utils'
 import { RoleSelectorProps, RoleSelectorToggleConfig } from './types'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
-import { renderGroup, renderRoleInfoTippy } from './roleSelectorHelpers'
+import { renderGroup, renderOption, renderRoleInfoTippy } from './roleSelectorHelpers'
 import { ACCESS_ROLE_OPTIONS_CONTAINER_ID } from './constants'
 
 const DeprecatedTag = importComponentFromFELibrary('DeprecatedTag', null, 'function')
@@ -29,33 +27,6 @@ const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: Ro
     const { allowManageAllAccess, isLoggedInUserSuperAdmin } = usePermissionConfiguration()
     const { accessType, roleConfig, team, roleConfigError } = permission
     const [toggleConfig, setToggleConfig] = useState<RoleSelectorToggleConfig>(getDefaultRolesToggleConfig(roleConfig))
-
-    const handleUpdateBaseRole = (event: ChangeEvent<HTMLInputElement>) => {
-        handleUpdateDirectPermissionRoleConfig({ ...roleConfig, baseRole: event.target.value })
-    }
-
-    const handleUpdateAdditionalRoles = (updatedAdditionalRoles: UserRoleConfig['additionalRoles']) => {
-        handleUpdateDirectPermissionRoleConfig({ ...roleConfig, additionalRoles: updatedAdditionalRoles })
-    }
-
-    const handleUpdateAccessManagerRoles = (updatedAccessRoles: UserRoleConfig['accessManagerRoles']) => {
-        handleUpdateDirectPermissionRoleConfig({ ...roleConfig, accessManagerRoles: updatedAccessRoles })
-    }
-
-    const handleChangeAdditionalOrAccessRole = (isRoleSelected: boolean, value: string, roleType: RoleType) => {
-        const currentSet = roleType !== 'baseRole' && roleConfig[roleType]
-        if (isRoleSelected) {
-            currentSet.delete(value)
-        } else {
-            currentSet.add(value)
-        }
-
-        if (roleType === 'additionalRoles') {
-            handleUpdateAdditionalRoles(currentSet)
-            return
-        }
-        handleUpdateAccessManagerRoles(currentSet)
-    }
 
     const toggleBaseRole = () => {
         setToggleConfig((prev) => {
@@ -79,7 +50,7 @@ const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: Ro
         setToggleConfig((prev) => {
             // On toggling off clear selected roles
             if (prev.accessManagerRoles) {
-                handleUpdateAccessManagerRoles(new Set())
+                handleUpdateDirectPermissionRoleConfig({ ...roleConfig, accessManagerRoles: new Set() })
             } else {
                 try {
                     setTimeout(() => {
@@ -107,12 +78,14 @@ const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: Ro
         renderGroup({
             props,
             baseRoleValue: roleConfig.baseRole,
-            handleUpdateBaseRole,
             toggleConfig,
             toggleBaseRole,
             toggleAccessManagerRoles,
             showToggle: isLoggedInUserSuperAdmin && accessType === ACCESS_TYPE_MAP.DEVTRON_APPS,
         })
+
+    const Option = (props: OptionProps<RoleSelectorOptionType>) =>
+        renderOption({ props, roleConfig, handleUpdateDirectPermissionRoleConfig })
 
     const groupedOptions = useMemo(
         () =>
@@ -127,7 +100,6 @@ const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: Ro
     const formatOptionLabel = ({ value, label, description, roleType }: RoleSelectorOptionType) => {
         const isRoleSelected: boolean = roleType !== 'baseRole' && roleConfig[roleType].has(value)
 
-        const handleUpdateRole = () => handleChangeAdditionalOrAccessRole(isRoleSelected, value, roleType)
         return (
             <Tooltip
                 content={renderRoleInfoTippy(label as string, description as string)}
@@ -144,12 +116,7 @@ const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: Ro
                         </RadioGroupItem>
                     </div>
                 ) : (
-                    <div
-                        className="flexbox dc__align-items-center"
-                        role="button"
-                        tabIndex={0}
-                        onClick={handleUpdateRole}
-                    >
+                    <div className="flexbox dc__align-items-center">
                         <Checkbox
                             isChecked={isRoleSelected}
                             onChange={noop}
@@ -174,6 +141,7 @@ const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: Ro
                     ClearIndicator: null,
                     IndicatorSeparator: null,
                     Group,
+                    Option,
                 }}
                 styles={roleSelectorStyles}
                 closeMenuOnSelect={false}
@@ -184,6 +152,7 @@ const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: Ro
                 hideSelectedOptions={false}
                 isMulti
                 controlShouldRenderValue={false}
+                menuIsOpen
             />
             {roleConfigError && (
                 <div className="flexbox dc__align-items-center dc__gap-4">
