@@ -591,7 +591,6 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     return (
                         <ClusterList
                             {...props}
-                            serverMode={serverMode}
                             isSuperAdmin={isSuperAdmin || window._env_.K8S_CLIENT}
                         />
                     )

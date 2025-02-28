@@ -47,11 +47,6 @@ export function updateCluster(request) {
     return put(URL, request)
 }
 
-export function retryClusterInstall(id: number, payload): Promise<ResponseType> {
-    const URL = `${Routes.CHART_AVAILABLE}/cluster-component/install/${id}`
-    return post(URL, payload)
-}
-
 export const getEnvironment = (id: number): Promise<any> => {
     const URL = `${Routes.ENVIRONMENT}?id=${id}`
     return get(URL)
