@@ -106,13 +106,10 @@ const Login = () => {
         if (ssoLoginListResponse.status === 'fulfilled' && ssoLoginListResponse.value.result) {
             setLoginList(ssoLoginListResponse.value.result || [])
         }
-        if (typeof Storage !== 'undefined') {
-            if (localStorage.isDashboardAccessed) {
-                return
-            }
 
+        if (typeof Storage !== 'undefined' && !localStorage.getItem('isDashboardAccessed')) {
             if (dashboardAccessesResponse.status === 'fulfilled' && dashboardAccessesResponse.value.result) {
-                localStorage.isDashboardAccessed = true
+                localStorage.setItem('isDashboardAccessed', 'true')
             }
         }
 
