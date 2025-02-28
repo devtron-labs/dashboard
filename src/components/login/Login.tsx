@@ -40,6 +40,7 @@ import {
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as Help } from '@Icons/ic-help-outline.svg'
 import { SSOTabIcons } from '@Pages/GlobalConfigurations/Authorization/SSOLoginServices/utils'
+import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
 import { URLS, DOCUMENTATION, TOKEN_COOKIE_NAME } from '../../config'
 import { loginAsAdmin } from './login.service'
 import { dashboardAccessed } from '../../services/service'
@@ -58,6 +59,16 @@ const Login = () => {
     const [form, setForm] = useState({
         username: 'admin',
         password: '',
+    })
+    const [errorMessage, setErrorMessage] = useState({
+        username: {
+            message: '',
+            isValid: true,
+        },
+        password: {
+            message: '',
+            isValid: true,
+        },
     })
 
     const { searchParams } = useSearchString()
@@ -118,24 +129,20 @@ const Login = () => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.persist()
+
+        const { name, value } = e.target
+        setErrorMessage((prevState) => ({
+            ...prevState,
+            [name]: {
+                message: value ? '' : REQUIRED_FIELD_MSG,
+                isValid: !!value,
+            },
+        }))
+
         setForm({
             ...form,
-            [e.target.name]: e.target.value,
+            [name]: value,
         })
-    }
-
-    const isFormNotValid = () => {
-        const _form = { ...form }
-        let isValid = true
-        const keys = ['username', 'password']
-        keys.forEach((key) => {
-            if (key === 'password') {
-                isValid = isValid && _form[key]?.length >= 6
-            } else {
-                isValid = isValid && _form[key]?.length
-            }
-        })
-        return !isValid
     }
 
     const getDefaultRedirectionURL = () => {
@@ -216,16 +223,16 @@ const Login = () => {
         const { search } = location
 
         return (
-            <form className="flexbox-col dc__gap-32" autoComplete="on" onSubmit={onSubmitLogin}>
+            <form className="flexbox-col dc__gap-32" autoComplete="on" onSubmit={onSubmitLogin} noValidate>
                 <div className="flexbox-col dc__gap-16">
                     <CustomInput
-                        data-testid="username-textbox"
                         placeholder="Enter username"
                         value={form.username}
                         name="username"
                         onChange={handleChange}
                         label="User ID"
                         required
+                        error={errorMessage.username.message}
                     />
                     <div className="flexbox-col dc__gap-4">
                         <PasswordField
@@ -236,6 +243,8 @@ const Login = () => {
                             label="Password"
                             required
                             shouldShowDefaultPlaceholderOnBlur={false}
+                            autoFocus
+                            error={errorMessage.password.message}
                         />
 
                         <div className="flex left dc__gap-4">
@@ -254,7 +263,7 @@ const Login = () => {
                 </div>
                 <div className="flexbox-col dc__gap-12">
                     <Button
-                        disabled={isFormNotValid() || loading}
+                        disabled={loading}
                         isLoading={loading}
                         dataTestId="login-button"
                         text="Login"
