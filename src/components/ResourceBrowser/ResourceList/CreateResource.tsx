@@ -26,7 +26,6 @@ import {
     createNewResource,
     CreateResourceDTO,
     CodeEditorThemesKeys,
-    AppThemeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { APP_STATUS_HEADERS, MODES } from '../../../config'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
@@ -159,7 +158,6 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
                             focus: true,
                         }}
                         codeMirrorProps={{
-                            theme: AppThemeType.dark,
                             value: resourceYAML,
                             height: 'fitToParent',
                             onChange: handleEditorValueChange,
