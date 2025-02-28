@@ -296,7 +296,7 @@ export default function AddExternalLink({
                                     showDelete={linksLen > 1}
                                 />
                                 {linksLen > 1 && idx !== linksLen - 1 && (
-                                    <hr className="external-links-divider mt-16 mb-16" />
+                                    <div className="divider__primary" />
                                 )}
                             </Fragment>
                         )

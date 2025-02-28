@@ -20,12 +20,6 @@
         min-width: 100%;
     }
 
-    .external-links-divider {
-        border: 0;
-        height: 1px;
-        box-shadow: inset 0 -1px 0 0 var(--N200);
-    }
-
     &.app-config-view__listing {
         height: calc(100% - 110px);
     }
@@ -38,10 +32,6 @@
     .external-link-list__row__app-config {
         display: grid;
         grid-template-columns: 24px 144px minmax(100px, calc(59% - 322px)) minmax(100px, 59%) 56px;
-    }
-
-    .external-link__divider {
-        height: 1px;
     }
 
 }
