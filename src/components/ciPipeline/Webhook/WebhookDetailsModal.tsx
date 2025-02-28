@@ -35,6 +35,7 @@ import {
     EntityTypes,
     Button,
     ButtonVariantType,
+    ActionTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -65,7 +66,7 @@ import { executeWebhookAPI, getExternalCIConfig, getWebhookAPITokenList } from '
 import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessaging'
 import { createUserPermissionPayload } from '../../../Pages/GlobalConfigurations/Authorization/utils'
 import { ChartGroupPermissionsFilter } from '../../../Pages/GlobalConfigurations/Authorization/types'
-import { ActionTypes, PermissionType } from '../../../Pages/GlobalConfigurations/Authorization/constants'
+import { PermissionType } from '../../../Pages/GlobalConfigurations/Authorization/constants'
 import {
     getDefaultStatusAndTimeout,
     getDefaultUserStatusAndTimeout,

@@ -2,157 +2,31 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     noop,
-    RadioGroup,
     RadioGroupItem,
     Tooltip,
     RoleSelectorOptionType,
-    UserRoleConfig,
-    RoleType,
     Icon,
+    ActionTypes,
+    ACCESS_TYPE_MAP,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Select, { GroupProps, components, ValueContainerProps } from 'react-select'
+import Select, { GroupProps, OptionProps } from 'react-select'
 import './roleSelectorStyles.scss'
 import { useAuthorizationContext } from '@Pages/GlobalConfigurations/Authorization/AuthorizationProvider'
-import { ActionTypes } from '@Pages/GlobalConfigurations/Authorization/constants'
-import { ChangeEvent, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { importComponentFromFELibrary } from '@Components/common'
-import { getDefaultRoleConfig, getRoleOptions, getRoleSelectorStyles, getSelectedRolesText } from './utils'
-import { MANGER_ROLE_DEPRECATION_WARNING } from './constants'
-import {
-    RoleSelectorGroupHeaderProps,
-    RoleSelectorGroupParams,
-    RoleSelectorProps,
-    RoleSelectorToggleConfig,
-} from './types'
+import { getDefaultRolesToggleConfig, getRoleOptions, getRoleSelectorStyles, getSelectedRolesText } from './utils'
+import { RoleSelectorProps, RoleSelectorToggleConfig } from './types'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
+import { renderGroup, renderOption, renderRoleInfoTippy } from './roleSelectorHelpers'
+import { ACCESS_ROLE_OPTIONS_CONTAINER_ID } from './constants'
 
-const ToggleEnableRole = importComponentFromFELibrary('ToggleEnableRole', null, 'function')
 const DeprecatedTag = importComponentFromFELibrary('DeprecatedTag', null, 'function')
-
-const renderRoleInfoTippy = (label: string, description: string) => (
-    <div className="flexbox-col fs-12 lh-18">
-        <span className="fw-6">{label}</span>
-        <p className="fw-4 mb-0">{description}</p>
-        {MANGER_ROLE_DEPRECATION_WARNING && label === 'Manager' && (
-            <p className="mt-10">{MANGER_ROLE_DEPRECATION_WARNING}</p>
-        )}
-    </div>
-)
-
-const RoleSelectorGroupHeader = ({ label, showToggle, toggleSelected, onChange }: RoleSelectorGroupHeaderProps) => (
-    <Tooltip
-        content={renderRoleInfoTippy(label, 'Can manage access of users with specific roles')}
-        alwaysShowTippyOnHover={label === 'Access Manager'}
-        placement="left"
-    >
-        <div className="flexbox dc__align-items-center dc__content-space px-8 py-6 bg__secondary br-4">
-            <span className="fs-13 fw-4 lh-20">{label}</span>
-            {ToggleEnableRole && showToggle && <ToggleEnableRole selected={toggleSelected} onChange={onChange} />}
-        </div>
-    </Tooltip>
-)
-
-const renderGroup = ({
-    props,
-    baseRoleValue,
-    toggleConfig,
-    showToggle,
-    toggleBaseRole,
-    toggleAccessManagerRoles,
-    handleUpdateBaseRole,
-}: RoleSelectorGroupParams) => {
-    const { children, data } = props
-    const { label } = data
-
-    if (label === 'Additional role')
-        return toggleConfig.baseRole ? (
-            <div className="py-4">
-                <div className="px-8 py-4 fs-12 lh-20 fw-6">{label}</div>
-                {children}
-            </div>
-        ) : null
-
-    if (label === 'Base Role') {
-        return (
-            <>
-                <RoleSelectorGroupHeader
-                    label={label}
-                    showToggle={showToggle}
-                    toggleSelected={toggleConfig.baseRole}
-                    onChange={toggleBaseRole}
-                />
-                {toggleConfig.baseRole && (
-                    <RadioGroup
-                        name="base-role"
-                        value={baseRoleValue}
-                        onChange={handleUpdateBaseRole}
-                        className="flexbox-imp flexbox-col dc__inline-radio-group dc__no-border-imp base-role-selector"
-                    >
-                        {children}
-                    </RadioGroup>
-                )}
-            </>
-        )
-    }
-    return (
-        <div className="flexbox-col dc__gap-4">
-            <div className="border__secondary--bottom" />
-            <RoleSelectorGroupHeader
-                label={label}
-                showToggle
-                onChange={toggleAccessManagerRoles}
-                toggleSelected={toggleConfig.accessManagerRoles}
-            />
-            {toggleConfig.accessManagerRoles && children}
-        </div>
-    )
-}
-
-const renderValueContainer = (roleConfig: UserRoleConfig, props: ValueContainerProps<RoleSelectorOptionType>) => {
-    const { selectProps } = props
-    const selectedRolesText = getSelectedRolesText(roleConfig)
-
-    return (
-        <components.ValueContainer {...props}>
-            {selectedRolesText ? <span className="dc__truncate">{selectedRolesText}</span> : selectProps.placeholder}
-        </components.ValueContainer>
-    )
-}
 
 const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: RoleSelectorProps) => {
     const { customRoles } = useAuthorizationContext()
     const { allowManageAllAccess, isLoggedInUserSuperAdmin } = usePermissionConfiguration()
     const { accessType, roleConfig, team, roleConfigError } = permission
-    const [toggleConfig, setToggleConfig] = useState<RoleSelectorToggleConfig>(
-        getDefaultRoleConfig(!!permission.roleConfig.accessManagerRoles.size),
-    )
-
-    const handleUpdateBaseRole = (event: ChangeEvent<HTMLInputElement>) => {
-        handleUpdateDirectPermissionRoleConfig({ ...roleConfig, baseRole: event.target.value })
-    }
-
-    const handleUpdateAdditionalRoles = (updatedAdditionalRoles: UserRoleConfig['additionalRoles']) => {
-        handleUpdateDirectPermissionRoleConfig({ ...roleConfig, additionalRoles: updatedAdditionalRoles })
-    }
-
-    const handleUpdateAccessManagerRoles = (updatedAccessRoles: UserRoleConfig['accessManagerRoles']) => {
-        handleUpdateDirectPermissionRoleConfig({ ...roleConfig, accessManagerRoles: updatedAccessRoles })
-    }
-
-    const handleChangeAdditionalOrAccessRole = (isRoleSelected: boolean, value: string, roleType: RoleType) => {
-        const currentSet = roleType !== 'baseRole' && roleConfig[roleType]
-        if (isRoleSelected) {
-            currentSet.delete(value)
-        } else {
-            currentSet.add(value)
-        }
-
-        if (roleType === 'additionalRoles') {
-            handleUpdateAdditionalRoles(currentSet)
-            return
-        }
-        handleUpdateAccessManagerRoles(currentSet)
-    }
+    const [toggleConfig, setToggleConfig] = useState<RoleSelectorToggleConfig>(getDefaultRolesToggleConfig(roleConfig))
 
     const toggleBaseRole = () => {
         setToggleConfig((prev) => {
@@ -176,25 +50,42 @@ const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: Ro
         setToggleConfig((prev) => {
             // On toggling off clear selected roles
             if (prev.accessManagerRoles) {
-                handleUpdateAccessManagerRoles(new Set())
+                handleUpdateDirectPermissionRoleConfig({ ...roleConfig, accessManagerRoles: new Set() })
+            } else {
+                try {
+                    setTimeout(() => {
+                        const element = document.getElementById(ACCESS_ROLE_OPTIONS_CONTAINER_ID)
+                        element.scrollIntoView({ behavior: 'smooth', block: 'end' })
+                    }, 100)
+                } catch {
+                    // do nothing
+                }
             }
             return { ...prev, accessManagerRoles: !prev.accessManagerRoles }
         })
     }
 
-    const ValueContainer = (props: ValueContainerProps<RoleSelectorOptionType>) =>
-        renderValueContainer(roleConfig, props)
+    const selectText = useMemo(() => {
+        const baseRole =
+            customRoles.customRoles.find(
+                (role) => role.accessType === accessType && role.roleName === roleConfig.baseRole,
+            )?.roleDisplayName || ''
+
+        return getSelectedRolesText(baseRole, roleConfig, allowManageAllAccess)
+    }, [roleConfig, allowManageAllAccess])
 
     const Group = (props: GroupProps) =>
         renderGroup({
             props,
             baseRoleValue: roleConfig.baseRole,
-            handleUpdateBaseRole,
             toggleConfig,
             toggleBaseRole,
             toggleAccessManagerRoles,
-            showToggle: isLoggedInUserSuperAdmin,
+            showToggle: isLoggedInUserSuperAdmin && accessType === ACCESS_TYPE_MAP.DEVTRON_APPS,
         })
+
+    const Option = (props: OptionProps<RoleSelectorOptionType>) =>
+        renderOption({ props, roleConfig, handleUpdateDirectPermissionRoleConfig })
 
     const groupedOptions = useMemo(
         () =>
@@ -209,7 +100,6 @@ const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: Ro
     const formatOptionLabel = ({ value, label, description, roleType }: RoleSelectorOptionType) => {
         const isRoleSelected: boolean = roleType !== 'baseRole' && roleConfig[roleType].has(value)
 
-        const handleUpdateRole = () => handleChangeAdditionalOrAccessRole(isRoleSelected, value, roleType)
         return (
             <Tooltip
                 content={renderRoleInfoTippy(label as string, description as string)}
@@ -226,12 +116,7 @@ const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: Ro
                         </RadioGroupItem>
                     </div>
                 ) : (
-                    <div
-                        className="flexbox dc__align-items-center"
-                        role="button"
-                        tabIndex={0}
-                        onClick={handleUpdateRole}
-                    >
+                    <div className="flexbox dc__align-items-center">
                         <Checkbox
                             isChecked={isRoleSelected}
                             onChange={noop}
@@ -256,16 +141,17 @@ const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: Ro
                     ClearIndicator: null,
                     IndicatorSeparator: null,
                     Group,
-                    ValueContainer,
+                    Option,
                 }}
                 styles={roleSelectorStyles}
                 closeMenuOnSelect={false}
                 isSearchable={false}
-                placeholder="Select roles"
+                placeholder={selectText}
                 menuPlacement="auto"
                 isDisabled={!team}
                 hideSelectedOptions={false}
                 isMulti
+                controlShouldRenderValue={false}
             />
             {roleConfigError && (
                 <div className="flexbox dc__align-items-center dc__gap-4">

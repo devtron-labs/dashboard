@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Dispatch, SetStateAction, ChangeEvent } from 'react'
-import { GroupBase, GroupProps } from 'react-select'
+import { Dispatch, SetStateAction } from 'react'
+import { GroupBase, GroupProps, OptionProps } from 'react-select'
 import {
     ServerError,
     ACCESS_TYPE_MAP,
@@ -23,6 +23,8 @@ import {
     Teams,
     UserRoleConfig,
     CustomRoles,
+    EnvListMinDTO,
+    RoleSelectorOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { JobList } from '../../../../../../components/Jobs/Types'
 import { DirectPermissionsRoleFilter } from '../../../types'
@@ -30,6 +32,7 @@ import { DirectPermissionsRoleFilter } from '../../../types'
 type AppsList = Map<number, { loading: boolean; result: { id: number; name: string }[]; error: ServerError }>
 type JobsList = Map<number, { loading: boolean; result: JobList['result']['jobContainers']; error: ServerError }>
 export type ProjectsListType = Record<ACCESS_TYPE_MAP, Teams[]>
+export type EnvironmentsListType = Record<ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.JOBS, EnvListMinDTO[]>
 
 export interface AppPermissionsDetailType {
     accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
@@ -99,10 +102,6 @@ export interface RoleSelectorProps {
     permission: DirectPermissionsRoleFilter
     handleUpdateDirectPermissionRoleConfig: (updatedRoleConfig: UserRoleConfig) => void
 }
-export interface JobRoleSelectorProps {
-    permission: DirectPermissionsRoleFilter
-    handleUpdateDirectPermissionRoleConfig: (updatedRoleConfig: UserRoleConfig) => void
-}
 
 export interface RoleSelectorGroupParams {
     props: GroupProps
@@ -111,7 +110,11 @@ export interface RoleSelectorGroupParams {
     toggleConfig: RoleSelectorToggleConfig
     toggleBaseRole: () => void
     toggleAccessManagerRoles: () => void
-    handleUpdateBaseRole: (event: ChangeEvent<HTMLInputElement>) => void
+}
+
+export interface RoleSelectorOptionParams extends Pick<RoleSelectorProps, 'handleUpdateDirectPermissionRoleConfig'> {
+    props: OptionProps<RoleSelectorOptionType>
+    roleConfig: UserRoleConfig
 }
 
 export interface RoleSelectorGroupHeaderProps extends Pick<RoleSelectorGroupParams, 'showToggle'> {

@@ -54,12 +54,13 @@ import {
     UserAccessResourceKind,
     UserRole,
     GetUserPermissionResourcesPayload,
+    GetUserAccessAllWorkflowsParams,
 } from './types'
 import { transformPermissionGroupResponse, transformUserResponse } from './utils'
 import { SortableKeys as PermissionGroupListSortableKeys } from './PermissionGroups/List/constants'
 import { importComponentFromFELibrary } from '../../../components/common'
 import { getUserGroupsPayload } from './libUtils'
-import { ProjectsListType } from './Shared/components/AppPermissions/types'
+import { EnvironmentsListType, ProjectsListType } from './Shared/components/AppPermissions/types'
 
 const getUserStatusAndTimeoutPayload: (
     userStatus: UserStatus,
@@ -257,31 +258,31 @@ export const getCustomRoles = async (): Promise<ResponseType<CustomRoles[]>> => 
 export const getUserRole = (appName?: string): Promise<ResponseType<UserRole>> =>
     get(getUrlWithSearchParams(Routes.USER_CHECK_ROLE, { appName }))
 
-const getUserResourceOptions = async <T>({ kind, payload }: GetUserResourceOptionsProps): Promise<T> => {
+const getUserResourceOptions = async <T>({ kind, payload, options }: GetUserResourceOptionsProps): Promise<T> => {
     const url = `${Routes.USER_RESOURCE_OPTIONS}/${kind}/${ResourceVersionType.alpha1}`
-    const { result } = await post<{ data: T }>(url, payload)
+    const { result } = await post<{ data: T }>(url, payload, options)
     return result.data
 }
 
-export const getUserAccessChartGroups = async () =>
+export const getUserAccessChartGroups = () =>
     getUserResourceOptions<{ groups: ChartGroup[] }>({
         kind: UserAccessResourceKind.CHART_GROUP,
         payload: { entity: EntityTypes.CHART_GROUP },
     })
 
-export const getUserAccessEnvListForHelmApps = async () =>
+export const getUserAccessEnvListForHelmApps = () =>
     getUserResourceOptions<EnvironmentListHelmResult[]>({
         kind: UserAccessResourceKind.HELM_ENVS,
         payload: { entity: EntityTypes.DIRECT, accessType: ACCESS_TYPE_MAP.HELM_APPS },
     })
 
-export const getUserAccessJobList = async ({ teamIds }: Pick<GetUserPermissionResourcesPayload, 'teamIds'>) =>
+export const getUserAccessJobList = ({ teamIds }: Pick<GetUserPermissionResourcesPayload, 'teamIds'>) =>
     getUserResourceOptions<JobList['result']['jobContainers']>({
         kind: UserAccessResourceKind.JOBS,
         payload: { entity: EntityTypes.JOB, teamIds },
     })
 
-export const getUserAccessK8sResourceList = async ({
+export const getUserAccessK8sResourceList = ({
     clusterId,
     k8sRequest,
 }: Pick<GetUserPermissionResourcesPayload, 'clusterId' | 'k8sRequest'>) =>
@@ -290,33 +291,32 @@ export const getUserAccessK8sResourceList = async ({
         payload: { entity: EntityTypes.CLUSTER, k8sRequest, clusterId },
     })
 
-export const getUserAccessResourceGroupList = async ({
-    clusterId,
-}: Pick<GetUserPermissionResourcesPayload, 'clusterId'>) =>
+export const getUserAccessResourceGroupList = ({ clusterId }: Pick<GetUserPermissionResourcesPayload, 'clusterId'>) =>
     getUserResourceOptions<ApiResourceType>({
         kind: UserAccessResourceKind.API_RESOURCES,
         payload: { entity: EntityTypes.CLUSTER, clusterId },
     })
 
-export const getUserAccessNamespaceList = async ({ clusterId }: Pick<GetUserPermissionResourcesPayload, 'clusterId'>) =>
+export const getUserAccessNamespaceList = ({ clusterId }: Pick<GetUserPermissionResourcesPayload, 'clusterId'>) =>
     getUserResourceOptions<string[]>({
         kind: UserAccessResourceKind.NAMESPACES,
         payload: { entity: EntityTypes.CLUSTER, clusterId },
     })
 
-export const getUserAccessClusterList = async () =>
+export const getUserAccessClusterList = () =>
     getUserResourceOptions<Cluster[]>({
         kind: UserAccessResourceKind.CLUSTER,
         payload: { entity: EntityTypes.CLUSTER },
     })
 
-export const getUserAccessAllWorkflows = async ({ appIds }: Pick<GetUserPermissionResourcesPayload, 'appIds'>) =>
+export const getUserAccessAllWorkflows = ({ appIds, options }: GetUserAccessAllWorkflowsParams) =>
     getUserResourceOptions<AppIdWorkflowNamesMapping>({
         kind: UserAccessResourceKind.JOBS,
         payload: { entity: EntityTypes.JOB, appIds },
+        options,
     })
 
-export const getUserAccessProjectFilteredApps = async ({
+export const getUserAccessProjectFilteredApps = ({
     accessType,
     teamIds,
 }: Pick<GetUserPermissionResourcesPayload, 'accessType' | 'teamIds'>) =>
@@ -328,9 +328,7 @@ export const getUserAccessProjectFilteredApps = async ({
         payload: { entity: EntityTypes.DIRECT, accessType, teamIds },
     })
 
-export const getUserAccessEnvironmentList = async (): Promise<
-    Record<ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.JOBS, EnvListMinDTO[]>
-> => {
+export const getUserAccessEnvironmentList = async (): Promise<EnvironmentsListType> => {
     const [devtronEnvironments, jobEnvironments] = await Promise.all([
         getUserResourceOptions<EnvListMinDTO[]>({
             kind: UserAccessResourceKind.ENVIRONMENT,

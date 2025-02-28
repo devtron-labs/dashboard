@@ -22,9 +22,9 @@ import {
     CHECKBOX_VALUE,
     SelectPicker,
     ComponentSizeType,
+    ActionTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
-import { ActionTypes } from '../../../constants'
 import { ChartPermissionRow } from './types'
 import { ChartPermissionValues, CHART_PERMISSION_OPTIONS } from './constants'
 

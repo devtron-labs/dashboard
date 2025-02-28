@@ -57,7 +57,7 @@ const DirectPermission = ({
     environmentClusterOptions,
     getListForAccessType,
 }: DirectPermissionRowProps) => {
-    const { setDirectPermission } = usePermissionConfiguration()
+    const { setDirectPermission, allowManageAllAccess } = usePermissionConfiguration()
     const [workflowList, setWorkflowList] = useState<WorkflowListType>({ loading: false, options: [] })
 
     const { showStatus, userStatus } = usePermissionConfiguration()
@@ -81,10 +81,11 @@ const DirectPermission = ({
     const handleUpdateDirectPermissionRoleConfig = (updatedRoleConfig: UserRoleConfig) => {
         const { baseRole, accessManagerRoles } = updatedRoleConfig
         setDirectPermission((prevPermissions) => {
-            const tempPermissions = [...prevPermissions]
+            const tempPermissions = [...structuredClone(prevPermissions)]
             tempPermissions[index].roleConfig = updatedRoleConfig
 
-            tempPermissions[index].roleConfigError = !baseRole && !accessManagerRoles.size
+            tempPermissions[index].roleConfigError =
+                !baseRole && (allowManageAllAccess ? true : !accessManagerRoles.size)
 
             return tempPermissions
         })

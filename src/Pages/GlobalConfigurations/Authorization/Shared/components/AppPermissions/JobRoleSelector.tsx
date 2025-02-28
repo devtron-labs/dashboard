@@ -21,16 +21,18 @@ import {
     UserRoleConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
-import { JobRoleSelectorProps } from './types'
+import { RoleSelectorProps } from './types'
 
-const JobRoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: JobRoleSelectorProps) => {
+const JobRoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: RoleSelectorProps) => {
     const { customRoles } = useAuthorizationContext()
     const { possibleJobRoles } = customRoles
+    const { roleConfig, team } = permission
 
-    const selectedValue = possibleJobRoles.find((option) => option.value === permission.roleConfig.baseRole)
+    const selectedValue = possibleJobRoles.find((option) => option.value === roleConfig.baseRole)
 
     const handleChangeJobRole = (selectedOption: SelectPickerOptionType<string>) => {
         const updatedConfig: UserRoleConfig = {
+            ...roleConfig,
             baseRole: selectedOption.value,
         }
         handleUpdateDirectPermissionRoleConfig(updatedConfig)
@@ -41,7 +43,7 @@ const JobRoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }:
             inputId="jobs-role-selector"
             options={possibleJobRoles}
             size={ComponentSizeType.large}
-            isDisabled={!permission.team}
+            isDisabled={!team}
             onChange={handleChangeJobRole}
             value={selectedValue}
         />

@@ -22,6 +22,7 @@ import {
     DEFAULT_ENV,
     UserRoleConfig,
     RoleSelectorOptionType,
+    getCommonSelectStyle,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { OptionsOrGroups, GroupBase, Options } from 'react-select'
 import { APIRoleFilter } from '@Pages/GlobalConfigurations/Authorization/types'
@@ -29,16 +30,29 @@ import { createClusterEnvGroup, importComponentFromFELibrary } from '../../../..
 import { SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
 import {
     ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE,
-    ALLOWED_ADDITIONAL_ROLES_MAP,
-    BASE_ROLE_VALUE_TO_LABEL_MAP,
     DirectPermissionFieldName,
+    SELECT_ROLES_PLACEHOLDER,
 } from './constants'
 import { DirectPermissionRowProps, GetRoleConfigParams, RoleSelectorToggleConfig } from './types'
 
 const getRoleConfig: (action: string, subAction: string, approver: boolean) => UserRoleConfig =
     importComponentFromFELibrary('getRoleConfig', null, 'function')
 
-export const getNavLinksConfig = (serverMode: SERVER_MODE, superAdmin: boolean) =>
+const getAdditionalRolesAccordingToAccess = importComponentFromFELibrary(
+    'getAdditionalRolesAccordingToAccess',
+    null,
+    'function',
+)
+
+export const ALLOWED_ADDITIONAL_ROLES_MAP = importComponentFromFELibrary(
+    'ALLOWED_ADDITIONAL_ROLES_MAP',
+    null,
+    'function',
+)
+
+const getAccessManagerRoles = importComponentFromFELibrary('getAccessManagerRoles', null, 'function')
+
+export const getNavLinksConfig = (serverMode: SERVER_MODE, superAdmin: boolean, canManageAllAccess: boolean) =>
     [
         {
             // Access type is applicable for direct permissions only
@@ -63,7 +77,7 @@ export const getNavLinksConfig = (serverMode: SERVER_MODE, superAdmin: boolean) 
             accessType: null,
             tabName: 'kubernetes-objects',
             label: 'Kubernetes Resources',
-            isHidden: !superAdmin,
+            isHidden: !(superAdmin || canManageAllAccess),
         },
         {
             accessType: null,
@@ -220,7 +234,7 @@ export const getEnvironmentDisplayText = (
     return count
 }
 
-export const getRoleConfigForRoleFilter = (roleFilter: APIRoleFilter): UserRoleConfig => {
+export const getRoleConfigForRoleFilter = (roleFilter: APIRoleFilter, subAction: string): UserRoleConfig => {
     if (roleFilter.entity === EntityTypes.JOB || !ALLOWED_ADDITIONAL_ROLES_MAP) {
         return {
             baseRole: roleFilter.action,
@@ -230,30 +244,25 @@ export const getRoleConfigForRoleFilter = (roleFilter: APIRoleFilter): UserRoleC
         }
     }
 
-    const { action, subAction, approver } = roleFilter
+    const { action, approver } = roleFilter
     const roleConfig = getRoleConfig(action, subAction, approver)
     return roleConfig
 }
 
-const getAdditionalRolesAccordingToAccess = importComponentFromFELibrary(
-    'getAdditionalRolesAccordingToAccess',
-    null,
-    'function',
-)
-
-const getAccessManagerRoles = importComponentFromFELibrary('getAccessManagerRoles', null, 'function')
-
-export const getSelectedRolesText = (roleConfig: UserRoleConfig): string => {
-    const baseRole = BASE_ROLE_VALUE_TO_LABEL_MAP[roleConfig.baseRole || '']
+export const getSelectedRolesText = (
+    baseRole: string,
+    roleConfig: UserRoleConfig,
+    allowManageAllAccess: boolean,
+): string => {
     const additionalRole = roleConfig.additionalRoles?.size > 0 ? 'Approver' : ''
-    const accessManagerRole = roleConfig.accessManagerRoles?.size > 0 ? 'Access manager' : ''
+    const accessManagerRole = !allowManageAllAccess && roleConfig.accessManagerRoles.size > 0 ? 'Access manager' : ''
 
-    return [baseRole, additionalRole, accessManagerRole].filter(Boolean).join(', ')
+    return [baseRole, additionalRole, accessManagerRole].filter(Boolean).join(', ') || SELECT_ROLES_PLACEHOLDER
 }
 
-export const getDefaultRoleConfig = (hasAccessManagerPermission: boolean): RoleSelectorToggleConfig => ({
-    baseRole: true,
-    accessManagerRoles: hasAccessManagerPermission,
+export const getDefaultRolesToggleConfig = (roleConfig: UserRoleConfig): RoleSelectorToggleConfig => ({
+    baseRole: !!roleConfig.baseRole || !!roleConfig.additionalRoles.size,
+    accessManagerRoles: !!roleConfig.accessManagerRoles.size,
 })
 
 export const getRoleOptions = ({
@@ -298,14 +307,7 @@ export const getRoleOptions = ({
     ]
 }
 
-export const getRoleSelectorStyles = (error?: boolean) => ({
-    container: (base, state) => ({
-        ...base,
-        ...(state.isDisabled && {
-            cursor: 'not-allowed',
-            pointerEvents: 'auto',
-        }),
-    }),
+const getRoleSelectorStyleOverrides = (error?: boolean) => ({
     menu: (base) => ({
         ...base,
         overflow: 'hidden',
@@ -313,7 +315,7 @@ export const getRoleSelectorStyles = (error?: boolean) => ({
         backgroundColor: 'var(--bg-menu-primary)',
         border: '1px solid var(--N200)',
         boxShadow: '0px 2px 4px 0px rgba(0, 0, 0, 0.20)',
-        width: 300,
+        minWidth: 240,
         maxHeight: 300,
         zIndex: 'var(--select-picker-menu-index)',
     }),
@@ -343,8 +345,8 @@ export const getRoleSelectorStyles = (error?: boolean) => ({
     option: (base, state) => ({
         ...base,
         color: 'var(--N900)',
-        backgroundColor: state.isFocussed ? 'var(--bg-secondary)' : 'var(--transparent)',
-        padding: '6px 8px',
+        backgroundColor: state.isFocused ? 'var(--bg-secondary)' : 'var(--transparent)',
+        padding: 0,
         cursor: 'pointer',
         fontSize: '13px',
         lineHeight: '20px',
@@ -355,7 +357,7 @@ export const getRoleSelectorStyles = (error?: boolean) => ({
         },
 
         ':hover': {
-            backgroundColor: 'var(--bg-secondary)',
+            backgroundColor: 'var(--bg-hover)',
         },
 
         ...(state.isDisabled && {
@@ -370,11 +372,11 @@ export const getRoleSelectorStyles = (error?: boolean) => ({
     valueContainer: (base) => ({
         ...base,
         padding: '0',
-        fontWeight: '400',
     }),
     control: (base, state) => ({
         ...base,
         height: '36px',
+        minHeight: '36px',
         minWidth: '56px',
         boxShadow: 'none',
         backgroundColor: 'var(--bg-secondary)',
@@ -396,4 +398,20 @@ export const getRoleSelectorStyles = (error?: boolean) => ({
             outline: 'none',
         },
     }),
+    placeholder: (base, state) => ({
+        ...base,
+        fontSize: '13px',
+        color: state.isDisabled || state.children === SELECT_ROLES_PLACEHOLDER ? 'var(--N500)' : 'var(--N900)',
+        lineHeight: '20px',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        height: '20px',
+    }),
 })
+
+export const getRoleSelectorStyles = (error?: boolean) => {
+    const styleOverrides = getRoleSelectorStyleOverrides(error)
+
+    return getCommonSelectStyle(styleOverrides)
+}

@@ -32,6 +32,7 @@ import {
     SelectPickerOptionType,
     stringComparatorBySortOrder,
     UserRoleConfig,
+    ActionTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { GroupBase } from 'react-select'
 import { Moment12HourFormat, REQUIRED_FIELDS_MISSING, SELECT_ALL_VALUE, SERVER_MODE } from '../../../config'
@@ -47,7 +48,7 @@ import {
 } from './types'
 import { LAST_LOGIN_TIME_NULL_STATE } from './UserPermissions/constants'
 import { useAuthorizationBulkSelection } from './Shared/components/BulkSelection'
-import { ActionTypes, PermissionType, ViewChartGroupPermission, DEFAULT_ACCESS_TYPE_TO_ERROR_MAP } from './constants'
+import { PermissionType, ViewChartGroupPermission, DEFAULT_ACCESS_TYPE_TO_ERROR_MAP } from './constants'
 import { AppIdWorkflowNamesMapping } from '../../../services/service.types'
 import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './Shared/components/AppPermissions/constants'
 import { importComponentFromFELibrary } from '../../../components/common'
@@ -68,21 +69,36 @@ const getStatusExportText: (status: UserStatus, timeToLive: string) => string = 
     'function',
 )
 
-const transformRoleFilters = (
-    roleFilters: APIRoleFilterDto[],
-    accessRoleFilters?: APIRoleFilterDto[],
-): APIRoleFilter[] => {
-    const accessRoleMap = accessRoleFilters?.reduce(
+const getRoleFiltersMap = (roleFilters: APIRoleFilterDto[]) =>
+    roleFilters?.reduce<Record<string, true>>(
+        (agg, { entity, team, environment, accessType, entityName, workflow }) => {
+            const key = `${entity}${accessType}${team}${environment}${entityName}${workflow}`
+            // eslint-disable-next-line no-param-reassign
+            agg[key] = true
+            return agg
+        },
+        {},
+    )
+
+const getAccessRoleMap = (accessRoleFilters: APIRoleFilterDto[]) =>
+    accessRoleFilters?.reduce<Record<string, string>>(
         (agg, { entity, team, environment, accessType, entityName, workflow, subAction }) => {
             const key = `${entity}${accessType}${team}${environment}${entityName}${workflow}`
             // eslint-disable-next-line no-param-reassign
             agg[key] = subAction
             return agg
         },
-        {} as Record<string, string>,
+        {},
     )
 
-    return (
+const transformRoleFilters = (
+    roleFilters: APIRoleFilterDto[],
+    accessRoleFilters?: APIRoleFilterDto[],
+): APIRoleFilter[] => {
+    const accessRoleMap = getAccessRoleMap(accessRoleFilters)
+    const roleFiltersMap = accessRoleFilters ? getRoleFiltersMap(roleFilters) : {}
+
+    const parsedRoleFilters =
         roleFilters?.map(
             ({
                 status: roleFilterStatus,
@@ -102,7 +118,33 @@ const transformRoleFilters = (
                 }
             },
         ) ?? []
-    )
+
+    if (accessRoleFilters) {
+        accessRoleFilters.forEach(
+            ({
+                status: roleFilterStatus,
+                timeoutWindowExpression: roleFilterTimeoutWindowExpression,
+                ...accessRole
+            }) => {
+                const { entity, accessType, team, environment, entityName, workflow } = accessRole
+                const roleFilterKey = `${entity}${accessType}${team}${environment}${entityName}${workflow}`
+
+                // this means accessRoleFilter has no corresponding roleFilter
+                // i.e. permission only has access manager role and not any base role or additional roles
+                if (!roleFiltersMap[roleFilterKey]) {
+                    const roleFilterTimeToLive = getFormattedTimeToLive(roleFilterTimeoutWindowExpression)
+
+                    parsedRoleFilters.push({
+                        ...accessRole,
+                        status: getUserStatus(roleFilterStatus, roleFilterTimeToLive),
+                        timeToLive: roleFilterTimeToLive,
+                    })
+                }
+            },
+        )
+    }
+
+    return parsedRoleFilters
 }
 
 export const transformUserResponse = (_user: UserDto): User => {
@@ -166,7 +208,7 @@ export const transformPermissionGroupResponse = (_permissionGroup: PermissionGro
     }
 }
 
-export const reduceCustomRoles = (roleList: CustomRoles[]) =>
+export const getRoleNameToValueMap = (roleList: CustomRoles[]) =>
     roleList.reduce<MetaPossibleRoles>((agg, curr) => {
         // eslint-disable-next-line no-param-reassign
         agg[curr.roleName] = {
@@ -180,7 +222,7 @@ export const getMetaPossibleRoles = (customRoles: CustomRoles[]): CustomRoleAndM
     const filteredDevtronRoles = customRoles.filter((role) => role.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS)
     const filteredClusterRoles = customRoles.filter((role) => role.entity === EntityTypes.CLUSTER)
 
-    const possibleRolesMetaForDevtron = reduceCustomRoles(filteredDevtronRoles)
+    const possibleRolesMetaForDevtron = getRoleNameToValueMap(filteredDevtronRoles)
     const possibleJobRoles = customRoles
         .filter((role) => role.entity === EntityTypes.JOB)
         .map((jobRole) => ({
@@ -188,7 +230,7 @@ export const getMetaPossibleRoles = (customRoles: CustomRoles[]): CustomRoleAndM
             value: jobRole.roleName,
             description: jobRole.roleDescription,
         }))
-    const possibleRolesMetaForCluster = reduceCustomRoles(filteredClusterRoles)
+    const possibleRolesMetaForCluster = getRoleNameToValueMap(filteredClusterRoles)
 
     return {
         customRoles,
@@ -299,24 +341,31 @@ const getCommaSeparatedNamespaceList = (namespaces: OptionType[]) => {
 
 const getRoleAndAccessFiltersFromDirectPermission = ({
     directPermission,
-}: Pick<CreateUserPermissionPayloadParams, 'directPermission'>) => {
+    canManageAllAccess,
+}: Pick<CreateUserPermissionPayloadParams, 'directPermission' | 'canManageAllAccess'>): {
+    roleFilters: APIRoleFilter[]
+    accessRoleFilters: APIRoleFilterDto[]
+} => {
     const roleFilters = []
     const accessRoleFilters = []
 
     directPermission.forEach((permission) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { roleConfig, roleConfigError, workflowError, entityNameError, environmentError, ...restPermission } =
+            permission
+
         const commonPermissions = {
-            ...permission,
+            ...restPermission,
             team: permission.team.value,
             environment: getSelectedEnvironments(permission),
             entityName: getSelectedPermissionValues(permission.entityName),
             entity: permission.entity,
-            approver: permission.roleConfig.additionalRoles.has('deploymentApprover'),
             ...(permission.entity === EntityTypes.JOB && {
                 workflow: permission.workflow?.length ? getSelectedPermissionValues(permission.workflow) : '',
             }),
         }
 
-        if (permission.roleConfig.accessManagerRoles.size > 0) {
+        if (!canManageAllAccess && permission.roleConfig.accessManagerRoles.size > 0) {
             const accessRole = {
                 ...commonPermissions,
                 action: 'accessManager',
@@ -324,30 +373,35 @@ const getRoleAndAccessFiltersFromDirectPermission = ({
             }
             accessRoleFilters.push(accessRole)
         }
-        const role = {
-            ...commonPermissions,
-            action: getPermissionActionValue(permission.roleConfig),
+        if (permission.roleConfig.baseRole || permission.roleConfig.additionalRoles.size > 0) {
+            const role = {
+                ...commonPermissions,
+                approver: roleConfig.additionalRoles.has('deploymentApprover'),
+                action: getPermissionActionValue(permission.roleConfig),
+            }
+            roleFilters.push(role)
         }
-        roleFilters.push(role)
     })
 
     return { roleFilters, accessRoleFilters }
 }
 
-export const getRoleFilters = ({
+export const getRolesAndAccessRoles = ({
     directPermission,
     k8sPermission,
     chartPermission,
     serverMode,
+    canManageAllAccess,
 }: Pick<
     CreateUserPermissionPayloadParams,
-    'chartPermission' | 'directPermission' | 'serverMode' | 'k8sPermission'
+    'chartPermission' | 'directPermission' | 'serverMode' | 'k8sPermission' | 'canManageAllAccess'
 >) => {
     const filteredDirectPermissions = directPermission.filter(
         (permission) => permission.team?.value && permission.environment.length && permission.entityName.length,
     )
     const { roleFilters: directRoleFilters, accessRoleFilters } = getRoleAndAccessFiltersFromDirectPermission({
         directPermission: filteredDirectPermissions,
+        canManageAllAccess,
     })
     const roleFilters: UserCreateOrUpdateParamsType['roleFilters'] = [
         ...directRoleFilters,
@@ -399,11 +453,12 @@ export const createUserPermissionPayload = ({
     userGroups,
     canManageAllAccess,
 }: CreateUserPermissionPayloadParams): UserCreateOrUpdateParamsType => {
-    const { roleFilters, accessRoleFilters } = getRoleFilters({
+    const { roleFilters, accessRoleFilters } = getRolesAndAccessRoles({
         directPermission,
         k8sPermission,
         chartPermission,
         serverMode,
+        canManageAllAccess,
     })
 
     return {
