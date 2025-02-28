@@ -16,8 +16,13 @@
 
 import { useState, useMemo, useRef } from 'react'
 import { MultiValue, SelectInstance } from 'react-select'
-import { Button, ButtonVariantType, SelectPicker, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICGears } from '@Icons/ic-nav-gear.svg'
+import {
+    Button,
+    ButtonVariantType,
+    Icon,
+    SelectPicker,
+    SelectPickerOptionType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { OPTIONAL_NODE_LIST_HEADERS } from '../Constants'
 import { ColumnSelectorType } from '../Types'
 import { saveAppliedColumnsInLocalStorage } from './utils'
@@ -83,7 +88,7 @@ const ColumnSelector = ({ setVisibleColumns, visibleColumns }: ColumnSelectorTyp
             controlShouldRenderValue={false}
             fullWidth
             hideSelectedOptions={false}
-            icon={<ICGears className="dc__no-shrink icon-dim-16 scn-6" />}
+            icon={<Icon name="ic-gear" color="N600" size={16} />}
             isSearchable
             menuIsOpen={isMenuOpen}
             onMenuOpen={handleMenuOpen}
