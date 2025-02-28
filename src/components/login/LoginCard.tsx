@@ -24,7 +24,7 @@ export const LoginCard = ({ renderContent }: LoginCardProps) => {
     )
 
     const renderTermsAndConditions = () => (
-        <div className="dc__border-top flex dc__gap-4 p-12 cn-7">
+        <div className="border-top__secondary flex dc__gap-4 p-12 cn-7">
             <p className="m-0 lh-18">By logging in, you agree to our </p>
             <a href={PRIVACY_POLICY} target="blank" rel="noreferrer">
                 Terms of Service
