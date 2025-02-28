@@ -31,6 +31,7 @@ import {
     Pagination,
     SortableTableHeaderCell,
     useAsync,
+    useStickyEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ContentCard from '@Components/common/ContentCard/ContentCard'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '@Components/onboardingGuide/OnboardingGuide.constants'
@@ -67,8 +68,16 @@ const DevtronAppList = ({
     changePage,
     changePageSize,
     setAppCount,
+    appListContainerRef,
 }: DevtronAppListProps) => {
     const history = useHistory()
+    const [isHeaderStuck, setIsHeaderStuck] = useState(false)
+
+    const { stickyElementRef } = useStickyEvent({
+        identifier: 'app-list',
+        containerRef: appListContainerRef,
+        callback: setIsHeaderStuck,
+    })
 
     const [expandedState, setExpandedState] = useState<DevtronAppExpandedState>(INITIAL_EXPANDED_STATE)
 
@@ -251,7 +260,10 @@ const DevtronAppList = ({
     const renderAppList = () => (
         <div className="app-list" data-testid="app-list-container">
             <div
-                className={`app-list__header ${!isArgoInstalled ? 'app-list__header--argo-not-installed' : ''} dc__position-sticky dc__top-47`}
+                ref={stickyElementRef}
+                className={`app-list__header ${!isArgoInstalled ? 'app-list__header--argo-not-installed' : ''} dc__position-sticky dc__top-47 ${
+                    isHeaderStuck ? 'dc__box-shadow--header' : ''
+                }`}
             >
                 <div className="app-list__cell--icon flex left cursor" onClick={toggleExpandAllRow}>
                     <Arrow className={`icon-dim-24 p-2 ${getArrowIconClass()}`} />

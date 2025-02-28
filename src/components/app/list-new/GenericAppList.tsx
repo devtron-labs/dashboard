@@ -29,6 +29,7 @@ import {
     DEFAULT_BASE_PAGE_SIZE,
     stringComparatorBySortOrder,
     showError,
+    useStickyEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -72,12 +73,20 @@ const GenericAppList = ({
     changePageSize,
     handleSorting,
     setShowPulsatingDot,
+    appListContainerRef,
 }: GenericAppListProps) => {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING)
     const [errorResponseCode, setErrorResponseCode] = useState(0)
     const [appsList, setAppsList] = useState<GenericAppType[]>([])
     const [sseConnection, setSseConnection] = useState<EventSource>(null)
     const { isSuperAdmin } = useMainContext()
+    const [isHeaderStuck, setIsHeaderStuck] = useState(false)
+
+    const { stickyElementRef } = useStickyEvent({
+        callback: setIsHeaderStuck,
+        identifier: 'generic-app-list',
+        containerRef: appListContainerRef,
+    })
 
     const isArgoCDAppList = appType === AppListConstants.AppType.ARGO_APPS
     const isFluxCDAppList = appType === AppListConstants.AppType.FLUX_APPS
@@ -231,7 +240,10 @@ const GenericAppList = ({
     function renderAppListHeader() {
         return (
             <div
-                className={`app-list__header app-list__header${isFluxCDAppList ? '__fluxcd' : ''} dc__position-sticky dc__top-47`}
+                ref={stickyElementRef}
+                className={`app-list__header app-list__header${isFluxCDAppList ? '__fluxcd' : ''} dc__position-sticky dc__top-47 ${
+                    isHeaderStuck ? 'dc__box-shadow--header' : ''
+                }`}
             >
                 <div className="app-list__cell--icon" />
                 <div className="app-list__cell app-list__cell--name">
