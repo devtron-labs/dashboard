@@ -100,20 +100,24 @@ const Login = () => {
     }
 
     useEffect(() => {
-        if (initResult[0].status === 'fulfilled' && initResult[0].value.result) {
-            setLoginList(initResult[0].value.result || [])
+        if (!initResult || !Array.isArray(initResult) || initResult.length < 2) return
+
+        const [ssoLoginListResponse, dashboardAccessesResponse] = initResult
+        if (ssoLoginListResponse.status === 'fulfilled' && ssoLoginListResponse.value.result) {
+            setLoginList(ssoLoginListResponse.value.result || [])
         }
         if (typeof Storage !== 'undefined') {
             if (localStorage.isDashboardAccessed) {
                 return
             }
 
-            if (initResult[1].status === 'fulfilled' && initResult[1].value.result) {
+            if (dashboardAccessesResponse.status === 'fulfilled' && dashboardAccessesResponse.value.result) {
                 localStorage.isDashboardAccessed = true
             }
         }
+
         setLoginNavigationURL()
-    }, [])
+    }, [initResult])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.persist()
