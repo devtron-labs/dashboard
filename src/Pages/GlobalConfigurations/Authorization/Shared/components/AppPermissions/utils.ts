@@ -345,7 +345,7 @@ const getRoleSelectorStyleOverrides = (error?: boolean) => ({
     option: (base, state) => ({
         ...base,
         color: 'var(--N900)',
-        backgroundColor: state.isFocussed ? 'var(--bg-secondary)' : 'var(--transparent)',
+        backgroundColor: state.isFocused ? 'var(--bg-secondary)' : 'var(--transparent)',
         padding: 0,
         cursor: 'pointer',
         fontSize: '13px',
