@@ -129,7 +129,7 @@
                     display: grid;
 
                     &:hover > :first-child {
-                        background-color: var(--bg-secondary);
+                        background-color: var(--transparent);
                     }
 
                     & > :first-child {
@@ -172,9 +172,9 @@
             .scrollable-event-list {
                 .hover-class {
                     &:hover {
-                        background-color: var(--bg-secondary);
+                        background-color: var(--bg-hover);
                         .sticky-column {
-                            background-color: var(--bg-secondary);
+                            background-color: var(--bg-hover);
                         }
 
                         .restart-icon path {

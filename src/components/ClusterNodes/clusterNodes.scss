@@ -159,9 +159,9 @@
 
     .hover-class {
         &:hover {
-            background-color: var(--bg-secondary);
+            background-color: var(--bg-hover);
             .sticky-column {
-                background-color: var(--bg-secondary);
+                background-color: var(--bg-hover);
             }
         }
     }
