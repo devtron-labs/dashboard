@@ -97,22 +97,6 @@
                         display: flex;
                         align-items: flex-start;
 
-                        .link-name {
-                            display: flex;
-                            flex-direction: column;
-                            width: 200px;
-
-                            input {
-                                width: 200px;
-                                height: 32px;
-                                padding: 10px 6px;
-                                background-color: var(--bg-secondary);
-                                color: var(--N900);
-                                border: 1px solid var(--N200);
-                                border-radius: 4px;
-                            }
-                        }
-
                         .monitoring-tool {
                             width: 150px;
 

@@ -207,36 +207,33 @@ const SESConfigModal = ({
         <div className="dc__gap-16 flex-grow-1 flexbox-col mh-0 p-20 dc__overflow-auto h-100 mh-0">
             <CustomInput
                 label="Configuration Name"
-                dataTestid="add-ses-configuration-name"
                 name={ConfigurationFieldKeys.CONFIG_NAME}
                 value={form.configName}
                 onChange={handleInputChange}
                 onBlur={handleBlur}
                 placeholder="Enter a name"
                 autoFocus
-                isRequiredField
+                required
                 error={isFormValid[ConfigurationFieldKeys.CONFIG_NAME].message}
             />
             <CustomInput
                 label="Access Key ID"
-                dataTestid="add-ses-access-key"
                 name={ConfigurationFieldKeys.ACCESS_KEY}
                 value={form.accessKey}
                 onChange={handleInputChange}
                 onBlur={handleBlur}
                 placeholder="Enter access key ID"
-                isRequiredField
+                required
                 error={isFormValid[ConfigurationFieldKeys.ACCESS_KEY].message}
             />
             <CustomInput
                 label="Secret Access Key"
-                dataTestid="add-ses-secret-access-key"
                 name={ConfigurationFieldKeys.SECRET_KEY}
                 value={form.secretKey}
                 onChange={handleInputChange}
                 onBlur={handleBlur}
                 placeholder="Enter Secret access Key"
-                isRequiredField
+                required
                 error={isFormValid[ConfigurationFieldKeys.SECRET_KEY].message}
             />
             <SelectPicker
@@ -257,14 +254,13 @@ const SESConfigModal = ({
 
             <CustomInput
                 label="Send email from"
-                dataTestid="add-ses-send-email"
                 type="email"
                 name={ConfigurationFieldKeys.FROM_EMAIL}
                 value={form.fromEmail}
                 onBlur={handleBlur}
                 placeholder="Enter sender's email"
                 onChange={handleInputChange}
-                isRequiredField
+                required
                 error={isFormValid[ConfigurationFieldKeys.FROM_EMAIL].message}
                 helperText="This email must be verified with SES."
             />

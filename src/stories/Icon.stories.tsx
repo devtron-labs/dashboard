@@ -14,13 +14,32 @@
  * limitations under the License.
  */
 
-.custom-password__show-btn {
-    position: absolute;
-    bottom: 7px;
-    right: 10px;
-    height: 28px;
-}
+import type { Meta, StoryObj } from '@storybook/react'
 
-.p-r-41 {
-    padding-right: 41px;
+import { Icon, iconMap, IconsProps } from '@devtron-labs/devtron-fe-common-lib'
+
+const options = Object.keys(iconMap)
+
+const meta = {
+    component: Icon,
+    argTypes: {
+        name: {
+            options,
+            control: {
+                type: 'select',
+            },
+        },
+    },
+} satisfies Meta<IconsProps>
+
+export default meta
+
+type Story = StoryObj<typeof meta>
+
+export const Default: Story = {
+    args: {
+        name: options[0] as IconsProps['name'],
+        size: 80,
+        color: null,
+    },
 }

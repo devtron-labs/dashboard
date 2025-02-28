@@ -55,15 +55,14 @@ const DockerArgsItem: FunctionComponent<DockerArgsItemProps> = ({
                 <CustomInput
                     name="arg-key"
                     data-testid={fromBuildPack ? `build-pack-build-env-key${index}` : `docker-arg-key-${index}`}
-                    rootClassName={`w-100 dc__top-radius-4 pl-10 pr-10 pt-6 pb-6 en-2 bw-1 ${
-                        readOnly ? 'cursor-not-allowed' : ''
-                    }`}
-                    autoComplete="off"
                     placeholder="Key"
                     type="text"
                     value={arg.key}
                     disabled={readOnly}
                     onChange={handleDockerArgKeyUpdate}
+                    borderRadiusConfig={{
+                        bottom: false,
+                    }}
                 />
                 <Textarea
                     name={fromBuildPack ? `build-pack-build-env-value${index}` : `docker-arg-value-${index}`}
@@ -71,6 +70,9 @@ const DockerArgsItem: FunctionComponent<DockerArgsItemProps> = ({
                     placeholder="Value"
                     onChange={handleDockerArgValueUpdate}
                     disabled={readOnly}
+                    borderRadiusConfig={{
+                        top: false,
+                    }}
                 />
             </div>
 

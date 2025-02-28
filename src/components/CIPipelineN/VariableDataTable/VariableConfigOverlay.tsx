@@ -63,11 +63,12 @@ export const VariableConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOver
             <>
                 <div className="p-12 flexbox-col dc__gap-12">
                     <CustomInput
+                        placeholder="Enter variable name"
                         name="variable-name"
                         onChange={handleVariableName}
                         value={data.variable.value}
                         label="Variable"
-                        isRequiredField
+                        required
                         autoFocus
                     />
                     <Textarea

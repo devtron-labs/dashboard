@@ -23,16 +23,16 @@ import {
     DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useLocation } from 'react-router-dom'
+import { ReactComponent as SESEmpty } from '@Images/ses-empty.svg'
+import { ReactComponent as WebhookEmpty } from '@Images/webhook-empty.svg'
+import { ReactComponent as SMTPEmpty } from '@Images/smtp-empty.svg'
+import { ReactComponent as EmptySlack } from '@Images/slack-empty.svg'
 import { deleteNotification, getConfigs } from './notifications.service'
 import { DC_CONFIGURATION_CONFIRMATION_MESSAGE } from '../../config/constantMessaging'
 import { ConfigurationTabState } from './types'
 import { ConfigurationTabSwitcher } from './ConfigurationTabsSwitcher'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, ConfigurationTabText } from './constants'
 import { EmptyConfigurationView } from './EmptyConfigurationView'
-import emptySES from '../../assets/img/ses-empty.png'
-import emptyWebhook from '../../assets/img/webhook-empty.png'
-import emptySmtp from '../../assets/img/smtp-empty.png'
-import emptySlack from '../../assets/img/slack-empty.png'
 import { ConfigurationTables } from './ConfigurationTables'
 import SESConfigModal from './SESConfigModal'
 import { SlackConfigModal } from './SlackConfigModal'
@@ -128,14 +128,14 @@ export const ConfigurationTab = () => {
     const renderEmptyState = () => {
         switch (modal) {
             case ConfigurationsTabTypes.SMTP:
-                return <EmptyConfigurationView activeTab={ConfigurationsTabTypes.SMTP} image={emptySmtp} />
+                return <EmptyConfigurationView activeTab={ConfigurationsTabTypes.SMTP} image={SMTPEmpty} />
             case ConfigurationsTabTypes.SLACK:
-                return <EmptyConfigurationView activeTab={ConfigurationsTabTypes.SLACK} image={emptySlack} />
+                return <EmptyConfigurationView activeTab={ConfigurationsTabTypes.SLACK} image={EmptySlack} />
             case ConfigurationsTabTypes.WEBHOOK:
-                return <EmptyConfigurationView activeTab={ConfigurationsTabTypes.WEBHOOK} image={emptyWebhook} />
+                return <EmptyConfigurationView activeTab={ConfigurationsTabTypes.WEBHOOK} image={WebhookEmpty} />
             case ConfigurationsTabTypes.SES:
             default:
-                return <EmptyConfigurationView activeTab={ConfigurationsTabTypes.SES} image={emptySES} />
+                return <EmptyConfigurationView activeTab={ConfigurationsTabTypes.SES} image={SESEmpty} />
         }
     }
 
@@ -192,7 +192,6 @@ export const ConfigurationTab = () => {
             title={deletePayload.configName}
             component={ConfigurationTabText[state.activeTab.toUpperCase()]}
             onDelete={onClickDelete}
-            showConfirmationModal={state.confirmation}
             closeConfirmationModal={hideDeleteModal}
             renderCannotDeleteConfirmationSubTitle={DC_CONFIGURATION_CONFIRMATION_MESSAGE}
             errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
@@ -208,7 +207,7 @@ export const ConfigurationTab = () => {
             <ConfigurationTabSwitcher isEmptyView={isEmptyView} />
             {isEmptyView ? renderEmptyState() : renderTableComponent()}
             {renderModal()}
-            {renderDeleteModal()}
+            {state.confirmation && renderDeleteModal()}
         </div>
     )
 }

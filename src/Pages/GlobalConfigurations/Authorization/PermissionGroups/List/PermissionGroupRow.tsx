@@ -129,13 +129,14 @@ const PermissionGroupRow = ({
                     />
                 </div>
             </div>
-            <DeleteUserPermission
-                title={name}
-                onDelete={onDelete}
-                showConfirmationModal={isDeleteModalOpen}
-                closeConfirmationModal={toggleDeleteModal}
-                isUserGroup
-            />
+            {isDeleteModalOpen && (
+                <DeleteUserPermission
+                    title={name}
+                    onDelete={onDelete}
+                    closeConfirmationModal={toggleDeleteModal}
+                    isUserGroup
+                />
+            )}
         </>
     )
 }

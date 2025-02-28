@@ -492,7 +492,7 @@ const NodeDetailComponent = ({
     return (
         <>
             <div
-                className={`w-100 pr-20 pl-20 bg__primary flex dc__border-bottom dc__content-space h-32 ${!isResourceBrowserView ? 'node-detail__sticky' : ''}`}
+                className={`w-100 pr-20 pl-20 bg__primary flex border__secondary--bottom dc__content-space h-32 ${!isResourceBrowserView ? 'node-detail__sticky' : ''}`}
             >
                 <div className="flex left">
                     <TabGroup tabs={TAB_GROUP_CONFIG} size={ComponentSizeType.medium} alignActiveBorderWithContainer />
@@ -610,28 +610,31 @@ const NodeDetailComponent = ({
                     switchSelectedContainer={switchSelectedContainer}
                     selectedNamespaceByClickingPod={selectedResource?.namespace}
                     // getContainersFromManifest can only be used from resource browser
-                    {...isResourceBrowserView ? {
-                        handleSuccess: getContainersFromManifest
-                    } : {}}
+                    {...(isResourceBrowserView
+                        ? {
+                              handleSuccess: getContainersFromManifest,
+                          }
+                        : {})}
                 />
             )}
-            <DeleteResourcePopup
-                clusterId={`${selectedResource.clusterId}`}
-                resourceData={selectedResource}
-                selectedResource={{
-                    gvk: {
-                        Group: selectedResource.group,
-                        Version: selectedResource.version,
-                        Kind: selectedResource.kind as NodeType,
-                    },
-                    namespaced: false,
-                }}
-                getResourceListData={getContainersFromManifest}
-                toggleDeleteDialog={toggleDeleteDialog}
-                removeTabByIdentifier={removeTabByIdentifier}
-                handleClearBulkSelection={noop}
-                showConfirmationModal={isResourceBrowserView && showDeleteDialog}
-            />
+            {isResourceBrowserView && showDeleteDialog && (
+                <DeleteResourcePopup
+                    clusterId={`${selectedResource.clusterId}`}
+                    resourceData={selectedResource}
+                    selectedResource={{
+                        gvk: {
+                            Group: selectedResource.group,
+                            Version: selectedResource.version,
+                            Kind: selectedResource.kind as NodeType,
+                        },
+                        namespaced: false,
+                    }}
+                    getResourceListData={getContainersFromManifest}
+                    toggleDeleteDialog={toggleDeleteDialog}
+                    removeTabByIdentifier={removeTabByIdentifier}
+                    handleClearBulkSelection={noop}
+                />
+            )}
         </>
     )
 }

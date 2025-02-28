@@ -41,7 +41,6 @@ import {
     getClusterList,
     getEnvironmentList,
     getCluster,
-    retryClusterInstall,
     deleteEnvironment,
 } from './cluster.service'
 import { ReactComponent as Add } from '@Icons/ic-add.svg'
@@ -50,10 +49,8 @@ import { ReactComponent as PencilEdit } from '@Icons/ic-pencil.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { ReactComponent as VirtualClusterIcon } from '@Icons/ic-virtual-cluster.svg'
 import { ReactComponent as VirtualEnvIcon } from '@Icons/ic-environment-temp.svg'
-import { ClusterComponentModal } from './ClusterComponentModal'
-import { ClusterInstallStatus } from './ClusterInstallStatus'
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type'
-import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, CONFIGURATION_TYPES, AppCreationType } from '../../config'
+import { DOCUMENTATION, ViewType, CONFIGURATION_TYPES, AppCreationType } from '../../config'
 import { getEnvName } from './cluster.util'
 import ClusterForm from './ClusterForm'
 import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
@@ -93,12 +90,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
 
     componentDidMount() {
         if (this.props.isSuperAdmin) {
-            this.initialise()
-        }
-    }
-
-    componentDidUpdate(prevProps) {
-        if (this.props.serverMode !== prevProps.serverMode) {
             this.initialise()
         }
     }
@@ -276,7 +267,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                 {...cluster}
                                 reload={this.initialise}
                                 key={cluster.id || Math.random().toString(36).substr(2, 5)}
-                                serverMode={this.props.serverMode}
                                 showEditCluster={this.state.showEditCluster}
                                 toggleShowAddCluster={this.toggleShowEditCluster}
                                 toggleCheckTlsConnection={this.toggleCheckTlsConnection}
@@ -337,7 +327,6 @@ const Cluster = ({
     proxyUrl,
     toConnectWithSSHTunnel,
     sshTunnelConfig,
-    serverMode,
     isTlsConnection,
     toggleShowAddCluster,
     toggleCheckTlsConnection,
@@ -349,7 +338,6 @@ const Cluster = ({
     const [environment, setEnvironment] = useState(null)
     const [config, setConfig] = useState(defaultConfig)
     const [prometheusAuth, setPrometheusAuth] = useState(undefined)
-    const [showClusterComponentModal, toggleClusterComponentModal] = useState(false)
     const [showWindow, setShowWindow] = useState(false)
     const [confirmation, setConfirmation] = useState(false)
     const [prometheusToggleEnabled] = useState(!!prometheus_url)
@@ -488,34 +476,6 @@ const Cluster = ({
             toggleEditMode((t) => !t)
         } catch (err) {
             showError(err)
-        }
-    }
-
-    function redirectToChartDeployment(appId, envId): void {
-        history.push(`${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`)
-    }
-
-    async function callRetryClusterInstall() {
-        try {
-            const payload = {}
-            const { result } = await retryClusterInstall(clusterId, payload)
-            if (result) {
-                ToastManager.showToast({
-                    variant: ToastVariantType.success,
-                    description: 'Successfully triggered',
-                })
-            }
-            reload()
-        } catch (error) {
-            showError(error)
-        }
-    }
-
-    async function clusterInstallStatusOnclick(e) {
-        if (agentInstallationStage === 3) {
-            callRetryClusterInstall()
-        } else {
-            toggleClusterComponentModal(!showClusterComponentModal)
         }
     }
 
@@ -695,25 +655,6 @@ const Cluster = ({
                         </Tippy>
                     )}
                 </List>
-                {!isVirtualCluster && serverMode !== SERVER_MODE.EA_ONLY && !window._env_.K8S_CLIENT && clusterId && (
-                    <ClusterInstallStatus
-                        agentInstallationStage={agentInstallationStage}
-                        envName={envName}
-                        onClick={clusterInstallStatusOnclick}
-                    />
-                )}
-                {showClusterComponentModal && (
-                    <ClusterComponentModal
-                        agentInstallationStage={agentInstallationStage}
-                        components={defaultClusterComponent}
-                        environmentName={envName}
-                        callRetryClusterInstall={callRetryClusterInstall}
-                        redirectToChartDeployment={redirectToChartDeployment}
-                        close={(e) => {
-                            toggleClusterComponentModal(!showClusterComponentModal)
-                        }}
-                    />
-                )}
                 {!window._env_.K8S_CLIENT && Array.isArray(newEnvs) && newEnvs.length > 1 ? (
                     <div className="pb-8">
                         <div className="cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
@@ -796,12 +737,13 @@ const Cluster = ({
                                     ) : null,
                             )}
 
-                        <EnvironmentDeleteComponent
-                            environmentName={environment?.environmentName}
-                            showConfirmationModal={confirmation}
-                            onDelete={onDelete}
-                            closeConfirmationModal={hideConfirmationModal}
-                        />
+                        {confirmation && (
+                            <EnvironmentDeleteComponent
+                                environmentName={environment?.environmentName}
+                                onDelete={onDelete}
+                                closeConfirmationModal={hideConfirmationModal}
+                            />
+                        )}
                     </div>
                 ) : (
                     clusterId && renderNoEnvironmentTab()

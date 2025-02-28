@@ -110,7 +110,6 @@ const CordonNodeModal = ({ name, version, kind, unschedulable, closePopup }: Cor
             Icon={isCordonButton ? <CordonIcon /> : <UncordonIcon />}
             title={`${CORDON_NODE_MODAL_MESSAGING[isCordonButton ? 'cordon' : 'uncordon']} node '${name}'`}
             handleClose={onClose}
-            showConfirmationModal
             subtitle={
                 isCordonButton
                     ? CORDON_NODE_MODAL_MESSAGING.cordonInfoText

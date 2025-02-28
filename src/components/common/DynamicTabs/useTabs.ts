@@ -19,6 +19,7 @@ import dayjs from 'dayjs'
 import { noop, InitTabType, DynamicTabType } from '@devtron-labs/devtron-fe-common-lib'
 import { AddTabParamsType, ParsedTabsData, PopulateTabDataPropsType, UseTabsReturnType } from './types'
 import { FALLBACK_TAB, TAB_DATA_LOCAL_STORAGE_KEY, TAB_DATA_VERSION } from './constants'
+import { convertV1TabsDataToV2 } from './utils'
 
 export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB): UseTabsReturnType {
     const [tabs, setTabs] = useState<DynamicTabType[]>([])
@@ -104,17 +105,15 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
         } else {
             const persistedTabsData = getTabDataFromLocalStorage()
             try {
-                _parsedTabsData = JSON.parse(persistedTabsData)
+                _parsedTabsData = convertV1TabsDataToV2(JSON.parse(persistedTabsData))
             } catch {
                 noop()
             }
         }
 
         return JSON.stringify({
-            ..._parsedTabsData,
-            key: persistenceKey,
             version: TAB_DATA_VERSION,
-            data: _tabs,
+            data: { ..._parsedTabsData?.data, [persistenceKey]: _tabs },
         })
     }
 
@@ -170,46 +169,27 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
         overrideSelectionStatus = false,
     ) => {
         let _tabs: DynamicTabType[] = []
-        let tabDataVersion = TAB_DATA_VERSION
         let parsedTabsData: ParsedTabsData
 
         setTabs((prevTabs) => {
             if (!reInit) {
                 const persistedTabsData = getTabDataFromLocalStorage()
                 try {
-                    parsedTabsData = JSON.parse(persistedTabsData)
-                    _tabs = parsedTabsData && persistenceKey === parsedTabsData.key ? parsedTabsData.data : prevTabs
-                    tabDataVersion = parsedTabsData?.version
+                    parsedTabsData = convertV1TabsDataToV2(JSON.parse(persistedTabsData))
+                    _tabs = parsedTabsData ? parsedTabsData.data[persistenceKey] ?? [] : prevTabs
                 } catch {
                     _tabs = prevTabs
                 }
             }
             if (_tabs.length > 0) {
-                _tabs = _tabs.map((_tab) => {
-                    // Backward compatibility with position
-                    const type =
-                        _tab.type ??
-                        ('position' in _tab && _tab.position === Number.MAX_SAFE_INTEGER ? 'dynamic' : 'fixed')
-
-                    return {
-                        ..._tab,
-                        // NOTE: if reInit && overrideSelectionStatus is false, we need to retain the current selection
-                        // if reInit is true, we need to remove old selection and use the provided initTabs' selection
-                        // or fallback if user has sent all initTabs with isSelected false
-                        ...(reInit || overrideSelectionStatus ? { isSelected: false } : {}),
-                        /* NOTE: following lines migrate old tab data to new */
-                        lastSyncMoment: dayjs(),
-                        ...(_tab.componentKey
-                            ? { componentKey: _tab.componentKey }
-                            : { componentKey: getNewTabComponentKey(_tab.id) }),
-                        ...(_tab.isAlive ? { isAlive: _tab.isAlive } : { isAlive: false }),
-                        type,
-                        id:
-                            tabDataVersion !== TAB_DATA_VERSION && type === 'fixed' && _tab.id
-                                ? _tab.id.split('-')[0]
-                                : _tab.id,
-                    }
-                })
+                _tabs = _tabs.map((_tab) => ({
+                    ..._tab,
+                    // NOTE: if reInit && overrideSelectionStatus is false, we need to retain the current selection
+                    // if reInit is true, we need to remove old selection and use the provided initTabs' selection
+                    // or fallback if user has sent all initTabs with isSelected false
+                    ...(reInit || overrideSelectionStatus ? { isSelected: false } : {}),
+                    lastSyncMoment: dayjs(),
+                }))
                 if (tabsToRemove?.length) {
                     _tabs = _tabs.filter((_tab) => tabsToRemove.indexOf(_tab.id) === -1)
                 }

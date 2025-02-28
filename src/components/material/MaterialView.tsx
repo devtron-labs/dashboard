@@ -159,7 +159,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
 
     regexInfoSteps = (): JSX.Element => {
         return (
-            <div data-testid="exclude-include-use-regex-info" className="w-500 h-380 fs-13 bg__primary">
+            <div data-testid="exclude-include-use-regex-info" className="w-500 h-380 fs-13">
                 <div className="h-365 dc__align-start p-12 dc__gap-12 dc__position-sticky dc__overflow-auto">
                     <div className="w-476 h-112 flex column dc__align-start p-0 dc__gap-4">
                         {USE_REGEX_TIPPY_CONTENT.insructionsList.regexInfo.map((item, index) => (
@@ -688,9 +688,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             placeholder={this.gitAuthType('placeholder')}
                             value={`${this.props.material.url}`}
                             onChange={this.props.handleUrlChange}
-                            data-testid="git-repo-url-text-box"
                             error={this.props.isError.url}
-                            rootClassName="h-36"
                         />
                     </div>
                 </div>
@@ -722,7 +720,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 <TippyCustomized
                                     theme={TippyTheme.white}
                                     iconClass="fcv-5"
-                                    className="bg__primary deafult-tt"
                                     placement="bottom"
                                     Icon={Help}
                                     heading="Exclude file/folders"
@@ -794,7 +791,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 <TippyCustomized
                                                     theme={TippyTheme.white}
                                                     iconClass="fcv-5"
-                                                    className="dc__mxw-none w-505 bg__primary dc__border-radius-8-imp tippy-box default-white tippy-shadow"
+                                                    className="dc__mxw-none w-505 dc__border-radius-8-imp tippy-box default-white tippy-shadow"
                                                     heading={USE_REGEX_TIPPY_CONTENT.insructionsList.heading}
                                                     placement="bottom"
                                                     Icon={Help}
@@ -882,13 +879,11 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             </div>
                         </Checkbox>
                         {this.props.isChecked && (
-                            <div className="ml-35">
+                            <div className="ml-35 w-885">
                                 <CustomInput
-                                    rootClassName="w-885"
                                     placeholder="e.g. /abc"
                                     value={this.props.material.checkoutPath}
                                     onChange={this.props.handlePathChange}
-                                    data-testid="clone-directory-path"
                                     name="clone-directory-path"
                                     error={this.props.isError.checkoutPath}
                                 />
@@ -970,10 +965,9 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         />
                     </div>
                 </div>
-                <DeleteConfirmationModal
+                {this.state.confirmation && <DeleteConfirmationModal
                     title={this.props.material.name}
                     component={DeleteComponentsName.GitRepo}
-                    showConfirmationModal={this.state.confirmation}
                     closeConfirmationModal={this.toggleConfirmation}
                     onDelete={this.onDelete}
                     errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
@@ -982,7 +976,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             ? DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE
                             : DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE
                     }
-                />
+                />}
             </form>
         )
     }

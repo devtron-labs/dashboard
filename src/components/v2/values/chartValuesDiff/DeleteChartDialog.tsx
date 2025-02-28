@@ -25,7 +25,6 @@ export const DeleteChartDialog = ({
     toggleConfirmation,
     isCreateValueView,
     disableButton,
-    showConfirmationModal,
 }: DeleteChartDialogProps) => {
     const closeConfirmation = () => {
         toggleConfirmation(false)
@@ -52,7 +51,6 @@ export const DeleteChartDialog = ({
                 },
             }}
             subtitle={<ApplicationDeletionInfo isPresetValue={isCreateValueView} />}
-            showConfirmationModal={showConfirmationModal}
             handleClose={closeConfirmation}
         />
     )
