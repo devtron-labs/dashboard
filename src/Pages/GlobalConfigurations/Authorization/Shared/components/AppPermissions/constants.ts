@@ -71,3 +71,5 @@ export enum DirectPermissionFieldName {
     team = 'team',
     status = 'status',
 }
+
+export const SELECT_ROLES_PLACEHOLDER = 'Select roles'

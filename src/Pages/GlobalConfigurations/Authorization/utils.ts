@@ -341,9 +341,10 @@ const getCommaSeparatedNamespaceList = (namespaces: OptionType[]) => {
 
 const getRoleAndAccessFiltersFromDirectPermission = ({
     directPermission,
-}: Pick<CreateUserPermissionPayloadParams, 'directPermission'>): {
-    roleFilters
-    accessRoleFilters
+    canManageAllAccess,
+}: Pick<CreateUserPermissionPayloadParams, 'directPermission' | 'canManageAllAccess'>): {
+    roleFilters: APIRoleFilter[]
+    accessRoleFilters: APIRoleFilterDto[]
 } => {
     const roleFilters = []
     const accessRoleFilters = []
@@ -364,7 +365,7 @@ const getRoleAndAccessFiltersFromDirectPermission = ({
             }),
         }
 
-        if (permission.roleConfig.accessManagerRoles.size > 0) {
+        if (!canManageAllAccess && permission.roleConfig.accessManagerRoles.size > 0) {
             const accessRole = {
                 ...commonPermissions,
                 action: 'accessManager',
@@ -390,15 +391,17 @@ export const getRolesAndAccessRoles = ({
     k8sPermission,
     chartPermission,
     serverMode,
+    canManageAllAccess,
 }: Pick<
     CreateUserPermissionPayloadParams,
-    'chartPermission' | 'directPermission' | 'serverMode' | 'k8sPermission'
+    'chartPermission' | 'directPermission' | 'serverMode' | 'k8sPermission' | 'canManageAllAccess'
 >) => {
     const filteredDirectPermissions = directPermission.filter(
         (permission) => permission.team?.value && permission.environment.length && permission.entityName.length,
     )
     const { roleFilters: directRoleFilters, accessRoleFilters } = getRoleAndAccessFiltersFromDirectPermission({
         directPermission: filteredDirectPermissions,
+        canManageAllAccess,
     })
     const roleFilters: UserCreateOrUpdateParamsType['roleFilters'] = [
         ...directRoleFilters,
@@ -455,6 +458,7 @@ export const createUserPermissionPayload = ({
         k8sPermission,
         chartPermission,
         serverMode,
+        canManageAllAccess,
     })
 
     return {

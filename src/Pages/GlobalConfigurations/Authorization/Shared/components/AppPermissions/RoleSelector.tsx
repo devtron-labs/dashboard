@@ -90,8 +90,8 @@ const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: Ro
                 (role) => role.accessType === accessType && role.roleName === roleConfig.baseRole,
             )?.roleDisplayName || ''
 
-        return getSelectedRolesText(baseRole, roleConfig)
-    }, [roleConfig])
+        return getSelectedRolesText(baseRole, roleConfig, allowManageAllAccess)
+    }, [roleConfig, allowManageAllAccess])
 
     const Group = (props: GroupProps) =>
         renderGroup({

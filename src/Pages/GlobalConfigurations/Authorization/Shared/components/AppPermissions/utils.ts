@@ -28,7 +28,11 @@ import { OptionsOrGroups, GroupBase, Options } from 'react-select'
 import { APIRoleFilter } from '@Pages/GlobalConfigurations/Authorization/types'
 import { createClusterEnvGroup, importComponentFromFELibrary } from '../../../../../../components/common'
 import { SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
-import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE, DirectPermissionFieldName } from './constants'
+import {
+    ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE,
+    DirectPermissionFieldName,
+    SELECT_ROLES_PLACEHOLDER,
+} from './constants'
 import { DirectPermissionRowProps, GetRoleConfigParams, RoleSelectorToggleConfig } from './types'
 
 const getRoleConfig: (action: string, subAction: string, approver: boolean) => UserRoleConfig =
@@ -245,11 +249,15 @@ export const getRoleConfigForRoleFilter = (roleFilter: APIRoleFilter, subAction:
     return roleConfig
 }
 
-export const getSelectedRolesText = (baseRole: string, roleConfig: UserRoleConfig): string => {
+export const getSelectedRolesText = (
+    baseRole: string,
+    roleConfig: UserRoleConfig,
+    allowManageAllAccess: boolean,
+): string => {
     const additionalRole = roleConfig.additionalRoles?.size > 0 ? 'Approver' : ''
-    const accessManagerRole = roleConfig.accessManagerRoles?.size > 0 ? 'Access manager' : ''
+    const accessManagerRole = !allowManageAllAccess && roleConfig.accessManagerRoles.size > 0 ? 'Access manager' : ''
 
-    return [baseRole, additionalRole, accessManagerRole].filter(Boolean).join(', ') || 'Select roles'
+    return [baseRole, additionalRole, accessManagerRole].filter(Boolean).join(', ') || SELECT_ROLES_PLACEHOLDER
 }
 
 export const getDefaultRolesToggleConfig = (roleConfig: UserRoleConfig): RoleSelectorToggleConfig => ({
@@ -393,7 +401,7 @@ const getRoleSelectorStyleOverrides = (error?: boolean) => ({
     placeholder: (base, state) => ({
         ...base,
         fontSize: '13px',
-        color: state.isDisabled ? 'var(--N500)' : 'var(--N900)',
+        color: state.isDisabled || state.children === SELECT_ROLES_PLACEHOLDER ? 'var(--N500)' : 'var(--N900)',
         lineHeight: '20px',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
