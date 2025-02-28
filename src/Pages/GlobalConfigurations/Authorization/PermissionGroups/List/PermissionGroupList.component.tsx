@@ -37,7 +37,7 @@ export const PermissionGroupIcon = ({
     hasSuperAdminPermission,
     hasAccessManagerPermission,
 }: Pick<PermissionGroupRowProps, 'hasSuperAdminPermission' | 'hasAccessManagerPermission'>) => {
-    if (!(hasAccessManagerPermission || hasAccessManagerPermission)) {
+    if (!(hasSuperAdminPermission || hasAccessManagerPermission)) {
         return null
     }
     return (

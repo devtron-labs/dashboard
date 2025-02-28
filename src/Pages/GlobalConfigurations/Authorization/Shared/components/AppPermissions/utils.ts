@@ -252,9 +252,9 @@ export const getSelectedRolesText = (baseRole: string, roleConfig: UserRoleConfi
     return [baseRole, additionalRole, accessManagerRole].filter(Boolean).join(', ') || 'Select roles'
 }
 
-export const getDefaultRoleConfig = (hasAccessManagerPermission: boolean): RoleSelectorToggleConfig => ({
-    baseRole: true,
-    accessManagerRoles: hasAccessManagerPermission,
+export const getDefaultRolesToggleConfig = (roleConfig: UserRoleConfig): RoleSelectorToggleConfig => ({
+    baseRole: !!roleConfig.baseRole || !!roleConfig.additionalRoles.size,
+    accessManagerRoles: !!roleConfig.accessManagerRoles.size,
 })
 
 export const getRoleOptions = ({

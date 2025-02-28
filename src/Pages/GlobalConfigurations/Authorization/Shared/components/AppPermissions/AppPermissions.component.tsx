@@ -554,7 +554,6 @@ const AppPermissions = () => {
                     return {
                         ...directRoleFilter,
                         accessType: directRoleFilter.accessType,
-                        action: { label: directRoleFilter.action, value: directRoleFilter.action },
                         team: { label: directRoleFilter.team, value: directRoleFilter.team },
                         entity: directRoleFilter.entity,
                         entityName: updatedEntityName,

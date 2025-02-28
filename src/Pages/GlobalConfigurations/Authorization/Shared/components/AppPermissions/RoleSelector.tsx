@@ -9,13 +9,14 @@ import {
     RoleType,
     Icon,
     ActionTypes,
+    ACCESS_TYPE_MAP,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Select, { GroupProps } from 'react-select'
 import './roleSelectorStyles.scss'
 import { useAuthorizationContext } from '@Pages/GlobalConfigurations/Authorization/AuthorizationProvider'
 import { ChangeEvent, useMemo, useState } from 'react'
 import { importComponentFromFELibrary } from '@Components/common'
-import { getDefaultRoleConfig, getRoleOptions, getRoleSelectorStyles, getSelectedRolesText } from './utils'
+import { getDefaultRolesToggleConfig, getRoleOptions, getRoleSelectorStyles, getSelectedRolesText } from './utils'
 import { RoleSelectorProps, RoleSelectorToggleConfig } from './types'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { renderGroup, renderRoleInfoTippy } from './roleSelectorHelpers'
@@ -26,9 +27,7 @@ const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: Ro
     const { customRoles } = useAuthorizationContext()
     const { allowManageAllAccess, isLoggedInUserSuperAdmin } = usePermissionConfiguration()
     const { accessType, roleConfig, team, roleConfigError } = permission
-    const [toggleConfig, setToggleConfig] = useState<RoleSelectorToggleConfig>(
-        getDefaultRoleConfig(!!permission.roleConfig.accessManagerRoles.size),
-    )
+    const [toggleConfig, setToggleConfig] = useState<RoleSelectorToggleConfig>(getDefaultRolesToggleConfig(roleConfig))
 
     const handleUpdateBaseRole = (event: ChangeEvent<HTMLInputElement>) => {
         handleUpdateDirectPermissionRoleConfig({ ...roleConfig, baseRole: event.target.value })
@@ -102,7 +101,7 @@ const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: Ro
             toggleConfig,
             toggleBaseRole,
             toggleAccessManagerRoles,
-            showToggle: isLoggedInUserSuperAdmin,
+            showToggle: isLoggedInUserSuperAdmin && accessType === ACCESS_TYPE_MAP.DEVTRON_APPS,
         })
 
     const groupedOptions = useMemo(
