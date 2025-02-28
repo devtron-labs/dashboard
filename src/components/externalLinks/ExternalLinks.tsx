@@ -227,7 +227,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
             if (!matchesCluster && hasApps) {
                 matchesApp =
                     link.identifiers?.length === 0 || // No identifiers (global match)
-                    link.identifiers.some(({ appId, type }) => parsedAppliedApps.has(`${appId}|${type}`))
+                    link.identifiers.some(({ appId: _appId, type }) => parsedAppliedApps.has(`${_appId}|${type}`))
             }
 
             // Apply OR logic: If any condition matches, return true
