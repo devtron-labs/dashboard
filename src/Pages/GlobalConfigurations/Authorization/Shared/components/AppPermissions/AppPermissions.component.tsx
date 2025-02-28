@@ -937,9 +937,9 @@ const AppPermissions = () => {
         if (!isDataLoading) {
             if (!data) {
                 const emptyPermissionArr = [
-                    emptyDirectPermissionHelmApps,
-                    emptyDirectPermissionDevtronApps,
-                    emptyDirectPermissionJobs,
+                    structuredClone(emptyDirectPermissionHelmApps),
+                    structuredClone(emptyDirectPermissionDevtronApps),
+                    structuredClone(emptyDirectPermissionJobs),
                 ]
                 setDirectPermission(emptyPermissionArr)
                 return

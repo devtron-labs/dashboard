@@ -1,6 +1,7 @@
 import { RadioGroup, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import { RoleSelectorGroupHeaderProps, RoleSelectorGroupParams } from './types'
+import { ACCESS_ROLE_OPTIONS_CONTAINER_ID } from './constants'
 
 const ToggleEnableRole = importComponentFromFELibrary('ToggleEnableRole', null, 'function')
 
@@ -84,7 +85,7 @@ export const renderGroup = ({
                 onChange={toggleAccessManagerRoles}
                 toggleSelected={toggleConfig.accessManagerRoles}
             />
-            {toggleConfig.accessManagerRoles && children}
+            <div id={ACCESS_ROLE_OPTIONS_CONTAINER_ID}>{toggleConfig.accessManagerRoles && children}</div>
         </div>
     )
 }

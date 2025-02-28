@@ -20,6 +20,7 @@ import { getDefaultRolesToggleConfig, getRoleOptions, getRoleSelectorStyles, get
 import { RoleSelectorProps, RoleSelectorToggleConfig } from './types'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { renderGroup, renderRoleInfoTippy } from './roleSelectorHelpers'
+import { ACCESS_ROLE_OPTIONS_CONTAINER_ID } from './constants'
 
 const DeprecatedTag = importComponentFromFELibrary('DeprecatedTag', null, 'function')
 
@@ -79,6 +80,15 @@ const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: Ro
             // On toggling off clear selected roles
             if (prev.accessManagerRoles) {
                 handleUpdateAccessManagerRoles(new Set())
+            } else {
+                try {
+                    setTimeout(() => {
+                        const element = document.getElementById(ACCESS_ROLE_OPTIONS_CONTAINER_ID)
+                        element.scrollIntoView({ behavior: 'smooth', block: 'end' })
+                    }, 100)
+                } catch {
+                    // do nothing
+                }
             }
             return { ...prev, accessManagerRoles: !prev.accessManagerRoles }
         })

@@ -73,3 +73,5 @@ export enum DirectPermissionFieldName {
 }
 
 export const SELECT_ROLES_PLACEHOLDER = 'Select roles'
+
+export const ACCESS_ROLE_OPTIONS_CONTAINER_ID = 'access-role-options'
