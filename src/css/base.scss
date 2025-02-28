@@ -4635,6 +4635,10 @@ textarea::placeholder {
 }
 
 .dc__transition {
+    &--background {
+        transition: background 0.2s;
+    }
+
     &--transform {
         transition: transform 0.3s;
     }
