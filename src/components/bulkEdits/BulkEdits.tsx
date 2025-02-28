@@ -28,6 +28,7 @@ import {
     ToastManager,
     ToastVariantType,
     MarkDown,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION, SERVER_MODE, ViewType } from '../../config'
 import {
@@ -255,15 +256,19 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderCodeEditorBody = () => {
         return (
-            <div className="code-editor-body">
+            <div className="code-editor-body bg__primary flexbox-col flex-grow-1">
                 <CodeEditor
-                    height="calc(60vh - 97px)"
-                    value={this.state.codeEditorPayload}
-                    mode="yaml"
-                    onChange={(event) => {
-                        this.handleConfigChange(event)
+                    mode={MODES.YAML}
+                    codeEditorProps={{
+                        height: '0',
+                        value: this.state.codeEditorPayload,
+                        onChange: this.handleConfigChange,
                     }}
-                    data-testid="code-editor"
+                    codeMirrorProps={{
+                        height: 'fitToParent',
+                        value: this.state.codeEditorPayload,
+                        onChange: this.handleConfigChange,
+                    }}
                 />
                 <div className="bulk-output-drawer bg__primary fs-13">
                     <div className="bulk-output-header flex left pl-20 pr-20 pt-6 dc__border-top dc__border-bottom bg__primary">
@@ -670,7 +675,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderBulkCodeEditor = () => {
         return (
-            <div className="dc__border-right">
+            <div className="flexbox-col">
                 {this.renderCodeEditorHeader()}
                 {this.renderCodeEditorBody()}
             </div>
@@ -689,8 +694,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderCodeEditorAndReadme = () => {
         return (
             <div className="bulk-container vertical-divider">
-                <div>{this.renderBulkCodeEditor()}</div>
-                <div>{this.renderReadmeSection()}</div>
+                {this.renderBulkCodeEditor()}
+                {this.renderReadmeSection()}
             </div>
         )
     }

@@ -33,6 +33,7 @@ import {
     ComponentSizeType,
     showError,
     TriggerType,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useContext, useState } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
@@ -737,15 +738,20 @@ export default function BuildCD({
                             {strategy.isCollapsed ? null : (
                                 <div className="deployment-strategy__info-body">
                                     <CodeEditor
-                                        height={300}
-                                        value={strategy.yamlStr}
-                                        mode="yaml"
-                                        onChange={(event) =>
-                                            handleStrategyChange(event, strategy.deploymentTemplate, 'yaml')
-                                        }
-                                    >
-                                        <CodeEditor.Header className="code-editor" />
-                                    </CodeEditor>
+                                        mode={MODES.YAML}
+                                        codeEditorProps={{
+                                            value: strategy.yamlStr,
+                                            height: 300,
+                                            onChange: (event) =>
+                                                handleStrategyChange(event, strategy.deploymentTemplate, 'yaml'),
+                                        }}
+                                        codeMirrorProps={{
+                                            value: strategy.yamlStr,
+                                            height: 300,
+                                            onChange: (event) =>
+                                                handleStrategyChange(event, strategy.deploymentTemplate, 'yaml'),
+                                        }}
+                                    />
                                 </div>
                             )}
                         </div>
@@ -775,9 +781,7 @@ export default function BuildCD({
                     !noGitOpsModuleInstalledAndConfigured &&
                     renderDeploymentAppType()}
                 {isAdvanced ? renderAdvancedDeploymentStrategy() : renderBasicDeploymentStrategy()}
-                {isAdvanced &&
-                    ApprovalPolicyRedirectCard &&
-                    <ApprovalPolicyRedirectCard />}
+                {isAdvanced && ApprovalPolicyRedirectCard && <ApprovalPolicyRedirectCard />}
                 {isAdvanced && (
                     <>
                         <CustomImageTags

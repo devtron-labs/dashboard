@@ -21,6 +21,7 @@ import {
     PopupMenu,
     ScopedVariablesFileViewType,
     SavedVariablesViewParamsType,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import Descriptor from './Descriptor'
@@ -108,7 +109,7 @@ const SavedVariablesContent = ({
 
     const renderYAMLView = () => (
         <div className="bg__tertiary flex-grow-1 dc__no-shrink p-8 flex column dc__align-start dc__content-start dc__gap-16 dc__align-self-stretch">
-            <div className="flex-grow-1 dc__no-shrink dc__border dc__border-radius-4-imp flex column dc__content-space dc__align-self-stretch dc__align-start">
+            <div className="flex-grow-1 dc__no-shrink dc__border dc__border-radius-4-imp flex column dc__content-space dc__align-self-stretch dc__align-start dc__overflow-auto">
                 <div className="dc__position-rel dc__top-radius-4 dc__border-bottom flex pt-8 pb-8 pl-12 pr-12 bg__primary dc__gap-16 dc__content-space dc__align-items-center dc__align-self-stretch">
                     <p className="flex-grow-1 dc__no-shrink cn-9 fs-13 fw-4 lh-20 m-0">Last saved file</p>
                     <Tippy className="default-tt" arrow placement="top" content="Edit">
@@ -148,7 +149,19 @@ const SavedVariablesContent = ({
                     </PopupMenu>
                 </div>
 
-                <CodeEditor value={scopedVariablesYAML} mode="yaml" height="100%" readOnly noParsing />
+                <CodeEditor
+                    mode={MODES.YAML}
+                    readOnly
+                    noParsing
+                    codeEditorProps={{
+                        value: scopedVariablesYAML,
+                        height: '100%',
+                    }}
+                    codeMirrorProps={{
+                        value: scopedVariablesYAML,
+                        height: 'fitToParent',
+                    }}
+                />
             </div>
         </div>
     )
