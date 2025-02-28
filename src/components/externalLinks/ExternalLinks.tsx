@@ -205,12 +205,12 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
             // Search Key filtering with AND logic where cluster and app filters are applied
             if (hasSearchKey) {
                 matchesSearch = link.name.toLowerCase().includes(searchKey.toLowerCase())
+                // If search is applied without cluster or app filters, return early
+                if (!hasClusters && !hasApps) {
+                    return matchesSearch
+                }
             }
-
-            // If search is applied without cluster or app filters, still return results
-            if (hasSearchKey && !hasClusters && !hasApps) {
-                return link.name.toLowerCase().includes(searchKey.toLowerCase())
-            }
+            if (!matchesSearch) return false
 
             // Cluster filtering
             if (hasClusters) {
@@ -224,14 +224,14 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
             }
 
             // App filtering
-            if (hasApps) {
+            if (!matchesCluster && hasApps) {
                 matchesApp =
                     link.identifiers?.length === 0 || // No identifiers (global match)
                     link.identifiers.some(({ appId, type }) => parsedAppliedApps.has(`${appId}|${type}`))
             }
 
             // Apply OR logic: If any condition matches, return true
-            return (matchesCluster || matchesApp) && matchesSearch
+            return matchesCluster || matchesApp
         })
 
         // Sort after filtering
