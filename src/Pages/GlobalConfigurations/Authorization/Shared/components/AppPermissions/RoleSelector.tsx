@@ -152,7 +152,6 @@ const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: Ro
                 hideSelectedOptions={false}
                 isMulti
                 controlShouldRenderValue={false}
-                menuIsOpen
             />
             {roleConfigError && (
                 <div className="flexbox dc__align-items-center dc__gap-4">
