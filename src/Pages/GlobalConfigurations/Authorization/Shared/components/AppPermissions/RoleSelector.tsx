@@ -9,7 +9,7 @@ import {
     ActionTypes,
     ACCESS_TYPE_MAP,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Select, { GroupProps, OptionProps } from 'react-select'
+import Select, { GroupProps, OptionProps, GroupHeadingProps } from 'react-select'
 import './roleSelectorStyles.scss'
 import { useAuthorizationContext } from '@Pages/GlobalConfigurations/Authorization/AuthorizationProvider'
 import { useMemo, useState } from 'react'
@@ -17,7 +17,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { getDefaultRolesToggleConfig, getRoleOptions, getRoleSelectorStyles, getSelectedRolesText } from './utils'
 import { RoleSelectorProps, RoleSelectorToggleConfig } from './types'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
-import { renderGroup, renderOption, renderRoleInfoTippy } from './roleSelectorHelpers'
+import { renderGroup, renderGroupHeading, renderOption, renderRoleInfoTippy } from './roleSelectorHelpers'
 import { ACCESS_ROLE_OPTIONS_CONTAINER_ID } from './constants'
 
 const DeprecatedTag = importComponentFromFELibrary('DeprecatedTag', null, 'function')
@@ -53,6 +53,7 @@ const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: Ro
                 handleUpdateDirectPermissionRoleConfig({ ...roleConfig, accessManagerRoles: new Set() })
             } else {
                 try {
+                    // Need to set timeout as element is rendered in dom after state is set
                     setTimeout(() => {
                         const element = document.getElementById(ACCESS_ROLE_OPTIONS_CONTAINER_ID)
                         element.scrollIntoView({ behavior: 'smooth', block: 'end' })
@@ -74,14 +75,20 @@ const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: Ro
         return getSelectedRolesText(baseRole, roleConfig, allowManageAllAccess)
     }, [roleConfig, allowManageAllAccess])
 
+    const GroupHeading = (props: GroupHeadingProps) =>
+        renderGroupHeading({
+            props,
+            toggleConfig,
+            toggleBaseRole,
+            toggleAccessManagerRoles,
+            showToggle: isLoggedInUserSuperAdmin && accessType === ACCESS_TYPE_MAP.DEVTRON_APPS,
+        })
+
     const Group = (props: GroupProps) =>
         renderGroup({
             props,
             baseRoleValue: roleConfig.baseRole,
             toggleConfig,
-            toggleBaseRole,
-            toggleAccessManagerRoles,
-            showToggle: isLoggedInUserSuperAdmin && accessType === ACCESS_TYPE_MAP.DEVTRON_APPS,
         })
 
     const Option = (props: OptionProps<RoleSelectorOptionType>) =>
@@ -142,6 +149,7 @@ const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: Ro
                     IndicatorSeparator: null,
                     Group,
                     Option,
+                    GroupHeading,
                 }}
                 styles={roleSelectorStyles}
                 closeMenuOnSelect={false}

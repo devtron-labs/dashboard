@@ -209,7 +209,7 @@ export type UserCreateOrUpdateParamsType = Pick<
     | 'canManageAllAccess'
 > & {
     userGroups: Pick<UserGroupType, 'name' | 'userGroupId'>[]
-} & Partial<Pick<UserDto, 'accessRoleFilters'>>
+} & Pick<UserDto, 'accessRoleFilters'>
 
 export interface UserCreateOrUpdatePayloadType
     extends Omit<UserDto, 'userGroups' | 'createdOn' | 'updatedOn' | 'isDeleted'> {

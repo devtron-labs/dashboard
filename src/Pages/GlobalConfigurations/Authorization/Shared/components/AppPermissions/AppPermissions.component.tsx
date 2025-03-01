@@ -459,14 +459,14 @@ const AppPermissions = () => {
         return []
     }
 
-    const getProjectForAccessType = (accessType: ACCESS_TYPE_MAP, teamName: string) => {
+    const getProjectIdForAccessType = (accessType: ACCESS_TYPE_MAP, teamName: string) => {
         switch (accessType) {
             case ACCESS_TYPE_MAP.DEVTRON_APPS:
-                return devtronAppsProjectsMap.get(teamName)
+                return devtronAppsProjectsMap.get(teamName)?.id
             case ACCESS_TYPE_MAP.HELM_APPS:
-                return helmAppsProjectsMap.get(teamName)
+                return helmAppsProjectsMap.get(teamName)?.id
             case ACCESS_TYPE_MAP.JOBS:
-                return jobsProjectsMap.get(teamName)
+                return jobsProjectsMap.get(teamName)?.id
             default:
                 throw new Error(`Unknown access type ${accessType}`)
         }
@@ -485,7 +485,7 @@ const AppPermissions = () => {
 
         // Devtron apps, helm apps and jobs
         roleFilters?.forEach((roleFilter) => {
-            const projectId = getProjectForAccessType(roleFilter.accessType, roleFilter.team)?.id
+            const projectId = getProjectIdForAccessType(roleFilter.accessType, roleFilter.team)
             if (projectId) {
                 switch (roleFilter.entity) {
                     case EntityTypes.DIRECT:
@@ -518,7 +518,7 @@ const AppPermissions = () => {
                 ?.map(async ({ subAction, ...directRoleFilter }: APIRoleFilter) => {
                     const projectId =
                         directRoleFilter.team !== HELM_APP_UNASSIGNED_PROJECT &&
-                        getProjectForAccessType(directRoleFilter.accessType, directRoleFilter.team)?.id
+                        getProjectIdForAccessType(directRoleFilter.accessType, directRoleFilter.team)
 
                     // Fallback for access type
                     if (!directRoleFilter.accessType && directRoleFilter.entity !== EntityTypes.JOB) {
@@ -746,10 +746,10 @@ const AppPermissions = () => {
         if (value === SELECT_ALL_VALUE) {
             if (action === ReactSelectInputAction.selectOption) {
                 if (tempPermissions[index].team.value !== HELM_APP_UNASSIGNED_PROJECT) {
-                    const projectId = getProjectForAccessType(
+                    const projectId = getProjectIdForAccessType(
                         tempPermissions[index].accessType,
                         tempPermissions[index].team.value,
-                    )?.id
+                    )
                     const isJobs = tempPermissions[index].entity === EntityTypes.JOB
                     tempPermissions[index].entityName = [
                         SELECT_ALL_OPTION,
@@ -812,10 +812,10 @@ const AppPermissions = () => {
             tempPermissions[index].workflow = []
         }
         if (tempPermissions[index].team.value !== HELM_APP_UNASSIGNED_PROJECT) {
-            const projectId = getProjectForAccessType(
+            const projectId = getProjectIdForAccessType(
                 tempPermissions[index].accessType,
                 tempPermissions[index].team.value,
-            )?.id
+            )
             _fetchListForAccessType(tempPermissions[index].accessType, projectId)
         }
     }

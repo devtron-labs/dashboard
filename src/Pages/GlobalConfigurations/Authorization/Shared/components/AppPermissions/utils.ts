@@ -307,12 +307,16 @@ export const getRoleOptions = ({
     ]
 }
 
-const getRoleSelectorStyleOverrides = (error?: boolean) => ({
-    menu: (base) => ({
-        ...base,
+const commonSelectStyles = getCommonSelectStyle()
+
+export const getRoleSelectorStyles = (error?: boolean) => ({
+    container: (base, state) => ({
+        ...commonSelectStyles.container(base, state),
+    }),
+    menu: (base, state) => ({
+        ...commonSelectStyles.menu(base, state),
         overflow: 'hidden',
         marginBlock: '4px',
-        backgroundColor: 'var(--bg-menu-primary)',
         border: '1px solid var(--N200)',
         boxShadow: '0px 2px 4px 0px rgba(0, 0, 0, 0.20)',
         minWidth: 240,
@@ -324,16 +328,13 @@ const getRoleSelectorStyleOverrides = (error?: boolean) => ({
         padding: 4,
     }),
     dropdownIndicator: (base, state) => ({
-        ...base,
+        ...commonSelectStyles.dropdownIndicator(base, state),
         width: 16,
         height: 16,
         display: 'flex',
         alignItems: 'center',
         flexShrink: '0',
-        color: 'var(--N600)',
         padding: '0',
-        transition: 'all .2s ease',
-        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
     }),
     groupHeading: (base) => ({
         ...base,
@@ -343,18 +344,10 @@ const getRoleSelectorStyleOverrides = (error?: boolean) => ({
         textTransform: 'none',
     }),
     option: (base, state) => ({
-        ...base,
-        color: 'var(--N900)',
+        ...commonSelectStyles.option(base, state),
         backgroundColor: state.isFocused ? 'var(--bg-secondary)' : 'var(--transparent)',
         padding: 0,
-        cursor: 'pointer',
-        fontSize: '13px',
-        lineHeight: '20px',
-        fontWeight: 400,
         borderRadius: 4,
-        ':active': {
-            backgroundColor: 'var(--N100)',
-        },
 
         ':hover': {
             backgroundColor: 'var(--bg-hover)',
@@ -374,18 +367,14 @@ const getRoleSelectorStyleOverrides = (error?: boolean) => ({
         padding: '0',
     }),
     control: (base, state) => ({
-        ...base,
+        ...commonSelectStyles.control(base, state),
         height: '36px',
         minHeight: '36px',
         minWidth: '56px',
-        boxShadow: 'none',
-        backgroundColor: 'var(--bg-secondary)',
         border: `1px solid ${error ? 'var(--R500)' : 'var(--N200)'}`,
-        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
         padding: '5px 8px',
         gap: '6px',
         opacity: state.isDisabled ? 0.5 : 1,
-        flexWrap: 'nowrap',
         overflow: 'auto',
         alignItems: 'safe center',
 
@@ -399,19 +388,7 @@ const getRoleSelectorStyleOverrides = (error?: boolean) => ({
         },
     }),
     placeholder: (base, state) => ({
-        ...base,
-        fontSize: '13px',
+        ...commonSelectStyles.placeholder(base, state),
         color: state.isDisabled || state.children === SELECT_ROLES_PLACEHOLDER ? 'var(--N500)' : 'var(--N900)',
-        lineHeight: '20px',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-        height: '20px',
     }),
 })
-
-export const getRoleSelectorStyles = (error?: boolean) => {
-    const styleOverrides = getRoleSelectorStyleOverrides(error)
-
-    return getCommonSelectStyle(styleOverrides)
-}

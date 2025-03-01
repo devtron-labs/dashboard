@@ -15,7 +15,7 @@
  */
 
 import { Dispatch, SetStateAction } from 'react'
-import { GroupBase, GroupProps, OptionProps } from 'react-select'
+import { GroupBase, GroupProps, GroupHeadingProps, OptionProps } from 'react-select'
 import {
     ServerError,
     ACCESS_TYPE_MAP,
@@ -106,8 +106,12 @@ export interface RoleSelectorProps {
 export interface RoleSelectorGroupParams {
     props: GroupProps
     baseRoleValue: string
-    showToggle: boolean
     toggleConfig: RoleSelectorToggleConfig
+}
+
+export interface RoleSelectorGroupHeadingParams extends Pick<RoleSelectorGroupParams, 'toggleConfig'> {
+    props: GroupHeadingProps
+    showToggle: boolean
     toggleBaseRole: () => void
     toggleAccessManagerRoles: () => void
 }
@@ -117,7 +121,7 @@ export interface RoleSelectorOptionParams extends Pick<RoleSelectorProps, 'handl
     roleConfig: UserRoleConfig
 }
 
-export interface RoleSelectorGroupHeaderProps extends Pick<RoleSelectorGroupParams, 'showToggle'> {
+export interface RoleSelectorGroupHeaderProps extends Pick<RoleSelectorGroupHeadingParams, 'showToggle'> {
     label: string
     toggleSelected: boolean
     onChange: () => void

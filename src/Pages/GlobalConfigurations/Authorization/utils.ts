@@ -69,27 +69,24 @@ const getStatusExportText: (status: UserStatus, timeToLive: string) => string = 
     'function',
 )
 
+const getKeyForRoleFilter = ({ entity, team, environment, accessType, entityName, workflow }: APIRoleFilterDto) =>
+    `${entity}${accessType}${team}${environment}${entityName}${workflow}`
+
 const getRoleFiltersMap = (roleFilters: APIRoleFilterDto[]) =>
-    roleFilters?.reduce<Record<string, true>>(
-        (agg, { entity, team, environment, accessType, entityName, workflow }) => {
-            const key = `${entity}${accessType}${team}${environment}${entityName}${workflow}`
-            // eslint-disable-next-line no-param-reassign
-            agg[key] = true
-            return agg
-        },
-        {},
-    )
+    roleFilters?.reduce<Record<string, true>>((agg, curr) => {
+        const key = getKeyForRoleFilter(curr)
+        // eslint-disable-next-line no-param-reassign
+        agg[key] = true
+        return agg
+    }, {})
 
 const getAccessRoleMap = (accessRoleFilters: APIRoleFilterDto[]) =>
-    accessRoleFilters?.reduce<Record<string, string>>(
-        (agg, { entity, team, environment, accessType, entityName, workflow, subAction }) => {
-            const key = `${entity}${accessType}${team}${environment}${entityName}${workflow}`
-            // eslint-disable-next-line no-param-reassign
-            agg[key] = subAction
-            return agg
-        },
-        {},
-    )
+    accessRoleFilters?.reduce<Record<string, string>>((agg, curr) => {
+        const key = getKeyForRoleFilter(curr)
+        // eslint-disable-next-line no-param-reassign
+        agg[key] = curr.subAction
+        return agg
+    }, {})
 
 const transformRoleFilters = (
     roleFilters: APIRoleFilterDto[],
@@ -120,28 +117,22 @@ const transformRoleFilters = (
         ) ?? []
 
     if (accessRoleFilters) {
-        accessRoleFilters.forEach(
-            ({
-                status: roleFilterStatus,
-                timeoutWindowExpression: roleFilterTimeoutWindowExpression,
-                ...accessRole
-            }) => {
-                const { entity, accessType, team, environment, entityName, workflow } = accessRole
-                const roleFilterKey = `${entity}${accessType}${team}${environment}${entityName}${workflow}`
+        accessRoleFilters.forEach((accessRole) => {
+            const roleFilterKey = getKeyForRoleFilter(accessRole)
 
-                // this means accessRoleFilter has no corresponding roleFilter
-                // i.e. permission only has access manager role and not any base role or additional roles
-                if (!roleFiltersMap[roleFilterKey]) {
-                    const roleFilterTimeToLive = getFormattedTimeToLive(roleFilterTimeoutWindowExpression)
+            // this means accessRoleFilter has no corresponding roleFilter
+            // i.e. permission only has access manager role and not any base role or additional roles
+            if (!roleFiltersMap[roleFilterKey]) {
+                const roleFilterTimeToLive = getFormattedTimeToLive(accessRole.timeoutWindowExpression)
 
-                    parsedRoleFilters.push({
-                        ...accessRole,
-                        status: getUserStatus(roleFilterStatus, roleFilterTimeToLive),
-                        timeToLive: roleFilterTimeToLive,
-                    })
-                }
-            },
-        )
+                parsedRoleFilters.push({
+                    ...accessRole,
+                    action: '',
+                    status: getUserStatus(accessRole.status, roleFilterTimeToLive),
+                    timeToLive: roleFilterTimeToLive,
+                })
+            }
+        })
     }
 
     return parsedRoleFilters
