@@ -1,8 +1,11 @@
-import { PRIVACY_POLICY } from '@Config/constants'
+import { EULA_LINK, PREVIEW_DEVTRON, PRIVACY_POLICY } from '@Config/constants'
 import { ReactComponent as DevtronLogo } from '@Icons/logo/logo-dt.svg'
+import { importComponentFromFELibrary } from '@Components/common'
 import { LoginCardProps } from './login.types'
 
 export const LoginCard = ({ renderContent }: LoginCardProps) => {
+    const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
+
     const renderDevtronLogo = () => (
         <div className="flex column dc__gap-16 dc__text-center">
             {window._env_.LOGIN_DT_LOGO ? (
@@ -26,8 +29,12 @@ export const LoginCard = ({ renderContent }: LoginCardProps) => {
     const renderTermsAndConditions = () => (
         <div className="border-top__secondary flex dc__gap-4 p-12 cn-7">
             <p className="m-0 lh-18">By logging in, you agree to our </p>
-            <a href={PRIVACY_POLICY} target="blank" rel="noreferrer">
-                Terms of Service
+            <a
+                href={window.location.origin === PREVIEW_DEVTRON ? PRIVACY_POLICY : EULA_LINK}
+                target="blank"
+                rel="noreferrer"
+            >
+                {window.location.origin === PREVIEW_DEVTRON ? 'Privacy Policy' : 'User License'}
             </a>
         </div>
     )
@@ -38,7 +45,7 @@ export const LoginCard = ({ renderContent }: LoginCardProps) => {
                 {renderDevtronLogo()}
                 {renderContent()}
             </div>
-            {renderTermsAndConditions()}
+            {isFELibAvailable && renderTermsAndConditions()}
         </div>
     )
 }

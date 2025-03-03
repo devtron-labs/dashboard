@@ -151,7 +151,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 if (ssoConfig) {
                     this.setState({ sso: ssoConfig?.name, lastActiveSSO: ssoConfig })
                 } else {
-                    ssoConfig = sample.google
+                    ssoConfig = sample.google as any // TODO: Add type for sample
                     this.setState({ sso: 'google', ssoConfig: this.parseResponse(ssoConfig) })
                 }
                 // Would be undefined for OSS

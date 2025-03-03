@@ -47,14 +47,14 @@ import { dashboardAccessed } from '../../services/service'
 import './login.scss'
 import { getSSOConfigList } from '../../Pages/GlobalConfigurations/Authorization/SSOLoginServices/service'
 import { LoginCard } from './LoginCard'
-import { SSOConfig } from './login.types'
+import { SSOConfigLoginList } from './login.types'
 import { SSOProvider } from './constants'
 
 const NetworkStatusInterface = !importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
 
 const Login = () => {
     const [continueUrl, setContinueUrl] = useState('')
-    const [loginList, setLoginList] = useState<SSOConfig[]>([])
+    const [loginList, setLoginList] = useState<SSOConfigLoginList[]>([])
     const [loading, setLoading] = useState(false)
     const [form, setForm] = useState({
         username: 'admin',
@@ -76,7 +76,7 @@ const Login = () => {
     const history = useHistory()
     const { setEmail } = useUserEmail()
 
-    const [, initResult] = useAsync(() => Promise.allSettled([getSSOConfigList(), dashboardAccessed()]), [])
+    const [initLoading, initResult] = useAsync(() => Promise.allSettled([getSSOConfigList(), dashboardAccessed()]), [])
 
     const setLoginNavigationURL = () => {
         let queryParam = searchParams.continue
@@ -111,21 +111,26 @@ const Login = () => {
     }
 
     useEffect(() => {
-        if (!initResult || !Array.isArray(initResult) || initResult.length < 2) return
+        setLoginNavigationURL()
+    }, [])
 
-        const [ssoLoginListResponse, dashboardAccessesResponse] = initResult
-        if (ssoLoginListResponse.status === 'fulfilled' && ssoLoginListResponse.value.result) {
-            setLoginList(ssoLoginListResponse.value.result || [])
-        }
+    useEffect(() => {
+        if (initResult && !initLoading) {
+            const [ssoLoginListResponse, dashboardAccessesResponse] = initResult
+            if (ssoLoginListResponse.status === 'fulfilled' && ssoLoginListResponse.value.result) {
+                setLoginList(ssoLoginListResponse.value.result as SSOConfigLoginList[])
+            }
 
-        if (typeof Storage !== 'undefined' && !localStorage.getItem('isDashboardAccessed')) {
-            if (dashboardAccessesResponse.status === 'fulfilled' && dashboardAccessesResponse.value.result) {
+            if (
+                typeof Storage !== 'undefined' &&
+                !localStorage.getItem('isDashboardAccessed') &&
+                dashboardAccessesResponse.status === 'fulfilled' &&
+                dashboardAccessesResponse.value.result
+            ) {
                 localStorage.setItem('isDashboardAccessed', 'true')
             }
         }
-
-        setLoginNavigationURL()
-    }, [initResult])
+    }, [initLoading, initResult])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.persist()
