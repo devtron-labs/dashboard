@@ -16,7 +16,6 @@
 
  // Login css
 .login {
-    min-height: 600px;
     background-color: var(--white);
 
     .login__bg {
@@ -25,23 +24,13 @@
 
     .login__image {
         background-image: url('../../assets//img//bg-login.png');
-        min-height: 600px;
-        height: 100vh;
-        width: 100%;
         background-size: auto 100%;
         background-position: right;
         background-repeat: no-repeat;
     }
 
     .login-card__wrapper {
-        background: var(--bg-primary);
-        border: 1px solid var(--border-primary);
         box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.04), 0px 2px 6px 0px rgba(0, 0, 0, 0.04), 0px 4px 12px 0px rgba(0, 0, 0, 0.10);
-    }
-
-    .login__know-password--link {
-        text-decoration: none !important;
-        line-height: 1.67;
     }
 }
 

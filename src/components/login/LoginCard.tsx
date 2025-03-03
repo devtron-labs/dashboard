@@ -33,6 +33,7 @@ export const LoginCard = ({ renderContent }: LoginCardProps) => {
                 href={window.location.origin === PREVIEW_DEVTRON ? PRIVACY_POLICY : EULA_LINK}
                 target="blank"
                 rel="noreferrer"
+                className="anchor lh-18"
             >
                 {window.location.origin === PREVIEW_DEVTRON ? 'Privacy Policy' : 'User License'}
             </a>
@@ -40,7 +41,7 @@ export const LoginCard = ({ renderContent }: LoginCardProps) => {
     )
 
     return (
-        <div className="login-card__wrapper br-12 mw-420">
+        <div className="login-card__wrapper br-12 mw-420 bg__primary dc__border">
             <div className="flexbox-col dc__gap-32 p-36">
                 {renderDevtronLogo()}
                 {renderContent()}

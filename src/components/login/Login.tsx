@@ -256,7 +256,7 @@ const Login = () => {
                             <Help className="fcb-5 icon-dim-16" />
 
                             <a
-                                className="login__know-password--link fs-11 cb-5 lh-20"
+                                className="anchor fs-11 cb-5 lh-20"
                                 rel="noreferrer noopener"
                                 target="_blank"
                                 href={DOCUMENTATION.ADMIN_PASSWORD}
@@ -300,7 +300,7 @@ const Login = () => {
                 style={window?._env_?.LOGIN_PAGE_IMAGE_BG ? { backgroundColor: window._env_.LOGIN_PAGE_IMAGE_BG } : {}}
             >
                 <div
-                    className="login__image"
+                    className="login__image w-100 h-100vh mh-600"
                     style={
                         window?._env_?.LOGIN_PAGE_IMAGE
                             ? { backgroundImage: `url(${window._env_.LOGIN_PAGE_IMAGE})` }
