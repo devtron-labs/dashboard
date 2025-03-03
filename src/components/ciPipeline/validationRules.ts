@@ -25,6 +25,7 @@ import {
     REPO_NAME_VALIDATION,
 } from '../../config/constantMessaging'
 import { validateInputOutputVariableCell } from '@Components/CIPipelineN/VariableDataTable/validations'
+import { ValidationRulesType } from './types'
 
 export class ValidationRules {
     name = (value: string): { message: string | null; isValid: boolean } => {
@@ -96,12 +97,17 @@ export class ValidationRules {
         return { message: null, isValid: true }
     }
 
-    sourceValue = (value: string, doRegexValidation = true): { message: string | null; isValid: boolean } => {
+    sourceValue: ValidationRulesType['sourceValue'] = (value, doRegexValidation) => {
         if (!value) {
             return { message: `This is required`, isValid: false }
         }
         if (doRegexValidation) {
             try {
+                // Regex must be less than 250 characters
+                if (value.length > 250) {
+                    return { message: 'Regex must be less than 250 characters.', isValid: false }
+                }
+
                 new RegExp(value)
                 return { message: null, isValid: true }
             } catch (err) {
