@@ -838,10 +838,10 @@ export default function BuildCD({
                                 <ICInfo className="dc__no-shrink icon-dim-20 dc__no-shrink" />
                                 <span className="fs-13 fw-4 lh-20 cn-9 dc__word-break">
                                     This deployment pipeline was linked to&nbsp;
-                                    {migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.GITOPS
-                                        ? 'argo'
-                                        : 'helm'}
-                                    &nbsp; release: {formData.deploymentAppName}
+                                    {formData.deploymentAppType === DeploymentAppTypes.GITOPS
+                                        ? 'Argo CD application'
+                                        : 'helm release'}
+                                    &nbsp;: {formData.deploymentAppName}
                                 </span>
                             </div>
                         )}
