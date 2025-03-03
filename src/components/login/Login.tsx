@@ -297,7 +297,7 @@ const Login = () => {
         )
     }
     return (
-        <div className={`login flex ${getComponentSpecificThemeClass(AppThemeType.light)}`}>
+        <div className={`login bg__white flex ${getComponentSpecificThemeClass(AppThemeType.light)}`}>
             <div
                 className="login__bg w-50"
                 style={window?._env_?.LOGIN_PAGE_IMAGE_BG ? { backgroundColor: window._env_.LOGIN_PAGE_IMAGE_BG } : {}}
