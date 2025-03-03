@@ -141,6 +141,10 @@
         }
     }
 
+    &__primary-translucent {
+        border: 1px solid var(--border-primary-translucent);
+    }
+
     &__secondary {
         border: 1px solid var(--border-secondary);
 
@@ -150,6 +154,14 @@
 
         &--bottom {
             border-bottom: 1px solid var(--border-secondary);
+        }
+    }
+
+    &__secondary-translucent {
+        border: 1px solid var(--border-secondary-translucent);
+
+        &--bottom {
+            border-bottom: 1px solid var(--border-secondary-translucent);
         }
     }
 
@@ -169,9 +181,21 @@
         background-color: var(--divider-primary);
     }
 
+    &__primary-translucent {
+        width: 1px;
+        min-height: 16px;
+        background-color: var(--divider-primary-translucent);
+    }
+
     &__secondary {
         width: 1px;
         min-height: 16px;
         background-color: var(--divider-secondary);
+    }
+
+    &__secondary-translucent {
+        width: 1px;
+        min-height: 16px;
+        background-color: var(--divider-secondary-translucent);
     }
 }

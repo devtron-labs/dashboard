@@ -134,7 +134,7 @@ export const URLS = {
     SOFTWARE_DISTRIBUTION_HUB: '/software-distribution-hub',
     MONITORING_DASHBOARD: 'monitoring-dashboard',
     CREATE_ENVIRONMENT: '/create/environment',
-}
+} as const
 
 export enum APP_COMPOSE_STAGE {
     SOURCE_CONFIG = 'MATERIAL',
