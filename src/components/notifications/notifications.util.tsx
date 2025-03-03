@@ -224,24 +224,7 @@ export const getSMTPDefaultConfiguration = (shouldBeDefault: boolean): SMTPFormT
     isLoading: false,
 })
 
-export const renderText = (text: string, isLink: boolean = false, linkTo?: () => void, dataTestId?: string) => (
-    <Tooltip content={text} placement="bottom" showOnTruncate={!!text} className="mxh-210 dc__overflow-auto" interactive>
-        {isLink ? (
-            <button
-                type="button"
-                onClick={linkTo}
-                className="flex left dc__unset-button-styles lh-20 dc__ellipsis-right fs-13 cb-5 dc__no-decor cursor"
-                data-testid={dataTestId}
-            >
-                {text || '-'}
-            </button>
-        ) : (
-            <p className="lh-20 dc__ellipsis-right m-0 fs-13" data-testid={dataTestId}>
-                {text || '-'}
-            </p>
-        )}
-    </Tooltip>
-)
+
 
 export const renderDefaultTag = (isDefault: boolean) => {
     if (isDefault) {

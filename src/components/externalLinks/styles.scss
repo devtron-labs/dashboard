@@ -14,32 +14,24 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react'
+.external-links-container {
 
-import { Icon, iconMap, IconsProps } from '@devtron-labs/devtron-fe-common-lib'
+    &.error-view {
+        min-width: 100%;
+    }
 
-const options = Object.keys(iconMap)
+    &.app-config-view__listing {
+        height: calc(100% - 110px);
+    }
 
-const meta = {
-    component: Icon,
-    argTypes: {
-        name: {
-            options,
-            control: {
-                type: 'select',
-            },
-        },
-    },
-} satisfies Meta<IconsProps>
+    .external-link-list__row {
+        display: grid;
+        grid-template-columns: 24px 144px minmax(100px, calc(59% - 322px)) 100px minmax(100px, 59%) 56px;
+    }
 
-export default meta
+    .external-link-list__row__app-config {
+        display: grid;
+        grid-template-columns: 24px 144px minmax(100px, calc(59% - 322px)) minmax(100px, 59%) 56px;
+    }
 
-type Story = StoryObj<typeof meta>
-
-export const Default: Story = {
-    args: {
-        name: options[0] as IconsProps['name'],
-        size: 80,
-        color: null,
-    },
 }

@@ -17,9 +17,11 @@
 import { DeleteComponentsName } from '@Config/constantMessaging'
 import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
+import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
+
 import { ConfigurationTableProps } from './types'
 import { ConfigurationsTabTypes } from './constants'
-import { getConfigTabIcons, renderText } from './notifications.util'
+import { getConfigTabIcons } from './notifications.util'
 import './notifications.scss'
 import { ConfigTableRowActionButton } from './ConfigTableRowActionButton'
 
@@ -55,9 +57,12 @@ const SlackConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTab
                     >
                         {getConfigTabIcons(ConfigurationsTabTypes.SLACK)}
                         <div className="flex left dc__gap-8">
-                            {renderText(slackConfig.slackChannel, true, onClickSlackConfigEdit(slackConfig.id))}
+                            <InteractiveCellText
+                                text={slackConfig.slackChannel}
+                                onClickHandler={onClickSlackConfigEdit(slackConfig.id)}
+                            />
                         </div>
-                        {renderText(slackConfig.webhookUrl)}
+                        <InteractiveCellText text={slackConfig.webhookUrl} />
                         <ConfigTableRowActionButton
                             onClickEditRow={onClickSlackConfigEdit(slackConfig.id)}
                             onClickDeleteRow={deleteClickHandler(

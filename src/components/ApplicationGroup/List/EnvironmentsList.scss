@@ -38,7 +38,6 @@
 .env-compose {
     display: grid;
     grid-template-columns: 255px 1fr;
-    height: calc(100vh - 77px);
     background: var(--bg-primary);
     overflow: hidden;
 

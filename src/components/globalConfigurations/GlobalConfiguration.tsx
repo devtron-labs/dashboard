@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { lazy, useState, useEffect, Suspense, isValidElement, useRef, LazyExoticComponent } from 'react'
+import { lazy, useState, useEffect, Suspense, isValidElement, LazyExoticComponent } from 'react'
 import { Route, NavLink, Router, Switch, Redirect, useHistory, useLocation } from 'react-router-dom'
 import {
     showError,
@@ -605,13 +605,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             <Route
                 path={URLS.GLOBAL_CONFIG_CLUSTER}
                 render={(props) => {
-                    return (
-                        <ClusterList
-                            {...props}
-                            serverMode={serverMode}
-                            isSuperAdmin={isSuperAdmin || window._env_.K8S_CLIENT}
-                        />
-                    )
+                    return <ClusterList {...props} isSuperAdmin={isSuperAdmin || window._env_.K8S_CLIENT} />
                 }}
             />
             {!window._env_.K8S_CLIENT && [
