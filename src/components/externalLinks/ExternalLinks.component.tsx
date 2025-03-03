@@ -36,7 +36,6 @@ import { getMonitoringToolIcon, getParsedURL, MONITORING_TOOL_ICONS, onImageLoad
 import {
     TippyCustomized,
     TippyTheme,
-    InfoColourBar,
     GenericEmptyState,
     ConditionalWrap,
     GenericFilterEmptyState,
@@ -82,7 +81,6 @@ export const NoExternalLinksView = ({
         <GenericEmptyState
             image={EmptyExternalLinks}
             title={EMPTY_STATE_STATUS.EXTERNAL_LINK_COMPONENT.TITLE}
-            heightToDeduct={120}
             subTitle={
                 <>
                     {`Add frequently visited links (eg. Monitoring dashboards, documents, specs etc.) for
