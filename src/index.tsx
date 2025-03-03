@@ -146,6 +146,7 @@ if (!window || !window._env_) {
         SIDEBAR_DT_LOGO: '',
         ENABLE_EXTERNAL_ARGO_CD: false,
         API_BATCH_SIZE: 20,
+        FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE: false,
         SERVICE_WORKER_TIMEOUT: '3',
         HIDE_RELEASES: false,
         HIDE_RESOURCE_WATCHER: false,
