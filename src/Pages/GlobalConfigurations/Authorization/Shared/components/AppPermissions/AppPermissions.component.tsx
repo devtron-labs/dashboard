@@ -753,12 +753,14 @@ const AppPermissions = () => {
                     const isJobs = tempPermissions[index].entity === EntityTypes.JOB
                     tempPermissions[index].entityName = [
                         SELECT_ALL_OPTION,
-                        ...getListForAccessType(tempPermissions[index].accessType)
-                            .get(projectId)
-                            .result.map((app) => ({
-                                label: isJobs ? app.jobName : app.name,
-                                value: isJobs ? app.appName : app.name,
-                            })),
+                        ...(projectId
+                            ? getListForAccessType(tempPermissions[index].accessType)
+                                  .get(projectId)
+                                  .result.map((app) => ({
+                                      label: isJobs ? app.jobName : app.name,
+                                      value: isJobs ? app.appName : app.name,
+                                  }))
+                            : []),
                     ]
                 } else {
                     tempPermissions[index].entityName = [SELECT_ALL_OPTION]
@@ -816,7 +818,9 @@ const AppPermissions = () => {
                 tempPermissions[index].accessType,
                 tempPermissions[index].team.value,
             )
-            _fetchListForAccessType(tempPermissions[index].accessType, projectId)
+            if (projectId) {
+                _fetchListForAccessType(tempPermissions[index].accessType, projectId)
+            }
         }
     }
 
