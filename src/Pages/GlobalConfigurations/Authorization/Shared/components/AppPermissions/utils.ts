@@ -14,15 +14,45 @@
  * limitations under the License.
  */
 
-import { OptionType, ACCESS_TYPE_MAP, EntityTypes, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
-import { OptionsOrGroups, GroupBase } from 'react-select'
-import { DEFAULT_ENV } from '../../../../../../components/app/details/triggerView/Constants'
-import { createClusterEnvGroup } from '../../../../../../components/common'
+import {
+    OptionType,
+    ACCESS_TYPE_MAP,
+    EntityTypes,
+    SelectPickerOptionType,
+    DEFAULT_ENV,
+    UserRoleConfig,
+    RoleSelectorOptionType,
+    getCommonSelectStyle,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { OptionsOrGroups, GroupBase, Options } from 'react-select'
+import { APIRoleFilter } from '@Pages/GlobalConfigurations/Authorization/types'
+import { createClusterEnvGroup, importComponentFromFELibrary } from '../../../../../../components/common'
 import { SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
-import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE, DirectPermissionFieldName } from './constants'
-import { DirectPermissionRowProps } from './types'
+import {
+    ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE,
+    DirectPermissionFieldName,
+    SELECT_ROLES_PLACEHOLDER,
+} from './constants'
+import { DirectPermissionRowProps, GetRoleConfigParams, RoleSelectorToggleConfig } from './types'
 
-export const getNavLinksConfig = (serverMode: SERVER_MODE, superAdmin: boolean) =>
+const getRoleConfig: (action: string, subAction: string, approver: boolean) => UserRoleConfig =
+    importComponentFromFELibrary('getRoleConfig', null, 'function')
+
+const getAdditionalRolesAccordingToAccess = importComponentFromFELibrary(
+    'getAdditionalRolesAccordingToAccess',
+    null,
+    'function',
+)
+
+export const ALLOWED_ADDITIONAL_ROLES_MAP = importComponentFromFELibrary(
+    'ALLOWED_ADDITIONAL_ROLES_MAP',
+    null,
+    'function',
+)
+
+const getAccessManagerRoles = importComponentFromFELibrary('getAccessManagerRoles', null, 'function')
+
+export const getNavLinksConfig = (serverMode: SERVER_MODE, superAdmin: boolean, canManageAllAccess: boolean) =>
     [
         {
             // Access type is applicable for direct permissions only
@@ -47,7 +77,7 @@ export const getNavLinksConfig = (serverMode: SERVER_MODE, superAdmin: boolean) 
             accessType: null,
             tabName: 'kubernetes-objects',
             label: 'Kubernetes Resources',
-            isHidden: !superAdmin,
+            isHidden: !(superAdmin || canManageAllAccess),
         },
         {
             accessType: null,
@@ -203,3 +233,162 @@ export const getEnvironmentDisplayText = (
 
     return count
 }
+
+export const getRoleConfigForRoleFilter = (roleFilter: APIRoleFilter, subAction: string): UserRoleConfig => {
+    if (roleFilter.entity === EntityTypes.JOB || !ALLOWED_ADDITIONAL_ROLES_MAP) {
+        return {
+            baseRole: roleFilter.action,
+            // Empty set in case of OSS
+            additionalRoles: new Set(),
+            accessManagerRoles: new Set(),
+        }
+    }
+
+    const { action, approver } = roleFilter
+    const roleConfig = getRoleConfig(action, subAction, approver)
+    return roleConfig
+}
+
+export const getSelectedRolesText = (
+    baseRole: string,
+    roleConfig: UserRoleConfig,
+    allowManageAllAccess: boolean,
+): string => {
+    const additionalRole = roleConfig.additionalRoles?.size > 0 ? 'Approver' : ''
+    const accessManagerRole = !allowManageAllAccess && roleConfig.accessManagerRoles.size > 0 ? 'Access manager' : ''
+
+    return [baseRole, additionalRole, accessManagerRole].filter(Boolean).join(', ') || SELECT_ROLES_PLACEHOLDER
+}
+
+export const getDefaultRolesToggleConfig = (roleConfig: UserRoleConfig): RoleSelectorToggleConfig => ({
+    baseRole: !!roleConfig.baseRole || !!roleConfig.additionalRoles.size,
+    accessManagerRoles: !!roleConfig.accessManagerRoles.size,
+})
+
+export const getRoleOptions = ({
+    customRoles,
+    accessType,
+    showAccessRoles,
+}: GetRoleConfigParams): Options<GroupBase<RoleSelectorOptionType>> => {
+    const baseRoles: RoleSelectorOptionType[] = customRoles
+        .filter(
+            (role) =>
+                role.accessType === accessType &&
+                (ALLOWED_ADDITIONAL_ROLES_MAP ? !ALLOWED_ADDITIONAL_ROLES_MAP[role.roleName] : true),
+        )
+        .map((role) => ({
+            label: role.roleDisplayName,
+            value: role.roleName,
+            description: role.roleDescription,
+            roleType: 'baseRole',
+        }))
+
+    return [
+        {
+            label: 'Base Role',
+            options: baseRoles,
+        },
+        ...(getAdditionalRolesAccordingToAccess
+            ? [
+                  {
+                      label: 'Additional role',
+                      options: getAdditionalRolesAccordingToAccess(customRoles, accessType),
+                  },
+              ]
+            : []),
+        ...(getAccessManagerRoles && showAccessRoles && accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
+            ? [
+                  {
+                      label: 'Access Manager',
+                      options: getAccessManagerRoles(customRoles),
+                  },
+              ]
+            : []),
+    ]
+}
+
+const commonSelectStyles = getCommonSelectStyle()
+
+export const getRoleSelectorStyles = (error?: boolean) => ({
+    container: (base, state) => ({
+        ...commonSelectStyles.container(base, state),
+    }),
+    menu: (base, state) => ({
+        ...commonSelectStyles.menu(base, state),
+        overflow: 'hidden',
+        marginBlock: '4px',
+        border: '1px solid var(--N200)',
+        boxShadow: '0px 2px 4px 0px rgba(0, 0, 0, 0.20)',
+        minWidth: 240,
+        maxHeight: 300,
+        zIndex: 'var(--select-picker-menu-index)',
+    }),
+    menuList: (base) => ({
+        ...base,
+        padding: 4,
+    }),
+    dropdownIndicator: (base, state) => ({
+        ...commonSelectStyles.dropdownIndicator(base, state),
+        width: 16,
+        height: 16,
+        display: 'flex',
+        alignItems: 'center',
+        flexShrink: '0',
+        padding: '0',
+    }),
+    groupHeading: (base) => ({
+        ...base,
+        padding: 0,
+        margin: 0,
+        color: 'var(--N900)',
+        textTransform: 'none',
+    }),
+    option: (base, state) => ({
+        ...commonSelectStyles.option(base, state),
+        backgroundColor: state.isFocused ? 'var(--bg-secondary)' : 'var(--transparent)',
+        padding: 0,
+        borderRadius: 4,
+
+        ':hover': {
+            backgroundColor: 'var(--bg-hover)',
+        },
+
+        ...(state.isDisabled && {
+            cursor: 'not-allowed',
+            opacity: 0.5,
+        }),
+    }),
+    group: (base) => ({
+        ...base,
+        padding: 0,
+    }),
+    valueContainer: (base) => ({
+        ...base,
+        padding: '0',
+    }),
+    control: (base, state) => ({
+        ...commonSelectStyles.control(base, state),
+        height: '36px',
+        minHeight: '36px',
+        minWidth: '56px',
+        border: `1px solid ${error ? 'var(--R500)' : 'var(--N200)'}`,
+        padding: '5px 8px',
+        gap: '6px',
+        opacity: state.isDisabled ? 0.5 : 1,
+        overflow: 'auto',
+        alignItems: 'safe center',
+
+        '&:hover': {
+            borderColor: state.isDisabled ? 'var(--N200)' : `${error ? 'var(--R500)' : 'var(--N300)'}`,
+        },
+
+        '&:focus, &:focus-within': {
+            borderColor: state.isDisabled ? 'var(--N200)' : 'var(--B500)',
+            outline: 'none',
+        },
+    }),
+    placeholder: (base, state) => ({
+        ...commonSelectStyles.placeholder(base, state),
+        color: state.isDisabled || state.children === SELECT_ROLES_PLACEHOLDER ? 'var(--N500)' : 'var(--N900)',
+    }),
+})

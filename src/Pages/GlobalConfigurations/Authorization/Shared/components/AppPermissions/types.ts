@@ -15,14 +15,24 @@
  */
 
 import { Dispatch, SetStateAction } from 'react'
-import { GroupBase } from 'react-select'
-import { ServerError, ACCESS_TYPE_MAP, SelectPickerOptionType, Teams } from '@devtron-labs/devtron-fe-common-lib'
+import { GroupBase, GroupProps, GroupHeadingProps, OptionProps } from 'react-select'
+import {
+    ServerError,
+    ACCESS_TYPE_MAP,
+    SelectPickerOptionType,
+    Teams,
+    UserRoleConfig,
+    CustomRoles,
+    EnvListMinDTO,
+    RoleSelectorOptionType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { JobList } from '../../../../../../components/Jobs/Types'
 import { DirectPermissionsRoleFilter } from '../../../types'
 
 type AppsList = Map<number, { loading: boolean; result: { id: number; name: string }[]; error: ServerError }>
 type JobsList = Map<number, { loading: boolean; result: JobList['result']['jobContainers']; error: ServerError }>
 export type ProjectsListType = Record<ACCESS_TYPE_MAP, Teams[]>
+export type EnvironmentsListType = Record<ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.JOBS, EnvListMinDTO[]>
 
 export interface AppPermissionsDetailType {
     accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
@@ -81,4 +91,44 @@ export interface AppOrJobSelectorProps
         | 'appsListHelmApps'
     > {
     setWorkflowList: Dispatch<SetStateAction<WorkflowListType>>
+}
+
+export interface RoleSelectorToggleConfig {
+    baseRole: boolean
+    accessManagerRoles: boolean
+}
+
+export interface RoleSelectorProps {
+    permission: DirectPermissionsRoleFilter
+    handleUpdateDirectPermissionRoleConfig: (updatedRoleConfig: UserRoleConfig) => void
+}
+
+export interface RoleSelectorGroupParams {
+    props: GroupProps
+    baseRoleValue: string
+    toggleConfig: RoleSelectorToggleConfig
+}
+
+export interface RoleSelectorGroupHeadingParams extends Pick<RoleSelectorGroupParams, 'toggleConfig'> {
+    props: GroupHeadingProps
+    showToggle: boolean
+    toggleBaseRole: () => void
+    toggleAccessManagerRoles: () => void
+}
+
+export interface RoleSelectorOptionParams extends Pick<RoleSelectorProps, 'handleUpdateDirectPermissionRoleConfig'> {
+    props: OptionProps<RoleSelectorOptionType>
+    roleConfig: UserRoleConfig
+}
+
+export interface RoleSelectorGroupHeaderProps extends Pick<RoleSelectorGroupHeadingParams, 'showToggle'> {
+    label: string
+    toggleSelected: boolean
+    onChange: () => void
+}
+
+export interface GetRoleConfigParams {
+    customRoles: CustomRoles[]
+    accessType: ACCESS_TYPE_MAP
+    showAccessRoles: boolean
 }

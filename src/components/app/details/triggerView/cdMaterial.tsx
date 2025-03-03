@@ -38,7 +38,7 @@ import {
     ServerErrors,
     DeploymentAppTypes,
     FilterConditionsListType,
-    useSuperAdmin,
+    useGetUserRoles,
     ImageCard,
     ExcludedImageNode,
     ImageCardAccordion,
@@ -204,7 +204,7 @@ const CDMaterial = ({
     const { searchParams } = useSearchString()
     const { handleDownload } = useDownload()
     // Add dep here
-    const { isSuperAdmin } = useSuperAdmin()
+    const { isSuperAdmin } = useGetUserRoles()
     // NOTE: Won't be available in app group will use data from props for that
     // DO Not consume directly, use appName variable instead
     const { currentAppName } = useAppContext()
@@ -1567,15 +1567,17 @@ const CDMaterial = ({
                             )}
                         </>
                     ) : (
-                        <RuntimeParameters
-                            appId={appId}
-                            parameters={parameters}
-                            handleChange={handleRuntimeParamsChange}
-                            errorState={errorState}
-                            handleError={handleRuntimeParamsError}
-                            uploadFile={uploadRuntimeParamsFile}
-                            isCD
-                        />
+                        <div className="bg__tertiary dc__overflow-auto flex-1 select-material--trigger-view">
+                            <RuntimeParameters
+                                appId={appId}
+                                parameters={parameters}
+                                handleChange={handleRuntimeParamsChange}
+                                errorState={errorState}
+                                handleError={handleRuntimeParamsError}
+                                uploadFile={uploadRuntimeParamsFile}
+                                isCD
+                            />
+                        </div>
                     )}
                 </ConditionalWrap>
             </div>
