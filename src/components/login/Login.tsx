@@ -36,10 +36,10 @@ import {
     getComponentSpecificThemeClass,
     AppThemeType,
     useAsync,
+    SSOProviderIcon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as Help } from '@Icons/ic-help-outline.svg'
-import { SSOTabIcons } from '@Pages/GlobalConfigurations/Authorization/SSOLoginServices/utils'
 import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
 import { URLS, DOCUMENTATION, TOKEN_COOKIE_NAME } from '../../config'
 import { loginAsAdmin } from './login.service'
@@ -47,8 +47,8 @@ import { dashboardAccessed } from '../../services/service'
 import './login.scss'
 import { getSSOConfigList } from '../../Pages/GlobalConfigurations/Authorization/SSOLoginServices/service'
 import { LoginCard } from './LoginCard'
-import { SSOProvider } from './constants'
 import { SSOConfig } from './login.types'
+import { SSOProvider } from './constants'
 
 const NetworkStatusInterface = !importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
 
@@ -200,7 +200,7 @@ const Login = () => {
                         onClick={onClickSSO}
                         dataTestId={`login-with-${item.name}`}
                         style={ButtonStyleType.neutral}
-                        startIcon={<SSOTabIcons provider={item.name as SSOProvider} />}
+                        startIcon={<SSOProviderIcon provider={item.name as SSOProvider} />}
                         fullWidth
                         size={ComponentSizeType.xl}
                     />
