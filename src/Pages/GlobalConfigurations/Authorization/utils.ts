@@ -31,8 +31,8 @@ import {
     MetaPossibleRoles,
     SelectPickerOptionType,
     stringComparatorBySortOrder,
-    UserRoleConfig,
     ActionTypes,
+    UserRoleConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { GroupBase } from 'react-select'
 import { Moment12HourFormat, REQUIRED_FIELDS_MISSING, SELECT_ALL_VALUE, SERVER_MODE } from '../../../config'
@@ -68,6 +68,14 @@ const getStatusExportText: (status: UserStatus, timeToLive: string) => string = 
     noop,
     'function',
 )
+
+const getPermissionActionValue: (roleConfig: UserRoleConfig) => string = importComponentFromFELibrary(
+    'getPermissionActionValue',
+    null,
+    'function',
+)
+
+const DEPLOYMENT_APPROVER_ROLE_VALUE = importComponentFromFELibrary('DEPLOYMENT_APPROVER_ROLE_VALUE', null, 'function')
 
 const getKeyForRoleFilter = ({ entity, team, environment, accessType, entityName, workflow }: APIRoleFilterDto) =>
     `${entity}${accessType}${team}${environment}${entityName}${workflow}`
@@ -312,17 +320,6 @@ const getSelectedEnvironments = (permission) => {
     return envList
 }
 
-const getPermissionActionValue = ({ baseRole, additionalRoles }: UserRoleConfig): string => {
-    const selectedRoles = []
-    if (baseRole) {
-        selectedRoles.push(baseRole)
-    }
-    // filtering deploymentApprover as no need to send it to BE
-    const additionalRoleArray = Array.from(additionalRoles).filter((role) => role !== 'deploymentApprover')
-
-    return [baseRole, ...additionalRoleArray].filter(Boolean).join(',')
-}
-
 const getCommaSeparatedNamespaceList = (namespaces: OptionType[]) => {
     if (namespaces.some((el) => el.value === SELECT_ALL_VALUE)) {
         return ''
@@ -367,8 +364,14 @@ const getRoleAndAccessFiltersFromDirectPermission = ({
         if (permission.roleConfig.baseRole || permission.roleConfig.additionalRoles.size > 0) {
             const role = {
                 ...commonPermissions,
-                approver: roleConfig.additionalRoles.has('deploymentApprover'),
-                action: getPermissionActionValue(permission.roleConfig),
+                // approver is true if deploymentApprover role is given
+                ...(DEPLOYMENT_APPROVER_ROLE_VALUE
+                    ? { approver: roleConfig.additionalRoles.has(DEPLOYMENT_APPROVER_ROLE_VALUE) }
+                    : {}),
+                // if fe lib is available get string for base and additional roles otherwise only send base role
+                action: !getPermissionActionValue
+                    ? permission.roleConfig.baseRole
+                    : getPermissionActionValue(permission.roleConfig),
             }
             roleFilters.push(role)
         }
