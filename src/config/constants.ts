@@ -444,6 +444,8 @@ export const NETSHOOT_LINK = 'https://github.com/nicolaka/netshoot'
 
 export const BUSYBOX_LINK = 'https://busybox.net/'
 
+export const EULA_LINK = 'https://devtron.ai/end-user-license-agreement-eula'
+
 export enum SERVER_MODE {
     EA_ONLY = 'EA_ONLY',
     FULL = 'FULL',

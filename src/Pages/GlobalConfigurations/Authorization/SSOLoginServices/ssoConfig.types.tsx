@@ -18,23 +18,23 @@ import { RouteComponentProps } from 'react-router-dom'
 import { SSOProvider } from './constants'
 import { GlobalConfiguration } from '../../../../components/globalConfigurations/types'
 
-export interface SSOLogin {
-    id: number
-    name: string
+export interface SSOConfigDTO {
     active: boolean
+    id: number
+    globalAuthConfigType: string
+    name: string
+    url: string
 }
 
-export interface SSOConfigType {
-    name?: string
-    id?: number
-    url?: string
+export interface SSOLogin extends Pick<SSOConfigDTO, 'active' | 'name' | 'id'> {}
+
+export interface SSOConfigType extends Partial<Pick<SSOConfigDTO, 'active' | 'name' | 'id' | 'url'>> {
     config: {
         type: string
         id: string
         name: string
         config: string // YAML string
     }
-    active?: boolean
 }
 
 export interface SSOLoginState {
@@ -75,7 +75,3 @@ export interface SSOLoginTabType {
 }
 
 export const OIDCType = 'oidc'
-
-export interface SSOTabIconsTypes {
-    provider: SSOProvider
-}

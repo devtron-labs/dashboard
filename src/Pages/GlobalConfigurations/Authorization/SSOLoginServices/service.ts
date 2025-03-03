@@ -15,10 +15,11 @@
  */
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { post, put, get, getUrlWithSearchParams } from '@devtron-labs/devtron-fe-common-lib'
+import { post, put, get, getUrlWithSearchParams, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../../../config'
+import { SSOConfigDTO } from './ssoConfig.types'
 
-export function getSSOConfigList(): Promise<any> {
+export function getSSOConfigList(): Promise<ResponseType<SSOConfigDTO[]>> {
     return get(Routes.SSO_LIST)
 }
 

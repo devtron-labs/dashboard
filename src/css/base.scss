@@ -2067,6 +2067,15 @@ button.anchor {
     }
 }
 
+.border-top__secondary {
+    border-top: solid 1px var(--border-secondary);
+
+    &--important {
+        border-top: solid 1px var(--border-secondary) !important;
+    }
+}
+
+// Deprecate this class, use border-top__secondary instead
 .dc__border-top-n1 {
     border-top: solid 1px var(--border-secondary);
 
@@ -2835,6 +2844,10 @@ button.anchor {
 
 .mw-400 {
     min-width: 400px;
+}
+
+.mw-420 {
+    min-width: 420px;
 }
 
 .mw-600 {
