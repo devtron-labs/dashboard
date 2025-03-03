@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import {
     showError,
     Progressing,
@@ -79,6 +79,7 @@ import { clusterId } from '../ClusterNodes/__mocks__/clusterAbout.mock'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { RemoteConnectionType } from '../dockerRegistry/dockerType'
 import { getServerURLFromLocalStorage } from './cluster.util'
+import { ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY } from './constants'
 
 const VirtualClusterSelectionTab = importComponentFromFELibrary('VirtualClusterSelectionTab')
 const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio')
@@ -167,6 +168,15 @@ export default function ClusterForm({
     const [isVirtual, setIsVirtual] = useState(isVirtualCluster)
     const [isConnectedViaProxyTemp, setIsConnectedViaProxyTemp] = useState(isConnectedViaProxy)
     const [isConnectedViaSSHTunnelTemp, setIsConnectedViaSSHTunnelTemp] = useState(isConnectedViaSSHTunnel)
+
+    useEffect(
+        () => () => {
+            if (localStorage.getItem(ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY)) {
+                localStorage.removeItem(ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY)
+            }
+        },
+        [],
+    )
 
     const [, grafanaModuleStatus] = useAsync(
         () => getModuleInfo(ModuleNameMap.GRAFANA),

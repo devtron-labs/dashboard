@@ -106,7 +106,6 @@ export const getServerURLFromLocalStorage = (fallbackServerUrl: string): string 
         } catch {}
     }
 
-    localStorage.removeItem(ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY)
     return fallbackServerUrl
 }
 
@@ -120,7 +119,5 @@ export const getNamespaceFromLocalStorage = (fallbackNamespace: string): string 
             return namespace
         } catch {}
     }
-
-    localStorage.removeItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY)
-    return fallbackNamespace
+      return fallbackNamespace
 }
