@@ -24,6 +24,7 @@ import {
     VariableType,
     NodeStatusDTO,
     CDFormType,
+    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 export const CD_PATCH_ACTION = {
@@ -265,6 +266,7 @@ export interface MigrateToDevtronBaseFormStateType {
     clusterId: number | null
     clusterName: string | null
     validationResponse: ValidateMigrationSourceInfoType | null
+    appIcon: SelectPickerOptionType['startIcon']
 }
 
 export interface MigrateArgoAppToCDPipelineRequiredBasePayloadType

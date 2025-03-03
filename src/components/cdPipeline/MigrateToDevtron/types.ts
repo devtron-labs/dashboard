@@ -28,6 +28,12 @@ export interface ExternalHelmAppDTO {
     namespace: string
     environmentId: number
     status: string
+    chartAvatar: string
+}
+
+export interface ExternalHelmAppType
+    extends Pick<ExternalHelmAppDTO, 'releaseName' | 'clusterId' | 'namespace' | 'environmentId' | 'status'> {
+    icon: SelectPickerOptionType['startIcon']
 }
 
 export interface ValidationResponseContentRowProps {

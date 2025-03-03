@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import {
     abortPreviousRequests,
     APIResponseHandler,
@@ -12,8 +13,9 @@ import {
     useAsync,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
+import { ReactComponent as ICHelmChart } from '@Icons/ic-helmchart.svg'
+import { ReactComponent as ICArgoCDApp } from '@Icons/ic-argocd-app.svg'
 import { ClusterSelectProps, MigrateToDevtronProps, SelectMigrateAppOptionType } from './types'
 import ClusterSelect from './ClusterSelect'
 import { MigrateToDevtronBaseFormStateType, TriggerTypeRadioProps } from '../cdPipeline.types'
@@ -41,7 +43,7 @@ const MigrateToDevtron = ({
         ? migrateToDevtronFormState.migrateFromHelmFormState
         : migrateToDevtronFormState.migrateFromArgoFormState
 
-    const { clusterId, clusterName, appName, namespace, validationResponse } = selectedFormState
+    const { clusterId, clusterName, appName, namespace, validationResponse, appIcon } = selectedFormState
     const { isLinkable } = validationResponse || {}
 
     const [
@@ -143,6 +145,7 @@ const MigrateToDevtron = ({
                 null,
                 migrateToDevtronFormState.deploymentAppType,
             ),
+            appIcon: null,
         }
 
         setMigrateToDevtronFormState((prevState) => ({
@@ -175,6 +178,7 @@ const MigrateToDevtron = ({
                     : {
                           appName: appOption.value.appName,
                           namespace: appOption.value.namespace,
+                          appIcon: appOption.startIcon,
                       }),
             },
             migrateFromHelmFormState: {
@@ -183,6 +187,7 @@ const MigrateToDevtron = ({
                     ? {
                           appName: appOption.value.appName,
                           namespace: appOption.value.namespace,
+                          appIcon: appOption.startIcon,
                       }
                     : {}),
             },
@@ -256,6 +261,7 @@ const MigrateToDevtron = ({
                                 ? 'Select a cluster to view and select Helm Release in that cluster'
                                 : 'Select a cluster to view and select Argo CD applications in that cluster'
                         }
+                        icon={isMigratingFromHelm ? <ICHelmChart /> : <ICArgoCDApp />}
                         isDisabled={!clusterId}
                         isLoading={isLoadingAppListOptions}
                         optionListError={appListOptionsError}
@@ -268,6 +274,7 @@ const MigrateToDevtron = ({
                                 ? generateMigrateAppOption({
                                       appName,
                                       namespace,
+                                      startIcon: appIcon,
                                   })
                                 : null
                         }

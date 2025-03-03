@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { GenericAppType } from '@Components/app/list-new/AppListType'
 import { URLS } from '@Config/routes'
-import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ValidateMigrateToDevtronPayloadType,
     ValidateMigrationSourceDTO,
@@ -78,13 +78,16 @@ export const generateClusterOption = (clusterName: string, clusterId: number): S
 export const generateMigrateAppOption = ({
     appName,
     namespace,
-}: Pick<GenericAppType, 'appName' | 'namespace'>): SelectMigrateAppOptionType => ({
+    startIcon,
+}: Pick<GenericAppType, 'appName' | 'namespace'> &
+    Pick<SelectPickerOptionType, 'startIcon'>): SelectMigrateAppOptionType => ({
     label: appName || '',
     value: {
         appName: appName || '',
         namespace: namespace || '',
     },
     description: `Namespace: ${namespace || '--'}`,
+    startIcon,
 })
 
 export const renderGitOpsNotConfiguredDescription = () => (

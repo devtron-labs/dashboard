@@ -4,12 +4,15 @@ import {
     get,
     getIsRequestAborted,
     getUrlWithSearchParams,
+    ImageWithFallback,
     post,
     showError,
     stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '@Config/constants'
 import { getArgoInstalledExternalApps } from '@Components/app/list-new/AppListService'
+import { ReactComponent as ICHelmChart } from '@Icons/ic-helmchart.svg'
+import { ReactComponent as ICArgoCDApp } from '@Icons/ic-argocd-app.svg'
 import {
     ValidateMigrateToDevtronPayloadType,
     ValidateMigrationSourceDTO,
@@ -21,7 +24,12 @@ import {
     getValidateMigrationSourcePayload,
     sanitizeValidateMigrationSourceResponse,
 } from './utils'
-import { ExternalHelmAppDTO, GetMigrateAppOptionsParamsType, SelectMigrateAppOptionType } from './types'
+import {
+    ExternalHelmAppDTO,
+    ExternalHelmAppType,
+    GetMigrateAppOptionsParamsType,
+    SelectMigrateAppOptionType,
+} from './types'
 
 export const validateMigrationSource = async (
     params: ValidateMigrationSourceServiceParamsType,
@@ -45,7 +53,7 @@ export const validateMigrationSource = async (
 const getExternalHelmAppList = async (
     clusterId: number,
     abortControllerRef: APIOptions['abortControllerRef'],
-): Promise<ExternalHelmAppDTO[]> => {
+): Promise<ExternalHelmAppType[]> => {
     const { result } = await get<ExternalHelmAppDTO[]>(
         getUrlWithSearchParams(Routes.APPLICATION_EXTERNAL_HELM_RELEASE, { clusterId }),
         { abortControllerRef },
@@ -57,6 +65,12 @@ const getExternalHelmAppList = async (
         namespace: app.namespace || '',
         environmentId: app.environmentId,
         status: app.status || '',
+        icon: (
+            <ImageWithFallback
+                imageProps={{ src: app.chartAvatar, alt: 'Helm Release', width: '100%', height: '100%' }}
+                fallbackImage={<ICHelmChart />}
+            />
+        ),
     }))
 }
 
@@ -70,7 +84,11 @@ export const getMigrateAppOptions = async ({
             const { result } = await getArgoInstalledExternalApps(String(clusterId), abortControllerRef)
             return (result || [])
                 .map<SelectMigrateAppOptionType>((argoApp) =>
-                    generateMigrateAppOption({ appName: argoApp.appName, namespace: argoApp.namespace }),
+                    generateMigrateAppOption({
+                        appName: argoApp.appName,
+                        namespace: argoApp.namespace,
+                        startIcon: <ICArgoCDApp />,
+                    }),
                 )
                 .sort((a, b) => stringComparatorBySortOrder(a.label as string, b.label as string))
         }
@@ -81,6 +99,7 @@ export const getMigrateAppOptions = async ({
                 generateMigrateAppOption({
                     appName: helmApp.releaseName,
                     namespace: helmApp.namespace,
+                    startIcon: helmApp.icon,
                 }),
             )
             .sort((a, b) => stringComparatorBySortOrder(a.label as string, b.label as string))
