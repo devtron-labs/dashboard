@@ -49,7 +49,7 @@ export const manageApps = async (
             appIds.map(
                 (appId) => () =>
                     post(
-                        `batch/v1beta1/${action}`,
+                        `batch/v1beta2/${action}`,
                         { appIdIncludes: [appId], envId, envName },
                         { timeout: window._env_.TRIGGER_API_TIMEOUT },
                     ),

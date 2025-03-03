@@ -99,7 +99,7 @@ export const getCommonSelectStyle = (styleOverrides = {}) => {
         }),
         menu: (base) => ({
             ...base,
-            backgroundColor: 'var(--bg-menu)',
+            backgroundColor: 'var(--bg-menu-primary)',
         }),
         ...styleOverrides,
     }

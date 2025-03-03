@@ -27,8 +27,11 @@
 
 .main {
     height: 100vh;
-    width: 100%;
     overflow-y: auto;
+
+    &__modern-layout {
+        height: calc(100vh - 16px);
+    }
 }
 
 .main__overflow-disabled {
@@ -55,7 +58,7 @@
         display: flex;
         overflow: hidden;
         z-index: var(--navigation-index);
-        transition: width 300ms ease-out;
+        transition: width 200ms ease-out;
 
         .nav-grid {
             display: grid;
@@ -100,13 +103,6 @@
             }
 
             a {
-                .short-nav-icon {
-                    width: 20px;
-                    height: 20px;
-                    fill: var(--white);
-                    opacity: 1;
-                }
-
                 .short-nav__item-selected {
                     display: none;
                 }
@@ -154,7 +150,7 @@
 
         &:hover {
             width: 252px;
-            transition: width 300ms ease-in 700ms;
+            transition: width 200ms ease-in 700ms;
         }
 
         .short-nav__bottom-options {
@@ -186,10 +182,41 @@
         height: 80px;
         width: 100%;
     }
+
+    & .nav__modern-layout {
+        $transition-duration: 200ms;
+        $transition-delay: 700ms;
+
+        background: var(--transparent);
+        transition: width $transition-duration ease-out, background 150ms ease-out 200ms;
+
+        .short-nav {
+            a {
+                &:hover {
+                    .svg-container {
+                        background: var(--bg-sidebar-item-selected);
+                    }
+                }
+            }
+        }
+
+        .active-nav {
+            .svg-container {
+                background: var(--bg-sidebar-item-selected);
+            }
+        }
+
+        &:hover {
+            background: var(--bg-sidebar-modern-layout);
+            border-right: 1px solid var(--border-primary-translucent);
+            box-shadow: var(--shadow-modal);
+            transition: width $transition-duration ease-in $transition-delay, background 150ms ease-in $transition-delay, border-right $transition-duration ease-in $transition-delay, box-shadow $transition-duration ease-in $transition-delay;
+        }
+    }
 }
 
 .logout-card {
-    width: 260px;
+    width: 268px;
     border-radius: 4px;
     background-color: var(--bg-primary);
     position: fixed;
@@ -212,7 +239,6 @@
     color: var(--N0);
     user-select: none;
     cursor: pointer;
-    margin: auto;
     border: solid 1px transparent;
 }
 

@@ -60,6 +60,9 @@ const DockerArgsItem: FunctionComponent<DockerArgsItemProps> = ({
                     value={arg.key}
                     disabled={readOnly}
                     onChange={handleDockerArgKeyUpdate}
+                    borderRadiusConfig={{
+                        bottom: false,
+                    }}
                 />
                 <Textarea
                     name={fromBuildPack ? `build-pack-build-env-value${index}` : `docker-arg-value-${index}`}
@@ -67,6 +70,9 @@ const DockerArgsItem: FunctionComponent<DockerArgsItemProps> = ({
                     placeholder="Value"
                     onChange={handleDockerArgValueUpdate}
                     disabled={readOnly}
+                    borderRadiusConfig={{
+                        top: false,
+                    }}
                 />
             </div>
 

@@ -270,9 +270,6 @@ src/components/external-apps/ExternalApps.tsx
 src/components/externalArgoApps/ExternalArgoApp.tsx
 src/components/externalArgoApps/ExternalArgoAppDetail.tsx
 src/components/externalLinks/ExternalLinks.component.tsx
-src/components/externalLinks/ExternalLinks.service.ts
-src/components/externalLinks/ExternalLinks.tsx
-src/components/externalLinks/ExternalLinks.utils.ts
 src/components/externalLinks/ExternalLinksCRUD/AddExternalLink.tsx
 src/components/externalLinks/ExternalLinksCRUD/ConfigureLinkAction.tsx
 src/components/externalLinks/ExternalLinksCRUD/DeleteExternalLinkDialog.tsx

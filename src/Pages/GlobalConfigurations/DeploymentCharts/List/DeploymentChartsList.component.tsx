@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
     GenericEmptyState,
-    InfoColourBar,
     APIResponseHandler,
     useAsync,
     Tooltip,
     EMPTY_STATE_STATUS,
     URLS,
+    SortableTableHeaderCell,
+    getAlphabetIcon,
+    useUrlFilters,
+    GenericFilterEmptyState,
+    highlightSearchText,
 } from '@devtron-labs/devtron-fe-common-lib'
+import DOMPurify from 'dompurify'
 import { DOCUMENTATION } from '@Config/constants'
 import emptyCustomChart from '@Images/ic-empty-custom-charts.webp'
-import { ReactComponent as DevtronIcon } from '@Icons/ic-devtron-app.svg'
-import { ReactComponent as HelpIcon } from '@Icons/ic-help.svg'
+import { ReactComponent as ICFolderZip } from '@Icons/ic-folder-zip.svg'
+import { ReactComponent as ICDevtronApp } from '@Icons/ic-devtron-app.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 import UploadChartModal from './UploadChartModal'
 import { getChartList } from './service'
@@ -35,12 +40,27 @@ import DeploymentChartsListHeader from './DeploymentChartsListHeader'
 import UploadButton from './UploadButton'
 import DownloadChartButton from './DownloadChartButton'
 import './styles.scss'
+import { DeploymentChartsListSortableKeys } from '../types'
+import { sortChartList } from './utils'
 
-const EditDeploymentChart = importComponentFromFELibrary('EditDeploymentChart', null, 'function')
+const DeploymentChartActionButton = importComponentFromFELibrary('DeploymentChartActionButton', null, 'function')
 
 const DeploymentChartsList = () => {
     const [showUploadPopup, setShowUploadPopup] = useState(false)
     const [chartListLoading, chartList, chartListError, reloadChartList] = useAsync(getChartList)
+
+    const { sortBy, sortOrder, searchKey, handleSearch, handleSorting, clearFilters } =
+        useUrlFilters<DeploymentChartsListSortableKeys>({
+            initialSortKey: DeploymentChartsListSortableKeys.CHART_NAME,
+        })
+
+    const handleTriggerSorting = (sortKey: DeploymentChartsListSortableKeys) => () => handleSorting(sortKey)
+
+    const filteredChartList = useMemo(() => {
+        const lowerCaseSearch = searchKey.toLowerCase()
+        const filteredList = chartList?.filter((chart) => chart.name.toLowerCase().includes(lowerCaseSearch)) || []
+        return filteredList.sort((a, b) => sortChartList(a, b, sortBy, sortOrder))
+    }, [sortBy, sortOrder, searchKey, chartList])
 
     const handleCloseUploadChartModal = (isReloadChartList: boolean): void => {
         setShowUploadPopup(false)
@@ -81,74 +101,103 @@ const DeploymentChartsList = () => {
         }
 
         return (
-            <div
-                className="chart-list flexbox-col dc__gap-20 dc__overflow-hidden h-100"
-                data-testid="custom-charts-list"
-            >
-                <DeploymentChartsListHeader handleOpenUploadChartModal={handleOpenUploadChartModal} />
-                <div
-                    data-testid="custom-chart-list"
-                    className="en-2 bw-1 bg__primary br-8 h-100 dc__overflow-hidden flexbox-col"
-                >
-                    <InfoColourBar
-                        message={
-                            <>
-                                <span className="fs-13 fw-6 lh-20">How to use?</span>
-                                <span className="fs-13 fw-4 lh-20 ml-4 mr-4">
-                                    Uploaded charts can be used in Deployment template to deploy custom applications
-                                    created in Devtron.
-                                </span>
-                                <a
-                                    href={DOCUMENTATION.CUSTOM_CHART}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="dc__link dc__no-decor pointer"
-                                >
-                                    Learn more
-                                </a>
-                            </>
-                        }
-                        classname="dc__content-start bcv-1 w-100 custom-chart-info-bar dc__border-bottom-v2 pt-6 pb-6 pl-16 pr-16"
-                        Icon={HelpIcon}
-                        iconClass="fcv-5 icon-dim-20"
-                    />
-                    <div className="chart-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-10 pb-10 pr-20 pl-20 dc__uppercase dc__no-shrink">
-                        <span>Name</span>
-                        <span>Version</span>
-                        <span>Description</span>
-                    </div>
-                    <div className="h-100 dc__overflow-auto">
-                        {chartList.map((chartData) => (
-                            <div
-                                key={`custom-chart_${chartData.name}`}
-                                className="chart-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20"
-                            >
-                                <div className="flexbox dc__gap-8 dc__align-items-center">
-                                    <span className="cn-9 dc__ellipsis-right">{chartData.name}</span>
-                                    {!chartData.isUserUploaded && (
-                                        <div className="flex bcb-1 br-6 py-2 px-6">
-                                            <DevtronIcon className="icon-dim-20" />
-                                            <span className="ml-4 fs-12 fw-6 cn-7 lh-20 devtron-tag">by Devtron</span>
+            <div className="flexbox-col h-100 dc__gap-8 pt-16" data-testid="custom-charts-list">
+                <DeploymentChartsListHeader
+                    searchKey={searchKey}
+                    handleSearch={handleSearch}
+                    handleOpenUploadChartModal={handleOpenUploadChartModal}
+                />
+                {filteredChartList.length ? (
+                    <div className="flexbox-col dc__overflow-auto">
+                        <div className="dc__grid dc__gap-16 dc__align-items-center chart-list-row dc__border-bottom px-20 py-10 fs-12 fw-6 lh-20 cn-7">
+                            <span />
+                            <SortableTableHeaderCell
+                                title="Name"
+                                isSortable
+                                disabled={false}
+                                sortOrder={sortOrder}
+                                triggerSorting={handleTriggerSorting(DeploymentChartsListSortableKeys.CHART_NAME)}
+                                isSorted={sortBy === DeploymentChartsListSortableKeys.CHART_NAME}
+                            />
+                            <SortableTableHeaderCell
+                                title="Version"
+                                isSortable
+                                disabled={false}
+                                sortOrder={sortOrder}
+                                triggerSorting={handleTriggerSorting(DeploymentChartsListSortableKeys.CHART_VERSION)}
+                                isSorted={sortBy === DeploymentChartsListSortableKeys.CHART_VERSION}
+                            />
+                            <SortableTableHeaderCell title="Description" isSortable={false} />
+                            <SortableTableHeaderCell
+                                title="Uploaded by"
+                                isSortable
+                                disabled={false}
+                                sortOrder={sortOrder}
+                                triggerSorting={handleTriggerSorting(DeploymentChartsListSortableKeys.UPLOADED_BY)}
+                                isSorted={sortBy === DeploymentChartsListSortableKeys.UPLOADED_BY}
+                            />
+                            <span />
+                        </div>
+                        <div className="flexbox-col dc__overflow-auto flex-grow-1">
+                            {filteredChartList.map((chartData) => {
+                                const { version, description, uploadedBy, isUserUploaded } = chartData.versions[0]
+                                return (
+                                    <div
+                                        key={`custom-chart_${chartData.name}`}
+                                        className="chart-list-row bg__primary fw-4 cn-9 fs-13 lh-20 fw-4 dc__grid dc__gap-16 dc__align-items-center px-20 py-10 dc__hover-n50"
+                                    >
+                                        <div className="icon-dim-24 p-2">
+                                            <ICFolderZip className="icon-dim-20 scb-5" />
                                         </div>
-                                    )}
-                                </div>
-                                <span>
-                                    {chartData.versions[0].version}
-                                    <span className="cn-5 ml-8">
-                                        {chartData.versions.length && `+${chartData.versions.length} more`}
-                                    </span>
-                                </span>
-                                <Tooltip content={chartData.versions[0].description} placement="left">
-                                    <span className="dc__ellipsis-right">{chartData.versions[0].description}</span>
-                                </Tooltip>
-                                <div className="flexbox dc__gap-4">
-                                    {EditDeploymentChart && <EditDeploymentChart name={chartData.name} />}
-                                    <DownloadChartButton name={chartData.name} versions={chartData.versions} />
-                                </div>
-                            </div>
-                        ))}
+                                        <span
+                                            className="dc__truncate"
+                                            // eslint-disable-next-line react/no-danger
+                                            dangerouslySetInnerHTML={{
+                                                __html: DOMPurify.sanitize(
+                                                    highlightSearchText({
+                                                        searchText: searchKey,
+                                                        text: chartData.name,
+                                                        highlightClasses: 'bcy-2',
+                                                    }),
+                                                ),
+                                            }}
+                                        />
+                                        <div className="flexbox dc__gap-8">
+                                            <span>{version}</span>
+                                            <span className="cn-6">
+                                                {!!(chartData.versions.length - 1) &&
+                                                    `+${chartData.versions.length - 1} more`}
+                                            </span>
+                                        </div>
+                                        <Tooltip content={description} placement="top">
+                                            <span className="dc__truncate">{description}</span>
+                                        </Tooltip>
+                                        <div>
+                                            <div className="flexbox dc__align-items-center dc__gap-8">
+                                                {isUserUploaded ? (
+                                                    getAlphabetIcon(uploadedBy, 'icon-dim-20 m-0-imp')
+                                                ) : (
+                                                    <ICDevtronApp className="icon-dim-20 fcb-5 dc__no-shrink" />
+                                                )}
+                                                <Tooltip content={uploadedBy} placement="left">
+                                                    <span className="dc__truncate">{uploadedBy}</span>
+                                                </Tooltip>
+                                            </div>
+                                        </div>
+                                        <div className="flex dc__gap-4">
+                                            {DeploymentChartActionButton && (
+                                                <DeploymentChartActionButton name={chartData.name} />
+                                            )}
+                                            <DownloadChartButton name={chartData.name} versions={chartData.versions} />
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
                     </div>
-                </div>
+                ) : (
+                    <GenericFilterEmptyState handleClearFilters={clearFilters} />
+                )}
             </div>
         )
     }

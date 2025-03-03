@@ -28,15 +28,37 @@
     }
 
     &__overlay {
-        background: var(--bg-overlay);
+        &--primary {
+            background: var(--bg-overlay-primary);
+        }
+
+        &--secondary {
+            background: var(--bg-overlay-secondary);
+        }
     }
 
     &__menu {
-        background: var(--bg-menu);
+        &--primary {
+            background: var(--bg-menu-primary);
+        }
+
+        &--secondary {
+            background: var(--bg-menu-secondary);
+        }
     }
 
     &__modal {
-        background: var(--bg-modal);
+        &--primary {
+            background: var(--bg-modal-primary);
+        }
+
+        &--secondary {
+            background: var(--bg-modal-secondary);
+        }
+
+        &--tertiary {
+            background: var(--bg-modal-tertiary);
+        }
     }
 
     &__white {
@@ -95,9 +117,11 @@
         &--primary {
             box-shadow: var(--shadow-card-primary);
         }
+
         &--secondary {
             box-shadow: var(--shadow-card-secondary);
         }
+
         &--tertiary {
             box-shadow: var(--shadow-card-tertiary);
         }
@@ -111,6 +135,14 @@
         &--top {
             border-top: 1px solid var(--border-primary);
         }
+
+        &--left {
+            border-left: 1px solid var(--border-primary);
+        }
+    }
+
+    &__primary-translucent {
+        border: 1px solid var(--border-primary-translucent);
     }
 
     &__secondary {
@@ -122,6 +154,14 @@
 
         &--bottom {
             border-bottom: 1px solid var(--border-secondary);
+        }
+    }
+
+    &__secondary-translucent {
+        border: 1px solid var(--border-secondary-translucent);
+
+        &--bottom {
+            border-bottom: 1px solid var(--border-secondary-translucent);
         }
     }
 
@@ -141,9 +181,21 @@
         background-color: var(--divider-primary);
     }
 
+    &__primary-translucent {
+        width: 1px;
+        min-height: 16px;
+        background-color: var(--divider-primary-translucent);
+    }
+
     &__secondary {
         width: 1px;
         min-height: 16px;
         background-color: var(--divider-secondary);
+    }
+
+    &__secondary-translucent {
+        width: 1px;
+        min-height: 16px;
+        background-color: var(--divider-secondary-translucent);
     }
 }

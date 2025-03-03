@@ -110,7 +110,7 @@ export const Configurations = () => {
     // RENDERERS
     const renderConfigSideNav = () => (
         <Switch>
-            <Route path={`${path}/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?`}>
+            <Route key={appId} path={`${path}/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?`}>
                 <EnvConfigurationsNav
                     envConfig={envConfig}
                     environments={environments}

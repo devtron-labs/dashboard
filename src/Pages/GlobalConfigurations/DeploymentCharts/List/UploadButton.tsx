@@ -15,7 +15,7 @@
  */
 
 import { ReactComponent as Upload } from '@Icons/ic-upload.svg'
-import { Button } from '@devtron-labs/devtron-fe-common-lib'
+import { Button, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
 import { UploadButtonProps } from '../types'
 
 const UploadButton = ({ handleOpenUploadChartModal }: UploadButtonProps) => (
@@ -24,6 +24,7 @@ const UploadButton = ({ handleOpenUploadChartModal }: UploadButtonProps) => (
         startIcon={<Upload />}
         onClick={handleOpenUploadChartModal}
         dataTestId="upload-custom-chart-button"
+        size={ComponentSizeType.medium}
     />
 )
 
