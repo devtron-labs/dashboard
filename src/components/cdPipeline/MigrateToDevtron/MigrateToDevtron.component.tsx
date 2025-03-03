@@ -34,6 +34,7 @@ const MigrateToDevtron = ({
         featureGitOpsFlags: { isFeatureArgoCdMigrationEnabled },
     } = useMainContext()
     const migrateAppOptionsControllerRef = useRef<AbortController>(new AbortController())
+    const validateMigrationSourceControllerRef = useRef<AbortController>(new AbortController())
 
     const isMigratingFromHelm = migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.HELM
     const selectedFormState = isMigratingFromHelm
@@ -63,7 +64,6 @@ const MigrateToDevtron = ({
         !!clusterId,
     )
 
-    // TODO: Add ref to controller to abort previous requests
     const handleValidateMigrationSource = async () => {
         setMigrateToDevtronFormState((prevState) => ({
             ...prevState,
@@ -81,7 +81,14 @@ const MigrateToDevtron = ({
             },
         }))
 
-        const validationResponseData = await validateMigrationSource({ migrateToDevtronFormState, appId: +appId })
+        const validationResponseData = await abortPreviousRequests(
+            () =>
+                validateMigrationSource(
+                    { migrateToDevtronFormState, appId: +appId },
+                    validateMigrationSourceControllerRef,
+                ),
+            validateMigrationSourceControllerRef,
+        )
         setMigrateToDevtronFormState((prevState) => ({
             ...prevState,
             migrateFromArgoFormState: {
@@ -95,17 +102,32 @@ const MigrateToDevtron = ({
         }))
     }
 
-    const [isLoadingValidationResponse, , validationResponseError, reloadValidationResponse] = useAsync(
+    const [
+        isLoadingValidationResponseWithAbortedError,
+        ,
+        validationResponseErrorWithAbortedError,
+        reloadValidationResponse,
+    ] = useAsync(
         handleValidateMigrationSource,
         [appName, namespace, migrateToDevtronFormState.deploymentAppType],
         !!appName && !!namespace,
     )
 
+    const isLoadingValidationResponse =
+        isLoadingValidationResponseWithAbortedError || getIsRequestAborted(validationResponseErrorWithAbortedError)
+    const validationResponseError = isLoadingValidationResponse ? null : validationResponseErrorWithAbortedError
+
     const isLoadingAppListOptions =
         isLoadingAppListOptionsWithAbortedError || getIsRequestAborted(appListErrorWithAbortedError)
     const appListOptionsError = isLoadingAppListOptions ? null : appListErrorWithAbortedError
 
-    useEffect(() => () => migrateAppOptionsControllerRef.current.abort(), [])
+    useEffect(
+        () => () => {
+            migrateAppOptionsControllerRef.current.abort()
+            validateMigrationSourceControllerRef.current.abort()
+        },
+        [],
+    )
 
     const handleClusterChange: ClusterSelectProps['handleClusterChange'] = (clusterOption) => {
         if (clusterOption.value === clusterId) {
@@ -242,7 +264,7 @@ const MigrateToDevtron = ({
                         onChange={handleAppSelection}
                         required
                         value={
-                            migrateToDevtronFormState.migrateFromArgoFormState.appName
+                            appName
                                 ? generateMigrateAppOption({
                                       appName,
                                       namespace,

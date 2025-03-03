@@ -1,6 +1,8 @@
 import {
+    APIOptions,
     DeploymentAppTypes,
     get,
+    getIsRequestAborted,
     getUrlWithSearchParams,
     post,
     showError,
@@ -23,22 +25,30 @@ import { ExternalHelmAppDTO, GetMigrateAppOptionsParamsType, SelectMigrateAppOpt
 
 export const validateMigrationSource = async (
     params: ValidateMigrationSourceServiceParamsType,
+    abortControllerRef: APIOptions['abortControllerRef'],
 ): Promise<ValidateMigrationSourceInfoType> => {
     try {
         const { result } = await post<ValidateMigrationSourceDTO, ValidateMigrateToDevtronPayloadType>(
             Routes.APP_CD_PIPELINE_VALIDATE_LINK_REQUEST,
             getValidateMigrationSourcePayload(params),
+            { abortControllerRef },
         )
         return sanitizeValidateMigrationSourceResponse(result, params.migrateToDevtronFormState.deploymentAppType)
     } catch (error) {
-        showError(error)
+        if (!getIsRequestAborted(error)) {
+            showError(error)
+        }
         throw error
     }
 }
 
-const getExternalHelmAppList = async (clusterId: number): Promise<ExternalHelmAppDTO[]> => {
+const getExternalHelmAppList = async (
+    clusterId: number,
+    abortControllerRef: APIOptions['abortControllerRef'],
+): Promise<ExternalHelmAppDTO[]> => {
     const { result } = await get<ExternalHelmAppDTO[]>(
         getUrlWithSearchParams(Routes.APPLICATION_EXTERNAL_HELM_RELEASE, { clusterId }),
+        { abortControllerRef },
     )
 
     return (result || []).map((app) => ({
@@ -65,7 +75,7 @@ export const getMigrateAppOptions = async ({
                 .sort((a, b) => stringComparatorBySortOrder(a.label as string, b.label as string))
         }
 
-        const externalHelmApps = await getExternalHelmAppList(clusterId)
+        const externalHelmApps = await getExternalHelmAppList(clusterId, abortControllerRef)
         return externalHelmApps
             .map<SelectMigrateAppOptionType>((helmApp) =>
                 generateMigrateAppOption({
@@ -75,7 +85,9 @@ export const getMigrateAppOptions = async ({
             )
             .sort((a, b) => stringComparatorBySortOrder(a.label as string, b.label as string))
     } catch (error) {
-        showError(error)
+        if (!getIsRequestAborted(error)) {
+            showError(error)
+        }
         throw error
     }
 }
