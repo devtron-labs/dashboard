@@ -25,6 +25,11 @@ export const sanitizeValidateMigrationSourceResponse = (
     const destination =
         deploymentAppType === DeploymentAppTypes.GITOPS ? argoChartDestination : helmReleaseMetadata?.destination
 
+    const chartInfoSource =
+        deploymentAppType === DeploymentAppTypes.GITOPS
+            ? argoAppSourceDetails?.chartMetadata
+            : helmReleaseMetadata?.chart?.metadata
+
     const baseData: ValidateMigrationSourceInfoBaseType = {
         isLinkable: isLinkable || false,
         errorDetail: {
@@ -39,15 +44,8 @@ export const sanitizeValidateMigrationSourceResponse = (
             environmentId: destination?.environmentId || null,
         },
 
-        requiredChartName:
-            deploymentAppType === DeploymentAppTypes.GITOPS
-                ? argoAppSourceDetails?.chartMetadata?.requiredChartName || ''
-                : helmReleaseMetadata?.chart?.metadata?.requiredChartName || '',
-
-        savedChartName:
-            deploymentAppType === DeploymentAppTypes.GITOPS
-                ? argoAppSourceDetails?.chartMetadata?.savedChartName || ''
-                : helmReleaseMetadata?.chart?.metadata?.savedChartName || '',
+        requiredChartName: chartInfoSource?.requiredChartName || '',
+        savedChartName: chartInfoSource?.savedChartName || '',
 
         requiredChartVersion:
             deploymentAppType === DeploymentAppTypes.GITOPS
@@ -127,16 +125,17 @@ export const getValidateMigrationSourcePayload = ({
     }
 }
 
+export const getDeploymentAppTypeLabel = (isMigratingFromHelm: boolean) =>
+    isMigratingFromHelm ? 'Helm Release' : 'Argo CD Application'
+
 export const getTargetClusterTooltipInfo = (isMigratingFromHelm: boolean) => ({
     heading: 'Target cluster',
-    infoList: [
-        `Cluster in which the ${isMigratingFromHelm ? 'Helm Release' : 'Argo CD application'} is deploying your microservice`,
-    ],
+    infoList: [`Cluster in which the ${getDeploymentAppTypeLabel(isMigratingFromHelm)} is deploying your microservice`],
 })
 
 export const getTargetNamespaceTooltipInfo = (isMigratingFromHelm: boolean) => ({
     heading: 'Target Namespace',
     infoList: [
-        `Namespace in which the ${isMigratingFromHelm ? 'Helm Release' : 'Argo CD application'} is deploying your microservice`,
+        `Namespace in which the ${getDeploymentAppTypeLabel(isMigratingFromHelm)} is deploying your microservice`,
     ],
 })

@@ -29,6 +29,7 @@ import { MigrateToDevtronValidationFactoryProps, ValidationResponseContentRowPro
 import { GENERIC_SECTION_ERROR_STATE_COMMON_PROPS, TARGET_ENVIRONMENT_INFO_LIST } from './constants'
 import './MigrateToDevtronValidationFactory.scss'
 import {
+    getDeploymentAppTypeLabel,
     getTargetClusterTooltipInfo,
     getTargetNamespaceTooltipInfo,
     renderGitOpsNotConfiguredDescription,
@@ -90,7 +91,7 @@ const MigrateToDevtronValidationFactory = ({
     } = validationResponse
     const { validationFailedReason, validationFailedMessage } = errorDetail || {}
     const isMigratingFromHelm = deploymentAppType === DeploymentAppTypes.HELM
-    const deploymentAppTypeLabel = isMigratingFromHelm ? 'Helm Release' : 'Argo CD Application'
+    const deploymentAppTypeLabel = getDeploymentAppTypeLabel(isMigratingFromHelm)
 
     const targetClusterTooltipInfo = getTargetClusterTooltipInfo(isMigratingFromHelm)
     const targetNamespaceTooltipInfo = getTargetNamespaceTooltipInfo(isMigratingFromHelm)

@@ -261,12 +261,12 @@ export type ValidateMigrationSourceInfoType = ValidateMigrationSourceInfoBaseTyp
     )
 
 export interface MigrateToDevtronBaseFormStateType {
-    appName: string | null
-    namespace: string | null
-    clusterId: number | null
-    clusterName: string | null
-    validationResponse: ValidateMigrationSourceInfoType | null
-    appIcon: SelectPickerOptionType['startIcon']
+    appName: string
+    namespace: string
+    clusterId: number
+    clusterName: string
+    validationResponse: ValidateMigrationSourceInfoType
+    appIcon: SelectPickerOptionType['startIcon'] | null
 }
 
 export interface MigrateArgoAppToCDPipelineRequiredBasePayloadType

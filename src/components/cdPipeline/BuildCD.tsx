@@ -481,7 +481,9 @@ export default function BuildCD({
                         />
                     </div>
                 </div>
-                {gitOpsRepoNotConfiguredAndOptionsHidden && gitOpsRepoConfigInfoBar(GITOPS_REPO_REQUIRED)}
+                <div className="mb-16">
+                    {gitOpsRepoNotConfiguredAndOptionsHidden && gitOpsRepoConfigInfoBar(GITOPS_REPO_REQUIRED)}
+                </div>
                 {renderNamespaceInfo(namespaceEditable)}
                 {isVirtualEnvironment
                     ? HelmManifestPush && (

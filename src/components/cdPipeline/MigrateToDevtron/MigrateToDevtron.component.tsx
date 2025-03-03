@@ -20,7 +20,7 @@ import { ClusterSelectProps, MigrateToDevtronProps, SelectMigrateAppOptionType }
 import ClusterSelect from './ClusterSelect'
 import { MigrateToDevtronBaseFormStateType, TriggerTypeRadioProps } from '../cdPipeline.types'
 import { getMigrateAppOptions, validateMigrationSource } from './service'
-import { generateMigrateAppOption, sanitizeValidateMigrationSourceResponse } from './utils'
+import { generateMigrateAppOption, getDeploymentAppTypeLabel, sanitizeValidateMigrationSourceResponse } from './utils'
 import { GENERIC_SECTION_ERROR_STATE_COMMON_PROPS } from './constants'
 import MigrateToDevtronValidationFactory from './MigrateToDevtronValidationFactory'
 import TriggerTypeRadio from '../TriggerTypeRadio'
@@ -256,11 +256,7 @@ const MigrateToDevtron = ({
                         classNamePrefix="migrate-from-source-app-select"
                         label={isMigratingFromHelm ? 'Release name' : 'Argo CD application'}
                         placeholder={isMigratingFromHelm ? 'Select a helm release' : 'Select an Argo CD application'}
-                        disabledTippyContent={
-                            isMigratingFromHelm
-                                ? 'Select a cluster to view and select Helm Release in that cluster'
-                                : 'Select a cluster to view and select Argo CD applications in that cluster'
-                        }
+                        disabledTippyContent={`Select a cluster to view and select ${getDeploymentAppTypeLabel(isMigratingFromHelm)} in that cluster`}
                         icon={isMigratingFromHelm ? <ICHelmChart /> : <ICArgoCDApp />}
                         isDisabled={!clusterId}
                         isLoading={isLoadingAppListOptions}
@@ -305,7 +301,7 @@ const MigrateToDevtron = ({
                         }
                         genericSectionErrorProps={{
                             title: 'Error checking compatibility',
-                            subTitle: `An error occurred while checking if ${isMigratingFromHelm ? 'Helm Release' : 'Argo CD application'} and its configurations are compatible for migration to deployment pipeline`,
+                            subTitle: `An error occurred while checking if ${getDeploymentAppTypeLabel(isMigratingFromHelm)} and its configurations are compatible for migration to deployment pipeline`,
                             reload: reloadValidationResponse,
                             ...GENERIC_SECTION_ERROR_STATE_COMMON_PROPS,
                         }}
