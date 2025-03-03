@@ -297,7 +297,7 @@ const MigrateToDevtron = ({
                                 title={isMigratingFromHelm ? 'Fetching helm release' : 'Checking compatibility'}
                                 subTitle={
                                     isMigratingFromHelm
-                                        ? `Please ensure the chart used in the helm release is same as the one used in ${appName} application'`
+                                        ? `Please ensure the chart used in the helm release is same as the one used in '${appName}' application`
                                         : 'Checking if Argo CD application and its configurations are compatible for migration to deployment pipeline'
                                 }
                                 {...GENERIC_SECTION_ERROR_STATE_COMMON_PROPS}
