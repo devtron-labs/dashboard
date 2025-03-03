@@ -65,14 +65,6 @@
                 color: var(--B500);
             }
         }
-
-        .cta-delete-app {
-            bottom: 0;
-
-            .cta.delete {
-                width: calc(100% - 8px);
-            }
-        }
     }
 
     .app-compose__main {
