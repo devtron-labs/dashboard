@@ -170,7 +170,7 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
             <Scroller
                 scrollToBottom={scrollToBottom}
                 scrollToTop={scrollToTop}
-                style={{ position: 'fixed', bottom: '30px', right: '30px', zIndex: '5' }}
+                style={{ position: 'absolute', bottom: '30px', right: '30px', zIndex: '5' }}
             />
         </>
     )
