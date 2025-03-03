@@ -1,6 +1,6 @@
 import { EULA_LINK, PREVIEW_DEVTRON, PRIVACY_POLICY } from '@Config/constants'
-import { ReactComponent as DevtronLogo } from '@Icons/logo/logo-dt.svg'
 import { importComponentFromFELibrary } from '@Components/common'
+import { Icon } from '@devtron-labs/devtron-fe-common-lib'
 import { LoginCardProps } from './login.types'
 
 export const LoginCard = ({ renderContent }: LoginCardProps) => {
@@ -17,7 +17,7 @@ export const LoginCard = ({ renderContent }: LoginCardProps) => {
                     className="flexbox dc__align-self-center fcb-5"
                 />
             ) : (
-                <DevtronLogo />
+                <Icon name="ic-login-devtron-logo" color={null} size={null} />
             )}
 
             <p className="fs-16 lh-20 m-0 w-300 dc__align-self-center cn-9">
