@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UserStatus, EntityTypes, useSuperAdmin, ActionTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { UserStatus, EntityTypes, useGetUserRoles, ActionTypes } from '@devtron-labs/devtron-fe-common-lib'
 import React, { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { PermissionType } from '../../../constants'
@@ -46,7 +46,7 @@ export const PermissionConfigurationFormProvider = ({
     showStatus: boolean
 }) => {
     // isLoggedInUserSuperAdmin and canManageAllAccess here denotes permissions for the logged in user
-    const { isSuperAdmin: isLoggedInUserSuperAdmin, canManageAllAccess } = useSuperAdmin()
+    const { isSuperAdmin: isLoggedInUserSuperAdmin, canManageAllAccess } = useGetUserRoles()
     const [isSaveDisabled, setIsSaveDisabled] = useState(false)
     const [permissionType, setPermissionType] = useState<PermissionType>(PermissionType.SPECIFIC)
     const [allowManageAllAccess, setAllowManageAllAccess] = useState<boolean>()
