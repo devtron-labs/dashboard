@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import { ACCESS_TYPE_MAP, EntityTypes, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
-import { StylesConfig } from 'react-select'
+import { ACCESS_TYPE_MAP, EntityTypes, SelectPickerOptionType, ActionTypes } from '@devtron-labs/devtron-fe-common-lib'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
-import { ActionTypes, authorizationSelectStyles } from '../../../constants'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
 import { DirectPermissionsRoleFilter } from '../../../types'
 
@@ -44,11 +42,12 @@ export const emptyDirectPermissionDevtronApps: DirectPermissionsRoleFilter = {
     entityName: [],
     environment: [],
     team: null,
-    action: {
-        label: '',
-        value: ActionTypes.VIEW,
-    },
     accessType: ACCESS_TYPE_MAP.DEVTRON_APPS,
+    roleConfig: {
+        baseRole: ActionTypes.VIEW,
+        additionalRoles: new Set(),
+        accessManagerRoles: new Set(),
+    },
     ...getDefaultStatusAndTimeout(),
 }
 
@@ -73,14 +72,6 @@ export enum DirectPermissionFieldName {
     status = 'status',
 }
 
-export const roleSelectStyles: StylesConfig = {
-    ...authorizationSelectStyles,
-    valueContainer: (base, state) => ({
-        ...authorizationSelectStyles.valueContainer(base, state),
-        display: 'flex',
-        flexWrap: 'nowrap',
-        textOverflow: 'ellipsis',
-        overflow: 'hidden',
-        whiteSpace: 'nowrap',
-    }),
-}
+export const SELECT_ROLES_PLACEHOLDER = 'Select roles'
+
+export const ACCESS_ROLE_OPTIONS_CONTAINER_ID = 'access-role-options'

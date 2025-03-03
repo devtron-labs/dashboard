@@ -76,6 +76,7 @@ const EditAPIToken = ({
         k8sPermission,
         userRoleGroups,
         isSaveDisabled,
+        allowManageAllAccess,
     } = usePermissionConfiguration()
 
     const history = useHistory()
@@ -140,6 +141,7 @@ const EditAPIToken = ({
                     k8sPermission,
                     permissionType,
                     userGroups: [],
+                    canManageAllAccess: allowManageAllAccess,
                     ...getDefaultUserStatusAndTimeout(),
                 })
 
@@ -267,7 +269,7 @@ const EditAPIToken = ({
                         </div>
                     </label>
                     <div className="dc__border-top" />
-                    <PermissionConfigurationForm showUserPermissionGroupSelector />
+                    <PermissionConfigurationForm showUserPermissionGroupSelector isAddMode={false} />
                 </div>
             </div>
             <GenerateActionButton

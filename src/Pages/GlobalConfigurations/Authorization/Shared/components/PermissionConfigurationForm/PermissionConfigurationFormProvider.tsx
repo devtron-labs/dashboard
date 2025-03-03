@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { UserStatus, EntityTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { UserStatus, EntityTypes, useGetUserRoles, ActionTypes } from '@devtron-labs/devtron-fe-common-lib'
 import React, { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
-import { ActionTypes, PermissionType } from '../../../constants'
+import { PermissionType } from '../../../constants'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
 import {
     ChartGroupPermissionsFilter,
@@ -45,9 +45,11 @@ export const PermissionConfigurationFormProvider = ({
     data: User | PermissionGroup
     showStatus: boolean
 }) => {
+    // isLoggedInUserSuperAdmin and canManageAllAccess here denotes permissions for the logged in user
+    const { isSuperAdmin: isLoggedInUserSuperAdmin, canManageAllAccess } = useGetUserRoles()
     const [isSaveDisabled, setIsSaveDisabled] = useState(false)
     const [permissionType, setPermissionType] = useState<PermissionType>(PermissionType.SPECIFIC)
-
+    const [allowManageAllAccess, setAllowManageAllAccess] = useState<boolean>()
     const [directPermission, setDirectPermission] = useState<DirectPermissionsRoleFilter[]>([])
     const [chartPermission, setChartPermission] = useState<ChartGroupPermissionsFilter>({
         entity: EntityTypes.CHART_GROUP,
@@ -78,6 +80,7 @@ export const PermissionConfigurationFormProvider = ({
     useEffect(() => {
         if (data) {
             setPermissionType(data.superAdmin ? PermissionType.SUPER_ADMIN : PermissionType.SPECIFIC)
+            setAllowManageAllAccess(data.canManageAllAccess ?? false)
         }
     }, [data])
 
@@ -130,6 +133,10 @@ export const PermissionConfigurationFormProvider = ({
             showStatus,
             isSaveDisabled,
             setIsSaveDisabled,
+            allowManageAllAccess,
+            setAllowManageAllAccess,
+            isLoggedInUserSuperAdmin,
+            canManageAllAccess,
         }),
         [
             permissionType,
@@ -149,6 +156,10 @@ export const PermissionConfigurationFormProvider = ({
             data,
             showStatus,
             isSaveDisabled,
+            allowManageAllAccess,
+            setAllowManageAllAccess,
+            isLoggedInUserSuperAdmin,
+            canManageAllAccess,
         ],
     )
 

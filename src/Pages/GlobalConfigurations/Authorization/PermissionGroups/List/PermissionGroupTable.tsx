@@ -77,7 +77,7 @@ const PermissionGroupTable = ({
             ) : (
                 <>
                     <div className="fs-13 fw-4 lh-20 cn-9 flex-grow-1">
-                        {permissionGroups.map((permissionGroup, index) => (
+                        {permissionGroups.map(({ superAdmin, ...permissionGroup }, index) => (
                             <PermissionGroupRow
                                 {...permissionGroup}
                                 index={index}
@@ -86,6 +86,7 @@ const PermissionGroupTable = ({
                                 isChecked={isBulkSelectionApplied || bulkSelectionState[permissionGroup.id]}
                                 toggleChecked={toggleCheckForBulkSelection}
                                 showCheckbox={isSomeRowChecked}
+                                hasSuperAdminPermission={superAdmin}
                             />
                         ))}
                     </div>

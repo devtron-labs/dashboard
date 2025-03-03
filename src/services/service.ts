@@ -26,7 +26,6 @@ import {
     TemplateListDTO,
     getUrlWithSearchParams,
     SERVER_MODE,
-    ACCESS_TYPE_MAP,
     ModuleNameMap,
     stringComparatorBySortOrder,
     ResourceVersionType,
@@ -137,24 +136,6 @@ export function getAppListMin(
             result: list,
         }
     })
-}
-
-export async function getProjectFilteredApps(
-    projectIds: number[] | string[],
-    accessType?: string,
-): Promise<ProjectFilteredApps> {
-    const chartOnlyQueryParam = accessType === ACCESS_TYPE_MAP.HELM_APPS ? '&appType=DevtronChart' : ''
-    const response = await get(`app/min?teamIds=${projectIds.join(',')}${chartOnlyQueryParam}`)
-    
-    return {
-        ...response,
-        result: (response.result || [])
-            .map((project) => ({
-                ...project,
-                appList: (project.appList ?? []).sort((a, b) => stringComparatorBySortOrder(a.name, b.name)),
-            }))
-            .sort((a, b) => stringComparatorBySortOrder(a.projectName, b.projectName)),
-    }
 }
 
 export function getAvailableCharts(
@@ -289,9 +270,6 @@ export function getEnvironmentConfigs(appId, envId, option?) {
 
 export function getEnvironmentSecrets(appId, envId) {
     return get(`${Routes.APP_CREATE_ENV_SECRET}/${appId}/${envId}`)
-}
-export const getAllWorkflowsForAppNames = (appNames: string[], signal?: AbortSignal): Promise<AllWorkflows> => {
-    return post(`${Routes.WORKFLOW}/all`, { appNames }, { signal })
 }
 
 export function getWorkflowList(appId, filteredEnvIds?: string) {

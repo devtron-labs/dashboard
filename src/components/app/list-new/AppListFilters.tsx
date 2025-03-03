@@ -22,7 +22,7 @@ import {
     SelectPickerOptionType,
     SERVER_MODE,
     Tooltip,
-    useSuperAdmin,
+    useGetUserRoles,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { FILE_NAMES } from '@Components/common/ExportToCsv/constants'
@@ -51,7 +51,7 @@ const AppListFilters = ({
     appType,
     namespaceListResponse,
 }: AppListFiltersProps) => {
-    const { isSuperAdmin } = useSuperAdmin()
+    const { isSuperAdmin } = useGetUserRoles()
 
     const { searchKey } = filterConfig
 

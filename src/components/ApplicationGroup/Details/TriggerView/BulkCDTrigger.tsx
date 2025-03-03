@@ -28,7 +28,7 @@ import {
     CDMaterialServiceEnum,
     CDMaterialType,
     FilterStates,
-    useSuperAdmin,
+    useGetUserRoles,
     GenericEmptyState,
     DeploymentWindowProfileMetaData,
     ACTION_STATE,
@@ -128,7 +128,7 @@ export default function BulkCDTrigger({
 
     const location = useLocation()
     const history = useHistory()
-    const { isSuperAdmin } = useSuperAdmin()
+    const { isSuperAdmin } = useGetUserRoles()
     const isBulkDeploymentTriggered = useRef(false)
 
     const showRuntimeParams =

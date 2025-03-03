@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { ReactSelectInputAction, EntityTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactSelectInputAction, EntityTypes, ActionTypes } from '@devtron-labs/devtron-fe-common-lib'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
-import { ActionTypes, ACTION_LABEL } from '../../../constants'
+import { ACTION_LABEL } from '../../../constants'
 import { K8sPermissionFilter } from '../../../types'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
 

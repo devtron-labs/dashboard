@@ -59,9 +59,13 @@ const UserAndGroupPermissions = () => {
     // For handling the auto assign flow for enterprise
     const [isAutoAssignFlowEnabled, setIsAutoAssignFlowEnabled] = useState(false)
 
+    // parsing access manager role as it is not required on FE
+    // to be removed when access manager can give access manager permissions
+    const filteredCustomRoles = customRolesList?.result.filter((role) => role.roleName !== 'accessManager')
+
     const authorizationProviderValue = useMemo(
         () => ({
-            customRoles: getMetaPossibleRoles(customRolesList?.result ?? []),
+            customRoles: getMetaPossibleRoles(filteredCustomRoles ?? []),
             isAutoAssignFlowEnabled,
         }),
         [isAutoAssignFlowEnabled, customRolesList],

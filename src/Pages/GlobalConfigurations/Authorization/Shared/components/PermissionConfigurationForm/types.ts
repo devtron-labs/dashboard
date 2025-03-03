@@ -32,6 +32,7 @@ export type PermissionConfigurationFormProps = {
      * @default false
      */
     hideDirectPermissions?: boolean
+    isAddMode: boolean
 }
 
 export interface PermissionConfigurationFormContext {
@@ -44,7 +45,7 @@ export interface PermissionConfigurationFormContext {
     timeToLive: User['timeToLive']
     handleUserStatusUpdate: (updatedStatus: User['userStatus'], updatedTimeToLive?: string) => void
     directPermission: DirectPermissionsRoleFilter[]
-    setDirectPermission: (...rest) => void
+    setDirectPermission: React.Dispatch<React.SetStateAction<DirectPermissionsRoleFilter[]>>
     chartPermission: ChartGroupPermissionsFilter
     setChartPermission: React.Dispatch<React.SetStateAction<ChartGroupPermissionsFilter>>
     k8sPermission?: K8sPermissionFilter[]
@@ -63,6 +64,16 @@ export interface PermissionConfigurationFormContext {
      */
     isSaveDisabled: boolean
     setIsSaveDisabled: React.Dispatch<React.SetStateAction<boolean>>
+    /**
+     * State to store if allowing to manage all access is toggled or not
+     */
+    allowManageAllAccess: boolean
+    setAllowManageAllAccess: React.Dispatch<React.SetStateAction<boolean>>
+    isLoggedInUserSuperAdmin: boolean
+    /**
+     * for logged in user
+     */
+    canManageAllAccess: boolean
 }
 
 export type AccessTypeToErrorMapType = Record<

@@ -24,6 +24,7 @@ import {
     SelectPickerOptionType,
     ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { PermissionGroupIcon } from '@Pages/GlobalConfigurations/Authorization/PermissionGroups/List/PermissionGroupList.component'
 import { PermissionGroup, User } from '../../../types'
 import { importComponentFromFELibrary, mapByKey } from '../../../../../../components/common'
 import { getPermissionGroupList } from '../../../authorization.service'
@@ -32,6 +33,20 @@ import { getDefaultStatusAndTimeout } from '../../../libUtils'
 
 const StatusHeaderCell = importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
+
+const PermissionGroupOptionLabel = ({
+    superAdmin,
+    hasAccessManagerPermission,
+    name,
+}: Pick<PermissionGroup, 'name' | 'superAdmin' | 'hasAccessManagerPermission'>) => (
+    <div className="flexbox dc__align-items-center dc__gap-8">
+        {name}
+        <PermissionGroupIcon
+            hasSuperAdminPermission={superAdmin}
+            hasAccessManagerPermission={hasAccessManagerPermission}
+        />
+    </div>
+)
 
 const UserPermissionGroupsSelector = () => {
     const { userRoleGroups, setUserRoleGroups, data: userData, userStatus, showStatus } = usePermissionConfiguration()
@@ -59,7 +74,13 @@ const UserPermissionGroupsSelector = () => {
 
     const groupOptions: SelectPickerOptionType[] = userGroupsList?.map((group) => ({
         value: group.name,
-        label: group.name,
+        label: (
+            <PermissionGroupOptionLabel
+                name={group.name}
+                superAdmin={group.superAdmin}
+                hasAccessManagerPermission={group.hasAccessManagerPermission}
+            />
+        ),
         description: group.description,
     }))
     const selectedValue = userRoleGroups.map((userGroup) => ({ value: userGroup.name, label: userGroup.name }))
