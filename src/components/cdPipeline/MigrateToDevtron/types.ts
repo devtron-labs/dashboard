@@ -1,10 +1,10 @@
+import { Dispatch, SetStateAction, SyntheticEvent } from 'react'
 import {
     APIOptions,
     ButtonComponentType,
     ButtonProps,
     SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Dispatch, SetStateAction, SyntheticEvent } from 'react'
 import { MigrateToDevtronBaseFormStateType, MigrateToDevtronFormState } from '../cdPipeline.types'
 import { BuildCDProps } from '../types'
 

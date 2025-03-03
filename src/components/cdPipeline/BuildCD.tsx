@@ -305,14 +305,14 @@ export default function BuildCD({
     const gitOpsRepoConfigInfoBar = (content: string) => (
         <InfoBlock
             description={content}
-            variant='warning'
+            variant="warning"
             buttonProps={{
                 dataTestId: 'configure-gitops-repo-button',
                 variant: ButtonVariantType.text,
                 text: 'Configure',
                 endIcon: <ICArrowRight />,
                 onClick: checkGitOpsRepoConflict,
-                isLoading: gitopsConflictLoading,  
+                isLoading: gitopsConflictLoading,
             }}
         />
     )
@@ -800,6 +800,7 @@ export default function BuildCD({
                 {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
                     !isVirtualEnvironment &&
                     formData.allowedDeploymentTypes.length > 0 &&
+                    // Want to show this when gitops module is installed, does not matter if it is configured or not
                     (!noGitOpsModuleInstalledAndConfigured || isGitOpsInstalledButNotConfigured) &&
                     renderDeploymentAppType()}
 

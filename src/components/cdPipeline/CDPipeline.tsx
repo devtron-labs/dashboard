@@ -688,6 +688,7 @@ export default function CDPipeline({
             }),
         }
 
+        // Have to enforce type like this otherwise pipeline variable would have taken type from MigrateArgoAppToCDPipelineRequiredPayloadType and would throw error in case of virtual env.
         const migrateToDevtronRequiredPayload: Omit<MigrateArgoAppToCDPipelineRequiredPayloadType, 'deploymentAppType'> & { deploymentAppType: DeploymentAppTypes } = isMigratingFromExternalApp
             ? getMigrateToDevtronRequiredPayload(migrateToDevtronFormState)
             : null

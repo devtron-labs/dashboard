@@ -445,13 +445,17 @@ export const getMigrateToDevtronRequiredPayload = (
         migrateToDevtronFormState
     const requiredFormState =
         deploymentAppType === DeploymentAppTypes.GITOPS ? migrateFromArgoFormState : migrateFromHelmFormState
-    const destinationDetails = requiredFormState.validationResponse.destination
+    const {
+        environmentId,
+        environmentName,
+        namespace: destinationNamespace,
+    } = requiredFormState.validationResponse.destination
 
     const basePayload: MigrateArgoAppToCDPipelineRequiredBasePayloadType = {
         triggerType,
-        environmentId: destinationDetails.environmentId,
-        environmentName: destinationDetails.environmentName,
-        namespace: destinationDetails.namespace,
+        environmentId,
+        environmentName,
+        namespace: destinationNamespace,
         deploymentAppName: requiredFormState.appName,
     }
 

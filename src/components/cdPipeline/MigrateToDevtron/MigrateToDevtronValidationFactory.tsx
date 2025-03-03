@@ -86,9 +86,11 @@ const MigrateToDevtronValidationFactory = ({
         destination,
         status,
         deploymentAppType,
+        chartIcon,
     } = validationResponse
     const { validationFailedReason, validationFailedMessage } = errorDetail || {}
     const isMigratingFromHelm = deploymentAppType === DeploymentAppTypes.HELM
+    const deploymentAppTypeLabel = isMigratingFromHelm ? 'Helm Release' : 'Argo CD Application'
 
     const targetClusterTooltipInfo = getTargetClusterTooltipInfo(isMigratingFromHelm)
     const targetNamespaceTooltipInfo = getTargetNamespaceTooltipInfo(isMigratingFromHelm)
@@ -126,7 +128,7 @@ const MigrateToDevtronValidationFactory = ({
                 return (
                     <GenericSectionErrorState
                         title="Chart type mismatch"
-                        subTitle={`${isMigratingFromHelm ? 'This Helm Release' : 'Argo CD application'} uses '${savedChartName}' chart where as this application uses '${requiredChartName}' chart. You can upload your own charts in Global Configuration > Deployment Charts.`}
+                        subTitle={`This ${deploymentAppTypeLabel} uses '${savedChartName}' chart where as this application uses '${requiredChartName}' chart. You can upload your own charts in Global Configuration > Deployment Charts.`}
                         reload={refetchValidationResponse}
                         {...GENERIC_SECTION_ERROR_STATE_COMMON_PROPS}
                     />
@@ -307,19 +309,19 @@ const MigrateToDevtronValidationFactory = ({
             return null
         }
 
-        if (validationFailedReason === MigrationSourceValidationReasonType.ENVIRONMENT_ALREADY_PRESENT) {
-            return 'A pipeline already exists for this environment. Delete the existing deployment pipeline and try again.'
-        }
+        switch (validationFailedReason) {
+            case MigrationSourceValidationReasonType.ENVIRONMENT_ALREADY_PRESENT:
+                return 'A pipeline already exists for this environment. Delete the existing deployment pipeline and try again.'
 
-        if (validationFailedReason === MigrationSourceValidationReasonType.APPLICATION_ALREADY_LINKED) {
-            return `This ${isMigratingFromHelm ? 'Helm Release' : 'Argo CD application'} is already linked to a deployment pipeline`
-        }
+            case MigrationSourceValidationReasonType.APPLICATION_ALREADY_LINKED:
+                return `This ${deploymentAppTypeLabel} is already linked to a deployment pipeline`
 
-        if (validationFailedReason === MigrationSourceValidationReasonType.ENFORCED_POLICY_VIOLATION) {
-            return `Cannot migrate ${isMigratingFromHelm ? 'Helm Release' : 'Argo CD Application'}. Deployment via Helm is enforced on the target environment.`
-        }
+            case MigrationSourceValidationReasonType.ENFORCED_POLICY_VIOLATION:
+                return `Cannot migrate ${deploymentAppTypeLabel}. Deployment via Helm is enforced on the target environment.`
 
-        return validationFailedMessage
+            default:
+                return validationFailedMessage
+        }
     }
 
     const getInfoBarInfoVariantMessage = () => {
@@ -331,15 +333,16 @@ const MigrateToDevtronValidationFactory = ({
             return 'A deployment pipeline will be created for the target environment'
         }
 
-        if (validationFailedReason === MigrationSourceValidationReasonType.CLUSTER_NOT_FOUND) {
-            return 'Connect the target cluster with Devtron and try again'
-        }
+        switch (validationFailedReason) {
+            case MigrationSourceValidationReasonType.CLUSTER_NOT_FOUND:
+                return 'Connect the target cluster with Devtron and try again'
 
-        if (validationFailedReason === MigrationSourceValidationReasonType.ENVIRONMENT_NOT_FOUND) {
-            return `Add an environment with namespace '${destination.namespace}' in '${destination.clusterName}' cluster and try again`
-        }
+            case MigrationSourceValidationReasonType.ENVIRONMENT_NOT_FOUND:
+                return `Add an environment with namespace '${destination.namespace}' in '${destination.clusterName}' cluster and try again`
 
-        return validationFailedMessage
+            default:
+                return validationFailedMessage
+        }
     }
 
     const renderContentInfoBar = () => {
@@ -375,6 +378,7 @@ const MigrateToDevtronValidationFactory = ({
                             imageProps={{
                                 height: 36,
                                 width: 36,
+                                src: chartIcon,
                                 alt: 'Helm Release',
                             }}
                             fallbackImage={<ICHelmChart className="icon-dim-36 dc__no-shrink" />}
@@ -388,7 +392,6 @@ const MigrateToDevtronValidationFactory = ({
                             <h5 className="m-0 cn-9 fs-13 fw-6 lh-20 dc__truncate">{appName}</h5>
                         </Tooltip>
 
-                        {/* TODO: Need to look if helm statuses are supported by API and if possible get their enums */}
                         {status && (
                             <span
                                 data-testid="deployment-status-name"
