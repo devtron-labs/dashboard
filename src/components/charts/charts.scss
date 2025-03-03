@@ -122,7 +122,8 @@
 
 .deploy-and-details-view {
     display: flex;
-    height: calc(100vh - 48px);
+    flex-grow: 1;
+    overflow: auto;
 }
 
 .deploy-and-details-view--details {
