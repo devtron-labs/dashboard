@@ -32,6 +32,12 @@
     .login-card__wrapper {
         box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.04), 0px 2px 6px 0px rgba(0, 0, 0, 0.04), 0px 4px 12px 0px rgba(0, 0, 0, 0.10);
     }
+
+    .login-button {
+        .button__secondary--neutral{
+            color: var(--N900)
+        }
+    }
 }
 
 // SSO login & GitOps configuration css

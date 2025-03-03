@@ -198,17 +198,19 @@ const Login = () => {
             {loginList
                 .filter((sso) => sso.active)
                 .map((item) => (
-                    <Button
-                        variant={ButtonVariantType.secondary}
-                        text={`Login with ${item.name}`}
-                        key={item.name}
-                        onClick={onClickSSO}
-                        dataTestId={`login-with-${item.name}`}
-                        style={ButtonStyleType.neutral}
-                        startIcon={<SSOProviderIcon provider={item.name as SSOProvider} />}
-                        fullWidth
-                        size={ComponentSizeType.xl}
-                    />
+                    <div className="login-button">
+                        <Button
+                            variant={ButtonVariantType.secondary}
+                            text={`Login with ${item.name}`}
+                            key={item.name}
+                            onClick={onClickSSO}
+                            dataTestId={`login-with-${item.name}`}
+                            style={ButtonStyleType.neutral}
+                            startIcon={<SSOProviderIcon provider={item.name as SSOProvider} />}
+                            fullWidth
+                            size={ComponentSizeType.xl}
+                        />
+                    </div>
                 ))}
             <div className="flex">
                 <Button
@@ -278,6 +280,7 @@ const Login = () => {
                             type: 'submit',
                         }}
                     />
+
                     {loginList.length > 0 && (
                         <Button
                             dataTestId="sso-login"
