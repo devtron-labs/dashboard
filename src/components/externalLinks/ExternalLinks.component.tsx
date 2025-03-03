@@ -18,7 +18,6 @@ import React, { Fragment, useEffect, useState } from 'react'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
-import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as LinkIcon } from '../../assets/icons/ic-link.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { DOCUMENTATION, URLS } from '../../config'
@@ -29,6 +28,7 @@ import {
     ExternalLinkChipProps,
     ExternalLinkFallbackImageProps,
     NodeLevelExternalLinksType,
+    NoExternalLinkViewProps,
     OptionTypeWithIcon,
     RoleBasedInfoNoteProps,
 } from './ExternalLinks.type'
@@ -52,21 +52,15 @@ import {
     ButtonComponentType,
     ButtonStyleType,
     ImageWithFallback,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './externalLinks.component.scss'
 import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/constants'
 import { ReactComponent as ICArrowOut } from '@Icons/ic-arrow-square-out.svg'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import ICWebpage from '@Icons/tools/ic-link-webpage.png'
-
-export const AddLinkButton = ({ handleOnClick }: { handleOnClick: () => void }): JSX.Element => {
-    return (
-        <button onClick={handleOnClick} className="add-link cta flex" data-testid="external-links-add-link">
-            <AddIcon className="icon-dim-16 mr-8" />
-            Add link
-        </button>
-    )
-}
+import { AddLinkButton } from './AddLinkButton'
+import { Link } from 'react-router-dom'
 
 export const ExternalLinksLearnMore = (): JSX.Element => {
     return (
@@ -80,13 +74,7 @@ export const NoExternalLinksView = ({
     handleAddLinkClick,
     isAppConfigView,
     userRole,
-    history,
-}: {
-    handleAddLinkClick: () => void
-    isAppConfigView: boolean
-    userRole: UserRoleType
-    history: any
-}): JSX.Element => {
+}: NoExternalLinkViewProps): JSX.Element => {
     const handleButton = () => {
         return <AddLinkButton handleOnClick={handleAddLinkClick} />
     }
@@ -97,7 +85,7 @@ export const NoExternalLinksView = ({
             heightToDeduct={120}
             subTitle={
                 <>
-                    {`Add frequenly visited links (eg. Monitoring dashboards, documents, specs etc.) for
+                    {`Add frequently visited links (eg. Monitoring dashboards, documents, specs etc.) for
                     ${isAppConfigView ? ' this ' : ' any '}application. Links will be available on the app details
                     page. `}
                     <ExternalLinksLearnMore />
@@ -110,21 +98,40 @@ export const NoExternalLinksView = ({
     )
 }
 
+const redirectToGlobalConfig = (linkText) => {
+    return <Link
+        to={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
+        data-testid="info-bar-internal-link"
+        className="cursor dc__link dc__underline-onhover mr-5 dc__no-decor"
+    >
+        {linkText}
+    </Link>
+}
+
+const renderInfoDescription = (userRole) => {
+    if (userRole === UserRoleType.SuperAdmin) {
+        return (
+            <span>
+                Only links editable by application admins are shown here. To check all configured links,&nbsp;
+                {redirectToGlobalConfig('Go to Global configuration')}
+            </span>
+        )
+    }
+    return (
+        <span>
+            Only links editable by application admins are shown here. All configured links are available to super admins
+            in&nbsp;{redirectToGlobalConfig('Global Configurations')}
+        </span>
+    )
+}
+
 export const RoleBasedInfoNote = ({ userRole, listingView }: RoleBasedInfoNoteProps) => {
     return (
-        <InfoColourBar
-            message={
-                userRole === UserRoleType.SuperAdmin
-                    ? 'Only links editable by application admins are shown here. To check all configured links,'
-                    : 'Only links editable by application admins are shown here. All configured links are available to super admins in'
-            }
-            classname={`info_bar fs-12 pl-12 pr-12 ${listingView ? 'mt-12 mb-12' : 'dc__mxw-300 m-20'}`}
-            Icon={InfoIcon}
-            iconClass="h-20"
-            linkText={userRole === UserRoleType.SuperAdmin ? 'Go to Global configurations' : 'Global Configurations.'}
-            internalLink
-            redirectLink={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
-        />
+        <div className="flexbox-col px-20">
+            <InfoBlock
+                description={renderInfoDescription(userRole)}
+            />
+        </div>
     )
 }
 

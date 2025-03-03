@@ -18,11 +18,11 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 import {
     ComponentSizeType,
+    Icon,
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerProps,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICCube } from '@Icons/ic-cube.svg'
 import { ReactComponent as ICEnv } from '@Icons/ic-env.svg'
 
 const meta = {
@@ -112,7 +112,7 @@ export const IconInControl: Story = {
     ...Default,
     args: {
         ...Default.args,
-        icon: <ICCube className="scb-5" />,
+        icon: <Icon color="B500" name="ic-cube" />,
     },
 }
 

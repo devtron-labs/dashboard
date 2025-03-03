@@ -15,10 +15,15 @@
  */
 
 import { useState, useEffect } from 'react'
-import { DEFAULT_BASE_PAGE_SIZE, Pagination, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DEFAULT_BASE_PAGE_SIZE,
+    Pagination,
+    ToastManager,
+    ToastVariantType,
+    Icon,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink } from 'react-router-dom'
 import { EnvEmptyStates } from '../EnvEmptyStates'
-import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
 import { useAppContext } from '../../common'
 import { EMPTY_LIST_MESSAGING, GROUP_LIST_HEADER, NO_ACCESS_TOAST_MESSAGE } from '../Constants'
 import { EnvironmentsListViewType, EnvAppList, EnvironmentLinkProps, EnvApp } from '../AppGroup.types'
@@ -138,7 +143,7 @@ const EnvironmentsListView = ({
                         data-testid="env-list-row"
                     >
                         <span className="icon-dim-24 bcb-1 flex br-6">
-                            <EnvIcon className="icon-dim-16 scb-4" />
+                            <Icon name="ic-app-group" size={16} color="B400" />
                         </span>
                         <div className="cb-5 dc__ellipsis-right">
                             <EnvironmentLink

@@ -14,70 +14,76 @@
  * limitations under the License.
  */
 
+$white: 255, 255, 255;
+$black: 0, 0, 0;
+
 @mixin theme-light {
-    --V700: #4934b3;
-    --V500: #664bee;
-    --V200: #b6abf3;
-    --V100: #f3f0ff;
-    --B700: #003974;
-    --B600: #004fa1;
-    --B500: #0066cc;
-    --B400: #3989d9;
-    --B300: #72ace6;
-    --B200: #abcff3;
-    --B100: #e5f2ff;
-    --B50: #f0f7ff;
-    --N900: #000a14;
-    --N800: #1d2730;
-    --N700: #3b444c;
-    --N600: #596168;
-    --N500: #767d84;
-    --N400: #959ba1;
-    --N300: #b1b7bc;
-    --N200: #d0d4d9;
-    --N100: #edf1f5;
-    --N50: #f7fafc;
-    --N0: #ffffff;
-    --G700: #106240;
-    --G600: #168859;
-    --G500: #1dad70;
-    --G400: #50c191;
-    --G300: #83d5b2;
-    --G200: #b6e9d3;
-    --G100: #e9fbf4;
-    --G50: #f2fffa;
-    --Y800: #594320;
-    --Y700: #8c6324;
-    --Y600: #c58d36;
-    --Y500: #ffb549;
-    --Y400: #ffc570;
-    --Y300: #ffd597;
-    --Y200: #ffe5be;
-    --Y100: #fff5e5;
-    --Y50: #fff8ed;
-    --R700: #b21212;
-    --R600: #c73232;
-    --R500: #f33e3e;
-    --R400: #f66868;
-    --R300: #f99292;
-    --R200: #fcbcbc;
-    --R100: #fde7e7;
-    --R50: #fdf0f0;
-    --O700: #b23412;
-    --O600: #e55e39;
-    --O500: #ff7e5b;
-    --O200: #ffbead;
-    --O100: #ffe5de;
-    --O50: #fcf3f0;
+    $B50: 240, 247, 255;
+    $N100: 237, 241, 245;
+
+    --V700: rgb(73, 52, 179);
+    --V500: rgb(102, 75, 238);
+    --V200: rgb(182, 171, 243);
+    --V100: rgb(243, 240, 255);
+    --B700: rgb(0, 57, 116);
+    --B600: rgb(0, 79, 161);
+    --B500: rgb(0, 102, 204);
+    --B400: rgb(57, 137, 217);
+    --B300: rgb(114, 172, 230);
+    --B200: rgb(171, 207, 243);
+    --B100: rgb(229, 242, 255);
+    --B50: rgb(#{$B50});
+    --N900: rgb(0, 10, 20);
+    --N800: rgb(29, 39, 48);
+    --N700: rgb(59, 68, 76);
+    --N600: rgb(89, 97, 104);
+    --N500: rgb(118, 125, 132);
+    --N400: rgb(149, 155, 161);
+    --N300: rgb(177, 183, 188);
+    --N200: rgb(208, 212, 217);
+    --N100: rgb(#{$N100});
+    --N50: rgb(247, 250, 252);
+    --N0: rgb(#{$white});
+    --G700: rgb(16, 98, 64);
+    --G600: rgb(22, 136, 89);
+    --G500: rgb(29, 173, 112);
+    --G400: rgb(80, 193, 145);
+    --G300: rgb(131, 213, 178);
+    --G200: rgb(182, 233, 211);
+    --G100: rgb(233, 251, 244);
+    --G50: rgb(242, 255, 250);
+    --Y800: rgb(89, 67, 32);
+    --Y700: rgb(140, 99, 36);
+    --Y600: rgb(197, 141, 54);
+    --Y500: rgb(255, 181, 73);
+    --Y400: rgb(255, 197, 112);
+    --Y300: rgb(255, 213, 151);
+    --Y200: rgb(255, 229, 190);
+    --Y100: rgb(255, 245, 229);
+    --Y50: rgb(255, 248, 237);
+    --R700: rgb(178, 18, 18);
+    --R600: rgb(199, 50, 50);
+    --R500: rgb(243, 62, 62);
+    --R400: rgb(246, 104, 104);
+    --R300: rgb(249, 146, 146);
+    --R200: rgb(252, 188, 188);
+    --R100: rgb(253, 231, 231);
+    --R50: rgb(253, 240, 240);
+    --O700: rgb(178, 52, 18);
+    --O600: rgb(229, 94, 57);
+    --O500: rgb(255, 126, 91);
+    --O200: rgb(255, 190, 173);
+    --O100: rgb(255, 229, 222);
+    --O50: rgb(252, 243, 240);
 
     // Custom colors
-    --bg-pipeline-trigger-type: #a5a7bf;
-    --bg-bulk-selection-widget: #f0f7ffb8;
+    --bg-pipeline-trigger-type: rgb(165, 167, 191);
+    --bg-bulk-selection-widget: rgba(#{$B50}, 0.72);
 
     // Color Tokens
     --bg-primary: var(--N0);
     --bg-secondary: var(--N50);
-    --bg-tertiary: #f2f4f7;
+    --bg-tertiary: rgb(242, 244, 247);
 
     --bg-overlay-primary: var(--bg-primary);
     --bg-overlay-secondary: var(--bg-secondary);
@@ -91,92 +97,100 @@
 
     --bg-tooltip-black: var(--N900);
     --bg-toast: var(--N800);
-    --bg-sidebar: #0066cc;
+    --bg-sidebar: var(--B500);
+    --bg-sidebar-modern-layout: var(--B500);
+    --bg-sidebar-item-selected: rgba(#{$black}, 0.35);
     --bg-shimmer-loader: linear-gradient(90deg, var(--N200) 0%, var(--N50) 50%, var(--N200) 80%);
-    --bg-hover: #edf1f5bf;
+    --bg-hover: rgba(#{$N100}, 0.75);
+    --bg-body: linear-gradient(90deg, var(--B500) 0%, var(--B500) 10%, rgb(0, 82, 165) 25%, rgb(0, 47, 94) 50%, rgb(0, 33, 65) 100%);
 
-    --backdrop-bg: #000000bf;
+    --backdrop-bg: rgba(#{$black}, 0.75);
 
     --border-primary: var(--N200);
+    --border-primary-translucent: rgba(#{$black}, 0.18);
     --border-secondary: var(--N100);
+    --border-secondary-translucent: rgba(#{$black}, 0.06);
 
-    --divider-primary: var(--N200);
-    --divider-secondary: var(--N100);
+    --divider-primary: var(--border-primary);
+    --divider-primary-translucent: var(--border-primary-translucent);
+    --divider-secondary: var(--border-secondary);
+    --divider-secondary-translucent: var(--border-secondary-translucent);
 }
 
 @mixin theme-dark {
     color-scheme: dark;
 
-    --V700: #CABFFF;
-    --V500: #a695ff;
-    --V200: #4f4979;
-    --V100: #322f4c;
-    --B700: #acd3ff;
-    --B600: #90c4ff;
-    --B500: #74B5FF;
-    --B400: #6195d2;
-    --B300: #4e76a5;
-    --B200: #3b5679;
-    --B100: #28364c;
-    --B50: #1e2635;
-    --N900: #f8f8f9;
-    --N800: #e4e5e6;
-    --N700: #c8cbce;
-    --N600: #9fa4a9;
-    --N500: #767d84;
-    --N400: #636870;
-    --N300: #4f545c;
-    --N200: #3c3f47;
-    --N100: #282b33;
-    --N50: #1f2029;
-    --N0: #15161f;
-    --G700: #afddb3;
-    --G600: #95d199;
-    --G500: #7ac680;
-    --G400: #66a36d;
-    --G300: #528059;
-    --G200: #3d5c46;
-    --G100: #293932;
-    --G50: #212b2b;
-    --Y800: #fbe3c1;
-    --Y700: #f8d6a1;
-    --Y600: #f6c882;
-    --Y500: #f4ba63;
-    --Y400: #c79955;
-    --Y300: #9b7848;
-    --Y200: #6e5838;
-    --Y100: #42372d;
-    --Y50: #2b2626;
-    --R700: #ff9ea0;
-    --R600: #ff7d80;
-    --R500: #ff5d60;
-    --R400: #d04f53;
-    --R300: #a14146;
-    --R200: #733239;
-    --R100: #44242c;
-    --R50: #311f27;
-    --O700: #ffb29d;
-    --O600: #ff987c;
-    --O500: #ff7e5b;
-    --O200: #734037;
-    --O100: #442b2b;
-    --O50: #2c2025;
+    $N0: 21, 22, 31;
+
+    --V700: rgb(202, 191, 255);
+    --V500: rgb(166, 149, 255);
+    --V200: rgb(79, 73, 121);
+    --V100: rgb(50, 47, 76);
+    --B700: rgb(172, 211, 255);
+    --B600: rgb(144, 196, 255);
+    --B500: rgb(116, 181, 255);
+    --B400: rgb(97, 149, 210);
+    --B300: rgb(78, 118, 165);
+    --B200: rgb(59, 86, 121);
+    --B100: rgb(40, 54, 76);
+    --B50: rgb(30, 38, 53);
+    --N900: rgb(248, 248, 249);
+    --N800: rgb(228, 229, 230);
+    --N700: rgb(200, 203, 206);
+    --N600: rgb(159, 164, 169);
+    --N500: rgb(118, 125, 132);
+    --N400: rgb(99, 104, 112);
+    --N300: rgb(79, 84, 92);
+    --N200: rgb(60, 63, 71);
+    --N100: rgb(40, 43, 51);
+    --N50: rgb(31, 32, 41);
+    --N0: rgb(#{$N0});
+    --G700: rgb(175, 221, 179);
+    --G600: rgb(149, 209, 153);
+    --G500: rgb(122, 198, 128);
+    --G400: rgb(102, 163, 109);
+    --G300: rgb(82, 128, 89);
+    --G200: rgb(61, 92, 70);
+    --G100: rgb(41, 57, 50);
+    --G50: rgb(33, 43, 43);
+    --Y800: rgb(251, 227, 193);
+    --Y700: rgb(248, 214, 161);
+    --Y600: rgb(246, 200, 130);
+    --Y500: rgb(244, 186, 99);
+    --Y400: rgb(199, 153, 85);
+    --Y300: rgb(155, 120, 72);
+    --Y200: rgb(110, 88, 56);
+    --Y100: rgb(66, 55, 45);
+    --Y50: rgb(43, 38, 38);
+    --R700: rgb(255, 158, 160);
+    --R600: rgb(255, 125, 128);
+    --R500: rgb(255, 93, 96);
+    --R400: rgb(208, 79, 83);
+    --R300: rgb(161, 65, 70);
+    --R200: rgb(115, 50, 57);
+    --R100: rgb(68, 36, 44);
+    --R50: rgb(49, 31, 39);
+    --O700: rgb(255, 178, 157);
+    --O600: rgb(255, 152, 124);
+    --O500: rgb(255, 126, 91);
+    --O200: rgb(115, 64, 55);
+    --O100: rgb(68, 43, 43);
+    --O50: rgb(44, 32, 37);
 
     // Custom colors
-    --bg-pipeline-trigger-type: #44465a;
-    --bg-bulk-selection-widget: #141c26b8;
+    --bg-pipeline-trigger-type: rgb(68, 70, 90);
+    --bg-bulk-selection-widget: rgba(20, 28, 38, 0.72);
 
     // Color Tokens
-    --bg-primary: #1E1F28;
-    --bg-secondary: #1A1B23;
-    // Ensure to update in index.css at the root level as well
-    --bg-tertiary: #15161F;
+    --bg-primary: rgb(30, 31, 40);
+    --bg-secondary: rgb(26, 27, 35);
+    --bg-tertiary: rgb(#{$N0});
 
-    --bg-overlay-primary: #31323A;
-    --bg-overlay-secondary: #282931;
+    --bg-overlay-primary: rgb(49, 50, 58);
+    --bg-overlay-secondary: rgb(40, 41, 49);
 
-    --bg-menu-primary: #282931;
-    --bg-menu-secondary: #1E1F28;
+    --bg-menu-primary: var(--bg-overlay-secondary);
+    --bg-menu-secondary: var(--bg-primary);
 
     --bg-modal-primary: var(--bg-primary);
     --bg-modal-secondary: var(--bg-secondary);
@@ -184,45 +198,52 @@
 
     --bg-tooltip-black: var(--N200);
     --bg-toast: var(--N300);
-    --bg-sidebar: #2E3142;
+    --bg-sidebar: rgb(46, 49, 66);
+    --bg-sidebar-modern-layout: rgb(44, 45, 53);
+    --bg-sidebar-item-selected: rgba(#{$white}, 0.35);
     --bg-shimmer-loader: linear-gradient(90deg, var(--N50) 0%, var(--N200) 50%, var(--N50) 80%);
-    --bg-hover: rgba(255, 255, 255, 0.07);
+    --bg-hover: rgba(#{$white}, 0.07);
+    --bg-body: var(--bg-tertiary);
 
-    --backdrop-bg: var(--black-60);
+    --backdrop-bg: rgba(#{$black}, 0.6);
 
-    --border-primary: #FFFFFF33;
-    --border-secondary: #FFFFFF1A;
+    --border-primary: var(--N200);
+    --border-primary-translucent: rgba(#{$white}, 0.2);
+    --border-secondary: var(--N100);
+    --border-secondary-translucent: rgba(#{$white}, 0.1);
 
-    --divider-primary: #FFFFFF33;
-    --divider-secondary: #FFFFFF1A;
+    --divider-primary: var(--border-primary);
+    --divider-primary-translucent: var(--border-primary-translucent);
+    --divider-secondary: var(--border-secondary);
+    --divider-secondary-translucent: var(--border-secondary-translucent);
 }
 
 :root {
-    --white-20: #ffffff33;
-    --white-40: #ffffff66;
-    --white-60: #ffffff99;
-    --white-80: #ffffffcc;
-    --white: #fff;
+    --white-20: rgba(#{$white}, 0.2);
+    --white-40: rgba(#{$white}, 0.4);
+    --white-60: rgba(#{$white}, 0.6);
+    --white-80: rgba(#{$white}, 0.8);
+    --white: rgb(#{$white});
 
-    --black-20: #000a1433;
-    --black-40: #000a1466;
-    --black-60: #000a1499;
-    --black-80: #000a14cc;
-    --black: #000a14;
+    --black-20: rgba(#{$black}, 0.2);
+    --black-40: rgba(#{$black}, 0.4);
+    --black-60: rgba(#{$black}, 0.6);
+    --black-80: rgba(#{$black}, 0.8);
+    --black: rgb(0, 10, 20);
 
     // Being used as hex in LogViewer, Terminal for theming support
-    --terminal-bg: #181920;
+    --terminal-bg: rgb(24, 25, 32);
     --transparent: transparent;
 
-    --button-text-on-dark: #72ace6;
+    --button-text-on-dark: rgb(114, 172, 230);
 
-    --shadow-menu: 0px 1px 1px 0px rgba(0, 0, 0, 0.07), 0px 2px 5px 0px rgba(0, 0, 0, 0.07), 0px 3px 8px 0px rgba(0, 0, 0, 0.07);
-    --shadow-modal: 0px 1px 1px 0px rgba(0, 0, 0, 0.04), 0px 2px 8px 0px rgba(0, 0, 0, 0.04), 0px 3px 17px 0px rgba(0, 0, 0, 0.04), 0px 4px 30px 0px rgba(0, 0, 0, 0.13);
-    --shadow-overlay: 0px 1px 1px 0px rgba(0, 0, 0, 0.04), 0px 2px 6px 0px rgba(0, 0, 0, 0.04), 0px 4px 12px 0px rgba(0, 0, 0, 0.10);
-    --shadow-drawer: 0px 1px 1px 0px rgba(0, 0, 0, 0.04), 0px 2px 8px 0px rgba(0, 0, 0, 0.04), 0px 3px 17px 0px rgba(0, 0, 0, 0.04), 0px 4px 30px 0px rgba(0, 0, 0, 0.13);
+    --shadow-menu: 0px 1px 1px 0px rgba(#{$black}, 0.07), 0px 2px 5px 0px rgba(#{$black}, 0.07), 0px 3px 8px 0px rgba(#{$black}, 0.07);
+    --shadow-modal: 0px 1px 1px 0px rgba(#{$black}, 0.04), 0px 2px 8px 0px rgba(#{$black}, 0.04), 0px 3px 17px 0px rgba(#{$black}, 0.04), 0px 4px 30px 0px rgba(#{$black}, 0.13);
+    --shadow-overlay: 0px 1px 1px 0px rgba(#{$black}, 0.04), 0px 2px 6px 0px rgba(#{$black}, 0.04), 0px 4px 12px 0px rgba(#{$black}, 0.1);
+    --shadow-drawer: 0px 1px 1px 0px rgba(#{$black}, 0.04), 0px 2px 8px 0px rgba(#{$black}, 0.04), 0px 3px 17px 0px rgba(#{$black}, 0.04), 0px 4px 30px 0px rgba(#{$black}, 0.13);
     --shadow-card-primary: 0px 1px 2px 0px rgba(1, 87, 173, 0.1);
-    --shadow-card-secondary: 0px 0px 8px 0px rgba(0, 0, 0, 0.1);
-    --shadow-card-tertiary: 0 8px 12px 0 rgba(30, 35, 96, 0.1), 0 1px 4px 0 rgba(0, 0, 0, 0.1);
+    --shadow-card-secondary: 0px 0px 8px 0px rgba(#{$black}, 0.1);
+    --shadow-card-tertiary: 0 8px 12px 0 rgba(30, 35, 96, 0.1), 0 1px 4px 0 rgba(#{$black}, 0.1);
 
     &.theme {
         &__light {
@@ -255,7 +276,7 @@
 
     &__dark {
         @include theme-dark;
-        --bg-code-editor-base: #181920;
+        --bg-code-editor-base: var(--terminal-bg);
         --bg-code-editor-base-gutter: var(--bg-tertiary);
         --bg-code-editor-red: var(--R50);
         --bg-code-editor-red-gutter: var(--R100);

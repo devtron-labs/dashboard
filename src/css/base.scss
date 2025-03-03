@@ -48,6 +48,11 @@ body {
         sans-serif;
     background: var(--bg-tertiary);
 
+    &.modern-layout {
+        // Added fallback styling to bg tertiary (loaded from index.css)
+        background: var(--bg-body, var(--bg-tertiary));
+    }
+
     a {
         color: var(--B500);
     }
@@ -1366,7 +1371,7 @@ button.anchor {
     font-size: 12px;
     line-height: 1.6;
     color: var(--N900);
-    border: 1px solid var(--N200);
+    border: 1px solid var(--border-primary-translucent);
     background-color: var(--bg-overlay-primary);
 
     &.no-content-padding {
