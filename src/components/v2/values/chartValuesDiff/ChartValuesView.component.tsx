@@ -213,7 +213,7 @@ const RadioWithTippy = (children, isFromCDPipeline: boolean, tippyContent: strin
     )
 }
 
-const renderGitopsActionBlock = ({
+const GitOpsActionBlock = ({
     deploymentAppType,
     areGitopsCredentialsConfigured,
     gitOpsRepoConfigInfoBar,
@@ -298,13 +298,13 @@ export const DeploymentAppRadioGroup = ({
             </ConditionalWrap>
         </RadioGroup>
 
-        {renderGitopsActionBlock({
-            deploymentAppType,
-            areGitopsCredentialsConfigured,
-            gitOpsRepoConfigInfoBar,
-            isGitOpsRepoNotConfigured,
-            allowedDeploymentTypes,
-        })}
+        <GitOpsActionBlock
+            deploymentAppType={deploymentAppType}
+            areGitopsCredentialsConfigured={areGitopsCredentialsConfigured}
+            gitOpsRepoConfigInfoBar={gitOpsRepoConfigInfoBar}
+            isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
+            allowedDeploymentTypes={allowedDeploymentTypes}
+        />
     </div>
 )
 
