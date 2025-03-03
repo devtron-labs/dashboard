@@ -257,7 +257,15 @@ const DTChartSelector = ({
                     size={ComponentSizeType.small}
                     placeholder="Select version"
                     isDisabled={migratedFrom === PipelineMigratedFromType.ARGO_APPLICATION}
-                    disabledTippyContent="Version selection is disabled for pipelines migrated from Argo"
+                    disabledTippyContent={
+                        <div className="flexbox-col dc__gap-2 dc__mxw-200">
+                            <h6 className="m-0 fs-12 fw-6 lh-18">Cannot change chart version</h6>
+
+                            <span className="fs-12 fw-4 lh-18">
+                                Chart version cannot be changed for deployments migrated from Argo CD Applications
+                            </span>
+                        </div>
+                    }
                 />
             </div>
         )
