@@ -18,7 +18,7 @@
     display: grid;
     grid-template-rows: 47px 1fr;
     grid-template-columns: 240px 1fr;
-    height: calc(100vh - 18px);
+    height: 100vh;
 
     .dc__page-header {
         grid-column: 1 / -1;
