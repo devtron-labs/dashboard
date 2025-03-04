@@ -32,6 +32,9 @@ import {
     SelectPicker,
     ServerErrors,
     getIsRequestAborted,
+    Button,
+    GenericEmptyState,
+    ButtonComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
@@ -181,15 +184,10 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
 
     const renderAppNotConfigured = () => {
         return (
-            otherEnvsResult &&
-            !otherEnvsLoading && (
-                <>
-                    {envList.length === 0 && !isAppDeleted && !isVirtualEnvRef.current && <AppNotConfigured />}
-                    {!params.envId && envList.length > 0 && !isVirtualEnvRef.current && (
-                        <EnvironmentNotConfigured environments={envList} />
-                    )}
-                </>
-            )
+            <>
+                {envList.length === 0 && !isAppDeleted && <AppNotConfigured />}
+                {!params.envId && envList.length > 0 && <EnvironmentNotConfigured environments={envList} />}
+            </>
         )
     }
 
@@ -622,7 +620,6 @@ export const Details: React.FC<DetailsType> = ({
                     />
                 ) : (
                     <AppNotConfigured
-                        style={{ height: 'calc(100vh - 150px)' }}
                         image={noGroups}
                         title={ERROR_EMPTY_SCREEN.ALL_SET_GO_CONFIGURE}
                         subtitle={ERROR_EMPTY_SCREEN.DEPLOYEMENT_WILL_BE_HERE}
@@ -808,9 +805,7 @@ export const Details: React.FC<DetailsType> = ({
                     isVirtualEnvironment={isVirtualEnvRef.current}
                 />
             }
-            {isConfigDriftEnabled && !isVirtualEnvRef.current && (
-                <ConfigDriftModalRoute path={path} />
-            )}
+            {isConfigDriftEnabled && !isVirtualEnvRef.current && <ConfigDriftModalRoute path={path} />}
         </>
     )
 }
@@ -932,7 +927,6 @@ export const AppNotConfigured = ({
     subtitle,
     buttonTitle,
     appConfigTabs = '',
-    style,
     isJobView,
 }: {
     image?: any
@@ -940,7 +934,6 @@ export const AppNotConfigured = ({
     subtitle?: React.ReactNode
     buttonTitle?: string
     appConfigTabs?: string
-    style?: React.CSSProperties
     isJobView?: boolean
 }) => {
     const { appId } = useParams<{ appId: string }>()
@@ -956,31 +949,38 @@ export const AppNotConfigured = ({
         })
     }
 
+    const renderButton = () =>
+        appId &&
+        push && (
+            <Button
+                dataTestId="app-details-empty"
+                text={buttonTitle || 'Go to app configurations'}
+                onClick={handleEditApp}
+                endIcon={<ForwardArrow />}
+            />
+        )
+
     return (
-        <section className="app-not-configured w-100" style={style}>
-            <img src={image || AppNotConfiguredIcon} />
-            <h3 className="mb-8 mt-20 fs-16 fw-600 w-300">{title || 'Finish configuring this application'}</h3>
-            <p className="mb-20 fs-13 w-300">
-                {subtitle || (
+        <GenericEmptyState
+            image={image || AppNotConfiguredIcon}
+            title={title || 'Finish configuring this application'}
+            subTitle={
+                subtitle || (
                     <>
                         {APP_DETAILS.APP_FULLY_NOT_CONFIGURED}&nbsp;
                         <a href={DOCUMENTATION.APP_CREATE} target="_blank" rel="noreferrer">
                             {APP_DETAILS.NEED_HELP}
                         </a>
                     </>
-                )}
-            </p>
-            {appId && push && (
-                <button className="cta flex" onClick={handleEditApp}>
-                    {buttonTitle || 'Go to app configurations'}
-                    <ForwardArrow className="ml-5" />
-                </button>
-            )}
-        </section>
+                )
+            }
+            isButtonAvailable
+            renderButton={renderButton}
+        />
     )
 }
 
-export const EnvironmentNotConfigured = ({ environments, ...props }) => {
+const EnvironmentNotConfigured = ({ environments, ...props }) => {
     const environmentsMap = Array.isArray(environments)
         ? environments.reduce((agg, curr) => {
               agg[curr.environmentId] = curr.environmentName
@@ -989,25 +989,28 @@ export const EnvironmentNotConfigured = ({ environments, ...props }) => {
         : {}
     const { envId, appId } = useParams<{ appId; envId }>()
 
+    const renderButton = () => (
+        <Button
+            dataTestId="go-to-trigger"
+            component={ButtonComponentType.link}
+            text="Go to Trigger"
+            linkProps={{
+                to: getAppTriggerURL(appId),
+            }}
+        />
+    )
+
     return (
-        <section className="env-not-configured w-100 flex">
-            <div className="env-not-configured__instructions">
-                <img
-                    className="no-configuration"
-                    src={environmentsMap[+envId] ? AppNotDeployedIcon : AppNotConfiguredIcon}
-                />
-                <p>
-                    {environmentsMap[+envId]
-                        ? `This app is not deployed on ${environmentsMap[+envId]}`
-                        : `Please select an environment to view app details`}
-                </p>
-                {environmentsMap[+envId] && (
-                    <Link className="cta dc__no-decor" to={getAppTriggerURL(appId)}>
-                        Go to Trigger
-                    </Link>
-                )}
-            </div>
-        </section>
+        <GenericEmptyState
+            image={environmentsMap[+envId] ? AppNotDeployedIcon : AppNotConfiguredIcon}
+            title={
+                environmentsMap[+envId]
+                    ? `This app is not deployed on ${environmentsMap[+envId]}`
+                    : `Please select an environment to view app details`
+            }
+            isButtonAvailable={environmentsMap[+envId]}
+            renderButton={renderButton}
+        />
     )
 }
 

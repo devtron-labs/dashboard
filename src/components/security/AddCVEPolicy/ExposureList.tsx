@@ -34,7 +34,7 @@ const ExposureList = ({
     const appListLength = appListResponse.result.scanList.length
     if (!appListLength && areFiltersApplied) {
         return (
-            <div className="dc__position-rel" style={{ height: 'calc(100vh - 200px)' }}>
+            <div className="dc__position-rel flex-grow-1">
                 <GenericFilterEmptyState handleClearFilters={clearExposureListFilters} />
             </div>
         )
