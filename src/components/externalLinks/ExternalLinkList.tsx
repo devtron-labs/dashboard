@@ -51,9 +51,7 @@ export const ExternalLinkList = ({
 
     const renderExternalLinksHeader = (): JSX.Element => (
         <div
-            className={`${isAppConfigView ? 'app-config-view external-link-list__row__app-config' : 'external-link-list__row'} dc__align-items-center h-40 fs-12 fw-6 dc__uppercase px-20 py-6 dc__gap-16 dc__border-bottom dc__position-sticky dc__top-0 cn-7 bg__primary ${
-                isAppConfigView ? 'app-config-view' : ''
-            }`}
+            className={`${isAppConfigView ? 'app-config-view external-link-list__row__app-config' : 'external-link-list__row'} dc__align-items-center h-40 fs-12 fw-6 dc__uppercase px-20 py-6 dc__gap-16 dc__border-bottom dc__position-sticky dc__top-0 cn-7 bg__primary`}
         >
             <span className="icon-dim-24" />
             <span className="lh-20">
