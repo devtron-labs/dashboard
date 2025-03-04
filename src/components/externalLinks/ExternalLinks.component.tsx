@@ -36,7 +36,6 @@ import { getMonitoringToolIcon, getParsedURL, MONITORING_TOOL_ICONS, onImageLoad
 import {
     TippyCustomized,
     TippyTheme,
-    InfoColourBar,
     GenericEmptyState,
     ConditionalWrap,
     GenericFilterEmptyState,

@@ -159,6 +159,7 @@ export default function ConfigureLinkAction({
                     onChange={onNameChange}
                     onBlur={validateAndUpdateLinksData}
                     error={link.invalidName && CONFIGURE_LINK_NO_NAME}
+                    autoFocus
                 />
                 <Textarea
                     name="external-link-description-input"
