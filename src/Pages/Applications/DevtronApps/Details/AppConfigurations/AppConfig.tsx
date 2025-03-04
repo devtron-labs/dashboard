@@ -68,6 +68,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
     // STATES
     const [showCannotDeleteTooltip, setShowCannotDeleteTooltip] = useState(false)
     const [reload, setReload] = useState(false)
+    const [isAppDeleting, setIsAppDeleting] = useState(false)
     const [state, setState] = useState<AppConfigState>({
         view: ViewType.LOADING,
         stageName: STAGE_NAME.LOADING,
@@ -331,8 +332,10 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
 
     const deleteAppHandler = async () => {
         try {
+            setIsAppDeleting(true)
             const response = await deleteApp(appId)
             if (response) {
+                setIsAppDeleting(false)
                 if (isJob) {
                     ToastManager.showToast({
                         variant: ToastVariantType.success,
@@ -348,6 +351,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
                 }
             }
         } catch (error) {
+            setIsAppDeleting(false)
             showError(error)
         }
     }
@@ -422,7 +426,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
                         primaryButtonConfig: {
                             text: 'Delete',
                             onClick: deleteAppHandler,
-                            isLoading: state.view === ViewType.LOADING,
+                            isLoading: state.view === ViewType.LOADING || isAppDeleting,
                         },
                     }}
                     handleClose={closeDeleteConfirmationModal}
