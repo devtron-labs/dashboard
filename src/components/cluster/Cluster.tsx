@@ -32,6 +32,7 @@ import {
     ButtonStyleType,
     ComponentSizeType,
     useStickyEvent,
+    getClassNameForStickyHeaderWithShadow,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react/headless'
@@ -665,8 +666,8 @@ const Cluster = ({
                     clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list'
                 }`}
             >
-                <List internalRef={stickyElementRef} className={`dc__border dc__position-sticky dc__top-0 ${
-                    isHeaderStuck ? 'dc__box-shadow--header dc__no-border-radius' : ''
+                <List internalRef={stickyElementRef} className={`dc__border ${getClassNameForStickyHeaderWithShadow(isHeaderStuck)} ${
+                    isHeaderStuck ? 'dc__no-border-radius' : ''
                 }`} key={clusterId} onClick={editModeToggle}>
                     {!clusterId && (
                         <List.Logo>

@@ -30,6 +30,7 @@ import {
     stringComparatorBySortOrder,
     showError,
     useStickyEvent,
+    getClassNameForStickyHeaderWithShadow,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -242,8 +243,8 @@ const GenericAppList = ({
         return (
             <div
                 ref={stickyElementRef}
-                className={`app-list__header app-list__header${isFluxCDAppList ? '__fluxcd' : ''} dc__position-sticky dc__top-47 dc__transition--box-shadow ${
-                    isHeaderStuck ? 'dc__box-shadow--header' : ''
+                className={`app-list__header app-list__header${isFluxCDAppList ? '__fluxcd' : ''} dc__top-47 ${
+                   getClassNameForStickyHeaderWithShadow(isHeaderStuck)
                 }`}
             >
                 <div className="app-list__cell--icon" />

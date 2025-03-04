@@ -26,6 +26,7 @@ import {
     DEFAULT_BASE_PAGE_SIZE,
     ErrorScreenManager,
     GenericFilterEmptyState,
+    getClassNameForStickyHeaderWithShadow,
     getIsRequestAborted,
     handleUTCTime,
     Pagination,
@@ -261,9 +262,9 @@ const DevtronAppList = ({
         <div className="app-list" data-testid="app-list-container">
             <div
                 ref={stickyElementRef}
-                className={`app-list__header ${!isArgoInstalled ? 'app-list__header--argo-not-installed' : ''} dc__position-sticky dc__top-47 dc__transition--box-shadow ${
-                    isHeaderStuck ? 'dc__box-shadow--header' : ''
-                }`}
+                className={`app-list__header ${!isArgoInstalled ? 'app-list__header--argo-not-installed' : ''} dc__top-47  ${getClassNameForStickyHeaderWithShadow(
+                    isHeaderStuck,
+                )}`}
             >
                 <div className="app-list__cell--icon flex left cursor" onClick={toggleExpandAllRow}>
                     <Arrow className={`icon-dim-24 p-2 ${getArrowIconClass()}`} />

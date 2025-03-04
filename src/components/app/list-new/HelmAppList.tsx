@@ -29,6 +29,7 @@ import {
     SortableTableHeaderCell,
     stringComparatorBySortOrder,
     useStickyEvent,
+    getClassNameForStickyHeaderWithShadow,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -336,8 +337,8 @@ const HelmAppList = ({
 
     function renderHeaders() {
         return (
-            <div ref={stickyElementRef} className={`app-list__header dc__position-sticky dc__top-47 dc__transition--box-shadow ${
-                isHeaderStuck ? 'dc__box-shadow--header' : ''
+            <div ref={stickyElementRef} className={`app-list__header dc__top-47 ${
+                getClassNameForStickyHeaderWithShadow(isHeaderStuck)
             }`}>
                 <div className="app-list__cell--icon" />
                 <div className="app-list__cell app-list__cell--name">
