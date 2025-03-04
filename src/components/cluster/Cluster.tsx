@@ -365,7 +365,7 @@ const Cluster = ({
 
     const { stickyElementRef } = useStickyEvent({
         callback: setIsHeaderStuck,
-        containerClassName: 'global-configuration__component-wrapper',
+        containerSelector: '.global-configuration__component-wrapper',
         identifier: `cluster-list__${cluster_name}`,
     })
 

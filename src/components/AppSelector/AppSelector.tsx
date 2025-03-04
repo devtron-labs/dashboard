@@ -15,11 +15,10 @@
  */
 
 import React, { useRef } from 'react'
-import { Props as SelectProps } from 'react-select'
+import { Props as SelectProps, SelectInstance } from 'react-select'
 import AsyncSelect from 'react-select/async'
 import { appListOptions, appSelectorStyle, DropdownIndicator, noOptionsMessage } from './AppSelectorUtil'
 import { abortPreviousRequests } from '@devtron-labs/devtron-fe-common-lib'
-import { SelectInstance } from 'react-select'
 
 interface AppSelectorType {
     onChange: ({ label, value }) => void
@@ -49,6 +48,7 @@ export default function AppSelector({ onChange, appId, appName, isJobView }: App
     return (
         <AsyncSelect
             ref={selectRef}
+            blurInputOnSelect
             onKeyDown={handleOnKeyDown}
             defaultOptions
             loadOptions={loadAppListOptions}

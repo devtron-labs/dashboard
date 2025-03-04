@@ -94,7 +94,7 @@ const HelmAppList = ({
     const [sseConnection, setSseConnection] = useState<EventSource>(undefined)
     const [externalHelmListFetchErrors, setExternalHelmListFetchErrors] = useState<string[]>([])
     const [showGuidedContentCards, setShowGuidedContentCards] = useState(false)
-    const [isHeaderStuck, setIsHeaderStuck] = useState<boolean>()
+    const [isHeaderStuck, setIsHeaderStuck] = useState<boolean>(false)
 
     const { appStatus, environment, cluster, namespace, project, searchKey, sortBy, sortOrder, offset, pageSize } =
         filterConfig
