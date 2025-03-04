@@ -1397,7 +1397,7 @@ export default function CDPipeline({
                                 {
                                     tabType: 'button',
                                     active: formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS,
-                                    label: 'Migrate to devtron',
+                                    label: 'Migrate to Devtron',
                                     id: ReleaseMode.MIGRATE_EXTERNAL_APPS,
                                     props: {
                                         onClick: handleSelectMigrateToDevtron,

@@ -1,4 +1,5 @@
 import {
+    ComponentSizeType,
     DeploymentAppTypes,
     ResourceKindType,
     SelectPicker,
@@ -38,6 +39,7 @@ const ClusterSelect = ({ clusterId, clusterName, handleClusterChange, deployment
                 placeholder="Select a cluster"
                 required
                 autoFocus
+                size={ComponentSizeType.large}
             />
         </div>
     )

@@ -3,6 +3,7 @@ import {
     abortPreviousRequests,
     APIResponseHandler,
     BaseURLParams,
+    ComponentSizeType,
     DeploymentAppTypes,
     ErrorScreenNotAuthorized,
     GenericSectionErrorState,
@@ -14,7 +15,7 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
-import { ReactComponent as ICHelmChart } from '@Icons/ic-helmchart.svg'
+import { ReactComponent as ICDefaultChart } from '@Icons/ic-default-chart.svg'
 import { ReactComponent as ICArgoCDApp } from '@Icons/ic-argocd-app.svg'
 import { ClusterSelectProps, MigrateToDevtronProps, SelectMigrateAppOptionType } from './types'
 import ClusterSelect from './ClusterSelect'
@@ -212,7 +213,7 @@ const MigrateToDevtron = ({
     }
 
     return (
-        <div className="flexbox-col dc__gap-16">
+        <div className="flexbox-col dc__gap-20">
             {isFeatureArgoCdMigrationEnabled && (
                 <div className="flexbox-col dc__gap-8">
                     <span className="cn-7 fs-13 fw-4 lh-20">Select type of application to migrate</span>
@@ -257,7 +258,7 @@ const MigrateToDevtron = ({
                         label={isMigratingFromHelm ? 'Release name' : 'Argo CD application'}
                         placeholder={isMigratingFromHelm ? 'Select a helm release' : 'Select an Argo CD application'}
                         disabledTippyContent={`Select a cluster to view and select ${getDeploymentAppTypeLabel(isMigratingFromHelm)} in that cluster`}
-                        icon={isMigratingFromHelm ? <ICHelmChart /> : <ICArgoCDApp />}
+                        icon={isMigratingFromHelm ? <ICDefaultChart /> : <ICArgoCDApp />}
                         isDisabled={!clusterId}
                         isLoading={isLoadingAppListOptions}
                         optionListError={appListOptionsError}
@@ -275,45 +276,42 @@ const MigrateToDevtron = ({
                                 : null
                         }
                         getOptionValue={getAppOptionValue}
+                        size={ComponentSizeType.large}
                     />
                 </div>
             </div>
 
             {!!appName && (
                 <div className="flex column w-100 dc__gap-16">
-                    <APIResponseHandler
-                        isLoading={isLoadingValidationResponse}
-                        error={validationResponseError}
-                        customLoader={
-                            <GenericSectionErrorState
-                                progressingProps={{
-                                    size: 24,
-                                    fillColor: 'var(--N700)',
-                                }}
-                                title={isMigratingFromHelm ? 'Fetching helm release' : 'Checking compatibility'}
-                                subTitle={
-                                    isMigratingFromHelm
-                                        ? `Please ensure the chart used in the helm release is same as the one used in '${appName}' application`
-                                        : 'Checking if Argo CD application and its configurations are compatible for migration to deployment pipeline'
-                                }
-                                {...GENERIC_SECTION_ERROR_STATE_COMMON_PROPS}
-                            />
-                        }
-                        genericSectionErrorProps={{
-                            title: 'Error checking compatibility',
-                            subTitle: `An error occurred while checking if ${getDeploymentAppTypeLabel(isMigratingFromHelm)} and its configurations are compatible for migration to deployment pipeline`,
-                            reload: reloadValidationResponse,
-                            ...GENERIC_SECTION_ERROR_STATE_COMMON_PROPS,
-                        }}
-                    >
-                        <div className="w-100 flex column center">
+                    <div className="w-100 flex column center br-8 bg__primary border__secondary">
+                        <APIResponseHandler
+                            isLoading={isLoadingValidationResponse}
+                            error={validationResponseError}
+                            customLoader={
+                                <GenericSectionErrorState
+                                    progressingProps={{
+                                        size: 24,
+                                        color: 'N700',
+                                    }}
+                                    title="Checking compatibility"
+                                    subTitle={`Checking if ${getDeploymentAppTypeLabel(isMigratingFromHelm)} and its configurations are compatible for migration to deployment pipeline`}
+                                    {...GENERIC_SECTION_ERROR_STATE_COMMON_PROPS}
+                                />
+                            }
+                            genericSectionErrorProps={{
+                                title: 'Error checking compatibility',
+                                subTitle: `An error occurred while checking if ${getDeploymentAppTypeLabel(isMigratingFromHelm)} and its configurations are compatible for migration to deployment pipeline`,
+                                reload: reloadValidationResponse,
+                                ...GENERIC_SECTION_ERROR_STATE_COMMON_PROPS,
+                            }}
+                        >
                             <MigrateToDevtronValidationFactory
                                 appName={appName}
                                 refetchValidationResponse={reloadValidationResponse}
                                 validationResponse={validationResponse}
                             />
-                        </div>
-                    </APIResponseHandler>
+                        </APIResponseHandler>
+                    </div>
 
                     {isLinkable && (
                         <div className="w-100">
