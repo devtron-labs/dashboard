@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { SSOProvider } from '@Pages/GlobalConfigurations/Authorization/SSOLoginServices/constants'
-import { SSOConfigDTO } from '@Pages/GlobalConfigurations/Authorization/SSOLoginServices/ssoConfig.types'
+import { SSOConfigDTO, SSOProvider } from '@Pages/GlobalConfigurations'
 
 export interface SSOConfigLoginList extends Pick<SSOConfigDTO, 'id' | 'active' | 'url'> {
     name: SSOProvider
