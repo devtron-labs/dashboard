@@ -89,6 +89,7 @@ export const validateInputOutputVariableCell = ({
 
     const variableNameReg = new RegExp(PATTERNS.VARIABLE)
     const numberReg = new RegExp(FE_COMMON_LIB_PATTERNS.NUMBERS_WITH_SCOPE_VARIABLES)
+    const boolReg = new RegExp(FE_COMMON_LIB_PATTERNS.BOOLEAN_WITH_SCOPE_VARIABLES)
 
     const isInputVariable = type === PluginVariableType.INPUT
 
@@ -136,6 +137,13 @@ export const validateInputOutputVariableCell = ({
         if (format === VariableTypeFormat.NUMBER && variableValue && !!value && !numberReg.test(value)) {
             return {
                 errorMessages: [VARIABLE_DATA_TABLE_CELL_ERROR_MSGS.VARIABLE_VALUE_NOT_A_NUMBER],
+                isValid: false,
+            }
+        }
+        // test for boolean and scope variables when format is "BOOL".
+        if (format === VariableTypeFormat.BOOL && variableValue && !!value && !boolReg.test(value)) {
+            return {
+                errorMessages: [VARIABLE_DATA_TABLE_CELL_ERROR_MSGS.VARIABLE_VALUE_NOT_A_BOOLEAN],
                 isValid: false,
             }
         }

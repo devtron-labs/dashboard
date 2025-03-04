@@ -44,6 +44,7 @@ import {
     FILE_UPLOAD_SIZE_UNIT_OPTIONS,
     FORMAT_COLUMN_OPTIONS,
     VAL_COLUMN_DROPDOWN_LABEL,
+    VARIABLE_DATA_TABLE_CELL_BOOL_VALUES,
 } from './constants'
 import {
     GetValColumnRowPropsType,
@@ -53,7 +54,7 @@ import {
     VariableDataCustomState,
 } from './types'
 
-export const getOptionsForValColumn = ({
+const getOptionsForValColumn = ({
     inputVariablesListFromPrevStep,
     activeStageName,
     selectedTaskIndex,
@@ -209,7 +210,7 @@ export const getOptionsForValColumn = ({
     ]
 }
 
-export const getVariableColumnRowProps = () => {
+const getVariableColumnRowProps = () => {
     const data: VariableDataRowType['data']['variable'] = {
         value: '',
         type: DynamicDataTableRowDataType.TEXT,
@@ -221,7 +222,7 @@ export const getVariableColumnRowProps = () => {
     return data
 }
 
-export const getFormatColumnRowProps = ({
+const getFormatColumnRowProps = ({
     format,
     isCustomTask,
 }: Pick<VariableType, 'format'> & { isCustomTask: boolean }): VariableDataRowType['data']['format'] => {
@@ -299,9 +300,7 @@ export const getValColumnRowProps = ({
             props: {
                 placeholder: 'Enter value or variable',
                 options: optionsForValColumn,
-                isCreatable:
-                    format !== VariableTypeFormat.BOOL &&
-                    (!valueConstraint?.choices?.length || !valueConstraint.blockCustomValue),
+                isCreatable: !valueConstraint?.choices?.length || !valueConstraint.blockCustomValue,
                 icon:
                     refVariableStage || (variableType && variableType !== RefVariableType.NEW) ? (
                         <SystemVariableIcon />
@@ -333,8 +332,20 @@ export const getValColumnRowValue = (
 ) => {
     const isSystemVariable = checkForSystemVariable(valColumnSelectedValue)
     const isDateFormat = !isSystemVariable && value && format === VariableTypeFormat.DATE
+    const isBoolFormat =
+        !isSystemVariable &&
+        value &&
+        format === VariableTypeFormat.BOOL &&
+        VARIABLE_DATA_TABLE_CELL_BOOL_VALUES.includes(value)
 
-    return isDateFormat ? getGoLangFormattedDateWithTimezone(valColumnSelectedValue.value) : value
+    if (isDateFormat) {
+        return getGoLangFormattedDateWithTimezone(valColumnSelectedValue.value)
+    }
+    if (isBoolFormat) {
+        return value.toUpperCase()
+    }
+
+    return value
 }
 
 export const getEmptyVariableDataTableRow = ({

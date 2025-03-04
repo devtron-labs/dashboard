@@ -154,7 +154,7 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab, handleClearBulkSel
     return (
         <>
             <PopupMenu autoClose>
-                <PopupMenu.Button rootClassName="flex ml-auto p-4" isKebab>
+                <PopupMenu.Button rootClassName="flex ml-auto p-4 dc__no-background" isKebab>
                     <MenuDots className="node-actions-menu-icon icon-dim-16" />
                 </PopupMenu.Button>
                 <PopupMenu.Body rootClassName="dc__border">

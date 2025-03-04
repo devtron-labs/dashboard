@@ -40,6 +40,7 @@ import {
     FILE_MOUNT_DIR,
     FILE_UPLOAD_SIZE_UNIT_OPTIONS,
     getVariableDataTableHeaders,
+    VARIABLE_DATA_TABLE_CELL_BOOL_VALUES,
     VARIABLE_DATA_TABLE_EMPTY_ROW_MESSAGE,
 } from './constants'
 import {
@@ -338,11 +339,11 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                     selectedRow.data.val = getValColumnRowProps({
                         ...defaultRowValColumnParams,
                         value: valColumnRowValue,
-                        ...(!customState.blockCustomValue && rowAction.actionValue.valColumnSelectedValue
+                        ...(!customState.blockCustomValue && valColumnSelectedValue
                             ? {
-                                  variableType: rowAction.actionValue.valColumnSelectedValue.variableType,
-                                  refVariableName: rowAction.actionValue.valColumnSelectedValue.value,
-                                  refVariableStage: rowAction.actionValue.valColumnSelectedValue.refVariableStage,
+                                  variableType: valColumnSelectedValue.variableType,
+                                  refVariableName: valColumnSelectedValue.value,
+                                  refVariableStage: valColumnSelectedValue.refVariableStage,
                               }
                             : {}),
                         format: data.format.value as VariableTypeFormat,
@@ -351,7 +352,18 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                             choices: customState.choices,
                         },
                     })
-                    selectedRow.customState.valColumnSelectedValue = rowAction.actionValue.valColumnSelectedValue
+                    if (
+                        valColumnSelectedValue &&
+                        data.format.value === VariableTypeFormat.BOOL &&
+                        VARIABLE_DATA_TABLE_CELL_BOOL_VALUES.includes(valColumnSelectedValue.label as string)
+                    ) {
+                        selectedRow.customState.valColumnSelectedValue = {
+                            label: (valColumnSelectedValue.label as string).toUpperCase(),
+                            value: valColumnSelectedValue.value.toUpperCase(),
+                        }
+                    } else {
+                        selectedRow.customState.valColumnSelectedValue = valColumnSelectedValue
+                    }
                 }
                 break
 
