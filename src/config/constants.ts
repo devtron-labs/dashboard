@@ -436,15 +436,9 @@ export const HEADER_TEXT = {
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
 
-export const PREVIEW_DEVTRON = 'https://preview.devtron.ai'
-
-export const PRIVACY_POLICY = 'https://devtron.ai/privacy-policy'
-
 export const NETSHOOT_LINK = 'https://github.com/nicolaka/netshoot'
 
 export const BUSYBOX_LINK = 'https://busybox.net/'
-
-export const EULA_LINK = 'https://devtron.ai/end-user-license-agreement-eula'
 
 export enum SERVER_MODE {
     EA_ONLY = 'EA_ONLY',
