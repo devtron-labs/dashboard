@@ -37,6 +37,7 @@ import {
     AppThemeType,
     useAsync,
     SSOProviderIcon,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as Help } from '@Icons/ic-help-outline.svg'
@@ -46,7 +47,6 @@ import { loginAsAdmin } from './login.service'
 import { dashboardAccessed } from '../../services/service'
 import './login.scss'
 import { getSSOConfigList } from '../../Pages/GlobalConfigurations/Authorization/SSOLoginServices/service'
-import { LoginCard } from './LoginCard'
 import { SSOConfigLoginList } from './login.types'
 import { SSOProvider } from './constants'
 
@@ -77,6 +77,8 @@ const Login = () => {
     const { setEmail } = useUserEmail()
 
     const [initLoading, initResult] = useAsync(() => Promise.allSettled([getSSOConfigList(), dashboardAccessed()]), [])
+
+    const getTermsAndConditions = importComponentFromFELibrary('getTermsAndConditions', null, 'function')
 
     const setLoginNavigationURL = () => {
         let queryParam = searchParams.continue
@@ -296,10 +298,39 @@ const Login = () => {
             </form>
         )
     }
+
+    const renderDevtronLogo = () => (
+        <div className="flex column dc__gap-16 dc__text-center">
+            {window._env_.LOGIN_DT_LOGO ? (
+                <img
+                    src={window._env_.LOGIN_DT_LOGO}
+                    alt="login-dt-logo"
+                    width="170px"
+                    height="120px"
+                    className="flexbox dc__align-self-center fcb-5"
+                />
+            ) : (
+                <Icon name="ic-login-devtron-logo" color={null} size={null} />
+            )}
+
+            <p className="fs-16 lh-20 m-0 w-300 dc__align-self-center cn-9">
+                Your tool for Rapid, Reliable & Repeatable deployments
+            </p>
+        </div>
+    )
+
+    const renderLoginContent = () => (
+        <Switch>
+            <Route path={`${URLS.LOGIN_SSO}`} component={renderSSOLoginPage} />
+            <Route path={`${URLS.LOGIN_ADMIN}`} component={renderAdminLoginPage} />
+            <Redirect to={`${URLS.LOGIN_SSO}`} />
+        </Switch>
+    )
+
     return (
         <div className={`login bg__white flex ${getComponentSpecificThemeClass(AppThemeType.light)}`}>
             <div
-                className="login__bg w-50"
+                className="w-50 login__bg"
                 style={window?._env_?.LOGIN_PAGE_IMAGE_BG ? { backgroundColor: window._env_.LOGIN_PAGE_IMAGE_BG } : {}}
             >
                 <div
@@ -312,15 +343,13 @@ const Login = () => {
                 />
             </div>
             <div className="w-50 flex">
-                <Switch>
-                    <Route path={`${URLS.LOGIN_SSO}`}>
-                        <LoginCard renderContent={renderSSOLoginPage} />
-                    </Route>
-                    <Route path={`${URLS.LOGIN_ADMIN}`}>
-                        <LoginCard renderContent={renderAdminLoginPage} />
-                    </Route>
-                    <Redirect to={`${URLS.LOGIN_SSO}`} />
-                </Switch>
+                <div className="login-card__wrapper br-12 mw-420 bg__primary dc__border">
+                    <div className="flexbox-col dc__gap-32 p-36">
+                        {renderDevtronLogo()}
+                        {renderLoginContent()}
+                    </div>
+                    {getTermsAndConditions && getTermsAndConditions()}
+                </div>
             </div>
         </div>
     )
