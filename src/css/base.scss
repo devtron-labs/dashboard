@@ -241,15 +241,12 @@ a:focus {
     }
 }
 
+// To be removed by arun
 .dc__loading-wrapper {
     height: calc(100vh - 172px);
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.dc__container-below-header {
-    height: calc(100vh - 48px);
 }
 
 .dc__empty__subtitle {
@@ -842,12 +839,14 @@ button.anchor {
     transition: transform 0.3s;
 }
 
+// Removed by arun
 .dc__no-apps {
     background-color: var(--bg-tertiary);
     min-height: calc(100vh - 160px);
     padding-top: 70px;
 }
 
+// Removed by arun
 .no-results {
     background-color: var(--bg-tertiary);
     height: calc(100vh - 250px);
@@ -888,11 +887,6 @@ button.anchor {
     color: var(--N700);
     margin: 0px;
     margin-bottom: 20px;
-}
-
-.dc__empty-state__no-deploymentgroup {
-    min-height: calc(100vh - 82px);
-    padding-top: 100px;
 }
 
 .dc__devtron-tag__container {
@@ -3589,10 +3583,12 @@ button.anchor {
     height: 76px !important;
 }
 
+// Removed by arun
 .dc__height-reduce-172 {
     height: calc(100vh - 172px);
 }
 
+// To be removed by arun
 .dc__height-reduce-48 {
     height: calc(100% - 48px);
 }
