@@ -22,14 +22,12 @@
 
 :root {
     --modal-index: 20;
-    --full-screen-modal-index: 10;
     --page-header-index: 13;
     --filter-menu-index: 7;
     --transparent-div-index: 6;
     --app-list-header-index: 3;
     --navigation-index: 14;
     --tooltip-index: 7;
-    --events-logs: 4;
     --select-picker-menu-index: 20;
 }
 
@@ -342,12 +340,12 @@ a:focus {
     top: 0;
 }
 
-.dc__top-9 {
-    top: 9px;
-}
-
 .dc__top-12 {
     top: 12px;
+}
+
+.dc__top-20 {
+    top: 20px;
 }
 
 .dc__top-22 {
@@ -356,10 +354,6 @@ a:focus {
 
 .dc__top-48 {
     top: 48px;
-}
-
-.dc__top-119 {
-    top: 119px;
 }
 
 .dc__top-26 {
@@ -374,16 +368,8 @@ a:focus {
     top: 36px;
 }
 
-.dc__top-40 {
-    top: 40px;
-}
-
 .dc__top-44 {
     top: 44px;
-}
-
-.dc__top-46 {
-    top: 46px;
 }
 
 .dc__top-47 {
@@ -418,6 +404,10 @@ a:focus {
     bottom: 12px;
 }
 
+.dc__bottom-20 {
+    bottom: 20px;
+}
+
 .dc__bottom-30-imp {
     bottom: 30px !important;
 }
@@ -430,10 +420,6 @@ a:focus {
     right: -3px;
 }
 
-.dc__right-8 {
-    right: 8px;
-}
-
 .dc__right-10 {
     right: 10px;
 }
@@ -442,20 +428,20 @@ a:focus {
     right: 12px;
 }
 
-.dc__left-0 {
-    left: 0;
+.dc__right-20 {
+    right: 20px;
 }
 
-.dc__left-6 {
-    left: 6px;
+.dc__left-0 {
+    left: 0;
 }
 
 .dc__left-12 {
     left: 12px;
 }
 
-.dc__left-30 {
-    left: 30px;
+.dc__left-20 {
+    left: 20px;
 }
 
 .dc__left-35 {
@@ -468,14 +454,6 @@ a:focus {
 
 .dc__left-65 {
     left: 65px;
-}
-
-.dc__left-150 {
-    left: 150px;
-}
-
-.dc__left-405 {
-    left: 405px;
 }
 
 .dc__right-20 {
@@ -837,20 +815,6 @@ button.anchor {
 .rotate {
     transform: rotate(var(--rotateBy));
     transition: transform 0.3s;
-}
-
-// Removed by arun
-.dc__no-apps {
-    background-color: var(--bg-tertiary);
-    min-height: calc(100vh - 160px);
-    padding-top: 70px;
-}
-
-// Removed by arun
-.no-results {
-    background-color: var(--bg-tertiary);
-    height: calc(100vh - 250px);
-    padding-top: 50px;
 }
 
 .empty {
@@ -3583,12 +3547,6 @@ button.anchor {
     height: 76px !important;
 }
 
-// Removed by arun
-.dc__height-reduce-172 {
-    height: calc(100vh - 172px);
-}
-
-// To be removed by arun
 .dc__height-reduce-48 {
     height: calc(100% - 48px);
 }

@@ -938,125 +938,6 @@ table.pod__table td:last-child {
     }
 }
 
-.events-logs {
-    position: fixed;
-    bottom: 0;
-    left: 64px;
-    width: calc(100vw - 64px);
-    background: var(--terminal-bg);
-    display: grid;
-    grid-template-rows: 36px 40px 1fr;
-    grid-template-columns: 1fr 1fr;
-    box-shadow: inset 0 -1px 8px 0 var(--N900);
-    z-index: var(--events-logs);
-
-    .event-logs__logs {
-        color: var(--N0);
-        padding-left: 20px;
-    }
-
-    .events-logs__dropdown-container {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
-        padding: 0 20px;
-        border-bottom: 1px solid var(--border-primary);
-
-        .tab-container {
-            padding-left: 16px;
-            border-left: 1px solid var(--border-primary);
-        }
-    }
-
-    .events-logs__event,
-    .events-logs__log {
-        color: var(--N0);
-        font-family: monospace;
-        font-size: 12px;
-        margin-bottom: 0px;
-    }
-
-    .events-logs__toggle-btn {
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        height: 100%;
-    }
-
-    .events-logs__label {
-        margin-right: 10px;
-        color: var(--N0);
-        opacity: 0.6;
-    }
-
-    .events-logs__dropdown-selector {
-        display: flex;
-        align-items: center;
-        padding: 0 20px;
-        border-left: 1px solid var(--border-primary);
-        height: calc(100% - 16px);
-
-        .pod-selector-button,
-        .container-selector-button {
-            width: 200px;
-            background: transparent;
-            border: 1px solid transparent;
-            justify-content: space-between;
-            border-radius: 4px;
-
-            span.dc__ellipsis-left {
-                border-radius: 4px;
-                padding: 8px 10px 8px 12px;
-                font-size: 12px;
-                color: var(--N0);
-                text-align: left;
-            }
-        }
-
-        .popup-button {
-            border: unset;
-        }
-    }
-
-    .log-viewer-container {
-        width: 100%;
-        align-items: flex-start;
-        position: relative;
-
-        &:focus {
-            outline: none;
-        }
-
-        .log-viewer {
-            height: 100%;
-            width: 100%;
-            padding: 8px 0 8px 16px;
-            overflow: hidden;
-
-            &:focus {
-                outline: none;
-            }
-
-            .xterm {
-                height: 100%;
-            }
-        }
-
-        .logs {
-            font-family: monospace;
-
-            .log {
-                grid-template-columns: 100%;
-
-                .content {
-                    padding-right: 16px;
-                }
-            }
-        }
-    }
-}
-
 .pod-readyState {
     position: relative;
     left: 0;
@@ -1087,204 +968,6 @@ table.pod__table td:last-child {
     &.pod-readyState--show {
         height: 24px;
         transition: height 200ms;
-    }
-}
-
-.app-not-configured,
-.app-not-deployed {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: calc(100vh - 110px);
-
-    img {
-        width: 250px;
-        height: 200px;
-    }
-
-    h3 {
-        font-weight: 600;
-        text-align: center;
-        line-height: 22px;
-        color: var(--N900);
-    }
-
-    p {
-        text-align: center;
-        color: var(--N700);
-    }
-
-    button {
-        font-size: 13px;
-        height: 36px;
-    }
-}
-
-.env-not-configured {
-    padding: 0 20px;
-    display: flex;
-    height: calc(100vh - 152px);
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-
-    .env-selector-wrapper {
-        height: 68px;
-        padding: 0 20px;
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        border: 1px solid var(--N200);
-        border-radius: 4px;
-        margin-top: 20px;
-        width: 100%;
-
-        .app-summary__env-selector {
-            display: flex;
-            align-items: center;
-
-            svg {
-                width: 24px;
-                height: 24px;
-            }
-
-            .app-summary__env-name {
-                background: var(--B500);
-                padding: 4px 8px;
-                border-radius: 10px;
-                height: 16px;
-                font-size: 10px;
-                display: flex;
-                align-items: center;
-                color: var(--N0);
-            }
-        }
-    }
-
-    .env-not-configured__instructions {
-        height: calc(100% - 68px - 20px);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-
-        img.no-configuration {
-            display: flex;
-            justify-content: center;
-            width: 250px;
-            height: 200px;
-            margin: 0 auto 12px auto;
-        }
-
-        p {
-            font-size: 16px;
-            text-align: center;
-            width: 250px;
-        }
-
-        button {
-            padding: 8px 16px;
-            color: var(--B500);
-            border: 1px solid var(--B500);
-            border-radius: 4px;
-            outline: none;
-            font-size: 14px;
-            font-weight: 600;
-        }
-    }
-}
-
-.app-summary__source-info {
-    .app-summary__source-table {
-        width: 80%;
-        margin: 0 auto;
-        border-radius: 4px;
-        background: var(--bg-primary);
-        margin-top: 80px;
-        overflow: hidden;
-        position: relative;
-
-        .app-summary__source-row {
-            display: grid;
-            grid-template-columns: 13% auto 20% 10% 18%;
-            grid-column-gap: 40px;
-            grid-auto-rows: minmax(48px, max-content);
-            align-items: center;
-            justify-items: start;
-
-            & > span:first-child {
-                padding-left: 20px;
-            }
-
-            & > span:last-child {
-                padding-right: 20px;
-            }
-
-            &:nth-child(even) {
-                background: var(--N100);
-            }
-
-            &.app-summary__source-row--header {
-                font-weight: 600;
-                border-bottom: 1px solid var(--N200);
-            }
-
-            .tag-container {
-                max-width: calc(100% - 20px);
-                color: var(--B500);
-                background: var(--B100);
-                border-radius: 4px;
-                padding: 5px 7px;
-                font-size: 12px;
-                margin-right: 20px;
-
-                svg {
-                    flex-shrink: 0;
-                }
-
-                .tag {
-                    max-width: calc(100% - 12px);
-                    font-family: monospace;
-                }
-            }
-        }
-
-        .fa.fa-close {
-            position: absolute;
-            right: 16px;
-            top: 16px;
-        }
-
-        .app-summary__commit-url-container {
-            width: 100%;
-
-            .app-summary__commit-url {
-                max-width: calc(100% - 12px);
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-                display: inline-block;
-                color: var(--B500);
-                line-height: 100%;
-            }
-        }
-    }
-
-    .app-summary__toggle-source {
-        width: 100%;
-        height: 36px;
-        cursor: pointer;
-
-        .app-summary__toggle-source-text {
-            color: var(--B500);
-            font-weight: 600;
-        }
-    }
-
-    &.detailed {
-        .app-summary__toggle-source {
-            border-top: 1px solid var(--N200);
-        }
     }
 }
 
@@ -1336,86 +1019,6 @@ table.pod__table td:last-child {
 
 .select-popup.poup-body--app-switch {
     width: 218px;
-}
-
-.visible-modal__body.app-status__material-modal {
-    .app-status-detai {
-        background: var(--bg-primary);
-        margin: 80px auto 120px auto;
-        max-width: 1200px;
-        min-width: 800px;
-        padding: 24px;
-        border-radius: 8px;
-        height: calc(100% - 200px);
-        min-height: 300px;
-        display: grid;
-        grid-template-rows: 45px auto 1fr;
-
-        .title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        & > div {
-            overflow: auto;
-            position: relative;
-        }
-
-        .kind-name {
-            width: 100%;
-            display: grid;
-            grid-template-columns: auto 1fr;
-            grid-template-rows: 1fr;
-
-            .dc__ellipsis-left {
-                text-align: left;
-            }
-        }
-
-        table {
-            width: 100%;
-            table-layout: fixed;
-
-            thead {
-                height: 44px;
-
-                th {
-                    background: var(--bg-primary);
-                    position: sticky;
-                    top: 0;
-                }
-            }
-
-            border-collapse: separate;
-            border-spacing: 15px;
-
-            tr,
-            th {
-                height: 44px;
-            }
-
-            th:nth-child(1),
-            td:nth-child(1) {
-                width: 20%;
-            }
-
-            th:nth-child(2),
-            td:nth-child(2) {
-                width: 15%;
-            }
-
-            th:nth-child(3),
-            td:nth-child(3) {
-                width: 65%;
-            }
-        }
-
-        .fa.fa-close {
-            margin-left: auto;
-            cursor: pointer;
-        }
-    }
 }
 
 table.trigger-history {
@@ -1507,7 +1110,7 @@ form.log-search-form {
 }
 
 table.resource-tree {
-    width: calc(100%);
+    width: 100%;
     height: 1px;
 
     thead {
@@ -1600,10 +1203,6 @@ table.resource-tree {
     right: 40px;
 }
 
-.graph-modal {
-    height: calc(100% - 140px);
-}
-
 .graph-modal__title {
     font-size: 12px;
     font-weight: 600;
@@ -1628,7 +1227,7 @@ table.resource-tree {
 }
 
 .graph-modal__main-chart {
-    height: calc(100% - 0px);
+    height: 100%;
     width: 100%;
     border: none;
 }
@@ -1842,10 +1441,6 @@ table.resource-tree {
 
 .deployment-approval-container + .deployment-status-breakdown-container {
     padding-top: 0px;
-}
-
-.deployment-status-breakdown {
-    height: calc(100vh - 70px);
 }
 
 .env-select {
