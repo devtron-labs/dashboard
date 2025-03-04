@@ -196,8 +196,8 @@ $black: 0, 0, 0;
     --bg-modal-secondary: var(--bg-secondary);
     --bg-modal-tertiary: var(--bg-tertiary);
 
-    --bg-tooltip-black: var(--N200);
-    --bg-toast: var(--N300);
+    --bg-tooltip-black: rgb(63, 64, 71);
+    --bg-toast: rgb(63, 64, 71);
     --bg-sidebar: rgb(46, 49, 66);
     --bg-sidebar-modern-layout: rgb(44, 45, 53);
     --bg-sidebar-item-selected: rgba(#{$white}, 0.25);
