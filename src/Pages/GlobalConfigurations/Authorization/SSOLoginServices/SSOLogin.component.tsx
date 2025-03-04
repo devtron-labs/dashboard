@@ -43,6 +43,7 @@ import {
     ComponentSizeType,
     ConfirmationModal,
     ConfirmationModalVariantType,
+    SSOProviderIcon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import yamlJsParser from 'yaml'
 import Check from '@Icons/ic-selected-corner.png'
@@ -72,7 +73,6 @@ import {
     SsoSecretsToHide,
 } from './constants'
 import './ssoLogin.scss'
-import { SSOTabIcons } from './utils'
 
 const AutoAssignToggleTile = importComponentFromFELibrary('AutoAssignToggleTile')
 const UserPermissionConfirmationModal = importComponentFromFELibrary('UserPermissionConfirmationModal')
@@ -89,7 +89,7 @@ const SSOLoginTab: React.FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastA
         />
         <span className="dc__tertiary-tab sso-icons" data-testid={`sso-${value}-button`}>
             <aside className="login__icon-alignment">
-                <SSOTabIcons provider={value} />
+                <SSOProviderIcon provider={value} size={24} />
             </aside>
             <aside className="login__text-alignment">{SSOName}</aside>
             <label>
@@ -151,7 +151,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 if (ssoConfig) {
                     this.setState({ sso: ssoConfig?.name, lastActiveSSO: ssoConfig })
                 } else {
-                    ssoConfig = sample.google
+                    ssoConfig = sample.google as any // TODO: Add type for sample
                     this.setState({ sso: 'google', ssoConfig: this.parseResponse(ssoConfig) })
                 }
                 // Would be undefined for OSS
