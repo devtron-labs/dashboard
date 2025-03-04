@@ -817,9 +817,9 @@ const DropDown = ({ className = '', dataTestid = '', style = {}, src = null, ...
     )
 }
 
-export const List = ({ dataTestId = '', children = null, className = '', ...props }) => {
+export const List = ({ dataTestId = '', children = null, className = '', internalRef = null, ...props }) => {
     return (
-        <div className={`list ${className}`} {...props} data-testid={dataTestId}>
+        <div ref={internalRef} className={`list ${className}`} {...props} data-testid={dataTestId}>
             {children}
         </div>
     )

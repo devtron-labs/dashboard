@@ -82,12 +82,6 @@ const GenericAppList = ({
     const { isSuperAdmin } = useMainContext()
     const [isHeaderStuck, setIsHeaderStuck] = useState(false)
 
-    const { stickyElementRef } = useStickyEvent({
-        callback: setIsHeaderStuck,
-        identifier: 'generic-app-list',
-        containerRef: appListContainerRef,
-    })
-
     const isArgoCDAppList = appType === AppListConstants.AppType.ARGO_APPS
     const isFluxCDAppList = appType === AppListConstants.AppType.FLUX_APPS
 
@@ -118,6 +112,13 @@ const GenericAppList = ({
         filteredAppsList = filteredAppsList.slice(offset, offset + pageSize)
         return { filteredAppsList, filteredListTotalSize }
     }, [appsList, filterConfig])
+
+    const { stickyElementRef } = useStickyEvent({
+        callback: setIsHeaderStuck,
+        identifier: 'generic-app-list',
+        containerRef: appListContainerRef,
+        isStickyElementMounted: dataStateType === AppListViewType.LIST && filteredListTotalSize > 0
+    })
 
     const closeSseConnection = (sseConnection: EventSource) => {
         sseConnection.close()
@@ -241,7 +242,7 @@ const GenericAppList = ({
         return (
             <div
                 ref={stickyElementRef}
-                className={`app-list__header app-list__header${isFluxCDAppList ? '__fluxcd' : ''} dc__position-sticky dc__top-47 ${
+                className={`app-list__header app-list__header${isFluxCDAppList ? '__fluxcd' : ''} dc__position-sticky dc__top-47 dc__transition--box-shadow ${
                     isHeaderStuck ? 'dc__box-shadow--header' : ''
                 }`}
             >

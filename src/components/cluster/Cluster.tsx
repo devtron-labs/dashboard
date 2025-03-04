@@ -31,6 +31,7 @@ import {
     ButtonVariantType,
     ButtonStyleType,
     ComponentSizeType,
+    useStickyEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react/headless'
@@ -353,6 +354,7 @@ const Cluster = ({
     const [showWindow, setShowWindow] = useState(false)
     const [confirmation, setConfirmation] = useState(false)
     const [prometheusToggleEnabled] = useState(!!prometheus_url)
+    const [isHeaderStuck, setIsHeaderStuck] = useState(false)
 
     const [prometheusAuthenticationType] = useState({
         type: prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
@@ -360,6 +362,12 @@ const Cluster = ({
     const authenticationType = prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
 
     const drawerRef = useRef(null)
+
+    const { stickyElementRef } = useStickyEvent({
+        callback: setIsHeaderStuck,
+        containerClassName: 'global-configuration__component-wrapper',
+        identifier: `cluster-list__${cluster_name}`,
+    })
 
     const isDefaultCluster = (): boolean => {
         return id == 1
@@ -657,7 +665,9 @@ const Cluster = ({
                     clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list'
                 }`}
             >
-                <List className="dc__border dc__position-sticky dc__top-0" key={clusterId} onClick={editModeToggle}>
+                <List internalRef={stickyElementRef} className={`dc__border dc__position-sticky dc__top-0 ${
+                    isHeaderStuck ? 'dc__box-shadow--header dc__no-border-radius' : ''
+                }`} key={clusterId} onClick={editModeToggle}>
                     {!clusterId && (
                         <List.Logo>
                             <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />
