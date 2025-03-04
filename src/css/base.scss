@@ -28,7 +28,6 @@
     --app-list-header-index: 3;
     --navigation-index: 14;
     --tooltip-index: 7;
-    --index-next-section: 3;
     --select-picker-menu-index: 20;
 }
 
@@ -240,15 +239,12 @@ a:focus {
     }
 }
 
+// To be removed by arun
 .dc__loading-wrapper {
     height: calc(100vh - 172px);
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.dc__container-below-header {
-    height: calc(100vh - 48px);
 }
 
 .dc__empty__subtitle {
@@ -820,7 +816,6 @@ button.anchor {
     transform: rotate(var(--rotateBy));
     transition: transform 0.3s;
 }
-
 
 .empty {
     width: 320px;
