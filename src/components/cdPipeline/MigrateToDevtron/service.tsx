@@ -11,7 +11,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '@Config/constants'
 import { getArgoInstalledExternalApps } from '@Components/app/list-new/AppListService'
-import { ReactComponent as ICHelmChart } from '@Icons/ic-helmchart.svg'
+import { ReactComponent as ICDefaultChart } from '@Icons/ic-default-chart.svg'
 import { ReactComponent as ICArgoCDApp } from '@Icons/ic-argocd-app.svg'
 import {
     ValidateMigrateToDevtronPayloadType,
@@ -68,7 +68,7 @@ const getExternalHelmAppList = async (
         icon: (
             <ImageWithFallback
                 imageProps={{ src: app.chartAvatar, alt: 'Helm Release', width: '100%', height: '100%' }}
-                fallbackImage={<ICHelmChart />}
+                fallbackImage={<ICDefaultChart />}
             />
         ),
     }))

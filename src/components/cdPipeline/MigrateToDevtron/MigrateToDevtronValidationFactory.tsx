@@ -1,9 +1,9 @@
+import { ComponentProps } from 'react'
 import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
-    InfoColourBar,
     Tooltip,
     ButtonComponentType,
     URLS as COMMON_URLS,
@@ -11,14 +11,13 @@ import {
     GenericSectionErrorState,
     DeploymentAppTypes,
     ImageWithFallback,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import { URLS } from '@Config/routes'
-import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
 import { ReactComponent as ICArgoCDApp } from '@Icons/ic-argocd-app.svg'
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
-import { ReactComponent as ICInfoFilled } from '@Icons/ic-info-filled.svg'
-import { ReactComponent as ICHelmChart } from '@Icons/ic-helmchart.svg'
+import { ReactComponent as ICDefaultChart } from '@Icons/ic-default-chart.svg'
 import { AddClusterFormPrefilledInfoType, AddEnvironmentFormPrefilledInfoType } from '@Components/cluster/cluster.type'
 import {
     ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY,
@@ -90,6 +89,7 @@ const MigrateToDevtronValidationFactory = ({
         chartIcon,
     } = validationResponse
     const { validationFailedReason, validationFailedMessage } = errorDetail || {}
+
     const isMigratingFromHelm = deploymentAppType === DeploymentAppTypes.HELM
     const deploymentAppTypeLabel = getDeploymentAppTypeLabel(isMigratingFromHelm)
 
@@ -347,31 +347,37 @@ const MigrateToDevtronValidationFactory = ({
     }
 
     const renderContentInfoBar = () => {
+        const commonInfoBlockProps: Pick<
+            ComponentProps<typeof InfoBlock>,
+            'borderConfig' | 'borderRadiusConfig' | 'size'
+        > = {
+            borderConfig: {
+                top: false,
+                bottom: false,
+                left: false,
+                right: false,
+            },
+            borderRadiusConfig: {
+                top: false,
+            },
+            size: ComponentSizeType.medium,
+        }
+
         if (shouldRenderInfoVariantWithContent) {
             return (
-                <InfoColourBar
-                    Icon={ICInfoFilled}
-                    message={getInfoBarInfoVariantMessage()}
-                    classname="dc__overflow-hidden py-6 px-10 bg__secondary border__secondary--top"
-                />
+                <InfoBlock variant="neutral" description={getInfoBarInfoVariantMessage()} {...commonInfoBlockProps} />
             )
         }
 
         if (shouldRenderInfoErrorVariantWithContent) {
-            return (
-                <InfoColourBar
-                    Icon={ICErrorExclamation}
-                    message={getInfoErrorVariantMessage()}
-                    classname="dc__overflow-hidden py-6 px-10 bcr-50 border__secondary--top"
-                />
-            )
+            return <InfoBlock variant="error" description={getInfoErrorVariantMessage()} {...commonInfoBlockProps} />
         }
 
         return null
     }
 
     return (
-        <div className="flexbox-col dc__gap-16 br-8 bg__primary border__secondary w-100 dc__overflow-hidden">
+        <div className="flexbox-col dc__gap-16 w-100 dc__overflow-hidden">
             <div className="flexbox px-16 pt-16 dc__content-space">
                 <div className="flexbox dc__gap-12">
                     {isMigratingFromHelm ? (
@@ -382,13 +388,13 @@ const MigrateToDevtronValidationFactory = ({
                                 src: chartIcon,
                                 alt: 'Helm Release',
                             }}
-                            fallbackImage={<ICHelmChart className="icon-dim-36 dc__no-shrink" />}
+                            fallbackImage={<ICDefaultChart className="icon-dim-36 dc__no-shrink" />}
                         />
                     ) : (
                         <ICArgoCDApp className="icon-dim-36 dc__no-shrink" />
                     )}
 
-                    <div className="flexbox-col dc__gap-2">
+                    <div className="flexbox-col">
                         <Tooltip content={appName}>
                             <h5 className="m-0 cn-9 fs-13 fw-6 lh-20 dc__truncate">{appName}</h5>
                         </Tooltip>
@@ -396,7 +402,7 @@ const MigrateToDevtronValidationFactory = ({
                         {status && (
                             <span
                                 data-testid="deployment-status-name"
-                                className={`app-summary__status-name fs-13 mr-8 fw-6 f-${status.toLowerCase()} dc__first-letter-capitalize--imp dc__truncate`}
+                                className={`app-summary__status-name fs-12 fw-4 lh-18 f-${status.toLowerCase()} dc__first-letter-capitalize--imp dc__truncate`}
                             >
                                 {status}
                             </span>
