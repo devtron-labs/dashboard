@@ -113,7 +113,7 @@ const MigrateToDevtronValidationFactory = ({
                 return (
                     <GenericSectionErrorState
                         title="Chart type mismatch"
-                        subTitle={`Argo CD application uses '${source.chartMetadata.savedChartName}' chart where as this application uses '${source.chartMetadata.requiredChartName}' chart. You can upload your own charts in Global Configuration > Deployment Charts.`}
+                        subTitle={`Argo CD application uses '${source.chartMetadata.requiredChartName}' chart where as this application uses '${source.chartMetadata.savedChartName}' chart. You can upload your own charts in Global Configuration > Deployment Charts.`}
                         reload={refetchValidationResponse}
                         {...GENERIC_SECTION_ERROR_STATE_COMMON_PROPS}
                     />
