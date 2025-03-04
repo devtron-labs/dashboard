@@ -48,6 +48,11 @@ body {
         sans-serif;
     background: var(--bg-tertiary);
 
+    &.modern-layout {
+        // Added fallback styling to bg tertiary (loaded from index.css)
+        background: var(--bg-body, var(--bg-tertiary));
+    }
+
     a {
         color: var(--B500);
     }
@@ -1366,7 +1371,7 @@ button.anchor {
     font-size: 12px;
     line-height: 1.6;
     color: var(--N900);
-    border: 1px solid var(--N200);
+    border: 1px solid var(--border-primary-translucent);
     background-color: var(--bg-overlay-primary);
 
     &.no-content-padding {
@@ -2062,6 +2067,15 @@ button.anchor {
     }
 }
 
+.border-top__secondary {
+    border-top: solid 1px var(--border-secondary);
+
+    &--important {
+        border-top: solid 1px var(--border-secondary) !important;
+    }
+}
+
+// Deprecate this class, use border-top__secondary instead
 .dc__border-top-n1 {
     border-top: solid 1px var(--border-secondary);
 
@@ -2834,6 +2848,10 @@ button.anchor {
 
 .mw-400 {
     min-width: 400px;
+}
+
+.mw-420 {
+    min-width: 420px;
 }
 
 .mw-600 {

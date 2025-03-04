@@ -20,6 +20,7 @@ import { MESSAGING_UI } from '../../../../../../config/constants'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { EventTableType } from './node.type'
 import { TERMINAL_STATUS, TERMINAL_TEXT } from './terminal/constants'
+import { AppThemeType, getComponentSpecificThemeClass } from '@devtron-labs/devtron-fe-common-lib'
 
 export const EventsTable = ({ loading, eventsList, isResourceBrowserView, errorValue, reconnect }: EventTableType) => {
     const renderEventsTable = () => {
@@ -37,7 +38,7 @@ export const EventsTable = ({ loading, eventsList, isResourceBrowserView, errorV
             return (
                 <div
                     data-testid="app-events-container"
-                    className="text__white dc__overflow-auto"
+                    className={`text__white dc__overflow-auto ${getComponentSpecificThemeClass(AppThemeType.dark)}`}
                     style={{
                         height: isResourceBrowserView ? 'calc(100vh - 119px)' : 'calc(100vh - 155px)',
                     }}

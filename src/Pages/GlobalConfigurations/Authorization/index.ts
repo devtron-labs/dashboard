@@ -15,3 +15,4 @@
  */
 
 export { default } from './Authorization.component'
+export * from './SSOLoginServices'
