@@ -25,10 +25,6 @@
         background: var(--bg-tertiary);
     }
 
-    .onboarding__bottom {
-        height: calc(100vh - 300px);
-    }
-
     .onboarding__line {
         width: 1px;
         height: 150px;
@@ -44,10 +40,6 @@
 
 .guide_skip a:hover {
     color: var(--B500);
-}
-
-.guide-body {
-    height: calc(100vh - 454px);
 }
 
 .common-guide__container {
