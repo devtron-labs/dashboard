@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { lazy, useState, useEffect, Suspense, isValidElement } from 'react'
+import { lazy, useState, useEffect, Suspense, isValidElement, PropsWithChildren } from 'react'
 import { Route, NavLink, Router, Switch, Redirect, useHistory, useLocation } from 'react-router-dom'
 import {
     showError,
@@ -46,6 +46,7 @@ import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.ser
 import { BodyType } from './globalConfiguration.type'
 import { GlobalConfigurationProvider, useGlobalConfiguration } from './GlobalConfigurationProvider'
 import { OffendingPipelineModalAppView } from '@Pages/GlobalConfigurations/PluginPolicy/OffendingPipelineModal'
+import { ListProps } from './types'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -817,13 +818,17 @@ const DropDown = ({ className = '', dataTestid = '', style = {}, src = null, ...
     )
 }
 
-export const List = ({ dataTestId = '', children = null, className = '', internalRef = null, ...props }) => {
-    return (
-        <div ref={internalRef} className={`list ${className}`} {...props} data-testid={dataTestId}>
-            {children}
-        </div>
-    )
-}
+export const List = ({
+    dataTestId = '',
+    children = null,
+    className = '',
+    internalRef = null,
+    ...props
+}: PropsWithChildren<ListProps>) => (
+    <div ref={internalRef} className={`list ${className}`} {...props} data-testid={dataTestId}>
+        {children}
+    </div>
+)
 
 List.Logo = Logo
 List.Title = Title
