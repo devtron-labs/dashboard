@@ -129,7 +129,7 @@ const MigrateToDevtronValidationFactory = ({
                 return (
                     <GenericSectionErrorState
                         title="Chart type mismatch"
-                        subTitle={`This ${deploymentAppTypeLabel} uses '${savedChartName}' chart where as this application uses '${requiredChartName}' chart. You can upload your own charts in Global Configuration > Deployment Charts.`}
+                        subTitle={`This ${deploymentAppTypeLabel} uses '${requiredChartName}' chart where as this application uses '${savedChartName}' chart. You can upload your own charts in Global Configuration > Deployment Charts.`}
                         reload={refetchValidationResponse}
                         {...GENERIC_SECTION_ERROR_STATE_COMMON_PROPS}
                     />
