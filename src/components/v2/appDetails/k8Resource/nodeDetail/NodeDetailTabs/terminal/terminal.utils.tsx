@@ -124,7 +124,8 @@ const connectionButton = (connectData: ConnectionButtonType) => {
             className="default-tt"
             arrow={false}
             placement="bottom"
-            content={connectData.connectTerminal ? 'Disconnect and terminate pod' : 'Connect to terminal'}
+            // NOTE: cluster terminal does not show this button instead it shows the connection switch button
+            content={connectData.connectTerminal ? 'Disconnect terminal' : 'Connect to terminal'}
         >
             {connectData.connectTerminal ? (
                 <span className="flex">

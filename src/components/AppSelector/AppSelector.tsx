@@ -15,6 +15,7 @@
  */
 
 import React, { useRef } from 'react'
+import { Props as SelectProps, SelectInstance } from 'react-select'
 import AsyncSelect from 'react-select/async'
 import { appListOptions, appSelectorStyle, DropdownIndicator, noOptionsMessage } from './AppSelectorUtil'
 import { abortPreviousRequests } from '@devtron-labs/devtron-fe-common-lib'
@@ -27,6 +28,8 @@ interface AppSelectorType {
 }
 
 export default function AppSelector({ onChange, appId, appName, isJobView }: AppSelectorType) {
+    const selectRef = useRef<SelectInstance>(null)
+
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
     const defaultOptions = [{ value: appId, label: appName }]
@@ -36,8 +39,17 @@ export default function AppSelector({ onChange, appId, appName, isJobView }: App
             abortControllerRef,
         )
 
+    const handleOnKeyDown: SelectProps['onKeyDown'] = (event) => {
+        if (event.key === 'Escape') {
+            selectRef.current?.inputRef.blur()
+        }
+    }
+
     return (
         <AsyncSelect
+            ref={selectRef}
+            blurInputOnSelect
+            onKeyDown={handleOnKeyDown}
             defaultOptions
             loadOptions={loadAppListOptions}
             noOptionsMessage={noOptionsMessage}

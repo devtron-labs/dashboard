@@ -311,7 +311,7 @@ export const AppMetrics: React.FC<{
     return (
         <section
             data-testid="app-metrices-wrapper"
-            className="app-summary bg__primary pl-24 pr-24 pb-20 w-100 dc__border-bottom-n1"
+            className="app-summary bg__primary pl-24 pr-24 pb-20 w-100"
         >
             {(appMetrics || infraMetrics) && (
                 <div className="flex" style={{ justifyContent: 'space-between', height: '68px' }}>

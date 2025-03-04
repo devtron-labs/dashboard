@@ -28,6 +28,8 @@ import {
     DATE_TIME_FORMATS,
     SortableTableHeaderCell,
     stringComparatorBySortOrder,
+    useStickyEvent,
+    getClassNameForStickyHeaderWithShadow,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -84,6 +86,7 @@ const HelmAppList = ({
     changePage,
     changePageSize,
     setShowPulsatingDot,
+    appListContainerRef,
 }: HelmAppListProps) => {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING)
     const [errorResponseCode, setErrorResponseCode] = useState(0)
@@ -92,6 +95,7 @@ const HelmAppList = ({
     const [sseConnection, setSseConnection] = useState<EventSource>(undefined)
     const [externalHelmListFetchErrors, setExternalHelmListFetchErrors] = useState<string[]>([])
     const [showGuidedContentCards, setShowGuidedContentCards] = useState(false)
+    const [isHeaderStuck, setIsHeaderStuck] = useState<boolean>(false)
 
     const { appStatus, environment, cluster, namespace, project, searchKey, sortBy, sortOrder, offset, pageSize } =
         filterConfig
@@ -134,6 +138,13 @@ const HelmAppList = ({
 
         return { filteredHelmAppList, filteredListTotalSize }
     }, [devtronInstalledHelmAppsList, externalHelmAppsList, filterConfig])
+
+    const { stickyElementRef } = useStickyEvent({
+        identifier: 'helm-app-list',
+        containerRef: appListContainerRef,
+        callback: setIsHeaderStuck,
+        isStickyElementMounted: dataStateType === AppListViewType.LIST && filteredListTotalSize > 0
+    })
 
     // component load
     useEffect(() => {
@@ -326,7 +337,9 @@ const HelmAppList = ({
 
     function renderHeaders() {
         return (
-            <div className="app-list__header dc__position-sticky dc__top-47">
+            <div ref={stickyElementRef} className={`app-list__header dc__top-47 ${
+                getClassNameForStickyHeaderWithShadow(isHeaderStuck)
+            }`}>
                 <div className="app-list__cell--icon" />
                 <div className="app-list__cell app-list__cell--name">
                     {sseConnection && <span>{APP_LIST_HEADERS.ReleaseName}</span>}

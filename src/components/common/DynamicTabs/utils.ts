@@ -27,9 +27,9 @@ export const getClassNameForVariant = (variant: DynamicTabsVariantType) => {
 
     switch (variant) {
         case DynamicTabsVariantType.ROUNDED:
-            return `${prefix}rounded bg__primary`
+            return `${prefix}rounded`
         case DynamicTabsVariantType.RECTANGULAR:
-            return `${prefix}rectangular bg__tertiary`
+            return `${prefix}rectangular`
         default:
             return ''
     }

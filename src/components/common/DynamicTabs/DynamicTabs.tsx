@@ -62,6 +62,7 @@ const DynamicTabs = ({
     setIsDataStale = noop,
     timerConfig,
     iconsConfig = {},
+    backgroundColorToken,
 }: DynamicTabsProps) => {
     const { push } = useHistory()
 
@@ -268,7 +269,7 @@ const DynamicTabs = ({
 
     return (
         <div
-            className={`dynamic-tabs-section ${getClassNameForVariant(variant)} flexbox pl-12 pr-12 w-100 dc__outline-none-imp h-36 w-100 dc__box-shadow`}
+            className={`dynamic-tabs-section ${getClassNameForVariant(variant)} ${backgroundColorToken} dc__transition--background flexbox pl-12 pr-12 w-100 dc__outline-none-imp h-36 w-100 dc__box-shadow`}
         >
             <div
                 className={`dc__separated-flexbox dc__separated-flexbox--tight ${dynamicTabs.length ? 'separator separator-right' : ''}`}
