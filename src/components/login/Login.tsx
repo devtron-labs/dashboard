@@ -52,6 +52,8 @@ import { SSOProvider } from './constants'
 
 const NetworkStatusInterface = !importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
 
+const getTermsAndConditions = importComponentFromFELibrary('getTermsAndConditions', null, 'function')
+
 const Login = () => {
     const [continueUrl, setContinueUrl] = useState('')
     const [loginList, setLoginList] = useState<SSOConfigLoginList[]>([])
@@ -77,8 +79,6 @@ const Login = () => {
     const { setEmail } = useUserEmail()
 
     const [initLoading, initResult] = useAsync(() => Promise.allSettled([getSSOConfigList(), dashboardAccessed()]), [])
-
-    const getTermsAndConditions = importComponentFromFELibrary('getTermsAndConditions', null, 'function')
 
     const setLoginNavigationURL = () => {
         let queryParam = searchParams.continue
@@ -321,9 +321,9 @@ const Login = () => {
 
     const renderLoginContent = () => (
         <Switch>
-            <Route path={`${URLS.LOGIN_SSO}`} component={renderSSOLoginPage} />
-            <Route path={`${URLS.LOGIN_ADMIN}`} component={renderAdminLoginPage} />
-            <Redirect to={`${URLS.LOGIN_SSO}`} />
+            <Route path={URLS.LOGIN_SSO} component={renderSSOLoginPage} />
+            <Route path={URLS.LOGIN_ADMIN} component={renderAdminLoginPage} />
+            <Redirect to={URLS.LOGIN_SSO} />
         </Switch>
     )
 
