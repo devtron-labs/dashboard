@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component, Fragment, SyntheticEvent } from 'react'
+import React, { Component, ComponentType, Fragment, SyntheticEvent } from 'react'
 import { withRouter } from 'react-router-dom'
 import {
     showError,
@@ -30,6 +30,7 @@ import {
     FeatureTitleWithInfo,
     ToastVariantType,
     ToastManager,
+    useMainContext,
     CustomInputProps,
     InfoBlock,
     PasswordField,
@@ -108,7 +109,7 @@ const GitInfoTab: React.FC<{ gitLink: string; gitProvider: string; gitProviderGr
     return <InfoBlock variant="help" heading="Recommended" description={renderDescription()} />
 }
 
-class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
+class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefinedGitOpsEnabled: boolean }, GitOpsState> {
     constructor(props) {
         super(props)
         this.state = {
@@ -1328,7 +1329,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         const renderDirectoryManagementInGitOps = () => (
             <div className="flex column left w-100 dc__gap-16 pb-16">
                 <div className="fw-6 cn-9 fs-14">Directory management in Git</div>
-                {window._env_.FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE ? (
+                {window._env_.FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE &&
+                this.props.isFeatureUserDefinedGitOpsEnabled ? (
                     <RadioGroup
                         className="radio-group-no-border"
                         name="trigger-type"
@@ -1434,4 +1436,11 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 }
 
-export default withRouter(GitOpsConfiguration)
+const withIsFeatureUserDefinedGitOpsEnabled = (Component: ComponentType) => (props) => {
+    const {
+        featureGitOpsFlags: { isFeatureUserDefinedGitOpsEnabled },
+    } = useMainContext()
+    return <Component isFeatureUserDefinedGitOpsEnabled={isFeatureUserDefinedGitOpsEnabled} {...props} />
+}
+
+export default withIsFeatureUserDefinedGitOpsEnabled(withRouter(GitOpsConfiguration))

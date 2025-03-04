@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
+import { SyntheticEvent } from 'react'
 import {
+    DeploymentAppTypes,
     DeploymentStrategy,
     Environment,
+    TriggerType,
     SavedDeploymentStrategy,
     VariableType,
+    NodeStatusDTO,
+    CDFormType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 export const CD_PATCH_ACTION = {
@@ -127,4 +132,108 @@ export interface AdvanceCDPipelineModalProps {
 export interface InputVariablesFromInputListType {
     preBuildStage: Map<string, VariableType>[]
     postBuildStage: Map<string, VariableType>[]
+}
+
+export enum MigrationSourceValidationReasonType {
+    CLUSTER_NOT_FOUND = 'ClusterNotFound',
+    ENVIRONMENT_NOT_FOUND = 'EnvironmentNotFound',
+    APPLICATION_ALREADY_LINKED = 'ApplicationAlreadyLinked',
+    CHART_TYPE_MISMATCH = 'ChartTypeMismatch',
+    CHART_VERSION_NOT_FOUND = 'ChartVersionNotFound',
+    GITOPS_NOT_FOUND = 'GitOpsNotFound',
+    INTERNAL_SERVER_ERROR = 'InternalServerError',
+    ENVIRONMENT_ALREADY_PRESENT = 'EnvironmentAlreadyPresent',
+    ENFORCED_POLICY_VIOLATION = 'EnforcedPolicyViolation',
+}
+
+interface ValidateMigrateToDevtronCommonPayloadType {
+    deploymentAppName: string
+    appId: number
+}
+
+interface ValidationPayloadApplicationMetaDataType {
+    applicationObjectClusterId: number
+    applicationObjectNamespace: string
+}
+
+export type ValidateMigrateToDevtronPayloadType = ValidateMigrateToDevtronCommonPayloadType &
+    (
+        | {
+              deploymentAppType: DeploymentAppTypes.GITOPS
+              applicationMetadata: ValidationPayloadApplicationMetaDataType
+              helmReleaseMetaData?: never
+          }
+        | {
+              deploymentAppType: DeploymentAppTypes.HELM
+              helmReleaseMetaData: {
+                  releaseClusterId: number
+                  releaseNamespace: string
+              }
+              applicationMetadata?: never
+          }
+    )
+
+interface ValidateMigrationDestinationDetailsDTO {
+    clusterName: string
+    clusterServerUrl: string
+    namespace: string
+    environmentName: string
+    environmentId: number
+}
+
+interface ValidateMigrationSourceDetailsDTO {
+    repoURL: string
+    chartPath: string
+    chartMetadata: {
+        requiredChartVersion: string
+        savedChartName: string
+        valuesFileName: string
+        requiredChartName: string
+    }
+}
+
+export interface ValidateMigrationSourceServiceParamsType {
+    migrateToDevtronFormState: MigrateToDevtronFormState
+    appId: number
+}
+
+export interface ValidateMigrationSourceDTO {
+    isLinkable: boolean
+    errorDetail: {
+        validationFailedReason: MigrationSourceValidationReasonType
+        validationFailedMessage: string
+    }
+    applicationMetadata: {
+        source: ValidateMigrationSourceDetailsDTO
+        destination: ValidateMigrationDestinationDetailsDTO
+        status: NodeStatusDTO
+    }
+}
+
+export interface MigrateFromArgoFormState {
+    appName: string | null
+    namespace: string | null
+    clusterId: number | null
+    clusterName: string | null
+    validationResponse: ValidateMigrationSourceDTO | null
+}
+
+export interface MigrateToDevtronFormState {
+    deploymentAppType: Extract<DeploymentAppTypes, DeploymentAppTypes.HELM | DeploymentAppTypes.GITOPS> | null
+    migrateFromArgoFormState: MigrateFromArgoFormState
+    triggerType: (typeof TriggerType)[keyof typeof TriggerType]
+}
+
+// Will generalize this type as per helm in next PR of migrating helm release to devtron
+export interface MigrateArgoAppToCDPipelineRequiredPayloadType
+    extends Pick<MigrateToDevtronFormState, 'triggerType'>,
+        Pick<CDFormType, 'environmentId' | 'environmentName' | 'namespace'>,
+        ValidationPayloadApplicationMetaDataType {
+    deploymentAppName: ValidateMigrateToDevtronPayloadType['deploymentAppName']
+    deploymentAppType: DeploymentAppTypes
+}
+
+export interface TriggerTypeRadioProps {
+    value: (typeof TriggerType)[keyof typeof TriggerType]
+    onChange: (event: SyntheticEvent) => void
 }

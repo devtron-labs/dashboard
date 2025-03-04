@@ -22,7 +22,10 @@ import {
     ClusterComponentStatus,
     ClusterTerminalParamsType,
     emptyClusterTerminalParamsData,
+    AddClusterFormPrefilledInfoType,
+    AddEnvironmentFormPrefilledInfoType,
 } from './cluster.type'
+import { ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY, ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from './constants'
 
 export function getEnvName(components: ClusterComponentType[], agentInstallationStage): string {
     let nonTerminatingStatus: ClusterComponentStatusType[] = []
@@ -90,4 +93,31 @@ export const createTaintsList = (list: any[], nodeLabel: string): Map<string, No
         }
         return taints
     }, new Map<string, NodeTaintType[]>())
+}
+
+export const getServerURLFromLocalStorage = (fallbackServerUrl: string): string => {
+    const stringifiedClusterData = localStorage.getItem(ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY)
+
+    if (stringifiedClusterData) {
+        try {
+            const clusterData: AddClusterFormPrefilledInfoType = JSON.parse(stringifiedClusterData)
+            const serverURL = clusterData?.serverURL || fallbackServerUrl
+            return serverURL
+        } catch {}
+    }
+
+    return fallbackServerUrl
+}
+
+export const getNamespaceFromLocalStorage = (fallbackNamespace: string): string => {
+    const stringifiedEnvData = localStorage.getItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY)
+
+    if (stringifiedEnvData) {
+        try {
+            const envData: AddEnvironmentFormPrefilledInfoType = JSON.parse(stringifiedEnvData)
+            const namespace = envData?.namespace || fallbackNamespace
+            return namespace
+        } catch {}
+    }
+      return fallbackNamespace
 }
