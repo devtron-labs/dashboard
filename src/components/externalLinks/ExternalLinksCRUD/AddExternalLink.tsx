@@ -123,12 +123,12 @@ export default function AddExternalLink({
         if (selectedIdentifiers.length === 0) {
             if (selectedLink.type === ExternalLinkScopeType.ClusterLevel) {
                 for (const _selectedIdentifier of selectedLink.identifiers) {
-                    const _seletedCluster = clusters.find(
+                    const _selectedCluster = clusters.find(
                         (_cluster) => _selectedIdentifier.clusterId === +_cluster.value,
                     )
 
-                    if (_seletedCluster) {
-                        selectedIdentifiers.push(_seletedCluster)
+                    if (_selectedCluster) {
+                        selectedIdentifiers.push(_selectedCluster)
                     }
                 }
             } else {
@@ -140,15 +140,15 @@ export default function AddExternalLink({
                             type: _selectedIdentifier.type,
                         })
                     } else {
-                        const _seletedApp = allApps.find((_app) => {
+                        const _selectedApp = allApps.find((_app) => {
                             const _appValue = _app.value.split('|')
                             return (
                                 _selectedIdentifier.identifier === _appValue[0] &&
                                 _selectedIdentifier.type === _appValue[2]
                             )
                         })
-                        if (_seletedApp) {
-                            selectedIdentifiers.push(_seletedApp)
+                        if (_selectedApp) {
+                            selectedIdentifiers.push(_selectedApp)
                         }
                     }
                 }
@@ -296,7 +296,7 @@ export default function AddExternalLink({
                                     showDelete={linksLen > 1}
                                 />
                                 {linksLen > 1 && idx !== linksLen - 1 && (
-                                    <hr className="external-links-divider mt-16 mb-16" />
+                                    <div className="divider__primary" />
                                 )}
                             </Fragment>
                         )
