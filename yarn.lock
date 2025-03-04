@@ -1105,10 +1105,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@1.8.2-beta-6":
-  version "1.8.2-beta-6"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.8.2-beta-6.tgz#207921ca0af310477f7dc31cc12e03b52a823bb2"
-  integrity sha512-N9/5ajac4d7iRhgmkilMQP0Y4f7bVw45jhBxTCg4Khsxy1YACCfr3HeGDlvFEYUDf/JsMwJee9ZxAM/xzgDgOA==
+"@devtron-labs/devtron-fe-common-lib@1.8.2-beta-7":
+  version "1.8.2-beta-7"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.8.2-beta-7.tgz#db8b8827d4f59f7f388f846bca581a09200e2cbb"
+  integrity sha512-7QCEY/+jspwWQkLlsxXXPnpmhv8t2SUsSvwtYAZdGe8BcxnCmwzMtujcadVAWhF3yzjwevGAciBsUeqbXJGszQ==
   dependencies:
     "@codemirror/lang-json" "6.0.1"
     "@codemirror/lang-yaml" "6.1.2"
@@ -3233,16 +3233,16 @@
     "@codemirror/view" "^6.0.0"
 
 "@uiw/codemirror-theme-github@^4.23.7":
-  version "4.23.9"
-  resolved "https://registry.yarnpkg.com/@uiw/codemirror-theme-github/-/codemirror-theme-github-4.23.9.tgz#4ee89ea0c029d7cd8b234f178445a5d27a6b71f0"
-  integrity sha512-QwZLG5emItul2e9yrnLUayTvT1ISrBTOICpME598ysM5JmhiL+dMmsHwfWUGo0C61G+rTGhDv9AeRdR9z8qXJw==
+  version "4.23.10"
+  resolved "https://registry.yarnpkg.com/@uiw/codemirror-theme-github/-/codemirror-theme-github-4.23.10.tgz#0ef8a0cb0a2cf51eae1e1928ef9b75ffa2a824e4"
+  integrity sha512-jTg2sHAcU1d+8x0O+EBDI71rtJ8PWKIW8gzy+SW4wShQTAdsqGHk5y1ynt3KIeoaUkqngLqAK4SkhPaUKlqZqg==
   dependencies:
-    "@uiw/codemirror-themes" "4.23.9"
+    "@uiw/codemirror-themes" "4.23.10"
 
-"@uiw/codemirror-themes@4.23.9":
-  version "4.23.9"
-  resolved "https://registry.yarnpkg.com/@uiw/codemirror-themes/-/codemirror-themes-4.23.9.tgz#1d986d04bb5a3df5c1634f6bf4612e335ee30650"
-  integrity sha512-cYVZPVxMCyxUUOsdzdMH5d9N3AfWLxPg519GtEKwJ0FA6YXJSX0JG1KH6oXQ1JID105pc66+AXTBHLrCEDsyLA==
+"@uiw/codemirror-themes@4.23.10":
+  version "4.23.10"
+  resolved "https://registry.yarnpkg.com/@uiw/codemirror-themes/-/codemirror-themes-4.23.10.tgz#380ef1f8b0538474340d5e56c19aa994392c4a11"
+  integrity sha512-dU0UgEEgEXCAYpxuVDQ6fovE82XsqgHZckTJOH6Bs8xCi3Z7dwBKO4pXuiA8qGDwTOXOMjSzfi+pRViDm7OfWw==
   dependencies:
     "@codemirror/language" "^6.0.0"
     "@codemirror/state" "^6.0.0"
@@ -8470,7 +8470,7 @@ tsconfig-paths@^4.2.0:
 
 tslib@2.7.0, tslib@^2.0.1, tslib@^2.1.0, tslib@^2.6.2:
   version "2.7.0"
-  resolved "https://registry.npmjs.org/tslib/-/tslib-2.7.0.tgz"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.7.0.tgz#d9b40c5c40ab59e8738f297df3087bf1a2690c01"
   integrity sha512-gLXCKdN1/j47AiHiOkJN69hJmcbGTHI0ImLmbYLHykhgeN0jVGola9yVjFgzCUklsZQMW55o+dW7IXv3RCXDzA==
 
 tslib@^1.8.1, tslib@^1.9.3:
