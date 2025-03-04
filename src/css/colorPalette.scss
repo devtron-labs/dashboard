@@ -200,7 +200,7 @@ $black: 0, 0, 0;
     --bg-toast: var(--N300);
     --bg-sidebar: rgb(46, 49, 66);
     --bg-sidebar-modern-layout: rgb(44, 45, 53);
-    --bg-sidebar-item-selected: rgba(#{$white}, 0.35);
+    --bg-sidebar-item-selected: rgba(#{$white}, 0.25);
     --bg-shimmer-loader: linear-gradient(90deg, var(--N50) 0%, var(--N200) 50%, var(--N50) 80%);
     --bg-hover: rgba(#{$white}, 0.07);
     --bg-body: var(--bg-tertiary);
