@@ -18,7 +18,6 @@ import { FunctionComponent, useEffect, useState } from 'react'
 import {
     GitOpsAuthModeType,
     InfoBlock,
-    InfoColourBar,
     Progressing,
     showError,
     ToastManager,
@@ -28,7 +27,6 @@ import { gitOpsConfigDevtron, getGitOpsRepoConfig } from '../../services/service
 import UserGitRepo from './UserGitRepo'
 import { UserGitRepoConfigurationProps } from './gitops.type'
 import { repoType } from '../../config'
-import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { ReloadNoGitOpsRepoConfiguredModal } from '../workflowEditor/NoGitOpsRepoConfiguredWarning'
 
 const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> = ({
