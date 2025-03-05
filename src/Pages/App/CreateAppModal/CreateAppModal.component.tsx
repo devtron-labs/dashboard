@@ -325,7 +325,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
     }
 
     return (
-        <Drawer position="right" width="1024px">
+        <Drawer position="right" width="1024px" onEscape={handleClose}>
             <div className="h-100 bg__modal--primary flexbox-col dc__overflow-hidden">
                 <HeaderSection isJobView={isJobView} handleClose={handleClose} isCloseDisabled={isSubmitting} />
                 <div className="flexbox flex-grow-1 dc__overflow-hidden">
@@ -379,7 +379,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                                         </div>
                                     </div>
                                     <div className="divider__secondary--horizontal" />
-                                    <div className="create-app-modal__template">
+                                    <div className="flexbox-col flex-grow-1 dc__overflow-auto create-app-modal__template">
                                         <div className="create-app-modal__template__loader">
                                             <Progressing size={32} />
                                         </div>

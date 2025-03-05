@@ -85,6 +85,7 @@ const ApplicationInfoForm = ({
                         !isJobView && 'Apps are NOT env specific and can be used to deploy to multiple environments.'
                     }
                     fullWidth
+                    autoFocus
                 />
             </div>
             <Textarea
