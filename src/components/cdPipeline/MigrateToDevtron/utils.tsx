@@ -46,11 +46,7 @@ export const sanitizeValidateMigrationSourceResponse = (
 
         requiredChartName: chartInfoSource?.requiredChartName || '',
         savedChartName: chartInfoSource?.savedChartName || '',
-
-        requiredChartVersion:
-            deploymentAppType === DeploymentAppTypes.GITOPS
-                ? argoAppSourceDetails?.chartMetadata?.requiredChartVersion || ''
-                : helmReleaseMetadata?.chart?.metadata?.version || '',
+        requiredChartVersion: chartInfoSource?.requiredChartVersion || '',
     }
 
     return {

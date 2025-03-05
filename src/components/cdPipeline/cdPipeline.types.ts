@@ -182,14 +182,17 @@ interface ValidateMigrationDestinationDetailsDTO {
     environmentId: number
 }
 
+interface ChartMetadataCommonDTO {
+    requiredChartVersion: string
+    savedChartName: string
+    requiredChartName: string
+}
+
 interface ValidateMigrationSourceDetailsDTO {
     repoURL: string
     chartPath: string
-    chartMetadata: {
-        requiredChartVersion: string
-        savedChartName: string
+    chartMetadata: ChartMetadataCommonDTO & {
         valuesFileName: string
-        requiredChartName: string
     }
 }
 
@@ -217,11 +220,8 @@ export interface ValidateMigrationSourceDTO {
             status: string
         }
         chart: {
-            metadata: {
-                requiredChartName: string
-                savedChartName: string
+            metadata: ChartMetadataCommonDTO & {
                 home: string
-                version: string
                 icon: string
                 apiVersion: string
                 deprecated: boolean
