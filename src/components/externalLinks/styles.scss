@@ -14,5 +14,24 @@
  * limitations under the License.
  */
 
-export { default } from './Authorization.component'
-export * from './SSOLoginServices'
+.external-links-container {
+
+    &.error-view {
+        min-width: 100%;
+    }
+
+    &.app-config-view__listing {
+        height: calc(100% - 110px);
+    }
+
+    .external-link-list__row {
+        display: grid;
+        grid-template-columns: 24px 144px minmax(100px, calc(59% - 322px)) 100px minmax(100px, 59%) 56px;
+    }
+
+    .external-link-list__row__app-config {
+        display: grid;
+        grid-template-columns: 24px 144px minmax(100px, calc(59% - 322px)) minmax(100px, 59%) 56px;
+    }
+
+}
