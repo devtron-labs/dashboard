@@ -37,6 +37,7 @@ import {
     useMainContext,
     useSuperAdmin,
     ErrorScreenNotAuthorized,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useHistory } from 'react-router-dom'
 import yamlJsParser from 'yaml'
@@ -107,7 +108,9 @@ export default function BuildCD({
         setReloadNoGitOpsRepoConfiguredModal,
     } = useContext(pipelineContext)
 
-    const { featureGitOpsFlags: { isFeatureArgoCdMigrationEnabled } } = useMainContext()
+    const {
+        featureGitOpsFlags: { isFeatureArgoCdMigrationEnabled },
+    } = useMainContext()
     const { isSuperAdmin } = useSuperAdmin()
 
     const validationRules = new ValidationRules()
@@ -188,7 +191,7 @@ export default function BuildCD({
                 configMaps: [],
                 secrets: [],
             }
-            
+
             // Only readonly field not to be consumed while sending
             _form.isClusterCdActive = selection.isClusterCdActive
             _form.runPreStageInEnv = getPrePostStageInEnv(
@@ -324,7 +327,7 @@ export default function BuildCD({
 
     const renderTriggerType = () => (
         <TriggerTypeRadio
-            value={formData.triggerType ? formData.triggerType as TriggerTypeRadioProps['value']  : TriggerType.Auto}
+            value={formData.triggerType ? (formData.triggerType as TriggerTypeRadioProps['value']) : TriggerType.Auto}
             onChange={handleTriggerTypeChange}
         />
     )
@@ -768,6 +771,33 @@ export default function BuildCD({
         )
     }
 
+    const renderSelectMigrateFromRadioGroup = (deploymentAppType: MigrateToDevtronFormState['deploymentAppType']) => (
+        <RadioGroupItem dataTestId={`${deploymentAppType}-radio-item`} value={deploymentAppType}>
+            <Tooltip
+                alwaysShowTippyOnHover
+                content={
+                    <div className="flexbox-col dc__gap-2">
+                        <h6 className="m-0 fs-12 fw-6 lh-18">
+                            {deploymentAppType === DeploymentAppTypes.HELM
+                                ? 'Migrate helm release'
+                                : 'Migrate Argo CD Application'}
+                        </h6>
+
+                        <p className="m-0 fs-12 fw-4 lh-18">
+                            {deploymentAppType === DeploymentAppTypes.HELM
+                                ? 'Migrate an existing Helm Release to manage deployments via CD pipeline'
+                                : 'Migrate an existing Argo CD Application to manage deployments via CD pipeline'}
+                        </p>
+                    </div>
+                }
+            >
+                <span className="cn-9 fs-13 fw-4 lh-20 dc__underline-dotted">
+                    {deploymentAppType === DeploymentAppTypes.HELM ? 'Helm Release' : 'Argo CD Application'}
+                </span>
+            </Tooltip>
+        </RadioGroupItem>
+    )
+
     const renderBuild = () => {
         if (releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && !isAdvanced && MigrateHelmReleaseBody) {
             if (!isSuperAdmin) {
@@ -796,19 +826,8 @@ export default function BuildCD({
                             name="migrate-from-app-type"
                             onChange={handleMigrateFromAppTypeChange}
                         >
-                            <RadioGroupItem
-                                dataTestId={`${DeploymentAppTypes.HELM}-radio-item`}
-                                value={DeploymentAppTypes.HELM}
-                            >
-                                <span className="cn-9 fs-13 fw-4 lh-20 dc__underline-dotted">Helm Release</span>
-                            </RadioGroupItem>
-
-                            <RadioGroupItem
-                                dataTestId={`${DeploymentAppTypes.GITOPS}-radio-item`}
-                                value={DeploymentAppTypes.GITOPS}
-                            >
-                                <span className="cn-9 fs-13 fw-4 lh-20 dc__underline-dotted">Argo CD Application</span>
-                            </RadioGroupItem>
+                            {renderSelectMigrateFromRadioGroup(DeploymentAppTypes.HELM)}
+                            {renderSelectMigrateFromRadioGroup(DeploymentAppTypes.GITOPS)}
                         </RadioGroup>
                     </div>
 
@@ -861,9 +880,7 @@ export default function BuildCD({
 
                 {isAdvanced ? renderAdvancedDeploymentStrategy() : renderBasicDeploymentStrategy()}
 
-                {isAdvanced &&
-                    ApprovalPolicyRedirectCard &&
-                    <ApprovalPolicyRedirectCard />}
+                {isAdvanced && ApprovalPolicyRedirectCard && <ApprovalPolicyRedirectCard />}
 
                 {isAdvanced && (
                     <>
