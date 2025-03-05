@@ -1,0 +1,23 @@
+.create-app-modal__template {
+    position: relative;
+
+    &:has([data-testid="progressing"]:not(.create-app-modal__template__loader > [data-testid="progressing"])) {
+        overflow: hidden;
+
+        .create-app-modal__template__loader {
+            display: block;
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            z-index: 1;
+        }
+
+        .create-app-modal__template__content {
+            visibility: hidden;
+        }
+    }
+
+    &__loader {
+        display: none;
+    }
+}

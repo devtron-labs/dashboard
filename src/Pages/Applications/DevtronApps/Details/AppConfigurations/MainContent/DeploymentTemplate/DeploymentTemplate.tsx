@@ -60,6 +60,7 @@ import {
     DraftAction,
     checkIfPathIsMatching,
     FloatingVariablesSuggestions,
+    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt, useLocation, useParams } from 'react-router-dom'
 import YAML from 'yaml'
@@ -149,6 +150,7 @@ const DeploymentTemplate = ({
     environmentName,
     clusterId,
     fetchEnvConfig,
+    isTemplateView,
 }: DeploymentTemplateProps) => {
     // If envId is there, then it is from envOverride
     const { appId, envId } = useParams<BaseURLParams>()
@@ -255,7 +257,12 @@ const DeploymentTemplate = ({
 
     const isGuiSupported = isEditMode && !showDeleteOverrideDraftEmptyState
 
-    const baseDeploymentTemplateURL = getAppComposeURL(appId, APP_COMPOSE_STAGE.DEPLOYMENT_TEMPLATE)
+    const baseDeploymentTemplateURL = getAppComposeURL(
+        appId,
+        APP_COMPOSE_STAGE.DEPLOYMENT_TEMPLATE,
+        null,
+        isTemplateView,
+    )
 
     /**
      * Means has no global config
@@ -335,7 +342,13 @@ const DeploymentTemplate = ({
                 },
                 guiSchema,
             },
-        } = await getBaseDeploymentTemplate(+appId, +globalChartDetails.id, abortSignal, globalChartDetails.name)
+        } = await getBaseDeploymentTemplate(
+            +appId,
+            +globalChartDetails.id,
+            abortSignal,
+            globalChartDetails.name,
+            isTemplateView,
+        )
 
         const stringifiedTemplate = YAMLStringify(defaultAppOverride, { simpleKeys: true })
 
@@ -761,7 +774,7 @@ const DeploymentTemplate = ({
 
         const {
             result: { globalConfig, environmentConfig, guiSchema, IsOverride, schema, readme, appMetrics },
-        } = await getEnvOverrideDeploymentTemplate(+appId, +envId, +chartInfo.id, chartInfo.name)
+        } = await getEnvOverrideDeploymentTemplate(+appId, +envId, +chartInfo.id, chartInfo.name, isTemplateView)
 
         const {
             id,
@@ -985,8 +998,10 @@ const DeploymentTemplate = ({
         try {
             reloadEnvironments()
             const [chartRefsDataResponse, lockedKeysConfigResponse] = await Promise.allSettled([
-                getChartList({ appId, envId }),
-                getJsonPath ? getJsonPath(appId, envId || BASE_CONFIGURATION_ENV_ID) : Promise.resolve(null),
+                getChartList({ appId, envId, isTemplateView }),
+                getJsonPath && !isTemplateView
+                    ? getJsonPath(appId, envId || BASE_CONFIGURATION_ENV_ID)
+                    : Promise.resolve(null),
             ])
 
             if (chartRefsDataResponse.status === 'rejected') {
@@ -1072,7 +1087,8 @@ const DeploymentTemplate = ({
      */
     const getSaveAPIService = (): ((
         payload: ReturnType<typeof prepareDataToSave>,
-        abortSignal?: AbortSignal,
+        abortSignal: AbortSignal,
+        isTemplateView: AppConfigProps['isTemplateView'],
     ) => Promise<ResponseType<any>>) => {
         if (!envId) {
             return isUpdateView ? updateBaseDeploymentTemplate : createBaseDeploymentTemplate
@@ -1081,7 +1097,13 @@ const DeploymentTemplate = ({
         return isUpdateView
             ? updateEnvDeploymentTemplate
             : (payload, abortSignal) =>
-                  createEnvDeploymentTemplate(+appId, +envId, payload as UpdateEnvironmentDTPayloadType, abortSignal)
+                  createEnvDeploymentTemplate(
+                      +appId,
+                      +envId,
+                      payload as UpdateEnvironmentDTPayloadType,
+                      abortSignal,
+                      isTemplateView,
+                  )
     }
 
     const getSuccessToastMessage = (): string => {
@@ -1106,7 +1128,7 @@ const DeploymentTemplate = ({
 
         try {
             const apiService = getSaveAPIService()
-            const response = await apiService(prepareDataToSave(true), null)
+            const response = await apiService(prepareDataToSave(true), null, isTemplateView)
 
             const isLockConfigError = !!response?.result?.isLockConfigError
 
@@ -1854,6 +1876,7 @@ const DeploymentTemplate = ({
                         handleClose={handleCloseDeleteOverrideDialog}
                         handleProtectionError={handleDeleteOverrideProtectionError}
                         reloadEnvironments={reloadEnvironments}
+                        isTemplateView={isTemplateView}
                         environmentName={environmentName}
                     />
                 )}

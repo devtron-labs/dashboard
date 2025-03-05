@@ -32,6 +32,7 @@ import {
     SelectPicker,
     ServerErrors,
     getIsRequestAborted,
+    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
@@ -115,7 +116,7 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
     const { path } = useRouteMatch()
     const { environmentId, setEnvironmentId } = useAppContext() // global state for app to synchronise environments
     const [isAppDeleted, setIsAppDeleted] = useState(false)
-    const [otherEnvsLoading, otherEnvsResult] = useAsync(() => getAppOtherEnvironmentMin(params.appId), [params.appId])
+    const [otherEnvsLoading, otherEnvsResult] = useAsync(() => getAppOtherEnvironmentMin(params.appId, false), [params.appId])
     const [commitInfo, showCommitInfo] = useState<boolean>(false)
     const [deploymentUserActionState, setDeploymentUserActionState] = useState<ACTION_STATE>(ACTION_STATE.ALLOWED)
     const isVirtualEnvRef = useRef(false)
@@ -184,7 +185,9 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
             otherEnvsResult &&
             !otherEnvsLoading && (
                 <>
-                    {envList.length === 0 && !isAppDeleted && !isVirtualEnvRef.current && <AppNotConfigured />}
+                    {envList.length === 0 && !isAppDeleted && !isVirtualEnvRef.current && (
+                        <AppNotConfigured />
+                    )}
                     {!params.envId && envList.length > 0 && !isVirtualEnvRef.current && (
                         <EnvironmentNotConfigured environments={envList} />
                     )}
@@ -946,7 +949,7 @@ export const AppNotConfigured = ({
     const { appId } = useParams<{ appId: string }>()
     const { push } = useHistory()
     function handleEditApp(e) {
-        getAppConfigStatus(+appId).then((response) => {
+        getAppConfigStatus(+appId, isJobView, false).then((response) => {
             const _urlPrefix = `/${isJobView ? 'job' : 'app'}/${appId}`
             let url = `${_urlPrefix}/edit`
             if (appConfigTabs) {

@@ -494,7 +494,7 @@ const PrometheusError = () => {
 
 const EnableAppMetrics = () => {
     const { appId } = useParams<AppDetailsPathParams>()
-    const LINK = getAppComposeURL(appId, APP_COMPOSE_STAGE.DEPLOYMENT_TEMPLATE)
+    const LINK = getAppComposeURL(appId, APP_COMPOSE_STAGE.DEPLOYMENT_TEMPLATE, null, false)
     return (
         <div
             data-testid="app-metrices-not-enabled"

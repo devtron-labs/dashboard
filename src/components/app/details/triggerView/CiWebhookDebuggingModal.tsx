@@ -110,7 +110,7 @@ export const CiWebhookModal = ({
             window.open(
                 window.location.href.replace(
                     location.pathname,
-                    getCIPipelineURL(appId, _workflowId, true, _ciPipelineId, isJobView, false),
+                    getCIPipelineURL(appId, _workflowId, true, _ciPipelineId, isJobView, false, false),
                 ),
                 '_blank',
                 'noreferrer',

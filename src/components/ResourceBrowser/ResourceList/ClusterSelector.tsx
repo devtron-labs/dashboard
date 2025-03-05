@@ -16,8 +16,8 @@
 
 import React from 'react'
 import ReactSelect from 'react-select'
+import { AppSelectorDropdownIndicator, APP_SELECTOR_STYLES } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '../../../config'
-import { appSelectorStyle, DropdownIndicator } from '../../AppSelector/AppSelectorUtil'
 import {
     clusterOverviewNodeText,
     ERROR_SCREEN_LEARN_MORE,
@@ -43,11 +43,11 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({ onChange, clusterList,
                 onChange={onChange}
                 components={{
                     IndicatorSeparator: null,
-                    DropdownIndicator,
+                    DropdownIndicator: AppSelectorDropdownIndicator,
                     LoadingIndicator: null,
                 }}
                 value={defaultOption}
-                styles={appSelectorStyle}
+                styles={APP_SELECTOR_STYLES}
             />
             {defaultOption?.isProd && <span className="px-6 py-2 br-4 bcb-1 cb-7 fs-12 lh-16 fw-5">Production</span>}
         </div>

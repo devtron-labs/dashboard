@@ -43,6 +43,7 @@ const EnvironmentOverride = ({
     envConfig,
     fetchEnvConfig,
     appOrEnvIdToResourceApprovalConfigurationMap,
+    isTemplateView,
 }: EnvironmentOverrideComponentProps) => {
     const isAppGroupView = !!envName
     const params = useParams<{ appId: string; envId: string }>()
@@ -59,7 +60,7 @@ const EnvironmentOverride = ({
     const isDeploymentOverride = !!location.pathname.includes(URLS.APP_DEPLOYMENT_CONFIG)
 
     useEffect(() => {
-        if (params.envId) {
+        if (params.envId && setEnvironmentId) {
             setEnvironmentId(+params.envId)
         }
     }, [params.envId])
@@ -72,7 +73,7 @@ const EnvironmentOverride = ({
             const newUrl = generatePath(path, { appId: params.appId, envId: environmentId })
             push(newUrl)
         } else {
-            const workflowUrl = getAppComposeURL(params.appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR)
+            const workflowUrl = getAppComposeURL(params.appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR, null, isTemplateView)
             push(workflowUrl)
         }
     }, [])
@@ -150,6 +151,7 @@ const EnvironmentOverride = ({
                             reloadEnvironments={reloadEnvironments}
                             clusterId={clusterId}
                             fetchEnvConfig={fetchEnvConfig}
+                            isTemplateView={isTemplateView}
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
@@ -169,6 +171,7 @@ const EnvironmentOverride = ({
                             isJob={isJob}
                             appName={getAppName()}
                             envName={getEnvName()}
+                            isTemplateView={isTemplateView}
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
@@ -189,6 +192,7 @@ const EnvironmentOverride = ({
                             isJob={isJob}
                             appName={getAppName()}
                             envName={getEnvName()}
+                            isTemplateView={isTemplateView}
                         />
                     </Route>
                 </Switch>
