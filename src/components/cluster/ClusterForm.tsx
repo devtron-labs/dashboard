@@ -1205,10 +1205,11 @@ export default function ClusterForm({
                 {isKubeConfigFile && (
                     <div
                         data-testid="valid_cluster_infocolor_bar"
-                        className="cluster-form dc__position-rel h-100 bg__primary"
+                        className="cluster-form dc__position-rel h-100 bg__primary flexbox-col"
                     >
                         <AddClusterHeader />
-                        <div className="dc__overflow-auto" style={{ height: 'calc(100vh - 110px)' }}>
+
+                        <div className="flexbox-col flex-grow-1 dc__overflow-auto">
                             <div className="api-token__list en-2 bw-1 bg__primary br-4 mr-20 ml-20 mt-16">
                                 <InfoColourBar
                                     message={
@@ -1342,34 +1343,32 @@ export default function ClusterForm({
                                 </div>
                             </div>
                         </div>
-                    </div>
-                )}
 
-                {isKubeConfigFile && (
-                    <div className="w-100 dc__border-top flex right pb-12 pt-12 pl-20 pr-20 dc__position-fixed dc__position-abs bg__primary dc__bottom-0">
-                        <button
-                            className="dc__edit_button cb-5"
-                            type="button"
-                            onClick={handleEditConfigClick}
-                            style={{ marginRight: 'auto' }}
-                        >
-                            <span
-                                data-testid="edit_kubeconfig_button_cluster_checkbox"
-                                style={{ display: 'flex', alignItems: 'center' }}
+                        <div className="w-100 dc__border-top flex right py-12 px-20 bg__primary dc__no-shrink">
+                            <button
+                                className="dc__edit_button cb-5"
+                                type="button"
+                                onClick={handleEditConfigClick}
+                                style={{ marginRight: 'auto' }}
                             >
-                                <Edit className="icon-dim-16 scb-5 mr-4 h-36 lh-36" />
-                                Edit Kubeconfig
-                            </span>
-                        </button>
-                        <button
-                            data-testid="save_cluster_list_button_after_selection"
-                            className="cta h-36 lh-36"
-                            type="button"
-                            onClick={() => handleClusterDetailCall()}
-                            disabled={!saveClusterList || !isAnyCheckboxSelected}
-                        >
-                            Save
-                        </button>
+                                <span
+                                    data-testid="edit_kubeconfig_button_cluster_checkbox"
+                                    style={{ display: 'flex', alignItems: 'center' }}
+                                >
+                                    <Edit className="icon-dim-16 scb-5 mr-4 h-36 lh-36" />
+                                    Edit Kubeconfig
+                                </span>
+                            </button>
+                            <button
+                                data-testid="save_cluster_list_button_after_selection"
+                                className="cta h-36 lh-36"
+                                type="button"
+                                onClick={() => handleClusterDetailCall()}
+                                disabled={!saveClusterList || !isAnyCheckboxSelected}
+                            >
+                                Save
+                            </button>
+                        </div>
                     </div>
                 )}
                 {isClusterDetails && !isKubeConfigFile && saveClusterDetails()}
