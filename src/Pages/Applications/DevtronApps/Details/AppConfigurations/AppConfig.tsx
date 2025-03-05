@@ -517,7 +517,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
             isTemplateView={isTemplateView}
         >
             <>
-                <div className={`app-compose ${getAdditionalParentClass()}`}>
+                <div className={`app-compose flex-grow-1 dc__overflow-auto ${getAdditionalParentClass()}`}>
                     <div
                         className={`app-compose__nav ${getAppComposeClasses()} flex column left top dc__overflow-auto`}
                     >
