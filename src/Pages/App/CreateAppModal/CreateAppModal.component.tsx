@@ -326,7 +326,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
 
     return (
         <Drawer position="right" width="1024px">
-            <div className="h-100 bg__modal flexbox-col dc__overflow-hidden">
+            <div className="h-100 bg__modal--primary flexbox-col dc__overflow-hidden">
                 <HeaderSection isJobView={isJobView} handleClose={handleClose} isCloseDisabled={isSubmitting} />
                 <div className="flexbox flex-grow-1 dc__overflow-hidden">
                     <Sidebar
