@@ -38,19 +38,25 @@ import {
     noop,
     InfoIconTippy,
     DEFAULT_SECRET_PLACEHOLDER,
-    ClearIndicator,
-    MultiValueRemove,
-    MultiValueChipContainer,
     OptionType,
-    DeleteComponent,
     SelectPicker,
     ToastVariantType,
     ToastManager,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ERROR_STATUS_CODE,
+    DeleteConfirmationModal,
+    Textarea,
+    Tooltip,
+    RegistryType as CommonRegistryType,
+    RegistryIcon,
+    ComponentSizeType,
+    PasswordField,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import CreatableSelect from 'react-select/creatable'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import { useForm, handleOnBlur, handleOnFocus, parsePassword, importComponentFromFELibrary } from '../common'
+import { useForm, handleOnBlur, handleOnFocus, parsePassword, importComponentFromFELibrary, Trash } from '../common'
 import {
     getClusterListMinWithoutAuth,
     getDockerRegistryList,
@@ -84,16 +90,12 @@ import ManageRegistry from './ManageRegistry'
 import {
     CredentialType,
     CustomCredential,
-    EAModeRegistryType,
     RemoteConnectionType,
     RemoteConnectionTypeRegistry,
     SSHAuthenticationType,
 } from './dockerType'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
-import { ReactComponent as ErrorInfo } from '../../assets/icons/misc/errorInfo.svg'
-import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { creatableSelectStyles } from './creatableStyles'
 
 const RegistryHelmPushCheckbox = importComponentFromFELibrary('RegistryHelmPushCheckbox')
 const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio')
@@ -103,13 +105,6 @@ enum CERTTYPE {
     SECURE = 'secure',
     INSECURE = 'insecure',
     SECURE_WITH_CERT = 'secure-with-cert',
-}
-
-const creatableComponents = {
-    DropdownIndicator: null,
-    ClearIndicator,
-    MultiValueRemove,
-    MultiValueContainer: (props) => <MultiValueChipContainer {...props} />,
 }
 
 const getInitialSSHAuthenticationType = (remoteConnectionConfig: any): SSHAuthenticationType => {
@@ -290,7 +285,7 @@ const CollapsedList = ({
             >
                 {id && (
                     <List.Logo>
-                        <div className={`dc__registry-icon ${registryType}`} />
+                        <RegistryIcon registryType={registryType as CommonRegistryType} />
                     </List.Logo>
                 )}
                 {!id && collapsed && (
@@ -531,8 +526,7 @@ const DockerForm = ({
         password: '',
     }
 
-    const [deleting, setDeleting] = useState(false)
-    const [confirmation, toggleConfirmation] = useState(false)
+    const [confirmationModal, setConfirmationModal] = useState(false)
     const [isIAMAuthType, setIAMAuthType] = useState(!awsAccessKeyId && !awsSecretAccessKey)
     const [blackList, setBlackList] = useState(_ignoredClusterIdsCsv)
     const [whiteList, setWhiteList] = useState(_appliedClusterIdsCsv)
@@ -1316,14 +1310,13 @@ const DockerForm = ({
                         <ConditionalWrap
                             condition={disabledFields.some((test) => test === RepositoryAction.CONTAINER)}
                             wrap={(children) => (
-                                <TippyCustomized
-                                    theme={TippyTheme.black}
-                                    className="w-200 dc__zi-4 mt-0-imp"
+                                <Tooltip
+                                    alwaysShowTippyOnHover
                                     placement="left"
-                                    infoText="Cannot be disabled as some build pipelines are using this registry to push container images."
+                                    content="Cannot be disabled as some build pipelines are using this registry to push container images."
                                 >
                                     <div>{children}</div>
-                                </TippyCustomized>
+                                </Tooltip>
                             )}
                         >
                             <div
@@ -1355,14 +1348,13 @@ const DockerForm = ({
                         <ConditionalWrap
                             condition={disabledFields.some((test) => test === RepositoryAction.CHART_PUSH)}
                             wrap={(children) => (
-                                <TippyCustomized
-                                    theme={TippyTheme.black}
-                                    className="w-200 dc__zi-4 pt-0-imp"
+                                <Tooltip
+                                    alwaysShowTippyOnHover
                                     placement="left"
-                                    infoText="Cannot be disabled as some deployment pipelines are using this registry to push helm packages."
+                                    content="Cannot be disabled as some deployment pipelines are using this registry to push helm packages."
                                 >
                                     <div>{children}</div>
-                                </TippyCustomized>
+                                </Tooltip>
                             )}
                         >
                             <div>
@@ -1379,14 +1371,13 @@ const DockerForm = ({
                     <ConditionalWrap
                         condition={disabledFields.some((test) => test === RepositoryAction.CHART_PULL)}
                         wrap={(children) => (
-                            <TippyCustomized
-                                theme={TippyTheme.black}
-                                className="w-200 dc__zi-4 pt-0 mt-0"
+                            <Tooltip
+                                alwaysShowTippyOnHover
                                 placement="left"
-                                infoText="Cannot be disabled as some applications are deployed using helm charts from this registry."
+                                content="Cannot be disabled as some applications are deployed using helm charts from this registry."
                             >
                                 <div>{children}</div>
-                            </TippyCustomized>
+                            </Tooltip>
                         )}
                     >
                         <div>
@@ -1485,39 +1476,25 @@ const DockerForm = ({
         return (
             <>
                 <div className="mb-12">
-                    <div className="dc__required-field fs-13 cn-9 mb-6">List of repositories</div>
-                    <CreatableSelect
+                    <SelectPicker
+                        required
+                        label="List of repositories"
                         isMulti
-                        isClearable
+                        options={[]}
                         autoFocus
-                        value={customState.repositoryList.value}
-                        inputValue={customState.repositoryList.inputValue}
-                        tabIndex={3}
-                        menuIsOpen={false}
-                        styles={creatableSelectStyles}
-                        components={creatableComponents}
-                        onChange={handleCreatableChange}
-                        onInputChange={handleCreatableInputChange}
-                        onBlur={setRepoListValue}
-                        onKeyDown={handleCreatableKeyDown}
+                        isClearable
                         placeholder="Enter repository name and press enter"
+                        inputValue={customState.repositoryList.inputValue}
+                        value={customState.repositoryList.value}
+                        onBlur={setRepoListValue}
+                        onInputChange={handleCreatableInputChange}
+                        onKeyDown={handleCreatableKeyDown}
+                        onChange={handleCreatableChange}
+                        inputId="repository-list"
+                        error={repositoryError || customState.repositoryList?.error}
+                        shouldHideMenu
+                        size={ComponentSizeType.large}
                     />
-                    {repositoryError.length > 0 && (
-                        <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6">
-                            <div className="error-label-icon">
-                                <ErrorInfo className="icon-dim-16" />
-                            </div>
-                            <div className="ml-4 cr-5">{repositoryError}</div>
-                        </div>
-                    )}
-                    {customState.repositoryList?.error && (
-                        <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6">
-                            <div className="error-label-icon">
-                                <AlertTriangle className="icon-dim-16" />
-                            </div>
-                            <div className="ml-4 cr-5">{customState.repositoryList?.error}</div>
-                        </div>
-                    )}
                 </div>
                 {registryStorageType === RegistryStorageType.OCI_PUBLIC && (
                     <InfoColourBar
@@ -1602,10 +1579,8 @@ const DockerForm = ({
                             <>
                                 <div className="form__row">
                                     <CustomInput
-                                        dataTestid="aws-access-keyid-textbox"
                                         name="awsAccessKeyId"
-                                        labelClassName="dc__required-field"
-                                        tabIndex={5}
+                                        required
                                         value={customState.awsAccessKeyId.value}
                                         error={customState.awsAccessKeyId.error}
                                         onChange={customHandleChange}
@@ -1614,15 +1589,12 @@ const DockerForm = ({
                                     />
                                 </div>
                                 <div className="form__row">
-                                    <CustomInput
-                                        dataTestid="aws-secret-access-key-textbox"
+                                    <PasswordField
                                         name="awsSecretAccessKey"
-                                        labelClassName="dc__required-field"
-                                        tabIndex={6}
+                                        required
                                         value={customState.awsSecretAccessKey.value}
                                         error={customState.awsSecretAccessKey.error}
-                                        onBlur={id && handleOnBlur}
-                                        onFocus={handleOnFocus}
+                                        shouldShowDefaultPlaceholderOnBlur={!!id}
                                         onChange={customHandleChange}
                                         label={selectedDockerRegistryType.password.label}
                                         placeholder={selectedDockerRegistryType.password.placeholder}
@@ -1638,12 +1610,9 @@ const DockerForm = ({
                     <div className={`${isGCROrGCP ? '' : 'form__row--two-third'}`}>
                         <div className="form__row">
                             <CustomInput
-                                dataTestid="container-registry-username-textbox"
                                 name="username"
-                                labelClassName="dc__required-field"
-                                tabIndex={5}
+                                required
                                 value={customState.username.value || selectedDockerRegistryType.id.defaultValue}
-                                autoComplete="off"
                                 error={customState.username.error}
                                 onChange={customHandleChange}
                                 label={selectedDockerRegistryType.id.label}
@@ -1660,16 +1629,13 @@ const DockerForm = ({
                                 selectedDockerRegistryType.value === RegistryType.ACR ||
                                 selectedDockerRegistryType.value === RegistryType.QUAY ||
                                 selectedDockerRegistryType.value === RegistryType.OTHER) && (
-                                <CustomInput
-                                    dataTestid="container-registry-password-textbox"
+                                <PasswordField
+                                    shouldShowDefaultPlaceholderOnBlur={!!id}
                                     name="password"
-                                    labelClassName="dc__required-field"
-                                    tabIndex={6}
+                                    required
                                     value={customState.password.value}
                                     error={customState.password.error}
                                     onChange={customHandleChange}
-                                    onBlur={id && handleOnBlur}
-                                    onFocus={handleOnFocus}
                                     label={selectedDockerRegistryType.password.label}
                                     placeholder={
                                         selectedDockerRegistryType.password.placeholder
@@ -1681,29 +1647,18 @@ const DockerForm = ({
                         </div>
                     </div>
                     {isGCROrGCP && (
-                        <div className="form__row">
-                            <label htmlFor="" className="form__label w-100 dc__required-field">
-                                {selectedDockerRegistryType.password.label}
-                            </label>
-                            <textarea
-                                name="password"
-                                tabIndex={6}
-                                data-testid="artifact-service-account-textbox"
-                                value={customState.password.value}
-                                className="w-100 p-10"
-                                rows={3}
-                                onBlur={id && handleOnBlur}
-                                onFocus={handleOnFocus}
-                                onChange={customHandleChange}
-                                placeholder={selectedDockerRegistryType.password.placeholder}
-                            />
-                            {customState.password?.error && (
-                                <div className="form__error">
-                                    <Error className="form__icon form__icon--error" />
-                                    {customState.password?.error}
-                                </div>
-                            )}
-                        </div>
+                        <Textarea
+                            label={selectedDockerRegistryType.password.label}
+                            required
+                            name="password"
+                            value={customState.password.value}
+                            onBlur={id && handleOnBlur}
+                            onFocus={handleOnFocus}
+                            onChange={customHandleChange}
+                            placeholder={selectedDockerRegistryType.password.placeholder}
+                            error={customState.password?.error}
+                            shouldTrim={false}
+                        />
                     )}
                 </>
             )
@@ -1720,12 +1675,9 @@ const DockerForm = ({
                     <div className={`${isGCROrGCP ? '' : 'form__row--two-third'}`}>
                         <div className="form__row">
                             <CustomInput
-                                dataTestid="container-registry-username-textbox"
                                 name="username"
-                                labelClassName="dc__required-field"
-                                tabIndex={5}
+                                required
                                 value={customState.username.value || selectedDockerRegistryType.id.defaultValue}
-                                autoComplete="off"
                                 error={customState.username.error}
                                 onChange={customHandleChange}
                                 label={selectedDockerRegistryType.id.label}
@@ -1742,16 +1694,13 @@ const DockerForm = ({
                                 selectedDockerRegistryType.value === RegistryType.ACR ||
                                 selectedDockerRegistryType.value === RegistryType.QUAY ||
                                 selectedDockerRegistryType.value === RegistryType.OTHER) && (
-                                <CustomInput
-                                    dataTestid="container-registry-password-textbox"
+                                <PasswordField
+                                    shouldShowDefaultPlaceholderOnBlur={!!id}
                                     name="password"
-                                    labelClassName="dc__required-field"
-                                    tabIndex={6}
+                                    required
                                     value={customState.password.value}
                                     error={customState.password.error}
                                     onChange={customHandleChange}
-                                    onBlur={id && handleOnBlur}
-                                    onFocus={handleOnFocus}
                                     label={selectedDockerRegistryType.password.label}
                                     placeholder={
                                         selectedDockerRegistryType.password.placeholder
@@ -1763,39 +1712,41 @@ const DockerForm = ({
                         </div>
                     </div>
                     {isGCROrGCP && (
-                        <div className="form__row">
-                            <label htmlFor="" className="form__label w-100 dc__required-field">
-                                {selectedDockerRegistryType.password.label}
-                            </label>
-                            <textarea
-                                name="password"
-                                tabIndex={6}
-                                data-testid="artifact-service-account-textbox"
-                                value={customState.password.value}
-                                className="w-100 p-10"
-                                rows={3}
-                                onBlur={id && handleOnBlur}
-                                onFocus={handleOnFocus}
-                                onChange={customHandleChange}
-                                placeholder={selectedDockerRegistryType.password.placeholder}
-                            />
-                            {customState.password?.error && (
-                                <div className="form__error">
-                                    <Error className="form__icon form__icon--error" />
-                                    {customState.password?.error}
-                                </div>
-                            )}
-                        </div>
+                        <Textarea
+                            label={selectedDockerRegistryType.password.label}
+                            required
+                            name="password"
+                            value={customState.password.value}
+                            onBlur={id && handleOnBlur}
+                            onFocus={handleOnFocus}
+                            onChange={customHandleChange}
+                            placeholder={selectedDockerRegistryType.password.placeholder}
+                            error={customState.password?.error}
+                            shouldTrim={false}
+                        />
                     )}
                 </>
             )
         }
     }
 
+    const showConfirmationModal = () => setConfirmationModal(true)
+    const closeConfirmationModal = () => setConfirmationModal(false)
+
+    const onDelete = async () => {
+        const deletePayload = getRegistryPayload(
+            selectedDockerRegistryType.value === RegistryType.ECR && fetchAWSRegion(),
+        )
+        await deleteDockerReg(deletePayload)
+        reload()
+    }
+
     // For EA Mode GCR is not available as it is not OCI compliant
-    const EA_MODE_REGISTRY_TYPE_MAP = Object.fromEntries(Object.entries(REGISTRY_TYPE_MAP).filter(([key,_]) => key !== 'gcr'))
+    const EA_MODE_REGISTRY_TYPE_MAP = Object.fromEntries(
+        Object.entries(REGISTRY_TYPE_MAP).filter(([key, _]) => key !== 'gcr'),
+    )
     return (
-        <form onSubmit={handleOnSubmit} className="docker-form divider" autoComplete="off">
+        <form onSubmit={handleOnSubmit} className="docker-form divider" autoComplete="off" noValidate>
             <div className="pl-20 pr-20 pt-20 pb-20">
                 <div
                     className={`form__row--two-third ${
@@ -1881,12 +1832,10 @@ const DockerForm = ({
                 <div className="form__row--two-third">
                     <div className="form__row">
                         <CustomInput
-                            dataTestid="container-registry-name"
-                            labelClassName="dc__required-field"
+                            required
                             name="id"
                             value={customState.id.value}
                             error={customState.id.error}
-                            tabIndex={1}
                             onChange={customHandleChange}
                             label="Name"
                             disabled={!!id}
@@ -1896,10 +1845,8 @@ const DockerForm = ({
                     </div>
                     <div className="form__row">
                         <CustomInput
-                            dataTestid="container-registry-url-textbox"
                             name="registryUrl"
-                            tabIndex={3}
-                            labelClassName="dc__required-field"
+                            required
                             label={selectedDockerRegistryType.registryURL.label}
                             value={customState.registryUrl.value || selectedDockerRegistryType.registryURL.defaultValue}
                             error={customState.registryUrl.error}
@@ -1969,20 +1916,14 @@ const DockerForm = ({
                                 {value == CERTTYPE.SECURE_WITH_CERT &&
                                     state.advanceSelect.value == CERTTYPE.SECURE_WITH_CERT && (
                                         <div className="ml-20">
-                                            <textarea
+                                            <Textarea
                                                 name="certInput"
                                                 placeholder="Begins with -----BEGIN CERTIFICATE-----"
-                                                className="form__input"
-                                                style={{ height: '100px', backgroundColor: 'var(--bg-secondary)' }}
                                                 onChange={handleOnChange}
                                                 value={state.certInput.value}
+                                                error={certError}
+                                                shouldTrim={false}
                                             />
-                                            {certError && (
-                                                <div className="form__error">
-                                                    <Error className="form__icon form__icon--error" />
-                                                    {certError}
-                                                </div>
-                                            )}
                                         </div>
                                     )}
                             </div>
@@ -1995,48 +1936,45 @@ const DockerForm = ({
                 {renderDefaultRegistry()}
             </div>
             <div className="p-20 divider">
-                <div className="flex right">
+                <div className="flexbox">
                     {id && (
-                        <button
-                            className="cta flex h-36 delete dc__m-auto ml-0"
-                            data-testid="delete-container-registry"
-                            type="button"
-                            disabled={loading}
-                            onClick={() => toggleConfirmation(true)}
-                        >
-                            {deleting ? <Progressing /> : 'Delete'}
-                        </button>
+                        <Button
+                            text="Delete"
+                            variant={ButtonVariantType.secondary}
+                            style={ButtonStyleType.negative}
+                            startIcon={<Trash />}
+                            dataTestId="delete-container-registry"
+                            onClick={showConfirmationModal}
+                        />
                     )}
-                    <button
-                        className="cta flex h-36 mr-16 cancel"
-                        type="button"
-                        onClick={setToggleCollapse}
-                        disabled={loading || deleting}
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        className="cta flex h-36"
-                        type="submit"
-                        disabled={loading || deleting}
-                        data-testid="container-registry-save-button"
-                    >
-                        {loading ? <Progressing /> : id ? 'Update' : 'Save'}
-                    </button>
+                    <div className="flex right w-100 dc__gap-12">
+                        <Button
+                            dataTestId="container-registry-cancel-button"
+                            onClick={setToggleCollapse}
+                            text="Cancel"
+                            variant={ButtonVariantType.secondary}
+                            size={ComponentSizeType.medium}
+                        />
+                        <Button
+                            dataTestId="container-registry-save-button"
+                            disabled={loading}
+                            text={id ? 'Update' : 'Save'}
+                            size={ComponentSizeType.medium}
+                            buttonProps={{
+                                type: 'submit',
+                            }}
+                        />
+                    </div>
                 </div>
 
-                {confirmation && (
-                    <DeleteComponent
-                        setDeleting={setDeleting}
-                        deleteComponent={deleteDockerReg}
-                        payload={getRegistryPayload(
-                            selectedDockerRegistryType.value === RegistryType.ECR && fetchAWSRegion(),
-                        )}
+                {confirmationModal && (
+                    <DeleteConfirmationModal
                         title={id}
-                        toggleConfirmation={toggleConfirmation}
                         component={DeleteComponentsName.ContainerRegistry}
-                        confirmationDialogDescription={DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE}
-                        reload={reload}
+                        renderCannotDeleteConfirmationSubTitle={DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE}
+                        errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+                        onDelete={onDelete}
+                        closeConfirmationModal={closeConfirmationModal}
                     />
                 )}
             </div>

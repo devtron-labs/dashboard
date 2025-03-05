@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
+import { AppConfigProps, URLS as COMMON_URLS, EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
+import { generatePath } from 'react-router-dom'
 
 export interface NavItem {
     title: string
@@ -58,10 +59,10 @@ export const URLS = {
     APP_DOCKER_CONFIG: 'docker-build-config',
     APP_GITOPS_CONFIG: 'gitops-config',
     APP_DOCKER_OVERRIDE_DETAILS: 'override-details',
-    APP_DEPLOYMENT_CONFIG: 'deployment-template',
+    APP_DEPLOYMENT_CONFIG: EnvResourceType.DeploymentTemplate,
     APP_WORKFLOW_CONFIG: 'workflow',
-    APP_CM_CONFIG: 'configmap',
-    APP_CS_CONFIG: 'secrets',
+    APP_CM_CONFIG: EnvResourceType.ConfigMap,
+    APP_CS_CONFIG: EnvResourceType.Secret,
     APP_ENV_OVERRIDE_CONFIG: 'env-override',
     APP_ENV_CONFIG_COMPARE: 'config-compare',
     APP_EXTERNAL_LINKS: 'external-links',
@@ -71,6 +72,7 @@ export const URLS = {
     APP_LINKED_CI_CONFIG: 'linked-ci',
     APP_JOB_CI_CONFIG: 'ci-job',
     AUTHENTICATE: '/auth/login',
+    BASE_CONFIG: 'base-config',
     BULK_EDITS: '/bulk-edits',
     LINKED_CD: 'linked-cd',
     LOGIN_ADMIN: '/login/admin', //
@@ -129,7 +131,7 @@ export const URLS = {
     WEBHOOK_RECEIVED_PAYLOAD_ID: 'payload-id',
     SOFTWARE_DISTRIBUTION_HUB: '/software-distribution-hub',
     MONITORING_DASHBOARD: 'monitoring-dashboard',
-}
+} as const
 
 export enum APP_COMPOSE_STAGE {
     SOURCE_CONFIG = 'MATERIAL',
@@ -141,18 +143,22 @@ export enum APP_COMPOSE_STAGE {
     ENV_OVERRIDE = 'ENV_OVERRIDE',
 }
 
-export const ORDERED_APP_COMPOSE_ROUTES: { stage: string; path: string }[] = [
+const ORDERED_APP_COMPOSE_ROUTES: { stage: string; path: string }[] = [
     { stage: APP_COMPOSE_STAGE.SOURCE_CONFIG, path: URLS.APP_GIT_CONFIG },
     { stage: APP_COMPOSE_STAGE.CI_CONFIG, path: URLS.APP_DOCKER_CONFIG },
-    { stage: APP_COMPOSE_STAGE.DEPLOYMENT_TEMPLATE, path: URLS.APP_DEPLOYMENT_CONFIG },
+    { stage: APP_COMPOSE_STAGE.DEPLOYMENT_TEMPLATE, path: `${URLS.BASE_CONFIG}/${URLS.APP_DEPLOYMENT_CONFIG}` },
     { stage: APP_COMPOSE_STAGE.WORKFLOW_EDITOR, path: URLS.APP_WORKFLOW_CONFIG },
-    { stage: APP_COMPOSE_STAGE.CONFIG_MAPS, path: URLS.APP_CM_CONFIG },
-    { stage: APP_COMPOSE_STAGE.SECRETS, path: URLS.APP_CS_CONFIG },
+    { stage: APP_COMPOSE_STAGE.CONFIG_MAPS, path: `${URLS.BASE_CONFIG}/${URLS.APP_CM_CONFIG}` },
+    { stage: APP_COMPOSE_STAGE.SECRETS, path: `${URLS.BASE_CONFIG}/${URLS.APP_CS_CONFIG}` },
     { stage: APP_COMPOSE_STAGE.ENV_OVERRIDE, path: URLS.APP_ENV_OVERRIDE_CONFIG },
 ]
 
-export const getAppComposeURL = (appId: string, appStage?: APP_COMPOSE_STAGE, isJobView?: boolean): string => {
-    const _url = `${isJobView ? URLS.JOB : URLS.APP}/${appId}/${COMMON_URLS.APP_CONFIG}`
+export const getAppComposeURL = (appId: string, appStage: APP_COMPOSE_STAGE | null, isJobView: boolean | null, isTemplateView: AppConfigProps['isTemplateView']): string => {
+    const _url = isTemplateView
+        ? `${generatePath(COMMON_URLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+              appId,
+          })}/${COMMON_URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`
+        : `${isJobView ? URLS.JOB : URLS.APP}/${appId}/${COMMON_URLS.APP_CONFIG}`
     if (!appStage) {
         return _url
     }

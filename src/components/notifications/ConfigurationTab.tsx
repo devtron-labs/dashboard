@@ -19,21 +19,20 @@ import {
     showError,
     Progressing,
     useSearchString,
-    ConfirmationModal,
-    ConfirmationModalVariantType,
-    ServerErrors,
+    ERROR_STATUS_CODE,
+    DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useLocation } from 'react-router-dom'
+import { ReactComponent as SESEmpty } from '@Images/ses-empty.svg'
+import { ReactComponent as WebhookEmpty } from '@Images/webhook-empty.svg'
+import { ReactComponent as SMTPEmpty } from '@Images/smtp-empty.svg'
+import { ReactComponent as EmptySlack } from '@Images/slack-empty.svg'
 import { deleteNotification, getConfigs } from './notifications.service'
 import { DC_CONFIGURATION_CONFIRMATION_MESSAGE } from '../../config/constantMessaging'
 import { ConfigurationTabState } from './types'
 import { ConfigurationTabSwitcher } from './ConfigurationTabsSwitcher'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, ConfigurationTabText } from './constants'
 import { EmptyConfigurationView } from './EmptyConfigurationView'
-import emptySES from '../../assets/img/ses-empty.png'
-import emptyWebhook from '../../assets/img/webhook-empty.png'
-import emptySmtp from '../../assets/img/smtp-empty.png'
-import emptySlack from '../../assets/img/slack-empty.png'
 import { ConfigurationTables } from './ConfigurationTables'
 import SESConfigModal from './SESConfigModal'
 import { SlackConfigModal } from './SlackConfigModal'
@@ -60,7 +59,6 @@ export const ConfigurationTab = () => {
         webhookConfig: {},
         activeTab: ConfigurationsTabTypes.SES,
         isLoading: false,
-        showCannotDeleteDialogModal: false,
     })
 
     const getAllChannelConfigs = async () => {
@@ -130,72 +128,22 @@ export const ConfigurationTab = () => {
     const renderEmptyState = () => {
         switch (modal) {
             case ConfigurationsTabTypes.SMTP:
-                return <EmptyConfigurationView activeTab={ConfigurationsTabTypes.SMTP} image={emptySmtp} />
+                return <EmptyConfigurationView activeTab={ConfigurationsTabTypes.SMTP} image={SMTPEmpty} />
             case ConfigurationsTabTypes.SLACK:
-                return <EmptyConfigurationView activeTab={ConfigurationsTabTypes.SLACK} image={emptySlack} />
+                return <EmptyConfigurationView activeTab={ConfigurationsTabTypes.SLACK} image={EmptySlack} />
             case ConfigurationsTabTypes.WEBHOOK:
-                return <EmptyConfigurationView activeTab={ConfigurationsTabTypes.WEBHOOK} image={emptyWebhook} />
+                return <EmptyConfigurationView activeTab={ConfigurationsTabTypes.WEBHOOK} image={WebhookEmpty} />
             case ConfigurationsTabTypes.SES:
             default:
-                return <EmptyConfigurationView activeTab={ConfigurationsTabTypes.SES} image={emptySES} />
+                return <EmptyConfigurationView activeTab={ConfigurationsTabTypes.SES} image={SESEmpty} />
         }
     }
 
     const onClickDelete = async () => {
-        try {
-            await deleteNotification(deletePayload)
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            getAllChannelConfigs()
-            setState({ ...state, confirmation: false })
-        } catch (serverError) {
-            if (serverError instanceof ServerErrors && serverError.code !== 500) {
-                showError(serverError)
-            }
-            setState({ ...state, confirmation: false, showCannotDeleteDialogModal: true })
-        }
+        await deleteNotification(deletePayload)
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        getAllChannelConfigs()
     }
-
-    const handleConfirmation = () => {
-        setState({ ...state, showCannotDeleteDialogModal: false })
-    }
-
-    const renderDeleteModal = () => (
-        <ConfirmationModal
-            variant={ConfirmationModalVariantType.delete}
-            title={`Delete ${ConfigurationTabText[state.activeTab.toUpperCase()]} '${deletePayload.configName}'`}
-            subtitle="Are you sure you want to delete this configuration?"
-            buttonConfig={{
-                secondaryButtonConfig: {
-                    text: 'Cancel',
-                    onClick: hideDeleteModal,
-                    disabled: state.isLoading,
-                },
-                primaryButtonConfig: {
-                    text: 'Delete',
-                    onClick: onClickDelete,
-                    isLoading: state.isLoading,
-                },
-            }}
-            showConfirmationModal={state.confirmation}
-            handleClose={hideDeleteModal}
-        />
-    )
-
-    const renderCannotDeleteDialogModal = () => (
-        <ConfirmationModal
-            variant={ConfirmationModalVariantType.info}
-            title={`Cannot delete ${ConfigurationTabText[state.activeTab.toUpperCase()]} '${deletePayload.configName}'`}
-            subtitle={DC_CONFIGURATION_CONFIRMATION_MESSAGE}
-            buttonConfig={{
-                primaryButtonConfig: {
-                    text: 'Okay',
-                    onClick: handleConfirmation,
-                },
-            }}
-            showConfirmationModal={state.showCannotDeleteDialogModal}
-            handleClose={handleConfirmation}
-        />
-    )
 
     const renderTableComponent = () => <ConfigurationTables activeTab={modal} state={state} setState={setState} />
 
@@ -239,6 +187,19 @@ export const ConfigurationTab = () => {
         }
     }
 
+    const renderDeleteModal = () => (
+        <DeleteConfirmationModal
+            title={deletePayload.configName}
+            component={ConfigurationTabText[state.activeTab.toUpperCase()]}
+            onDelete={onClickDelete}
+            closeConfirmationModal={hideDeleteModal}
+            renderCannotDeleteConfirmationSubTitle={DC_CONFIGURATION_CONFIRMATION_MESSAGE}
+            errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+            disabled={state.isLoading}
+            isDeleting={state.isLoading}
+        />
+    )
+
     const isEmptyView = !state[`${modal.toLowerCase()}ConfigurationList`].length
 
     return (
@@ -246,8 +207,7 @@ export const ConfigurationTab = () => {
             <ConfigurationTabSwitcher isEmptyView={isEmptyView} />
             {isEmptyView ? renderEmptyState() : renderTableComponent()}
             {renderModal()}
-            {renderDeleteModal()}
-            {renderCannotDeleteDialogModal()}
+            {state.confirmation && renderDeleteModal()}
         </div>
     )
 }

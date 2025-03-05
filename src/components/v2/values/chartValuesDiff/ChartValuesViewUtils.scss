@@ -14,102 +14,102 @@
  * limitations under the License.
  */
 
-@mixin sub-vh {
-    &.sub130-vh {
-        .react-monaco-editor-container,
-        .overflow-guard,
-        .details-loader-height {
-            height: calc(100vh - 130px) !important;
-        }
+ @mixin sub-vh {
+  &.sub130-vh {
+      .react-monaco-editor-container,
+      .overflow-guard,
+      .details-loader-height {
+          height: calc(100vh - 130px) !important;
+      }
 
-        .monaco-editor {
-            .monaco-editor-background,
-            .margin {
-                background-color: var(--bg-primary) !important;
-            }
+      .monaco-editor {
+          .monaco-editor-background,
+          .margin {
+              background-color: var(--bg-primary) !important;
+          }
 
-            height: calc(100vh - 130px) !important;
-        }
-    }
+          height: calc(100vh - 130px) !important;
+      }
+  }
 
-    &.sub160-vh {
-        .react-monaco-editor-container,
-        .overflow-guard,
-        .details-loader-height {
-            height: calc(100vh - 160px) !important;
-        }
+  &.sub160-vh {
+      .react-monaco-editor-container,
+      .overflow-guard,
+      .details-loader-height {
+          height: calc(100vh - 160px) !important;
+      }
 
-        .monaco-editor {
-            .monaco-editor-background,
-            .margin {
-                background-color: var(--bg-primary) !important;
-            }
+      .monaco-editor {
+          .monaco-editor-background,
+          .margin {
+              background-color: var(--bg-primary) !important;
+          }
 
-            height: calc(100vh - 160px) !important;
-        }
-    }
+          height: calc(100vh - 160px) !important;
+      }
+  }
 
-    &.sub189-vh {
-        .react-monaco-editor-container,
-        .overflow-guard,
-        .details-loader-height {
-            height: calc(100vh - 189px) !important;
-        }
+  &.sub189-vh {
+      .react-monaco-editor-container,
+      .overflow-guard,
+      .details-loader-height {
+          height: calc(100vh - 189px) !important;
+      }
 
-        .monaco-editor {
-            .monaco-editor-background,
-            .margin {
-                background-color: var(--bg-primary) !important;
-            }
+      .monaco-editor {
+          .monaco-editor-background,
+          .margin {
+              background-color: var(--bg-primary) !important;
+          }
 
-            height: calc(100vh - 189px) !important;
-        }
-    }
+          height: calc(100vh - 189px) !important;
+      }
+  }
 
-    &.sub193-vh {
-        .react-monaco-editor-container,
-        .overflow-guard,
-        .details-loader-height {
-            height: calc(100vh - 193px) !important;
-        }
+  &.sub193-vh {
+      .react-monaco-editor-container,
+      .overflow-guard,
+      .details-loader-height {
+          height: calc(100vh - 193px) !important;
+      }
 
-        .monaco-editor {
-            .monaco-editor-background,
-            .margin {
-                background-color: var(--bg-primary) !important;
-            }
+      .monaco-editor {
+          .monaco-editor-background,
+          .margin {
+              background-color: var(--bg-primary) !important;
+          }
 
-            height: calc(100vh - 193px) !important;
-        }
-    }
+          height: calc(100vh - 193px) !important;
+      }
+  }
 
-    &.sub222-vh {
-        .react-monaco-editor-container,
-        .overflow-guard,
-        .details-loader-height {
-            height: calc(100vh - 222px) !important;
-        }
+  &.sub222-vh {
+      .react-monaco-editor-container,
+      .overflow-guard,
+      .details-loader-height {
+          height: calc(100vh - 222px) !important;
+      }
 
-        .monaco-editor {
-            .monaco-editor-background,
-            .margin {
-                background-color: var(--bg-primary) !important;
-            }
+      .monaco-editor {
+          .monaco-editor-background,
+          .margin {
+              background-color: var(--bg-primary) !important;
+          }
 
-            height: calc(100vh - 222px) !important;
-        }
-    }
+          height: calc(100vh - 222px) !important;
+      }
+  }
 }
 
 @mixin chart-values-view-sub-vh {
-    &.sub162-vh {
-        height: calc(100vh - 162px) !important;
-    }
+  &.sub162-vh {
+      height: calc(100vh - 162px) !important;
+  }
 
-    &.sub189-vh {
-        height: calc(100vh - 189px) !important;
-    }
+  &.sub189-vh {
+      height: calc(100vh - 189px) !important;
+  }
 
-    border: 1px solid var(--N100);
-    overflow: overlay;
+  border: 1px solid var(--N100);
+  overflow: overlay;
 }

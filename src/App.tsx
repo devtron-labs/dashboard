@@ -41,7 +41,6 @@ import {
     reloadLocation,
 } from './components/common'
 import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG, URLS } from './config'
-import Hotjar from './components/Hotjar/Hotjar'
 import { validateToken } from './services/service'
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'))
@@ -160,6 +159,10 @@ export default function App() {
     }
 
     useEffect(() => {
+        if (window._env_.FEATURE_EXPERIMENTAL_MODERN_LAYOUT_ENABLE) {
+            document.body.classList.add('modern-layout')
+        }
+
         if (typeof Storage !== 'undefined') {
             // TODO (Arun): Remove in next packet
             localStorage.removeItem('undefined')
@@ -326,11 +329,11 @@ export default function App() {
                 ) : (
                     <>
                         {errorPage ? (
-                            <div className="full-height-width">
+                            <div className="full-height-width bg__tertiary">
                                 <Reload />
                             </div>
-                        ) : (
-                            <ErrorBoundary>
+                            ) : (
+                            <ErrorBoundary shouldAddFullScreenBg={window._env_.FEATURE_EXPERIMENTAL_MODERN_LAYOUT_ENABLE}>
                                 <BreadcrumbStore>
                                     <Switch>
                                         {isDirectApprovalNotification && GenericDirectApprovalModal && (
@@ -351,9 +354,6 @@ export default function App() {
                                     <div id="visible-modal" />
                                     <div id="visible-modal-2" />
                                     <div id="animated-dialog-backdrop" />
-                                    {import.meta.env.VITE_NODE_ENV === 'production' &&
-                                        window._env_ &&
-                                        window._env_.HOTJAR_ENABLED && <Hotjar />}
                                 </BreadcrumbStore>
                             </ErrorBoundary>
                         )}

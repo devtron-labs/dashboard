@@ -16,22 +16,16 @@
 
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { DeleteDialog, not, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { not, GenericEmptyState, DeleteConfirmationModal } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
 import { ReactComponent as DownArrow } from '../../assets/icons/ic-chevron-down.svg'
 import NoDeploymentImg from '../../assets/img/app-not-configured.png'
-import { InstalledChartGroup, InstalledChart } from './charts.types'
+import { InstalledChartGroup, InstalledChart, ChartGroupDeploymentsProps } from './charts.types'
 import { URLS } from '../../config'
 import placeHolder from '../../assets/icons/ic-plc-chart.svg'
-import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
-
-interface ChartGroupDeploymentsProps {
-    name: string
-    description: string
-    installedChartData: InstalledChartGroup[]
-    deleteInstalledChart: (e) => void
-}
+import { DeleteComponentsName, EMPTY_STATE_STATUS } from '../../config/constantMessaging'
+import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo/ApplicationDeletionInfo'
 
 const ChartGroupDeployments: React.FC<ChartGroupDeploymentsProps> = (props) => {
     return (
@@ -96,6 +90,13 @@ const CollapsibleDeployment: React.FC<{
         target.src = placeHolder
     }
 
+    const onCloseDeleteModal = () => setCandidateChart(defaultInstalledChart)
+
+    const onDelete = async () => {
+        await props.deleteInstalledChart(candidateChart.installedAppId)
+        onCloseDeleteModal()
+    }
+
     return (
         <>
             <div className="chart-group-deployment__row" data-testid={`past-deployment-${props.index}`}>
@@ -155,25 +156,15 @@ const CollapsibleDeployment: React.FC<{
                     )
                 })}
             </div>
-            {candidateChart.installedAppId ? (
-                <DeleteDialog
-                    title={`Delete '${candidateChart.chartName}' ?`}
-                    delete={() => {
-                        props.deleteInstalledChart(candidateChart.installedAppId)
-                        setCandidateChart(defaultInstalledChart)
-                    }}
-                    closeDelete={() => {
-                        setCandidateChart(defaultInstalledChart)
-                    }}
-                >
-                    <DeleteDialog.Description>
-                        <p className="fs-13 cn-7 lh-1-54">
-                            This will delete all resources associated with this application
-                        </p>
-                        <p className="fs-13 cn-7 lh-1-54">Deleted applications cannot be restored.</p>
-                    </DeleteDialog.Description>
-                </DeleteDialog>
-            ) : null}
+            {!!candidateChart.installedAppId && (
+                <DeleteConfirmationModal
+                    title={candidateChart.chartName}
+                    component={DeleteComponentsName.ChartGroup}
+                    onDelete={onDelete}
+                    closeConfirmationModal={onCloseDeleteModal}
+                    subtitle={<ApplicationDeletionInfo />}
+                />
+            )}
         </>
     )
 }

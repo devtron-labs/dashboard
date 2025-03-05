@@ -70,6 +70,7 @@ import {
 } from '../../../../values/chartValuesDiff/ChartValuesView.constants'
 import { getDecodedEncodedSecretManifestData, getTrimmedManifestData } from '../nodeDetail.util'
 import { importComponentFromFELibrary } from '@Components/common'
+import { DEFAULT_CLUSTER_ID } from '@Components/cluster/cluster.type'
 
 const renderOutOfSyncWarning = importComponentFromFELibrary('renderOutOfSyncWarning', null, 'function')
 const getManifestGUISchema = importComponentFromFELibrary('getManifestGUISchema', null, 'function')
@@ -95,7 +96,7 @@ const ManifestComponent = ({
     handleUpdateUnableToParseManifest,
     handleManifestGUIErrors,
     manifestGUIFormRef,
-    isExternalApp,
+    isManifestEditable,
 }: ManifestActionPropsType) => {
     const location = useLocation()
     const history = useHistory()
@@ -196,7 +197,7 @@ const ManifestComponent = ({
     ])
 
     const handleInitializeGUISchema = async (abortSignal: AbortSignal) => {
-        if (!getManifestGUISchema || isExternalApp) {
+        if (!getManifestGUISchema || !isManifestEditable) {
             return
         }
 
@@ -209,7 +210,7 @@ const ManifestComponent = ({
         })
 
         const guiSchemaResponse = await getManifestGUISchema({
-            clusterId: resourceRequestPayload.clusterId,
+            clusterId: DEFAULT_CLUSTER_ID,
             gvk: resourceRequestPayload.k8sRequest.resourceIdentifier.groupVersionKind,
             signal: abortSignal,
         })
@@ -218,7 +219,8 @@ const ManifestComponent = ({
     }
 
     const handleInitializeLockedManifestKeys = async (signal: AbortSignal) => {
-        if (!getLockedManifestKeys || isExternalApp) {
+        // NOTE: this feature is only applicable to non-superadmins
+        if (!getLockedManifestKeys || !isManifestEditable || isSuperAdmin) {
             return
         }
 
@@ -231,7 +233,7 @@ const ManifestComponent = ({
         })
 
         const lockedKeysResponse = await getLockedManifestKeys({
-            clusterId: resourceRequestPayload.clusterId,
+            clusterId: DEFAULT_CLUSTER_ID,
             gvk: resourceRequestPayload.k8sRequest.resourceIdentifier.groupVersionKind,
             signal,
         })
@@ -646,7 +648,7 @@ const ManifestComponent = ({
         return (
             <InfoColourBar
                 message={message}
-                classname="w-100 m-0 code-editor__information dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
+                classname="w-100 m-0 fs-12 fw-4 lh-16 cn-9 py-8 px-16 bcb-1 dc__border-bottom dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
                 Icon={ICInfoFilled}
                 iconClass="icon-dim-16"
                 linkClass="dc__truncate--clamp-6"
@@ -666,7 +668,7 @@ const ManifestComponent = ({
         return (
             <InfoColourBar
                 message={errorText}
-                classname="w-100 m-0 code-editor__error dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
+                classname="w-100 m-0 fs-12 fw-4 lh-16 py-8 px-16 bco-1 co-5 dc__border-bottom dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
                 Icon={ICErrorExclamation}
                 iconClass="icon-dim-16"
                 linkClass="dc__truncate--clamp-6"
@@ -704,13 +706,7 @@ const ManifestComponent = ({
                 readOnly={isReadOnlyView}
                 onChange={handleEditorValueChange}
                 loading={loading}
-                customLoader={
-                    <MessageUI
-                        msg={loadingMsg}
-                        icon={MsgUIType.LOADING}
-                        size={24}
-                    />
-                }
+                customLoader={<MessageUI msg={loadingMsg} icon={MsgUIType.LOADING} size={24} />}
                 focus={isEditMode}
             >
                 {renderEditorInfo(true)}
@@ -748,23 +744,18 @@ const ManifestComponent = ({
 
     return isDeleted ? (
         <div className="h-100 flex-grow-1">
-            <MessageUI
-                msg="This resource no longer exists"
-                size={32}
-            />
+            <MessageUI msg="This resource no longer exists" size={32} />
         </div>
     ) : (
         <div
             className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ' '} manifest-container flexbox-col flex-grow-1 dc__overflow-auto`}
             data-testid="app-manifest-container"
-            style={{ background: '#0B0F22', ...(!isResourceBrowserView ? { minHeight: 'calc(100vh - 152px)' } : {}) }}
+            style={{
+                background: 'var(--terminal-bg)',
+                ...(!isResourceBrowserView ? { minHeight: 'calc(100vh - 152px)' } : {}),
+            }}
         >
-            {error && !loading && (
-                <MessageUI
-                    msg="Manifest not available"
-                    size={24}
-                />
-            )}
+            {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
             {!error && (
                 <div
                     className={`${

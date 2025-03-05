@@ -212,3 +212,6 @@ export const sampleJSONs = {
 }
 
 export const CONFIG_MAP_SECRET_NO_DATA_ERROR = 'This is a required field'
+
+export const DELETE_OVERRIDE_CONFIG_SUBTITLE =
+    'This action will result in the removal of all overrides, and the original base configurations for this file will be reinstated.'

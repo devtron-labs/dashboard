@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-.select-width {
-    width: 240px;
-}
-
 .updated-container {
     height: 'calc(100vh - 100px)';
     min-height: 0;
@@ -72,11 +68,11 @@
 }
 
 .code-editor-body {
-    height: calc(100vh - 97px);
-    background: var(--bg-primary);
-    .react-monaco-editor-container {
-        min-height: calc(60vh - 97px);
-    }
+  height: calc(100vh - 97px);
+  background: var(--bg-primary);
+  .react-monaco-editor-container {
+      min-height: calc(60vh - 97px);
+  }
 }
 
 .bulk-output-body {

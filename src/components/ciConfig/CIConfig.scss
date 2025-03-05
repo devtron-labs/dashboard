@@ -84,10 +84,6 @@
                     padding: 8px 10px;
                     border-radius: 4px 0 0 4px;
                 }
-
-                .file-name {
-                    border-radius: 0 4px 4px 0;
-                }
             }
         }
 
@@ -96,20 +92,6 @@
             display: flex;
             align-items: center;
             margin-top: 4px;
-
-            &.form__error--info {
-                color: var(--N700);
-
-                &:before {
-                    content: '';
-                    background: url('../../assets/icons/ic-info-warn.svg');
-                    height: 14px;
-                    width: 14px;
-                    display: inline-block;
-                    background-size: contain;
-                    margin-right: 4px;
-                }
-            }
         }
     }
 
@@ -132,11 +114,10 @@
             }
         }
     }
-
     .create-dockerfile-option {
-        .code-editor__header {
-            background-color: var(--bg-primary);
-        }
+      .code-editor__header {
+          background-color: var(--bg-primary);
+      }
     }
 }
 

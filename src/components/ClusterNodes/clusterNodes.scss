@@ -140,10 +140,6 @@
                     background-color: var(--bg-secondary);
                 }
             }
-            .scrollable-pod-list {
-                max-height: 700px;
-                overflow: scroll;
-            }
         }
     }
     .condition-grid {
@@ -379,8 +375,8 @@
 }
 
 .cluster-manifest-header {
-    display: grid;
-    grid-template-columns: 1fr 1fr 30px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 30px;
 }
 
 .node-data-container {

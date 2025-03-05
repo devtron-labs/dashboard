@@ -39,16 +39,15 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     ConditionalWrap,
-    EnvResourceType,
     TippyCustomized,
     TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as ICArrowSquareOut } from '@Icons/ic-arrow-square-out.svg'
 import { DEVTRON_APPS_STEPS, STAGE_NAME } from '../AppConfig.types'
-import { URLS } from '../../../../../../config'
+import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE, URLS } from '../../../../../../config'
 import AppConfigurationCheckBox from './AppConfigurationCheckBox'
-import { DeleteComponentsName, GIT_MATERIAL_IN_USE_MESSAGE } from '../../../../../../config/constantMessaging'
+import { GIT_MATERIAL_IN_USE_MESSAGE } from '../../../../../../config/constantMessaging'
 import DockerFileInUse from '../../../../../../assets/img/ic-dockerfile-in-use.png'
 
 import EnvironmentOverrideRouter from './EnvironmentOverrideRouter'
@@ -101,7 +100,7 @@ export const AppNavigation = () => {
             visible={showCannotDeleteTooltip}
             iconClass="repo-configured-icon"
             iconSize={32}
-            infoTextHeading={`${DeleteComponentsName.GitRepo} '${getRepo}' is in use`}
+            infoTextHeading={`Repo '${getRepo}' is in use`}
             infoText={GIT_MATERIAL_IN_USE_MESSAGE}
             showCloseButton
             trigger="manual"
@@ -116,9 +115,11 @@ export const AppNavigation = () => {
     )
 
     const getValidBackURL = () => {
-        const isBackURLLocked = location.pathname === lastUnlockedStage
-        const secondLastUnlockedStage = isBackURLLocked
-            ? navItems.reduce(
+        const isCurrentPathLastUnlockedStage = location.pathname === lastUnlockedStage
+        const eligibleNavItems = navItems.filter((navItem) => navItem.stage !== STAGE_NAME.REDIRECT_ITEM)
+
+        const secondLastUnlockedStage = isCurrentPathLastUnlockedStage
+            ? eligibleNavItems.reduce(
                   (acc, curr) => {
                       if (curr.href === lastUnlockedStage) {
                           acc.found = true
@@ -154,8 +155,8 @@ export const AppNavigation = () => {
         <Switch>
             <Route
                 path={[
-                    `${path}/:resourceType(${Object.values(EnvResourceType).join('|')})`,
-                    `${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)/:resourceType(${Object.values(EnvResourceType).join('|')})`,
+                    `${path}/${URLS.BASE_CONFIG}/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?`,
+                    `${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?`,
                 ]}
             >
                 {({ match }) => (
@@ -178,80 +179,85 @@ export const AppNavigation = () => {
                     />
                 )}
             </Route>
+
             <Route key="default-navigation">
                 <>
-                    {!hideConfigHelp && (
-                        <AppConfigurationCheckBox
-                            selectedNav={selectedNav}
-                            isJobView={isJobView}
-                            totalSteps={totalSteps}
-                        />
-                    )}
-                    {navItems.map((item) => {
-                        if (item.altNavKey) {
-                            return null
-                        }
-
-                        if (item.stage === STAGE_NAME.EXTERNAL_LINKS) {
-                            return (
-                                canShowExternalLinks && (
-                                    <div key={item.stage}>
-                                        <div className="dc__border-bottom-n1 mt-8 mb-8" />
-                                        {renderNavItem(item)}
-                                    </div>
-                                )
-                            )
-                        }
-
-                        if (item.stage === STAGE_NAME.PROTECT_CONFIGURATION) {
-                            return (
-                                isWorkflowEditorUnlocked &&
-                                isFELibAvailable && (
-                                    <div key={item.stage}>
-                                        {!canShowExternalLinks && <div className="dc__border-bottom-n1 mt-8 mb-8" />}
-                                        {renderNavItem(item, null, {
-                                            target: '_blank',
-                                            icon: <ICArrowSquareOut className="icon-dim-16 dc__no-shrink scn-8" />,
-                                            tooltipContent:
-                                                'Configuration change approval has been moved to Global Configuration',
-                                        })}
-                                    </div>
-                                )
-                            )
-                        }
-
-                        if (
-                            item.stage !== STAGE_NAME.ENV_OVERRIDE ||
-                            (item.stage === STAGE_NAME.ENV_OVERRIDE && item.isLocked)
-                        ) {
-                            return (
-                                <ConditionalWrap
-                                    key={item.stage}
-                                    condition={showCannotDeleteTooltip && item.stage === STAGE_NAME.CI_CONFIG}
-                                    wrap={getEnvOverrideTippy}
-                                >
-                                    {item.required && renderNavItem(item, isJobView)}
-                                </ConditionalWrap>
-                            )
-                        }
-
-                        return (
-                            <EnvironmentOverrideRouter
-                                key={item.stage}
-                                envIdToEnvApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                    <div className="flexbox-col flex-grow-1 dc__overflow-auto w-100 pt-16 px-12">
+                        {!hideConfigHelp && (
+                            <AppConfigurationCheckBox
+                                selectedNav={selectedNav}
+                                isJobView={isJobView}
+                                totalSteps={totalSteps}
                             />
-                        )
-                    })}
-                    {isJobView && <div className="h-100" />}
+                        )}
+                        {navItems.map((item) => {
+                            if (item.altNavKey) {
+                                return null
+                            }
+
+                            if (item.stage === STAGE_NAME.EXTERNAL_LINKS) {
+                                return (
+                                    canShowExternalLinks && (
+                                        <div key={item.stage}>
+                                            <div className="dc__border-bottom-n1 mt-8 mb-8" />
+                                            {renderNavItem(item)}
+                                        </div>
+                                    )
+                                )
+                            }
+
+                            if (item.stage === STAGE_NAME.PROTECT_CONFIGURATION) {
+                                return (
+                                    isWorkflowEditorUnlocked &&
+                                    isFELibAvailable && (
+                                        <div key={item.stage}>
+                                            {!canShowExternalLinks && (
+                                                <div className="dc__border-bottom-n1 mt-8 mb-8" />
+                                            )}
+                                            {renderNavItem(item, null, {
+                                                target: '_blank',
+                                                icon: <ICArrowSquareOut className="icon-dim-16 dc__no-shrink scn-8" />,
+                                                tooltipContent:
+                                                    'Configuration change approval has been moved to Global Configuration',
+                                            })}
+                                        </div>
+                                    )
+                                )
+                            }
+
+                            if (
+                                item.stage !== STAGE_NAME.ENV_OVERRIDE ||
+                                (item.stage === STAGE_NAME.ENV_OVERRIDE && item.isLocked)
+                            ) {
+                                return (
+                                    <ConditionalWrap
+                                        key={item.stage}
+                                        condition={showCannotDeleteTooltip && item.stage === STAGE_NAME.CI_CONFIG}
+                                        wrap={getEnvOverrideTippy}
+                                    >
+                                        {item.required && renderNavItem(item, isJobView)}
+                                    </ConditionalWrap>
+                                )
+                            }
+
+                            return (
+                                <EnvironmentOverrideRouter
+                                    key={item.stage}
+                                    envIdToEnvApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                                />
+                            )
+                        })}
+                        {isJobView && <div className="h-100" />}
+                    </div>
                     {!isTemplateView && (
-                        <div className="dc__align-self-end">
+                        <div className="p-12 w-100">
                             <Button
                                 dataTestId="delete-job-app-button"
                                 variant={ButtonVariantType.secondary}
                                 size={ComponentSizeType.medium}
                                 style={ButtonStyleType.negative}
                                 onClick={deleteApp}
-                                text={`Delete ${getDeleteButtonText()}`}
+                                text={getDeleteButtonText()}
                                 fullWidth
                             />
                         </div>

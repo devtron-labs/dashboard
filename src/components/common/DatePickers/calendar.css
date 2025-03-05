@@ -21,17 +21,22 @@
     box-shadow:
         0 2px 6px rgba(0, 0, 0, 0.05),
         0 0 0 1px rgba(0, 0, 0, 0.07);
-    background: var(--bg-overlay);
+    background: var(--bg-overlay-primary);
 }
 
 .DateRangePickerInput__withBorder {
     border: solid 1px var(--N200);
-    background-color: var(--transparent);
+    background-color: var(--bg-secondary);
 }
 
 .DateRangePickerInput {
     height: 40px;
     border-radius: 4px;
+}
+
+.DateInput__small {
+    background: var(--transparent);
+    padding: 4px 8px;
 }
 
 .DateInput__small,
@@ -42,6 +47,7 @@
 
 .DateInput_input {
     font-weight: 400;
+    border: none;
 }
 
 .DateInput_input__focused {
@@ -140,6 +146,11 @@
         cursor: not-allowed;
     }
 
+    &[aria-label^="Selected"] {
+        background: var(--B300) !important;
+        color: var(--N0) !important;
+    }
+
     &:hover:not([aria-disabled="true"]) {
         color: var(--B500) !important;
         background: var(--bg-secondary) !important;
@@ -147,7 +158,7 @@
 }
 
 .DateRangePicker_picker {
-    background: var(--bg-overlay);
+    background: var(--bg-overlay-primary);
     border-radius: 4px;
 }
 

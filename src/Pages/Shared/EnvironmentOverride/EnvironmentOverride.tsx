@@ -22,16 +22,7 @@ import {
     Reload,
     CMSecretComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import {
-    useParams,
-    useRouteMatch,
-    useHistory,
-    useLocation,
-    Redirect,
-    Route,
-    Switch,
-    generatePath,
-} from 'react-router-dom'
+import { useParams, useRouteMatch, useHistory, useLocation, Route, Switch, generatePath } from 'react-router-dom'
 
 import { mapByKey, ErrorBoundary, useAppContext } from '@Components/common'
 import { APP_COMPOSE_STAGE, URLS, getAppComposeURL } from '@Config/index'
@@ -82,7 +73,7 @@ const EnvironmentOverride = ({
             const newUrl = generatePath(path, { appId: params.appId, envId: environmentId })
             push(newUrl)
         } else {
-            const workflowUrl = getAppComposeURL(params.appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR)
+            const workflowUrl = getAppComposeURL(params.appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR, null, isTemplateView)
             push(workflowUrl)
         }
     }, [])
@@ -204,7 +195,6 @@ const EnvironmentOverride = ({
                             isTemplateView={isTemplateView}
                         />
                     </Route>
-                    <Redirect to={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`} />
                 </Switch>
             </div>
         </ErrorBoundary>

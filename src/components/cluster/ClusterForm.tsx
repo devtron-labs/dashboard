@@ -25,29 +25,37 @@ import {
     InfoColourBar,
     Toggle,
     GenericEmptyState,
-    ResizableTextarea,
     useAsync,
     CustomInput,
     noop,
     DEFAULT_SECRET_PLACEHOLDER,
     GenericFilterEmptyState,
     CodeEditor,
-    DeleteComponent,
     ToastManager,
     ToastVariantType,
+    ButtonStyleType,
+    ButtonVariantType,
+    Button,
+    ERROR_STATUS_CODE,
+    DeleteConfirmationModal,
+    DC_DELETE_SUBTITLES,
+    Textarea,
+    Icon,
+    PasswordField,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import TippyHeadless from '@tippyjs/react/headless'
-import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
-import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning-y6.svg'
-import { useForm, CustomPassword, importComponentFromFELibrary } from '../common'
+import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
+import { ReactComponent as ErrorIcon } from '@Icons/ic-warning-y6.svg'
+import { useForm, importComponentFromFELibrary } from '../common'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { saveCluster, updateCluster, deleteCluster, validateCluster, saveClusters } from './cluster.service'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ReactComponent as Warning } from '../../assets/icons/ic-alert-triangle.svg'
-import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
-import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as ForwardArrow } from '../../assets/icons/ic-arrow-right.svg'
+import { ReactComponent as Close } from '@Icons/ic-close.svg'
+import { ReactComponent as Warning } from '@Icons/ic-alert-triangle.svg'
+import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
+import { ReactComponent as ForwardArrow } from '@Icons/ic-arrow-right.svg'
+import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
+
 import { ReactComponent as MechanicalOperation } from '../../assets/img/ic-mechanical-operation.svg'
 import {
     AuthenticationType,
@@ -61,13 +69,9 @@ import {
 } from './cluster.type'
 
 import { CLUSTER_COMMAND, AppCreationType, MODES, ModuleNameMap } from '../../config'
-import {
-    DC_CLUSTER_CONFIRMATION_MESSAGE,
-    DeleteComponentsName,
-    EMPTY_STATE_STATUS,
-} from '../../config/constantMessaging'
-import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
+import { DeleteComponentsName, EMPTY_STATE_STATUS } from '../../config/constantMessaging'
+import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
+import { ReactComponent as InfoIcon } from '@Icons/info-filled.svg'
 import ClusterInfoStepsModal from './ClusterInfoStepsModal'
 import { UPLOAD_STATE } from '@Pages/GlobalConfigurations/DeploymentCharts/types'
 import UserNameDropDownList from './UseNameListDropdown'
@@ -144,8 +148,7 @@ export default function ClusterForm({
     const isDefaultCluster = (): boolean => {
         return id == 1
     }
-    const [deleting, setDeleting] = useState(false)
-    const [confirmation, toggleConfirmation] = useState(false)
+    const [confirmation, setConfirmation] = useState(false)
     const inputFileRef = useRef(null)
     const [uploadState, setUploadState] = useState<string>(UPLOAD_STATE.UPLOAD)
     const [saveYamlData, setSaveYamlData] = useState<string>('')
@@ -557,25 +560,6 @@ export default function ClusterForm({
         }
     }
 
-    const payload = {
-        id,
-        cluster_name,
-        config: { bearer_token: state.token.value },
-        active,
-        prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
-        prometheusAuth: {
-            userName: prometheusToggleEnabled ? state.userName.value : '',
-            password: prometheusToggleEnabled ? state.password.value : '',
-            tlsClientCert: prometheusToggleEnabled ? state.prometheusTlsClientKey.value : '',
-            tlsClientKey: prometheusToggleEnabled ? state.prometheusTlsClientCert.value : '',
-        },
-        remoteConnectionConfig: getRemoteConnectionConfig(state, remoteConnectionMethod),
-        server_url,
-        defaultClusterComponent,
-        k8sversion: '',
-        insecureSkipTlsVerify: !isTlsConnection,
-    }
-
     const ClusterInfoComponent = () => {
         const k8sClusters = Object.values(CLUSTER_COMMAND)
         return (
@@ -710,7 +694,7 @@ export default function ClusterForm({
             <>
                 <div className="form__row">
                     <CustomInput
-                        labelClassName="dc__required-field"
+                        required
                         name="cluster_name"
                         disabled={isDefaultCluster()}
                         value={state.cluster_name.value}
@@ -718,7 +702,6 @@ export default function ClusterForm({
                         onChange={handleOnChange}
                         label="Cluster Name"
                         placeholder="Cluster Name"
-                        dataTestid="cluster_name_input"
                     />
                 </div>
                 <div className="form__row mb-8-imp">
@@ -730,37 +713,27 @@ export default function ClusterForm({
                         label={clusterLabel()}
                         disabled={isDefaultCluster()}
                         placeholder="Enter server URL"
-                        dataTestid="enter_server_url_input"
                     />
                 </div>
-                <div className="form__row form__row--bearer-token flex column left top">
+                <div className="form__row">
                     {id !== DEFAULT_CLUSTER_ID && (
-                        <div className="bearer-token">
-                            <ResizableTextarea
-                                className="dc__resizable-textarea__with-max-height dc__required-field"
-                                name="token"
-                                value={
-                                    id
-                                        ? id !== 1
-                                            ? DEFAULT_SECRET_PLACEHOLDER
-                                            : config?.bearer_token
-                                              ? config.bearer_token
-                                              : ''
-                                        : state.token.value
-                                }
-                                onChange={handleOnChange}
-                                onBlur={handleOnBlur}
-                                onFocus={handleOnFocus}
-                                placeholder="Enter bearer token"
-                                dataTestId="enter_bearer_token_input"
-                            />
-                        </div>
-                    )}
-                    {state.token.error && (
-                        <label htmlFor="" className="form__error">
-                            <FormError className="form__icon form__icon--error" />
-                            {state.token.error}
-                        </label>
+                        <Textarea
+                            name="token"
+                            value={
+                                id
+                                    ? id !== 1
+                                        ? DEFAULT_SECRET_PLACEHOLDER
+                                        : config?.bearer_token
+                                          ? config.bearer_token
+                                          : ''
+                                    : state.token.value
+                            }
+                            onChange={handleOnChange}
+                            onBlur={handleOnBlur}
+                            onFocus={handleOnFocus}
+                            placeholder="Enter bearer token"
+                            error={state.token.error}
+                        />
                     )}
                 </div>
                 <RadioGroup
@@ -774,8 +747,8 @@ export default function ClusterForm({
                 </RadioGroup>
                 {id !== DEFAULT_CLUSTER_ID && RemoteConnectionRadio && (
                     <>
-                        <hr />
-                        <div className="dc__position-rel dc__hover mb-20">
+                        <div className="divider divider--n1 mt-20 mb-20" />
+                        <div className="dc__position-rel dc__hover">
                             <span className="form__input-header pb-20">
                                 How do you want Devtron to connect with this cluster?
                             </span>
@@ -795,7 +768,7 @@ export default function ClusterForm({
                 )}
                 {id !== DEFAULT_CLUSTER_ID && (
                     <>
-                        <hr />
+                        <div className="divider divider--n1 mt-20 mb-20" />
                         <div className="dc__position-rel flex left dc__hover mb-20">
                             <Checkbox
                                 isChecked={isTlsConnection}
@@ -808,19 +781,13 @@ export default function ClusterForm({
                                 </div>
                             </Checkbox>
                         </div>
-                        {!isTlsConnection && <hr />}
+                        {!isTlsConnection && <div className="divider divider--n1" />}
                         {isTlsConnection && (
                             <>
                                 <div className="form__row ml-24">
-                                    <span
-                                        data-testid="certificate_authority_data"
-                                        className="form__label dc__required-field"
-                                    >
-                                        Certificate Authority Data
-                                    </span>
-                                    <ResizableTextarea
-                                        dataTestId="certificate_authority_data_input"
-                                        className="dc__resizable-textarea__with-max-height w-100"
+                                    <Textarea
+                                        required
+                                        label="Certificate Authority Data"
                                         name="certificateAuthorityData"
                                         value={
                                             id && id !== 1 && isTlsConnection
@@ -831,21 +798,13 @@ export default function ClusterForm({
                                         onBlur={handleOnBlur}
                                         onFocus={handleOnFocus}
                                         placeholder="Enter CA Data"
+                                        error={state.certificateAuthorityData.error}
                                     />
-                                    {state.certificateAuthorityData.error && (
-                                        <label htmlFor="" className="form__error">
-                                            <FormError className="form__icon form__icon--error" />
-                                            {state.certificateAuthorityData.error}
-                                        </label>
-                                    )}
                                 </div>
                                 <div className="form__row ml-24">
-                                    <span data-testid="tls_client_key" className="form__label dc__required-field">
-                                        TLS Key
-                                    </span>
-                                    <ResizableTextarea
-                                        dataTestId="tls_client_key_input"
-                                        className="dc__resizable-textarea__with-max-height w-100"
+                                    <Textarea
+                                        label="TLS Key"
+                                        required
                                         name="tlsClientKey"
                                         value={
                                             id && id !== 1 && isTlsConnection
@@ -856,21 +815,13 @@ export default function ClusterForm({
                                         onBlur={handleOnBlur}
                                         onFocus={handleOnFocus}
                                         placeholder="Enter tls Key"
+                                        error={state.tlsClientKey.error}
                                     />
-                                    {state.tlsClientKey.error && (
-                                        <label htmlFor="" className="form__error">
-                                            <FormError className="form__icon form__icon--error" />
-                                            {state.tlsClientKey.error}
-                                        </label>
-                                    )}
                                 </div>
                                 <div className="form__row ml-24">
-                                    <span data-testid="tls_certificate" className="form__label dc__required-field">
-                                        TLS Certificate
-                                    </span>
-                                    <ResizableTextarea
-                                        dataTestId="tls_certificate_input"
-                                        className="dc__resizable-textarea__with-max-height w-100"
+                                    <Textarea
+                                        label="TLS Certificate"
+                                        required
                                         name="tlsClientCert"
                                         value={
                                             id && id !== 1 && isTlsConnection
@@ -881,15 +832,10 @@ export default function ClusterForm({
                                         onBlur={handleOnBlur}
                                         onFocus={handleOnFocus}
                                         placeholder="Enter tls Certificate"
+                                        error={state.tlsClientCert.error}
                                     />
-                                    {state.tlsClientCert.error && (
-                                        <label htmlFor="" className="form__error">
-                                            <FormError className="form__icon form__icon--error" />
-                                            {state.tlsClientCert.error}
-                                        </label>
-                                    )}
                                 </div>
-                                <hr />
+                                <div className="divider divider--n1" />
                             </>
                         )}
                     </>
@@ -916,7 +862,8 @@ export default function ClusterForm({
                         )}
                         <div className="form__row">
                             <CustomInput
-                                labelClassName="dc__required-field"
+                                required
+                                placeholder="Enter endpoint"
                                 name="endpoint"
                                 value={state.endpoint.value}
                                 error={state.endpoint.error}
@@ -939,6 +886,7 @@ export default function ClusterForm({
                             <div className="form__row form__row--flex">
                                 <div className="w-50 mr-8 ">
                                     <CustomInput
+                                        placeholder="Enter username"
                                         name="userName"
                                         value={state.userName.value}
                                         error={state.userName.error}
@@ -947,32 +895,34 @@ export default function ClusterForm({
                                     />
                                 </div>
                                 <div className="w-50 ml-8">
-                                    <CustomPassword
+                                    <PasswordField
+                                        placeholder="Enter password"
                                         name="password"
                                         value={state.password.value}
                                         error={state.userName.error}
                                         onChange={handleOnChange}
                                         label="Password"
+                                        shouldShowDefaultPlaceholderOnBlur={false}
                                     />
                                 </div>
                             </div>
                         ) : null}
                         <div className="form__row">
-                            <span className="form__label">TLS Key</span>
-                            <ResizableTextarea
-                                className="dc__resizable-textarea__with-max-height w-100"
+                            <Textarea
+                                label="TLS Key"
                                 name="prometheusTlsClientKey"
                                 value={state.prometheusTlsClientKey.value}
                                 onChange={handleOnChange}
+                                placeholder="Enter TLS Key"
                             />
                         </div>
                         <div className="form__row">
-                            <span className="form__label">TLS Certificate</span>
-                            <ResizableTextarea
-                                className="dc__resizable-textarea__with-max-height w-100"
+                            <Textarea
+                                label="TLS Certificate"
                                 name="prometheusTlsClientCert"
                                 value={state.prometheusTlsClientCert.value}
                                 onChange={handleOnChange}
+                                placeholder="Enter TLS Certificate"
                             />
                         </div>
                     </div>
@@ -1097,12 +1047,10 @@ export default function ClusterForm({
                                     >
                                         <span className="dc__ellipsis-right">{clusterListDetail.clusterName}</span>
                                     </div>
-                                    <div className="flexbox dc__align-items-center">
-                                        <div
-                                            data-testid="status_icon_visibility"
-                                            className={`dc__app-summary__icon icon-dim-16 mr-2 ${
-                                                clusterListDetail.status === 'Failed' ? 'failed' : 'succeeded'
-                                            }`}
+                                    <div className="flexbox dc__align-items-center dc__gap-2">
+                                        <Icon
+                                            name={clusterListDetail.status === 'Failed' ? 'ic-error' : 'ic-success'}
+                                            color={null}
                                         />
                                         <div
                                             data-testid={`validate-cluster-${clusterListDetail.status}`}
@@ -1117,7 +1065,7 @@ export default function ClusterForm({
                         )}
                     </div>
                 </div>
-                <div className="w-100 dc__border-top flex right pb-12 pt-12 pr-20 pl-20 dc__position-fixed dc__position-abs dc__bottom-0">
+                <div className="dc__border-top flex right py-12 px-20">
                     <button
                         className="dc__edit_button cb-5 h-36 lh-36"
                         type="button"
@@ -1334,7 +1282,7 @@ export default function ClusterForm({
                                                                 columnGap: '6px',
                                                             }}
                                                         >
-                                                            <ErrorIcon className="dc__app-summary__icon icon-dim-16 m-2" />
+                                                            <ErrorIcon className="icon-dim-16 m-2" />
                                                             <span>
                                                                 {isClusterSelected[clusterDetail.cluster_name]
                                                                     ? 'Cluster already exists. Cluster will be updated'
@@ -1352,15 +1300,13 @@ export default function ClusterForm({
                                                                     columnGap: '6px',
                                                                 }}
                                                             >
-                                                                <div
-                                                                    className={`dc__app-summary__icon icon-dim-16 m-2 ${
-                                                                        selectedUserNameOptions[
-                                                                            clusterDetail.cluster_name
-                                                                        ].errorInConnecting.length !== 0
-                                                                            ? 'failed'
-                                                                            : ''
-                                                                    }`}
-                                                                />
+                                                                {selectedUserNameOptions[clusterDetail.cluster_name]
+                                                                    .errorInConnecting.length !== 0 && (
+                                                                    <div className="m-2">
+                                                                        <Icon name="ic-error" color={null} />
+                                                                    </div>
+                                                                )}
+
                                                                 <span>
                                                                     {selectedUserNameOptions[clusterDetail.cluster_name]
                                                                         ?.errorInConnecting || ' '}
@@ -1441,12 +1387,105 @@ export default function ClusterForm({
         toggleShowAddCluster()
     }
 
+    const showConfirmationModal = () => setConfirmation(true)
+    const hideConfirmationModal = () => setConfirmation(false)
+
+    const onDelete = async () => {
+        const payload = {
+            id,
+            cluster_name,
+            config: { bearer_token: state.token.value },
+            active,
+            prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
+            prometheusAuth: {
+                userName: prometheusToggleEnabled ? state.userName.value : '',
+                password: prometheusToggleEnabled ? state.password.value : '',
+                tlsClientCert: prometheusToggleEnabled ? state.prometheusTlsClientKey.value : '',
+                tlsClientKey: prometheusToggleEnabled ? state.prometheusTlsClientCert.value : '',
+            },
+            remoteConnectionConfig: getRemoteConnectionConfig(state, remoteConnectionMethod),
+            server_url,
+            defaultClusterComponent,
+            k8sversion: '',
+            insecureSkipTlsVerify: !isTlsConnection,
+        }
+        await deleteCluster(payload)
+        reload()
+    }
+
+    const renderNonVirtualFooter = () => {
+        if (isVirtual) {
+            return null
+        }
+
+        if (isKubeConfigFile) {
+            return (
+                <div className="dc__border-top flex right py-12 px-20">
+                    <button
+                        data-testid="cancel_kubeconfig_button"
+                        className="cta cancel h-36 lh-36"
+                        type="button"
+                        onClick={handleCloseButton}
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        className="cta ml-12 h-36 lh-36"
+                        type="button"
+                        onClick={handleGetClustersClick}
+                        disabled={!saveYamlData}
+                        data-testId="get_cluster_button"
+                    >
+                        <div className="flex">
+                            Get cluster
+                            <ForwardArrow className={`ml-5 ${!saveYamlData ? 'scn-4' : ''}`} />
+                        </div>
+                    </button>
+                </div>
+            )
+        }
+
+        return (
+            <div className="dc__border-top flexbox py-12 px-20 dc__content-space">
+                {id && (
+                    <Button
+                        text="Delete"
+                        variant={ButtonVariantType.secondary}
+                        style={ButtonStyleType.negative}
+                        startIcon={<Trash />}
+                        disabled={isDefaultCluster()}
+                        dataTestId="delete_cluster"
+                        onClick={showConfirmationModal}
+                    />
+                )}
+                <div className="flex dc__gap-12 right w-100">
+                    <Button
+                        text="Cancel"
+                        variant={ButtonVariantType.secondary}
+                        style={ButtonStyleType.neutral}
+                        dataTestId="cancel_button"
+                        onClick={handleCloseButton}
+                    />
+                    <Button
+                        dataTestId="save_cluster_after_entering_cluster_details"
+                        onClick={handleOnSubmit}
+                        text={id ? 'Update cluster' : 'Save cluster'}
+                        buttonProps={{
+                            type: 'submit',
+                        }}
+                    />
+                </div>
+            </div>
+        )
+    }
+
     return getClusterVar ? (
         displayClusterDetails()
     ) : (
-        <div className="cluster-form dc__position-rel h-100 bg__primary" style={{ padding: 'auto 0' }}>
+        <div className="cluster-form dc__position-rel h-100 bg__primary flexbox-col">
             <AddClusterHeader />
-            <div style={{ overflow: 'auto', height: 'calc(100vh - 110px)' }}>
+            <div className="flex-grow-1 flexbox-col dc__overflow-auto">
                 {VirtualClusterSelectionTab && (
                     <VirtualClusterSelectionTab
                         id={id}
@@ -1459,7 +1498,7 @@ export default function ClusterForm({
                 )}
                 {!isVirtual && (
                     <>
-                        <div className="p-20">
+                        <div className="p-20 flex-grow-1 flexbox-col">
                             {!id && (
                                 <div className="form__row clone-apps dc__inline-block pd-0 pt-0 pb-12">
                                     <RadioGroup
@@ -1484,77 +1523,21 @@ export default function ClusterForm({
                             {isKubeConfigFile ? codeEditor() : renderUrlAndBearerToken()}
                         </div>
 
-                        {!isKubeConfigFile && (
-                            <div className="w-100 dc__border-top flex right pb-12 pt-12 pr-20 pl-20 dc__position-fixed dc__position-abs dc__bottom-0">
-                                {id && (
-                                    <button
-                                        data-testid="delete_cluster"
-                                        style={{ margin: 'auto', marginLeft: 20 }}
-                                        className="flex cta delete scr-5 h-36 lh-36"
-                                        type="button"
-                                        onClick={() => toggleConfirmation(true)}
-                                        disabled={isDefaultCluster()}
-                                    >
-                                        {deleting ? <Progressing /> : 'Delete'}
-                                    </button>
-                                )}
-                                <button
-                                    data-testid="cancel_button"
-                                    className="cta cancel h-36 lh-36"
-                                    type="button"
-                                    onClick={handleCloseButton}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    data-testid="save_cluster_after_entering_cluster_details"
-                                    className="cta ml-12 h-36 lh-36"
-                                    onClick={handleOnSubmit}
-                                >
-                                    {id ? 'Update cluster' : 'Save cluster'}
-                                </button>
-                            </div>
-                        )}
-                        {isKubeConfigFile && (
-                            <div className="w-100 dc__border-top flex right pb-12 pt-12 pr-20 pl-20 dc__position-fixed dc__position-abs dc__bottom-0">
-                                <button
-                                    data-testid="cancel_kubeconfig_button"
-                                    className="cta cancel h-36 lh-36"
-                                    type="button"
-                                    onClick={handleCloseButton}
-                                >
-                                    Cancel
-                                </button>
-
-                                <button
-                                    className="cta ml-12 h-36 lh-36"
-                                    type="button"
-                                    onClick={handleGetClustersClick}
-                                    disabled={!saveYamlData}
-                                    data-testId="get_cluster_button"
-                                >
-                                    <div className="flex">
-                                        Get cluster
-                                        <ForwardArrow className={`ml-5 ${!saveYamlData ? 'scn-4' : ''}`} />
-                                    </div>
-                                </button>
-                            </div>
-                        )}
                         {confirmation && (
-                            <DeleteComponent
-                                setDeleting={setDeleting}
-                                deleteComponent={deleteCluster}
-                                payload={payload}
+                            <DeleteConfirmationModal
                                 title={cluster_name}
-                                toggleConfirmation={toggleConfirmation}
                                 component={DeleteComponentsName.Cluster}
-                                confirmationDialogDescription={DC_CLUSTER_CONFIRMATION_MESSAGE}
-                                reload={reload}
+                                subtitle={DC_DELETE_SUBTITLES.DELETE_ENVIRONMENT_SUBTITLE}
+                                onDelete={onDelete}
+                                closeConfirmationModal={hideConfirmationModal}
+                                errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
                             />
                         )}
                     </>
                 )}
             </div>
+
+            {renderNonVirtualFooter()}
         </div>
     )
 }

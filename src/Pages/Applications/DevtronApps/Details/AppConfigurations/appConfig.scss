@@ -17,7 +17,6 @@
 .app-compose {
     display: grid;
     grid-template-columns: 255px 1fr;
-    height: calc(100vh - 77px);
     background: var(--bg-primary);
     overflow: hidden;
 
@@ -30,81 +29,14 @@
     }
 
     .app-compose__nav {
-        padding: 16px 12px;
         border-right: solid 1px var(--N200);
         background: var(--bg-primary);
         height: 100%;
-        display: grid;
-        grid-template-columns: 1fr;
         overflow: hidden;
 
         &.app-compose-env-configurations__nav {
             padding: 0;
             display: block
-        }
-
-        &.app-compose-with-no-gitops-config__nav {
-            grid-template-rows: 110px repeat(4, 32px) 54px 1fr auto;
-
-            &.hide-app-config-help {
-                grid-template-rows: repeat(4, 32px) 54px 1fr auto;
-
-                &.hide-external-links {
-                    grid-template-rows: repeat(4, 32px) 1fr auto;
-                }
-            }
-
-            &.job-compose__side-nav {
-                grid-template-rows: 110px repeat(3, 32px) 1fr;
-
-                &.hide-app-config-help {
-                    grid-template-rows: repeat(3, 32px) 1fr;
-                }
-            }
-
-            &.config-protection__side-nav {
-                grid-template-rows: 110px repeat(4, 32px) 54px 32px 1fr auto;
-
-                &.hide-external-links {
-                    grid-template-rows: 110px repeat(4, 32px) 54px 1fr auto;
-                }
-
-                &.hide-app-config-help {
-                    grid-template-rows: repeat(4, 32px) 54px 32px 1fr auto;
-
-                    &.hide-external-links {
-                        grid-template-rows: repeat(4, 32px) 54px 1fr auto;
-                    }
-                }
-            }
-        }
-
-        &.app-compose-with-gitops-config__nav {
-            grid-template-rows: 110px repeat(5, 32px) 54px 1fr auto;
-
-            &.hide-app-config-help {
-                grid-template-rows: repeat(5, 32px) 54px 1fr auto;
-
-                &.hide-external-links {
-                    grid-template-rows: repeat(5, 32px) 1fr auto;
-                }
-            }
-
-            &.config-protection__side-nav {
-                grid-template-rows: 110px repeat(5, 32px) 54px 32px 1fr auto;
-
-                &.hide-external-links {
-                    grid-template-rows: 110px repeat(5, 32px) 54px 1fr auto;
-                }
-
-                &.hide-app-config-help {
-                    grid-template-rows: repeat(5, 32px) 54px 32px 1fr auto;
-
-                    &.hide-external-links {
-                        grid-template-rows: repeat(5, 32px) 54px 1fr auto;
-                    }
-                }
-            }
         }
 
         .help-container {

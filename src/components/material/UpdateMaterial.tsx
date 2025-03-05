@@ -15,11 +15,16 @@
  */
 
 import React, { Component } from 'react'
-import { AppConfigProps, showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AppConfigProps,
+    showError,
+    ToastManager,
+    ToastVariantType,
+    isAWSCodeCommitURL,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { updateMaterial } from './material.service'
 import { GitMaterialType, MaterialViewProps, UpdateMaterialState } from './material.types'
 import { MaterialView } from './MaterialView'
-import { isAWSCodeCommitURL } from '../common'
 
 export interface UpdateMaterialProps extends Required<Pick<AppConfigProps, 'isTemplateView'>>, Pick<MaterialViewProps, 'isCreateAppView'> {
     appId: number

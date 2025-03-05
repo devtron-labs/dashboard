@@ -365,9 +365,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     }
 
     openCIPipeline(node: CommonNodeAttr) {
-        if (node.isExternalCI && !node.isLinkedCI) {
-            return `${this.props.match.url}/deprecated-warning`
-        }
         const { appId } = this.props.match.params
         let url = ''
         if (node.isLinkedCI) {
@@ -503,8 +500,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 handleSelectedNodeChange={this.props.handleSelectedNodeChange}
                 selectedNode={this.props.selectedNode}
                 appName={this.props.appName ?? ''}
-                // Since we only have this correct for CDNodes so using it here only
-                isLastNode={node.isLast}
+                // Adding this downstream hack, for the case when we are not recieving all the nodes in case of filtered CD
+                isLastNode={node.isLast || node.downstreams.length === 0}
                 deploymentAppType={node.deploymentAppType}
                 appId={this.props.match.params.appId}
                 getWorkflows={this.props.getWorkflows}

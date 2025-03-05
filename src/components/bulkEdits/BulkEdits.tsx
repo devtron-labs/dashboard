@@ -688,7 +688,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderCodeEditorAndReadme = () => {
         return (
-            <div className="bulk-container">
+            <div className="bulk-container vertical-divider">
                 <div>{this.renderBulkCodeEditor()}</div>
                 <div>{this.renderReadmeSection()}</div>
             </div>

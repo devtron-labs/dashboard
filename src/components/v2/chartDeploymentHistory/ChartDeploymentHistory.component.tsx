@@ -32,12 +32,14 @@ import {
     ShowMoreText,
     DEPLOYMENT_STATUS,
     EMPTY_STATE_STATUS,
+    AppStatus,
+    StatusType,
+    Button,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
-import Tippy from '@tippyjs/react'
 import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
-import docker from '../../../assets/icons/misc/docker.svg'
-import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
+import docker from '@Icons/misc/docker.svg'
 import DataNotFound from '../../../assets/img/app-not-deployed.svg'
 import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
 import { Moment12HourFormat, SERVER_ERROR_CODES, URLS } from '../../../config'
@@ -63,8 +65,8 @@ import {
     processVirtualEnvironmentDeploymentData,
     renderDeploymentApprovalInfo,
 } from '../../app/details/cdDetails/utils'
-import { ReactComponent as Rocket} from '@Icons/ic-nav-rocket.svg'
-import {ReactComponent as ICLines } from '@Icons/ic-lines.svg'
+import { ReactComponent as Rocket } from '@Icons/ic-nav-rocket.svg'
+import { ReactComponent as ICLines } from '@Icons/ic-lines.svg'
 
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 const ChartSecurityTab = importComponentFromFELibrary('ChartSecurityTab', null, 'function')
@@ -114,7 +116,7 @@ const ChartDeploymentHistory = ({
             DEPLOYMENT_HISTORY_TAB.SOURCE,
             DEPLOYMENT_HISTORY_TAB.VALUES_YAML,
             DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST,
-            (ChartSecurityTab && !isExternal && DEPLOYMENT_HISTORY_TAB.SECURITY),
+            ChartSecurityTab && !isExternal && DEPLOYMENT_HISTORY_TAB.SECURITY,
         ]
         if (installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS) {
             tabs.unshift(DEPLOYMENT_HISTORY_TAB.STEPS)
@@ -302,13 +304,21 @@ const ChartDeploymentHistory = ({
         setDeploymentManifestDetails(_deploymentManifestDetail)
     }
 
+    const getDeploymentStatus = (deployment: ChartDeploymentDetail) => {
+        if (
+            (deployment?.status && installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS) ||
+            installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD
+        ) {
+            return deployment.status
+        } else {
+            return deployment?.status || StatusType.SUCCEEDED
+        }
+    }
+
     function renderDeploymentCards() {
         return (
             <>
                 {deploymentHistoryArr.map((deployment, index) => {
-                    const helmDeploymentStatus: string = deployment?.status
-                        ? deployment.status.toLowerCase()
-                        : 'succeeded'
                     return (
                         <React.Fragment key={deployment.version}>
                             <div
@@ -328,14 +338,11 @@ const ChartDeploymentHistory = ({
                                         gridColumnGap: '12px',
                                     }}
                                 >
-                                    <div
-                                        className={`dc__app-summary__icon icon-dim-22 ${
-                                            (deployment?.status &&
-                                                installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS) ||
-                                            installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD
-                                                ? deployment?.status.toLowerCase()
-                                                : ''
-                                        } ${deployment?.status ? helmDeploymentStatus : ''}`}
+                                    <AppStatus
+                                        status={getDeploymentStatus(deployment)}
+                                        hideMessage
+                                        iconSize={24}
+                                        hideIconTooltip
                                     />
                                     <div className="flex column left dc__ellipsis-right">
                                         <div className="cn-9 fs-14" data-testid="chart-deployment-time">
@@ -594,7 +601,9 @@ const ChartDeploymentHistory = ({
                     />
                 )}
                 {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SECURITY && !isExternal && ChartSecurityTab && (
-                    <ChartSecurityTab installedAppVersionHistoryId={deploymentHistoryArr[selectedDeploymentHistoryIndex].version} />
+                    <ChartSecurityTab
+                        installedAppVersionHistoryId={deploymentHistoryArr[selectedDeploymentHistoryIndex].version}
+                    />
                 )}
             </div>
         )
@@ -602,6 +611,10 @@ const ChartDeploymentHistory = ({
 
     const closeDockerInfoTab = () => {
         setShowDockerInfo(false)
+    }
+
+    const handleOpenRollbackConfirmation = () => {
+        setShowRollbackConfirmation(true)
     }
 
     function renderSelectedDeploymentDetailHeader() {
@@ -617,16 +630,17 @@ const ChartDeploymentHistory = ({
                         </div>
 
                         <div className="flex column left">
-                                <div className=" cn-9 fs-13 fw-4 lh-20">
-                                    <span>Message</span>
-                                </div>
+                            <div className=" cn-9 fs-13 fw-4 lh-20">
+                                <span>Message</span>
+                            </div>
 
                             {/* Need key since using ref inside of this component as useEffect dependency, so there were issues while switching builds */}
                             {message && <ShowMoreText text={message} key={message} textClass="cn-7" />}
                         </div>
                     </div>
                 )
-            }}
+            }
+        }
 
         return (
             <div className="trigger-details pb-20">
@@ -654,27 +668,26 @@ const ChartDeploymentHistory = ({
                                 <DockerImageDetails deployment={deployment} setShowDockerInfo={setShowDockerInfo} />
                             )}
                         </div>
-
                     </div>
 
                     {!(selectedDeploymentHistoryIndex === 0 || isVirtualEnvironment) && (
-                        <Tippy className="default-tt" arrow={false} content="Re-deploy this version">
-                            <button
-                                className="flex cta deploy-button"
-                                onClick={() => setShowRollbackConfirmation(true)}
-                                data-testid="re-deployment-button"
-                            >
-                                <DeployButton className="deploy-button-icon" />
-                                <span className="ml-4">Deploy</span>
-                            </button>
-                        </Tippy>
+                        <Button
+                            dataTestId="re-deployment-button"
+                            text="Deploy"
+                            size={ComponentSizeType.medium}
+                            showTooltip
+                            tooltipProps={{
+                                content: 'Re-deploy this version',
+                            }}
+                            onClick={handleOpenRollbackConfirmation}
+                            startIcon={<Rocket />}
+                        />
                     )}
                     {showDockerInfo && (
                         <DockerListModal dockerList={deployment.dockerImages} closeTab={closeDockerInfoTab} />
                     )}
                 </div>
                 {getViewMessage()}
-
             </div>
         )
     }

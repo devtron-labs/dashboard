@@ -19,7 +19,6 @@ import { GroupBase } from 'react-select'
 import { useParams } from 'react-router-dom'
 import {
     Progressing,
-    DeleteDialog,
     RadioGroup,
     RadioGroupItem,
     ConditionalWrap,
@@ -32,6 +31,7 @@ import {
     SelectPickerOptionType,
     SelectPickerProps,
     MarkDown,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
@@ -52,22 +52,17 @@ import {
     ChartVersionSelectorType,
     ChartVersionValuesSelectorType,
     DeleteApplicationButtonProps,
-    DeleteChartDialogProps,
     DeploymentAppRadioGroupType,
     DeploymentAppSelectorType,
     UpdateApplicationButtonProps,
     ValueNameInputType,
     gitOpsDrawerType,
 } from './ChartValuesView.type'
-import {
-    DELETE_CHART_APP_DESCRIPTION_LINES,
-    DELETE_PRESET_VALUE_DESCRIPTION_LINES,
-    UPDATE_APP_BUTTON_TEXTS,
-} from './ChartValuesView.constants'
+import { UPDATE_APP_BUTTON_TEXTS } from './ChartValuesView.constants'
 import { DeploymentAppTypeNameMapping, REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
-import { DELETE_ACTION, repoType } from '../../../../config'
+import { repoType } from '../../../../config'
 import UserGitRepo from '../../../gitOps/UserGitRepo'
 import { getChartValuesFiltered } from '@Components/charts/charts.helper'
 import { ChartValuesType } from '@Components/charts/charts.types'
@@ -528,11 +523,10 @@ export const ChartValuesSelector = ({
         },
         {
             label: 'Default',
-            options: filteredChartValues.defaultChartValues
-                .map((chartValue) => ({
-                    value: chartValue,
-                    label: `${chartValue.name} ${chartValue.chartVersion}`,
-                })),
+            options: filteredChartValues.defaultChartValues.map((chartValue) => ({
+                value: chartValue,
+                label: `${chartValue.name} ${chartValue.chartVersion}`,
+            })),
         },
     ]
 
@@ -632,52 +626,6 @@ export const ActiveReadmeColumn = ({ fetchingReadMe, activeReadMe }: ActiveReadm
     )
 }
 
-export const DeleteChartDialog = ({
-    appName,
-    handleDelete,
-    toggleConfirmation,
-    isCreateValueView,
-    disableButton,
-}: DeleteChartDialogProps) => {
-    const closeConfirmation = () => {
-        toggleConfirmation(false)
-    }
-    const handleForceDelete = () => {
-        handleDelete(DELETE_ACTION.DELETE)
-    }
-    return (
-        <DeleteDialog
-            apiCallInProgress={disableButton}
-            title={`Delete '${appName}' ?`}
-            delete={handleForceDelete}
-            closeDelete={closeConfirmation}
-        >
-            {isCreateValueView ? (
-                <DeleteDialog.Description>
-                    <p>{DELETE_PRESET_VALUE_DESCRIPTION_LINES.First}</p>
-                    <p>{DELETE_PRESET_VALUE_DESCRIPTION_LINES.Second}</p>
-                </DeleteDialog.Description>
-            ) : (
-                <DeleteDialog.Description>
-                    <p>{DELETE_CHART_APP_DESCRIPTION_LINES.First}</p>
-                    <p>{DELETE_CHART_APP_DESCRIPTION_LINES.Second}</p>
-                </DeleteDialog.Description>
-            )}
-        </DeleteDialog>
-    )
-}
-
-const renderValidationErrorLabel = (message?: string): JSX.Element => {
-    return (
-        <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6">
-            <div className="error-label-icon">
-                <Error className="icon-dim-16" />
-            </div>
-            <div className="ml-4 cr-5">{message || REQUIRED_FIELD_MSG}</div>
-        </div>
-    )
-}
-
 export const ValueNameInput = ({
     valueName,
     handleValueNameChange,
@@ -691,14 +639,13 @@ export const ValueNameInput = ({
             <CustomInput
                 name="value-name"
                 label="Name"
-                tabIndex={1}
                 placeholder="Eg. value-template"
                 value={valueName}
                 onChange={(e) => handleValueNameChange(e.target.value)}
                 onBlur={() => handleValueNameOnBlur()}
                 disabled={valueNameDisabled}
                 data-testid="preset-values-name-input"
-                isRequiredField
+                required
                 error={invalidValueName && (invalidValueNameMessage || REQUIRED_FIELD_MSG)}
             />
         </div>
@@ -713,21 +660,19 @@ export const AppNameInput = ({
     invalidAppNameMessage,
 }: AppNameInputType) => {
     return (
-        <div className="w-100">
-            <CustomInput
-                name="app-name"
-                tabIndex={1}
-                label="App Name"
-                placeholder="Eg. app-name"
-                value={appName}
-                onChange={(e) => handleAppNameChange(e.target.value)}
-                onBlur={handleAppNameOnBlur}
-                data-testid="app-name-input"
-                isRequiredField
-                error={invalidAppName && (invalidAppNameMessage || REQUIRED_FIELD_MSG)}
-                rootClassName="h-32"
-            />
-        </div>
+        <CustomInput
+            name="app-name"
+            label="App Name"
+            placeholder="Eg. app-name"
+            value={appName}
+            onChange={(e) => handleAppNameChange(e.target.value)}
+            onBlur={handleAppNameOnBlur}
+            data-testid="app-name-input"
+            required
+            error={invalidAppName && (invalidAppNameMessage || REQUIRED_FIELD_MSG)}
+            size={ComponentSizeType.medium}
+            fullWidth
+        />
     )
 }
 

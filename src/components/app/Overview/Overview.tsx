@@ -32,16 +32,14 @@ import {
     ToastManager,
     ToastVariantType,
     URLS as CommonUrls,
+    AppStatus,
+    StatusType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { getGitProviderIcon, handleUTCTime, importComponentFromFELibrary } from '../../common'
 import { AppOverviewProps, EditAppRequest, JobPipeline } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as TagIcon } from '../../../assets/icons/ic-tag.svg'
-import { ReactComponent as SucceededIcon } from '../../../assets/icons/ic-success.svg'
-import { ReactComponent as InProgressIcon } from '../../../assets/icons/ic-progressing.svg'
-import { ReactComponent as FailedIcon } from '../../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as CrossIcon } from '../../../assets/icons/ic-close.svg'
 import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
 import AboutAppInfoModal from '../details/AboutAppInfoModal'
 import AboutTagEditModal from '../details/AboutTagEditModal'
@@ -260,7 +258,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                     <EditableTextArea
                         emptyState={config.defaultDescription}
                         placeholder={config.defaultDescription}
-                        rows={4}
                         initialText={description}
                         updateContent={handleSaveDescription}
                         validations={{
@@ -388,31 +385,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
         </div>
     )
 
-    const getStatusIcon = (status: string): JSX.Element => {
-        switch (status) {
-            case 'Succeeded':
-                return <SucceededIcon className="dc__app-summary__icon icon-dim-16 mr-6" />
-            case 'Failed':
-            case 'Error':
-                return <FailedIcon className="dc__app-summary__icon icon-dim-16 mr-6" />
-            case 'InProgress':
-                return <InProgressIcon className="dc__app-summary__icon icon-dim-16 mr-6" />
-            case 'Starting':
-                return <div className="dc__app-summary__icon icon-dim-16 mr-6 progressing" />
-            case 'Running':
-                return <div className="dc__app-summary__icon icon-dim-16 mr-6 progressing" />
-            case 'CANCELLED':
-                return <div className="dc__app-summary__icon icon-dim-16 mr-6 cancelled" />
-            default:
-                return (
-                    <>
-                        <CrossIcon className="dc__app-summary__icon icon-dim-16 mr-6" />
-                        Yet to run
-                    </>
-                )
-        }
-    }
-
     const renderWorkflowComponent = () => {
         if (!Array.isArray(jobPipelines) || !jobPipelines.length) {
             return (
@@ -448,14 +420,9 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                         <div className="flex">
                             <div
                                 data-testid={`${jobPipeline.status || 'notdeployed'}-job-status`}
-                                className="mr-16 w-150 h-20 m-tb-8 fs-13 cn-9 flex dc__content-start"
+                                className="mr-16 w-150 h-20 m-tb-8"
                             >
-                                {getStatusIcon(jobPipeline.status)}
-                                {jobPipeline.status === 'CANCELLED' ? (
-                                    <div>Aborted</div>
-                                ) : (
-                                    <div>{jobPipeline.status}</div>
-                                )}
+                                <AppStatus status={jobPipeline.status || StatusType.NOT_DEPLOYED} isJobView />
                             </div>
                             <div
                                 data-testid={`${jobPipeline.environmentName}-${index}`}

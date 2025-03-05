@@ -1,10 +1,9 @@
-import { CustomInput, ResizableTextarea, TagsContainer } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, TagsContainer, Textarea } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICDevtronApp } from '@Icons/ic-devtron-app.svg'
 import { ReactComponent as ICCaretLeftSmall } from '@Icons/ic-caret-left-small.svg'
 import { ChangeEvent, useState } from 'react'
 import { importComponentFromFELibrary } from '@Components/common'
 import { APP_TYPE } from '@Config/constants'
-import { ReactComponent as ICError } from '@Icons/ic-warning.svg'
 import ProjectSelector from './ProjectSelector'
 import {
     ApplicationInfoFormProps,
@@ -76,36 +75,27 @@ const ApplicationInfoForm = ({
                 <span className="pt-26 fs-20 lh-36 cn-7 dc__no-shrink">/</span>
                 <CustomInput
                     label={isJobView ? 'Job name' : 'Application name'}
-                    isRequiredField
                     required
-                    rootClassName="h-36"
                     name="name"
                     onChange={handleInputChange(CreateAppFormStateActionType.updateName)}
                     value={formState.name}
                     placeholder="Enter name"
-                    inputWrapClassName="w-100"
                     error={formErrorState.name}
                     helperText={
                         !isJobView && 'Apps are NOT env specific and can be used to deploy to multiple environments.'
                     }
+                    fullWidth
                 />
             </div>
-            <div>
-                <span className="form__label">Description</span>
-                <ResizableTextarea
-                    name="description"
-                    value={formState.description}
-                    onChange={handleInputChange(CreateAppFormStateActionType.updateDescription)}
-                    placeholder={isJobView ? 'Describe this job' : 'Write a description for this application'}
-                    className="w-100"
-                />
-                {formErrorState.description ? (
-                    <span className="form__error">
-                        <ICError className="form__icon form__icon--error" />
-                        {formErrorState.description} <br />
-                    </span>
-                ) : null}
-            </div>
+            <Textarea
+                label="Description"
+                name="description"
+                value={formState.description}
+                onChange={handleInputChange(CreateAppFormStateActionType.updateDescription)}
+                placeholder={isJobView ? 'Describe this job' : 'Write a description for this application'}
+                fullWidth
+                error={formErrorState.description}
+            />
             <div className="flexbox-col dc__gap-16">
                 <button
                     className="dc__transparent p-0 flex left dc__gap-8 dc__w-fit-content"

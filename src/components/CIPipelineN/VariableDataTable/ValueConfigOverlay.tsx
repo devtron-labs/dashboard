@@ -26,9 +26,10 @@ import {
     CustomInput,
     FilePropertyTypeSizeUnit,
     PATTERNS,
-    ResizableTextarea,
     SelectPicker,
     SelectPickerOptionType,
+    Textarea,
+    TextareaProps,
     Tooltip,
     validateRequiredPositiveNumber,
     VariableTypeFormat,
@@ -119,7 +120,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
         })
     }
 
-    const handleFileAllowedExtensionsChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleFileAllowedExtensionsChange: TextareaProps['onChange'] = (e) => {
         handleRowUpdateAction({
             actionType: VariableDataTableActionType.UPDATE_FILE_ALLOWED_EXTENSIONS,
             rowId,
@@ -178,28 +179,23 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
             return (
                 <div className="dc__overflow-auto p-12 flex-grow-1 flexbox-col dc__gap-12">
                     <CustomInput
-                        name="fileMount"
+                        name={`file-mount-${rowId}`}
                         label="File mount path"
                         placeholder="Enter file mount path"
                         value={fileInfo.fileMountDir}
                         onChange={handleFileMountChange}
-                        dataTestid={`file-mount-${rowId}`}
-                        inputWrapClassName="w-100"
-                        isRequiredField
+                        fullWidth
+                        required
                         error={hasFileMountError ? 'This field is required' : ''}
                         autoFocus
                     />
-                    <div className="flexbox-col dc__gap-6">
-                        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                        <label className="m-0 fs-13 lh-20 cn-7 fw-4">Restrict file type</label>
-                        <ResizableTextarea
-                            value={fileInfo.allowedExtensions}
-                            minHeight={96}
-                            maxHeight={96}
-                            placeholder="Enter file types separated by commas Eg. .xls, .csv, .tar"
-                            onChange={handleFileAllowedExtensionsChange}
-                        />
-                    </div>
+                    <Textarea
+                        name="file-allowed-extension"
+                        label="Restrict file type"
+                        value={fileInfo.allowedExtensions}
+                        placeholder="Enter file types separated by commas Eg. .xls, .csv, .tar"
+                        onChange={handleFileAllowedExtensionsChange}
+                    />
                     <div>
                         <div className="flexbox dc__align-items-center">
                             <div className="flex-grow-1">
@@ -267,8 +263,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
                                     autoFocus={index === 0}
                                     value={value}
                                     onChange={handleChoiceChange(id)}
-                                    dataTestid={`choice-${id}`}
-                                    inputWrapClassName="w-100"
+                                    fullWidth
                                     error={error}
                                 />
                                 <div className="mt-2 dc__align-self-start">

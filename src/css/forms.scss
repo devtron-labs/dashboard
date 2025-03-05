@@ -105,8 +105,7 @@
     margin-bottom: 8px;
 }
 
-.form__input,
-.form__textarea {
+.form__input {
     border-radius: 4px;
     border: solid 1px var(--N200);
     padding: 7px 10px;
@@ -126,35 +125,8 @@
     }
 }
 
-.form__textarea {
-    min-height: 36px;
-    resize: vertical;
-
-    &:focus-visible {
-        outline: 1px solid var(--B500);
-    }
-}
-
 .form__input--error {
     border: solid 1px var(--R500);
-}
-
-.form__input--textarea {
-    display: block;
-    height: 160px;
-    resize: none;
-}
-
-.form__text-field-info {
-    font-size: 11px;
-    font-weight: 400;
-    line-height: 1.45;
-    letter-spacing: normal;
-    color: var(--N500);
-    vertical-align: middle;
-    text-transform: lowercase;
-    display: flex;
-    align-items: flex-end;
 }
 
 p.sentence-case {
@@ -221,25 +193,6 @@ p.sentence-case:first-letter {
         flex-direction: column;
         text-transform: capitalize;
     }
-    textarea {
-        border-radius: 4px;
-        border: solid 1px var(--N200);
-        padding: 9px 10px;
-        display: block;
-        width: 100%;
-        font-weight: 400;
-    }
-}
-
-.form__add-parameter {
-    border: none;
-    background-color: var(--bg-primary);
-    margin-left: auto;
-    padding: 0 16px;
-    font-size: 13px;
-    font-weight: 600;
-    line-height: 1.54;
-    color: var(--B500);
 }
 
 .form__radio-group {
@@ -380,7 +333,7 @@ p.sentence-case:first-letter {
     display: inline-block;
     height: 16px;
     width: 16px;
-    border: 1px solid var(--N200);
+    border: 1px solid var(--N500);
     border-radius: 50%;
     margin-right: 10px;
 }
@@ -626,14 +579,6 @@ p.sentence-case:first-letter {
 
 .form__input:focus {
     outline: none;
-}
-
-.form__input:focus ~ .form__text-field-info {
-    color: var(--B500);
-}
-
-.form__input:focus ~ .form__text-field-info path[fill='#06C'] {
-    fill: var(--B500);
 }
 
 .form__input:disabled {

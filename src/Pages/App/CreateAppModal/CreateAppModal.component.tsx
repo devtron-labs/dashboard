@@ -241,7 +241,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
     const redirectToArtifacts = (appId: string) => {
         const url = isCreationMethodTemplate
             ? `${URLS.APP}/${appId}/${URLS.APP_TRIGGER}`
-            : getAppComposeURL(appId, APP_COMPOSE_STAGE.SOURCE_CONFIG, isJobView)
+            : getAppComposeURL(appId, APP_COMPOSE_STAGE.SOURCE_CONFIG, isJobView, false)
         history.push(url)
     }
 

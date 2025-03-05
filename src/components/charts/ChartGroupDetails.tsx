@@ -24,16 +24,20 @@ import {
     ConditionalWrap,
     useAsync,
     PageHeader,
-    DeleteComponent,
     ToastVariantType,
     ToastManager,
+    DeleteConfirmationModal,
+    Button,
+    ButtonVariantType,
+    ButtonStyleType,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import ChartGroupDeployments from './ChartGroupDeployments'
 import MultiChartSummary from './MultiChartSummary'
 import useChartGroup from './useChartGroup'
 import { URLS } from '../../config'
-import { Pencil } from '../common'
+import { ReactComponent as Pencil } from '@Icons/ic-pencil.svg'
 import { getDeployableChartsFromConfiguredCharts } from './list/DiscoverCharts'
 import {
     deployChartGroup,
@@ -91,8 +95,7 @@ export default function ChartGroupDetails() {
         () => getChartGroupInstallationDetails(groupId),
         [groupId],
     )
-    const [deleting, setDeleting] = useState(false)
-    const [confirmation, toggleConfirmation] = useState(false)
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false)
     const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false)
     const [clickedOnAdvance, setClickedOnAdvance] = useState(null)
 
@@ -109,18 +112,8 @@ export default function ChartGroupDetails() {
     }
 
     async function deleteInstalledChartFromDeployments(installedAppId: number) {
-        try {
-            await deleteInstalledChart(installedAppId)
-            ToastManager.showToast({
-                variant: ToastVariantType.success,
-                description: 'Successfully Deleted',
-            })
-            reloadChartGroupDetails()
-        } catch (err) {
-            showError(err)
-        } finally {
-            setLoading(false)
-        }
+        await deleteInstalledChart(installedAppId)
+        reloadChartGroupDetails()
     }
 
     async function handleInstall() {
@@ -143,7 +136,10 @@ export default function ChartGroupDetails() {
         }
     }
 
-    function getDeleteComponent() {
+    const closeConfirmationModal = () => setShowConfirmationModal(false)
+    const onClickConfirmationModal = () => setShowConfirmationModal(true)
+
+    const onDelete = async () => {
         const payload = {
             name: state.name,
             description: state.description,
@@ -151,17 +147,17 @@ export default function ChartGroupDetails() {
             chartGroupEntries: state.charts,
             installedChartData: chartGroupInstalled?.result?.installedChartData,
         }
+        await deleteChartGroup(payload)
+        push(`${URLS.CHARTS}/discover`)
+    }
 
+    const renderDeleteComponent = () => {
         return (
-            <DeleteComponent
-                setDeleting={setDeleting}
-                deleteComponent={deleteChartGroup}
-                payload={payload}
+            <DeleteConfirmationModal
                 title={state.name}
-                toggleConfirmation={toggleConfirmation}
+                closeConfirmationModal={closeConfirmationModal}
                 component={DeleteComponentsName.ChartGroup}
-                redirectTo
-                url={`${URLS.CHARTS}/discover`}
+                onDelete={onDelete}
             />
         )
     }
@@ -200,24 +196,24 @@ export default function ChartGroupDetails() {
 
     const renderChartGroupActionButton = () => {
         return (
-            <div className="dc__page-header__cta-container flex">
-                <button
-                    type="button"
-                    className="cta flex cancel mr-16 h-32"
+            <div className="dc__page-header__cta-container flex dc__gap-12">
+                <Button
+                    text="Edit"
+                    variant={ButtonVariantType.secondary}
+                    style={ButtonStyleType.neutral}
+                    size={ComponentSizeType.medium}
+                    dataTestId="chart-group-edit-button"
+                    startIcon={<Pencil />}
                     onClick={redirectToConfigure}
-                    data-testid="chart-group-edit-button"
-                >
-                    <Pencil className="mr-5" />
-                    Edit
-                </button>
-                <button
-                    className="cta flex delete h-32"
-                    type="button"
-                    data-testid="chart-group-delete-button"
-                    onClick={() => toggleConfirmation(true)}
-                >
-                    {deleting ? <Progressing /> : 'Delete'}
-                </button>
+                />
+                <Button
+                    text="Delete"
+                    variant={ButtonVariantType.secondary}
+                    style={ButtonStyleType.negative}
+                    size={ComponentSizeType.medium}
+                    dataTestId="chart-group-delete-button"
+                    onClick={onClickConfirmationModal}
+                />
             </div>
         )
     }
@@ -288,13 +284,6 @@ export default function ChartGroupDetails() {
                                     <button
                                         type="button"
                                         disabled={state.charts.filter((chart) => chart.isEnabled).length === 0}
-                                        /* onClick={(e) =>
-                                           push(`${url}/deploy`, {
-                                               charts: state.charts,
-                                               configureChartIndex: state.charts.findIndex((chart) => chart.isEnabled),
-                                           })
-
-                                        } */
                                         onClick={handleAdvancedButtonClick}
                                         className="cta cancel dc__ellipsis-right w-100"
                                         data-testid="advanced-options-button"
@@ -329,7 +318,7 @@ export default function ChartGroupDetails() {
                         </div>
                     </div>
                 )}
-                {confirmation && getDeleteComponent()}
+                {showConfirmationModal && renderDeleteComponent()}
             </div>
             {showDeployModal ? (
                 <ChartGroupBasicDeploy

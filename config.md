@@ -26,12 +26,10 @@
 | GTM_ENABLED                                  | "true"     | Enable GTM for tag manager                                                                                       |
 | GTM_ID                                       | ""         | Enable GTM_ID for tag manager args                                                                               |
 | HELM_APP_DETAILS_POLLING_INTERVAL            | 3000       | API polling interval for helm app details                                                                        |
-| HIDE_APPLICATION_GROUPS                      | "false"    | Hide application group from Devtron UI                                                                           |
 | HIDE_DISCORD                                 | "true"     | Hide Discord button from UI                                                                                      |
 | HIDE_DEFAULT_CLUSTER                         | "true"     | Hide default cluster                                                                                             |
 | HIDE_EXCLUDE_INCLUDE_GIT_COMMITS             | "true"     | Hide exclude include git commits                                                                                 |
 | HIDE_GITOPS_OR_HELM_OPTION                   | "false"    | Enable GitOps and Helm option                                                                                    |
-| HOTJAR_ENABLED                               | "false"    | Hotjar integration status                                                                                        |
 | LOGIN_DT_LOGO                                | ""         | Devtron logo for login page                                                                                      |
 | LOGIN_PAGE_IMAGE                             | ""         | Login page image url                                                                                             |
 | LOGIN_PAGE_IMAGE_BG                          | ""         | Login page image background color code                                                                           |

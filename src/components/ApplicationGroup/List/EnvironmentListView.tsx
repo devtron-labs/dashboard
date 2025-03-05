@@ -16,18 +16,16 @@
 
 import { useState, useEffect } from 'react'
 import {
-    useAsync,
     DEFAULT_BASE_PAGE_SIZE,
     Pagination,
     ToastManager,
     ToastVariantType,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink } from 'react-router-dom'
 import { EnvEmptyStates } from '../EnvEmptyStates'
-import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
 import { useAppContext } from '../../common'
 import { EMPTY_LIST_MESSAGING, GROUP_LIST_HEADER, NO_ACCESS_TOAST_MESSAGE } from '../Constants'
-import { getEnvAppList } from '../AppGroup.service'
 import { EnvironmentsListViewType, EnvAppList, EnvironmentLinkProps, EnvApp } from '../AppGroup.types'
 import { LoadingShimmerList } from './LoadingShimmer'
 
@@ -63,17 +61,20 @@ const EnvironmentsListView = ({
     clearFilters,
     changePage,
     changePageSize,
+    appListLoading,
+    appListResponse,
 }: EnvironmentsListViewType) => {
     const [filteredEnvList, setFilteredEnvList] = useState<EnvAppList[]>([])
     const [envCount, setEnvCount] = useState<number>(0)
     const { cluster } = filterConfig
-    const [appListLoading, appListResponse] = useAsync(() => getEnvAppList(filterConfig), [filterConfig])
     const emptyStateData = cluster.join()
         ? { title: 'No app groups found', subTitle: "We couldn't find any matching app groups." }
         : { title: '', subTitle: '' }
 
     useEffect(() => {
-        const appListResult: EnvApp = appListResponse?.result || { envCount: 0, envList: [] }
+        const appListResult: EnvApp = appListResponse?.result?.envList?.length
+            ? appListResponse.result
+            : { envCount: 0, envList: [] }
         setFilteredEnvList(appListResult.envList)
         setEnvCount(appListResult.envCount)
     }, [appListResponse?.result])
@@ -142,7 +143,7 @@ const EnvironmentsListView = ({
                         data-testid="env-list-row"
                     >
                         <span className="icon-dim-24 bcb-1 flex br-6">
-                            <EnvIcon className="icon-dim-16 scb-4" />
+                            <Icon name="ic-app-group" size={16} color="B400" />
                         </span>
                         <div className="cb-5 dc__ellipsis-right">
                             <EnvironmentLink

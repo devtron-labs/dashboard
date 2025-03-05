@@ -221,14 +221,12 @@ export const Build = ({
                 <CustomInput
                     name="name"
                     label="Pipeline Name"
-                    data-testid="build-pipeline-name-textbox"
-                    autoComplete="off"
                     disabled={!!ciPipeline?.id}
                     placeholder="e.g. my-first-pipeline"
                     type="text"
                     value={formData.name}
                     onChange={handlePipelineName}
-                    isRequiredField
+                    required
                     error={formDataErrorObj.name && !formDataErrorObj.name.isValid && formDataErrorObj.name.message}
                 />
             </label>

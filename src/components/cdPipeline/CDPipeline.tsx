@@ -50,6 +50,9 @@ import {
     FloatingVariablesSuggestions,
     saveCDPipeline,
     TriggerType,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
@@ -1125,14 +1128,13 @@ export default function CDPipeline({
     const renderSecondaryButton = () => {
         if (cdPipelineId) {
             return (
-                <button
-                    data-testid="ci-delete-pipeline-button"
-                    type="button"
-                    className="cta cta--workflow delete mr-16"
+                <Button
+                    text="Delete Pipeline"
+                    variant={ButtonVariantType.secondary}
+                    style={ButtonStyleType.negative}
+                    dataTestId="ci-delete-pipeline-button"
                     onClick={openDeleteModal}
-                >
-                    Delete Pipeline
-                </button>
+                />
             )
         }
         if (!isAdvanced && formData.releaseMode !== ReleaseMode.MIGRATE_HELM) {
@@ -1387,9 +1389,8 @@ export default function CDPipeline({
                         reload={reloadAppConfig}
                     />
                 )}
-                {cdPipelineId && (
+                {cdPipelineId && showDeleteModal && (
                     <DeleteCDNode
-                        showDeleteDialog={showDeleteModal}
                         deleteDialog={deleteDialog}
                         setDeleteDialog={setDeleteDialog}
                         clusterName={formData.clusterName}

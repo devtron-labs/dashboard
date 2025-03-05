@@ -1567,15 +1567,17 @@ const CDMaterial = ({
                             )}
                         </>
                     ) : (
-                        <RuntimeParameters
-                            appId={appId}
-                            parameters={parameters}
-                            handleChange={handleRuntimeParamsChange}
-                            errorState={errorState}
-                            handleError={handleRuntimeParamsError}
-                            uploadFile={uploadRuntimeParamsFile}
-                            isCD
-                        />
+                        <div className="bg__tertiary dc__overflow-auto flex-1 select-material--trigger-view">
+                            <RuntimeParameters
+                                appId={appId}
+                                parameters={parameters}
+                                handleChange={handleRuntimeParamsChange}
+                                errorState={errorState}
+                                handleError={handleRuntimeParamsError}
+                                uploadFile={uploadRuntimeParamsFile}
+                                isCD
+                            />
+                        </div>
                     )}
                 </ConditionalWrap>
             </div>
@@ -1715,20 +1717,23 @@ const CDMaterial = ({
                 }`}
             >
                 {!hideConfigDiffSelector &&
-                    (state.isRollbackTrigger || state.isSelectImageTrigger) &&
-                    !showConfigDiffView &&
-                    stageType === DeploymentNodeType.CD && (
-                        <PipelineConfigDiffStatusTile
-                            isLoading={pipelineDeploymentConfigLoading}
-                            deploymentConfigSelectorProps={deploymentConfigSelectorProps}
-                            hasDiff={diffFound}
-                            onClick={() => onClickSetInitialParams('review-config')}
-                            noLastDeploymentConfig={noLastDeploymentConfig}
-                            canReviewConfig={canReviewConfig()}
-                            urlFilters={urlFilters}
-                            renderConfigNotAvailableTooltip={renderTippyContent}
-                        />
-                    )}
+                (state.isRollbackTrigger || state.isSelectImageTrigger) &&
+                !showConfigDiffView &&
+                stageType === DeploymentNodeType.CD ? (
+                    <PipelineConfigDiffStatusTile
+                        isLoading={pipelineDeploymentConfigLoading}
+                        deploymentConfigSelectorProps={deploymentConfigSelectorProps}
+                        hasDiff={diffFound}
+                        onClick={() => onClickSetInitialParams('review-config')}
+                        noLastDeploymentConfig={noLastDeploymentConfig}
+                        canReviewConfig={canReviewConfig()}
+                        urlFilters={urlFilters}
+                        renderConfigNotAvailableTooltip={renderTippyContent}
+                    />
+                ) : (
+                    // NOTE: needed so that the button is pushed to the right since justify-content is set to space-between
+                    <div />
+                )}
                 <ConditionalWrap
                     condition={!pipelineDeploymentConfigLoading && isDeployButtonDisabled()}
                     wrap={(children) => (

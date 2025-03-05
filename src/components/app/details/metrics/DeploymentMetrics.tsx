@@ -43,10 +43,10 @@ import {
 } from './deploymentMetrics.util'
 import AppNotDeployed from '../../../../assets/img/app-not-deployed.svg'
 import SelectEnvImage from '../../../../assets/img/ic-empty-dep-metrics@2x.png'
-import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as Deploy } from '../../../../assets/icons/ic-deploy.svg'
-import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
-import { ReactComponent as Fail } from '../../../../assets/icons/ic-error-exclamation.svg'
+import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
+import { ReactComponent as Deploy } from '@Icons/ic-nav-rocket.svg'
+import { ReactComponent as Success } from '@Icons/appstatus/healthy.svg'
+import { ReactComponent as Fail } from '@Icons/ic-error-exclamation.svg'
 import './deploymentMetrics.scss'
 import { DeploymentMetricsProps, DeploymentMetricsState } from './deploymentMetrics.types'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
@@ -544,8 +544,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
             <div>
                 {this.renderInputs()}
                 <div
-                    className="dc__position-rel"
-                    style={{ backgroundColor: 'var(--bg-primary)', height: 'calc(100vh - 150px' }}
+                    className="dc__position-rel bg__primary"
                 >
                     <GenericEmptyState
                         image={AppNotDeployed}
@@ -559,7 +558,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
 
     renderNoEnvironmentView() {
         return (
-            <div className="dc__position-rel" style={{ backgroundColor: 'var(--bg-primary)', height: 'calc(100vh - 80px' }}>
+            <div className="dc__position-rel bg__primary">
                 <GenericEmptyState
                     image={SelectEnvImage}
                     title={EMPTY_STATE_STATUS.RENDER_NO_ENVIORNMENT_STATE.TITLE}

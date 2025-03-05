@@ -27,7 +27,7 @@ export const clusterSelectStyle = {
         textAlign: 'left',
         minWidth: '150px',
         maxWidth: '300px',
-        backgroundColor: 'var(--bg-menu)',
+        backgroundColor: 'var(--bg-menu-primary)',
         border: '1px solid var(--N200)',
     }),
     control: (base, state) => ({
@@ -102,15 +102,6 @@ export const CLUSTER_NODE_ACTIONS_LABELS = {
     delete: 'Delete',
 }
 
-export const DELETE_NODE_MODAL_MESSAGING = {
-    recommended: 'Recommended: ',
-    recommendedInfoText: 'Drain the node before deleting it as it may cause disruption because of pod deletion.',
-    delete: 'Delete node',
-    deletePostfix: ' Node',
-    description: 'Are you sure you want to delete this node?',
-    initiated: 'Node deletion initiated',
-}
-
 export const EDIT_TAINTS_MODAL_MESSAGING = {
     titlePrefix: 'Edit taints for node ',
     infoText:
@@ -171,7 +162,7 @@ export const clusterImageSelect = {
         textAlign: 'left',
         maxWidth: '380px',
         minWidth: '350px',
-        backgroundColor: 'var(--bg-menu)',
+        backgroundColor: 'var(--bg-menu-primary)',
         border: '1px solid var(--N200)',
     }),
     control: (base, state) => ({

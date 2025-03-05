@@ -95,13 +95,13 @@ $svg-fill-hex-to-var: (
 // Using where to have lowest specificity (0,0,0)
 :where(svg:not([data-style-override="false"])) {
     @each $hex, $var in $svg-stroke-hex-to-var {
-        :where([stroke="#{$hex}" i]) {
+        :where([stroke="#{$hex}" i]:not([data-style-override="false"])) {
             stroke: var($var);
         }
     }
 
     @each $hex, $var in $svg-fill-hex-to-var {
-        :where([fill="#{$hex}" i]) {
+        :where([fill="#{$hex}" i]:not([data-style-override="false"])) {
             fill: var($var);
         }
     }
@@ -110,10 +110,6 @@ $svg-fill-hex-to-var: (
 // These are just hack, not to be further extended
 .theme {
     &__dark {
-        .github {
-            background-image: url('../assets/icons/dark/ic-github.svg') !important;
-        }
-
         .form__checkbox-container {
             background-image: url('../assets/icons/dark/ic-checkbox-unselected.svg');
 

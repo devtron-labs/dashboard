@@ -254,7 +254,7 @@ export interface DeploymentTemplateCTAProps
     isDryRunView: boolean
 }
 
-export interface DeleteOverrideDialogProps extends Pick<DeploymentTemplateProps, 'isTemplateView'> {
+export interface DeleteOverrideDialogProps extends Pick<DeploymentTemplateProps, 'isTemplateView' | 'environmentName'> {
     environmentConfigId: number
     handleReload: () => void
     handleClose: () => void

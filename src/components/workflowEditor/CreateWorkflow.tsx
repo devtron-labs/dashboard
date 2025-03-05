@@ -119,9 +119,8 @@ export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflow
                         value={this.state.name}
                         placeholder="e.g. production workflow"
                         autoFocus
-                        tabIndex={1}
                         onChange={this.handleWorkflowName}
-                        isRequiredField
+                        required
                         error={this.state.showError && !isValid && REQUIRED_FIELD_MSG}
                     />
                 </label>

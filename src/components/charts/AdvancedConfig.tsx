@@ -197,19 +197,27 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({
                     {handleNameChange && (
                         <div className="mb-16">
                             <CustomInput
+                                placeholder="Enter app name"
                                 name="appName"
                                 label="App name"
-                                rootClassName={`${appName?.error ? 'form__input--error' : ''}`}
                                 value={appName.value}
                                 onChange={(e) => handleNameChange(index, e.target.value)}
                                 data-testid="advanced-option-app-name-box"
-                                isRequiredField
+                                required
                                 error={appName?.error}
-                                additionalErrorInfo={renderAdditionalErrorInfo(
-                                    handleNameChange,
-                                    appName.suggestedName,
-                                    index,
-                                )}
+                                helperText={
+                                    appName.suggestedName ? (
+                                        <>
+                                            Suggested Name:
+                                            <span
+                                                className="anchor pointer"
+                                                onClick={() => handleNameChange(index, appName.suggestedName)}
+                                            >
+                                                {appName.suggestedName}
+                                            </span>
+                                        </>
+                                    ) : null
+                                }
                             />
                         </div>
                     )}
@@ -381,7 +389,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({
                             mode="yaml"
                         >
                             <CodeEditor.Header>
-                                <div className="flex" style={{ justifyContent: 'space-between', width: '100%' }}>
+                                <div className="flex dc__content-space w-100">
                                     <span data-testid="code-editor-code-editor-container-heading">
                                         {appName.value}.yaml
                                     </span>
@@ -469,7 +477,7 @@ const ReadmeCharts = ({ readme, valuesYaml, onChange, handleClose, chart }) => {
         <div className="advanced-config__readme">
             <h3>{chart.chartMetaData.chartName}</h3>
             <div className="readme-config-container" data-testid="readme-container">
-                <div className="readme-config--header">
+                <div className="readme-config--header vertical-divider">
                     <h5 className="flex left">Readme.md</h5>
                     <h5 className="flex left">
                         {chart?.name?.value}.yaml
@@ -487,7 +495,7 @@ const ReadmeCharts = ({ readme, valuesYaml, onChange, handleClose, chart }) => {
                             noParsing
                             readOnly={!onChange}
                             height="100%"
-                            onChange={onChange ? (valuesYaml) => onChange(valuesYaml) : () => {}}
+                            onChange={onChange ? onChange : () => {}}
                         />
                     </div>
                 </div>
@@ -563,7 +571,7 @@ const ValuesDiffViewer = ({
             <h3>{chartName}</h3>
             <div className="readme-config-container" data-testid="check-diff-container">
                 {/* TODO: use code editor header */}
-                <div className="readme-config--header">
+                <div className="readme-config--header vertical-divider">
                     <h5 className="flex left">
                         <Select
                             rootClassName="values-select"

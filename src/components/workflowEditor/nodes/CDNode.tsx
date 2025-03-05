@@ -21,6 +21,7 @@ import {
     ConditionalWrap,
     ConfirmationDialog,
     DeploymentAppTypes,
+    Icon,
     MODAL_TYPE,
     ServerErrors,
     showError,
@@ -197,7 +198,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                             ))}
                         </div>
                     </div>
-                    <div className="workflow-node__icon-common workflow-node__CD-icon" />
+                    <Icon name="ic-cd" size={20} color={null} />
                 </div>
             </div>
         )
@@ -271,7 +272,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         />
     )
 
-    renderDeleteConformationDialog = () => {
+    renderDeleteConfirmationDialog = () => {
         if (this.state.showDeploymentConfirmationDeleteDialog && DeploymentWindowConfirmationDialog) {
             return this.renderDeploymentWindowConfirmationModal()
         } else if (this.state.showDeletePipelinePopup) {
@@ -295,13 +296,9 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         }
 
         return (
-            <div
-                className={`workflow-node__icon-common dc__no-shrink pt-12 pb-12 mr-12 ${
-                    this.props.isVirtualEnvironment
-                        ? 'workflow-node__CD-rocket-icon'
-                        : 'workflow-node__CD-icon dc__flip'
-                }`}
-            />
+            <div className={`flex ${!this.props.isVirtualEnvironment ? 'dc__flip pl-12 ' : 'pr-12'}`}>
+                <Icon name={this.props.isVirtualEnvironment ? 'ic-paper-plane-color' : 'ic-cd'} size={20} color={null} />
+            </div>
         )
     }
 
@@ -408,21 +405,21 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                 >
                     {this.props.cdNamesList?.length > 0 ? this.renderReadOnlyCard() : this.renderCardContent()}
                 </foreignObject>
-                
-                <DeleteCDNode
-                    showDeleteDialog={this.state.showDeleteDialog}
-                    deleteDialog={this.state.deleteDialog}
-                    setDeleteDialog={this.handleDeleteDialogUpdate}
-                    clusterName={this.state.clusterName}
-                    appName={this.props.appName}
-                    hideDeleteModal={this.handleHideDeleteModal}
-                    deleteCD={this.deleteCD}
-                    deploymentAppType={this.props.deploymentAppType ?? ''}
-                    forceDeleteData={this.state.forceDeleteData}
-                    deleteTitleName={this.props.environmentName}
-                    isLoading={this.state.deleteInProgress}
-                />
-                {this.renderDeleteConformationDialog()}
+                {this.state.showDeleteDialog && (
+                    <DeleteCDNode
+                        deleteDialog={this.state.deleteDialog}
+                        setDeleteDialog={this.handleDeleteDialogUpdate}
+                        clusterName={this.state.clusterName}
+                        appName={this.props.appName}
+                        hideDeleteModal={this.handleHideDeleteModal}
+                        deleteCD={this.deleteCD}
+                        deploymentAppType={this.props.deploymentAppType ?? ''}
+                        forceDeleteData={this.state.forceDeleteData}
+                        deleteTitleName={this.props.environmentName}
+                        isLoading={this.state.deleteInProgress}
+                    />
+                )}
+                {this.renderDeleteConfirmationDialog()}
             </>
         )
     }

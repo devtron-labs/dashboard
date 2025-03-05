@@ -38,6 +38,7 @@ import {
     ResponseType,
     get,
     getUrlWithSearchParams,
+    noop,
     showError,
     getTemplateAPIRoute,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -45,7 +46,7 @@ import {
 import { Routes } from '@Config/constants'
 
 import { AppConfigStatusItemType } from './service.types'
-import { DEFAULT_LANDING_STAGE } from './Details/AppConfigurations/AppConfig.types'
+import { DEFAULT_LANDING_STAGE, EnvConfigType } from './Details/AppConfigurations/AppConfig.types'
 import { transformEnvConfig } from './Details/AppConfigurations/AppConfig.utils'
 
 export const getAppConfigStatus = (
@@ -68,10 +69,14 @@ export const getAppConfigStatus = (
     return get(URL)
 }
 
-export const getEnvConfig = async (appId: number, envId: number, isTemplateView: AppConfigProps['isTemplateView']) => {
+export const getEnvConfig = async (
+    appId: number,
+    envId: number,
+    isTemplateView: AppConfigProps['isTemplateView'],
+    callback: (res: EnvConfigType) => void = noop,
+) => {
     try {
         const queryParams = { appId, envId }
-
         const URL = isTemplateView
             ? getTemplateAPIRoute({
                   type: GetTemplateAPIRouteType.CD_DEPLOY_CONFIG,
@@ -80,9 +85,14 @@ export const getEnvConfig = async (appId: number, envId: number, isTemplateView:
             : getUrlWithSearchParams(Routes.ENV_CONFIG, queryParams)
 
         const res = await get(URL)
-        return transformEnvConfig(res.result)
+        const envConfig = transformEnvConfig(res.result)
+        callback(envConfig)
+
+        return envConfig
     } catch (err) {
         showError(err)
+        callback(null)
+
         throw err
     }
 }

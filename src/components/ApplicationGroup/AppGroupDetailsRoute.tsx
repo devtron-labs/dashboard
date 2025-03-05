@@ -30,7 +30,6 @@ import {
     BreadCrumb,
     useBreadcrumb,
     stopPropagation,
-    DeleteDialog,
     showError,
     GenericEmptyState,
     useAsync,
@@ -40,6 +39,7 @@ import {
     ToastManager,
     ToastVariantType,
     URLS as CommonURLS,
+    DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { MultiValue } from 'react-select'
@@ -82,7 +82,7 @@ import AppGroupAppFilter from './AppGroupAppFilter'
 import EnvCIDetails from './Details/EnvCIDetails/EnvCIDetails'
 import EnvCDDetails from './Details/EnvCDDetails/EnvCDDetails'
 import '../app/details/app.scss'
-import { CONTEXT_NOT_AVAILABLE_ERROR } from '../../config/constantMessaging'
+import { CONTEXT_NOT_AVAILABLE_ERROR, DeleteComponentsName } from '../../config/constantMessaging'
 import CreateAppGroup from './CreateAppGroup'
 
 export const AppGroupAppFilterContext = React.createContext<AppGroupAppFilterContextType>(null)
@@ -101,7 +101,6 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     const [envName, setEnvName] = useState<string>('')
     const [showEmpty, setShowEmpty] = useState<boolean>(false)
     const [appListLoading, setAppListLoading] = useState<boolean>(false)
-    const [deleting, setDeleting] = useState<boolean>(false)
     const [loading, envList] = useAsync(getEnvAppList, [])
     const [appListOptions, setAppListOptions] = useState<OptionType[]>([])
     const [selectedAppList, setSelectedAppList] = useState<MultiValue<OptionType>>([])
@@ -370,28 +369,13 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         getPermissionCheck({ appIds: selectedGroupId.appIds }, false, true)
     }
 
-    async function handleDelete() {
-        if (deleting) {
-            return
-        }
-        setDeleting(true)
-        try {
-            await deleteEnvGroup(envId, clickedGroup.value)
-            ToastManager.showToast({
-                variant: ToastVariantType.success,
-                description: 'Successfully deleted',
-            })
-            setShowDeleteGroup(false)
-            getSavedFilterData(
-                selectedGroupFilter[0] && clickedGroup.value !== selectedGroupFilter[0].value
-                    ? +selectedGroupFilter[0].value
-                    : null,
-            )
-        } catch (serverError) {
-            showError(serverError)
-        } finally {
-            setDeleting(false)
-        }
+    const onDelete = async () => {
+        await deleteEnvGroup(envId, clickedGroup.value)
+        getSavedFilterData(
+            selectedGroupFilter[0] && clickedGroup.value !== selectedGroupFilter[0].value
+                ? +selectedGroupFilter[0].value
+                : null,
+        )
     }
 
     const closeDeleteGroup = () => {
@@ -502,11 +486,11 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                 />
             )}
             {showDeleteGroup && isPopupBox && (
-                <DeleteDialog
-                    title={`Delete filter '${clickedGroup?.label}' ?`}
-                    description="Are you sure you want to delete this filter?"
-                    delete={handleDelete}
-                    closeDelete={closeDeleteGroup}
+                <DeleteConfirmationModal
+                    title={clickedGroup?.label}
+                    component={DeleteComponentsName.Filter}
+                    onDelete={onDelete}
+                    closeConfirmationModal={closeDeleteGroup}
                 />
             )}
         </div>

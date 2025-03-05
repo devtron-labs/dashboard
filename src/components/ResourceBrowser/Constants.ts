@@ -26,7 +26,7 @@ export const FILTER_SELECT_COMMON_STYLES = {
         ...base,
         zIndex: 5,
         textAlign: 'left',
-        backgroundColor: 'var(--bg-menu)',
+        backgroundColor: 'var(--bg-menu-primary)',
         border: '1px solid var(--N200)',
     }),
     control: (base, state) => ({
@@ -88,7 +88,7 @@ export const KIND_SEARCH_COMMON_STYLES = {
     }),
     option: (base, state) => ({
         ...base,
-        backgroundColor: state.isFocused ? 'var(--bg-secondary)' : 'var(--bg-primary)',
+        backgroundColor: state.isFocused ? 'var(--bg-secondary)' : 'var(--bg-transparent)',
         color: 'var(--N900)',
         textOverflow: 'ellipsis',
         fontWeight: '500',
@@ -174,11 +174,6 @@ export const K8S_RESOURCE_LIST = {
         maxTabSubTitle: 'Please close an open tab and try again.',
     },
     createResource: 'Create / Update Kubernetes Resources',
-}
-
-export const DELETE_MODAL_MESSAGING = {
-    description: 'Are you sure, you want to delete this resource?',
-    checkboxText: 'Force delete resource',
 }
 
 export const SIDEBAR_KEYS: RBSidebarKeysType = {

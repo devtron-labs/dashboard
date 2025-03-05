@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -44,39 +44,12 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
     const [resourceYAML, setResourceYAML] = useState('')
     const [resourceResponse, setResourceResponse] = useState<CreateResourceDTO[]>(null)
 
-    const appStatusDetailRef = useRef<HTMLDivElement>(null)
-
     const onClose = (): void => {
         if (loader) {
             return
         }
         closePopup(true)
     }
-
-    const escKeyPressHandler = (evt): void => {
-        if (evt && evt.key === 'Escape') {
-            evt.preventDefault()
-            onClose()
-        }
-    }
-    const outsideClickHandler = (evt): void => {
-        if (appStatusDetailRef.current && !appStatusDetailRef.current.contains(evt.target)) {
-            onClose()
-        }
-    }
-    useEffect(() => {
-        document.addEventListener('keydown', escKeyPressHandler)
-        return (): void => {
-            document.removeEventListener('keydown', escKeyPressHandler)
-        }
-    }, [escKeyPressHandler])
-
-    useEffect(() => {
-        document.addEventListener('click', outsideClickHandler)
-        return (): void => {
-            document.removeEventListener('click', outsideClickHandler)
-        }
-    }, [outsideClickHandler])
 
     useEffect(() => {
         setDisableShortcuts(true)
@@ -237,8 +210,8 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
     }
 
     return (
-        <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            <div className="create-resource-container bg__primary h-100" ref={appStatusDetailRef}>
+        <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px" onEscape={onClose}>
+            <div className="create-resource-container bg__primary h-100">
                 <div className="flex flex-align-center flex-justify bg__primary pt-16 pr-20 pb-16 pl-20 dc__border-bottom">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0">{CREATE_RESOURCE_MODAL_MESSAGING.title}</h2>
                     <button

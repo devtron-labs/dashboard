@@ -15,13 +15,28 @@
  */
 
 import { useEffect, useState } from 'react'
-import { CIBuildConfigType, CIBuildType, showError, ConfirmationDialog, ToastVariantType, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CIBuildConfigType,
+    CIBuildType,
+    showError,
+    ToastVariantType,
+    ToastManager,
+    ConfirmationModal,
+    ConfirmationModalVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '../../config'
 import { OptionType } from '../app/types'
 import { CIPipelineBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { getGitProviderIcon, useForm } from '../common'
 import { saveCIConfig, updateCIConfig } from './service'
-import { CIBuildArgType, CIConfigFormProps, CurrentMaterialType, LoadingState, SelectedGitMaterialType, SourceConfigType } from './types'
+import {
+    CIBuildArgType,
+    CIConfigFormProps,
+    CurrentMaterialType,
+    LoadingState,
+    SelectedGitMaterialType,
+    SourceConfigType,
+} from './types'
 import warningIconSrc from '../../assets/icons/ic-warning-y6.svg'
 import { ReactComponent as BookOpenIcon } from '../../assets/icons/ic-book-open.svg'
 import { ReactComponent as NextIcon } from '../../assets/icons/ic-arrow-right.svg'
@@ -261,37 +276,41 @@ export default function CIConfigForm({
         }
     }
 
-    const renderConfirmationModal = (): JSX.Element => {
-        return (
-            <ConfirmationDialog>
-                <ConfirmationDialog.Icon src={warningIconSrc} />
-                <ConfirmationDialog.Body title="Please ensure you have set valid target platform for the build" />
-                <span className="fs-14 cn-7 dc__block">Custom target platform(s):</span>
-                {selectedTargetPlatforms.map((targetPlatform) =>
-                    targetPlatformMap.get(targetPlatform.value) ? null : (
-                        <span className="fs-13 cn-7 dc__block">{targetPlatform.value}</span>
-                    ),
-                )}
-                <p className="fs-13 cn-7 lh-1-54 mt-20">
-                    The build will fail if the target platform is invalid or unsupported.
-                </p>
-                <ConfirmationDialog.ButtonGroup>
-                    <button
-                        type="button"
-                        className="cta cancel"
-                        onClick={(e) => {
-                            setShowCustomPlatformConfirmation(false)
-                        }}
-                    >
-                        Go back
-                    </button>
-                    <button onClick={onValidation} className="cta ml-12 dc__no-decor">
-                        Confirm save
-                    </button>
-                </ConfirmationDialog.ButtonGroup>
-            </ConfirmationDialog>
-        )
+    const handleCloseDialog = () => {
+        setShowCustomPlatformConfirmation(false)
     }
+
+    const renderConfirmationModal = () => (
+        <ConfirmationModal
+            variant={ConfirmationModalVariantType.warning}
+            title="Please ensure you have set valid target platform for the build"
+            subtitle={
+                <div>
+                    <span className="fs-14 cn-7 dc__block">Custom target platform(s):</span>
+                    {selectedTargetPlatforms.map((targetPlatform) =>
+                        targetPlatformMap.get(targetPlatform.value) ? null : (
+                            <span key={targetPlatform.value} className="fs-13 cn-7 dc__block">{targetPlatform.value}</span>
+                        ),
+                    )}
+                </div>
+            }
+            buttonConfig={{
+                secondaryButtonConfig: {
+                    text: 'Go back',
+                    onClick: handleCloseDialog,
+                },
+                primaryButtonConfig: {
+                    text: 'Confirm save',
+                    onClick: onValidation,
+                },
+            }}
+            handleClose={handleCloseDialog}
+        >
+            <span className="fs-13 cn-7 lh-1-54">
+                The build will fail if the target platform is invalid or unsupported.
+            </span>
+        </ConfirmationModal>
+    )
 
     const handleOnChangeConfig = (e) => {
         handleOnChange(e)

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react'
-import { generatePath, Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { generatePath, Route, Switch, useRouteMatch } from 'react-router-dom'
 
 import {
     ApprovalConfigDataKindType,
@@ -24,7 +24,6 @@ import {
     GenericEmptyState,
     getIsApprovalPolicyConfigured,
     Progressing,
-    useAsync,
     CMSecretComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -35,6 +34,8 @@ import { DeploymentConfigCompare, DeploymentTemplate } from '@Pages/Applications
 import { getEnvConfig } from '@Pages/Applications/DevtronApps/service'
 import { EnvConfigurationsNav } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/Navigation/EnvConfigurationsNav'
 
+import { EnvConfigType } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
+import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
 import { ReleaseConfigurationContextType } from './types'
 
 import './styles.scss'
@@ -66,12 +67,29 @@ export const Configurations = () => {
         envIdToEnvApprovalConfigurationMap,
     }: ReleaseConfigurationContextType = useReleaseConfigurationContext()
 
-    // ASYNC CALLS
-    const [envConfigResLoading, envConfigRes, , fetchEnvConfig] = useAsync(
-        () => getEnvConfig(+appId, +envId, false),
-        [appId, envId],
-        !!(appId && envId),
-    )
+    const [envConfigResLoading, setEnvConfigResLoading] = useState<boolean>(false)
+    const [envConfigRes, setEnvConfigRes] = useState<EnvConfigType>(null)
+
+    const fetchEnvConfig = async (propEnvId?: number, callback?: Parameters<typeof getEnvConfig>[3]) => {
+        if (!appId || !envId) {
+            return
+        }
+
+        try {
+            setEnvConfigResLoading(true)
+            const res = await getEnvConfig(+appId, +envId, false, callback)
+            setEnvConfigRes(res)
+        } catch {
+            // Do nothing
+        } finally {
+            setEnvConfigResLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        fetchEnvConfig()
+    }, [appId, envId])
 
     // CONSTANTS
     const envConfig = {
@@ -92,7 +110,7 @@ export const Configurations = () => {
     // RENDERERS
     const renderConfigSideNav = () => (
         <Switch>
-            <Route path={`${path}/:resourceType(${Object.values(EnvResourceType).join('|')})`}>
+            <Route key={appId} path={`${path}/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?`}>
                 <EnvConfigurationsNav
                     envConfig={envConfig}
                     environments={environments}
@@ -160,7 +178,6 @@ export const Configurations = () => {
                     />
                 </div>
             </Route>
-            <Redirect to={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`} />
         </Switch>
     )
 
@@ -168,17 +185,18 @@ export const Configurations = () => {
         <Switch>
             <Route
                 key={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}`}
-                path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
+                path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
             >
                 {({ match, location }) => {
                     const basePath = generatePath(path, match.params)
-                    // Set the resourceTypePath based on the resourceType from the URL parameters.
-                    // If the resourceType is 'Manifest' or 'PipelineStrategy', use 'deployment-template' as the back URL.
-                    // Otherwise, use the actual resourceType from the URL, which could be 'deployment-template', 'configmap', or 'secrets'.
-                    const resourceTypePath = `/${match.params.resourceType === EnvResourceType.Manifest || match.params.resourceType === EnvResourceType.PipelineStrategy ? EnvResourceType.DeploymentTemplate : match.params.resourceType}`
+                    // Used in cm/cs
                     const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
 
-                    const goBackURL = `${basePath}${resourceTypePath}${resourceNamePath}`
+                    const goBackURL =
+                        match.params.resourceType === EnvResourceType.Manifest ||
+                        match.params.resourceType === EnvResourceType.PipelineStrategy
+                            ? basePath
+                            : `${basePath}/${match.params.resourceType}${resourceNamePath}`
 
                     return showConfig ? (
                         <DeploymentConfigCompare

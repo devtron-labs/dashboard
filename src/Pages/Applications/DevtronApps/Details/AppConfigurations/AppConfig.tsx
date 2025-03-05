@@ -15,26 +15,34 @@
  */
 
 import { useState, useEffect } from 'react'
-import { useParams, useLocation, useRouteMatch, useHistory, Link } from 'react-router-dom'
+import { useParams, useLocation, useRouteMatch, useHistory } from 'react-router-dom'
 import {
     showError,
     Progressing,
     ErrorScreenManager,
-    DeleteDialog,
-    ConfirmationDialog,
     useAsync,
     ResourceKindType,
     ToastManager,
     ToastVariantType,
     ResourceIdToResourceApprovalPolicyConfigMapType,
     AppConfigProps,
+    ConfirmationModal,
+    ConfirmationModalVariantType,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { DeleteComponentsName } from '@Config/constantMessaging'
+import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo/ApplicationDeletionInfo'
 import { URLS, getAppComposeURL, APP_COMPOSE_STAGE, ViewType } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { getAppOtherEnvironmentMin, getJobOtherEnvironmentMin, getWorkflowList } from '../../../../../services/service'
-import warn from '../../../../../assets/icons/ic-warning.svg'
 import './appConfig.scss'
-import { AppConfigState, AppStageUnlockedType, STAGE_NAME, DEFAULT_LANDING_STAGE } from './AppConfig.types'
+import {
+    AppConfigState,
+    AppStageUnlockedType,
+    STAGE_NAME,
+    DEFAULT_LANDING_STAGE,
+    EnvConfigType,
+} from './AppConfig.types'
 import { getUserRole } from '../../../../GlobalConfigurations/Authorization/authorization.service'
 import { isCIPipelineCreated, isCDPipelineCreated, getNavItems, isUnlocked } from './AppConfig.utils'
 import AppComposeRouter from './MainContent/AppComposeRouter'
@@ -134,12 +142,12 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
      *
      * @param envId - The ID of the environment for which the configuration is to be fetched.
      */
-    const fetchEnvConfig = (envId: number) => {
+    const fetchEnvConfig = (envId: number, callback: (res: EnvConfigType) => void = noop) => {
         // Set loading state to true
         setState((prevState) => ({ ...prevState, envConfig: { ...prevState.envConfig, isLoading: true } }))
 
         // Fetch environment configuration
-        getEnvConfig(+appId, envId, isTemplateView)
+        getEnvConfig(+appId, envId, isTemplateView, callback)
             .then((res) => {
                 setState((prevState) => ({
                     ...prevState,
@@ -329,30 +337,27 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
         }))
     }
 
-    const redirectToWorkflowEditor = () => getAppComposeURL(appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR, isJob)
-
-    const deleteAppHandler = () => {
-        deleteApp(appId)
-            .then((response) => {
-                if (response.code === 200) {
-                    if (isJob) {
-                        ToastManager.showToast({
-                            variant: ToastVariantType.success,
-                            description: 'Job Deleted!',
-                        })
-                        history.push(`${URLS.JOB}/${URLS.APP_LIST}`)
-                    } else {
-                        ToastManager.showToast({
-                            variant: ToastVariantType.success,
-                            description: 'Application Deleted!',
-                        })
-                        history.push(`${URLS.APP}/${URLS.APP_LIST}`)
-                    }
+    const deleteAppHandler = async () => {
+        try {
+            const response = await deleteApp(appId)
+            if (response) {
+                if (isJob) {
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Job Deleted!',
+                    })
+                    history.push(`${URLS.JOB}/${URLS.APP_LIST}`)
+                } else {
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Application Deleted!',
+                    })
+                    history.push(`${URLS.APP}/${URLS.APP_LIST}`)
                 }
-            })
-            .catch((error) => {
-                showError(error)
-            })
+            }
+        } catch (error) {
+            showError(error)
+        }
     }
 
     const respondOnSuccess = (redirection: boolean = false) => {
@@ -398,52 +403,59 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
             })
     }
 
+    const closeDeleteConfirmationModal = () => setState((prevState) => ({ ...prevState, showDeleteConfirm: false }))
+
+    const onClickCloseCannotDeleteModal = () => setState((prevState) => ({ ...prevState, showDeleteConfirm: false }))
+
+    const redirectToWorkflowEditor = () => {
+        onClickCloseCannotDeleteModal()
+        history.push(getAppComposeURL(appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR, isJob, isTemplateView))
+    }
+
     const renderDeleteDialog = () => {
-        if (state.showDeleteConfirm) {
-            return state.canDeleteApp || isTemplateView ? (
-                <DeleteDialog
-                    title={`Delete '${appName}'?`}
-                    delete={deleteAppHandler}
-                    closeDelete={() => {
-                        setState((prevState) => ({ ...prevState, showDeleteConfirm: false }))
+        // Using Confirmation Dialog Modal instead of Delete Confirmation as we are evaluating status on the basis of local variable despite of error code
+        if (!state.showDeleteConfirm) return null
+
+        if (state.canDeleteApp || isTemplateView) {
+            return (
+                <ConfirmationModal
+                    title={`Delete ${isJob ? DeleteComponentsName.Job : DeleteComponentsName.Application} '${appName}' ?`}
+                    variant={ConfirmationModalVariantType.delete}
+                    subtitle={<ApplicationDeletionInfo />}
+                    buttonConfig={{
+                        secondaryButtonConfig: {
+                            text: 'Cancel',
+                            onClick: closeDeleteConfirmationModal,
+                        },
+                        primaryButtonConfig: {
+                            text: 'Delete',
+                            onClick: deleteAppHandler,
+                            isLoading: state.view === ViewType.LOADING,
+                        },
                     }}
-                >
-                    <DeleteDialog.Description>
-                        <p className="fs-13 cn-7 lh-1-54">
-                            This will delete all resources associated with this application.
-                        </p>
-                        <p className="fs-13 cn-7 lh-1-54">Deleted applications cannot be restored.</p>
-                    </DeleteDialog.Description>
-                </DeleteDialog>
-            ) : (
-                <ConfirmationDialog>
-                    <ConfirmationDialog.Icon src={warn} />
-                    <ConfirmationDialog.Body title={`Cannot Delete ${isJob ? 'job' : 'application'}`} />
-                    <p className="fs-13 cn-7 lh-1-54">
-                        Delete all pipelines and workflows before deleting this {isJob ? 'job' : 'application'}.
-                    </p>
-                    <ConfirmationDialog.ButtonGroup>
-                        <button
-                            type="button"
-                            className="cta cancel"
-                            onClick={() => {
-                                setState((prevState) => ({ ...prevState, showDeleteConfirm: false }))
-                            }}
-                        >
-                            Cancel
-                        </button>
-                        <Link
-                            onClick={() => setState((prevState) => ({ ...prevState, showDeleteConfirm: false }))}
-                            to={redirectToWorkflowEditor()}
-                            className="cta ml-12 dc__no-decor"
-                        >
-                            View Workflows
-                        </Link>
-                    </ConfirmationDialog.ButtonGroup>
-                </ConfirmationDialog>
+                    handleClose={closeDeleteConfirmationModal}
+                />
             )
         }
-        return null
+
+        return (
+            <ConfirmationModal
+                title={`Cannot Delete ${isJob ? DeleteComponentsName.Job : DeleteComponentsName.Application} '${appName}'`}
+                variant={ConfirmationModalVariantType.warning}
+                subtitle={`Delete all pipelines and workflows before deleting this ${isJob ? DeleteComponentsName.Job : DeleteComponentsName.Application}`}
+                buttonConfig={{
+                    secondaryButtonConfig: {
+                        text: 'Cancel',
+                        onClick: onClickCloseCannotDeleteModal,
+                    },
+                    primaryButtonConfig: {
+                        text: 'View Workflows',
+                        onClick: redirectToWorkflowEditor,
+                    },
+                }}
+                handleClose={onClickCloseCannotDeleteModal}
+            />
+        )
     }
 
     const getAdditionalParentClass = () => {

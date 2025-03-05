@@ -19,7 +19,6 @@ import Tippy from '@tippyjs/react'
 import {
     showError,
     Progressing,
-    DeleteDialog,
     PopupMenu,
     Checkbox,
     Reload,
@@ -30,6 +29,12 @@ import {
     ToastManager,
     ToastVariantType,
     TOAST_ACCESS_DENIED,
+    Button,
+    ButtonVariantType,
+    ButtonStyleType,
+    ComponentSizeType,
+    ConfirmationModal,
+    ConfirmationModalVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink } from 'react-router-dom'
 import EmptyImage from '../../assets/img/ic-empty-notifications.png'
@@ -39,84 +44,22 @@ import {
     updateNotificationEvents,
     getChannelsAndEmailsFilteredByEmail,
 } from './notifications.service'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as Delete, ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
-import { ReactComponent as Bell } from '../../assets/icons/ic-bell.svg'
-import { ReactComponent as User } from '../../assets/icons/ic-users.svg'
-import { ReactComponent as Slack } from '../../assets/icons/slack-logo.svg'
-import { ReactComponent as Email } from '../../assets/icons/ic-mail.svg'
-import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
-import { ReactComponent as Play } from '../../assets/icons/ic-play.svg'
-import { ReactComponent as Info } from '../../assets/icons/ic-info-outline.svg'
-import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg'
+import { ReactComponent as Add } from '@Icons/ic-add.svg'
+import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
+import { ReactComponent as Bell } from '@Icons/ic-bell.svg'
+import { ReactComponent as User } from '@Icons/ic-users.svg'
+import { ReactComponent as Slack } from '@Icons/slack-logo.svg'
+import { ReactComponent as Email } from '@Icons/ic-mail.svg'
+import { ReactComponent as Check } from '@Icons/ic-check.svg'
+import { ReactComponent as Play } from '@Icons/ic-play.svg'
+import { ReactComponent as Info } from '@Icons/ic-info-outline.svg'
+import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
+import { ReactComponent as Webhook } from '@Icons/ic-CIWebhook.svg'
 import { ViewType, URLS, SourceTypeMap } from '../../config'
 import { ModifyRecipientsModal } from './ModifyRecipientsModal'
 import { getHostURLConfiguration } from '../../services/service'
-import { HostURLConfig } from '../../services/service.types'
 import { renderPipelineTypeIcon } from './notifications.util'
-
-export interface NotificationConfiguration {
-    id: number
-    pipelineId?: number
-    appName: string
-    pipelineName?: string
-    pipelineType: 'CI' | 'CD'
-    environmentName?: string
-    branch?: string
-    trigger: boolean
-    success: boolean
-    failure: boolean
-    isSelected: boolean
-    providers: { dest: string; configId: number; recipient: string; name?: string }[]
-    appliedFilters: {
-        project: { id: number; name: string }[]
-        application: { id: number; name: string }[]
-        environment: { id: number; name: string }[]
-        cluster: {
-            id: number
-            name: string
-        }[]
-    }
-    singleDeletedId: number
-    isVirtualEnvironment?: boolean
-}
-
-export interface NotificationTabState {
-    view: string
-    statusCode: number
-    notificationList: NotificationConfiguration[]
-    channelList: any[]
-    showDeleteDialog: boolean
-    showModifyRecipientsModal: boolean
-    headerCheckbox: {
-        isChecked: boolean
-        value: 'INTERMEDIATE' | 'CHECKED'
-    }
-    triggerCheckbox: {
-        isChecked: boolean
-        value: 'INTERMEDIATE' | 'CHECKED'
-    }
-    successCheckbox: {
-        isChecked: boolean
-        value: 'INTERMEDIATE' | 'CHECKED'
-    }
-    failureCheckbox: {
-        isChecked: boolean
-        value: 'INTERMEDIATE' | 'CHECKED'
-    }
-    payloadUpdateEvents: Array<{ id: number; eventTypeIds: number[] }>
-    pagination: {
-        size: number
-        pageSize: number
-        offset: number
-    }
-    hostURLConfig: HostURLConfig
-    deleting: boolean
-    confirmation: boolean
-    singleDeletedId: number
-    disableEdit: boolean
-}
+import { NotificationTabState } from './types'
 
 export class NotificationTab extends Component<any, NotificationTabState> {
     constructor(props) {
@@ -386,41 +329,50 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             })
     }
 
-    deleteNotifications(): void {
+    deleteNotifications = async () => {
+        this.setState({ showDeleteDialog: true, deleting: true })
         const candidates = this.state.notificationList.filter((n) => n.isSelected)
-        deleteNotifications(candidates, this.state.singleDeletedId)
-            .then((response) => {
-                this.setState({ showDeleteDialog: false })
-                this.getAllNotifications()
-                ToastManager.showToast({
-                    variant: ToastVariantType.success,
-                    description: 'Deleted Successfully',
-                })
-
+        try {
+            await deleteNotifications(candidates, this.state.singleDeletedId)
+            this.setState({ showDeleteDialog: false })
+            this.getAllNotifications()
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Deleted Successfully',
             })
-            .catch((error) => {
-                showError(error)
-            })
+        } catch (error) {
+            showError(error)
+        } finally {
+            this.setState({ deleting: false })
+        }
     }
 
-    renderDeleteDialog() {
-        if (this.state.showDeleteDialog) {
-            const n = this.state.singleDeletedId
-                ? [this.state.singleDeletedId]
-                : this.state.notificationList.filter((n) => n.isSelected)
-            return (
-                <DeleteDialog
-                    title={`Delete ${n.length} notification configuration(s)`}
-                    description="Recipients will stop recieving notifications for selected pipilines."
-                    closeDelete={() => {
-                        this.setState({ showDeleteDialog: false })
-                    }}
-                    delete={() => {
-                        this.deleteNotifications()
-                    }}
-                />
-            )
-        }
+    closeConfirmationModal = () => this.setState({ showDeleteDialog: false })
+
+    renderDeleteDialog = () => {
+        const notificationCount = this.state.singleDeletedId
+            ? [this.state.singleDeletedId]
+            : this.state.notificationList.filter((n) => n.isSelected)
+        return (
+            <ConfirmationModal
+                title={`Delete ${notificationCount.length} notification configuration(s)`}
+                variant={ConfirmationModalVariantType.delete}
+                subtitle="Recipients will stop receiving notifications for selected pipelines."
+                buttonConfig={{
+                    secondaryButtonConfig: {
+                        text: 'Cancel',
+                        onClick: this.closeConfirmationModal,
+                    },
+                    primaryButtonConfig: {
+                        text: 'Delete',
+                        onClick: this.deleteNotifications,
+                        isLoading: this.state.deleting,
+                        disabled: this.state.deleting,
+                    },
+                }}
+                handleClose={this.closeConfirmationModal}
+            />
+        )
     }
 
     CreateNewNotification = () => {
@@ -475,10 +427,10 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     applyModifyEvents = (event) => {
         if (this.state.disableEdit) {
-           ToastManager.showToast({
-               variant: ToastVariantType.notAuthorized,
-               description: TOAST_ACCESS_DENIED.SUBTITLE,
-           })
+            ToastManager.showToast({
+                variant: ToastVariantType.notAuthorized,
+                description: TOAST_ACCESS_DENIED.SUBTITLE,
+            })
         } else {
             this.updateNotificationEvents(event)
         }
@@ -488,14 +440,67 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         this.validateAccess({ showModifyRecipientsModal: !this.state.showModifyRecipientsModal })
     }
 
+    renderModifyEventPopUpBody = () => (
+        <PopupMenu.Body>
+            <ul className="dc__kebab-menu__list kebab-menu__list--notification-tab ">
+                <li key="edit" className="dc__kebab-menu__list-item flex-justify">
+                    <span>Trigger</span>
+                    <Checkbox
+                        rootClassName=""
+                        isChecked={this.state.triggerCheckbox.isChecked}
+                        value={this.state.triggerCheckbox.value}
+                        onChange={(e) => {
+                            this.triggerCheckboxHandler()
+                        }}
+                    >
+                        <span />
+                    </Checkbox>
+                </li>
+                <li key="success" className="dc__kebab-menu__list-item flex-justify">
+                    <span>Success</span>
+                    <Checkbox
+                        rootClassName=""
+                        isChecked={this.state.successCheckbox.isChecked}
+                        value={this.state.successCheckbox.value}
+                        onChange={(e) => {
+                            e.stopPropagation()
+                            this.successCheckboxHandler()
+                        }}
+                    >
+                        <span />
+                    </Checkbox>
+                </li>
+                <li key="failure" className="dc__kebab-menu__list-item flex-justify">
+                    <span>Failure</span>
+                    <Checkbox
+                        rootClassName=""
+                        isChecked={this.state.failureCheckbox.isChecked}
+                        value={this.state.failureCheckbox.value}
+                        onChange={(e) => {
+                            this.failureCheckboxHandler()
+                        }}
+                    >
+                        <span />
+                    </Checkbox>
+                </li>
+            </ul>
+            <div className="kebab-menu__sticky-bottom">
+                <button type="button" className="cta w-100" onClick={this.applyModifyEvents}>
+                    Apply
+                </button>
+            </div>
+        </PopupMenu.Body>
+    )
+
     renderOptions() {
         if (this.state.headerCheckbox.isChecked) {
             return (
-                <div className="flex left mt-20 mb-20">
+                <div className="flex left dc__gap-16 mt-20 mb-20">
+                    {/* NOTE: Need to replace all the icons with the new Button component all together */}
                     <Tippy placement="top" content="Delete">
                         <div className="flex">
-                            <Delete
-                                className="icon-dim-24 mr-20 notification-tab__option"
+                            <Trash
+                                className="icon-dim-24 notification-tab__option"
                                 onClick={this.showDeleteModal}
                                 data-testid="notification-delete-button"
                             />
@@ -511,66 +516,15 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                         <PopupMenu.Button rootClassName="popup-button--notification-tab">
                             <Tippy placement="top" content="Modify Events">
                                 <div className="flex">
-                                    <Bell className="icon-dim-24 mr-20 notification-tab__option" />
+                                    <Bell className="icon-dim-24 notification-tab__option" />
                                 </div>
                             </Tippy>
                         </PopupMenu.Button>
-                        <PopupMenu.Body>
-                            <ul className="dc__kebab-menu__list kebab-menu__list--notification-tab ">
-                                <li key="edit" className="dc__kebab-menu__list-item flex-justify">
-                                    <span>Trigger</span>
-                                    <Checkbox
-                                        rootClassName=""
-                                        isChecked={this.state.triggerCheckbox.isChecked}
-                                        value={this.state.triggerCheckbox.value}
-                                        onChange={(e) => {
-                                            this.triggerCheckboxHandler()
-                                        }}
-                                    >
-                                        <span />
-                                    </Checkbox>
-                                </li>
-                                <li key="success" className="dc__kebab-menu__list-item flex-justify">
-                                    <span>Success</span>
-                                    <Checkbox
-                                        rootClassName=""
-                                        isChecked={this.state.successCheckbox.isChecked}
-                                        value={this.state.successCheckbox.value}
-                                        onChange={(e) => {
-                                            e.stopPropagation()
-                                            this.successCheckboxHandler()
-                                        }}
-                                    >
-                                        <span />
-                                    </Checkbox>
-                                </li>
-                                <li key="failure" className="dc__kebab-menu__list-item flex-justify">
-                                    <span>Failure</span>
-                                    <Checkbox
-                                        rootClassName=""
-                                        isChecked={this.state.failureCheckbox.isChecked}
-                                        value={this.state.failureCheckbox.value}
-                                        onChange={(e) => {
-                                            this.failureCheckboxHandler()
-                                        }}
-                                    >
-                                        <span />
-                                    </Checkbox>
-                                </li>
-                            </ul>
-                            <div className="kebab-menu__sticky-bottom">
-                                <button type="button" className="cta w-100" onClick={this.applyModifyEvents}>
-                                    Apply
-                                </button>
-                            </div>
-                        </PopupMenu.Body>
+                        {this.renderModifyEventPopUpBody()}
                     </PopupMenu>
                     <Tippy placement="top" content="Modify Recipients">
                         <div className="flex">
-                            <User
-                                className="icon-dim-24 mr-20 notification-tab__option"
-                                onClick={this.showModifyModal}
-                            />
+                            <User className="icon-dim-24 notification-tab__option" onClick={this.showModifyModal} />
                         </div>
                     </Tippy>
                 </div>
@@ -581,6 +535,13 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     onChangePipelineCheckbox(e) {
         e.stopPropagation()
         this.toggleAllNotification()
+    }
+
+    onClickDeleteButton = (e) => {
+        this.validateAccess({
+            showDeleteDialog: !this.state.showDeleteDialog,
+            singleDeletedId: +e.currentTarget.getAttribute('data-id'),
+        })
     }
 
     renderPipelineList() {
@@ -761,20 +722,16 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                     </div>
                                 </td>
                                 <td className="pipeline-list__hover flex">
-                                    <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
-                                        <button
-                                            type="button"
-                                            className="dc__transparent dc__align-right"
-                                            onClick={(event) => {
-                                                this.validateAccess({
-                                                    showDeleteDialog: !this.state.showDeleteDialog,
-                                                    singleDeletedId: row.id,
-                                                })
-                                            }}
-                                        >
-                                            <Trash className="scn-5 icon-dim-20" />
-                                        </button>
-                                    </Tippy>
+                                    <Button
+                                        icon={<Trash />}
+                                        ariaLabel="Delete"
+                                        variant={ButtonVariantType.borderLess}
+                                        style={ButtonStyleType.negativeGrey}
+                                        size={ComponentSizeType.medium}
+                                        data-id={row.id}
+                                        onClick={this.onClickDeleteButton}
+                                        dataTestId={`delete-notification-${row.id}-button`}
+                                    />
                                 </td>
                             </tr>
                         )
@@ -819,7 +776,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         )
     }
 
-    remderModifyRecipients() {
+    renderModifyRecipients() {
         if (this.state.showModifyRecipientsModal) {
             const allCandidates = this.state.notificationList
                 .filter((row) => row.isSelected)
@@ -886,9 +843,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             <div className="bg__primary pt-16" style={{ minHeight: 'calc(100vh - 215px)' }}>
                 {this.renderHostErrorMessage()}
                 {this.renderBody()}
-                {this.renderDeleteDialog()}
-                {this.remderModifyRecipients()}
-                {this.state.confirmation && this.renderDeleteDialog()}
+                {this.state.showDeleteDialog && this.renderDeleteDialog()}
+                {this.renderModifyRecipients()}
             </div>
         )
     }

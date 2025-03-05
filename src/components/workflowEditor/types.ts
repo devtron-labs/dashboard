@@ -211,10 +211,6 @@ export interface WebhookTippyType {
     hideTippy: () => void
 }
 
-export interface DeprecatedWarningModalType {
-    closePopup: () => void
-}
-
 export interface CDNodeState {
     showDeletePipelinePopup: boolean
     showDeleteDialog: boolean

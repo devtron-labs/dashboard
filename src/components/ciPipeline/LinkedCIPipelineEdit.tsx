@@ -362,7 +362,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                             value={this.state.form.name}
                             onChange={this.handleName}
                             data-testid="pipeline-name-for-linked"
-                            isRequiredField
+                            required
                             error={this.getErrorMessage()}
                         />
                     </label>

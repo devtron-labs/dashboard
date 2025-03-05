@@ -15,21 +15,6 @@
  */
 
 /* eslint-disable react/prop-types */
-/*
- * Copyright (c) 2024. Devtron Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 /* eslint-disable react/sort-comp */
 /* eslint-disable class-methods-use-this */
@@ -44,10 +29,8 @@ import {
     showError,
     Progressing,
     ErrorScreenManager,
-    ConfirmationDialog,
     CustomInput,
     noop,
-    ButtonWithLoader,
     YAMLStringify,
     DEFAULT_SECRET_PLACEHOLDER,
     CodeEditor,
@@ -55,12 +38,17 @@ import {
     InfoColourBar,
     ToastManager,
     ToastVariantType,
+    Button,
+    ButtonVariantType,
+    ComponentSizeType,
+    ConfirmationModal,
+    ConfirmationModalVariantType,
+    SSOProviderIcon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import yamlJsParser from 'yaml'
 import Check from '@Icons/ic-selected-corner.png'
 import { ReactComponent as Help } from '@Icons/ic-help.svg'
 import { ReactComponent as UsersIcon } from '@Icons/ic-users.svg'
-import { ReactComponent as WarningIcon } from '@Icons/ic-warning.svg'
 import { ReactComponent as InfoIcon } from '@Icons/ic-info-warn.svg'
 import {
     DevtronSwitch as Switch,
@@ -85,7 +73,6 @@ import {
     SsoSecretsToHide,
 } from './constants'
 import './ssoLogin.scss'
-import { SSOTabIcons } from './utils'
 
 const AutoAssignToggleTile = importComponentFromFELibrary('AutoAssignToggleTile')
 const UserPermissionConfirmationModal = importComponentFromFELibrary('UserPermissionConfirmationModal')
@@ -102,7 +89,7 @@ const SSOLoginTab: React.FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastA
         />
         <span className="dc__tertiary-tab sso-icons" data-testid={`sso-${value}-button`}>
             <aside className="login__icon-alignment">
-                <SSOTabIcons provider={value} />
+                <SSOProviderIcon provider={value} size={24} />
             </aside>
             <aside className="login__text-alignment">{SSOName}</aside>
             <label>
@@ -164,7 +151,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 if (ssoConfig) {
                     this.setState({ sso: ssoConfig?.name, lastActiveSSO: ssoConfig })
                 } else {
-                    ssoConfig = sample.google
+                    ssoConfig = sample.google as any // TODO: Add type for sample
                     this.setState({ sso: 'google', ssoConfig: this.parseResponse(ssoConfig) })
                 }
                 // Would be undefined for OSS
@@ -487,13 +474,13 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
                             return (
                                 <div className="pb-20 pr-20 pl-20">
-                                    <button
-                                        type="button"
+                                    <Button
+                                        variant={ButtonVariantType.text}
+                                        size={ComponentSizeType.small}
                                         onClick={handleClick}
-                                        className="cta secondary cursor lh-20-imp h-28"
-                                    >
-                                        Take me there
-                                    </button>
+                                        dataTestId="take-me-there"
+                                        text="Take me there"
+                                    />
                                 </div>
                             )
                         }
@@ -643,15 +630,17 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }
         const value = YAMLStringify(newConfig)
 
-        this.setState({
-            ssoConfig: {
-                ...this.state.ssoConfig,
-                config: {
-                    ...this.state.ssoConfig.config,
-                    config: value,
+        setTimeout(() => {
+            this.setState({
+                ssoConfig: {
+                    ...this.state.ssoConfig,
+                    config: {
+                        ...this.state.ssoConfig.config,
+                        config: value,
+                    },
                 },
-            },
-        })
+            })
+        }, 0)
     }
 
     renderSSOCodeEditor() {
@@ -811,10 +800,10 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     <CustomInput
                         value={this.state.ssoConfig.url || window.__ORCHESTRATOR_ROOT__}
                         onChange={this.handleURLChange}
-                        data-testid="sso-url-input"
                         name="sso-url"
                         label="URL"
-                        isRequiredField
+                        placeholder="Enter URL"
+                        required
                         error={this.state.isError.url}
                     />
                     <div className="flex left fw-4 pt-4">
@@ -869,42 +858,33 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             </div>
         )
         return (
-            <section className="bg__primary sso-login__wrapper">
+            <section className="bg__primary sso-login__wrapper min-h-100">
                 {renderSSOContent()}
                 {/* Confirmation Modal for SSO Change */}
                 {showSSOChangeConfirmationModal && (
-                    <ConfirmationDialog className="w-400">
-                        <WarningIcon className="icon-dim-48 mb-12 warning-icon-y5-imp" />
-                        <ConfirmationDialog.Body
-                            title={`Use "${ssoProviderToDisplayNameMap[this.state.sso]}" instead of "${
-                                ssoProviderToDisplayNameMap[this.state.lastActiveSSO?.name]
-                            }" for login?`}
-                            subtitle="This will end all active user sessions. Users would have to login again using updated SSO service."
-                        />
-                        <ConfirmationDialog.ButtonGroup>
-                            <button
-                                type="button"
-                                className="cta cancel"
-                                disabled={this.state.saveLoading}
-                                onClick={this.toggleWarningModal}
-                            >
-                                Cancel
-                            </button>
-                            <ButtonWithLoader
-                                type="submit"
-                                rootClassName="cta"
-                                dataTestId="confirm-sso-button"
-                                disabled={this.state.saveLoading}
-                                isLoading={this.state.saveLoading}
-                                onClick={this.saveNewSSO}
-                            >
-                                Confirm
-                            </ButtonWithLoader>
-                        </ConfirmationDialog.ButtonGroup>
-                    </ConfirmationDialog>
+                    <ConfirmationModal
+                        variant={ConfirmationModalVariantType.warning}
+                        title={`Use "${ssoProviderToDisplayNameMap[this.state.sso]}" instead of "${
+                            ssoProviderToDisplayNameMap[this.state.lastActiveSSO?.name]
+                        }" for login?`}
+                        subtitle="This will end all active user sessions. Users would have to login again using updated SSO service."
+                        buttonConfig={{
+                            secondaryButtonConfig: {
+                                text: 'Cancel',
+                                disabled: this.state.saveLoading,
+                                onClick: this.toggleWarningModal,
+                            },
+                            primaryButtonConfig: {
+                                text: 'Confirm',
+                                isLoading: this.state.saveLoading,
+                                onClick: this.saveNewSSO,
+                            },
+                        }}
+                        handleClose={this.toggleWarningModal}
+                    />
                 )}
                 {/* Confirmation modal for permission auto-assignment */}
-                {this.state.showAutoAssignConfirmationModal && (
+                {UserPermissionConfirmationModal && this.state.showAutoAssignConfirmationModal && (
                     <UserPermissionConfirmationModal
                         handleSave={this.saveNewSSO}
                         handleCancel={this.handleAutoAssignConfirmationModalClose}

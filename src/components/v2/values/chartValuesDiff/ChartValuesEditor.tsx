@@ -16,7 +16,13 @@
 
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
-import { showError, DetailsProgressing, YAMLStringify, CodeEditor, versionComparatorBySortOrder } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    DetailsProgressing,
+    YAMLStringify,
+    CodeEditor,
+    versionComparatorBySortOrder,
+} from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import { Moment12HourFormat } from '../../../../config'
@@ -354,10 +360,7 @@ export default function ChartValuesEditor({
     }
 
     return (
-        <div
-            className="code-editor-container"
-            data-testid="code-editor-container"
-        >
+        <div className="code-editor-container" data-testid="code-editor-container">
             <CodeEditor
                 height="0"
                 defaultValue={

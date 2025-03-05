@@ -156,6 +156,7 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
                         onSubmit={(event) => {
                             event.preventDefault()
                         }}
+                        noValidate
                     >
                         <div className="whitelist-cve__cve-id ml-24 mr-24 mb-20">
                             <label className="dc__block flex-1 mb-5 mr-16 ">
@@ -163,11 +164,10 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
                                     name="cve"
                                     label="CVE ID"
                                     autoFocus
-                                    tabIndex={1}
                                     placeholder="Enter CVE ID"
                                     value={this.state.cve}
                                     onChange={this.handleCveChange}
-                                    isRequiredField
+                                    required
                                     error={this.state.isCveError && CVE_ID_NOT_FOUND}
                                 />
                             </label>

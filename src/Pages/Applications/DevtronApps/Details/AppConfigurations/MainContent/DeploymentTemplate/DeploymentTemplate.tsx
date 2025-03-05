@@ -60,14 +60,13 @@ import {
     DraftAction,
     checkIfPathIsMatching,
     FloatingVariablesSuggestions,
-    URLS as CommonURLS,
     AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt, useLocation, useParams } from 'react-router-dom'
 import YAML from 'yaml'
 import { importComponentFromFELibrary } from '@Components/common'
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
-import { URLS } from '@Config/routes'
+import { APP_COMPOSE_STAGE, getAppComposeURL } from '@Config/routes'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
 import deleteOverrideEmptyStateImage from '@Images/no-artifact.webp'
@@ -258,7 +257,12 @@ const DeploymentTemplate = ({
 
     const isGuiSupported = isEditMode && !showDeleteOverrideDraftEmptyState
 
-    const baseDeploymentTemplateURL = `${URLS.APP}/${appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_DEPLOYMENT_CONFIG}`
+    const baseDeploymentTemplateURL = getAppComposeURL(
+        appId,
+        APP_COMPOSE_STAGE.DEPLOYMENT_TEMPLATE,
+        null,
+        isTemplateView,
+    )
 
     /**
      * Means has no global config
@@ -1873,6 +1877,7 @@ const DeploymentTemplate = ({
                         handleProtectionError={handleDeleteOverrideProtectionError}
                         reloadEnvironments={reloadEnvironments}
                         isTemplateView={isTemplateView}
+                        environmentName={environmentName}
                     />
                 )}
 

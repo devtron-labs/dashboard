@@ -403,12 +403,14 @@ const NodeDetailComponent = ({
         setUnableToParseManifest(value)
     }
 
+    const isManifestEditable =
+        isExternalApp ||
+        isResourceBrowserView ||
+        (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS && appDetails.deploymentAppDeleteRequest)
+
     const renderManifestTabHeader = () => (
         <>
-            {(isExternalApp ||
-                isResourceBrowserView ||
-                (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&
-                    appDetails.deploymentAppDeleteRequest)) &&
+            {isManifestEditable &&
                 manifestCodeEditorMode &&
                 !showManifestCompareView &&
                 !isResourceMissing && (
@@ -416,7 +418,7 @@ const NodeDetailComponent = ({
                         <div className="ml-12 mr-12 tab-cell-border" />
                         {manifestCodeEditorMode === ManifestCodeEditorMode.EDIT ? (
                             <div className="flex dc__gap-12">
-                                {ToggleManifestConfigurationMode && !isExternalApp && (
+                                {ToggleManifestConfigurationMode && isManifestEditable && (
                                     <ToggleManifestConfigurationMode
                                         mode={manifestFormConfigurationType}
                                         handleToggle={handleToggleManifestConfigurationMode}
@@ -490,7 +492,7 @@ const NodeDetailComponent = ({
     return (
         <>
             <div
-                className={`w-100 pr-20 pl-20 bg__primary flex dc__border-bottom dc__content-space h-32 ${!isResourceBrowserView ? 'node-detail__sticky' : ''}`}
+                className={`w-100 pr-20 pl-20 bg__primary flex border__secondary--bottom dc__content-space h-32 ${!isResourceBrowserView ? 'node-detail__sticky' : ''}`}
             >
                 <div className="flex left">
                     <TabGroup tabs={TAB_GROUP_CONFIG} size={ComponentSizeType.medium} alignActiveBorderWithContainer />
@@ -556,7 +558,7 @@ const NodeDetailComponent = ({
                             handleUpdateUnableToParseManifest={handleUpdateUnableToParseManifest}
                             handleManifestGUIErrors={handleManifestGUIError}
                             manifestGUIFormRef={manifestGUIFormRef}
-                            isExternalApp={isExternalApp}
+                            isManifestEditable={isManifestEditable}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`}>
@@ -608,9 +610,11 @@ const NodeDetailComponent = ({
                     switchSelectedContainer={switchSelectedContainer}
                     selectedNamespaceByClickingPod={selectedResource?.namespace}
                     // getContainersFromManifest can only be used from resource browser
-                    {...isResourceBrowserView ? {
-                        handleSuccess: getContainersFromManifest
-                    } : {}}
+                    {...(isResourceBrowserView
+                        ? {
+                              handleSuccess: getContainersFromManifest,
+                          }
+                        : {})}
                 />
             )}
             {isResourceBrowserView && showDeleteDialog && (

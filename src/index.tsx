@@ -27,6 +27,8 @@ import {
     UserEmailProvider,
     customEnv,
     ThemeProvider,
+    ConfirmationModalProvider,
+    BaseConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import App from './App'
 
@@ -109,7 +111,6 @@ if (!window || !window._env_) {
         SENTRY_PERFORMANCE_ENABLED: false,
         SENTRY_DSN: '',
         SENTRY_TRACES_SAMPLE_RATE: 0.2,
-        HOTJAR_ENABLED: false,
         GA_ENABLED: false,
         GTM_ENABLED: false,
         APPLICATION_METRICS_ENABLED: true,
@@ -125,12 +126,11 @@ if (!window || !window._env_) {
         CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.ai',
         // Remove this in next sprint, have'nt removed yet for backward compatibility
         HIDE_GITOPS_OR_HELM_OPTION: false,
-        HIDE_APPLICATION_GROUPS: false,
         K8S_CLIENT: import.meta.env.VITE_K8S_CLIENT === 'true',
         CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL: 7000,
         CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT: 7,
         ENABLE_CHART_SEARCH_IN_HELM_DEPLOY: false,
-        HIDE_EXCLUDE_INCLUDE_GIT_COMMITS: true,
+        HIDE_EXCLUDE_INCLUDE_GIT_COMMITS: false,
         ENABLE_BUILD_CONTEXT: false,
         CLAIR_TOOL_VERSION: 'V4',
         ENABLE_RESTART_WORKLOAD: false,
@@ -171,6 +171,8 @@ if (!window || !window._env_) {
         FEATURE_ACTION_AUDIOS_ENABLE: true,
         FEATURE_EXPERIMENTAL_THEMING_ENABLE: import.meta.env.DEV,
         FEATURE_APPLICATION_TEMPLATES_ENABLE: true,
+        FEATURE_EXPERIMENTAL_MODERN_LAYOUT_ENABLE: import.meta.env.DEV,
+        FEATURE_DEFAULT_AUTHENTICATED_VIEW_ENABLE: false,
     }
 }
 
@@ -181,7 +183,10 @@ ReactDOM.render(
                 <BrowserRouter basename={window.__BASE_URL__}>
                     <UseRegisterShortcutProvider>
                         <UserEmailProvider>
-                            <App />
+                            <ConfirmationModalProvider>
+                                <App />
+                                <BaseConfirmationModal />
+                            </ConfirmationModalProvider>
                         </UserEmailProvider>
                     </UseRegisterShortcutProvider>
                     <ToastManagerContainer />

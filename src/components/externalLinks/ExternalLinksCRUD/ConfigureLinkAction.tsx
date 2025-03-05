@@ -22,6 +22,7 @@ import {
     RadioGroupItem,
     CustomInput,
     Tooltip,
+    Textarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
@@ -35,6 +36,7 @@ import { ToolSelectStyles } from '../ExternalLinks.utils'
 import { customOptionWithIcon, customValueContainerWithIcon, ToolsMenuList } from '../ExternalLinks.component'
 import IdentifierSelector from './IdentifierSelector'
 import { CONFIGURE_LINK_NO_NAME } from '../../../config'
+import { ReactNode } from 'react'
 
 export default function ConfigureLinkAction({
     isFullMode,
@@ -49,7 +51,7 @@ export default function ConfigureLinkAction({
     onToolSelection,
     handleLinksDataActions,
 }: ConfigureLinkActionType): JSX.Element {
-    const getErrorLabel = (field: string, type?: string): JSX.Element => {
+    const getErrorLabel = (field: string, type?: string): ReactNode => {
         const errorLabel = (label: string): JSX.Element => {
             return (
                 <div className="error-label flex left dc__align-start fs-11 mt-4">
@@ -61,16 +63,12 @@ export default function ConfigureLinkAction({
             )
         }
         switch (field) {
-            case 'tool':
-                return errorLabel('Please select monitoring tool')
-            case 'name':
-                return errorLabel('Please provide name for the tool you want to link')
             case 'identifiers':
                 return errorLabel(`Please select one or more ${type}`)
             case 'url':
-                return errorLabel('Please enter URL template')
+                return 'Please enter URL template'
             case 'invalidProtocol':
-                return errorLabel('The url should start with http:// or https://')
+                return 'The url should start with http:// or https://'
             default:
                 return <></>
         }
@@ -154,26 +152,20 @@ export default function ConfigureLinkAction({
                 />
             </div>
             <div className="configure-link-action-content">
-                <div className="link-name">
-                    <CustomInput
-                        name={LinkValidationKeys.name}
-                        placeholder="Link name"
-                        value={link.name}
-                        onChange={onNameChange}
-                        onBlur={validateAndUpdateLinksData}
-                        data-testid="external-link-name-input"
-                        error={link.invalidName && CONFIGURE_LINK_NO_NAME}
-                    />
-                </div>
-                <div className="link-text-area">
-                    <textarea
-                        rows={1}
-                        placeholder="Description"
-                        value={link.description}
-                        onChange={onDescriptionChange}
-                        data-testid="external-link-description-input"
-                    />
-                </div>
+                <CustomInput
+                    name={LinkValidationKeys.name}
+                    placeholder="Link name"
+                    value={link.name}
+                    onChange={onNameChange}
+                    onBlur={validateAndUpdateLinksData}
+                    error={link.invalidName && CONFIGURE_LINK_NO_NAME}
+                />
+                <Textarea
+                    name="external-link-description-input"
+                    placeholder="Description"
+                    value={link.description}
+                    onChange={onDescriptionChange}
+                />
                 {!isAppConfigView && (
                     <div className="link-scope flex left">
                         <label className="mr-16">Show link in:</label>
@@ -183,7 +175,7 @@ export default function ConfigureLinkAction({
                             name={`external-link-scope-${index}`}
                             onChange={handleLinkScope}
                         >
-                            <RadioGroupItem value={ExternalLinkScopeType.ClusterLevel} >
+                            <RadioGroupItem value={ExternalLinkScopeType.ClusterLevel}>
                                 <span
                                     className={`dc__no-text-transform ${
                                         link.type === ExternalLinkScopeType.ClusterLevel ? 'fw-6' : 'fw-4'
@@ -218,20 +210,19 @@ export default function ConfigureLinkAction({
                         getErrorLabel={getErrorLabel}
                     />
                 )}
-                <div className="link-text-area">
-                    <label className="dc__required-field">URL Template</label>
-                    <textarea
-                        name={LinkValidationKeys.urlTemplate}
-                        rows={1}
-                        placeholder="Link or URL template"
-                        value={link.urlTemplate}
-                        onChange={onUrlTemplateChange}
-                        onBlur={validateAndUpdateLinksData}
-                        data-testid="link-url-template-input"
-                    />
-                    {link.invalidUrlTemplate && getErrorLabel('url')}
-                    {link.invalidProtocol && getErrorLabel('invalidProtocol')}
-                </div>
+                <Textarea
+                    label="URL Template"
+                    name={LinkValidationKeys.urlTemplate}
+                    placeholder="Link or URL template"
+                    value={link.urlTemplate}
+                    onChange={onUrlTemplateChange}
+                    onBlur={validateAndUpdateLinksData}
+                    error={
+                        (link.invalidUrlTemplate && getErrorLabel('url')) ||
+                        (link.invalidProtocol && getErrorLabel('invalidProtocol'))
+                    }
+                    required
+                />
                 <div className="flex left dc__gap-20">
                     {isFullMode && !isAppConfigView && link.type === ExternalLinkScopeType.AppLevel && (
                         <Checkbox

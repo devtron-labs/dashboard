@@ -23,9 +23,8 @@ import {
     AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS, DOCUMENTATION } from '@Config/index'
-
 import { generatePath } from 'react-router-dom'
+import { URLS, DOCUMENTATION, getAppComposeURL, APP_COMPOSE_STAGE } from '@Config/index'
 import { AppConfigStatusItemType, EnvConfigDTO } from '../../service.types'
 import { AppConfigState, AppStageUnlockedType, CustomNavItemsType, EnvConfigType, STAGE_NAME } from './AppConfig.types'
 
@@ -153,7 +152,7 @@ export const getNavItems = ({
                     },
                     {
                         title: 'ConfigMaps & Secrets',
-                        href: `/job/${appId}/edit/configmap`,
+                        href: getAppComposeURL(appId, APP_COMPOSE_STAGE.CONFIG_MAPS, true, isTemplateView),
                         stage: STAGE_NAME.REDIRECT_ITEM,
                         isLocked: !_isUnlocked.configmap,
                         isProtectionAllowed: true,
@@ -161,7 +160,7 @@ export const getNavItems = ({
                     },
                     {
                         title: 'ConfigMaps',
-                        href: `/job/${appId}/edit/configmap`,
+                        href: getAppComposeURL(appId, APP_COMPOSE_STAGE.CONFIG_MAPS, true, isTemplateView),
                         stage: STAGE_NAME.CONFIGMAP,
                         isLocked: !_isUnlocked.configmap,
                         supportDocumentURL: DOCUMENTATION.APP_CREATE_CONFIG_MAP,
@@ -173,7 +172,7 @@ export const getNavItems = ({
                     },
                     {
                         title: 'Secrets',
-                        href: `/job/${appId}/edit/secrets`,
+                        href: getAppComposeURL(appId, APP_COMPOSE_STAGE.SECRETS, true, isTemplateView),
                         stage: STAGE_NAME.SECRETS,
                         isLocked: !_isUnlocked.secret,
                         supportDocumentURL: DOCUMENTATION.APP_CREATE_SECRET,
@@ -219,7 +218,7 @@ export const getNavItems = ({
                     },
                     {
                         title: 'Base Configurations',
-                        href: `${basePath}/edit/deployment-template`,
+                        href: `${basePath}/${CommonURLS.APP_CONFIG}/${URLS.BASE_CONFIG}`,
                         stage: STAGE_NAME.REDIRECT_ITEM,
                         isLocked: !_isUnlocked.deploymentTemplate,
                         isProtectionAllowed:
@@ -228,7 +227,7 @@ export const getNavItems = ({
                     },
                     {
                         title: 'Deployment Template',
-                        href: `${basePath}/edit/deployment-template`,
+                        href: getAppComposeURL(appId, APP_COMPOSE_STAGE.DEPLOYMENT_TEMPLATE, null, isTemplateView),
                         stage: STAGE_NAME.DEPLOYMENT_TEMPLATE,
                         isLocked: !_isUnlocked.deploymentTemplate,
                         supportDocumentURL: DOCUMENTATION.APP_DEPLOYMENT_TEMPLATE,
@@ -259,7 +258,7 @@ export const getNavItems = ({
                     },
                     {
                         title: 'ConfigMaps',
-                        href: `${basePath}/edit/configmap`,
+                        href: getAppComposeURL(appId, APP_COMPOSE_STAGE.CONFIG_MAPS, null, isTemplateView),
                         stage: STAGE_NAME.CONFIGMAP,
                         isLocked: !_isUnlocked.configmap,
                         supportDocumentURL: DOCUMENTATION.APP_CREATE_CONFIG_MAP,
@@ -271,7 +270,7 @@ export const getNavItems = ({
                     },
                     {
                         title: 'Secrets',
-                        href: `${basePath}/edit/secrets`,
+                        href: getAppComposeURL(appId, APP_COMPOSE_STAGE.SECRETS, null, isTemplateView),
                         stage: STAGE_NAME.SECRETS,
                         isLocked: !_isUnlocked.secret,
                         supportDocumentURL: DOCUMENTATION.APP_CREATE_SECRET,

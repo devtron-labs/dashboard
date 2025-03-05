@@ -15,3 +15,5 @@
  */
 
 export { default } from './SSOLogin.component'
+export * from './constants'
+export * from './ssoConfig.types'

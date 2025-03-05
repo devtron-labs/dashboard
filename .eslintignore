@@ -59,7 +59,6 @@ src/components/ClusterNodes/ClusterEvents.tsx
 src/components/ClusterNodes/ClusterManifest.tsx
 src/components/ClusterNodes/ClusterNodeEmptyStates.tsx
 src/components/ClusterNodes/ClusterOverview.tsx
-src/components/ClusterNodes/NodeActions/DeleteNodeModal.tsx
 src/components/ClusterNodes/NodeActions/EditTaintsModal.tsx
 src/components/ClusterNodes/NodeActions/NodeActionsMenu.tsx
 src/components/ClusterNodes/NodeActions/validationRules.ts
@@ -76,9 +75,7 @@ src/components/Jobs/JobsEmptyState.tsx
 src/components/Jobs/Service.ts
 src/components/Jobs/Utils.ts
 src/components/LogViewer/LogViewer.tsx
-src/components/ResourceBrowser/ResourceList/ResourceList.component.tsx
 src/components/ResourceBrowser/ResourceList/__tests__/Sidebar.test.tsx
-src/components/__mocks__/monaco-editor.js
 src/components/__mocks__/xterm-webfont.js
 src/components/app/LogFilter.test.ts
 src/components/app/LogFilter.ts
@@ -219,7 +216,6 @@ src/components/ciPipeline/WebhookSelectorCondition.tsx
 src/components/ciPipeline/ciPipeline.service.ts
 src/components/ciPipeline/validationRules.ts
 src/components/cluster/Cluster.tsx
-src/components/cluster/ClusterCodeEditor.tsx
 src/components/cluster/ClusterComponentModal.tsx
 src/components/cluster/ClusterForm.tsx
 src/components/cluster/ClusterInfoStepsModal.tsx
@@ -233,7 +229,6 @@ src/components/command/command.util.ts
 src/components/common/Accordian/Accordian.tsx
 src/components/common/AppDetailsEmptyState.tsx
 src/components/common/Carousel/Carousel.tsx
-src/components/common/ClusterNotReachableDailog/ClusterNotReachableDialog.tsx
 src/components/common/ContentCard/ContentCard.tsx
 src/components/common/Contexts/AppContext.ts
 src/components/common/DatePickers/Calender.tsx
@@ -251,7 +246,6 @@ src/components/common/edge/rectangularEdge.tsx
 src/components/common/edge/straightEdge.tsx
 src/components/common/errorBoundary.tsx
 src/components/common/formFields/CopyButton.tsx
-src/components/common/formFields/CustomPassword.tsx
 src/components/common/formFields/DevtronSwitch.tsx
 src/components/common/formFields/Typeahead.tsx
 src/components/common/helpers/Helpers.tsx
@@ -274,9 +268,6 @@ src/components/external-apps/ExternalApps.tsx
 src/components/externalArgoApps/ExternalArgoApp.tsx
 src/components/externalArgoApps/ExternalArgoAppDetail.tsx
 src/components/externalLinks/ExternalLinks.component.tsx
-src/components/externalLinks/ExternalLinks.service.ts
-src/components/externalLinks/ExternalLinks.tsx
-src/components/externalLinks/ExternalLinks.utils.ts
 src/components/externalLinks/ExternalLinksCRUD/AddExternalLink.tsx
 src/components/externalLinks/ExternalLinksCRUD/ConfigureLinkAction.tsx
 src/components/externalLinks/ExternalLinksCRUD/DeleteExternalLinkDialog.tsx
@@ -296,8 +287,6 @@ src/components/globalConfigurations/GlobalConfiguration.tsx
 src/components/globalConfigurations/GlobalConfigurationProvider.tsx
 src/components/hostURL/HostURL.tsx
 src/components/hyperion/EnvironmentSelect.tsx
-src/components/login/Login.tsx
-src/components/login/login.service.ts
 src/components/material/CreateMaterial.tsx
 src/components/material/MaterialList.tsx
 src/components/material/MaterialView.tsx
