@@ -97,7 +97,6 @@ export default function HibernateStatusListDrawer({
         }
 
         return (
-            <>
                 <div className="dc__overflow-auto pb-16 px-20">
                     <div className="dc__position-sticky pt-24 pb-8 fs-12 fw-6 cn-7 dc__top-0 dc__border-bottom response-row dc__uppercase bg__tertiary">
                         <div>Application</div>
@@ -114,7 +113,6 @@ export default function HibernateStatusListDrawer({
                         />
                     ))}
                 </div>
-            </>
         )
     }
 
