@@ -239,14 +239,6 @@ a:focus {
     }
 }
 
-// To be removed by arun
-.dc__loading-wrapper {
-    height: calc(100vh - 172px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
 .dc__empty__subtitle {
     font-size: 14px;
     font-weight: normal;
@@ -3558,10 +3550,6 @@ button.anchor {
 
 .h-76-imp {
     height: 76px !important;
-}
-
-.dc__height-reduce-48 {
-    height: calc(100% - 48px);
 }
 
 // Line height
