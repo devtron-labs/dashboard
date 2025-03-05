@@ -642,7 +642,7 @@ const HelmAppList = ({
     }
     if (dataStateType === AppListViewType.ERROR) {
         return (
-            <div className="dc__loading-wrapper">
+            <div className="flex-grow-1">
                 <ErrorScreenManager code={errorResponseCode} />
             </div>
         )

@@ -252,7 +252,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div className="code-editor-body dc__grid-half flexbox-col flex-grow-1 mh-0">
                 <CodeEditor
-                    height="calc(60vh - 97px)"
                     value={this.state.codeEditorPayload}
                     mode="yaml"
                     onChange={(event) => {

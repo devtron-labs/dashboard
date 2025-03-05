@@ -518,7 +518,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
                     >
                         <AppNavigation />
                     </div>
-                    <div className="app-compose__main">
+                    <div className="flexbox-col app-compose__main">
                         <AppComposeRouter />
                     </div>
                 </div>
