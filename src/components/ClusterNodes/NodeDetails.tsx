@@ -36,6 +36,7 @@ import {
     ResourceDetail,
     CodeEditorThemesKeys,
     noop,
+    AppThemeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
 import YAML from 'yaml'
@@ -906,29 +907,37 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         }
     }
 
-    const getCodeEditorHeight = (): string => {
-        if (!isReviewState) {
-            return 'calc(100vh - 115px)'
-        }
-        if (isShowWarning) {
-            return `calc(100vh - 180px)`
-        }
-        return `calc(100vh - 148px)`
-    }
-
     const renderYAMLEditor = (): JSX.Element => {
         return (
-            <div className="node-details-container">
+            <div className="node-details-container flexbox-col flex-grow-1">
                 <CodeEditor
-                    value={modifiedManifest}
-                    defaultValue={(nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || ''}
-                    height={getCodeEditorHeight()}
                     readOnly={!isEdit}
-                    theme={CodeEditorThemesKeys.vsDarkDT}
                     diffView={isReviewState}
-                    onChange={handleEditorValueChange}
                     mode={MODES.YAML}
                     noParsing
+                    codeEditorProps={{
+                        theme: CodeEditorThemesKeys.vsDarkDT,
+                        value: modifiedManifest,
+                        defaultValue: (nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || '',
+                        height: 0,
+                        onChange: handleEditorValueChange,
+                    }}
+                    codeMirrorProps={{
+                        theme: AppThemeType.dark,
+                        ...(isReviewState
+                            ? {
+                                  diffView: true,
+                                  originalValue: (nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || '',
+                                  modifiedValue: modifiedManifest,
+                                  onModifiedValueChange: handleEditorValueChange,
+                              }
+                            : {
+                                  diffView: false,
+                                  value: modifiedManifest,
+                                  onChange: handleEditorValueChange,
+                              }),
+                        height: 'fitToParent',
+                    }}
                 >
                     {isReviewState && isShowWarning && (
                         <CodeEditor.Warning
@@ -1048,7 +1057,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     }
 
     return (
-        <div className="bg__primary node-data-container">
+        <div className="bg__primary node-data-container flexbox-col">
             {loader ? (
                 <Progressing pageLoader size={32} />
             ) : (
