@@ -1105,10 +1105,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@1.8.1":
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.8.1.tgz#e33a3a4cd9efe89b577095329765ad56c30aec6e"
-  integrity sha512-AjS0WNIMIfFyhCYLArnRQjqJFYELIeKDanVV++MP0LZqWDOwKK1kFpuN8eS5lq+xbrQ7sQfU4cKFryx75q7ycQ==
+"@devtron-labs/devtron-fe-common-lib@1.8.4":
+  version "1.8.4"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.8.4.tgz#a7a084633e6a8cd2fce4effb4b9f90228bcba004"
+  integrity sha512-z934Pfc8n7DNgH29l2tSKTPknJfJITSpAFfZ3UQWbTQB7BHkPI8VcTlmKm3KAA2Bu2/hbFZsD1Q1C9eRAB9mQw==
   dependencies:
     "@codemirror/lang-json" "6.0.1"
     "@codemirror/lang-yaml" "6.1.2"
@@ -1116,6 +1116,8 @@
     "@codemirror/legacy-modes" "6.4.2"
     "@codemirror/lint" "6.8.4"
     "@codemirror/search" "6.5.8"
+    "@lezer/highlight" "1.2.1"
+    "@replit/codemirror-indentation-markers" "6.5.3"
     "@replit/codemirror-vscode-keymap" "6.0.2"
     "@types/react-dates" "^21.8.6"
     "@uiw/codemirror-theme-github" "^4.23.7"
@@ -1674,7 +1676,7 @@
   resolved "https://registry.yarnpkg.com/@lezer/common/-/common-1.2.3.tgz#138fcddab157d83da557554851017c6c1e5667fd"
   integrity sha512-w7ojc8ejBqr2REPsWxJjrMFsA/ysDCFICn8zEOR9mrqzOu2amhITYuLD8ag6XZf0CFXDrhKqw7+tW8cX66NaDA==
 
-"@lezer/highlight@^1.0.0", "@lezer/highlight@^1.2.0":
+"@lezer/highlight@1.2.1", "@lezer/highlight@^1.0.0", "@lezer/highlight@^1.2.0":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@lezer/highlight/-/highlight-1.2.1.tgz#596fa8f9aeb58a608be0a563e960c373cbf23f8b"
   integrity sha512-Z5duk4RN/3zuVO7Jq0pGLJ3qynpxUVsh7IbUbGj88+uV2ApSAn6kWg2au3iJb+0Zi7kKtqffIESgNcRXWZWmSA==
@@ -1808,6 +1810,11 @@
   version "2.11.8"
   resolved "https://registry.npmjs.org/@popperjs/core/-/core-2.11.8.tgz"
   integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
+
+"@replit/codemirror-indentation-markers@6.5.3":
+  version "6.5.3"
+  resolved "https://registry.yarnpkg.com/@replit/codemirror-indentation-markers/-/codemirror-indentation-markers-6.5.3.tgz#1cfe5c557c45dd7f2988cbee278f17607010591b"
+  integrity sha512-hL5Sfvw3C1vgg7GolLe/uxX5T3tmgOA3ZzqlMv47zjU1ON51pzNWiVbS22oh6crYhtVhv8b3gdXwoYp++2ilHw==
 
 "@replit/codemirror-vscode-keymap@6.0.2":
   version "6.0.2"
