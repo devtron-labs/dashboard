@@ -97,7 +97,7 @@ const EventsComponent = ({
 
     return (
         <div
-            className="flex-grow-1"
+            className="flex-grow-1 flexbox-col dc__overflow-auto"
             style={{ background: 'var(--terminal-bg)' }}
         >
             {renderContent()}

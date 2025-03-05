@@ -485,19 +485,19 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
                 />
             )
         }
+
         if (isLoading || errorMsg) {
             return (
-                <div className="flex flex-grow-1">
-                    <ConnectingToClusterState
-                        loader={isLoading}
-                        errorMsg={errorMsg}
-                        selectedCluster={selectedCluster}
-                        handleRetry={handleRetry}
-                        requestAbortController={requestAbortControllerRef.current}
-                    />
-                </div>
+                <ConnectingToClusterState
+                    loader={isLoading}
+                    errorMsg={errorMsg}
+                    selectedCluster={selectedCluster}
+                    handleRetry={handleRetry}
+                    requestAbortController={requestAbortControllerRef.current}
+                />
             )
         }
+
         return (
             <div
                 className="p-20 dc__column-gap-32 h-100 dc__overflow-auto flexbox flex-justify-center"
@@ -522,19 +522,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
         )
     }
 
-    const renderClusterSummary = (): JSX.Element => {
-        return (
-            <div
-                className={`dc__border-left resource-details-container bg__primary dc__overflow-auto ${
-                    errorStatusCode || errorCode ? 'flex' : ''
-                }`}
-            >
-                {renderState()}
-            </div>
-        )
-    }
-
-    return renderClusterSummary()
+    return renderState()
 }
 
 export default React.memo(ClusterOverview)

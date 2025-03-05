@@ -93,8 +93,9 @@
     }
     .node-details-grid {
         display: grid;
-        grid-template-columns: 300px calc(100vw - 415px);
+        grid-template-columns: 300px auto;
         column-gap: 12px;
+
         .resource-row {
             display: grid;
             grid-template-columns: 20px minmax(auto, 200px) repeat(5, 100px);
@@ -107,7 +108,6 @@
             .pod-container-header {
                 top: 0px;
                 z-index: 1;
-                padding-top: 10px;
                 background-color: var(--bg-primary);
             }
             .pods-grid {
@@ -126,7 +126,7 @@
                 }
                 header {
                     position: sticky;
-                    top: 46px;
+                    top: 36px;
                     z-index: 1;
                 }
                 .row-wrapper,
@@ -146,6 +146,12 @@
         display: grid;
         grid-template-columns: 200px 280px auto;
         column-gap: 16px;
+    }
+
+    &__editor {
+        & .react-monaco-editor-container {
+            flex-grow: 1;
+        }
     }
 }
 .cluster-list-main-container,
@@ -377,16 +383,6 @@
 .cluster-manifest-header {
   display: grid;
   grid-template-columns: 1fr 1fr 30px;
-}
-
-.node-data-container {
-    height: calc(100vh - 84px);
-    overflow: hidden;
-
-    .node-data-wrapper {
-        height: calc(100vh - 118px);
-        overflow: auto;
-    }
 }
 
 .node-code-editor-header {

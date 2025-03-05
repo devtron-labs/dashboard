@@ -74,7 +74,7 @@ const K8SResourceTabComponent = ({
     }
 
     return (
-        <div className="resource-browser bg__primary">
+        <div className="flex-grow-1 flexbox bg__primary dc__overflow-hidden">
             <Sidebar
                 apiResources={k8SObjectMap?.result.apiResources || null}
                 selectedResource={selectedResource}

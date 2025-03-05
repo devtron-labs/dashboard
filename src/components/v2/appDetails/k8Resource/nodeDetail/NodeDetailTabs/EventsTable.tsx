@@ -34,13 +34,14 @@ export const EventsTable = ({ loading, eventsList, isResourceBrowserView, errorV
                 />
             )
         }
+
         if (eventsList && eventsList.length > 0) {
             return (
                 <div
                     data-testid="app-events-container"
-                    className={`text__white dc__overflow-auto ${getComponentSpecificThemeClass(AppThemeType.dark)}`}
+                    className={`text__white flex-grow-1 dc__overflow-auto ${getComponentSpecificThemeClass(AppThemeType.dark)}`}
                     style={{
-                        height: isResourceBrowserView ? 'calc(100vh - 119px)' : 'calc(100vh - 155px)',
+                        height: isResourceBrowserView ? '' : 'calc(100vh - 155px)',
                     }}
                 >
                     {errorValue?.status === TERMINAL_STATUS.TERMINATED && (

@@ -392,14 +392,18 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         ]
 
         return (
-            <div className="en-2 bw-1 br-4 bg__primary mt-12">
-                <div className="dc__border-bottom px-20">
-                    <TabGroup tabs={tabs} alignActiveBorderWithContainer />
+            <div>
+                <div className="dc__border-bottom dc__position-sticky dc__top-0 dc__zi-1 bg__primary">
+                    <div className="en-2 bw-1 dc__top-radius-4 bg__primary dc__no-bottom-border px-20">
+                        <TabGroup tabs={tabs} alignActiveBorderWithContainer />
+                    </div>
                 </div>
-                <div className=" pr-20 pl-20 pt-12 pb-12">
-                    {selectedSubTabIndex == 0 && renderLabelTab()}
-                    {selectedSubTabIndex == 1 && renderAnnotationTab()}
-                    {selectedSubTabIndex == 2 && renderTaintTab()}
+                <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20">
+                    <div className=" pr-20 pl-20 pt-12 pb-12">
+                        {selectedSubTabIndex == 0 && renderLabelTab()}
+                        {selectedSubTabIndex == 1 && renderAnnotationTab()}
+                        {selectedSubTabIndex == 2 && renderTaintTab()}
+                    </div>
                 </div>
             </div>
         )
@@ -487,7 +491,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
 
     const renderNodeOverviewCard = (): JSX.Element => {
         return (
-            <div className="en-2 bw-1 br-4 bg__primary dc__position-sticky  top-10">
+            <div className="en-2 bw-1 br-4 bg__primary">
                 <div className="flexbox pt-12 pb-12 pr-16 pl-16 dc__top-radius-4">
                     <span className="fw-6 fs-14 cn-9">Node overview</span>
                 </div>
@@ -535,53 +539,58 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         if (!nodeDetail.resources?.length) {
             return null
         }
+
         return (
-            <div className="en-2 bw-1 br-4 bg__primary">
-                <div className="resource-row dc__border-bottom fw-6 fs-13 pt-8 pb-8 pr-20 pl-20 cn-7">
-                    <div />
-                    <div>Resource</div>
-                    <div>Requests</div>
-                    <div>Limits</div>
-                    <div>Usage</div>
-                    <div>Allocatable</div>
-                    <div>Capacity</div>
+            <div>
+                <div className='dc__border-bottom dc__position-sticky dc__top-0 dc__zi-1 bg__primary'>
+                    <div className="en-2 bw-1 dc__top-radius-4 bg__primary dc__no-bottom-border resource-row dc__border-bottom fw-6 fs-13 pt-8 pb-8 pr-20 pl-20 cn-7">
+                        <div />
+                        <div>Resource</div>
+                        <div>Requests</div>
+                        <div>Limits</div>
+                        <div>Usage</div>
+                        <div>Allocatable</div>
+                        <div>Capacity</div>
+                    </div>
                 </div>
-                {cpuData && (
-                    <div className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
-                        <Cpu className="mt-2 mb-2 icon-dim-18" />
-                        <div>{cpuData.name || '-'}</div>
-                        <div>{cpuData.requestPercentage || '-'}</div>
-                        <div>{cpuData.limitPercentage || '-'}</div>
-                        <div>{cpuData.usagePercentage || '-'}</div>
-                        <div>{cpuData.allocatable || '-'}</div>
-                        <div>{cpuData.capacity || '-'}</div>
-                    </div>
-                )}
-                {memoryData && (
-                    <div className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
-                        <Memory className="mt-2 mb-2 icon-dim-18" />
-                        <div>{memoryData.name || '-'}</div>
-                        <div>{memoryData.requestPercentage || '-'}</div>
-                        <div>{memoryData.limitPercentage || '-'}</div>
-                        <div>{memoryData.usagePercentage || '-'}</div>
-                        <div>{memoryData.allocatable || '-'}</div>
-                        <div>{memoryData.capacity || '-'}</div>
-                    </div>
-                )}
-                {nodeDetail.resources.map((resource) => (
-                    <div
-                        key={resource.name}
-                        className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9"
-                    >
-                        <Storage className="mt-2 mb-2 icon-dim-18" />
-                        <div>{resource.name || '-'}</div>
-                        <div>{resource.requestPercentage || '-'}</div>
-                        <div>{resource.limitPercentage || '-'}</div>
-                        <div>{resource.usagePercentage || '-'}</div>
-                        <div>{resource.allocatable || '-'}</div>
-                        <div>{resource.capacity || '-'}</div>
-                    </div>
-                ))}
+                <div className='en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20'>
+                    {cpuData && (
+                        <div className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
+                            <Cpu className="mt-2 mb-2 icon-dim-18" />
+                            <div>{cpuData.name || '-'}</div>
+                            <div>{cpuData.requestPercentage || '-'}</div>
+                            <div>{cpuData.limitPercentage || '-'}</div>
+                            <div>{cpuData.usagePercentage || '-'}</div>
+                            <div>{cpuData.allocatable || '-'}</div>
+                            <div>{cpuData.capacity || '-'}</div>
+                        </div>
+                    )}
+                    {memoryData && (
+                        <div className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
+                            <Memory className="mt-2 mb-2 icon-dim-18" />
+                            <div>{memoryData.name || '-'}</div>
+                            <div>{memoryData.requestPercentage || '-'}</div>
+                            <div>{memoryData.limitPercentage || '-'}</div>
+                            <div>{memoryData.usagePercentage || '-'}</div>
+                            <div>{memoryData.allocatable || '-'}</div>
+                            <div>{memoryData.capacity || '-'}</div>
+                        </div>
+                    )}
+                    {nodeDetail.resources.map((resource) => (
+                        <div
+                            key={resource.name}
+                            className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9"
+                        >
+                            <Storage className="mt-2 mb-2 icon-dim-18" />
+                            <div>{resource.name || '-'}</div>
+                            <div>{resource.requestPercentage || '-'}</div>
+                            <div>{resource.limitPercentage || '-'}</div>
+                            <div>{resource.usagePercentage || '-'}</div>
+                            <div>{resource.allocatable || '-'}</div>
+                            <div>{resource.capacity || '-'}</div>
+                        </div>
+                    ))}
+                </div>
             </div>
         )
     }
@@ -674,7 +683,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                 </div>
                 <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20">
                     <div className="pods-grid fw-4 fs-13 cn-9">
-                        <header className="bg__primary dc__border-bottom-n1 fw-6">
+                        <header className="bg__primary dc__border-bottom fw-6">
                             {renderPodHeaderCell('Namespace', 'namespace', 'string')}
                             {renderPodHeaderCell('Pod', 'name', 'string')}
                             {renderPodHeaderCell('CPU Requests', 'cpu.requestPercentage', 'number')}
@@ -814,15 +823,16 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         if (!nodeDetail) {
             return null
         }
+
         return (
-            <div className="node-details-container node-data-wrapper">
-                <div className="ml-20 mr-20 mt-12 node-details-grid">
-                    <div className="fw-6 fs-16 cn-9">
+            <div className="node-details-container node-data-wrapper dc__overflow-hidden flexbox-col flex-grow-1">
+                <div className="mt-12 node-details-grid dc__overflow-hidden">
+                    <div className="pl-20 fw-6 fs-16 cn-9 dc__overflow-auto">
                         {renderErrorOverviewCard()}
                         {renderProbableIssuesOverviewCard()}
                         {renderNodeOverviewCard()}
                     </div>
-                    <div>
+                    <div className='dc__overflow-auto pr-20'>
                         {renderResourceList()}
                         {renderLabelAnnotationTaint()}
                         {renderPodList()}
@@ -906,23 +916,13 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         }
     }
 
-    const getCodeEditorHeight = (): string => {
-        if (!isReviewState) {
-            return 'calc(100vh - 115px)'
-        }
-        if (isShowWarning) {
-            return `calc(100vh - 180px)`
-        }
-        return `calc(100vh - 148px)`
-    }
-
     const renderYAMLEditor = (): JSX.Element => {
         return (
-            <div className="node-details-container">
+            <div className="node-details-container__editor flex-grow-1 flexbox-col">
                 <CodeEditor
                     value={modifiedManifest}
                     defaultValue={(nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || ''}
-                    height={getCodeEditorHeight()}
+                    height="0"
                     readOnly={!isEdit}
                     theme={CodeEditorThemesKeys.vsDarkDT}
                     diffView={isReviewState}
@@ -954,7 +954,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
 
     const renderConditions = (): JSX.Element => {
         return (
-            <div className="node-details-container">
+            <div className="node-details-container flex-grow-1 flexbox-col dc__overflow-auto">
                 <div className="ml-20 mr-20 mb-12 mt-16 bg__primary br-8 en-2 bw-1">
                     <div className="condition-grid cn-7 fw-6 fs-13 dc__border-bottom pt-8 pl-20 pb-8 pr-20">
                         <div>Type</div>
@@ -1036,19 +1036,17 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
 
     if (errorResponseCode) {
         return (
-            <div className="bg__primary node-data-container flex">
-                <ErrorScreenManager
-                    code={errorResponseCode}
-                    subtitle={
-                        errorResponseCode == 403 ? unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) : ''
-                    }
-                />
-            </div>
+            <ErrorScreenManager
+                code={errorResponseCode}
+                subtitle={
+                    errorResponseCode == 403 ? unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) : ''
+                }
+            />
         )
     }
 
     return (
-        <div className="bg__primary node-data-container">
+        <div className="bg__primary node-data-container flex-grow-1 dc__overflow-hidden flexbox-col">
             {loader ? (
                 <Progressing pageLoader size={32} />
             ) : (

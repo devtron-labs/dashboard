@@ -453,7 +453,7 @@ const ResourceList = () => {
                 updateTabUrl={getUpdateTabUrlForId(tabId)}
             />
         ) : (
-            <div className="resource-details-container flexbox-col">
+            <div className="flexbox-col flex-grow-1 dc__overflow-hidden">
                 <NodeDetailComponent
                     key={dynamicActiveTab.componentKey}
                     loadingResources={rawGVKLoader}
@@ -557,7 +557,11 @@ const ResourceList = () => {
                             return (
                                 <div
                                     key={currentTab.componentKey}
-                                    className={!tabs[index].isSelected ? hideClassName : ''}
+                                    className={
+                                        !tabs[index].isSelected
+                                            ? hideClassName
+                                            : 'flex-grow-1 flexbox-col dc__overflow-hidden'
+                                    }
                                 >
                                     {component}
                                 </div>
