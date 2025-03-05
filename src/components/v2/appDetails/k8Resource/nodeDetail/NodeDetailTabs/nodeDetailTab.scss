@@ -204,3 +204,9 @@
 .pod-terminal-hidden * {
     height: 0 !important;
 }
+
+.manifest-container {
+    & .react-monaco-editor-container {
+        flex-grow: 1;
+    }
+}

@@ -16,215 +16,162 @@
 
 @import '../v2/appDetails/k8Resource/k8resources.scss';
 
-.resource-browser-container {
-    min-width: 1024px;
-
-    .resource-browser {
-        display: grid;
-        grid-template-columns: 220px auto;
-        height: calc(100vh - 84px);
-
-        .k8s-object-container {
-            .k8s-object-kind-search {
-                .kind-search-select__value-container {
-                    .kind-search-icon {
-                        path:nth-child(2) {
-                            fill: var(--N600);
-                        }
-                    }
-                }
-
-                .kind-search-select__input-container {
-                    input {
-                        max-width: 135px;
-                    }
-                }
-
-                .kind-search-select__menu {
-                    margin-top: 4px;
-
-                    .kind-search-select__menu-list {
-                        .kind-search-select__option {
-                            &--highlight {
-                                padding: 0;
-                                background-color: var(--Y200);
-                            }
-                        }
-                    }
-                }
-
-                .kind-search-select__indicators {
-                    position: absolute;
-                    top: 15px;
-                    right: 0;
-
-                    .clear-kind-search-icon {
-                        rect {
-                            fill: var(--N600);
-                        }
-                    }
-
-                    .kind-search-shortcut-key {
-                        right: 10px;
-                        top: -10px;
-                    }
-                }
+.k8s-object-kind-search {
+    .kind-search-select__value-container {
+        .kind-search-icon {
+            path:nth-child(2) {
+                fill: var(--N600);
             }
+        }
+    }
 
-            .k8s-object-wrapper {
-                height: calc(100vh - 140px);
-                overflow: auto;
+    .kind-search-select__input-container {
+        input {
+            max-width: 135px;
+        }
+    }
 
-                .resource-tree-object:hover {
-                    background-color: var(--bg-secondary);
-                    color: var(--N900);
+    .kind-search-select__menu {
+        margin-top: 4px;
+
+        .kind-search-select__menu-list {
+            .kind-search-select__option {
+                &--highlight {
+                    padding: 0;
+                    background-color: var(--Y200);
                 }
             }
         }
+    }
 
-        .resource-list-container {
-            .node-listing-search-container {
-                display: grid;
-                grid-template-columns: auto 160px 1px 180px;
-                column-gap: 8px;
+    .kind-search-select__indicators {
+        position: absolute;
+        top: 15px;
+        right: 0;
 
-                &__shortcut-key {
-                    right: 10px;
-                    top: 6px;
-                }
+        .clear-kind-search-icon {
+            rect {
+                fill: var(--N600);
             }
+        }
 
-            &.no-result-container {
-                height: calc(100vh - 92px);
-                overflow: hidden;
+        .kind-search-shortcut-key {
+            right: 10px;
+            top: -10px;
+        }
+    }
+}
+
+.resource-list-container {
+    .node-listing-search-container {
+        display: grid;
+        grid-template-columns: auto 160px 1px 180px;
+        column-gap: 8px;
+
+        &__shortcut-key {
+            right: 10px;
+            top: 6px;
+        }
+    }
+
+    .resource-filter-options-container {
+        &__search-box {
+            width: 250px;
+
+            .resource-search-shortcut-key {
+                right: 8px;
+                top: 50%;
+                transform: translateY(-50%);
             }
+        }
+    }
 
-            .resource-filter-options-container {
-                &__search-box {
-                    width: 250px;
-                    .resource-search-shortcut-key {
-                        right: 8px;
-                        top: 50%;
-                        transform: translateY(-50%);
-                    }
-                }
-            }
+    .scrollable-resource-list {
+        &__row {
+            width: max-content;
+            min-width: 100%;
+            display: grid;
 
-            .scrollable-resource-list {
-                height: calc(100vh - 144px);
-                &.paginated-list-view {
-                    height: calc(100vh - 201px);
-                }
-
-                &.sync-error {
-                    height: calc(100vh - 176px);
-                }
-
-                &.paginated-list-view-with-sync-error {
-                    height: calc(100vh - 233px);
-                }
-                &__row {
-                    width: max-content;
-                    min-width: 100%;
-                    display: grid;
-
-                    &:hover > :first-child {
-                        background-color: var(--transparent);
-                    }
-
-                    & > :first-child {
-                        position: sticky;
-                        left: 0;
-                        z-index: 1;
-                        background-color: var(--bg-primary);
-                        border-right: 1px solid var(--border-primary);
-                        padding-left: 20px;
-                    }
-
-                    & > :last-child {
-                        padding-right: 20px;
-                    }
-
-                    &.no-hover-bg {
-                        &:hover > :first-child {
-                            background-color: var(--bg-primary);
-                        }
-                    }
-                }
-            }
-
-            .scrollable-event-list {
-                height: calc(100vh - 180px);
-                &.paginated-list-view {
-                    height: calc(100vh - 201px);
-                }
-
-                &.sync-error {
-                    height: calc(100vh - 212px);
-                }
-
-                &.paginated-list-view-with-sync-error {
-                    height: calc(100vh - 269px);
-                }
-            }
-
-            .scrollable-resource-list,
-            .scrollable-event-list {
-                .hover-class {
-                    &:hover {
-                        background-color: var(--bg-hover);
-                        .sticky-column {
-                            background-color: var(--bg-hover);
-                        }
-
-                        .restart-icon path {
-                            stroke: var(--B500);
-                        }
-                    }
-                }
-            }
-
-            .pagination-wrapper {
-                &.resource-browser-paginator {
-                    .select__button {
-                        width: fit-content;
-                    }
-                }
-            }
-
-            .sticky-column {
+            & > :first-child {
+                position: sticky;
                 left: 0;
                 z-index: 1;
                 background-color: var(--bg-primary);
+                border-right: 1px solid var(--border-primary);
+                padding-left: 20px;
             }
 
-            .event-list-row {
-                display: grid;
-                grid-template-columns: 80px minmax(200px, auto) 130px 200px 150px repeat(3, 70px);
-                column-gap: 16px;
+            &:hover > :first-child {
+                background-color: var(--bg-hover);
+            }
 
-                &__explain {
-                    display: grid;
-                    grid-template-columns: 80px minmax(200px, auto) 130px 150px 150px repeat(4, 70px);
-                    column-gap: 16px;
+            & > :last-child {
+                padding-right: 20px;
+            }
 
-                    &:hover {
-                        .explain-ai-button {
-                            visibility: visible;
-                        }
-                    }
+            &.no-hover-bg {
+                &:hover > :first-child {
+                    background-color: var(--bg-primary);
                 }
             }
+        }
+    }
 
-            .explain-ai-button {
-                visibility: hidden;
-            }
+    .scrollable-resource-list,
+    .scrollable-event-list {
+        .hover-class {
+            &:hover {
+                background-color: var(--bg-hover);
+                .sticky-column {
+                    background-color: var(--bg-hover);
+                }
 
-            .node-actions-menu-icon {
-                path:nth-child(2) {
-                    fill: var(--N600);
+                .restart-icon path {
+                    stroke: var(--B500);
                 }
             }
+        }
+    }
+
+    .pagination-wrapper {
+        &.resource-browser-paginator {
+            .select__button {
+                width: fit-content;
+            }
+        }
+    }
+
+    .sticky-column {
+        left: 0;
+        z-index: 1;
+        background-color: var(--bg-primary);
+    }
+
+    .event-list-row {
+        display: grid;
+        grid-template-columns: 80px minmax(200px, auto) 130px 200px 150px repeat(3, 70px);
+        column-gap: 16px;
+
+        &__explain {
+            display: grid;
+            grid-template-columns: 80px minmax(200px, auto) 130px 150px 150px repeat(4, 70px);
+            column-gap: 16px;
+
+            &:hover {
+                .explain-ai-button {
+                    visibility: visible;
+                }
+            }
+        }
+    }
+
+    .explain-ai-button {
+        visibility: hidden;
+    }
+
+    .node-actions-menu-icon {
+        path:nth-child(2) {
+            fill: var(--N600);
         }
     }
 }
@@ -237,8 +184,6 @@
     }
 
     .created-resource-list {
-        height: calc(100vh - 202px);
-        min-height: 220px;
         overflow-y: auto;
 
         .created-resource-row {
@@ -247,10 +192,10 @@
             }
         }
     }
-}
 
-.resource-details-container {
-    height: calc(100vh - 84px);
+    & .react-monaco-editor-container {
+        flex-grow: 1;
+    }
 }
 
 .cluster-terminal-hidden {
