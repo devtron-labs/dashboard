@@ -134,7 +134,7 @@ export const WebhookReceivedPayloadModal = ({
         }
         return (
             <div
-                className={`h-100 ${fromBulkCITrigger ? 'dc__position-fixed bg__primary env-modal-width full-height' : ''}`}
+                className={`flexbox-col flex-grow-1 ${fromBulkCITrigger ? 'dc__position-fixed bg__primary env-modal-width full-height' : ''}`}
             >
                 <CiWebhookModal
                     webhookPayloads={webhookPayloads}
