@@ -38,14 +38,11 @@ import { Routes, URLS } from '../../../config'
 import { AppListViewType } from '../config'
 import SelectClusterImage from '../../../assets/icons/ic-select-cluster.svg'
 import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
-import { Empty } from '../list/emptyView/Empty'
-import { ReactComponent as InfoFill } from '../../../assets/icons/ic-info-filled.svg'
 import noChartInClusterImage from '../../../assets/img/ic-no-chart-in-clusters@2x.png'
 import '../list/list.scss'
 import {
     APP_LIST_EMPTY_STATE_MESSAGING,
     APP_LIST_HEADERS,
-    ClearFiltersLabel,
     ENVIRONMENT_HEADER_TIPPY_CONTENT,
     appListLoadingArray,
     FLUX_CD_HELM_RELEASE_LABEL,
@@ -60,6 +57,7 @@ import {
 } from './AppListType'
 import { renderIcon } from './list.utils'
 import { EXTERNAL_FLUX_APP_STATUS } from '../../../Pages/App/Details/ExternalFlux/types'
+import AskToClearFilters from './AppListComponents'
 
 // This app list is currently used for ExternalArgoCD and ExternalFluxCD app listing
 const GenericAppList = ({
@@ -354,37 +352,12 @@ const GenericAppList = ({
         )
     }
 
-    function askToClearFilters(showTipToSelectCluster?: boolean) {
-        return (
-            <Empty
-                view={AppListViewType.NO_RESULT}
-                title={APP_LIST_EMPTY_STATE_MESSAGING.noAppsFound}
-                message={APP_LIST_EMPTY_STATE_MESSAGING.noAppsFoundInfoText}
-                buttonLabel={ClearFiltersLabel}
-                clickHandler={clearAllFilters}
-            >
-                {showTipToSelectCluster && (
-                    <div className="mt-18">
-                        <p
-                            className="bcb-1 cn-9 fs-13 pt-10 pb-10 pl-16 pr-16 eb-2 bw-1 br-4 cluster-tip flex left top"
-                            style={{ width: '300px' }}
-                        >
-                            <span>
-                                <InfoFill className="icon-dim-20" />
-                            </span>
-                            <div className="ml-12 cn-9" style={{ textAlign: 'start' }}>
-                                <span className="fw-6">Tip </span>
-                                <span>{APP_LIST_EMPTY_STATE_MESSAGING.selectCluster}</span>
-                            </div>
-                        </p>
-                    </div>
-                )}
-            </Empty>
-        )
-    }
-
     function askToClearFiltersWithSelectClusterTip() {
-        return <div className="flex column">{askToClearFilters(true)}</div>
+        return (
+            <div className="flex column">
+                <AskToClearFilters clearAllFilters={clearAllFilters} showTipToSelectCluster />
+            </div>
+        )
     }
 
     function askToConnectAClusterForNoResult() {
@@ -416,7 +389,7 @@ const GenericAppList = ({
             return askToConnectAClusterForNoResult()
         }
         if (isAnyFilterApplied) {
-            return askToClearFilters()
+            return <AskToClearFilters clearAllFilters={clearAllFilters} />
         }
         return null
     }

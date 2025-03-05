@@ -41,9 +41,7 @@ import NoClusterSelectImage from '../../../assets/icons/ic-select-cluster.svg'
 import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
 import HelmCluster from '../../../assets/img/guided-helm-cluster.png'
 import DeployCICD from '../../../assets/img/guide-onboard.png'
-import { Empty } from '../list/emptyView/Empty'
 import { AllCheckModal } from '../../checkList/AllCheckModal'
-import { ReactComponent as InfoFill } from '../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as InfoFillPurple } from '../../../assets/icons/ic-info-filled-purple.svg'
 import { ReactComponent as ErrorExclamationIcon } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
@@ -62,12 +60,12 @@ import {
     APP_LIST_HEADERS,
     HELM_PERMISSION_MESSAGE,
     SELECT_CLUSTER_FROM_FILTER_NOTE,
-    ClearFiltersLabel,
     appListLoadingArray,
 } from './Constants'
 import { LEARN_MORE } from '../../../config/constantMessaging'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
 import { HelmAppListResponse, HelmApp, AppListSortableKeys, HelmAppListProps } from './AppListType'
+import AskToClearFilters from './AppListComponents'
 
 const HelmAppList = ({
     serverMode,
@@ -529,37 +527,12 @@ const HelmAppList = ({
         )
     }
 
-    function askToClearFilters(showTipToSelectCluster?: boolean) {
-        return (
-            <Empty
-                view={AppListViewType.NO_RESULT}
-                title={APP_LIST_EMPTY_STATE_MESSAGING.noAppsFound}
-                message={APP_LIST_EMPTY_STATE_MESSAGING.noAppsFoundInfoText}
-                buttonLabel={ClearFiltersLabel}
-                clickHandler={clearAllFilters}
-            >
-                {showTipToSelectCluster && (
-                    <div className="mt-18">
-                        <p
-                            className="bcb-1 cn-9 fs-13 pt-10 pb-10 pl-16 pr-16 eb-2 bw-1 br-4 cluster-tip flex left top"
-                            style={{ width: '300px' }}
-                        >
-                            <span>
-                                <InfoFill className="icon-dim-20" />
-                            </span>
-                            <div className="ml-12 cn-9" style={{ textAlign: 'start' }}>
-                                <span className="fw-6">Tip </span>
-                                <span>{APP_LIST_EMPTY_STATE_MESSAGING.selectCluster}</span>
-                            </div>
-                        </p>
-                    </div>
-                )}
-            </Empty>
-        )
-    }
-
     function askToClearFiltersWithSelectClusterTip() {
-        return <div className="flex column">{askToClearFilters(true)}</div>
+        return (
+            <div className="flex column">
+                <AskToClearFilters clearAllFilters={clearAllFilters} showTipToSelectCluster />
+            </div>
+        )
     }
 
     function askToConnectAClusterForNoResult() {
@@ -605,7 +578,7 @@ const HelmAppList = ({
             return askToConnectAClusterForNoResult()
         }
         if (_isAnyFilterationApplied()) {
-            return askToClearFilters()
+            return <AskToClearFilters clearAllFilters={clearAllFilters} />
         }
         if (!clusterIdsCsv) {
             return askToSelectClusterId()
