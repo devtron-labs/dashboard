@@ -161,7 +161,7 @@ export default function ChartGroupAdvanceDeploy() {
     return (
         <div className="chart-group-advance-deploy-page">
             <PageHeader isBreadcrumbs breadCrumbs={renderAdvanceBreadcrumb} />
-            <div className="chart-group-advance-deploy__body">
+            <div className="chart-group-advance-deploy__body flexbox-col dc__overflow-auto">
                 {!deployed && (
                     <Prompt
                         when={!isLeavingPageAllowed}

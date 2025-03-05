@@ -356,6 +356,13 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     loadAppListOptions = (inputValue: string) => appListOptions(inputValue, this.props.isJobView)
 
     renderBodySection = (): JSX.Element => {
+        if (this.state.view === ViewType.LOADING) {
+            return <Progressing pageLoader />
+        }
+        if (this.state.view === ViewType.ERROR) {
+            return <Reload />
+        }
+
         const errorObject = [
             this.rules.appName(this.state.form.appName),
             this.rules.team(this.state.form.projectId),
@@ -365,7 +372,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         const showError = this.state.showErrors
         const { appNameErrors } = this.state
         return (
-            <div className="scrollable-content p-20">
+            <div className="scrollable-content dc__overflow-auto p-20">
                 <div className="form__row">
                     <CustomInput
                         data-testid={`${this.props.isJobView ? 'job' : 'app'}-name-textbox`}
@@ -506,7 +513,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
 
     renderFooterSection = (): JSX.Element => {
         return (
-            <div className="w-800 dc__border-top flex right px-20 py-16 dc__position-fixed dc__bottom-0">
+            <div className="w-800 dc__border-top flex right px-20 py-16">
                 <Button
                     onClick={this.createApp}
                     dataTestId={`${this.state.form.appCreationType === AppCreationType.Existing ? 'clone' : 'create'}-${
@@ -522,27 +529,18 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         )
     }
 
-    renderPageDetails = (): JSX.Element => {
-        if (this.state.view === ViewType.LOADING) {
-            return <Progressing pageLoader />
-        }
-        if (this.state.view === ViewType.ERROR) {
-            return <Reload />
-        }
-        return (
-            <>
-                {this.renderBodySection()}
-                {this.renderFooterSection()}
-            </>
-        )
-    }
-
     render() {
         return (
             <Drawer position="right" width="800px">
-                <div className="h-100 bg__primary create-app-container" ref={this.createAppRef}>
-                    {this.renderHeaderSection()}
-                    {this.renderPageDetails()}
+                <div
+                    className="flexbox-col h-100 bg__primary dc__content-space create-app-container"
+                    ref={this.createAppRef}
+                >
+                    <div className='flexbox-col flex-grow-1 dc__overflow-hidden' >
+                        {this.renderHeaderSection()}
+                        {this.renderBodySection()}
+                    </div>
+                    {this.renderFooterSection()}
                 </div>
             </Drawer>
         )

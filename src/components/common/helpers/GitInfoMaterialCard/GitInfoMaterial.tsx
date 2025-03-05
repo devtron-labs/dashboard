@@ -152,7 +152,7 @@ export const GitInfoMaterial = ({
         }))
 
         return (
-            <div className="material-list dc__overflow-hidden" style={{ height: 'calc(100vh - 136px)' }}>
+            <div className="material-list dc__overflow-hidden flexbox-col flex-grow-1 mh-0">
                 {RuntimeParamTabs ? (
                     <div className="flex pt-12 pb-12 pl-16 pr-16 dc__gap-4">
                         <RuntimeParamTabs
@@ -441,7 +441,7 @@ export const GitInfoMaterial = ({
                     isJobView={isJobCI}
                 />
             ) : (
-                <div className={`m-lr-0 ${fromBulkCITrigger ? '' : 'flexbox'}`}>
+                <div className={`${fromBulkCITrigger ? '' : 'flexbox flex-grow-1 mh-0'}`}>
                     {isBulkCIWebhook ? (
                         renderWebhookContent()
                     ) : (

@@ -78,22 +78,11 @@
 
 .rotate-pods-container {
     .response-list-container {
-        max-height: calc(100vh - 120px);
-
         .response-row {
             display: grid;
             grid-template-columns: 320px 150px 380px;
             grid-column-gap: 16px;
         }
-    }
-}
-
-.restart-modal-width {
-    width: 1024px;
-
-    &.full-height {
-        z-index: 1;
-        height: calc(100vh - 55px);
     }
 }
 

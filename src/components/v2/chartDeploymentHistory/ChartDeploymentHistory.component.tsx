@@ -733,7 +733,7 @@ const ChartDeploymentHistory = ({
     function renderData() {
         if (errorResponseCode && errorResponseCode !== 404) {
             return (
-                <div className="dc__loading-wrapper">
+                <div className="flex-grow-1">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )
@@ -789,7 +789,7 @@ const ChartDeploymentHistory = ({
     return (
         <>
             {isLoading ? (
-                <div className="dc__loading-wrapper">
+                <div className="flex-grow-1">
                     <Progressing pageLoader />
                 </div>
             ) : (

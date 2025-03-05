@@ -45,12 +45,5 @@ export default function JobsEmptyState(props: JobsEmptyProps) {
         return <GenericFilterEmptyState handleClearFilters={props.clickHandler} />
     }
 
-    return (
-        <div
-            className="bg__primary"
-            style={{ height: `calc(100vh - ${props.view === JobListViewType.NO_RESULT ? '146px' : '48px'})` }}
-        >
-            {props.view === JobListViewType.NO_RESULT ? renderNoResultsView() : renderNoJobsView()}
-        </div>
-    )
+    return props.view === JobListViewType.NO_RESULT ? renderNoResultsView() : renderNoJobsView()
 }

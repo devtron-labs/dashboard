@@ -16,8 +16,6 @@
 
 .create-app-container {
     .scrollable-content {
-        height: calc(100vh - 120px);
-        overflow: auto;
 
         .info-container--create-app {
             padding: 10px 12px;
@@ -37,10 +35,5 @@
                 color: var(--N700);
             }
         }
-    }
-
-    .mandatory-tag-key-container {
-        min-width: 345px;
-        width: 345px;
     }
 }

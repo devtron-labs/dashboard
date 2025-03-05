@@ -66,7 +66,7 @@ export default function DeploymentStatusDetailModal({
     return (
         <Drawer position="right" width="1024px">
             <div
-                className="deployment-status-breakdown-modal-container bg__primary"
+                className="deployment-status-breakdown-modal-container flexbox-col h-100"
                 data-testid="deployment-status-drawer"
                 ref={appStatusDetailRef}
             >
@@ -101,7 +101,7 @@ export default function DeploymentStatusDetailModal({
                         </span>
                     </div>
                 </div>
-                <div className="bcn-1 dc__overflow-auto pb-20 deployment-status-breakdown">
+                <div className="bcn-1 flex-grow-1 dc__overflow-auto pb-20">
                     {isLoading ? (
                         <Progressing />
                     ) : (

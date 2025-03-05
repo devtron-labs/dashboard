@@ -414,7 +414,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             return <Progressing pageLoader />
         }
         if (showEmpty) {
-            return <div className="env-empty-state flex w-100">{renderEmpty()}</div>
+            return <div className="flex flex-grow-1 w-100">{renderEmpty()}</div>
         }
         const _filteredAppsIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
         return (
@@ -456,7 +456,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     }
 
     return (
-        <div className="env-details-page h-100vh flexbox-col">
+        <div className="env-details-page h-100 dc__overflow-hidden flexbox-col">
             <EnvHeader
                 envName={envName}
                 setEnvName={setEnvName}

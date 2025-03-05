@@ -14,20 +14,8 @@
  * limitations under the License.
  */
 
-.expand-incoming-payload {
-    height: calc(100vh - 400px);
-}
-
 .empty-payload {
     min-height: 186px;
-}
-
-.payload-wrapper-no-header {
-    height: calc(100vh - 50px);
-}
-
-.payload-wrapper {
-    height: calc(100vh - 130px);
 }
 
 .ci-trigger__webhook-wrapper{

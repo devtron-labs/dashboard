@@ -15,24 +15,12 @@
  */
 
 .env-list {
-    &.no-result-container {
-        height: calc(100vh - 48px);
-        overflow: hidden;
-    }
 
     .env-list-row {
         display: grid;
         grid-template-columns: 20px 250px repeat(3, 200px);
         column-gap: 16px;
     }
-}
-
-.env-empty-state {
-    height: calc(100vh - 48px);
-}
-
-.loading-state {
-    height: calc(100vh - 78px);
 }
 
 .env-compose {

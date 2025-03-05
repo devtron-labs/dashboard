@@ -302,7 +302,7 @@ const EnvironmentOverrideRouter = ({
     const renderEnvsNav = (): JSX.Element => {
         if (environments.length) {
             return (
-                <div className="w-100" style={{ height: 'calc(100% - 60px)' }} data-testid="env-override-list">
+                <div className="w-100" data-testid="env-override-list">
                     {environments.map((env) => {
                         const isApprovalApplicable =
                             envIdToEnvApprovalConfigurationMap?.[env.environmentId]?.isApprovalApplicable

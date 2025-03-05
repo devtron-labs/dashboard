@@ -87,7 +87,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                 </div>
             </div>
             <div className="api-token__list">
-                <div className="api-list__row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pl-20 pr-20 dc__uppercase">
+                <div className="api-list__row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pl-20 pr-20 dc__uppercase dc__position-sticky dc__top-0 bg__primary dc__zi-3">
                     <div />
                     <div>Name</div>
                     <div>Last Used On</div>
@@ -95,7 +95,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                     <div>Expires on</div>
                     <div />
                 </div>
-                <div className="dc__overflow-auto api__list__height dc__position-rel">
+                <div className="dc__overflow-auto dc__position-rel">
                     {!tokenList || tokenList.length === 0
                         ? noMatchingResults()
                         : tokenList.map((list, index) => (

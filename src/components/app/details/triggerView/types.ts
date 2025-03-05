@@ -671,7 +671,6 @@ export interface MaterialSourceProps {
     selectMaterial: (materialId: string, ciPipelineId?: number) => void
     refreshMaterial?: RefreshMaterialType
     ciPipelineId?: number
-    fromTriggerInfo?: boolean
     clearSearch?: (e: any) => void
 }
 

@@ -94,14 +94,14 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
 
     if (isLoading) {
         return (
-            <div className="dc__loading-wrapper">
+            <div className="flex-grow-1">
                 <Progressing pageLoader />
             </div>
         )
     }
     if (errorResponseCode) {
         return (
-            <div className="dc__loading-wrapper">
+            <div className="flex-grow-1">
                 <ErrorScreenManager code={errorResponseCode} />
             </div>
         )

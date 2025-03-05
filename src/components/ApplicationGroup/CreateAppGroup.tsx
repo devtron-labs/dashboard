@@ -184,14 +184,11 @@ export default function CreateAppGroup({
         setAuthorizedAppList(_authorizedAppList)
     }
 
-    const renderEmptyState = (title?: string): JSX.Element => {
+    const renderEmptyState = (): JSX.Element => {
         return (
-            <GenericEmptyState
-                title={title}
-                image={Info}
-                imageClassName="h-20 scn-6"
-                styles={{ height: 'calc(100vh - 420px)' }}
-            />
+            <div className="flex-grow-1">
+                <GenericEmptyState title="No matching results" image={Info} imageClassName="h-20 scn-6" />
+            </div>
         )
     }
 
@@ -210,7 +207,7 @@ export default function CreateAppGroup({
         }
 
         return (
-            <div>
+            <div className='flexbox-col flex-grow-1'>
                 <SearchBar
                     inputProps={{
                         placeholder: `Search ${filterParentTypeMsg}'s`,
@@ -220,9 +217,9 @@ export default function CreateAppGroup({
                     handleEnter={handleAppSearchEnterChange}
                     dataTestId="create-app-group"
                 />
-                <div>
+                <div className='flexbox-col flex-grow-1'>
                     {filteredAuthList.length <= 0 && filteredUnAuthList.length <= 0
-                        ? renderEmptyState('No matching results')
+                        ? renderEmptyState()
                         : filteredAuthList.map((app) => {
                               return (
                                   <div
@@ -273,7 +270,7 @@ export default function CreateAppGroup({
         }
 
         return (
-            <div>
+            <div className='flexbox-col flex-grow-1'>
                 <SearchBar
                     inputProps={{
                         placeholder: `Search ${filterParentTypeMsg}'s`,
@@ -282,9 +279,9 @@ export default function CreateAppGroup({
                     initialSearchText={allAppSearchText}
                     handleEnter={handleAllAppSearchEnterChange}
                 />
-                <div>
+                <div className='flexbox-col flex-grow-1'>
                     {filteredAllApps.length <= 0
-                        ? renderEmptyState('No matching results')
+                        ? renderEmptyState()
                         : filteredAllApps.map((app) => (
                               <ConditionalWrap
                                   condition={unAuthorizedApps.get(app.appName) === true}
@@ -354,7 +351,7 @@ export default function CreateAppGroup({
             return <Progressing pageLoader />
         }
         return (
-            <div className="p-20 bg__primary dc__overflow-auto flex-grow-1">
+            <div className="flexbox-col p-20 bg__primary dc__overflow-auto flex-grow-1">
                 <div className="form__row mb-16">
                     <CustomInput
                         label="Name"
@@ -379,7 +376,7 @@ export default function CreateAppGroup({
                         }
                     />
                 </div>
-                <div>
+                <div className='flexbox-col flex-grow-1'>
                     <div className="dc__border-bottom mb-8">
                         <TabGroup
                             tabs={[

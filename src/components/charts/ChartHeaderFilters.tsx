@@ -163,7 +163,7 @@ const ChartHeaderFilter = ({
     }
 
     return (
-        <div className="filter-column-container">
+        <div className="filter-column-container flexbox-col h-100 dc__overflow-hidden">
             <div className="pb-12 pl-12 pr-12 pt-16">
                 <SearchBar
                     initialSearchText={appStoreName}
@@ -176,7 +176,7 @@ const ChartHeaderFilter = ({
                     dataTestId="chart-store-search-box"
                 />
             </div>
-            <div className="pl-12 pr-12 filter-tab">
+            <div className="pl-12 pr-12 flexbox-col flex-grow-1 dc__overflow-auto">
                 <div className="fs-12 fw-6 ml-8 cn-6 pb-8 pt-8" data-testid="chart-store-view-type-heading">
                     VIEW AS
                 </div>

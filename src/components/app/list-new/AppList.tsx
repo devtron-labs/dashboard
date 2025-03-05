@@ -44,12 +44,11 @@ import {
 import { getCommonAppFilters } from '@Services/service'
 import { Cluster } from '@Services/service.types'
 import { useAppContext } from '../../common'
-import { SERVER_MODE, DOCUMENTATION } from '../../../config'
+import { SERVER_MODE } from '../../../config'
 import HelmAppList from './HelmAppList'
 import { AppListPropType } from '../list/types'
 import { AddNewApp } from '../create/CreateApp'
 import '../list/list.scss'
-import EAEmptyState, { EAEmptyStateType } from '../../common/eaEmptyState/EAEmptyState'
 import { APP_LIST_LOCAL_STORAGE_KEY, APP_LISTING_URLS, FLUX_CD_HELM_RELEASE_LABEL } from './Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import {
@@ -460,16 +459,6 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                     updateDataSyncing={updateDataSyncing}
                     setAppCount={setAppCount}
                 />
-            )}
-            {params.appType === AppListConstants.AppType.DEVTRON_APPS && serverMode === SERVER_MODE.EA_ONLY && (
-                <div style={{ height: 'calc(100vh - 250px)' }}>
-                    <EAEmptyState
-                        title="Create, build, deploy and debug custom apps"
-                        msg="Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI."
-                        stateType={EAEmptyStateType.DEVTRONAPPS}
-                        knowMoreLink={DOCUMENTATION.HOME_PAGE}
-                    />
-                </div>
             )}
             {params.appType === AppListConstants.AppType.HELM_APPS && (
                 <>

@@ -172,13 +172,13 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
     return (
         <>
             {isLoading && (
-                <div className="dc__loading-wrapper">
+                <div className="flex-grow-1">
                     <Progressing pageLoader />
                 </div>
             )}
 
             {!isLoading && errorResponseCode && (
-                <div className="dc__loading-wrapper">
+                <div className="flex-grow-1">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )}

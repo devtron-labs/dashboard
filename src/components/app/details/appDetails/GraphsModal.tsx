@@ -339,7 +339,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
 
         return (
             <VisibleModal className="" close={this.props.close}>
-                <div className="modal__body modal__body--full-screen" onClick={(e) => e.stopPropagation()}>
+                <div className="dc__position-abs dc__top-20 dc__left-20 dc__right-20 dc__bottom-20 dc__overflow-auto bg__primary br-8" onClick={(e) => e.stopPropagation()}>
                     <div className="modal__header p-24 m-0">
                         <h1 className="modal__title mb-0">{this.props.appName}/application metrics</h1>
                         <Close className="icon-dim-20 cursor" onClick={this.props.close} />

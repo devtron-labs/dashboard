@@ -157,7 +157,7 @@ export const RestartStatusListDrawer = ({
         }
 
         return (
-            <div className="drawer-body-section__status-drawer dc__overflow-auto">
+            <div className="dc__overflow-auto">
                 {Object.keys(bulkRotatePodsMap as BulkRotatePodsMap)
                     .filter((_appId) => bulkRotatePodsMap[_appId].isChecked)
                     .map((_appId: string) => (
@@ -245,7 +245,7 @@ export const RestartStatusListDrawer = ({
     }
 
     return (
-        <div className="bulk-restart-workload-wrapper" data-testid={DATA_TEST_IDS.WORKLOAD_RESTART_MODAL}>
+        <div className="flex-grow-1 dc__overflow-auto" data-testid={DATA_TEST_IDS.WORKLOAD_RESTART_MODAL}>
             {renderWorkloadStatusTableHeader()}
             {renderWorkloadStatusItems()}
         </div>

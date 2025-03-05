@@ -148,15 +148,6 @@
     }
 }
 
-.app-compose__main {
-    .save-build-configuration {
-        bottom: 0;
-        right: 0;
-        padding: 12px 20px;
-        width: calc(100% - 255px);
-    }
-}
-
 .modal__body {
     &.modal__config-override-diff {
         width: 100%;

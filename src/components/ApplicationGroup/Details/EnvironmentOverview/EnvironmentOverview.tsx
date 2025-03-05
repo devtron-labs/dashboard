@@ -264,7 +264,7 @@ export default function EnvironmentOverview({
 
     if (loading) {
         return (
-            <div className="loading-state">
+            <div className="flex-grow-1">
                 <Progressing pageLoader />
             </div>
         )

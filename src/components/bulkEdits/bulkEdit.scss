@@ -14,76 +14,38 @@
  * limitations under the License.
  */
 
-.updated-container {
-    height: 'calc(100vh - 100px)';
-    min-height: 0;
-    display: grid;
-    grid-template-rows: 48px 1fr;
-}
 
-.updated-container--sample {
-    height: calc(100vh - 150px);
-    align-items: flex-start;
-}
-
-.right-readme {
-    height: calc(100vh - 97px);
-    overflow: auto;
-}
-
-.bulk-desciription {
-    box-shadow: inset 0 -1px 0 0 var(--N200);
-    background-color: var(--V100);
-}
-
-.border-top {
-    border-top: 1px solid var(--N200);
-}
-
-.bulk-output-drawer {
-    height: auto;
-}
-
-.bulk-output-drawer {
-    .dc__tertiary-tab__radio input:checked ~ .tertiary-output-tab {
-        color: var(--B500);
-        border-bottom: solid 2px var(--B500);
-    }
-}
-
-.height {
-    height: calc(100% - 100px);
-}
-
-.code-editor-readme {
-    display: grid;
-    grid-template-columns: auto auto;
-}
 
 .bulk-container {
-    display: grid;
-    grid-template-columns: 50% 50%;
-    height: calc(100vh - 48px);
-    background-color: var(--bg-primary);
-}
 
-.code-editor-body {
-  height: calc(100vh - 97px);
-  background: var(--bg-primary);
-  .react-monaco-editor-container {
-      min-height: calc(60vh - 97px);
-  }
-}
+    // Editor section
+    .bulk-output-body {
+        letter-spacing: 0.2px;
+        font-family: monospace;
+    }
 
-.bulk-output-body {
-    letter-spacing: 0.2px;
-    height: calc(40vh - 36px);
-    overflow: auto;
-    font-family: monospace;
-}
+    .bulk-output-drawer {
+        .dc__tertiary-tab__radio input:checked~.tertiary-output-tab {
+            color: var(--B500);
+            border-bottom: solid 2px var(--B500);
+        }
+    }
 
-.bulk-run-button {
-    max-height: 32px;
-    min-width: 72px;
-    padding: 0 12px;
+    .code-editor-readme {
+        display: grid;
+        grid-template-columns: auto auto;
+    }
+
+    // Readme Section
+    .deploy-chart__readme-column {
+        .markdown {
+            .table-container {
+                flex-shrink: 0;
+            }
+
+            pre {
+                flex-shrink: 0;
+            }
+        }
+    }
 }

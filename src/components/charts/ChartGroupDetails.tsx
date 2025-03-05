@@ -232,7 +232,7 @@ export default function ChartGroupDetails() {
                 breadCrumbs={renderBreadcrumbs}
                 renderActionButtons={renderChartGroupActionButton}
             />
-            <div className="chart-group-details-page__body">
+            <div className="chart-group-details-page__body flexbox-col dc__overflow-auto">
                 {state.loading && <Progressing pageLoader />}
                 {!state.loading && (
                     <div className="deploy-and-details-view summary-show">
