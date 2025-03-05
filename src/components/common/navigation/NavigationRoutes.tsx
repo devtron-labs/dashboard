@@ -430,7 +430,7 @@ export default function NavigationRoutes() {
         )
     }
     if (pageState === ViewType.ERROR) {
-        return <Reload />
+        return <Reload className="h-100vh" />
     }
     const _isOnboardingPage = isOnboardingPage()
 

@@ -33,14 +33,13 @@ import { ValuesYamlConfirmDialog } from './dialogs/ValuesYamlConfirmDialog'
 import { ReactComponent as LockIcon } from '../../assets/icons/ic-locked.svg'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-alert-triangle.svg'
 import { getSavedValuesListURL } from './charts.helper'
-import { renderAdditionalErrorInfo } from './charts.util'
 
-interface AdvancedConfig extends AdvancedConfigHelpers {
+interface AdvancedConfigProps extends AdvancedConfigHelpers {
     chart: ChartGroupEntry
     index: number
 }
 
-const AdvancedConfig: React.FC<AdvancedConfig> = ({
+const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
     chart,
     index,
     fetchChartValues,

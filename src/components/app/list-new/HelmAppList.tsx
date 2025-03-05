@@ -519,7 +519,7 @@ const HelmAppList = ({
 
     function askToSelectClusterId() {
         return (
-            <div className="dc__position-rel" style={{ height: 'calc(100vh - 150px)' }}>
+            <div className="dc__position-rel flex-grow-1">
                 <GenericEmptyState
                     image={NoClusterSelectImage}
                     title={APP_LIST_EMPTY_STATE_MESSAGING.heading}
@@ -571,7 +571,7 @@ const HelmAppList = ({
             </Link>
         )
         return (
-            <div className="dc__position-rel" style={{ height: 'calc(100vh - 150px)' }}>
+            <div className="dc__position-rel flex-grow-1">
                 <GenericEmptyState
                     image={noChartInClusterImage}
                     title={APP_LIST_EMPTY_STATE_MESSAGING.noHelmChartsFound}

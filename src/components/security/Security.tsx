@@ -100,14 +100,12 @@ export class Security extends Component<SecurityProps> {
 
     renderEmptyStateForEAOnlyMode = () => {
         return (
-            <div style={{ height: 'calc(100vh - 250px)' }}>
-                <EAEmptyState
-                    title="Integrated DevSecOps"
-                    msg="Enable security scanning to identify vulnerabilities in your container and protect from external attacks. Manage security policies to allow or block specific vulnerabilities."
-                    stateType={EAEmptyStateType.SECURITY}
-                    knowMoreLink={DOCUMENTATION.SECURITY}
-                />
-            </div>
+            <EAEmptyState
+                title="Integrated DevSecOps"
+                msg="Enable security scanning to identify vulnerabilities in your container and protect from external attacks. Manage security policies to allow or block specific vulnerabilities."
+                stateType={EAEmptyStateType.SECURITY}
+                knowMoreLink={DOCUMENTATION.SECURITY}
+            />
         )
     }
 

@@ -165,9 +165,9 @@
 
     .hover-class {
         &:hover {
-            background-color: var(--bg-hover);
+            background-color: var(--bg-hover-opaque);
             .sticky-column {
-                background-color: var(--bg-hover);
+                background-color: var(--bg-hover-opaque);
             }
         }
     }

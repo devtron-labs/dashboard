@@ -40,7 +40,7 @@ export class SecurityPoliciesTab extends Component<RouteComponentProps<{}>> {
     render() {
         const { path } = this.props.match
         return (
-            <div className="security-policy">
+            <div className="security-policy flex-grow-1">
                 <div className="dc__secondary-nav">
                     <NavLink
                         to={`${path}/global`}
@@ -79,7 +79,7 @@ export class SecurityPoliciesTab extends Component<RouteComponentProps<{}>> {
                         Check CVE Policy
                     </NavLink>
                 </div>
-                <div className="security-policy__content">{this.renderRouter()}</div>
+                <div className="flexbox-col security-policy__content">{this.renderRouter()}</div>
             </div>
         )
     }

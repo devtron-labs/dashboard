@@ -1493,7 +1493,7 @@ const ChartValuesView = ({
 
     const renderChartValuesEditor = () => {
         return (
-            <div className="chart-values-view__editor mw-none">
+            <div className="chart-values-view__editor mw-none dc__overflow-auto">
                 {commonState.activeTab === 'manifest' && commonState.valuesEditorError ? (
                     <GenericEmptyState title="" subTitle={commonState.valuesEditorError} />
                 ) : (
