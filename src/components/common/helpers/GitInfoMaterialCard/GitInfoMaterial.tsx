@@ -344,7 +344,7 @@ export const GitInfoMaterial = ({
 
         if (materialError || !anyCommit) {
             return (
-                <div className="select-material select-material--trigger-view">
+                <div className="select-material">
                     {showHeader && renderMaterialHistoryHeader(_selectedMaterial)}
 
                     <div className="select-material__empty-state-container flex dc__position-rel">
@@ -376,7 +376,7 @@ export const GitInfoMaterial = ({
 
         if (RuntimeParameters && currentSidebarTab === CIMaterialSidebarType.PARAMETERS) {
             return (
-                <div className="bg__tertiary dc__overflow-auto flex-1 select-material--trigger-view p-16">
+                <div className="bg__tertiary dc__overflow-auto flex-1 p-16">
                     <RuntimeParameters
                         // Have to add key for appId since key value config would not be updated incase of app change
                         key={`runtime-parameters-${appId}`}
@@ -393,7 +393,7 @@ export const GitInfoMaterial = ({
         }
 
         return (
-            <div className="select-material select-material--trigger-view">
+            <div className="select-material">
                 {showHeader && renderMaterialHistoryHeader(selectedMaterial)}
                 {renderWebhookHeader()}
                 <div className="py-12 px-16">

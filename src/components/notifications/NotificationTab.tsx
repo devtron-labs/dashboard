@@ -495,7 +495,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     renderOptions() {
         if (this.state.headerCheckbox.isChecked) {
             return (
-                <div className="flex left dc__gap-16 mt-20 mb-20">
+                <div className="flex left dc__gap-16">
                     {/* NOTE: Need to replace all the icons with the new Button component all together */}
                     <Tippy placement="top" content="Delete">
                         <div className="flex">
