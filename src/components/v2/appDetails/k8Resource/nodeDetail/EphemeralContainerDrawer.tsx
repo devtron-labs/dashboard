@@ -28,6 +28,8 @@ import {
     TabGroup,
     SelectPicker,
     ComponentSizeType,
+    MODES,
+    isCodeMirrorEnabled,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
@@ -373,22 +375,31 @@ const EphemeralContainerDrawer = ({
                 ? ephemeralFormAdvanced.advancedData.manifest
                 : YAMLStringify(sampleConfig?.sampleManifest)
         return (
-            <div className="mr-24 mb-24 code-editor-container">
+            <div className="flex-grow-1 flexbox-col">
                 <CodeEditor
-                    value={codeEditorBody}
-                    mode="yaml"
-                    onChange={handleManifestAdvanceConfiguration}
+                    mode={MODES.YAML}
                     readOnly={switchManifest === SwitchItemValues.Sample}
-                    height="100%"
+                    codeEditorProps={{
+                        value: codeEditorBody,
+                        onChange: handleManifestAdvanceConfiguration,
+                        height: '100%',
+                    }}
+                    codeMirrorProps={{
+                        value: codeEditorBody,
+                        onChange: handleManifestAdvanceConfiguration,
+                        height: 'fitToParent',
+                    }}
                 >
-                    <CodeEditor.Header>
+                    <CodeEditor.Header className="code-editor__header flex dc__content-space dc__gap-8 bcn-1 dc__border-bottom">
                         <Switch value={switchManifest} name="tab" onChange={handleManifestTabChange}>
                             <SwitchItem value={SwitchItemValues.Configuration}> Manifest </SwitchItem>
                             <SwitchItem value={SwitchItemValues.Sample}> Sample manifest</SwitchItem>
                         </Switch>
-                        <div className="w-70 ml-8">
-                            <CodeEditor.ValidationError />
-                        </div>
+                        {!isCodeMirrorEnabled() && (
+                            <div style={{ flex: '0 0 60%' }}>
+                                <CodeEditor.ValidationError />
+                            </div>
+                        )}
                     </CodeEditor.Header>
                 </CodeEditor>
             </div>

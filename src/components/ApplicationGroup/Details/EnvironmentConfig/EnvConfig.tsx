@@ -137,7 +137,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
 
     if (loading || !envAppList.length || isAppNotPresentInEnv) {
         return (
-            <div className="loading-state">
+            <div className="flex-grow-1">
                 <Progressing pageLoader />
             </div>
         )

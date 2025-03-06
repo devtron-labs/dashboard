@@ -178,13 +178,16 @@ export interface WorkflowsResponseType {
     filteredCIPipelines: Map<string, any>
 }
 
-export interface TriggerResponseModalType {
-    closePopup: (e) => void
+export interface TriggerResponseModalBodyProps {
     responseList: ResponseRowType[]
     isLoading: boolean
-    onClickRetryBuild: (appsToRetry: Record<string, boolean>) => void
     isVirtualEnv?: boolean
     envName?: string
+}
+
+export interface TriggerResponseModalFooterProps extends Pick<TriggerResponseModalBodyProps, 'isLoading' | 'responseList'> {
+    onClickRetryBuild: (appsToRetry: Record<string, boolean>) => void
+    closePopup: (e) => void
 }
 
 export interface TriggerModalRowType {

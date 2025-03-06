@@ -23,6 +23,8 @@ import {
     CustomInput,
     CodeEditor,
     MarkDown,
+    MODES,
+    isCodeMirrorEnabled,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import { Select, mapByKey, useKeyDown, Info, Pencil } from '../common'
@@ -188,7 +190,7 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
 
     return (
         <>
-            <div className="advanced-config flex">
+            <div className="advanced-config flexbox flex-grow-1">
                 <form action="" className="advanced-config__form">
                     <h1 className="form__title form__title--mb-24" data-testid="advanced-option-heading">
                         {chartName}
@@ -372,20 +374,29 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
                             </div>
                         </div>
                     )}
-                    <div className="code-editor-container" data-testid="code-editor-code-editor-container">
+                    <CodeEditor.Container>
                         <CodeEditor
-                            value={valuesYaml}
-                            noParsing
-                            loading={loading}
-                            readOnly={!handleValuesYaml}
-                            onChange={
-                                handleValuesYaml
+                            codeEditorProps={{
+                                value: valuesYaml,
+                                onChange: handleValuesYaml
                                     ? (valuesYaml) => {
                                           handleValuesYaml(index, valuesYaml)
                                       }
-                                    : () => {}
-                            }
-                            mode="yaml"
+                                    : () => {},
+                            }}
+                            codeMirrorProps={{
+                                value: valuesYaml,
+                                height: 'auto',
+                                onChange: handleValuesYaml
+                                    ? (valuesYaml) => {
+                                          handleValuesYaml(index, valuesYaml)
+                                      }
+                                    : () => {},
+                            }}
+                            noParsing
+                            loading={loading}
+                            readOnly={!handleValuesYaml}
+                            mode={MODES.YAML}
                         >
                             <CodeEditor.Header>
                                 <div className="flex dc__content-space w-100">
@@ -419,7 +430,7 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
                                 <CodeEditor.Warning text="The values configuration was created for a different chart version. Review the diff before continuing." />
                             ) : null}
                         </CodeEditor>
-                    </div>
+                    </CodeEditor.Container>
                 </form>
             </div>
             {showReadme && (
@@ -489,12 +500,19 @@ const ReadmeCharts = ({ readme, valuesYaml, onChange, handleClose, chart }) => {
                     </div>
                     <div className="right column">
                         <CodeEditor
-                            value={valuesYaml}
-                            mode="yaml"
+                            mode={MODES.YAML}
                             noParsing
                             readOnly={!onChange}
-                            height="100%"
-                            onChange={onChange ? onChange : () => {}}
+                            codeEditorProps={{
+                                value: valuesYaml,
+                                height: '100%',
+                                onChange: onChange ? onChange : () => {},
+                            }}
+                            codeMirrorProps={{
+                                value: valuesYaml,
+                                height: '100%',
+                                onChange: onChange ? onChange : () => {},
+                            }}
                         />
                     </div>
                 </div>
@@ -632,17 +650,34 @@ const ValuesDiffViewer = ({
                         <Pencil style={{ marginLeft: 'auto' }} />
                     </h5>
                 </div>
-                <div className="readme-config--body" style={{ gridTemplateColumns: '1fr' }}>
+                <div
+                    {...(isCodeMirrorEnabled()
+                        ? {
+                              className: 'mw-none mh-0',
+                          }
+                        : {
+                              className: 'readme-config--body',
+                              style: { gridTemplateColumns: '1fr' },
+                          })}
+                >
                     <CodeEditor
-                        defaultValue={originalValuesYaml}
-                        value={valuesYaml}
-                        mode="yaml"
+                        mode={MODES.YAML}
                         noParsing
                         loading={loading && !originalValuesYaml}
                         readOnly={!onChange}
-                        height="100%"
                         diffView
-                        onChange={onChange ? (valuesYaml) => onChange(valuesYaml) : () => {}}
+                        codeEditorProps={{
+                            value: valuesYaml,
+                            defaultValue: originalValuesYaml,
+                            height: '100%',
+                            onChange: onChange ? (valuesYaml) => onChange(valuesYaml) : () => {},
+                        }}
+                        codeMirrorProps={{
+                            modifiedValue: valuesYaml,
+                            originalValue: originalValuesYaml,
+                            height: '100%',
+                            onModifiedValueChange: onChange ? (valuesYaml) => onChange(valuesYaml) : () => {},
+                        }}
                     />
                 </div>
             </div>

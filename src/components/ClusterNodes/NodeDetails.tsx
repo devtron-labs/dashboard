@@ -36,6 +36,7 @@ import {
     ResourceDetail,
     CodeEditorThemesKeys,
     noop,
+    AppThemeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
 import YAML from 'yaml'
@@ -924,11 +925,32 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                     defaultValue={(nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || ''}
                     height="0"
                     readOnly={!isEdit}
-                    theme={CodeEditorThemesKeys.vsDarkDT}
                     diffView={isReviewState}
-                    onChange={handleEditorValueChange}
                     mode={MODES.YAML}
                     noParsing
+                    codeEditorProps={{
+                        theme: CodeEditorThemesKeys.vsDarkDT,
+                        value: modifiedManifest,
+                        defaultValue: (nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || '',
+                        height: '0',
+                        onChange: handleEditorValueChange,
+                    }}
+                    codeMirrorProps={{
+                        theme: AppThemeType.dark,
+                        ...(isReviewState
+                            ? {
+                                  diffView: true,
+                                  originalValue: (nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || '',
+                                  modifiedValue: modifiedManifest,
+                                  onModifiedValueChange: handleEditorValueChange,
+                              }
+                            : {
+                                  diffView: false,
+                                  value: modifiedManifest,
+                                  onChange: handleEditorValueChange,
+                              }),
+                        height: 'fitToParent',
+                    }}
                 >
                     {isReviewState && isShowWarning && (
                         <CodeEditor.Warning

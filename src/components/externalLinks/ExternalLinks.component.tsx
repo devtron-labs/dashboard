@@ -385,7 +385,7 @@ export const NodeLevelExternalLinks = ({
 
     return (
         nodeLevelExternalLinks.length > 0 && (
-            <div className={`node-level__external-links flex column${addExtraSpace ? ' mr-4' : ''}`}>
+            <div className={`flex column${addExtraSpace ? ' mr-4' : ''}`}>
                 <SelectPicker
                     inputId={`${podName}-external-links`}
                     name={`${podName}-external-links`}

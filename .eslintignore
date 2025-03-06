@@ -33,11 +33,7 @@ src/components/ApplicationGroup/Details/EnvironmentOverview/HibernateStatusRow.t
 src/components/ApplicationGroup/Details/EnvironmentOverview/__test__/EnvironmentOverview.test.tsx
 src/components/ApplicationGroup/Details/TriggerView/BulkCDTrigger.tsx
 src/components/ApplicationGroup/Details/TriggerView/BulkCITrigger.tsx
-src/components/ApplicationGroup/Details/TriggerView/BulkSourceChange.tsx
 src/components/ApplicationGroup/Details/TriggerView/EnvTriggerView.tsx
-src/components/ApplicationGroup/Details/TriggerView/SourceUpdateResponseModal.tsx
-src/components/ApplicationGroup/Details/TriggerView/TriggerModalTableRow.tsx
-src/components/ApplicationGroup/Details/TriggerView/TriggerResponseModal.tsx
 src/components/ApplicationGroup/SearchBar.tsx
 src/components/CIPipelineN/AdvancedConfigOptions.tsx
 src/components/CIPipelineN/Build.tsx
@@ -170,7 +166,6 @@ src/components/charts/charts.util.tsx
 src/components/charts/dialogs/ValuesYamlConfirmDialog.tsx
 src/components/charts/discoverChartDetail/About.tsx
 src/components/charts/discoverChartDetail/ChartDeploymentList.tsx
-src/components/charts/discoverChartDetail/ChartVersionSelectorModal.tsx
 src/components/charts/discoverChartDetail/DiscoverChartDetails.tsx
 src/components/charts/list/ChartGroup.tsx
 src/components/charts/list/ChartListPopUp.tsx

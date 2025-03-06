@@ -303,6 +303,8 @@
     margin: 0 auto;
     padding: 24px 87px;
     background-color: var(--bg-primary);
+    min-height: 100%;
+    display: flex;
 
     .half {
         width: 50%;
@@ -310,10 +312,6 @@
         &:nth-child(2) {
             margin-left: 20px;
         }
-    }
-
-    .code-editor-container .react-monaco-editor-container {
-        min-height: 450px;
     }
 }
 

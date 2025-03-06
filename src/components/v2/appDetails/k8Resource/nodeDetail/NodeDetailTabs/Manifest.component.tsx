@@ -36,6 +36,7 @@ import {
     InfoColourBar,
     logExceptionToSentry,
     CodeEditorThemesKeys,
+    AppThemeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
@@ -696,18 +697,37 @@ const ManifestComponent = ({
 
         return (
             <CodeEditor
-                defaultValue={showManifestCompareView && desiredManifest}
                 cleanData={showManifestCompareView}
                 diffView={showManifestCompareView}
-                theme={CodeEditorThemesKeys.vsDarkDT}
-                height={isResourceBrowserView ? '0' : 'calc(100vh - 77px)'}
-                value={getCodeEditorValue()}
                 mode={MODES.YAML}
                 readOnly={isReadOnlyView}
-                onChange={handleEditorValueChange}
                 loading={loading}
                 customLoader={<MessageUI msg={loadingMsg} icon={MsgUIType.LOADING} size={24} />}
-                focus={isEditMode}
+                codeEditorProps={{
+                    theme: CodeEditorThemesKeys.vsDarkDT,
+                    value: getCodeEditorValue(),
+                    defaultValue: showManifestCompareView && desiredManifest,
+                    onChange: handleEditorValueChange,
+                    focus: isEditMode,
+                    height: '100%',
+                }}
+                codeMirrorProps={{
+                    theme: AppThemeType.dark,
+                    height: '100%',
+                    ...(showManifestCompareView
+                        ? {
+                            diffView: true,
+                            originalValue: desiredManifest,
+                            modifiedValue: getCodeEditorValue(),
+                            onModifiedValueChange: handleEditorValueChange,
+                        }
+                        : {
+                            diffView: false,
+                            value: getCodeEditorValue(),
+                            onChange: handleEditorValueChange,
+                            autoFocus: isEditMode,
+                        }),
+                }}
             >
                 {renderEditorInfo(true)}
 
