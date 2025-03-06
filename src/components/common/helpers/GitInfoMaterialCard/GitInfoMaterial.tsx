@@ -410,7 +410,9 @@ export const GitInfoMaterial = ({
     const nodeType: CommonNodeAttr['type'] = 'CI'
 
     const renderWebhookContent = () => (
-        <div className={` ${fromBulkCITrigger ? 'dc__position-fixed bg__primary env-modal-width full-height' : ''}`}>
+        <div
+            className={` ${fromBulkCITrigger ? 'dc__position-fixed bg__primary env-modal-width full-height w-100' : ''}`}
+        >
             <CiWebhookModal
                 webhookPayloads={webhookPayloads}
                 ciPipelineMaterialId={material[0].id}

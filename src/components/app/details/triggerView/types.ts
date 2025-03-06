@@ -724,11 +724,9 @@ export interface CIWebhookPayload {
 export interface WebhookReceivedPayloadModalType
     extends Pick<TriggerViewState, 'webhookPayloads' | 'workflowId' | 'isWebhookPayloadLoading'>,
         Pick<CIMaterialProps, 'getWebhookPayload'> {
-    fromBulkCITrigger?: boolean
     title: string
     material: CIMaterialType[]
     pipelineId: string
-    fromAppGrouping?: boolean
     isJobView?: boolean
     appId: string
     isBulkCIWebhook?: boolean

@@ -26,7 +26,6 @@ export interface BulkSourceChangeProps {
 }
 
 export interface SourceUpdateResponseModalProps {
-    closePopup: any
     responseList: any
     isLoading: any
 }
