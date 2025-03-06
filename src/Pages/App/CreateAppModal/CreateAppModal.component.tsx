@@ -144,7 +144,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                 .every((key) => !updatedFormErrorState[key]),
             invalidLabels,
             labelTags,
-            invalidWorkFlow: updatedFormErrorState.workflowConfig,
+            invalidWorkFlow: Object.values(updatedFormErrorState.workflowConfig).some((value) => !!value),
         }
     }
 
@@ -196,7 +196,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                                   }))
                                 : value.data.cd,
                         }
-                        updatedFormErrorState.workflowConfig = value.isError
+                        updatedFormErrorState.workflowConfig = value.workflowIdToErrorMessageMap
                         break
                     }
                     case CreateAppFormStateActionType.updateTemplateConfig:
@@ -270,12 +270,22 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
     const handleCreateApp = async () => {
         const { isFormValid, invalidLabels, labelTags, invalidWorkFlow } = validateForm()
 
-        if (isCreationMethodTemplate && !formState.templateConfig?.templateId) {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Please select a template to create app',
-            })
-            return
+        if (isCreationMethodTemplate) {
+            if (!formState.templateConfig?.templateId) {
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: 'Please select a template to create app',
+                })
+                return
+            }
+
+            if (invalidWorkFlow) {
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: Object.values(formErrorState.workflowConfig)[0],
+                })
+                return
+            }
         }
 
         if (!isFormValid || invalidLabels) {
@@ -284,14 +294,6 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                 description: invalidLabels
                     ? 'Some required fields in tags are missing or invalid'
                     : REQUIRED_FIELDS_MISSING,
-            })
-            return
-        }
-
-        if (invalidWorkFlow) {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Invalid Workflow!',
             })
             return
         }
@@ -414,6 +416,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                                                 formState={formState}
                                                 isJobView={isJobView}
                                                 handleFormStateChange={handleFormStateChange}
+                                                formErrorState={formErrorState}
                                             />
                                         </div>
                                     </div>

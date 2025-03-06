@@ -292,6 +292,7 @@ const getEnvironmentCDNodesMap = (nodes: Record<string, GraphVisualizerNode[]>) 
 
 export const getValidatedNodes = (nodes: Record<string, GraphVisualizerNode[]>) => {
     const validatedNodes = nodes
+    const workflowIdToErrorMessageMap: Record<string, string> = {}
 
     const cdNodesWithDuplicateEnv = Array.from(getEnvironmentCDNodesMap(validatedNodes).values())
         .filter((cdNodes) => cdNodes.length > 1)
@@ -302,6 +303,11 @@ export const getValidatedNodes = (nodes: Record<string, GraphVisualizerNode[]>) 
             const errorNode = cdNodesWithDuplicateEnv.find((duplicateEnvNode) => duplicateEnvNode.id === node.id)
 
             if (node.type === 'dropdownNode') {
+                if (errorNode) {
+                    workflowIdToErrorMessageMap[workflowId] =
+                        'Multiple deployment pipelines cannot have same environment'
+                }
+
                 return errorNode
                     ? {
                           ...node,
@@ -325,5 +331,5 @@ export const getValidatedNodes = (nodes: Record<string, GraphVisualizerNode[]>) 
         })
     })
 
-    return { validatedNodes, isValid: !cdNodesWithDuplicateEnv.length }
+    return { validatedNodes, workflowIdToErrorMessageMap }
 }
