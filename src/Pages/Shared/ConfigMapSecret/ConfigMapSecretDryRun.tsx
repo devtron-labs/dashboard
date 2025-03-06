@@ -195,13 +195,12 @@ export const ConfigMapSecretDryRun = ({
                     areScopeVariablesResolving={areScopeVariablesResolving}
                     fallbackMergeStrategy={DEFAULT_MERGE_STRATEGY}
                 />
-                <div className="px-16 pb-16">
-                    {renderExternalInfo(
-                        dryRunConfigMapSecretData.externalType,
-                        dryRunConfigMapSecretData.external,
-                        componentType,
-                    )}
-                </div>
+                {renderExternalInfo(
+                    dryRunConfigMapSecretData.externalType,
+                    dryRunConfigMapSecretData.external,
+                    componentType,
+                    'mr-16 ml-16',
+                )}
             </>
         )
     }
@@ -232,7 +231,7 @@ export const ConfigMapSecretDryRun = ({
                     />
                 </div>
             </div>
-            <div className="flex-grow-1 dc__overflow-auto">{renderLHSContent()}</div>
+            {renderLHSContent()}
         </div>
     )
 
@@ -252,9 +251,18 @@ export const ConfigMapSecretDryRun = ({
                     reload: reloadConfigMapSecretManifest,
                 }}
             >
-                <div className="flex-grow-1 dc__overflow-auto">
-                    <CodeEditor value={configMapSecretManifest?.manifest} height="100%" mode={MODES.YAML} readOnly />
-                </div>
+                <CodeEditor
+                    mode={MODES.YAML}
+                    readOnly
+                    codeEditorProps={{
+                        value: configMapSecretManifest?.manifest,
+                        height: '100%',
+                    }}
+                    codeMirrorProps={{
+                        value: configMapSecretManifest?.manifest,
+                        height: 'fitToParent',
+                    }}
+                />
             </APIResponseHandler>
         </div>
     )

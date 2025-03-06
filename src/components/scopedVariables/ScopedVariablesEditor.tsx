@@ -26,6 +26,7 @@ import {
     ComponentSizeType,
     ButtonVariantType,
     ButtonStyleType,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Descriptor from './Descriptor'
 import { parseYAMLStringToObj, parseIntoYAMLString, sortVariables } from './utils'
@@ -204,33 +205,50 @@ export default function ScopedVariablesEditor({
                         />
                     )}
 
-                    {showSaveView && (
-                        <div className="bcn-1 flexbox dc__content-space w-100 h-32 dc__align-items-center">
-                            <div
-                                className="dc__border-right fs-12 fw-6 cn-7 pt-8 pb-8 pl-12 pr-12 flexbox"
-                                style={{ width: '48.5%' }}
-                            >
-                                Last Saved File
-                            </div>
-                            <div className="fs-12 fw-6 cn-7 flex-grow-1 dc__gap-4 flexbox pt-8 pb-8 pl-12 pr-12">
-                                <div className="flex">
-                                    <ICPencil className="icon-dim-16" />
-                                </div>
-                                Edit File
-                            </div>
-                        </div>
-                    )}
-
                     <CodeEditor
-                        mode="yaml"
-                        value={editorData}
+                        mode={MODES.YAML}
                         noParsing
                         diffView={showSaveView}
-                        defaultValue={savedScopedVariables || ''}
-                        height="100%"
-                        onChange={handleEditorChange}
-                        validatorSchema={jsonSchema}
-                    />
+                        codeEditorProps={{
+                            value: editorData,
+                            defaultValue: savedScopedVariables || '',
+                            height: '100%',
+                            onChange: handleEditorChange,
+                            validatorSchema: jsonSchema,
+                        }}
+                        codeMirrorProps={{
+                            height: 'fitToParent',
+                            ...(showSaveView
+                                ? {
+                                      diffView: true,
+                                      originalValue: savedScopedVariables || '',
+                                      modifiedValue: editorData,
+                                      onModifiedValueChange: handleEditorChange,
+                                  }
+                                : {
+                                      diffView: false,
+                                      value: editorData,
+                                      onChange: handleEditorChange,
+                                      validatorSchema: jsonSchema,
+                                  }),
+                        }}
+                    >
+                        {showSaveView && (
+                            <CodeEditor.Header
+                                hideDefaultSplitHeader
+                                className="bg__tertiary w-100 h-32 dc__grid-half vertical-divider"
+                                diffViewWidth
+                            >
+                                <div className="fs-12 fw-6 cn-7 pt-8 pb-8 pl-12 pr-12 flexbox">Last Saved File</div>
+                                <div className="fs-12 fw-6 cn-7 flex-grow-1 dc__gap-4 flexbox pt-8 pb-8 pl-12 pr-12">
+                                    <div className="flex">
+                                        <ICPencil className="icon-dim-16" />
+                                    </div>
+                                    Edit File
+                                </div>
+                            </CodeEditor.Header>
+                        )}
+                    </CodeEditor>
 
                     <div className="flexbox pt-13 pb-13 pl-12 pr-12 bg__primary dc__border-top dc__content-end dc__align-items-center dc__align-self-stretch dc__gap-12">
                         <button

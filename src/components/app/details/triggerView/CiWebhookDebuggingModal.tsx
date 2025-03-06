@@ -31,6 +31,7 @@ import {
     getUrlWithSearchParams,
     Tooltip,
     Icon,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
@@ -253,7 +254,18 @@ export const CiWebhookModal = ({
                 <div className="fw-6">Payload</div>
                 <ClipboardButton content={_value} rootClassName="p-4 dc__visible-hover--child" />
             </div>
-            <CodeEditor value={_value} readOnly mode="yaml" adjustEditorHeightToContent />
+            <CodeEditor
+                readOnly
+                mode={MODES.YAML}
+                codeEditorProps={{
+                    value: _value,
+                    adjustEditorHeightToContent: true,
+                }}
+                codeMirrorProps={{
+                    value: _value,
+                    height: 'fitToParent',
+                }}
+            />
         </div>
     )
 
