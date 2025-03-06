@@ -194,7 +194,7 @@ export default function JobListView(props: JobListViewProps) {
 
     if (props.view === JobListViewType.LOADING) {
         return (
-            <div className="dc__loading-wrapper">
+            <div className="flex-grow-1">
                 <Progressing pageLoader />
             </div>
         )

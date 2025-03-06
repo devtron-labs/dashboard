@@ -1065,19 +1065,6 @@ table.trigger-history {
     }
 }
 
-form.log-search-form {
-    margin-left: auto;
-    width: 100%;
-    margin-right: 20px;
-    border-radius: 4px;
-
-    input {
-        width: calc(100% - 24px);
-        border: unset;
-        padding: 0 8px;
-    }
-}
-
 .toggle-logs {
     width: 24px;
     height: 24px;
@@ -1319,10 +1306,6 @@ table.resource-tree {
     width: 800px;
     padding: 0px;
     border: none;
-}
-
-.select-material--h450 {
-    height: 450px;
 }
 
 .select-material-message {

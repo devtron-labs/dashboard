@@ -27,40 +27,11 @@
     z-index: var(--page-header-index);
 }
 
-// TODO (Arun): Remove unused css after filter clean up
-.app-list-filters.filters .filter {
-    min-width: unset;
-    flex-basis: unset;
-}
-
-.app-list-filters.filters .filter .filter__trigger {
-    padding: 1px 12px;
-}
-
-.app-list-filters.filters .filter .filter__menu {
-    min-width: 200px;
-}
-
-.app-list-filters.filters .filter button .filter-icon {
-    margin-left: 10px;
-}
-
 .filters {
     flex: 1 1;
     display: flex;
     justify-content: flex-end;
     align-items: center;
-}
-
-.filters__label {
-    font-size: 12px;
-    font-weight: 600;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: var(--N900);
-    margin: 11px 0px;
 }
 
 .saved-filters__wrap {
@@ -237,18 +208,6 @@
     border: none;
 }
 
-.round-button {
-    border-radius: 20px;
-    background-color: var(--B500);
-    color: var(--N0);
-    font-size: 14px;
-}
-
-.round-button__icon {
-    display: inline-block;
-    margin-left: 8px;
-}
-
 .button-edit {
     height: 48px;
     background-color: var(--N200);
@@ -310,16 +269,6 @@
     z-index: var(--tooltip-index);
 }
 
-.select-material--h450 {
-    height: 450px;
-}
-
-.round-button--app-list {
-    width: 142px;
-    height: 40px;
-    border: none;
-}
-
 .modal__header--flex-col {
     flex-direction: column;
     align-items: flex-start;
@@ -359,10 +308,6 @@
     visibility: visible;
 }
 
-.round-button:hover {
-    background-color: var(--B600);
-}
-
 .cell__link:hover {
     text-decoration: underline;
 }
@@ -375,9 +320,6 @@
     .search {
         flex-basis: 250px;
         margin-bottom: 0px;
-    }
-    .filters__label {
-        margin: 0px;
     }
 }
 

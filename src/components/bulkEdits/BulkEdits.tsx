@@ -31,6 +31,7 @@ import {
     Button,
     ButtonVariantType,
     ButtonStyleType,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION, SERVER_MODE, ViewType } from '../../config'
 import { BulkEditsProps, BulkEditsState } from './bulkEdits.type'
@@ -252,13 +253,17 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div className="code-editor-body dc__grid-half flexbox-col flex-grow-1 mh-0">
                 <CodeEditor
-                    height="calc(60vh - 97px)"
-                    value={this.state.codeEditorPayload}
-                    mode="yaml"
-                    onChange={(event) => {
-                        this.handleConfigChange(event)
+                    mode={MODES.YAML}
+                    codeEditorProps={{
+                        height: '0',
+                        value: this.state.codeEditorPayload,
+                        onChange: this.handleConfigChange,
                     }}
-                    data-testid="code-editor"
+                    codeMirrorProps={{
+                        height: 'fitToParent',
+                        value: this.state.codeEditorPayload,
+                        onChange: this.handleConfigChange,
+                    }}
                 />
                 <div className="bulk-output-drawer bg__primary flexbox-col flex-grow-1 mh-0">
                     <div className="bulk-output-header flex left pl-20 pr-20 pt-6 dc__border-top dc__border-bottom bg__primary">
@@ -485,7 +490,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderCodeEditorAndReadme = () => {
         return (
-            <div className="bulk-container flex-grow-1 mh-0 dc__grid-half">
+            <div className="bulk-container vertical-divider flex-grow-1 mh-0 dc__grid-half">
                 {this.renderBulkCodeEditor()}
                 {this.renderReadmeSection()}
             </div>

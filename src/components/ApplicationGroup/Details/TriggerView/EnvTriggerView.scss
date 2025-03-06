@@ -15,10 +15,6 @@
  */
 
 .env-list {
-    &.no-result-container {
-        height: calc(100vh - 48px);
-        overflow: hidden;
-    }
     .env-list-row {
         display: grid;
         grid-template-columns: 20px 250px repeat(3, 200px);
@@ -42,13 +38,21 @@
 }
 
 .bulk-ci-trigger-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+
     .bulk-ci-trigger {
         display: grid;
         grid-template-columns: 234px 1fr;
-        height: calc(100vh - 128px);
+        overflow: hidden;
+        flex-grow: 1;
+        
         &.webhook-modal {
             grid-template-columns: 1fr;
         }
+        
         .sidebar {
             .material-list {
                 .material-list__item {
@@ -73,13 +77,15 @@
             }
         }
     }
+    
     .tippy-over {
         .tippy-box {
             top: 47px;
         }
     }
+
     .response-list-container {
-        max-height: calc(100vh - 120px);
+        overflow: auto;
         .response-row {
             display: grid;
             grid-template-columns: repeat(2, 200px) auto;
@@ -93,9 +99,6 @@
 }
 
 .env-modal-width {
-    width: 75%;
-    min-width: 1024px;
-    max-width: 1200px;
     &.full-height {
         z-index: 1;
         height: calc(100vh - 55px);

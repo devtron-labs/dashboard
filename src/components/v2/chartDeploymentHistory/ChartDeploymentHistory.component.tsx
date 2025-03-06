@@ -36,6 +36,7 @@ import {
     StatusType,
     Button,
     ComponentSizeType,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
@@ -473,19 +474,26 @@ const ChartDeploymentHistory = ({
             )
         }
         return (
-            <div className="bg__primary border-btm h-100">
-                <CodeEditor
-                    value={
+            <CodeEditor
+                key={selectedDeploymentTabName}
+                noParsing
+                mode={MODES.YAML}
+                readOnly
+                codeEditorProps={{
+                    value:
                         selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
                             ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
-                            : getEditorValue(selectedDeploymentManifestDetail.manifest)
-                    }
-                    noParsing
-                    mode="yaml"
-                    height="100%"
-                    readOnly
-                />
-            </div>
+                            : getEditorValue(selectedDeploymentManifestDetail.manifest),
+                    height: '100%',
+                }}
+                codeMirrorProps={{
+                    value:
+                        selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
+                            ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
+                            : getEditorValue(selectedDeploymentManifestDetail.manifest),
+                    height: 'fitToParent',
+                }}
+            />
         )
     }
 
@@ -502,7 +510,7 @@ const ChartDeploymentHistory = ({
 
         return (
             <div
-                className={`trigger-outputs-container h-100 ${
+                className={`trigger-outputs-container flex-grow-1 flexbox-col ${
                     selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SOURCE ? 'pt-20' : ''
                 }`}
                 data-testid="trigger-output-container"
@@ -733,7 +741,7 @@ const ChartDeploymentHistory = ({
     function renderData() {
         if (errorResponseCode && errorResponseCode !== 404) {
             return (
-                <div className="dc__loading-wrapper">
+                <div className="flex-grow-1">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )
@@ -789,7 +797,7 @@ const ChartDeploymentHistory = ({
     return (
         <>
             {isLoading ? (
-                <div className="dc__loading-wrapper">
+                <div className="flex-grow-1">
                     <Progressing pageLoader />
                 </div>
             ) : (

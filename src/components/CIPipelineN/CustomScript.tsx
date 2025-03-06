@@ -15,7 +15,7 @@
  */
 
 import React, { useContext, useEffect, useState } from 'react'
-import { ScriptType, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
+import { ScriptType, CodeEditor, MODES } from '@devtron-labs/devtron-fe-common-lib'
 import { TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
@@ -46,12 +46,19 @@ const CustomScript = ({ handleScriptChange }: CustomScriptType) => {
                 )}
                 <div className="script-container no-padding-script-container">
                     <CodeEditor
-                        mode="shell"
+                        mode={MODES.SHELL}
                         noParsing
-                        onChange={(value) => handleScriptChange({ target: { value } })}
-                        inline
-                        height={300}
-                        value={editorValue}
+                        codeEditorProps={{
+                            value: editorValue,
+                            onChange: (value) => handleScriptChange({ target: { value } }),
+                            height: 300,
+                            inline: true,
+                        }}
+                        codeMirrorProps={{
+                            value: editorValue,
+                            onChange: (value) => handleScriptChange({ target: { value } }),
+                            height: 300,
+                        }}
                     />
                 </div>
             </div>

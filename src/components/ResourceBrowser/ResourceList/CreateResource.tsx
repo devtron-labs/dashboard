@@ -149,14 +149,22 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
                     />
 
                     <CodeEditor
-                        theme={CodeEditorThemesKeys.vsDarkDT}
-                        value={resourceYAML}
                         mode={MODES.YAML}
                         noParsing
-                        height="0"
-                        onChange={handleEditorValueChange}
                         loading={loader}
-                        focus
+                        codeEditorProps={{
+                            theme: CodeEditorThemesKeys.vsDarkDT,
+                            value: resourceYAML,
+                            height: '0',
+                            onChange: handleEditorValueChange,
+                            focus: true,
+                        }}
+                        codeMirrorProps={{
+                            value: resourceYAML,
+                            height: 'fitToParent',
+                            onChange: handleEditorValueChange,
+                            autoFocus: true,
+                        }}
                     />
                 </>
             )

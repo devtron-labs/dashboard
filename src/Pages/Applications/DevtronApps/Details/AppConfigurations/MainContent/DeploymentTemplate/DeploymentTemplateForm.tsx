@@ -117,14 +117,29 @@ const DeploymentTemplateForm = ({
 
             <div className="flexbox-col dc__overflow-auto flex-grow-1">
                 <CodeEditor
-                    value={editedDocument}
-                    schemaURI={getEditorSchemaURIFromChartNameAndVersion(selectedChart?.name, selectedChart?.version)}
-                    onChange={readOnly ? noop : editorOnChange}
                     mode={MODES.YAML}
-                    validatorSchema={schema}
                     readOnly={readOnly}
                     noParsing
-                    height="100%"
+                    codeEditorProps={{
+                        value: editedDocument,
+                        schemaURI: getEditorSchemaURIFromChartNameAndVersion(
+                            selectedChart?.name,
+                            selectedChart?.version,
+                        ),
+                        onChange: readOnly ? noop : editorOnChange,
+                        validatorSchema: schema,
+                        height: '100%',
+                    }}
+                    codeMirrorProps={{
+                        value: editedDocument,
+                        schemaURI: getEditorSchemaURIFromChartNameAndVersion(
+                            selectedChart?.name,
+                            selectedChart?.version,
+                        ),
+                        onChange: readOnly ? noop : editorOnChange,
+                        validatorSchema: schema,
+                        height: '100%',
+                    }}
                 >
                     {renderEditorHeader()}
                 </CodeEditor>
