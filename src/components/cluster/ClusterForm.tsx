@@ -1079,7 +1079,7 @@ export default function ClusterForm({
                                         data-testid={`validate-cluster-${clusterListDetail.status}`}
                                         className="dc__ellipsis-right"
                                     >
-                                        {clusterListDetail.status}{' '}
+                                        {clusterListDetail.status}&nbsp;
                                     </div>
                                 </div>
                                 <div className="dc__ellipsis-right"> {clusterListDetail.message}</div>
