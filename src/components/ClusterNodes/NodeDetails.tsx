@@ -921,9 +921,6 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         return (
             <div className="node-details-container__editor flex-grow-1 flexbox-col">
                 <CodeEditor
-                    value={modifiedManifest}
-                    defaultValue={(nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || ''}
-                    height="0"
                     readOnly={!isEdit}
                     diffView={isReviewState}
                     mode={MODES.YAML}
