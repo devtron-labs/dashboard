@@ -52,6 +52,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
     const [formErrorState, setFormErrorState] = useState<CreateAppFormErrorStateType>(
         structuredClone(createAppInitialFormErrorState),
     )
+    const [isTagsAccordionExpanded, setIsTagsAccordionExpanded] = useState(false)
 
     const createMethodConfig = useMemo(
         () => getCreateMethodConfig(isJobView, selectedCreationMethod),
@@ -63,6 +64,10 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
     }, [])
 
     const isCreationMethodTemplate = selectedCreationMethod === CreationMethodType.template
+
+    const toggleIsTagsAccordionExpanded = () => {
+        setIsTagsAccordionExpanded((prev) => !prev)
+    }
 
     const validateFormField = (field: keyof CreateAppFormStateType, value) => {
         switch (field) {
@@ -128,6 +133,10 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
         }
 
         setFormErrorState(updatedFormErrorState)
+
+        if (invalidLabels && !isTagsAccordionExpanded) {
+            setIsTagsAccordionExpanded(true)
+        }
 
         return {
             isFormValid: Object.keys(updatedFormErrorState)
@@ -349,6 +358,8 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                                 handleTagErrorChange={handleTagErrorChange}
                                 isJobView={isJobView}
                                 selectedCreationMethod={selectedCreationMethod}
+                                isTagsAccordionExpanded={isTagsAccordionExpanded}
+                                toggleIsTagsAccordionExpanded={toggleIsTagsAccordionExpanded}
                             />
                         </div>
                     )}
@@ -396,6 +407,8 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                                                 handleTagErrorChange={handleTagErrorChange}
                                                 isJobView={isJobView}
                                                 selectedCreationMethod={selectedCreationMethod}
+                                                isTagsAccordionExpanded={isTagsAccordionExpanded}
+                                                toggleIsTagsAccordionExpanded={toggleIsTagsAccordionExpanded}
                                             />
                                             <UpdateTemplateConfig
                                                 formState={formState}

@@ -125,6 +125,8 @@ export interface ApplicationInfoFormProps extends Pick<CreateAppModalProps, 'isJ
     formErrorState: CreateAppFormErrorStateType
     handleTagErrorChange: (tagsError: CreateAppFormErrorStateType['tags']) => void
     selectedCreationMethod: CreationMethodType
+    isTagsAccordionExpanded: boolean
+    toggleIsTagsAccordionExpanded: () => void
 }
 
 export interface ProjectSelectorProps extends Required<Pick<SelectPickerProps, 'error'>> {
