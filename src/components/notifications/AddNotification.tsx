@@ -65,7 +65,7 @@ export enum FilterOptions {
     ENVIRONMENT = 'environment',
     APPLICATION = 'application',
     PROJECT = 'project',
-    CLUSTER = 'cluster'
+    CLUSTER = 'cluster',
 }
 interface Options {
     environment: {
@@ -533,42 +533,44 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
     }
 
     getEnvTeamAndClusterData(): void {
-        Promise.all([getEnvironmentListMin(), getTeamListMin(), getClusterListMin()]).then(([environments, teams, clusters]) => {
-            const state = { ...this.state }
-            state.options.environment = [
-                {
-                    environment_name: 'All non-prod environments',
-                    // parseInt can be removed once BE supports identifiers instead
-                    id: parseInt(SelectAllGroupedResourceIdentifiers.allExistingAndFutureNonProdEnvironments),
-                },
-                {
-                    environment_name: 'All prod environments',
-                    id: parseInt(SelectAllGroupedResourceIdentifiers.allExistingAndFutureProdEnvironments),
-                },
-                ...(environments?.result ?? []),
-            ].map((elem) => {
-                return {
-                    label: `${elem.environment_name.toLowerCase()}`,
-                    value: elem.id,
-                    type: FilterOptions.ENVIRONMENT,
-                }
-            })
-            state.options.project = (teams?.result ?? []).map((elem) => {
-                return {
-                    label: `${elem.name.toLowerCase()}`,
-                    value: elem.id,
-                    type: FilterOptions.PROJECT,
-                }
-            })
-            state.options.cluster = (clusters?.result ?? []).map(({ name, id }) => {
-                return {
-                    label: `${name.toLowerCase()}`,
-                    value: id,
-                    type: FilterOptions.CLUSTER,
-                }
-            })
-            this.setState(state)
-        })
+        Promise.all([getEnvironmentListMin(), getTeamListMin(), getClusterListMin()]).then(
+            ([environments, teams, clusters]) => {
+                const state = { ...this.state }
+                state.options.environment = [
+                    {
+                        environment_name: 'All non-prod environments',
+                        // parseInt can be removed once BE supports identifiers instead
+                        id: parseInt(SelectAllGroupedResourceIdentifiers.allExistingAndFutureNonProdEnvironments),
+                    },
+                    {
+                        environment_name: 'All prod environments',
+                        id: parseInt(SelectAllGroupedResourceIdentifiers.allExistingAndFutureProdEnvironments),
+                    },
+                    ...(environments?.result ?? []),
+                ].map((elem) => {
+                    return {
+                        label: `${elem.environment_name.toLowerCase()}`,
+                        value: elem.id,
+                        type: FilterOptions.ENVIRONMENT,
+                    }
+                })
+                state.options.project = (teams?.result ?? []).map((elem) => {
+                    return {
+                        label: `${elem.name.toLowerCase()}`,
+                        value: elem.id,
+                        type: FilterOptions.PROJECT,
+                    }
+                })
+                state.options.cluster = (clusters?.result ?? []).map(({ name, id }) => {
+                    return {
+                        label: `${name.toLowerCase()}`,
+                        value: id,
+                        type: FilterOptions.CLUSTER,
+                    }
+                })
+                this.setState(state)
+            },
+        )
     }
 
     getData(text) {
@@ -737,7 +739,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             )
         }
         return (
-            <table className="pipeline-list__table">
+            <table className="w-100 flexbox-col flex-grow-1">
                 <tbody>
                     <tr className="pipeline-list__header">
                         <th className="pipeline-list__checkbox fw-6" />
@@ -933,7 +935,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
 
     renderAddCard() {
         return (
-            <div className="white-card white-card--no-padding">
+            <div className="white-card white-card--no-padding dc__mxw-1000">
                 <div className="m-24">
                     {this.renderSendTo()}
                     {this.renderEmailAgentSelector()}
@@ -1063,7 +1065,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
     render() {
         return (
             <ErrorBoundary>
-                <div className="add-notification-page">
+                <div className="flexbox-col bg__primary h-100 dc__gap-24 px-20 py-16">
                     <div data-testid="add-notifications-heading-title" className="form__title mb-16">
                         Add Notifications
                     </div>
