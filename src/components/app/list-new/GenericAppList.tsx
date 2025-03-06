@@ -81,7 +81,6 @@ const GenericAppList = ({
     const [appsList, setAppsList] = useState<GenericAppType[]>([])
     const [sseConnection, setSseConnection] = useState<EventSource>(null)
     const { isSuperAdmin } = useMainContext()
-    const [isHeaderStuck, setIsHeaderStuck] = useState(false)
 
     const isArgoCDAppList = appType === AppListConstants.AppType.ARGO_APPS
     const isFluxCDAppList = appType === AppListConstants.AppType.FLUX_APPS
@@ -114,8 +113,7 @@ const GenericAppList = ({
         return { filteredAppsList, filteredListTotalSize }
     }, [appsList, filterConfig])
 
-    const { stickyElementRef } = useStickyEvent({
-        callback: setIsHeaderStuck,
+    const { stickyElementRef, isStuck: isHeaderStuck } = useStickyEvent({
         identifier: 'generic-app-list',
         containerRef: appListContainerRef,
         isStickyElementMounted: dataStateType === AppListViewType.LIST && filteredListTotalSize > 0
@@ -243,8 +241,8 @@ const GenericAppList = ({
         return (
             <div
                 ref={stickyElementRef}
-                className={`app-list__header app-list__header${isFluxCDAppList ? '__fluxcd' : ''} dc__top-47 ${
-                   getClassNameForStickyHeaderWithShadow(isHeaderStuck)
+                className={`app-list__header app-list__header${isFluxCDAppList ? '__fluxcd' : ''} ${
+                   getClassNameForStickyHeaderWithShadow(isHeaderStuck, 'dc__top-47')
                 }`}
             >
                 <div className="app-list__cell--icon" />

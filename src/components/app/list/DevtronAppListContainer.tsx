@@ -72,12 +72,10 @@ const DevtronAppList = ({
     appListContainerRef,
 }: DevtronAppListProps) => {
     const history = useHistory()
-    const [isHeaderStuck, setIsHeaderStuck] = useState(false)
 
-    const { stickyElementRef } = useStickyEvent({
+    const { stickyElementRef, isStuck: isHeaderStuck } = useStickyEvent({
         identifier: 'app-list',
         containerRef: appListContainerRef,
-        callback: setIsHeaderStuck,
     })
 
     const [expandedState, setExpandedState] = useState<DevtronAppExpandedState>(INITIAL_EXPANDED_STATE)
@@ -262,8 +260,9 @@ const DevtronAppList = ({
         <div className="app-list" data-testid="app-list-container">
             <div
                 ref={stickyElementRef}
-                className={`app-list__header ${!isArgoInstalled ? 'app-list__header--argo-not-installed' : ''} dc__top-47  ${getClassNameForStickyHeaderWithShadow(
+                className={`app-list__header ${!isArgoInstalled ? 'app-list__header--argo-not-installed' : ''} ${getClassNameForStickyHeaderWithShadow(
                     isHeaderStuck,
+                    'dc__top-47',
                 )}`}
             >
                 <div className="app-list__cell--icon flex left cursor" onClick={toggleExpandAllRow}>

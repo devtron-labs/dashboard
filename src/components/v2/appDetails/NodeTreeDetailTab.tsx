@@ -60,12 +60,12 @@ const NodeTreeDetailTab = ({
     const [clickedNodes, registerNodeClick] = useState<Map<string, string>>(new Map<string, string>())
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const displayLogAnalyzer = IndexStore.getNodesByKind(NodeType.Pod).length > 0 && !isVirtualEnvironment
-    const [isDynamicTabsStuck, setIsDynamicTabsStuck] = useState<boolean>(false)
 
-    const { stickyElementRef } = useStickyEvent({
-        callback: setIsDynamicTabsStuck,
-        containerSelector: '.app-details-page-wrapper',
-        isStickyElementMounted: !!(appDetails?.resourceTree?.nodes?.length > 0 && tabs.length),
+    const showContent = !!(appDetails?.resourceTree?.nodes?.length > 0 && tabs.length)
+
+    const { stickyElementRef, isStuck: isDynamicTabsStuck } = useStickyEvent({
+        containerSelector: '.app-details-page',
+        isStickyElementMounted: showContent,
         identifier: 'node-tree-detail-tab',
     })
 
@@ -105,12 +105,11 @@ const NodeTreeDetailTab = ({
     // NOTE: don't render any of the components before tabs are initialized
     // this is cuz, the components mark their own corresponding tabs as the selected tabs on mount
     return (
-        appDetails?.resourceTree?.nodes?.length > 0 &&
-        tabs.length && (
+        showContent && (
             <>
                 <div
                     ref={stickyElementRef}
-                    className={`dc__position-sticky dc__left-0 ${dynamicTabsBackgroundClass} dc__transition--background dc__top-0 pt-7 dc__zi-10`}
+                    className={`dc__position-sticky dc__left-0 ${dynamicTabsBackgroundClass} dc__transition--background dc__top-77 pt-7 dc__zi-10`}
                 >
                     <DynamicTabs
                         backgroundColorToken={dynamicTabsBackgroundClass}
