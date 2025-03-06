@@ -60,7 +60,8 @@ const ApplicationInfoForm = ({
     }
 
     return (
-        <div className="flexbox-col dc__gap-16 p-20 br-8 border__secondary bg__primary">
+        // key is required for ensuring autoFocus on name on creation method change
+        <div className="flexbox-col dc__gap-16 p-20 br-8 border__secondary bg__primary" key={selectedCreationMethod}>
             <ICDevtronApp className="icon-dim-48 dc__no-shrink" />
             <div className="flexbox dc__gap-8">
                 <ProjectSelector
