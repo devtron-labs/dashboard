@@ -12,7 +12,7 @@ import {
     validateTagKeyValue,
     validateTagValue,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { getHostURLConfiguration } from '@Services/service'
 import { saveHostURLConfiguration } from '@Components/hostURL/hosturl.service'
 import { createJob } from '@Components/Jobs/Service'
@@ -46,16 +46,21 @@ const createDevtronAppUsingTemplate = importComponentFromFELibrary('createDevtro
 
 const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
     const history = useHistory()
-    const createMethodConfig = getCreateMethodConfig(isJobView)
-
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [selectedCreationMethod, setSelectedCreationMethod] = useState<CreationMethodType>(
-        createMethodConfig[0].value,
-    )
+    const [selectedCreationMethod, setSelectedCreationMethod] = useState<CreationMethodType>(null)
     const [formState, setFormState] = useState<CreateAppFormStateType>(structuredClone(createAppInitialFormState))
     const [formErrorState, setFormErrorState] = useState<CreateAppFormErrorStateType>(
         structuredClone(createAppInitialFormErrorState),
     )
+
+    const createMethodConfig = useMemo(
+        () => getCreateMethodConfig(isJobView, selectedCreationMethod),
+        [isJobView, selectedCreationMethod],
+    )
+
+    useEffect(() => {
+        setSelectedCreationMethod(createMethodConfig[0].value)
+    }, [])
 
     const isCreationMethodTemplate = selectedCreationMethod === CreationMethodType.template
 
