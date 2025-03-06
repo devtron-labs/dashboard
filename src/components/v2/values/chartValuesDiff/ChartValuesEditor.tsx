@@ -15,7 +15,7 @@
  */
 
 import moment from 'moment'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     showError,
     DetailsProgressing,
@@ -23,13 +23,13 @@ import {
     CodeEditor,
     versionComparatorBySortOrder,
     MODES,
-    isCodeMirrorEnabled,
+    SelectPicker,
+    SelectPickerVariantType,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import ReactSelect, { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import { Moment12HourFormat } from '../../../../config'
 import { getChartValues } from '../../../charts/charts.service'
-import { Option } from '../../common/ReactSelect.utils'
 import { getDeploymentManifestDetails } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import { ReactComponent as Lock } from '../../../../assets/icons/ic-locked.svg'
 import {
@@ -47,30 +47,7 @@ import {
     MANIFEST_OUTPUT_INFO_TEXT,
     MANIFEST_OUTPUT_TIPPY_CONTENT,
 } from './ChartValuesView.constants'
-import { getCompareValuesSelectStyles } from './ChartValuesView.utils'
-
-const formatOptionLabel = (option: ChartValuesDiffOptionType): JSX.Element => {
-    return (
-        <div className="flex left column">
-            <span className="w-100 dc__ellipsis-right">
-                {option.label}&nbsp;{option.version && `(${option.version})`}
-            </span>
-            {option.info && <small className="cn-6">{option.info}</small>}
-        </div>
-    )
-}
-
-const customValueContainer = (props: any): JSX.Element => {
-    return (
-        <components.ValueContainer {...props}>
-            {props.selectProps.value?.label}&nbsp;
-            {props.selectProps.value?.version && `(${props.selectProps.value.version})`}
-            {React.cloneElement(props.children[1], {
-                style: { position: 'absolute' },
-            })}
-        </components.ValueContainer>
-    )
-}
+import { getFormattedChartValuesDiffOptionLabel } from './ChartValuesView.utils'
 
 const CompareWithDropdown = ({
     deployedChartValues,
@@ -121,21 +98,16 @@ const CompareWithDropdown = ({
     }, [deployedChartValues, defaultChartValues, deploymentHistoryOptionsList])
 
     return (
-        <ReactSelect
+        <SelectPicker
+            inputId="compare-values-select"
+            classNamePrefix="compare-values-select"
+            variant={SelectPickerVariantType.BORDER_LESS}
             options={groupedOptions}
-            isMulti={false}
             isSearchable={false}
             value={selectedVersionForDiff}
-            classNamePrefix="compare-values-select"
             isOptionDisabled={(option) => option.value === 0}
-            formatOptionLabel={formatOptionLabel}
-            components={{
-                IndicatorSeparator: null,
-                ValueContainer: customValueContainer,
-                Option,
-            }}
-            styles={getCompareValuesSelectStyles()}
             onChange={handleSelectedVersionForDiff}
+            menuSize={ComponentSizeType.medium}
         />
     )
 }
@@ -190,10 +162,11 @@ export default function ChartValuesEditor({
             for (let index = 0; index < chartValuesList.length; index++) {
                 const _chartValue = chartValuesList[index]
                 const processedChartValue = {
-                    label: _chartValue.name,
+                    label: getFormattedChartValuesDiffOptionLabel(_chartValue.name, _chartValue.chartVersion),
                     value: _chartValue.id,
                     appStoreVersionId: _chartValue.appStoreVersionId || 0,
                     info: _chartValue.environmentName ? `Deployed on: ${_chartValue.environmentName}` : '',
+                    description: _chartValue.environmentName ? `Deployed on: ${_chartValue.environmentName}` : '',
                     kind: _chartValue.kind,
                     version: _chartValue.chartVersion,
                 }
@@ -210,7 +183,10 @@ export default function ChartValuesEditor({
             }
             const deploymentHistoryOptionsList = deploymentHistoryList.map((_deploymentHistory) => {
                 return {
-                    label: moment(new Date(_deploymentHistory.deployedAt.seconds * 1000)).format(Moment12HourFormat),
+                    label: getFormattedChartValuesDiffOptionLabel(
+                        moment(new Date(_deploymentHistory.deployedAt.seconds * 1000)).format(Moment12HourFormat),
+                        _deploymentHistory.chartMetadata.chartVersion,
+                    ),
                     value: _deploymentHistory.version,
                     info: '',
                     version: _deploymentHistory.chartMetadata.chartVersion,
@@ -432,43 +408,37 @@ export default function ChartValuesEditor({
                 </CodeEditor.Information>
             )}
             {comparisonView && (
-                <div className="flexbox dc__align-items-center">
-                    <CodeEditor.Header
-                        hideDefaultSplitHeader
-                        className="code-editor__header dc__grid-half vertical-divider flex-grow-1"
-                    >
-                        <div className="flex left fs-12 fw-6 cn-7">
-                            <span style={{ width: '90px' }} data-testid="compare-with-heading">
-                                Compare with:
-                            </span>
-                            <CompareWithDropdown
-                                deployedChartValues={valuesForDiffState.deployedChartValues}
-                                defaultChartValues={valuesForDiffState.defaultChartValues}
-                                presetChartValues={valuesForDiffState.presetChartValues}
-                                deploymentHistoryOptionsList={valuesForDiffState.deploymentHistoryOptionsList}
-                                selectedVersionForDiff={valuesForDiffState.selectedVersionForDiff}
-                                handleSelectedVersionForDiff={handleSelectedVersionForDiff}
-                                manifestView={manifestView}
-                            />
-                        </div>
-                        <div className="chart-values-view__diff-view-current flex left fs-12 fw-6 cn-7 pl-12">
-                            {manifestView ? (
-                                <>
-                                    <Lock className="icon-dim-16 mr-8" />
-                                    <span>Manifest output for current YAML</span>
-                                </>
-                            ) : (
-                                <>
-                                    <Edit className="icon-dim-16 mr-10" />
-                                    values.yaml&nbsp;
-                                    {(selectedChartValues?.chartVersion || repoChartValue?.version) &&
-                                        `(${selectedChartValues?.chartVersion || repoChartValue?.version})`}
-                                </>
-                            )}
-                        </div>
-                    </CodeEditor.Header>
-                    {!isCodeMirrorEnabled () && <div style={{ width: '30px', backgroundColor: 'var(--N100)', height: '100%' }} />}
-                </div>
+                <CodeEditor.Header hideDefaultSplitHeader>
+                    <div className="flex left fs-12 fw-6 cn-7">
+                        <span style={{ width: '90px' }} data-testid="compare-with-heading">
+                            Compare with:
+                        </span>
+                        <CompareWithDropdown
+                            deployedChartValues={valuesForDiffState.deployedChartValues}
+                            defaultChartValues={valuesForDiffState.defaultChartValues}
+                            presetChartValues={valuesForDiffState.presetChartValues}
+                            deploymentHistoryOptionsList={valuesForDiffState.deploymentHistoryOptionsList}
+                            selectedVersionForDiff={valuesForDiffState.selectedVersionForDiff}
+                            handleSelectedVersionForDiff={handleSelectedVersionForDiff}
+                            manifestView={manifestView}
+                        />
+                    </div>
+                    <div className="chart-values-view__diff-view-current flex left fs-12 fw-6 cn-7 pl-12">
+                        {manifestView ? (
+                            <>
+                                <Lock className="icon-dim-16 mr-8" />
+                                <span>Manifest output for current YAML</span>
+                            </>
+                        ) : (
+                            <>
+                                <Edit className="icon-dim-16 mr-10" />
+                                values.yaml&nbsp;
+                                {(selectedChartValues?.chartVersion || repoChartValue?.version) &&
+                                    `(${selectedChartValues?.chartVersion || repoChartValue?.version})`}
+                            </>
+                        )}
+                    </div>
+                </CodeEditor.Header>
             )}
         </CodeEditor>
     )

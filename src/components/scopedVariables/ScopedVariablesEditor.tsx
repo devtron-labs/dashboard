@@ -234,48 +234,33 @@ export default function ScopedVariablesEditor({
                         }}
                     >
                         {showSaveView && (
-                            <CodeEditor.Header
-                                hideDefaultSplitHeader
-                                className="bg__tertiary w-100 h-32 dc__grid-half vertical-divider"
-                                diffViewWidth
-                            >
-                                <div className="fs-12 fw-6 cn-7 pt-8 pb-8 pl-12 pr-12 flexbox">Last Saved File</div>
-                                <div className="fs-12 fw-6 cn-7 flex-grow-1 dc__gap-4 flexbox pt-8 pb-8 pl-12 pr-12">
-                                    <div className="flex">
-                                        <ICPencil className="icon-dim-16" />
-                                    </div>
-                                    Edit File
-                                </div>
+                            <CodeEditor.Header hideDefaultSplitHeader diffViewWidth>
+                                <p className="m-0 fs-12 fw-6 cn-7">Last Saved File</p>
+                                <p className="m-0 fs-12 fw-6 cn-7 pl-16 flex left dc__gap-4">
+                                    <ICPencil className="icon-dim-16" />
+                                    <span>Edit File</span>
+                                </p>
                             </CodeEditor.Header>
                         )}
                     </CodeEditor>
 
                     <div className="flexbox pt-13 pb-13 pl-12 pr-12 bg__primary dc__border-top dc__content-end dc__align-items-center dc__align-self-stretch dc__gap-12">
-                        <button
-                            type="button"
-                            className="flex pt-8 pb-8 pl-16 pr-16 dc__gap-8 dc__border-radius-4-imp dc__border bg__primary cn-7 fs-13 fw-6 lh-20 mw-56 dc__outline-none-imp h-32"
+                        <Button
+                            dataTestId="scope-variables-editor-cancel-btn"
                             onClick={handleAbort}
+                            variant={ButtonVariantType.secondary}
+                            style={ButtonStyleType.negativeGrey}
                             disabled={showSaveView ? isSaving : loadingSavedScopedVariables}
-                        >
-                            Cancel
-                        </button>
-
-                        <ButtonWithLoader
-                            rootClassName="flex mw-56 pt-8 pb-8 pl-16 pr-16 dc__outline-none-imp dc__gap-8 dc__border-radius-4-imp bcb-5 cn-0 fs-13 fw-6 lh-20 dc__no-border h-32 cta"
+                            text="Cancel"
+                        />
+                        <Button
+                            dataTestId="scope-variables-editor-save-btn"
                             onClick={showSaveView ? handleSave : handleReview}
                             isLoading={showSaveView ? isSaving : loadingSavedScopedVariables}
                             disabled={showSaveView ? isSaving : loadingSavedScopedVariables}
-                        >
-                            {showSaveView ? (
-                                'Save'
-                            ) : (
-                                <div className="flex dc__gap-4">
-                                    <div>Review Changes</div>
-
-                                    <ICArrowRight />
-                                </div>
-                            )}
-                        </ButtonWithLoader>
+                            text={showSaveView ? 'Save' : 'Review Changes'}
+                            endIcon={!showSaveView ? <ICArrowRight /> : null}
+                        />
                     </div>
                 </div>
             </div>
