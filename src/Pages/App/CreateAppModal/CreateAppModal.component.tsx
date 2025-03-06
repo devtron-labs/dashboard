@@ -389,8 +389,8 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                                             />
                                             <span>/</span>
                                             <p className="m-0 flex left dc__gap-6">
-                                                <ICAppTemplate className="icon-dim-20 p-1" />
-                                                <span className="fs-13 lh-20 fw-6 cn-9">
+                                                <ICAppTemplate className="icon-dim-20 p-1 dc__no-shrink" />
+                                                <span className="fs-13 lh-20 fw-6 cn-9 dc__truncate">
                                                     {formState.templateConfig.name}
                                                 </span>
                                             </p>
