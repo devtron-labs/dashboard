@@ -799,12 +799,16 @@ export default function BuildCD({
     )
 
     const renderBuild = () => {
-        if (releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && !isAdvanced && MigrateHelmReleaseBody) {
+        if (
+            releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS &&
+            !isAdvanced &&
+            (MigrateHelmReleaseBody || isFeatureArgoCdMigrationEnabled)
+        ) {
             if (!isSuperAdmin) {
                 return <ErrorScreenNotAuthorized />
             }
 
-            if (!isFeatureArgoCdMigrationEnabled) {
+            if (!isFeatureArgoCdMigrationEnabled && MigrateHelmReleaseBody) {
                 return (
                     <MigrateHelmReleaseBody
                         renderTriggerType={renderTriggerType}
@@ -812,6 +816,17 @@ export default function BuildCD({
                         setFormData={setFormData}
                         renderEnvSelector={renderEnvSelector}
                     />
+                )
+            }
+
+            if (isFeatureArgoCdMigrationEnabled && !MigrateHelmReleaseBody) {
+                return (
+                    <div className="flexbox-col dc__gap-16">
+                        <MigrateFromArgo
+                            migrateToDevtronFormState={migrateToDevtronFormState}
+                            setMigrateToDevtronFormState={setMigrateToDevtronFormState}
+                        />
+                    </div>
                 )
             }
 

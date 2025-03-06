@@ -53,6 +53,7 @@ import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
@@ -143,6 +144,9 @@ export default function CDPipeline({
     const childPipelineId = urlParams.get('childPipelineId')
     const parentPipelineTypeFromURL = urlParams.get('parentPipelineType')
     const parentPipelineId = urlParams.get('parentPipelineId')
+    const {
+        featureGitOpsFlags: { isFeatureArgoCdMigrationEnabled },
+    } = useMainContext()
     const [gitOpsRepoConfiguredWarning, setGitOpsRepoConfiguredWarning] = useState<{ show: boolean; text: string }>({
         show: false,
         text: '',
@@ -1375,7 +1379,7 @@ export default function CDPipeline({
                     </button>
                 </div>
 
-                {!isAdvanced && !!isFELibAvailable && (
+                {!isAdvanced && (!!isFELibAvailable || isFeatureArgoCdMigrationEnabled) && (
                     <div className="px-20">
                         <TabGroup
                             tabs={[
