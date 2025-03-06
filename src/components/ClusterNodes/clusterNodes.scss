@@ -111,7 +111,7 @@
 
     .node-details-grid {
         display: grid;
-        grid-template-columns: 300px calc(100vw - 415px);
+        grid-template-columns: 300px auto;
         column-gap: 12px;
 
         .resource-row {
@@ -128,7 +128,6 @@
             .pod-container-header {
                 top: 0px;
                 z-index: 1;
-                padding-top: 10px;
                 background-color: var(--bg-primary);
             }
 
@@ -152,7 +151,7 @@
 
                 header {
                     position: sticky;
-                    top: 46px;
+                    top: 36px;
                     z-index: 1;
                 }
 
@@ -175,6 +174,12 @@
         display: grid;
         grid-template-columns: 200px 280px auto;
         column-gap: 16px;
+    }
+
+    &__editor {
+        & .react-monaco-editor-container {
+            flex-grow: 1;
+        }
     }
 }
 
@@ -424,14 +429,9 @@
     flex-shrink: 0;
 }
 
-.node-data-container {
-    height: calc(100vh - 84px);
-    overflow: hidden;
-
-    .node-data-wrapper {
-        height: calc(100vh - 118px);
-        overflow: auto;
-    }
+.cluster-manifest-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 30px;
 }
 
 .node-code-editor-header {

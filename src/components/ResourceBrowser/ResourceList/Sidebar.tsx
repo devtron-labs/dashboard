@@ -308,8 +308,8 @@ const Sidebar = ({
     const noOptionsMessage = () => 'No matching kind'
 
     return (
-        <div className="k8s-object-container">
-            <div className="k8s-object-kind-search bg__primary pt-16 pb-8 w-200 dc__m-auto cursor">
+        <div className="w-250 dc__no-shrink dc__overflow-hidden flexbox-col">
+            <div className="k8s-object-kind-search bg__primary pt-16 pb-8 px-10 w-100 cursor">
                 <ReactSelect
                     ref={searchInputRef}
                     placeholder="Jump to Kind"
@@ -338,7 +338,8 @@ const Sidebar = ({
                     }}
                 />
             </div>
-            <div className="k8s-object-wrapper flexbox-col dc__border-top-n1 p-8 dc__user-select-none">
+
+            <div className="dc__overflow-auto flexbox-col flex-grow-1 dc__border-top-n1 p-8 dc__user-select-none">
                 <div className="pb-8 flexbox-col">
                     {!!list?.size && !!list.get(AggregationKeys.Nodes) && (
                         <SidebarChildButton

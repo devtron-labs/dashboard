@@ -696,71 +696,69 @@ const ManifestComponent = ({
         }
 
         return (
-            <div style={{ height: isResourceBrowserView ? 'calc(100vh - 119px)' : 'calc(100vh - 77px)' }}>
-                <CodeEditor
-                    cleanData={showManifestCompareView}
-                    diffView={showManifestCompareView}
-                    mode={MODES.YAML}
-                    readOnly={isReadOnlyView}
-                    loading={loading}
-                    customLoader={<MessageUI msg={loadingMsg} icon={MsgUIType.LOADING} size={24} />}
-                    codeEditorProps={{
-                        theme: CodeEditorThemesKeys.vsDarkDT,
-                        value: getCodeEditorValue(),
-                        defaultValue: showManifestCompareView && desiredManifest,
-                        onChange: handleEditorValueChange,
-                        focus: isEditMode,
-                        height: '100%',
-                    }}
-                    codeMirrorProps={{
-                        theme: AppThemeType.dark,
-                        height: '100%',
-                        ...(showManifestCompareView
-                            ? {
-                                  diffView: true,
-                                  originalValue: desiredManifest,
-                                  modifiedValue: getCodeEditorValue(),
-                                  onModifiedValueChange: handleEditorValueChange,
-                              }
-                            : {
-                                  diffView: false,
-                                  value: getCodeEditorValue(),
-                                  onChange: handleEditorValueChange,
-                                  autoFocus: isEditMode,
-                              }),
-                    }}
-                >
-                    {renderEditorInfo(true)}
+            <CodeEditor
+                cleanData={showManifestCompareView}
+                diffView={showManifestCompareView}
+                mode={MODES.YAML}
+                readOnly={isReadOnlyView}
+                loading={loading}
+                customLoader={<MessageUI msg={loadingMsg} icon={MsgUIType.LOADING} size={24} />}
+                codeEditorProps={{
+                    theme: CodeEditorThemesKeys.vsDarkDT,
+                    value: getCodeEditorValue(),
+                    defaultValue: showManifestCompareView && desiredManifest,
+                    onChange: handleEditorValueChange,
+                    focus: isEditMode,
+                    height: '100%',
+                }}
+                codeMirrorProps={{
+                    theme: AppThemeType.dark,
+                    height: '100%',
+                    ...(showManifestCompareView
+                        ? {
+                            diffView: true,
+                            originalValue: desiredManifest,
+                            modifiedValue: getCodeEditorValue(),
+                            onModifiedValueChange: handleEditorValueChange,
+                        }
+                        : {
+                            diffView: false,
+                            value: getCodeEditorValue(),
+                            onChange: handleEditorValueChange,
+                            autoFocus: isEditMode,
+                        }),
+                }}
+            >
+                {renderEditorInfo(true)}
 
-                    {!loading &&
-                        !error &&
-                        isConfigDriftEnabled &&
-                        'hasDrift' in _selectedResource &&
-                        _selectedResource.hasDrift &&
-                        !showManifestCompareView &&
-                        renderOutOfSyncWarning &&
-                        renderOutOfSyncWarning(handleDesiredManifestOpen)}
-                    {showManifestCompareView && (
-                        <CodeEditor.Header hideDefaultSplitHeader className="p-0">
-                            <div className="dc__split-header">
-                                <div className="dc__split-header__pane flexbox dc__align-items-center dc__content-space dc__gap-8">
-                                    <span>Desired manifest</span>
-                                    <button
-                                        className="dc__unset-button-styles flex"
-                                        aria-label="Close Desired Manifest"
-                                        onClick={handleDesiredManifestClose}
-                                    >
-                                        <ICClose className="icon-dim-16 scn-0" />
-                                    </button>
-                                </div>
-                                <div className="dc__split-header__pane">Live manifest</div>
+                {!loading &&
+                    !error &&
+                    isConfigDriftEnabled &&
+                    'hasDrift' in _selectedResource &&
+                    _selectedResource.hasDrift &&
+                    !showManifestCompareView &&
+                    renderOutOfSyncWarning &&
+                    renderOutOfSyncWarning(handleDesiredManifestOpen)}
+                {showManifestCompareView && (
+                    <CodeEditor.Header hideDefaultSplitHeader className="p-0">
+                        <div className="dc__split-header">
+                            <div className="dc__split-header__pane flexbox dc__align-items-center dc__content-space dc__gap-8">
+                                <span>Desired manifest</span>
+                                <button
+                                    className="dc__unset-button-styles flex"
+                                    aria-label="Close Desired Manifest"
+                                    onClick={handleDesiredManifestClose}
+                                >
+                                    <ICClose className="icon-dim-16 scn-0" />
+                                </button>
                             </div>
-                        </CodeEditor.Header>
-                    )}
+                            <div className="dc__split-header__pane">Live manifest</div>
+                        </div>
+                    </CodeEditor.Header>
+                )}
 
-                    {renderErrorBar(true)}
-                </CodeEditor>
-            </div>
+                {renderErrorBar(true)}
+            </CodeEditor>
         )
     }
 
