@@ -942,14 +942,20 @@ export default function ClusterForm({
 
     const codeEditor = () => {
         return (
-            <div className="code-editor-container">
+            <CodeEditor.Container flexExpand overflowHidden>
                 <CodeEditor
-                    value={saveYamlData}
-                    // TODO: Check after code mirror (connect with Rohit)
-                    height="calc(100vh - 236px)"
                     diffView={false}
-                    onChange={onChangeEditorValue}
                     mode={MODES.YAML}
+                    codeEditorProps={{
+                        value: saveYamlData,
+                        onChange: onChangeEditorValue,
+                        height: '0',
+                    }}
+                    codeMirrorProps={{
+                        value: saveYamlData,
+                        onChange: onChangeEditorValue,
+                        height: 'fitToParent',
+                    }}
                 >
                     <CodeEditor.Header>
                         <div className="user-list__subtitle flex fs-13 lh-20 w-100">
@@ -977,7 +983,7 @@ export default function ClusterForm({
                     </CodeEditor.Header>
                     {hasValidationError && <CodeEditor.ErrorBar text={errorText} />}
                 </CodeEditor>
-            </div>
+            </CodeEditor.Container>
         )
     }
 
