@@ -13,7 +13,7 @@ const Sidebar = ({
     }
 
     return (
-        <div className="w-250 p-20 flexbox-col dc__gap-24 dc__no-shrink">
+        <div className="w-250 p-20 flexbox-col dc__gap-24 dc__no-shrink dc__overflow-auto">
             <div className="flexbox-col">
                 {createMethodConfig.map(({ label, value, startIcon }) => {
                     const isSelected = value === selectedCreationMethod
