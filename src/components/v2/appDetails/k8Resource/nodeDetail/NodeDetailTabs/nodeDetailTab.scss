@@ -163,19 +163,11 @@
           background-color: var(--bg-primary);
       }
 
-      .react-monaco-editor-container,
-      .overflow-guard {
-          height: calc(100vh - 178px) !important;
-      }
-
       .monaco-editor {
-
           .monaco-editor-background,
           .margin {
               background-color: var(--bg-secondary) !important;
           }
-
-          height: calc(100vh - 178px) !important;
       }
 
       .radio-group {

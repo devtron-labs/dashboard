@@ -97,8 +97,8 @@ const NodeTreeDetailTab = ({
     return (
         appDetails?.resourceTree?.nodes?.length > 0 &&
         tabs.length && (
-            <>
-                <div className="dc__position-sticky dc__left-0 bg__primary dc__top-0 pt-7 dc__zi-10">
+            <div className="dc__position-sticky dc__top-0 h-100 dc__no-shrink flexbox-col">
+                <div className="bg__primary pt-7 dc__no-shrink">
                     <DynamicTabs
                         variant={DynamicTabsVariantType.ROUNDED}
                         markTabActiveById={markTabActiveById}
@@ -124,7 +124,7 @@ const NodeTreeDetailTab = ({
                         }}
                     />
                 </div>
-                <div className="node-tree-detail-tab__content flexbox-col w-100 dc__no-shrink">
+                <div className="flexbox-col w-100 flex-grow-1">
                     <Switch>
                         <Route
                             path={[
@@ -218,7 +218,7 @@ const NodeTreeDetailTab = ({
                         <Redirect to={`${routeMatchPath}/${URLS.APP_DETAILS_K8}`} />
                     </Switch>
                 </div>
-            </>
+            </div>
         )
     )
 }

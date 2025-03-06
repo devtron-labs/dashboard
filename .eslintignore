@@ -93,7 +93,6 @@ src/components/app/create/validationRules.ts
 src/components/app/details/AboutAppInfoModal.tsx
 src/components/app/details/AboutTagEditModal.tsx
 src/components/app/details/AppHeader.tsx
-src/components/app/details/appDetails/AppDetails.tsx
 src/components/app/details/appDetails/AppMetrics.tsx
 src/components/app/details/appDetails/AppStatusCard.tsx
 src/components/app/details/appDetails/DeploymentStatusDetailModal.tsx
@@ -336,7 +335,6 @@ src/components/security/security.service.ts
 src/components/security/security.util.tsx
 src/components/terminal/TerminalWrapper.tsx
 src/components/util/KeyValueFileInput.tsx
-src/components/v2/appDetails/AppDetails.component.tsx
 src/components/v2/appDetails/ReleaseStatusEmptyState.tsx
 src/components/v2/appDetails/SyncError.component.tsx
 src/components/v2/appDetails/__tests__/index.store.test.ts
@@ -347,12 +345,6 @@ src/components/v2/appDetails/k8Resource/FilterResource.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/EphemeralContainerDrawer.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetail.component.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/CustomLogsModal/CustomLogsModal.tsx
-src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/Events.component.tsx
-src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/EventsTable.tsx
-src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/LogViewer.component.tsx
-src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/Logs.component.tsx
-src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/Manifest.component.tsx
-src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/Summary.component.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/Terminal.component.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/Terminal.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/TerminalWrapper.component.tsx

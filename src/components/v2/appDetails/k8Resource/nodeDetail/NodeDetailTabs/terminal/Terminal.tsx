@@ -279,12 +279,16 @@ export default function TerminalView({
         }
     }, [clearTerminal])
 
+    useEffect(() => {
+        resizeSocket()
+    }, [fullScreenView])
+
     // NOTE: by default events from textarea are also ignored
     // since terminal is a textarea we need to override the ignoreTags property
     return (
         <UseRegisterShortcutProvider ignoreTags={['input']}>
             <div
-                className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ''} terminal-wrapper`}
+                className="terminal-wrapper flex-grow-1 dc__gap-6"
                 data-testid={dataTestId}
             >
                 {renderConnectionStrip()}
@@ -306,9 +310,9 @@ export default function TerminalView({
                         ref={termDivRef}
                         id="terminal-id"
                         data-testid="terminal-editor-container"
-                        className={`mt-8 mb-4 terminal-component ${
+                        className={`terminal-component ${
                             fullScreenView ? 'terminal-component--fullscreen' : ''
-                        } ml-20 ${!isResourceBrowserView && !fullScreenView && isSuperAdmin ? 'terminal-component__zoom--bottom-41' : ''}`}
+                        } ml-20`}
                     >
                         <CopyToast showCopyToast={popupText} />
                         <LogResizeButton
