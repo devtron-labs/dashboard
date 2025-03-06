@@ -170,7 +170,6 @@ src/components/charts/charts.util.tsx
 src/components/charts/dialogs/ValuesYamlConfirmDialog.tsx
 src/components/charts/discoverChartDetail/About.tsx
 src/components/charts/discoverChartDetail/ChartDeploymentList.tsx
-src/components/charts/discoverChartDetail/ChartVersionSelectorModal.tsx
 src/components/charts/discoverChartDetail/DiscoverChartDetails.tsx
 src/components/charts/list/ChartGroup.tsx
 src/components/charts/list/ChartListPopUp.tsx
