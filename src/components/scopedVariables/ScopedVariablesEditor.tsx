@@ -234,18 +234,12 @@ export default function ScopedVariablesEditor({
                         }}
                     >
                         {showSaveView && (
-                            <CodeEditor.Header
-                                hideDefaultSplitHeader
-                                className="bg__tertiary w-100 h-32 dc__grid-half vertical-divider"
-                                diffViewWidth
-                            >
-                                <div className="fs-12 fw-6 cn-7 pt-8 pb-8 pl-12 pr-12 flexbox">Last Saved File</div>
-                                <div className="fs-12 fw-6 cn-7 flex-grow-1 dc__gap-4 flexbox pt-8 pb-8 pl-12 pr-12">
-                                    <div className="flex">
-                                        <ICPencil className="icon-dim-16" />
-                                    </div>
-                                    Edit File
-                                </div>
+                            <CodeEditor.Header hideDefaultSplitHeader diffViewWidth>
+                                <p className="m-0 fs-12 fw-6 cn-7">Last Saved File</p>
+                                <p className="m-0 fs-12 fw-6 cn-7 pl-16 flex left dc__gap-4">
+                                    <ICPencil className="icon-dim-16" />
+                                    <span>Edit File</span>
+                                </p>
                             </CodeEditor.Header>
                         )}
                     </CodeEditor>
