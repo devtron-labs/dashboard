@@ -1014,6 +1014,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
     }
 
     render() {
-        return this.props.isCollapsed ? this.renderCollapsedView() : this.renderForm()
+        return this.props.isCollapsed && !this.props.isCreateAppView ? this.renderCollapsedView() : this.renderForm()
     }
 }
