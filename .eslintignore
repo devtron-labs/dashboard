@@ -33,11 +33,7 @@ src/components/ApplicationGroup/Details/EnvironmentOverview/HibernateStatusRow.t
 src/components/ApplicationGroup/Details/EnvironmentOverview/__test__/EnvironmentOverview.test.tsx
 src/components/ApplicationGroup/Details/TriggerView/BulkCDTrigger.tsx
 src/components/ApplicationGroup/Details/TriggerView/BulkCITrigger.tsx
-src/components/ApplicationGroup/Details/TriggerView/BulkSourceChange.tsx
 src/components/ApplicationGroup/Details/TriggerView/EnvTriggerView.tsx
-src/components/ApplicationGroup/Details/TriggerView/SourceUpdateResponseModal.tsx
-src/components/ApplicationGroup/Details/TriggerView/TriggerModalTableRow.tsx
-src/components/ApplicationGroup/Details/TriggerView/TriggerResponseModal.tsx
 src/components/ApplicationGroup/SearchBar.tsx
 src/components/CIPipelineN/AdvancedConfigOptions.tsx
 src/components/CIPipelineN/Build.tsx
