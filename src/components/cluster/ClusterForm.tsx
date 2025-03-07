@@ -1537,7 +1537,7 @@ export default function ClusterForm({
                                 subtitle={DC_DELETE_SUBTITLES.DELETE_ENVIRONMENT_SUBTITLE}
                                 onDelete={onDelete}
                                 closeConfirmationModal={hideConfirmationModal}
-                                errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+                                errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.BAD_REQUEST}
                             />
                         )}
                     </>
