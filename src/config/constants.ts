@@ -85,6 +85,7 @@ export const Routes = {
     APP_OTHER_ENVIRONMENT: 'app/other-env',
     APP_OTHER_ENVIRONMENT_MIN: 'app/other-env/min',
     APP_CI_PIPELINE: 'ci-pipeline/min',
+    APP_CD_PIPELINE_VALIDATE_LINK_REQUEST: 'app/cd-pipeline/validate-link-request',
     ARGO_APPLICATION: 'argo-application/detail',
     EPHEMERAL_CONTAINERS: 'k8s/resources/ephemeralContainers',
     APP_EDIT: 'app/edit',
@@ -436,10 +437,6 @@ export const HEADER_TEXT = {
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
-
-export const PREVIEW_DEVTRON = 'https://preview.devtron.ai'
-
-export const PRIVACY_POLICY = 'https://devtron.ai/privacy-policy'
 
 export const NETSHOOT_LINK = 'https://github.com/nicolaka/netshoot'
 

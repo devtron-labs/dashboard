@@ -49,6 +49,7 @@ interface InitializeStateBasePayloadType
         | ConfigEditorStatesType.PUBLISHED_EDITOR
         | 'chartDetails'
         | 'lockedConfigKeysWithLockType'
+        | 'migratedFrom'
     > {}
 
 interface GetDeploymentTemplateInitialStateParamsType {
@@ -302,6 +303,7 @@ export const getDeploymentTemplateInitialState = ({
     selectedProtectionViewTab: ProtectConfigTabsType.EDIT_DRAFT,
     isLoadingChangedChartDetails: false,
     areCommentsPresent: false,
+    migratedFrom: null,
 })
 
 const handleSwitchToYAMLMode = (state: DeploymentTemplateStateType): DeploymentTemplateStateType => {
@@ -469,6 +471,7 @@ export const deploymentTemplateReducer = (
                 chartDetails,
                 lockedConfigKeysWithLockType,
                 currentEditorTemplateData,
+                migratedFrom,
             } = action.payload
 
             return {
@@ -480,6 +483,7 @@ export const deploymentTemplateReducer = (
                 currentEditorTemplateData,
                 isLoadingInitialData: false,
                 initialLoadError: null,
+                migratedFrom,
             }
         }
 
@@ -492,6 +496,7 @@ export const deploymentTemplateReducer = (
                 draftTemplateData,
                 currentEditorTemplateData,
                 selectedProtectionViewTab,
+                migratedFrom,
             } = action.payload
 
             return {
@@ -506,6 +511,7 @@ export const deploymentTemplateReducer = (
                 areCommentsPresent: draftTemplateData?.latestDraft?.commentsCount > 0,
                 isLoadingInitialData: false,
                 initialLoadError: null,
+                migratedFrom,
             }
         }
 

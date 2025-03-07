@@ -366,7 +366,7 @@ export interface ValidationRulesType {
         props: ValidateInputOutputVariableCellProps,
     ) => DynamicDataTableCellValidationState
     conditionDetail: (value: object) => ErrorObj
-    sourceValue: (value: string) => ErrorObj
+    sourceValue: (value: string, doRegexValidation: boolean) => ErrorObj
     mountPathMap: (value: object) => ErrorObj
 }
 export interface SourceMaterialsProps {
