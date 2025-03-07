@@ -1422,7 +1422,9 @@ button.anchor {
     }
 }
 
-.shimmer, .show-shimmer-loading .child-shimmer-loading, .shimmer-loading {
+.shimmer,
+.show-shimmer-loading .child-shimmer-loading,
+.shimmer-loading {
     background: var(--bg-shimmer-loader);
     border-radius: 4px;
     opacity: 0.5;
@@ -4929,7 +4931,7 @@ details[open] {
     gap: 24px;
     align-items: center;
 
-    & > :not(:first-child) {
+    &> :not(:first-child) {
         position: relative;
 
         &::before {
@@ -4948,7 +4950,7 @@ details[open] {
     &--tight {
         gap: 1px;
 
-        & > :not(:first-child)::before {
+        &> :not(:first-child)::before {
             left: -1px;
         }
     }
@@ -4956,7 +4958,7 @@ details[open] {
     &--gap-8 {
         gap: 16px;
 
-        & > :not(:first-child)::before {
+        &> :not(:first-child)::before {
             left: -8px;
         }
     }
@@ -4966,7 +4968,7 @@ details[open] {
         align-items: unset;
         flex-direction: column;
 
-        & > :not(:first-child)::before {
+        &> :not(:first-child)::before {
             top: -20px;
             left: 0px;
             width: 100%;
@@ -4982,11 +4984,16 @@ details[open] {
     background: inherit;
     border: none;
     padding: inherit;
-    white-space: pre-wrap;       /* Since CSS 2.1 */
-    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
-    white-space: -pre-wrap;      /* Opera 4-6 */
-    white-space: -o-pre-wrap;    /* Opera 7 */
-    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    white-space: pre-wrap;
+    /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;
+    /* Mozilla, since 1999 */
+    white-space: -pre-wrap;
+    /* Opera 4-6 */
+    white-space: -o-pre-wrap;
+    /* Opera 7 */
+    word-wrap: break-word;
+    /* Internet Explorer 5.5+ */
 }
 
 .vertical-divider {
@@ -5013,35 +5020,52 @@ details[open] {
 }
 
 .code-editor__warning {
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.33;
-  letter-spacing: normal;
-  color: var(--N900);
-  height: auto;
-  padding: 8px 16px;
-  border-bottom: 1px solid var(--Y200);
-  background-color: var(--Y100);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.33;
+    letter-spacing: normal;
+    color: var(--N900);
+    height: auto;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--Y200);
+    background-color: var(--Y100);
 }
 
 .code-editor__error {
-  background-color: var(--O100);
-  color: var(--O500);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.33;
-  padding: 8px 16px;
-  border-bottom: 1px solid var(--N200);
+    background-color: var(--O100);
+    color: var(--O500);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.33;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--N200);
 }
 
 .code-editor__information {
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.33;
-  letter-spacing: normal;
-  color: var(--N900);
-  height: auto;
-  padding: 8px 16px;
-  border-bottom: 1px solid var(--N200);
-  background-color: var(--B100);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.33;
+    letter-spacing: normal;
+    color: var(--N900);
+    height: auto;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--N200);
+    background-color: var(--B100);
 }
+
+.deploy-config-collapsible-layout {
+    transition: grid-template-columns 0.3s;
+
+    &.release-config-layout {
+        grid-template-columns: 255px 1fr;
+    }
+
+    &:has(.deployment-config__comments-view) {
+        grid-template-columns: 0 1fr !important;
+        
+        .collapsible-sidebar {
+            overflow: hidden;
+        }
+    }
+}
+

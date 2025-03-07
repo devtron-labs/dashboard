@@ -173,9 +173,9 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
                 }}
             </Route>
             <Route>
-                <div className="env-compose flex-grow-1">
+                <div className="env-compose deploy-config-collapsible-layout flex-grow-1">
                     <div
-                        className={`env-compose__nav ${pathname.match(ENV_CONFIG_PATH_REG) ? 'env-configurations' : ''}`}
+                        className={`env-compose__nav collapsible-sidebar ${pathname.match(ENV_CONFIG_PATH_REG) ? 'env-configurations' : ''}`}
                     >
                         <ApplicationRoute
                             key={appId}
