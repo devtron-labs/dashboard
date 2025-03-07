@@ -24,7 +24,7 @@ export const ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE = '#'
 export const allApplicationsOption = ({ entity, team }: DirectPermissionsRoleFilter): SelectPickerOptionType => ({
     label: entity === EntityTypes.JOB ? 'All Jobs' : 'All applications',
     value: SELECT_ALL_VALUE,
-    description: `All ${entity === EntityTypes.JOB ? 'jobs' : 'applications'} in '${team?.label}'`,
+    description: `All existing and future ${entity === EntityTypes.JOB ? 'jobs' : 'applications'} in '${team?.label}'`,
 })
 
 export const SELECT_ALL_OPTION = {
@@ -35,6 +35,7 @@ export const SELECT_ALL_OPTION = {
 export const ALL_ENVIRONMENTS_OPTION = {
     label: 'All environments',
     value: SELECT_ALL_VALUE,
+    description: 'All existing and future environments',
 } as const
 
 export const emptyDirectPermissionDevtronApps: DirectPermissionsRoleFilter = {

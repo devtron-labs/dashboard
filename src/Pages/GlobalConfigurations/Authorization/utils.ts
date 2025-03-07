@@ -473,6 +473,7 @@ export const createUserPermissionPayload = ({
 export const validateDirectPermissionForm = (
     directPermission: PermissionConfigurationFormContext['directPermission'],
     setDirectPermission: PermissionConfigurationFormContext['setDirectPermission'],
+    allowManageAllAccess: boolean,
     showErrorToast: boolean = true,
 ): {
     isValid: boolean
@@ -487,6 +488,7 @@ export const validateDirectPermissionForm = (
         (permission) => {
             let isErrorInCurrentItem = false
             const updatedPermission = structuredClone(permission)
+            const { roleConfig } = updatedPermission
 
             if (updatedPermission.team) {
                 if (updatedPermission.entityName.length === 0) {
@@ -503,6 +505,21 @@ export const validateDirectPermissionForm = (
                 }
                 if (updatedPermission.roleConfigError) {
                     isErrorInCurrentItem = true
+                }
+
+                if (allowManageAllAccess) {
+                    if (!roleConfig.baseRole && !roleConfig.additionalRoles.size) {
+                        isErrorInCurrentItem = true
+                        updatedPermission.roleConfigError = true
+                        updatedPermission.roleConfig.accessManagerRoles = new Set()
+                    }
+                } else if (
+                    !roleConfig.baseRole &&
+                    !roleConfig.additionalRoles.size &&
+                    !roleConfig.accessManagerRoles.size
+                ) {
+                    isErrorInCurrentItem = true
+                    updatedPermission.roleConfigError = true
                 }
             }
 

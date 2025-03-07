@@ -24,7 +24,8 @@ const DeprecatedTag = importComponentFromFELibrary('DeprecatedTag', null, 'funct
 
 const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: RoleSelectorProps) => {
     const { customRoles } = useAuthorizationContext()
-    const { allowManageAllAccess, isLoggedInUserSuperAdmin } = usePermissionConfiguration()
+    const { allowManageAllAccess, isLoggedInUserSuperAdmin, canManageAllAccess, hasManagerPermissions } =
+        usePermissionConfiguration()
     const { accessType, roleConfig, team, roleConfigError } = permission
     const [toggleConfig, setToggleConfig] = useState<RoleSelectorToggleConfig>(getDefaultRolesToggleConfig(roleConfig))
 
@@ -100,8 +101,16 @@ const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: Ro
                 customRoles: customRoles.customRoles,
                 accessType,
                 showAccessRoles: isLoggedInUserSuperAdmin && !allowManageAllAccess,
+                showDeploymentApproverRole: canManageAllAccess || hasManagerPermissions || isLoggedInUserSuperAdmin,
             }),
-        [customRoles, accessType, isLoggedInUserSuperAdmin, allowManageAllAccess],
+        [
+            customRoles,
+            accessType,
+            isLoggedInUserSuperAdmin,
+            allowManageAllAccess,
+            canManageAllAccess,
+            hasManagerPermissions,
+        ],
     )
 
     const formatOptionLabel = ({ value, label, description, roleType }: RoleSelectorOptionType) => {

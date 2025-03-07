@@ -46,7 +46,7 @@ export const PermissionConfigurationFormProvider = ({
     showStatus: boolean
 }) => {
     // isLoggedInUserSuperAdmin and canManageAllAccess here denotes permissions for the logged in user
-    const { isSuperAdmin: isLoggedInUserSuperAdmin, canManageAllAccess } = useGetUserRoles()
+    const { isSuperAdmin: isLoggedInUserSuperAdmin, canManageAllAccess, hasManagerPermissions } = useGetUserRoles()
     const [isSaveDisabled, setIsSaveDisabled] = useState(false)
     const [permissionType, setPermissionType] = useState<PermissionType>(PermissionType.SPECIFIC)
     const [allowManageAllAccess, setAllowManageAllAccess] = useState<boolean>()
@@ -137,6 +137,7 @@ export const PermissionConfigurationFormProvider = ({
             setAllowManageAllAccess,
             isLoggedInUserSuperAdmin,
             canManageAllAccess,
+            hasManagerPermissions,
         }),
         [
             permissionType,
@@ -160,6 +161,7 @@ export const PermissionConfigurationFormProvider = ({
             setAllowManageAllAccess,
             isLoggedInUserSuperAdmin,
             canManageAllAccess,
+            hasManagerPermissions,
         ],
     )
 
