@@ -488,6 +488,7 @@ export const validateDirectPermissionForm = (
         (permission) => {
             let isErrorInCurrentItem = false
             const updatedPermission = structuredClone(permission)
+            const { roleConfig } = updatedPermission
 
             if (updatedPermission.team) {
                 if (updatedPermission.entityName.length === 0) {
@@ -506,7 +507,14 @@ export const validateDirectPermissionForm = (
                     isErrorInCurrentItem = true
                 }
 
-                if (allowManageAllAccess && !!updatedPermission.roleConfig.accessManagerRoles.size) {
+                // handing for case when allowManageAllAccess is true and baseRoles are off
+                // here we do not clear accessManagerRoles from directPermission state so checking error explicitly
+                if (
+                    allowManageAllAccess &&
+                    !!roleConfig.accessManagerRoles.size &&
+                    !roleConfig.baseRole &&
+                    !roleConfig.additionalRoles.size
+                ) {
                     isErrorInCurrentItem = true
                     updatedPermission.roleConfigError = true
                 }
