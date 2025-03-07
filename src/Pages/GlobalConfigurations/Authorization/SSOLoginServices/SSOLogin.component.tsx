@@ -43,6 +43,9 @@ import {
     ComponentSizeType,
     ConfirmationModal,
     ConfirmationModalVariantType,
+    MODES,
+    isCodeMirrorEnabled,
+    SSOProviderIcon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import yamlJsParser from 'yaml'
 import Check from '@Icons/ic-selected-corner.png'
@@ -72,7 +75,6 @@ import {
     SsoSecretsToHide,
 } from './constants'
 import './ssoLogin.scss'
-import { SSOTabIcons } from './utils'
 
 const AutoAssignToggleTile = importComponentFromFELibrary('AutoAssignToggleTile')
 const UserPermissionConfirmationModal = importComponentFromFELibrary('UserPermissionConfirmationModal')
@@ -89,7 +91,7 @@ const SSOLoginTab: React.FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastA
         />
         <span className="dc__tertiary-tab sso-icons" data-testid={`sso-${value}-button`}>
             <aside className="login__icon-alignment">
-                <SSOTabIcons provider={value} />
+                <SSOProviderIcon provider={value} size={24} />
             </aside>
             <aside className="login__text-alignment">{SSOName}</aside>
             <label>
@@ -151,7 +153,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 if (ssoConfig) {
                     this.setState({ sso: ssoConfig?.name, lastActiveSSO: ssoConfig })
                 } else {
-                    ssoConfig = sample.google
+                    ssoConfig = sample.google as any // TODO: Add type for sample
                     this.setState({ sso: 'google', ssoConfig: this.parseResponse(ssoConfig) })
                 }
                 // Would be undefined for OSS
@@ -630,17 +632,15 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }
         const value = YAMLStringify(newConfig)
 
-        setTimeout(() => {
-            this.setState({
-                ssoConfig: {
-                    ...this.state.ssoConfig,
-                    config: {
-                        ...this.state.ssoConfig.config,
-                        config: value,
-                    },
+        this.setState({
+            ssoConfig: {
+                ...this.state.ssoConfig,
+                config: {
+                    ...this.state.ssoConfig.config,
+                    config: value,
                 },
-            })
-        }, 0)
+            },
+        })
     }
 
     renderSSOCodeEditor() {
@@ -660,7 +660,9 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             this.state.configMap === SwitchItemValues.Configuration ? ssoConfig : YAMLStringify(sample[this.state.sso])
 
         let presetConfig = (
-            <div className="w-100 code-editor__text">
+            <div
+                className={`w-100 code-editor__text ${!isCodeMirrorEnabled() ? 'code-editor__text--monaco-editor' : ''}`}
+            >
                 <p className="m-0">config:</p>
                 <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
                 <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;name: {this.state.ssoConfig.config.name}</p>
@@ -671,7 +673,9 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
         if (this.state.configMap === SwitchItemValues.Configuration && this.state.sso === OIDCType) {
             presetConfig = (
-                <div className="w-100 code-editor__text">
+                <div
+                    className={`w-100 code-editor__text ${!isCodeMirrorEnabled() ? 'code-editor__text--monaco-editor' : ''}`}
+                >
                     <p className="m-0">config:</p>
                     <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
                 </div>
@@ -682,17 +686,27 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
         const decorationWidth = this.state.sso !== OIDCType ? 50 : 25
         return (
-            <div className="br-4 dc__border w-100 dc__overflow-hidden">
+            <CodeEditor.Container>
                 <CodeEditor
-                    value={codeEditorBody}
-                    mode="yaml"
+                    mode={MODES.YAML}
                     noParsing={this.state.sso === OIDCType}
-                    lineDecorationsWidth={this.state.configMap === SwitchItemValues.Configuration ? decorationWidth : 0}
-                    shebang={shebangHtml}
                     readOnly={this.state.configMap !== SwitchItemValues.Configuration}
-                    onChange={this.handleConfigChange}
-                    onBlur={this.handleOnBlur}
-                    adjustEditorHeightToContent
+                    codeEditorProps={{
+                        value: codeEditorBody,
+                        shebang: shebangHtml,
+                        lineDecorationsWidth:
+                            this.state.configMap === SwitchItemValues.Configuration ? decorationWidth : 0,
+                        onChange: this.handleConfigChange,
+                        onBlur: this.handleOnBlur,
+                        adjustEditorHeightToContent: true,
+                    }}
+                    codeMirrorProps={{
+                        value: codeEditorBody,
+                        shebang: shebangHtml,
+                        onChange: this.handleConfigChange,
+                        onBlur: this.handleOnBlur,
+                        height: 'auto',
+                    }}
                 >
                     <CodeEditor.Header>
                         <div className="flex dc__content-space dc__gap-6">
@@ -712,7 +726,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </div>
                     </CodeEditor.Header>
                 </CodeEditor>
-            </div>
+            </CodeEditor.Container>
         )
     }
 
