@@ -33,7 +33,7 @@ export const SELECT_ALL_OPTION = {
 } as const
 
 export const ALL_ENVIRONMENTS_OPTION = {
-    label: 'All environments',
+    label: 'All existing + future environments',
     value: SELECT_ALL_VALUE,
 } as const
 

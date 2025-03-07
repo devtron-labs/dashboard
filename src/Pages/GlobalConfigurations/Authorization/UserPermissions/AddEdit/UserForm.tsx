@@ -131,7 +131,10 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
     }
 
     const handleSubmit = async () => {
-        if (!validateForm() || !validateDirectPermissionForm(directPermission, setDirectPermission).isValid) {
+        if (
+            !validateForm() ||
+            !validateDirectPermissionForm(directPermission, setDirectPermission, allowManageAllAccess).isValid
+        ) {
             return
         }
 

@@ -473,6 +473,7 @@ export const createUserPermissionPayload = ({
 export const validateDirectPermissionForm = (
     directPermission: PermissionConfigurationFormContext['directPermission'],
     setDirectPermission: PermissionConfigurationFormContext['setDirectPermission'],
+    allowManageAllAccess: boolean,
     showErrorToast: boolean = true,
 ): {
     isValid: boolean
@@ -503,6 +504,11 @@ export const validateDirectPermissionForm = (
                 }
                 if (updatedPermission.roleConfigError) {
                     isErrorInCurrentItem = true
+                }
+
+                if (allowManageAllAccess && !!updatedPermission.roleConfig.accessManagerRoles.size) {
+                    isErrorInCurrentItem = true
+                    updatedPermission.roleConfigError = true
                 }
             }
 

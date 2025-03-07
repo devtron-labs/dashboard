@@ -269,6 +269,7 @@ export const getRoleOptions = ({
     customRoles,
     accessType,
     showAccessRoles,
+    showDeploymentApproverRole,
 }: GetRoleConfigParams): Options<GroupBase<RoleSelectorOptionType>> => {
     const baseRoles: RoleSelectorOptionType[] = customRoles
         .filter(
@@ -292,7 +293,7 @@ export const getRoleOptions = ({
             ? [
                   {
                       label: 'Additional role',
-                      options: getAdditionalRolesAccordingToAccess(customRoles, accessType),
+                      options: getAdditionalRolesAccordingToAccess(customRoles, accessType, showDeploymentApproverRole),
                   },
               ]
             : []),
@@ -352,11 +353,6 @@ export const getRoleSelectorStyles = (error?: boolean) => ({
         ':hover': {
             backgroundColor: 'var(--bg-hover)',
         },
-
-        ...(state.isDisabled && {
-            cursor: 'not-allowed',
-            opacity: 0.5,
-        }),
     }),
     group: (base) => ({
         ...base,

@@ -74,6 +74,10 @@ export interface PermissionConfigurationFormContext {
      * for logged in user
      */
     canManageAllAccess: boolean
+    /**
+     * for logged in user
+     */
+    hasManagerPermissions: boolean
 }
 
 export type AccessTypeToErrorMapType = Record<
