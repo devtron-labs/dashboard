@@ -27,6 +27,7 @@ import {
     SelectPickerOptionType,
     ServerErrors,
     CMSecretComponentType,
+    PipelineMigratedFromType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { FunctionComponent, MutableRefObject, ReactNode } from 'react'
 import { DeploymentTemplateStateType } from './DeploymentTemplate/types'
@@ -191,6 +192,7 @@ export interface GetConfigToolbarPopupConfigProps {
     isDeleteOverrideDraftPresent?: boolean
     isDeleteDisabled?: boolean
     deleteDisabledTooltip?: string
+    migratedFrom?: PipelineMigratedFromType
 }
 
 type ConfigDryRunManifestProps =
