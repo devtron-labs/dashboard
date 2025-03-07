@@ -113,7 +113,7 @@ const EditAPIToken = ({
     }
 
     const handleUpdatedToken = async (tokenId) => {
-        if (!validateDirectPermissionForm(directPermission, setDirectPermission).isValid) {
+        if (!validateDirectPermissionForm(directPermission, setDirectPermission, allowManageAllAccess).isValid) {
             return
         }
 

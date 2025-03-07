@@ -83,6 +83,7 @@ const AppPermissions = () => {
         setIsSaveDisabled,
         isLoggedInUserSuperAdmin,
         canManageAllAccess,
+        allowManageAllAccess,
     } = usePermissionConfiguration()
     const { customRoles } = useAuthorizationContext()
     const { url, path } = useRouteMatch()
@@ -919,6 +920,7 @@ const AppPermissions = () => {
         const { accessTypeToErrorMap: _accessTypeToErrorMap } = validateDirectPermissionForm(
             directPermission,
             setDirectPermission,
+            allowManageAllAccess,
             false,
         )
         setAccessTypeToErrorMap(_accessTypeToErrorMap)

@@ -99,7 +99,10 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
             setName((_name) => ({ ..._name, error: 'Group name is mandatory' }))
             return
         }
-        if (!isSuperAdminPermission && !validateDirectPermissionForm(directPermission, setDirectPermission).isValid) {
+        if (
+            !isSuperAdminPermission &&
+            !validateDirectPermissionForm(directPermission, setDirectPermission, allowManageAllAccess).isValid
+        ) {
             return
         }
         setSubmitting(true)

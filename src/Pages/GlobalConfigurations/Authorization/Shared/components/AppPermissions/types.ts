@@ -131,4 +131,5 @@ export interface GetRoleConfigParams {
     customRoles: CustomRoles[]
     accessType: ACCESS_TYPE_MAP
     showAccessRoles: boolean
+    showDeploymentApproverRole: boolean
 }
