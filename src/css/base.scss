@@ -5053,18 +5053,19 @@ details[open] {
     background-color: var(--B100);
 }
 
-.release-config-layout {
-    grid-template-columns: 255px 1fr;
-}
-
 .deploy-config-collapsible-layout {
     transition: grid-template-columns 0.3s;
-}
 
-.deploy-config-collapsible-layout:has(.deployment-config__comments-view) {
-    grid-template-columns: 0 1fr !important;
-    
-    .collapsible-sidebar {
-        overflow: hidden;
+    &.release-config-layout {
+        grid-template-columns: 255px 1fr;
+    }
+
+    &:has(.deployment-config__comments-view) {
+        grid-template-columns: 0 1fr !important;
+        
+        .collapsible-sidebar {
+            overflow: hidden;
+        }
     }
 }
+
