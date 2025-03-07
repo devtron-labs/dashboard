@@ -142,6 +142,7 @@ a:focus {
     position: sticky;
     top: 0px;
     overflow: visible;
+    flex-shrink: 0;
 }
 
 .dc__page-header__height {

@@ -180,6 +180,7 @@
 .pod-terminal-hidden {
     visibility: hidden;
     height: 0;
+    flex-grow: 0;
     .terminal-action-strip {
         display: none;
     }

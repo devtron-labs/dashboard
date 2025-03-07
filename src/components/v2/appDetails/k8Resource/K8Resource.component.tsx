@@ -135,10 +135,13 @@ export const K8ResourceComponent = ({
     }
 
     return (
-        <div className="bg__primary flexbox flex-grow-1" style={{ justifyContent: 'space-between' }}>
+        <div className="bg__primary flexbox flex-grow-1 dc__overflow-hidden">
             {nodes.length > 0 ? (
                 <div className="flex-grow-1 flexbox" data-testid="resource-node-wrapper">
-                    <div className="k8-resources-node-tree dc__border-right--n1" data-testid="k8-resources-node-tree">
+                    <div
+                        className="dc__border-right--n1 dc__overflow-hidden flexbox-col dc__no-shrink w-250"
+                        data-testid="k8-resources-node-tree"
+                    >
                         <div className="pt-16 pb-15 px-16 border__secondary--bottom">
                             <StatusFilterButtonComponent
                                 nodes={nodes}
@@ -147,7 +150,7 @@ export const K8ResourceComponent = ({
                                 maxInlineFiltersCount={3}
                             />
                         </div>
-                        <div className="py-8 px-12">
+                        <div className="py-8 px-12 dc__overflow-auto">
                             <NodeTreeComponent
                                 clickedNodes={clickedNodes}
                                 registerNodeClick={registerNodeClick}
@@ -155,7 +158,7 @@ export const K8ResourceComponent = ({
                             />
                         </div>
                     </div>
-                    <div className="flex-grow-1-imp p-0" data-testid="k8-resources-node-details">
+                    <div className="flex-grow-1 dc__overflow-auto" data-testid="k8-resources-node-details">
                         <NodeComponent
                             externalLinks={externalLinks}
                             monitoringTools={monitoringTools}

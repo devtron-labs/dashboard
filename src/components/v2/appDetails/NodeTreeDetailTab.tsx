@@ -124,7 +124,7 @@ const NodeTreeDetailTab = ({
                         }}
                     />
                 </div>
-                <div className="flexbox-col w-100 flex-grow-1">
+                <div className="flexbox-col w-100 flex-grow-1 dc__overflow-hidden">
                     <Switch>
                         <Route
                             path={[
