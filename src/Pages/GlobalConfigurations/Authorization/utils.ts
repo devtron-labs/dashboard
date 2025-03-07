@@ -507,16 +507,19 @@ export const validateDirectPermissionForm = (
                     isErrorInCurrentItem = true
                 }
 
-                // handing for case when allowManageAllAccess is true and baseRoles are off
-                // here we do not clear accessManagerRoles from directPermission state so checking error explicitly and clear accessRoles
-                if (!roleConfig.baseRole && !roleConfig.additionalRoles.size) {
-                    if (allowManageAllAccess && !!roleConfig.accessManagerRoles.size) {
+                if (allowManageAllAccess) {
+                    if (!roleConfig.baseRole && !roleConfig.additionalRoles.size) {
                         isErrorInCurrentItem = true
                         updatedPermission.roleConfigError = true
                         updatedPermission.roleConfig.accessManagerRoles = new Set()
-                    } else {
-                        updatedPermission.roleConfigError = false
                     }
+                } else if (
+                    !roleConfig.baseRole &&
+                    !roleConfig.additionalRoles.size &&
+                    !roleConfig.accessManagerRoles.size
+                ) {
+                    isErrorInCurrentItem = true
+                    updatedPermission.roleConfigError = true
                 }
             }
 
