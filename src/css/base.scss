@@ -2978,6 +2978,10 @@ button.anchor {
     width: 130px;
 }
 
+.w-140 {
+    width: 140px;
+}
+
 .w-150 {
     width: 150px;
 }
@@ -4136,6 +4140,11 @@ textarea::placeholder {
 }
 
 // opacity
+
+.dc__opacity-0 {
+    opacity: 0;
+}
+
 .dc__opacity-0_2 {
     opacity: 0.2;
 }

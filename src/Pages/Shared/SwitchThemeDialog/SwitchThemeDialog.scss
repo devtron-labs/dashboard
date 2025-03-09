@@ -1,0 +1,16 @@
+.theme-preference-option {
+    &__auto-figure {
+        grid-template-columns: repeat(12, 1fr);
+        grid-template-rows: 1fr;
+
+        &--light {
+            grid-column: 1 / -1;
+            grid-row: 1 / -1;
+        }
+
+        &--dark {
+            grid-column: 7 / -1;
+            grid-row: 1 / -1;
+        }
+    }
+}
