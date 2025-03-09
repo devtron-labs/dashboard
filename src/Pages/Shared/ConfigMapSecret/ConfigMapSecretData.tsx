@@ -319,25 +319,27 @@ export const ConfigMapSecretData = ({
                         shebang: sheBangText,
                     }}
                 >
-                    <CodeEditor.Header className="configmap-secret-form__code-editor flex right dc__gap-6 py-6 px-12 bg__secondary dc__border-bottom fs-13 lh-20">
-                        {!isHashiOrAWS && data.external ? (
-                            <StyledRadioGroup
-                                name="code-editor-radio"
-                                className="gui-yaml-switch"
-                                initialTab={codeEditorRadio}
-                                onChange={handleCodeEditorRadioChange}
-                            >
-                                {Object.keys(CODE_EDITOR_RADIO_STATE).map((key) => (
-                                    <StyledRadioGroup.Radio key={key} value={CODE_EDITOR_RADIO_STATE[key]}>
-                                        {CODE_EDITOR_RADIO_STATE_VALUE[key]}
-                                    </StyledRadioGroup.Radio>
-                                ))}
-                            </StyledRadioGroup>
-                        ) : null}
-                        <div className="flexbox dc__align-items-center dc__gap-8">
-                            {renderSecretShowHide()}
-                            <div className="flex p-4">
-                                <CodeEditor.Clipboard />
+                    <CodeEditor.Header>
+                        <div className="flex dc__content-space">
+                            {!isHashiOrAWS && data.external ? (
+                                <StyledRadioGroup
+                                    name="code-editor-radio"
+                                    className="gui-yaml-switch"
+                                    initialTab={codeEditorRadio}
+                                    onChange={handleCodeEditorRadioChange}
+                                >
+                                    {Object.keys(CODE_EDITOR_RADIO_STATE).map((key) => (
+                                        <StyledRadioGroup.Radio key={key} value={CODE_EDITOR_RADIO_STATE[key]}>
+                                            {CODE_EDITOR_RADIO_STATE_VALUE[key]}
+                                        </StyledRadioGroup.Radio>
+                                    ))}
+                                </StyledRadioGroup>
+                            ) : null}
+                            <div className="flex right dc__gap-8 ml-auto">
+                                {renderSecretShowHide()}
+                                <div className="flex p-4">
+                                    <CodeEditor.Clipboard />
+                                </div>
                             </div>
                         </div>
                     </CodeEditor.Header>

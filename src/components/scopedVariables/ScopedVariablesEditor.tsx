@@ -234,7 +234,7 @@ export default function ScopedVariablesEditor({
                         }}
                     >
                         {showSaveView && (
-                            <CodeEditor.Header hideDefaultSplitHeader diffViewWidth>
+                            <CodeEditor.Header hideDefaultSplitHeader>
                                 <p className="m-0 fs-12 fw-6 cn-7">Last Saved File</p>
                                 <p className="m-0 fs-12 fw-6 cn-7 pl-16 flex left dc__gap-4">
                                     <ICPencil className="icon-dim-16" />
