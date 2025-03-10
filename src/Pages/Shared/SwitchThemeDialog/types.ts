@@ -13,12 +13,13 @@ export type SwitchThemeDialogProps = {
           currentUserPreferences: UserPreferencesType
           /**
            * @default false
+           * @description Required for storybook
            */
-          mockAPICalls?: false
+          disableAPICalls?: false
       }
     | {
           currentUserPreferences?: never
-          mockAPICalls: true
+          disableAPICalls: true
       }
 )
 

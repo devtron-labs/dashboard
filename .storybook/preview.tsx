@@ -22,7 +22,7 @@ const SwitchThemeDialogWrapper = () => {
     }
 
     return (
-        showThemeSwitcherDialog ? <SwitchThemeDialog initialThemePreference={themePreference} handleClose={handleClose} mockAPICalls /> : null
+        showThemeSwitcherDialog ? <SwitchThemeDialog initialThemePreference={themePreference} handleClose={handleClose} disableAPICalls /> : null
     )
 }
 
