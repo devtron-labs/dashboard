@@ -72,7 +72,6 @@ export function deleteCDPipeline(
         isTemplateView: AppConfigProps['isTemplateView']
     },
 ) {
-    let URL
     const baseQueryParams = {
         ...(force ? { force } : {}),
         ...(cascadeDelete ? { cascade: cascadeDelete } : {}),
