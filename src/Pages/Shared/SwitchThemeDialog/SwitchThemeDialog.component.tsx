@@ -81,6 +81,8 @@ const ThemePreferenceOption = ({
                 value={value}
                 checked={isSelected}
                 onChange={handleChange}
+                // eslint-disable-next-line jsx-a11y/no-autofocus
+                autoFocus={isSelected}
                 className="theme-preference-option__input m-0 dc__position-abs dc__opacity-0 dc__disable-click"
             />
 
