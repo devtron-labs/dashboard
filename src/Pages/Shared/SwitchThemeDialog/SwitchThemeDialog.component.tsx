@@ -29,9 +29,9 @@ const THEME_PREFERENCE_OPTION_LIST: ThemePreferenceOptionProps['value'][] = Obje
 
 const BaseLabelFigure = ({ isSelected, value, noLeftRadius = false }: BaseLabelFigureProps) => (
     <div
-        className={`${isSelected ? 'br-8' : 'br-12'} ${noLeftRadius ? 'dc__no-left-radius' : ''} ${getComponentSpecificThemeClass(value)} h-100 pt-16 pl-16 border__secondary-translucent bg__tertiary`}
+        className={`${isSelected ? 'br-8' : 'br-12'} ${noLeftRadius ? 'dc__no-left-radius' : ''} ${getComponentSpecificThemeClass(value)} h-100 pt-16 pl-16 border__secondary-translucent bg__tertiary dc__overflow-hidden`}
     >
-        <div className="py-8 px-16 border__primary--top border__primary--left dc__top-left-radius h-100">
+        <div className="py-8 px-16 bg__primary border__primary--top border__primary--left dc__top-left-radius-8 h-100">
             <span className="cn-9 fs-24 fw-6 lh-36">Aa</span>
         </div>
     </div>
@@ -86,7 +86,9 @@ const ThemePreferenceOption = ({
             <label htmlFor={inputId} className="m-0 cursor w-100">
                 <div className="flexbox-col dc__gap-6 w-100">
                     <div className="h-100px-imp w-100">
-                        <div className={`br-12 h-100 ${isSelected ? 'eb-5 bw-1 p-4' : ''}`}>
+                        <div
+                            className={`br-12 h-100 ${isSelected ? 'eb-5 bw-2 p-4' : 'theme-preference-option__label-container'}`}
+                        >
                             <ThemePreferenceLabelFigure value={value} isSelected={isSelected} />
                         </div>
                     </div>
