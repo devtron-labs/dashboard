@@ -97,7 +97,7 @@ const NodeTreeDetailTab = ({
     return (
         appDetails?.resourceTree?.nodes?.length > 0 &&
         tabs.length && (
-            <div className="dc__position-sticky dc__top-0 h-100 dc__no-shrink flexbox-col">
+            <div className="dc__position-sticky dc__top-0 h-100 dc__no-shrink flexbox-col node-tree-details-wrapper">
                 <div className="bg__primary pt-7 dc__no-shrink">
                     <DynamicTabs
                         variant={DynamicTabsVariantType.ROUNDED}
