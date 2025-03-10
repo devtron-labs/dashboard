@@ -1,8 +1,13 @@
 import { AppThemeType, UserPreferencesType, useTheme } from '@devtron-labs/devtron-fe-common-lib'
 
-export interface SwitchThemeDialogProps {
-    initialThemePreference: ReturnType<typeof useTheme>['themePreference']
-    handleClose: () => void
+type ThemePreferenceType = ReturnType<typeof useTheme>['themePreference']
+
+export interface SwitchThemeDialogProps extends Pick<ReturnType<typeof useTheme>, 'handleThemePreferenceChange'> {
+    /**
+     * @description The initial theme preference of the user fetched from api, in case of error would be null
+     */
+    initialThemePreference: ThemePreferenceType
+    handleClose: (updatedThemePreference: ThemePreferenceType) => void
     currentUserPreferences: UserPreferencesType
 }
 

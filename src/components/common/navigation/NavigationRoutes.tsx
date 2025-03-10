@@ -77,6 +77,7 @@ import { TAB_DATA_LOCAL_STORAGE_KEY } from '../DynamicTabs/constants'
 import { DEFAULT_GIT_OPS_FEATURE_FLAGS } from './constants'
 import { ParsedTabsData, ParsedTabsDataV1 } from '../DynamicTabs/types'
 import { SwitchThemeDialog } from '@Pages/Shared'
+import { SwitchThemeDialogProps } from '@Pages/Shared/SwitchThemeDialog/types'
 
 // Monaco Editor worker initialization
 self.MonacoEnvironment = {
@@ -158,7 +159,8 @@ export default function NavigationRoutes() {
     const [userPreferences, setUserPreferences] = useState<UserPreferencesType>(null)
     const [userPreferencesError, setUserPreferencesError] = useState<ServerErrors>(null)
 
-    const { showThemeSwitcherDialog, handleThemeSwitcherDialogVisibilityChange } = useTheme()
+    const { showThemeSwitcherDialog, handleThemeSwitcherDialogVisibilityChange, handleThemePreferenceChange } =
+        useTheme()
 
     const { isAirgapped, isManifestScanningEnabled, canOnlyViewPermittedEnvOrgLevel } = environmentDataState
 
@@ -219,7 +221,11 @@ export default function NavigationRoutes() {
         }
     }
 
-    const handleCloseSwitchThemeDialog = () => {
+    const handleCloseSwitchThemeDialog: SwitchThemeDialogProps['handleClose'] = (updatedThemePreference) => {
+        setUserPreferences((prev) => ({
+            ...prev,
+            themePreference: updatedThemePreference,
+        }))
         handleThemeSwitcherDialogVisibilityChange(false)
     }
 
@@ -350,10 +356,11 @@ export default function NavigationRoutes() {
         }
     }
 
-
     const handleInitializeUserPreferencesFromResponse = (userPreferencesResponse: UserPreferencesType) => {
         if (window._env_.FEATURE_EXPERIMENTAL_THEMING_ENABLE && !userPreferencesResponse?.themePreference) {
             handleThemeSwitcherDialogVisibilityChange(true)
+        } else if (userPreferencesResponse?.themePreference) {
+            handleThemePreferenceChange(userPreferencesResponse?.themePreference)
         }
 
         setUserPreferences(userPreferencesResponse)
@@ -500,6 +507,7 @@ export default function NavigationRoutes() {
                         initialThemePreference={userPreferences?.themePreference}
                         handleClose={handleCloseSwitchThemeDialog}
                         currentUserPreferences={userPreferences}
+                        handleThemePreferenceChange={handleThemePreferenceChange}
                     />
                 )}
 

@@ -6,6 +6,7 @@ import {
     getAppThemeForAutoPreference,
     AppThemeType,
     getComponentSpecificThemeClass,
+    useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     BaseLabelFigureProps,
@@ -99,7 +100,13 @@ const ThemePreferenceOption = ({
     )
 }
 
-const SwitchThemeDialog = ({ initialThemePreference, handleClose, currentUserPreferences }: SwitchThemeDialogProps) => {
+const SwitchThemeDialog = ({
+    initialThemePreference,
+    handleClose,
+    currentUserPreferences,
+    handleThemePreferenceChange,
+}: SwitchThemeDialogProps) => {
+    const { handleShowSwitchThemeLocationTippyChange } = useTheme()
     const [themePreference, setThemePreference] = useState<typeof initialThemePreference>(initialThemePreference)
     const [isSaving, setIsSaving] = useState<boolean>(false)
 
@@ -107,13 +114,19 @@ const SwitchThemeDialog = ({ initialThemePreference, handleClose, currentUserPre
         setIsSaving(true)
         const isSuccessful = await updateUserPreferences({ ...currentUserPreferences, themePreference })
         if (isSuccessful) {
-            handleClose()
+            handleShowSwitchThemeLocationTippyChange(!initialThemePreference)
+            handleClose(themePreference)
         }
         setIsSaving(false)
     }
 
     const handleChangedThemePreference: ThemePreferenceOptionProps['handleChangedThemePreference'] = (value) => {
+        handleThemePreferenceChange(value)
         setThemePreference(value)
+    }
+
+    const handleCloseModal = () => {
+        handleClose(initialThemePreference)
     }
 
     return (
@@ -121,14 +134,13 @@ const SwitchThemeDialog = ({ initialThemePreference, handleClose, currentUserPre
             title="Appearance"
             subtitle="Choose an interface theme preference"
             variant={ConfirmationModalVariantType.custom}
-            handleClose={!initialThemePreference ? null : handleClose}
-            shouldCloseOnEscape={!initialThemePreference}
+            handleClose={!initialThemePreference ? null : handleCloseModal}
+            shouldCloseOnEscape={!!initialThemePreference}
             buttonConfig={{
                 primaryButtonConfig: {
                     isLoading: isSaving,
                     text: 'Save Preference',
                     onClick: handleSaveThemePreference,
-                    // In case of error initialThemePreference will be null
                     disabled: !themePreference,
                 },
             }}
