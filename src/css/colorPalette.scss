@@ -278,8 +278,8 @@ $black: 0, 0, 0;
         --bg-matching-keyword-selected: rgb(0, 102, 204);
         --active-line: var(--bg-hover);
         --bg-code-editor-diffmap-scrollbar: rgba(#{$black}, 0.1);
-        --selection-color: rgba(#{$selection-color}, 0.2);
-        --selection-match-color: rgba(#{$selection-color}, 0.1);
+        --selection-color: rgba(#{$selection-color}, 0.3);
+        --selection-match-color: rgba(#{$selection-color}, 0.2);
         // CODE-EDITOR EDITOR COLORS
         --code-editor-property-name: rgb(0, 128, 128);
         --code-editor-number: rgb(0, 92, 197);
@@ -307,8 +307,8 @@ $black: 0, 0, 0;
         --bg-matching-keyword: rgb(197, 141, 54);
         --bg-matching-keyword-selected: rgb(0, 102, 204);
         --active-line: var(--bg-hover);
-        --selection-color: rgba(#{$selection-color}, 0.3);
-        --selection-match-color: rgba(#{$selection-color}, 0.2);
+        --selection-color: rgba(#{$selection-color}, 0.4);
+        --selection-match-color: rgba(#{$selection-color}, 0.3);
         --bg-code-editor-diffmap-scrollbar: rgba(#{$white}, 0.2);
         // CODE-EDITOR EDITOR COLORS
         --code-editor-property-name: rgb(126, 231, 135);
