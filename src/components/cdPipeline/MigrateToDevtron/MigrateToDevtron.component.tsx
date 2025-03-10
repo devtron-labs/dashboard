@@ -13,13 +13,18 @@ import {
     SelectPicker,
     useAsync,
     useMainContext,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { ReactComponent as ICDefaultChart } from '@Icons/ic-default-chart.svg'
 import { ReactComponent as ICArgoCDApp } from '@Icons/ic-argocd-app.svg'
 import { ClusterSelectProps, MigrateToDevtronProps, SelectMigrateAppOptionType } from './types'
 import ClusterSelect from './ClusterSelect'
-import { MigrateToDevtronBaseFormStateType, TriggerTypeRadioProps } from '../cdPipeline.types'
+import {
+    MigrateToDevtronBaseFormStateType,
+    MigrateToDevtronFormState,
+    TriggerTypeRadioProps,
+} from '../cdPipeline.types'
 import { getMigrateAppOptions, validateMigrationSource } from './service'
 import { generateMigrateAppOption, getDeploymentAppTypeLabel, sanitizeValidateMigrationSourceResponse } from './utils'
 import { GENERIC_SECTION_ERROR_STATE_COMMON_PROPS } from './constants'
@@ -208,6 +213,33 @@ const MigrateToDevtron = ({
         }))
     }
 
+    const renderSelectMigrateFromRadioGroup = (deploymentAppType: MigrateToDevtronFormState['deploymentAppType']) => (
+        <RadioGroupItem dataTestId={`${deploymentAppType}-radio-item`} value={deploymentAppType}>
+            <Tooltip
+                alwaysShowTippyOnHover
+                content={
+                    <div className="flexbox-col dc__gap-2">
+                        <h6 className="m-0 fs-12 fw-6 lh-18">
+                            {deploymentAppType === DeploymentAppTypes.HELM
+                                ? 'Migrate helm release'
+                                : 'Migrate Argo CD Application'}
+                        </h6>
+
+                        <p className="m-0 fs-12 fw-4 lh-18">
+                            {deploymentAppType === DeploymentAppTypes.HELM
+                                ? 'Migrate an existing Helm Release to manage deployments via CD pipeline'
+                                : 'Migrate an existing Argo CD Application to manage deployments via CD pipeline'}
+                        </p>
+                    </div>
+                }
+            >
+                <span className="cn-9 fs-13 fw-4 lh-20 dc__underline-dotted">
+                    {deploymentAppType === DeploymentAppTypes.HELM ? 'Helm Release' : 'Argo CD Application'}
+                </span>
+            </Tooltip>
+        </RadioGroupItem>
+    )
+
     if (!isSuperAdmin) {
         return <ErrorScreenNotAuthorized />
     }
@@ -224,19 +256,8 @@ const MigrateToDevtron = ({
                         name="migrate-from-app-type"
                         onChange={handleMigrateFromAppTypeChange}
                     >
-                        <RadioGroupItem
-                            dataTestId={`${DeploymentAppTypes.HELM}-radio-item`}
-                            value={DeploymentAppTypes.HELM}
-                        >
-                            <span className="cn-9 fs-13 fw-4 lh-20 dc__underline-dotted">Helm Release</span>
-                        </RadioGroupItem>
-
-                        <RadioGroupItem
-                            dataTestId={`${DeploymentAppTypes.GITOPS}-radio-item`}
-                            value={DeploymentAppTypes.GITOPS}
-                        >
-                            <span className="cn-9 fs-13 fw-4 lh-20 dc__underline-dotted">Argo CD Application</span>
-                        </RadioGroupItem>
+                        {renderSelectMigrateFromRadioGroup(DeploymentAppTypes.HELM)}
+                        {renderSelectMigrateFromRadioGroup(DeploymentAppTypes.GITOPS)}
                     </RadioGroup>
                 </div>
             )}

@@ -263,6 +263,7 @@ export const Routes = {
     ENV_CONFIG: 'config/autocomplete',
     SECURITY_SCAN_CVE_EXPOSURE: 'security/scan/cve/exposure',
     CONFIG_MANIFEST: 'config/manifest',
+    USER_RESOURCE_OPTIONS: 'user/resource/options'
 }
 
 export enum ViewType {
@@ -437,10 +438,6 @@ export const HEADER_TEXT = {
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
-
-export const PREVIEW_DEVTRON = 'https://preview.devtron.ai'
-
-export const PRIVACY_POLICY = 'https://devtron.ai/privacy-policy'
 
 export const NETSHOOT_LINK = 'https://github.com/nicolaka/netshoot'
 

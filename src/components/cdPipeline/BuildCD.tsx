@@ -34,6 +34,10 @@ import {
     TriggerType,
     InfoBlock,
     ButtonVariantType,
+    useMainContext,
+    Tooltip,
+    MODES,
+    useGetUserRoles,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useHistory } from 'react-router-dom'
 import yamlJsParser from 'yaml'
@@ -104,6 +108,11 @@ export default function BuildCD({
         appId,
         setReloadNoGitOpsRepoConfiguredModal,
     } = useContext(pipelineContext)
+
+    const {
+        featureGitOpsFlags: { isFeatureArgoCdMigrationEnabled },
+    } = useMainContext()
+    const { isSuperAdmin } = useGetUserRoles()
 
     const validationRules = new ValidationRules()
     const history = useHistory()
@@ -746,15 +755,20 @@ export default function BuildCD({
                             {strategy.isCollapsed ? null : (
                                 <div className="deployment-strategy__info-body">
                                     <CodeEditor
-                                        height={300}
-                                        value={strategy.yamlStr}
-                                        mode="yaml"
-                                        onChange={(event) =>
-                                            handleStrategyChange(event, strategy.deploymentTemplate, 'yaml')
-                                        }
-                                    >
-                                        <CodeEditor.Header className="code-editor" />
-                                    </CodeEditor>
+                                        mode={MODES.YAML}
+                                        codeEditorProps={{
+                                            value: strategy.yamlStr,
+                                            height: 300,
+                                            onChange: (event) =>
+                                                handleStrategyChange(event, strategy.deploymentTemplate, 'yaml'),
+                                        }}
+                                        codeMirrorProps={{
+                                            value: strategy.yamlStr,
+                                            height: 300,
+                                            onChange: (event) =>
+                                                handleStrategyChange(event, strategy.deploymentTemplate, 'yaml'),
+                                        }}
+                                    />
                                 </div>
                             )}
                         </div>

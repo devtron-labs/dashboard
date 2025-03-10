@@ -2067,6 +2067,15 @@ button.anchor {
     }
 }
 
+.border-top__secondary {
+    border-top: solid 1px var(--border-secondary);
+
+    &--important {
+        border-top: solid 1px var(--border-secondary) !important;
+    }
+}
+
+// Deprecate this class, use border-top__secondary instead
 .dc__border-top-n1 {
     border-top: solid 1px var(--border-secondary);
 
@@ -2472,6 +2481,10 @@ button.anchor {
     border-top-left-radius: 4px;
 }
 
+.dc__top-left-radius-8 {
+    border-top-left-radius: 8px;
+}
+
 .dc__bottom-left-radius {
     border-bottom-left-radius: 4px;
 }
@@ -2853,6 +2866,10 @@ button.anchor {
     min-width: 400px;
 }
 
+.mw-420 {
+    min-width: 420px;
+}
+
 .mw-600 {
     min-width: 600px;
 }
@@ -2971,6 +2988,10 @@ button.anchor {
 
 .w-130 {
     width: 130px;
+}
+
+.w-140 {
+    width: 140px;
 }
 
 .w-150 {
@@ -3535,6 +3556,10 @@ button.anchor {
 
 .mxh-140 {
     max-height: 140px;
+}
+
+.mxh-200 {
+    max-height: 200px;
 }
 
 .mxh-210 {
@@ -4127,6 +4152,11 @@ textarea::placeholder {
 }
 
 // opacity
+
+.dc__opacity-0 {
+    opacity: 0;
+}
+
 .dc__opacity-0_2 {
     opacity: 0.2;
 }
@@ -4237,6 +4267,10 @@ textarea::placeholder {
 
 .dc__hover-r500:hover {
     background-color: var(--R500);
+}
+
+.dc__hover-r50:hover {
+    background-color: var(--R50);
 }
 
 .dc__hover-cn1:hover {

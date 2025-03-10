@@ -29,45 +29,6 @@ import {
     getDeploymentManifestDetails,
 } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 
-export const getCompareValuesSelectStyles = () => ({
-    control: (base) => ({
-        ...base,
-        backgroundColor: 'var(--N100)',
-        border: 'none',
-        boxShadow: 'none',
-        minHeight: '32px',
-    }),
-    option: (base, state) => ({
-        ...base,
-        color: 'var(--N900)',
-        backgroundColor: state.isFocused ? 'var(--N100)' : 'var(--bg-primary)',
-    }),
-    menu: (base) => ({
-        ...base,
-        marginTop: '2px',
-        minWidth: '240px',
-        backgroundColor: 'var(--bg-menu-primary)',
-    }),
-    menuList: (base) => ({
-        ...base,
-        position: 'relative',
-        paddingBottom: 0,
-        paddingTop: 0,
-        maxHeight: '250px',
-    }),
-    dropdownIndicator: (base, state) => ({
-        ...base,
-        padding: 0,
-        color: 'var(--N400)',
-        transition: 'all .2s ease',
-        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-    }),
-    noOptionsMessage: (base) => ({
-        ...base,
-        color: 'var(--N600)',
-    }),
-})
-
 const generateManifestGenerationKey = (
     isCreateValueView: boolean,
     isExternalApp: boolean,
@@ -224,3 +185,6 @@ export const updateYamlDocument = (
         },
     })
 }
+
+export const getFormattedChartValuesDiffOptionLabel = (label: string, version?: string) =>
+    `${label}${version ? ` (${version})` : ''}`

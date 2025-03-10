@@ -20,12 +20,13 @@ import { BulkSelectionModalConfig } from '../../Shared/components/BulkSelection'
 import { PermissionGroup } from '../../types'
 import { SortableKeys } from './constants'
 
-export interface PermissionGroupRowProps extends PermissionGroup {
+export interface PermissionGroupRowProps extends Omit<PermissionGroup, 'superAdmin'> {
     index: number
     refetchPermissionGroupList: () => void
     isChecked: boolean
     toggleChecked: (id: PermissionGroup['id']) => void
     showCheckbox: boolean
+    hasSuperAdminPermission: boolean
 }
 
 export interface PermissionGroupListHeaderProps {
