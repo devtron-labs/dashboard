@@ -156,3 +156,11 @@
     content: ' .';
     color: var(--B500);
 }
+
+.migrate-to-devtron {
+   &__deployment-app-type-radio-group {
+        .radio__button {
+            margin-top: 2px;
+        }
+   } 
+}

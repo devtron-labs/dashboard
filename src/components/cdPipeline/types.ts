@@ -21,6 +21,7 @@ import {
     ReleaseMode,
     ChangeCIPayloadType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { MigrateToDevtronFormState } from './cdPipeline.types'
 
 // Have added any type for most of these since they were legacy do not know the implications of changing them
 export interface CDPipelineProps {
@@ -83,4 +84,6 @@ export interface BuildCDProps
         form: PipelineFormType,
         requiredPluginIds?: PluginDetailPayloadType['pluginIds'],
     ) => Promise<void>
+    migrateToDevtronFormState: MigrateToDevtronFormState
+    setMigrateToDevtronFormState: Dispatch<SetStateAction<MigrateToDevtronFormState>>
 }
