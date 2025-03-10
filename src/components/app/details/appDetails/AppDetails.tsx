@@ -586,50 +586,47 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     const callAppDetailsAPI = async (fetchExternalLinks?: boolean) => {
-        appDetailsAPI(params.appId, params.envId, interval - 5000, appDetailsAbortRef)
-            .then(async (response) => {
-                // eslint-disable-next-line no-param-reassign
-                isVirtualEnvRef.current = response.result?.isVirtualEnvironment
-                // This means the CD is not triggered and the app is not helm migrated i.e. Empty State
-                if (
-                    !response.result.isPipelineTriggered &&
-                    response.result.releaseMode === ReleaseMode.NEW_DEPLOYMENT
-                ) {
-                    setResourceTreeFetchTimeOut(false)
-                    setLoadingResourceTree(false)
-                    setAppDetails(null)
-                    pollResourceTreeRef.current = false
-                    return
-                }
-                appDetailsRef.current = {
-                    ...appDetailsRef.current,
-                    ...response.result,
-                }
-                IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_APP)
-                setAppDetails(appDetailsRef.current)
+        try {
+            const response = await appDetailsAPI(params.appId, params.envId, interval - 5000, appDetailsAbortRef)
+            // eslint-disable-next-line no-param-reassign
+            isVirtualEnvRef.current = response.result?.isVirtualEnvironment
+            // This means the CD is not triggered and the app is not helm migrated i.e. Empty State
+            if (!response.result.isPipelineTriggered && response.result.releaseMode === ReleaseMode.NEW_DEPLOYMENT) {
+                setResourceTreeFetchTimeOut(false)
+                setLoadingResourceTree(false)
+                setAppDetails(null)
+                pollResourceTreeRef.current = false
+                return
+            }
+            appDetailsRef.current = {
+                ...appDetailsRef.current,
+                ...response.result,
+            }
+            IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_APP)
+            setAppDetails(appDetailsRef.current)
 
-                if (fetchExternalLinks && response.result?.clusterId) {
-                    getExternalLinksAndTools(response.result.clusterId)
-                }
-                pollResourceTreeRef.current = true
+            if (fetchExternalLinks && response.result?.clusterId) {
+                getExternalLinksAndTools(response.result.clusterId)
+            }
+            pollResourceTreeRef.current = true
 
-                if (pollResourceTreeRef.current) {
-                    // Need to wait for the resource tree to check if the env is isolated or not
-                    await fetchResourceTree()
-                }
+            if (pollResourceTreeRef.current) {
+                // Need to wait for the resource tree to check if the env is isolated or not
+                await fetchResourceTree()
+            }
 
-                const isIsolatedEnv = isVirtualEnvRef.current && !!appDetailsRef.current.resourceTree
+            const isIsolatedEnv = isVirtualEnvRef.current && !!appDetailsRef.current.resourceTree
 
-                _getDeploymentStatusDetail(
-                    appDetailsRef.current.deploymentAppType,
-                    isIsolatedEnv,
-                    isIsolatedEnv ? appDetailsRef.current?.resourceTree?.wfrId : null,
-                )
-            })
-            .catch(handleAppDetailsCallError)
-            .finally(() => {
-                setLoadingDetails(false)
-            })
+            _getDeploymentStatusDetail(
+                appDetailsRef.current.deploymentAppType,
+                isIsolatedEnv,
+                isIsolatedEnv ? appDetailsRef.current?.resourceTree?.wfrId : null,
+            )
+        } catch (err) {
+            handleAppDetailsCallError(err)
+        } finally {
+            setLoadingDetails(false)
+        }
     }
 
     useEffect(() => {
@@ -648,7 +645,7 @@ export const Details: React.FC<DetailsType> = ({
         clearPollingInterval()
         if (isPollingRequired) {
             appDetailsIntervalID = setInterval(callAppDetailsAPI, interval)
-            callAppDetailsAPI(true).then(noop).catch(noop)
+            callAppDetailsAPI(true).catch(noop)
         }
     }, [isPollingRequired])
 
