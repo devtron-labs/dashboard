@@ -522,6 +522,7 @@ const ResourceList = () => {
             <>
                 <DynamicTabs
                     tabs={tabs}
+                    backgroundColorToken="bg__tertiary"
                     variant={DynamicTabsVariantType.RECTANGULAR}
                     removeTabByIdentifier={removeTabByIdentifier}
                     markTabActiveById={markTabActiveById}
