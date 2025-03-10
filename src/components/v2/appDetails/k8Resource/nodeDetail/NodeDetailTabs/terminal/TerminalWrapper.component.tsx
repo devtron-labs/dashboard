@@ -73,7 +73,7 @@ export default function TerminalWrapper({
     }
 
     return (
-        <div className={`${className} flex-grow-1 flexbox-col`} data-testid={dataTestId}>
+        <div className={`${className} flex-grow-1 flexbox-col dc__overflow-hidden`} data-testid={dataTestId}>
             <div className="flex bg__primary pl-20 h-32 terminal-action-strip dc__zi-11 border__secondary--bottom">
                 {firstStrip()}
             </div>

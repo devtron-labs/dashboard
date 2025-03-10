@@ -340,7 +340,6 @@ src/components/v2/appDetails/k8Resource/FilterResource.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/EphemeralContainerDrawer.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/CustomLogsModal/CustomLogsModal.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/Terminal.component.tsx
-src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/Terminal.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/TerminalWrapper.component.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/__tests__/Terminal.component.test.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/__tests__/TerminalWrapper.test.tsx
