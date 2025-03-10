@@ -36,7 +36,7 @@ export const getGitProviderMinAuth = (appId) => {
 export function deleteApp(appId: string, isTemplateView: AppConfigProps['isTemplateView']) {
     const URL = isTemplateView
         ? getUrlWithSearchParams(CommonRoutes.RESOURCE_TEMPLATE, {
-              id: appId,
+              templateId: appId,
           })
         : `${Routes.APP}/${appId}`
 

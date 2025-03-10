@@ -29,6 +29,7 @@ import {
     ConfirmationModal,
     ConfirmationModalVariantType,
     noop,
+    URLS as CommonUrls,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DeleteComponentsName } from '@Config/constantMessaging'
 import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo/ApplicationDeletionInfo'
@@ -347,6 +348,12 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
                         description: 'Job Deleted!',
                     })
                     history.push(`${URLS.JOB}/${URLS.APP_LIST}`)
+                } else if (isTemplateView) {
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Template Deleted!',
+                    })
+                    history.push(CommonUrls.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP)
                 } else {
                     ToastManager.showToast({
                         variant: ToastVariantType.success,
