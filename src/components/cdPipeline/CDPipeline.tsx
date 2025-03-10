@@ -432,7 +432,7 @@ export default function CDPipeline({
     }
 
     const getMandatoryPluginData: BuildCDProps['getMandatoryPluginData'] = async (form, requiredPluginIds = []) => {
-        if (!processPluginData) {
+        if (!processPluginData || isTemplateView) {
             return
         }
 
@@ -504,7 +504,7 @@ export default function CDPipeline({
     }
 
     const getCDeploymentWindowState = async (envId: string) => {
-        if (getDeploymentWindowProfileMetaData) {
+        if (getDeploymentWindowProfileMetaData && !isTemplateView) {
             const { userActionState } = await getDeploymentWindowProfileMetaData(appId, envId)
             if (userActionState && userActionState !== ACTION_STATE.ALLOWED) {
                 setShowDeploymentWindowConfirmation(true)
