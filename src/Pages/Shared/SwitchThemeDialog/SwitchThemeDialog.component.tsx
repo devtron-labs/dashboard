@@ -123,6 +123,7 @@ const SwitchThemeDialog = ({ initialThemePreference, handleClose, currentUserPre
                 },
             }}
             overriddenTheme={themePreference === 'auto' ? getAppThemeForAutoPreference() : themePreference}
+            isLandscapeView
         >
             <div className="flexbox dc__gap-16">
                 <ThemePreferenceOption

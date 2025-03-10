@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { lazy, Suspense, useEffect, useState, useRef, useMemo, FunctionComponent, Dispatch } from 'react'
+import { lazy, Suspense, useEffect, useState, useRef, useMemo, FunctionComponent } from 'react'
 import {
     useUserEmail,
     showError,
@@ -34,10 +34,10 @@ import {
     ServerErrors,
     ViewIsPipelineRBACConfiguredRadioTabs,
     EnvironmentDataValuesDTO,
-    ResponseType,
     UserPreferencesType,
     getUserPreferences,
     MODES,
+    useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -76,6 +76,7 @@ import YamlWorker from '../../../yaml.worker.js?worker'
 import { TAB_DATA_LOCAL_STORAGE_KEY } from '../DynamicTabs/constants'
 import { DEFAULT_GIT_OPS_FEATURE_FLAGS } from './constants'
 import { ParsedTabsData, ParsedTabsDataV1 } from '../DynamicTabs/types'
+import { SwitchThemeDialog } from '@Pages/Shared'
 
 // Monaco Editor worker initialization
 self.MonacoEnvironment = {
@@ -157,6 +158,8 @@ export default function NavigationRoutes() {
     const [userPreferences, setUserPreferences] = useState<UserPreferencesType>(null)
     const [userPreferencesError, setUserPreferencesError] = useState<ServerErrors>(null)
 
+    const { showThemeSwitcherDialog, handleThemeSwitcherDialogVisibilityChange } = useTheme()
+
     const { isAirgapped, isManifestScanningEnabled, canOnlyViewPermittedEnvOrgLevel } = environmentDataState
 
     const getInit = async (_serverMode: string) => {
@@ -214,6 +217,10 @@ export default function NavigationRoutes() {
                 history.push(`/${URLS.GETTING_STARTED}`)
             }
         }
+    }
+
+    const handleCloseSwitchThemeDialog = () => {
+        handleThemeSwitcherDialogVisibilityChange(false)
     }
 
     useEffect(() => {
@@ -343,15 +350,24 @@ export default function NavigationRoutes() {
         }
     }
 
+
+    const handleInitializeUserPreferencesFromResponse = (userPreferencesResponse: UserPreferencesType) => {
+        if (window._env_.FEATURE_EXPERIMENTAL_THEMING_ENABLE && !userPreferencesResponse?.themePreference) {
+            handleThemeSwitcherDialogVisibilityChange(true)
+        }
+
+        setUserPreferences(userPreferencesResponse)
+    }
+
     const handleFetchUserPreferences = async () => {
         try {
             setUserPreferencesError(null)
             const userPreferencesResponse = await getUserPreferences()
             if (migrateUserPreferences) {
                 const migratedUserPreferences = await migrateUserPreferences(userPreferencesResponse)
-                setUserPreferences(migratedUserPreferences)
+                handleInitializeUserPreferencesFromResponse(migratedUserPreferences)
             } else {
-                setUserPreferences(userPreferencesResponse)
+                handleInitializeUserPreferencesFromResponse(userPreferencesResponse)
             }
         } catch (error) {
             setUserPreferencesError(error)
@@ -479,6 +495,14 @@ export default function NavigationRoutes() {
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
+                {window._env_.FEATURE_EXPERIMENTAL_THEMING_ENABLE && showThemeSwitcherDialog && (
+                    <SwitchThemeDialog
+                        initialThemePreference={userPreferences?.themePreference}
+                        handleClose={handleCloseSwitchThemeDialog}
+                        currentUserPreferences={userPreferences}
+                    />
+                )}
+
                 {!_isOnboardingPage && (
                     <Navigation
                         currentServerInfo={currentServerInfo}
