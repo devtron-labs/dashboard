@@ -86,7 +86,7 @@ const ThemePreferenceOption = ({
                 <div className="flexbox-col dc__gap-6 w-100">
                     <div className="h-100px-imp w-100">
                         <div
-                            className={`br-12 h-100 ${isSelected ? 'eb-5 bw-2 p-4' : 'theme-preference-option__label-container'}`}
+                            className={`br-12 h-100 theme-preference-option__label-container ${isSelected ? 'eb-5 bw-2 p-4' : 'theme-preference-option__label-container--hover'}`}
                         >
                             <ThemePreferenceLabelFigure value={value} isSelected={isSelected} />
                         </div>
