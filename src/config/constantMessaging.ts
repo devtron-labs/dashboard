@@ -71,6 +71,7 @@ export const enum DeleteComponentsName {
     Project = 'project',
     Override = 'override',
     USER = 'user',
+    Template = 'template',
 }
 
 // DELETE COMPONENT ENDS

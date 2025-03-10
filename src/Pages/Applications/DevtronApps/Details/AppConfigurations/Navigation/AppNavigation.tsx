@@ -145,10 +145,10 @@ export const AppNavigation = () => {
 
     const getDeleteButtonText = () => {
         if (isJobView) {
-            return 'Job'
+            return 'Delete Job'
         }
 
-        return isTemplateView ? 'Template' : 'Application'
+        return isTemplateView ? 'Delete Template' : 'Delete Application'
     }
 
     return (
@@ -249,19 +249,17 @@ export const AppNavigation = () => {
                         })}
                         {isJobView && <div className="h-100" />}
                     </div>
-                    {!isTemplateView && (
-                        <div className="p-12 w-100">
-                            <Button
-                                dataTestId="delete-job-app-button"
-                                variant={ButtonVariantType.secondary}
-                                size={ComponentSizeType.medium}
-                                style={ButtonStyleType.negative}
-                                onClick={deleteApp}
-                                text={getDeleteButtonText()}
-                                fullWidth
-                            />
-                        </div>
-                    )}
+                    <div className="p-12 w-100">
+                        <Button
+                            dataTestId="delete-job-app-button"
+                            variant={ButtonVariantType.secondary}
+                            size={ComponentSizeType.medium}
+                            style={ButtonStyleType.negative}
+                            onClick={deleteApp}
+                            text={getDeleteButtonText()}
+                            fullWidth
+                        />
+                    </div>
                 </>
             </Route>
         </Switch>
