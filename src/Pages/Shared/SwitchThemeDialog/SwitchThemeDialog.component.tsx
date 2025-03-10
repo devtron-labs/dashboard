@@ -16,6 +16,16 @@ import {
 import './SwitchThemeDialog.scss'
 import { getThemePreferenceText } from './utils'
 
+const THEME_PREFERENCE_OPTION_MAP: Record<ThemePreferenceOptionProps['value'], null> = {
+    [AppThemeType.light]: null,
+    [AppThemeType.dark]: null,
+    auto: null,
+}
+
+const THEME_PREFERENCE_OPTION_LIST: ThemePreferenceOptionProps['value'][] = Object.keys(
+    THEME_PREFERENCE_OPTION_MAP,
+) as ThemePreferenceOptionProps['value'][]
+
 const BaseLabelFigure = ({ isSelected, value, noLeftRadius = false }: BaseLabelFigureProps) => (
     <div
         className={`${isSelected ? 'br-8' : 'br-12'} ${noLeftRadius ? 'dc__no-left-radius' : ''} ${getComponentSpecificThemeClass(value)} h-100 pt-16 pl-16 border__secondary-translucent bg__tertiary`}
@@ -72,9 +82,9 @@ const ThemePreferenceOption = ({
                 className="theme-preference-option__input m-0 dc__position-abs dc__opacity-0 dc__disable-click"
             />
 
-            <label htmlFor={inputId} className="m-0">
-                <div className="flexbox-col dc__gap-6">
-                    <div className="h-100px-imp w-140">
+            <label htmlFor={inputId} className="m-0 cursor w-100">
+                <div className="flexbox-col dc__gap-6 w-100">
+                    <div className="h-100px-imp w-100">
                         <div className={`br-12 h-100 ${isSelected ? 'eb-5 bw-1 p-4' : ''}`}>
                             <ThemePreferenceLabelFigure value={value} isSelected={isSelected} />
                         </div>
@@ -125,24 +135,15 @@ const SwitchThemeDialog = ({ initialThemePreference, handleClose, currentUserPre
             overriddenTheme={themePreference === 'auto' ? getAppThemeForAutoPreference() : themePreference}
             isLandscapeView
         >
-            <div className="flexbox dc__gap-16">
-                <ThemePreferenceOption
-                    value={AppThemeType.light}
-                    selectedThemePreference={themePreference}
-                    handleChangedThemePreference={handleChangedThemePreference}
-                />
-
-                <ThemePreferenceOption
-                    value={AppThemeType.dark}
-                    selectedThemePreference={themePreference}
-                    handleChangedThemePreference={handleChangedThemePreference}
-                />
-
-                <ThemePreferenceOption
-                    value="auto"
-                    selectedThemePreference={themePreference}
-                    handleChangedThemePreference={handleChangedThemePreference}
-                />
+            <div className="dc__grid dc__column-gap-16 theme-preference-option__container">
+                {THEME_PREFERENCE_OPTION_LIST.map((value) => (
+                    <ThemePreferenceOption
+                        key={value}
+                        value={value}
+                        selectedThemePreference={themePreference}
+                        handleChangedThemePreference={handleChangedThemePreference}
+                    />
+                ))}
             </div>
         </ConfirmationModal>
     )

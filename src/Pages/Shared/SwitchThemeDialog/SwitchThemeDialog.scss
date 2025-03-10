@@ -1,4 +1,8 @@
 .theme-preference-option {
+    &__container {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
     &__auto-figure {
         grid-template-columns: repeat(12, 1fr);
         grid-template-rows: 1fr;
