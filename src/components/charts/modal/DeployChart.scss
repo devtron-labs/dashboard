@@ -138,12 +138,6 @@
                 transition: all 0.2s ease-out;
             }
         }
-
-        .code-editor-container {
-          .react-monaco-editor-container {
-              min-height: 450px;
-          }
-      }
     }
 
     .cta-container {
@@ -159,12 +153,6 @@
             width: 200px;
         }
     }
-}
-
-.code-editor-container {
-  .react-monaco-editor-container {
-      height: calc(100vh - 170px) !important;
-  }
 }
 
 .form__row {

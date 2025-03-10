@@ -20,10 +20,9 @@ import { AuthorizationContextProps, AuthorizationProviderProps } from './types'
 const AuthorizationContext = createContext<AuthorizationContextProps>({
     customRoles: {
         customRoles: [],
-        possibleRolesMeta: {},
-        possibleRolesMetaForHelm: {},
+        possibleRolesMetaForDevtron: {},
+        possibleJobRoles: [],
         possibleRolesMetaForCluster: {},
-        possibleRolesMetaForJob: {},
     },
     isAutoAssignFlowEnabled: false,
 })

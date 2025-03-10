@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-@import './ChartValuesViewUtils.scss';
-
 .chart-values-view__container {
   & .react-monaco-editor-container {
     flex-grow: 1;
@@ -231,14 +229,6 @@
       }
     }
 
-    .chart-values-view__readme {
-      .code-editor__header {
-        height: 32px;
-        padding: 0 12px;
-        border-bottom: none;
-      }
-    }
-
     .chart-values-view__gui-form-container {
       border-bottom: 1px solid var(--N100);
 
@@ -264,74 +254,36 @@
         }
       }
 
-      .code-editor-container {
-        display: flex;
-        flex-direction: column;
-        flex-grow: 1;
-        border: none;
-        border-bottom: 1px solid var(--N100);
-        height: auto;
 
-        .monaco-editor {
 
-          .monaco-editor-background,
-          .margin {
-            background-color: var(--bg-primary) !important;
-          }
-        }
+      .code-editor__warning {
+        color: var(--N900);
+        background-color: var(--Y100);
 
-        .code-editor__warning {
-          color: var(--N900);
-          background-color: var(--Y100);
-
-          .code-editor__information-info-icon path:nth-child(2) {
-            fill: var(--Y700);
-          }
-        }
-
-        .code-editor__header,
-        .chart-values-view__diff-view-header {
-          height: 32px;
-          padding: 0 12px;
-          border-bottom: none;
-          background: var(--N100) !important;
-        }
-
-        .chart-values-view__diff-view-header {
-          display: grid;
-          grid-template-columns: 48.5% 51.5%;
-
-          .chart-values-view__diff-view-default {
-            border-right: 1px solid var(--N200);
-          }
-        }
-
-        & .details-loader-height {
-          height: 100%;
-        }
-
-        & .details-loader {
-          width: 100%;
+        .code-editor__information-info-icon path:nth-child(2) {
+          fill: var(--Y700);
         }
       }
-    }
 
-    .chart-values-view__update-cta {
-      position: absolute;
-      bottom: 12px;
-      right: 20px;
-    }
+      & .details-loader-height {
+        height: 100%;
+      }
 
-    .cta {
-      height: 36px;
-      line-height: 20px;
+      & .details-loader {
+        width: 100%;
+      }
     }
   }
 
-  .chart-values-view__hr-divider {
-    width: 100%;
-    height: 1px;
+  .cta {
+    height: 36px;
+    line-height: 20px;
   }
+}
+
+.chart-values-view__hr-divider {
+  width: 100%;
+  height: 1px;
 }
 
 .no-readme-icon path:nth-child(2) {

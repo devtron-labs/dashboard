@@ -1,176 +1,182 @@
-/*
- * Copyright (c) 2024. Devtron Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+import {
+    Checkbox,
+    CHECKBOX_VALUE,
+    noop,
+    RadioGroupItem,
+    Tooltip,
+    RoleSelectorOptionType,
+    Icon,
+    ActionTypes,
+    ACCESS_TYPE_MAP,
+} from '@devtron-labs/devtron-fe-common-lib'
+import Select, { GroupProps, OptionProps, GroupHeadingProps } from 'react-select'
+import './roleSelectorStyles.scss'
+import { useAuthorizationContext } from '@Pages/GlobalConfigurations/Authorization/AuthorizationProvider'
+import { useMemo, useState } from 'react'
+import { importComponentFromFELibrary } from '@Components/common'
+import { getDefaultRolesToggleConfig, getRoleOptions, getRoleSelectorStyles, getSelectedRolesText } from './utils'
+import { RoleSelectorProps, RoleSelectorToggleConfig } from './types'
+import { usePermissionConfiguration } from '../PermissionConfigurationForm'
+import { renderGroup, renderGroupHeading, renderOption, renderRoleInfoTippy } from './roleSelectorHelpers'
+import { ACCESS_ROLE_OPTIONS_CONTAINER_ID } from './constants'
 
-import React, { useMemo } from 'react'
-import { ACCESS_TYPE_MAP, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
-import Select, { components, MenuListProps, ValueContainerProps } from 'react-select'
-import { importComponentFromFELibrary } from '../../../../../../components/common'
-import { SELECT_ALL_VALUE } from '../../../../../../config'
-import { useAuthorizationContext } from '../../../AuthorizationProvider'
-import { CONFIG_APPROVER_ACTION, ARTIFACT_PROMOTER_ACTION, TERMINAL_EXEC_ACTION } from '../../../constants'
-import { roleSelectStyles } from './constants'
-import { getPrimaryRoleIndex, parseData } from '../../../utils'
-import { DirectPermissionRowProps } from './types'
+const DeprecatedTag = importComponentFromFELibrary('DeprecatedTag', null, 'function')
 
-const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
-
-const RoleSelector = ({
-    permission,
-    handleDirectPermissionChange,
-}: Pick<DirectPermissionRowProps, 'permission' | 'handleDirectPermissionChange'>) => {
+const RoleSelector = ({ permission, handleUpdateDirectPermissionRoleConfig }: RoleSelectorProps) => {
     const { customRoles } = useAuthorizationContext()
+    const { allowManageAllAccess, isLoggedInUserSuperAdmin, canManageAllAccess, hasManagerPermissions } =
+        usePermissionConfiguration()
+    const { accessType, roleConfig, team, roleConfigError } = permission
+    const [toggleConfig, setToggleConfig] = useState<RoleSelectorToggleConfig>(getDefaultRolesToggleConfig(roleConfig))
 
-    const possibleRoles = useMemo(
+    const toggleBaseRole = () => {
+        setToggleConfig((prev) => {
+            if (prev.baseRole) {
+                handleUpdateDirectPermissionRoleConfig({
+                    ...roleConfig,
+                    baseRole: '',
+                    additionalRoles: new Set(),
+                })
+            } else {
+                handleUpdateDirectPermissionRoleConfig({
+                    ...roleConfig,
+                    baseRole: 'view',
+                })
+            }
+            return { ...prev, baseRole: !prev.baseRole }
+        })
+    }
+
+    const toggleAccessManagerRoles = () => {
+        setToggleConfig((prev) => {
+            // On toggling off clear selected roles
+            if (prev.accessManagerRoles) {
+                handleUpdateDirectPermissionRoleConfig({ ...roleConfig, accessManagerRoles: new Set() })
+            } else {
+                try {
+                    // Need to set timeout as element is rendered in dom after state is set
+                    setTimeout(() => {
+                        const element = document.getElementById(ACCESS_ROLE_OPTIONS_CONTAINER_ID)
+                        element.scrollIntoView({ behavior: 'smooth', block: 'end' })
+                    }, 100)
+                } catch {
+                    // do nothing
+                }
+            }
+            return { ...prev, accessManagerRoles: !prev.accessManagerRoles }
+        })
+    }
+
+    const selectText = useMemo(() => {
+        const baseRole =
+            customRoles.customRoles.find(
+                (role) => role.accessType === accessType && role.roleName === roleConfig.baseRole,
+            )?.roleDisplayName || ''
+
+        return getSelectedRolesText(baseRole, roleConfig, allowManageAllAccess)
+    }, [roleConfig, allowManageAllAccess])
+
+    const GroupHeading = (props: GroupHeadingProps) =>
+        renderGroupHeading({
+            props,
+            toggleConfig,
+            toggleBaseRole,
+            toggleAccessManagerRoles,
+            showToggle: isLoggedInUserSuperAdmin && accessType === ACCESS_TYPE_MAP.DEVTRON_APPS,
+        })
+
+    const Group = (props: GroupProps) =>
+        renderGroup({
+            props,
+            baseRoleValue: roleConfig.baseRole,
+            toggleConfig,
+        })
+
+    const Option = (props: OptionProps<RoleSelectorOptionType>) =>
+        renderOption({ props, roleConfig, handleUpdateDirectPermissionRoleConfig })
+
+    const groupedOptions = useMemo(
         () =>
-            customRoles.customRoles.map(({ roleDisplayName, roleName, roleDescription, entity, accessType }) => ({
-                label: roleDisplayName,
-                value: roleName,
-                description: roleDescription,
-                entity,
+            getRoleOptions({
+                customRoles: customRoles.customRoles,
                 accessType,
-            })),
-        [customRoles],
+                showAccessRoles: isLoggedInUserSuperAdmin && !allowManageAllAccess,
+                showDeploymentApproverRole: canManageAllAccess || hasManagerPermissions || isLoggedInUserSuperAdmin,
+            }),
+        [
+            customRoles,
+            accessType,
+            isLoggedInUserSuperAdmin,
+            allowManageAllAccess,
+            canManageAllAccess,
+            hasManagerPermissions,
+        ],
     )
 
-    // creating a multiRole array since we receive , binded values from the backend and after one action, we reset that
-    const multiRole = permission.action.value.split(',')
-    const doesConfigApproverRoleExist = multiRole.includes(CONFIG_APPROVER_ACTION.value)
-    const doesArtifactPromoterRoleExist = multiRole.includes(ARTIFACT_PROMOTER_ACTION.value)
-    const doesTerminalAccessRoleExist = multiRole.includes(TERMINAL_EXEC_ACTION.value)
-
-    const primaryActionRoleIndex = getPrimaryRoleIndex(multiRole, [
-        CONFIG_APPROVER_ACTION.value,
-        ARTIFACT_PROMOTER_ACTION.value,
-        TERMINAL_EXEC_ACTION.value,
-    ])
-
-    const primaryActionRole = {
-        label: multiRole[primaryActionRoleIndex],
-        value: multiRole[primaryActionRoleIndex],
-        configApprover: doesConfigApproverRoleExist || permission.action.configApprover,
-        artifactPromoter: doesArtifactPromoterRoleExist || permission.action.artifactPromoter,
-        terminalExec: doesTerminalAccessRoleExist || permission.action.terminalExec,
-    }
-
-    const getSelectedRolesDisplay = (selectedPermissions: string[]) =>
-        selectedPermissions.filter((selectedVal) => !!selectedVal).join(', ')
-
-    const _getMetaRolesForAccessType = () => {
-        switch (permission.accessType) {
-            case ACCESS_TYPE_MAP.DEVTRON_APPS:
-                return customRoles.possibleRolesMeta
-            case ACCESS_TYPE_MAP.HELM_APPS:
-                return customRoles.possibleRolesMetaForHelm
-            case ACCESS_TYPE_MAP.JOBS:
-                return customRoles.possibleRolesMetaForJob
-            default:
-                throw new Error(`Unknown access type ${permission.accessType}`)
-        }
-    }
-
-    const metaRolesForAccessType = _getMetaRolesForAccessType()
-
-    // eslint-disable-next-line react/no-unstable-nested-components
-    const RoleValueContainer = ({ children, getValue, ...props }: ValueContainerProps<SelectPickerOptionType>) => {
-        const [{ value }] = getValue()
+    const formatOptionLabel = ({ value, label, description, roleType }: RoleSelectorOptionType) => {
+        const isRoleSelected: boolean = roleType !== 'baseRole' && roleConfig[roleType].has(value)
 
         return (
-            <components.ValueContainer
-                {...{
-                    getValue,
-                    ...props,
-                }}
+            <Tooltip
+                content={renderRoleInfoTippy(label as string, description as string)}
+                alwaysShowTippyOnHover
+                placement="left"
             >
-                {getSelectedRolesDisplay([
-                    value === SELECT_ALL_VALUE ? 'Admin' : metaRolesForAccessType[value].value,
-                    ...(ApproverPermission
-                        ? [
-                              (permission.approver ||
-                                  primaryActionRole.configApprover ||
-                                  primaryActionRole.artifactPromoter) &&
-                                  'Approver',
-                              primaryActionRole.terminalExec && 'Terminal',
-                          ]
-                        : []),
-                ])}
-                {React.cloneElement(children[1])}
-            </components.ValueContainer>
-        )
-    }
-
-    const formatOptionLabel = ({ value }) => (
-        <div className="flex left column">
-            <span>{metaRolesForAccessType[value]?.value}</span>
-            <small className="light-color">{metaRolesForAccessType[value]?.description}</small>
-        </div>
-    )
-
-    // eslint-disable-next-line react/no-unstable-nested-components
-    const RoleMenuList = (props: MenuListProps) => {
-        const {
-            children,
-            selectOption,
-            selectProps: { value },
-        } = props
-
-        return (
-            <components.MenuList {...props}>
-                {children}
-                {ApproverPermission &&
-                    (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS ||
-                        permission.accessType === ACCESS_TYPE_MAP.HELM_APPS) && (
-                        <ApproverPermission
-                            optionProps={props}
-                            approver={permission.approver}
-                            configApprover={primaryActionRole.configApprover}
-                            artifactPromoter={primaryActionRole.artifactPromoter}
-                            terminalExec={primaryActionRole.terminalExec}
-                            handleDirectPermissionChange={(...rest) => {
-                                selectOption(value)
-                                handleDirectPermissionChange(...rest)
-                            }}
-                            formatOptionLabel={formatOptionLabel}
-                            accessType={permission.accessType}
-                            customRoles={customRoles}
+                {roleType === 'baseRole' ? (
+                    <div className="flexbox dc__align-items-center">
+                        <RadioGroupItem value={value}>
+                            <div className="flexbox dc__align-items-center dc__gap-8 fs-13 lh-20">
+                                <span>{label}</span>
+                                {value === ActionTypes.MANAGER && DeprecatedTag && <DeprecatedTag />}
+                            </div>
+                        </RadioGroupItem>
+                    </div>
+                ) : (
+                    <div className="flexbox dc__align-items-center">
+                        <Checkbox
+                            isChecked={isRoleSelected}
+                            onChange={noop}
+                            value={CHECKBOX_VALUE.CHECKED}
+                            rootClassName="mb-0"
                         />
-                    )}
-            </components.MenuList>
+                        <span>{label}</span>
+                    </div>
+                )}
+            </Tooltip>
         )
     }
+
+    const roleSelectorStyles = useMemo(() => getRoleSelectorStyles(roleConfigError), [roleConfigError])
 
     return (
-        <Select
-            classNamePrefix="dropdown-for-role"
-            value={primaryActionRole}
-            name="action"
-            placeholder="Select role"
-            options={parseData(possibleRoles, permission.entity, permission.accessType)}
-            formatOptionLabel={formatOptionLabel}
-            onChange={handleDirectPermissionChange}
-            isDisabled={!permission.team}
-            menuPlacement="auto"
-            blurInputOnSelect
-            styles={roleSelectStyles}
-            components={{
-                ClearIndicator: null,
-                IndicatorSeparator: null,
-                ValueContainer: RoleValueContainer,
-                MenuList: RoleMenuList,
-            }}
-        />
+        <div className="flexbox-col dc__gap-4">
+            <Select<RoleSelectorOptionType, true>
+                formatOptionLabel={formatOptionLabel}
+                options={groupedOptions}
+                components={{
+                    ClearIndicator: null,
+                    IndicatorSeparator: null,
+                    Group,
+                    Option,
+                    GroupHeading,
+                }}
+                styles={roleSelectorStyles}
+                closeMenuOnSelect={false}
+                isSearchable={false}
+                placeholder={selectText}
+                menuPlacement="auto"
+                isDisabled={!team}
+                hideSelectedOptions={false}
+                isMulti
+                controlShouldRenderValue={false}
+            />
+            {roleConfigError && (
+                <div className="flexbox dc__align-items-center dc__gap-4">
+                    <Icon name="ic-error" size={16} color={null} />
+                    <span className="cr-5 fs-11 lh-16 fw-4">Required</span>
+                </div>
+            )}
+        </div>
     )
 }
 

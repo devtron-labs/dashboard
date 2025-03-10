@@ -78,6 +78,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
         handleUserStatusUpdate,
         showStatus,
         isSaveDisabled,
+        allowManageAllAccess,
     } = usePermissionConfiguration()
     const _userData = userData as User
 
@@ -130,7 +131,10 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
     }
 
     const handleSubmit = async () => {
-        if (!validateForm() || !validateDirectPermissionForm(directPermission, setDirectPermission).isValid) {
+        if (
+            !validateForm() ||
+            !validateDirectPermissionForm(directPermission, setDirectPermission, allowManageAllAccess).isValid
+        ) {
             return
         }
 
@@ -146,6 +150,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
             k8sPermission,
             permissionType,
             userGroups: selectedUserGroups,
+            canManageAllAccess: allowManageAllAccess,
             ...getDefaultUserStatusAndTimeout(),
         })
 
@@ -342,6 +347,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                             hideDirectPermissions={
                                 window._env_.FEATURE_HIDE_USER_DIRECT_PERMISSIONS_FOR_NON_SUPER_ADMINS && !isSuperAdmin
                             }
+                            isAddMode={isAddMode}
                         />
                     )}
                 </div>

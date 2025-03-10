@@ -2485,6 +2485,10 @@ button.anchor {
     border-top-left-radius: 4px;
 }
 
+.dc__top-left-radius-8 {
+    border-top-left-radius: 8px;
+}
+
 .dc__bottom-left-radius {
     border-bottom-left-radius: 4px;
 }
@@ -2714,6 +2718,14 @@ button.anchor {
 
     &::first-letter {
         text-transform: uppercase;
+    }
+
+    &--imp {
+        text-transform: lowercase !important;
+
+        &::first-letter {
+            text-transform: uppercase !important;
+        }
     }
 }
 
@@ -2972,6 +2984,10 @@ button.anchor {
 
 .w-130 {
     width: 130px;
+}
+
+.w-140 {
+    width: 140px;
 }
 
 .w-150 {
@@ -3536,6 +3552,10 @@ button.anchor {
 
 .mxh-140 {
     max-height: 140px;
+}
+
+.mxh-200 {
+    max-height: 200px;
 }
 
 .mxh-210 {
@@ -4128,6 +4148,11 @@ textarea::placeholder {
 }
 
 // opacity
+
+.dc__opacity-0 {
+    opacity: 0;
+}
+
 .dc__opacity-0_2 {
     opacity: 0.2;
 }
@@ -4238,6 +4263,10 @@ textarea::placeholder {
 
 .dc__hover-r500:hover {
     background-color: var(--R500);
+}
+
+.dc__hover-r50:hover {
+    background-color: var(--R50);
 }
 
 .dc__hover-cn1:hover {
