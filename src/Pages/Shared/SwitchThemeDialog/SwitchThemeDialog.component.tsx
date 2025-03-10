@@ -7,6 +7,7 @@ import {
     getComponentSpecificThemeClass,
     useTheme,
     getThemePreferenceText,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     BaseLabelFigureProps,
@@ -105,15 +106,20 @@ const SwitchThemeDialog = ({
     initialThemePreference,
     handleClose,
     currentUserPreferences,
+    handleUpdateUserThemePreference,
     disableAPICalls = false,
 }: SwitchThemeDialogProps) => {
     const { handleShowSwitchThemeLocationTippyChange, handleThemePreferenceChange } = useTheme()
-    const [themePreference, setThemePreference] = useState<typeof initialThemePreference>(initialThemePreference)
+    const [themePreference, setThemePreference] = useState<typeof initialThemePreference>(
+        !initialThemePreference ? 'auto' : initialThemePreference,
+    )
     const [isSaving, setIsSaving] = useState<boolean>(false)
 
     const handleSuccess = () => {
         handleShowSwitchThemeLocationTippyChange(!initialThemePreference)
-        handleClose(themePreference)
+        handleUpdateUserThemePreference(themePreference)
+        handleThemePreferenceChange(themePreference)
+        handleClose()
     }
 
     const handleSaveThemePreference = async () => {
@@ -131,21 +137,23 @@ const SwitchThemeDialog = ({
     }
 
     const handleChangedThemePreference: ThemePreferenceOptionProps['handleChangedThemePreference'] = (value) => {
-        handleThemePreferenceChange(value)
+        handleThemePreferenceChange(value, true)
         setThemePreference(value)
     }
 
     const handleCloseModal = () => {
-        handleClose(initialThemePreference)
+        handleThemePreferenceChange(initialThemePreference, true)
+        handleClose()
     }
 
     return (
         <ConfirmationModal
-            title="Appearance"
-            subtitle="Choose an interface theme preference"
+            title="Customize your theme"
+            subtitle="Select a theme that suits your preference"
             variant={ConfirmationModalVariantType.custom}
             handleClose={!initialThemePreference ? null : handleCloseModal}
             shouldCloseOnEscape={!!initialThemePreference}
+            Icon={<Icon name="ic-medium-paintbucket" color={null} size={48} />}
             buttonConfig={{
                 primaryButtonConfig: {
                     isLoading: isSaving,
@@ -155,6 +163,7 @@ const SwitchThemeDialog = ({
                 },
             }}
             isLandscapeView
+            showConfetti={!initialThemePreference}
         >
             <div className="dc__grid dc__column-gap-16 theme-preference-option__container">
                 {THEME_PREFERENCE_OPTION_LIST.map((value) => (
