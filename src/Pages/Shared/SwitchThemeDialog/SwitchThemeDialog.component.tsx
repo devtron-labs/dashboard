@@ -14,14 +14,14 @@ import {
     ThemePreferenceOptionProps,
 } from './types'
 import './SwitchThemeDialog.scss'
-import { THEME_LABEL_TEXT, THEME_PREFERENCE_TEXT_MAP } from './constants'
+import { getThemePreferenceText } from './utils'
 
 const BaseLabelFigure = ({ isSelected, value, noLeftRadius = false }: BaseLabelFigureProps) => (
     <div
         className={`${isSelected ? 'br-8' : 'br-12'} ${noLeftRadius ? 'dc__no-left-radius' : ''} ${getComponentSpecificThemeClass(value)} h-100 pt-16 pl-16 border__secondary-translucent bg__tertiary`}
     >
         <div className="py-8 px-16 border__primary--top border__primary--left dc__top-left-radius h-100">
-            <span className="cn-9 fs-24 fw-6 lh-36">{THEME_LABEL_TEXT}</span>
+            <span className="cn-9 fs-24 fw-6 lh-36">Aa</span>
         </div>
     </div>
 )
@@ -81,7 +81,7 @@ const ThemePreferenceOption = ({
                     </div>
 
                     <span className={`${isSelected ? 'cb-5' : 'cn-9'} fs-13 fw-6 lh-20`}>
-                        {THEME_PREFERENCE_TEXT_MAP[value]}
+                        {getThemePreferenceText(value)}
                     </span>
                 </div>
             </label>
