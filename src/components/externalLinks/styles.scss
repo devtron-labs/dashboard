@@ -22,12 +22,12 @@
 
     .external-link-list__row {
         display: grid;
-        grid-template-columns: 24px 144px 1fr 100px 2fr 56px;
+        grid-template-columns: 24px 250px 1fr 100px 1fr 56px;
     }
 
     .external-link-list__row__app-config {
         display: grid;
-        grid-template-columns: 24px 144px 1fr 2fr 56px;
+        grid-template-columns: 24px 250px 1fr 1fr 56px;
     }
 
 }

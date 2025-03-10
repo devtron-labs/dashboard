@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useMemo } from 'react'
 import {
     AppListConstants,
     GroupedOptionsType,
@@ -22,11 +23,10 @@ import {
     stringComparatorBySortOrder,
     Teams,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useMemo } from 'react'
 import { Cluster } from '@Services/service.types'
+import ArgoCDAppIcon from '@Icons/ic-argocd-app.svg'
+import FluxCDAppIcon from '@Icons/ic-fluxcd-app.svg'
 import { URLS } from '../../../config'
-import ArgoCDAppIcon from '../../../assets/icons/ic-argocd-app.svg'
-import FluxCDAppIcon from '../../../assets/icons/ic-fluxcd-app.svg'
 import {
     AppListUrlFilters,
     AppListUrlFiltersType,

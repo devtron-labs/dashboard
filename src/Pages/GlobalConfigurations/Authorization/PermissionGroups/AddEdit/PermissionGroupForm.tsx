@@ -40,7 +40,7 @@ import {
     PermissionConfigurationForm,
     usePermissionConfiguration,
 } from '../../Shared/components/PermissionConfigurationForm'
-import { getIsSuperAdminPermission, getRoleFilters, validateDirectPermissionForm } from '../../utils'
+import { getIsSuperAdminPermission, getRolesAndAccessRoles, validateDirectPermissionForm } from '../../utils'
 import { excludeKeyAndClusterValue } from '../../Shared/components/K8sObjectPermissions/utils'
 import { DeleteUserPermission } from '../../UserPermissions/DeleteUserPermission'
 
@@ -57,6 +57,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
         currentK8sPermissionRef,
         data: permissionGroup,
         isSaveDisabled,
+        allowManageAllAccess,
     } = usePermissionConfiguration()
     const _permissionGroup = permissionGroup as PermissionGroup
 
@@ -98,10 +99,20 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
             setName((_name) => ({ ..._name, error: 'Group name is mandatory' }))
             return
         }
-        if (!isSuperAdminPermission && !validateDirectPermissionForm(directPermission, setDirectPermission).isValid) {
+        if (
+            !isSuperAdminPermission &&
+            !validateDirectPermissionForm(directPermission, setDirectPermission, allowManageAllAccess).isValid
+        ) {
             return
         }
         setSubmitting(true)
+
+        const { roleFilters, accessRoleFilters } = getRolesAndAccessRoles({
+            k8sPermission,
+            directPermission,
+            serverMode,
+            chartPermission,
+        })
 
         const payload: PermissionGroupCreateOrUpdatePayload = {
             // ID 0 denotes create operation
@@ -109,12 +120,9 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
             name: name.value,
             description,
             superAdmin: isSuperAdminPermission,
-            roleFilters: getRoleFilters({
-                k8sPermission,
-                directPermission,
-                serverMode,
-                chartPermission,
-            }),
+            roleFilters,
+            ...(accessRoleFilters.length ? { accessRoleFilters } : {}),
+            canManageAllAccess: allowManageAllAccess,
         }
 
         try {
@@ -190,7 +198,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
                         placeholder="Enter a description for this group"
                     />
                     <div className="dc__border-top" />
-                    <PermissionConfigurationForm showUserPermissionGroupSelector={false} />
+                    <PermissionConfigurationForm showUserPermissionGroupSelector={false} isAddMode={isAddMode} />
                 </div>
                 <div className="flexbox pt-16 pl-20 pr-20 dc__border-top-n1 dc__align-items-center dc__align-self-stretch dc__gap-8">
                     <Button

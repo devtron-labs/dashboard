@@ -390,16 +390,18 @@ const EphemeralContainerDrawer = ({
                         height: 'fitToParent',
                     }}
                 >
-                    <CodeEditor.Header className="code-editor__header flex dc__content-space dc__gap-8 bcn-1 dc__border-bottom">
-                        <Switch value={switchManifest} name="tab" onChange={handleManifestTabChange}>
-                            <SwitchItem value={SwitchItemValues.Configuration}> Manifest </SwitchItem>
-                            <SwitchItem value={SwitchItemValues.Sample}> Sample manifest</SwitchItem>
-                        </Switch>
-                        {!isCodeMirrorEnabled() && (
-                            <div style={{ flex: '0 0 60%' }}>
-                                <CodeEditor.ValidationError />
-                            </div>
-                        )}
+                    <CodeEditor.Header>
+                        <div className="flex dc__content-space">
+                            <Switch value={switchManifest} name="tab" onChange={handleManifestTabChange}>
+                                <SwitchItem value={SwitchItemValues.Configuration}> Manifest </SwitchItem>
+                                <SwitchItem value={SwitchItemValues.Sample}> Sample manifest</SwitchItem>
+                            </Switch>
+                            {!isCodeMirrorEnabled() && (
+                                <div style={{ flex: '0 0 60%' }}>
+                                    <CodeEditor.ValidationError />
+                                </div>
+                            )}
+                        </div>
                     </CodeEditor.Header>
                 </CodeEditor>
             </div>

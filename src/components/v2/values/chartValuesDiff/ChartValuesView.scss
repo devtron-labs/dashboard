@@ -229,14 +229,6 @@
       }
     }
 
-    .chart-values-view__readme {
-      .code-editor__header {
-        height: 32px;
-        padding: 0 12px;
-        border-bottom: none;
-      }
-    }
-
     .chart-values-view__gui-form-container {
       border-bottom: 1px solid var(--N100);
 
@@ -273,23 +265,6 @@
         }
       }
 
-      .code-editor__header,
-      .chart-values-view__diff-view-header {
-        height: 32px;
-        padding: 0 12px;
-        border-bottom: none;
-        background: var(--N100) !important;
-      }
-
-      .chart-values-view__diff-view-header {
-        display: grid;
-        grid-template-columns: 48.5% 51.5%;
-
-        .chart-values-view__diff-view-default {
-          border-right: 1px solid var(--N200);
-        }
-      }
-
       & .details-loader-height {
         height: 100%;
       }
@@ -298,12 +273,6 @@
         width: 100%;
       }
     }
-  }
-
-  .chart-values-view__update-cta {
-    position: absolute;
-    bottom: 12px;
-    right: 20px;
   }
 
   .cta {

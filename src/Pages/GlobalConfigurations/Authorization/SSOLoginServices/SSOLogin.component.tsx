@@ -711,7 +711,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     <CodeEditor.Header>
                         <div className="flex dc__content-space dc__gap-6">
                             <CodeEditor.ValidationError />
-                            <div className="dc__no-shrink">
+                            <div className="dc__no-shrink ml-auto">
                                 <Switch
                                     value={this.state.configMap}
                                     name="tab"
