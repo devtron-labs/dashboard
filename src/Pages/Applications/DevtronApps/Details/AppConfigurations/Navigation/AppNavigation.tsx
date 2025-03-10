@@ -190,63 +190,67 @@ export const AppNavigation = () => {
                                 totalSteps={totalSteps}
                             />
                         )}
-                        {navItems.map((item) => {
-                            if (item.altNavKey) {
-                                return null
-                            }
+                        {navItems
+                            .filter((item) => !item.isHidden)
+                            .map((item) => {
+                                if (item.altNavKey) {
+                                    return null
+                                }
 
-                            if (item.stage === STAGE_NAME.EXTERNAL_LINKS) {
-                                return (
-                                    canShowExternalLinks && (
-                                        <div key={item.stage}>
-                                            <div className="dc__border-bottom-n1 mt-8 mb-8" />
-                                            {renderNavItem(item)}
-                                        </div>
-                                    )
-                                )
-                            }
-
-                            if (item.stage === STAGE_NAME.PROTECT_CONFIGURATION) {
-                                return (
-                                    isWorkflowEditorUnlocked &&
-                                    isFELibAvailable && (
-                                        <div key={item.stage}>
-                                            {!canShowExternalLinks && (
+                                if (item.stage === STAGE_NAME.EXTERNAL_LINKS) {
+                                    return (
+                                        canShowExternalLinks && (
+                                            <div key={item.stage}>
                                                 <div className="dc__border-bottom-n1 mt-8 mb-8" />
-                                            )}
-                                            {renderNavItem(item, null, {
-                                                target: '_blank',
-                                                icon: <ICArrowSquareOut className="icon-dim-16 dc__no-shrink scn-8" />,
-                                                tooltipContent:
-                                                    'Configuration change approval has been moved to Global Configuration',
-                                            })}
-                                        </div>
+                                                {renderNavItem(item)}
+                                            </div>
+                                        )
                                     )
-                                )
-                            }
+                                }
 
-                            if (
-                                item.stage !== STAGE_NAME.ENV_OVERRIDE ||
-                                (item.stage === STAGE_NAME.ENV_OVERRIDE && item.isLocked)
-                            ) {
+                                if (item.stage === STAGE_NAME.PROTECT_CONFIGURATION) {
+                                    return (
+                                        isWorkflowEditorUnlocked &&
+                                        isFELibAvailable && (
+                                            <div key={item.stage}>
+                                                {!canShowExternalLinks && (
+                                                    <div className="dc__border-bottom-n1 mt-8 mb-8" />
+                                                )}
+                                                {renderNavItem(item, null, {
+                                                    target: '_blank',
+                                                    icon: (
+                                                        <ICArrowSquareOut className="icon-dim-16 dc__no-shrink scn-8" />
+                                                    ),
+                                                    tooltipContent:
+                                                        'Configuration change approval has been moved to Global Configuration',
+                                                })}
+                                            </div>
+                                        )
+                                    )
+                                }
+
+                                if (
+                                    item.stage !== STAGE_NAME.ENV_OVERRIDE ||
+                                    (item.stage === STAGE_NAME.ENV_OVERRIDE && item.isLocked)
+                                ) {
+                                    return (
+                                        <ConditionalWrap
+                                            key={item.stage}
+                                            condition={showCannotDeleteTooltip && item.stage === STAGE_NAME.CI_CONFIG}
+                                            wrap={getEnvOverrideTippy}
+                                        >
+                                            {item.required && renderNavItem(item, isJobView)}
+                                        </ConditionalWrap>
+                                    )
+                                }
+
                                 return (
-                                    <ConditionalWrap
+                                    <EnvironmentOverrideRouter
                                         key={item.stage}
-                                        condition={showCannotDeleteTooltip && item.stage === STAGE_NAME.CI_CONFIG}
-                                        wrap={getEnvOverrideTippy}
-                                    >
-                                        {item.required && renderNavItem(item, isJobView)}
-                                    </ConditionalWrap>
+                                        envIdToEnvApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                                    />
                                 )
-                            }
-
-                            return (
-                                <EnvironmentOverrideRouter
-                                    key={item.stage}
-                                    envIdToEnvApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
-                                />
-                            )
-                        })}
+                            })}
                         {isJobView && <div className="h-100" />}
                     </div>
                     <div className="p-12 w-100">
