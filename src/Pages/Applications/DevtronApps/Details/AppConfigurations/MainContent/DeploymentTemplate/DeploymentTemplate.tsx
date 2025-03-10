@@ -1747,6 +1747,7 @@ const DeploymentTemplate = ({
                         hideObjectVariables={false}
                         {...(envId && { envId })}
                         {...(clusterId && { clusterId })}
+                        isTemplateView={isTemplateView}
                     />
                 </div>
             )}

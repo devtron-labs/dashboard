@@ -972,6 +972,7 @@ export default function CIPipeline({
                         appId={appId}
                         envId={selectedEnv?.id ? String(selectedEnv.id) : null}
                         clusterId={selectedEnv?.clusterId}
+                        isTemplateView={isTemplateView}
                     />
                 </div>
             </div>

@@ -1437,6 +1437,7 @@ export default function CDPipeline({
                         appId={appId}
                         envId={formData?.environmentId ? String(formData.environmentId) : null}
                         clusterId={formData?.clusterId}
+                        isTemplateView={isTemplateView}
                     />
                 </div>
             </div>
