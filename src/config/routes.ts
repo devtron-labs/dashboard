@@ -157,7 +157,7 @@ export const getAppComposeURL = (appId: string, appStage: APP_COMPOSE_STAGE | nu
     const _url = isTemplateView
         ? `${generatePath(COMMON_URLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
               appId,
-          })}/${COMMON_URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`
+          })}/${COMMON_URLS.APP_CONFIG}`
         : `${isJobView ? URLS.JOB : URLS.APP}/${appId}/${COMMON_URLS.APP_CONFIG}`
     if (!appStage) {
         return _url

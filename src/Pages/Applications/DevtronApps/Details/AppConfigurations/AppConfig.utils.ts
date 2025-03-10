@@ -237,15 +237,19 @@ export const getNavItems = ({
                         required: true,
                         altNavKey: 'env-configurations',
                     },
-                    {
-                        title: 'GitOps Configuration',
-                        href: `${basePath}/edit/gitops-config`,
-                        stage: STAGE_NAME.GITOPS_CONFIG,
-                        isLocked: !_isUnlocked.gitOpsConfig,
-                        flowCompletionPercent: completedPercent,
-                        currentStep: completedSteps,
-                        required: isGitOpsConfigurationRequired,
-                    },
+                    ...(isTemplateView
+                        ? []
+                        : [
+                              {
+                                  title: 'GitOps Configuration',
+                                  href: `${basePath}/edit/gitops-config`,
+                                  stage: STAGE_NAME.GITOPS_CONFIG,
+                                  isLocked: !_isUnlocked.gitOpsConfig,
+                                  flowCompletionPercent: completedPercent,
+                                  currentStep: completedSteps,
+                                  required: isGitOpsConfigurationRequired,
+                              },
+                          ]),
                     {
                         title: 'Workflow Editor',
                         href: `${basePath}/edit/workflow`,
