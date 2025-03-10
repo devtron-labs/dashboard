@@ -3,7 +3,6 @@ import {
     ConfirmationModal,
     ConfirmationModalVariantType,
     updateUserPreferences,
-    getAppThemeForAutoPreference,
     AppThemeType,
     getComponentSpecificThemeClass,
     useTheme,
@@ -155,7 +154,6 @@ const SwitchThemeDialog = ({
                     disabled: !themePreference,
                 },
             }}
-            overriddenTheme={themePreference === 'auto' ? getAppThemeForAutoPreference() : themePreference}
             isLandscapeView
         >
             <div className="dc__grid dc__column-gap-16 theme-preference-option__container">
