@@ -317,7 +317,7 @@ export default function CDPipeline({
     }
 
     const getEnvCDPipelineName = (form) => {
-        Promise.all([getCDPipelineNameSuggestion(appId), getEnvironmentListMinPublic(true)])
+        Promise.all([getCDPipelineNameSuggestion(appId, isTemplateView), getEnvironmentListMinPublic(true)])
             .then(([cpPipelineName, envList]) => {
                 form.name = cpPipelineName.result
                 let list = envList.result || []

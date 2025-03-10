@@ -29,8 +29,13 @@ import {
 import { Routes } from '../../config'
 import { getEnvironmentSecrets, getEnvironmentConfigs } from '../../services/service'
 
-export function getCDPipelineNameSuggestion(appId: string | number): Promise<any> {
-    const URL = `app/pipeline/suggest/cd/${appId}`
+export function getCDPipelineNameSuggestion(appId: string | number, isTemplateView: AppConfigProps['isTemplateView']): Promise<any> {
+    const URL = isTemplateView ? getTemplateAPIRoute({
+        type: GetTemplateAPIRouteType.PIPELINE_SUGGEST_CD,
+        queryParams: {
+            id: appId,
+        }
+    }) : `app/pipeline/suggest/cd/${appId}`
     return get(URL)
 }
 
