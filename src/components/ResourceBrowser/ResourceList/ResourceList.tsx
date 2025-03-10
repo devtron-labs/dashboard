@@ -90,7 +90,7 @@ const ResourceList = () => {
         stopTabByIdentifier,
         getTabId,
         getTabById,
-    } = useTabs(URLS.RESOURCE_BROWSER)
+    } = useTabs(`${URLS.RESOURCE_BROWSER}/${clusterId}`)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [widgetEventDetails, setWidgetEventDetails] = useState<WidgetEventDetails>(null)
     const [isDataStale, setIsDataStale] = useState(false)
