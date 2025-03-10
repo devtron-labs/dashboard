@@ -254,6 +254,7 @@ const TerminalComponent = ({
                 setSocketConnection,
                 socketConnection,
                 sessionId,
+                isTerminalTab: showTerminal,
             },
         },
         metadata: isResourceBrowserView

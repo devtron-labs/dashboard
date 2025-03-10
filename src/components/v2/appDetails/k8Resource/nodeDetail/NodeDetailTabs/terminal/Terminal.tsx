@@ -315,12 +315,14 @@ const TerminalView = ({
                         className={`terminal-component ${fullScreenView ? 'terminal-component--fullscreen' : ''} ml-20`}
                     >
                         <CopyToast showCopyToast={popupText} />
-                        <LogResizeButton
-                            shortcutCombo={[IS_PLATFORM_MAC_OS ? 'Meta' : 'Control', 'Shift', 'F']}
-                            showOnlyWhenPathIncludesLogs={false}
-                            fullScreenView={fullScreenView}
-                            setFullScreenView={handleToggleFullscreen}
-                        />
+                        {isTerminalTab && (
+                            <LogResizeButton
+                                shortcutCombo={[IS_PLATFORM_MAC_OS ? 'Meta' : 'Control', 'Shift', 'F']}
+                                showOnlyWhenPathIncludesLogs={false}
+                                fullScreenView={fullScreenView}
+                                setFullScreenView={handleToggleFullscreen}
+                            />
+                        )}
                     </div>
                 </div>
             </div>
