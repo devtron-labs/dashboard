@@ -144,7 +144,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                 .every((key) => !updatedFormErrorState[key]),
             invalidLabels,
             labelTags,
-            invalidWorkFlow: Object.values(updatedFormErrorState.workflowConfig).some((value) => !!value),
+            invalidWorkFlow: Object.values(updatedFormErrorState.workflowConfig ?? {}).some((value) => !!value),
         }
     }
 
