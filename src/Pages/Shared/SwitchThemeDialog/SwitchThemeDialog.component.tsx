@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     ConfirmationModal,
     ConfirmationModalVariantType,
@@ -8,6 +8,7 @@ import {
     useTheme,
     getThemePreferenceText,
     Icon,
+    THEME_PREFERENCE_STORAGE_KEY,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     BaseLabelFigureProps,
@@ -115,12 +116,33 @@ const SwitchThemeDialog = ({
     )
     const [isSaving, setIsSaving] = useState<boolean>(false)
 
-    const handleSuccess = () => {
+    const handleSuccess = (updatedThemePreference: typeof themePreference = themePreference) => {
         handleShowSwitchThemeLocationTippyChange(!initialThemePreference)
-        handleUpdateUserThemePreference(themePreference)
-        handleThemePreferenceChange(themePreference)
+        handleUpdateUserThemePreference(updatedThemePreference)
+        handleThemePreferenceChange(updatedThemePreference)
         handleClose()
     }
+
+    useEffect(() => {
+        // Watching every 10s local storage for theme preference, if present in localStorage and no initial theme preference is provided would close the modal
+        let interval: NodeJS.Timeout
+
+        if (!initialThemePreference) {
+            interval = setInterval(() => {
+                const currentThemePreference = localStorage.getItem(
+                    THEME_PREFERENCE_STORAGE_KEY,
+                ) as typeof themePreference
+
+                if (currentThemePreference) {
+                    handleSuccess(currentThemePreference)
+                }
+            }, 10000)
+        }
+
+        return () => {
+            clearInterval(interval)
+        }
+    }, [])
 
     const handleSaveThemePreference = async () => {
         setIsSaving(true)
