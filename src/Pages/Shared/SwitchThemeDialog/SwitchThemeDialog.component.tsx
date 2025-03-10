@@ -7,6 +7,7 @@ import {
     AppThemeType,
     getComponentSpecificThemeClass,
     useTheme,
+    getThemePreferenceText,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     BaseLabelFigureProps,
@@ -15,7 +16,6 @@ import {
     ThemePreferenceOptionProps,
 } from './types'
 import './SwitchThemeDialog.scss'
-import { getThemePreferenceText } from './utils'
 
 const THEME_PREFERENCE_OPTION_MAP: Record<ThemePreferenceOptionProps['value'], null> = {
     [AppThemeType.light]: null,
