@@ -604,7 +604,7 @@ const ManifestComponent = ({
             return null
         }
 
-        if (jsonManifestData?.kind !== 'Secret' || isEditMode || secretViewAccess) {
+        if (jsonManifestData?.kind !== 'Secret' || isEditMode || !secretViewAccess) {
             return null
         }
 
