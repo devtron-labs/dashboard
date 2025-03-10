@@ -79,3 +79,9 @@
     min-width: 72px;
     padding: 0 12px;
 }
+
+.code-editor-body {
+    .react-monaco-editor-container {
+        flex-grow: 1;
+    }
+}
