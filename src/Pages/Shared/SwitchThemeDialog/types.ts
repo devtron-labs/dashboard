@@ -2,14 +2,25 @@ import { AppThemeType, UserPreferencesType, useTheme } from '@devtron-labs/devtr
 
 type ThemePreferenceType = ReturnType<typeof useTheme>['themePreference']
 
-export interface SwitchThemeDialogProps extends Pick<ReturnType<typeof useTheme>, 'handleThemePreferenceChange'> {
+export type SwitchThemeDialogProps = {
     /**
      * @description The initial theme preference of the user fetched from api, in case of error would be null
      */
     initialThemePreference: ThemePreferenceType
     handleClose: (updatedThemePreference: ThemePreferenceType) => void
-    currentUserPreferences: UserPreferencesType
-}
+} & (
+    | {
+          currentUserPreferences: UserPreferencesType
+          /**
+           * @default false
+           */
+          mockAPICalls?: false
+      }
+    | {
+          currentUserPreferences?: never
+          mockAPICalls: true
+      }
+)
 
 export interface ThemePreferenceOptionProps {
     selectedThemePreference: SwitchThemeDialogProps['initialThemePreference']

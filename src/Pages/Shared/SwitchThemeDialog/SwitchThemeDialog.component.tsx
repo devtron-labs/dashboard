@@ -106,18 +106,27 @@ const SwitchThemeDialog = ({
     initialThemePreference,
     handleClose,
     currentUserPreferences,
-    handleThemePreferenceChange,
+    mockAPICalls = false,
 }: SwitchThemeDialogProps) => {
-    const { handleShowSwitchThemeLocationTippyChange } = useTheme()
+    const { handleShowSwitchThemeLocationTippyChange, handleThemePreferenceChange } = useTheme()
     const [themePreference, setThemePreference] = useState<typeof initialThemePreference>(initialThemePreference)
     const [isSaving, setIsSaving] = useState<boolean>(false)
 
+    const handleSuccess = () => {
+        handleShowSwitchThemeLocationTippyChange(!initialThemePreference)
+        handleClose(themePreference)
+    }
+
     const handleSaveThemePreference = async () => {
         setIsSaving(true)
-        const isSuccessful = await updateUserPreferences({ ...currentUserPreferences, themePreference })
-        if (isSuccessful) {
-            handleShowSwitchThemeLocationTippyChange(!initialThemePreference)
-            handleClose(themePreference)
+
+        if (!mockAPICalls) {
+            const isSuccessful = await updateUserPreferences({ ...currentUserPreferences, themePreference })
+            if (isSuccessful) {
+                handleSuccess()
+            }
+        } else {
+            handleSuccess()
         }
         setIsSaving(false)
     }

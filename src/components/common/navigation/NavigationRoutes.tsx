@@ -507,7 +507,6 @@ export default function NavigationRoutes() {
                         initialThemePreference={userPreferences?.themePreference}
                         handleClose={handleCloseSwitchThemeDialog}
                         currentUserPreferences={userPreferences}
-                        handleThemePreferenceChange={handleThemePreferenceChange}
                     />
                 )}
 
