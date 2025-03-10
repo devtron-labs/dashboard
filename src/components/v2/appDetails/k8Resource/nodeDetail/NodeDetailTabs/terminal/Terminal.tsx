@@ -313,6 +313,7 @@ const TerminalView = ({
                         id="terminal-id"
                         data-testid="terminal-editor-container"
                         className={`terminal-component ${fullScreenView ? 'terminal-component--fullscreen' : ''} ml-20`}
+                        data-is-fullscreen={fullScreenView}
                     >
                         <CopyToast showCopyToast={popupText} />
                         {isTerminalTab && (
