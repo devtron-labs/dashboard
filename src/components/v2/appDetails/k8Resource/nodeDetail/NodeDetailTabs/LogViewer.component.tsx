@@ -20,11 +20,11 @@ import { FitAddon } from 'xterm-addon-fit'
 import * as XtermWebfont from 'xterm-webfont'
 import { SearchAddon } from 'xterm-addon-search'
 import { AutoSizer } from 'react-virtualized'
+import { Scroller } from '@devtron-labs/devtron-fe-common-lib'
 import CopyToast, { handleSelectionChange } from './CopyToast'
 import 'xterm/css/xterm.css'
 import './nodeDetailTab.scss'
 import { Subject } from '../../../../../../util/Subject'
-import { Scroller } from '@devtron-labs/devtron-fe-common-lib'
 
 interface logViewerInterface {
     rootClassName?: string
@@ -37,12 +37,9 @@ interface logViewerInterface {
 
 const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
     subject,
-    rootClassName = '',
-    indexHidden = true,
     highlightString = '',
     reset = false,
 }) => {
-    let subscribed: boolean = false
     let unsubscribe: () => boolean = null
     const terminal = useRef<Terminal>(null)
     const fitAddon = useRef<FitAddon>(null)
@@ -80,19 +77,19 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
                 return false
             case 'Enter':
                 terminal.current.writeln('')
-                break
+                return false
             default:
                 return false
         }
     }
 
-    function scrollToTop(e) {
+    const scrollToTop = () => {
         if (terminal.current) {
             terminal.current.scrollToTop()
         }
     }
 
-    function scrollToBottom(e) {
+    const scrollToBottom = () => {
         if (terminal.current) {
             terminal.current.scrollToBottom()
         }
@@ -123,6 +120,7 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
          * for production the value will be `webFontAddon.current = new XtermWebfont.default()`
          * for local the value will be `webFontAddon.current = new XtermWebfont()`
          */
+        // eslint-disable-next-line new-cap
         webFontAddon.current = XtermWebfont.default ? new XtermWebfont.default() : new XtermWebfont()
 
         terminal.current.loadAddon(fitAddon.current)
@@ -136,10 +134,11 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
         if (unsubscribe !== null) {
             unsubscribe()
         }
-        ;[subscribed, unsubscribe] = subject.subscribe(function (log: string) {
+        const [, unsub] = subject.subscribe((log: string) => {
             fitAddon.current.fit()
             terminal.current.writeln(log.toString())
         })
+        unsubscribe = unsub
         return () => {
             if (unsubscribe !== null) {
                 unsubscribe()
@@ -170,7 +169,7 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
             <Scroller
                 scrollToBottom={scrollToBottom}
                 scrollToTop={scrollToTop}
-                style={{ position: 'absolute', bottom: '30px', right: '30px', zIndex: '5' }}
+                style={{ position: 'absolute', bottom: '5px', right: '20px', zIndex: '5' }}
             />
         </>
     )

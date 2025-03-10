@@ -16,7 +16,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouteMatch } from 'react-router-dom'
-import { showError, getComponentSpecificThemeClass, AppThemeType } from '@devtron-labs/devtron-fe-common-lib'
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import IndexStore from '../../../index.store'
 import { NodeDetailTab } from '../nodeDetail.type'
 import { getEvent } from '../nodeDetail.api'
@@ -75,7 +75,7 @@ const EventsComponent = ({
                     setEvents([])
                     setLoading(false)
                 })
-        } catch (err) {
+        } catch {
             setEvents([])
             setLoading(false)
         }
@@ -83,9 +83,7 @@ const EventsComponent = ({
 
     const renderContent = () => {
         if (isDeleted) {
-            return (
-                <MessageUI msg={MESSAGING_UI.NO_RESOURCE} size={32} />
-            )
+            return <MessageUI msg={MESSAGING_UI.NO_RESOURCE} size={32} />
         }
 
         if (events.length) {
@@ -96,10 +94,7 @@ const EventsComponent = ({
     }
 
     return (
-        <div
-            className="flex-grow-1 flexbox-col dc__overflow-auto"
-            style={{ background: 'var(--terminal-bg)' }}
-        >
+        <div className="flex-grow-1 flexbox-col dc__overflow-auto" style={{ background: 'var(--terminal-bg)' }}>
             {renderContent()}
         </div>
     )
