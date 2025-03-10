@@ -729,7 +729,6 @@ export interface WebhookReceivedPayloadModalType
     pipelineId: string
     isJobView?: boolean
     appId: string
-    isBulkCIWebhook?: boolean
 }
 
 export type OffendingWorkflowQueryParamType = `policy/${PolicyKindType}|identifier|${string}`

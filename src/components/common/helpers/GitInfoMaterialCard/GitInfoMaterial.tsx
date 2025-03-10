@@ -410,21 +410,27 @@ export const GitInfoMaterial = ({
     const nodeType: CommonNodeAttr['type'] = 'CI'
 
     const renderWebhookContent = () => (
-        <div
-            className={` ${fromBulkCITrigger ? 'dc__position-fixed bg__primary env-modal-width full-height w-100' : ''}`}
-        >
-            <CiWebhookModal
-                webhookPayloads={webhookPayloads}
-                ciPipelineMaterialId={material[0].id}
-                ciPipelineId={+pipelineId}
-                isWebhookPayloadLoading={isWebhookPayloadLoading}
-                workflowId={workflowId}
-                fromAppGrouping={fromAppGrouping}
-                appId={appId}
-                isJobView={isJobView}
-            />
-        </div>
+        <CiWebhookModal
+            webhookPayloads={webhookPayloads}
+            ciPipelineMaterialId={material[0].id}
+            ciPipelineId={+pipelineId}
+            isWebhookPayloadLoading={isWebhookPayloadLoading}
+            workflowId={workflowId}
+            fromAppGrouping={fromAppGrouping}
+            appId={appId}
+            isJobView={isJobView}
+        />
     )
+
+    const renderBody = () =>
+        fromBulkCITrigger && isBulkCIWebhook ? (
+            renderWebhookContent()
+        ) : (
+            <div className="flexbox flex-grow-1 mh-0">
+                {!fromBulkCITrigger && renderMaterialSource()}
+                {renderMaterialHistory(selectedMaterial)}
+            </div>
+        )
 
     return (
         <>
@@ -443,16 +449,7 @@ export const GitInfoMaterial = ({
                     isJobView={isJobCI}
                 />
             ) : (
-                <div className={`${fromBulkCITrigger ? '' : 'flexbox flex-grow-1 mh-0'}`}>
-                    {isBulkCIWebhook ? (
-                        renderWebhookContent()
-                    ) : (
-                        <>
-                            {!fromBulkCITrigger && renderMaterialSource()}
-                            {renderMaterialHistory(selectedMaterial)}
-                        </>
-                    )}
-                </div>
+                renderBody()
             )}
         </>
     )

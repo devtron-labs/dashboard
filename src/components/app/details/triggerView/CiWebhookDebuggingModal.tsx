@@ -134,7 +134,7 @@ export const CiWebhookModal = ({
     )
 
     const renderSidebar = () => (
-        <div className="ci-pipeline-webhook dc__border-right-n2 dc__overflow-hidden dc__border-right-n1">
+        <div className="flexbox-col dc__border-right-n2 dc__overflow-hidden dc__border-right-n1">
             <span className="py-14 fw-6 lh-20 px-16">Received webhooks</span>
             <div className="p-8 flexbox-col flex-grow-1 dc__overflow-auto">
                 {webhookPayloads?.payloads?.map((webhookPayload: WebhookPayload) => {
