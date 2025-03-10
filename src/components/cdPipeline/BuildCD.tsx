@@ -35,10 +35,10 @@ import {
     showError,
     TriggerType,
     useMainContext,
-    useSuperAdmin,
     ErrorScreenNotAuthorized,
     Tooltip,
     MODES,
+    useGetUserRoles,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useHistory } from 'react-router-dom'
 import yamlJsParser from 'yaml'
@@ -112,7 +112,7 @@ export default function BuildCD({
     const {
         featureGitOpsFlags: { isFeatureArgoCdMigrationEnabled },
     } = useMainContext()
-    const { isSuperAdmin } = useSuperAdmin()
+    const { isSuperAdmin } = useGetUserRoles()
 
     const validationRules = new ValidationRules()
     const history = useHistory()

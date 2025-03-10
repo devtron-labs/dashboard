@@ -946,14 +946,12 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                         />
                     )}
                     {isReviewState && (
-                        <CodeEditor.Header hideDefaultSplitHeader className="node-code-editor-header vertical-divider">
-                            <div className="h-32 lh-32 fs-12 fw-6 flexbox w-100 text__white">
-                                <div className=" pl-10 w-49">Current node YAML </div>
-                                <div className="pl-25 w-51 flexbox">
-                                    <Edit className="icon-dim-16 icon-fill-white mt-7 mr-5" />
-                                    YAML (Editing)
-                                </div>
-                            </div>
+                        <CodeEditor.Header hideDefaultSplitHeader>
+                            <p className="m-0 fs-12 fw-6 cn-7">Current node YAML</p>
+                            <p className="m-0 fs-12 fw-6 cn-7 pl-16 flex left dc__gap-4">
+                                <Edit className="icon-dim-16" />
+                                <span>YAML (Editing)</span>
+                            </p>
                         </CodeEditor.Header>
                     )}
                 </CodeEditor>

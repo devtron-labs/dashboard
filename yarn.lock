@@ -1105,10 +1105,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@1.8.6":
-  version "1.8.6"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.8.6.tgz#6f8eb994e204c5d58b1ac0e24d6775c5343f4277"
-  integrity sha512-toLorzCOaN3y2q8d0RxPBeaWPDRplnyl9x8dcicFIbHPf5HiTV39RAx3iV1QMcMdOT7QLnckJIJV0o+vtzRIvQ==
+"@devtron-labs/devtron-fe-common-lib@1.8.8":
+  version "1.8.8"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.8.8.tgz#cf75797d16e31065feaf581b5dcc4a8de8c70016"
+  integrity sha512-4pmfAsQZt26C6X6vwWsB0MF7/uwbIJWvkoG7ItlqKd40dSYOTuJypMSQBJoxLMk8BzbmVsdAIE1GmNZ7xE7W3w==
   dependencies:
     "@codemirror/lang-json" "6.0.1"
     "@codemirror/lang-yaml" "6.1.2"
@@ -1120,7 +1120,8 @@
     "@replit/codemirror-indentation-markers" "6.5.3"
     "@replit/codemirror-vscode-keymap" "6.0.2"
     "@types/react-dates" "^21.8.6"
-    "@uiw/codemirror-theme-github" "^4.23.7"
+    "@uiw/codemirror-extensions-hyper-link" "4.23.10"
+    "@uiw/codemirror-theme-github" "4.23.7"
     "@uiw/react-codemirror" "4.23.7"
     ansi_up "^5.2.1"
     codemirror-json-schema "0.8.0"
@@ -3239,17 +3240,22 @@
     "@codemirror/state" "^6.0.0"
     "@codemirror/view" "^6.0.0"
 
-"@uiw/codemirror-theme-github@^4.23.7":
-  version "4.23.8"
-  resolved "https://registry.yarnpkg.com/@uiw/codemirror-theme-github/-/codemirror-theme-github-4.23.8.tgz#60e08d5c8fc46c7dbb1ebab00c3afbdd13fd3da7"
-  integrity sha512-+LVpFdF6RMjDsTo+HkJYBWkEGy2AgcZJVCDku+yWme/shEtV/FulpGwHeb+NrArAFNyXjUXSVMPhLq3+syOLhw==
-  dependencies:
-    "@uiw/codemirror-themes" "4.23.8"
+"@uiw/codemirror-extensions-hyper-link@4.23.10":
+  version "4.23.10"
+  resolved "https://registry.yarnpkg.com/@uiw/codemirror-extensions-hyper-link/-/codemirror-extensions-hyper-link-4.23.10.tgz#d53d7653afb129fe6429d0c8ebddb785cb93fabe"
+  integrity sha512-fwpIzbufHqLDBZCDcVEIjx3nNaD/mB/8CPZmWf05YRAze6ejZZL8quU8xGegXyiJwKKMLgKl5qll+ZT+djf62g==
 
-"@uiw/codemirror-themes@4.23.8":
-  version "4.23.8"
-  resolved "https://registry.yarnpkg.com/@uiw/codemirror-themes/-/codemirror-themes-4.23.8.tgz#b530ecb388fbc000712466559d41b582cca882c4"
-  integrity sha512-PZmJBZxWMuZ48p/2D5aRPl8zTlBq1d/+NeRqyyH6P6k6yWDF6h71m0Dt+fjslgPE7KmWXux2hbejXXXoRLZO9Q==
+"@uiw/codemirror-theme-github@4.23.7":
+  version "4.23.7"
+  resolved "https://registry.yarnpkg.com/@uiw/codemirror-theme-github/-/codemirror-theme-github-4.23.7.tgz#a52d4f4677e629956915c4a55d8dc9db496a1290"
+  integrity sha512-r9SstBZD7Ow1sQ8F0EpsRGx9b11K552M2FayvyLWTkal64YJmQMKW0S2KcWykgCMKLWhmDFi7LX+h8cg6nek8g==
+  dependencies:
+    "@uiw/codemirror-themes" "4.23.7"
+
+"@uiw/codemirror-themes@4.23.7":
+  version "4.23.7"
+  resolved "https://registry.yarnpkg.com/@uiw/codemirror-themes/-/codemirror-themes-4.23.7.tgz#33d09a2d9df3eda3e3affcb68d91672e41bf646a"
+  integrity sha512-UNf1XOx1hG9OmJnrtT86PxKcdcwhaNhbrcD+nsk8WxRJ3n5c8nH6euDvgVPdVLPwbizsaQcZTILACgA/FjRpVg==
   dependencies:
     "@codemirror/language" "^6.0.0"
     "@codemirror/state" "^6.0.0"

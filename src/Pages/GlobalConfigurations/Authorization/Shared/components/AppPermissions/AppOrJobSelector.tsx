@@ -24,7 +24,7 @@ import {
     ComponentSizeType,
     SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { getAllWorkflowsForAppNames } from '../../../../../../services/service'
+import { getUserAccessAllWorkflows } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
 import { HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE } from '../../../../../../config'
 import { allApplicationsOption, DirectPermissionFieldName } from './constants'
 import { getWorkflowOptions } from '../../../utils'
@@ -48,7 +48,7 @@ const AppOrJobSelector = ({
     const isAccessTypeJob = permission.accessType === ACCESS_TYPE_MAP.JOBS
     const projectId =
         permission.team && permission.team.value !== HELM_APP_UNASSIGNED_PROJECT
-            ? projectsList.find((project) => project.name === permission.team.value)?.id
+            ? projectsList[permission.accessType].find((project) => project.name === permission.team.value)?.id
             : null
     const listForAccessType = getListForAccessType(permission.accessType)
     const appOrJobSelectorName = isAccessTypeJob ? DirectPermissionFieldName.jobs : DirectPermissionFieldName.apps
@@ -66,9 +66,10 @@ const AppOrJobSelector = ({
             const jobNames =
                 _permission.entityName.filter((option) => option.value !== SELECT_ALL_VALUE).map((app) => app.label) ??
                 []
-            const {
-                result: { appIdWorkflowNamesMapping },
-            } = await getAllWorkflowsForAppNames(jobNames, abortControllerRef.current.signal)
+            const { appIdWorkflowNamesMapping } = await getUserAccessAllWorkflows({
+                appIds: jobNames,
+                options: { abortControllerRef },
+            })
             const workflowOptions = getWorkflowOptions(appIdWorkflowNamesMapping)
             abortControllerRef.current = null
             setWorkflowList({ loading: false, options: workflowOptions })
