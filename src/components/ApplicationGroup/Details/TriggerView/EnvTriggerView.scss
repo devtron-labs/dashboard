@@ -49,10 +49,6 @@
         overflow: hidden;
         flex-grow: 1;
         
-        &.webhook-modal {
-            grid-template-columns: 1fr;
-        }
-        
         .sidebar {
             .material-list {
                 .material-list__item {
@@ -95,12 +91,5 @@
                 grid-template-columns: repeat(2, 200px) auto 103px;
             }
         }
-    }
-}
-
-.env-modal-width {
-    &.full-height {
-        z-index: 1;
-        height: calc(100vh - 55px);
     }
 }

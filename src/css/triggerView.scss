@@ -86,14 +86,6 @@
     flex: 1;
 }
 
-.select-material__empty-state-container {
-    height: calc(100% - 74px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
 .material-history {
     width: 530px;
     border: solid 1px var(--N200);
@@ -304,7 +296,6 @@
 .trigger-modal__body {
     display: flex;
     background-color: var(--bg-tertiary);
-    height: calc(100vh - 49px);
     overflow: auto;
     flex-direction: column;
     padding: 20px;
@@ -349,9 +340,8 @@
     min-width: 800px;
     margin-left: auto;
     max-width: 1024px;
-    right: 0;
     background: var(--bg-primary);
-    top: 0;
+    height: 100%;
 }
 
 @keyframes spin {

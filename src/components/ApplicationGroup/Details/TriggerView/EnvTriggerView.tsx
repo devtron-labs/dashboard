@@ -1941,7 +1941,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
     if (!filteredWorkflows.length) {
         return (
-            <div>
+            <div className='flex-grow-1'>
                 <AppNotConfigured />
             </div>
         )

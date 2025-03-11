@@ -27,13 +27,9 @@
         'Helvetica Neue',
         sans-serif;
 }
+
 .webhook-details-container {
     .webhook-body {
-        overflow: auto;
-        height: calc(100vh - 125px);
-        &.super-admin-view {
-            height: calc(100vh - 60px);
-        }
         .permission-row {
             display: grid;
             grid-template-columns: repeat(4, 25%);
