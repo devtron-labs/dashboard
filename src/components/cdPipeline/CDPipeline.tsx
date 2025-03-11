@@ -1256,7 +1256,7 @@ export default function CDPipeline({
     const renderCDPipelineBody = () => {
         if (pageState === ViewType.ERROR) {
             return (
-                <div className="pipeline-empty-state">
+                <div className="flex-grow-1">
                     <hr className="divider m-0" />
                     <div className="h-100 flex">
                         <ErrorScreenManager code={errorCode} />
@@ -1283,7 +1283,7 @@ export default function CDPipeline({
                 <hr className="divider m-0" />
                 <pipelineContext.Provider value={contextValue}>
                     <div
-                        className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''} ${
+                        className={`${isAdvanced ? 'pipeline-container' : ''} ${
                             activeStageName === BuildStageVariable.Build ? 'no-side-bar' : ''
                         }`}
                     >

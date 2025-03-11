@@ -853,7 +853,7 @@ export default function CIPipeline({
                 )}
                 <hr className="divider m-0" />
                 <pipelineContext.Provider value={contextValue}>
-                    <div className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''}`}>
+                    <div className={`${isAdvanced ? 'pipeline-container' : ''}`}>
                         {isAdvanced && (
                             <div className="sidebar-container">
                                 <Sidebar

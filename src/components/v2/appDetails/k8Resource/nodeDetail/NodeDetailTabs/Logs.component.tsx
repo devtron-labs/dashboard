@@ -23,22 +23,22 @@ import {
     Host,
     Progressing,
     useDownload,
-    useMainContext,
     useKeyDown,
     SearchBar,
     ToastVariantType,
     ToastManager,
     getComponentSpecificThemeClass,
     AppThemeType,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Select from 'react-select'
 import ReactGA from 'react-ga4'
-import { ReactComponent as PlayButton } from '../../../../../../assets/icons/ic-play-filled.svg'
-import { ReactComponent as StopButton } from '../../../../../../assets/icons/ic-stop-filled.svg'
-import { ReactComponent as Search } from '../../../../../../assets/icons/ic-search.svg'
-import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg'
-import { ReactComponent as LinesIcon } from '../../../../../../assets/icons/ic-lines.svg'
-import { ReactComponent as Download } from '../../../../../../assets/icons/ic-arrow-line-down.svg'
+import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
+import { ReactComponent as PlayButton } from '@Icons/ic-play-filled.svg'
+import { ReactComponent as StopButton } from '@Icons/ic-stop-filled.svg'
+import { ReactComponent as LinesIcon } from '@Icons/ic-lines.svg'
+import { ReactComponent as Download } from '@Icons/ic-arrow-line-down.svg'
+import { ReactComponent as Abort } from '@Icons/ic-abort.svg'
 import { NodeDetailTab } from '../nodeDetail.type'
 import { downloadLogs, getLogsURL } from '../nodeDetail.api'
 import IndexStore from '../../../index.store'
@@ -48,7 +48,6 @@ import { Subject } from '../../../../../../util/Subject'
 import LogViewerComponent from './LogViewer.component'
 import { multiSelectStyles, podsDropdownStyles } from '../../../../common/ReactSelectCustomization'
 import { LogsComponentProps, Options } from '../../../appDetails.type'
-import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { Option } from '../../../../common/ReactSelect.utils'
 import { AppDetailsTabs } from '../../../appDetails.store'
@@ -116,7 +115,6 @@ const LogsComponent = ({
     const [showNoPrevContainer, setNoPrevContainer] = useState('')
     const [newFilteredLogs, setNewFilteredLogs] = useState<boolean>(false)
     const [showCustomOptionsModal, setShowCustomOptionsMoadal] = useState(false)
-    const { isSuperAdmin } = useMainContext()
     const getPrevContainerLogs = () => {
         setPrevContainer(!prevContainer)
     }
@@ -152,6 +150,27 @@ const LogsComponent = ({
         setPrevContainer(false)
     }
 
+    const parsePipes = (expression: string): string[] => {
+        const pipes = expression.split(/[|\s]*grep[\s]*/).filter((p) => !!p)
+        return pipes
+    }
+
+    const getGrepTokens = (expression) => {
+        const options = commandLineParser({
+            args: expression.replace(/"/g, '').split(' '),
+            booleanKeys: ['v'],
+            allowEmbeddedValues: true,
+        })
+        let { A, B } = options
+        const { _args, C = 0, a = 0, b = 0, c = 0, v = false } = options
+        if (C || c) {
+            A = C || c
+            B = C || c
+        }
+
+        return _args ? { _args: _args.join(' '), a: Number(A || a), b: Number(B || b), v } : null
+    }
+
     const handleSearchTextChange = (searchText: string) => {
         if (!searchText) {
             setLogState({
@@ -177,31 +196,20 @@ const LogsComponent = ({
         })
     }
 
-    const parsePipes = (expression: string): string[] => {
-        const pipes = expression.split(/[\|\s]*grep[\s]*/).filter((p) => !!p)
-        return pipes
-    }
-
-    const getGrepTokens = (expression) => {
-        const options = commandLineParser({
-            args: expression.replace(/"/g, '').split(' '),
-            booleanKeys: ['v'],
-            allowEmbeddedValues: true,
-        })
-        let { _args, A = 0, B = 0, C = 0, a = 0, b = 0, c = 0, v = false } = options
-        if (C || c) {
-            A = C || c
-            B = C || c
-        }
-
-        return _args ? { _args: _args.join(' '), a: Number(A || a), b: Number(B || b), v } : null
-    }
+    const podContainerOptions = getPodContainerOptions(
+        isLogAnalyzer,
+        params,
+        location,
+        logState,
+        isResourceBrowserView,
+        selectedResource,
+    )
 
     const updateLogsAndReadyState = (event: any) => {
         event.data.result.forEach((log: string) => {
             subject.publish(log)
             if (prevContainer) {
-                for (const _co of podContainerOptions.containerOptions) {
+                podContainerOptions.containerOptions.forEach((_co) => {
                     if (
                         _co.selected &&
                         log.toString() ===
@@ -209,7 +217,7 @@ const LogsComponent = ({
                     ) {
                         setNoPrevContainer(log.toString())
                     }
-                }
+                })
             } else {
                 setNoPrevContainer('')
             }
@@ -221,6 +229,7 @@ const LogsComponent = ({
 
     const handleMessage = (event: any) => {
         if (!event || !event.data || !event.data.result || logsPausedRef.current) {
+            noop()
         } else if (event.data.result?.length === 1 && event.data.signal === 'CUSTOM_ERR_STREAM') {
             if (!showStreamErrorRef.current) {
                 updateLogsAndReadyState(event)
@@ -237,7 +246,9 @@ const LogsComponent = ({
                 workerRef.current.postMessage({ type: 'stop' })
                 workerRef.current.terminate()
                 showStreamErrorRef.current = false
-            } catch (err) {}
+            } catch {
+                noop()
+            }
         }
     }
 
@@ -253,7 +264,7 @@ const LogsComponent = ({
     const handleDownloadLogs = () => {
         const nodeName = podContainerOptions.podOptions[0].name
         if (isResourceBrowserView) {
-            for (const _co of podContainerOptions.containerOptions) {
+            podContainerOptions.containerOptions.forEach((_co) => {
                 if (_co.selected) {
                     downloadLogs(
                         handleDownload,
@@ -268,7 +279,7 @@ const LogsComponent = ({
                         selectedResource.namespace,
                     )
                 }
-            }
+            })
         } else {
             const selectedPods = podContainerOptions.podOptions
                 .filter((_pod) => _pod.selected)
@@ -279,7 +290,7 @@ const LogsComponent = ({
                 .flatMap((_pod) => flatContainers(_pod).map((_container) => [_pod.name, _container]))
                 .filter((_pwc) => containers.includes(_pwc[1]))
 
-            for (const _pwc of podsWithContainers) {
+            podsWithContainers.forEach((_pwc) => {
                 downloadLogs(
                     handleDownload,
                     appDetails,
@@ -289,12 +300,12 @@ const LogsComponent = ({
                     logsShownOption.current,
                     selectedCustomLogFilter,
                 )
-            }
+            })
         }
     }
 
     const fetchLogs = () => {
-        if (podContainerOptions.podOptions.length == 0 || podContainerOptions.containerOptions.length == 0) {
+        if (podContainerOptions.podOptions.length === 0 || podContainerOptions.containerOptions.length === 0) {
             return
         }
         workerRef.current = new WebWorker(sseWorker)
@@ -306,7 +317,7 @@ const LogsComponent = ({
         if (isResourceBrowserView) {
             const nodeName = podContainerOptions.podOptions[0].name
             pods.push(nodeName)
-            for (const _co of podContainerOptions.containerOptions) {
+            podContainerOptions.containerOptions.forEach((_co) => {
                 if (_co.selected) {
                     urls.push(
                         getLogsURL(
@@ -324,7 +335,7 @@ const LogsComponent = ({
                         ),
                     )
                 }
-            }
+            })
         } else {
             const selectedPods = podContainerOptions.podOptions
                 .filter((_pod) => _pod.selected)
@@ -335,7 +346,7 @@ const LogsComponent = ({
                 .flatMap((_pod) => flatContainers(_pod).map((_container) => [_pod.name, _container]))
                 .filter((_pwc) => containers.includes(_pwc[1]))
 
-            for (const _pwc of podsWithContainers) {
+            podsWithContainers.forEach((_pwc) => {
                 pods.push(_pwc[0])
                 urls.push(
                     getLogsURL(
@@ -349,9 +360,9 @@ const LogsComponent = ({
                         selectedCustomLogFilter,
                     ),
                 )
-            }
+            })
 
-            if (urls.length == 0) {
+            if (urls.length === 0) {
                 return
             }
         }
@@ -380,8 +391,8 @@ const LogsComponent = ({
         setTempSearch(_searchText)
         const str = replaceLastOddBackslash(_searchText)
         handleSearchTextChange(str)
-        const { length, [length - 1]: highlightString } = str.split(' ')
-        setHighlightString(highlightString)
+        const { length, [length - 1]: highlightStringLocal } = str.split(' ')
+        setHighlightString(highlightStringLocal)
         handleCurrentSearchTerm(str)
     }
 
@@ -431,8 +442,8 @@ const LogsComponent = ({
             if (currentSearchTerm) {
                 setTempSearch(currentSearchTerm)
                 handleSearchTextChange(currentSearchTerm)
-                const { length, [length - 1]: highlightString } = currentSearchTerm.split(' ')
-                setHighlightString(highlightString)
+                const { length, [length - 1]: highlightStringLocal } = currentSearchTerm.split(' ')
+                setHighlightString(highlightStringLocal)
             }
         }
         // TODO: reset pauseLog and grepToken
@@ -448,15 +459,6 @@ const LogsComponent = ({
         return () => stopWorker()
     }, [logState, prevContainer, newFilteredLogs])
 
-    const podContainerOptions = getPodContainerOptions(
-        isLogAnalyzer,
-        params,
-        location,
-        logState,
-        isResourceBrowserView,
-        selectedResource,
-    )
-
     const getPodGroups = () => {
         const allGroupPods = []
         const individualPods = []
@@ -468,8 +470,12 @@ const LogsComponent = ({
             })
         }
 
-        podContainerOptions.podOptions.map((pod) => {
-            pod.name.startsWith('All ') ? podCreate(allGroupPods, pod) : podCreate(individualPods, pod)
+        podContainerOptions.podOptions.forEach((pod) => {
+            if (pod.name.startsWith('All ')) {
+                podCreate(allGroupPods, pod)
+            } else {
+                podCreate(individualPods, pod)
+            }
         })
         return [
             {
@@ -483,10 +489,12 @@ const LogsComponent = ({
         ]
     }
 
+    const renderOption = (props) => <Option {...props} showTippy style={{ direction: 'rtl' }} />
+
     const renderSearchText = (): JSX.Element => (
         <SearchBar
             initialSearchText={tempSearch}
-            containerClassName='w-100 bg__primary'
+            containerClassName="w-100 bg__primary"
             handleEnter={handleLogsSearch}
             inputProps={{
                 placeholder: `grep -A 10 -B 20 "Server Error" | grep 500`,
@@ -511,7 +519,7 @@ const LogsComponent = ({
                         >
                             <div
                                 className={`mr-8 ${logsPaused ? 'play' : 'stop'} flex`}
-                                onClick={(e) => handleLogsPause()}
+                                onClick={() => handleLogsPause()}
                                 data-testid="logs-stop-button"
                             >
                                 {logsPaused ? (
@@ -525,7 +533,7 @@ const LogsComponent = ({
                             <div className="ml-8 flex">
                                 <Abort
                                     data-testid="clear-logs-container"
-                                    onClick={(e) => {
+                                    onClick={() => {
                                         onLogsCleared()
                                     }}
                                     className="icon-dim-16 cursor"
@@ -558,7 +566,7 @@ const LogsComponent = ({
                                                         backgroundColor: 'var(--bg-menu-primary)',
                                                         textAlign: 'left',
                                                     }),
-                                                    control: (base, state) => ({
+                                                    control: (base) => ({
                                                         ...base,
                                                         borderColor: 'transparent',
                                                         backgroundColor: 'transparent',
@@ -582,7 +590,7 @@ const LogsComponent = ({
                                                         color: 'var(--N700)',
                                                         marginLeft: 0,
                                                     }),
-                                                    singleValue: (base, state) => ({
+                                                    singleValue: (base) => ({
                                                         ...base,
                                                         fontWeight: 600,
                                                         color: 'var(--N900)',
@@ -590,19 +598,17 @@ const LogsComponent = ({
                                                         textAlign: 'left',
                                                         marginLeft: '2px',
                                                     }),
-                                                    indicatorsContainer: (provided, state) => ({
+                                                    indicatorsContainer: (provided) => ({
                                                         ...provided,
                                                     }),
-                                                    dropdownIndicator: (base, state) => ({
+                                                    dropdownIndicator: (base) => ({
                                                         ...base,
                                                         padding: '0',
                                                     }),
                                                 }}
                                                 components={{
                                                     IndicatorSeparator: null,
-                                                    Option: (props) => (
-                                                        <Option {...props} showTippy style={{ direction: 'rtl' }} />
-                                                    ),
+                                                    Option: renderOption,
                                                 }}
                                             />
                                         </div>
@@ -644,7 +650,7 @@ const LogsComponent = ({
                                                 ...base,
                                                 paddingTop: 0,
                                             }),
-                                            control: (base, state) => ({
+                                            control: (base) => ({
                                                 ...base,
                                                 borderColor: 'transparent',
                                                 backgroundColor: 'transparent',
@@ -661,7 +667,7 @@ const LogsComponent = ({
                                                 paddingTop: '0',
                                                 color: 'var(--N900)',
                                             }),
-                                            singleValue: (base, state) => ({
+                                            singleValue: (base) => ({
                                                 ...base,
                                                 fontWeight: 600,
                                                 color: 'var(--N900)',
@@ -669,19 +675,17 @@ const LogsComponent = ({
                                                 textAlign: 'left',
                                                 marginLeft: '2px',
                                             }),
-                                            indicatorsContainer: (provided, state) => ({
+                                            indicatorsContainer: (provided) => ({
                                                 ...provided,
                                             }),
-                                            dropdownIndicator: (base, state) => ({
+                                            dropdownIndicator: (base) => ({
                                                 ...base,
                                                 padding: '0',
                                             }),
                                         }}
                                         components={{
                                             IndicatorSeparator: null,
-                                            Option: (props) => (
-                                                <Option {...props} showTippy style={{ direction: 'rtl' }} />
-                                            ),
+                                            Option: renderOption,
                                         }}
                                     />
                                 </div>
@@ -709,7 +713,7 @@ const LogsComponent = ({
                             }}
                             components={{
                                 IndicatorSeparator: null,
-                                Option: (props) => <Option {...props} />,
+                                Option,
                             }}
                         />
                         <div className="h-16 dc__border-right ml-8 mr-8" />
@@ -724,7 +728,7 @@ const LogsComponent = ({
                                     <Download
                                         className={`icon-dim-16 mr-8 cursor ${
                                             (podContainerOptions?.containerOptions ?? []).length === 0 ||
-                                            (prevContainer && showNoPrevContainer != '')
+                                            (prevContainer && showNoPrevContainer !== '')
                                                 ? 'cursor-not-allowed dc__opacity-0_5'
                                                 : ''
                                         }`}
@@ -768,10 +772,7 @@ const LogsComponent = ({
                     <div
                         data-testid="app-logs-container"
                         style={{
-                            gridColumn: '1 / span 2',
                             background: 'var(--terminal-bg)',
-                            height:
-                                isResourceBrowserView || isLogAnalyzer ? 'calc(100vh - 152px)' : 'calc(100vh - 187px)',
                         }}
                         className="flex flex-grow-1 column log-viewer-container"
                     >
@@ -783,7 +784,7 @@ const LogsComponent = ({
                             {logsPaused && (
                                 <div className="w-100 cn-0">
                                     Stopped printing logs.{' '}
-                                    <span onClick={(e) => handleLogsPause()} className="pointer dc__underline">
+                                    <span onClick={() => handleLogsPause()} className="pointer dc__underline">
                                         Resume ( Ctrl+c )
                                     </span>
                                 </div>
@@ -791,17 +792,19 @@ const LogsComponent = ({
                             {readyState === 2 && (
                                 <div className="w-100 cn-0">
                                     Disconnected.{' '}
-                                    <span onClick={(e) => fetchLogs()} className="pointer dc__underline">
+                                    <span onClick={() => fetchLogs()} className="pointer dc__underline">
                                         Reconnect
                                     </span>
                                 </div>
                             )}
                         </div>
 
-                        {prevContainer && showNoPrevContainer != '' ? (
+                        {prevContainer && showNoPrevContainer !== '' ? (
                             <MessageUI dataTestId="no-prev-container-logs" msg={showNoPrevContainer} size={24} />
                         ) : (
-                            <div className={`flexbox-col flex-grow-1 w-100 h-100 ${getComponentSpecificThemeClass(AppThemeType.dark)}`}>
+                            <div
+                                className={`flexbox-col flex-grow-1 w-100 h-100 ${getComponentSpecificThemeClass(AppThemeType.dark)}`}
+                            >
                                 <div className="log-viewer">
                                     <LogViewerComponent
                                         subject={subject}
@@ -816,7 +819,7 @@ const LogsComponent = ({
                         <div
                             className={`pod-readyState pod-readyState--bottom w-100 ${
                                 !logsPaused && [0, 1].includes(readyState) ? 'pod-readyState--show' : ''
-                            } ${isSuperAdmin && !isResourceBrowserView ? 'dc__bottom-30-imp' : ''}`}
+                            }`}
                         >
                             {readyState === 0 && (
                                 <div
@@ -839,7 +842,7 @@ const LogsComponent = ({
                     </div>
                 )}
 
-            {podContainerOptions.containerOptions.filter((_co) => _co.selected).length == 0 && (
+            {podContainerOptions.containerOptions.filter((_co) => _co.selected).length === 0 && (
                 <div className="no-pod no-pod--container flex-grow-1">
                     <MessageUI
                         icon={MsgUIType.MULTI_CONTAINER}

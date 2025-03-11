@@ -209,7 +209,7 @@ const RouterComponent = ({ envType }) => {
         }
         if (errorResponseCode) {
             return (
-                <div className="dc__loading-wrapper">
+                <div className="flex-grow-1">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )
@@ -223,7 +223,7 @@ const RouterComponent = ({ envType }) => {
             {!errorResponseCode && (
                 <>
                     {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
-                    <Suspense fallback={<DetailsProgressing loadingText="Please wait…" size={24} />}>
+                    <Suspense fallback={<DetailsProgressing fullHeight loadingText="Please wait…" size={24} />}>
                         <Switch>
                             <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
                                 <HelmAppOverview

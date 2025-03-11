@@ -19,7 +19,6 @@ import {
     showError,
     Progressing,
     ConditionalWrap,
-    InfoColourBar,
     DevtronProgressing,
     PageHeader,
     useMainContext,
@@ -53,7 +52,6 @@ import SavedValuesList from '../SavedValues/SavedValuesList'
 import ChartValues from '../chartValues/ChartValues'
 import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-forward.svg'
 import NoGitOpsConfiguredWarning from '../../workflowEditor/NoGitOpsConfiguredWarning'
-import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as BackIcon } from '../../../assets/icons/ic-back.svg'
 import { isGitOpsModuleInstalledAndConfigured } from '../../../services/service'
 import { ReactComponent as SourceIcon } from '../../../assets/icons/ic-source.svg'
@@ -418,16 +416,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
 
     const randerChartStoreEmptyState = (): JSX.Element => {
         return chartRepos?.length > 0 && noChartAvailable ? (
-            <ChartEmptyState onClickViewChartButton={clearSearch}>
-                <InfoColourBar
-                    message="Can’t find what you’re looking for?"
-                    classname="br-4 bw-1 bcv-1 ev-2 dc__mxw-300 bcv-1 fs-12 pl-12 pr-12"
-                    Icon={Help}
-                    iconClass="fcv-5 h-20"
-                    linkText="Try refetching connected chart repos or connect a chart repository"
-                    linkOnClick={handleViewAllCharts}
-                />
-            </ChartEmptyState>
+            <ChartEmptyState onClickViewChartButton={clearSearch} />
         ) : (
             <ChartEmptyState
                 title="No charts available right now"

@@ -1567,7 +1567,7 @@ const CDMaterial = ({
                             )}
                         </>
                     ) : (
-                        <div className="bg__tertiary dc__overflow-auto flex-1 select-material--trigger-view">
+                        <div className="bg__tertiary dc__overflow-auto flex-grow-1">
                             <RuntimeParameters
                                 appId={appId}
                                 parameters={parameters}
