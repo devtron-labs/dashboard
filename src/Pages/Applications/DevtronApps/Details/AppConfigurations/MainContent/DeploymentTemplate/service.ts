@@ -48,7 +48,7 @@ export const updateBaseDeploymentTemplate = (
           })
         : Routes.DEPLOYMENT_TEMPLATE_UPDATE
 
-    return post(URL, request, {
+    return (isTemplateView ? put : post)(URL, request, {
         signal: abortSignal,
     })
 }
