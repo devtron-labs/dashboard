@@ -78,8 +78,11 @@ export function deleteCDPipeline(
     },
 ) {
     const baseQueryParams = {
-        ...(force ? { force } : {}),
-        ...(cascadeDelete ? { cascade: cascadeDelete } : {}),
+        ...(force
+            ? { force }
+            : {
+                  ...(!cascadeDelete ? { cascade: cascadeDelete } : {}),
+              }),
     }
 
     if (isTemplateView) {
