@@ -74,11 +74,11 @@ export default function TerminalWrapper({
 
     return (
         <div className={`${className} flex-grow-1 flexbox-col dc__overflow-hidden`} data-testid={dataTestId}>
-            <div className="flex bg__primary pl-20 h-32 terminal-action-strip dc__zi-11 border__secondary--bottom">
+            <div className="flex bg__primary pl-20 h-32 terminal-action-strip dc__zi-11 border__secondary--bottom dc__no-shrink">
                 {firstStrip()}
             </div>
             {selectionListData.secondRow && (
-                <div className="flex left bg__primary pl-20 border__secondary--bottom terminal-action-strip dc__gap-12">
+                <div className="flex left bg__primary pl-20 border__secondary--bottom terminal-action-strip dc__gap-12 dc__no-shrink">
                     {secondStrip()}
                 </div>
             )}
