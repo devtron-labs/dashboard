@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import {
     showError,
     Progressing,
@@ -78,6 +78,8 @@ import UserNameDropDownList from './UseNameListDropdown'
 import { clusterId } from '../ClusterNodes/__mocks__/clusterAbout.mock'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { RemoteConnectionType } from '../dockerRegistry/dockerType'
+import { getServerURLFromLocalStorage } from './cluster.util'
+import { ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY } from './constants'
 
 const VirtualClusterSelectionTab = importComponentFromFELibrary('VirtualClusterSelectionTab')
 const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio')
@@ -111,12 +113,12 @@ const PrometheusRequiredFieldInfo = () => {
 }
 
 export default function ClusterForm({
-    id,
+    id = null,
     cluster_name,
     server_url,
     active,
     config,
-    toggleEditMode,
+    toggleEditMode = noop,
     reload,
     prometheus_url,
     prometheusAuth,
@@ -131,7 +133,7 @@ export default function ClusterForm({
     isTlsConnection,
     toggleCheckTlsConnection,
     setTlsConnectionFalse,
-    toggleShowAddCluster,
+    handleCloseCreateClusterForm = noop,
     toggleKubeConfigFile,
     isKubeConfigFile,
     isClusterDetails,
@@ -167,6 +169,15 @@ export default function ClusterForm({
     const [isConnectedViaProxyTemp, setIsConnectedViaProxyTemp] = useState(isConnectedViaProxy)
     const [isConnectedViaSSHTunnelTemp, setIsConnectedViaSSHTunnelTemp] = useState(isConnectedViaSSHTunnel)
 
+    useEffect(
+        () => () => {
+            if (localStorage.getItem(ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY)) {
+                localStorage.removeItem(ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY)
+            }
+        },
+        [],
+    )
+
     const [, grafanaModuleStatus] = useAsync(
         () => getModuleInfo(ModuleNameMap.GRAFANA),
         [clusterId],
@@ -190,7 +201,7 @@ export default function ClusterForm({
     const { state, handleOnChange, handleOnSubmit } = useForm(
         {
             cluster_name: { value: cluster_name, error: '' },
-            url: { value: server_url, error: '' },
+            url: { value: !id ? getServerURLFromLocalStorage(server_url) : server_url, error: '' },
             userName: { value: prometheusAuth?.userName, error: '' },
             password: { value: prometheusAuth?.password, error: '' },
             prometheusTlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
@@ -535,7 +546,7 @@ export default function ClusterForm({
                 variant: ToastVariantType.success,
                 description: `Successfully ${id ? 'updated' : 'saved'}`,
             })
-            toggleShowAddCluster()
+            handleCloseCreateClusterForm()
             setRemoteConnectionFalse()
             setTlsConnectionFalse()
             reload()
@@ -638,7 +649,7 @@ export default function ClusterForm({
         }
         setRemoteConnectionFalse()
         setTlsConnectionFalse()
-        toggleShowAddCluster()
+        handleCloseCreateClusterForm()
 
         setLoadingState(false)
         reload()
@@ -989,21 +1000,21 @@ export default function ClusterForm({
 
     const LoadingCluster = (): JSX.Element => {
         return (
-            <div className="cluster-form dc__position-rel h-100 bg__primary">
+            <div className="cluster-form dc__position-rel h-100 bg__primary flexbox-col">
                 <div className="flex flex-align-center dc__border-bottom flex-justify bg__primary pb-12 pt-12 pl-20 pr-20">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Add Cluster</h2>
                     <button type="button" className="dc__transparent flex icon-dim-24 " onClick={handleCloseButton}>
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
-                <div className="dc__position-rel" style={{ height: 'calc(100vh - 110px)' }}>
+                <div className="dc__position-rel flex-grow-1">
                     <GenericEmptyState
                         SvgImage={MechanicalOperation}
                         title={EMPTY_STATE_STATUS.LOADING_CLUSTER.TITLE}
                         subTitle={EMPTY_STATE_STATUS.LOADING_CLUSTER.SUBTITLE}
                     />
                 </div>
-                <div className="w-100 dc__border-top flex right pb-12 pt-12 pr-20 pl-20 dc__position-fixed dc__position-abs ">
+                <div className="w-100 dc__border-top flex right py-12 px-20 dc__no-shrink">
                     <button className="cta cancel h-36 lh-36" type="button" onClick={handleCloseButton} disabled>
                         Cancel
                     </button>
@@ -1023,80 +1034,101 @@ export default function ClusterForm({
         return <LoadingCluster />
     }
 
-    const saveClusterDetails = (): JSX.Element => {
-        return (
-            <div className="cluster-form dc__position-rel h-100 bg__primary">
-                <AddClusterHeader />
-                <div className="api-token__list en-2 bw-0 bg__primary br-8">
-                    <div
-                        data-testid="cluster_list_page_after_selection"
-                        className="saved-cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20  dc__border-bottom-n1"
-                    >
-                        <div />
-                        <div data-testid="cluster_validate">CLUSTER</div>
-                        <div data-testid="status_validate">STATUS</div>
-                        <div data-testid="message_validate">MESSAGE</div>
-                        <div />
-                    </div>
-                    <div className="dc__overflow-auto" style={{ height: 'calc(100vh - 161px)' }}>
-                        {!saveClusterList || saveClusterList.length === 0 ? (
-                            <NoMatchingResults />
-                        ) : (
-                            saveClusterList.map((clusterListDetail, index) => (
-                                <div
-                                    key={`api_${index}`}
-                                    className="saved-cluster-list-row cluster-env-list_table flex-align-center fw-4 cn-9 fs-13 pr-16 pl-16 pt-6 pb-6"
-                                >
-                                    <div />
-                                    <div
-                                        data-testid={`validate-cluster-${clusterListDetail.clusterName}`}
-                                        className="flexbox dc__align-items-center ml-2"
-                                    >
-                                        <span className="dc__ellipsis-right">{clusterListDetail.clusterName}</span>
-                                    </div>
-                                    <div className="flexbox dc__align-items-center dc__gap-2">
-                                        <Icon
-                                            name={clusterListDetail.status === 'Failed' ? 'ic-error' : 'ic-success'}
-                                            color={null}
-                                        />
-                                        <div
-                                            data-testid={`validate-cluster-${clusterListDetail.status}`}
-                                            className="dc__ellipsis-right"
-                                        >
-                                            {clusterListDetail.status}{' '}
-                                        </div>
-                                    </div>
-                                    <div className="dc__ellipsis-right"> {clusterListDetail.message}</div>
-                                </div>
-                            ))
-                        )}
-                    </div>
+    const clusterTitle = () => {
+        if (!id) {
+            return 'Add Cluster'
+        }
+        return 'Edit Cluster'
+    }
+
+    const AddClusterHeader = () => (
+        <div className="flex flex-align-center dc__border-bottom flex-justify bg__primary py-12 px-20">
+            <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
+                <span className="fw-6 fs-16 cn-9">{clusterTitle()}</span>
+            </h2>
+            <button
+                data-testid="header_close_icon"
+                type="button"
+                className="dc__transparent flex icon-dim-24"
+                onClick={handleCloseButton}
+            >
+                <Close className="icon-dim-24" />
+            </button>
+        </div>
+    )
+
+    const saveClusterDetails = (): JSX.Element => (
+        <div className="cluster-form dc__position-rel h-100 bg__primary flexbox-col">
+            <AddClusterHeader />
+            <div className="api-token__list en-2 bw-0 bg__primary br-8 flexbox-col flex-grow-1 dc__overflow-auto">
+                <div
+                    data-testid="cluster_list_page_after_selection"
+                    className="saved-cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20  dc__border-bottom-n1"
+                >
+                    <div />
+                    <div data-testid="cluster_validate">CLUSTER</div>
+                    <div data-testid="status_validate">STATUS</div>
+                    <div data-testid="message_validate">MESSAGE</div>
+                    <div />
                 </div>
-                <div className="dc__border-top flex right py-12 px-20">
-                    <button
-                        className="dc__edit_button cb-5 h-36 lh-36"
-                        type="button"
-                        onClick={handleEditConfigClick}
-                        style={{ marginRight: 'auto' }}
-                    >
-                        <span className="flex dc__align-items-center">
-                            <Edit className="icon-dim-16 scb-5 mr-4" />
-                            Edit Kubeconfig
-                        </span>
-                    </button>
-                    <button
-                        data-testid="close_after_cluster_list_display"
-                        className="cta  h-36 lh-36"
-                        type="button"
-                        onClick={handleCloseButton}
-                        style={{ marginLeft: 'auto' }}
-                    >
-                        Close
-                    </button>
+                <div className="dc__overflow-auto flex-grow-1 h-100">
+                    {!saveClusterList || saveClusterList.length === 0 ? (
+                        <NoMatchingResults />
+                    ) : (
+                        saveClusterList.map((clusterListDetail, index) => (
+                            <div
+                                key={`api_${index}`}
+                                className="saved-cluster-list-row cluster-env-list_table flex-align-center fw-4 cn-9 fs-13 pr-16 pl-16 pt-6 pb-6"
+                            >
+                                <div />
+                                <div
+                                    data-testid={`validate-cluster-${clusterListDetail.clusterName}`}
+                                    className="flexbox dc__align-items-center ml-2"
+                                >
+                                    <span className="dc__ellipsis-right">{clusterListDetail.clusterName}</span>
+                                </div>
+                                <div className="flexbox dc__align-items-center dc__gap-2">
+                                    <Icon
+                                        name={clusterListDetail.status === 'Failed' ? 'ic-error' : 'ic-success'}
+                                        color={null}
+                                    />
+                                    <div
+                                        data-testid={`validate-cluster-${clusterListDetail.status}`}
+                                        className="dc__ellipsis-right"
+                                    >
+                                        {clusterListDetail.status}&nbsp;
+                                    </div>
+                                </div>
+                                <div className="dc__ellipsis-right"> {clusterListDetail.message}</div>
+                            </div>
+                        ))
+                    )}
                 </div>
             </div>
-        )
-    }
+            <div className="dc__border-top flex right py-12 px-20 dc__no-shrink">
+                <button
+                    className="dc__edit_button cb-5 h-36 lh-36"
+                    type="button"
+                    onClick={handleEditConfigClick}
+                    style={{ marginRight: 'auto' }}
+                >
+                    <span className="flex dc__align-items-center">
+                        <Edit className="icon-dim-16 scb-5 mr-4" />
+                        Edit Kubeconfig
+                    </span>
+                </button>
+                <button
+                    data-testid="close_after_cluster_list_display"
+                    className="cta  h-36 lh-36"
+                    type="button"
+                    onClick={handleCloseButton}
+                    style={{ marginLeft: 'auto' }}
+                >
+                    Close
+                </button>
+            </div>
+        </div>
+    )
 
     const handleClusterDetailCall = async () => {
         setLoadingState(true)
@@ -1190,10 +1222,11 @@ export default function ClusterForm({
                 {isKubeConfigFile && (
                     <div
                         data-testid="valid_cluster_infocolor_bar"
-                        className="cluster-form dc__position-rel h-100 bg__primary"
+                        className="cluster-form dc__position-rel h-100 bg__primary flexbox-col"
                     >
                         <AddClusterHeader />
-                        <div className="dc__overflow-auto" style={{ height: 'calc(100vh - 110px)' }}>
+
+                        <div className="flexbox-col flex-grow-1 dc__overflow-auto">
                             <div className="api-token__list en-2 bw-1 bg__primary br-4 mr-20 ml-20 mt-16">
                                 <InfoColourBar
                                     message={
@@ -1327,34 +1360,32 @@ export default function ClusterForm({
                                 </div>
                             </div>
                         </div>
-                    </div>
-                )}
 
-                {isKubeConfigFile && (
-                    <div className="w-100 dc__border-top flex right pb-12 pt-12 pl-20 pr-20 dc__position-fixed dc__position-abs bg__primary dc__bottom-0">
-                        <button
-                            className="dc__edit_button cb-5"
-                            type="button"
-                            onClick={handleEditConfigClick}
-                            style={{ marginRight: 'auto' }}
-                        >
-                            <span
-                                data-testid="edit_kubeconfig_button_cluster_checkbox"
-                                style={{ display: 'flex', alignItems: 'center' }}
+                        <div className="w-100 dc__border-top flex right py-12 px-20 bg__primary dc__no-shrink">
+                            <button
+                                className="dc__edit_button cb-5"
+                                type="button"
+                                onClick={handleEditConfigClick}
+                                style={{ marginRight: 'auto' }}
                             >
-                                <Edit className="icon-dim-16 scb-5 mr-4 h-36 lh-36" />
-                                Edit Kubeconfig
-                            </span>
-                        </button>
-                        <button
-                            data-testid="save_cluster_list_button_after_selection"
-                            className="cta h-36 lh-36"
-                            type="button"
-                            onClick={() => handleClusterDetailCall()}
-                            disabled={!saveClusterList || !isAnyCheckboxSelected}
-                        >
-                            Save
-                        </button>
+                                <span
+                                    data-testid="edit_kubeconfig_button_cluster_checkbox"
+                                    style={{ display: 'flex', alignItems: 'center' }}
+                                >
+                                    <Edit className="icon-dim-16 scb-5 mr-4 h-36 lh-36" />
+                                    Edit Kubeconfig
+                                </span>
+                            </button>
+                            <button
+                                data-testid="save_cluster_list_button_after_selection"
+                                className="cta h-36 lh-36"
+                                type="button"
+                                onClick={() => handleClusterDetailCall()}
+                                disabled={!saveClusterList || !isAnyCheckboxSelected}
+                            >
+                                Save
+                            </button>
+                        </div>
                     </div>
                 )}
                 {isClusterDetails && !isKubeConfigFile && saveClusterDetails()}
@@ -1362,36 +1393,11 @@ export default function ClusterForm({
         )
     }
 
-    const clusterTitle = () => {
-        if (!id) {
-            return 'Add Cluster'
-        }
-        return 'Edit Cluster'
-    }
-
-    const AddClusterHeader = () => {
-        return (
-            <div className="flex flex-align-center dc__border-bottom flex-justify bg__primary pb-12 pt-12 pl-20 pr-20">
-                <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
-                    <span className="fw-6 fs-16 cn-9">{clusterTitle()}</span>
-                </h2>
-                <button
-                    data-testid="header_close_icon"
-                    type="button"
-                    className="dc__transparent flex icon-dim-24"
-                    onClick={handleCloseButton}
-                >
-                    <Close className="icon-dim-24" />
-                </button>
-            </div>
-        )
-    }
-
     const handleVirtualCloseButton = (e) => {
         toggleEditMode(e)
         setLoadingState(false)
         reload()
-        toggleShowAddCluster()
+        handleCloseCreateClusterForm()
     }
 
     const showConfirmationModal = () => setConfirmation(true)
@@ -1537,7 +1543,7 @@ export default function ClusterForm({
                                 subtitle={DC_DELETE_SUBTITLES.DELETE_ENVIRONMENT_SUBTITLE}
                                 onDelete={onDelete}
                                 closeConfirmationModal={hideConfirmationModal}
-                                errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+                                errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.BAD_REQUEST}
                             />
                         )}
                     </>

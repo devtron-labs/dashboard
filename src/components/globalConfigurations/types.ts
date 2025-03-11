@@ -15,6 +15,7 @@
  */
 
 import { TippyCustomizedProps } from '@devtron-labs/devtron-fe-common-lib'
+import { HTMLAttributes, MutableRefObject } from 'react'
 
 export type TippyConfig =
     | (Omit<TippyCustomizedProps, 'theme' | 'children' | 'placement'> & {
@@ -31,4 +32,9 @@ export type TippyConfig =
 export interface GlobalConfiguration {
     tippyConfig: TippyConfig
     setTippyConfig: (tippyConfig: TippyConfig) => void
+}
+
+export interface ListProps extends HTMLAttributes<HTMLDivElement> {
+    dataTestId?: string
+    internalRef?: MutableRefObject<HTMLDivElement>
 }

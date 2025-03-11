@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { lazy, useState, useEffect, Suspense, isValidElement } from 'react'
+import { lazy, useState, useEffect, Suspense, isValidElement, PropsWithChildren, LazyExoticComponent } from 'react'
 import { Route, NavLink, Router, Switch, Redirect, useHistory, useLocation } from 'react-router-dom'
 import {
     showError,
@@ -48,6 +48,7 @@ import { GlobalConfigurationProvider, useGlobalConfiguration } from './GlobalCon
 import { OffendingPipelineModalAppView } from '@Pages/GlobalConfigurations/PluginPolicy/OffendingPipelineModal'
 import { getShouldHidePageHeaderAndSidebar } from './utils'
 import AppConfig from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
+import { ListProps } from './types'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -191,9 +192,20 @@ const NavItem = ({ serverMode }) => {
         Authorization: !location.pathname.startsWith('/global-config/auth'),
     })
     const { tippyConfig, setTippyConfig } = useGlobalConfiguration()
+    const {
+        featureGitOpsFlags: { isFeatureGitOpsEnabled },
+    } = useMainContext()
 
     let moduleStatusTimer = null
-    const ConfigRequired = [
+    const ConfigRequired: {
+        name: string
+        href: string
+        component: LazyExoticComponent<any>
+        isAvailableInEA: boolean
+        moduleName?: string
+        isAvailableInDesktop?: boolean
+        hideRoute?: boolean
+    }[] = [
         {
             name: 'Host URL',
             href: URLS.GLOBAL_CONFIG_HOST_URL,
@@ -204,7 +216,8 @@ const NavItem = ({ serverMode }) => {
             name: 'GitOps ',
             href: URLS.GLOBAL_CONFIG_GITOPS,
             component: GitOpsConfiguration,
-            moduleName: ModuleNameMap.ARGO_CD,
+            hideRoute: !isFeatureGitOpsEnabled,
+            isAvailableInEA: isFeatureGitOpsEnabled,
         },
         { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project, isAvailableInEA: true },
         {
@@ -349,11 +362,12 @@ const NavItem = ({ serverMode }) => {
                     to={`${route.href}`}
                     activeClassName="active-route"
                     data-testid={route.dataTestId}
-                    className={`${route.name === 'API tokens' &&
+                    className={`${
+                        route.name === 'API tokens' &&
                         location.pathname.startsWith(`${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}`)
-                        ? 'active-route'
-                        : ''
-                        }`}
+                            ? 'active-route'
+                            : ''
+                    }`}
                     onClick={(e) => {
                         if (!preventOnClickOp) {
                             handleGroupCollapsedState(e, route)
@@ -418,6 +432,7 @@ const NavItem = ({ serverMode }) => {
             {ConfigRequired.map(
                 (route) =>
                     ((!window._env_.K8S_CLIENT &&
+                        !route.hideRoute &&
                         ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) ||
                             route.isAvailableInEA ||
                             installedModuleMap.current?.[route.moduleName])) ||
@@ -589,7 +604,10 @@ const NavItem = ({ serverMode }) => {
 }
 
 const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, isSuperAdmin }: BodyType) => {
-    const location = useLocation()
+    const {
+        featureGitOpsFlags: { isFeatureGitOpsEnabled },
+    } = useMainContext()
+
     const defaultRoute = (): string => {
         if (window._env_.K8S_CLIENT) {
             return URLS.GLOBAL_CONFIG_CLUSTER
@@ -605,12 +623,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             <Route
                 path={URLS.GLOBAL_CONFIG_CLUSTER}
                 render={(props) => {
-                    return (
-                        <ClusterList
-                            {...props}
-                            isSuperAdmin={isSuperAdmin || window._env_.K8S_CLIENT}
-                        />
-                    )
+                    return <ClusterList {...props} isSuperAdmin={isSuperAdmin || window._env_.K8S_CLIENT} />
                 }}
             />
             {!window._env_.K8S_CLIENT && [
@@ -632,13 +645,21 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                           />,
                       ]
                     : []),
-                <Route
-                    key={URLS.GLOBAL_CONFIG_GITOPS}
-                    path={URLS.GLOBAL_CONFIG_GITOPS}
-                    render={(props) => {
-                        return <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
-                    }}
-                />,
+
+                ...(isFeatureGitOpsEnabled
+                    ? [
+                          <Route
+                              key={URLS.GLOBAL_CONFIG_GITOPS}
+                              path={URLS.GLOBAL_CONFIG_GITOPS}
+                              render={(props) => {
+                                  return (
+                                      <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
+                                  )
+                              }}
+                          />,
+                      ]
+                    : []),
+
                 <Route
                     key={URLS.GLOBAL_CONFIG_PROJECT}
                     path={URLS.GLOBAL_CONFIG_PROJECT}
@@ -838,13 +859,17 @@ const DropDown = ({ className = '', dataTestid = '', style = {}, src = null, ...
     )
 }
 
-export const List = ({ dataTestId = '', children = null, className = '', ...props }) => {
-    return (
-        <div className={`list ${className}`} {...props} data-testid={dataTestId}>
-            {children}
-        </div>
-    )
-}
+export const List = ({
+    dataTestId = '',
+    children = null,
+    className = '',
+    internalRef = null,
+    ...props
+}: PropsWithChildren<ListProps>) => (
+    <div ref={internalRef} className={`list ${className}`} {...props} data-testid={dataTestId}>
+        {children}
+    </div>
+)
 
 List.Logo = Logo
 List.Title = Title

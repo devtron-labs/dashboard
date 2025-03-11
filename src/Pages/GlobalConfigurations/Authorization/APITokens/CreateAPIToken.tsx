@@ -101,6 +101,7 @@ const CreateAPIToken = ({
         k8sPermission,
         userRoleGroups,
         isSaveDisabled,
+        allowManageAllAccess,
     } = usePermissionConfiguration()
     const [customDate, setCustomDate] = useState<Moment>(null)
     const validationRules = new ValidationRules()
@@ -169,7 +170,7 @@ const CreateAPIToken = ({
     }
 
     const handleGenerateAPIToken = async () => {
-        if (!validateDirectPermissionForm(directPermission, setDirectPermission).isValid) {
+        if (!validateDirectPermissionForm(directPermission, setDirectPermission, allowManageAllAccess).isValid) {
             return
         }
 
@@ -214,6 +215,7 @@ const CreateAPIToken = ({
                     k8sPermission,
                     permissionType,
                     userGroups: [],
+                    canManageAllAccess: allowManageAllAccess,
                     ...getDefaultUserStatusAndTimeout(),
                 })
 
@@ -291,7 +293,7 @@ const CreateAPIToken = ({
                         )}
                     </label>
                     <div className="dc__border-top" />
-                    <PermissionConfigurationForm showUserPermissionGroupSelector />
+                    <PermissionConfigurationForm showUserPermissionGroupSelector isAddMode />
                 </div>
             </div>
             <GenerateActionButton

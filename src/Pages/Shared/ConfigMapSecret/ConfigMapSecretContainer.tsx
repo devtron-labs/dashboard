@@ -1053,10 +1053,12 @@ export const ConfigMapSecretContainer = ({
     return (
         <>
             <Prompt when={shouldPrompt} message={checkIfPathIsMatching(location.pathname)} />
-            <div
-                className={`configmap-secret-container p-8 h-100 dc__position-rel ${showComments ? 'with-comment-drawer' : ''}`}
-            >
-                <div className="dc__border br-4 dc__overflow-hidden h-100 bg__primary">{renderContent()}</div>
+            <div className="configmap-secret-container flexbox w-100 dc__content-space h-100 dc__position-rel">
+                <div className="p-8 flexbox flex-grow-1">
+                    <div className="dc__border br-4 dc__overflow-hidden h-100 bg__primary flex-grow-1">
+                        {renderContent()}
+                    </div>
+                </div>
                 {renderDeleteModal()}
                 {SaveChangesModal && showDraftSaveModal && (
                     <SaveChangesModal

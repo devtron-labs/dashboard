@@ -216,8 +216,8 @@ export const Configurations = () => {
                 }}
             </Route>
             <Route>
-                <div className="release-configurations dc__grid h-100 dc__overflow-hidden">
-                    <div className="flexbox-col min-h-100 bg__primary dc__border-right">
+                <div className="deploy-config-collapsible-layout dc__grid release-config-layout h-100 dc__overflow-hidden">
+                    <div className="collapsible-sidebar flexbox-col min-h-100 bg__primary dc__border-right">
                         <ConfigurationsAppEnvSelector />
                         {showConfig ? renderConfigSideNav() : null}
                     </div>

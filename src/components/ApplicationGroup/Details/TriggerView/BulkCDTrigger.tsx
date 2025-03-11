@@ -28,7 +28,7 @@ import {
     CDMaterialServiceEnum,
     CDMaterialType,
     FilterStates,
-    useSuperAdmin,
+    useGetUserRoles,
     GenericEmptyState,
     DeploymentWindowProfileMetaData,
     ACTION_STATE,
@@ -62,7 +62,7 @@ import CDMaterial from '../../../app/details/triggerView/cdMaterial'
 import { BulkSelectionEvents, MATERIAL_TYPE, RuntimeParamsErrorState } from '../../../app/details/triggerView/types'
 import { BulkCDDetailType, BulkCDTriggerType } from '../../AppGroup.types'
 import { BULK_CD_DEPLOYMENT_STATUS, BULK_CD_MATERIAL_STATUS, BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
-import TriggerResponseModal from './TriggerResponseModal'
+import TriggerResponseModalBody, { TriggerResponseModalFooter } from './TriggerResponseModal'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 import { importComponentFromFELibrary } from '../../../common'
 import { BULK_ERROR_MESSAGES } from './constants'
@@ -128,7 +128,7 @@ export default function BulkCDTrigger({
 
     const location = useLocation()
     const history = useHistory()
-    const { isSuperAdmin } = useSuperAdmin()
+    const { isSuperAdmin } = useGetUserRoles()
     const isBulkDeploymentTriggered = useRef(false)
 
     const showRuntimeParams =
@@ -715,8 +715,8 @@ export default function BulkCDTrigger({
 
         return (
             <div className="bulk-ci-trigger">
-                <div className="sidebar bg__primary dc__height-inherit dc__overflow-auto">
-                    <div className="dc__position-sticky dc__top-0 pt-12 bg__primary dc__zi-1">
+                <div className="sidebar bg__primary dc__overflow-auto">
+                    <div className="dc__position-sticky dc__top-0 pt-12 bg__primary">
                         {showRuntimeParams && (
                             <div className="px-16 pb-8">
                                 <RuntimeParamTabs
@@ -771,7 +771,7 @@ export default function BulkCDTrigger({
                         </div>
                     ))}
                 </div>
-                <div className="main-content bg__tertiary dc__height-inherit w-100">
+                <div className="main-content bg__tertiary w-100 dc__overflow-auto">
                     {selectedApp.warningMessage || unauthorizedAppList[selectedApp.appId] ? (
                         renderEmptyView()
                     ) : (
@@ -849,7 +849,7 @@ export default function BulkCDTrigger({
     const renderFooterSection = (): JSX.Element => {
         const isDeployButtonDisabled: boolean = isDeployDisabled()
         return (
-            <div className="dc__border-top flex right bg__primary pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width">
+            <div className="dc__border-top flex right bg__primary px-20 py-16">
                 <div className="dc__position-rel tippy-over">
                     {!isDeployButtonDisabled && stage === DeploymentNodeType.CD && !isLoading ? (
                         <AnimatedDeployButton onButtonClick={onClickStartDeploy} isVirtualEnvironment={false} />
@@ -869,24 +869,33 @@ export default function BulkCDTrigger({
         )
     }
 
+    const responseListLength = responseList.length
+
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            <div className="bg__tertiary h-100 bulk-ci-trigger-container">
-                {renderHeaderSection()}
-                {responseList.length ? (
-                    <TriggerResponseModal
+            <div className="bg__primary bulk-ci-trigger-container">
+                <div className='flexbox-col flex-grow-1 dc__overflow-hidden'>
+                    {renderHeaderSection()}
+                    {responseListLength ? (
+                        <TriggerResponseModalBody
+                            responseList={responseList}
+                            isLoading={isLoading}
+                            isVirtualEnv={isVirtualEnv}
+                            envName={selectedApp.envName}
+                        />
+                    ) : (
+                        renderBodySection()
+                    )}
+                </div>
+                {responseListLength ? (
+                    <TriggerResponseModalFooter
                         closePopup={closeBulkCDModal}
                         responseList={responseList}
                         isLoading={isLoading}
                         onClickRetryBuild={onClickTriggerBulkCD}
-                        isVirtualEnv={isVirtualEnv}
-                        envName={selectedApp.envName}
                     />
                 ) : (
-                    <>
-                        {renderBodySection()}
-                        {renderFooterSection()}
-                    </>
+                    renderFooterSection()
                 )}
             </div>
             {showResistanceBox && (

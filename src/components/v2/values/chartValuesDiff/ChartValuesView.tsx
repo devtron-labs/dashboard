@@ -247,7 +247,7 @@ const ChartValuesView = ({
     }
 
     useEffect(() => {
-        if (!isUpdateAppView && !isExternalApp) {
+        if (!isExternalApp) {
             checkGitOpsConfiguration()
         }
         if (isDeployChartView || isCreateValueView) {
@@ -1492,7 +1492,7 @@ const ChartValuesView = ({
 
     const renderChartValuesEditor = () => {
         return (
-            <div className="chart-values-view__editor mw-none">
+            <div className="chart-values-view__editor mw-none dc__overflow-auto">
                 {commonState.activeTab === 'manifest' && commonState.valuesEditorError ? (
                     <GenericEmptyState title="" subTitle={commonState.valuesEditorError} />
                 ) : (
@@ -1734,6 +1734,7 @@ const ChartValuesView = ({
                                     allowedCustomBool={allowedCustomBool}
                                 />
                             )}
+
                             {allowedCustomBool && showDeploymentTools && (
                                 <GitOpsDrawer
                                     commonState={commonState}
@@ -1916,14 +1917,14 @@ const ChartValuesView = ({
 
     if (commonState.isLoading || isProjectLoading) {
         return (
-            <div className="dc__loading-wrapper">
+            <div className="flex-grow-1">
                 <Progressing pageLoader />
             </div>
         )
     }
     if (commonState.errorResponseCode) {
         return (
-            <div className="dc__height-reduce-48">
+            <div className="flex-grow-1">
                 <ErrorScreenManager code={commonState.errorResponseCode} />
             </div>
         )

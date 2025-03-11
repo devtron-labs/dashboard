@@ -495,7 +495,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     renderOptions() {
         if (this.state.headerCheckbox.isChecked) {
             return (
-                <div className="flex left dc__gap-16 mt-20 mb-20">
+                <div className="flex left dc__gap-16">
                     {/* NOTE: Need to replace all the icons with the new Button component all together */}
                     <Tippy placement="top" content="Delete">
                         <div className="flex">
@@ -546,7 +546,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     renderPipelineList() {
         return (
-            <table className="pipeline-list__table">
+            <table className="flexbox-col flex-grow-1">
                 <tbody>
                     <tr className="pipeline-list__header">
                         <th className="pipeline-list__checkbox">
@@ -759,16 +759,15 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     renderBody() {
         return (
-            <div className="notification-tab">
-                <div
-                    data-testid="add-new-notification-button"
+            <div className="notification-tab flexbox-col flex-grow-1 dc__gap-16">
+                <Button
+                    variant={ButtonVariantType.primary}
+                    text="Add New"
+                    size={ComponentSizeType.medium}
                     onClick={this.CreateNewNotification}
-                    style={{ width: '100px' }}
-                    className="cta small flex dc__no-decor"
-                >
-                    <Add className="icon-dim-16 mr-5" />
-                    Add New
-                </div>
+                    dataTestId="delete-notification-button"
+                    startIcon={<Add />}
+                />
                 {this.renderOptions()}
                 {this.renderPipelineList()}
                 {this.renderPagination()}
@@ -802,7 +801,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     renderHostErrorMessage() {
         if (!this.state.hostURLConfig || this.state.hostURLConfig.value !== window.location.origin) {
             return (
-                <div className="br-4 bw-1 er-2 pt-10 pb-10 pl-16 pr-16 bcr-1 mb-16 ml-20 mr-20 flex left">
+                <div className="br-4 bw-1 er-2 pt-10 pb-10 pl-16 pr-16 bcr-1 flex left">
                     <Error className="icon-dim-20 mr-8" />
                     <div className="cn-9 fs-13">
                         Host url is not configured or is incorrect. Reach out to your DevOps team (super-admin) to
@@ -818,29 +817,21 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     render() {
         if (this.state.view === ViewType.LOADING) {
-            return (
-                <div style={{ height: 'calc(100vh - 215px)' }}>
-                    <Progressing pageLoader />
-                </div>
-            )
+            return <Progressing pageLoader />
         }
         if (this.state.view === ViewType.ERROR) {
-            return (
-                <div style={{ height: 'calc(100vh - 215px)' }}>
-                    <Reload />
-                </div>
-            )
+            return <Reload />
         }
         if (!this.state.notificationList.length) {
             return (
-                <div className="pt-16" style={{ height: 'calc(100vh - 215px)' }}>
+                <div className="flexbox-col flex-grow-1">
                     {this.renderHostErrorMessage()}
                     {this.renderGenericState()}
                 </div>
             )
         }
         return (
-            <div className="bg__primary pt-16" style={{ minHeight: 'calc(100vh - 215px)' }}>
+            <div className="flexbox-col flex-grow-1 pt-16 dc__gap-16">
                 {this.renderHostErrorMessage()}
                 {this.renderBody()}
                 {this.state.showDeleteDialog && this.renderDeleteDialog()}

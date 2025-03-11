@@ -1004,7 +1004,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
         if (this.state.view === ViewType.ERROR) {
             return (
-                <div className="dc__loading-wrapper">
+                <div className="flex-grow-1">
                     <ErrorScreenManager code={this.state.code} />
                 </div>
             )

@@ -55,14 +55,6 @@
     display: table-row;
 }
 
-.events-logs__event,
-.events-logs__log {
-    color: var(--N0);
-    font-family: monospace;
-    font-size: 12px;
-    margin-bottom: 0px;
-}
-
 .log-viewer__prev-container {
     font-size: 12px;
     color: var(--N900);
@@ -171,19 +163,11 @@
           background-color: var(--bg-primary);
       }
 
-      .react-monaco-editor-container,
-      .overflow-guard {
-          height: calc(100vh - 178px) !important;
-      }
-
       .monaco-editor {
-
           .monaco-editor-background,
           .margin {
               background-color: var(--bg-secondary) !important;
           }
-
-          height: calc(100vh - 178px) !important;
       }
 
       .radio-group {
@@ -196,6 +180,7 @@
 .pod-terminal-hidden {
     visibility: hidden;
     height: 0;
+    flex-grow: 0;
     .terminal-action-strip {
         display: none;
     }
@@ -203,4 +188,10 @@
 
 .pod-terminal-hidden * {
     height: 0 !important;
+}
+
+.manifest-container {
+    & .react-monaco-editor-container {
+        flex-grow: 1;
+    }
 }

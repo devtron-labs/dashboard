@@ -36,6 +36,9 @@ import {
 import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { ReactComponent as ICCheck } from '@Icons/ic-check.svg'
+import { EDITOR_VIEW } from '@Config/constants'
+import { importComponentFromFELibrary } from '@Components/common'
+import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
 import EventsComponent from './NodeDetailTabs/Events.component'
 import LogsComponent from './NodeDetailTabs/Logs.component'
 import ManifestComponent from './NodeDetailTabs/Manifest.component'
@@ -46,6 +49,7 @@ import {
     ManifestActionPropsType,
     ManifestCodeEditorMode,
     ManifestViewRefType,
+    Node,
     NodeDetailPropsType,
     NodeType,
     Options,
@@ -61,9 +65,6 @@ import { ReactComponent as EphemeralIcon } from '../../../../../assets/icons/ic-
 import { ReactComponent as DeleteIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
 import { CLUSTER_NODE_ACTIONS_LABELS } from '../../../../ClusterNodes/constants'
 import DeleteResourcePopup from '../../../../ResourceBrowser/ResourceList/DeleteResourcePopup'
-import { EDITOR_VIEW } from '@Config/constants'
-import { importComponentFromFELibrary } from '@Components/common'
-import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
 
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', false, 'function')
 const ToggleManifestConfigurationMode = importComponentFromFELibrary(
@@ -115,7 +116,10 @@ const NodeDetailComponent = ({
     }
 
     const _selectedResource = useMemo(
-        () => lowercaseKindToResourceGroupMap[`${params.group === K8S_EMPTY_GROUP ? '' : params.group?.toLowerCase()}-${params.nodeType.toLowerCase()}`],
+        () =>
+            lowercaseKindToResourceGroupMap[
+                `${params.group === K8S_EMPTY_GROUP ? '' : params.group?.toLowerCase()}-${params.nodeType.toLowerCase()}`
+            ],
         [lowercaseKindToResourceGroupMap, params.nodeType, params.group],
     )
 
@@ -144,10 +148,11 @@ const NodeDetailComponent = ({
             (window._env_.FEATURE_CONFIG_DRIFT_ENABLE &&
                 appDetails.appType === AppType.DEVTRON_APP &&
                 isFELibAvailable)) &&
-        !currentResource?.['parentRefs']?.length
+        !(currentResource as unknown as Node)?.parentRefs?.length
 
     const isResourceMissing =
-        appDetails.appType === AppType.EXTERNAL_HELM_CHART && currentResource?.['health']?.status === 'Missing'
+        appDetails.appType === AppType.EXTERNAL_HELM_CHART &&
+        (currentResource as unknown as Node)?.health?.status === 'Missing'
 
     const [containers, setContainers] = useState<Options[]>(
         (isResourceBrowserView ? selectedResource?.containers ?? [] : getContainersData(podMetaData)) as Options[],
@@ -200,22 +205,10 @@ const NodeDetailComponent = ({
         }
     }, [params.nodeType])
 
-    useEffect(() => {
-        if (
-            isResourceBrowserView &&
-            !loadingResources &&
-            selectedResource &&
-            resourceName &&
-            params.nodeType === Nodes.Pod.toLowerCase()
-        ) {
-            getContainersFromManifest()
-        }
-    }, [loadingResources, resourceName, params.namespace])
-
     const getContainersFromManifest = async () => {
         try {
             const nullCaseName = isResourceBrowserView && params.nodeType === 'pod' ? resourceName : ''
-            const { result } = await getManifestResource(
+            const { result } = (await getManifestResource(
                 appDetails,
                 resourceName,
                 params.nodeType,
@@ -225,7 +218,7 @@ const NodeDetailComponent = ({
                     name: selectedResource.name ? selectedResource.name : nullCaseName,
                     namespace: selectedResource.namespace ? selectedResource.namespace : params.namespace,
                 },
-            ) as any
+            )) as any
             const _resourceContainers = []
             if (result?.manifestResponse?.manifest?.spec) {
                 if (Array.isArray(result.manifestResponse.manifest.spec.containers)) {
@@ -270,11 +263,11 @@ const NodeDetailComponent = ({
             }
         } catch (err) {
             // when resource is deleted
-            if (Array.isArray(err['errors']) && err['errors'].some((_err) => _err.code === '404')) {
+            if (Array.isArray(err.errors) && err.errors.some((_err) => _err.code === '404')) {
                 setResourceDeleted(true)
                 setHideDeleteButton(true)
                 // when user is not authorized to view resource
-            } else if (err['code'] === 403) {
+            } else if (err.code === 403) {
                 setHideDeleteButton(true)
                 showError(err)
             } else {
@@ -290,6 +283,18 @@ const NodeDetailComponent = ({
         }
     }
 
+    useEffect(() => {
+        if (
+            isResourceBrowserView &&
+            !loadingResources &&
+            selectedResource &&
+            resourceName &&
+            params.nodeType === Nodes.Pod.toLowerCase()
+        ) {
+            getContainersFromManifest().catch(noop)
+        }
+    }, [loadingResources, resourceName, params.namespace])
+
     const handleManifestGUIError: ManifestActionPropsType['handleManifestGUIErrors'] = (errors = []) => {
         setManifestErrors(errors)
     }
@@ -297,7 +302,7 @@ const NodeDetailComponent = ({
     const handleSelectedTab = (_tabName: string, _url: string) => {
         setSelectedTabName(_tabName)
         updateTabUrl({
-            url: _url
+            url: _url,
         })
     }
 
@@ -337,9 +342,7 @@ const NodeDetailComponent = ({
         setShowDeleteDialog((prevState) => !prevState)
     }
 
-    const getComponentKeyFromParams = () => {
-        return Object.values(params).join('/')
-    }
+    const getComponentKeyFromParams = () => Object.values(params).join('/')
 
     const handleManifestApplyChanges = () => {
         const isFormValid = !manifestGUIFormRef.current?.validateForm || manifestGUIFormRef.current.validateForm()
@@ -354,12 +357,6 @@ const NodeDetailComponent = ({
         }
 
         setManifestCodeEditorMode(ManifestCodeEditorMode.APPLY_CHANGES)
-    }
-
-    const handleManifestCancel = () => {
-        handleManifestGUIError([])
-        handleUpdateUnableToParseManifest(false)
-        setManifestCodeEditorMode(ManifestCodeEditorMode.CANCEL)
     }
 
     const handleManifestEdit = () => setManifestCodeEditorMode(ManifestCodeEditorMode.EDIT)
@@ -403,6 +400,12 @@ const NodeDetailComponent = ({
         setUnableToParseManifest(value)
     }
 
+    const handleManifestCancel = () => {
+        handleManifestGUIError([])
+        handleUpdateUnableToParseManifest(false)
+        setManifestCodeEditorMode(ManifestCodeEditorMode.CANCEL)
+    }
+
     const isManifestEditable =
         isExternalApp ||
         isResourceBrowserView ||
@@ -410,55 +413,48 @@ const NodeDetailComponent = ({
 
     const renderManifestTabHeader = () => (
         <>
-            {isManifestEditable &&
-                manifestCodeEditorMode &&
-                !showManifestCompareView &&
-                !isResourceMissing && (
-                    <>
-                        <div className="ml-12 mr-12 tab-cell-border" />
-                        {manifestCodeEditorMode === ManifestCodeEditorMode.EDIT ? (
-                            <div className="flex dc__gap-12">
-                                {ToggleManifestConfigurationMode && isManifestEditable && (
-                                    <ToggleManifestConfigurationMode
-                                        mode={manifestFormConfigurationType}
-                                        handleToggle={handleToggleManifestConfigurationMode}
-                                        isDisabled={unableToParseManifest || doesManifestGUIContainsError}
-                                    />
-                                )}
+            {isManifestEditable && manifestCodeEditorMode && !showManifestCompareView && !isResourceMissing && (
+                <>
+                    <div className="ml-12 mr-12 tab-cell-border" />
+                    {manifestCodeEditorMode === ManifestCodeEditorMode.EDIT ? (
+                        <div className="flex dc__gap-12">
+                            {ToggleManifestConfigurationMode && isManifestEditable && (
+                                <ToggleManifestConfigurationMode
+                                    mode={manifestFormConfigurationType}
+                                    handleToggle={handleToggleManifestConfigurationMode}
+                                    isDisabled={unableToParseManifest || doesManifestGUIContainsError}
+                                />
+                            )}
 
-                                <button
-                                    type="button"
-                                    className={`dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4 ${doesManifestGUIContainsError ? 'dc__disabled' : ''}`}
-                                    onClick={handleManifestApplyChanges}
-                                    disabled={doesManifestGUIContainsError}
-                                >
-                                    <>
-                                        <ICCheck className="icon-dim-16 scb-5" />
-                                        <span>Apply changes</span>
-                                    </>
-                                </button>
-                                <button
-                                    type="button"
-                                    className="dc__unset-button-styles fs-12 lh-1-5 fw-6 flex cn-6"
-                                    onClick={handleManifestCancel}
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        ) : (
                             <button
                                 type="button"
-                                className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
-                                onClick={handleManifestEdit}
+                                className={`dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4 ${doesManifestGUIContainsError ? 'dc__disabled' : ''}`}
+                                onClick={handleManifestApplyChanges}
+                                disabled={doesManifestGUIContainsError}
                             >
-                                <>
-                                    <ICPencil className="icon-dim-16 scb-5" />
-                                    <span>Edit live manifest</span>
-                                </>
+                                <ICCheck className="icon-dim-16 scb-5" />
+                                <span>Apply changes</span>
                             </button>
-                        )}
-                    </>
-                )}
+                            <button
+                                type="button"
+                                className="dc__unset-button-styles fs-12 lh-1-5 fw-6 flex cn-6"
+                                onClick={handleManifestCancel}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    ) : (
+                        <button
+                            type="button"
+                            className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
+                            onClick={handleManifestEdit}
+                        >
+                            <ICPencil className="icon-dim-16 scb-5" />
+                            <span>Edit live manifest</span>
+                        </button>
+                    )}
+                </>
+            )}
             {manifestCodeEditorMode === ManifestCodeEditorMode.READ &&
                 !showManifestCompareView &&
                 (showDesiredAndCompareManifest || isResourceMissing) && (
@@ -477,23 +473,19 @@ const NodeDetailComponent = ({
         </>
     )
 
-    const TAB_GROUP_CONFIG: TabProps[] = tabs?.map((tab: string, idx: number) => {
-        return {
-            id: `${idx}resourceTreeTab`,
-            label: capitalizeFirstLetter(tab),
-            tabType: 'navLink',
-            props: {
-                to: `${url}/${tab.toLowerCase()}${location.search}`,
-                ['data-testid']: `${tab.toLowerCase()}-nav-link`,
-            }
-        }
-    })
+    const TAB_GROUP_CONFIG: TabProps[] = tabs?.map((tab: string, idx: number) => ({
+        id: `${idx}resourceTreeTab`,
+        label: capitalizeFirstLetter(tab),
+        tabType: 'navLink',
+        props: {
+            to: `${url}/${tab.toLowerCase()}${location.search}`,
+            'data-testid': `${tab.toLowerCase()}-nav-link`,
+        },
+    }))
 
     return (
         <>
-            <div
-                className={`w-100 pr-20 pl-20 bg__primary flex border__secondary--bottom dc__content-space h-32 ${!isResourceBrowserView ? 'node-detail__sticky' : ''}`}
-            >
+            <div className="w-100 pr-20 pl-20 bg__primary flex border__secondary--bottom dc__content-space h-32">
                 <div className="flex left">
                     <TabGroup tabs={TAB_GROUP_CONFIG} size={ComponentSizeType.medium} alignActiveBorderWithContainer />
                     {selectedTabName === NodeDetailTab.TERMINAL && (

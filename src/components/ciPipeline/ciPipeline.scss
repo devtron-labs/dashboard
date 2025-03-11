@@ -28,10 +28,6 @@
     border-top: solid 1px var(--N100);
 }
 
-.ci-pipeline-advance {
-    min-height: calc(100vh - 690px);
-}
-
 .repo-name {
     font-size: 12px;
     font-weight: 600;
@@ -188,30 +184,27 @@
 .advanced-option-container {
     height: 100%;
     width: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .pipeline-container {
     display: grid;
     grid-template-columns: 280px 1fr;
-    height: calc(100vh - 138px);
     background: var(--bg-primary);
     overflow: hidden;
+    flex-grow: 1;
 
     .sidebar-container {
         border-right: 1px solid var(--N200);
         padding-left: 20px;
         padding-right: 20px;
-        max-height: calc(100vh - 138px);
         overflow: auto;
     }
 
     &.no-side-bar {
         grid-template-columns: 1fr;
     }
-}
-
-.pipeline-empty-state {
-    height: calc(100vh - 118px);
 }
 
 .bottom-border-radius {
@@ -225,7 +218,6 @@
 
 .ci-scrollable-content {
     overflow: auto;
-    max-height: calc(100vh - 125px);
 }
 
 .task-item {
