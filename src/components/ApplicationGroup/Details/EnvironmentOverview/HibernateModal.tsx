@@ -36,6 +36,7 @@ export const HibernateModal = ({
     isDeploymentWindowLoading,
     showDefaultDrawer,
     isDeploymentBlockedViaWindow,
+    onClose,
 }: HibernateModalProps) => {
     const [isActionButtonDisabled, setActionButtonDisabled] = useState<boolean>(true)
     const isCurrentSelected = !Array.isArray(selectedAppDetailsList)
@@ -73,6 +74,7 @@ export const HibernateModal = ({
 
     const closeModal = () => {
         setOpenedHibernateModalType(null)
+        onClose?.()
     }
 
     const renderHibernateModalBody = () => {
