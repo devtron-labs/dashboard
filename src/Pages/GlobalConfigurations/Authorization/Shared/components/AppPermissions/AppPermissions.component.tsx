@@ -100,7 +100,12 @@ const AppPermissions = () => {
     const [isDataLoading, configData, configDataError, reload] = useAsync(() =>
         Promise.all([
             getUserAccessProjectList(serverMode),
-            getUserAccessEnvironmentList(serverMode),
+            serverMode === SERVER_MODE.EA_ONLY
+                ? {
+                      [ACCESS_TYPE_MAP.DEVTRON_APPS]: [],
+                      [ACCESS_TYPE_MAP.JOBS]: [],
+                  }
+                : getUserAccessEnvironmentList(),
             serverMode === SERVER_MODE.EA_ONLY ? null : getUserAccessChartGroups(),
             getUserAccessEnvListForHelmApps(),
         ]),

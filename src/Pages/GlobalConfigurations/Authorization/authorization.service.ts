@@ -329,20 +329,16 @@ export const getUserAccessProjectFilteredApps = ({
         payload: { entity: EntityTypes.DIRECT, accessType, teamIds },
     })
 
-export const getUserAccessEnvironmentList = async (serverMode: SERVER_MODE): Promise<EnvironmentsListType> => {
+export const getUserAccessEnvironmentList = async (): Promise<EnvironmentsListType> => {
     const [devtronEnvironments, jobEnvironments] = await Promise.all([
-        serverMode === SERVER_MODE.EA_ONLY
-            ? Promise.resolve([])
-            : getUserResourceOptions<EnvListMinDTO[]>({
-                  kind: UserAccessResourceKind.ENVIRONMENT,
-                  payload: { entity: EntityTypes.DIRECT, accessType: ACCESS_TYPE_MAP.DEVTRON_APPS },
-              }),
-        serverMode === SERVER_MODE.EA_ONLY
-            ? Promise.resolve([])
-            : getUserResourceOptions<EnvListMinDTO[]>({
-                  kind: UserAccessResourceKind.ENVIRONMENT,
-                  payload: { entity: EntityTypes.JOB },
-              }),
+        getUserResourceOptions<EnvListMinDTO[]>({
+            kind: UserAccessResourceKind.ENVIRONMENT,
+            payload: { entity: EntityTypes.DIRECT, accessType: ACCESS_TYPE_MAP.DEVTRON_APPS },
+        }),
+        getUserResourceOptions<EnvListMinDTO[]>({
+            kind: UserAccessResourceKind.ENVIRONMENT,
+            payload: { entity: EntityTypes.JOB },
+        }),
     ])
 
     return {
