@@ -461,7 +461,8 @@ export default function NavigationRoutes() {
         )
     }
     if (pageState === ViewType.ERROR) {
-        return <Reload className="h-100vh" />
+        // 100vh is required for covering the full height of the page as this is the top level component
+        return <Reload className="h-100vh bg__tertiary" />
     }
     const _isOnboardingPage = isOnboardingPage()
 

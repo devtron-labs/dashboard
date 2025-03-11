@@ -961,14 +961,6 @@ button.anchor {
     height: 100%;
 }
 
-.details-loader {
-    width: 100vw;
-}
-
-.details-loader.details-loader-height {
-    height: calc(100vh - 80px);
-}
-
 .dc__configuration-list {
     display: grid;
     grid-template-columns: 24px 1fr 200px;

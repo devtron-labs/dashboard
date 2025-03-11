@@ -39,7 +39,6 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as PlayButton } from '../../assets/icons/ic-play.svg'
 import { updateBulkList, getSeeExample, updateImpactedObjectsList } from './bulkedits.service'
 import './bulkEdit.scss'
-import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState'
 import {
     OutputTabs,
     renderCMAndSecretImpObj,
@@ -515,17 +514,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return !this.state.showExamples ? this.renderBulkCodeEditor() : this.renderCodeEditorAndReadme()
     }
 
-    renderEmptyStateForEAOnlyMode = () => {
-        return (
-            <EAEmptyState
-                title="Create, build, deploy and debug custom apps"
-                msg="Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI."
-                stateType={EAEmptyStateType.BULKEDIT}
-                knowMoreLink={DOCUMENTATION.HOME_PAGE}
-            />
-        )
-    }
-
     render() {
         if (this.state.view === ViewType.ERROR) {
             return (
@@ -545,9 +533,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         tippyRedirectLink: DOCUMENTATION.BULK_UPDATE,
                     }}
                 />
-                {this.props.serverMode === SERVER_MODE.EA_ONLY
-                    ? this.renderEmptyStateForEAOnlyMode()
-                    : this.renderBulkEditBody()}
+                {this.renderBulkEditBody()}
             </div>
         )
     }
