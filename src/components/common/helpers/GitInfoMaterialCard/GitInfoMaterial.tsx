@@ -346,30 +346,27 @@ export const GitInfoMaterial = ({
             return (
                 <div className="select-material">
                     {showHeader && renderMaterialHistoryHeader(_selectedMaterial)}
-
-                    <div className="select-material__empty-state-container flex dc__position-rel">
-                        <EmptyStateCIMaterial
-                            isRepoError={_selectedMaterial.isRepoError}
-                            isBranchError={_selectedMaterial.isBranchError}
-                            isDockerFileError={_selectedMaterial.isDockerFileError}
-                            isWebHook={isWebhook}
-                            gitMaterialName={_selectedMaterial.gitMaterialName}
-                            sourceValue={_selectedMaterial.value}
-                            repoErrorMsg={_selectedMaterial.repoErrorMsg}
-                            branchErrorMsg={_selectedMaterial.branchErrorMsg}
-                            dockerFileErrorMsg={_selectedMaterial.dockerFileErrorMsg}
-                            repoUrl={_selectedMaterial.gitURL}
-                            isMaterialLoading={_selectedMaterial.isMaterialLoading}
-                            onRetry={onRetry}
-                            anyCommit={anyCommit}
-                            noSearchResults={_selectedMaterial.noSearchResult}
-                            noSearchResultsMsg={_selectedMaterial.noSearchResultsMsg}
-                            clearSearch={clearFilters}
-                            handleGoToWorkFlowEditor={goToWorkFlowEditor}
-                            showAllCommits={showAllCommits}
-                            toggleExclude={toggleExclude}
-                        />
-                    </div>
+                    <EmptyStateCIMaterial
+                        isRepoError={_selectedMaterial.isRepoError}
+                        isBranchError={_selectedMaterial.isBranchError}
+                        isDockerFileError={_selectedMaterial.isDockerFileError}
+                        isWebHook={isWebhook}
+                        gitMaterialName={_selectedMaterial.gitMaterialName}
+                        sourceValue={_selectedMaterial.value}
+                        repoErrorMsg={_selectedMaterial.repoErrorMsg}
+                        branchErrorMsg={_selectedMaterial.branchErrorMsg}
+                        dockerFileErrorMsg={_selectedMaterial.dockerFileErrorMsg}
+                        repoUrl={_selectedMaterial.gitURL}
+                        isMaterialLoading={_selectedMaterial.isMaterialLoading}
+                        onRetry={onRetry}
+                        anyCommit={anyCommit}
+                        noSearchResults={_selectedMaterial.noSearchResult}
+                        noSearchResultsMsg={_selectedMaterial.noSearchResultsMsg}
+                        clearSearch={clearFilters}
+                        handleGoToWorkFlowEditor={goToWorkFlowEditor}
+                        showAllCommits={showAllCommits}
+                        toggleExclude={toggleExclude}
+                    />
                 </div>
             )
         }
@@ -423,7 +420,7 @@ export const GitInfoMaterial = ({
     )
 
     const renderBody = () =>
-        fromBulkCITrigger && isBulkCIWebhook ? (
+        isBulkCIWebhook ? (
             renderWebhookContent()
         ) : (
             <div className="flexbox flex-grow-1 mh-0">

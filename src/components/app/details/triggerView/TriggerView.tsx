@@ -1313,7 +1313,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                         <CloseIcon />
                                     </button>
                                 </div>
-                                <div style={{ height: 'calc(100% - 55px)' }}>
+                                <div className='flex-grow-1'>
                                     <Progressing pageLoader size={32} />
                                 </div>
                             </>
