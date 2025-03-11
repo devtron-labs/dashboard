@@ -292,6 +292,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     }
 
     renderSourceNode(node, ci) {
+        console.log('node', node)
         return (
             <StaticNode
                 x={node.x}
