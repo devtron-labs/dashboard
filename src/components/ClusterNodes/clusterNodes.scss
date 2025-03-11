@@ -203,6 +203,12 @@
     }
 }
 
+.cluster-manifest {
+    & .react-monaco-editor-container {
+        flex-grow: 1;
+    }
+}
+
 .tab-list {
     .tab-list__tab {
         .tab-hover {
@@ -231,55 +237,6 @@
             border-radius: 2px 2px 0px 0px;
             margin-top: -1px;
         }
-    }
-}
-
-.cluster-terminal-view-container {
-    // NOTE: this component is only visible in resource browser
-    // and at the time of writing this only the page header and dynamic tabs
-    // appear above it which amount to 48px and 36px respectively (48 + 36 = 84)
-    height: calc(100vh - 84px);
-}
-
-.cluster-terminal__wrapper {
-    position: relative;
-    background: var(--terminal-bg);
-    flex: 1 1;
-    height: calc(100% - 60px);
-
-    &.full-screen-terminal {
-        height: calc(100vh - 109px);
-    }
-
-    &.cluster-details-full-screen {
-        height: calc(100vh - 136px);
-    }
-
-    &.cluster-details-node-details {
-        .terminal-container {
-            height: calc(100% - 50px);
-        }
-    }
-
-    &.node-details-full-screen {
-        height: calc(100vh - 144px);
-    }
-}
-
-.cluster-full_screen {
-    position: absolute;
-    width: calc(100vw - 56px);
-    height: 0;
-    z-index: 1;
-
-    &.cluster-details-terminal {
-        top: 76px;
-        height: calc(100vh - 76px);
-    }
-
-    &.node-terminal {
-        top: 48px;
-        height: calc(100vh - 48px);
     }
 }
 
