@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
-import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
-import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
+import { ReactComponent as WarningIcon } from '@Icons/ic-warning.svg'
+import { ReactComponent as Close } from '@Icons/ic-cross.svg'
 import { NoGitOpsConfiguredWarningType } from './types'
 
 export default function NoGitOpsConfiguredWarning({ closePopup }: NoGitOpsConfiguredWarningType) {

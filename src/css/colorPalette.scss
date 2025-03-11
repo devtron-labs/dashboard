@@ -256,34 +256,63 @@ $black: 0, 0, 0;
     }
 }
 
-// CODE MIRROR THEME
-.code-editor__shebang,
-.cm-theme,
-.cm-merge-theme,
 .component-specific-theme {
     &__light {
         @include theme-light;
+
+        $code-editor-diff-red: 243, 62, 62;
+        $code-editor-diff-green: 29, 173, 112;
+        $selection-color: 0, 102, 204;
+
+        // CODE-EDITOR COLORS
+        --fg-code-editor: rgb(26, 47, 101);
         --bg-code-editor-base: var(--bg-primary);
         --bg-code-editor-base-gutter: var(--bg-secondary);
-        --bg-code-editor-red: var(--R50);
-        --bg-code-editor-red-gutter: var(--R100);
-        --bg-code-editor-red-highlight: var(--R200);
-        --bg-code-editor-green: var(--G50);
-        --bg-code-editor-green-gutter: var(--G100);
-        --bg-code-editor-green-highlight: var(--G200);
-        --active-line: var(--N100);
+        --bg-code-editor-red: rgba(#{$code-editor-diff-red}, 0.15);
+        --bg-code-editor-red-gutter: rgba(#{$code-editor-diff-red}, 0.20);
+        --bg-code-editor-red-highlight: rgba(#{$code-editor-diff-red}, 0.5);
+        --bg-code-editor-green: rgba(#{$code-editor-diff-green}, 0.15);
+        --bg-code-editor-green-gutter: rgba(#{$code-editor-diff-green}, 0.20);
+        --bg-code-editor-green-highlight: rgba(#{$code-editor-diff-green}, 0.5);
+        --bg-matching-keyword: rgb(197, 141, 54);
+        --bg-matching-keyword-selected: rgb(0, 102, 204);
+        --active-line: var(--bg-hover);
+        --bg-code-editor-diffmap-scrollbar: rgba(#{$black}, 0.1);
+        --selection-color: rgba(#{$selection-color}, 0.3);
+        --selection-match-color: rgba(#{$selection-color}, 0.2);
+        // CODE-EDITOR EDITOR COLORS
+        --code-editor-property-name: rgb(0, 128, 128);
+        --code-editor-number: rgb(0, 92, 197);
+        --code-editor-boolean: rgb(107, 92, 204);
     }
 
     &__dark {
         @include theme-dark;
+
+        $code-editor-diff-red: 255, 93, 96;
+        $code-editor-diff-green: 122, 198, 128;
+        $selection-color: 116, 181, 255;
+
+
+        // CODE-EDITOR COLORS
+        --fg-code-editor: #a5d6ff;
         --bg-code-editor-base: var(--terminal-bg);
         --bg-code-editor-base-gutter: var(--bg-tertiary);
-        --bg-code-editor-red: var(--R50);
-        --bg-code-editor-red-gutter: var(--R100);
-        --bg-code-editor-red-highlight: var(--R200);
-        --bg-code-editor-green: var(--G50);
-        --bg-code-editor-green-gutter: var(--G100);
-        --bg-code-editor-green-highlight: var(--G200);
-        --active-line: var(--N200);
+        --bg-code-editor-red: rgba(#{$code-editor-diff-red}, 0.18);
+        --bg-code-editor-red-gutter: rgba(#{$code-editor-diff-red}, 0.12);
+        --bg-code-editor-red-highlight: rgba(#{$code-editor-diff-red}, 0.5);
+        --bg-code-editor-green: rgba(#{$code-editor-diff-green}, 0.18);
+        --bg-code-editor-green-gutter: rgba(#{$code-editor-diff-green}, 0.12);
+        --bg-code-editor-green-highlight: rgba(#{$code-editor-diff-green}, 0.5);
+        --bg-matching-keyword: rgb(197, 141, 54);
+        --bg-matching-keyword-selected: rgb(0, 102, 204);
+        --active-line: var(--bg-hover);
+        --selection-color: rgba(#{$selection-color}, 0.4);
+        --selection-match-color: rgba(#{$selection-color}, 0.3);
+        --bg-code-editor-diffmap-scrollbar: rgba(#{$white}, 0.2);
+        // CODE-EDITOR EDITOR COLORS
+        --code-editor-property-name: rgb(126, 231, 135);
+        --code-editor-number: rgb(121, 192, 255);
+        --code-editor-boolean: rgb(192, 132, 252);
     }
 }

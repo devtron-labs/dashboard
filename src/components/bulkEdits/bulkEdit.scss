@@ -67,14 +67,6 @@
     background-color: var(--bg-primary);
 }
 
-.code-editor-body {
-  height: calc(100vh - 97px);
-  background: var(--bg-primary);
-  .react-monaco-editor-container {
-      min-height: calc(60vh - 97px);
-  }
-}
-
 .bulk-output-body {
     letter-spacing: 0.2px;
     height: calc(40vh - 36px);
@@ -86,4 +78,10 @@
     max-height: 32px;
     min-width: 72px;
     padding: 0 12px;
+}
+
+.code-editor-body {
+    .react-monaco-editor-container {
+        flex-grow: 1;
+    }
 }

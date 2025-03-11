@@ -90,7 +90,7 @@ const ResourceList = () => {
         stopTabByIdentifier,
         getTabId,
         getTabById,
-    } = useTabs(URLS.RESOURCE_BROWSER)
+    } = useTabs(`${URLS.RESOURCE_BROWSER}/${clusterId}`)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [widgetEventDetails, setWidgetEventDetails] = useState<WidgetEventDetails>(null)
     const [isDataStale, setIsDataStale] = useState(false)
@@ -522,6 +522,7 @@ const ResourceList = () => {
             <>
                 <DynamicTabs
                     tabs={tabs}
+                    backgroundColorToken="bg__tertiary"
                     variant={DynamicTabsVariantType.RECTANGULAR}
                     removeTabByIdentifier={removeTabByIdentifier}
                     markTabActiveById={markTabActiveById}

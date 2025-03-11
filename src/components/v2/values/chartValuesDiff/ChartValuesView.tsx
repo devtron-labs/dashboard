@@ -247,7 +247,7 @@ const ChartValuesView = ({
     }
 
     useEffect(() => {
-        if (!isUpdateAppView && !isExternalApp) {
+        if (!isExternalApp) {
             checkGitOpsConfiguration()
         }
         if (isDeployChartView || isCreateValueView) {
@@ -1734,6 +1734,7 @@ const ChartValuesView = ({
                                     allowedCustomBool={allowedCustomBool}
                                 />
                             )}
+
                             {allowedCustomBool && showDeploymentTools && (
                                 <GitOpsDrawer
                                     commonState={commonState}

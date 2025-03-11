@@ -19,7 +19,7 @@ import {
     FilterSelectPicker,
     SearchBar,
     SelectPickerOptionType,
-    useSuperAdmin,
+    useGetUserRoles,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { FILE_NAMES } from '@Components/common/ExportToCsv/constants'
 import { getAppListDataToExport } from '../Service'
@@ -36,7 +36,7 @@ const JobListFilters = ({
     updateSearchParams,
     getLabelFromValue,
 }: JobListFilterProps) => {
-    const { isSuperAdmin } = useSuperAdmin()
+    const { isSuperAdmin } = useGetUserRoles()
     const { searchKey, status, environment, project } = filterConfig
     const getJobsDataToExport = async () => getAppListDataToExport(payload, searchKey, jobListCount)
 

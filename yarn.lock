@@ -1105,10 +1105,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@1.8.3":
-  version "1.8.3"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.8.3.tgz#5778ec632ccf0c282a135c057bb8fe8746d434aa"
-  integrity sha512-RzTsj0iWH178UBEwYM5J0dCwqbSmLxV7a49FFLejxI1Tgzuhnr0PNtnuprGSXT12t1dgl9OrX05g0lIqqI02zQ==
+"@devtron-labs/devtron-fe-common-lib@1.8.10":
+  version "1.8.10"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.8.10.tgz#ae8bbda354535fc1c846f7da83b3f9c1cb5c86b4"
+  integrity sha512-ShTmLjPwrmn/gphHNqI6jxHDvea37/zOsTKLq6ayPJe2y6aJ9GNjC6nzetJMJSoOUAC10vJk5w3id1ywWHDH5w==
   dependencies:
     "@codemirror/lang-json" "6.0.1"
     "@codemirror/lang-yaml" "6.1.2"
@@ -1116,9 +1116,12 @@
     "@codemirror/legacy-modes" "6.4.2"
     "@codemirror/lint" "6.8.4"
     "@codemirror/search" "6.5.8"
+    "@lezer/highlight" "1.2.1"
+    "@replit/codemirror-indentation-markers" "6.5.3"
     "@replit/codemirror-vscode-keymap" "6.0.2"
     "@types/react-dates" "^21.8.6"
-    "@uiw/codemirror-theme-github" "^4.23.7"
+    "@uiw/codemirror-extensions-hyper-link" "4.23.10"
+    "@uiw/codemirror-theme-github" "4.23.7"
     "@uiw/react-codemirror" "4.23.7"
     ansi_up "^5.2.1"
     codemirror-json-schema "0.8.0"
@@ -1674,7 +1677,7 @@
   resolved "https://registry.yarnpkg.com/@lezer/common/-/common-1.2.3.tgz#138fcddab157d83da557554851017c6c1e5667fd"
   integrity sha512-w7ojc8ejBqr2REPsWxJjrMFsA/ysDCFICn8zEOR9mrqzOu2amhITYuLD8ag6XZf0CFXDrhKqw7+tW8cX66NaDA==
 
-"@lezer/highlight@^1.0.0", "@lezer/highlight@^1.2.0":
+"@lezer/highlight@1.2.1", "@lezer/highlight@^1.0.0", "@lezer/highlight@^1.2.0":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@lezer/highlight/-/highlight-1.2.1.tgz#596fa8f9aeb58a608be0a563e960c373cbf23f8b"
   integrity sha512-Z5duk4RN/3zuVO7Jq0pGLJ3qynpxUVsh7IbUbGj88+uV2ApSAn6kWg2au3iJb+0Zi7kKtqffIESgNcRXWZWmSA==
@@ -1808,6 +1811,11 @@
   version "2.11.8"
   resolved "https://registry.npmjs.org/@popperjs/core/-/core-2.11.8.tgz"
   integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
+
+"@replit/codemirror-indentation-markers@6.5.3":
+  version "6.5.3"
+  resolved "https://registry.yarnpkg.com/@replit/codemirror-indentation-markers/-/codemirror-indentation-markers-6.5.3.tgz#1cfe5c557c45dd7f2988cbee278f17607010591b"
+  integrity sha512-hL5Sfvw3C1vgg7GolLe/uxX5T3tmgOA3ZzqlMv47zjU1ON51pzNWiVbS22oh6crYhtVhv8b3gdXwoYp++2ilHw==
 
 "@replit/codemirror-vscode-keymap@6.0.2":
   version "6.0.2"
@@ -3232,17 +3240,22 @@
     "@codemirror/state" "^6.0.0"
     "@codemirror/view" "^6.0.0"
 
-"@uiw/codemirror-theme-github@^4.23.7":
-  version "4.23.8"
-  resolved "https://registry.yarnpkg.com/@uiw/codemirror-theme-github/-/codemirror-theme-github-4.23.8.tgz#60e08d5c8fc46c7dbb1ebab00c3afbdd13fd3da7"
-  integrity sha512-+LVpFdF6RMjDsTo+HkJYBWkEGy2AgcZJVCDku+yWme/shEtV/FulpGwHeb+NrArAFNyXjUXSVMPhLq3+syOLhw==
-  dependencies:
-    "@uiw/codemirror-themes" "4.23.8"
+"@uiw/codemirror-extensions-hyper-link@4.23.10":
+  version "4.23.10"
+  resolved "https://registry.yarnpkg.com/@uiw/codemirror-extensions-hyper-link/-/codemirror-extensions-hyper-link-4.23.10.tgz#d53d7653afb129fe6429d0c8ebddb785cb93fabe"
+  integrity sha512-fwpIzbufHqLDBZCDcVEIjx3nNaD/mB/8CPZmWf05YRAze6ejZZL8quU8xGegXyiJwKKMLgKl5qll+ZT+djf62g==
 
-"@uiw/codemirror-themes@4.23.8":
-  version "4.23.8"
-  resolved "https://registry.yarnpkg.com/@uiw/codemirror-themes/-/codemirror-themes-4.23.8.tgz#b530ecb388fbc000712466559d41b582cca882c4"
-  integrity sha512-PZmJBZxWMuZ48p/2D5aRPl8zTlBq1d/+NeRqyyH6P6k6yWDF6h71m0Dt+fjslgPE7KmWXux2hbejXXXoRLZO9Q==
+"@uiw/codemirror-theme-github@4.23.7":
+  version "4.23.7"
+  resolved "https://registry.yarnpkg.com/@uiw/codemirror-theme-github/-/codemirror-theme-github-4.23.7.tgz#a52d4f4677e629956915c4a55d8dc9db496a1290"
+  integrity sha512-r9SstBZD7Ow1sQ8F0EpsRGx9b11K552M2FayvyLWTkal64YJmQMKW0S2KcWykgCMKLWhmDFi7LX+h8cg6nek8g==
+  dependencies:
+    "@uiw/codemirror-themes" "4.23.7"
+
+"@uiw/codemirror-themes@4.23.7":
+  version "4.23.7"
+  resolved "https://registry.yarnpkg.com/@uiw/codemirror-themes/-/codemirror-themes-4.23.7.tgz#33d09a2d9df3eda3e3affcb68d91672e41bf646a"
+  integrity sha512-UNf1XOx1hG9OmJnrtT86PxKcdcwhaNhbrcD+nsk8WxRJ3n5c8nH6euDvgVPdVLPwbizsaQcZTILACgA/FjRpVg==
   dependencies:
     "@codemirror/language" "^6.0.0"
     "@codemirror/state" "^6.0.0"

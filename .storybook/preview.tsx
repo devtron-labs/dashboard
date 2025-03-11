@@ -11,7 +11,20 @@ import {
     DEVTRON_BASE_MAIN_ID,
     ConfirmationModalProvider,
     BaseConfirmationModal,
+    useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
+import  { SwitchThemeDialog } from '../src/Pages/Shared'
+
+const SwitchThemeDialogWrapper = () => {
+    const { showThemeSwitcherDialog, themePreference, handleThemeSwitcherDialogVisibilityChange } = useTheme()
+    const handleClose = () => {
+        handleThemeSwitcherDialogVisibilityChange(false)
+    }
+
+    return (
+        showThemeSwitcherDialog ? <SwitchThemeDialog initialThemePreference={themePreference} handleClose={handleClose} disableAPICalls /> : null
+    )
+}
 
 const preview: Preview = {
     parameters: {
@@ -41,6 +54,8 @@ const preview: Preview = {
                         </BrowserRouter>
                         <ToastManagerContainer />
                     </div>
+
+                    <SwitchThemeDialogWrapper />
 
                     <div id="animated-dialog-backdrop" />
 
