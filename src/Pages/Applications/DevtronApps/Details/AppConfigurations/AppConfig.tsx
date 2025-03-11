@@ -68,6 +68,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
     // STATES
     const [showCannotDeleteTooltip, setShowCannotDeleteTooltip] = useState(false)
     const [reload, setReload] = useState(false)
+    const [isAppDeleting, setIsAppDeleting] = useState(false)
     const [state, setState] = useState<AppConfigState>({
         view: ViewType.LOADING,
         stageName: STAGE_NAME.LOADING,
@@ -339,8 +340,10 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
 
     const deleteAppHandler = async () => {
         try {
+            setIsAppDeleting(true)
             const response = await deleteApp(appId)
             if (response) {
+                setIsAppDeleting(false)
                 if (isJob) {
                     ToastManager.showToast({
                         variant: ToastVariantType.success,
@@ -356,6 +359,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
                 }
             }
         } catch (error) {
+            setIsAppDeleting(false)
             showError(error)
         }
     }
@@ -430,7 +434,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
                         primaryButtonConfig: {
                             text: 'Delete',
                             onClick: deleteAppHandler,
-                            isLoading: state.view === ViewType.LOADING,
+                            isLoading: state.view === ViewType.LOADING || isAppDeleting,
                         },
                     }}
                     handleClose={closeDeleteConfirmationModal}
@@ -517,13 +521,15 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
             isTemplateView={isTemplateView}
         >
             <>
-                <div className={`app-compose flex-grow-1 dc__overflow-auto ${getAdditionalParentClass()}`}>
+                <div
+                    className={`app-compose flex-grow-1 dc__overflow-auto deploy-config-collapsible-layout ${getAdditionalParentClass()}`}
+                >
                     <div
-                        className={`app-compose__nav ${getAppComposeClasses()} flex column left top dc__overflow-auto`}
+                        className={`app-compose__nav collapsible-sidebar ${getAppComposeClasses()} flex column left top dc__overflow-auto`}
                     >
                         <AppNavigation />
                     </div>
-                    <div className="app-compose__main">
+                    <div className="flexbox-col app-compose__main">
                         <AppComposeRouter />
                     </div>
                 </div>

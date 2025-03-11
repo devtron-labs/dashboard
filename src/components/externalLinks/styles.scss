@@ -20,10 +20,6 @@
         min-width: 100%;
     }
 
-    &.app-config-view__listing {
-        height: calc(100% - 110px);
-    }
-
     .external-link-list__row {
         display: grid;
         grid-template-columns: 24px 250px 1fr 100px 1fr 56px;

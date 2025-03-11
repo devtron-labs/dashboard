@@ -23,6 +23,7 @@ import {
     ToastManager,
     ConfirmationModal,
     ConfirmationModalVariantType,
+    Button,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '../../config'
 import { OptionType } from '../app/types'
@@ -343,84 +344,79 @@ export default function CIConfigForm({
 
     const { repository, dockerfile, projectPath, registry, repository_name, buildContext, key, value } = state
     return (
-        <>
-            <div
-                className={
-                    isCreateAppView ? '' : `form__app-compose ${configOverrideView ? 'config-override-view' : ''}`
-                }
-            >
-                {!isCreateAppView && !configOverrideView && (
-                    <div className="flex dc__content-space mb-20">
-                        <h2 className="form__title m-0-imp" data-testid="build-configuration-heading">
-                            Build Configuration
-                        </h2>
-                        <a
-                            className="flex right dc__link"
-                            rel="noreferrer noopener"
-                            target="_blank"
-                            href={DOCUMENTATION.APP_CREATE_CI_CONFIG}
-                        >
-                            <BookOpenIcon className="icon-dim-16 mr-8" />
-                            <span>View documentation</span>
-                        </a>
-                    </div>
-                )}
-                <CIContainerRegistryConfig
-                    appId={appId}
-                    configOverrideView={configOverrideView}
-                    ciConfig={ciConfig}
-                    allowOverride={allowOverride}
-                    configOverridenPipelines={configOverridenPipelines}
-                    toggleConfigOverrideDiffModal={toggleConfigOverrideDiffModal}
-                    updateDockerConfigOverride={updateDockerConfigOverride}
-                    dockerRegistries={dockerRegistries}
-                    registry={registry}
-                    repository_name={repository_name}
-                    currentRegistry={currentRegistry}
-                    handleOnChangeConfig={handleOnChangeConfig}
-                    isCDPipeline={isCDPipeline}
-                    isCreateAppView={isCreateAppView}
-                />
-                {!isCreateAppView && (
-                    <CIDockerFileConfig
-                        ciConfig={ciConfig}
-                        sourceConfig={getParsedSourceConfig()}
+        <div className="flexbox-col h-100 dc__content-space dc__overflow-hidden">
+            <div className="flex-grow-1 dc__overflow-auto">
+                <div className={isCreateAppView ? '' : `form__app-compose ${configOverrideView ? 'config-override-view' : ''}`}>
+                    {!isCreateAppView && !configOverrideView && (
+                        <div className="flex dc__content-space mb-20">
+                            <h2 className="form__title m-0-imp" data-testid="build-configuration-heading">
+                                Build Configuration
+                            </h2>
+                            <a
+                                className="flex right dc__link"
+                                rel="noreferrer noopener"
+                                target="_blank"
+                                href={DOCUMENTATION.APP_CREATE_CI_CONFIG}
+                            >
+                                <BookOpenIcon className="icon-dim-16 mr-8" />
+                                <span>View documentation</span>
+                            </a>
+                        </div>
+                    )}
+                    <CIContainerRegistryConfig
+                        appId={appId}
                         configOverrideView={configOverrideView}
+                        ciConfig={ciConfig}
                         allowOverride={allowOverride}
-                        selectedCIPipeline={selectedCIPipeline}
-                        currentMaterial={getParsedCurrentMaterial()}
-                        currentBuildContextGitMaterial={currentBuildContextGitMaterial}
-                        selectedMaterial={selectedMaterial}
-                        selectedBuildContextGitMaterial={selectedBuildContextGitMaterial}
-                        setSelectedMaterial={setSelectedMaterial}
-                        setSelectedBuildContextGitMaterial={setSelectedBuildContextGitMaterial}
-                        formState={state}
+                        configOverridenPipelines={configOverridenPipelines}
+                        toggleConfigOverrideDiffModal={toggleConfigOverrideDiffModal}
                         updateDockerConfigOverride={updateDockerConfigOverride}
-                        args={args}
-                        setArgs={setArgs}
-                        buildEnvArgs={buildEnvArgs}
-                        setBuildEnvArgs={setBuildEnvArgs}
+                        dockerRegistries={dockerRegistries}
+                        registry={registry}
+                        repository_name={repository_name}
+                        currentRegistry={currentRegistry}
                         handleOnChangeConfig={handleOnChangeConfig}
-                        selectedTargetPlatforms={selectedTargetPlatforms}
-                        setSelectedTargetPlatforms={setSelectedTargetPlatforms}
-                        targetPlatformMap={targetPlatformMap}
-                        showCustomPlatformWarning={showCustomPlatformWarning}
-                        setShowCustomPlatformWarning={setShowCustomPlatformWarning}
-                        currentCIBuildConfig={currentCIBuildConfig}
-                        setCurrentCIBuildConfig={setCurrentCIBuildConfig}
-                        setLoadingState={configOverrideView ? setLoadingStateFromParent : setLoadingDataState}
+                        isCDPipeline={isCDPipeline}
+                        isCreateAppView={isCreateAppView}
                     />
-                )}
+                    {!isCreateAppView && (
+                        <CIDockerFileConfig
+                            ciConfig={ciConfig}
+                            sourceConfig={getParsedSourceConfig()}
+                            configOverrideView={configOverrideView}
+                            allowOverride={allowOverride}
+                            selectedCIPipeline={selectedCIPipeline}
+                            currentMaterial={getParsedCurrentMaterial()}
+                            currentBuildContextGitMaterial={currentBuildContextGitMaterial}
+                            selectedMaterial={selectedMaterial}
+                            selectedBuildContextGitMaterial={selectedBuildContextGitMaterial}
+                            setSelectedMaterial={setSelectedMaterial}
+                            setSelectedBuildContextGitMaterial={setSelectedBuildContextGitMaterial}
+                            formState={state}
+                            updateDockerConfigOverride={updateDockerConfigOverride}
+                            args={args}
+                            setArgs={setArgs}
+                            buildEnvArgs={buildEnvArgs}
+                            setBuildEnvArgs={setBuildEnvArgs}
+                            handleOnChangeConfig={handleOnChangeConfig}
+                            selectedTargetPlatforms={selectedTargetPlatforms}
+                            setSelectedTargetPlatforms={setSelectedTargetPlatforms}
+                            targetPlatformMap={targetPlatformMap}
+                            showCustomPlatformWarning={showCustomPlatformWarning}
+                            setShowCustomPlatformWarning={setShowCustomPlatformWarning}
+                            currentCIBuildConfig={currentCIBuildConfig}
+                            setCurrentCIBuildConfig={setCurrentCIBuildConfig}
+                            setLoadingState={configOverrideView ? setLoadingStateFromParent : setLoadingDataState}
+                        />
+                    )}
+                </div>
             </div>
             {!isCreateAppView && (
                 <>
                     {!configOverrideView && (
-                        <div className="save-build-configuration form__buttons dc__position-abs bg__primary dc__border-top">
-                            <button
-                                data-testid="build_config_save_and_next_button"
-                                tabIndex={5}
-                                type="button"
-                                className="flex cta h-36"
+                        <div className="dc__no-shrink py-12 px-20 form__buttons bg__primary dc__border-top">
+                            <Button
+                                dataTestId="build_config_save_and_next_button"
                                 onClick={handleOnSubmit}
                                 disabled={
                                     apiInProgress ||
@@ -430,16 +426,9 @@ export default function CIConfigForm({
                                             loadingStateFromParent?.loading ||
                                             loadingStateFromParent?.failed))
                                 }
-                            >
-                                {!isCiPipeline ? (
-                                    <>
-                                        Save & Next
-                                        <NextIcon className="icon-dim-16 ml-5 scn-0" />
-                                    </>
-                                ) : (
-                                    'Save Configuration'
-                                )}
-                            </button>
+                                text={!isCiPipeline ? 'Save & Next' : 'Save Configuration'}
+                                endIcon={!isCiPipeline ? <NextIcon /> : null}
+                            />
                         </div>
                     )}
                     {showCustomPlatformConfirmation && renderConfirmationModal()}
@@ -458,6 +447,6 @@ export default function CIConfigForm({
                     )}
                 </>
             )}
-        </>
+        </div>
     )
 }

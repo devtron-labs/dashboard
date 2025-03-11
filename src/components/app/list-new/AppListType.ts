@@ -204,3 +204,7 @@ export interface GetDevtronHelmAppListParamsType {
     appStatuses: string
     clusterIds: string
 }
+
+export interface AskToClearFiltersProps extends Pick<DevtronAppListProps, 'clearAllFilters'> {
+    showTipToSelectCluster?: boolean
+}

@@ -102,7 +102,7 @@ export const ExternalLinkList = ({
             {filteredExternalLinks.map((link, idx) => (
                 <Fragment key={`external-link-${link.name}-${link.id}`}>
                     <div
-                        className={` dc__align-items-center dc__gap-16 dc__visible-hover dc__visible-hover--parent dc__hover-n50 cn-9 fs-13 px-20 py-10 ${isAppConfigView ? 'app-config-view external-link-list__row__app-config' : 'external-link-list__row '} ${idx !== filteredExternalLinks.length - 1 ? 'border__secondary--bottom' : ''}`}
+                        className={`dc__align-items-center dc__gap-16 dc__visible-hover dc__visible-hover--parent dc__hover-n50 cn-9 fs-13 px-20 py-10 ${isAppConfigView ? 'app-config-view external-link-list__row__app-config' : 'external-link-list__row'} ${idx !== filteredExternalLinks.length - 1 ? 'border__secondary--bottom' : ''}`}
                     >
                         <div className="p-2 flex">
                             <img
@@ -153,7 +153,7 @@ export const ExternalLinkList = ({
     }
 
     return (
-        <div className={`external-links bg__primary ${isAppConfigView ? 'app-config-view__listing' : ''}`}>
+        <div className="external-links bg__primary">
             {renderExternalLinksHeader()}
             {renderExternalListContent()}
         </div>

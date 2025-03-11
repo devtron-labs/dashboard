@@ -23,3 +23,5 @@ export const STATUS = {
     ERROR: "Please check the apiVersion and kind, apiVersion and kind provided by you don't exist",
     EMPTY_IMPACTED: 'We could not find any matching devtron applications.',
 }
+
+export const OutputDivider = '-----------------------------------------------------------------'

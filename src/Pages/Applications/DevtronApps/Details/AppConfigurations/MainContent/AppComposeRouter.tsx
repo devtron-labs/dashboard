@@ -23,6 +23,7 @@ import {
     ApprovalConfigDataKindType,
     getIsApprovalPolicyConfigured,
     CMSecretComponentType,
+    Button,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Next } from '@Icons/ic-arrow-forward.svg'
@@ -50,18 +51,16 @@ const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, current
     const nextUrl = navItems[index + 1].href
     if (!isCiPipeline) {
         return (
-            <div className="app-compose__next-section">
-                <button
-                    type="button"
+            <div className="app-compose__next-section flex right">
+                <Button
                     disabled={isDisabled}
-                    className="cta dc__align-right flex"
                     onClick={() => {
                         history.push(nextUrl)
                     }}
-                >
-                    <span className="mr-5">Next </span>
-                    <Next className="icon-dim-18" />
-                </button>
+                    text="Next"
+                    endIcon={<Next />}
+                    dataTestId="app-compose-next-button"
+                />
             </div>
         )
     }
@@ -104,22 +103,24 @@ const AppComposeRouter = () => {
         // currently the logic for redirection to next unlocked stage is in respondOnSuccess function can be done for MaterialList also
         <Switch>
             <Route path={`${path}/${URLS.APP_GIT_CONFIG}`}>
-                <>
-                    <MaterialList
-                        respondOnSuccess={respondOnSuccess}
-                        isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
-                        toggleRepoSelectionTippy={toggleRepoSelectionTippy}
-                        setRepo={setRepoState}
-                        isJobView={isJobView}
-                        appId={appId}
-                    />
+                <div className="flexbox-col flex-grow-1 dc__content-space h-100 dc__overflow-hidden">
+                    <div className="flex-grow-1 dc__overflow-auto">
+                        <MaterialList
+                            respondOnSuccess={respondOnSuccess}
+                            isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
+                            toggleRepoSelectionTippy={toggleRepoSelectionTippy}
+                            setRepo={setRepoState}
+                            isJobView={isJobView}
+                            appId={appId}
+                        />
+                    </div>
                     <NextButton
                         currentStageName={STAGE_NAME.GIT_MATERIAL}
                         navItems={navItems}
                         isDisabled={!isUnlocked.workflowEditor}
                         isCiPipeline={isCiPipeline}
                     />
-                </>
+                </div>
             </Route>
             {isUnlocked.workflowEditor && [
                 <Route
@@ -193,22 +194,24 @@ const AppComposeRouter = () => {
     const renderAppViewRoutes = (): JSX.Element => (
         <Switch>
             <Route path={`${path}/${URLS.APP_GIT_CONFIG}`}>
-                <>
-                    <MaterialList
-                        respondOnSuccess={respondOnSuccess}
-                        isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
-                        toggleRepoSelectionTippy={toggleRepoSelectionTippy}
-                        setRepo={setRepoState}
-                        isTemplateView={isTemplateView}
-                        appId={appId}
-                    />
+                <div className="flexbox-col flex-grow-1 dc__content-space h-100 dc__overflow-hidden">
+                    <div className="flex-grow-1 dc__overflow-auto">
+                        <MaterialList
+                            respondOnSuccess={respondOnSuccess}
+                            isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
+                            toggleRepoSelectionTippy={toggleRepoSelectionTippy}
+                            setRepo={setRepoState}
+                            isTemplateView={isTemplateView}
+                            appId={appId}
+                        />
+                    </div>
                     <NextButton
                         currentStageName={STAGE_NAME.GIT_MATERIAL}
                         navItems={navItems}
                         isDisabled={!isUnlocked.dockerBuildConfig}
                         isCiPipeline={isCiPipeline}
                     />
-                </>
+                </div>
             </Route>
 
             {isUnlocked.dockerBuildConfig && (

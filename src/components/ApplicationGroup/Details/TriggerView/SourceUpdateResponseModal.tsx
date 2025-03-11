@@ -14,52 +14,27 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerModalRow } from './TriggerModalTableRow'
 import { SourceUpdateResponseModalProps } from './types'
 
-export default function SourceUpdateResponseModal({
-    closePopup,
-    responseList,
-    isLoading,
-}: SourceUpdateResponseModalProps) {
-    const renderResponseBodySection = (): JSX.Element => {
-        if (isLoading) {
-            return <Progressing pageLoader />
-        }
-        return (
-            <div className="response-list-container bg__primary dc__height-inherit dc__overflow-auto pr-20 pb-16 pl-20">
-                <div
-                    className="dc__position-sticky dc__top-0 bg__primary dc__border-bottom response-row dc__border-bottom pt-24 pb-8 dc__uppercase"
-                    style={{ zIndex: 1 }}
-                >
-                    <div className="fs-12 fw-6 cn-7 ">Application</div>
-                    <div className="fs-12 fw-6 cn-7 ">Branch Change status</div>
-                    <div className="fs-12 fw-6 cn-7 ">Message</div>
-                </div>
-                {responseList.map((response, index) => (
-                    <TriggerModalRow key={response.appId} rowData={response} index={index} />
-                ))}
-            </div>
-        )
-    }
-
-    // ASK: Why there is no retry button for failed request?
-    const renderFooterSection = (): JSX.Element => {
-        return (
-            <div className="dc__border-top flex bg__primary pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width right">
-                <button className="cta cancel flex h-36" data-testid="close-popup" onClick={closePopup}>
-                    Close
-                </button>
-            </div>
-        )
+const SourceUpdateResponseModal = ({ responseList, isLoading }: SourceUpdateResponseModalProps) => {
+    if (isLoading) {
+        return <Progressing pageLoader />
     }
 
     return (
-        <>
-            {renderResponseBodySection()}
-            {renderFooterSection()}
-        </>
+        <div className="response-list-container bg__primary dc__overflow-auto pr-20 pb-16 pl-20">
+            <div className="dc__position-sticky dc__top-0 bg__primary dc__border-bottom response-row pt-24 pb-8 dc__uppercase">
+                <div className="fs-12 fw-6 cn-7 ">Application</div>
+                <div className="fs-12 fw-6 cn-7 ">Branch Change status</div>
+                <div className="fs-12 fw-6 cn-7 ">Message</div>
+            </div>
+            {responseList.map((response, index) => (
+                <TriggerModalRow key={response.appId} rowData={response} index={index} />
+            ))}
+        </div>
     )
 }
+
+export default SourceUpdateResponseModal

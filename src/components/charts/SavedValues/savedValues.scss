@@ -15,11 +15,8 @@
  */
 
 .preset-values-container {
-    margin: auto;
     padding: 20px;
     width: 100%;
-    min-width: 960px;
-    max-width: 1024px;
 
     .margin-right-0 {
         margin-right: 0 !important;
@@ -33,7 +30,6 @@
         }
     }
     .preset-value-list {
-        height: calc(100vh - 235px);
         min-height: 220px;
         overflow-y: auto;
 

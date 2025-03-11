@@ -570,11 +570,11 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
 
     renderSelectEnvironmentView() {
         return (
-            <div>
+            <div className="flexbox-col">
                 {this.renderInputs()}
                 <div
-                    className="dc__position-rel"
-                    style={{ backgroundColor: 'var(--bg-primary)', height: 'calc(100vh - 150px' }}
+                    className="dc__position-rel flex-grow-1"
+                    style={{ backgroundColor: 'var(--bg-primary)' }}
                 >
                     <GenericEmptyState
                         image={SelectEnvImage}

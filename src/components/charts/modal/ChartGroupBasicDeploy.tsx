@@ -19,7 +19,6 @@ import { ComponentSizeType, CustomInput, DialogForm, DialogFormSubmit, SelectPic
 import { ProjectType, ChartGroupEntry, EnvironmentType } from '../charts.types'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-edit.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
-import { renderAdditionalErrorInfo } from '../charts.util'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import { getEnvironmentListMin } from '../../../services/service'
 import { Prompt } from 'react-router-dom'

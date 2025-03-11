@@ -904,7 +904,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
 
     const renderBodySection = (): JSX.Element => {
         return (
-            <div className={`p-20 webhook-body ${isSuperAdmin ? 'super-admin-view' : ''}`}>
+            <div className="p-20 webhook-body flex-grow-1 dc__overflow-auto">
                 {renderTokenPermissionSection()}
                 {renderPlayGroundSection()}
                 {selectedPlaygroundTab === PLAYGROUND_TAB_LIST[0].key && renderSampleResponseSection()}
@@ -915,7 +915,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     const renderFooterSection = (): JSX.Element => {
         return (
             <div
-                className="dc__border-top flex flex-align-center flex-justify bg__primary pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0"
+                className="dc__border-top flex flex-align-center flex-justify bg__primary pt-16 pr-20 pb-16 pl-20"
                 style={{ width: '75%', minWidth: '1024px', maxWidth: '1200px' }}
             >
                 <div className="flexbox pt-8 pb-8">
@@ -947,16 +947,16 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
             return <Reload />
         }
         return (
-            <>
+            <div className='flexbox-col flex-grow-1 mh-0'>
                 {renderBodySection()}
                 {!isSuperAdmin && renderFooterSection()}
-            </>
+            </div>
         )
     }
 
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            <div className="bg__tertiary h-100 webhook-details-container" ref={appStatusDetailRef}>
+            <div className="bg__tertiary h-100 flexbox-col webhook-details-container" ref={appStatusDetailRef}>
                 {renderHeaderSection()}
                 {renderPageDetails()}
             </div>

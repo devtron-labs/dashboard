@@ -1765,6 +1765,7 @@ const DeploymentTemplate = ({
                         hideObjectVariables={false}
                         {...(envId && { envId })}
                         {...(clusterId && { clusterId })}
+                        isTemplateView={isTemplateView}
                     />
                 </div>
             )}
@@ -1956,9 +1957,7 @@ const DeploymentTemplate = ({
 
     return (
         <>
-            <div
-                className={`h-100 bg__tertiary ${showDraftComments ? 'deployment-template__comments-view' : 'flexbox'}`}
-            >
+            <div className="h-100 bg__tertiary flexbox">
                 {renderDeploymentTemplate()}
 
                 {DraftComments && showDraftComments && (
