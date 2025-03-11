@@ -783,7 +783,7 @@ const ChartDeploymentHistory = ({
     }
 
     if (isLoadingDetails) {
-        return <DetailsProgressing loadingText="Please wait…" size={24} />
+        return <DetailsProgressing fullHeight loadingText="Please wait…" size={24} />
     }
     if (showReleaseNotFound) {
         return (

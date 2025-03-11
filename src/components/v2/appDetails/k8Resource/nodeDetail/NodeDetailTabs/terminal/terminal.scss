@@ -56,6 +56,7 @@
             position: fixed;
             top: var(--metadata-header-height);
             left: 0;
+            // calc required for full screen mode
             height: calc(100vh - var(--metadata-header-height));
             width: 100vw;
             z-index: var(--modal-index);

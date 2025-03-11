@@ -50,7 +50,7 @@ const ValuesComponent = ({ appId, init }: ValueComponentTypes) => {
     }, [appDetails.appStoreInstalledAppVersionId])
 
     return !installedConfig ? (
-        <DetailsProgressing loadingText="Please wait…" size={24} />
+        <DetailsProgressing fullHeight loadingText="Please wait…" size={24} />
     ) : (
         <ChartValuesView
             appId={appId}
