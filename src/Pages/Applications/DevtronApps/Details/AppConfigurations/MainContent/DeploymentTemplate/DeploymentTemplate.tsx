@@ -76,6 +76,7 @@ import {
     DeploymentTemplateURLConfigType,
     GetLockConfigEligibleAndIneligibleChangesType,
     GetPublishedAndBaseDeploymentTemplateReturnType,
+    HandleFetchDeploymentTemplateReturnType,
     HandleFetchGlobalDeploymentTemplateParamsType,
     HandleInitializeTemplatesWithoutDraftParamsType,
     UpdateBaseDTPayloadType,
@@ -199,6 +200,7 @@ const DeploymentTemplate = ({
         resolvedPublishedTemplate,
         areCommentsPresent,
         wasGuiOrHideLockedKeysEdited,
+        migratedFrom: pipelineMigratedFrom,
     } = state
 
     const manifestAbortController = useRef<AbortController>(new AbortController())
@@ -754,9 +756,16 @@ const DeploymentTemplate = ({
     const handleFetchDeploymentTemplate = async (
         chartInfo: DeploymentChartVersionType,
         lockedConfigKeys: string[] = lockedConfigKeysWithLockType.config,
-    ): Promise<DeploymentTemplateConfigState> => {
+    ): Promise<HandleFetchDeploymentTemplateReturnType> => {
         if (!envId) {
-            return handleFetchGlobalDeploymentTemplate({ globalChartDetails: chartInfo, lockedConfigKeys })
+            const deploymentTemplateConfigState = await handleFetchGlobalDeploymentTemplate({
+                globalChartDetails: chartInfo,
+                lockedConfigKeys,
+            })
+
+            return {
+                deploymentTemplateConfigState,
+            }
         }
 
         const {
@@ -771,30 +780,33 @@ const DeploymentTemplate = ({
             namespace,
             envOverrideValues,
             mergeStrategy,
+            migratedFrom,
             envOverridePatchValues,
         } = environmentConfig || {}
 
         // In case of no override it same as saying we have override with no patch value
         return {
-            ...getEnvOverrideEditorCommonState({
-                id,
-                status,
-                manualReviewed,
-                active,
-                namespace,
-                lockedConfigKeys,
-                mergeStrategy,
-                envOverridePatchValues,
-                mergedTemplateObject: IsOverride ? envOverrideValues || globalConfig : globalConfig,
-                isOverridden: !!IsOverride,
-            }),
-
-            schema,
-            readme,
-            guiSchema,
-            isAppMetricsEnabled: appMetrics,
-            selectedChart: chartInfo,
-            selectedChartRefId: +chartInfo.id,
+            deploymentTemplateConfigState: {
+                ...getEnvOverrideEditorCommonState({
+                    id,
+                    status,
+                    manualReviewed,
+                    active,
+                    namespace,
+                    lockedConfigKeys,
+                    mergeStrategy,
+                    envOverridePatchValues,
+                    mergedTemplateObject: IsOverride ? envOverrideValues || globalConfig : globalConfig,
+                    isOverridden: !!IsOverride,
+                }),
+                schema,
+                readme,
+                guiSchema,
+                isAppMetricsEnabled: appMetrics,
+                selectedChart: chartInfo,
+                selectedChartRefId: +chartInfo.id,
+            },
+            migratedFrom,
         }
     }
 
@@ -803,7 +815,10 @@ const DeploymentTemplate = ({
         lockedConfigKeys: string[],
     ): Promise<GetPublishedAndBaseDeploymentTemplateReturnType> => {
         const shouldFetchBaseDeploymentData = !!envId
-        const [templateData, baseDeploymentTemplateDataResponse] = await Promise.all([
+        const [
+            { deploymentTemplateConfigState: publishedTemplateConfigState, migratedFrom },
+            baseDeploymentTemplateDataResponse,
+        ] = await Promise.all([
             handleFetchDeploymentTemplate(chartRefsData.selectedChart, lockedConfigKeys),
             shouldFetchBaseDeploymentData
                 ? handleFetchGlobalDeploymentTemplate({
@@ -814,10 +829,11 @@ const DeploymentTemplate = ({
         ])
 
         return {
-            publishedTemplateState: templateData,
+            publishedTemplateState: publishedTemplateConfigState,
             baseDeploymentTemplateState: shouldFetchBaseDeploymentData
                 ? baseDeploymentTemplateDataResponse
-                : templateData,
+                : publishedTemplateConfigState,
+            migratedFrom,
         }
     }
 
@@ -826,6 +842,7 @@ const DeploymentTemplate = ({
         publishedTemplateState,
         chartDetailsState,
         lockedConfigKeysWithLockTypeState,
+        migratedFrom,
     }: HandleInitializeTemplatesWithoutDraftParamsType) => {
         const clonedTemplateData = structuredClone(publishedTemplateState)
         delete clonedTemplateData.editorTemplateWithoutLockedKeys
@@ -856,6 +873,7 @@ const DeploymentTemplate = ({
                 chartDetails: chartDetailsState,
                 lockedConfigKeysWithLockType: lockedConfigKeysWithLockTypeState,
                 currentEditorTemplateData: currentEditorState,
+                migratedFrom,
             },
         })
     }
@@ -864,10 +882,9 @@ const DeploymentTemplate = ({
         chartRefsData: Awaited<ReturnType<typeof getChartList>>,
         lockedKeysConfig: typeof lockedConfigKeysWithLockType,
     ) => {
-        const { publishedTemplateState, baseDeploymentTemplateState } = await getPublishedAndBaseDeploymentTemplate(
-            chartRefsData,
-            lockedKeysConfig.config,
-        )
+        const { publishedTemplateState, baseDeploymentTemplateState, migratedFrom } =
+            await getPublishedAndBaseDeploymentTemplate(chartRefsData, lockedKeysConfig.config)
+
         handleInitializeTemplatesWithoutDraft({
             baseDeploymentTemplateState,
             publishedTemplateState,
@@ -878,6 +895,7 @@ const DeploymentTemplate = ({
                 latestAppChartRef: chartRefsData.latestAppChartRef,
             },
             lockedConfigKeysWithLockTypeState: lockedKeysConfig,
+            migratedFrom,
         })
     }
 
@@ -900,7 +918,8 @@ const DeploymentTemplate = ({
             throw publishedAndBaseTemplateDataResponse.reason
         }
 
-        const { publishedTemplateState, baseDeploymentTemplateState } = publishedAndBaseTemplateDataResponse.value
+        const { publishedTemplateState, baseDeploymentTemplateState, migratedFrom } =
+            publishedAndBaseTemplateDataResponse.value
 
         const shouldInitializeWithoutDraft =
             draftPromiseResponse.status === 'rejected' ||
@@ -921,6 +940,7 @@ const DeploymentTemplate = ({
                     latestAppChartRef: chartRefsData.latestAppChartRef,
                 },
                 lockedConfigKeysWithLockTypeState: lockedKeysConfig,
+                migratedFrom,
             })
             return
         }
@@ -973,6 +993,7 @@ const DeploymentTemplate = ({
                     draftTemplateState.latestDraft?.draftState === DraftState.AwaitApproval
                         ? ProtectConfigTabsType.COMPARE
                         : ProtectConfigTabsType.EDIT_DRAFT,
+                migratedFrom,
             },
         })
     }
@@ -1240,7 +1261,9 @@ const DeploymentTemplate = ({
         })
 
         try {
-            const selectedChartTemplateDetails = await handleFetchDeploymentTemplate(selectedChart)
+            const { deploymentTemplateConfigState: selectedChartTemplateDetails } =
+                await handleFetchDeploymentTemplate(selectedChart)
+
             dispatch({
                 type: DeploymentTemplateActionType.CHART_CHANGE_SUCCESS,
                 payload: {
@@ -1498,6 +1521,7 @@ const DeploymentTemplate = ({
             showDeleteOverrideDraftEmptyState,
             isApprovalPolicyConfigured,
             isDeleteOverrideDraftPresent: isDeleteOverrideDraft,
+            migratedFrom: pipelineMigratedFrom,
         }),
         popupNodeType,
         popupMenuNode: ProtectionViewToolbarPopupNode ? (
@@ -1815,6 +1839,7 @@ const DeploymentTemplate = ({
                                 isGuiSupported={isGuiSupported}
                                 areChartsLoading={false}
                                 showDeleteOverrideDraftEmptyState={showDeleteOverrideDraftEmptyState}
+                                migratedFrom={pipelineMigratedFrom}
                             />
                         )}
                     </ConfigToolbar>
@@ -1908,9 +1933,7 @@ const DeploymentTemplate = ({
 
     return (
         <>
-            <div
-                className={`h-100 bg__tertiary ${showDraftComments ? 'deployment-template__comments-view' : 'flexbox'}`}
-            >
+            <div className="h-100 bg__tertiary flexbox">
                 {renderDeploymentTemplate()}
 
                 {DraftComments && showDraftComments && (

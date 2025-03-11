@@ -1313,7 +1313,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                         <CloseIcon />
                                     </button>
                                 </div>
-                                <div style={{ height: 'calc(100% - 55px)' }}>
+                                <div className='flex-grow-1'>
                                     <Progressing pageLoader size={32} />
                                 </div>
                             </>
@@ -1424,7 +1424,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         }
         if (!this.state.workflows.length) {
             return (
-                <div>
+                <div className='flex-grow-1'>
                     {this.props.isJobView ? (
                         <AppNotConfigured
                             title={APP_DETAILS.JOB_FULLY_NOT_CONFIGURED.title}

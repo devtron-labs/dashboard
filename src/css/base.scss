@@ -1423,7 +1423,9 @@ button.anchor {
     }
 }
 
-.shimmer, .show-shimmer-loading .child-shimmer-loading, .shimmer-loading {
+.shimmer,
+.show-shimmer-loading .child-shimmer-loading,
+.shimmer-loading {
     background: var(--bg-shimmer-loader);
     border-radius: 4px;
     opacity: 0.5;
@@ -2431,6 +2433,10 @@ button.anchor {
     border-top-left-radius: 4px;
 }
 
+.dc__top-left-radius-8 {
+    border-top-left-radius: 8px;
+}
+
 .dc__bottom-left-radius {
     border-bottom-left-radius: 4px;
 }
@@ -2660,6 +2666,14 @@ button.anchor {
 
     &::first-letter {
         text-transform: uppercase;
+    }
+
+    &--imp {
+        text-transform: lowercase !important;
+
+        &::first-letter {
+            text-transform: uppercase !important;
+        }
     }
 }
 
@@ -2922,6 +2936,10 @@ button.anchor {
 
 .w-130 {
     width: 130px;
+}
+
+.w-140 {
+    width: 140px;
 }
 
 .w-150 {
@@ -3486,6 +3504,10 @@ button.anchor {
 
 .mxh-140 {
     max-height: 140px;
+}
+
+.mxh-200 {
+    max-height: 200px;
 }
 
 .mxh-210 {
@@ -4070,6 +4092,11 @@ textarea::placeholder {
 }
 
 // opacity
+
+.dc__opacity-0 {
+    opacity: 0;
+}
+
 .dc__opacity-0_2 {
     opacity: 0.2;
 }
@@ -4180,6 +4207,10 @@ textarea::placeholder {
 
 .dc__hover-r500:hover {
     background-color: var(--R500);
+}
+
+.dc__hover-r50:hover {
+    background-color: var(--R50);
 }
 
 .dc__hover-cn1:hover {
@@ -4930,7 +4961,7 @@ details[open] {
     gap: 24px;
     align-items: center;
 
-    & > :not(:first-child) {
+    &> :not(:first-child) {
         position: relative;
 
         &::before {
@@ -4949,7 +4980,7 @@ details[open] {
     &--tight {
         gap: 1px;
 
-        & > :not(:first-child)::before {
+        &> :not(:first-child)::before {
             left: -1px;
         }
     }
@@ -4957,7 +4988,7 @@ details[open] {
     &--gap-8 {
         gap: 16px;
 
-        & > :not(:first-child)::before {
+        &> :not(:first-child)::before {
             left: -8px;
         }
     }
@@ -4967,7 +4998,7 @@ details[open] {
         align-items: unset;
         flex-direction: column;
 
-        & > :not(:first-child)::before {
+        &> :not(:first-child)::before {
             top: -20px;
             left: 0px;
             width: 100%;
@@ -4983,11 +5014,16 @@ details[open] {
     background: inherit;
     border: none;
     padding: inherit;
-    white-space: pre-wrap;       /* Since CSS 2.1 */
-    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
-    white-space: -pre-wrap;      /* Opera 4-6 */
-    white-space: -o-pre-wrap;    /* Opera 7 */
-    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    white-space: pre-wrap;
+    /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;
+    /* Mozilla, since 1999 */
+    white-space: -pre-wrap;
+    /* Opera 4-6 */
+    white-space: -o-pre-wrap;
+    /* Opera 7 */
+    word-wrap: break-word;
+    /* Internet Explorer 5.5+ */
 }
 
 .vertical-divider {
@@ -5014,35 +5050,52 @@ details[open] {
 }
 
 .code-editor__warning {
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.33;
-  letter-spacing: normal;
-  color: var(--N900);
-  height: auto;
-  padding: 8px 16px;
-  border-bottom: 1px solid var(--Y200);
-  background-color: var(--Y100);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.33;
+    letter-spacing: normal;
+    color: var(--N900);
+    height: auto;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--Y200);
+    background-color: var(--Y100);
 }
 
 .code-editor__error {
-  background-color: var(--O100);
-  color: var(--O500);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.33;
-  padding: 8px 16px;
-  border-bottom: 1px solid var(--N200);
+    background-color: var(--O100);
+    color: var(--O500);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.33;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--N200);
 }
 
 .code-editor__information {
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.33;
-  letter-spacing: normal;
-  color: var(--N900);
-  height: auto;
-  padding: 8px 16px;
-  border-bottom: 1px solid var(--N200);
-  background-color: var(--B100);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.33;
+    letter-spacing: normal;
+    color: var(--N900);
+    height: auto;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--N200);
+    background-color: var(--B100);
 }
+
+.deploy-config-collapsible-layout {
+    transition: grid-template-columns 0.3s;
+
+    &.release-config-layout {
+        grid-template-columns: 255px 1fr;
+    }
+
+    &:has(.deployment-config__comments-view) {
+        grid-template-columns: 0 1fr !important;
+        
+        .collapsible-sidebar {
+            overflow: hidden;
+        }
+    }
+}
+

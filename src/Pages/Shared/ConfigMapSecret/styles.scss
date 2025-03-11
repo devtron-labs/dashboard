@@ -44,41 +44,9 @@
             align-self: flex-start;
         }
     }
-
-    &__code-editor {
-        .form__error {
-            margin: 0;
-        }
-    }
 }
 
 .configmap-secret-container {
-    &.with-comment-drawer {
-        display: grid;
-        gap: 8px;
-        grid-template-columns: 1fr 300px;
-        background-color: var(--bg-tertiary);
-        position: absolute;
-        left: 56px;
-        top: 77px;
-        right: 0;
-        height: calc(100% - 77px);
-        animation: comments-view-opening;
-        animation-duration: 200ms;
-        animation-timing-function: linear;
-        animation-fill-mode: forwards;
-    }
-
-    @keyframes comments-view-opening {
-        0% {
-            grid-template-columns: 1fr 0;
-        }
-
-        100% {
-            grid-template-columns: 1fr 300px;
-        }
-    }
-
     &__approval-tippy {
         .tippy-box {
             top: 50px;

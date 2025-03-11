@@ -141,5 +141,9 @@
             align-items: center;
             gap: 8px;
         }
+
+        .form__radio-item.disabled {
+            background-color: var(--bg-primary) !important;
+        }
     }
 }
