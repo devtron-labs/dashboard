@@ -262,6 +262,15 @@ export default function EnvironmentOverview({
         setCommitInfoModalConfig(null)
     }
 
+    const resetSelectedAppDetails = () => {
+        setSelectedAppDetails(null)
+    }
+
+    const handleCloseClonePipelineModal = () => {
+        setOpenClonePipelineConfig(null)
+        resetSelectedAppDetails()
+    }
+
     if (loading) {
         return (
             <div className="loading-state">
@@ -424,6 +433,7 @@ export default function EnvironmentOverview({
                     restartLoader={restartLoader}
                     hibernateInfoMap={hibernateInfoMap}
                     isDeploymentBlockedViaWindow={isDeploymentBlockedViaWindow}
+                    onClose={resetSelectedAppDetails}
                 />
             )
         }
@@ -442,6 +452,7 @@ export default function EnvironmentOverview({
                     showDefaultDrawer={showDefaultDrawer}
                     openedHibernateModalType={openedHibernateModalType}
                     isDeploymentBlockedViaWindow={isDeploymentBlockedViaWindow}
+                    onClose={resetSelectedAppDetails}
                 />
             )
         }
@@ -465,7 +476,7 @@ export default function EnvironmentOverview({
                 <ClonePipelineModal
                     sourceEnvironmentName={appListData.environment}
                     selectedAppDetailsList={selectedApps}
-                    handleCloseClonePipelineModal={() => setOpenClonePipelineConfig(null)}
+                    handleCloseClonePipelineModal={handleCloseClonePipelineModal}
                 />
             )
         }
