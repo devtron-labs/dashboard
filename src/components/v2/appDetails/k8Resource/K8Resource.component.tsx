@@ -199,6 +199,7 @@ export const EmptyK8sResourceComponent = ({ emptyStateMessage }: { emptyStateMes
         <>
             <div className="bg__primary pt-10">
                 <DynamicTabs
+                    backgroundColorToken="bg__primary"
                     variant={DynamicTabsVariantType.ROUNDED}
                     markTabActiveById={markTabActiveById}
                     removeTabByIdentifier={removeTabByIdentifier}

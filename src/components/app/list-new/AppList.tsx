@@ -15,7 +15,7 @@
  */
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import {
     Switch,
     Route,
@@ -85,6 +85,8 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
     const [fetchingExternalApps, setFetchingExternalApps] = useState<boolean>(false)
     const [appCount, setAppCount] = useState<number>(0)
     const [showPulsatingDot, setShowPulsatingDot] = useState<boolean>(false)
+
+    const appListContainerRef = useRef<HTMLDivElement>(null)
 
     // check for external argoCD app
     const isExternalArgo =
@@ -418,7 +420,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
     }
 
     return (
-        <div className="flexbox-col h-100 dc__overflow-auto">
+        <div ref={appListContainerRef} className="flexbox-col h-100 dc__overflow-auto">
             <HeaderWithCreateButton headerName="Applications" />
             <AppListFilters
                 filterConfig={filterConfig}
@@ -458,6 +460,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                     syncListData={syncListData}
                     updateDataSyncing={updateDataSyncing}
                     setAppCount={setAppCount}
+                    appListContainerRef={appListContainerRef}
                 />
             )}
             {params.appType === AppListConstants.AppType.HELM_APPS && (
@@ -477,6 +480,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                         changePage={changePage}
                         changePageSize={changePageSize}
                         setShowPulsatingDot={setShowPulsatingDot}
+                        appListContainerRef={appListContainerRef}
                     />
                     {fetchingExternalApps && (
                         <div className="mt-16">
@@ -499,6 +503,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                     changePageSize={changePageSize}
                     handleSorting={handleSorting}
                     setShowPulsatingDot={setShowPulsatingDot}
+                    appListContainerRef={appListContainerRef}
                 />
             )}
             {tabs.every((tab) => tab.id !== params.appType) && <Redirect {...(tabs[0].props as RedirectProps)} />}

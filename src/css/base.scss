@@ -2100,7 +2100,11 @@ button.anchor {
     }
 
     &--segmented-chart {
-        box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.1)
+        box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.1);
+    }
+
+    &--header {
+        box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.15);
     }
 }
 
@@ -4622,6 +4626,14 @@ textarea::placeholder {
 }
 
 .dc__transition {
+    &--box-shadow {
+        transition: box-shadow 0.1s linear;
+    }
+
+    &--background {
+        transition: background 0.2s;
+    }
+
     &--transform {
         transition: transform 0.3s;
     }

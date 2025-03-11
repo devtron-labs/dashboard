@@ -18,7 +18,7 @@ import { useState, useEffect } from 'react'
 import ReactGA from 'react-ga4'
 import { Route, Switch, useRouteMatch, Redirect, useLocation, useHistory } from 'react-router-dom'
 import { DynamicTabs, useTabs } from '@Components/common/DynamicTabs'
-import { EnvResourceType, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { EnvResourceType, noop, useStickyEvent } from '@devtron-labs/devtron-fe-common-lib'
 import { DynamicTabsProps, DynamicTabsVariantType } from '@Components/common/DynamicTabs/types'
 import { ReactComponent as ICObject } from '@Icons/ic-object.svg'
 import { ReactComponent as ICLogs } from '@Icons/ic-logs.svg'
@@ -61,6 +61,16 @@ const NodeTreeDetailTab = ({
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const displayLogAnalyzer = IndexStore.getNodesByKind(NodeType.Pod).length > 0 && !isVirtualEnvironment
 
+    const showContent = !!(appDetails?.resourceTree?.nodes?.length > 0 && tabs.length)
+
+    const { stickyElementRef, isStuck: isDynamicTabsStuck } = useStickyEvent({
+        containerSelector: '.app-details-page',
+        isStickyElementMounted: showContent,
+        identifier: 'node-tree-detail-tab',
+    })
+
+    const dynamicTabsBackgroundClass = isDynamicTabsStuck ? 'bg__tertiary' : 'bg__primary'
+
     useEffect(() => {
         const initialTabs = getInitialTabs(location.pathname, routeMatchUrl, displayLogAnalyzer)
 
@@ -95,11 +105,14 @@ const NodeTreeDetailTab = ({
     // NOTE: don't render any of the components before tabs are initialized
     // this is cuz, the components mark their own corresponding tabs as the selected tabs on mount
     return (
-        appDetails?.resourceTree?.nodes?.length > 0 &&
-        tabs.length && (
-            <div className="dc__position-sticky dc__top-0 h-100 dc__no-shrink flexbox-col node-tree-details-wrapper">
+        showContent && (
+            <div
+                ref={stickyElementRef}
+                className="dc__position-sticky dc__top-0 h-100 dc__no-shrink flexbox-col node-tree-details-wrapper"
+            >
                 <div className="bg__primary pt-7 dc__no-shrink">
                     <DynamicTabs
+                        backgroundColorToken={dynamicTabsBackgroundClass}
                         variant={DynamicTabsVariantType.ROUNDED}
                         markTabActiveById={markTabActiveById}
                         removeTabByIdentifier={removeTabByIdentifier}
