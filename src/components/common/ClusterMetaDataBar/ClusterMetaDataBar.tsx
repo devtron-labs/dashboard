@@ -72,9 +72,10 @@ export const ClusterMetaDataBar = ({
         </a>
     )
 
-    if (!isSuperAdmin) {
+    if (!isSuperAdmin || !clusterId || !namespace) {
         return null
     }
+
     return (
         <div className={getComponentSpecificThemeClass(darkTheme ? AppThemeType.dark : appTheme)}>
             <div
