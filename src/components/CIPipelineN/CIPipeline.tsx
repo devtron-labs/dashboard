@@ -58,7 +58,6 @@ import {
 } from '../common'
 import { BuildStageVariable, BuildTabText, JobPipelineTabText, URLS, ViewType } from '../../config'
 import {
-    deleteCIPipeline,
     getInitData,
     getInitDataWithCIPipeline,
     saveCIPipeline,
@@ -86,7 +85,6 @@ export default function CIPipeline({
     connectCDPipelines,
     getWorkflows,
     close,
-    deleteWorkflow,
     isJobView,
     isJobCI,
     changeCIPayload,

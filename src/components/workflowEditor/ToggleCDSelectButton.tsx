@@ -27,22 +27,24 @@ const ToggleCDSelectButton = ({
     getWorkflows,
 }: ToggleCDSelectButtonProps) => (
     <div className="h-100 dc__border-left-n1 w-24 dc__align-items-center dc__grid-rows-2 ci-node__action-button dc__right-radius-8">
-        <Button
-            ariaLabel={
-                addNewPipelineBlocked
-                    ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.'
-                    : 'Add deployment pipeline'
-            }
-            variant={ButtonVariantType.borderLess}
-            dataTestId={`${testId}-add`}
-            onClick={onClickAddNode}
-            icon={<Add />}
-            disabled={addNewPipelineBlocked}
-            size={ComponentSizeType.xs}
-            showAriaLabelInTippy
-            style={ButtonStyleType.neutral}
-            fullWidth
-        />
+        <div className="dc__border-bottom-n1">
+            <Button
+                ariaLabel={
+                    addNewPipelineBlocked
+                        ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.'
+                        : 'Add deployment pipeline'
+                }
+                variant={ButtonVariantType.borderLess}
+                dataTestId={`${testId}-add`}
+                onClick={onClickAddNode}
+                icon={<Add />}
+                disabled={addNewPipelineBlocked}
+                size={ComponentSizeType.xs}
+                showAriaLabelInTippy
+                style={ButtonStyleType.neutral}
+                fullWidth
+            />
+        </div>
 
         <DeleteCINodeButton
             testId={`${testId}-delete`}
