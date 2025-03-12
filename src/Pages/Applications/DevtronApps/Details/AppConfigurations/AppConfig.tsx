@@ -512,7 +512,9 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
             fetchEnvConfig={fetchEnvConfig}
         >
             <>
-                <div className={`app-compose deploy-config-collapsible-layout ${getAdditionalParentClass()}`}>
+                <div
+                    className={`app-compose deploy-config-collapsible-layout flex-grow-1 ${getAdditionalParentClass()}`}
+                >
                     <div
                         className={`app-compose__nav collapsible-sidebar ${getAppComposeClasses()} flex column left top dc__overflow-auto`}
                     >
