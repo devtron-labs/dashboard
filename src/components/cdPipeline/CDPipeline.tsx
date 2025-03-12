@@ -129,7 +129,7 @@ export default function CDPipeline({
     envIds,
     noGitOpsModuleInstalledAndConfigured,
     changeCIPayload,
-    isGitOpsRepoNotConfigured,
+    isGitOpsRepoNotConfigured: isGitOpsRepoNotConfiguredProp,
     reloadAppConfig,
     handleDisplayLoader,
 }: CDPipelineProps) {
@@ -271,6 +271,12 @@ export default function CDPipeline({
         migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.GITOPS &&
         formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS &&
         !cdPipelineId
+
+    const isExternalArgoPipeline =
+        formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS &&
+        formData.deploymentAppType === DeploymentAppTypes.GITOPS
+
+    const isGitOpsRepoNotConfigured = isExternalArgoPipeline ? false : isGitOpsRepoNotConfiguredProp
 
     const handleHideScopedVariableWidgetUpdate: PipelineContext['handleHideScopedVariableWidgetUpdate'] = (
         hideScopedVariableWidgetValue: boolean,
@@ -948,11 +954,7 @@ export default function CDPipeline({
 
     const savePipeline = async () => {
         if (!isMigratingFromArgoApp) {
-            const isUpdatedArgoLinkedPipeline =
-                formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS &&
-                formData.deploymentAppType === DeploymentAppTypes.GITOPS
-
-            if (!isUpdatedArgoLinkedPipeline && checkForGitOpsRepoNotConfigured()) {
+            if (checkForGitOpsRepoNotConfigured()) {
                 return
             }
             const isUnique = checkUniqueness(formData, true)
