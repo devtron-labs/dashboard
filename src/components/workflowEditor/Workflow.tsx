@@ -334,6 +334,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 selectedNode={this.props.selectedNode}
                 isLastNode={node.downstreams.length === 0}
                 isReadonlyView={this.props.isOffendingPipelineView}
+                appId={this.props.match.params.appId}
+                workflowId={this.props.id}
+                getWorkflows={this.props.getWorkflows}
             />
         )
     }
@@ -389,6 +392,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         return `${this.props.match.url}/${getWebhookDetailsURL(this.props.id.toString(), node.id)}`
     }
 
+
     renderCINodes(node) {
         return (
             <CINode
@@ -428,6 +432,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 location={this.props.location}
                 match={this.props.match}
                 isOffendingPipelineView={this.props.isOffendingPipelineView}
+                appId={this.props.match.params.appId}
+                getWorkflows={this.props.getWorkflows}
+
             />
         )
     }
@@ -496,7 +503,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 handleSelectedNodeChange={this.props.handleSelectedNodeChange}
                 selectedNode={this.props.selectedNode}
                 appName={this.props.appName ?? ''}
-                // Adding this downstream hack, for the case when we are not recieving all the nodes in case of filtered CD
+                // Adding this downstream hack, for the case when we are not receiving all the nodes in case of filtered CD
                 isLastNode={node.isLast || node.downstreams.length === 0}
                 deploymentAppType={node.deploymentAppType}
                 appId={this.props.match.params.appId}
@@ -510,6 +517,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             />
         )
     }
+
 
     getEdges({ nodesWithBufferHeight }: { nodesWithBufferHeight: CommonNodeAttr[] }) {
         return nodesWithBufferHeight.reduce((edgeList, node) => {

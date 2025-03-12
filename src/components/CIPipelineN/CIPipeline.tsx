@@ -48,8 +48,6 @@ import {
     getGlobalVariables,
     FloatingVariablesSuggestions,
     TriggerType,
-    ERROR_STATUS_CODE,
-    DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -73,12 +71,12 @@ import { Sidebar } from './Sidebar'
 import { Build } from './Build'
 import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning.svg'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { DeleteComponentsName, MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
 import { LoadingState } from '../ciConfig/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from '../cdPipeline/cdpipeline.util'
 import { PipelineContext, PipelineFormDataErrorType } from '../workflowEditor/types'
 import { EnvironmentWithSelectPickerType } from './types'
+import { DeleteCINodeButton } from '@Components/ciPipeline/DeleteCINodeButton'
 
 const processPluginData: (params: ProcessPluginDataParamsType) => Promise<ProcessPluginDataReturnType> =
     importComponentFromFELibrary('processPluginData', null, 'function')
@@ -120,7 +118,6 @@ export default function CIPipeline({
         failed: false,
     })
     const [apiInProgress, setApiInProgress] = useState<boolean>(false)
-    const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
     const [selectedTaskIndex, setSelectedTaskIndex] = useState<number>(0)
     const [globalVariables, setGlobalVariables] = useState<PipelineContext['globalVariables']>([])
     const [inputVariablesListFromPrevStep, setInputVariablesListFromPrevStep] = useState<{
@@ -536,37 +533,18 @@ export default function CIPipeline({
         close()
     }
 
-    const onDelete = async () => {
-        await deleteCIPipeline(
-            formData,
-            ciPipeline,
-            formData.materials,
-            Number(appId),
-            Number(workflowId),
-            false,
-            formData.webhookConditionList,
-        )
+    const onClose = () => {
         setPageState(ViewType.FORM)
         handleClose()
-        deleteWorkflow(appId, Number(workflowId))
     }
 
-    const closeCIDeleteModal = (): void => {
-        setShowDeleteModal(false)
+    const onDelete = () => {
+        onClose()
+        setPageState(ViewType.FORM)
+        handleClose()
+        this.closeDeleteModal()
+        this.handleDisplayLoader()
     }
-
-    const renderDeleteCIModal = () => (
-        <DeleteConfirmationModal
-            title={formData.name}
-            component={isJobView ? DeleteComponentsName.Job : DeleteComponentsName.BuildPipeline}
-            subtitle={`Are you sure you want to delete this pipeline from '${appName}' ?`}
-            closeConfirmationModal={closeCIDeleteModal}
-            onDelete={onDelete}
-            errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.BAD_REQUEST}
-            renderCannotDeleteConfirmationSubTitle="Please delete deployment pipelines for this workflow first and try again."
-            successToastMessage="Pipeline Deleted"
-        />
-    )
 
     const renderSecondaryButton = () => {
         if (ciPipelineId) {
@@ -584,17 +562,21 @@ export default function CIPipeline({
                         </Tippy>
                     )}
                 >
-                    <button
-                        data-testid="ci-delete-pipeline-button"
-                        type="button"
-                        className="cta cta--workflow delete mr-16"
+                    <DeleteCINodeButton
+                        testId="ci-delete-pipeline-button"
                         disabled={!canDeletePipeline}
-                        onClick={() => {
-                            setShowDeleteModal(true)
+                        isCIPipeline
+                        isJobView={isJobView}
+                        title={ciPipeline.name}
+                        deletePayloadConfig={{
+                            appId: appId,
+                            appWorkflowId: Number(workflowId),
+                            pipelineId: Number(ciPipelineId),
+                            pipelineName: ciPipeline.name,
                         }}
-                    >
-                        Delete Pipeline
-                    </button>
+                        onDelete={onDelete}
+                        getWorkflows={getWorkflows}
+                    />
                 </ConditionalWrap>
             )
         }
@@ -921,7 +903,6 @@ export default function CIPipeline({
                         )}
                     </div>
                 )}
-                {ciPipelineId && showDeleteModal && renderDeleteCIModal()}
             </>
         )
     }
