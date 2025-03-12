@@ -110,7 +110,7 @@ const NodeTreeDetailTab = ({
                 ref={stickyElementRef}
                 className="dc__position-sticky dc__top-0 h-100 dc__no-shrink flexbox-col node-tree-details-wrapper"
             >
-                <div className="bg__primary pt-7 dc__no-shrink">
+                <div className={`${dynamicTabsBackgroundClass} dc__transition--background pt-7 dc__no-shrink`}>
                     <DynamicTabs
                         backgroundColorToken={dynamicTabsBackgroundClass}
                         variant={DynamicTabsVariantType.ROUNDED}
