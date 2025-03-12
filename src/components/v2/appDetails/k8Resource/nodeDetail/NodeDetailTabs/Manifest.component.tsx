@@ -741,20 +741,19 @@ const ManifestComponent = ({
                         renderOutOfSyncWarning &&
                         renderOutOfSyncWarning(handleDesiredManifestOpen)}
                     {showManifestCompareView && (
-                        <CodeEditor.Header hideDefaultSplitHeader className="p-0">
-                            <div className="dc__split-header">
-                                <div className="dc__split-header__pane flexbox dc__align-items-center dc__content-space dc__gap-8">
-                                    <span>Desired manifest</span>
-                                    <button
-                                        className="dc__unset-button-styles flex"
-                                        aria-label="Close Desired Manifest"
-                                        onClick={handleDesiredManifestClose}
-                                    >
-                                        <ICClose className="icon-dim-16 scn-0" />
-                                    </button>
-                                </div>
-                                <div className="dc__split-header__pane">Live manifest</div>
+                        <CodeEditor.Header hideDefaultSplitHeader>
+                            <div className="flex dc__content-space dc__gap-8 pr-16">
+                                <p className="m-0 cn-9">Desired manifest</p>
+                                <button
+                                    type="button"
+                                    className="dc__unset-button-styles flex"
+                                    aria-label="Close Desired Manifest"
+                                    onClick={handleDesiredManifestClose}
+                                >
+                                    <ICClose className="icon-dim-16 scn-0" />
+                                </button>
                             </div>
+                            <p className="m-0 cn-9 pl-16">Live manifest</p>
                         </CodeEditor.Header>
                     )}
 
