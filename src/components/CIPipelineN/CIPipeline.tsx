@@ -540,8 +540,6 @@ export default function CIPipeline({
         onClose()
         setPageState(ViewType.FORM)
         handleClose()
-        this.closeDeleteModal()
-        this.handleDisplayLoader()
     }
 
     const renderSecondaryButton = () => {
