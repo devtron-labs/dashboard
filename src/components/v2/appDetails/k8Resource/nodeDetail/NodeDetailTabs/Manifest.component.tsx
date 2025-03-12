@@ -37,6 +37,8 @@ import {
     logExceptionToSentry,
     CodeEditorThemesKeys,
     AppThemeType,
+    isCodeMirrorEnabled,
+    getComponentSpecificThemeClass,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
@@ -696,7 +698,7 @@ const ManifestComponent = ({
         }
 
         return (
-            <div style={{ height: isResourceBrowserView ? 'calc(100vh - 119px)' : 'calc(100vh - 77px)' }}>
+            <div className={!isCodeMirrorEnabled() ? getComponentSpecificThemeClass(AppThemeType.dark) : ''} style={{ height: isResourceBrowserView ? 'calc(100vh - 119px)' : 'calc(100vh - 77px)' }}>
                 <CodeEditor
                     cleanData={showManifestCompareView}
                     diffView={showManifestCompareView}
@@ -707,7 +709,7 @@ const ManifestComponent = ({
                     codeEditorProps={{
                         theme: CodeEditorThemesKeys.vsDarkDT,
                         value: getCodeEditorValue(),
-                        defaultValue: showManifestCompareView && desiredManifest,
+                        defaultValue: showManifestCompareView ? desiredManifest : '',
                         onChange: handleEditorValueChange,
                         focus: isEditMode,
                         height: '100%',
