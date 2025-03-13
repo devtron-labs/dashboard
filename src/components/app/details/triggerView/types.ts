@@ -671,7 +671,6 @@ export interface MaterialSourceProps {
     selectMaterial: (materialId: string, ciPipelineId?: number) => void
     refreshMaterial?: RefreshMaterialType
     ciPipelineId?: number
-    fromTriggerInfo?: boolean
     clearSearch?: (e: any) => void
 }
 
@@ -725,14 +724,11 @@ export interface CIWebhookPayload {
 export interface WebhookReceivedPayloadModalType
     extends Pick<TriggerViewState, 'webhookPayloads' | 'workflowId' | 'isWebhookPayloadLoading'>,
         Pick<CIMaterialProps, 'getWebhookPayload'> {
-    fromBulkCITrigger?: boolean
     title: string
     material: CIMaterialType[]
     pipelineId: string
-    fromAppGrouping?: boolean
     isJobView?: boolean
     appId: string
-    isBulkCIWebhook?: boolean
 }
 
 export type OffendingWorkflowQueryParamType = `policy/${PolicyKindType}|identifier|${string}`

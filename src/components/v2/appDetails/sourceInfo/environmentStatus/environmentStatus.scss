@@ -143,12 +143,7 @@ svg.app-notes__icon {
         grid-column-gap: 16px;
     }
     .resource-list {
-        height: calc(100vh - 202px);
-        min-height: 220px;
         overflow-y: auto;
-        &.with-footer {
-            height: calc(100vh - 255px);
-        }
         .app-status-row {
             &:hover {
                 background-color: var(--bg-secondary);

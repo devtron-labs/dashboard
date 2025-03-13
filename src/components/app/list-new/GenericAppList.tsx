@@ -29,6 +29,8 @@ import {
     DEFAULT_BASE_PAGE_SIZE,
     stringComparatorBySortOrder,
     showError,
+    useStickyEvent,
+    getClassNameForStickyHeaderWithShadow,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -38,14 +40,11 @@ import { Routes, URLS } from '../../../config'
 import { AppListViewType } from '../config'
 import SelectClusterImage from '../../../assets/icons/ic-select-cluster.svg'
 import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
-import { Empty } from '../list/emptyView/Empty'
-import { ReactComponent as InfoFill } from '../../../assets/icons/ic-info-filled.svg'
 import noChartInClusterImage from '../../../assets/img/ic-no-chart-in-clusters@2x.png'
 import '../list/list.scss'
 import {
     APP_LIST_EMPTY_STATE_MESSAGING,
     APP_LIST_HEADERS,
-    ClearFiltersLabel,
     ENVIRONMENT_HEADER_TIPPY_CONTENT,
     appListLoadingArray,
     FLUX_CD_HELM_RELEASE_LABEL,
@@ -60,6 +59,7 @@ import {
 } from './AppListType'
 import { renderIcon } from './list.utils'
 import { EXTERNAL_FLUX_APP_STATUS } from '../../../Pages/App/Details/ExternalFlux/types'
+import AskToClearFilters from './AppListComponents'
 
 // This app list is currently used for ExternalArgoCD and ExternalFluxCD app listing
 const GenericAppList = ({
@@ -72,6 +72,7 @@ const GenericAppList = ({
     changePageSize,
     handleSorting,
     setShowPulsatingDot,
+    appListContainerRef,
 }: GenericAppListProps) => {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING)
     const [errorResponseCode, setErrorResponseCode] = useState(0)
@@ -109,6 +110,12 @@ const GenericAppList = ({
         filteredAppsList = filteredAppsList.slice(offset, offset + pageSize)
         return { filteredAppsList, filteredListTotalSize }
     }, [appsList, filterConfig])
+
+    const { stickyElementRef, isStuck: isHeaderStuck } = useStickyEvent({
+        identifier: 'generic-app-list',
+        containerRef: appListContainerRef,
+        isStickyElementMounted: dataStateType === AppListViewType.LIST && filteredListTotalSize > 0
+    })
 
     const closeSseConnection = (sseConnection: EventSource) => {
         sseConnection.close()
@@ -231,7 +238,10 @@ const GenericAppList = ({
     function renderAppListHeader() {
         return (
             <div
-                className={`app-list__header app-list__header${isFluxCDAppList ? '__fluxcd' : ''} dc__position-sticky dc__top-47`}
+                ref={stickyElementRef}
+                className={`app-list__header app-list__header${isFluxCDAppList ? '__fluxcd' : ''} ${
+                   getClassNameForStickyHeaderWithShadow(isHeaderStuck, 'dc__top-47')
+                }`}
             >
                 <div className="app-list__cell--icon" />
                 <div className="app-list__cell app-list__cell--name">
@@ -258,13 +268,17 @@ const GenericAppList = ({
                 )}
                 <div className="app-list__cell app-list__cell--env">
                     <span className="app-list__cell-header mr-4">{APP_LIST_HEADERS.Environment}</span>
-                    <Tippy className="default-tt" arrow placement="top" content={ENVIRONMENT_HEADER_TIPPY_CONTENT}>
-                        <span>
-                            <ICHelpOutline className="icon-dim-20" />
-                        </span>
+                    <Tippy
+                        className="default-tt"
+                        arrow={false}
+                        placement="top"
+                        content={ENVIRONMENT_HEADER_TIPPY_CONTENT}
+                    >
+                        <div className="flex">
+                            <ICHelpOutline className="icon-dim-16" />
+                        </div>
                     </Tippy>
                 </div>
-
                 <div className="app-list__cell app-list__cell--cluster">
                     <span className="app-list__cell-header">{APP_LIST_HEADERS.Cluster}</span>
                 </div>
@@ -336,7 +350,7 @@ const GenericAppList = ({
 
     function askToSelectClusterId() {
         return (
-            <div className="dc__position-rel" style={{ height: 'calc(100vh - 150px)' }}>
+            <div className="dc__position-rel flex-grow-1">
                 <GenericEmptyState
                     image={SelectClusterImage}
                     title={APP_LIST_EMPTY_STATE_MESSAGING.heading}
@@ -350,37 +364,12 @@ const GenericAppList = ({
         )
     }
 
-    function askToClearFilters(showTipToSelectCluster?: boolean) {
-        return (
-            <Empty
-                view={AppListViewType.NO_RESULT}
-                title={APP_LIST_EMPTY_STATE_MESSAGING.noAppsFound}
-                message={APP_LIST_EMPTY_STATE_MESSAGING.noAppsFoundInfoText}
-                buttonLabel={ClearFiltersLabel}
-                clickHandler={clearAllFilters}
-            >
-                {showTipToSelectCluster && (
-                    <div className="mt-18">
-                        <p
-                            className="bcb-1 cn-9 fs-13 pt-10 pb-10 pl-16 pr-16 eb-2 bw-1 br-4 cluster-tip flex left top"
-                            style={{ width: '300px' }}
-                        >
-                            <span>
-                                <InfoFill className="icon-dim-20" />
-                            </span>
-                            <div className="ml-12 cn-9" style={{ textAlign: 'start' }}>
-                                <span className="fw-6">Tip </span>
-                                <span>{APP_LIST_EMPTY_STATE_MESSAGING.selectCluster}</span>
-                            </div>
-                        </p>
-                    </div>
-                )}
-            </Empty>
-        )
-    }
-
     function askToClearFiltersWithSelectClusterTip() {
-        return <div className="flex column">{askToClearFilters(true)}</div>
+        return (
+            <div className="flex column">
+                <AskToClearFilters clearAllFilters={clearAllFilters} showTipToSelectCluster />
+            </div>
+        )
     }
 
     function askToConnectAClusterForNoResult() {
@@ -392,7 +381,7 @@ const GenericAppList = ({
             </Link>
         )
         return (
-            <div className="dc__position-rel" style={{ height: 'calc(100vh - 150px)' }}>
+            <div className="dc__position-rel flex-grow-1">
                 <GenericEmptyState
                     image={noChartInClusterImage}
                     title={APP_LIST_EMPTY_STATE_MESSAGING.noAppsFound}
@@ -412,7 +401,7 @@ const GenericAppList = ({
             return askToConnectAClusterForNoResult()
         }
         if (isAnyFilterApplied) {
-            return askToClearFilters()
+            return <AskToClearFilters clearAllFilters={clearAllFilters} />
         }
         return null
     }
@@ -465,7 +454,7 @@ const GenericAppList = ({
                 </>
             )}
             {dataStateType === AppListViewType.ERROR && (
-                <div className="dc__loading-wrapper">
+                <div className="flex-grow-1">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )}

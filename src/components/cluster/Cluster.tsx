@@ -32,6 +32,8 @@ import {
     ButtonVariantType,
     ButtonStyleType,
     ComponentSizeType,
+    useStickyEvent,
+    getClassNameForStickyHeaderWithShadow,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, useHistory, withRouter } from 'react-router-dom'
 import { ReactComponent as ClusterIcon } from '@Icons/ic-cluster.svg'
@@ -373,6 +375,11 @@ const Cluster = ({
 
     const drawerRef = useRef(null)
 
+    const { stickyElementRef, isStuck: isHeaderStuck } = useStickyEvent({
+        containerSelector: '.global-configuration__component-wrapper',
+        identifier: `cluster-list__${cluster_name}`,
+    })
+
     const isDefaultCluster = (): boolean => {
         return id == 1
     }
@@ -628,7 +635,9 @@ const Cluster = ({
                     clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list'
                 }`}
             >
-                <List className="dc__border dc__position-sticky dc__top-0" key={clusterId} onClick={editModeToggle}>
+                <List internalRef={stickyElementRef} className={`dc__border dc__zi-1 ${getClassNameForStickyHeaderWithShadow(isHeaderStuck)} ${
+                    isHeaderStuck ? 'dc__no-border-radius' : ''
+                }`} key={clusterId} onClick={editModeToggle}>
                     {!clusterId && (
                         <List.Logo>
                             <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />

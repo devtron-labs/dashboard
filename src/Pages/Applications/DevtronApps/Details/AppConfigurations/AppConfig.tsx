@@ -68,6 +68,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
     // STATES
     const [showCannotDeleteTooltip, setShowCannotDeleteTooltip] = useState(false)
     const [reload, setReload] = useState(false)
+    const [isAppDeleting, setIsAppDeleting] = useState(false)
     const [state, setState] = useState<AppConfigState>({
         view: ViewType.LOADING,
         stageName: STAGE_NAME.LOADING,
@@ -331,8 +332,10 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
 
     const deleteAppHandler = async () => {
         try {
+            setIsAppDeleting(true)
             const response = await deleteApp(appId)
             if (response) {
+                setIsAppDeleting(false)
                 if (isJob) {
                     ToastManager.showToast({
                         variant: ToastVariantType.success,
@@ -348,6 +351,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
                 }
             }
         } catch (error) {
+            setIsAppDeleting(false)
             showError(error)
         }
     }
@@ -422,7 +426,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
                         primaryButtonConfig: {
                             text: 'Delete',
                             onClick: deleteAppHandler,
-                            isLoading: state.view === ViewType.LOADING,
+                            isLoading: state.view === ViewType.LOADING || isAppDeleting,
                         },
                     }}
                     handleClose={closeDeleteConfirmationModal}
@@ -508,13 +512,15 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
             fetchEnvConfig={fetchEnvConfig}
         >
             <>
-                <div className={`app-compose ${getAdditionalParentClass()}`}>
+                <div
+                    className={`app-compose deploy-config-collapsible-layout flex-grow-1 ${getAdditionalParentClass()}`}
+                >
                     <div
-                        className={`app-compose__nav ${getAppComposeClasses()} flex column left top dc__overflow-auto`}
+                        className={`app-compose__nav collapsible-sidebar ${getAppComposeClasses()} flex column left top dc__overflow-auto`}
                     >
                         <AppNavigation />
                     </div>
-                    <div className="app-compose__main">
+                    <div className="flexbox-col app-compose__main">
                         <AppComposeRouter />
                     </div>
                 </div>

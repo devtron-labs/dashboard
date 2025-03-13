@@ -16,7 +16,6 @@
 
 import { useEffect, useRef, useState } from 'react'
 import {
-    ButtonWithLoader,
     CHECKBOX_VALUE,
     Checkbox,
     Drawer,
@@ -29,6 +28,7 @@ import {
     useSearchString,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     ApiQueuingWithBatch,
+    Button,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt, useHistory, useLocation } from 'react-router-dom'
 import {
@@ -373,7 +373,7 @@ export const RestartWorkloadModal = ({
     }
 
     const renderRestartWorkloadModalListItems = () => (
-        <div className="drawer-body-section__list-drawer dc__overflow-auto bg__primary">
+        <div className="dc__overflow-auto bg__primary">
             {Object.keys(bulkRotatePodsMap).map((appId) => (
                 <div className="pl-16 pr-16" key={appId}>
                     <div key={appId} className="flex dc__content-space cursor dc__hover-n50">
@@ -432,38 +432,34 @@ export const RestartWorkloadModal = ({
         }
         if (restartLoader) {
             return (
-                <div className="drawer-section__empty flex">
-                    <GenericEmptyState
-                        title={`Fetching workload for ${isCurrentSelected ? selectedAppDetailsList.application : `${selectedAppDetailsList.length} Applications`}`}
-                        subTitle={APP_DETAILS_TEXT.APP_GROUP_RESTART_WORKLOAD_SUBTITLE}
-                        SvgImage={MechanicalIcon}
-                    />
-                </div>
+                <GenericEmptyState
+                    title={`Fetching workload for ${isCurrentSelected ? selectedAppDetailsList.application : `${selectedAppDetailsList.length} Applications`}`}
+                    subTitle={APP_DETAILS_TEXT.APP_GROUP_RESTART_WORKLOAD_SUBTITLE}
+                    SvgImage={MechanicalIcon}
+                />
             )
         }
 
         if (statusModalLoading) {
             return (
-                <div className="drawer-section__empty flex">
-                    <GenericEmptyState
-                        title={`Restarting selected workload on ${envName}`}
-                        subTitle={APP_DETAILS_TEXT.APP_GROUP_RESTART_WORKLOAD_SUBTITLE}
-                        SvgImage={MechanicalIcon}
-                    >
-                        <InfoColourBar
-                            message={APP_DETAILS_TEXT.APP_GROUP_EMPTY_WORKLOAD_INFO_BAR}
-                            classname="warn cn-9 lh-2 w-100"
-                            Icon={Warn}
-                            iconClass="warning-icon h-100-imp"
-                            iconSize={20}
-                        />
-                    </GenericEmptyState>
-                </div>
+                <GenericEmptyState
+                    title={`Restarting selected workload on ${envName}`}
+                    subTitle={APP_DETAILS_TEXT.APP_GROUP_RESTART_WORKLOAD_SUBTITLE}
+                    SvgImage={MechanicalIcon}
+                >
+                    <InfoColourBar
+                        message={APP_DETAILS_TEXT.APP_GROUP_EMPTY_WORKLOAD_INFO_BAR}
+                        classname="warn cn-9 lh-2 w-100"
+                        Icon={Warn}
+                        iconClass="warning-icon h-100-imp"
+                        iconSize={20}
+                    />
+                </GenericEmptyState>
             )
         }
 
         return (
-            <div className="flexbox-col">
+            <div className="flexbox-col dc__overflow-auto">
                 <InfoColourBar
                     message={APP_DETAILS_TEXT.APP_GROUP_INFO_TEXT}
                     classname="info_bar dc__no-border-radius dc__no-top-border"
@@ -600,25 +596,20 @@ export const RestartWorkloadModal = ({
     }
 
     const onSave = async () => {
-        if (isDisabled()) {
-            return null
-        }
         if (!showStatusModal && !showResistanceBox && Object.keys(hibernateInfoMap).length > 0) {
             setShowResistanceBox(true)
-        } else {
-            const functionCalls = createFunctionCallsFromRestartPodMap()
-            setStatusModalLoading(true)
-            ApiQueuingWithBatch(functionCalls)
-                .then(async () => {})
-                .catch(() => {})
-                .finally(() => {
-                    setShowStatusModal(true)
-                    setShowResistanceBox(false)
-                    setStatusModalLoading(false)
-                })
+            return
         }
-
-        return null
+        const functionCalls = createFunctionCallsFromRestartPodMap()
+        setStatusModalLoading(true)
+        ApiQueuingWithBatch(functionCalls)
+            .then(async () => {})
+            .catch(() => {})
+            .finally(() => {
+                setShowStatusModal(true)
+                setShowResistanceBox(false)
+                setStatusModalLoading(false)
+            })
     }
 
     const renderFooterSection = () => (
@@ -633,18 +624,14 @@ export const RestartWorkloadModal = ({
                         Close
                     </button>
                 )}
-                <ButtonWithLoader
-                    rootClassName={`cta flex h-36 pl-16 pr-16 pt-8 pb-8 dc__border-radius-4-imp dc__gap-8 ${isDisabled() ? 'dc__disabled' : ''}`}
+                <Button
+                    dataTestId="rotate-workloads-button"
+                    startIcon={showStatusModal ? <Retry /> : <RotateIcon />}
                     isLoading={restartLoader}
+                    disabled={isDisabled()}
                     onClick={onSave}
-                >
-                    {showStatusModal ? (
-                        <Retry className="icon-dim-16 icon-dim-16 scn-0 dc__no-svg-fill" />
-                    ) : (
-                        <RotateIcon className="dc__no-svg-fill icon-dim-16 scn-0" />
-                    )}
-                    {showStatusModal ? APP_DETAILS_TEXT.RETRY_FAILED : APP_DETAILS_TEXT.RESTART_WORKLOAD}
-                </ButtonWithLoader>
+                    text={showStatusModal ? APP_DETAILS_TEXT.RETRY_FAILED : APP_DETAILS_TEXT.RESTART_WORKLOAD}
+                />
             </div>
         </div>
     )
@@ -654,12 +641,7 @@ export const RestartWorkloadModal = ({
             return <ErrorScreenManager code={errorStatusCode} />
         }
 
-        return (
-            <>
-                {renderRestartWorkloadModalList()}
-                {renderFooterSection()}
-            </>
-        )
+        return renderRestartWorkloadModalList()
     }
 
     const hideResistanceBox = (): void => {
@@ -670,10 +652,13 @@ export const RestartWorkloadModal = ({
             <Drawer onEscape={closeDrawer} position="right" width="800" parentClassName="h-100">
                 <div
                     onClick={stopPropagation}
-                    className="bulk-restart-workload-wrapper bg__primary cn-9 w-800 h-100 fs-13 lh-20"
+                    className="flexbox-col dc__content-space bg__primary cn-9 w-800 h-100 fs-13 lh-20"
                 >
-                    {renderHeaderSection()}
-                    {renderBodySection()}
+                    <div className="flexbox-col flex-grow-1 dc__overflow-hidden">
+                        {renderHeaderSection()}
+                        {renderBodySection()}
+                    </div>
+                    {renderFooterSection()}
                 </div>
                 {isDeploymentBlockedViaWindow && showResistanceBox && BulkDeployResistanceTippy && (
                     <BulkDeployResistanceTippy

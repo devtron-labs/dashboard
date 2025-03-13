@@ -194,7 +194,7 @@ export default function JobListView(props: JobListViewProps) {
 
     if (props.view === JobListViewType.LOADING) {
         return (
-            <div className="dc__loading-wrapper">
+            <div className="flex-grow-1">
                 <Progressing pageLoader />
             </div>
         )
@@ -209,7 +209,7 @@ export default function JobListView(props: JobListViewProps) {
     }
     if (props.view === JobListViewType.ERROR) {
         return (
-            <div className="dc__height-reduce-48">
+            <div className="flex-grow-1">
                 <ErrorScreenManager code={props.code} />
             </div>
         )

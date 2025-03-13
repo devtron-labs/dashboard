@@ -18,7 +18,6 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import {
     ServerErrors,
     Drawer,
-    Progressing,
     showError,
     stopPropagation,
     ConsequenceType,
@@ -71,15 +70,13 @@ import BranchRegexModal from '../../../app/details/triggerView/BranchRegexModal'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { BulkCIDetailType, BulkCITriggerType } from '../../AppGroup.types'
 import { IGNORE_CACHE_INFO } from '../../../app/details/triggerView/Constants'
-import TriggerResponseModal from './TriggerResponseModal'
+import TriggerResponseModalBody, { TriggerResponseModalFooter } from './TriggerResponseModal'
 import { BULK_CI_BUILD_STATUS, BULK_CI_MATERIAL_STATUS, BULK_CI_MESSAGING } from '../../Constants'
 import { processConsequenceData } from '../../AppGroup.utils'
 import { getIsAppUnorthodox } from './utils'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 import { BULK_ERROR_MESSAGES } from './constants'
 import { GitInfoMaterial } from '@Components/common/helpers/GitInfoMaterialCard/GitInfoMaterial'
-import { useRouteMatch } from 'react-router-dom'
-import { WebhookReceivedPayloadModal } from '@Components/app/details/triggerView/WebhookReceivedPayloadModal'
 import { ReactComponent as LeftIcon } from '@Icons/ic-arrow-backward.svg'
 
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
@@ -123,9 +120,16 @@ const BulkCITrigger = ({
     const [appIgnoreCache, setAppIgnoreCache] = useState<Record<number, boolean>>({})
     const [appPolicy, setAppPolicy] = useState<Record<number, ConsequenceType>>({})
     const [currentSidebarTab, setCurrentSidebarTab] = useState<string>(CIMaterialSidebarType.CODE_SOURCE)
-    const { url } = useRouteMatch()
-    const showWebhookModal = url.includes(URLS.WEBHOOK_RECEIVED_PAYLOAD_ID || URLS.WEBHOOK_MODAL)
     const [isWebhookBulkCI, setIsWebhookBulkCI] = useState(false)
+
+    const selectedMaterialList = appList.find((app) => app.appId === selectedApp.appId)?.material || []
+
+    useEffect(() => {
+        const selectedMaterialId = selectedMaterialList[0]?.id
+        if (isWebhookBulkCI && selectedMaterialId) {
+            getWebhookPayload(selectedMaterialId)
+        }
+    }, [JSON.stringify(selectedMaterialList), isWebhookBulkCI])
 
     const [blobStorageConfigurationLoading, blobStorageConfiguration] = useAsync(
         () => getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
@@ -176,7 +180,7 @@ const BulkCITrigger = ({
     const getRuntimeParamsData = async (_materialListMap: Record<string, any[]>): Promise<void> => {
         const runtimeParamsServiceList = appList.map((appDetails) => {
             if (getIsAppUnorthodox(appDetails) || !_materialListMap[appDetails.appId]) {
-                return () => ([])
+                return () => []
             }
             return () => getRuntimeParams(appDetails.ciPipelineId)
         })
@@ -317,9 +321,6 @@ const BulkCITrigger = ({
     }
 
     const renderHeaderSection = (): JSX.Element | null => {
-        if (showWebhookModal) {
-            return null
-        }
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bg__primary pt-16 pr-20 pb-16 pl-20">
                 <div className="flex left dc__gap-12">
@@ -463,7 +464,7 @@ const BulkCITrigger = ({
         setRegexValue(_regexValue)
     }
 
-    const renderMainContent = (selectedMaterialList: any[]): JSX.Element => {
+    const renderMainContent = (): JSX.Element => {
         if (showRegexModal) {
             const selectedCIPipeline = selectedApp.filteredCIPipelines?.find(
                 (_ciPipeline) => _ciPipeline?.id == selectedApp.ciPipelineId,
@@ -511,6 +512,7 @@ const BulkCITrigger = ({
                 />
             )
         }
+
         const selectedMaterial = selectedMaterialList?.find((mat) => mat.isSelected)
 
         return (
@@ -679,20 +681,6 @@ const BulkCITrigger = ({
         )
     }
 
-    const renderWebhookModal = (selectedMaterialList: CIMaterialType[]): JSX.Element => (
-        <WebhookReceivedPayloadModal
-            workflowId={+selectedApp.workFlowId}
-            webhookPayloads={webhookPayloads}
-            isWebhookPayloadLoading={isWebhookPayloadLoading}
-            material={selectedMaterialList}
-            pipelineId={selectedApp.ciPipelineId}
-            title={selectedApp.ciPipelineName}
-            getWebhookPayload={getWebhookPayload}
-            appId={selectedApp.appId.toString()}
-            isBulkCIWebhook={isWebhookBulkCI}
-        />
-    )
-
     const renderBodySection = (): JSX.Element => {
         if (isLoading) {
             const message = isBulkBuildTriggered.current
@@ -707,54 +695,47 @@ const BulkCITrigger = ({
                 />
             )
         }
-        const selectedMaterialList = appList.find((app) => app.appId === selectedApp.appId)?.material || []
+
         const sidebarTabs = Object.values(CIMaterialSidebarType).map((tabValue) => ({
             value: tabValue,
             label: tabValue,
         }))
 
-        return (
-            <div className={`bulk-ci-trigger  ${showWebhookModal ? 'webhook-modal' : ''}`}>
-                {isWebhookBulkCI ? (
-                    renderWebhookModal(selectedMaterialList)
-                ) : (
-                    <div className="sidebar bg__primary dc__height-inherit dc__overflow-auto">
-                        <div
-                            className="dc__position-sticky dc__top-0 bg__primary dc__border-bottom fw-6 fs-13 cn-9 p-12 "
-                            style={{ zIndex: 1 }}
-                        >
-                            {RuntimeParamTabs ? (
-                                <RuntimeParamTabs
-                                    tabs={sidebarTabs}
-                                    initialTab={currentSidebarTab}
-                                    onChange={handleSidebarTabChange}
-                                    hasError={{
-                                        [CIMaterialSidebarType.PARAMETERS]:
-                                            runtimeParamsErrorState[selectedApp.ciPipelineId] &&
-                                            !runtimeParamsErrorState[selectedApp.ciPipelineId].isValid,
-                                    }}
-                                />
-                            ) : (
-                                'Applications'
-                            )}
-                        </div>
-
-                        {appList.map((app, index) => (
-                            <div
-                                className={`material-list pr-12 pl-12 pb-12 ${
-                                    app.appId === selectedApp.appId ? 'bg__tertiary' : 'dc__border-bottom-n1 cursor'
-                                }`}
-                                key={`app-${app.appId}`}
-                            >
-                                {renderAppName(app, index)}
-                                {renderSelectedAppMaterial(app.appId, selectedMaterialList)}
-                            </div>
-                        ))}
+        return isWebhookBulkCI ? (
+            renderMainContent()
+        ) : (
+            <div className="bulk-ci-trigger">
+                <div className="sidebar bg__primary dc__overflow-auto">
+                    <div className="dc__position-sticky dc__top-0 bg__primary dc__border-bottom fw-6 fs-13 cn-9 p-12 ">
+                        {RuntimeParamTabs ? (
+                            <RuntimeParamTabs
+                                tabs={sidebarTabs}
+                                initialTab={currentSidebarTab}
+                                onChange={handleSidebarTabChange}
+                                hasError={{
+                                    [CIMaterialSidebarType.PARAMETERS]:
+                                        runtimeParamsErrorState[selectedApp.ciPipelineId] &&
+                                        !runtimeParamsErrorState[selectedApp.ciPipelineId].isValid,
+                                }}
+                            />
+                        ) : (
+                            'Applications'
+                        )}
                     </div>
-                )}
-                <div className="main-content bg__tertiary dc__height-inherit">
-                    {renderMainContent(selectedMaterialList)}
+
+                    {appList.map((app, index) => (
+                        <div
+                            className={`material-list pr-12 pl-12 pb-12 ${
+                                app.appId === selectedApp.appId ? 'bg__tertiary' : 'dc__border-bottom-n1 cursor'
+                            }`}
+                            key={`app-${app.appId}`}
+                        >
+                            {renderAppName(app, index)}
+                            {renderSelectedAppMaterial(app.appId, selectedMaterialList)}
+                        </div>
+                    ))}
                 </div>
+                <div className="main-content bg__tertiary dc__overflow-auto">{renderMainContent()}</div>
             </div>
         )
     }
@@ -782,15 +763,14 @@ const BulkCITrigger = ({
     }
 
     const renderFooterSection = (): JSX.Element => {
+        const blobStorageNotConfigured = !blobStorageConfigurationLoading && !blobStorageConfiguration?.result?.enabled
         return (
             <div
-                className={`dc__border-top flex right bg__primary pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width ${
-                    !blobStorageConfigurationLoading && !blobStorageConfiguration?.result?.enabled
-                        ? 'dc__content-space'
-                        : ''
+                className={`dc__border-top flex right bg__primary px-20 py-16 ${
+                    blobStorageNotConfigured ? 'dc__content-space' : ''
                 }`}
             >
-                {!blobStorageConfigurationLoading && !blobStorageConfiguration?.result?.enabled && (
+                {blobStorageNotConfigured && (
                     <div className="flexbox flex-align-center">
                         <Storage className="icon-dim-24 mr-8" />
                         <div>
@@ -810,43 +790,42 @@ const BulkCITrigger = ({
                         </div>
                     </div>
                 )}
-                <button
-                    className="cta flex h-36"
-                    data-testid="start-build"
+                <Button
+                    dataTestId="start-build"
                     onClick={onClickStartBuild}
                     disabled={isStartBuildDisabled()}
-                    type="button"
-                >
-                    {isLoading ? (
-                        <Progressing />
-                    ) : (
-                        <>
-                            <PlayIcon className="trigger-btn__icon" />
-                            Start Build
-                        </>
-                    )}
-                </button>
+                    isLoading={isLoading}
+                    text="Start build"
+                    startIcon={<PlayIcon />}
+                />
             </div>
         )
     }
 
+    const responseListLength = responseList.length
+
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            <div className="bg__tertiary h-100 bulk-ci-trigger-container">
-                {renderHeaderSection()}
-                {responseList.length ? (
-                    <TriggerResponseModal
-                        closePopup={closePopup}
-                        responseList={responseList}
-                        isLoading={isLoading}
-                        onClickRetryBuild={onClickRetryBuild}
-                    />
-                ) : (
-                    <>
-                        {renderBodySection()}
-                        {renderFooterSection()}
-                    </>
-                )}
+            <div className="bg__primary bulk-ci-trigger-container">
+                <div className="flexbox-col flex-grow-1 dc__overflow-hidden">
+                    {renderHeaderSection()}
+                    {responseListLength ? (
+                        <TriggerResponseModalBody responseList={responseList} isLoading={isLoading} />
+                    ) : (
+                        renderBodySection()
+                    )}
+                </div>
+                {!isWebhookBulkCI &&
+                    (responseListLength ? (
+                        <TriggerResponseModalFooter
+                            closePopup={closePopup}
+                            responseList={responseList}
+                            isLoading={isLoading}
+                            onClickRetryBuild={onClickRetryBuild}
+                        />
+                    ) : (
+                        renderFooterSection()
+                    ))}
             </div>
         </Drawer>
     )

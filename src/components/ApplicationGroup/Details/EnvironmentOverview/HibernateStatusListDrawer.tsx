@@ -22,7 +22,7 @@ import {
     InfoColourBar,
     Progressing,
     usePrompt,
-    DEFAULT_ROUTE_PROMPT_MESSAGE
+    DEFAULT_ROUTE_PROMPT_MESSAGE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt } from 'react-router-dom'
 import { HibernateStatusRow } from './HibernateStatusRow'
@@ -51,7 +51,7 @@ export default function HibernateStatusListDrawer({
 
     const renderHeaderSection = (): JSX.Element => {
         return (
-            <div className="flex flex-align-center flex-justify dc__border-bottom bg__primary pt-16 pr-20 pb-16 pl-20">
+            <div className="flex flex-align-center flex-justify dc__border-bottom py-16 px-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">
                     {isHibernating ? 'Hibernate applications' : 'Unhibernate applications'}
                 </h2>
@@ -97,12 +97,8 @@ export default function HibernateStatusListDrawer({
         }
 
         return (
-            <>
-                <div className="response-list-container bg__primary dc__height-inherit dc__overflow-auto pr-20 pb-16 pl-20">
-                    <div
-                        className="dc__position-sticky fs-12 fw-6 cn-7 dc__top-0 bg__primary dc__border-bottom response-row dc__border-bottom pt-24 pb-8 dc__uppercase"
-                        style={{ zIndex: 1 }}
-                    >
+                <div className="hibernate-status-body dc__overflow-auto pb-16 px-20">
+                    <div className="dc__position-sticky pt-24 pb-8 fs-12 fw-6 cn-7 dc__top-0 dc__border-bottom response-row dc__uppercase bg__tertiary">
                         <div>Application</div>
                         <div>Status</div>
                         <div>Message</div>
@@ -117,20 +113,25 @@ export default function HibernateStatusListDrawer({
                         />
                     ))}
                 </div>
-                <div className="dc__border-top flex bg__primary pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width right">
-                    <button className="cta cancel flex h-36" data-testid="close-popup" onClick={closePopup}>
-                        Close
-                    </button>
-                </div>
-            </>
         )
     }
 
+    const renderFooter = () => (
+        <div className="dc__border-top dc__content-end flex py-16 px-20">
+            <button className="cta cancel flex h-36" data-testid="close-popup" onClick={closePopup}>
+                Close
+            </button>
+        </div>
+    )
+
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            <div className="bg__tertiary h-100 bulk-ci-trigger-container">
-                {renderHeaderSection()}
-                {renderBody()}
+            <div className="bg__tertiary h-100 flexbox-col dc__content-space bg__primary">
+                <div className="flexbox-col flex-grow-1 dc__overflow-hidden">
+                    {renderHeaderSection()}
+                    {renderBody()}
+                </div>
+                {renderFooter()}
             </div>
         </Drawer>
     )
