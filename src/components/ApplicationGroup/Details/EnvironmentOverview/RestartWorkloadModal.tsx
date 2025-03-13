@@ -63,6 +63,7 @@ export const RestartWorkloadModal = ({
     envId,
     hibernateInfoMap,
     isDeploymentBlockedViaWindow,
+    onClose,
 }: RestartWorkloadModalProps) => {
     const [bulkRotatePodsMap, setBulkRotatePodsMap] = useState<Record<number, BulkRotatePodsMetaData>>({})
     const [expandedAppIds, setExpandedAppIds] = useState<number[]>([])
@@ -112,6 +113,8 @@ export const RestartWorkloadModal = ({
 
         abortControllerRef.current.abort()
         history.push({ search: new URLSearchParams(newParams).toString() })
+
+        onClose?.()
     }
 
     const getPodsToRotate = async (selectedAppIds: number[]) => {

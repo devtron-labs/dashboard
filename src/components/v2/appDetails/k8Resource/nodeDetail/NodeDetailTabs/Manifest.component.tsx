@@ -38,6 +38,8 @@ import {
     CodeEditorThemesKeys,
     noop,
     AppThemeType,
+    isCodeMirrorEnabled,
+    getComponentSpecificThemeClass,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
@@ -705,54 +707,54 @@ const ManifestComponent = ({
         }
 
         return (
-            <CodeEditor
-                cleanData={showManifestCompareView}
-                diffView={showManifestCompareView}
-                mode={MODES.YAML}
-                readOnly={isReadOnlyView}
-                loading={loading}
-                customLoader={<MessageUI msg={loadingMsg} icon={MsgUIType.LOADING} size={24} />}
-                codeEditorProps={{
-                    theme: CodeEditorThemesKeys.vsDarkDT,
-                    value: getCodeEditorValue(),
-                    defaultValue: showManifestCompareView && desiredManifest,
-                    onChange: handleEditorValueChange,
-                    focus: isEditMode,
-                    height: '0',
-                }}
-                codeMirrorProps={{
-                    theme: AppThemeType.dark,
-                    height: '100%',
-                    ...(showManifestCompareView
-                        ? {
-                              diffView: true,
-                              originalValue: desiredManifest,
-                              modifiedValue: getCodeEditorValue(),
-                              onModifiedValueChange: handleEditorValueChange,
-                          }
-                        : {
-                              diffView: false,
-                              value: getCodeEditorValue(),
-                              onChange: handleEditorValueChange,
-                              autoFocus: isEditMode,
-                          }),
-                }}
-            >
-                {renderEditorInfo(true)}
+            <div className={!isCodeMirrorEnabled() ? getComponentSpecificThemeClass(AppThemeType.dark) : ''}>
+                <CodeEditor
+                    cleanData={showManifestCompareView}
+                    diffView={showManifestCompareView}
+                    mode={MODES.YAML}
+                    readOnly={isReadOnlyView}
+                    loading={loading}
+                    customLoader={<MessageUI msg={loadingMsg} icon={MsgUIType.LOADING} size={24} />}
+                    codeEditorProps={{
+                        theme: CodeEditorThemesKeys.vsDarkDT,
+                        value: getCodeEditorValue(),
+                        defaultValue: showManifestCompareView ? desiredManifest : '',
+                        onChange: handleEditorValueChange,
+                        focus: isEditMode,
+                        height: '0',
+                    }}
+                    codeMirrorProps={{
+                        theme: AppThemeType.dark,
+                        height: '100%',
+                        ...(showManifestCompareView
+                            ? {
+                                  diffView: true,
+                                  originalValue: desiredManifest,
+                                  modifiedValue: getCodeEditorValue(),
+                                  onModifiedValueChange: handleEditorValueChange,
+                              }
+                            : {
+                                  diffView: false,
+                                  value: getCodeEditorValue(),
+                                  onChange: handleEditorValueChange,
+                                  autoFocus: isEditMode,
+                              }),
+                    }}
+                >
+                    {renderEditorInfo(true)}
 
-                {!loading &&
-                    !error &&
-                    isConfigDriftEnabled &&
-                    'hasDrift' in _selectedResource &&
-                    _selectedResource.hasDrift &&
-                    !showManifestCompareView &&
-                    renderOutOfSyncWarning &&
-                    renderOutOfSyncWarning(handleDesiredManifestOpen)}
-                {showManifestCompareView && (
-                    <CodeEditor.Header hideDefaultSplitHeader className="p-0">
-                        <div className="dc__split-header">
-                            <div className="dc__split-header__pane flexbox dc__align-items-center dc__content-space dc__gap-8">
-                                <span>Desired manifest</span>
+                    {!loading &&
+                        !error &&
+                        isConfigDriftEnabled &&
+                        'hasDrift' in _selectedResource &&
+                        _selectedResource.hasDrift &&
+                        !showManifestCompareView &&
+                        renderOutOfSyncWarning &&
+                        renderOutOfSyncWarning(handleDesiredManifestOpen)}
+                    {showManifestCompareView && (
+                        <CodeEditor.Header hideDefaultSplitHeader>
+                            <div className="flex dc__content-space dc__gap-8 pr-16">
+                                <p className="m-0 cn-9">Desired manifest</p>
                                 <button
                                     type="button"
                                     className="dc__unset-button-styles flex"
@@ -762,13 +764,13 @@ const ManifestComponent = ({
                                     <ICClose className="icon-dim-16 scn-0" />
                                 </button>
                             </div>
-                            <div className="dc__split-header__pane">Live manifest</div>
-                        </div>
-                    </CodeEditor.Header>
-                )}
+                            <p className="m-0 cn-9 pl-16">Live manifest</p>
+                        </CodeEditor.Header>
+                    )}
 
-                {renderErrorBar(true)}
-            </CodeEditor>
+                    {renderErrorBar(true)}
+                </CodeEditor>
+            </div>
         )
     }
 

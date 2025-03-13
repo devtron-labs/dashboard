@@ -2470,25 +2470,6 @@ button.anchor {
     color: var(--N50);
 }
 
-.dc__split-header {
-    display: flex;
-    gap: 1px;
-    background-color: var(--N700);
-    padding-bottom: 1px;
-    padding-right: 30px;
-    color: var(--N0);
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 20px;
-    width: 100%;
-
-    &__pane {
-        flex: 1 0 0;
-        background-color: var(--terminal-bg);
-        padding: 4px 12px;
-    }
-}
-
 .basic-multi-select>.select__control--is-disabled {
     background-color: var(--N100) !important;
 }
@@ -2889,6 +2870,10 @@ button.anchor {
 
 .w-24 {
     width: 24px;
+}
+
+.w-24-imp {
+    width: 24px !important;
 }
 
 .w-28 {

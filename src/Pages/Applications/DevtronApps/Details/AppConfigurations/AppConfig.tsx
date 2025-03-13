@@ -522,7 +522,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
         >
             <>
                 <div
-                    className={`app-compose flex-grow-1 dc__overflow-auto deploy-config-collapsible-layout ${getAdditionalParentClass()}`}
+                    className={`app-compose deploy-config-collapsible-layout flex-grow-1 ${getAdditionalParentClass()}`}
                 >
                     <div
                         className={`app-compose__nav collapsible-sidebar ${getAppComposeClasses()} flex column left top dc__overflow-auto`}
