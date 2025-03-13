@@ -123,6 +123,7 @@ export class Workflow extends Component<WorkflowProps> {
                 width={node.width}
                 key={`webhook-${node.id}`}
                 id={node.id}
+                isTemplateView={false}
             />
         )
     }
