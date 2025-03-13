@@ -20,9 +20,9 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     DeleteCINodeButton,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ToggleCDSelectButtonProps } from './types'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 
 const ToggleCDSelectButton = ({
     addNewPipelineBlocked,
@@ -43,7 +43,7 @@ const ToggleCDSelectButton = ({
                 variant={ButtonVariantType.borderLess}
                 dataTestId={`${testId}-add`}
                 onClick={onClickAddNode}
-                icon={<Add />}
+                icon={<Icon size={12} name="ic-add" color={null} />}
                 disabled={addNewPipelineBlocked}
                 size={ComponentSizeType.xxs_small_icon}
                 style={ButtonStyleType.neutral}
