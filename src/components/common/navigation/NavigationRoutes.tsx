@@ -221,11 +221,7 @@ export default function NavigationRoutes() {
         }
     }
 
-    const handleCloseSwitchThemeDialog: SwitchThemeDialogProps['handleClose'] = (updatedThemePreference) => {
-        setUserPreferences((prev) => ({
-            ...prev,
-            themePreference: updatedThemePreference,
-        }))
+    const handleCloseSwitchThemeDialog: SwitchThemeDialogProps['handleClose'] = () => {
         handleThemeSwitcherDialogVisibilityChange(false)
     }
 
@@ -453,6 +449,13 @@ export default function NavigationRoutes() {
         }))
     }
 
+    const handleUpdateUserThemePreference = (themePreference: UserPreferencesType['themePreference']) => {
+        setUserPreferences((prev) => ({
+            ...prev,
+            themePreference,
+        }))
+    }
+
     if (pageState === ViewType.LOADING) {
         return (
             <div className="full-height-width">
@@ -461,7 +464,8 @@ export default function NavigationRoutes() {
         )
     }
     if (pageState === ViewType.ERROR) {
-        return <Reload />
+        // 100vh is required for covering the full height of the page as this is the top level component
+        return <Reload className="h-100vh bg__tertiary" />
     }
     const _isOnboardingPage = isOnboardingPage()
 
@@ -507,6 +511,7 @@ export default function NavigationRoutes() {
                         initialThemePreference={userPreferences?.themePreference}
                         handleClose={handleCloseSwitchThemeDialog}
                         currentUserPreferences={userPreferences}
+                        handleUpdateUserThemePreference={handleUpdateUserThemePreference}
                     />
                 )}
 

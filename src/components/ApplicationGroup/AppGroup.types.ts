@@ -117,7 +117,7 @@ export interface BulkCITriggerType extends BulkRuntimeParamsType {
     closePopup: (e) => void
     updateBulkInputMaterial: (materialList: Record<string, any[]>) => void
     onClickTriggerBulkCI: (appIgnoreCache: Record<number, boolean>, appsToRetry?: Record<string, boolean>) => void
-    getWebhookPayload: (id, webhookTimeStampOrder: typeof TIME_STAMP_ORDER) => void
+    getWebhookPayload: (id, webhookTimeStampOrder?: typeof TIME_STAMP_ORDER) => void
     webhookPayloads: WebhookPayloadType
     setWebhookPayloads: React.Dispatch<React.SetStateAction<WebhookPayloadType>>
     isWebhookPayloadLoading: boolean
@@ -178,13 +178,16 @@ export interface WorkflowsResponseType {
     filteredCIPipelines: Map<string, any>
 }
 
-export interface TriggerResponseModalType {
-    closePopup: (e) => void
+export interface TriggerResponseModalBodyProps {
     responseList: ResponseRowType[]
     isLoading: boolean
-    onClickRetryBuild: (appsToRetry: Record<string, boolean>) => void
     isVirtualEnv?: boolean
     envName?: string
+}
+
+export interface TriggerResponseModalFooterProps extends Pick<TriggerResponseModalBodyProps, 'isLoading' | 'responseList'> {
+    onClickRetryBuild: (appsToRetry: Record<string, boolean>) => void
+    closePopup: (e) => void
 }
 
 export interface TriggerModalRowType {
@@ -505,6 +508,7 @@ export interface HibernateModalProps {
     showDefaultDrawer: boolean
     openedHibernateModalType: HibernateModalType
     isDeploymentBlockedViaWindow: boolean
+    onClose?: () => void
 }
 
 export interface StatusDrawer {
@@ -530,6 +534,7 @@ export interface RestartWorkloadModalProps {
     setRestartLoader: React.Dispatch<React.SetStateAction<boolean>>
     hibernateInfoMap: Record<number, HibernateInfoMapProps>
     isDeploymentBlockedViaWindow: boolean
+    onClose?: () => void
 }
 
 export interface RestartStatusListDrawerProps {

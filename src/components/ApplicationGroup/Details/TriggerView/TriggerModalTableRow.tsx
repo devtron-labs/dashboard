@@ -23,29 +23,30 @@ import { ReactComponent as ICInfoFilled } from '../../../../assets/icons/ic-info
 import { BulkResponseStatus } from '../../Constants'
 import { importComponentFromFELibrary } from '../../../common'
 
-const DownloadManifestForVirtualEnvironmentButton = importComponentFromFELibrary('DownloadManifestForVirtualEnvironmentButton', null, 'function')
+const DownloadManifestForVirtualEnvironmentButton = importComponentFromFELibrary(
+    'DownloadManifestForVirtualEnvironmentButton',
+    null,
+    'function',
+)
 
 export const TriggerModalRow = ({ rowData, index, isVirtualEnv, envName }: TriggerModalRowType) => {
     const { handleDownload } = useDownload()
 
-    const renderStatusIcon = (rowData: ResponseRowType): JSX.Element => {
-        if (rowData.status === BulkResponseStatus.SKIP) {
+    const renderStatusIcon = (responseRowData: ResponseRowType): JSX.Element => {
+        if (responseRowData.status === BulkResponseStatus.SKIP) {
             return <ICInfoFilled className="mr-8 icon-dim-18" />
         }
-        if (rowData.status === BulkResponseStatus.UNAUTHORIZE) {
+        if (responseRowData.status === BulkResponseStatus.UNAUTHORIZE) {
             return <UnAuthorized className="mr-8 icon-dim-18 fcy-7" />
         }
-        if (rowData.status === BulkResponseStatus.PASS) {
+        if (responseRowData.status === BulkResponseStatus.PASS) {
             return <Success className="mr-8 icon-dim-18" />
         }
         return <Error className="mr-8 icon-dim-18" />
     }
 
     return (
-        <div
-            className={`response-row  py-8 ${isVirtualEnv ? 'is-virtual' : ''}`}
-            key={`response-${rowData.appId}`}
-        >
+        <div className={`response-row py-8 ${isVirtualEnv ? 'is-virtual' : ''}`} key={`response-${rowData.appId}`}>
             <div className="fs-13 fw-4 cn-9">{rowData.appName}</div>
             <div className="flex left top fs-13 fw-4 cn-9">
                 {renderStatusIcon(rowData)}

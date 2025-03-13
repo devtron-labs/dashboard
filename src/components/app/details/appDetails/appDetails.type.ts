@@ -194,6 +194,8 @@ export interface DetailsType {
     filteredEnvIds?: string
     deploymentUserActionState?: ACTION_STATE
     onCloseHideDeploymentWindowConfirmationModal?: () => void
+    appDetails: any
+    setAppDetails: React.Dispatch<React.SetStateAction<AppDetails>>
 }
 
 export interface DeletedAppComponentType extends SyncErrorType {

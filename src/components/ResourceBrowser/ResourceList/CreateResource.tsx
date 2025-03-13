@@ -138,6 +138,7 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
                 />
             )
         }
+
         if (showCodeEditorView) {
             return (
                 <>
@@ -146,6 +147,7 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
                         classname="info_bar dc__no-border-radius dc__no-top-border"
                         Icon={InfoIcon}
                     />
+
                     <CodeEditor
                         mode={MODES.YAML}
                         noParsing
@@ -167,8 +169,9 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
                 </>
             )
         }
+
         return (
-            <div>
+            <div className="flex-grow-1 dc__overflow-hidden flexbox-col">
                 <div className="created-resource-row dc__border-bottom pt-8 pr-20 pb-8 pl-20">
                     {APP_STATUS_HEADERS.map((headerKey) => (
                         <div className="fs-13 fw-6 cn-7" key={headerKey}>
@@ -176,7 +179,7 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
                         </div>
                     ))}
                 </div>
-                <div className="created-resource-list fs-13">
+                <div className="created-resource-list dc__overflow-auto fs-13">
                     {resourceResponse?.map((resource) => (
                         <div
                             className="created-resource-row pt-8 pr-20 pb-8 pl-20"
@@ -218,7 +221,7 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
     }
 
     return (
-        <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px" onEscape={onClose}>
+        <Drawer position="right" width="1024px" onEscape={onClose}>
             <div className="create-resource-container bg__primary h-100 flexbox-col">
                 <div className="flex flex-align-center flex-justify bg__primary pt-16 pr-20 pb-16 pl-20 dc__border-bottom">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0">{CREATE_RESOURCE_MODAL_MESSAGING.title}</h2>
@@ -231,7 +234,7 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
                         <CloseIcon className="icon-dim-24" />
                     </button>
                 </div>
-                <div className="flex-grow-1 flexbox-col">{renderPageContent()}</div>
+                {renderPageContent()}
                 {renderFooter()}
             </div>
         </Drawer>

@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 
-.k8s-resource-view-container {
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - 119px);
-}
-
-.terminal-view-container {
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - 155px);
-}
-
 .terminal-view-wrapper {
     position: relative;
     min-height: 600px;
@@ -40,10 +28,8 @@
 .terminal-wrapper {
     display: flex;
     flex-direction: column;
-    max-height: 100vh;
     background: var(--terminal-bg);
     overflow: hidden;
-    flex: 1;
     position: relative;
     // NOTE: fixing height for consistency
     --metadata-header-height: 28px;
@@ -70,6 +56,7 @@
             position: fixed;
             top: var(--metadata-header-height);
             left: 0;
+            // calc required for full screen mode
             height: calc(100vh - var(--metadata-header-height));
             width: 100vw;
             z-index: var(--modal-index);
@@ -79,16 +66,10 @@
         }
 
         & .zoom {
-            position: fixed;
+            position: absolute;
             bottom: 12px;
             right: 12px;
             z-index: 11;
-        }
-
-        &__zoom--bottom-41 {
-            & .zoom {
-                bottom: 41px;
-            }
         }
     }
 }

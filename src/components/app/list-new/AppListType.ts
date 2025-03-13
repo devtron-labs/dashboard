@@ -143,6 +143,7 @@ export interface HelmAppListProps
         | 'isArgoInstalled'
         | 'syncListData'
         | 'updateDataSyncing'
+        | 'appListContainerRef'
     > {
     clusterIdsCsv: string
     serverMode: SERVER_MODE
@@ -155,7 +156,12 @@ export interface HelmAppListProps
 export interface GenericAppListProps
     extends Pick<
             DevtronAppListProps,
-            'filterConfig' | 'clearAllFilters' | 'handleSorting' | 'changePage' | 'changePageSize'
+            | 'filterConfig'
+            | 'clearAllFilters'
+            | 'handleSorting'
+            | 'changePage'
+            | 'changePageSize'
+            | 'appListContainerRef'
         >,
         Pick<HelmAppListProps, 'clusterIdsCsv' | 'setShowPulsatingDot'> {
     appType: string
@@ -197,4 +203,8 @@ export interface useFilterOptionsProps
 export interface GetDevtronHelmAppListParamsType {
     appStatuses: string
     clusterIds: string
+}
+
+export interface AskToClearFiltersProps extends Pick<DevtronAppListProps, 'clearAllFilters'> {
+    showTipToSelectCluster?: boolean
 }

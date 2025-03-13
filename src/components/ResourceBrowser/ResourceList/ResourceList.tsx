@@ -90,7 +90,7 @@ const ResourceList = () => {
         stopTabByIdentifier,
         getTabId,
         getTabById,
-    } = useTabs(URLS.RESOURCE_BROWSER)
+    } = useTabs(`${URLS.RESOURCE_BROWSER}/${clusterId}`)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [widgetEventDetails, setWidgetEventDetails] = useState<WidgetEventDetails>(null)
     const [isDataStale, setIsDataStale] = useState(false)
@@ -453,7 +453,7 @@ const ResourceList = () => {
                 updateTabUrl={getUpdateTabUrlForId(tabId)}
             />
         ) : (
-            <div className="resource-details-container flexbox-col">
+            <div className="flexbox-col flex-grow-1 dc__overflow-hidden">
                 <NodeDetailComponent
                     key={dynamicActiveTab.componentKey}
                     loadingResources={rawGVKLoader}
@@ -522,6 +522,7 @@ const ResourceList = () => {
             <>
                 <DynamicTabs
                     tabs={tabs}
+                    backgroundColorToken="bg__tertiary"
                     variant={DynamicTabsVariantType.RECTANGULAR}
                     removeTabByIdentifier={removeTabByIdentifier}
                     markTabActiveById={markTabActiveById}
@@ -557,7 +558,11 @@ const ResourceList = () => {
                             return (
                                 <div
                                     key={currentTab.componentKey}
-                                    className={!tabs[index].isSelected ? hideClassName : ''}
+                                    className={
+                                        !tabs[index].isSelected
+                                            ? hideClassName
+                                            : 'flex-grow-1 flexbox-col dc__overflow-hidden'
+                                    }
                                 >
                                     {component}
                                 </div>

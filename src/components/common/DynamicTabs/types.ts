@@ -59,8 +59,9 @@ export interface DynamicTabsProps {
     removeTabByIdentifier: UseTabsReturnType['removeTabByIdentifier']
     markTabActiveById: UseTabsReturnType['markTabActiveById']
     stopTabByIdentifier: UseTabsReturnType['stopTabByIdentifier']
-    setIsDataStale?: React.Dispatch<React.SetStateAction<boolean>>
+    backgroundColorToken: 'bg__primary' | 'bg__tertiary' | 'bg__secondary'
     timerConfig: Record<DynamicTabType['id'], TimerConfigType>
+    setIsDataStale?: React.Dispatch<React.SetStateAction<boolean>>
     iconsConfig?: Record<DynamicTabType['id'], ReactElement>
 }
 
