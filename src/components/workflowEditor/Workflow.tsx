@@ -196,7 +196,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     // AND renderAdditionalEdge would only work for cdWorkflowList that is CIConfigDiffView
     renderNodes({ nodesWithBufferHeight }: { nodesWithBufferHeight: CommonNodeAttr[] }) {
         const ci = nodesWithBufferHeight.find((node) => node.type == WorkflowNodeType.CI && !node.isLinkedCD)
-        const webhook = nodesWithBufferHeight.find((node) => node.type == WorkflowNodeType.WEBHOOK)
+        const webhook = nodesWithBufferHeight.find((node) => {
+            node.type == WorkflowNodeType.WEBHOOK})
         const linkedCD = nodesWithBufferHeight.find((node) => node.isLinkedCD)
         const _nodesData = this.getNodesData({
             nodeId: ci?.id || webhook?.id || linkedCD?.id || '',
@@ -465,6 +466,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 isLastNode={node.downstreams.length === 0}
                 deploymentAppDeleteRequest={node.deploymentAppDeleteRequest}
                 readOnly={this.props.isOffendingPipelineView}
+                appId={this.props.match.params.appId}
+                getWorkflows={this.props.getWorkflows}
+                workflowId={this.props.id}
             />
         )
     }

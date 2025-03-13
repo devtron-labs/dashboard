@@ -21,6 +21,7 @@ import {
     ComponentSizeType,
     DeleteConfirmationModal,
     ERROR_STATUS_CODE,
+    preventDefault,
     showError,
     stopPropagation,
     ToastManager,
@@ -52,12 +53,12 @@ export const DeleteCINodeButton = ({
 
     const onClickDeleteShowModal = (e) => {
         stopPropagation(e)
-        e.preventDefault()
+        preventDefault(e)
         setShowDeleteModal(true)
     }
 
     const onDeleteWorkflow = async () => {
-        deleteWorkflow(String(deletePayloadConfig.appId), Number(deletePayloadConfig.appWorkflowId))
+        await deleteWorkflow(String(deletePayloadConfig.appId), Number(deletePayloadConfig.appWorkflowId))
             .then((response) => {
                 if (response.errors) {
                     const { errors } = response
@@ -70,8 +71,6 @@ export const DeleteCINodeButton = ({
                 }
 
                 if (response.status.toLowerCase() === 'ok') {
-                    // this.closeDeleteModal()
-                    // this.handleDisplayLoader()
                     ToastManager.showToast({
                         variant: ToastVariantType.success,
                         description: 'Workflow Deleted',
@@ -116,7 +115,7 @@ export const DeleteCINodeButton = ({
                 ariaLabel="Delete pipeline"
                 variant={ButtonVariantType.borderLess}
                 dataTestId={testId}
-                size={ComponentSizeType.xs}
+                size={ComponentSizeType.xxs_small_icon}
                 showAriaLabelInTippy
                 onClick={onClickDeleteShowModal}
                 style={ButtonStyleType.negativeGrey}

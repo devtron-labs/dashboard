@@ -39,8 +39,7 @@ const ToggleCDSelectButton = ({
                 onClick={onClickAddNode}
                 icon={<Add />}
                 disabled={addNewPipelineBlocked}
-                size={ComponentSizeType.xs}
-                showAriaLabelInTippy
+                size={ComponentSizeType.xxs_small_icon}
                 style={ButtonStyleType.neutral}
                 fullWidth
             />

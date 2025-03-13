@@ -201,7 +201,7 @@ export interface WebhookNodeProps {
     isReadonlyView?: boolean
     appId?: string
     workflowId: number
-    getWorkflows: () => void
+    getWorkflows?: () => void
 }
 
 export interface WebhookTippyType {
