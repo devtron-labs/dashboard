@@ -508,6 +508,7 @@ export interface HibernateModalProps {
     showDefaultDrawer: boolean
     openedHibernateModalType: HibernateModalType
     isDeploymentBlockedViaWindow: boolean
+    onClose?: () => void
 }
 
 export interface StatusDrawer {
@@ -533,6 +534,7 @@ export interface RestartWorkloadModalProps {
     setRestartLoader: React.Dispatch<React.SetStateAction<boolean>>
     hibernateInfoMap: Record<number, HibernateInfoMapProps>
     isDeploymentBlockedViaWindow: boolean
+    onClose?: () => void
 }
 
 export interface RestartStatusListDrawerProps {

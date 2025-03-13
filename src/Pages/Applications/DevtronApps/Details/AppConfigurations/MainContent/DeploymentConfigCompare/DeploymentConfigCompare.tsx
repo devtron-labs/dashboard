@@ -187,7 +187,9 @@ export const DeploymentConfigCompare = ({
         updateSearchParams({
             [AppEnvDeploymentConfigQueryParams.COMPARE_WITH_CONFIG_TYPE]:
                 AppEnvDeploymentConfigType.PREVIOUS_DEPLOYMENTS,
-            compareWithIdentifierId: previousDeploymentData.wfrId,
+            compareWithIdentifierId: isManifestView
+                ? previousDeploymentData.deploymentTemplateHistoryId
+                : previousDeploymentData.wfrId,
             compareWithPipelineId: previousDeploymentData.pipelineId,
             compareWithManifestChartRefId: isManifestView ? previousDeploymentData.chartRefId : null,
         })
