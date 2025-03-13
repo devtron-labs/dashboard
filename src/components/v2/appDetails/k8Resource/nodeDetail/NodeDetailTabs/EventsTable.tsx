@@ -81,10 +81,7 @@ export const EventsTable = ({ loading, eventsList, isResourceBrowserView, errorV
                                     <td className="cell-style count">{event.count}</td>
                                     <td className="cell-style timestamp">
                                         {event.lastTimestamp &&
-                                            moment(event.lastTimestamp, 'YYYY-MM-DDTHH:mm:ss')
-                                                .add(5, 'hours')
-                                                .add(30, 'minutes')
-                                                .format('YYYY-MM-DD HH:mm:ss')}
+                                            moment.utc(event.lastTimestamp).local().format('YYYY-MM-DD HH:mm:ss')}
                                     </td>
                                 </tr>
                             ))}
