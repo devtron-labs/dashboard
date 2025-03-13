@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-import { Button, ButtonStyleType, ButtonVariantType, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
-import { DeleteCINodeButton } from '@Components/ciPipeline/DeleteCINodeButton'
+import {
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    DeleteCINodeButton,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ToggleCDSelectButtonProps } from './types'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 
@@ -25,6 +30,7 @@ const ToggleCDSelectButton = ({
     testId,
     deleteConfig,
     getWorkflows,
+    hideDeleteButton = false,
 }: ToggleCDSelectButtonProps) => (
     <div className="h-100 dc__border-left-n1 w-24 dc__align-items-center dc__grid-rows-2 ci-node__action-button dc__right-radius-8">
         <div className="dc__border-bottom-n1">
@@ -45,13 +51,15 @@ const ToggleCDSelectButton = ({
             />
         </div>
 
-        <DeleteCINodeButton
-            testId={`${testId}-delete`}
-            disabled={false}
-            deletePayloadConfig={deleteConfig}
-            title={deleteConfig.pipelineName}
-            getWorkflows={getWorkflows}
-        />
+        {!hideDeleteButton && (
+            <DeleteCINodeButton
+                testId={`${testId}-delete`}
+                disabled={false}
+                deletePayloadConfig={deleteConfig}
+                title={deleteConfig.pipelineName}
+                getWorkflows={getWorkflows}
+            />
+        )}
     </div>
 )
 

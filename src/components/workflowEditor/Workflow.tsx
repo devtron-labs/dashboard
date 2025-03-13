@@ -335,9 +335,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 selectedNode={this.props.selectedNode}
                 isLastNode={node.downstreams.length === 0}
                 isReadonlyView={this.props.isOffendingPipelineView}
-                appId={this.props.match.params.appId}
-                workflowId={this.props.id}
-                getWorkflows={this.props.getWorkflows}
             />
         )
     }

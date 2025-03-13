@@ -48,6 +48,7 @@ import {
     getGlobalVariables,
     FloatingVariablesSuggestions,
     TriggerType,
+    DeleteCINodeButton,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -75,7 +76,6 @@ import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from '../cdPipeline/cdpipeline.util'
 import { PipelineContext, PipelineFormDataErrorType } from '../workflowEditor/types'
 import { EnvironmentWithSelectPickerType } from './types'
-import { DeleteCINodeButton } from '@Components/ciPipeline/DeleteCINodeButton'
 
 const processPluginData: (params: ProcessPluginDataParamsType) => Promise<ProcessPluginDataReturnType> =
     importComponentFromFELibrary('processPluginData', null, 'function')

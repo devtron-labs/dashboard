@@ -31,6 +31,7 @@ import {
     Button,
     ButtonVariantType,
     ButtonStyleType,
+    DeleteCINodeButton,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -43,7 +44,6 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
 import { SourceMaterials } from './SourceMaterials'
 import './ciPipeline.scss'
-import { DeleteCINodeButton } from './DeleteCINodeButton'
 
 export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIPipelineState> {
     constructor(props) {

@@ -199,9 +199,6 @@ export interface WebhookNodeProps {
      * @default false
      */
     isReadonlyView?: boolean
-    appId?: string
-    workflowId: number
-    getWorkflows?: () => void
 }
 
 export interface WebhookTippyType {
@@ -337,11 +334,12 @@ export interface ToggleCDSelectButtonProps {
     addNewPipelineBlocked: boolean
     onClickAddNode: (event: any) => void
     testId: string
-    deleteConfig: {
+    deleteConfig?: {
         appId: string
         appWorkflowId: number
         pipelineId: number
         pipelineName: string
     }
-    getWorkflows: () => void
+    getWorkflows?: () => void
+    hideDeleteButton?: boolean
 }

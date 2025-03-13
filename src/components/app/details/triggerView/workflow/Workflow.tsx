@@ -122,8 +122,6 @@ export class Workflow extends Component<WorkflowProps> {
                 width={node.width}
                 key={`webhook-${node.id}`}
                 id={node.id}
-                appId={this.props.match.params.appId}
-                workflowId={Number(this.props.id)}
             />
         )
     }
