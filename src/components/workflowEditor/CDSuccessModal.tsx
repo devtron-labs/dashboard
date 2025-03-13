@@ -16,7 +16,7 @@
 
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
+import { VisibleModal, URLS as CommonURLS } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { ReactComponent as SuccessIcon } from '../../assets/icons/ic-success-with-light-background.svg'
 import { ReactComponent as GotToBuildDeploy } from '../../assets/icons/go-to-buildanddeploy.svg'
@@ -61,7 +61,7 @@ export default function CDSuccessModal({ appId, envId, closeSuccessPopup, envNam
                     </div>
                 </NavLink>
                 <NavLink
-                    to={`${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${envId}`}
+                    to={`${URLS.APP}/${appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${envId}`}
                     data-testid="go-to-environmentOverride-link"
                     className="cb-5 dc__no-decor"
                 >

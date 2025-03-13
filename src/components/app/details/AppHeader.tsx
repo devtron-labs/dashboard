@@ -16,7 +16,7 @@
 
 import React, { useCallback, useRef, useEffect, useState, useMemo } from 'react'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router-dom'
-import { BreadCrumb, useBreadcrumb, noop, PageHeader, TabGroup, TabProps } from '@devtron-labs/devtron-fe-common-lib'
+import { BreadCrumb, useBreadcrumb, noop, PageHeader, TabGroup, TabProps, URLS as CommonURLS } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { URLS } from '../../../config'
 import { AppSelector } from '../../AppSelector'
@@ -222,7 +222,7 @@ export const AppHeader = ({
                 tabType: 'navLink',
                 icon: Settings,
                 props: {
-                    to: `${match.url}/${URLS.APP_CONFIG}`,
+                    to: `${match.url}/${CommonURLS.APP_CONFIG}`,
                     ['data-action']: 'App Configuration Clicked',
                     ['data-testid']: 'app-config-link',
                     onClick: handleEventClick,

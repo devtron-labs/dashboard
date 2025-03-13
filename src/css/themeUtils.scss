@@ -183,6 +183,12 @@
         width: 1px;
         min-height: 16px;
         background-color: var(--divider-primary);
+
+        &--horizontal {
+            width: 100%;
+            min-height: 1px;
+            background-color: var(--divider-primary);
+        }
     }
 
     &__primary-translucent {
@@ -195,6 +201,12 @@
         width: 1px;
         min-height: 16px;
         background-color: var(--divider-secondary);
+
+        &--horizontal {
+            width: 100%;
+            min-height: 1px;
+            background-color: var(--divider-secondary);
+        }
     }
 
     &__secondary-translucent {

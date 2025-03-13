@@ -156,7 +156,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
     }
 
     callGetAppOtherEnv(prevEnvId: string | undefined) {
-        getAppOtherEnvironmentMin(this.props.match.params.appId)
+        getAppOtherEnvironmentMin(this.props.match.params.appId, false)
             .then((envResponse) => {
                 const filteredEnvMap = this.props.filteredEnvIds
                     ?.split(',')

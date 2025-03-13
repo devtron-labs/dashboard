@@ -43,6 +43,7 @@ const OffendingPipelineModalAppView = ({
                 filteredEnvIds: null,
                 shouldCheckDeploymentWindow: false,
                 offending: `policy/${policyKind}|identifier|${policyName}`,
+                isTemplateView: false,
             }),
         [appId],
         !!appId,
@@ -103,6 +104,7 @@ const OffendingPipelineModalAppView = ({
                         workflowPositionState={null}
                         handleDisplayLoader={noop}
                         isOffendingPipelineView
+                        isTemplateView={false}
                     />
                 ))
             ) : (

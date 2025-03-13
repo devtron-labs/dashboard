@@ -77,8 +77,8 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
     const [loading, result] = useAsync(
         () =>
             Promise.allSettled([
-                getAppOtherEnvironmentMin(appId),
-                getCDPipelines(appId),
+                getAppOtherEnvironmentMin(appId, false),
+                getCDPipelines(appId, false),
                 getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
             ]),
         [appId, filteredEnvIds],

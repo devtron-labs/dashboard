@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-import React, { useRef } from 'react'
+import { useRef } from 'react'
+import {
+    abortPreviousRequests,
+    APP_SELECTOR_STYLES,
+    AppSelectorDropdownIndicator,
+    AppSelectorNoOptionsMessage,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Props as SelectProps, SelectInstance } from 'react-select'
 import AsyncSelect from 'react-select/async'
-import { appListOptions, appSelectorStyle, DropdownIndicator, noOptionsMessage } from './AppSelectorUtil'
-import { abortPreviousRequests } from '@devtron-labs/devtron-fe-common-lib'
+import { appListOptions } from './AppSelectorUtil'
 
 interface AppSelectorType {
     onChange: ({ label, value }) => void
@@ -27,7 +32,7 @@ interface AppSelectorType {
     isJobView?: boolean
 }
 
-export default function AppSelector({ onChange, appId, appName, isJobView }: AppSelectorType) {
+const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) => {
     const selectRef = useRef<SelectInstance>(null)
 
     const abortControllerRef = useRef<AbortController>(new AbortController())
@@ -52,15 +57,17 @@ export default function AppSelector({ onChange, appId, appName, isJobView }: App
             onKeyDown={handleOnKeyDown}
             defaultOptions
             loadOptions={loadAppListOptions}
-            noOptionsMessage={noOptionsMessage}
+            noOptionsMessage={AppSelectorNoOptionsMessage}
             onChange={onChange}
             components={{
                 IndicatorSeparator: null,
-                DropdownIndicator,
+                DropdownIndicator: AppSelectorDropdownIndicator,
                 LoadingIndicator: null,
             }}
             value={defaultOptions[0]}
-            styles={appSelectorStyle}
+            styles={APP_SELECTOR_STYLES}
         />
     )
 }
+
+export default AppSelector
