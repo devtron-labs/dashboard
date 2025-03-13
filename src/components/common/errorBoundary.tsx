@@ -24,7 +24,15 @@ interface errorBoundaryState {
     hasError: boolean
     isChunkLoadError: boolean
 }
-export default class ErrorBoundary extends Component<{}, errorBoundaryState> {
+
+interface ErrorBoundaryProps {
+    /**
+     * If true, it will add a full screen background to the error boundary
+     */
+    shouldAddFullScreenBg?: boolean
+}
+
+export default class ErrorBoundary extends Component<ErrorBoundaryProps, errorBoundaryState> {
     constructor(props) {
         super(props)
         this.state = { eventId: null, hasError: false, isChunkLoadError: false }
@@ -55,12 +63,17 @@ export default class ErrorBoundary extends Component<{}, errorBoundaryState> {
 
     render() {
         if (this.state.hasError) {
+            const bgClass = this.props.shouldAddFullScreenBg ? 'bg__tertiary' : ''
+
             return this.state.isChunkLoadError ? (
-                <div style={{ height: '100vh' }}>
+                <div className={bgClass} style={{ height: '100vh' }}>
                     <Reload />
                 </div>
             ) : (
-                <div className="flex column" style={{ width: '100%', height: '100%' }}>
+                <div
+                    className={`flex column ${bgClass}`}
+                    style={{ width: '100%', height: this.props.shouldAddFullScreenBg ? '100vh' : '100%' }}
+                >
                     <img src={bugFixing} alt="" style={{ height: '300px', width: 'auto', marginBottom: '20px' }} />
                     <h2 style={{ marginBottom: '20px' }}>We encountered an error.</h2>
                     <a

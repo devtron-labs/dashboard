@@ -36,6 +36,7 @@ import {
     ResourceDetail,
     CodeEditorThemesKeys,
     noop,
+    AppThemeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
 import YAML from 'yaml'
@@ -906,29 +907,37 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         }
     }
 
-    const getCodeEditorHeight = (): string => {
-        if (!isReviewState) {
-            return 'calc(100vh - 115px)'
-        }
-        if (isShowWarning) {
-            return `calc(100vh - 180px)`
-        }
-        return `calc(100vh - 148px)`
-    }
-
     const renderYAMLEditor = (): JSX.Element => {
         return (
-            <div className="node-details-container">
+            <div className="node-details-container flexbox-col flex-grow-1">
                 <CodeEditor
-                    value={modifiedManifest}
-                    defaultValue={(nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || ''}
-                    height={getCodeEditorHeight()}
                     readOnly={!isEdit}
-                    theme={CodeEditorThemesKeys.vsDarkDT}
                     diffView={isReviewState}
-                    onChange={handleEditorValueChange}
                     mode={MODES.YAML}
                     noParsing
+                    codeEditorProps={{
+                        theme: CodeEditorThemesKeys.vsDarkDT,
+                        value: modifiedManifest,
+                        defaultValue: (nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || '',
+                        height: 0,
+                        onChange: handleEditorValueChange,
+                    }}
+                    codeMirrorProps={{
+                        theme: AppThemeType.dark,
+                        ...(isReviewState
+                            ? {
+                                  diffView: true,
+                                  originalValue: (nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || '',
+                                  modifiedValue: modifiedManifest,
+                                  onModifiedValueChange: handleEditorValueChange,
+                              }
+                            : {
+                                  diffView: false,
+                                  value: modifiedManifest,
+                                  onChange: handleEditorValueChange,
+                              }),
+                        height: 'fitToParent',
+                    }}
                 >
                     {isReviewState && isShowWarning && (
                         <CodeEditor.Warning
@@ -937,14 +946,12 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                         />
                     )}
                     {isReviewState && (
-                        <CodeEditor.Header hideDefaultSplitHeader className="node-code-editor-header vertical-divider">
-                            <div className="h-32 lh-32 fs-12 fw-6 flexbox w-100 text__white">
-                                <div className=" pl-10 w-49">Current node YAML </div>
-                                <div className="pl-25 w-51 flexbox">
-                                    <Edit className="icon-dim-16 icon-fill-white mt-7 mr-5" />
-                                    YAML (Editing)
-                                </div>
-                            </div>
+                        <CodeEditor.Header hideDefaultSplitHeader>
+                            <p className="m-0 fs-12 fw-6 cn-7">Current node YAML</p>
+                            <p className="m-0 fs-12 fw-6 cn-7 pl-16 flex left dc__gap-4">
+                                <Edit className="icon-dim-16" />
+                                <span>YAML (Editing)</span>
+                            </p>
                         </CodeEditor.Header>
                     )}
                 </CodeEditor>
@@ -1048,7 +1055,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     }
 
     return (
-        <div className="bg__primary node-data-container">
+        <div className="bg__primary node-data-container flexbox-col">
             {loader ? (
                 <Progressing pageLoader size={32} />
             ) : (

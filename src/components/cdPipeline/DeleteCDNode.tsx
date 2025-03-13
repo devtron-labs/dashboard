@@ -53,10 +53,10 @@ const DeleteCDNode = ({
 
     const renderForceDeleteConfirmationModal = () => (
         <ForceDeleteConfirmationModal
-            title={forceDeleteData.forceDeleteDialogTitle}
+            title="Failed to delete pipeline"
             onDelete={handleForceDeleteCDNode}
             closeConfirmationModal={hideDeleteModal}
-            subtitle={forceDeleteData.forceDeleteDialogMessage}
+            subtitle={forceDeleteData.forceDeleteDialogMessage ?? forceDeleteData.forceDeleteDialogTitle}
         />
     )
 

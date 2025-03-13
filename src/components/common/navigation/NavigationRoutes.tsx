@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { lazy, Suspense, useEffect, useState, useRef, useMemo, FunctionComponent, Dispatch } from 'react'
+import { lazy, Suspense, useEffect, useState, useRef, useMemo, FunctionComponent } from 'react'
 import {
     useUserEmail,
     showError,
@@ -27,16 +27,17 @@ import {
     ImageSelectionUtilityProvider,
     URLS as CommonURLS,
     AppListConstants,
+    getEnvironmentData,
     DEVTRON_BASE_MAIN_ID,
     MainContext,
     getHashedValue,
     ServerErrors,
     ViewIsPipelineRBACConfiguredRadioTabs,
     EnvironmentDataValuesDTO,
-    ResponseType,
     UserPreferencesType,
     getUserPreferences,
     MODES,
+    useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -73,7 +74,10 @@ import 'monaco-editor'
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import YamlWorker from '../../../yaml.worker.js?worker'
 import { TAB_DATA_LOCAL_STORAGE_KEY } from '../DynamicTabs/constants'
+import { DEFAULT_GIT_OPS_FEATURE_FLAGS } from './constants'
 import { ParsedTabsData, ParsedTabsDataV1 } from '../DynamicTabs/types'
+import { SwitchThemeDialog } from '@Pages/Shared'
+import { SwitchThemeDialogProps } from '@Pages/Shared/SwitchThemeDialog/types'
 
 // Monaco Editor worker initialization
 self.MonacoEnvironment = {
@@ -99,11 +103,6 @@ const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/Devt
 const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
-const getEnvironmentData: () => Promise<ResponseType<EnvironmentDataValuesDTO>> = importComponentFromFELibrary(
-    'getEnvironmentData',
-    null,
-    'function',
-)
 const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
 const SoftwareDistributionHub = importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
 const NetworkStatusInterface = importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
@@ -147,16 +146,23 @@ export default function NavigationRoutes() {
     const [environmentId, setEnvironmentId] = useState(null)
     const contextValue = useMemo(() => ({ environmentId, setEnvironmentId }), [environmentId])
     const [environmentDataState, setEnvironmentDataState] = useState<
-        Pick<MainContext, 'isAirgapped' | 'isManifestScanningEnabled' | 'isOrgLevelRBACViewEnforced'>
+        Pick<
+            MainContext,
+            'isAirgapped' | 'isManifestScanningEnabled' | 'canOnlyViewPermittedEnvOrgLevel' | 'featureGitOpsFlags'
+        >
     >({
         isAirgapped: false,
         isManifestScanningEnabled: false,
-        isOrgLevelRBACViewEnforced: false,
+        canOnlyViewPermittedEnvOrgLevel: false,
+        featureGitOpsFlags: structuredClone(DEFAULT_GIT_OPS_FEATURE_FLAGS),
     })
     const [userPreferences, setUserPreferences] = useState<UserPreferencesType>(null)
     const [userPreferencesError, setUserPreferencesError] = useState<ServerErrors>(null)
 
-    const { isAirgapped, isManifestScanningEnabled, isOrgLevelRBACViewEnforced } = environmentDataState
+    const { showThemeSwitcherDialog, handleThemeSwitcherDialogVisibilityChange, handleThemePreferenceChange } =
+        useTheme()
+
+    const { isAirgapped, isManifestScanningEnabled, canOnlyViewPermittedEnvOrgLevel } = environmentDataState
 
     const getInit = async (_serverMode: string) => {
         const [userRole, appList, loginData] = await Promise.all([
@@ -213,6 +219,10 @@ export default function NavigationRoutes() {
                 history.push(`/${URLS.GETTING_STARTED}`)
             }
         }
+    }
+
+    const handleCloseSwitchThemeDialog: SwitchThemeDialogProps['handleClose'] = () => {
+        handleThemeSwitcherDialogVisibilityChange(false)
     }
 
     useEffect(() => {
@@ -316,6 +326,7 @@ export default function NavigationRoutes() {
             isAirGapEnvironment: false,
             isManifestScanningEnabled: false,
             canOnlyViewPermittedEnvOrgLevel: false,
+            featureGitOpsFlags: structuredClone(DEFAULT_GIT_OPS_FEATURE_FLAGS),
         }
 
         if (!getEnvironmentData) {
@@ -324,14 +335,31 @@ export default function NavigationRoutes() {
 
         try {
             const { result } = await getEnvironmentData()
+            const parsedFeatureGitOpsFlags: typeof fallbackResponse.featureGitOpsFlags = {
+                isFeatureArgoCdMigrationEnabled: result.featureGitOpsFlags?.isFeatureArgoCdMigrationEnabled || false,
+                isFeatureGitOpsEnabled: result.featureGitOpsFlags?.isFeatureGitOpsEnabled || false,
+                isFeatureUserDefinedGitOpsEnabled:
+                    result.featureGitOpsFlags?.isFeatureUserDefinedGitOpsEnabled || false,
+            }
             return {
                 isAirGapEnvironment: result.isAirGapEnvironment,
                 isManifestScanningEnabled: result.isManifestScanningEnabled,
                 canOnlyViewPermittedEnvOrgLevel: result.canOnlyViewPermittedEnvOrgLevel,
+                featureGitOpsFlags: parsedFeatureGitOpsFlags,
             }
         } catch {
             return fallbackResponse
         }
+    }
+
+    const handleInitializeUserPreferencesFromResponse = (userPreferencesResponse: UserPreferencesType) => {
+        if (window._env_.FEATURE_EXPERIMENTAL_THEMING_ENABLE && !userPreferencesResponse?.themePreference) {
+            handleThemeSwitcherDialogVisibilityChange(true)
+        } else if (userPreferencesResponse?.themePreference) {
+            handleThemePreferenceChange(userPreferencesResponse?.themePreference)
+        }
+
+        setUserPreferences(userPreferencesResponse)
     }
 
     const handleFetchUserPreferences = async () => {
@@ -340,9 +368,9 @@ export default function NavigationRoutes() {
             const userPreferencesResponse = await getUserPreferences()
             if (migrateUserPreferences) {
                 const migratedUserPreferences = await migrateUserPreferences(userPreferencesResponse)
-                setUserPreferences(migratedUserPreferences)
+                handleInitializeUserPreferencesFromResponse(migratedUserPreferences)
             } else {
-                setUserPreferences(userPreferencesResponse)
+                handleInitializeUserPreferencesFromResponse(userPreferencesResponse)
             }
         } catch (error) {
             setUserPreferencesError(error)
@@ -363,7 +391,8 @@ export default function NavigationRoutes() {
             setEnvironmentDataState({
                 isAirgapped: environmentDataResponse.isAirGapEnvironment,
                 isManifestScanningEnabled: environmentDataResponse.isManifestScanningEnabled,
-                isOrgLevelRBACViewEnforced: environmentDataResponse.canOnlyViewPermittedEnvOrgLevel,
+                canOnlyViewPermittedEnvOrgLevel: environmentDataResponse.canOnlyViewPermittedEnvOrgLevel,
+                featureGitOpsFlags: environmentDataResponse.featureGitOpsFlags,
             })
 
             setServerMode(serverModeResponse)
@@ -397,9 +426,7 @@ export default function NavigationRoutes() {
                     }
                 } else {
                     const keys = Object.keys(parsedTabsData.data)
-                    if (
-                        keys.every((key) => location.pathname !== key && !location.pathname.startsWith(`${key}/`))
-                    ) {
+                    if (keys.every((key) => location.pathname !== key && !location.pathname.startsWith(`${key}/`))) {
                         localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
                     }
                 }
@@ -419,6 +446,13 @@ export default function NavigationRoutes() {
         setUserPreferences((prev) => ({
             ...prev,
             pipelineRBACViewSelectedTab: selectedTab,
+        }))
+    }
+
+    const handleUpdateUserThemePreference = (themePreference: UserPreferencesType['themePreference']) => {
+        setUserPreferences((prev) => ({
+            ...prev,
+            themePreference,
         }))
     }
 
@@ -455,11 +489,12 @@ export default function NavigationRoutes() {
                 isSuperAdmin,
                 isAirgapped,
                 isManifestScanningEnabled,
-                isOrgLevelRBACViewEnforced,
+                featureGitOpsFlags: environmentDataState.featureGitOpsFlags,
+                canOnlyViewPermittedEnvOrgLevel,
                 viewIsPipelineRBACConfiguredNode:
                     serverMode === SERVER_MODE.FULL &&
                     ViewIsPipelineRBACConfigured &&
-                    !isOrgLevelRBACViewEnforced &&
+                    !canOnlyViewPermittedEnvOrgLevel &&
                     !isSuperAdmin ? (
                         <ViewIsPipelineRBACConfigured
                             userPreferences={userPreferences}
@@ -470,6 +505,15 @@ export default function NavigationRoutes() {
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
+                {window._env_.FEATURE_EXPERIMENTAL_THEMING_ENABLE && showThemeSwitcherDialog && (
+                    <SwitchThemeDialog
+                        initialThemePreference={userPreferences?.themePreference}
+                        handleClose={handleCloseSwitchThemeDialog}
+                        currentUserPreferences={userPreferences}
+                        handleUpdateUserThemePreference={handleUpdateUserThemePreference}
+                    />
+                )}
+
                 {!_isOnboardingPage && (
                     <Navigation
                         currentServerInfo={currentServerInfo}
@@ -485,7 +529,7 @@ export default function NavigationRoutes() {
                 )}
                 {serverMode && (
                     <div
-                        className={`main ${location.pathname.startsWith('/app/list') || location.pathname.startsWith('/application-group/list') ? 'bg__primary' : ''} ${
+                        className={`main bg__primary ${window._env_.FEATURE_EXPERIMENTAL_MODERN_LAYOUT_ENABLE ? 'main__modern-layout border__primary-translucent m-8 br-6' : ''} ${
                             pageOverflowEnabled ? '' : 'main__overflow-disabled'
                         }`}
                     >

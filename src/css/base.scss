@@ -48,6 +48,11 @@ body {
         sans-serif;
     background: var(--bg-tertiary);
 
+    &.modern-layout {
+        // Added fallback styling to bg tertiary (loaded from index.css)
+        background: var(--bg-body, var(--bg-tertiary));
+    }
+
     a {
         color: var(--B500);
     }
@@ -1366,7 +1371,7 @@ button.anchor {
     font-size: 12px;
     line-height: 1.6;
     color: var(--N900);
-    border: 1px solid var(--N200);
+    border: 1px solid var(--border-primary-translucent);
     background-color: var(--bg-overlay-primary);
 
     &.no-content-padding {
@@ -2062,6 +2067,15 @@ button.anchor {
     }
 }
 
+.border-top__secondary {
+    border-top: solid 1px var(--border-secondary);
+
+    &--important {
+        border-top: solid 1px var(--border-secondary) !important;
+    }
+}
+
+// Deprecate this class, use border-top__secondary instead
 .dc__border-top-n1 {
     border-top: solid 1px var(--border-secondary);
 
@@ -2467,6 +2481,10 @@ button.anchor {
     border-top-left-radius: 4px;
 }
 
+.dc__top-left-radius-8 {
+    border-top-left-radius: 8px;
+}
+
 .dc__bottom-left-radius {
     border-bottom-left-radius: 4px;
 }
@@ -2489,25 +2507,6 @@ button.anchor {
 
 .c-n50 {
     color: var(--N50);
-}
-
-.dc__split-header {
-    display: flex;
-    gap: 1px;
-    background-color: var(--N700);
-    padding-bottom: 1px;
-    padding-right: 30px;
-    color: var(--N0);
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 20px;
-    width: 100%;
-
-    &__pane {
-        flex: 1 0 0;
-        background-color: var(--terminal-bg);
-        padding: 4px 12px;
-    }
 }
 
 .basic-multi-select>.select__control--is-disabled {
@@ -2697,6 +2696,14 @@ button.anchor {
     &::first-letter {
         text-transform: uppercase;
     }
+
+    &--imp {
+        text-transform: lowercase !important;
+
+        &::first-letter {
+            text-transform: uppercase !important;
+        }
+    }
 }
 
 .dc__no-text-transform {
@@ -2832,6 +2839,10 @@ button.anchor {
     min-width: 400px;
 }
 
+.mw-420 {
+    min-width: 420px;
+}
+
 .mw-600 {
     min-width: 600px;
 }
@@ -2896,6 +2907,10 @@ button.anchor {
     width: 24px;
 }
 
+.w-24-imp {
+    width: 24px !important;
+}
+
 .w-28 {
     width: 28px;
 }
@@ -2950,6 +2965,10 @@ button.anchor {
 
 .w-130 {
     width: 130px;
+}
+
+.w-140 {
+    width: 140px;
 }
 
 .w-150 {
@@ -3514,6 +3533,10 @@ button.anchor {
 
 .mxh-140 {
     max-height: 140px;
+}
+
+.mxh-200 {
+    max-height: 200px;
 }
 
 .mxh-210 {
@@ -4106,6 +4129,11 @@ textarea::placeholder {
 }
 
 // opacity
+
+.dc__opacity-0 {
+    opacity: 0;
+}
+
 .dc__opacity-0_2 {
     opacity: 0.2;
 }
@@ -4216,6 +4244,10 @@ textarea::placeholder {
 
 .dc__hover-r500:hover {
     background-color: var(--R500);
+}
+
+.dc__hover-r50:hover {
+    background-color: var(--R50);
 }
 
 .dc__hover-cn1:hover {

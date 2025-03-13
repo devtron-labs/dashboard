@@ -270,9 +270,6 @@ src/components/external-apps/ExternalApps.tsx
 src/components/externalArgoApps/ExternalArgoApp.tsx
 src/components/externalArgoApps/ExternalArgoAppDetail.tsx
 src/components/externalLinks/ExternalLinks.component.tsx
-src/components/externalLinks/ExternalLinks.service.ts
-src/components/externalLinks/ExternalLinks.tsx
-src/components/externalLinks/ExternalLinks.utils.ts
 src/components/externalLinks/ExternalLinksCRUD/AddExternalLink.tsx
 src/components/externalLinks/ExternalLinksCRUD/ConfigureLinkAction.tsx
 src/components/externalLinks/ExternalLinksCRUD/DeleteExternalLinkDialog.tsx
@@ -292,8 +289,6 @@ src/components/globalConfigurations/GlobalConfiguration.tsx
 src/components/globalConfigurations/GlobalConfigurationProvider.tsx
 src/components/hostURL/HostURL.tsx
 src/components/hyperion/EnvironmentSelect.tsx
-src/components/login/Login.tsx
-src/components/login/login.service.ts
 src/components/material/CreateMaterial.tsx
 src/components/material/MaterialList.tsx
 src/components/material/MaterialView.tsx

@@ -18,7 +18,7 @@
     border-top: 1px solid var(--border-primary);
     background: var(--terminal-bg);
     color: var(--white);
-    z-index: 19;
+    z-index: calc(var(--navigation-index) - 1);
 
     .resource-link__dark-theme:hover,
     .resource-link__dark-theme:focus {
