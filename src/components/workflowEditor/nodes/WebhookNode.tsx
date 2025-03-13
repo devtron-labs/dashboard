@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { WorkflowNodeType, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import ToggleCDSelectButton from '../ToggleCDSelectButton'
@@ -79,7 +79,8 @@ export const WebhookNode = ({
                             <ToggleCDSelectButton
                                 addNewPipelineBlocked={addNewPipelineBlocked}
                                 onClickAddNode={addNewCD}
-                                testId={`webhook-add-deployment-pipeline-button-${id}`}
+                                testId={`webhook-deployment-pipeline-button-${id}`}
+                                hideDeleteButton
                             />
                         )}
                     </div>

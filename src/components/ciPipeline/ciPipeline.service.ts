@@ -294,11 +294,16 @@ export function deleteCIPipeline(
     webhookConditionList,
 ) {
     const ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
+
+    const updatedCI = {
+        id: ci.id,
+        name: ci.name,
+    }
     const request = {
         appId,
         appWorkflowId: workflowId,
         action: PatchAction.DELETE,
-        ciPipeline: ci,
+        ciPipeline: updatedCI,
     }
     return savePipeline(request).then((response) => {
         return parseCIResponse(

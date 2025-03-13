@@ -1406,7 +1406,7 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
         }
 
         return (
-            <div className="bg__primary flex-grow-1 w-100 h-100">
+            <div className="flex-grow-1 w-100 h-100">
                 <section className="flex-1 bg__primary flex left column">
                     <div className="flex left column px-20 py-16 dc__gap-24 w-100">
                         <FeatureTitleWithInfo
