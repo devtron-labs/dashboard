@@ -3,11 +3,15 @@ import { CommonNodeAttr, SelectPickerOptionType, WorkflowType } from '@devtron-l
 import { EnvironmentListMinType } from '@Components/app/types'
 import { createClusterEnvGroup } from '@Components/common'
 
-import { CreateAppFormStateType } from '../types'
+import { CreateAppFormErrorStateType, CreateAppFormStateType } from '../types'
 
 export interface WorkflowProps {
     templateId: string
-    onChange?: (workflowConfig: CreateAppFormStateType['workflowConfig'], isError: boolean) => void
+    onChange?: (
+        workflowConfig: CreateAppFormStateType['workflowConfig'],
+        workflowIdToErrorMessageMap: CreateAppFormErrorStateType['workflowConfig'],
+    ) => void
+    workflowIdToErrorMessageMap: CreateAppFormErrorStateType['workflowConfig']
 }
 
 export type CDNodeEnvironmentSelectPickerOptionType = SelectPickerOptionType & {

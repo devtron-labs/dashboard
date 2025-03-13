@@ -48,7 +48,7 @@ export const updateBaseDeploymentTemplate = (
           })
         : Routes.DEPLOYMENT_TEMPLATE_UPDATE
 
-    return post(URL, request, {
+    return (isTemplateView ? put : post)(URL, request, {
         signal: abortSignal,
     })
 }
@@ -70,8 +70,19 @@ export const createBaseDeploymentTemplate = (
     })
 }
 
-export function updateEnvDeploymentTemplate(payload: UpdateEnvironmentDTPayloadType, abortSignal: AbortSignal) {
-    return put(Routes.ENVIRONMENT_CONFIG, payload, {
+export function updateEnvDeploymentTemplate(
+    appId: number,
+    payload: UpdateEnvironmentDTPayloadType,
+    abortSignal: AbortSignal,
+    isTemplateView: AppConfigProps['isTemplateView'],
+) {
+    const url = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CONFIG_DEPLOYMENT_TEMPLATE_ENV,
+              queryParams: { id: appId },
+          })
+        : Routes.ENVIRONMENT_CONFIG
+    return put(url, payload, {
         signal: abortSignal,
     })
 }
@@ -85,7 +96,7 @@ export function createEnvDeploymentTemplate(
 ) {
     const url = isTemplateView
         ? getTemplateAPIRoute({
-              type: GetTemplateAPIRouteType.CONFIG_DEPLOYMENT_TEMPLATE,
+              type: GetTemplateAPIRouteType.CONFIG_DEPLOYMENT_TEMPLATE_ENV,
               queryParams: { id: appId, envId },
           })
         : `${Routes.ENVIRONMENT_CONFIG}/${appId}/${envId}`
@@ -104,7 +115,7 @@ export const getEnvOverrideDeploymentTemplate = async (
 ): Promise<ResponseType<EnvironmentOverrideDeploymentTemplateDTO>> => {
     const url = isTemplateView
         ? getTemplateAPIRoute({
-              type: GetTemplateAPIRouteType.CONFIG_DEPLOYMENT_TEMPLATE,
+              type: GetTemplateAPIRouteType.CONFIG_DEPLOYMENT_TEMPLATE_ENV,
               queryParams: { id: appId, chartRefId: chartId, envId },
           })
         : `${Routes.ENVIRONMENT_CONFIG}/${appId}/${envId}/${chartId}`
@@ -121,8 +132,8 @@ export function deleteOverrideDeploymentTemplate(
 ) {
     const url = isTemplateView
         ? getTemplateAPIRoute({
-              type: GetTemplateAPIRouteType.CONFIG_DEPLOYMENT_TEMPLATE,
-              queryParams: { id: appId, envId },
+              type: GetTemplateAPIRouteType.CONFIG_DEPLOYMENT_TEMPLATE_ENV,
+              queryParams: { id: appId, envId, chartRefId: id },
           })
         : `${Routes.ENVIRONMENT_CONFIG}/reset/${appId}/${envId}/${id}`
 

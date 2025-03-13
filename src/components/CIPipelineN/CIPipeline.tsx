@@ -257,33 +257,35 @@ export default function CIPipeline({
          */
         requiredPluginIds?: PluginDetailPayloadType['pluginIds'],
     ): Promise<void> => {
-        if (areMandatoryPluginPossible) {
-            let branchName = ''
-            if (_formData?.materials?.length) {
-                for (const material of _formData.materials) {
-                    const canApplyPluginOnBranch =
-                        material.type !== SourceTypeMap.WEBHOOK && (!material.isRegex || material.value)
-                    if (canApplyPluginOnBranch) {
-                        branchName += `${branchName ? ',' : ''}${getParsedBranchValuesForPlugin(material.value)}`
+        if (!isTemplateView) {
+            if (areMandatoryPluginPossible) {
+                let branchName = ''
+                if (_formData?.materials?.length) {
+                    for (const material of _formData.materials) {
+                        const canApplyPluginOnBranch =
+                            material.type !== SourceTypeMap.WEBHOOK && (!material.isRegex || material.value)
+                        if (canApplyPluginOnBranch) {
+                            branchName += `${branchName ? ',' : ''}${getParsedBranchValuesForPlugin(material.value)}`
+                        }
                     }
                 }
-            }
-            if (selectedBranchRef.current !== branchName) {
-                selectedBranchRef.current = branchName
-                const { mandatoryPluginData: processedPluginData, pluginDataStore: updatedPluginDataStore } =
-                    await processPluginData({
-                        formData: _formData,
-                        pluginDataStoreState: pluginDataStore,
-                        appId: +appId,
-                        appName,
-                        ciPipelineId: +ciPipelineId,
-                        branchName,
-                        requiredPluginIds,
-                        resourceKind: ResourceKindType.ciPipeline,
-                    })
+                if (selectedBranchRef.current !== branchName) {
+                    selectedBranchRef.current = branchName
+                    const { mandatoryPluginData: processedPluginData, pluginDataStore: updatedPluginDataStore } =
+                        await processPluginData({
+                            formData: _formData,
+                            pluginDataStoreState: pluginDataStore,
+                            appId: +appId,
+                            appName,
+                            ciPipelineId: +ciPipelineId,
+                            branchName,
+                            requiredPluginIds,
+                            resourceKind: ResourceKindType.ciPipeline,
+                        })
 
-                setMandatoryPluginData(processedPluginData)
-                handlePluginDataStoreUpdate(updatedPluginDataStore)
+                    setMandatoryPluginData(processedPluginData)
+                    handlePluginDataStoreUpdate(updatedPluginDataStore)
+                }
             }
         }
     }

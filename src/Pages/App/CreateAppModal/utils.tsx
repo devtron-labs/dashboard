@@ -1,10 +1,7 @@
 import { MAX_LENGTH_30 } from '@Config/constantMessaging'
 import { PATTERNS } from '@Config/constants'
-import { SelectPickerOptionType, ValidationResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { Icon, IconsProps, SelectPickerOptionType, ValidationResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
-import { ReactComponent as ICNew } from '@Icons/ic-new.svg'
-import { ReactComponent as ICCopy } from '@Icons/ic-copy.svg'
-import { ReactComponent as ICCardStack } from '@Icons/ic-card-stack.svg'
 import { CreateAppFormStateType, CreateAppModalProps, CreationMethodType } from './types'
 
 const isFELibAvailable: boolean = importComponentFromFELibrary('isFELibAvailable', null, 'function')
@@ -55,26 +52,32 @@ export const validateCloneApp = (cloneAppId: CreateAppFormStateType['cloneAppId'
 
 export const getCreateMethodConfig = (
     isJobView: CreateAppModalProps['isJobView'],
-): (SelectPickerOptionType<CreationMethodType> & {
-    iconClass: string
-    selectedIconClass: string
-})[] => {
+    selectedCreationMethod: CreationMethodType,
+): SelectPickerOptionType<CreationMethodType>[] => {
     const labelSuffix = isJobView ? 'job' : 'application'
+    const baseIconColor: IconsProps['color'] = 'N800'
+    const selectedIconColor: IconsProps['color'] = 'B500'
 
     return [
         {
             label: `Blank ${labelSuffix}`,
             value: CreationMethodType.blank,
-            startIcon: <ICNew />,
-            iconClass: 'scn-8',
-            selectedIconClass: 'scb-5',
+            startIcon: (
+                <Icon
+                    name="ic-new"
+                    color={selectedCreationMethod === CreationMethodType.blank ? selectedIconColor : baseIconColor}
+                />
+            ),
         },
         {
             label: `Clone ${labelSuffix}`,
             value: CreationMethodType.clone,
-            startIcon: <ICCopy />,
-            iconClass: 'fcn-8',
-            selectedIconClass: 'fcb-5',
+            startIcon: (
+                <Icon
+                    name="ic-copy"
+                    color={selectedCreationMethod === CreationMethodType.clone ? selectedIconColor : baseIconColor}
+                />
+            ),
         },
         ...(isJobView || !window._env_.FEATURE_APPLICATION_TEMPLATES_ENABLE || !isFELibAvailable
             ? []
@@ -82,9 +85,16 @@ export const getCreateMethodConfig = (
                   {
                       label: `From template`,
                       value: CreationMethodType.template,
-                      startIcon: <ICCardStack />,
-                      iconClass: 'scn-8',
-                      selectedIconClass: 'scb-5',
+                      startIcon: (
+                          <Icon
+                              name="ic-card-stack"
+                              color={
+                                  selectedCreationMethod === CreationMethodType.template
+                                      ? selectedIconColor
+                                      : baseIconColor
+                              }
+                          />
+                      ),
                   },
               ]),
     ]

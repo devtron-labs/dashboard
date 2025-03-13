@@ -13,9 +13,9 @@ const Sidebar = ({
     }
 
     return (
-        <div className="w-250 p-20 flexbox-col dc__gap-24 dc__no-shrink">
+        <div className="w-250 p-20 flexbox-col dc__gap-24 dc__no-shrink dc__overflow-auto">
             <div className="flexbox-col">
-                {createMethodConfig.map(({ label, value, startIcon, iconClass, selectedIconClass }) => {
+                {createMethodConfig.map(({ label, value, startIcon }) => {
                     const isSelected = value === selectedCreationMethod
 
                     return (
@@ -26,11 +26,7 @@ const Sidebar = ({
                             type="button"
                             onClick={getHandleCreationMethodChange(value)}
                         >
-                            <span
-                                className={`dc__fill-available-space dc__no-shrink icon-dim-16 ${isSelected ? selectedIconClass : iconClass}`}
-                            >
-                                {startIcon}
-                            </span>
+                            <span className="dc__fill-available-space dc__no-shrink icon-dim-16">{startIcon}</span>
                             <span className={`fs-13 lh-20 dc__truncate ${isSelected ? 'cb-5 fw-6' : 'cn-9'}`}>
                                 {label}
                             </span>

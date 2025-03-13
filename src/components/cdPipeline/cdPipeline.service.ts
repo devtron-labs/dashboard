@@ -23,12 +23,19 @@ import {
     GetTemplateAPIRouteType,
     AppConfigProps,
     getTemplateAPIRoute,
+    patch,
+    getUrlWithSearchParams,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { getEnvironmentSecrets, getEnvironmentConfigs } from '../../services/service'
 
-export function getCDPipelineNameSuggestion(appId: string | number): Promise<any> {
-    const URL = `app/pipeline/suggest/cd/${appId}`
+export function getCDPipelineNameSuggestion(appId: string | number, isTemplateView: AppConfigProps['isTemplateView']): Promise<any> {
+    const URL = isTemplateView ? getTemplateAPIRoute({
+        type: GetTemplateAPIRouteType.PIPELINE_SUGGEST_CD,
+        queryParams: {
+            id: appId,
+        }
+    }) : `app/pipeline/suggest/cd/${appId}`
     return get(URL)
 }
 
@@ -43,13 +50,19 @@ export function getDeploymentStrategyList(appId, isTemplateView) {
 }
 
 export function updateCDPipeline(request, isTemplateView: AppConfigProps['isTemplateView']) {
-    const URL = isTemplateView ? getTemplateAPIRoute({
-        type: GetTemplateAPIRouteType.CD_PIPELINE,
-        queryParams: {
-            id: request.appId,
-        }
-    }) : `${Routes.CD_CONFIG_PATCH}`
-    return post(URL, request)
+    if (isTemplateView) {
+        return patch(
+            getTemplateAPIRoute({
+                type: GetTemplateAPIRouteType.CD_PIPELINE,
+                queryParams: {
+                    id: request.appId,
+                },
+            }),
+            request
+        )
+    }
+
+    return post(Routes.CD_CONFIG_PATCH, request)
 }
 
 export function deleteCDPipeline(
@@ -64,23 +77,29 @@ export function deleteCDPipeline(
         isTemplateView: AppConfigProps['isTemplateView']
     },
 ) {
-    let URL
+    const baseQueryParams = {
+        ...(force
+            ? { force }
+            : {
+                  ...(!cascadeDelete ? { cascade: cascadeDelete } : {}),
+              }),
+    }
 
     if (isTemplateView) {
-        URL = getTemplateAPIRoute({
-            type: GetTemplateAPIRouteType.CD_PIPELINE,
-            queryParams: {
-                id: request.appId,
-            },
-        })
-    } else if (force) {
-        URL = `${Routes.CD_CONFIG_PATCH}?force=${force}`
-    } else if (!cascadeDelete) {
-        URL = `${Routes.CD_CONFIG_PATCH}?cascade=${cascadeDelete}`
-    } else {
-        URL = `${Routes.CD_CONFIG_PATCH}`
+        return patch(
+            getTemplateAPIRoute({
+                type: GetTemplateAPIRouteType.CD_PIPELINE,
+                queryParams: {
+                    id: request.appId,
+                    ...baseQueryParams,
+                },
+            }),
+            request,
+        )
+
     }
-    return post(URL, request)
+
+    return post(getUrlWithSearchParams(Routes.CD_CONFIG_PATCH, baseQueryParams), request)
 }
 
 export function getCDPipelineV2(appId: string, pipelineId: string, isTemplateView: AppConfigProps['isTemplateView']) {

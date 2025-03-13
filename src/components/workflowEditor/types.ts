@@ -186,7 +186,7 @@ export interface CDNodeProps
     isDeploymentBlocked?: boolean
 }
 
-export interface WebhookNodeProps {
+export interface WebhookNodeProps extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     x: number
     y: number
     width: number

@@ -15,7 +15,7 @@
  */
 
 import { Component } from 'react'
-import { RouteComponentProps, Link } from 'react-router-dom'
+import { RouteComponentProps, Link, generatePath } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { CINode } from './nodes/CINode'
 import { CDNode } from './nodes/CDNode'
@@ -337,6 +337,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 selectedNode={this.props.selectedNode}
                 isLastNode={node.downstreams.length === 0}
                 isReadonlyView={this.props.isOffendingPipelineView}
+                isTemplateView={this.props.isTemplateView}
             />
         )
     }
@@ -446,7 +447,13 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 height={node.height}
                 configDiffView={this.props.cdWorkflowList?.length > 0}
                 title={node.title}
-                redirectTo={`${URLS.APP}/${this.props.match.params.appId}/${CommonURLS.APP_CONFIG}/${
+                redirectTo={`${
+                    this.props.isTemplateView
+                        ? generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+                              appId: this.props.match.params.appId,
+                          })
+                        : `${URLS.APP}/${this.props.match.params.appId}`
+                }/${CommonURLS.APP_CONFIG}/${
                     URLS.APP_WORKFLOW_CONFIG
                 }/${this.props.id ?? 0}/${URLS.LINKED_CD}?changeCi=0&switchFromCiPipelineId=${
                     node.id

@@ -12,7 +12,7 @@ import {
     validateTagKeyValue,
     validateTagValue,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { getHostURLConfiguration } from '@Services/service'
 import { saveHostURLConfiguration } from '@Components/hostURL/hosturl.service'
 import { createJob } from '@Components/Jobs/Service'
@@ -46,18 +46,28 @@ const createDevtronAppUsingTemplate = importComponentFromFELibrary('createDevtro
 
 const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
     const history = useHistory()
-    const createMethodConfig = getCreateMethodConfig(isJobView)
-
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [selectedCreationMethod, setSelectedCreationMethod] = useState<CreationMethodType>(
-        createMethodConfig[0].value,
-    )
+    const [selectedCreationMethod, setSelectedCreationMethod] = useState<CreationMethodType>(null)
     const [formState, setFormState] = useState<CreateAppFormStateType>(structuredClone(createAppInitialFormState))
     const [formErrorState, setFormErrorState] = useState<CreateAppFormErrorStateType>(
         structuredClone(createAppInitialFormErrorState),
     )
+    const [isTagsAccordionExpanded, setIsTagsAccordionExpanded] = useState(false)
+
+    const createMethodConfig = useMemo(
+        () => getCreateMethodConfig(isJobView, selectedCreationMethod),
+        [isJobView, selectedCreationMethod],
+    )
+
+    useEffect(() => {
+        setSelectedCreationMethod(createMethodConfig[0].value)
+    }, [])
 
     const isCreationMethodTemplate = selectedCreationMethod === CreationMethodType.template
+
+    const toggleIsTagsAccordionExpanded = () => {
+        setIsTagsAccordionExpanded((prev) => !prev)
+    }
 
     const validateFormField = (field: keyof CreateAppFormStateType, value) => {
         switch (field) {
@@ -124,13 +134,17 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
 
         setFormErrorState(updatedFormErrorState)
 
+        if (invalidLabels && !isTagsAccordionExpanded) {
+            setIsTagsAccordionExpanded(true)
+        }
+
         return {
             isFormValid: Object.keys(updatedFormErrorState)
                 .filter((key: keyof typeof updatedFormErrorState) => key !== 'tags' && key !== 'workflowConfig')
                 .every((key) => !updatedFormErrorState[key]),
             invalidLabels,
             labelTags,
-            invalidWorkFlow: updatedFormErrorState.workflowConfig,
+            invalidWorkFlow: Object.values(updatedFormErrorState.workflowConfig ?? {}).some((value) => !!value),
         }
     }
 
@@ -182,7 +196,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                                   }))
                                 : value.data.cd,
                         }
-                        updatedFormErrorState.workflowConfig = value.isError
+                        updatedFormErrorState.workflowConfig = value.workflowIdToErrorMessageMap
                         break
                     }
                     case CreateAppFormStateActionType.updateTemplateConfig:
@@ -256,12 +270,22 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
     const handleCreateApp = async () => {
         const { isFormValid, invalidLabels, labelTags, invalidWorkFlow } = validateForm()
 
-        if (isCreationMethodTemplate && !formState.templateConfig?.templateId) {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Please select a template to create app',
-            })
-            return
+        if (isCreationMethodTemplate) {
+            if (!formState.templateConfig?.templateId) {
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: 'Please select a template to create app',
+                })
+                return
+            }
+
+            if (invalidWorkFlow) {
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: Object.values(formErrorState.workflowConfig)[0],
+                })
+                return
+            }
         }
 
         if (!isFormValid || invalidLabels) {
@@ -270,14 +294,6 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                 description: invalidLabels
                     ? 'Some required fields in tags are missing or invalid'
                     : REQUIRED_FIELDS_MISSING,
-            })
-            return
-        }
-
-        if (invalidWorkFlow) {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Invalid Workflow!',
             })
             return
         }
@@ -344,6 +360,8 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                                 handleTagErrorChange={handleTagErrorChange}
                                 isJobView={isJobView}
                                 selectedCreationMethod={selectedCreationMethod}
+                                isTagsAccordionExpanded={isTagsAccordionExpanded}
+                                toggleIsTagsAccordionExpanded={toggleIsTagsAccordionExpanded}
                             />
                         </div>
                     )}
@@ -371,8 +389,8 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                                             />
                                             <span>/</span>
                                             <p className="m-0 flex left dc__gap-6">
-                                                <ICAppTemplate className="icon-dim-20 p-1" />
-                                                <span className="fs-13 lh-20 fw-6 cn-9">
+                                                <ICAppTemplate className="icon-dim-20 p-1 dc__no-shrink" />
+                                                <span className="fs-13 lh-20 fw-6 cn-9 dc__truncate">
                                                     {formState.templateConfig.name}
                                                 </span>
                                             </p>
@@ -391,11 +409,14 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                                                 handleTagErrorChange={handleTagErrorChange}
                                                 isJobView={isJobView}
                                                 selectedCreationMethod={selectedCreationMethod}
+                                                isTagsAccordionExpanded={isTagsAccordionExpanded}
+                                                toggleIsTagsAccordionExpanded={toggleIsTagsAccordionExpanded}
                                             />
                                             <UpdateTemplateConfig
                                                 formState={formState}
                                                 isJobView={isJobView}
                                                 handleFormStateChange={handleFormStateChange}
+                                                formErrorState={formErrorState}
                                             />
                                         </div>
                                     </div>

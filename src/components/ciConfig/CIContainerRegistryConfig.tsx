@@ -15,7 +15,7 @@
  */
 
 import { useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { generatePath, Link, NavLink } from 'react-router-dom'
 import {
     ComponentSizeType,
     CustomInput,
@@ -24,6 +24,7 @@ import {
     REGISTRY_TYPE_MAP,
     RegistryIcon,
     SelectPicker,
+    URLS as CommonURLs,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ArrowIcon } from '../../assets/icons/ic-arrow-left.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
@@ -48,6 +49,7 @@ export default function CIContainerRegistryConfig({
     handleOnChangeConfig,
     isCDPipeline,
     isCreateAppView,
+    isTemplateView,
 }: CIContainerRegistryConfigProps) {
     const [selectedRegistry, setSelectedRegistry] = useState(currentRegistry)
 
@@ -93,7 +95,12 @@ export default function CIContainerRegistryConfig({
                         Container registry & docker file location for build pipelines can be overridden.
                     </span>
                     {isCDPipeline && (
-                        <Link to={`/${Routes.APP}/${appId}/${Routes.WORKFLOW_EDITOR}`} onClick={onClickRedirectLink}>
+                        <Link
+                            to={`${isTemplateView ? generatePath(CommonURLs.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+                                appId,
+                            }) : `/${Routes.APP}/${appId}`}/${Routes.WORKFLOW_EDITOR}`}
+                            onClick={onClickRedirectLink}
+                        >
                             Take me there
                         </Link>
                     )}

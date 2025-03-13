@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { get, trash } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AppConfigProps,
+    get,
+    trash,
+    ROUTES as CommonRoutes,
+    getUrlWithSearchParams,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../../../../config'
 
 export const getGitProviderMin = () => {
@@ -27,7 +33,12 @@ export const getGitProviderMinAuth = (appId) => {
     return get(URL)
 }
 
-export function deleteApp(appId: string) {
-    const URL = `${Routes.APP}/${appId}`
+export function deleteApp(appId: string, isTemplateView: AppConfigProps['isTemplateView']) {
+    const URL = isTemplateView
+        ? getUrlWithSearchParams(CommonRoutes.RESOURCE_TEMPLATE, {
+              templateId: appId,
+          })
+        : `${Routes.APP}/${appId}`
+
     return trash(URL)
 }

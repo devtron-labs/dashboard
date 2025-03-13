@@ -1116,7 +1116,13 @@ const DeploymentTemplate = ({
         }
 
         return isUpdateView
-            ? updateEnvDeploymentTemplate
+            ? (payload, abortSignal) =>
+                  updateEnvDeploymentTemplate(
+                      +appId,
+                      payload as UpdateEnvironmentDTPayloadType,
+                      abortSignal,
+                      isTemplateView,
+                  )
             : (payload, abortSignal) =>
                   createEnvDeploymentTemplate(
                       +appId,

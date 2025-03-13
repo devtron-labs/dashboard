@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-export interface ApplicationDeletionInfoProps {
+import { AppConfigProps } from '@devtron-labs/devtron-fe-common-lib'
+
+export interface ApplicationDeletionInfoProps extends Pick<AppConfigProps, 'isTemplateView'> {
     isPresetValue?: boolean
 }

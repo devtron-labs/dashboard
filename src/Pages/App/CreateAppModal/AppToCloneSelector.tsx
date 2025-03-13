@@ -1,64 +1,51 @@
-import AsyncSelect from 'react-select/async'
-import { AppSelectorNoOptionsMessage, InfoBlock, multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AppSelectorNoOptionsMessage as appSelectorNoOptionsMessage,
+    ComponentSizeType,
+    InfoBlock,
+    SelectPicker,
+    SelectPickerProps,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { appListOptions } from '@Components/AppSelector/AppSelectorUtil'
-import { Option } from '@Components/v2/common/ReactSelect.utils'
-import { ReactComponent as ICError } from '@Icons/ic-warning.svg'
+import { useState } from 'react'
 import { AppToCloneSelectorProps } from './types'
 
-const _multiSelectStyles = {
-    ...multiSelectStyles,
-    control: (base, state) => ({
-        ...multiSelectStyles.control(base, state),
-        cursor: 'pointer',
-    }),
-    menu: (base, state) => ({
-        ...multiSelectStyles.menu(base, state),
-        marginTop: 'auto',
-    }),
-    menuList: (base) => ({
-        ...base,
-        position: 'relative',
-        paddingBottom: '0px',
-        maxHeight: '180px',
-    }),
-}
-
 const AppToCloneSelector = ({ isJobView, error, handleCloneIdChange }: AppToCloneSelectorProps) => {
-    const loadAppListOptions = (inputValue: string) => appListOptions(inputValue, isJobView)
+    const [inputValue, setInputValue] = useState('')
+    const [areOptionsLoading, setAreOptionsLoading] = useState(false)
+    const [options, setOptions] = useState([])
+
+    const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
+        setInputValue(val)
+        setAreOptionsLoading(true)
+        const fetchedOptions = await appListOptions(val, isJobView)
+        setAreOptionsLoading(false)
+        setOptions(fetchedOptions)
+    }
 
     const onChange = (selectedClonedApp) => {
         handleCloneIdChange(selectedClonedApp.value)
     }
 
+    const noOptionsMessage: SelectPickerProps['noOptionsMessage'] = () =>
+        appSelectorNoOptionsMessage({
+            inputValue,
+        })
+
     return (
         <>
-            <div>
-                <span
-                    className="form__label dc__required-field"
-                    data-testid={`Clone-${isJobView ? 'job' : 'app'}-option`}
-                >
-                    Select an {isJobView ? 'job' : 'app'} to clone
-                </span>
-                <AsyncSelect
-                    classNamePrefix={`${isJobView ? 'job' : 'app'}-name-for-clone`}
-                    loadOptions={loadAppListOptions}
-                    noOptionsMessage={AppSelectorNoOptionsMessage}
-                    onChange={onChange}
-                    styles={_multiSelectStyles}
-                    components={{
-                        IndicatorSeparator: null,
-                        LoadingIndicator: null,
-                        Option,
-                    }}
-                    placeholder={`Select ${isJobView ? 'job' : 'app'}`}
-                />
-                {error && (
-                    <span className="form__error">
-                        <ICError className="form__icon form__icon--error" />
-                        {error}
-                    </span>
-                )}
-            </div>
+            <SelectPicker
+                label={`Select an ${isJobView ? 'job' : 'app'} to clone`}
+                inputId={`${isJobView ? 'job' : 'app'}-name-for-clone`}
+                options={options}
+                onChange={onChange}
+                placeholder={`Select ${isJobView ? 'job' : 'app'}`}
+                inputValue={inputValue}
+                onInputChange={onInputChange}
+                isLoading={areOptionsLoading}
+                noOptionsMessage={noOptionsMessage}
+                error={error}
+                size={ComponentSizeType.large}
+            />
             <InfoBlock
                 heading="Important:"
                 description={

@@ -6,6 +6,7 @@ import {
     GraphVisualizerEdge,
     GraphVisualizerNode,
     GraphVisualizerProps,
+    Icon,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -22,7 +23,7 @@ import {
 } from './utils'
 import { HandleNodeUpdateActionProps, NodeUpdateActionType, WorkflowProps } from './types'
 
-export const Workflow = ({ templateId, onChange }: WorkflowProps) => {
+export const Workflow = ({ templateId, onChange, workflowIdToErrorMessageMap }: WorkflowProps) => {
     // STATES
     const [nodes, setNodes] = useState<Record<string, GraphVisualizerNode[]>>({})
     const [edges, setEdges] = useState<Record<string, GraphVisualizerEdge[]>>({})
@@ -103,8 +104,9 @@ export const Workflow = ({ templateId, onChange }: WorkflowProps) => {
                             })
                         }
 
-                        const { isValid, validatedNodes } = getValidatedNodes(updatedNodes)
-                        onChange({ cd: changedNodes }, !isValid)
+                        const { validatedNodes, workflowIdToErrorMessageMap: _workflowIdToErrorMessageMap } =
+                            getValidatedNodes(updatedNodes)
+                        onChange({ cd: changedNodes }, _workflowIdToErrorMessageMap)
 
                         return validatedNodes
                     })
@@ -137,7 +139,7 @@ export const Workflow = ({ templateId, onChange }: WorkflowProps) => {
                             environmentId,
                         })),
                 },
-                false,
+                {},
             )
         }
     }, [isWorkflowDataLoading, workflowData])
@@ -157,14 +159,24 @@ export const Workflow = ({ templateId, onChange }: WorkflowProps) => {
                     ({ id, name }) =>
                         Object.keys(nodes).length &&
                         Object.keys(edges).length && (
-                            <div key={id} className="flexbox-col dc__gap-6">
-                                <p className="m-0 fs-13 lh-20 fw-6">{name}</p>
-                                <GraphVisualizer
-                                    nodes={nodes[id]}
-                                    setNodes={setNodesHandler(id)}
-                                    edges={edges[id]}
-                                    setEdges={setEdgesHandler(id)}
-                                />
+                            <div key={id} className="flexbox-col dc__gap-4">
+                                <div className="flexbox-col dc__gap-6">
+                                    <p className="m-0 fs-13 lh-20 fw-6">{name}</p>
+                                    <GraphVisualizer
+                                        nodes={nodes[id]}
+                                        setNodes={setNodesHandler(id)}
+                                        edges={edges[id]}
+                                        setEdges={setEdgesHandler(id)}
+                                    />
+                                </div>
+                                {workflowIdToErrorMessageMap[id] && (
+                                    <div className="flexbox dc__gap-4 fs-11 lh-16 fw-4">
+                                        <Icon name="ic-error" size={16} color={null} />
+                                        <span className="dc__ellipsis-right__2nd-line cr-5">
+                                            {workflowIdToErrorMessageMap[id]}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
                         ),
                 )

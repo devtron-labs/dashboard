@@ -235,7 +235,7 @@ export interface CIFormStateOptionType {
     value: any
     error: string
 }
-export interface CIContainerRegistryConfigProps {
+export interface CIContainerRegistryConfigProps extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     appId: string
     configOverrideView: boolean
     ciConfig: CiPipelineResult

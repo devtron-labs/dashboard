@@ -211,7 +211,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
                                                 props.validationRules?.sourceValue(_materials[index].value, false)
                                                     .message
                                             }
-                                            autoFocus
+                                            autoFocus={index === 0}
                                         />
                                         {/* Note: In case Error is not shown added height */}
                                         {(errorObj?.isValid || isLinkedCI) && <div className="h-24" />}
