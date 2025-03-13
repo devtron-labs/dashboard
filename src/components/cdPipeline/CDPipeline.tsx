@@ -53,6 +53,7 @@ import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
@@ -91,6 +92,7 @@ import {
 import {
     calculateLastStepDetailsLogic,
     checkUniqueness,
+    getMigrateToDevtronRequiredPayload,
     handleDeleteCDNodePipeline,
     validateTask,
 } from './cdpipeline.util'
@@ -108,6 +110,7 @@ import {
 } from '../gitOps/constants'
 import { BuildCDProps, CDPipelineProps, DeleteDialogType, ForceDeleteMessageType } from './types'
 import { MIGRATE_TO_DEVTRON_FORM_STATE } from './constants'
+import { getConfigureGitOpsCredentialsButtonProps } from '@Components/workflowEditor/ConfigureGitopsInfoBlock'
 
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 const processPluginData: (params: ProcessPluginDataParamsType) => Promise<ProcessPluginDataReturnType> =
@@ -118,7 +121,6 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     null,
     'function',
 )
-const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 export default function CDPipeline({
     location,
@@ -132,6 +134,7 @@ export default function CDPipeline({
     isGitOpsRepoNotConfigured: isGitOpsRepoNotConfiguredProp,
     reloadAppConfig,
     handleDisplayLoader,
+    isGitOpsInstalledButNotConfigured,
 }: CDPipelineProps) {
     const isCdPipeline = true
     const urlParams = new URLSearchParams(location.search)
@@ -267,10 +270,7 @@ export default function CDPipeline({
     const [disableParentModalClose, setDisableParentModalClose] = useState<boolean>(false)
     const [mandatoryPluginData, setMandatoryPluginData] = useState<MandatoryPluginDataType>(null)
 
-    const isMigratingFromArgoApp =
-        migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.GITOPS &&
-        formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS &&
-        !cdPipelineId
+    const isMigratingFromExternalApp = formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && !cdPipelineId
 
     const isExternalArgoPipeline =
         formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS &&
@@ -549,7 +549,7 @@ export default function CDPipeline({
     }
 
     const updateStateFromResponse = (pipelineConfigFromRes, environments, form, dockerRegistries): void => {
-        sortObjectArrayAlphabetically(environments, isMigratingFromArgoApp ? 'environment_name' : 'name')
+        sortObjectArrayAlphabetically(environments, isMigratingFromExternalApp ? 'environment_name' : 'name')
         environments = environments.map((env) => {
             return {
                 ...env,
@@ -694,20 +694,9 @@ export default function CDPipeline({
             }),
         }
 
-        const { migrateFromArgoFormState, deploymentAppType, triggerType } = migrateToDevtronFormState
-        const migrateFromArgoTargetDetails = migrateFromArgoFormState.validationResponse.applicationMetadata.destination
-
-        const migrateToDevtronRequiredPayload: MigrateArgoAppToCDPipelineRequiredPayloadType = isMigratingFromArgoApp
-            ? {
-                  deploymentAppType,
-                  applicationObjectClusterId: migrateFromArgoFormState.clusterId,
-                  applicationObjectNamespace: migrateFromArgoFormState.namespace,
-                  deploymentAppName: migrateFromArgoFormState.appName,
-                  environmentId: migrateFromArgoTargetDetails.environmentId,
-                  environmentName: migrateFromArgoTargetDetails.environmentName,
-                  namespace: migrateFromArgoTargetDetails.namespace,
-                  triggerType,
-              }
+        // Have to enforce type like this otherwise pipeline variable would have taken type from MigrateArgoAppToCDPipelineRequiredPayloadType and would throw error in case of virtual env.
+        const migrateToDevtronRequiredPayload: Omit<MigrateArgoAppToCDPipelineRequiredPayloadType, 'deploymentAppType'> & { deploymentAppType: DeploymentAppTypes } = isMigratingFromExternalApp
+            ? getMigrateToDevtronRequiredPayload(migrateToDevtronFormState)
             : null
 
         const pipeline = {
@@ -953,7 +942,21 @@ export default function CDPipeline({
     }
 
     const savePipeline = async () => {
-        if (!isMigratingFromArgoApp) {
+        if (!isMigratingFromExternalApp) {
+            if (formData.deploymentAppType === DeploymentAppTypes.GITOPS && isGitOpsInstalledButNotConfigured) {
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    title: 'GitOps credentials not configured',
+                    description: 'GitOps credentials is required to deploy applications via GitOps',
+                    buttonProps: getConfigureGitOpsCredentialsButtonProps({
+                        size: ComponentSizeType.small,
+                        style: ButtonStyleType.neutral,
+                    })
+                })
+
+                return
+            }
+
             if (checkForGitOpsRepoNotConfigured()) {
                 return
             }
@@ -993,7 +996,7 @@ export default function CDPipeline({
         try {
             const promiseArr = cdPipelineId
                 ? [updateCDPipeline(request), null]
-                : [saveCDPipeline(request), isMigratingFromArgoApp ? getEnvironmentListMinPublic(true) : null]
+                : [saveCDPipeline(request), isMigratingFromExternalApp ? getEnvironmentListMinPublic(true) : null]
             const [response, environmentRes] = await Promise.all(promiseArr)
             if (response.result) {
                 const pipelineConfigFromRes = response.result.pipelines[0]
@@ -1197,7 +1200,7 @@ export default function CDPipeline({
         setFormData({
             ...formData,
             releaseMode: ReleaseMode.MIGRATE_EXTERNAL_APPS,
-            // This will select default deployment app type
+            // This will select default deployment app type (Helm) and then last configured deployment app type then
             deploymentAppType: migrateToDevtronFormState.deploymentAppType,
         })
     }
@@ -1330,6 +1333,7 @@ export default function CDPipeline({
                                     getMandatoryPluginData={getMandatoryPluginData}
                                     migrateToDevtronFormState={migrateToDevtronFormState}
                                     setMigrateToDevtronFormState={setMigrateToDevtronFormState}
+                                    isGitOpsInstalledButNotConfigured={isGitOpsInstalledButNotConfigured}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />
@@ -1354,8 +1358,9 @@ export default function CDPipeline({
 
         // Disable button if environment or release name is not selected
         const getButtonDisabledMessage = (): string => {
-            if (isMigratingFromArgoApp) {
-                if (!migrateToDevtronFormState.migrateFromArgoFormState.validationResponse.isLinkable) {
+            if (isMigratingFromExternalApp) {
+                const isLinkable = migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.HELM ? migrateToDevtronFormState.migrateFromHelmFormState.validationResponse.isLinkable : migrateToDevtronFormState.migrateFromArgoFormState.validationResponse.isLinkable
+                if (!isLinkable) {
                     return 'Please resolve errors before proceeding'
                 }
 
@@ -1386,7 +1391,7 @@ export default function CDPipeline({
                     </button>
                 </div>
 
-                {!isAdvanced && !!isFELibAvailable && (
+                {!isAdvanced && (
                     <div className="px-20">
                         <TabGroup
                             tabs={[
@@ -1403,7 +1408,7 @@ export default function CDPipeline({
                                 {
                                     tabType: 'button',
                                     active: formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS,
-                                    label: 'Migrate to devtron',
+                                    label: 'Migrate to Devtron',
                                     id: ReleaseMode.MIGRATE_EXTERNAL_APPS,
                                     props: {
                                         onClick: handleSelectMigrateToDevtron,

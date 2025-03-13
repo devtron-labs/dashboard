@@ -29,6 +29,7 @@ const componentVariantMap: Record<InfoBlockProps['variant'], null> = {
     information: null,
     success: null,
     warning: null,
+    neutral: null,
 }
 
 const layoutMap: Record<InfoBlockProps['layout'], null> = {

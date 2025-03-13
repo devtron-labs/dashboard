@@ -89,6 +89,7 @@ export const Routes = {
     ARGO_APPLICATION: 'argo-application/detail',
     EPHEMERAL_CONTAINERS: 'k8s/resources/ephemeralContainers',
     APP_EDIT: 'app/edit',
+    APPLICATION_EXTERNAL_HELM_RELEASE: 'application/external-helm-release',
 
     JOB_CI_DETAIL: 'job/ci-pipeline/list',
 

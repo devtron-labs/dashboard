@@ -69,8 +69,6 @@ export interface WorkflowEditState {
     environmentId?: number
     environmentName?: string
     successTitle?: string
-    showNoGitOpsWarningPopup?: boolean
-    cdLink?: string
     noGitOpsConfiguration?: boolean
     noGitOpsModuleInstalledAndConfigured?: boolean
     envToShowWebhookTippy?: number
