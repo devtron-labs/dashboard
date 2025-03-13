@@ -957,7 +957,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
         return (
             <div
-                className="workflow-editor bg__primary"
+                className="workflow-editor bg__primary dc__overflow-auto"
                 data-testid="workflow-editor-page"
                 // Added for showing the tippy on ApprovalNode
                 id={TARGET_IDS.WORKFLOW_EDITOR_CONTAINER}
