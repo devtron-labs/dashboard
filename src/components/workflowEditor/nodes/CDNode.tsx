@@ -363,7 +363,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                                                     : 'Add deployment pipeline'
                                             }
                                             variant={ButtonVariantType.borderLess}
-                                            dataTestId={`cd-add-pipeline-node-add`}
+                                            dataTestId={`cd-pipeline-node-add-button-${this.props.environmentName}`}
                                             onClick={this.handleAddNewNode}
                                             icon={<Icon size={12} name="ic-add" color={null} />}
                                             disabled={this.props.addNewPipelineBlocked}
@@ -382,7 +382,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                                     <Button
                                         ariaLabel="Delete pipeline"
                                         variant={ButtonVariantType.borderLess}
-                                        dataTestId={`cd-add-pipeline-node-delete`}
+                                        dataTestId={`cd-pipeline-node-delete-button-${this.props.environmentName}`}
                                         size={ComponentSizeType.xxs_small_icon}
                                         showAriaLabelInTippy
                                         onClick={this.handleDeleteCDNode}

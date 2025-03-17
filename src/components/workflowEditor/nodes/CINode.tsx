@@ -210,7 +210,7 @@ export class CINode extends Component<CINodeProps> {
                                 <ToggleCDSelectButton
                                     addNewPipelineBlocked={this.props.addNewPipelineBlocked}
                                     onClickAddNode={this.onClickAddNode}
-                                    testId={`ci-deployment-pipeline-button-${this.props.title}`}
+                                    testId={`ci-deployment-pipeline-${this.props.title}`}
                                     deleteConfig={this.deleteConfig}
                                     getWorkflows={this.props.getWorkflows}
                                 />

@@ -43,7 +43,7 @@ const ToggleCDSelectButton = ({
                         : 'Add deployment pipeline'
                 }
                 variant={ButtonVariantType.borderLess}
-                dataTestId={`${testId}-add`}
+                dataTestId={`${testId}-add-button`}
                 onClick={onClickAddNode}
                 icon={<Icon size={12} name="ic-add" color={null} />}
                 disabled={addNewPipelineBlocked}
@@ -62,7 +62,7 @@ const ToggleCDSelectButton = ({
 
         {!hideDeleteButton && (
             <DeleteCINodeButton
-                testId={`${testId}-delete`}
+                testId={`${testId}-delete-button`}
                 deletePayloadConfig={deleteConfig}
                 title={deleteConfig.pipelineName}
                 getWorkflows={getWorkflows}
