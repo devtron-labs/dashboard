@@ -7,7 +7,8 @@ export type SwitchThemeDialogProps = {
      * @description The initial theme preference of the user fetched from api, in case of error would be null
      */
     initialThemePreference: ThemePreferenceType
-    handleClose: (updatedThemePreference: ThemePreferenceType) => void
+    handleUpdateUserThemePreference: (themePreference: ThemePreferenceType) => void
+    handleClose: () => void
 } & (
     | {
           currentUserPreferences: UserPreferencesType

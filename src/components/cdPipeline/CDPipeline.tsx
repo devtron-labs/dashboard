@@ -131,7 +131,7 @@ export default function CDPipeline({
     envIds,
     noGitOpsModuleInstalledAndConfigured,
     changeCIPayload,
-    isGitOpsRepoNotConfigured,
+    isGitOpsRepoNotConfigured: isGitOpsRepoNotConfiguredProp,
     reloadAppConfig,
     handleDisplayLoader,
     isGitOpsInstalledButNotConfigured,
@@ -271,6 +271,12 @@ export default function CDPipeline({
     const [mandatoryPluginData, setMandatoryPluginData] = useState<MandatoryPluginDataType>(null)
 
     const isMigratingFromExternalApp = formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && !cdPipelineId
+
+    const isExternalArgoPipeline =
+        formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS &&
+        formData.deploymentAppType === DeploymentAppTypes.GITOPS
+
+    const isGitOpsRepoNotConfigured = isExternalArgoPipeline ? false : isGitOpsRepoNotConfiguredProp
 
     const handleHideScopedVariableWidgetUpdate: PipelineContext['handleHideScopedVariableWidgetUpdate'] = (
         hideScopedVariableWidgetValue: boolean,
@@ -994,7 +1000,12 @@ export default function CDPipeline({
             const [response, environmentRes] = await Promise.all(promiseArr)
             if (response.result) {
                 const pipelineConfigFromRes = response.result.pipelines[0]
-                    updateStateFromResponse(pipelineConfigFromRes, environmentRes?.result ?? _form.environments, _form, dockerRegistries)
+                updateStateFromResponse(
+                    pipelineConfigFromRes,
+                    environmentRes?.result ?? _form.environments,
+                    _form,
+                    dockerRegistries,
+                )
                 let envName = pipelineConfigFromRes.environmentName
                 if (!envName) {
                     const selectedEnv: Environment = environmentRes.result.find((env) => env.id == _form.environmentId)

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     ConfirmationModal,
     ConfirmationModalVariantType,
@@ -7,6 +7,8 @@ import {
     getComponentSpecificThemeClass,
     useTheme,
     getThemePreferenceText,
+    Icon,
+    THEME_PREFERENCE_STORAGE_KEY,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     BaseLabelFigureProps,
@@ -79,6 +81,8 @@ const ThemePreferenceOption = ({
                 value={value}
                 checked={isSelected}
                 onChange={handleChange}
+                // eslint-disable-next-line jsx-a11y/no-autofocus
+                autoFocus={isSelected}
                 className="theme-preference-option__input m-0 dc__position-abs dc__opacity-0 dc__disable-click"
             />
 
@@ -105,16 +109,42 @@ const SwitchThemeDialog = ({
     initialThemePreference,
     handleClose,
     currentUserPreferences,
+    handleUpdateUserThemePreference,
     disableAPICalls = false,
 }: SwitchThemeDialogProps) => {
     const { handleShowSwitchThemeLocationTippyChange, handleThemePreferenceChange } = useTheme()
-    const [themePreference, setThemePreference] = useState<typeof initialThemePreference>(initialThemePreference)
+    const [themePreference, setThemePreference] = useState<typeof initialThemePreference>(
+        !initialThemePreference ? 'auto' : initialThemePreference,
+    )
     const [isSaving, setIsSaving] = useState<boolean>(false)
 
-    const handleSuccess = () => {
+    const handleSuccess = (updatedThemePreference: typeof themePreference = themePreference) => {
         handleShowSwitchThemeLocationTippyChange(!initialThemePreference)
-        handleClose(themePreference)
+        handleUpdateUserThemePreference(updatedThemePreference)
+        handleThemePreferenceChange(updatedThemePreference)
+        handleClose()
     }
+
+    useEffect(() => {
+        // Watching every 10s local storage for theme preference, if present in localStorage and no initial theme preference is provided would close the modal
+        let interval: NodeJS.Timeout
+
+        if (!initialThemePreference) {
+            interval = setInterval(() => {
+                const currentThemePreference = localStorage.getItem(
+                    THEME_PREFERENCE_STORAGE_KEY,
+                ) as typeof themePreference
+
+                if (currentThemePreference) {
+                    handleSuccess(currentThemePreference)
+                }
+            }, 10000)
+        }
+
+        return () => {
+            clearInterval(interval)
+        }
+    }, [])
 
     const handleSaveThemePreference = async () => {
         setIsSaving(true)
@@ -131,21 +161,23 @@ const SwitchThemeDialog = ({
     }
 
     const handleChangedThemePreference: ThemePreferenceOptionProps['handleChangedThemePreference'] = (value) => {
-        handleThemePreferenceChange(value)
+        handleThemePreferenceChange(value, true)
         setThemePreference(value)
     }
 
     const handleCloseModal = () => {
-        handleClose(initialThemePreference)
+        handleThemePreferenceChange(initialThemePreference, true)
+        handleClose()
     }
 
     return (
         <ConfirmationModal
-            title="Appearance"
-            subtitle="Choose an interface theme preference"
+            title="Customize your theme"
+            subtitle="Select a theme that suits your preference"
             variant={ConfirmationModalVariantType.custom}
             handleClose={!initialThemePreference ? null : handleCloseModal}
             shouldCloseOnEscape={!!initialThemePreference}
+            Icon={<Icon name="ic-medium-paintbucket" color={null} size={48} />}
             buttonConfig={{
                 primaryButtonConfig: {
                     isLoading: isSaving,
@@ -155,6 +187,7 @@ const SwitchThemeDialog = ({
                 },
             }}
             isLandscapeView
+            showConfetti={!initialThemePreference}
         >
             <div className="dc__grid dc__column-gap-16 theme-preference-option__container">
                 {THEME_PREFERENCE_OPTION_LIST.map((value) => (
