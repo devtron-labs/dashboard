@@ -33,7 +33,7 @@ const ToggleCDSelectButton = ({
     hideDeleteButton = false,
 }: ToggleCDSelectButtonProps) => (
     <div
-        className={`${!hideDeleteButton ? 'dc__grid-rows-2 ' : 'flex'} ci-node__action-button dc__right-radius-8 h-100 dc__border-left-n1 w-24 dc__align-items-center`}
+        className={`${!hideDeleteButton ? 'dc__grid-rows-2' : 'flex'} ci-node__action-button dc__right-radius-8 h-100 dc__border-left-n1 w-24 dc__align-items-center`}
     >
         <div className={`${!hideDeleteButton ? 'dc__border-bottom-n1' : ''}`}>
             <Button
