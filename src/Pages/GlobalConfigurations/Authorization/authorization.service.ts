@@ -35,6 +35,7 @@ import {
     ApiResourceType,
     Teams,
     EnvListMinDTO,
+    SERVER_MODE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartGroup } from '@Components/charts/charts.types'
 import { AppIdWorkflowNamesMapping, Cluster, ProjectFilteredApps } from '@Services/service.types'
@@ -346,20 +347,24 @@ export const getUserAccessEnvironmentList = async (): Promise<EnvironmentsListTy
     }
 }
 
-export const getUserAccessProjectList = async (): Promise<ProjectsListType> => {
+export const getUserAccessProjectList = async (serverMode: SERVER_MODE): Promise<ProjectsListType> => {
     const [devtronProjects, helmProjects, jobProjects] = await Promise.all([
-        getUserResourceOptions<Teams[]>({
-            kind: UserAccessResourceKind.TEAM,
-            payload: { entity: EntityTypes.DIRECT, accessType: ACCESS_TYPE_MAP.DEVTRON_APPS },
-        }),
+        serverMode === SERVER_MODE.EA_ONLY
+            ? Promise.resolve([])
+            : getUserResourceOptions<Teams[]>({
+                  kind: UserAccessResourceKind.TEAM,
+                  payload: { entity: EntityTypes.DIRECT, accessType: ACCESS_TYPE_MAP.DEVTRON_APPS },
+              }),
         getUserResourceOptions<Teams[]>({
             kind: UserAccessResourceKind.TEAM,
             payload: { entity: EntityTypes.DIRECT, accessType: ACCESS_TYPE_MAP.HELM_APPS },
         }),
-        getUserResourceOptions<Teams[]>({
-            kind: UserAccessResourceKind.TEAM,
-            payload: { entity: EntityTypes.JOB },
-        }),
+        serverMode === SERVER_MODE.EA_ONLY
+            ? Promise.resolve([])
+            : getUserResourceOptions<Teams[]>({
+                  kind: UserAccessResourceKind.TEAM,
+                  payload: { entity: EntityTypes.JOB },
+              }),
     ])
 
     return {
