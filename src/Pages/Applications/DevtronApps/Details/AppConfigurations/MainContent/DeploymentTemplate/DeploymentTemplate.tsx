@@ -1890,8 +1890,7 @@ const DeploymentTemplate = ({
                         resourceType={3}
                         resourceName={getDeploymentTemplateResourceName(environmentName)}
                         prepareDataToSave={handlePrepareDataToSaveForProtectedDeleteOverride}
-                        // TODO: Should rename it to handleClose after merging cm/cs
-                        toggleModal={handleToggleDeleteDraftOverrideDialog}
+                        handleClose={handleToggleDeleteDraftOverrideDialog}
                         latestDraft={draftTemplateData?.latestDraft}
                         reload={handleReload}
                     />
@@ -1916,10 +1915,11 @@ const DeploymentTemplate = ({
                     <SaveChangesModal
                         appId={Number(appId)}
                         envId={+envId || BASE_CONFIGURATION_ENV_ID}
+                        envName={environmentName}
                         resourceType={3}
                         resourceName={getDeploymentTemplateResourceName(environmentName)}
                         prepareDataToSave={prepareDataToSave}
-                        toggleModal={handleCloseSaveChangesModal}
+                        handleClose={handleCloseSaveChangesModal}
                         latestDraft={draftTemplateData?.latestDraft}
                         reload={handleReload}
                         showAsModal={!showLockedTemplateDiffModal}

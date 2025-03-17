@@ -54,6 +54,7 @@ import {
     UseFormErrorHandler,
     UseFormSubmitHandler,
     isNullOrUndefined,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { APP_COMPOSE_STAGE, getAppComposeURL } from '@Config/routes'
@@ -672,7 +673,7 @@ export const ConfigMapSecretContainer = ({
         })
     }
 
-    const toggleSaveChangesModal = () => setShowDraftSaveModal(false)
+    const handleSaveChangesModalClose = () => setShowDraftSaveModal(false)
 
     const handleToggleShowTemplateMergedWithPatch = () => setShouldMergeTemplateWithPatches((prev) => !prev)
 
@@ -1057,13 +1058,23 @@ export const ConfigMapSecretContainer = ({
                     <SaveChangesModal
                         appId={+appId}
                         envId={envId ? +envId : -1}
+                        envName={envName}
                         resourceType={componentType}
                         resourceName={draftPayload.configData[0].name}
                         prepareDataToSave={() => draftPayload}
-                        toggleModal={toggleSaveChangesModal}
+                        handleClose={handleSaveChangesModalClose}
                         latestDraft={draftData}
                         reload={reloadSaveChangesModal}
                         showAsModal
+                        showExpressEdit
+                        editorValue={formData.yaml}
+                        publishedValue={configMapSecretData ? YAMLStringify(configMapSecretData.data) : ''}
+                        savedValue={
+                            (draftData ? YAMLStringify(draftData.parsedData.configData[0].data) : null) ??
+                            (configMapSecretData ? YAMLStringify(configMapSecretData.data) : null) ??
+                            ''
+                        }
+                        isDraftAvailable={!!draftData}
                     />
                 )}
                 {DraftComments && showComments && draftData && (

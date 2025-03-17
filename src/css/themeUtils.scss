@@ -143,6 +143,10 @@
         &--bottom {
             border-bottom: 1px solid var(--border-primary);
         }
+
+        &--right {
+            border-right: 1px solid var(--border-primary);
+        }
     }
 
     &__primary-translucent {
@@ -158,6 +162,10 @@
 
         &--bottom {
             border-bottom: 1px solid var(--border-secondary);
+        }
+
+        &--right {
+            border-right: 1px solid var(--border-secondary);
         }
     }
 
