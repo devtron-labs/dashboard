@@ -536,12 +536,6 @@ export default function CIPipeline({
         handleClose()
     }
 
-    const onDelete = () => {
-        onClose()
-        setPageState(ViewType.FORM)
-        handleClose()
-    }
-
     const renderSecondaryButton = () => {
         if (ciPipelineId) {
             const canDeletePipeline = connectCDPipelines === 0 && ciPipeline.linkedCount === 0
@@ -561,7 +555,7 @@ export default function CIPipeline({
                     <DeleteCINodeButton
                         testId="ci-delete-pipeline-button"
                         disabled={!canDeletePipeline}
-                        isCIPipeline
+                        showIconOnly={false}
                         isJobView={isJobView}
                         title={ciPipeline.name}
                         deletePayloadConfig={{
@@ -570,7 +564,7 @@ export default function CIPipeline({
                             pipelineId: Number(ciPipelineId),
                             pipelineName: ciPipeline.name,
                         }}
-                        onDelete={onDelete}
+                        onDelete={onClose}
                         getWorkflows={getWorkflows}
                     />
                 </ConditionalWrap>

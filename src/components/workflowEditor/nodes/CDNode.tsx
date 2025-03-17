@@ -16,8 +16,11 @@
 
 import React, { Component, ReactElement } from 'react'
 import { Link } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
 import {
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
     ConditionalWrap,
     ConfirmationDialog,
     DeploymentAppTypes,
@@ -30,8 +33,6 @@ import {
     WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
-import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
-import { ReactComponent as ICDelete } from '../../../assets/icons/ic-delete-interactive.svg'
 import { CDNodeProps, CDNodeState } from '../types'
 import {
     BUTTON_TEXT,
@@ -293,7 +294,11 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
 
         return (
             <div className={`flex ${!this.props.isVirtualEnvironment ? 'dc__flip pl-12 ' : 'pr-12'}`}>
-                <Icon name={this.props.isVirtualEnvironment ? 'ic-paper-plane-color' : 'ic-cd'} size={20} color={null} />
+                <Icon
+                    name={this.props.isVirtualEnvironment ? 'ic-paper-plane-color' : 'ic-cd'}
+                    size={20}
+                    color={null}
+                />
             </div>
         )
     }
@@ -347,38 +352,49 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
 
                         {!this.props.isOffendingPipelineView && selectedNodeKey !== currentNodeKey && (
                             <div className="flexbox-col h-100 dc__border-left-n1 w-24 dc__align-items-center">
-                                <Tippy
-                                    placement="right"
-                                    className="default-tt"
-                                    content={
-                                        <span className="add-cd-btn-tippy">
-                                            {this.props.addNewPipelineBlocked
-                                                ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.'
-                                                : 'Add deployment pipeline'}
-                                        </span>
-                                    }
+                                <div
+                                    className="dc__grid-rows-2 ci-node__action-button dc__right-radius-8 h-100 dc__border-left-n1 w-24 dc__align-items-center"
                                 >
-                                    <div className="flex h-100 w-100 dc__border-bottom-n1--important">
-                                        <button
-                                            type="button"
-                                            className="flex h-100 w-100 p-0 dc__outline-none-imp bg__primary dc__no-border workflow-node__title--add-cd-icon dc__hover-b500  pt-4 pb-4 pl-6 pr-6 workflow-node__title--top-right-rad-8"
-                                            disabled={this.props.addNewPipelineBlocked}
+                                    <div className="dc__border-bottom-n1">
+                                        <Button
+                                            ariaLabel={
+                                                this.props.addNewPipelineBlocked
+                                                    ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.'
+                                                    : 'Add deployment pipeline'
+                                            }
+                                            variant={ButtonVariantType.borderLess}
+                                            dataTestId={`cd-add-pipeline-node-add`}
                                             onClick={this.handleAddNewNode}
-                                        >
-                                            <Add className="icon-dim-12" />
-                                        </button>
+                                            icon={<Icon size={12} name="ic-add" color={null} />}
+                                            disabled={this.props.addNewPipelineBlocked}
+                                            size={ComponentSizeType.xxs_small_icon}
+                                            style={ButtonStyleType.neutral}
+                                            fullWidth
+                                            showTooltip
+                                            tooltipProps={{
+                                                placement: 'right',
+                                                content: this.props.addNewPipelineBlocked
+                                                    ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.'
+                                                    : 'Add deployment pipeline',
+                                            }}
+                                        />
                                     </div>
-                                </Tippy>
-
-                                <Tippy placement="right" content="Delete pipeline" className="default-tt">
-                                    <button
-                                        type="button"
-                                        className="flex h-100 w-100 dc__hover-r500 workflow-node__title--bottom-right-rad-8 pt-4 pb-4 pl-6 pr-6 dc__outline-none-imp bg__primary dc__no-border workflow-node__title--delete-cd-icon"
+                                    <Button
+                                        ariaLabel="Delete pipeline"
+                                        variant={ButtonVariantType.borderLess}
+                                        dataTestId={`cd-add-pipeline-node-delete`}
+                                        size={ComponentSizeType.xxs_small_icon}
+                                        showAriaLabelInTippy
                                         onClick={this.handleDeleteCDNode}
-                                    >
-                                        <ICDelete className="icon-dim-12" />
-                                    </button>
-                                </Tippy>
+                                        style={ButtonStyleType.negativeGrey}
+                                        icon={<Icon name="ic-delete" color={null} strokeWidth={1} size={12} />}
+                                        showTooltip
+                                        tooltipProps={{
+                                            placement: 'right',
+                                            content: 'Delete Pipeline',
+                                        }}
+                                    />
+                                </div>
                             </div>
                         )}
                     </div>

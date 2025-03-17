@@ -32,8 +32,10 @@ const ToggleCDSelectButton = ({
     getWorkflows,
     hideDeleteButton = false,
 }: ToggleCDSelectButtonProps) => (
-    <div className="h-100 dc__border-left-n1 w-24 dc__align-items-center dc__grid-rows-2 ci-node__action-button dc__right-radius-8">
-        <div className="dc__border-bottom-n1">
+    <div
+        className={`${!hideDeleteButton ? 'dc__grid-rows-2 ' : 'flex'} ci-node__action-button dc__right-radius-8 h-100 dc__border-left-n1 w-24 dc__align-items-center`}
+    >
+        <div className={`${!hideDeleteButton ? 'dc__border-bottom-n1' : ''}`}>
             <Button
                 ariaLabel={
                     addNewPipelineBlocked
@@ -48,13 +50,19 @@ const ToggleCDSelectButton = ({
                 size={ComponentSizeType.xxs_small_icon}
                 style={ButtonStyleType.neutral}
                 fullWidth
+                showTooltip
+                tooltipProps={{
+                    placement: 'right',
+                    content: addNewPipelineBlocked
+                        ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.'
+                        : 'Add deployment pipeline',
+                }}
             />
         </div>
 
         {!hideDeleteButton && (
             <DeleteCINodeButton
                 testId={`${testId}-delete`}
-                disabled={false}
                 deletePayloadConfig={deleteConfig}
                 title={deleteConfig.pipelineName}
                 getWorkflows={getWorkflows}

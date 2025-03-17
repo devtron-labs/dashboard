@@ -256,7 +256,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                         deletePayloadConfig={deleteConfig}
                         title={this.state.form.name}
                         getWorkflows={this.props.getWorkflows}
-                        isCIPipeline
+                        showIconOnly={false}
                         onDelete={this.onClose}
                     />
                 </ConditionalWrap>
