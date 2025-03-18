@@ -1811,6 +1811,9 @@ const DeploymentTemplate = ({
                     showNoOverride={showNoOverrideTab}
                     parsingError={currentEditorTemplateData?.parsingError}
                     restoreLastSavedYAML={restoreLastSavedTemplate}
+                    hideTabs={{
+                        dryRun: isTemplateView,
+                    }}
                 />
 
                 {!showNoOverrideEmptyState && (

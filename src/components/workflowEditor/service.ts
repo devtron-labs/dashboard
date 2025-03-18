@@ -26,7 +26,7 @@ import { Routes } from '../../config'
 export function createWorkflow(request, isTemplateView: AppConfigProps['isTemplateView']) {
     const URL = isTemplateView
         ? getTemplateAPIRoute({
-              type: GetTemplateAPIRouteType.WORKFLOW_LIST,
+              type: GetTemplateAPIRouteType.WORKFLOW,
               queryParams: { id: String(request.appId) },
           })
         : `${Routes.WORKFLOW}`
@@ -37,7 +37,7 @@ export function createWorkflow(request, isTemplateView: AppConfigProps['isTempla
 export function updateWorkflow(request, isTemplateView: AppConfigProps['isTemplateView']) {
     const URL = isTemplateView
         ? getTemplateAPIRoute({
-              type: GetTemplateAPIRouteType.WORKFLOW_LIST,
+              type: GetTemplateAPIRouteType.WORKFLOW,
               queryParams: { id: String(request.appId) },
           })
         : `${Routes.WORKFLOW}`
@@ -48,8 +48,8 @@ export function updateWorkflow(request, isTemplateView: AppConfigProps['isTempla
 export function deleteWorkflow(appId: string, workflowId: number, isTemplateView: AppConfigProps['isTemplateView']) {
     const URL = isTemplateView
         ? getTemplateAPIRoute({
-              type: GetTemplateAPIRouteType.WORKFLOW_LIST,
-              queryParams: { id: appId, workflowId },
+              type: GetTemplateAPIRouteType.WORKFLOW,
+              queryParams: { id: appId, appWorkflowId: workflowId },
           })
         : `${Routes.WORKFLOW}/${appId}/${workflowId}`
 

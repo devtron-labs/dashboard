@@ -996,7 +996,7 @@ export const ConfigMapSecretContainer = ({
                     showNoOverride={showNoOverride}
                     parsingError={parsingError}
                     restoreLastSavedYAML={restoreLastSavedYAML}
-                    hideTabs={{ inherited: isJob, dryRun: isJob }}
+                    hideTabs={{ inherited: isJob, dryRun: isJob || isTemplateView }}
                 />
                 {!hideConfigToolbar && (
                     <ConfigToolbar
