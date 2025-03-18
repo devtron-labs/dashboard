@@ -64,7 +64,7 @@ const NodeTreeDetailTab = ({
     const showContent = !!(appDetails?.resourceTree?.nodes?.length > 0 && tabs.length)
 
     const { stickyElementRef, isStuck: isDynamicTabsStuck } = useStickyEvent({
-        containerSelector: '.app-details-page',
+        containerSelector: '[data-testid="app-details-wrapper"]',
         isStickyElementMounted: showContent,
         identifier: 'node-tree-detail-tab',
     })
