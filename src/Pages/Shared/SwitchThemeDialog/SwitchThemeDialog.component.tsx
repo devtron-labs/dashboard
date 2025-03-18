@@ -112,7 +112,7 @@ const SwitchThemeDialog = ({
     handleUpdateUserThemePreference,
     disableAPICalls = false,
 }: SwitchThemeDialogProps) => {
-    const { handleShowSwitchThemeLocationTippyChange, handleThemePreferenceChange } = useTheme()
+    const { handleShowSwitchThemeLocationTippyChange, handleThemePreferenceChange, appTheme } = useTheme()
     const [themePreference, setThemePreference] = useState<typeof initialThemePreference>(
         !initialThemePreference ? 'auto' : initialThemePreference,
     )
@@ -150,7 +150,7 @@ const SwitchThemeDialog = ({
         setIsSaving(true)
 
         if (!disableAPICalls) {
-            const isSuccessful = await updateUserPreferences({ ...currentUserPreferences, themePreference })
+            const isSuccessful = await updateUserPreferences({ ...currentUserPreferences, themePreference, appTheme })
             if (isSuccessful) {
                 handleSuccess()
             }
