@@ -46,7 +46,8 @@ export interface CreateAppFormErrorStateType {
     tags: DynamicDataTableCellErrorType<TagsTableColumnsType>
     cloneAppId: string | null
     gitMaterials: boolean
-    workflowConfig: boolean
+    // Map of workflow id to error message
+    workflowConfig: Record<string, string>
 }
 
 export enum CreationMethodType {
@@ -102,7 +103,7 @@ export type HandleFormStateChangeParamsType =
           CreateAppFormStateActionType.updateWorkflowConfig,
           {
               data: CreateAppFormStateType['workflowConfig']
-              isError: boolean
+              workflowIdToErrorMessageMap: CreateAppFormErrorStateType['workflowConfig']
           }
       >
     | BaseHandleFormStateChangeParamsType<
@@ -125,6 +126,8 @@ export interface ApplicationInfoFormProps extends Pick<CreateAppModalProps, 'isJ
     formErrorState: CreateAppFormErrorStateType
     handleTagErrorChange: (tagsError: CreateAppFormErrorStateType['tags']) => void
     selectedCreationMethod: CreationMethodType
+    isTagsAccordionExpanded: boolean
+    toggleIsTagsAccordionExpanded: () => void
 }
 
 export interface ProjectSelectorProps extends Required<Pick<SelectPickerProps, 'error'>> {
@@ -148,4 +151,5 @@ export interface UpdateTemplateConfigProps
     extends Pick<CreateAppModalProps, 'isJobView'>,
         Pick<ApplicationInfoFormProps, 'handleFormStateChange'> {
     formState: CreateAppFormStateType
+    formErrorState: CreateAppFormErrorStateType
 }

@@ -1020,6 +1020,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         envName={this.state.environmentName}
                         closeSuccessPopup={this.closeSuccessPopup}
                         successTitle={this.state.successTitle}
+                        isTemplateView={this.props.isTemplateView}
                     />
                 )}
                 {this.state.showWorkflowOptionsModal && (

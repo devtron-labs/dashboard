@@ -19,7 +19,12 @@ const parentState: CIConfigProps['parentState'] = {
     currentCIBuildType: null,
 }
 
-const UpdateTemplateConfig = ({ formState, isJobView, handleFormStateChange }: UpdateTemplateConfigProps) => {
+const UpdateTemplateConfig = ({
+    formState,
+    isJobView,
+    handleFormStateChange,
+    formErrorState,
+}: UpdateTemplateConfigProps) => {
     const stringTemplateDbId = formState.templateConfig.id.toString()
 
     const handleBuildConfigurationChange: CIConfigProps['updateDockerConfigOverride'] = (key, value) => {
@@ -75,12 +80,12 @@ const UpdateTemplateConfig = ({ formState, isJobView, handleFormStateChange }: U
         })
     }
 
-    const handleWorkflowConfigChange: WorkflowProps['onChange'] = (workflowConfig, isError) => {
+    const handleWorkflowConfigChange: WorkflowProps['onChange'] = (workflowConfig, workflowIdToErrorMessageMap) => {
         handleFormStateChange({
             action: CreateAppFormStateActionType.updateWorkflowConfig,
             value: {
                 data: workflowConfig,
-                isError,
+                workflowIdToErrorMessageMap,
             },
         })
     }
@@ -118,7 +123,11 @@ const UpdateTemplateConfig = ({ formState, isJobView, handleFormStateChange }: U
             </div>
             <div className="br-8 border__secondary bg__primary p-20 flexbox-col dc__gap-16">
                 <h4 className="fs-14 fw-6 lh-20 cn-9 m-0">Workflows</h4>
-                <Workflow templateId={stringTemplateDbId} onChange={handleWorkflowConfigChange} />
+                <Workflow
+                    templateId={stringTemplateDbId}
+                    onChange={handleWorkflowConfigChange}
+                    workflowIdToErrorMessageMap={formErrorState.workflowConfig}
+                />
             </div>
         </>
     )

@@ -64,8 +64,13 @@ export function savePipeline(
     return post(url, request)
 }
 
-export function getCIPipelineNameSuggestion(appId: string | number): Promise<any> {
-    const URL = `app/pipeline/suggest/ci/${appId}`
+function getCIPipelineNameSuggestion(appId: string | number, isTemplateView: AppConfigProps['isTemplateView']): Promise<any> {
+    const URL = isTemplateView ? getTemplateAPIRoute({
+        type: GetTemplateAPIRouteType.PIPELINE_SUGGEST_CI,
+        queryParams: {
+            id: appId,
+        }
+    }) : `app/pipeline/suggest/ci/${appId}`
     return get(URL)
 }
 
@@ -76,7 +81,7 @@ export function getInitData(
     isTemplateView: AppConfigProps['isTemplateView'],
 ): Promise<any> {
     return Promise.all([
-        getCIPipelineNameSuggestion(appId),
+        getCIPipelineNameSuggestion(appId, isTemplateView),
         getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true, isJobCard, isTemplateView),
         getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
     ]).then(

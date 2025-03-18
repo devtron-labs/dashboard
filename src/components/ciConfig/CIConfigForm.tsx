@@ -346,7 +346,11 @@ export default function CIConfigForm({
     return (
         <div className="flexbox-col h-100 dc__content-space dc__overflow-hidden">
             <div className="flex-grow-1 dc__overflow-auto">
-                <div className={isCreateAppView ? '' : `form__app-compose ${configOverrideView ? 'config-override-view' : ''}`}>
+                <div
+                    className={
+                        isCreateAppView ? '' : `form__app-compose ${configOverrideView ? 'config-override-view' : ''}`
+                    }
+                >
                     {!isCreateAppView && !configOverrideView && (
                         <div className="flex dc__content-space mb-20">
                             <h2 className="form__title m-0-imp" data-testid="build-configuration-heading">
@@ -378,6 +382,7 @@ export default function CIConfigForm({
                         handleOnChangeConfig={handleOnChangeConfig}
                         isCDPipeline={isCDPipeline}
                         isCreateAppView={isCreateAppView}
+                        isTemplateView={isTemplateView}
                     />
                     {!isCreateAppView && (
                         <CIDockerFileConfig

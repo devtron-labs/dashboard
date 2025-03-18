@@ -245,6 +245,7 @@ export const getNavItems = ({
                         flowCompletionPercent: completedPercent,
                         currentStep: completedSteps,
                         required: isGitOpsConfigurationRequired,
+                        isHidden: isTemplateView,
                     },
                     {
                         title: 'Workflow Editor',

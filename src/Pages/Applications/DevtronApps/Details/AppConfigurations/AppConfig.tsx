@@ -29,6 +29,7 @@ import {
     ConfirmationModal,
     ConfirmationModalVariantType,
     noop,
+    URLS as CommonUrls,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DeleteComponentsName } from '@Config/constantMessaging'
 import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo/ApplicationDeletionInfo'
@@ -341,7 +342,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
     const deleteAppHandler = async () => {
         try {
             setIsAppDeleting(true)
-            const response = await deleteApp(appId)
+            const response = await deleteApp(appId, isTemplateView)
             if (response) {
                 setIsAppDeleting(false)
                 if (isJob) {
@@ -350,6 +351,12 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
                         description: 'Job Deleted!',
                     })
                     history.push(`${URLS.JOB}/${URLS.APP_LIST}`)
+                } else if (isTemplateView) {
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: 'Template Deleted!',
+                    })
+                    history.push(CommonUrls.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP)
                 } else {
                     ToastManager.showToast({
                         variant: ToastVariantType.success,
@@ -416,6 +423,14 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
         history.push(getAppComposeURL(appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR, isJob, isTemplateView))
     }
 
+    const getDeleteComponentName = (): DeleteComponentsName => {
+        if (isJob) {
+            return DeleteComponentsName.Job
+        }
+
+        return isTemplateView ? DeleteComponentsName.Template : DeleteComponentsName.Application
+    }
+
     const renderDeleteDialog = () => {
         // Using Confirmation Dialog Modal instead of Delete Confirmation as we are evaluating status on the basis of local variable despite of error code
         if (!state.showDeleteConfirm) return null
@@ -423,9 +438,9 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
         if (state.canDeleteApp || isTemplateView) {
             return (
                 <ConfirmationModal
-                    title={`Delete ${isJob ? DeleteComponentsName.Job : DeleteComponentsName.Application} '${appName}' ?`}
+                    title={`Delete ${getDeleteComponentName()} '${appName}' ?`}
                     variant={ConfirmationModalVariantType.delete}
-                    subtitle={<ApplicationDeletionInfo />}
+                    subtitle={<ApplicationDeletionInfo isTemplateView={isTemplateView} />}
                     buttonConfig={{
                         secondaryButtonConfig: {
                             text: 'Cancel',

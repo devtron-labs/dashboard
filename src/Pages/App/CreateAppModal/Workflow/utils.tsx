@@ -3,13 +3,13 @@ import { GroupBase } from 'react-select'
 import {
     CommonNodeAttr,
     getSelectPickerOptionByValue,
+    GitProviderIcon,
     GraphVisualizerEdge,
     GraphVisualizerNode,
     SelectPickerOptionType,
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICGit } from '@Icons/git/git.svg'
 import { ReactComponent as ICCi } from '@Icons/ic-CI.svg'
 import { ReactComponent as ICCD } from '@Icons/ic-CD.svg'
 import { ReactComponent as ICCIWebhook } from '@Icons/ic-CIWebhook.svg'
@@ -47,7 +47,7 @@ export const getPipelineIdFromNodeId = (nodeId: string) => nodeId.split('-')[0]
 const getSourceNodeConfig = (node: CommonNodeAttr): GraphVisualizerNode => ({
     id: node.id,
     type: 'iconNode',
-    data: { icon: <ICGit /> },
+    data: { icon: <GitProviderIcon gitRepoUrl={node.url} /> },
 })
 
 const getCINodeIcon = ({
@@ -292,6 +292,7 @@ const getEnvironmentCDNodesMap = (nodes: Record<string, GraphVisualizerNode[]>) 
 
 export const getValidatedNodes = (nodes: Record<string, GraphVisualizerNode[]>) => {
     const validatedNodes = nodes
+    const workflowIdToErrorMessageMap: Record<string, string> = {}
 
     const cdNodesWithDuplicateEnv = Array.from(getEnvironmentCDNodesMap(validatedNodes).values())
         .filter((cdNodes) => cdNodes.length > 1)
@@ -302,6 +303,11 @@ export const getValidatedNodes = (nodes: Record<string, GraphVisualizerNode[]>) 
             const errorNode = cdNodesWithDuplicateEnv.find((duplicateEnvNode) => duplicateEnvNode.id === node.id)
 
             if (node.type === 'dropdownNode') {
+                if (errorNode) {
+                    workflowIdToErrorMessageMap[workflowId] =
+                        'Multiple deployment pipelines cannot have same environment'
+                }
+
                 return errorNode
                     ? {
                           ...node,
@@ -325,5 +331,5 @@ export const getValidatedNodes = (nodes: Record<string, GraphVisualizerNode[]>) 
         })
     })
 
-    return { validatedNodes, isValid: !cdNodesWithDuplicateEnv.length }
+    return { validatedNodes, workflowIdToErrorMessageMap }
 }

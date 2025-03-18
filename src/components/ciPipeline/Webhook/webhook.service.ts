@@ -45,12 +45,12 @@ export function getExternalCIConfig(
               type: GetTemplateAPIRouteType.EXTERNAL_CI,
               queryParams: {
                   id: appId,
-                  externalCiId: webhookID,
+                  externalCIPipelineId: webhookID,
               },
           })
         : `${Routes.EXTERNAL_CI_CONFIG}/${appId}/${webhookID}`
 
-    return get(`${Routes.EXTERNAL_CI_CONFIG}/${appId}/${webhookID}`)
+    return get(url)
 }
 
 export function getWebhookAPITokenList(

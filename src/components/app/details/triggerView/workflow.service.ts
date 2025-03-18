@@ -216,6 +216,7 @@ function handleSourceNotConfigured(filteredCIPipelines: CiPipeline[], ciResponse
                 gitMaterialId: material.gitMaterialId,
                 id: 0,
                 gitMaterialName: material.materialName,
+                gitMaterialUrl: '',
             })
         }
     }
@@ -570,7 +571,7 @@ function ciPipelineToNode(
             isSource: true,
             isRoot: true,
             isGitSource: true,
-            url: '',
+            url: ciMaterial.gitMaterialUrl ?? '',
             id: `${WorkflowNodeType.GIT}-${materialName}-${index}`,
             downstreams: [`${WorkflowNodeType.CI}-${ciPipeline.id}`],
             downstreamEnvironments: [],

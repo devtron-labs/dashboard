@@ -1,7 +1,7 @@
 import { CustomInput, TagsContainer, Textarea } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICDevtronApp } from '@Icons/ic-devtron-app.svg'
 import { ReactComponent as ICCaretLeftSmall } from '@Icons/ic-caret-left-small.svg'
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent } from 'react'
 import { importComponentFromFELibrary } from '@Components/common'
 import { APP_TYPE } from '@Config/constants'
 import ProjectSelector from './ProjectSelector'
@@ -24,13 +24,9 @@ const ApplicationInfoForm = ({
     formErrorState,
     handleTagErrorChange,
     selectedCreationMethod,
+    isTagsAccordionExpanded,
+    toggleIsTagsAccordionExpanded,
 }: ApplicationInfoFormProps) => {
-    const [isTagsAccordionExpanded, setIsTagsAccordionExpanded] = useState(false)
-
-    const toggleIsTagsAccordionExpanded = () => {
-        setIsTagsAccordionExpanded((prev) => !prev)
-    }
-
     const handleInputChange =
         (
             action: Extract<
@@ -64,7 +60,8 @@ const ApplicationInfoForm = ({
     }
 
     return (
-        <div className="flexbox-col dc__gap-16 p-20 br-8 border__secondary bg__primary">
+        // key is required for ensuring autoFocus on name on creation method change
+        <div className="flexbox-col dc__gap-16 p-20 br-8 border__secondary bg__primary" key={selectedCreationMethod}>
             <ICDevtronApp className="icon-dim-48 dc__no-shrink" />
             <div className="flexbox dc__gap-8">
                 <ProjectSelector
@@ -108,8 +105,8 @@ const ApplicationInfoForm = ({
                     />
                     <span className="fs-13 fw-6 lh-20 cn-9">Add tags to {isJobView ? 'job' : 'application'}</span>
                 </button>
-                {isTagsAccordionExpanded &&
-                    (MandatoryTagsContainer ? (
+                <div className={!isTagsAccordionExpanded ? 'dc__hide-section' : ''}>
+                    {MandatoryTagsContainer ? (
                         <MandatoryTagsContainer
                             isCreateApp
                             appType={isJobView ? APP_TYPE.JOB : APP_TYPE.DEVTRON_APPS}
@@ -128,7 +125,8 @@ const ApplicationInfoForm = ({
                             tagsError={formErrorState.tags}
                             setTagErrors={handleTagErrorChange}
                         />
-                    ))}
+                    )}
+                </div>
             </div>
             {selectedCreationMethod === CreationMethodType.clone && (
                 <AppToCloneSelector

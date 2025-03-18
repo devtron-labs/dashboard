@@ -1116,7 +1116,13 @@ const DeploymentTemplate = ({
         }
 
         return isUpdateView
-            ? updateEnvDeploymentTemplate
+            ? (payload, abortSignal) =>
+                  updateEnvDeploymentTemplate(
+                      +appId,
+                      payload as UpdateEnvironmentDTPayloadType,
+                      abortSignal,
+                      isTemplateView,
+                  )
             : (payload, abortSignal) =>
                   createEnvDeploymentTemplate(
                       +appId,
@@ -1805,6 +1811,9 @@ const DeploymentTemplate = ({
                     showNoOverride={showNoOverrideTab}
                     parsingError={currentEditorTemplateData?.parsingError}
                     restoreLastSavedYAML={restoreLastSavedTemplate}
+                    hideTabs={{
+                        dryRun: isTemplateView,
+                    }}
                 />
 
                 {!showNoOverrideEmptyState && (

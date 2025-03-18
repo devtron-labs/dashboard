@@ -333,7 +333,7 @@ export default function CDPipeline({
     }
 
     const getEnvCDPipelineName = (form) => {
-        Promise.all([getCDPipelineNameSuggestion(appId), getEnvironmentListMinPublic(true)])
+        Promise.all([getCDPipelineNameSuggestion(appId, isTemplateView), getEnvironmentListMinPublic(true)])
             .then(([cpPipelineName, envList]) => {
                 form.name = cpPipelineName.result
                 let list = envList.result || []
@@ -448,7 +448,7 @@ export default function CDPipeline({
     }
 
     const getMandatoryPluginData: BuildCDProps['getMandatoryPluginData'] = async (form, requiredPluginIds = []) => {
-        if (!processPluginData) {
+        if (!processPluginData || isTemplateView) {
             return
         }
 
@@ -520,7 +520,7 @@ export default function CDPipeline({
     }
 
     const getCDeploymentWindowState = async (envId: string) => {
-        if (getDeploymentWindowProfileMetaData) {
+        if (getDeploymentWindowProfileMetaData && !isTemplateView) {
             const { userActionState } = await getDeploymentWindowProfileMetaData(appId, envId)
             if (userActionState && userActionState !== ACTION_STATE.ALLOWED) {
                 setShowDeploymentWindowConfirmation(true)
