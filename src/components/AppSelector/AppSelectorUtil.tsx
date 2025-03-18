@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { components } from 'react-select'
 import { getIsRequestAborted, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as DropDownIcon } from '../../assets/icons/ic-chevron-down.svg'

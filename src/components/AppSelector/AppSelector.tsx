@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-import React, { useRef } from 'react'
+import { useRef } from 'react'
 import { Props as SelectProps, SelectInstance } from 'react-select'
 import AsyncSelect from 'react-select/async'
 import { appListOptions, appSelectorStyle, DropdownIndicator, noOptionsMessage } from './AppSelectorUtil'
 import { abortPreviousRequests } from '@devtron-labs/devtron-fe-common-lib'
+import { AppSelectorType } from './types'
 
-interface AppSelectorType {
-    onChange: ({ label, value }) => void
-    appId: number
-    appName: string
-    isJobView?: boolean
-}
-
-export default function AppSelector({ onChange, appId, appName, isJobView }: AppSelectorType) {
+export default function AppSelector({ onChange, appId, appName, isJobView, recentlyVisitedDevtronApps }: AppSelectorType) {
     const selectRef = useRef<SelectInstance>(null)
 
     const abortControllerRef = useRef<AbortController>(new AbortController())
+
+    console.log(recentlyVisitedDevtronApps, 'app selector')
 
     const defaultOptions = [{ value: appId, label: appName }]
     const loadAppListOptions = (inputValue: string) =>

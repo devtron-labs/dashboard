@@ -150,9 +150,12 @@ interface GitMaterial {
     redirectionUrl: string
 }
 
-export interface AppMetaInfo {
+export interface BaseAppMetaData {
     appId: number
     appName: string
+}
+
+export interface AppMetaInfo extends BaseAppMetaData {
     createdBy: string
     description: string
     createdOn: string
@@ -182,6 +185,7 @@ export interface AppHeaderType extends GroupFilterType {
     appName: string
     appMetaInfo: AppMetaInfo
     reloadMandatoryProjects: boolean
+    recentlyVisitedDevtronApps: BaseAppMetaData[]
 }
 
 interface ResourceTree {
