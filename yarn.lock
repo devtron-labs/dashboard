@@ -1043,7 +1043,7 @@
     "@codemirror/view" "^6.35.0"
     crelt "^1.0.5"
 
-"@codemirror/merge@^6.1.2":
+"@codemirror/merge@^6.10.0":
   version "6.10.0"
   resolved "https://registry.yarnpkg.com/@codemirror/merge/-/merge-6.10.0.tgz#0a1be2a4561594f6adc1b1adcf6e7ac23d767b85"
   integrity sha512-Omn0gU6MM5cKQGqgKoIhFjUqCNWH/nukCMLXzu/1jOdtiHsxAu3GdENBf1QYkoIC3FSgkF7X/ClOqYeUATQ4Sw==
@@ -1105,16 +1105,17 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@1.9.0":
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.9.0.tgz#d1efcd0d060021fe6553dba2ee96a3b103734d51"
-  integrity sha512-yxRIsoflTlBDKaePzZM+Xh84OUKL39XzNKRkllcu3yho12Vzny4P7MwZf/qwB28td/zjgmVk6S89WvtRzQM2bA==
+"@devtron-labs/devtron-fe-common-lib@1.9.0-patch-1":
+  version "1.9.0-patch-1"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.9.0-patch-1.tgz#baa22c00086e829d7336ae940c57052344899d6a"
+  integrity sha512-ZPxLauoqVe1Q4fDLTfOibPdM2X03+pZDn5G8Mj5sjXz2xcDFXkJ/Qe117xdZJa/emX1gChTsvshp+jXvz69+VQ==
   dependencies:
     "@codemirror/lang-json" "6.0.1"
     "@codemirror/lang-yaml" "6.1.2"
     "@codemirror/language" "6.10.8"
     "@codemirror/legacy-modes" "6.4.2"
     "@codemirror/lint" "6.8.4"
+    "@codemirror/merge" "^6.10.0"
     "@codemirror/search" "6.5.8"
     "@lezer/highlight" "1.2.1"
     "@replit/codemirror-indentation-markers" "6.5.3"
@@ -1132,7 +1133,6 @@
     marked "^13.0.3"
     nanoid "^3.3.8"
     react-canvas-confetti "^2.0.7"
-    react-codemirror-merge "4.23.6"
     react-dates "^21.8.0"
     react-diff-viewer-continued "^3.4.0"
     react-draggable "^4.4.5"
@@ -3220,19 +3220,6 @@
     "@typescript-eslint/types" "8.3.0"
     eslint-visitor-keys "^3.4.3"
 
-"@uiw/codemirror-extensions-basic-setup@4.23.6":
-  version "4.23.6"
-  resolved "https://registry.yarnpkg.com/@uiw/codemirror-extensions-basic-setup/-/codemirror-extensions-basic-setup-4.23.6.tgz#a15afa85ad12e08fdaca40e89828bced78beeef5"
-  integrity sha512-bvtq8IOvdkLJMhoJBRGPEzU51fMpPDwEhcAHp9xCR05MtbIokQgsnLXrmD1aZm6e7s/3q47H+qdSfAAkR5MkLA==
-  dependencies:
-    "@codemirror/autocomplete" "^6.0.0"
-    "@codemirror/commands" "^6.0.0"
-    "@codemirror/language" "^6.0.0"
-    "@codemirror/lint" "^6.0.0"
-    "@codemirror/search" "^6.0.0"
-    "@codemirror/state" "^6.0.0"
-    "@codemirror/view" "^6.0.0"
-
 "@uiw/codemirror-extensions-basic-setup@4.23.7":
   version "4.23.7"
   resolved "https://registry.yarnpkg.com/@uiw/codemirror-extensions-basic-setup/-/codemirror-extensions-basic-setup-4.23.7.tgz#8fce5d6190a755c889805d2edc5b85d7f29cd322"
@@ -3266,18 +3253,6 @@
     "@codemirror/language" "^6.0.0"
     "@codemirror/state" "^6.0.0"
     "@codemirror/view" "^6.0.0"
-
-"@uiw/react-codemirror@4.23.6":
-  version "4.23.6"
-  resolved "https://registry.yarnpkg.com/@uiw/react-codemirror/-/react-codemirror-4.23.6.tgz#e77f302a39a28c644164ed59bdc1a9edeb587cdf"
-  integrity sha512-caYKGV6TfGLRV1HHD3p0G3FiVzKL1go7wes5XT2nWjB0+dTdyzyb81MKRSacptgZcotujfNO6QXn65uhETRAMw==
-  dependencies:
-    "@babel/runtime" "^7.18.6"
-    "@codemirror/commands" "^6.1.0"
-    "@codemirror/state" "^6.1.1"
-    "@codemirror/theme-one-dark" "^6.0.0"
-    "@uiw/codemirror-extensions-basic-setup" "4.23.6"
-    codemirror "^6.0.0"
 
 "@uiw/react-codemirror@4.23.7":
   version "4.23.7"
@@ -7217,15 +7192,6 @@ react-canvas-confetti@^2.0.7:
   dependencies:
     "@types/canvas-confetti" "^1.6.4"
     canvas-confetti "^1.9.2"
-
-react-codemirror-merge@4.23.6:
-  version "4.23.6"
-  resolved "https://registry.yarnpkg.com/react-codemirror-merge/-/react-codemirror-merge-4.23.6.tgz#0b4dbacd7f0359156f5bc0b25f5eed42d5fed368"
-  integrity sha512-tnbv/g8q37T3TP9AjPeKBUI1O67VQ2V2aaRU65alddFyPsrfT5f0fqDeoLRAeqUByhZy+PY4tUoCxauByHDQrw==
-  dependencies:
-    "@babel/runtime" "^7.18.6"
-    "@codemirror/merge" "^6.1.2"
-    "@uiw/react-codemirror" "4.23.6"
 
 react-csv@^2.2.2:
   version "2.2.2"
