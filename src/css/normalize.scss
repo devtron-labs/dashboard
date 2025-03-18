@@ -103,6 +103,7 @@ dialog {
     top: 0px;
     left: 0px;
     right: 0;
+    // 100vh is required for covering the full height of the page as this is the bg div for popup modals
     height: 100vh;
     z-index: var(--transparent-div-index);
 

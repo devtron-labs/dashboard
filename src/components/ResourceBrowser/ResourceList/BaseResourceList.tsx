@@ -640,7 +640,7 @@ const BaseResourceListContent = ({
 
     return (
         <div
-            className={`resource-list-container dc__border-left flexbox-col dc__overflow-hidden ${
+            className={`resource-list-container flex-grow-1 dc__border-left flexbox-col dc__overflow-hidden ${
                 filteredResourceList?.length === 0 ? 'no-result-container' : ''
             }`}
             ref={parentRef}

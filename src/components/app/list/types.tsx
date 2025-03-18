@@ -20,6 +20,7 @@ import {
     EnvListMinDTO,
     UseUrlFiltersReturnType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { MutableRefObject } from 'react'
 import { AppListFilterConfig, AppListSortableKeys } from '../list-new/AppListType'
 
 export interface App {
@@ -63,6 +64,7 @@ export interface DevtronAppListProps
     clearAllFilters: () => void
     setCurrentAppName: (appName: string) => void
     setAppCount: (appCount: number) => void
+    appListContainerRef: MutableRefObject<HTMLDivElement>
 }
 
 export const OrderBy = {

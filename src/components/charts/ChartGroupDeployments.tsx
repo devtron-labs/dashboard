@@ -29,7 +29,7 @@ import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo/A
 
 const ChartGroupDeployments: React.FC<ChartGroupDeploymentsProps> = (props) => {
     return (
-        <div className="chart-group-deployments">
+        <div className="chart-group-deployments flexbox-col flex-grow-1">
             <div className="white-card white-card--chart-store mb-20">
                 <div className="chart-store-card__header">About</div>
                 <div className="chart-store-card__body">
@@ -39,7 +39,7 @@ const ChartGroupDeployments: React.FC<ChartGroupDeploymentsProps> = (props) => {
                     </p>
                 </div>
             </div>
-            <div className="white-card white-card--running-deployments">
+            <div className="white-card flexbox-col flex-grow-1 p-0">
                 <div className="chart-store-card__header">Running Deployments</div>
                 <div className="chart-store-card__deployment-list">
                     {props.installedChartData.length > 0 ? (
