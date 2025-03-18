@@ -119,6 +119,7 @@ const ViewIsPipelineRBACConfigured: FunctionComponent<{
     userPreferencesError: ServerErrors
     handleUpdatePipelineRBACViewSelectedTab: (selectedTab: ViewIsPipelineRBACConfiguredRadioTabs) => void
 }> = importComponentFromFELibrary('ViewIsPipelineRBACConfigured', null, 'function')
+const LicenseInfoDialog = importComponentFromFELibrary('LicenseInfoDialog', null, 'function')
 
 export default function NavigationRoutes() {
     const history = useHistory()
@@ -158,11 +159,15 @@ export default function NavigationRoutes() {
     })
     const [userPreferences, setUserPreferences] = useState<UserPreferencesType>(null)
     const [userPreferencesError, setUserPreferencesError] = useState<ServerErrors>(null)
-
+    const [isLicenseInfoDialogOpen, setIsLicenseInfoDialogOpen] = useState<boolean>(false)
     const { showThemeSwitcherDialog, handleThemeSwitcherDialogVisibilityChange, handleThemePreferenceChange } =
         useTheme()
 
     const { isAirgapped, isManifestScanningEnabled, canOnlyViewPermittedEnvOrgLevel } = environmentDataState
+
+    const handleCloseLicenseInfoDialog = () => {
+        setIsLicenseInfoDialogOpen(false)
+    }
 
     const getInit = async (_serverMode: string) => {
         const [userRole, appList, loginData] = await Promise.all([
@@ -499,6 +504,7 @@ export default function NavigationRoutes() {
                             handleUpdatePipelineRBACViewSelectedTab={handleUpdatePipelineRBACViewSelectedTab}
                         />
                     ) : null,
+                setIsLicenseInfoDialogOpen,
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
@@ -509,7 +515,12 @@ export default function NavigationRoutes() {
                         currentUserPreferences={userPreferences}
                     />
                 )}
-
+                {isLicenseInfoDialogOpen && LicenseInfoDialog && (
+                    <LicenseInfoDialog
+                        handleCloseLicenseInfoDialog={handleCloseLicenseInfoDialog}
+                        currentVersion={currentServerInfo.serverInfo?.currentVersion}
+                    />
+                )}
                 {!_isOnboardingPage && (
                     <Navigation
                         currentServerInfo={currentServerInfo}
