@@ -777,7 +777,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
         return (
             <ConditionalWrap
-                condition={!this.props.isOffendingPipelineView && this.props.showWebhookTippy}
+                condition={!this.props.isOffendingPipelineView && !this.props.isTemplateView && this.props.showWebhookTippy}
                 wrap={(children) => (
                     <Tippy
                         placement="top-start"
