@@ -89,6 +89,7 @@ export default function BuildCD({
     getMandatoryPluginData,
     migrateToDevtronFormState,
     setMigrateToDevtronFormState,
+    isTemplateView,
 }: BuildCDProps) {
     const {
         formData,
@@ -312,6 +313,10 @@ export default function BuildCD({
     }
 
     const gitOpsRepoConfigInfoBar = (content: string) => {
+        if (isTemplateView) {
+            return null
+        }
+
         return (
             <InfoColourBar
                 message={content}

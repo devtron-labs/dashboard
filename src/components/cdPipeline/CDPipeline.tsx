@@ -1340,6 +1340,7 @@ export default function CDPipeline({
                                     getMandatoryPluginData={getMandatoryPluginData}
                                     migrateToDevtronFormState={migrateToDevtronFormState}
                                     setMigrateToDevtronFormState={setMigrateToDevtronFormState}
+                                    isTemplateView={isTemplateView}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />

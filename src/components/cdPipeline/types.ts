@@ -70,7 +70,10 @@ export interface PullImageDigestToggleType {
 }
 
 export interface BuildCDProps
-    extends Pick<CDPipelineProps, 'envIds' | 'isGitOpsRepoNotConfigured' | 'noGitOpsModuleInstalledAndConfigured'> {
+    extends Pick<
+        CDPipelineProps,
+        'envIds' | 'isGitOpsRepoNotConfigured' | 'noGitOpsModuleInstalledAndConfigured' | 'isTemplateView'
+    > {
     isAdvanced: boolean
     setIsVirtualEnvironment: Dispatch<SetStateAction<boolean>>
     noStrategyAvailable: MutableRefObject<boolean>
