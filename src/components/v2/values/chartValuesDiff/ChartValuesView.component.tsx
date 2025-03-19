@@ -66,6 +66,7 @@ import { repoType } from '../../../../config'
 import UserGitRepo from '../../../gitOps/UserGitRepo'
 import { getChartValuesFiltered } from '@Components/charts/charts.helper'
 import { ChartValuesType } from '@Components/charts/charts.types'
+import { ConfigureGitopsInfoBlock } from '@Components/workflowEditor/ConfigureGitopsInfoBlock'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
@@ -212,6 +213,38 @@ const RadioWithTippy = (children, isFromCDPipeline: boolean, tippyContent: strin
     )
 }
 
+const GitOpsActionBlock = ({
+    deploymentAppType,
+    areGitopsCredentialsConfigured,
+    gitOpsRepoConfigInfoBar,
+    isGitOpsRepoNotConfigured,
+    allowedDeploymentTypes,
+}: Pick<
+    DeploymentAppRadioGroupType,
+    | 'deploymentAppType'
+    | 'areGitopsCredentialsConfigured'
+    | 'gitOpsRepoConfigInfoBar'
+    | 'allowedDeploymentTypes'
+    | 'isGitOpsRepoNotConfigured'
+>) => {
+    const gitOpsNotConfiguredText =
+        allowedDeploymentTypes.length == 1 ? GITOPS_REPO_REQUIRED_FOR_ENV : GITOPS_REPO_REQUIRED
+
+    if (deploymentAppType !== DeploymentAppTypes.GITOPS) {
+        return null
+    }
+
+    if (!areGitopsCredentialsConfigured) {
+        return <ConfigureGitopsInfoBlock />
+    }
+
+    if (isGitOpsRepoNotConfigured) {
+        return gitOpsRepoConfigInfoBar(gitOpsNotConfiguredText)
+    }
+
+    return null
+}
+
 export const DeploymentAppRadioGroup = ({
     isDisabled,
     deploymentAppType,
@@ -221,61 +254,59 @@ export const DeploymentAppRadioGroup = ({
     isFromCDPipeline,
     isGitOpsRepoNotConfigured,
     gitOpsRepoConfigInfoBar,
-}: DeploymentAppRadioGroupType): JSX.Element => {
-    const gitOpsNotCongiguredText =
-        allowedDeploymentTypes.length == 1 ? GITOPS_REPO_REQUIRED_FOR_ENV : GITOPS_REPO_REQUIRED
-    return (
-        <>
-            <RadioGroup
-                value={deploymentAppType}
-                name="DeploymentAppTypeGroup"
-                onChange={handleOnChange}
-                disabled={isDisabled}
-                className={rootClassName ?? ''}
+    areGitopsCredentialsConfigured = true,
+}: DeploymentAppRadioGroupType): JSX.Element => (
+    <div className="flexbox-col dc__gap-16">
+        <RadioGroup
+            value={deploymentAppType}
+            name="DeploymentAppTypeGroup"
+            onChange={handleOnChange}
+            disabled={isDisabled}
+            className={rootClassName ?? ''}
+        >
+            <ConditionalWrap
+                condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
+                wrap={(children) =>
+                    RadioWithTippy(children, isFromCDPipeline, 'Deployment to this environment is not allowed via Helm')
+                }
             >
-                <ConditionalWrap
-                    condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
-                    wrap={(children) =>
-                        RadioWithTippy(
-                            children,
-                            isFromCDPipeline,
-                            'Deployment to this environment is not allowed via Helm',
-                        )
-                    }
+                <RadioGroupItem
+                    dataTestId="helm-deployment"
+                    value={DeploymentAppTypes.HELM}
+                    disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
                 >
-                    <RadioGroupItem
-                        dataTestId="helm-deployment"
-                        value={DeploymentAppTypes.HELM}
-                        disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
-                    >
-                        Helm
-                    </RadioGroupItem>
-                </ConditionalWrap>
-                <ConditionalWrap
-                    condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
-                    wrap={(children) =>
-                        RadioWithTippy(
-                            children,
-                            isFromCDPipeline,
-                            'Deployment to this environment is not allowed via GitOps',
-                        )
-                    }
+                    Helm
+                </RadioGroupItem>
+            </ConditionalWrap>
+            <ConditionalWrap
+                condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
+                wrap={(children) =>
+                    RadioWithTippy(
+                        children,
+                        isFromCDPipeline,
+                        'Deployment to this environment is not allowed via GitOps',
+                    )
+                }
+            >
+                <RadioGroupItem
+                    dataTestId="gitops-deployment"
+                    value={DeploymentAppTypes.GITOPS}
+                    disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
                 >
-                    <RadioGroupItem
-                        dataTestId="gitops-deployment"
-                        value={DeploymentAppTypes.GITOPS}
-                        disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
-                    >
-                        GitOps
-                    </RadioGroupItem>
-                </ConditionalWrap>
-            </RadioGroup>
-            {deploymentAppType === DeploymentAppTypes.GITOPS && isGitOpsRepoNotConfigured && (
-                <div className="mt-16">{gitOpsRepoConfigInfoBar(gitOpsNotCongiguredText)}</div>
-            )}
-        </>
-    )
-}
+                    GitOps
+                </RadioGroupItem>
+            </ConditionalWrap>
+        </RadioGroup>
+
+        <GitOpsActionBlock
+            deploymentAppType={deploymentAppType}
+            areGitopsCredentialsConfigured={areGitopsCredentialsConfigured}
+            gitOpsRepoConfigInfoBar={gitOpsRepoConfigInfoBar}
+            isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
+            allowedDeploymentTypes={allowedDeploymentTypes}
+        />
+    </div>
+)
 
 export const GitOpsDrawer = ({
     commonState,

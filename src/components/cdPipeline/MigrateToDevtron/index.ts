@@ -1,1 +1,1 @@
-export { default as MigrateFromArgo } from './MigrateFromArgo'
+export { default as MigrateToDevtron } from './MigrateToDevtron.component'

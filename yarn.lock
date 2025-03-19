@@ -1105,10 +1105,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@1.9.2":
-  version "1.9.2"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.9.2.tgz#b96d96dfa2bf7ed80a78c5b96e0d207f9f81ef80"
-  integrity sha512-zuFKvRsJ4hU5S+tDDy7k8TwIuwfzLWbCvIRIvOogAliBdxlQcmI9VQaZxMCS6SteGzlymi2ywMepc2tBt7O2dQ==
+"@devtron-labs/devtron-fe-common-lib@1.9.3":
+  version "1.9.3"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.9.3.tgz#3fff902f8f1d19b82927326b01a5e658350047da"
+  integrity sha512-abVTM7FMjxrSzXFj+saInyVc5VLR9vwnWH51sGlIKDIAHjUi0cX+PjZUOnKHmUgU/2igucDusWg6NA02NaPHKA==
   dependencies:
     "@codemirror/lang-json" "6.0.1"
     "@codemirror/lang-yaml" "6.1.2"
@@ -8468,7 +8468,7 @@ tsconfig-paths@^4.2.0:
 
 tslib@2.7.0, tslib@^2.0.1, tslib@^2.1.0, tslib@^2.6.2:
   version "2.7.0"
-  resolved "https://registry.npmjs.org/tslib/-/tslib-2.7.0.tgz"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.7.0.tgz#d9b40c5c40ab59e8738f297df3087bf1a2690c01"
   integrity sha512-gLXCKdN1/j47AiHiOkJN69hJmcbGTHI0ImLmbYLHykhgeN0jVGola9yVjFgzCUklsZQMW55o+dW7IXv3RCXDzA==
 
 tslib@^1.8.1, tslib@^1.9.3:
