@@ -326,7 +326,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
             <>
                 {/* Commented to be used in future */}
                 {/* {cardDetailsInBar()} */}
-                <div className="dc__grid-row-one-half dc__gap-16 pb-16">
+                <div className="dc__grid-cols-2 dc__gap-16 pb-16">
                     <div className="flexbox dc__gap-12 dc__content-space dc__overflow-auto bg__primary br-4 en-2 bw-1 pt-16 pl-16 pb-16 pr-16">
                         <div>
                             <div className="dc__align-left fs-13 fw-4 cn-7 dc__ellipsis-right">CPU Usage</div>
@@ -485,19 +485,19 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
                 />
             )
         }
+
         if (isLoading || errorMsg) {
             return (
-                <div className="flex flex-grow-1">
-                    <ConnectingToClusterState
-                        loader={isLoading}
-                        errorMsg={errorMsg}
-                        selectedCluster={selectedCluster}
-                        handleRetry={handleRetry}
-                        requestAbortController={requestAbortControllerRef.current}
-                    />
-                </div>
+                <ConnectingToClusterState
+                    loader={isLoading}
+                    errorMsg={errorMsg}
+                    selectedCluster={selectedCluster}
+                    handleRetry={handleRetry}
+                    requestAbortController={requestAbortControllerRef.current}
+                />
             )
         }
+
         return (
             <div
                 className="p-20 dc__column-gap-32 h-100 dc__overflow-auto flexbox flex-justify-center"
@@ -522,19 +522,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
         )
     }
 
-    const renderClusterSummary = (): JSX.Element => {
-        return (
-            <div
-                className={`dc__border-left resource-details-container bg__primary dc__overflow-auto ${
-                    errorStatusCode || errorCode ? 'flex' : ''
-                }`}
-            >
-                {renderState()}
-            </div>
-        )
-    }
-
-    return renderClusterSummary()
+    return renderState()
 }
 
 export default React.memo(ClusterOverview)

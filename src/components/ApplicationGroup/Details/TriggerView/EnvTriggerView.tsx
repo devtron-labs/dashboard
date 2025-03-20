@@ -1941,7 +1941,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
     if (!filteredWorkflows.length) {
         return (
-            <div>
+            <div className='flex-grow-1'>
                 <AppNotConfigured />
             </div>
         )
@@ -2202,7 +2202,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                         <CloseIcon />
                                     </button>
                                 </div>
-                                <div style={{ height: 'calc(100% - 55px)' }}>
+                                <div className="flex-grow-1">
                                     <Progressing pageLoader size={32} />
                                 </div>
                             </>
@@ -2307,10 +2307,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         const _showPopupMenu = showPreDeployment || showPostDeployment
         return (
             <div className="flex dc__min-width-fit-content dc__gap-12">
-                {ChangeImageSource && <ChangeImageSource
-                    selectedWorkflows={selectedWorkflows}
-                    handleCloseChangeImageSource={handleCloseChangeImageSource}
-                />}
+                {ChangeImageSource && (
+                    <ChangeImageSource
+                        selectedWorkflows={selectedWorkflows}
+                        handleCloseChangeImageSource={handleCloseChangeImageSource}
+                    />
+                )}
                 <Button
                     dataTestId="change-branch-bulk"
                     text="Change branch"
@@ -2404,66 +2406,62 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         />
                     )
                 })}
-                {!!selectedAppList.length && (
-                    <div
-                        className="flexbox dc__content-space dc__position-fixed dc__bottom-0 dc__border-top w-100 bg__primary pt-12 pr-20 pb-12 pl-20 dc__right-0"
-                        style={{ width: 'calc(100vw - 56px)' }}
-                    >
-                        {renderSelectedApps()}
-                        {renderBulkTriggerActionButtons()}
-                    </div>
-                )}
                 <LinkedCIDetail workflows={filteredWorkflows} handleClose={handleModalClose} />
             </>
         )
     }
 
     return (
-        <div
-            className="svg-wrapper-trigger app-group-trigger-view-container bg__primary"
-            style={{ paddingBottom: selectedAppList.length ? '68px' : '16px' }}
-        >
-            <div className="flex left mb-14">
-                <Checkbox
-                    rootClassName="fs-13 app-group-checkbox"
-                    isChecked={isSelectAll}
-                    value={selectAllValue}
-                    onChange={handleSelectAll}
-                    dataTestId="select-all-apps"
+        <div className="dc__overflow-auto flex-grow-1 dc__content-space flexbox-col app-group-trigger-view-container bg__primary">
+            <div className="flexbox-col flex-grow-1 dc__overflow-auto py-16 px-20">
+                <div className="flex left mb-14">
+                    <Checkbox
+                        rootClassName="fs-13 app-group-checkbox"
+                        isChecked={isSelectAll}
+                        value={selectAllValue}
+                        onChange={handleSelectAll}
+                        dataTestId="select-all-apps"
+                    >
+                        Select all apps
+                    </Checkbox>
+                </div>
+
+                <Prompt when={enableRoutePrompt} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
+
+                <TriggerViewContext.Provider
+                    value={{
+                        invalidateCache,
+                        refreshMaterial,
+                        onClickTriggerCINode,
+                        onClickCIMaterial,
+                        onClickCDMaterial,
+                        onClickRollbackMaterial,
+                        closeCIModal,
+                        selectCommit,
+                        selectMaterial,
+                        toggleChanges,
+                        toggleInvalidateCache,
+                        getMaterialByCommit,
+                        getFilteredMaterial,
+                        reloadTriggerView,
+                    }}
                 >
-                    Select all apps
-                </Checkbox>
+                    {renderWorkflow()}
+                    {renderCIMaterial()}
+                    {renderCDMaterial()}
+                    {renderBulkCDMaterial()}
+                    {renderBulkCIMaterial()}
+                    {renderApprovalMaterial()}
+                    {renderBulkSourchChange()}
+                </TriggerViewContext.Provider>
+                <div />
             </div>
-
-            <Prompt when={enableRoutePrompt} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
-
-            <TriggerViewContext.Provider
-                value={{
-                    invalidateCache,
-                    refreshMaterial,
-                    onClickTriggerCINode,
-                    onClickCIMaterial,
-                    onClickCDMaterial,
-                    onClickRollbackMaterial,
-                    closeCIModal,
-                    selectCommit,
-                    selectMaterial,
-                    toggleChanges,
-                    toggleInvalidateCache,
-                    getMaterialByCommit,
-                    getFilteredMaterial,
-                    reloadTriggerView,
-                }}
-            >
-                {renderWorkflow()}
-                {renderCIMaterial()}
-                {renderCDMaterial()}
-                {renderBulkCDMaterial()}
-                {renderBulkCIMaterial()}
-                {renderApprovalMaterial()}
-                {renderBulkSourchChange()}
-            </TriggerViewContext.Provider>
-            <div />
+            {!!selectedAppList.length && (
+                <div className="flexbox dc__gap-8 dc__content-space dc__border-top w-100 bg__primary pt-12 pr-20 pb-12 pl-20">
+                    {renderSelectedApps()}
+                    {renderBulkTriggerActionButtons()}
+                </div>
+            )}
         </div>
     )
 }

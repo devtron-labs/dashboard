@@ -64,7 +64,7 @@ const NodeTreeDetailTab = ({
     const showContent = !!(appDetails?.resourceTree?.nodes?.length > 0 && tabs.length)
 
     const { stickyElementRef, isStuck: isDynamicTabsStuck } = useStickyEvent({
-        containerSelector: '.app-details-page',
+        containerSelector: '[data-testid="app-details-wrapper"]',
         isStickyElementMounted: showContent,
         identifier: 'node-tree-detail-tab',
     })
@@ -106,11 +106,11 @@ const NodeTreeDetailTab = ({
     // this is cuz, the components mark their own corresponding tabs as the selected tabs on mount
     return (
         showContent && (
-            <>
-                <div
-                    ref={stickyElementRef}
-                    className={`dc__position-sticky dc__left-0 ${dynamicTabsBackgroundClass} dc__transition--background dc__top-77 pt-7 dc__zi-10`}
-                >
+            <div
+                ref={stickyElementRef}
+                className="dc__position-sticky dc__top-0 h-100 dc__no-shrink flexbox-col node-tree-details-wrapper"
+            >
+                <div className={`${dynamicTabsBackgroundClass} dc__transition--background pt-7 dc__no-shrink`}>
                     <DynamicTabs
                         backgroundColorToken={dynamicTabsBackgroundClass}
                         variant={DynamicTabsVariantType.ROUNDED}
@@ -137,7 +137,7 @@ const NodeTreeDetailTab = ({
                         }}
                     />
                 </div>
-                <div className="node-tree-detail-tab__content flexbox-col w-100 dc__no-shrink">
+                <div className="flexbox-col w-100 flex-grow-1 dc__overflow-hidden">
                     <Switch>
                         <Route
                             path={[
@@ -231,7 +231,7 @@ const NodeTreeDetailTab = ({
                         <Redirect to={`${routeMatchPath}/${URLS.APP_DETAILS_K8}`} />
                     </Switch>
                 </div>
-            </>
+            </div>
         )
     )
 }

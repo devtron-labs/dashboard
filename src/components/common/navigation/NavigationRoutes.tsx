@@ -38,6 +38,7 @@ import {
     getUserPreferences,
     MODES,
     useTheme,
+    AppThemeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -159,7 +160,7 @@ export default function NavigationRoutes() {
     const [userPreferences, setUserPreferences] = useState<UserPreferencesType>(null)
     const [userPreferencesError, setUserPreferencesError] = useState<ServerErrors>(null)
 
-    const { showThemeSwitcherDialog, handleThemeSwitcherDialogVisibilityChange, handleThemePreferenceChange } =
+    const { showThemeSwitcherDialog, handleThemeSwitcherDialogVisibilityChange, handleThemePreferenceChange, appTheme } =
         useTheme()
 
     const { isAirgapped, isManifestScanningEnabled, canOnlyViewPermittedEnvOrgLevel } = environmentDataState
@@ -221,11 +222,7 @@ export default function NavigationRoutes() {
         }
     }
 
-    const handleCloseSwitchThemeDialog: SwitchThemeDialogProps['handleClose'] = (updatedThemePreference) => {
-        setUserPreferences((prev) => ({
-            ...prev,
-            themePreference: updatedThemePreference,
-        }))
+    const handleCloseSwitchThemeDialog: SwitchThemeDialogProps['handleClose'] = () => {
         handleThemeSwitcherDialogVisibilityChange(false)
     }
 
@@ -453,6 +450,13 @@ export default function NavigationRoutes() {
         }))
     }
 
+    const handleUpdateUserThemePreference = (themePreference: UserPreferencesType['themePreference']) => {
+        setUserPreferences((prev) => ({
+            ...prev,
+            themePreference,
+        }))
+    }
+
     if (pageState === ViewType.LOADING) {
         return (
             <div className="full-height-width">
@@ -461,7 +465,8 @@ export default function NavigationRoutes() {
         )
     }
     if (pageState === ViewType.ERROR) {
-        return <Reload />
+        // 100vh is required for covering the full height of the page as this is the top level component
+        return <Reload className="h-100vh bg__tertiary" />
     }
     const _isOnboardingPage = isOnboardingPage()
 
@@ -507,6 +512,7 @@ export default function NavigationRoutes() {
                         initialThemePreference={userPreferences?.themePreference}
                         handleClose={handleCloseSwitchThemeDialog}
                         currentUserPreferences={userPreferences}
+                        handleUpdateUserThemePreference={handleUpdateUserThemePreference}
                     />
                 )}
 
@@ -525,7 +531,7 @@ export default function NavigationRoutes() {
                 )}
                 {serverMode && (
                     <div
-                        className={`main bg__primary ${window._env_.FEATURE_EXPERIMENTAL_MODERN_LAYOUT_ENABLE ? 'main__modern-layout border__primary-translucent m-8 br-6' : ''} ${
+                        className={`main bg__primary ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} m-8 br-6 ${
                             pageOverflowEnabled ? '' : 'main__overflow-disabled'
                         }`}
                     >

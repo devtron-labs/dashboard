@@ -595,7 +595,7 @@ const HistoryLogs = ({
                     />
                     {(scrollToTop || scrollToBottom) && (
                         <Scroller
-                            style={{ position: 'fixed', bottom: '52px', right: '12px', zIndex: '4' }}
+                            style={{ position: 'absolute', bottom: '52px', right: '12px', zIndex: '4' }}
                             {...{ scrollToTop, scrollToBottom }}
                         />
                     )}
@@ -604,10 +604,11 @@ const HistoryLogs = ({
                     <GitChanges gitTriggers={triggerDetails.gitTriggers} ciMaterials={triggerDetails.ciMaterials} />
                 </Route>
                 <Route path={`${path}/artifacts`}>
-                    {loading && <Progressing pageLoader />}
-                    {isJobCI && !loading && <div className="p-16 flexbox-col dc__gap-8">{CiArtifactsArrayCards}</div>}
-                    {!loading && (
-                        <div className="p-16 flex-grow-1">
+                    {loading ? (
+                        <Progressing pageLoader />
+                    ) : (
+                        <div className="p-16 flexbox-col dc__gap-8">
+                            {isJobCI && CiArtifactsArrayCards}
                             <Artifacts
                                 status={triggerDetails.status}
                                 artifact={triggerDetails.artifact}

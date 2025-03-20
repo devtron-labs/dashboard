@@ -141,59 +141,57 @@ export default function ClusterManifest({
             return <MessageUI msg={MESSAGING_UI.FETCHING_MANIFEST} icon={MsgUIType.LOADING} size={24} />
         }
         return (
-            <div className="h-100 flexbox-col">
-                <CodeEditor
-                    mode={MODES.YAML}
-                    noParsing
-                    readOnly={manifestMode !== EditModeType.EDIT && manifestMode !== EditModeType.REVIEW}
-                    diffView={manifestMode === EditModeType.REVIEW}
-                    codeEditorProps={{
-                        defaultValue: defaultManifest,
-                        theme: CodeEditorThemesKeys.vsDarkDT,
-                        height: '100%',
-                        value: manifestValue,
-                        onChange: setManifest,
-                    }}
-                    codeMirrorProps={{
-                        theme: AppThemeType.dark,
-                        height: '100%',
-                        ...(manifestMode === EditModeType.REVIEW
-                            ? {
-                                  diffView: true,
-                                  originalValue: defaultManifest,
-                                  modifiedValue: manifestValue,
-                                  onModifiedValueChange: setManifest,
-                              }
-                            : {
-                                  diffView: false,
-                                  value: manifestValue,
-                                  onChange: setManifest,
-                              }),
-                    }}
-                >
-                    {manifestMode === EditModeType.REVIEW && (
-                        <CodeEditor.Header
-                            hideDefaultSplitHeader
-                            className="dc__grid-half py-4 text__white vertical-divider"
-                        >
-                            <div className="flex dc__content-space px-12">
-                                <span>Pod manifest</span>
-                                <span className="flex" data-testid="close-to-edit-manifest" onClick={switchToEditMode}>
-                                    <Close className="icon-dim-16 cursor icon-fill__white" />
-                                </span>
-                            </div>
-                            <div className="flex left px-12">
-                                <Pencil className="icon-dim-16 mr-10 icon-stroke__white" />
-                                <span>Manifest (Editing)</span>
-                            </div>
-                        </CodeEditor.Header>
-                    )}
-                </CodeEditor>
-            </div>
+            <CodeEditor
+                mode={MODES.YAML}
+                noParsing
+                readOnly={manifestMode !== EditModeType.EDIT && manifestMode !== EditModeType.REVIEW}
+                diffView={manifestMode === EditModeType.REVIEW}
+                codeEditorProps={{
+                    defaultValue: defaultManifest,
+                    theme: CodeEditorThemesKeys.vsDarkDT,
+                    height: '0',
+                    value: manifestValue,
+                    onChange: setManifest,
+                }}
+                codeMirrorProps={{
+                    theme: AppThemeType.dark,
+                    height: '100%',
+                    ...(manifestMode === EditModeType.REVIEW
+                        ? {
+                                diffView: true,
+                                originalValue: defaultManifest,
+                                modifiedValue: manifestValue,
+                                onModifiedValueChange: setManifest,
+                            }
+                        : {
+                                diffView: false,
+                                value: manifestValue,
+                                onChange: setManifest,
+                            }),
+                }}
+            >
+                {manifestMode === EditModeType.REVIEW && (
+                    <CodeEditor.Header
+                        hideDefaultSplitHeader
+                        className="dc__grid-half py-4 text__white vertical-divider"
+                    >
+                        <div className="flex dc__content-space px-12">
+                            <span>Pod manifest</span>
+                            <span className="flex" data-testid="close-to-edit-manifest" onClick={switchToEditMode}>
+                                <Close className="icon-dim-16 cursor icon-fill__white" />
+                            </span>
+                        </div>
+                        <div className="flex left px-12">
+                            <Pencil className="icon-dim-16 mr-10 icon-stroke__white" />
+                            <span>Manifest (Editing)</span>
+                        </div>
+                    </CodeEditor.Header>
+                )}
+            </CodeEditor>
         )
     }
 
-    return <div className="dc__overflow-hidden h-100">{renderManifest()}</div>
+    return <div className="dc__overflow-hidden flex-grow-1 flexbox-col cluster-manifest">{renderManifest()}</div>
 }
 
 export const ManifestPopupMenu = ({ closePopup, podName, namespace, forceDeletePod }: ManifestPopuptype) => {

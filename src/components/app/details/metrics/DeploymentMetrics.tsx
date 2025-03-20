@@ -15,7 +15,13 @@
  */
 
 import React, { Component } from 'react'
-import { showError, Progressing, ErrorScreenManager, GenericEmptyState, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    GenericEmptyState,
+    SelectPicker,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { generatePath } from 'react-router-dom'
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Label, ReferenceLine } from 'recharts'
 import moment from 'moment'
@@ -541,11 +547,9 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
         const env = this.state.environments.find((e) => e.value === Number(this.props.match.params.envId))
         const envName = env ? env.label : ''
         return (
-            <div>
+            <div className="flexbox-col flex-grow-1">
                 {this.renderInputs()}
-                <div
-                    className="dc__position-rel bg__primary"
-                >
+                <div className="dc__position-rel bg__primary flex-grow-1">
                     <GenericEmptyState
                         image={AppNotDeployed}
                         title={EMPTY_STATE_STATUS.RENDER_EMPTY_STATE.TITILE}
@@ -558,7 +562,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
 
     renderNoEnvironmentView() {
         return (
-            <div className="dc__position-rel bg__primary">
+            <div className="flex-grow-1">
                 <GenericEmptyState
                     image={SelectEnvImage}
                     title={EMPTY_STATE_STATUS.RENDER_NO_ENVIORNMENT_STATE.TITLE}
@@ -570,12 +574,9 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
 
     renderSelectEnvironmentView() {
         return (
-            <div>
+            <div className="flexbox-col flex-grow-1">
                 {this.renderInputs()}
-                <div
-                    className="dc__position-rel"
-                    style={{ backgroundColor: 'var(--bg-primary)', height: 'calc(100vh - 150px' }}
-                >
+                <div className="dc__position-rel flex-grow-1 bg__primary">
                     <GenericEmptyState
                         image={SelectEnvImage}
                         title={EMPTY_STATE_STATUS.RENDER_SELECT_ENVIRONMENT_VIEW.TITLE}
@@ -619,7 +620,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
     render() {
         if (this.state.view === ViewType.LOADING) {
             return (
-                <div>
+                <div className="flex-grow-1">
                     <Progressing pageLoader />
                 </div>
             )

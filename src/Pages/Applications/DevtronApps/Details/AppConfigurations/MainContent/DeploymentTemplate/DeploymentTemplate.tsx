@@ -1933,9 +1933,7 @@ const DeploymentTemplate = ({
 
     return (
         <>
-            <div
-                className={`h-100 bg__tertiary ${showDraftComments ? 'deployment-template__comments-view' : 'flexbox'}`}
-            >
+            <div className="h-100 bg__tertiary flexbox">
                 {renderDeploymentTemplate()}
 
                 {DraftComments && showDraftComments && (
