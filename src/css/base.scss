@@ -295,13 +295,14 @@ a:focus {
     hyphens: auto;
 }
 
-//Do not use dc__truncate-text use dc__ellipsis-right
+//Do not use dc__truncate-text use dc__truncate
 
 .dc__truncate-text {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    min-width: 0px;
+    @extend .dc__truncate;
+    // white-space: nowrap;
+    // overflow: hidden;
+    // text-overflow: ellipsis;
+    // min-width: 0px;
 }
 
 .dc__position-fixed {
@@ -5095,4 +5096,3 @@ details[open] {
         }
     }
 }
-
