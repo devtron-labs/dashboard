@@ -24,6 +24,7 @@ import {
     VariableType,
     NodeStatusDTO,
     CDFormType,
+    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 export const CD_PATCH_ACTION = {
@@ -165,7 +166,7 @@ export type ValidateMigrateToDevtronPayloadType = ValidateMigrateToDevtronCommon
           }
         | {
               deploymentAppType: DeploymentAppTypes.HELM
-              helmReleaseMetaData: {
+              helmReleaseMetadata: {
                   releaseClusterId: number
                   releaseNamespace: string
               }
@@ -181,15 +182,25 @@ interface ValidateMigrationDestinationDetailsDTO {
     environmentId: number
 }
 
+interface ChartMetadataCommonDTO {
+    requiredChartVersion: string
+    savedChartName: string
+    requiredChartName: string
+}
+
 interface ValidateMigrationSourceDetailsDTO {
     repoURL: string
     chartPath: string
-    chartMetadata: {
-        requiredChartVersion: string
-        savedChartName: string
+    chartMetadata: ChartMetadataCommonDTO & {
         valuesFileName: string
-        requiredChartName: string
     }
+}
+
+export interface MigrateToDevtronFormState {
+    deploymentAppType: Extract<DeploymentAppTypes, DeploymentAppTypes.HELM | DeploymentAppTypes.GITOPS> | null
+    migrateFromArgoFormState: MigrateToDevtronBaseFormStateType
+    migrateFromHelmFormState: MigrateToDevtronBaseFormStateType
+    triggerType: (typeof TriggerType)[keyof typeof TriggerType]
 }
 
 export interface ValidateMigrationSourceServiceParamsType {
@@ -203,6 +214,24 @@ export interface ValidateMigrationSourceDTO {
         validationFailedReason: MigrationSourceValidationReasonType
         validationFailedMessage: string
     }
+    helmReleaseMetadata: {
+        name: string
+        info: {
+            status: string
+        }
+        chart: {
+            metadata: ChartMetadataCommonDTO & {
+                home: string
+                icon: string
+                apiVersion: string
+                deprecated: boolean
+            }
+        }
+        destination: ValidateMigrationDestinationDetailsDTO
+    }
+    /**
+     * Data relevant to argo application
+     */
     applicationMetadata: {
         source: ValidateMigrationSourceDetailsDTO
         destination: ValidateMigrationDestinationDetailsDTO
@@ -210,28 +239,55 @@ export interface ValidateMigrationSourceDTO {
     }
 }
 
-export interface MigrateFromArgoFormState {
-    appName: string | null
-    namespace: string | null
-    clusterId: number | null
-    clusterName: string | null
-    validationResponse: ValidateMigrationSourceDTO | null
+export type ValidateMigrationSourceInfoBaseType = Pick<ValidateMigrationSourceDTO, 'isLinkable' | 'errorDetail'> & {
+    destination: ValidateMigrationDestinationDetailsDTO
+    requiredChartName: string
+    savedChartName: string
+    requiredChartVersion: string
 }
 
-export interface MigrateToDevtronFormState {
-    deploymentAppType: Extract<DeploymentAppTypes, DeploymentAppTypes.HELM | DeploymentAppTypes.GITOPS> | null
-    migrateFromArgoFormState: MigrateFromArgoFormState
-    triggerType: (typeof TriggerType)[keyof typeof TriggerType]
+export type ValidateMigrationSourceInfoType = ValidateMigrationSourceInfoBaseType &
+    (
+        | {
+              deploymentAppType: DeploymentAppTypes.GITOPS
+              status: NodeStatusDTO
+              chartIcon?: never
+          }
+        | {
+              deploymentAppType: DeploymentAppTypes.HELM
+              status: string
+              chartIcon: string
+          }
+    )
+
+export interface MigrateToDevtronBaseFormStateType {
+    appName: string
+    namespace: string
+    clusterId: number
+    clusterName: string
+    validationResponse: ValidateMigrationSourceInfoType
+    appIcon: SelectPickerOptionType['startIcon'] | null
 }
 
-// Will generalize this type as per helm in next PR of migrating helm release to devtron
-export interface MigrateArgoAppToCDPipelineRequiredPayloadType
+export interface MigrateArgoAppToCDPipelineRequiredBasePayloadType
     extends Pick<MigrateToDevtronFormState, 'triggerType'>,
-        Pick<CDFormType, 'environmentId' | 'environmentName' | 'namespace'>,
-        ValidationPayloadApplicationMetaDataType {
+        Pick<CDFormType, 'environmentId' | 'environmentName' | 'namespace'> {
     deploymentAppName: ValidateMigrateToDevtronPayloadType['deploymentAppName']
-    deploymentAppType: DeploymentAppTypes
 }
+
+export type MigrateArgoAppToCDPipelineRequiredPayloadType = MigrateArgoAppToCDPipelineRequiredBasePayloadType &
+    (
+        | {
+              deploymentAppType: DeploymentAppTypes.GITOPS
+              applicationObjectClusterId: ValidationPayloadApplicationMetaDataType['applicationObjectClusterId']
+              applicationObjectNamespace: ValidationPayloadApplicationMetaDataType['applicationObjectNamespace']
+          }
+        | {
+              deploymentAppType: DeploymentAppTypes.HELM
+              applicationObjectClusterId?: never
+              applicationObjectNamespace?: never
+          }
+    )
 
 export interface TriggerTypeRadioProps {
     value: (typeof TriggerType)[keyof typeof TriggerType]
