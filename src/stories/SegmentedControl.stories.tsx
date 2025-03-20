@@ -18,8 +18,20 @@ import type { Meta, StoryObj } from '@storybook/react'
 
 import { NSegmentedControl, NSegmentedControlProps } from '@devtron-labs/devtron-fe-common-lib'
 
+const SEGMENTED_CONTROL_SIZE_MAP: Record<NSegmentedControlProps['size'], null> = {
+    xs: null,
+    small: null,
+    medium: null,
+} as const
+
 const meta = {
     component: NSegmentedControl,
+    argTypes: {
+        size: {
+            options: Object.keys(SEGMENTED_CONTROL_SIZE_MAP),
+            control: { type: 'radio' },
+        },
+    },
 } satisfies Meta<NSegmentedControlProps>
 
 export default meta
