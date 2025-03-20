@@ -38,7 +38,7 @@ export const EventsTable = ({ loading, eventsList, isResourceBrowserView, errorV
             return (
                 <div
                     data-testid="app-events-container"
-                    className={`text__white flex-grow-1 dc__overflow-auto ${getComponentSpecificThemeClass(AppThemeType.dark)}`}
+                    className={`text__white flex-grow-1 dc__overflow-auto bg__primary ${getComponentSpecificThemeClass(AppThemeType.dark)}`}
                 >
                     {errorValue?.status === TERMINAL_STATUS.TERMINATED && (
                         <div className="pl-20 h-24 flex left pr-20 w-100 bcr-7 cn-0">
