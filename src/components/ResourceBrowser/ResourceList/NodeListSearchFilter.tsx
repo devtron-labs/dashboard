@@ -31,12 +31,7 @@ import {
     NODE_SEARCH_KEY_PLACEHOLDER,
 } from '../Constants'
 
-const NodeListSearchFilter = ({
-    visibleColumns,
-    setVisibleColumns,
-    isOpen,
-    searchParams,
-}: NodeListSearchFilterType) => {
+const NodeListSearchFilter = ({ visibleColumns, setVisibleColumns, searchParams }: NodeListSearchFilterType) => {
     const { clusterId } = useParams<URLParams>()
 
     const selectedSearchTextType: NODE_SEARCH_KEYS | '' = Object.values(NODE_SEARCH_KEYS).reduce((type, key) => {
@@ -103,16 +98,14 @@ const NodeListSearchFilter = ({
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
 
     useEffect(() => {
-        if (registerShortcut && isOpen) {
-            registerShortcut({ keys: ['R'], callback: handleFocusInput })
-            registerShortcut({ keys: ['Escape'], callback: handleBlurInput })
-        }
+        registerShortcut({ keys: ['R'], callback: handleFocusInput })
+        registerShortcut({ keys: ['Escape'], callback: handleBlurInput })
 
         return (): void => {
             unregisterShortcut(['R'])
             unregisterShortcut(['Escape'])
         }
-    }, [isOpen])
+    }, [])
 
     const handleQueryParamsUpdate = (callback: (queryObject: ParsedQuery) => ParsedQuery) => {
         if (!callback) {

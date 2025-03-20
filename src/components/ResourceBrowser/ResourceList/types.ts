@@ -14,22 +14,11 @@
  * limitations under the License.
  */
 
-import {
-    K8sResourceDetailType,
-    ServerErrors,
-    ALL_NAMESPACE_OPTION,
-    RBBulkOperationType,
-} from '@devtron-labs/devtron-fe-common-lib'
-import { Dispatch, ReactNode, SetStateAction } from 'react'
+import { K8sResourceDetailType, ServerErrors, RBBulkOperationType } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactNode } from 'react'
 import { ClusterListType } from '@Components/ClusterNodes/types'
 import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
-import {
-    K8SResourceListType,
-    ResourceBrowserActionMenuType,
-    ResourceFilterOptionsProps,
-    SidebarType,
-    URLParams,
-} from '../Types'
+import { K8SResourceListType, ResourceBrowserActionMenuType, ResourceFilterOptionsProps, URLParams } from '../Types'
 
 export interface BaseResourceListProps
     extends Partial<Pick<ResourceFilterOptionsProps, 'areFiltersHidden' | 'searchPlaceholder'>>,
@@ -37,7 +26,6 @@ export interface BaseResourceListProps
         Pick<
             K8SResourceListType,
             | 'addTab'
-            | 'isOpen'
             | 'renderRefreshBar'
             | 'selectedCluster'
             | 'selectedResource'
@@ -47,15 +35,12 @@ export interface BaseResourceListProps
             | 'handleResourceClick'
             | 'lowercaseKindToResourceGroupMap'
         >,
-        Pick<SidebarType, 'updateK8sResourceTab'>,
         Pick<URLParams, 'nodeType' | 'group'> {
     isLoading: boolean
     resourceListError: ServerErrors
     resourceList: K8sResourceDetailType
     clusterId: string
     reloadResourceListData: () => void
-    selectedNamespace: typeof ALL_NAMESPACE_OPTION
-    setSelectedNamespace: Dispatch<SetStateAction<typeof ALL_NAMESPACE_OPTION>>
     children?: ReactNode
     showGenericNullState?: boolean
     hideBulkSelection?: boolean
@@ -68,7 +53,7 @@ export interface BaseResourceListProps
 }
 
 export interface ClusterUpgradeCompatibilityInfoProps
-    extends Pick<UseTabsReturnType, 'addTab'>,
+    extends Pick<UseTabsReturnType, 'addTab' | 'markTabActiveById' | 'getTabId'>,
         Pick<ClusterListType, 'updateTabUrl'>,
         Pick<
             BaseResourceListProps,

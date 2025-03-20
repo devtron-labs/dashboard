@@ -38,7 +38,7 @@ import {
     noop,
     AppThemeType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, useLocation, useHistory } from 'react-router-dom'
+import { useParams, useLocation, useHistory, useRouteMatch } from 'react-router-dom'
 import YAML from 'yaml'
 import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
@@ -81,8 +81,9 @@ import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSel
 import './clusterNodes.scss'
 import ResourceBrowserActionMenu from '../ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
 
-const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterListType) => {
+const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl, markTabActiveById, getTabId }: ClusterListType) => {
     const { clusterId, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
+    const { url } = useRouteMatch()
     const [loader, setLoader] = useState(true)
     const [apiInProgress, setApiInProgress] = useState(false)
     const [isReviewState, setIsReviewStates] = useState(false)
@@ -110,6 +111,20 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     const location = useLocation()
     const queryParams = new URLSearchParams(location.search)
     const { push, replace } = useHistory()
+
+    useEffect(() => {
+        console.log(getTabId(K8S_EMPTY_GROUP, node, 'node'), 'node')
+        markTabActiveById(getTabId(K8S_EMPTY_GROUP, node, 'node')).then((isTabFound) => {
+            if (!isTabFound) {
+                addTab({
+                    idPrefix: K8S_EMPTY_GROUP,
+                    name: node,
+                    kind: 'node',
+                    url,
+                }).catch(noop)
+            }
+        }).catch(noop)
+    }, [])
 
     const getData = (_patchdata: jsonpatch.Operation[]) => {
         setLoader(true)
@@ -193,6 +208,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                 _searchParam += NODE_DETAILS_TABS.nodeConditions.toLowerCase().replace(' ', '-')
             }
             updateTabUrl({
+                id: getTabId(K8S_EMPTY_GROUP, node, 'node'),
                 url: `${location.pathname}${_searchParam}`,
             })
         }

@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-import {
-    useAsync,
-    abortPreviousRequests,
-    Nodes,
-    getIsRequestAborted,
-    ALL_NAMESPACE_OPTION,
-} from '@devtron-labs/devtron-fe-common-lib'
-import { useMemo, useRef, useState } from 'react'
+import { useAsync, abortPreviousRequests, Nodes, getIsRequestAborted } from '@devtron-labs/devtron-fe-common-lib'
+import { useMemo, useRef } from 'react'
 import { useParams, useLocation } from 'react-router-dom'
 import { getPodRestartRBACPayload } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
@@ -43,9 +37,7 @@ export const K8SResourceList = ({
     selectedCluster,
     addTab,
     renderRefreshBar,
-    isOpen,
     showStaleDataWarning,
-    updateK8sResourceTab,
     setWidgetEventDetails,
     handleResourceClick,
     clusterName,
@@ -53,10 +45,7 @@ export const K8SResourceList = ({
 }: K8SResourceListType) => {
     // HOOKS
     const location = useLocation()
-    const { clusterId, nodeType, group } = useParams<URLParams>()
-
-    // STATES
-    const [selectedNamespace, setSelectedNamespace] = useState(ALL_NAMESPACE_OPTION)
+    const { clusterId, nodeType, group, namespace } = useParams<URLParams>()
 
     // REFS
     const abortControllerRef = useRef(new AbortController())
@@ -71,7 +60,7 @@ export const K8SResourceList = ({
                 if (selectedResource) {
                     return getResourceData({
                         selectedResource,
-                        selectedNamespace,
+                        namespace,
                         clusterId,
                         filters,
                         abortControllerRef,
@@ -80,7 +69,7 @@ export const K8SResourceList = ({
 
                 return null
             }, abortControllerRef),
-        [selectedResource, clusterId, selectedNamespace, filters],
+        [selectedResource, clusterId, namespace, filters],
     )
 
     const resourceListDataError = getIsRequestAborted(_resourceListDataError) ? null : _resourceListDataError
@@ -119,12 +108,8 @@ export const K8SResourceList = ({
             showStaleDataWarning={showStaleDataWarning}
             selectedResource={selectedResource}
             reloadResourceListData={reloadResourceListData}
-            selectedNamespace={selectedNamespace}
-            setSelectedNamespace={setSelectedNamespace}
             selectedCluster={selectedCluster}
-            isOpen={isOpen}
             renderRefreshBar={renderRefreshBar}
-            updateK8sResourceTab={updateK8sResourceTab}
             nodeType={nodeType}
             group={group}
             addTab={addTab}

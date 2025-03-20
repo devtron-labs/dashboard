@@ -23,7 +23,7 @@ import {
     NodeTaintType,
     NodeActionRequest,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { UpdateTabUrlParamsType, UseTabsReturnType } from '@Components/common/DynamicTabs/types'
+import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 import { LabelTag, OptionType } from '../app/types'
 import { CLUSTER_PAGE_TAB } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
@@ -129,9 +129,10 @@ export interface ColumnMetadataType {
     isDisabled?: boolean
 }
 
-export interface ClusterListType extends Pick<K8SResourceListType, 'lowercaseKindToResourceGroupMap'> {
+export interface ClusterListType
+    extends Pick<K8SResourceListType, 'lowercaseKindToResourceGroupMap'>,
+        Pick<UseTabsReturnType, 'markTabActiveById' | 'getTabId' | 'updateTabUrl'> {
     addTab?: UseTabsReturnType['addTab']
-    updateTabUrl: (params: Omit<UpdateTabUrlParamsType, 'id'>) => void
 }
 
 export interface ClusterAboutPropType {
@@ -283,9 +284,8 @@ export interface ClusterErrorType {
     errorType: ERROR_TYPE
     filterText: string[]
 }
-export interface ClusterOverviewProps {
+export interface ClusterOverviewProps extends Pick<UseTabsReturnType, 'markTabActiveById' | 'addTab'> {
     selectedCluster: ClusterOptionType
-    addTab: UseTabsReturnType['addTab']
 }
 
 export interface ClusterMapInitialStatusType {

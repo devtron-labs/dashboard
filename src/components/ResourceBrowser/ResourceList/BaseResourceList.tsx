@@ -41,7 +41,7 @@ import {
     useResizableTableConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 import DOMPurify from 'dompurify'
-import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import WebWorker from '@Components/app/WebWorker'
 import searchWorker from '@Config/searchWorker'
@@ -75,6 +75,7 @@ import ResourceFilterOptions from './ResourceFilterOptions'
 import { BaseResourceListProps, BulkOperationsModalState } from './types'
 import { getAppliedColumnsFromLocalStorage, getFirstResourceFromKindResourceMap } from './utils'
 import NodeListSearchFilter from './NodeListSearchFilter'
+import { URLParams } from '../Types'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const RBBulkSelectionActionWidget = importComponentFromFELibrary('RBBulkSelectionActionWidget', null, 'function')
@@ -89,12 +90,8 @@ const BaseResourceListContent = ({
     showStaleDataWarning,
     selectedResource,
     reloadResourceListData,
-    selectedNamespace,
-    setSelectedNamespace,
     selectedCluster,
-    isOpen,
     renderRefreshBar,
-    updateK8sResourceTab,
     children,
     nodeType,
     group,
@@ -109,6 +106,7 @@ const BaseResourceListContent = ({
     lowercaseKindToResourceGroupMap,
     handleResourceClick: onResourceClick,
 }: BaseResourceListProps) => {
+    const { namespace } = useParams<URLParams>()
     const [filteredResourceList, setFilteredResourceList] = useState<K8sResourceDetailType['data']>(null)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
     const [resourceListOffset, setResourceListOffset] = useState(0)
@@ -265,10 +263,6 @@ const BaseResourceListContent = ({
     }, [nodeType])
 
     useEffect(() => {
-        if (!isOpen) {
-            return
-        }
-
         if (!resourceList) {
             setFilteredResourceList(null)
             return
@@ -276,7 +270,7 @@ const BaseResourceListContent = ({
 
         handleFilterChanges(searchText)
         setResourceListOffset(0)
-    }, [resourceList, sortBy, sortOrder, location.search, isOpen])
+    }, [resourceList, sortBy, sortOrder, location.search])
 
     const getHandleCheckedForId = (resourceData: K8sResourceDetailDataType) => () => {
         const { id } = resourceData as Record<'id', string>
@@ -326,7 +320,6 @@ const BaseResourceListContent = ({
     const setSearchText = (text: string) => {
         const searchParamString = updateQueryString(location, [[SEARCH_QUERY_PARAM_KEY, text]])
         const _url = `${location.pathname}?${searchParamString}`
-        updateK8sResourceTab({ url: _url })
         replace(_url)
         handleFilterChanges(text, true)
         if (text) {
@@ -337,11 +330,9 @@ const BaseResourceListContent = ({
 
     const emptyStateActionHandler = () => {
         const pathname = `${URLS.RESOURCE_BROWSER}/${clusterId}/${ALL_NAMESPACE_OPTION.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}`
-        updateK8sResourceTab({ url: pathname, dynamicTitle: '', retainSearchParams: false })
         push(pathname)
         setFilteredResourceList(resourceList?.data ?? null)
         setResourceListOffset(0)
-        setSelectedNamespace(ALL_NAMESPACE_OPTION)
         setLastTimeStringSinceClearAllFilters(new Date().toISOString())
     }
 
@@ -554,8 +545,7 @@ const BaseResourceListContent = ({
                 return <GenericFilterEmptyState />
             }
 
-            const isFilterApplied =
-                searchText || location.search || selectedNamespace.value !== ALL_NAMESPACE_OPTION.value
+            const isFilterApplied = searchText || location.search || namespace !== ALL_NAMESPACE_OPTION.value
 
             return isFilterApplied ? (
                 <ResourceListEmptyState
@@ -651,22 +641,17 @@ const BaseResourceListContent = ({
                     visibleColumns={visibleColumns}
                     setVisibleColumns={setVisibleColumns}
                     searchParams={searchParams}
-                    isOpen={isOpen}
                 />
             ) : (
                 <ResourceFilterOptions
                     key={`${selectedResource?.gvk.Kind}-${selectedResource?.gvk.Group}`}
                     selectedResource={selectedResource}
-                    selectedNamespace={selectedNamespace}
-                    setSelectedNamespace={setSelectedNamespace}
                     selectedCluster={selectedCluster}
                     searchText={searchText}
-                    isOpen={isOpen}
                     resourceList={resourceList}
                     setSearchText={setSearchText}
                     isSearchInputDisabled={isLoading}
                     renderRefreshBar={renderRefreshBar}
-                    updateK8sResourceTab={updateK8sResourceTab}
                     areFiltersHidden={areFiltersHidden}
                     searchPlaceholder={searchPlaceholder}
                 />

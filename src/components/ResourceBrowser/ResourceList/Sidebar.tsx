@@ -38,14 +38,7 @@ import {
     getK8SObjectMapAfterGroupHeadingClick,
 } from '../Utils'
 
-const Sidebar = ({
-    apiResources,
-    selectedResource,
-    setSelectedResource,
-    updateK8sResourceTab,
-    updateK8sResourceTabLastSyncMoment,
-    isOpen,
-}: SidebarType) => {
+const Sidebar = ({ apiResources, selectedResource, setSelectedResource }: SidebarType) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
     const { push } = useHistory()
@@ -88,14 +81,12 @@ const Sidebar = ({
     }
 
     useEffect(() => {
-        if (isOpen) {
-            registerShortcut({ callback: handleInputShortcut, keys: ['K'] })
-        }
+        registerShortcut({ callback: handleInputShortcut, keys: ['K'] })
 
         return () => {
             unregisterShortcut(['K'])
         }
-    }, [isOpen])
+    }, [])
 
     const getGroupHeadingClickHandler =
         (preventCollapse = false, preventScroll = false) =>
@@ -122,9 +113,7 @@ const Sidebar = ({
             isGrouped: e.currentTarget.dataset.grouped === 'true',
         }
         setSelectedResource(_selectedResource)
-        updateK8sResourceTabLastSyncMoment()
         const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}${location.search}`
-        updateK8sResourceTab({ url: _url, dynamicTitle: e.currentTarget.dataset.kind })
         if (shouldPushUrl) {
             push(_url)
         }
@@ -151,7 +140,7 @@ const Sidebar = ({
 
     useEffect(() => {
         /* NOTE: this effect accommodates for user navigating through browser history (push) */
-        if (!isOpen || nodeType === selectedResource?.gvk.Kind.toLowerCase() || !k8sObjectOptionsList.length) {
+        if (nodeType === selectedResource?.gvk.Kind.toLowerCase() || !k8sObjectOptionsList.length) {
             return
         }
         /* NOTE: match will never be null; due to node fallback */
@@ -169,7 +158,7 @@ const Sidebar = ({
             /* NOTE: if we push here the history will be lost */
             !selectedResource,
         )
-    }, [nodeType, k8sObjectOptionsList, isOpen])
+    }, [nodeType, k8sObjectOptionsList])
 
     const selectedChildRef: React.Ref<HTMLButtonElement> = (node) => {
         /**

@@ -29,10 +29,6 @@ const ResourceBrowserRouter: React.FC = () => {
 
     return (
         <Switch>
-            <Route path={`${path}/:clusterId/:namespace/:nodeType/:group/:node?`}>
-                <ResourceList />
-            </Route>
-
             {CompareClusterViewWrapper && window._env_.FEATURE_RB_SYNC_CLUSTER_ENABLE && (
                 <Route path={`${COMMON_URLS.RESOURCE_BROWSER}${COMMON_URLS.COMPARE_CLUSTERS}`} exact>
                     <CompareClusterViewWrapper />
@@ -41,6 +37,10 @@ const ResourceBrowserRouter: React.FC = () => {
 
             <Route path={path} exact>
                 <ResourceBrowser />
+            </Route>
+
+            <Route path={`${path}/:clusterId`}>
+                <ResourceList />
             </Route>
 
             <Redirect to={path} />

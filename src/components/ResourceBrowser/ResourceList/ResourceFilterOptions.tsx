@@ -36,15 +36,11 @@ const FilterButton = importComponentFromFELibrary('FilterButton', null, 'functio
 
 const ResourceFilterOptions = ({
     selectedResource,
-    selectedNamespace,
     selectedCluster,
-    setSelectedNamespace,
     searchText,
-    isOpen,
     setSearchText,
     isSearchInputDisabled,
     renderRefreshBar,
-    updateK8sResourceTab,
     areFiltersHidden = false,
     searchPlaceholder,
 }: ResourceFilterOptionsProps) => {
@@ -65,6 +61,11 @@ const ResourceFilterOptions = ({
         [namespaceByClusterIdList],
     )
 
+    const selectedNamespace = useMemo(
+        () => namespaceOptions.find((option) => option.value.toLowerCase() === namespace) || namespaceOptions[0],
+        [namespace, namespaceOptions],
+    )
+
     const handleInputShortcut = () => {
         searchInputRef.current?.focus()
     }
@@ -74,15 +75,14 @@ const ResourceFilterOptions = ({
     }
 
     useEffect(() => {
-        if (registerShortcut && isOpen) {
-            registerShortcut({ keys: ['R'], callback: handleInputShortcut })
-            registerShortcut({ keys: ['F'], callback: handleShowFilterModal })
-        }
+        registerShortcut({ keys: ['R'], callback: handleInputShortcut })
+        registerShortcut({ keys: ['F'], callback: handleShowFilterModal })
+
         return (): void => {
             unregisterShortcut(['F'])
             unregisterShortcut(['R'])
         }
-    }, [isOpen])
+    }, [])
 
     const handleFilterKeyUp = (e: KeyboardEvent): void => {
         if (e.key === 'Escape' || e.key === 'Esc') {
@@ -102,13 +102,11 @@ const ResourceFilterOptions = ({
             return
         }
         const url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${selected.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}${location.search}`
-        updateK8sResourceTab({ url })
         replace(url)
-        setSelectedNamespace(selected)
     }
 
     useEffect(() => {
-        if (!isOpen || namespace === selectedNamespace.value || namespaceOptions.length === 1) {
+        if (namespace === selectedNamespace.value || namespaceOptions.length === 1) {
             return
         }
         const matchedOption = namespaceOptions.find((option) => option.value === namespace)
@@ -149,7 +147,6 @@ const ResourceFilterOptions = ({
                         {FilterButton && (
                             <FilterButton
                                 clusterName={selectedCluster?.label || ''}
-                                updateTabUrl={updateK8sResourceTab}
                                 showModal={showFilterModal}
                                 setShowModal={setShowFilterModal}
                             />

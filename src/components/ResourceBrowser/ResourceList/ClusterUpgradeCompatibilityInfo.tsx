@@ -22,14 +22,17 @@ import {
     noop,
     Progressing,
     useSearchString,
-    ALL_NAMESPACE_OPTION,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as NoOffendingPipeline } from '@Images/no-offending-pipeline.svg'
 import { URLS } from '@Config/routes'
+import { useEffect } from 'react'
+import { useRouteMatch } from 'react-router-dom'
+import { UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/types'
 import BaseResourceList from './BaseResourceList'
-import { SIDEBAR_KEYS, TARGET_K8S_VERSION_SEARCH_KEY } from '../Constants'
+import { SIDEBAR_KEYS, TARGET_K8S_VERSION_SEARCH_KEY, UPGRADE_CLUSTER_CONSTANTS } from '../Constants'
 import { ClusterUpgradeCompatibilityInfoProps } from './types'
+import { getUpgradeCompatibilityTippyConfig } from './utils'
 
 const useClusterUpgradeCompatibilityInfo = importComponentFromFELibrary(
     'useClusterUpgradeCompatibilityInfo',
@@ -45,8 +48,17 @@ const ClusterUpgradeCompatibilityInfo = ({
     addTab,
     lowercaseKindToResourceGroupMap,
     handleResourceClick,
+    markTabActiveById,
+    getTabId,
 }: ClusterUpgradeCompatibilityInfoProps) => {
     const targetK8sVersion = useSearchString().queryParams.get(TARGET_K8S_VERSION_SEARCH_KEY)
+    const { url } = useRouteMatch()
+
+    const tabId = getTabId(
+        UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX,
+        UPGRADE_CLUSTER_CONSTANTS.NAME,
+        SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase(),
+    )
 
     const {
         isLoading,
@@ -59,8 +71,32 @@ const ClusterUpgradeCompatibilityInfo = ({
     } = useClusterUpgradeCompatibilityInfo({
         targetK8sVersion,
         clusterId,
-        updateTabUrl,
+        updateTabUrl: (props: UpdateTabUrlParamsType) => {
+            updateTabUrl({
+                id: tabId,
+                ...props,
+            })
+        },
     })
+
+    useEffect(() => {
+        markTabActiveById(tabId)
+            .then((isTabFound) => {
+                if (!isTabFound) {
+                    addTab({
+                        idPrefix: UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX,
+                        name: UPGRADE_CLUSTER_CONSTANTS.NAME,
+                        url,
+                        kind: SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase(),
+                        dynamicTitle: `${UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE} to v${targetK8sVersion}`,
+                        tippyConfig: getUpgradeCompatibilityTippyConfig({
+                            targetK8sVersion,
+                        }),
+                    }).catch(noop)
+                }
+            })
+            .catch(noop)
+    }, [])
 
     if (isLoading) {
         return (
@@ -119,13 +155,9 @@ const ClusterUpgradeCompatibilityInfo = ({
                     gvk: SIDEBAR_KEYS.upgradeClusterGVK,
                     namespaced: false,
                 }}
-                selectedNamespace={ALL_NAMESPACE_OPTION}
                 selectedCluster={selectedCluster}
-                isOpen
                 reloadResourceListData={refetchCompatibilityList}
-                setSelectedNamespace={noop}
                 renderRefreshBar={noop}
-                updateK8sResourceTab={noop}
                 setWidgetEventDetails={noop}
                 nodeType={null}
                 group={null}

@@ -83,6 +83,9 @@ const NodeDetailComponent = ({
     updateTabUrl,
     isExternalApp,
     clusterName = '',
+    markTabActiveById,
+    getTabId,
+    addTab,
 }: NodeDetailPropsType) => {
     const location = useLocation()
     const appDetails = IndexStore.getAppDetails()
@@ -158,6 +161,22 @@ const NodeDetailComponent = ({
         (isResourceBrowserView ? selectedResource?.containers ?? [] : getContainersData(podMetaData)) as Options[],
     )
     const [startTerminal, setStartTerminal] = useState<boolean>(false)
+
+    const idPrefix = `${params.group || K8S_EMPTY_GROUP}_${params.namespace}`
+    const tabId = getTabId(idPrefix, params.node, params.nodeType)
+
+    useEffect(() => {
+        markTabActiveById(tabId).then((isTabFound) => {
+            if (!isTabFound) {
+                addTab({
+                    idPrefix,
+                    name: params.node,
+                    kind: params.nodeType,
+                    url: location.pathname,
+                }).catch(noop)
+            }
+        })
+    }, [])
 
     const selectedContainerValue = isResourceBrowserView ? selectedResource?.name : podMetaData?.name
     const _selectedContainer = selectedContainer.get(selectedContainerValue) || containers?.[0]?.name || ''
@@ -302,6 +321,7 @@ const NodeDetailComponent = ({
     const handleSelectedTab = (_tabName: string, _url: string) => {
         setSelectedTabName(_tabName)
         updateTabUrl({
+            id: tabId,
             url: _url,
         })
     }

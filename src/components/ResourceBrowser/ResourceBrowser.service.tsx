@@ -65,7 +65,7 @@ export const getNodeList = (
 
 export const getResourceData = async ({
     selectedResource,
-    selectedNamespace,
+    namespace,
     clusterId,
     filters,
     abortControllerRef,
@@ -78,7 +78,7 @@ export const getResourceData = async ({
         }
 
         return await getK8sResourceList(
-            getK8sResourceListPayload(clusterId, selectedNamespace.value.toLowerCase(), selectedResource, filters),
+            getK8sResourceListPayload(clusterId, namespace, selectedResource, filters),
             abortControllerRef.current.signal,
         )
     } catch (err) {

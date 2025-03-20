@@ -375,7 +375,7 @@ export interface LogAnalyzerProps extends LogSearchTermType {
 
 export interface NodeDetailPropsType
     extends LogSearchTermType,
-        Pick<ClusterListType, 'lowercaseKindToResourceGroupMap' | 'updateTabUrl'> {
+        Pick<ClusterListType, 'lowercaseKindToResourceGroupMap' | 'updateTabUrl' | 'getTabId' | 'markTabActiveById' | 'addTab'> {
     loadingResources?: boolean
     isResourceBrowserView?: boolean
     selectedResource?: SelectedResourceType
@@ -384,7 +384,7 @@ export interface NodeDetailPropsType
     isExternalApp?: boolean
 }
 
-export interface LogsComponentProps extends Omit<NodeDetailPropsType, 'lowercaseKindToResourceGroupMap' | 'updateTabUrl' | 'tabs'> {
+export interface LogsComponentProps extends Omit<NodeDetailPropsType, 'lowercaseKindToResourceGroupMap' | 'updateTabUrl' | 'tabs' | 'markTabActiveById' | 'getTabId'> {
     selectedTab: (_tabName: string, _url?: string) => void
     isDeleted: boolean
     ephemeralContainerType?: string

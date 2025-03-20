@@ -21,18 +21,14 @@ import {
     ApiResourceGroupType,
     GVKType,
     WidgetEventDetails,
-    InitTabType,
     K8sResourceDetailType,
     K8sResourceDetailDataType,
-    ALL_NAMESPACE_OPTION,
     ClusterDetail,
     ResourceDetail,
     SelectedResourceType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 import { LogSearchTermType } from '../v2/appDetails/appDetails.type'
-import { ClusterListType } from '../ClusterNodes/types'
-import { BaseResourceListProps } from './ResourceList/types'
 
 export interface K8SObjectType extends K8SObjectBaseType {
     child: ApiResourceGroupType[]
@@ -85,12 +81,8 @@ export interface CreateResourceType {
 
 export interface SidebarType {
     apiResources: ApiResourceGroupType[]
-    updateK8sResourceTabLastSyncMoment: () => void
-    isOpen: boolean
     isClusterError?: boolean
-    updateK8sResourceTab: ClusterListType['updateTabUrl']
     selectedResource: ApiResourceGroupType
-    setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
 }
 
 export interface ClusterOptionType extends OptionType {
@@ -98,14 +90,11 @@ export interface ClusterOptionType extends OptionType {
     isProd: boolean
 }
 
-export interface ResourceFilterOptionsProps extends Pick<SidebarType, 'updateK8sResourceTab'> {
+export interface ResourceFilterOptionsProps {
     selectedResource: ApiResourceGroupType
     resourceList?: K8sResourceDetailType
     selectedCluster?: ClusterOptionType
-    selectedNamespace?: typeof ALL_NAMESPACE_OPTION
-    setSelectedNamespace?: React.Dispatch<React.SetStateAction<OptionType>>
     searchText?: string
-    isOpen: boolean
     setSearchText?: (text: string) => void
     isSearchInputDisabled?: boolean
     renderRefreshBar?: () => JSX.Element
@@ -199,17 +188,15 @@ export interface K8sObjectOptionType extends OptionType {
 }
 
 export interface K8SResourceTabComponentProps
-    extends Pick<SidebarType, 'selectedResource' | 'setSelectedResource' | 'updateK8sResourceTab'>,
-        Pick<
+    extends Pick<
             K8SResourceListType,
             'setWidgetEventDetails' | 'handleResourceClick' | 'clusterName' | 'lowercaseKindToResourceGroupMap'
-        > {
+        >,
+        Pick<UseTabsReturnType, 'markTabActiveById' | 'updateTabUrl' | 'updateTabLastSyncMoment'> {
     selectedCluster: ClusterOptionType
     renderRefreshBar: () => JSX.Element
     addTab: UseTabsReturnType['addTab']
     showStaleDataWarning: boolean
-    updateK8sResourceTabLastSyncMoment: () => void
-    isOpen: boolean
 }
 
 export interface AdminTerminalProps {
@@ -252,20 +239,6 @@ export interface RBSidebarKeysType {
 
 export interface GetTabsBasedOnRoleParamsType {
     selectedCluster: ClusterOptionType
-    namespace: string
-    dynamicTabData: InitTabType
-    /**
-     * @default false
-     */
-    isTerminalSelected?: boolean
-    /**
-     * @default false
-     */
-    isOverviewSelected?: boolean
-    /**
-     * @default false
-     */
-    isMonitoringDashBoardSelected?: boolean
 }
 
 export interface NodeRowDetail {
@@ -281,7 +254,7 @@ export interface NodeRowDetail {
     age: string
 }
 
-export interface NodeListSearchFilterType extends Pick<ResourceFilterOptionsProps, 'isOpen'> {
+export interface NodeListSearchFilterType {
     visibleColumns: string[]
     setVisibleColumns: React.Dispatch<React.SetStateAction<string[]>>
     searchParams: Record<string, string>
@@ -304,7 +277,7 @@ export interface NodeActionsMenuProps {
 
 export interface GetResourceDataType {
     selectedResource: ApiResourceGroupType
-    selectedNamespace: BaseResourceListProps['selectedNamespace']
+    namespace: string
     clusterId: string
     filters: Record<string, unknown>
     abortControllerRef: RefObject<AbortController>

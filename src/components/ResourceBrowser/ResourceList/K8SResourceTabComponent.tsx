@@ -14,33 +14,53 @@
  * limitations under the License.
  */
 
-import { useRef } from 'react'
-import { useParams } from 'react-router-dom'
-import { useAsync, abortPreviousRequests, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+import { useEffect, useMemo, useRef } from 'react'
+import { useLocation, useParams } from 'react-router-dom'
+import { useAsync, abortPreviousRequests, ErrorScreenManager, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { K8SResourceTabComponentProps, URLParams } from '../Types'
 import { getResourceGroupList } from '../ResourceBrowser.service'
 import Sidebar from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
 import ConnectingToClusterState from './ConnectingToClusterState'
+import { ResourceBrowserTabsId } from '../Constants'
 
 const K8SResourceTabComponent = ({
-    selectedResource,
-    setSelectedResource,
     selectedCluster,
     renderRefreshBar,
     addTab,
-    isOpen,
     showStaleDataWarning,
-    updateK8sResourceTab,
-    updateK8sResourceTabLastSyncMoment,
+    updateTabUrl,
+    updateTabLastSyncMoment,
     setWidgetEventDetails,
     handleResourceClick,
     clusterName,
     lowercaseKindToResourceGroupMap,
+    markTabActiveById,
 }: K8SResourceTabComponentProps) => {
-    const { clusterId } = useParams<URLParams>()
+    const { clusterId, nodeType, namespace } = useParams<URLParams>()
+    const { pathname, search } = useLocation()
 
     const abortControllerRef = useRef(new AbortController())
+
+    const selectedResource = useMemo(() => lowercaseKindToResourceGroupMap[nodeType], [nodeType])
+
+    useEffect(() => {
+        markTabActiveById(ResourceBrowserTabsId.k8s_Resources).catch(noop)
+    }, [])
+
+    useEffect(() => {
+        updateTabLastSyncMoment(ResourceBrowserTabsId.k8s_Resources)
+    }, [nodeType, namespace])
+
+    const url = pathname + (search ? `?${search}` : '')
+
+    useEffect(() => {
+        updateTabUrl({
+            id: ResourceBrowserTabsId.k8s_Resources,
+            url,
+            dynamicTitle: selectedResource?.gvk.Kind ?? 'K8s Resource',
+        })
+    }, [url])
 
     const [loading, k8SObjectMap, error, reload] = useAsync(
         () =>
@@ -75,23 +95,15 @@ const K8SResourceTabComponent = ({
 
     return (
         <div className="flex-grow-1 flexbox bg__primary dc__overflow-hidden">
-            <Sidebar
-                apiResources={k8SObjectMap?.result.apiResources || null}
-                selectedResource={selectedResource}
-                setSelectedResource={setSelectedResource}
-                isOpen={isOpen}
-                updateK8sResourceTab={updateK8sResourceTab}
-                updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
-            />
+            <Sidebar apiResources={k8SObjectMap?.result.apiResources || null} selectedResource={selectedResource} />
+
             <K8SResourceList
                 clusterName={clusterName}
                 selectedResource={selectedResource}
                 selectedCluster={selectedCluster}
                 addTab={addTab}
-                isOpen={isOpen}
                 renderRefreshBar={renderRefreshBar}
                 showStaleDataWarning={showStaleDataWarning}
-                updateK8sResourceTab={updateK8sResourceTab}
                 setWidgetEventDetails={setWidgetEventDetails}
                 handleResourceClick={handleResourceClick}
                 lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}

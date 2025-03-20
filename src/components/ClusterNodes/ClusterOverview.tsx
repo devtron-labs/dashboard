@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useState, useRef } from 'react'
-import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import moment from 'moment'
 import {
     ErrorScreenManager,
@@ -44,6 +44,7 @@ import { defaultClusterNote, defaultClusterShortDescription } from './constants'
 import { Moment12HourFormat, URLS } from '../../config'
 import {
     K8S_EMPTY_GROUP,
+    ResourceBrowserTabsId,
     SIDEBAR_KEYS,
     TARGET_K8S_VERSION_SEARCH_KEY,
     UPGRADE_CLUSTER_CONSTANTS,
@@ -90,10 +91,9 @@ const tippyForMetricsApi = () => {
     )
 }
 
-function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
-    const { clusterId, namespace } = useParams<{
+function ClusterOverview({ selectedCluster, addTab, markTabActiveById }: ClusterOverviewProps) {
+    const { clusterId } = useParams<{
         clusterId: string
-        namespace: string
     }>()
     const [errorMsg, setErrorMsg] = useState('')
 
@@ -251,18 +251,15 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
     }, [selectedCluster])
 
     useEffect(() => {
+        markTabActiveById(ResourceBrowserTabsId.cluster_overview)
+
         return () => requestAbortControllerRef.current?.abort()
     }, [])
 
     const setCustomFilter = (errorType: ERROR_TYPE, filterText: string): void => {
         const queryParam = errorType === ERROR_TYPE.VERSION_ERROR ? 'k8sversion' : 'name'
         const newUrl =
-            `${generatePath(path, {
-                clusterId,
-                namespace,
-                nodeType: SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase(),
-                group: K8S_EMPTY_GROUP,
-            })}?` + `${queryParam}=${encodeURIComponent(filterText)}`
+            `${path}/${clusterId}/all/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}?` + `${queryParam}=${encodeURIComponent(filterText)}`
         history.push(newUrl)
     }
 
@@ -391,7 +388,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
         const upgradeClusterLowerCaseKind = SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase()
 
         const URL = getUrlWithSearchParams(
-            getURLBasedOnSidebarGVK(SIDEBAR_KEYS.upgradeClusterGVK.Kind, clusterId, namespace),
+            getURLBasedOnSidebarGVK(SIDEBAR_KEYS.upgradeClusterGVK.Kind, clusterId, 'all'),
             { [TARGET_K8S_VERSION_SEARCH_KEY]: selectedVersion },
         )
 
