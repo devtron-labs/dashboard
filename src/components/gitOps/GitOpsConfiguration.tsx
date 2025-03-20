@@ -1370,7 +1370,7 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
         const renderGitOpsBody = () => {
             return (
                 <form className="flex column left w-100" autoComplete="off" onKeyDown={handleDisableSubmitOnEnter}>
-                    <div className="pb-64 flex left column dc__gap-16 w-100 dc__mxw-1000">
+                    <div className="flex left column dc__gap-16 w-100 dc__mxw-1000">
                         {renderGitOpsTabs()}
                         {renderGitOpsFormInputs()}
                         {renderTLSConfigForm()}
@@ -1382,7 +1382,7 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
 
         const renderGitOpsFooter = () => {
             return (
-                <div className="form__buttons flex left dc__position-fixed bg__primary w-100 dc__bottom-0 px-20 py-16 dc__border-top-n1">
+                <div className="flex left bg__primary w-100 px-20 py-16 dc__border-top-n1">
                     <button
                         type="submit"
                         disabled={this.state.saveLoading}
@@ -1406,9 +1406,9 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
         }
 
         return (
-            <div className="bg__primary flex-grow-1 w-100 h-100">
-                <section className="flex-1 bg__primary flex left column">
-                    <div className="flex left column px-20 py-16 dc__gap-24 w-100">
+            <div className="bg__primary flex-grow-1 w-100 h-100 flexbox-col dc__overflow-auto">
+                <section className="flex-1 bg__primary flexbox-col dc__overflow-auto dc__content-space">
+                    <div className="flexbox-col px-20 py-16 dc__gap-24 w-100 dc__overflow-auto flex-grow-1">
                         <FeatureTitleWithInfo
                             title={HEADER_TEXT.GITOPS.title}
                             renderDescriptionContent={() => HEADER_TEXT.GITOPS.description}

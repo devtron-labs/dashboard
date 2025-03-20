@@ -311,7 +311,6 @@ export default function ChartGroupUpdate({}) {
                                 ) : !chartList.length ? (
                                     <ChartEmptyState
                                         onClickViewChartButton={handleViewAllCharts}
-                                        heightToDeduct={150}
                                     />
                                 ) : (
                                     <div className={`${!isGrid ? 'chart-list-view ' : ''}`}>

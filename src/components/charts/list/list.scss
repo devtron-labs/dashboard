@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-.chart-list-page {
-    display: grid;
-    grid-template-rows: 80px 58px 1fr;
-    height: 100%;
-}
-
-.main > .chart-grid {
-    height: calc(100% - 80px);
-}
-
 .chart-grid {
     overflow-y: auto;
     display: grid;
@@ -435,6 +425,7 @@
 
 .advanced-config__readme,
 .advanced-config__diff {
+    // These are required for the advanced config modal
     height: calc(100vh - 100px);
     width: calc(100vw - 100px);
     margin: 40px 50px 60px 50px;
@@ -468,6 +459,7 @@
         grid-template-rows: 40px 1fr;
         border: 1px solid var(--N200);
         border-radius: 4px;
+        overflow: hidden;
     }
 
     .readme-config--header {

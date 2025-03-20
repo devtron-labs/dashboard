@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component, ReactElement } from 'react'
+import { Component, ReactElement } from 'react'
 import {
     WorkflowNodeType,
     SelectedNode,
@@ -62,6 +62,8 @@ export interface CINodeProps extends RouteComponentProps<{}>, Pick<WorkflowProps
     handleSelectedNodeChange?: (selectedNode: SelectedNode) => void
     selectedNode?: SelectedNode
     isLastNode?: boolean
+    appId: string
+    getWorkflows: () => void
 }
 
 export class CINode extends Component<CINodeProps> {
@@ -133,6 +135,13 @@ export class CINode extends Component<CINodeProps> {
         </Link>
     )
 
+    deleteConfig = {
+        appId: this.props.appId,
+        appWorkflowId: this.props.workflowId,
+        pipelineId: this.props.id,
+        pipelineName: this.props.title,
+    }
+
     renderCardContent = (isJobCard: boolean) => {
         const currPipeline = this.props.filteredCIPipelines.find((pipeline) => +pipeline.id === +this.props.id)
         const env = currPipeline?.environmentId
@@ -201,7 +210,9 @@ export class CINode extends Component<CINodeProps> {
                                 <ToggleCDSelectButton
                                     addNewPipelineBlocked={this.props.addNewPipelineBlocked}
                                     onClickAddNode={this.onClickAddNode}
-                                    testId={`ci-add-deployment-pipeline-button-${this.props.title}`}
+                                    testId={`ci-deployment-pipeline-${this.props.title}`}
+                                    deleteConfig={this.deleteConfig}
+                                    getWorkflows={this.props.getWorkflows}
                                 />
                             )}
                     </div>

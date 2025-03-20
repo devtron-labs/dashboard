@@ -374,6 +374,7 @@ export function handleTimeWithOffset(ts: string) {
     let timestamp = ''
     try {
         if (ts && ts.length) {
+            // FIXME: fix the hardcoded offset, not fixing now as this is not being used anywhere
             const date = moment(ts).add(5, 'hours').add(30, 'minutes')
             timestamp = date.format(DATE_TIME_FORMAT_STRING)
         }

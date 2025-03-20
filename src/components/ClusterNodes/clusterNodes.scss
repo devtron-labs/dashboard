@@ -111,7 +111,7 @@
 
     .node-details-grid {
         display: grid;
-        grid-template-columns: 300px calc(100vw - 415px);
+        grid-template-columns: 300px auto;
         column-gap: 12px;
 
         .resource-row {
@@ -128,7 +128,6 @@
             .pod-container-header {
                 top: 0px;
                 z-index: 1;
-                padding-top: 10px;
                 background-color: var(--bg-primary);
             }
 
@@ -152,7 +151,7 @@
 
                 header {
                     position: sticky;
-                    top: 46px;
+                    top: 36px;
                     z-index: 1;
                 }
 
@@ -176,6 +175,12 @@
         grid-template-columns: 200px 280px auto;
         column-gap: 16px;
     }
+
+    &__editor {
+        & .react-monaco-editor-container {
+            flex-grow: 1;
+        }
+    }
 }
 
 .cluster-list-main-container,
@@ -190,12 +195,17 @@
 
     .hover-class {
         &:hover {
-            background-color: var(--bg-secondary);
-
+            background-color: var(--bg-hover-opaque);
             .sticky-column {
-                background-color: var(--bg-secondary);
+                background-color: var(--bg-hover-opaque);
             }
         }
+    }
+}
+
+.cluster-manifest {
+    & .react-monaco-editor-container {
+        flex-grow: 1;
     }
 }
 
@@ -227,55 +237,6 @@
             border-radius: 2px 2px 0px 0px;
             margin-top: -1px;
         }
-    }
-}
-
-.cluster-terminal-view-container {
-    // NOTE: this component is only visible in resource browser
-    // and at the time of writing this only the page header and dynamic tabs
-    // appear above it which amount to 48px and 36px respectively (48 + 36 = 84)
-    height: calc(100vh - 84px);
-}
-
-.cluster-terminal__wrapper {
-    position: relative;
-    background: var(--terminal-bg);
-    flex: 1 1;
-    height: calc(100% - 60px);
-
-    &.full-screen-terminal {
-        height: calc(100vh - 109px);
-    }
-
-    &.cluster-details-full-screen {
-        height: calc(100vh - 136px);
-    }
-
-    &.cluster-details-node-details {
-        .terminal-container {
-            height: calc(100% - 50px);
-        }
-    }
-
-    &.node-details-full-screen {
-        height: calc(100vh - 144px);
-    }
-}
-
-.cluster-full_screen {
-    position: absolute;
-    width: calc(100vw - 56px);
-    height: 0;
-    z-index: 1;
-
-    &.cluster-details-terminal {
-        top: 76px;
-        height: calc(100vh - 76px);
-    }
-
-    &.node-terminal {
-        top: 48px;
-        height: calc(100vh - 48px);
     }
 }
 
@@ -425,12 +386,7 @@
     flex-shrink: 0;
 }
 
-.node-data-container {
-    height: calc(100vh - 84px);
-    overflow: hidden;
-
-    .node-data-wrapper {
-        height: calc(100vh - 118px);
-        overflow: auto;
-    }
+.cluster-manifest-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 30px;
 }
