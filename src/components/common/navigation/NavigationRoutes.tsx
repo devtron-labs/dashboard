@@ -479,6 +479,10 @@ export default function NavigationRoutes() {
     }
     const _isOnboardingPage = isOnboardingPage()
 
+    const handleOpenLicenseInfoDialog = () => {
+        setIsLicenseInfoDialogOpen(true)
+    }
+
     return (
         <MainContextProvider
             value={{
@@ -512,7 +516,7 @@ export default function NavigationRoutes() {
                             handleUpdatePipelineRBACViewSelectedTab={handleUpdatePipelineRBACViewSelectedTab}
                         />
                     ) : null,
-                setIsLicenseInfoDialogOpen,
+                handleOpenLicenseInfoDialog,
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
