@@ -323,7 +323,7 @@ function ClusterOverview({ selectedCluster, addTab, markTabActiveById }: Cluster
             <>
                 {/* Commented to be used in future */}
                 {/* {cardDetailsInBar()} */}
-                <div className="dc__grid-row-one-half dc__gap-16 pb-16">
+                <div className="dc__grid-cols-2 dc__gap-16 pb-16">
                     <div className="flexbox dc__gap-12 dc__content-space dc__overflow-auto bg__primary br-4 en-2 bw-1 pt-16 pl-16 pb-16 pr-16">
                         <div>
                             <div className="dc__align-left fs-13 fw-4 cn-7 dc__ellipsis-right">CPU Usage</div>
