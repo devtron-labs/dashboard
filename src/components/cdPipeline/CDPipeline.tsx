@@ -933,22 +933,24 @@ export default function CDPipeline({
         const isGitOpsRepoNotConfiguredAndGitopsEnforced =
             isGitOpsRepoNotConfiguredAndOptionsVisible && formData.allowedDeploymentTypes.length == 1
 
-        if (isGitOpsRepoNotConfiguredAndOptionsVisible) {
-            setGitOpsRepoConfiguredWarning({ show: true, text: gitOpsRepoNotConfigured })
-        }
-        if (isGitOpsRepoNotConfiguredAndGitopsEnforced) {
-            setGitOpsRepoConfiguredWarning({
-                show: true,
-                text: gitOpsRepoNotConfiguredWithEnforcedEnv(formData.environmentName),
-            })
-        }
+        if (!isTemplateView) {
+            if (isGitOpsRepoNotConfiguredAndOptionsVisible) {
+                setGitOpsRepoConfiguredWarning({ show: true, text: gitOpsRepoNotConfigured })
+            }
+            if (isGitOpsRepoNotConfiguredAndGitopsEnforced) {
+                setGitOpsRepoConfiguredWarning({
+                    show: true,
+                    text: gitOpsRepoNotConfiguredWithEnforcedEnv(formData.environmentName),
+                })
+            }
 
-        if (
-            gitOpsRepoNotConfiguredAndOptionsHidden ||
-            isGitOpsRepoNotConfiguredAndGitopsEnforced ||
-            isGitOpsRepoNotConfiguredAndOptionsVisible
-        ) {
-            return true
+            if (
+                gitOpsRepoNotConfiguredAndOptionsHidden ||
+                isGitOpsRepoNotConfiguredAndGitopsEnforced ||
+                isGitOpsRepoNotConfiguredAndOptionsVisible
+            ) {
+                return true
+            }
         }
         return false
     }
@@ -1340,6 +1342,7 @@ export default function CDPipeline({
                                     getMandatoryPluginData={getMandatoryPluginData}
                                     migrateToDevtronFormState={migrateToDevtronFormState}
                                     setMigrateToDevtronFormState={setMigrateToDevtronFormState}
+                                    isTemplateView={isTemplateView}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />

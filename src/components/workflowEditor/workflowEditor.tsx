@@ -211,15 +211,17 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     async checkGitOpsConfiguration(): Promise<void> {
-        try {
-            const { result } = await isGitOpsModuleInstalledAndConfigured()
-            if (result.isInstalled && !result.isConfigured) {
-                this.setState({ noGitOpsConfiguration: true })
-            }
-            if (!result.isInstalled || !result.isConfigured) {
-                this.setState({ noGitOpsModuleInstalledAndConfigured: true })
-            }
-        } catch (error) {}
+        if (!this.props.isTemplateView) {
+            try {
+                const { result } = await isGitOpsModuleInstalledAndConfigured()
+                if (result.isInstalled && !result.isConfigured) {
+                    this.setState({ noGitOpsConfiguration: true })
+                }
+                if (!result.isInstalled || !result.isConfigured) {
+                    this.setState({ noGitOpsModuleInstalledAndConfigured: true })
+                }
+            } catch (error) {}
+        }
     }
 
     showDeleteDialog = (workflowId: number) => {
