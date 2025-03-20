@@ -234,7 +234,7 @@ const CreatePluginFormContent = ({
                 />
             )}
 
-            <div className="dc__grid-row-one-half dc__column-gap-12">
+            <div className="dc__grid-cols-2 dc__column-gap-12">
                 {/* Existing plugin / display name */}
                 {renderPluginName()}
 
@@ -265,7 +265,7 @@ const CreatePluginFormContent = ({
                         rootClassName: 'flex-grow-1',
                     }}
                 >
-                    <div className="dc__grid-row-one-half dc__column-gap-12">
+                    <div className="dc__grid-cols-2 dc__column-gap-12">
                         {/* New Version / Plugin Version */}
                         <CreatePluginFormField
                             label={renderPluginVersionLabel()}
