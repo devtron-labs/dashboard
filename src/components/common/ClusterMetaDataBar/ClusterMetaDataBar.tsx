@@ -87,7 +87,7 @@ export const ClusterMetaDataBar = ({
                 {!isVirtualEnvironment && (
                     <>
                         <ArrowLeft
-                            className={`${darkTheme ? 'fcn-0 dc__opacity-0_5' : ''} rotate dc__gap-6 icon-dim-16 flex`}
+                            className="fcn-9 dc__opacity-0_5 rotate dc__gap-6 icon-dim-16 flex"
                             style={{ ['--rotateBy' as string]: '180deg' }}
                         />
                         {renderNavigationToAllResources()}

@@ -459,6 +459,7 @@
         grid-template-rows: 40px 1fr;
         border: 1px solid var(--N200);
         border-radius: 4px;
+        overflow: hidden;
     }
 
     .readme-config--header {

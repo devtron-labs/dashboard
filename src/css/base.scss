@@ -43,12 +43,8 @@ body {
         Cantarell,
         'Helvetica Neue',
         sans-serif;
-    background: var(--bg-tertiary);
-
-    &.modern-layout {
-        // Added fallback styling to bg tertiary (loaded from index.css)
-        background: var(--bg-body, var(--bg-tertiary));
-    }
+    // Added fallback styling to bg tertiary (loaded from index.css)
+    background: var(--bg-body, var(--bg-tertiary));
 
     a {
         color: var(--B500);
@@ -295,13 +291,10 @@ a:focus {
     hyphens: auto;
 }
 
-//Do not use dc__truncate-text use dc__ellipsis-right
+//Do not use dc__truncate-text use dc__truncate
 
 .dc__truncate-text {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    min-width: 0px;
+    @extend .dc__truncate;
 }
 
 .dc__position-fixed {
@@ -5100,4 +5093,3 @@ details[open] {
         }
     }
 }
-
