@@ -602,7 +602,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                 connectCDPipelines={this.getLen()}
                                 close={this.closePipeline}
                                 getWorkflows={this.getWorkflows}
-                                deleteWorkflow={this.deleteWorkflow}
                                 isJobView={this.props.isJobView}
                                 isJobCI={isJobCI}
                                 changeCIPayload={this.state.changeCIPayload}
@@ -630,7 +629,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     connectCDPipelines={this.getLen()}
                                     close={this.closePipeline}
                                     getWorkflows={this.getWorkflows}
-                                    deleteWorkflow={this.deleteWorkflow}
                                 />
                             )
                         }}

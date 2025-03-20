@@ -518,9 +518,14 @@ a:focus {
     grid-column-gap: 16px;
 }
 
-.dc__grid-row-one-half {
+.dc__grid-cols-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
+}
+
+.dc__grid-rows-2 {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
 }
 
 .build-context-label {
