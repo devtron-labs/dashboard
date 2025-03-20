@@ -343,7 +343,7 @@ export default class Navigation extends Component<
     render() {
         return (
             <>
-                <nav className={window._env_.FEATURE_EXPERIMENTAL_MODERN_LAYOUT_ENABLE ? 'nav__modern-layout' : ''}>
+                <nav>
                     <aside className="short-nav nav-grid nav-grid--collapsed">
                         <NavLink
                             to={URLS.APP}

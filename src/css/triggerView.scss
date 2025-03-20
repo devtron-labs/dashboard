@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-.svg-wrapper-trigger {
-    padding: 16px 20px;
-    overflow: auto;
-}
-
 .material__error {
     width: 150px;
     color: var(--R500);
@@ -28,7 +23,7 @@
 }
 
 .material-list {
-    width: 234px;
+    max-width: 234px;
     background-color: var(--bg-primary);
 }
 
@@ -89,18 +84,6 @@
     background-color: var(--bg-tertiary);
     overflow: auto;
     flex: 1;
-}
-
-.select-material--trigger-view {
-    height: calc(100vh - 116px);
-}
-
-.select-material__empty-state-container {
-    height: calc(100% - 74px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
 }
 
 .material-history {
@@ -262,12 +245,6 @@
     line-height: 16px;
 }
 
-.commit-hash--cd {
-    background-color: transparent;
-    margin-left: 0px;
-    display: inline-block;
-}
-
 .commit-hash--docker {
     white-space: nowrap;
     background-color: var(--N100);
@@ -296,85 +273,6 @@
     }
 }
 
-.cta-with-img {
-    &.cta-with-img--ci-trigger-btn {
-        width: 260px;
-        padding: 14px;
-        height: 50px;
-        border-radius: 4px;
-        background-color: var(--B500);
-        color: var(--N0);
-        font-size: 13px;
-        font-weight: 600;
-        line-height: 1.43;
-        letter-spacing: normal;
-        margin-left: auto;
-        user-select: none;
-    }
-
-    &.cta-with-img--cd-trigger-btn {
-        width: auto;
-        padding: 8px 16px;
-        height: 36px;
-        border-radius: 4px;
-        background-color: var(--B500);
-        color: var(--N0);
-        font-size: 13px;
-        font-weight: 600;
-        line-height: 20px;
-        letter-spacing: normal;
-        margin-left: auto;
-        -webkit-user-select: none;
-        user-select: none;
-    }
-}
-
-.trigger-btn__icon,
-.trigger-job-btn__icon {
-    width: 16px;
-    height: 16px;
-    margin-right: 6px;
-}
-
-.cta-with-img.cta-with-img--ci-trigger-btn .trigger-job-btn__icon path {
-    fill: none !important;
-    stroke: var(--N0) !important;
-}
-
-.cta-with-img.cta-with-img--ci-trigger-btn:disabled .trigger-job-btn__icon path {
-    stroke: var(--N400) !important;
-}
-
-.cta-with-img--ci-trigger-btn:disabled svg path[fill='#FFF'],
-.cta-with-img--cd-trigger-btn:disabled svg path[fill='#FFF'] {
-    fill: var(--N400);
-}
-
-.caching-label {
-    font-size: 14px;
-    font-weight: 600;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.43;
-    letter-spacing: normal;
-    color: var(--N700);
-    position: relative;
-    cursor: pointer;
-    display: flex;
-    user-select: none;
-    align-items: center;
-
-    input {
-        opacity: 0;
-
-        &:checked {
-            & + .check {
-                display: inline-block;
-            }
-        }
-    }
-}
-
 .form__checkbox-label--ignore-cache {
     font-size: 14px;
     font-weight: 600;
@@ -395,22 +293,9 @@
     }
 }
 
-.trigger-btn {
-    &:hover {
-        background-color: var(--B600);
-    }
-}
-
-.material-detail {
-    border-bottom: solid 1px var(--N200);
-    margin: 10px;
-    display: flex;
-}
-
 .trigger-modal__body {
     display: flex;
     background-color: var(--bg-tertiary);
-    height: calc(100vh - 49px);
     overflow: auto;
     flex-direction: column;
     padding: 20px;
@@ -430,31 +315,6 @@
     background: var(--bg-primary);
     color: var(--B500);
     border: 1px solid var(--B500);
-}
-
-.config-text {
-    display: flex;
-    flex-direction: column;
-    color: var(--N700);
-}
-
-.config-text--bold {
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.43;
-    letter-spacing: normal;
-}
-
-.trigger-modal__small-text {
-    display: block;
-    font-size: 10px;
-    font-weight: 500;
-    line-height: 1.4;
-    letter-spacing: normal;
-}
-
-.w-fs-160 {
-    width: 160px;
 }
 
 .modal-body--cd-material {
@@ -477,33 +337,11 @@
 }
 
 .modal-body--ci-material {
-    position: fixed;
     min-width: 800px;
+    margin-left: auto;
     max-width: 1024px;
-    right: 0;
     background: var(--bg-primary);
-    top: 0;
-}
-
-.trigger-modal__empty-state {
-    background-color: var(--bg-tertiary);
-    font-family: 'Open Sans', sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: calc(100vh - 50px);
-    width: 100%;
-}
-
-.cd-material__img {
-    width: 250px;
-    height: 200px;
-}
-
-.empty-state__img--ci-material {
-    width: 200px !important;
-    height: 160px !important;
+    height: 100%;
 }
 
 @keyframes spin {
@@ -514,13 +352,6 @@
     to {
         transform: rotate(-360deg);
     }
-}
-
-.security-tab {
-    padding: 1px 20px 20px 20px;
-    background-color: var(--bg-primary);
-    overflow: auto;
-    max-height: 292px;
 }
 
 .security-tab-empty {
@@ -565,15 +396,6 @@
     }
 }
 
-.security-tab__last-scanned {
-    font-size: 12px;
-    font-weight: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    margin: 12px 0;
-    color: var(--N700);
-}
-
 .url-table_row {
     display: flex;
     column-gap: 16px;
@@ -601,60 +423,7 @@
     padding: 16px 20px;
     box-shadow: inset 0 1px 0 0 var(--N200);
     background-color: var(--bg-primary);
-    position: absolute;
     width: 100%;
     bottom: 0px;
     z-index: 9;
-
-    &.trigger-modal__trigger--empty-state {
-        height: calc(100vh - 72px);
-        position: static;
-        box-shadow: none;
-    }
-
-    .deploy-config-select__group {
-        padding-top: 4px;
-        padding-bottom: 4px;
-
-        .deploy-config-select__group-heading {
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: none;
-            color: var(--N900);
-            background-color: var(--bg-tertiary);
-            padding: 4px 10px;
-            border-top-left-radius: 4px;
-            border-top-right-radius: 4px;
-            margin: 0;
-        }
-    }
-}
-
-.trigger-modal__config-diff-status {
-    &:not(.config-not-found):hover {
-        background-color: var(--N100);
-    }
-
-    svg {
-        &.config-diff-found-icon {
-            path {
-                &:last-of-type {
-                    fill: var(--R500);
-                }
-            }
-        }
-
-        &.no-config-found-icon {
-            path {
-                &:nth-of-type(2) {
-                    fill: var(--Y500);
-                }
-            }
-        }
-    }
-}
-
-.trigger-modal__config-diff-status svg.loader__svg path,
-.trigger-modal__config-diff-status svg.config-diff-found-icon path:nth-of-type(2) {
-    fill: var(--N0);
 }

@@ -184,7 +184,7 @@ export const getConfigToolbarPopupConfig = ({
             disabled: isLoading || migratedFrom === PipelineMigratedFromType.ARGO_APPLICATION,
             tooltipText:
                 migratedFrom === PipelineMigratedFromType.ARGO_APPLICATION
-                    ? 'Can not delete override for pipelines migrated from argo'
+                    ? 'Override cannot be deleted for deployments migrated from Argo CD Applications'
                     : null,
             icon: <ICDeleteInteractive className="scr-5 dc__no-shrink icon-dim-16" />,
             variant: 'negative',

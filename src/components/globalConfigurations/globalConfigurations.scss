@@ -18,7 +18,7 @@
     display: grid;
     grid-template-rows: 47px 1fr;
     grid-template-columns: 240px 1fr;
-    height: 100vh;
+    height: 100%;
 
     .dc__page-header {
         grid-column: 1 / -1;
@@ -101,8 +101,7 @@
     transition: opacity 300ms linear 150ms;
 }
 
-.global-configuration__component,
-.add-notification-page {
+.global-configuration__component {
     margin: 0 auto;
     max-width: 1012px;
     padding: 24px;

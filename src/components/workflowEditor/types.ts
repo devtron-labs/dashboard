@@ -69,8 +69,6 @@ export interface WorkflowEditState {
     environmentId?: number
     environmentName?: string
     successTitle?: string
-    showNoGitOpsWarningPopup?: boolean
-    cdLink?: string
     noGitOpsConfiguration?: boolean
     noGitOpsModuleInstalledAndConfigured?: boolean
     envToShowWebhookTippy?: number
@@ -334,4 +332,12 @@ export interface ToggleCDSelectButtonProps {
     addNewPipelineBlocked: boolean
     onClickAddNode: (event: any) => void
     testId: string
+    deleteConfig?: {
+        appId: string
+        appWorkflowId: number
+        pipelineId: number
+        pipelineName: string
+    }
+    getWorkflows?: () => void
+    hideDeleteButton?: boolean
 }

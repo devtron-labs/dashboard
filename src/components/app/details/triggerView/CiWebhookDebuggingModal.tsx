@@ -121,20 +121,22 @@ export const CiWebhookModal = ({
     }
 
     const renderWebhookPayloadLoader = () => (
-        <div className="flex column">
-            <Progressing pageLoader />
+        <div className="flex column flex-grow-1 dc__gap-16">
+            {/* NOTE: Wrapped Loader in a div to prevent the 'loader' class from enforcing full height */}
             <div>
-                <span>Fetching webhook payloads.</span>
-                <br />
-                <span>This might take some time.</span>
+                <Progressing pageLoader />
             </div>
+            <p className="flexbox-col dc__gap-4 fs-16 cn-7 lh-20">
+                <span>Fetching webhook payloads.</span>
+                <span>This might take some time.</span>
+            </p>
         </div>
     )
 
     const renderSidebar = () => (
-        <div className="ci-pipeline-webhook dc__border-right-n2 dc__overflow-hidden dc__border-right-n1">
+        <div className="flexbox-col dc__border-right-n2 dc__overflow-hidden dc__border-right-n1">
             <span className="py-14 fw-6 lh-20 px-16">Received webhooks</span>
-            <div className="p-8">
+            <div className="p-8 flexbox-col flex-grow-1 dc__overflow-auto">
                 {webhookPayloads?.payloads?.map((webhookPayload: WebhookPayload) => {
                     const isPassed = webhookPayload.matchedFiltersCount > 0 && webhookPayload.failedFiltersCount === 0
                     const webhookPayloadId = webhookPayload.parsedDataId
@@ -283,14 +285,14 @@ export const CiWebhookModal = ({
 
     if (isWebhookPayloadLoading) {
         return (
-            <div className="flex h-100 payload-wrapper-no-header">
-                <Progressing pageLoader styles={{ height: '100%' }} />
+            <div className="flex h-100 ">
+                <Progressing pageLoader />
             </div>
         )
     }
 
     return (
-        <div className="ci-trigger__webhook-wrapper payload-wrapper-no-header fs-13 cn-9">
+        <div className="ci-trigger__webhook-wrapper fs-13 cn-9 h-100 dc__overflow-hidden">
             {renderSidebar()}
             {renderWebhookPayloadContent()}
         </div>

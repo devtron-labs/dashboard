@@ -521,38 +521,40 @@ const NodeComponent = ({
         <>
             {selectedNodes && (
                 <div className="node-container-fluid">
-                    {isPodAvailable ? (
-                        <PodHeaderComponent callBack={setPodType} />
-                    ) : (
-                        <div className="px-16 dc__border-bottom-n1">
-                            <TabGroup
-                                tabs={[
-                                    {
-                                        id: 'node-detail',
-                                        label: selectedNodes?.[0]?.kind || '',
-                                        tabType: 'block',
-                                        badge: selectedNodes.length,
-                                        description: selectedHealthyNodeCount
-                                            ? `${selectedHealthyNodeCount} healthy`
-                                            : `${selectedNodes.length} resource(s)`,
-                                    },
-                                ]}
-                                size={ComponentSizeType.xl}
-                                alignActiveBorderWithContainer
-                            />
-                        </div>
-                    )}
-
-                    <div className={`node-row dc__border-bottom-n1 pt-6 pb-5 pl-8 pr-16 ${nodeRowClassModifier}`}>
-                        {tableHeader.map((cell, index) => (
-                            <div
-                                // eslint-disable-next-line react/no-array-index-key
-                                key={`${cell}-${index}`} // NOTE: cell can be empty string therefore need to put index in key
-                                className={`fw-6 ${index === 0 && selectedNodes[0]?.childNodes?.length ? 'pl-28' : ''} ${index === 0 && !selectedNodes[0]?.childNodes?.length ? 'pl-10' : ''}`}
-                            >
-                                <SortableTableHeaderCell isSortable={false} title={cell} />
+                    <div className="dc__position-sticky dc__top-0 dc__zi-1 bg__primary flexbox-col">
+                        {isPodAvailable ? (
+                            <PodHeaderComponent callBack={setPodType} />
+                        ) : (
+                            <div className="px-16 dc__border-bottom-n1">
+                                <TabGroup
+                                    tabs={[
+                                        {
+                                            id: 'node-detail',
+                                            label: selectedNodes?.[0]?.kind || '',
+                                            tabType: 'block',
+                                            badge: selectedNodes.length,
+                                            description: selectedHealthyNodeCount
+                                                ? `${selectedHealthyNodeCount} healthy`
+                                                : `${selectedNodes.length} resource(s)`,
+                                        },
+                                    ]}
+                                    size={ComponentSizeType.xl}
+                                    alignActiveBorderWithContainer
+                                />
                             </div>
-                        ))}
+                        )}
+
+                        <div className={`node-row dc__border-bottom-n1 pt-6 pb-5 pl-8 pr-16 ${nodeRowClassModifier}`}>
+                            {tableHeader.map((cell, index) => (
+                                <div
+                                    // eslint-disable-next-line react/no-array-index-key
+                                    key={`${cell}-${index}`} // NOTE: cell can be empty string therefore need to put index in key
+                                    className={`fw-6 ${index === 0 && selectedNodes[0]?.childNodes?.length ? 'pl-28' : ''} ${index === 0 && !selectedNodes[0]?.childNodes?.length ? 'pl-10' : ''}`}
+                                >
+                                    <SortableTableHeaderCell isSortable={false} title={cell} />
+                                </div>
+                            ))}
+                        </div>
                     </div>
                     {params.nodeType === NodeType.Pod.toLowerCase() && containerLevelExternalLinks.length > 0 && (
                         <div className="fs-12 fw-4 cn-9 bcn-1 lh-18 py-4 px-36">

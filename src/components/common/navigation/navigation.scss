@@ -42,14 +42,17 @@
 
 #root > div > main {
     & > nav {
+        $transition-duration: 200ms;
+        $transition-delay: 700ms;
+
         width: 100%;
-        background: var(--bg-sidebar);
+        background: var(--transparent);
         position: sticky;
         top: 0;
         display: flex;
         overflow: hidden;
         z-index: var(--navigation-index);
-        transition: width 200ms ease-out;
+        transition: width $transition-duration ease-out, background 150ms ease-out 200ms;
 
         .nav-grid {
             display: grid;
@@ -100,7 +103,7 @@
 
                 &:hover {
                     .svg-container {
-                        background: var(--black-40);
+                        background: var(--bg-sidebar-item-selected);
                     }
                 }
 
@@ -135,13 +138,16 @@
 
         .active-nav {
             .svg-container {
-                background: var(--black-40);
+                background: var(--bg-sidebar-item-selected);
             }
         }
 
         &:hover {
             width: 252px;
-            transition: width 200ms ease-in 700ms;
+            background: var(--bg-sidebar-modern-layout);
+            border-right: 1px solid var(--border-primary-translucent);
+            box-shadow: var(--shadow-modal);
+            transition: width $transition-duration ease-in $transition-delay, background 150ms ease-in $transition-delay, border-right $transition-duration ease-in $transition-delay, box-shadow $transition-duration ease-in $transition-delay;
         }
 
         .short-nav__bottom-options {
@@ -172,37 +178,6 @@
     .hubspot-placeholder {
         height: 80px;
         width: 100%;
-    }
-
-    & .nav__modern-layout {
-        $transition-duration: 200ms;
-        $transition-delay: 700ms;
-
-        background: var(--transparent);
-        transition: width $transition-duration ease-out, background 150ms ease-out 200ms;
-
-        .short-nav {
-            a {
-                &:hover {
-                    .svg-container {
-                        background: var(--bg-sidebar-item-selected);
-                    }
-                }
-            }
-        }
-
-        .active-nav {
-            .svg-container {
-                background: var(--bg-sidebar-item-selected);
-            }
-        }
-
-        &:hover {
-            background: var(--bg-sidebar-modern-layout);
-            border-right: 1px solid var(--border-primary-translucent);
-            box-shadow: var(--shadow-modal);
-            transition: width $transition-duration ease-in $transition-delay, background 150ms ease-in $transition-delay, border-right $transition-duration ease-in $transition-delay, box-shadow $transition-duration ease-in $transition-delay;
-        }
     }
 }
 

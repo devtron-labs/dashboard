@@ -137,26 +137,27 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
     }
 
     return (
-        <div className="w-100 h-100 bg__primary pt-16 flexbox-col">
-            <div className="w-960">
-                <div className="fs-16 fcn-9 fw-6 ml-20 mb-8" data-testid="gitops-config-heading">
-                    GitOps Configuration
+        <div className="w-100 h-100 bg__primary pt-16 flexbox-col flex-grow-1 dc__overflow-auto dc__content-space">
+            <div className="flex-grow-1 dc__overflow-auto">
+                <div className="w-960">
+                    <div className="fs-16 fcn-9 fw-6 ml-20 mb-8" data-testid="gitops-config-heading">
+                        GitOps Configuration
+                    </div>
+                    {isEditable ? (
+                        <UserGitRepo
+                            setSelectedRepoType={setSelectedRepoType}
+                            selectedRepoType={selectedRepoType}
+                            repoURL={gitOpsRepoURL}
+                            setRepoURL={setGitOpsRepoURL}
+                            authMode={authMode}
+                        />
+                    ) : (
+                        renderSavedGitOpsRepoState(gitOpsRepoURL)
+                    )}
                 </div>
-                {isEditable ? (
-                    <UserGitRepo
-                        setSelectedRepoType={setSelectedRepoType}
-                        selectedRepoType={selectedRepoType}
-                        repoURL={gitOpsRepoURL}
-                        setRepoURL={setGitOpsRepoURL}
-                        authMode={authMode}
-                    />
-                ) : (
-                    renderSavedGitOpsRepoState(gitOpsRepoURL)
-                )}
             </div>
             {isEditable && (
-                <div className="pl-16 w-960">
-                    <hr />
+                <div className="flex left w-100 px-20 py-16 dc__border-top-n1">
                     <button
                         data-testid="save_cluster_list_button_after_selection"
                         className="cta h-36 lh-36 "
