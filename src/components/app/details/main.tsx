@@ -112,26 +112,6 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         }
     }, [appId])
 
-    useEffect(() => {
-        if (!appName) return
-        getRecentlyVisitedDevtronApps().then((response) => {
-            console.log(response, 'response')
-            // if the app is already present in the list, move it to the front
-            setRecentlyVisitedDevtronApps(() => {
-                const updatedList = [
-                    { appId, appName },
-                    ...response.filter((app) => Number(app.appId) !== Number(appId)),
-                ] as AppMetaInfo[]
-                // Trim the list to 5 items
-                const trimmedList = updatedList.slice(0, 5) as AppMetaInfo[]
-                updateRecentlyVisitedDevtronApps(trimmedList)
-                return trimmedList
-            })
-        })
-    }, [appId, appName])
-
-    console.log(recentlyVisitedDevtronApps, 'recentlyVisitedDevtronApps in main ')
-
     const getSavedFilterData = async (groupId?: number): Promise<GroupOptionType[]> => {
         setSelectedAppList([])
         setAppListLoading(true)
@@ -371,6 +351,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                     openDeleteGroup={openDeleteGroup}
                     isSuperAdmin
                     recentlyVisitedDevtronApps={recentlyVisitedDevtronApps}
+                    setRecentlyVisitedDevtronApps={setRecentlyVisitedDevtronApps}
                 />
             )}
             {showCreateGroup && (

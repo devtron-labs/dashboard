@@ -94,7 +94,7 @@ export const DropdownIndicator = (props) => {
 }
 
 export const noOptionsMessage = (inputObj: { inputValue: string }): string => {
-    if (inputObj && (inputObj.inputValue === '' || inputObj.inputValue.length < 3)) {
+    if (inputObj && (inputObj.inputValue.length < 3)) {
         return 'Type 3 chars to see matching results'
     }
     return 'No matching results'
