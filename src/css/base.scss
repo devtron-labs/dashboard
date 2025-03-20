@@ -295,10 +295,6 @@ a:focus {
 
 .dc__truncate-text {
     @extend .dc__truncate;
-    // white-space: nowrap;
-    // overflow: hidden;
-    // text-overflow: ellipsis;
-    // min-width: 0px;
 }
 
 .dc__position-fixed {
