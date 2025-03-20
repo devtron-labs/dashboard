@@ -2604,6 +2604,14 @@ button.anchor {
     }
 }
 
+.circle-fill {
+    &--n7 {
+        circle {
+            fill: var(--N700);
+        }
+    }
+}
+
 .icon-fill-n4 {
     rect {
         fill: var(--N400);

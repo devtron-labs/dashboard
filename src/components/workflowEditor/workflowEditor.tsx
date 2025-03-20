@@ -61,7 +61,6 @@ import { ReactComponent as ICClose } from '../../assets/icons/ic-close.svg'
 import { getHostURLConfiguration, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
 import './workflowEditor.scss'
 import CDSuccessModal from './CDSuccessModal'
-import NoGitOpsConfiguredWarning from './NoGitOpsConfiguredWarning'
 import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'
 import nojobs from '../../assets/img/empty-joblist.webp'
 import CDPipeline from '../cdPipeline/CDPipeline'
@@ -96,8 +95,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             workflowId: 0,
             allCINodesMap: undefined,
             showSuccessScreen: false,
-            showNoGitOpsWarningPopup: false,
-            cdLink: '',
             noGitOpsConfiguration: false,
             noGitOpsModuleInstalledAndConfigured: false,
             showOpenCIPipelineBanner:
@@ -354,14 +351,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             LINK = `${LINK}&childPipelineId=${childPipelineId}`
         }
 
-        if (this.state.noGitOpsConfiguration) {
-            this.setState({
-                showNoGitOpsWarningPopup: true,
-                cdLink: LINK,
-            })
-        } else {
-            this.props.history.push(LINK)
-        }
+        this.props.history.push(LINK)
     }
 
     openCreateWorkflow = (): string => {
@@ -412,13 +402,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             this.setState({ envToShowWebhookTippy: environmentId })
         }
         this.resetChangeCIPayload()
-    }
-
-    hideNoGitOpsWarning = (isContinueWithHelm: boolean) => {
-        this.setState({ showNoGitOpsWarningPopup: false })
-        if (isContinueWithHelm) {
-            this.props.history.push(this.state.cdLink)
-        }
     }
 
     renderDeleteDialog = () => {
@@ -591,6 +574,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     getWorkflows={this.getWorkflows}
                                     refreshParentWorkflows={this.props.getWorkflows}
                                     envIds={this.state.envIds}
+                                    isGitOpsInstalledButNotConfigured={this.state.noGitOpsConfiguration}
                                     noGitOpsModuleInstalledAndConfigured={
                                         this.state.noGitOpsModuleInstalledAndConfigured
                                     }
@@ -945,9 +929,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 {this.renderHostErrorMessage()}
                 {this.renderWorkflows()}
                 {this.state.showDeleteDialog && this.renderDeleteDialog()}
-                {this.state.showNoGitOpsWarningPopup && (
-                    <NoGitOpsConfiguredWarning closePopup={this.hideNoGitOpsWarning} />
-                )}
                 {this.state.showOpenCIPipelineBanner && this.renderOpenCIPipelineBanner()}
             </div>
         )
