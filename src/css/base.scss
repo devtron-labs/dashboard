@@ -2383,9 +2383,19 @@ button.anchor {
     border-top-right-radius: 4px;
 }
 
+.dc__top-radius-12 {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
 .dc__bottom-radius-8 {
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
+}
+
+.dc__bottom-radius-12 {
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
 }
 
 .dc__top-radius-8 {

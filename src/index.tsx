@@ -137,8 +137,6 @@ if (!window || !window._env_) {
         ENABLE_SCOPED_VARIABLES: true,
         DEFAULT_CI_TRIGGER_TYPE_MANUAL: false,
         ANNOUNCEMENT_BANNER_MSG: '',
-        LOGIN_PAGE_IMAGE: '',
-        LOGIN_PAGE_IMAGE_BG: '',
         HIDE_DEFAULT_CLUSTER: false,
         GLOBAL_API_TIMEOUT: 60000,
         TRIGGER_API_TIMEOUT: 60000,

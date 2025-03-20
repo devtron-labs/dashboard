@@ -26,16 +26,7 @@
 }
 
 .main {
-    height: 100vh;
-    overflow-y: auto;
-
-    &__modern-layout {
-        height: calc(100vh - 16px);
-    }
-}
-
-.main__overflow-disabled {
-    overflow-y: hidden !important;
+    height: calc(100vh - 16px);
 }
 
 .title-container {

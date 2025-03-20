@@ -33,11 +33,10 @@ import {
     useUserEmail,
     PasswordField,
     useSearchString,
-    getComponentSpecificThemeClass,
-    AppThemeType,
     useAsync,
     SSOProviderIcon,
     Icon,
+    LoginBanner,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as Help } from '@Icons/ic-help-outline.svg'
@@ -328,21 +327,11 @@ const Login = () => {
     )
 
     return (
-        <div className={`login bg__white flex ${getComponentSpecificThemeClass(AppThemeType.light)}`}>
-            <div
-                className="w-50 login__bg"
-                style={window?._env_?.LOGIN_PAGE_IMAGE_BG ? { backgroundColor: window._env_.LOGIN_PAGE_IMAGE_BG } : {}}
-            >
-                <div
-                    className="login__image w-100 h-100vh mh-600"
-                    style={
-                        window?._env_?.LOGIN_PAGE_IMAGE
-                            ? { backgroundImage: `url(${window._env_.LOGIN_PAGE_IMAGE})` }
-                            : {}
-                    }
-                />
+        <div className="full-height-width login dc__grid-half bg__secondary">
+            <div className="flexbox p-12">
+                <LoginBanner />
             </div>
-            <div className="w-50 flex">
+            <div className="flex">
                 <div className="login-card__wrapper br-12 mw-420 bg__primary dc__border">
                     <div className="flexbox-col dc__gap-32 p-36">
                         {renderDevtronLogo()}
