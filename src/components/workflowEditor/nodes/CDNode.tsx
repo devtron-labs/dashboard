@@ -387,7 +387,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                                         showAriaLabelInTippy
                                         onClick={this.handleDeleteCDNode}
                                         style={ButtonStyleType.negativeGrey}
-                                        icon={<Icon name="ic-delete" color={null} strokeWidth={1} size={12} />}
+                                        icon={<Icon name="ic-delete" color={null} size={12} />}
                                         showTooltip
                                         tooltipProps={{
                                             placement: 'right',
