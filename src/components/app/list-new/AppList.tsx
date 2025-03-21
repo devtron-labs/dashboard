@@ -43,11 +43,11 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCommonAppFilters } from '@Services/service'
 import { Cluster } from '@Services/service.types'
+import { CreateAppModal } from '@Pages/App/CreateAppModal'
 import { useAppContext } from '../../common'
 import { SERVER_MODE } from '../../../config'
 import HelmAppList from './HelmAppList'
 import { AppListPropType } from '../list/types'
-import { AddNewApp } from '../create/CreateApp'
 import '../list/list.scss'
 import { APP_LIST_LOCAL_STORAGE_KEY, APP_LISTING_URLS, FLUX_CD_HELM_RELEASE_LABEL } from './Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
@@ -408,18 +408,9 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
         return (
             <Switch>
                 {APP_LISTING_URLS.map((currentUrl) => (
-                    <Route
-                        path={`${currentUrl}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
-                        key={currentUrl}
-                        render={(props) => (
-                            <AddNewApp
-                                close={closeDevtronAppCreateModal}
-                                match={props.match}
-                                location={props.location}
-                                history={props.history}
-                            />
-                        )}
-                    />
+                    <Route path={`${currentUrl}/${AppListConstants.CREATE_DEVTRON_APP_URL}`} key={currentUrl}>
+                        <CreateAppModal handleClose={closeDevtronAppCreateModal} isJobView={false} />
+                    </Route>
                 ))}
             </Switch>
         )

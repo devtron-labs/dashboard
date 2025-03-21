@@ -69,6 +69,8 @@ export default function CIConfigForm({
     setParentState,
     loadingStateFromParent,
     setLoadingStateFromParent,
+    isTemplateView,
+    isCreateAppView,
 }: CIConfigFormProps) {
     const currentMaterial: CurrentMaterialType =
         allowOverride && selectedCIPipeline?.isDockerConfigOverridden
@@ -262,7 +264,7 @@ export default function CIConfigForm({
         setApiInProgress(true)
         try {
             const saveOrUpdate = ciConfig && ciConfig.id ? updateCIConfig : saveCIConfig
-            await saveOrUpdate(requestBody)
+            await saveOrUpdate(requestBody, isTemplateView)
             ToastManager.showToast({
                 variant: ToastVariantType.success,
                 description: 'Successfully saved',
@@ -344,8 +346,12 @@ export default function CIConfigForm({
     return (
         <div className="flexbox-col h-100 dc__content-space dc__overflow-hidden">
             <div className="flex-grow-1 dc__overflow-auto">
-                <div className={`form__app-compose ${configOverrideView ? 'config-override-view' : ''}`}>
-                    {!configOverrideView && (
+                <div
+                    className={
+                        isCreateAppView ? '' : `form__app-compose ${configOverrideView ? 'config-override-view' : ''}`
+                    }
+                >
+                    {!isCreateAppView && !configOverrideView && (
                         <div className="flex dc__content-space mb-20">
                             <h2 className="form__title m-0-imp" data-testid="build-configuration-heading">
                                 Build Configuration
@@ -375,67 +381,76 @@ export default function CIConfigForm({
                         currentRegistry={currentRegistry}
                         handleOnChangeConfig={handleOnChangeConfig}
                         isCDPipeline={isCDPipeline}
+                        isCreateAppView={isCreateAppView}
+                        isTemplateView={isTemplateView}
                     />
-                    <CIDockerFileConfig
-                        ciConfig={ciConfig}
-                        sourceConfig={getParsedSourceConfig()}
-                        configOverrideView={configOverrideView}
-                        allowOverride={allowOverride}
-                        selectedCIPipeline={selectedCIPipeline}
-                        currentMaterial={getParsedCurrentMaterial()}
-                        currentBuildContextGitMaterial={currentBuildContextGitMaterial}
-                        selectedMaterial={selectedMaterial}
-                        selectedBuildContextGitMaterial={selectedBuildContextGitMaterial}
-                        setSelectedMaterial={setSelectedMaterial}
-                        setSelectedBuildContextGitMaterial={setSelectedBuildContextGitMaterial}
-                        formState={state}
-                        updateDockerConfigOverride={updateDockerConfigOverride}
-                        args={args}
-                        setArgs={setArgs}
-                        buildEnvArgs={buildEnvArgs}
-                        setBuildEnvArgs={setBuildEnvArgs}
-                        handleOnChangeConfig={handleOnChangeConfig}
-                        selectedTargetPlatforms={selectedTargetPlatforms}
-                        setSelectedTargetPlatforms={setSelectedTargetPlatforms}
-                        targetPlatformMap={targetPlatformMap}
-                        showCustomPlatformWarning={showCustomPlatformWarning}
-                        setShowCustomPlatformWarning={setShowCustomPlatformWarning}
-                        currentCIBuildConfig={currentCIBuildConfig}
-                        setCurrentCIBuildConfig={setCurrentCIBuildConfig}
-                        setLoadingState={configOverrideView ? setLoadingStateFromParent : setLoadingDataState}
-                    />
+                    {!isCreateAppView && (
+                        <CIDockerFileConfig
+                            ciConfig={ciConfig}
+                            sourceConfig={getParsedSourceConfig()}
+                            configOverrideView={configOverrideView}
+                            allowOverride={allowOverride}
+                            selectedCIPipeline={selectedCIPipeline}
+                            currentMaterial={getParsedCurrentMaterial()}
+                            currentBuildContextGitMaterial={currentBuildContextGitMaterial}
+                            selectedMaterial={selectedMaterial}
+                            selectedBuildContextGitMaterial={selectedBuildContextGitMaterial}
+                            setSelectedMaterial={setSelectedMaterial}
+                            setSelectedBuildContextGitMaterial={setSelectedBuildContextGitMaterial}
+                            formState={state}
+                            updateDockerConfigOverride={updateDockerConfigOverride}
+                            args={args}
+                            setArgs={setArgs}
+                            buildEnvArgs={buildEnvArgs}
+                            setBuildEnvArgs={setBuildEnvArgs}
+                            handleOnChangeConfig={handleOnChangeConfig}
+                            selectedTargetPlatforms={selectedTargetPlatforms}
+                            setSelectedTargetPlatforms={setSelectedTargetPlatforms}
+                            targetPlatformMap={targetPlatformMap}
+                            showCustomPlatformWarning={showCustomPlatformWarning}
+                            setShowCustomPlatformWarning={setShowCustomPlatformWarning}
+                            currentCIBuildConfig={currentCIBuildConfig}
+                            setCurrentCIBuildConfig={setCurrentCIBuildConfig}
+                            setLoadingState={configOverrideView ? setLoadingStateFromParent : setLoadingDataState}
+                        />
+                    )}
                 </div>
             </div>
-            {!configOverrideView && (
-                <div className="dc__no-shrink py-12 px-20 form__buttons bg__primary dc__border-top">
-                    <Button
-                        dataTestId="build_config_save_and_next_button"
-                        onClick={handleOnSubmit}
-                        disabled={
-                            apiInProgress ||
-                            (currentCIBuildConfig.ciBuildType !== CIBuildType.SELF_DOCKERFILE_BUILD_TYPE &&
-                                (loadingDataState.loading ||
-                                    loadingDataState.failed ||
-                                    loadingStateFromParent?.loading ||
-                                    loadingStateFromParent?.failed))
-                        }
-                        text={!isCiPipeline ? 'Save & Next' : 'Save Configuration'}
-                        endIcon={!isCiPipeline ? <NextIcon /> : null}
-                    />
-                </div>
-            )}
-            {showCustomPlatformConfirmation && renderConfirmationModal()}
-            {/* Might cause bug in future since we are toggling the state but directly closes the modal on empty workflow */}
-            {/* TODO: Connect with product if empty state is better? */}
-            {configOverridenPipelines?.length > 0 && showConfigOverrideDiff && (
-                <CIConfigDiffView
-                    parentReloading={parentReloading}
-                    ciConfig={ciConfig}
-                    configOverridenPipelines={configOverridenPipelines}
-                    toggleConfigOverrideDiffModal={toggleConfigOverrideDiffModal}
-                    reload={reload}
-                    gitMaterials={sourceConfig.material}
-                />
+            {!isCreateAppView && (
+                <>
+                    {!configOverrideView && (
+                        <div className="dc__no-shrink py-12 px-20 form__buttons bg__primary dc__border-top">
+                            <Button
+                                dataTestId="build_config_save_and_next_button"
+                                onClick={handleOnSubmit}
+                                disabled={
+                                    apiInProgress ||
+                                    (currentCIBuildConfig.ciBuildType !== CIBuildType.SELF_DOCKERFILE_BUILD_TYPE &&
+                                        (loadingDataState.loading ||
+                                            loadingDataState.failed ||
+                                            loadingStateFromParent?.loading ||
+                                            loadingStateFromParent?.failed))
+                                }
+                                text={!isCiPipeline ? 'Save & Next' : 'Save Configuration'}
+                                endIcon={!isCiPipeline ? <NextIcon /> : null}
+                            />
+                        </div>
+                    )}
+                    {showCustomPlatformConfirmation && renderConfirmationModal()}
+                    {/* Might cause bug in future since we are toggling the state but directly closes the modal on empty workflow */}
+                    {/* TODO: Connect with product if empty state is better? */}
+                    {configOverridenPipelines?.length > 0 && showConfigOverrideDiff && (
+                        <CIConfigDiffView
+                            parentReloading={parentReloading}
+                            ciConfig={ciConfig}
+                            configOverridenPipelines={configOverridenPipelines}
+                            toggleConfigOverrideDiffModal={toggleConfigOverrideDiffModal}
+                            reload={reload}
+                            gitMaterials={sourceConfig.material}
+                            isTemplateView={isTemplateView}
+                        />
+                    )}
+                </>
             )}
         </div>
     )

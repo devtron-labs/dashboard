@@ -33,7 +33,7 @@ import { URLS } from '../../../config'
 import { getLinkedCITippyContent } from '../../../Pages/Shared/LinkedCIDetailsModal/utils'
 import { WorkflowProps } from '../Workflow'
 
-export interface CINodeProps extends RouteComponentProps<{}>, Pick<WorkflowProps, 'isOffendingPipelineView'> {
+export interface CINodeProps extends RouteComponentProps<{}>, Pick<WorkflowProps, 'isOffendingPipelineView' | 'isTemplateView'> {
     x: number
     y: number
     width: number
@@ -213,6 +213,7 @@ export class CINode extends Component<CINodeProps> {
                                     testId={`ci-deployment-pipeline-${this.props.title}`}
                                     deleteConfig={this.deleteConfig}
                                     getWorkflows={this.props.getWorkflows}
+                                    isTemplateView={this.props.isTemplateView}
                                 />
                             )}
                     </div>

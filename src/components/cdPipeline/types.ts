@@ -20,11 +20,12 @@ import {
     PluginDetailPayloadType,
     ReleaseMode,
     ChangeCIPayloadType,
+    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MigrateToDevtronFormState } from './cdPipeline.types'
 
 // Have added any type for most of these since they were legacy do not know the implications of changing them
-export interface CDPipelineProps {
+export interface CDPipelineProps extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     match: any
     location: any
     appName: any
@@ -76,6 +77,7 @@ export interface BuildCDProps
         | 'isGitOpsRepoNotConfigured'
         | 'noGitOpsModuleInstalledAndConfigured'
         | 'isGitOpsInstalledButNotConfigured'
+        | 'isTemplateView'
     > {
     isAdvanced: boolean
     setIsVirtualEnvironment: Dispatch<SetStateAction<boolean>>

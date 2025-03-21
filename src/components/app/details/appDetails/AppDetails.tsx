@@ -131,7 +131,7 @@ export const AppNotConfigured = ({
     const { push } = useHistory()
 
     const handleEditApp = () => {
-        getAppConfigStatus(+appId)
+        getAppConfigStatus(+appId, isJobView, false)
             .then(() => {
                 const _urlPrefix = `/${isJobView ? 'job' : 'app'}/${appId}`
                 let url = `${_urlPrefix}/edit`
@@ -890,7 +890,10 @@ const AppDetail = ({ filteredEnvIds }: { filteredEnvIds?: string }) => {
     const { path } = useRouteMatch()
     const { environmentId, setEnvironmentId } = useAppContext() // global state for app to synchronise environments
     const [isAppDeleted, setIsAppDeleted] = useState(false)
-    const [otherEnvsLoading, otherEnvsResult] = useAsync(() => getAppOtherEnvironmentMin(params.appId), [params.appId])
+    const [otherEnvsLoading, otherEnvsResult] = useAsync(
+        () => getAppOtherEnvironmentMin(params.appId, false),
+        [params.appId],
+    )
     const [commitInfo, showCommitInfo] = useState<boolean>(false)
     const [deploymentUserActionState, setDeploymentUserActionState] = useState<ACTION_STATE>(ACTION_STATE.ALLOWED)
     const isVirtualEnvRef = useRef(false)

@@ -15,7 +15,7 @@
  */
 
 import { Component } from 'react'
-import { RouteComponentProps, Link } from 'react-router-dom'
+import { RouteComponentProps, Link, generatePath } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { CINode } from './nodes/CINode'
 import { CDNode } from './nodes/CDNode'
@@ -46,6 +46,8 @@ import {
     ConditionalWrap,
     ChangeCIPayloadType,
     CIPipelineNodeType,
+    URLS as CommonURLS,
+    AppConfigProps
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
 import { ReactComponent as ICMoreOption } from '../../assets/icons/ic-more-option.svg'
@@ -63,7 +65,7 @@ const getParsedPluginPolicyConsequenceData = importComponentFromFELibrary(
 )
 
 export interface WorkflowProps
-    extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }> {
+    extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }>, Required<Pick<AppConfigProps, 'isTemplateView'>> {
     nodes: CommonNodeAttr[]
     id: number
     name: string
@@ -165,6 +167,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     node.downstreams[0].split('-')[1],
                     this.props.isJobView,
                     node.isJobCI,
+                    this.props.isTemplateView,
                 ),
             )
         }
@@ -334,6 +337,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 selectedNode={this.props.selectedNode}
                 isLastNode={node.downstreams.length === 0}
                 isReadonlyView={this.props.isOffendingPipelineView}
+                isTemplateView={this.props.isTemplateView}
             />
         )
     }
@@ -376,6 +380,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 node.id,
                 this.props.isJobView,
                 node.isJobCI,
+                this.props.isTemplateView,
             )
         }
 
@@ -431,7 +436,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 isOffendingPipelineView={this.props.isOffendingPipelineView}
                 appId={this.props.match.params.appId}
                 getWorkflows={this.props.getWorkflows}
-
+                isTemplateView={this.props.isTemplateView}
             />
         )
     }
@@ -446,7 +451,13 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 height={node.height}
                 configDiffView={this.props.cdWorkflowList?.length > 0}
                 title={node.title}
-                redirectTo={`${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${
+                redirectTo={`${
+                    this.props.isTemplateView
+                        ? generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+                              appId: this.props.match.params.appId,
+                          })
+                        : `${URLS.APP}/${this.props.match.params.appId}`
+                }/${CommonURLS.APP_CONFIG}/${
                     URLS.APP_WORKFLOW_CONFIG
                 }/${this.props.id ?? 0}/${URLS.LINKED_CD}?changeCi=0&switchFromCiPipelineId=${
                     node.id
@@ -465,6 +476,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 appId={this.props.match.params.appId}
                 getWorkflows={this.props.getWorkflows}
                 workflowId={this.props.id}
+                isTemplateView={this.props.isTemplateView}
             />
         )
     }
@@ -514,6 +526,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 handleDisplayLoader={this.props.handleDisplayLoader}
                 showPluginWarning={node.showPluginWarning}
                 isOffendingPipelineView={this.props.isOffendingPipelineView}
+                isTemplateView={this.props.isTemplateView}
             />
         )
     }
@@ -582,6 +595,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         workflowId={this.props.id}
                         isWebhookCD={isWebhookCD}
                         showApprovalConfigInfoTippy
+                        isTemplateView={this.props.isTemplateView}
                     />
                 )
             }
@@ -642,6 +656,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         isWebhookCD={isWebhookCD}
                         leftTooltipContent={leftTooltipContent}
                         showApprovalConfigInfoTippy
+                        isTemplateView={this.props.isTemplateView}
                     />,
                 )
             } else {
@@ -699,7 +714,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
     handleNewJobRedirection = () => {
         this.props.history.push(
-            `${URLS.JOB}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${this.props.id}/${URLS.APP_CI_CONFIG}/0`,
+            `${URLS.JOB}/${this.props.match.params.appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${this.props.id}/${URLS.APP_CI_CONFIG}/0`,
         )
     }
 
@@ -771,7 +786,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
         return (
             <ConditionalWrap
-                condition={!this.props.isOffendingPipelineView && this.props.showWebhookTippy}
+                condition={!this.props.isOffendingPipelineView && !this.props.isTemplateView && this.props.showWebhookTippy}
                 wrap={(children) => (
                     <Tippy
                         placement="top-start"

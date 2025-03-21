@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { Fragment, useEffect, useRef, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -72,7 +72,7 @@ import {
     getDefaultUserStatusAndTimeout,
 } from '../../../Pages/GlobalConfigurations/Authorization/libUtils'
 
-export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
+export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType) => {
     const { appId, webhookId } = useParams<{
         appId: string
         webhookId: string
@@ -161,7 +161,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
         try {
             const [{ result: _userRole }, { result: _webhookDetails }] = await Promise.all([
                 getUserRole(),
-                getExternalCIConfig(appId, webhookId),
+                getExternalCIConfig(appId, webhookId, isTemplateView),
             ])
             const _isSuperAdmin = _userRole?.superAdmin
             setIsSuperAdmin(_isSuperAdmin)
@@ -532,7 +532,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                 {Object.keys(schemaData).map((key) => {
                     const data = schemaData[key]
                     return (
-                        <div className="json-schema-row pt-8 pb-8 fw-4 fs-13">
+                        <div className="json-schema-row pt-8 pb-8 fw-4 fs-13" key={key}>
                             <span className="dc__ellipsis-right">{key}</span>
                             <span className="dc__ellipsis-right">
                                 {data.createLink ? (
@@ -565,10 +565,10 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                         return null
                     }
                     return (
-                        <>
+                        <Fragment key={key}>
                             <div className="cn-9 fs-13 fw-6 mt-8 mb-8">{key}</div>
                             {renderSchema(schema[key], `${schemaName}-root` + `-${key}`)}
-                        </>
+                        </Fragment>
                     )
                 })}
             </div>

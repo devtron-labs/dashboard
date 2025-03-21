@@ -33,6 +33,8 @@ export const Build = ({
     isSecurityModuleInstalled,
     isJobView,
     getPluginData,
+    appId,
+    isTemplateView,
 }: BuildType) => {
     const { formData, setFormData, formDataErrorObj, setFormDataErrorObj } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
@@ -72,13 +74,13 @@ export const Build = ({
         const _formData = structuredClone(formData)
         const isPrevWebhook =
             _formData.ciPipelineSourceTypeOptions.find((sto) => sto.isSelected)?.value === SourceTypeMap.WEBHOOK
-        
+
         const materialIndexToUpdate = _formData.materials.findIndex((mat) => mat.gitMaterialId === gitMaterialId)
         if (materialIndexToUpdate !== -1) {
-             const materialToUpdate = _formData.materials[materialIndexToUpdate]
-             const sourceType =
-                 gitMaterialId === materialToUpdate.gitMaterialId ? selectedSource.value : materialToUpdate.type
-             const isBranchRegexType = sourceType === SourceTypeMap.BranchRegex
+            const materialToUpdate = _formData.materials[materialIndexToUpdate]
+            const sourceType =
+                gitMaterialId === materialToUpdate.gitMaterialId ? selectedSource.value : materialToUpdate.type
+            const isBranchRegexType = sourceType === SourceTypeMap.BranchRegex
 
             _formData.materials[materialIndexToUpdate] = {
                 ...materialToUpdate,
@@ -271,7 +273,7 @@ export const Build = ({
             {!isJobView && isAdvanced && (
                 <>
                     {isSecurityModuleInstalled && renderScanner()}
-                    <AdvancedConfigOptions ciPipeline={ciPipeline} />
+                    <AdvancedConfigOptions ciPipeline={ciPipeline} appId={appId} isTemplateView={isTemplateView} />
                 </>
             )}
         </div>

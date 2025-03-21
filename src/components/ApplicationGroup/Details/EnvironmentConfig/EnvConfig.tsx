@@ -72,7 +72,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
         setEnvConfigLoading(true)
         try {
             if (appId) {
-                const res = await getEnvConfig(+appId, +envId, callback)
+                const res = await getEnvConfig(+appId, +envId, false, callback)
                 setEnvConfigRes(res)
             } else {
                 setEnvConfigRes(null)
@@ -196,6 +196,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
                                 fetchEnvConfig={fetchEnvConfig}
                                 onErrorRedirectURL={generatePath(path, { envId })}
                                 appOrEnvIdToResourceApprovalConfigurationMap={appIdToAppApprovalConfigMap}
+                                isTemplateView={false}
                             />
                         </div>
                     ) : (

@@ -43,6 +43,7 @@ import {
     UploadFileDTO,
     UploadFileProps,
     DynamicDataTableCellValidationState,
+    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
@@ -733,7 +734,7 @@ export interface WebhookReceivedPayloadModalType
 
 export type OffendingWorkflowQueryParamType = `policy/${PolicyKindType}|identifier|${string}`
 
-export interface GetInitialWorkflowsParamsType {
+export interface GetInitialWorkflowsParamsType extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     id: any
     dimensions: WorkflowDimensions
     workflowOffset: Offset

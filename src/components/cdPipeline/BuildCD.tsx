@@ -88,6 +88,7 @@ export default function BuildCD({
     getMandatoryPluginData,
     migrateToDevtronFormState,
     setMigrateToDevtronFormState,
+    isTemplateView,
     isGitOpsInstalledButNotConfigured,
 }: BuildCDProps) {
     const {
@@ -311,7 +312,7 @@ export default function BuildCD({
             })
     }
 
-    const gitOpsRepoConfigInfoBar = (content: string) => (
+    const gitOpsRepoConfigInfoBar = (content: string) => isTemplateView ? null : (
         <InfoBlock
             description={content}
             variant="warning"

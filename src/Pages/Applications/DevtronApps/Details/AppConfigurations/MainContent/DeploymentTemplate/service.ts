@@ -15,7 +15,17 @@
  */
 
 import { Routes } from '@Config/constants'
-import { BaseURLParams, get, post, put, ResponseType, trash } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AppConfigProps,
+    BaseURLParams,
+    get,
+    GetTemplateAPIRouteType,
+    post,
+    put,
+    ResponseType,
+    trash,
+    getTemplateAPIRoute,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { getChartReferencesForAppAndEnv } from '@Services/service'
 import {
     DeploymentTemplateConfigDTO,
@@ -26,22 +36,53 @@ import {
 } from './types'
 import { addGUISchemaIfAbsent } from './utils'
 
-export const updateBaseDeploymentTemplate = (request: UpdateBaseDTPayloadType, abortSignal: AbortSignal) => {
-    const URL = `${Routes.DEPLOYMENT_TEMPLATE_UPDATE}`
+export const updateBaseDeploymentTemplate = (
+    request: UpdateBaseDTPayloadType,
+    abortSignal: AbortSignal,
+    isTemplateView: AppConfigProps['isTemplateView'],
+) => {
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CONFIG_DEPLOYMENT_TEMPLATE,
+              queryParams: { id: request.appId },
+          })
+        : Routes.DEPLOYMENT_TEMPLATE_UPDATE
+
+    return (isTemplateView ? put : post)(URL, request, {
+        signal: abortSignal,
+    })
+}
+
+export const createBaseDeploymentTemplate = (
+    request: UpdateBaseDTPayloadType,
+    abortSignal: AbortSignal,
+    isTemplateView: AppConfigProps['isTemplateView'],
+) => {
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CONFIG_DEPLOYMENT_TEMPLATE,
+              queryParams: { id: request.appId },
+          })
+        : Routes.DEPLOYMENT_TEMPLATE
+
     return post(URL, request, {
         signal: abortSignal,
     })
 }
 
-export const createBaseDeploymentTemplate = (request: UpdateBaseDTPayloadType, abortSignal: AbortSignal) => {
-    const URL = `${Routes.DEPLOYMENT_TEMPLATE}`
-    return post(URL, request, {
-        signal: abortSignal,
-    })
-}
-
-export function updateEnvDeploymentTemplate(payload: UpdateEnvironmentDTPayloadType, abortSignal: AbortSignal) {
-    return put('app/env', payload, {
+export function updateEnvDeploymentTemplate(
+    appId: number,
+    payload: UpdateEnvironmentDTPayloadType,
+    abortSignal: AbortSignal,
+    isTemplateView: AppConfigProps['isTemplateView'],
+) {
+    const url = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CONFIG_DEPLOYMENT_TEMPLATE_ENV,
+              queryParams: { id: appId },
+          })
+        : Routes.ENVIRONMENT_CONFIG
+    return put(url, payload, {
         signal: abortSignal,
     })
 }
@@ -51,8 +92,16 @@ export function createEnvDeploymentTemplate(
     envId: number,
     payload: UpdateEnvironmentDTPayloadType,
     abortSignal: AbortSignal,
+    isTemplateView: AppConfigProps['isTemplateView'],
 ) {
-    return post(`app/env/${appId}/${envId}`, payload, {
+    const url = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CONFIG_DEPLOYMENT_TEMPLATE_ENV,
+              queryParams: { id: appId, envId },
+          })
+        : `${Routes.ENVIRONMENT_CONFIG}/${appId}/${envId}`
+
+    return post(url, payload, {
         signal: abortSignal,
     })
 }
@@ -62,13 +111,33 @@ export const getEnvOverrideDeploymentTemplate = async (
     envId: number,
     chartId: number,
     chartName: string,
+    isTemplateView: AppConfigProps['isTemplateView'],
 ): Promise<ResponseType<EnvironmentOverrideDeploymentTemplateDTO>> => {
-    const data = await get(`app/env/${appId}/${envId}/${chartId}`)
+    const url = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CONFIG_DEPLOYMENT_TEMPLATE_ENV,
+              queryParams: { id: appId, chartRefId: chartId, envId },
+          })
+        : `${Routes.ENVIRONMENT_CONFIG}/${appId}/${envId}/${chartId}`
+
+    const data = await get(url)
     return addGUISchemaIfAbsent(data, chartName)
 }
 
-export function deleteOverrideDeploymentTemplate(id: number, appId: number, envId: number) {
-    return trash(`app/env/reset/${appId}/${envId}/${id}`)
+export function deleteOverrideDeploymentTemplate(
+    id: number,
+    appId: number,
+    envId: number,
+    isTemplateView: AppConfigProps['isTemplateView'],
+) {
+    const url = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CONFIG_DEPLOYMENT_TEMPLATE_ENV,
+              queryParams: { id: appId, envId, chartRefId: id },
+          })
+        : `${Routes.ENVIRONMENT_CONFIG}/reset/${appId}/${envId}/${id}`
+
+    return trash(url)
 }
 
 export async function getBaseDeploymentTemplate(
@@ -76,8 +145,16 @@ export async function getBaseDeploymentTemplate(
     chartRefId: number,
     abortSignal: AbortSignal,
     chartName: string,
+    isTemplateView: AppConfigProps['isTemplateView'],
 ): Promise<ResponseType<DeploymentTemplateConfigDTO>> {
-    const response = await get(`${Routes.DEPLOYMENT_TEMPLATE}/${appId}/${chartRefId}`, {
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CONFIG_DEPLOYMENT_TEMPLATE,
+              queryParams: { id: String(appId), chartRefId },
+          })
+        : `${Routes.DEPLOYMENT_TEMPLATE}/${appId}/${chartRefId}`
+
+    const response = await get(URL, {
         signal: abortSignal,
     })
     return addGUISchemaIfAbsent(response, chartName)
@@ -86,8 +163,10 @@ export async function getBaseDeploymentTemplate(
 export const getChartList = async ({
     appId,
     envId,
-}: Pick<BaseURLParams, 'appId' | 'envId'>): Promise<GetChartListReturnType> => {
-    const chartRefResp = await getChartReferencesForAppAndEnv(+appId, +envId)
+    isTemplateView,
+}: Pick<BaseURLParams, 'appId' | 'envId'> &
+    Required<Pick<AppConfigProps, 'isTemplateView'>>): Promise<GetChartListReturnType> => {
+    const chartRefResp = await getChartReferencesForAppAndEnv(+appId, +envId, isTemplateView)
 
     const { chartRefs, latestAppChartRef, latestChartRef, latestEnvChartRef, chartMetadata } = chartRefResp.result
     // Adding another layer of security

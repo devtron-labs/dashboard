@@ -43,6 +43,7 @@ export const ConfigMapSecretDeleteModal = ({
     closeDeleteModal,
     updateCMSecret,
     handleError,
+    isTemplateView,
 }: ConfigMapSecretDeleteModalProps) => {
     // STATES
 
@@ -53,10 +54,10 @@ export const ConfigMapSecretDeleteModal = ({
     // METHODS
     const handleDelete = async () => {
         if (envId) {
-            const deleteEnvConfigMapSecretParams = { id, appId, envId, name: configName }
+            const deleteEnvConfigMapSecretParams = { id, appId, envId, name: configName, isTemplateView }
             await (isSecret ? deleteEnvSecret : deleteEnvConfigMap)(deleteEnvConfigMapSecretParams)
         } else {
-            const deleteConfigMapSecretParams = { id, appId, name: configName }
+            const deleteConfigMapSecretParams = { id, appId, name: configName, isTemplateView }
             await (isSecret ? deleteSecret : deleteConfigMap)(deleteConfigMapSecretParams)
         }
         updateCMSecret()

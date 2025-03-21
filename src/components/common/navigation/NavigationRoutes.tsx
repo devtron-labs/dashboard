@@ -546,7 +546,7 @@ export default function NavigationRoutes() {
                                         <ResourceBrowser />
                                     </Route>
                                     <Route
-                                        path={URLS.GLOBAL_CONFIG}
+                                        path={CommonURLS.GLOBAL_CONFIG}
                                         render={(props) => <GlobalConfig {...props} isSuperAdmin={isSuperAdmin} />}
                                     />
                                     {!window._env_.K8S_CLIENT && [

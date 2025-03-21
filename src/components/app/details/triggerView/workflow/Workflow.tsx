@@ -54,6 +54,7 @@ export class Workflow extends Component<WorkflowProps> {
                 node.downstreams[0].split('-')[1],
                 this.props.isJobView,
                 node.isJobCI,
+                false,
             )
             if (this.props.fromAppGrouping) {
                 window.open(
@@ -122,6 +123,7 @@ export class Workflow extends Component<WorkflowProps> {
                 width={node.width}
                 key={`webhook-${node.id}`}
                 id={node.id}
+                isTemplateView={false}
             />
         )
     }
@@ -138,6 +140,7 @@ export class Workflow extends Component<WorkflowProps> {
                     configDiffView={false}
                     title={node.title}
                     readOnly
+                    isTemplateView={false}
                 />
             )
         }

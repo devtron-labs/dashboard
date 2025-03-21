@@ -15,19 +15,24 @@
  */
 
 import { Component } from 'react'
-import { showError, ToastManager, ToastVariantType, isAWSCodeCommitURL } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AppConfigProps,
+    showError,
+    ToastManager,
+    ToastVariantType,
+    isAWSCodeCommitURL,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { createMaterial } from './material.service'
 import { MaterialView } from './MaterialView'
 import { CreateMaterialState } from './material.types'
 
-interface CreateMaterialProps {
+interface CreateMaterialProps extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     appId: number
     isMultiGit: boolean
     providers: any[]
     refreshMaterials: () => void
     isGitProviderValid
     isCheckoutPathValid
-    isWorkflowEditorUnlocked: boolean
     reload: () => void
     isJobView?: boolean
 }
@@ -218,7 +223,10 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                         },
                     ],
                 }
-                createMaterial(payload)
+                createMaterial({
+                    request: payload,
+                    isTemplateView: this.props.isTemplateView,
+                })
                     .then((response) => {
                         this.props.refreshMaterials()
                         ToastManager.showToast({
@@ -279,9 +287,9 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 toggleCollapse={this.toggleCollapse}
                 save={this.save}
                 cancel={this.cancel}
-                isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
                 reload={this.props.reload}
                 isJobView={this.props.isJobView}
+                isTemplateView={this.props.isTemplateView}
             />
         )
     }

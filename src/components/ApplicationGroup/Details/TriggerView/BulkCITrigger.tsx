@@ -38,10 +38,10 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     ButtonStyleType,
-    noop,
     RuntimePluginVariables,
     uploadCIPipelineFile,
     UploadFileProps,
+    savePipeline,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { getCIPipelineURL, getParsedBranchValuesForPlugin, importComponentFromFELibrary } from '../../../common'
@@ -67,7 +67,6 @@ import {
 } from '../../../app/details/triggerView/types'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import BranchRegexModal from '../../../app/details/triggerView/BranchRegexModal'
-import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { BulkCIDetailType, BulkCITriggerType } from '../../AppGroup.types'
 import { IGNORE_CACHE_INFO } from '../../../app/details/triggerView/Constants'
 import TriggerResponseModalBody, { TriggerResponseModalFooter } from './TriggerResponseModal'
@@ -434,7 +433,10 @@ const BulkCITrigger = ({
             }
         }
 
-        savePipeline(payload, true)
+        savePipeline(payload, {
+            isRegexMaterial: true,
+            isTemplateView: false,
+        })
             .then((response) => {
                 if (response) {
                     getMaterialData()
@@ -672,6 +674,7 @@ const BulkCITrigger = ({
                             app.ciPipelineId,
                             false,
                             app.isJobCI,
+                            false,
                         )}
                         nodeType={nodeType}
                         shouldRenderAdditionalInfo={app.appId === selectedApp.appId}

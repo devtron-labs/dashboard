@@ -56,6 +56,8 @@ export const getDeploymentTemplateData = ({
                         }),
                   configType,
               },
+              appId: null,
+              isTemplateView: false,
           })
         : nullResponse
 }

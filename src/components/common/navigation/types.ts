@@ -1,12 +1,12 @@
 import { URLS } from '@Config/routes'
-import { customEnv, IconsProps } from '@devtron-labs/devtron-fe-common-lib'
+import { customEnv, IconsProps, URLS as CommonURLS } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface NavigationListItemType {
     title: string
     dataTestId: string
     type: 'link'
     icon: IconsProps['name']
-    href: (typeof URLS)[keyof typeof URLS]
+    href: (typeof URLS)[keyof typeof URLS] | (typeof CommonURLS)[keyof typeof CommonURLS]
     isAvailableInEA?: boolean
     markOnlyForSuperAdmin?: boolean
     forceHideEnvKey?: keyof customEnv

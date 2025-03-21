@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { ReactElement } from 'react'
-import { WorkflowNodeType, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactElement, useState } from 'react'
+import { WorkflowNodeType, ConditionalWrap, TARGET_IDS, TippyTheme, TippyCustomized } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import ToggleCDSelectButton from '../ToggleCDSelectButton'
 import { ReactComponent as Webhook } from '../../../assets/icons/ic-CIWebhook.svg'
 import { WebhookNodeProps } from '../types'
+import { ReactComponent as ICCIWebhook } from '@Icons/ic-CIWebhook.svg'
+import { DOCUMENTATION } from '@Config/constants'
 
 export const WebhookNode = ({
     x,
@@ -35,7 +37,10 @@ export const WebhookNode = ({
     selectedNode,
     isLastNode,
     isReadonlyView = false,
+    isTemplateView,
 }: WebhookNodeProps) => {
+    const [isWebhookTippyOpen, setIsWebhookTippyOpen] = useState(false)
+
     const selectedNodeKey = `${selectedNode?.nodeType}-${selectedNode?.id}`
     const currentNodeKey = `${WorkflowNodeType.WEBHOOK}-${id ?? ''}`
 
@@ -57,16 +62,47 @@ export const WebhookNode = ({
         }
     }
 
-    const renderWrapWithLink = (children: ReactElement) => (
-        <Link to={to} onClick={hideWebhookTippy} className="dc__no-decor">
-            {children}
-        </Link>
-    )
+    const toggleIsWebhookTippyOpen = () => {
+        setIsWebhookTippyOpen(prev => !prev)
+    }
+
+    const renderWrapWithLinkOrTippy = (children: ReactElement) =>
+        isTemplateView ? (
+            <TippyCustomized
+                theme={TippyTheme.white}
+                className="default-tt w-300 h-100"
+                placement="bottom"
+                Icon={ICCIWebhook}
+                heading="External Image Source"
+                infoText="When an application is created from this template, a webhook URL is generated for the pipeline. Users can send container images to this URL to deploy them from external services."
+                showCloseButton
+                onClose={toggleIsWebhookTippyOpen}
+                interactive
+                appendTo={document.getElementById(TARGET_IDS.WORKFLOW_EDITOR_CONTAINER)}
+                documentationLink={DOCUMENTATION.CONFIGURING_WEBHOOK}
+                documentationLinkText="Documentation"
+                visible={isWebhookTippyOpen}
+            >
+                {children}
+            </TippyCustomized>
+        ) : (
+            <Link to={to} onClick={hideWebhookTippy} className="dc__no-decor">
+                {children}
+            </Link>
+        )
+    
+    const handleCardClick = () => {
+        if (isTemplateView) {
+            toggleIsWebhookTippyOpen()
+        }
+    }
 
     const renderWebhookCard = (): JSX.Element => {
+        const shouldWrap = isTemplateView || !!to
+
         return (
-            <ConditionalWrap condition={!!to} wrap={renderWrapWithLink}>
-                <div className={`workflow-node pl-10 ${to ? 'cursor' : ''}`}>
+            <ConditionalWrap condition={shouldWrap} wrap={renderWrapWithLinkOrTippy}>
+                <div className={`workflow-node pl-10 ${shouldWrap ? 'cursor' : ''}`} onClick={handleCardClick}>
                     <div className="workflow-node__title flex workflow-node__title--no-margin h-100">
                         <div className="workflow-node__full-width-minus-Icon p-12">
                             <span className="workflow-node__text-light">Webhook</span>
@@ -81,6 +117,7 @@ export const WebhookNode = ({
                                 onClickAddNode={addNewCD}
                                 testId={`webhook-deployment-pipeline-button-${id}`}
                                 hideDeleteButton
+                                isTemplateView={isTemplateView}
                             />
                         )}
                     </div>
