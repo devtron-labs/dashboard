@@ -41,7 +41,6 @@ export interface BaseResourceListProps
             | 'renderRefreshBar'
             | 'selectedCluster'
             | 'selectedResource'
-            | 'showStaleDataWarning'
             | 'clusterName'
             | 'setWidgetEventDetails'
             | 'handleResourceClick'

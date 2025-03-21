@@ -143,22 +143,6 @@ export const removeDefaultForStorageClass = (storageList: K8sResourceDetailDataT
             : storage,
     )
 
-export const getScrollableResourceClass = (
-    className: string,
-    showPaginatedView: boolean,
-    syncError: boolean,
-): string => {
-    let _className = className
-    if (showPaginatedView && syncError) {
-        _className += ' paginated-list-view-with-sync-error'
-    } else if (showPaginatedView) {
-        _className += ' paginated-list-view'
-    } else if (syncError) {
-        _className += ' sync-error'
-    }
-    return _className
-}
-
 /* This is a utility function used in #convertK8sObjectMapToOptionsList */
 const newK8sObjectOption = (
     label: string,
