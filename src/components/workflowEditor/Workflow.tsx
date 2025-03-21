@@ -436,7 +436,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 isOffendingPipelineView={this.props.isOffendingPipelineView}
                 appId={this.props.match.params.appId}
                 getWorkflows={this.props.getWorkflows}
-
+                isTemplateView={this.props.isTemplateView}
             />
         )
     }

@@ -36,6 +36,7 @@ import {
     URLS as CommonURLS,
     ConfirmationModal,
     ConfirmationModalVariantType,
+    deleteWorkflow,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
@@ -47,7 +48,6 @@ import {
     getCreateWorkflows,
     getMaxYFromFirstLevelDownstream,
 } from '../app/details/triggerView/workflow.service'
-import { deleteWorkflow } from './service'
 import AddWorkflow from './CreateWorkflow'
 import CIPipeline from '../CIPipelineN/CIPipeline'
 import emptyWorkflow from '../../assets/img/ic-empty-workflow@3x.png'

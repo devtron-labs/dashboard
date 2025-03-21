@@ -31,6 +31,7 @@ import {
     noop,
     Tooltip,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
+    savePipeline,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as ICInfoOutline } from '@Icons/ic-info-outline-grey.svg'
@@ -46,7 +47,6 @@ import { IGNORE_CACHE_INFO } from './Constants'
 import { EnvironmentList } from '../../../CIPipelineN/EnvironmentList'
 import { GitInfoMaterial } from '@Components/common/helpers/GitInfoMaterialCard/GitInfoMaterial'
 import BranchRegexModal from './BranchRegexModal'
-import { savePipeline } from '@Components/ciPipeline/ciPipeline.service'
 
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
 const validateRuntimeParameters = importComponentFromFELibrary(

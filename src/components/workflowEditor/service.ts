@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-    AppConfigProps,
-    GetTemplateAPIRouteType,
-    post,
-    trash,
-    getTemplateAPIRoute,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { AppConfigProps, GetTemplateAPIRouteType, post, getTemplateAPIRoute } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 
 export function createWorkflow(request, isTemplateView: AppConfigProps['isTemplateView']) {
@@ -43,15 +37,4 @@ export function updateWorkflow(request, isTemplateView: AppConfigProps['isTempla
         : `${Routes.WORKFLOW}`
 
     return post(URL, request)
-}
-
-export function deleteWorkflow(appId: string, workflowId: number, isTemplateView: AppConfigProps['isTemplateView']) {
-    const URL = isTemplateView
-        ? getTemplateAPIRoute({
-              type: GetTemplateAPIRouteType.WORKFLOW,
-              queryParams: { id: appId, appWorkflowId: workflowId },
-          })
-        : `${Routes.WORKFLOW}/${appId}/${workflowId}`
-
-    return trash(URL)
 }

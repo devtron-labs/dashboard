@@ -16,7 +16,7 @@
 
 import {
     get,
-    post,
+    savePipeline,
     MaterialType,
     Githost,
     ScriptType,
@@ -40,28 +40,6 @@ import { safeTrim } from '../../util/Util'
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }
-}
-
-export function savePipeline(
-    request,
-    { isTemplateView, isRegexMaterial }: Required<Pick<AppConfigProps, 'isTemplateView'>> & {
-        isRegexMaterial?: boolean
-    },
-): Promise<any> {
-    let url
-    if (isRegexMaterial) {
-        url = `${Routes.CI_PIPELINE_PATCH}/regex`
-    } else {
-        url = isTemplateView
-            ? getTemplateAPIRoute({
-                  type: GetTemplateAPIRouteType.CI_PIPELINE,
-                  queryParams: {
-                      id: request.appId,
-                  },
-              })
-            : `${Routes.CI_PIPELINE_PATCH}`
-    }
-    return post(url, request)
 }
 
 function getCIPipelineNameSuggestion(appId: string | number, isTemplateView: AppConfigProps['isTemplateView']): Promise<any> {

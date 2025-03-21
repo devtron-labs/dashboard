@@ -260,6 +260,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                         getWorkflows={this.props.getWorkflows}
                         showIconOnly={false}
                         onDelete={this.onClose}
+                        isTemplateView={this.props.isTemplateView}
                     />
                 </ConditionalWrap>
             )

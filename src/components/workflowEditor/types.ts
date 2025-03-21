@@ -333,7 +333,7 @@ export interface PipelineContext {
     uploadFile: (file: UploadFileProps) => Promise<UploadFileDTO>
 }
 
-export interface ToggleCDSelectButtonProps {
+export interface ToggleCDSelectButtonProps extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     addNewPipelineBlocked: boolean
     onClickAddNode: (event: any) => void
     testId: string

@@ -567,6 +567,7 @@ export default function CIPipeline({
                         }}
                         onDelete={onClose}
                         getWorkflows={getWorkflows}
+                        isTemplateView={isTemplateView}
                     />
                 </ConditionalWrap>
             )

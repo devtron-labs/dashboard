@@ -117,6 +117,7 @@ export const WebhookNode = ({
                                 onClickAddNode={addNewCD}
                                 testId={`webhook-deployment-pipeline-button-${id}`}
                                 hideDeleteButton
+                                isTemplateView={isTemplateView}
                             />
                         )}
                     </div>
