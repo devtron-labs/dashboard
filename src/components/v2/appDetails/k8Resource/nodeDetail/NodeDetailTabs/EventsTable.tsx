@@ -38,7 +38,7 @@ export const EventsTable = ({ loading, eventsList, isResourceBrowserView, errorV
             return (
                 <div
                     data-testid="app-events-container"
-                    className={`text__white flex-grow-1 dc__overflow-auto ${getComponentSpecificThemeClass(AppThemeType.dark)}`}
+                    className={`text__white flex-grow-1 dc__overflow-auto bg__primary ${getComponentSpecificThemeClass(AppThemeType.dark)}`}
                 >
                     {errorValue?.status === TERMINAL_STATUS.TERMINATED && (
                         <div className="pl-20 h-24 flex left pr-20 w-100 bcr-7 cn-0">
@@ -81,10 +81,7 @@ export const EventsTable = ({ loading, eventsList, isResourceBrowserView, errorV
                                     <td className="cell-style count">{event.count}</td>
                                     <td className="cell-style timestamp">
                                         {event.lastTimestamp &&
-                                            moment(event.lastTimestamp, 'YYYY-MM-DDTHH:mm:ss')
-                                                .add(5, 'hours')
-                                                .add(30, 'minutes')
-                                                .format('YYYY-MM-DD HH:mm:ss')}
+                                            moment.utc(event.lastTimestamp).local().format('YYYY-MM-DD HH:mm:ss')}
                                     </td>
                                 </tr>
                             ))}

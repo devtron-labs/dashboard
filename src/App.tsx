@@ -159,10 +159,6 @@ export default function App() {
     }
 
     useEffect(() => {
-        if (window._env_.FEATURE_EXPERIMENTAL_MODERN_LAYOUT_ENABLE) {
-            document.body.classList.add('modern-layout')
-        }
-
         if (typeof Storage !== 'undefined') {
             // TODO (Arun): Remove in next packet
             localStorage.removeItem('undefined')
@@ -333,7 +329,7 @@ export default function App() {
                                 <Reload />
                             </div>
                             ) : (
-                            <ErrorBoundary shouldAddFullScreenBg={window._env_.FEATURE_EXPERIMENTAL_MODERN_LAYOUT_ENABLE}>
+                            <ErrorBoundary>
                                 <BreadcrumbStore>
                                     <Switch>
                                         {isDirectApprovalNotification && GenericDirectApprovalModal && (

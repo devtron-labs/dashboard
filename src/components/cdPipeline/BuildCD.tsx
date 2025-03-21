@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import { SyntheticEvent, useContext, useState } from 'react'
+import { useContext, useState } from 'react'
 import {
     CustomInput,
     DeploymentAppTypes,
     InfoColourBar,
     Progressing,
-    RadioGroup,
-    RadioGroupItem,
     TippyCustomized,
     TippyTheme,
     YAMLStringify,
@@ -34,44 +32,45 @@ import {
     ComponentSizeType,
     showError,
     TriggerType,
+    InfoBlock,
+    ButtonVariantType,
     useMainContext,
-    ErrorScreenNotAuthorized,
     Tooltip,
     MODES,
     useGetUserRoles,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useHistory } from 'react-router-dom'
 import yamlJsParser from 'yaml'
-import error from '../../assets/icons/misc/errorInfo.svg'
-import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
+import { ReactComponent as ICArrowRight } from '@Icons/ic-arrow-right.svg'
+import { ReactComponent as Add } from '@Icons/ic-add.svg'
+import { ReactComponent as AlertTriangle } from '@Icons/ic-alert-triangle.svg'
+import { ReactComponent as Help } from '@Icons/ic-help.svg'
+import { ReactComponent as ICInfo } from '@Icons/ic-info-filled.svg'
+import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
+import settings from '@Icons/ic-settings.svg'
+import trash from '@Icons/misc/delete.svg'
+import error from '@Icons/misc/errorInfo.svg'
+import { Info } from '../common/icons/Icons'
 import { ENV_ALREADY_EXIST_ERROR, RegistryPayloadWithSelectType, URLS, ViewType } from '../../config'
 import { GeneratedHelmPush, MigrateToDevtronFormState, TriggerTypeRadioProps } from './cdPipeline.types'
 import { createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary, Select } from '../common'
-import { Info } from '../common/icons/Icons'
-import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
-import settings from '../../assets/icons/ic-settings.svg'
-import trash from '../../assets/icons/misc/delete.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { getNamespacePlaceholder } from './cdpipeline.util'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { DeploymentAppRadioGroup } from '../v2/values/chartValuesDiff/ChartValuesView.component'
 import CustomImageTags from '../CIPipelineN/CustomImageTags'
-import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { GITOPS_REPO_REQUIRED } from '../v2/values/chartValuesDiff/constant'
 import { getGitOpsRepoConfig } from '../../services/service'
-import { ReactComponent as ICInfo } from '../../assets/icons/ic-info-filled.svg'
 
 import PullImageDigestToggle from './PullImageDigestToggle'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
 import { BuildCDProps } from './types'
-import { MigrateFromArgo } from './MigrateToDevtron'
+import { MigrateToDevtron } from './MigrateToDevtron'
 import TriggerTypeRadio from './TriggerTypeRadio'
+import { MigrateToDevtronProps } from './MigrateToDevtron/types'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
-const MigrateHelmReleaseBody = importComponentFromFELibrary('MigrateHelmReleaseBody', null, 'function')
 const ApprovalPolicyRedirectCard = importComponentFromFELibrary('ApprovalPolicyRedirectCard', null, 'function')
 
 export default function BuildCD({
@@ -90,6 +89,7 @@ export default function BuildCD({
     migrateToDevtronFormState,
     setMigrateToDevtronFormState,
     isTemplateView,
+    isGitOpsInstalledButNotConfigured,
 }: BuildCDProps) {
     const {
         formData,
@@ -146,13 +146,11 @@ export default function BuildCD({
 
     const handleTriggerTypeChange = (event) => {
         const _form = { ...formData }
-        const triggerType = event.target.value as MigrateToDevtronFormState['triggerType']
-
-        _form.triggerType = triggerType
+        _form.triggerType = event.target.value as MigrateToDevtronFormState['triggerType']
         setFormData(_form)
     }
 
-    const handleMigrateFromAppTypeChange = (event: SyntheticEvent) => {
+    const handleMigrateFromAppTypeChange: MigrateToDevtronProps['handleMigrateFromAppTypeChange'] = (event) => {
         const { value } = event.target as HTMLInputElement
         setMigrateToDevtronFormState((prevState) => ({
             ...prevState,
@@ -305,6 +303,8 @@ export default function BuildCD({
             .catch((err) => {
                 if (err.code === 409) {
                     setReloadNoGitOpsRepoConfiguredModal(true)
+                } else {
+                    showError(err)
                 }
             })
             .finally(() => {
@@ -312,24 +312,20 @@ export default function BuildCD({
             })
     }
 
-    const gitOpsRepoConfigInfoBar = (content: string) => {
-        if (isTemplateView) {
-            return null
-        }
-
-        return (
-            <InfoColourBar
-                message={content}
-                classname="warn mb-16"
-                Icon={Warn}
-                iconClass="warning-icon"
-                linkClass={`flex ${gitopsConflictLoading ? 'loading-dots-cb5 cursor-not-allowed' : ''}`}
-                linkText="Configure GitOps Repository"
-                internalLink
-                linkOnClick={checkGitOpsRepoConflict}
-            />
-        )
-    }
+    const gitOpsRepoConfigInfoBar = (content: string) => isTemplateView ? null : (
+        <InfoBlock
+            description={content}
+            variant="warning"
+            buttonProps={{
+                dataTestId: 'configure-gitops-repo-button',
+                variant: ButtonVariantType.text,
+                text: 'Configure',
+                endIcon: <ICArrowRight />,
+                onClick: checkGitOpsRepoConflict,
+                isLoading: gitopsConflictLoading,
+            }}
+        />
+    )
 
     const renderTriggerType = () => (
         <TriggerTypeRadio
@@ -495,7 +491,9 @@ export default function BuildCD({
                         />
                     </div>
                 </div>
-                {gitOpsRepoNotConfiguredAndOptionsHidden && gitOpsRepoConfigInfoBar(GITOPS_REPO_REQUIRED)}
+                <div className="mb-16">
+                    {gitOpsRepoNotConfiguredAndOptionsHidden && gitOpsRepoConfigInfoBar(GITOPS_REPO_REQUIRED)}
+                </div>
                 {renderNamespaceInfo(namespaceEditable)}
                 {isVirtualEnvironment
                     ? HelmManifestPush && (
@@ -609,23 +607,22 @@ export default function BuildCD({
         setFormData(_form)
     }
 
-    const renderDeploymentAppType = () => {
-        return (
-            <div className="cd-pipeline__deployment-type mt-16">
-                <label className="form__label form__label--sentence dc__bold">How do you want to deploy?</label>
-                <DeploymentAppRadioGroup
-                    isDisabled={!!cdPipelineId}
-                    deploymentAppType={formData.deploymentAppType ?? DeploymentAppTypes.HELM}
-                    handleOnChange={handleDeploymentAppTypeChange}
-                    allowedDeploymentTypes={formData.allowedDeploymentTypes}
-                    rootClassName={`chartrepo-type__radio-group ${!cdPipelineId ? 'bcb-5' : ''}`}
-                    isFromCDPipeline
-                    isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
-                    gitOpsRepoConfigInfoBar={gitOpsRepoConfigInfoBar}
-                />
-            </div>
-        )
-    }
+    const renderDeploymentAppType = () => (
+        <div className="cd-pipeline__deployment-type mt-16">
+            <label className="form__label form__label--sentence dc__bold">How do you want to deploy?</label>
+            <DeploymentAppRadioGroup
+                isDisabled={!!cdPipelineId}
+                deploymentAppType={formData.deploymentAppType ?? DeploymentAppTypes.HELM}
+                handleOnChange={handleDeploymentAppTypeChange}
+                allowedDeploymentTypes={formData.allowedDeploymentTypes}
+                rootClassName={`chartrepo-type__radio-group ${!cdPipelineId ? 'bcb-5' : ''}`}
+                isFromCDPipeline
+                isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
+                gitOpsRepoConfigInfoBar={gitOpsRepoConfigInfoBar}
+                areGitopsCredentialsConfigured={!isGitOpsInstalledButNotConfigured}
+            />
+        </div>
+    )
 
     const renderStrategyOptions = () => {
         return (
@@ -782,80 +779,14 @@ export default function BuildCD({
         )
     }
 
-    const renderSelectMigrateFromRadioGroup = (deploymentAppType: MigrateToDevtronFormState['deploymentAppType']) => (
-        <RadioGroupItem dataTestId={`${deploymentAppType}-radio-item`} value={deploymentAppType}>
-            <Tooltip
-                alwaysShowTippyOnHover
-                content={
-                    <div className="flexbox-col dc__gap-2">
-                        <h6 className="m-0 fs-12 fw-6 lh-18">
-                            {deploymentAppType === DeploymentAppTypes.HELM
-                                ? 'Migrate helm release'
-                                : 'Migrate Argo CD Application'}
-                        </h6>
-
-                        <p className="m-0 fs-12 fw-4 lh-18">
-                            {deploymentAppType === DeploymentAppTypes.HELM
-                                ? 'Migrate an existing Helm Release to manage deployments via CD pipeline'
-                                : 'Migrate an existing Argo CD Application to manage deployments via CD pipeline'}
-                        </p>
-                    </div>
-                }
-            >
-                <span className="cn-9 fs-13 fw-4 lh-20 dc__underline-dotted">
-                    {deploymentAppType === DeploymentAppTypes.HELM ? 'Helm Release' : 'Argo CD Application'}
-                </span>
-            </Tooltip>
-        </RadioGroupItem>
-    )
-
     const renderBuild = () => {
-        if (releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && !isAdvanced && MigrateHelmReleaseBody) {
-            if (!isSuperAdmin) {
-                return <ErrorScreenNotAuthorized />
-            }
-
-            if (!isFeatureArgoCdMigrationEnabled) {
-                return (
-                    <MigrateHelmReleaseBody
-                        renderTriggerType={renderTriggerType}
-                        formData={formData}
-                        setFormData={setFormData}
-                        renderEnvSelector={renderEnvSelector}
-                    />
-                )
-            }
-
+        if (!isAdvanced && releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS) {
             return (
-                <div className="flexbox-col dc__gap-16">
-                    <div className="flexbox-col dc__gap-8">
-                        <span className="cn-7 fs-13 fw-4 lh-20">Select type of application to migrate</span>
-
-                        <RadioGroup
-                            className="radio-group-no-border migrate-to-devtron__deployment-app-type-radio-group"
-                            value={migrateToDevtronFormState.deploymentAppType}
-                            name="migrate-from-app-type"
-                            onChange={handleMigrateFromAppTypeChange}
-                        >
-                            {renderSelectMigrateFromRadioGroup(DeploymentAppTypes.HELM)}
-                            {renderSelectMigrateFromRadioGroup(DeploymentAppTypes.GITOPS)}
-                        </RadioGroup>
-                    </div>
-
-                    {migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.HELM ? (
-                        <MigrateHelmReleaseBody
-                            renderTriggerType={renderTriggerType}
-                            formData={formData}
-                            setFormData={setFormData}
-                            renderEnvSelector={renderEnvSelector}
-                        />
-                    ) : (
-                        <MigrateFromArgo
-                            migrateToDevtronFormState={migrateToDevtronFormState}
-                            setMigrateToDevtronFormState={setMigrateToDevtronFormState}
-                        />
-                    )}
-                </div>
+                <MigrateToDevtron
+                    migrateToDevtronFormState={migrateToDevtronFormState}
+                    setMigrateToDevtronFormState={setMigrateToDevtronFormState}
+                    handleMigrateFromAppTypeChange={handleMigrateFromAppTypeChange}
+                />
             )
         }
 
@@ -886,15 +817,14 @@ export default function BuildCD({
                 {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
                     !isVirtualEnvironment &&
                     formData.allowedDeploymentTypes.length > 0 &&
-                    !noGitOpsModuleInstalledAndConfigured &&
+                    // Want to show this when gitops module is installed, does not matter if it is configured or not
+                    (!noGitOpsModuleInstalledAndConfigured || isGitOpsInstalledButNotConfigured) &&
                     renderDeploymentAppType()}
 
                 {isAdvanced ? renderAdvancedDeploymentStrategy() : renderBasicDeploymentStrategy()}
-
-                {isAdvanced && ApprovalPolicyRedirectCard && <ApprovalPolicyRedirectCard />}
-
                 {isAdvanced && (
                     <>
+                        {ApprovalPolicyRedirectCard && <ApprovalPolicyRedirectCard />}
                         <CustomImageTags
                             formData={formData}
                             setFormData={setFormData}

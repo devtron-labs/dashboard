@@ -350,12 +350,15 @@ export function deleteCIPipeline(
     webhookConditionList,
     isTemplateView: AppConfigProps['isTemplateView']
 ) {
-    const ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
+    const updatedCI = {
+        id: ciPipeline.id,
+        name: formData.name,
+    }
     const request = {
         appId,
         appWorkflowId: workflowId,
         action: PatchAction.DELETE,
-        ciPipeline: ci,
+        ciPipeline: updatedCI,
     }
     return savePipeline(request, { isTemplateView }).then((response) => {
         return parseCIResponse(

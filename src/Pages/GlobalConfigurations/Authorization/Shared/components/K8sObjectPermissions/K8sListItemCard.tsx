@@ -446,7 +446,7 @@ const K8sListItemCard = ({
                         hideSelectedOptions={false}
                         size={ComponentSizeType.large}
                     />
-                    <div className="dc__grid-row-one-half dc__gap-12 w-100">
+                    <div className="dc__grid-cols-2 dc__gap-12 w-100">
                         <SelectPicker
                             inputId="k8s-permission-select-api-group-dropdown"
                             placeholder="Select API group"

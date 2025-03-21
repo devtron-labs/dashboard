@@ -164,7 +164,7 @@ export default function GlobalConfiguration(props) {
                             <NavItem serverMode={serverMode} />
                         </section>
                     )}
-                    <section className="global-configuration__component-wrapper">
+                    <section className="global-configuration__component-wrapper bg__secondary">
                         <Suspense fallback={<Progressing pageLoader />}>
                             <ErrorBoundary>
                                 <Body

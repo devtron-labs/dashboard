@@ -124,3 +124,21 @@
     bottom: 108px;
     right: 96px;
 }
+
+.ci-node__action-button {
+    div{
+        height: 100%;
+
+    }
+    .button {
+        height: 100%;
+        border-radius: 0;
+    }
+    .button__border-less--neutral{
+        border-top-right-radius: 8px;
+    }
+
+    .button__border-less--negative-grey{
+        border-bottom-right-radius: 8px;
+    }
+}

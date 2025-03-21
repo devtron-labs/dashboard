@@ -38,6 +38,7 @@ import {
     getUserPreferences,
     MODES,
     useTheme,
+    AppThemeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -159,7 +160,7 @@ export default function NavigationRoutes() {
     const [userPreferences, setUserPreferences] = useState<UserPreferencesType>(null)
     const [userPreferencesError, setUserPreferencesError] = useState<ServerErrors>(null)
 
-    const { showThemeSwitcherDialog, handleThemeSwitcherDialogVisibilityChange, handleThemePreferenceChange } =
+    const { showThemeSwitcherDialog, handleThemeSwitcherDialogVisibilityChange, handleThemePreferenceChange, appTheme } =
         useTheme()
 
     const { isAirgapped, isManifestScanningEnabled, canOnlyViewPermittedEnvOrgLevel } = environmentDataState
@@ -530,7 +531,7 @@ export default function NavigationRoutes() {
                 )}
                 {serverMode && (
                     <div
-                        className={`main bg__primary ${window._env_.FEATURE_EXPERIMENTAL_MODERN_LAYOUT_ENABLE ? 'main__modern-layout border__primary-translucent m-8 br-6' : ''} ${
+                        className={`main bg__primary ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} m-8 br-6 ${
                             pageOverflowEnabled ? '' : 'main__overflow-disabled'
                         }`}
                     >

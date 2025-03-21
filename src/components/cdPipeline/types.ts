@@ -36,6 +36,7 @@ export interface CDPipelineProps extends Required<Pick<AppConfigProps, 'isTempla
     changeCIPayload?: ChangeCIPayloadType
     noGitOpsModuleInstalledAndConfigured: any
     isGitOpsRepoNotConfigured: any
+    isGitOpsInstalledButNotConfigured: boolean
     reloadAppConfig: () => void
     handleDisplayLoader: () => void
 }
@@ -72,7 +73,11 @@ export interface PullImageDigestToggleType {
 export interface BuildCDProps
     extends Pick<
         CDPipelineProps,
-        'envIds' | 'isGitOpsRepoNotConfigured' | 'noGitOpsModuleInstalledAndConfigured' | 'isTemplateView'
+        | 'envIds'
+        | 'isGitOpsRepoNotConfigured'
+        | 'noGitOpsModuleInstalledAndConfigured'
+        | 'isGitOpsInstalledButNotConfigured'
+        | 'isTemplateView'
     > {
     isAdvanced: boolean
     setIsVirtualEnvironment: Dispatch<SetStateAction<boolean>>

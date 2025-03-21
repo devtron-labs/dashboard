@@ -124,7 +124,6 @@ if (!window || !window._env_) {
         HELM_APP_DETAILS_POLLING_INTERVAL: 30000,
         EA_APP_DETAILS_POLLING_INTERVAL: 30000,
         CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.ai',
-        // Remove this in next sprint, have'nt removed yet for backward compatibility
         HIDE_GITOPS_OR_HELM_OPTION: false,
         K8S_CLIENT: import.meta.env.VITE_K8S_CLIENT === 'true',
         CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL: 7000,
@@ -172,7 +171,6 @@ if (!window || !window._env_) {
         FEATURE_EXPERIMENTAL_THEMING_ENABLE: import.meta.env.DEV,
         FEATURE_APPLICATION_TEMPLATES_ENABLE: true,
         FEATURE_CODE_MIRROR_ENABLE: true,
-        FEATURE_EXPERIMENTAL_MODERN_LAYOUT_ENABLE: import.meta.env.DEV,
         FEATURE_DEFAULT_AUTHENTICATED_VIEW_ENABLE: false,
     }
 }
