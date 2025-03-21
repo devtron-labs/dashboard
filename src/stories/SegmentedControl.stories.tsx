@@ -17,6 +17,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
 import { NSegmentedControl, NSegmentedControlProps } from '@devtron-labs/devtron-fe-common-lib'
+import { action } from '@storybook/addon-actions'
 
 const SEGMENTED_CONTROL_SIZE_MAP: Record<NSegmentedControlProps['size'], null> = {
     xs: null,
@@ -43,14 +44,36 @@ export const Default: Story = {
         name: 'segmented-control',
         segments: [
             {
-                label: 'hello',
-                value: 'helllo',
+                label: 'Label 1',
+                value: 'value-1',
+                icon: 'ic-cube',
             },
             {
-                label: 'hello world',
-                value: 'helllo world',
+                label: 'Label 2',
+                value: 'value-2',
+                isError: true,
+                icon: 'ic-cube',
+                tooltipProps: {
+                    content: 'There is an error',
+                },
+            },
+            {
+                label: 'Label 3',
+                value: 'value-3',
+            },
+            {
+                label: 'Label 4',
+                value: 'value-4',
+            },
+            {
+                icon: 'ic-cube',
+                value: 'value-5',
+                tooltipProps: {
+                    content: 'Tooltip content for value 5',
+                },
+                ariaLabel: 'Aria label for value 5',
             },
         ],
-        onChange: () => {},
+        onChange: action('changed'),
     },
 }
