@@ -19,3 +19,7 @@ import { SSOConfigDTO, SSOProvider } from '@Pages/GlobalConfigurations'
 export interface SSOConfigLoginList extends Pick<SSOConfigDTO, 'id' | 'active' | 'url'> {
     name: SSOProvider
 }
+
+export interface LoginFormType {
+    loginList: SSOConfigLoginList[]
+}
