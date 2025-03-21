@@ -27,11 +27,6 @@
 
 .main {
     height: calc(100vh - 16px);
-    overflow-y: auto;
-}
-
-.main__overflow-disabled {
-    overflow-y: hidden !important;
 }
 
 .title-container {

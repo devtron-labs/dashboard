@@ -46,6 +46,7 @@ import { validateToken } from './services/service'
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'))
 const Login = lazy(() => import('./components/login/Login'))
 const GenericDirectApprovalModal = importComponentFromFELibrary('GenericDirectApprovalModal')
+const ActivateLicense = importComponentFromFELibrary('ActivateLicense', null, 'function')
 
 export default function App() {
     const onlineToastRef = useRef(null)
@@ -159,15 +160,12 @@ export default function App() {
     }
 
     useEffect(() => {
-        if (typeof Storage !== 'undefined') {
-            // TODO (Arun): Remove in next packet
-            localStorage.removeItem('undefined')
-        }
+
         if (navigator.serviceWorker) {
             navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
         }
         // If not K8S_CLIENT then validateToken otherwise directly redirect
-        if (!window._env_.K8S_CLIENT) {
+        if (!window._env_.K8S_CLIENT && location.pathname !== CommonURLS.LICENSE_AUTH) {
             // By Passing validations for direct email approval notifications
             if (isDirectApprovalNotification) {
                 redirectToDirectApprovalNotification()
@@ -338,6 +336,11 @@ export default function App() {
                                                     approvalType={approvalType}
                                                     approvalToken={approvalToken}
                                                 />
+                                            </Route>
+                                        )}
+                                        {ActivateLicense && (
+                                            <Route path={CommonURLS.LICENSE_AUTH}>
+                                                <ActivateLicense />
                                             </Route>
                                         )}
                                         {!window._env_.K8S_CLIENT && <Route path="/login" component={Login} />}
