@@ -294,10 +294,10 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
             />
         )
 
-    const removePageNumber = (search) => {
-        const params = new URLSearchParams(search)
-        params.delete('pageNumber')
-        return params.toString() ? `?${params.toString()}` : ''
+    const removePageNumber = (search: string) => {
+        const searchParams = new URLSearchParams(search)
+        searchParams.delete('pageNumber')
+        return searchParams.toString() ? `?${searchParams.toString()}` : ''
     }
 
     const tabs: TabProps[] = [
