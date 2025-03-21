@@ -246,6 +246,10 @@ $color-suffix: 00;
     font-family: 'Merriweather';
 }
 
+.font-ibm-plex-mono {
+    font-family: 'IBM Plex Mono';
+}
+
 @mixin cta($bg, $color, $border, $cursor: pointer, $override-svg: true) {
     background: $bg;
     color: $color;
