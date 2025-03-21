@@ -391,7 +391,6 @@ src/components/workflowEditor/EmptyWorkflow.tsx
 src/components/workflowEditor/NoGitOpsConfiguredWarning.tsx
 src/components/workflowEditor/NoGitOpsRepoConfiguredWarning.tsx
 src/components/workflowEditor/PipelineSelect.tsx
-src/components/workflowEditor/ToggleCDSelectButton.tsx
 src/components/workflowEditor/Workflow.tsx
 src/components/workflowEditor/nodes/CDNode.tsx
 src/components/workflowEditor/nodes/CINode.tsx

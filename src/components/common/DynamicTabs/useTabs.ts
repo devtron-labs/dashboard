@@ -215,7 +215,7 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
                 })
             }
             if (!_tabs.some((_tab) => _tab.isSelected)) {
-                _tabs[FALLBACK_TAB].isSelected = true
+                _tabs[fallbackTabIndex].isSelected = true
             }
 
             _tabs.sort((a, b) => {
