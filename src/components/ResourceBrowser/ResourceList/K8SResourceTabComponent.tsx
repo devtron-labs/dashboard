@@ -30,7 +30,6 @@ const K8SResourceTabComponent = ({
     renderRefreshBar,
     addTab,
     isOpen,
-    showStaleDataWarning,
     updateK8sResourceTab,
     updateK8sResourceTabLastSyncMoment,
     setWidgetEventDetails,
@@ -90,7 +89,6 @@ const K8SResourceTabComponent = ({
                 addTab={addTab}
                 isOpen={isOpen}
                 renderRefreshBar={renderRefreshBar}
-                showStaleDataWarning={showStaleDataWarning}
                 updateK8sResourceTab={updateK8sResourceTab}
                 setWidgetEventDetails={setWidgetEventDetails}
                 handleResourceClick={handleResourceClick}
