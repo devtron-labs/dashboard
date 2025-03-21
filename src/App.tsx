@@ -339,7 +339,9 @@ export default function App() {
                                             </Route>
                                         )}
                                         {ActivateLicense && (
-                                            <Route path={CommonURLS.LICENSE_AUTH} component={ActivateLicense} />
+                                            <Route path={CommonURLS.LICENSE_AUTH}>
+                                                <ActivateLicense />
+                                            </Route>
                                         )}
                                         {!window._env_.K8S_CLIENT && <Route path="/login" component={Login} />}
                                         <Route path="/" render={() => <NavigationRoutes />} />
