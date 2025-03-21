@@ -549,7 +549,7 @@ export default function NavigationRoutes() {
                 )}
                 {serverMode && (
                     <div
-                        className={`main flexbox-col bg__primary ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} m-8 br-6`}
+                        className={`main flexbox-col bg__primary ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} m-8 br-6 dc__overflow-hidden`}
                     >
                         {/* To be replaced with Announcement Banner */}
                         {EnterpriseLicenseBar && <EnterpriseLicenseBar />}
