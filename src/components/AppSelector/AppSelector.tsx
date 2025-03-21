@@ -14,30 +14,124 @@
  * limitations under the License.
  */
 
-import React, { useRef } from 'react'
-import { Props as SelectProps, SelectInstance } from 'react-select'
-import AsyncSelect from 'react-select/async'
+import { useEffect, useRef } from 'react'
+import { Props as SelectProps, SelectInstance, GroupBase, OptionsOrGroups } from 'react-select'
+import {
+    abortPreviousRequests,
+    SelectPickerOptionType,
+    showError,
+    SelectPickerVariantType,
+    ComponentSizeType,
+    AsyncSelectPicker,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { getRecentlyVisitedDevtronApps, updateRecentlyVisitedDevtronApps } from '@Components/app/details/utils'
+import { AppMetaInfo } from '@Components/app/types'
+import { AppSelectorType } from './types'
 import { appListOptions, appSelectorStyle, DropdownIndicator, noOptionsMessage } from './AppSelectorUtil'
-import { abortPreviousRequests } from '@devtron-labs/devtron-fe-common-lib'
 
-interface AppSelectorType {
-    onChange: ({ label, value }) => void
-    appId: number
-    appName: string
-    isJobView?: boolean
-}
-
-export default function AppSelector({ onChange, appId, appName, isJobView }: AppSelectorType) {
+const AppSelector = ({
+    onChange,
+    appId,
+    appName,
+    isJobView,
+    recentlyVisitedDevtronApps,
+    setRecentlyVisitedDevtronApps,
+}: AppSelectorType) => {
     const selectRef = useRef<SelectInstance>(null)
-
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
+    const fetchRecentlyVisitedDevtronApps = async () => {
+        try {
+            const response = await getRecentlyVisitedDevtronApps()
+
+            // Combine current app with previous list
+            const combinedList = [{ appId, appName }, ...response] as AppMetaInfo[]
+
+            // Ensure unique entries using a Map
+            const uniqueApps = Array.from(new Map(combinedList.map((app) => [Number(app.appId), app])).values())
+
+            // Trim the list to 5 items
+            const trimmedList = uniqueApps.slice(0, 5)
+
+            setRecentlyVisitedDevtronApps(trimmedList)
+            await updateRecentlyVisitedDevtronApps(trimmedList)
+        } catch (error) {
+            showError(error)
+        }
+    }
+
+    useEffect(() => {
+        if (!appName || !appId) return
+
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        fetchRecentlyVisitedDevtronApps().catch(showError)
+    }, [appId, appName])
+
+    if (!recentlyVisitedDevtronApps) {
+        return null
+    }
+
+    const filteredRecentlyVisitedApps = (inputValue) =>
+        inputValue?.length &&
+        recentlyVisitedDevtronApps
+            .filter((app) => app.appName.toLowerCase().includes(inputValue.toLowerCase()))
+            .map((app) => ({ value: app.appId, label: app.appName }))
+
+    const recentlyVisitedDevtronAppsOptions = (inputValue?: string) => [
+        {
+            label: 'Recently Visited',
+            options:
+                filteredRecentlyVisitedApps(inputValue)?.length || inputValue?.length < 3
+                    ? filteredRecentlyVisitedApps(inputValue)
+                    : recentlyVisitedDevtronApps.map((app) => ({ value: app.appId, label: app.appName })),
+        },
+        {
+            label: 'All Applications',
+            options: [
+                {
+                    value: 0,
+                    label: 'Type atleast 3 characters to search all applications',
+                },
+            ],
+        },
+    ]
+
+    const allAppListGroupedOptions = async (inputValue) => {
+        try {
+            const response = await appListOptions(inputValue, isJobView, abortControllerRef.current.signal)
+            return [
+                {
+                    label: 'All Applications',
+                    options: response,
+                },
+            ]
+        } catch (error) {
+            showError(error)
+            return [{ label: 'All Applications', options: [] }]
+        }
+    }
+
+    const loadAllAppListOptions = (inputValue) =>
+        abortPreviousRequests(() => allAppListGroupedOptions(inputValue), abortControllerRef)
+
     const defaultOptions = [{ value: appId, label: appName }]
-    const loadAppListOptions = (inputValue: string) =>
-        abortPreviousRequests(
-            () => appListOptions(inputValue, isJobView, abortControllerRef.current.signal),
-            abortControllerRef,
-        )
+
+    const appResponse = async (
+        inputValue,
+    ): Promise<OptionsOrGroups<SelectPickerOptionType<number>, GroupBase<SelectPickerOptionType<number>>>> => {
+        if (!inputValue) {
+            // Show recently visited apps when clicking the dropdown
+            return recentlyVisitedDevtronApps.length ? recentlyVisitedDevtronAppsOptions() : defaultOptions
+        }
+
+        if (inputValue.length <= 2 && recentlyVisitedDevtronApps.length) {
+            // Show recently visited apps when typing less than 3 characters
+            return recentlyVisitedDevtronAppsOptions(inputValue)
+        }
+
+        // ✅ Extracting only `options` from the grouped object
+        return loadAllAppListOptions(inputValue)
+    }
 
     const handleOnKeyDown: SelectProps['onKeyDown'] = (event) => {
         if (event.key === 'Escape') {
@@ -46,13 +140,14 @@ export default function AppSelector({ onChange, appId, appName, isJobView }: App
     }
 
     return (
-        <AsyncSelect
-            ref={selectRef}
+        <AsyncSelectPicker
             blurInputOnSelect
             onKeyDown={handleOnKeyDown}
-            defaultOptions
-            loadOptions={loadAppListOptions}
-            noOptionsMessage={noOptionsMessage}
+            defaultOptions={recentlyVisitedDevtronApps.length ? recentlyVisitedDevtronAppsOptions() : defaultOptions}
+            loadOptions={appResponse}
+            noOptionsMessage={(inputObj) =>
+                noOptionsMessage(inputObj, filteredRecentlyVisitedApps(inputObj?.inputValue)?.length > 0)
+            }
             onChange={onChange}
             components={{
                 IndicatorSeparator: null,
@@ -61,6 +156,11 @@ export default function AppSelector({ onChange, appId, appName, isJobView }: App
             }}
             value={defaultOptions[0]}
             styles={appSelectorStyle}
+            variant={SelectPickerVariantType.BORDER_LESS}
+            size={ComponentSizeType.large}
+            placeholder={appName}
         />
     )
 }
+
+export default AppSelector

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Switch, Route, Redirect, useParams, useRouteMatch } from 'react-router-dom'
 import {
     showError,
@@ -50,6 +50,7 @@ import { getAppOtherEnvironmentMin } from '../../../services/service'
 import { appGroupPermission, deleteEnvGroup, getEnvGroupList } from '../../ApplicationGroup/AppGroup.service'
 import CreateAppGroup from '../../ApplicationGroup/CreateAppGroup'
 import { DeleteComponentsName } from '@Config/constantMessaging'
+import { getRecentlyVisitedDevtronApps, updateRecentlyVisitedDevtronApps } from './utils'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
@@ -79,10 +80,14 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const [isPopupBox, setIsPopupBox] = useState(false)
     const [apiError, setApiError] = useState(null)
     const [initLoading, setInitLoading] = useState<boolean>(false)
-
+    const [recentlyVisitedDevtronApps, setRecentlyVisitedDevtronApps] = useState<AppMetaInfo[]>([])
     useEffect(() => {
-        setInitLoading(true)
-        getAppMetaInfoRes()
+        const fetchData = async () => {
+            setInitLoading(true)
+            await getAppMetaInfoRes()
+        }
+        fetchData()
+
         Promise.all([getSavedFilterData(), getAppListData()])
             .then((response) => {
                 const groupFilterOptionsList = response[0]
@@ -298,12 +303,12 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     }
 
     async function handleDelete() {
-            await deleteEnvGroup(appId, clickedGroup.value, FilterParentType.app)
-            getSavedFilterData(
-                selectedGroupFilter[0] && clickedGroup.value !== selectedGroupFilter[0].value
-                    ? +selectedGroupFilter[0].value
-                    : null,
-            )
+        await deleteEnvGroup(appId, clickedGroup.value, FilterParentType.app)
+        getSavedFilterData(
+            selectedGroupFilter[0] && clickedGroup.value !== selectedGroupFilter[0].value
+                ? +selectedGroupFilter[0].value
+                : null,
+        )
     }
 
     const closeDeleteGroup = () => {
@@ -326,6 +331,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     }
 
     const _filteredEnvIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
+
     return (
         <div className="app-details-page flexbox-col w-100 h-100 dc__overflow-auto">
             {!isV2 && (
@@ -344,6 +350,8 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                     openCreateGroup={openCreateGroup}
                     openDeleteGroup={openDeleteGroup}
                     isSuperAdmin
+                    recentlyVisitedDevtronApps={recentlyVisitedDevtronApps}
+                    setRecentlyVisitedDevtronApps={setRecentlyVisitedDevtronApps}
                 />
             )}
             {showCreateGroup && (
@@ -417,7 +425,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 </Suspense>
             </ErrorBoundary>
 
-            <div className='dc__no-shrink' id="cluster-meta-data-bar__container" />
+            <div className="dc__no-shrink" id="cluster-meta-data-bar__container" />
         </div>
     )
 }
