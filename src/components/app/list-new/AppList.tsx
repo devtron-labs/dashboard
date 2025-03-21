@@ -294,6 +294,12 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
             />
         )
 
+    const removePageNumber = (search) => {
+        const params = new URLSearchParams(search)
+        params.delete('pageNumber')
+        return params.toString() ? `?${params.toString()}` : ''
+    }
+
     const tabs: TabProps[] = [
         ...(serverMode === SERVER_MODE.FULL
             ? [
@@ -304,7 +310,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                       props: {
                           to: {
                               pathname: getChangeAppTabURL(AppListConstants.AppTabs.DEVTRON_APPS),
-                              search: location.search,
+                              search: removePageNumber(location.search),
                           },
                           'data-testid': 'devtron-app-list-button',
                       },
@@ -318,7 +324,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
             props: {
                 to: {
                     pathname: getChangeAppTabURL(AppListConstants.AppTabs.HELM_APPS),
-                    search: location.search,
+                    search: removePageNumber(location.search),
                 },
                 'data-testid': 'helm-app-list-button',
             },
@@ -332,7 +338,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                       props: {
                           to: {
                               pathname: getChangeAppTabURL(AppListConstants.AppTabs.ARGO_APPS),
-                              search: location.search,
+                              search: removePageNumber(location.search),
                           },
                           'data-testid': 'argo-app-list-button',
                       },
@@ -348,7 +354,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                       props: {
                           to: {
                               pathname: getChangeAppTabURL(AppListConstants.AppTabs.FLUX_APPS),
-                              search: location.search,
+                              search: removePageNumber(location.search),
                           },
                           'data-testid': 'flux-app-list-button',
                       },
