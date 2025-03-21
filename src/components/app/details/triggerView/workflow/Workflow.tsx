@@ -140,6 +140,7 @@ export class Workflow extends Component<WorkflowProps> {
                     configDiffView={false}
                     title={node.title}
                     readOnly
+                    isTemplateView={false}
                 />
             )
         }
