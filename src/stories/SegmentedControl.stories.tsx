@@ -16,7 +16,7 @@
 
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { NSegmentedControl, NSegmentedControlProps } from '@devtron-labs/devtron-fe-common-lib'
+import { ComponentSizeType, NSegmentedControl, NSegmentedControlProps } from '@devtron-labs/devtron-fe-common-lib'
 import { action } from '@storybook/addon-actions'
 import { useState } from 'react'
 
@@ -78,6 +78,8 @@ export const Default: Story = {
         name: 'segmented-control',
         segments,
         onChange: action('changed'),
+        size: ComponentSizeType.medium,
+        fullWidth: false,
     },
 }
 
