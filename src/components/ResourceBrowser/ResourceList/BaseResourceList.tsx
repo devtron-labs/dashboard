@@ -67,7 +67,7 @@ import {
     SEARCH_QUERY_PARAM_KEY,
     SIDEBAR_KEYS,
 } from '../Constants'
-import { getScrollableResourceClass, getRenderNodeButton, renderResourceValue, updateQueryString } from '../Utils'
+import { getRenderNodeButton, renderResourceValue, updateQueryString } from '../Utils'
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import { EventList } from './EventList'
@@ -86,7 +86,6 @@ const BaseResourceListContent = ({
     resourceList,
     clusterId,
     clusterName,
-    showStaleDataWarning,
     selectedResource,
     reloadResourceListData,
     selectedNamespace,
@@ -581,20 +580,11 @@ const BaseResourceListContent = ({
                         listRef={resourceListRef}
                         filteredData={filteredResourceList.slice(resourceListOffset, resourceListOffset + pageSize)}
                         handleResourceClick={handleResourceClick}
-                        paginatedView={showPaginatedView}
-                        syncError={showStaleDataWarning}
                         searchText={searchText}
                         setWidgetEventDetails={setWidgetEventDetails}
                     />
                 ) : (
-                    <div
-                        ref={resourceListRef}
-                        className={`${getScrollableResourceClass(
-                            'scrollable-resource-list',
-                            showPaginatedView,
-                            showStaleDataWarning,
-                        )} dc__overflow-auto`}
-                    >
+                    <div ref={resourceListRef} className="scrollable-resource-list dc__overflow-auto">
                         <div
                             className="scrollable-resource-list__row no-hover-bg h-36 fw-6 cn-7 fs-12 dc__gap-16 dc__zi-2 dc__position-sticky dc__border-bottom dc__uppercase bg__primary dc__top-0"
                             style={{ gridTemplateColumns }}

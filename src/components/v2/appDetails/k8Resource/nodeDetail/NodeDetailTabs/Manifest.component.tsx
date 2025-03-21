@@ -707,7 +707,13 @@ const ManifestComponent = ({
         }
 
         return (
-            <div className={!isCodeMirrorEnabled() ? getComponentSpecificThemeClass(AppThemeType.dark) : ''}>
+            <div
+                className={
+                    !isCodeMirrorEnabled()
+                        ? `${getComponentSpecificThemeClass(AppThemeType.dark)} flex-grow-1 flexbox-col`
+                        : ''
+                }
+            >
                 <CodeEditor
                     cleanData={showManifestCompareView}
                     diffView={showManifestCompareView}
