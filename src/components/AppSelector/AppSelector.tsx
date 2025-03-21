@@ -15,9 +15,15 @@
  */
 
 import { useEffect, useRef } from 'react'
-import { Props as SelectProps, SelectInstance } from 'react-select'
-import AsyncSelect from 'react-select/async'
-import { abortPreviousRequests, noop, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { Props as SelectProps, SelectInstance, GroupBase, OptionsOrGroups } from 'react-select'
+import {
+    abortPreviousRequests,
+    SelectPickerOptionType,
+    showError,
+    SelectPickerVariantType,
+    ComponentSizeType,
+    AsyncSelectPicker,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { getRecentlyVisitedDevtronApps, updateRecentlyVisitedDevtronApps } from '@Components/app/details/utils'
 import { AppMetaInfo } from '@Components/app/types'
 import { AppSelectorType } from './types'
@@ -36,10 +42,6 @@ const AppSelector = ({
 
     const fetchRecentlyVisitedDevtronApps = async () => {
         try {
-            if (!appName || !appId) {
-                return // ✅ Exit early inside the function instead of skipping useEffect
-            }
-
             const response = await getRecentlyVisitedDevtronApps()
 
             // Combine current app with previous list
@@ -57,31 +59,55 @@ const AppSelector = ({
             showError(error)
         }
     }
+
     useEffect(() => {
+        if (!appName || !appId) return
+
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         fetchRecentlyVisitedDevtronApps().catch(showError)
-    }, [appId])
+    }, [appId, appName])
 
     if (!recentlyVisitedDevtronApps) {
         return null
     }
 
-    const recentlyVisitedDevtronAppsOptions = [
+    const filteredRecentlyVisitedApps = (inputValue) =>
+        inputValue?.length &&
+        recentlyVisitedDevtronApps
+            .filter((app) => app.appName.toLowerCase().includes(inputValue.toLowerCase()))
+            .map((app) => ({ value: app.appId, label: app.appName }))
+
+    const recentlyVisitedDevtronAppsOptions = (inputValue?: string) => [
         {
             label: 'Recently Visited',
-            options: recentlyVisitedDevtronApps.map(({ appId, appName }) => ({ value: appId, label: appName })),
+            options:
+                filteredRecentlyVisitedApps(inputValue)?.length || inputValue?.length < 3
+                    ? filteredRecentlyVisitedApps(inputValue)
+                    : recentlyVisitedDevtronApps.map((app) => ({ value: app.appId, label: app.appName })),
+        },
+        {
+            label: 'All Applications',
+            options: [
+                {
+                    value: 0,
+                    label: 'Type atleast 3 characters to search all applications',
+                },
+            ],
         },
     ]
 
     const allAppListGroupedOptions = async (inputValue) => {
         try {
-            const response = (await appListOptions(inputValue, isJobView, abortControllerRef.current.signal)) || []
-            return {
-                label: 'All Applications',
-                options: response,
-            }
+            const response = await appListOptions(inputValue, isJobView, abortControllerRef.current.signal)
+            return [
+                {
+                    label: 'All Applications',
+                    options: response,
+                },
+            ]
         } catch (error) {
             showError(error)
-            return { label: 'All Applications', options: [] }
+            return [{ label: 'All Applications', options: [] }]
         }
     }
 
@@ -90,17 +116,21 @@ const AppSelector = ({
 
     const defaultOptions = [{ value: appId, label: appName }]
 
-    const appResponse = async (inputValue) => {
+    const appResponse = async (
+        inputValue,
+    ): Promise<OptionsOrGroups<SelectPickerOptionType<number>, GroupBase<SelectPickerOptionType<number>>>> => {
+        if (!inputValue) {
+            // Show recently visited apps when clicking the dropdown
+            return recentlyVisitedDevtronApps.length ? recentlyVisitedDevtronAppsOptions() : defaultOptions
+        }
+
         if (inputValue.length <= 2 && recentlyVisitedDevtronApps.length) {
-            const filteredApps = recentlyVisitedDevtronAppsOptions[0].options.filter(({ label }) =>
-                label.toLowerCase().includes(inputValue.toLowerCase()),
-            )
-            return filteredApps.length ? filteredApps : recentlyVisitedDevtronAppsOptions
+            // Show recently visited apps when typing less than 3 characters
+            return recentlyVisitedDevtronAppsOptions(inputValue)
         }
 
         // ✅ Extracting only `options` from the grouped object
-        const groupedResponse = await loadAllAppListOptions(inputValue)
-        return groupedResponse.options || []
+        return loadAllAppListOptions(inputValue)
     }
 
     const handleOnKeyDown: SelectProps['onKeyDown'] = (event) => {
@@ -110,13 +140,14 @@ const AppSelector = ({
     }
 
     return (
-        <AsyncSelect
-            ref={selectRef}
+        <AsyncSelectPicker
             blurInputOnSelect
             onKeyDown={handleOnKeyDown}
-            defaultOptions
+            defaultOptions={recentlyVisitedDevtronApps.length ? recentlyVisitedDevtronAppsOptions() : defaultOptions}
             loadOptions={appResponse}
-            noOptionsMessage={!recentlyVisitedDevtronApps?.length ? noOptionsMessage : noop}
+            noOptionsMessage={(inputObj) =>
+                noOptionsMessage(inputObj, filteredRecentlyVisitedApps(inputObj?.inputValue)?.length > 0)
+            }
             onChange={onChange}
             components={{
                 IndicatorSeparator: null,
@@ -125,6 +156,9 @@ const AppSelector = ({
             }}
             value={defaultOptions[0]}
             styles={appSelectorStyle}
+            variant={SelectPickerVariantType.BORDER_LESS}
+            size={ComponentSizeType.large}
+            placeholder={appName}
         />
     )
 }

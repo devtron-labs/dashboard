@@ -144,7 +144,7 @@ export const AppHeader = ({
                 },
             },
         },
-        [appId, appName],
+        [appId, appName, recentlyVisitedDevtronApps],
     )
 
     const renderAppDetailsTabs = () => {

@@ -15,9 +15,15 @@
  */
 
 import { components } from 'react-select'
-import { getIsRequestAborted, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    getIsRequestAborted,
+    SelectPickerOptionType,
+    ServerErrors,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as DropDownIcon } from '../../assets/icons/ic-chevron-down.svg'
 import { getAppListMin } from '../../services/service'
+import { BaseAppMetaData } from '@Components/app/types'
 
 let timeoutId
 
@@ -93,11 +99,20 @@ export const DropdownIndicator = (props) => {
     )
 }
 
-export const noOptionsMessage = (inputObj: { inputValue: string }): string => {
-    if (inputObj && (inputObj.inputValue.length < 3)) {
-        return 'Type 3 chars to see matching results'
+export const noOptionsMessage = (
+    inputObj: { inputValue: string },
+    isRecentlyVisitedFilteredAppsAvailable?: boolean,
+): string => {
+    if (!inputObj?.inputValue) return null
+    else {
+        if (inputObj.inputValue.length < 3 && !isRecentlyVisitedFilteredAppsAvailable) {
+            return 'No matching results'
+        }
+        if (inputObj.inputValue.length < 3) {
+            return 'Type 3 chars to see matching results'
+        }
+        return 'No matching results'
     }
-    return 'No matching results'
 }
 
 export const appListOptions = (inputValue: string, isJobView?: boolean, signal?: AbortSignal): Promise<[]> => {
@@ -132,6 +147,38 @@ export const appListOptions = (inputValue: string, isJobView?: boolean, signal?:
                         }
                     }
                 })
+        }, 300)
+    })
+}
+
+export const filteredRecentlyVisitedApps = (
+    inputValue: string,
+    recentlyVisitedDevtronApps: BaseAppMetaData[],
+): SelectPickerOptionType<number>[] =>
+    inputValue?.length &&
+    recentlyVisitedDevtronApps
+        .filter((app) => app.appName.toLowerCase().includes(inputValue.toLowerCase()))
+        .map((app) => ({ value: app.appId, label: app.appName }))
+
+export const recentlyVisitedDevtronAppsOptions = (
+    recentlyVisitedDevtronApps: BaseAppMetaData[],
+    inputValue?: string,
+): Promise<{ label: string; options: { value: number; label: any }[] }[]> => {
+    return new Promise((resolve) => {
+        if (timeoutId) {
+            clearTimeout(timeoutId)
+        }
+        timeoutId = setTimeout(() => {
+            resolve([
+                {
+                    label: 'Recently Visited',
+                    options:
+                        filteredRecentlyVisitedApps(inputValue, recentlyVisitedDevtronApps)?.length ||
+                        inputValue?.length < 3
+                            ? filteredRecentlyVisitedApps(inputValue, recentlyVisitedDevtronApps)
+                            : recentlyVisitedDevtronApps.map((app) => ({ value: app.appId, label: app.appName })),
+                },
+            ])
         }, 300)
     })
 }
