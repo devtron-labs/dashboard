@@ -35,7 +35,6 @@ import {
     InfoBlock,
     ButtonVariantType,
     useMainContext,
-    Tooltip,
     MODES,
     useGetUserRoles,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -71,7 +70,6 @@ import { MigrateToDevtronProps } from './MigrateToDevtron/types'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
-const MigrateHelmReleaseBody = importComponentFromFELibrary('MigrateHelmReleaseBody', null, 'function')
 
 export default function BuildCD({
     isAdvanced,

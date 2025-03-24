@@ -468,13 +468,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
         if (location.pathname.match(ENV_CONFIG_PATH_REG)) {
             return 'app-compose-env-configurations__nav'
         }
-        return `${
-            isGitOpsConfigurationRequired
-                ? 'app-compose-with-gitops-config__nav'
-                : 'app-compose-with-no-gitops-config__nav'
-        } ${isJob ? 'job-compose__side-nav' : ''} ${
-            !showCannotDeleteTooltip ? 'dc__position-rel' : ''
-        }  ${hideConfigHelp ? 'hide-app-config-help' : ''} ${!canShowExternalLinks ? 'hide-external-links' : ''}`
+        return !showCannotDeleteTooltip ? 'dc__position-rel' : ''
     }
 
     const toggleRepoSelectionTippy = () => {
