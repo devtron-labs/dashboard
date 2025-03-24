@@ -42,8 +42,6 @@ import {
     TippyCustomized,
     TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { importComponentFromFELibrary } from '@Components/common'
-import { ReactComponent as ICArrowSquareOut } from '@Icons/ic-arrow-square-out.svg'
 import { DEVTRON_APPS_STEPS, STAGE_NAME } from '../AppConfig.types'
 import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE, URLS } from '../../../../../../config'
 import AppConfigurationCheckBox from './AppConfigurationCheckBox'
@@ -54,8 +52,6 @@ import EnvironmentOverrideRouter from './EnvironmentOverrideRouter'
 import { useAppConfigurationContext } from '../AppConfiguration.provider'
 import { renderNavItem } from './Navigation.helper'
 import { EnvConfigurationsNav } from './EnvConfigurationsNav'
-
-const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 export const AppNavigation = () => {
     // HOOKS
@@ -68,7 +64,6 @@ export const AppNavigation = () => {
         deleteApp,
         canShowExternalLinks,
         showCannotDeleteTooltip,
-        isWorkflowEditorUnlocked,
         toggleRepoSelectionTippy,
         getRepo,
         isJobView,
@@ -80,6 +75,7 @@ export const AppNavigation = () => {
         isUnlocked,
         lastUnlockedStage,
         envIdToEnvApprovalConfigurationMap,
+        isTemplateView,
     } = useAppConfigurationContext()
 
     // CONSTANTS
@@ -142,6 +138,14 @@ export const AppNavigation = () => {
         return secondLastUnlockedStage || lastUnlockedStage
     }
 
+    const getDeleteButtonText = () => {
+        if (isJobView) {
+            return 'Delete Job'
+        }
+
+        return isTemplateView ? 'Delete Template' : 'Delete Application'
+    }
+
     return (
         <Switch>
             <Route
@@ -166,6 +170,7 @@ export const AppNavigation = () => {
                         showComparison={!isJobView && isUnlocked.workflowEditor}
                         isCMSecretLocked={!isUnlocked.workflowEditor}
                         appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                        isTemplateView={isTemplateView}
                     />
                 )}
             </Route>
@@ -180,63 +185,46 @@ export const AppNavigation = () => {
                                 totalSteps={totalSteps}
                             />
                         )}
-                        {navItems.map((item) => {
-                            if (item.altNavKey) {
-                                return null
-                            }
+                        {navItems
+                            .filter((item) => !item.isHidden)
+                            .map((item) => {
+                                if (item.altNavKey) {
+                                    return null
+                                }
 
-                            if (item.stage === STAGE_NAME.EXTERNAL_LINKS) {
-                                return (
-                                    canShowExternalLinks && (
-                                        <div key={item.stage}>
-                                            <div className="dc__border-bottom-n1 mt-8 mb-8" />
-                                            {renderNavItem(item)}
-                                        </div>
-                                    )
-                                )
-                            }
-
-                            if (item.stage === STAGE_NAME.PROTECT_CONFIGURATION) {
-                                return (
-                                    isWorkflowEditorUnlocked &&
-                                    isFELibAvailable && (
-                                        <div key={item.stage}>
-                                            {!canShowExternalLinks && (
+                                if (item.stage === STAGE_NAME.EXTERNAL_LINKS) {
+                                    return (
+                                        canShowExternalLinks && (
+                                            <div key={item.stage}>
                                                 <div className="dc__border-bottom-n1 mt-8 mb-8" />
-                                            )}
-                                            {renderNavItem(item, null, {
-                                                target: '_blank',
-                                                icon: <ICArrowSquareOut className="icon-dim-16 dc__no-shrink scn-8" />,
-                                                tooltipContent:
-                                                    'Configuration change approval has been moved to Global Configuration',
-                                            })}
-                                        </div>
+                                                {renderNavItem(item)}
+                                            </div>
+                                        )
                                     )
-                                )
-                            }
+                                }
 
-                            if (
-                                item.stage !== STAGE_NAME.ENV_OVERRIDE ||
-                                (item.stage === STAGE_NAME.ENV_OVERRIDE && item.isLocked)
-                            ) {
+                                if (
+                                    item.stage !== STAGE_NAME.ENV_OVERRIDE ||
+                                    (item.stage === STAGE_NAME.ENV_OVERRIDE && item.isLocked)
+                                ) {
+                                    return (
+                                        <ConditionalWrap
+                                            key={item.stage}
+                                            condition={showCannotDeleteTooltip && item.stage === STAGE_NAME.CI_CONFIG}
+                                            wrap={getEnvOverrideTippy}
+                                        >
+                                            {item.required && renderNavItem(item, isJobView)}
+                                        </ConditionalWrap>
+                                    )
+                                }
+
                                 return (
-                                    <ConditionalWrap
+                                    <EnvironmentOverrideRouter
                                         key={item.stage}
-                                        condition={showCannotDeleteTooltip && item.stage === STAGE_NAME.CI_CONFIG}
-                                        wrap={getEnvOverrideTippy}
-                                    >
-                                        {item.required && renderNavItem(item, isJobView)}
-                                    </ConditionalWrap>
+                                        envIdToEnvApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                                    />
                                 )
-                            }
-
-                            return (
-                                <EnvironmentOverrideRouter
-                                    key={item.stage}
-                                    envIdToEnvApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
-                                />
-                            )
-                        })}
+                            })}
                         {isJobView && <div className="h-100" />}
                     </div>
                     <div className="p-12 w-100">
@@ -246,7 +234,7 @@ export const AppNavigation = () => {
                             size={ComponentSizeType.medium}
                             style={ButtonStyleType.negative}
                             onClick={deleteApp}
-                            text={`Delete ${isJobView ? 'Job' : 'Application'}`}
+                            text={getDeleteButtonText()}
                             fullWidth
                         />
                     </div>

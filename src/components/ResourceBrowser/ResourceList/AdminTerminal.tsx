@@ -52,22 +52,14 @@ const AdminTerminal: React.FC<AdminTerminalProps> = ({ updateTerminalTabUrl }: A
     }, [data])
 
     if (loading) {
-        return (
-            <div className="h-100 node-data-container bg__primary">
-                <Progressing pageLoader size={32} />
-            </div>
-        )
+        return <Progressing pageLoader size={32} />
     }
 
     if (error || !details.nodeCount || !details.namespaceList?.length) {
         /* NOTE: if nodeCount is 0 show Reload page or show Unauthorized if not SuperAdmin */
         /* NOTE: the above happens in case of bad cluster setup */
         const errCode = error?.code || 403
-        return (
-            <div className="bg__primary node-data-container flex">
-                <ErrorScreenManager code={errCode} />
-            </div>
-        )
+        return <ErrorScreenManager code={errCode} />
     }
 
     return (

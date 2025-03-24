@@ -139,7 +139,11 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
             },
         }
         this.setState({ deleteInProgress: true })
-        deleteCDPipeline(payload, force, cascadeDelete)
+        deleteCDPipeline(payload, {
+            force,
+            cascadeDelete,
+            isTemplateView: this.props.isTemplateView,
+        })
             .then((response) => {
                 if (response.result) {
                     this.handleClusterNameUpdate(response.result.deleteResponse?.clusterName)
@@ -387,7 +391,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                                         showAriaLabelInTippy
                                         onClick={this.handleDeleteCDNode}
                                         style={ButtonStyleType.negativeGrey}
-                                        icon={<Icon name="ic-delete" color={null} strokeWidth={1} size={12} />}
+                                        icon={<Icon name="ic-delete" color={null} size={12} />}
                                         showTooltip
                                         tooltipProps={{
                                             placement: 'right',

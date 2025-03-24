@@ -1425,6 +1425,11 @@ button.anchor {
     position: relative;
     animation: shimmer-loading 1s infinite linear;
     height: 16px;
+
+    &__fill-dimensions {
+        height: 100%;
+        width: 100%;
+    }
 }
 
 .dc__app-commit__hash {
@@ -1805,6 +1810,10 @@ button.anchor {
     justify-content: flex-end !important;
 }
 
+.dc__content-space-around {
+    justify-content: space-around;
+}
+
 // Text alignment
 .dc__align-start {
     align-items: flex-start !important;
@@ -1840,6 +1849,10 @@ button.anchor {
 
 .dc__align-left {
     text-align: left !important;
+}
+
+.dc__align-unset {
+    text-align: unset;
 }
 
 // Use text-align-end instead for internationalization
