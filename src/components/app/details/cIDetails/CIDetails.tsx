@@ -607,7 +607,7 @@ const HistoryLogs = ({
                     {loading ? (
                         <Progressing pageLoader />
                     ) : (
-                        <div className="p-16 flexbox-col dc__gap-8">
+                        <div className="p-16 flexbox-col dc__gap-8 flex-grow-1">
                             {isJobCI && CiArtifactsArrayCards}
                             <Artifacts
                                 status={triggerDetails.status}

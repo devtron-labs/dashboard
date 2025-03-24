@@ -16,8 +16,12 @@
 
 import { useRef } from 'react'
 import AsyncSelect from 'react-select/async'
-import { abortPreviousRequests } from '@devtron-labs/devtron-fe-common-lib'
-import { appSelectorStyle, DropdownIndicator, noOptionsMessage } from '../AppSelector/AppSelectorUtil'
+import {
+    abortPreviousRequests,
+    AppSelectorNoOptionsMessage,
+    AppSelectorDropdownIndicator,
+    APP_SELECTOR_STYLES,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { EnvSelectorType } from './AppGroup.types'
 import { envListOptions } from './AppGroup.utils'
 
@@ -31,15 +35,15 @@ export const EnvSelector = ({ onChange, envId, envName }: EnvSelectorType) => {
     return (
         <AsyncSelect
             loadOptions={handleFetchOptions}
-            noOptionsMessage={noOptionsMessage}
+            noOptionsMessage={AppSelectorNoOptionsMessage}
             onChange={onChange}
             value={defaultOptions}
             components={{
                 IndicatorSeparator: null,
-                DropdownIndicator,
+                DropdownIndicator: AppSelectorDropdownIndicator,
                 LoadingIndicator: null,
             }}
-            styles={appSelectorStyle}
+            styles={APP_SELECTOR_STYLES}
         />
     )
 }

@@ -29,7 +29,7 @@ import { getTargetPlatformMap } from '../ciConfig/CIConfig.utils'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import '../ciConfig/CIConfig.scss'
 
-export default function AdvancedConfigOptions({ ciPipeline }: AdvancedConfigOptionsProps) {
+export default function AdvancedConfigOptions({ ciPipeline, appId, isTemplateView }: AdvancedConfigOptionsProps) {
     const { formData, setFormData, loadingState, setLoadingState, formDataErrorObj, setFormDataErrorObj } =
         useContext(pipelineContext)
     const [collapsedSection, setCollapsedSection] = useState<boolean>(false)
@@ -84,7 +84,7 @@ export default function AdvancedConfigOptions({ ciPipeline }: AdvancedConfigOpti
 
     // All updates to docker args will be handled here, which will will be further merged into formData on introduction of reducer
     const handleDockerArgsUpdate = ({ action, argData }: HandleDockerArgsUpdateType) => {
-        setFormData(prevFormData => {
+        setFormData((prevFormData) => {
             const _form = structuredClone(prevFormData)
 
             switch (action) {
@@ -166,7 +166,6 @@ export default function AdvancedConfigOptions({ ciPipeline }: AdvancedConfigOpti
 
             return _form
         })
-
     }
 
     const toggleAdvancedOptions = (): void => {
@@ -208,6 +207,8 @@ export default function AdvancedConfigOptions({ ciPipeline }: AdvancedConfigOpti
                     updateDockerConfigOverride={updateDockerConfigOverride}
                     loadingStateFromParent={loadingState}
                     setLoadingStateFromParent={setLoadingState}
+                    appId={appId}
+                    isTemplateView={isTemplateView}
                 />
 
                 {showNonBuildpackOptions && (

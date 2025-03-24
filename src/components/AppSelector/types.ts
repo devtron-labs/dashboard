@@ -1,9 +1,8 @@
 import { BaseAppMetaData } from '@Components/app/types'
 import { Dispatch, SetStateAction } from 'react'
-import { SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { SelectPickerOptionType, SelectPickerProps } from '@devtron-labs/devtron-fe-common-lib'
 
-export interface AppSelectorType {
-    onChange: ({ label, value }) => void
+export interface AppSelectorType extends Pick<SelectPickerProps, 'onChange'> {
     appId: number
     appName: string
     isJobView?: boolean

@@ -32,6 +32,7 @@ import {
 import { DeploymentStatusDetailsBreakdownDataType, ErrorItem, HibernationModalTypes } from './details/appDetails/appDetails.type'
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
 import { APP_TYPE } from '@Config/constants'
+import { CreateAppFormStateType } from '@Pages/App/CreateAppModal/types'
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
     close: (e) => void

@@ -15,9 +15,6 @@
  */
 
 import { post } from '@devtron-labs/devtron-fe-common-lib'
-import { Routes } from '../../../config'
+import { Routes } from '@Config/constants'
 
-export function createApp(request) {
-    const URL = `${Routes.APP}`
-    return post(URL, request)
-}
+export const createApp = (request) => post(Routes.APP, request)

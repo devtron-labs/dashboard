@@ -24,10 +24,10 @@ import {
     ComponentSizeType,
     AsyncSelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { getRecentlyVisitedDevtronApps, updateRecentlyVisitedDevtronApps } from '@Components/app/details/utils'
+import { getRecentlyVisitedDevtronApps, updateRecentlyVisitedDevtronApps } from '@Components/app/details/service'
 import { AppMetaInfo } from '@Components/app/types'
 import { AppSelectorType, RecentSelectPickerTypes } from './types'
-import { appListOptions, DropdownIndicator, noOptionsMessage } from './AppSelectorUtil'
+import { appListOptions, noOptionsMessage } from './AppSelectorUtil'
 
 const AppSelector = ({
     onChange,
@@ -154,11 +154,6 @@ const AppSelector = ({
                 noOptionsMessage(inputObj, filteredRecentlyVisitedApps(inputObj?.inputValue)?.length > 0)
             }
             onChange={onChange}
-            components={{
-                IndicatorSeparator: null,
-                DropdownIndicator,
-                LoadingIndicator: null,
-            }}
             value={defaultOptions[0]}
             variant={SelectPickerVariantType.BORDER_LESS}
             size={ComponentSizeType.large}

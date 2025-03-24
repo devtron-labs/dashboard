@@ -31,6 +31,7 @@ const ToggleCDSelectButton = ({
     deleteConfig,
     getWorkflows,
     hideDeleteButton = false,
+    isTemplateView,
 }: ToggleCDSelectButtonProps) => (
     <div
         className={`${!hideDeleteButton ? 'dc__grid-rows-2' : 'flex'} ci-node__action-button dc__right-radius-8 h-100 dc__border-left-n1 w-24 dc__align-items-center`}
@@ -66,6 +67,7 @@ const ToggleCDSelectButton = ({
                 deletePayloadConfig={deleteConfig}
                 title={deleteConfig.pipelineName}
                 getWorkflows={getWorkflows}
+                isTemplateView={isTemplateView}
             />
         )}
     </div>

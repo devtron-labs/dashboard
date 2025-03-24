@@ -37,7 +37,13 @@ import { ConfigMapSecretContainer } from './ConfigMapSecretContainer'
 
 export const ConfigMapSecretWrapper = (props: CMSecretWrapperProps) => {
     // PROPS
-    const { componentType = CMSecretComponentType.ConfigMap, parentState, setParentState, onErrorRedirectURL } = props
+    const {
+        componentType = CMSecretComponentType.ConfigMap,
+        parentState,
+        setParentState,
+        onErrorRedirectURL,
+        isTemplateView,
+    } = props
 
     // HOOKS
     const { appId, envId, name } = useParams<{ appId: string; envId: string; name: string }>()
@@ -47,7 +53,8 @@ export const ConfigMapSecretWrapper = (props: CMSecretWrapperProps) => {
 
     // ASYNC CALLS
     const [appChartRefLoading, appChartRefRes, appChartRefErr, reload] = useAsync(
-        () => abortPreviousRequests(() => getAppChartRefForAppAndEnv(+appId, +envId), abortControllerRef),
+        () =>
+            abortPreviousRequests(() => getAppChartRefForAppAndEnv(+appId, +envId, isTemplateView), abortControllerRef),
         [componentType],
     )
 

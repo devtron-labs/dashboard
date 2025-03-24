@@ -83,7 +83,7 @@ const EnvironmentSelectorComponent = ({
 
     useEffect(() => {
         if (appDetails.appType === AppType.DEVTRON_APP) {
-            getAppOtherEnvironmentMin(params.appId)
+            getAppOtherEnvironmentMin(params.appId, false)
                 .then((response) => {
                     setEnvironments(response.result || [])
                 })

@@ -8,7 +8,6 @@ vite.config.mts
 # The following files have eslint errors/warnings
 src/App.tsx
 src/Pages/GlobalConfigurations/Authorization/APITokens/__tests__/ApiTokens.test.tsx
-src/components/AppSelector/AppSelectorUtil.tsx
 src/components/AppSelector/ChartSelector.tsx
 src/components/ApplicationGroup/AppGroup.service.ts
 src/components/ApplicationGroup/AppGroup.types.ts
