@@ -16,31 +16,31 @@
 
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { ComponentSizeType, NSegmentedControl, NSegmentedControlProps } from '@devtron-labs/devtron-fe-common-lib'
+import { ComponentSizeType, SegmentedControl, SegmentedControlProps } from '@devtron-labs/devtron-fe-common-lib'
 import { action } from '@storybook/addon-actions'
 import { useState } from 'react'
 
-const SEGMENTED_CONTROL_SIZE_MAP: Record<NSegmentedControlProps['size'], null> = {
+const SEGMENTED_CONTROL_SIZE_MAP: Record<SegmentedControlProps['size'], null> = {
     xs: null,
     small: null,
     medium: null,
 } as const
 
 const meta = {
-    component: NSegmentedControl,
+    component: SegmentedControl,
     argTypes: {
         size: {
             options: Object.keys(SEGMENTED_CONTROL_SIZE_MAP),
             control: { type: 'radio' },
         },
     },
-} satisfies Meta<NSegmentedControlProps>
+} satisfies Meta<SegmentedControlProps>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-const segments: NSegmentedControlProps['segments'] = [
+const segments: SegmentedControlProps['segments'] = [
     {
         label: 'Label 1',
         value: 'value-1',
@@ -87,15 +87,16 @@ export const Controlled: Story = {
     render: (props) => {
         const [value, setValue] = useState(props.value)
 
-        const handleChange: NSegmentedControlProps['onChange'] = (selectedSegment) => {
+        const handleChange: SegmentedControlProps['onChange'] = (selectedSegment) => {
             action('changed')(selectedSegment)
             setValue(selectedSegment.value)
         }
 
-        return <NSegmentedControl {...props} value={value} onChange={handleChange} />
+        return <SegmentedControl {...props} value={value} onChange={handleChange} />
     },
     args: {
         ...Default.args,
         value: segments[2].value,
+        onChange: action('changed'),
     },
 }
