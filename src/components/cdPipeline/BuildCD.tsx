@@ -34,10 +34,7 @@ import {
     TriggerType,
     InfoBlock,
     ButtonVariantType,
-    useMainContext,
-    Tooltip,
     MODES,
-    useGetUserRoles,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useHistory } from 'react-router-dom'
 import yamlJsParser from 'yaml'
@@ -71,7 +68,6 @@ import { MigrateToDevtronProps } from './MigrateToDevtron/types'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
-const ApprovalPolicyRedirectCard = importComponentFromFELibrary('ApprovalPolicyRedirectCard', null, 'function')
 
 export default function BuildCD({
     isAdvanced,
@@ -109,11 +105,6 @@ export default function BuildCD({
         appId,
         setReloadNoGitOpsRepoConfiguredModal,
     } = useContext(pipelineContext)
-
-    const {
-        featureGitOpsFlags: { isFeatureArgoCdMigrationEnabled },
-    } = useMainContext()
-    const { isSuperAdmin } = useGetUserRoles()
 
     const validationRules = new ValidationRules()
     const history = useHistory()
@@ -824,7 +815,6 @@ export default function BuildCD({
                 {isAdvanced ? renderAdvancedDeploymentStrategy() : renderBasicDeploymentStrategy()}
                 {isAdvanced && (
                     <>
-                        {ApprovalPolicyRedirectCard && <ApprovalPolicyRedirectCard />}
                         <CustomImageTags
                             formData={formData}
                             setFormData={setFormData}
