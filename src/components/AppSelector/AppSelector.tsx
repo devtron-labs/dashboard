@@ -26,8 +26,8 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getRecentlyVisitedDevtronApps, updateRecentlyVisitedDevtronApps } from '@Components/app/details/utils'
 import { AppMetaInfo } from '@Components/app/types'
-import { AppSelectorType } from './types'
-import { appListOptions, appSelectorStyle, DropdownIndicator, noOptionsMessage } from './AppSelectorUtil'
+import { AppSelectorType, RecentSelectPickerTypes } from './types'
+import { appListOptions, DropdownIndicator, noOptionsMessage } from './AppSelectorUtil'
 
 const AppSelector = ({
     onChange,
@@ -51,7 +51,7 @@ const AppSelector = ({
             const uniqueApps = Array.from(new Map(combinedList.map((app) => [Number(app.appId), app])).values())
 
             // Trim the list to 5 items
-            const trimmedList = uniqueApps.slice(0, 5)
+            const trimmedList = uniqueApps.slice(0, 6)
 
             setRecentlyVisitedDevtronApps(trimmedList)
             await updateRecentlyVisitedDevtronApps(trimmedList)
@@ -77,20 +77,25 @@ const AppSelector = ({
             .filter((app) => app.appName.toLowerCase().includes(inputValue.toLowerCase()))
             .map((app) => ({ value: app.appId, label: app.appName }))
 
-    const recentlyVisitedDevtronAppsOptions = (inputValue?: string) => [
+    const recentlyVisitedDevtronAppsOptions = (
+        inputValue?: string,
+    ): OptionsOrGroups<RecentSelectPickerTypes, GroupBase<RecentSelectPickerTypes>> => [
         {
             label: 'Recently Visited',
             options:
                 filteredRecentlyVisitedApps(inputValue)?.length || inputValue?.length < 3
                     ? filteredRecentlyVisitedApps(inputValue)
-                    : recentlyVisitedDevtronApps.map((app) => ({ value: app.appId, label: app.appName })),
+                    : recentlyVisitedDevtronApps
+                          .filter((app) => app.appId !== appId)
+                          .map((app) => ({ value: app.appId, label: app.appName })),
         },
         {
             label: 'All Applications',
             options: [
                 {
                     value: 0,
-                    label: 'Type atleast 3 characters to search all applications',
+                    label: 'Type 3 characters to search all applications',
+                    isDisabled: true,
                 },
             ],
         },
@@ -155,10 +160,10 @@ const AppSelector = ({
                 LoadingIndicator: null,
             }}
             value={defaultOptions[0]}
-            styles={appSelectorStyle}
             variant={SelectPickerVariantType.BORDER_LESS}
             size={ComponentSizeType.large}
             placeholder={appName}
+            isOptionDisabled={(option: RecentSelectPickerTypes) => option.isDisabled}
         />
     )
 }
