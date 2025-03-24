@@ -282,12 +282,6 @@ export const getNavItems = ({
                         currentStep: completedSteps,
                     },
                     {
-                        title: 'Protect Configuration',
-                        href: URLS.GLOBAL_CONFIG_APPROVAL_POLICY,
-                        stage: STAGE_NAME.PROTECT_CONFIGURATION,
-                        isLocked: false,
-                    },
-                    {
                         title: 'Environment Override',
                         href: `/app/${appId}/edit/env-override`,
                         stage: STAGE_NAME.ENV_OVERRIDE,
