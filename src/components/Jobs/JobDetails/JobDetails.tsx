@@ -36,6 +36,7 @@ import {
     ResourceKindType,
     TabProps,
     TabGroup,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import Overview from '../../app/Overview/Overview'
@@ -95,7 +96,7 @@ export default function JobDetails() {
                         <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
                             <CIDetails key={appId} isJobView />
                         </Route>
-                        <Route path={`${path}/${URLS.APP_CONFIG}`}>
+                        <Route path={`${path}/${CommonURLS.APP_CONFIG}`}>
                             <AppConfig appName={jobName} resourceKind={ResourceKindType.job} />
                         </Route>
                         <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />
@@ -202,7 +203,7 @@ const JobHeader = ({ jobName }: { jobName: string }) => {
                 tabType: 'navLink',
                 icon: Settings,
                 props: {
-                    to: `${match.url}/${URLS.APP_CONFIG}`,
+                    to: `${match.url}/${CommonURLS.APP_CONFIG}`,
                     onClick: handleEventClick,
                     ['data-testid']: 'job-config-link',
                     ['data-action']: 'Job Configurations Clicked',

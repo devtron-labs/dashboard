@@ -634,7 +634,10 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             },
         }
 
-        await deleteMaterial(deletePayload)
+        await deleteMaterial({
+            request: deletePayload,
+            isTemplateView: this.props.isTemplateView
+        })
         this.props.reload()
     }
 
@@ -648,25 +651,33 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             : null
 
         return (
-            <form key={`${this.props.material.id}`} className="white-card p-20 mb-16">
-                <div
-                    className="mb-20 cn-9 fs-16 fw-6 white-card__header--form"
-                    data-testid={`${this.props.material.id ? 'edit' : 'add'}-git-repository-heading`}
-                >
-                    {this.props.material.id ? 'Edit Git Repository' : 'Add Git Repository'}
-                    {this.props.material.id ? (
-                        <button
-                            type="button"
-                            className="dc__transparent collapse-button"
-                            tabIndex={0}
-                            onClick={this.setToggleCollapse}
-                        >
-                            <Down className="collapsed__icon icon-dim-20" style={{ transform: 'rotateX(180deg)' }} />
-                        </button>
-                    ) : null}
-                </div>
-                <div className="form__row form-row__material" data-testid="add-git-repository-form">
-                    <div>
+            <form
+                key={`${this.props.material.id}`}
+                className={this.props.isCreateAppView ? '' : 'br-8 py-16 px-20 bg__primary border__secondary mb-16'}
+            >
+                {!this.props.isCreateAppView && (
+                    <div
+                        className="mb-20 cn-9 fs-16 fw-6 white-card__header--form"
+                        data-testid={`${this.props.material.id ? 'edit' : 'add'}-git-repository-heading`}
+                    >
+                        {this.props.material.id ? 'Edit Git Repository' : 'Add Git Repository'}
+                        {this.props.material.id ? (
+                            <button
+                                type="button"
+                                className="dc__transparent collapse-button"
+                                tabIndex={0}
+                                onClick={this.setToggleCollapse}
+                            >
+                                <Down
+                                    className="collapsed__icon icon-dim-20"
+                                    style={{ transform: 'rotateX(180deg)' }}
+                                />
+                            </button>
+                        ) : null}
+                    </div>
+                )}
+                <div className="flexbox dc__gap-16 mb-16" data-testid="add-git-repository-form">
+                    <div className="w-250 dc__no-shrink">
                         <SelectPicker
                             classNamePrefix="material-view__select-project"
                             inputId="material-view__select-project"
@@ -681,7 +692,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             size={ComponentSizeType.large}
                         />
                     </div>
-                    <div>
+                    <div className="flex-grow-1">
                         <CustomInput
                             label={this.renderGitRepoUrlLabel()}
                             name="Git Repo URL"
@@ -692,179 +703,237 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         />
                     </div>
                 </div>
-                {this.props.material.gitProvider?.authMode === AuthenticationType.ANONYMOUS && (
-                    <InfoColourBar
-                        message="This git account has anonymous read access. Only public repositories can be accessed with anonymous authentication."
-                        classname="info_bar cn-9 mb-20 lh-20"
-                        Icon={Info}
-                        iconClass="icon-dim-20"
-                    />
-                )}
-                {!window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS && (
+                {!this.props.isCreateAppView && (
                     <>
-                        <div className="flex left">
-                            <Checkbox
-                                isChecked={this.props.material.isExcludeRepoChecked}
-                                value={CHECKBOX_VALUE.CHECKED}
-                                tabIndex={3}
-                                onChange={this.props.handleExcludeRepoCheckbox}
-                                rootClassName="fs-14 cn-9 mb-8 flex top dc_max-width__max-content"
-                            >
-                                <div className="ml-12">
-                                    <span data-testid="exclude-include-checkbox" className="mt-1 flex left">
-                                        Exclude specific file/folder in this repo
-                                    </span>
-                                </div>
-                            </Checkbox>
-                            <span>
-                                <TippyCustomized
-                                    theme={TippyTheme.white}
-                                    iconClass="fcv-5"
-                                    placement="bottom"
-                                    Icon={Help}
-                                    heading="Exclude file/folders"
-                                    infoText=""
-                                    showCloseButton
-                                    additionalContent={this.tippyContent()}
-                                    trigger="click"
-                                    interactive
-                                >
-                                    <div className="flex">
-                                        <ICHelpOutline onClick={stopPropagation} className="icon-dim-16 ml-4 cursor" />
-                                    </div>
-                                </TippyCustomized>
-                            </span>
-                        </div>
-                        {this.props.material.isExcludeRepoChecked && (
-                            <div className="mt-8 ml-35">
-                                <div className="p-8 dc__top-radius-4 border__primary dc__no-bottom-border">
-                                    <p className="fw-4 fs-13 mb-0-imp">
-                                        Enter file or folder paths to be included or excluded.
-                                        <a
-                                            data-testid={`${
-                                                !this.props.isLearnHowClicked
-                                                    ? 'exclude-include-learn'
-                                                    : 'exclude-include-hide'
-                                            }`}
-                                            className="dc__link ml-4 cursor"
-                                            onClick={this.props.handleLearnHowClick}
-                                            rel="noopener noreferrer"
-                                            target="_blank"
-                                        >
-                                            {!this.props.isLearnHowClicked ? 'Learn how' : 'Hide info'}
-                                        </a>
-                                    </p>
-                                    {this.props.isLearnHowClicked && (
-                                        <div data-testid="exclude-include-learn-how-steps" className="ml-8 mt-8">
-                                            <div className="flex left">
-                                                <div className="dc__bullet mr-6 ml-6" />
-                                                <span className="fs-13 fw-4">
-                                                    {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partOne}
-                                                </span>
-                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
-                                                    {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partTwo}
-                                                </span>
-                                                <span className="ml-4 fs-13 fw-4">
-                                                    {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partThree}
-                                                </span>
-                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
-                                                    {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partFour}
-                                                </span>
-                                                <br />
-                                            </div>
-                                            <div className="flex left mt-4">
-                                                <div className="dc__bullet mr-6 ml-6" />
-                                                <span className="fs-13 fw-4">
-                                                    {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partOne}
-                                                </span>
-                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
-                                                    {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partTwo}
-                                                </span>
-                                                <span className="fs-13 fw-4 ml-2">,</span>
-                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
-                                                    {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partThree}
-                                                </span>
-                                                <span className="fs-13 fw-4 ml-2">,</span>
-                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
-                                                    {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFour}
-                                                </span>
-                                                <TippyCustomized
-                                                    theme={TippyTheme.white}
-                                                    iconClass="fcv-5"
-                                                    className="dc__mxw-none w-505 dc__border-radius-8-imp tippy-box default-white tippy-shadow"
-                                                    heading={USE_REGEX_TIPPY_CONTENT.insructionsList.heading}
-                                                    placement="bottom"
-                                                    Icon={Help}
-                                                    infoText=""
-                                                    showCloseButton
-                                                    additionalContent={this.regexInfoSteps()}
-                                                    trigger="click"
-                                                    interactive
-                                                >
-                                                    <span
-                                                        data-testid="exclude-include-use-regex"
-                                                        className="dc__link cursor fs-13 fw-4 ml-8"
-                                                    >
-                                                        {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFive}
-                                                    </span>
-                                                </TippyCustomized>
-                                                <br />
-                                            </div>
-                                            <div className="flex left mt-6">
-                                                <div className="dc__bullet mr-6 ml-6" />
-                                                <span className="fs-13 fw-4">
-                                                    {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineThree}
-                                                </span>
-                                                <br />
-                                            </div>
-                                            <div className="ml-10 mt-4 mono fs-13 fw-4">
-                                                {INCLUDE_EXCLUDE_COMMIT_INFO.example.lineOne}
-                                                <br />
-                                                {INCLUDE_EXCLUDE_COMMIT_INFO.example.lineTwo}
-                                                <br />
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                                <Textarea
-                                    name="exclude-include-commit-textbox"
-                                    autoFocus
-                                    placeholder={INCLUDE_EXCLUDE_PLACEHOLDER}
-                                    value={this.props.material.includeExcludeFilePath}
-                                    onChange={this.props.handleFileChange}
-                                    borderRadiusConfig={{
-                                        top: false,
-                                        ...(this.getShouldRenderIncludeExcludeInfoBar() && { bottom: false }),
-                                    }}
-                                />
-                                {this.renderIncludeExcludeInfoBar()}
-                            </div>
+                        {this.props.material.gitProvider?.authMode === AuthenticationType.ANONYMOUS && (
+                            <InfoColourBar
+                                message="This git account has anonymous read access. Only public repositories can be accessed with anonymous authentication."
+                                classname="info_bar cn-9 mb-20 lh-20"
+                                Icon={Info}
+                                iconClass="icon-dim-20"
+                            />
                         )}
-                    </>
-                )}
-                <label>
-                    <div className="pt-16">
-                        <Checkbox
-                            isChecked={this.props.isChecked}
-                            value={CHECKBOX_VALUE.CHECKED}
-                            tabIndex={4}
-                            onChange={this.props.handleCheckoutPathCheckbox}
-                            rootClassName="fs-14 cn-9 mb-8 flex top"
-                        >
-                            <div className="ml-12">
-                                {this.props.isJobView ? (
-                                    <span data-testid="set-checkout-path-checkbox" className="mb-4 mt-4 flex left">
-                                        Set checkout path
+                        {!window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS && (
+                            <>
+                                <div className="flex left">
+                                    <Checkbox
+                                        isChecked={this.props.material.isExcludeRepoChecked}
+                                        value={CHECKBOX_VALUE.CHECKED}
+                                        tabIndex={3}
+                                        onChange={this.props.handleExcludeRepoCheckbox}
+                                        rootClassName="fs-14 cn-9 mb-8 flex top dc_max-width__max-content"
+                                    >
+                                        <div className="ml-12">
+                                            <span data-testid="exclude-include-checkbox" className="mt-1 flex left">
+                                                Exclude specific file/folder in this repo
+                                            </span>
+                                        </div>
+                                    </Checkbox>
+                                    <span>
+                                        <TippyCustomized
+                                            theme={TippyTheme.white}
+                                            iconClass="fcv-5"
+                                            placement="bottom"
+                                            Icon={Help}
+                                            heading="Exclude file/folders"
+                                            infoText=""
+                                            showCloseButton
+                                            additionalContent={this.tippyContent()}
+                                            trigger="click"
+                                            interactive
+                                        >
+                                            <div className="flex">
+                                                <ICHelpOutline
+                                                    onClick={stopPropagation}
+                                                    className="icon-dim-16 ml-4 cursor"
+                                                />
+                                            </div>
+                                        </TippyCustomized>
                                     </span>
-                                ) : (
-                                    <>
-                                        <span className="mb-4 flex left" data-testid="set-clone-directory-checkbox">
-                                            Set clone directory
+                                </div>
+                                {this.props.material.isExcludeRepoChecked && (
+                                    <div className="mt-8 ml-35">
+                                        <div className="p-8 dc__top-radius-4 border__primary dc__no-bottom-border">
+                                            <p className="fw-4 fs-13 mb-0-imp">
+                                                Enter file or folder paths to be included or excluded.
+                                                <a
+                                                    data-testid={`${
+                                                        !this.props.isLearnHowClicked
+                                                            ? 'exclude-include-learn'
+                                                            : 'exclude-include-hide'
+                                                    }`}
+                                                    className="dc__link ml-4 cursor"
+                                                    onClick={this.props.handleLearnHowClick}
+                                                    rel="noopener noreferrer"
+                                                    target="_blank"
+                                                >
+                                                    {!this.props.isLearnHowClicked ? 'Learn how' : 'Hide info'}
+                                                </a>
+                                            </p>
+                                            {this.props.isLearnHowClicked && (
+                                                <div
+                                                    data-testid="exclude-include-learn-how-steps"
+                                                    className="ml-8 mt-8"
+                                                >
+                                                    <div className="flex left">
+                                                        <div className="dc__bullet mr-6 ml-6" />
+                                                        <span className="fs-13 fw-4">
+                                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partOne}
+                                                        </span>
+                                                        <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
+                                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partTwo}
+                                                        </span>
+                                                        <span className="ml-4 fs-13 fw-4">
+                                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partThree}
+                                                        </span>
+                                                        <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
+                                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partFour}
+                                                        </span>
+                                                        <br />
+                                                    </div>
+                                                    <div className="flex left mt-4">
+                                                        <div className="dc__bullet mr-6 ml-6" />
+                                                        <span className="fs-13 fw-4">
+                                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partOne}
+                                                        </span>
+                                                        <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
+                                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partTwo}
+                                                        </span>
+                                                        <span className="fs-13 fw-4 ml-2">,</span>
+                                                        <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
+                                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partThree}
+                                                        </span>
+                                                        <span className="fs-13 fw-4 ml-2">,</span>
+                                                        <span className="bcn-1 lh-20 br-6 pl-4 pr-4 mono fs-13 fw-4 ml-4 cn-7">
+                                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFour}
+                                                        </span>
+                                                        <TippyCustomized
+                                                            theme={TippyTheme.white}
+                                                            iconClass="fcv-5"
+                                                            className="dc__mxw-none w-505 dc__border-radius-8-imp tippy-box default-white tippy-shadow"
+                                                            heading={USE_REGEX_TIPPY_CONTENT.insructionsList.heading}
+                                                            placement="bottom"
+                                                            Icon={Help}
+                                                            infoText=""
+                                                            showCloseButton
+                                                            additionalContent={this.regexInfoSteps()}
+                                                            trigger="click"
+                                                            interactive
+                                                        >
+                                                            <span
+                                                                data-testid="exclude-include-use-regex"
+                                                                className="dc__link cursor fs-13 fw-4 ml-8"
+                                                            >
+                                                                {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFive}
+                                                            </span>
+                                                        </TippyCustomized>
+                                                        <br />
+                                                    </div>
+                                                    <div className="flex left mt-6">
+                                                        <div className="dc__bullet mr-6 ml-6" />
+                                                        <span className="fs-13 fw-4">
+                                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineThree}
+                                                        </span>
+                                                        <br />
+                                                    </div>
+                                                    <div className="ml-10 mt-4 mono fs-13 fw-4">
+                                                        {INCLUDE_EXCLUDE_COMMIT_INFO.example.lineOne}
+                                                        <br />
+                                                        {INCLUDE_EXCLUDE_COMMIT_INFO.example.lineTwo}
+                                                        <br />
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <Textarea
+                                            name="exclude-include-commit-textbox"
+                                            autoFocus
+                                            placeholder={INCLUDE_EXCLUDE_PLACEHOLDER}
+                                            value={this.props.material.includeExcludeFilePath}
+                                            onChange={this.props.handleFileChange}
+                                            borderRadiusConfig={{
+                                                top: false,
+                                                ...(this.getShouldRenderIncludeExcludeInfoBar() && { bottom: false }),
+                                            }}
+                                        />
+                                        {this.renderIncludeExcludeInfoBar()}
+                                    </div>
+                                )}
+                            </>
+                        )}
+                        <label>
+                            <div className="pt-16">
+                                <Checkbox
+                                    isChecked={this.props.isChecked}
+                                    value={CHECKBOX_VALUE.CHECKED}
+                                    tabIndex={4}
+                                    onChange={this.props.handleCheckoutPathCheckbox}
+                                    rootClassName="fs-14 cn-9 mb-8 flex top"
+                                >
+                                    <div className="ml-12">
+                                        {this.props.isJobView ? (
+                                            <span
+                                                data-testid="set-checkout-path-checkbox"
+                                                className="mb-4 mt-4 flex left"
+                                            >
+                                                Set checkout path
+                                            </span>
+                                        ) : (
+                                            <>
+                                                <span
+                                                    className="mb-4 flex left"
+                                                    data-testid="set-clone-directory-checkbox"
+                                                >
+                                                    Set clone directory
+                                                    <Tippy
+                                                        className="default-tt w-200"
+                                                        arrow={false}
+                                                        placement="bottom"
+                                                        content="Devtron will create the directory and clone the code in it"
+                                                    >
+                                                        <div className="flex">
+                                                            <ICHelpOutline className="icon-dim-16 ml-4" />
+                                                        </div>
+                                                    </Tippy>
+                                                </span>
+                                                <div className="fs-12 cn-7">
+                                                    Eg. If your app needs code from multiple git repositories for CI
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+                                </Checkbox>
+                                {this.props.isChecked && (
+                                    <div className="ml-35 w-885">
+                                        <CustomInput
+                                            placeholder="e.g. /abc"
+                                            value={this.props.material.checkoutPath}
+                                            onChange={this.props.handlePathChange}
+                                            name="clone-directory-path"
+                                            error={this.props.isError.checkoutPath}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                            <div className="pt-16 ">
+                                <Checkbox
+                                    isChecked={this.props.material.fetchSubmodules}
+                                    value={CHECKBOX_VALUE.CHECKED}
+                                    tabIndex={5}
+                                    onChange={this.props.handleSubmoduleCheckbox}
+                                    rootClassName="fs-14 cn-9 flex top"
+                                >
+                                    <div className="ml-12">
+                                        <span
+                                            className="mb-4 flex left"
+                                            data-testid="pull-submodule-recursively-checkbox"
+                                        >
+                                            Pull submodules recursively
                                             <Tippy
                                                 className="default-tt w-200"
                                                 arrow={false}
                                                 placement="bottom"
-                                                content="Devtron will create the directory and clone the code in it"
+                                                content="This will use credentials from default remote of parent repository."
                                             >
                                                 <div className="flex">
                                                     <ICHelpOutline className="icon-dim-16 ml-4" />
@@ -872,116 +941,79 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                             </Tippy>
                                         </span>
                                         <div className="fs-12 cn-7">
-                                            Eg. If your app needs code from multiple git repositories for CI
+                                            Use this to pull submodules recursively while building the code
                                         </div>
-                                    </>
-                                )}
+                                    </div>
+                                </Checkbox>
                             </div>
-                        </Checkbox>
-                        {this.props.isChecked && (
-                            <div className="ml-35 w-885">
-                                <CustomInput
-                                    placeholder="e.g. /abc"
-                                    value={this.props.material.checkoutPath}
-                                    onChange={this.props.handlePathChange}
-                                    name="clone-directory-path"
-                                    error={this.props.isError.checkoutPath}
+                        </label>
+                        <div className="flexbox dc__content-space pt-20">
+                            {this.props.material.id && (
+                                <ConditionalWrap
+                                    condition={this.props.preventRepoDelete}
+                                    wrap={(children) => (
+                                        <Tippy
+                                            className="default-tt"
+                                            arrow={false}
+                                            placement="top"
+                                            content={this.preventRepoDeleteContent()}
+                                        >
+                                            <div className="dc__m-auto ml-0">{children}</div>
+                                        </Tippy>
+                                    )}
+                                >
+                                    <Button
+                                        style={ButtonStyleType.negative}
+                                        variant={ButtonVariantType.secondary}
+                                        onClick={this.onClickDelete}
+                                        disabled={this.props.preventRepoDelete}
+                                        dataTestId="git-repository-delete-button"
+                                        isLoading={this.state.deleting}
+                                        text="Delete"
+                                    />
+                                </ConditionalWrap>
+                            )}
+                            <div className="flex w-100 dc__gap-12 right">
+                                {this.props.isMultiGit ? (
+                                    <Button
+                                        text="Cancel"
+                                        style={ButtonStyleType.neutral}
+                                        variant={ButtonVariantType.secondary}
+                                        onClick={this.props.cancel}
+                                        dataTestId="git-repository-cancel-button"
+                                    />
+                                ) : null}
+                                <Button
+                                    text={this.props.material.id ? 'Update' : 'Save'}
+                                    variant={ButtonVariantType.primary}
+                                    disabled={this.props.isLoading}
+                                    onClick={this.props.save}
+                                    dataTestId="git-repository-save-button"
+                                    isLoading={this.props.isLoading}
                                 />
                             </div>
+                        </div>
+                        {this.state.confirmation && (
+                            <DeleteConfirmationModal
+                                title={this.props.material.name}
+                                component={DeleteComponentsName.GitRepo}
+                                closeConfirmationModal={this.toggleConfirmation}
+                                onDelete={this.onDelete}
+                                errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+                                renderCannotDeleteConfirmationSubTitle={
+                                    this.props.isMultiGit
+                                        ? DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE
+                                        : DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE
+                                }
+                            />
                         )}
-                    </div>
-                    <div className="pt-16 ">
-                        <Checkbox
-                            isChecked={this.props.material.fetchSubmodules}
-                            value={CHECKBOX_VALUE.CHECKED}
-                            tabIndex={5}
-                            onChange={this.props.handleSubmoduleCheckbox}
-                            rootClassName="fs-14 cn-9 flex top"
-                        >
-                            <div className="ml-12">
-                                <span className="mb-4 flex left" data-testid="pull-submodule-recursively-checkbox">
-                                    Pull submodules recursively
-                                    <Tippy
-                                        className="default-tt w-200"
-                                        arrow={false}
-                                        placement="bottom"
-                                        content="This will use credentials from default remote of parent repository."
-                                    >
-                                        <div className="flex">
-                                            <ICHelpOutline className="icon-dim-16 ml-4" />
-                                        </div>
-                                    </Tippy>
-                                </span>
-                                <div className="fs-12 cn-7">
-                                    Use this to pull submodules recursively while building the code
-                                </div>
-                            </div>
-                        </Checkbox>
-                    </div>
-                </label>
-                <div className="flexbox dc__content-space pt-20">
-                    {this.props.material.id && (
-                        <ConditionalWrap
-                            condition={this.props.preventRepoDelete}
-                            wrap={(children) => (
-                                <Tippy
-                                    className="default-tt"
-                                    arrow={false}
-                                    placement="top"
-                                    content={this.preventRepoDeleteContent()}
-                                >
-                                    <div className="dc__m-auto ml-0">{children}</div>
-                                </Tippy>
-                            )}
-                        >
-                            <Button
-                                style={ButtonStyleType.negative}
-                                variant={ButtonVariantType.secondary}
-                                onClick={this.onClickDelete}
-                                disabled={this.props.preventRepoDelete}
-                                dataTestId="git-repository-delete-button"
-                                isLoading={this.state.deleting}
-                                text="Delete"
-                            />
-                        </ConditionalWrap>
-                    )}
-                    <div className='flex w-100 dc__gap-12 right'>
-                        {this.props.isMultiGit ? (
-                            <Button
-                                text="Cancel"
-                                style={ButtonStyleType.neutral}
-                                variant={ButtonVariantType.secondary}
-                                onClick={this.props.cancel}
-                                dataTestId="git-repository-cancel-button"
-                            />
-                        ) : null}
-                        <Button
-                            text={this.props.material.id ? 'Update' : 'Save'}
-                            variant={ButtonVariantType.primary}
-                            disabled={this.props.isLoading}
-                            onClick={this.props.save}
-                            dataTestId="git-repository-save-button"
-                            isLoading={this.props.isLoading}
-                        />
-                    </div>
-                </div>
-                {this.state.confirmation && <DeleteConfirmationModal
-                    title={this.props.material.name}
-                    component={DeleteComponentsName.GitRepo}
-                    closeConfirmationModal={this.toggleConfirmation}
-                    onDelete={this.onDelete}
-                    errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
-                    renderCannotDeleteConfirmationSubTitle={
-                        this.props.isMultiGit
-                            ? DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE
-                            : DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE
-                    }
-                />}
+                    </>
+                )}
             </form>
         )
     }
 
     render() {
-        return this.props.isCollapsed ? this.renderCollapsedView() : this.renderForm()
+        return this.props.isCollapsed && !this.props.isCreateAppView ? this.renderCollapsedView() : this.renderForm()
     }
 }

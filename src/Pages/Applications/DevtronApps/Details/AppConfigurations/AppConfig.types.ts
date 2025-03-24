@@ -21,6 +21,7 @@ import {
     EnvResourceType,
     AppEnvironment,
     ResourceIdToResourceApprovalPolicyConfigMapType,
+    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ViewType } from '@Config/constants'
@@ -57,12 +58,6 @@ export enum DEVTRON_APPS_STEPS {
 export enum DEFAULT_LANDING_STAGE {
     JOB_VIEW = 2,
     DEVTRON_APPS = 6,
-}
-
-export interface AppConfigProps {
-    appName: string
-    resourceKind: Extract<ResourceKindType, ResourceKindType.devtronApplication | ResourceKindType.job>
-    filteredEnvIds?: string
 }
 
 export interface AppConfigState {
@@ -119,6 +114,7 @@ export interface CustomNavItemsType {
     required?: boolean
     isProtectionAllowed?: boolean
     altNavKey?: string
+    isHidden?: boolean
 }
 
 export interface JobEnvOverrideRouteProps {
@@ -137,7 +133,7 @@ export interface NextButtonProps {
     isDisabled: boolean
 }
 
-interface CommonAppConfigurationProps {
+interface CommonAppConfigurationProps extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     appId: string
     resourceKind: Extract<ResourceKindType, ResourceKindType.devtronApplication | ResourceKindType.job>
     respondOnSuccess: () => void
@@ -203,7 +199,7 @@ export interface EnvironmentOptionType {
     id: number
 }
 
-export interface EnvConfigurationsNavProps {
+export interface EnvConfigurationsNavProps extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     envConfig: EnvConfigurationState
     fetchEnvConfig: AppConfigurationContextType['fetchEnvConfig']
     environments: EnvironmentOptionType[]

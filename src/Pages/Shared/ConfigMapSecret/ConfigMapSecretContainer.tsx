@@ -116,6 +116,7 @@ export const ConfigMapSecretContainer = ({
     parentName,
     appChartRef,
     reloadEnvironments,
+    isTemplateView,
 }: ConfigMapSecretContainerProps) => {
     // HOOKS
     const location = useLocation()
@@ -191,6 +192,7 @@ export const ConfigMapSecretContainer = ({
         appId,
         isSecret ? APP_COMPOSE_STAGE.SECRETS : APP_COMPOSE_STAGE.CONFIG_MAPS,
         isJob,
+        isTemplateView,
     )
     const headerMessage =
         cmSecretStateLabel === CM_SECRET_STATE.ENV ||
@@ -232,6 +234,7 @@ export const ConfigMapSecretContainer = ({
                                   resourceId: id,
                                   isJob,
                                   abortControllerRef,
+                                  isTemplateView,
                               })
                             : null,
                         // Fetch Base Configuration (Inherited Tab Data)
@@ -249,6 +252,7 @@ export const ConfigMapSecretContainer = ({
                                   resourceId: isJob ? id : null,
                                   isJob,
                                   abortControllerRef,
+                                  isTemplateView,
                               })
                             : null,
                         // Fetch Draft Configuration
@@ -736,6 +740,7 @@ export const ConfigMapSecretContainer = ({
                     appId: +appId,
                     payload: payloadData,
                     signal: abortControllerRef.current.signal,
+                    isTemplateView,
                 }
 
                 await (isSecret ? updateSecret : updateConfigMap)(updateConfigMapSecretParams)
@@ -746,6 +751,7 @@ export const ConfigMapSecretContainer = ({
                     envId: +envId,
                     payload: payloadData,
                     signal: abortControllerRef.current.signal,
+                    isTemplateView,
                 }
 
                 await (isSecret ? overRideSecret : overRideConfigMap)(overrideConfigMapSecretParams)
@@ -953,6 +959,7 @@ export const ConfigMapSecretContainer = ({
             updateCMSecret={updateCMSecret}
             closeDeleteModal={closeDeleteModal}
             handleError={handleError}
+            isTemplateView={isTemplateView}
         />
     )
 
@@ -989,7 +996,7 @@ export const ConfigMapSecretContainer = ({
                     showNoOverride={showNoOverride}
                     parsingError={parsingError}
                     restoreLastSavedYAML={restoreLastSavedYAML}
-                    hideTabs={{ inherited: isJob, dryRun: isJob }}
+                    hideTabs={{ inherited: isJob, dryRun: isJob || isTemplateView }}
                 />
                 {!hideConfigToolbar && (
                     <ConfigToolbar
@@ -1076,7 +1083,13 @@ export const ConfigMapSecretContainer = ({
                 )}
                 {window._env_.ENABLE_SCOPED_VARIABLES && (
                     <div className="app-config-variable-widget-position">
-                        <FloatingVariablesSuggestions zIndex={100} appId={appId} envId={envId} clusterId={clusterId} />
+                        <FloatingVariablesSuggestions
+                            zIndex={100}
+                            appId={appId}
+                            envId={envId}
+                            clusterId={clusterId}
+                            isTemplateView={isTemplateView}
+                        />
                     </div>
                 )}
             </div>

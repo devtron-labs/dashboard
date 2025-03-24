@@ -34,9 +34,7 @@ import {
     TriggerType,
     InfoBlock,
     ButtonVariantType,
-    useMainContext,
     MODES,
-    useGetUserRoles,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useHistory } from 'react-router-dom'
 import yamlJsParser from 'yaml'
@@ -86,6 +84,7 @@ export default function BuildCD({
     getMandatoryPluginData,
     migrateToDevtronFormState,
     setMigrateToDevtronFormState,
+    isTemplateView,
     isGitOpsInstalledButNotConfigured,
 }: BuildCDProps) {
     const {
@@ -106,11 +105,6 @@ export default function BuildCD({
         appId,
         setReloadNoGitOpsRepoConfiguredModal,
     } = useContext(pipelineContext)
-
-    const {
-        featureGitOpsFlags: { isFeatureArgoCdMigrationEnabled },
-    } = useMainContext()
-    const { isSuperAdmin } = useGetUserRoles()
 
     const validationRules = new ValidationRules()
     const history = useHistory()
@@ -309,7 +303,7 @@ export default function BuildCD({
             })
     }
 
-    const gitOpsRepoConfigInfoBar = (content: string) => (
+    const gitOpsRepoConfigInfoBar = (content: string) => isTemplateView ? null : (
         <InfoBlock
             description={content}
             variant="warning"
