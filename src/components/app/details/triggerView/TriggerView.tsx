@@ -34,7 +34,7 @@ import {
     TOAST_ACCESS_DENIED,
     BlockedStateData,
     getEnvironmentListMinPublic,
-    uploadCIPipelineFile,
+    CIPipelineNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { withRouter, NavLink, Route, Switch } from 'react-router-dom'
@@ -55,7 +55,7 @@ import {
 } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
-import { CIMaterialProps, CIPipelineNodeType, TriggerViewProps, TriggerViewState } from './types'
+import { CIMaterialProps, TriggerViewProps, TriggerViewState } from './types'
 import CDMaterial from './cdMaterial'
 import {
     URLS,
@@ -102,7 +102,7 @@ const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponent
     null,
     'function',
 )
-const ImagePromotionRouter = importComponentFromFELibrary('ImagePromotionRouter', null, 'function')
+const WorkflowActionRouter = importComponentFromFELibrary('WorkflowActionRouter', null, 'function')
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
 const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
 
@@ -597,7 +597,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    getWorkflowStatus() {
+    getWorkflowStatus = () => {
         getWorkflowStatus(this.props.match.params.appId)
             .then((response) => {
                 const _processedWorkflowsData = processWorkflowStatuses(
@@ -961,7 +961,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             ToastManager.showToast({
                                 variant: ToastVariantType.error,
                                 title: 'Nothing to execute',
-                                description: 'error.userMessage',
+                                description: error.userMessage,
                                 buttonProps: {
                                     text: 'Edit Pipeline',
                                     dataTestId: 'edit-pipeline-btn',
@@ -1076,8 +1076,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.props.history.push(this.props.match.url)
     }
 
-    closeCDModal = (e: React.MouseEvent): void => {
-        e.stopPropagation()
+    closeCDModal = (e?: React.MouseEvent): void => {
+        e?.stopPropagation()
         this.setState({ searchImageTag: '' })
         this.props.history.push({
             search: '',
@@ -1313,7 +1313,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                         <CloseIcon />
                                     </button>
                                 </div>
-                                <div style={{ height: 'calc(100% - 55px)' }}>
+                                <div className='flex-grow-1'>
                                     <Progressing pageLoader size={32} />
                                 </div>
                             </>
@@ -1424,7 +1424,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         }
         if (!this.state.workflows.length) {
             return (
-                <div>
+                <div className='flex-grow-1'>
                     {this.props.isJobView ? (
                         <AppNotConfigured
                             title={APP_DETAILS.JOB_FULLY_NOT_CONFIGURED.title}
@@ -1441,7 +1441,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
         return (
             <>
-                <div className="svg-wrapper-trigger bcn-0">
+                <div className="bg__primary py-16 px-20 dc__overflow-auto">
                     <TriggerViewContext.Provider
                         value={{
                             invalidateCache: this.state.invalidateCache,
@@ -1467,12 +1467,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         {this.renderApprovalMaterial()}
                     </TriggerViewContext.Provider>
                 </div>
-                {ImagePromotionRouter && (
-                    <ImagePromotionRouter
+                {WorkflowActionRouter && (
+                    <WorkflowActionRouter
                         basePath={this.props.match.path}
                         baseURL={this.props.match.url}
                         workflows={this.state.workflows}
                         getModuleInfo={getModuleInfo}
+                        reloadWorkflowStatus={this.getWorkflowStatus}
+                        appName={this.props.appContext.currentAppName}
                     />
                 )}
             </>

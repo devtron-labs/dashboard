@@ -30,7 +30,6 @@ import {
     BreadCrumb,
     useBreadcrumb,
     stopPropagation,
-    DeleteDialog,
     showError,
     GenericEmptyState,
     useAsync,
@@ -39,6 +38,7 @@ import {
     TabProps,
     ToastManager,
     ToastVariantType,
+    DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { MultiValue } from 'react-select'
@@ -54,7 +54,7 @@ import EnvTriggerView from './Details/TriggerView/EnvTriggerView'
 import EnvConfig from './Details/EnvironmentConfig/EnvConfig'
 import EnvironmentOverview from './Details/EnvironmentOverview/EnvironmentOverview'
 import { EnvSelector } from './EnvSelector'
-import EmptyFolder from '../../assets/img/Empty-folder.png'
+import EmptyFolder from '../../assets/img/empty-folder.webp'
 import { AppFilterTabs, EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS, NO_ACCESS_TOAST_MESSAGE } from './Constants'
 import { ReactComponent as Settings } from '../../assets/icons/ic-settings.svg'
 import {
@@ -81,7 +81,7 @@ import AppGroupAppFilter from './AppGroupAppFilter'
 import EnvCIDetails from './Details/EnvCIDetails/EnvCIDetails'
 import EnvCDDetails from './Details/EnvCDDetails/EnvCDDetails'
 import '../app/details/app.scss'
-import { CONTEXT_NOT_AVAILABLE_ERROR } from '../../config/constantMessaging'
+import { CONTEXT_NOT_AVAILABLE_ERROR, DeleteComponentsName } from '../../config/constantMessaging'
 import CreateAppGroup from './CreateAppGroup'
 
 export const AppGroupAppFilterContext = React.createContext<AppGroupAppFilterContextType>(null)
@@ -100,7 +100,6 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     const [envName, setEnvName] = useState<string>('')
     const [showEmpty, setShowEmpty] = useState<boolean>(false)
     const [appListLoading, setAppListLoading] = useState<boolean>(false)
-    const [deleting, setDeleting] = useState<boolean>(false)
     const [loading, envList] = useAsync(getEnvAppList, [])
     const [appListOptions, setAppListOptions] = useState<OptionType[]>([])
     const [selectedAppList, setSelectedAppList] = useState<MultiValue<OptionType>>([])
@@ -369,28 +368,13 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         getPermissionCheck({ appIds: selectedGroupId.appIds }, false, true)
     }
 
-    async function handleDelete() {
-        if (deleting) {
-            return
-        }
-        setDeleting(true)
-        try {
-            await deleteEnvGroup(envId, clickedGroup.value)
-            ToastManager.showToast({
-                variant: ToastVariantType.success,
-                description: 'Successfully deleted',
-            })
-            setShowDeleteGroup(false)
-            getSavedFilterData(
-                selectedGroupFilter[0] && clickedGroup.value !== selectedGroupFilter[0].value
-                    ? +selectedGroupFilter[0].value
-                    : null,
-            )
-        } catch (serverError) {
-            showError(serverError)
-        } finally {
-            setDeleting(false)
-        }
+    const onDelete = async () => {
+        await deleteEnvGroup(envId, clickedGroup.value)
+        getSavedFilterData(
+            selectedGroupFilter[0] && clickedGroup.value !== selectedGroupFilter[0].value
+                ? +selectedGroupFilter[0].value
+                : null,
+        )
     }
 
     const closeDeleteGroup = () => {
@@ -430,7 +414,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             return <Progressing pageLoader />
         }
         if (showEmpty) {
-            return <div className="env-empty-state flex w-100">{renderEmpty()}</div>
+            return <div className="flex flex-grow-1 w-100">{renderEmpty()}</div>
         }
         const _filteredAppsIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
         return (
@@ -472,7 +456,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     }
 
     return (
-        <div className="env-details-page h-100vh flexbox-col">
+        <div className="env-details-page h-100 dc__overflow-hidden flexbox-col">
             <EnvHeader
                 envName={envName}
                 setEnvName={setEnvName}
@@ -501,11 +485,11 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                 />
             )}
             {showDeleteGroup && isPopupBox && (
-                <DeleteDialog
-                    title={`Delete filter '${clickedGroup?.label}' ?`}
-                    description="Are you sure you want to delete this filter?"
-                    delete={handleDelete}
-                    closeDelete={closeDeleteGroup}
+                <DeleteConfirmationModal
+                    title={clickedGroup?.label}
+                    component={DeleteComponentsName.Filter}
+                    onDelete={onDelete}
+                    closeConfirmationModal={closeDeleteGroup}
                 />
             )}
         </div>

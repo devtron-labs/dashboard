@@ -14,95 +14,65 @@
  * limitations under the License.
  */
 
-import { Fragment, useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
     showError,
-    Progressing,
     ErrorScreenManager,
     InfoIconTippy,
     useMainContext,
     getClusterListMin,
+    DeleteConfirmationModal,
+    Progressing,
+    SearchBar,
+    useUrlFilters,
+    FilterChips,
+    stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
+import { useParams } from 'react-router-dom'
+import { DeleteComponentsName } from '@Config/constantMessaging'
 import { sortOptionsByLabel, sortOptionsByValue } from '../common'
-import { AddLinkButton, NoExternalLinksView, NoMatchingResults, RoleBasedInfoNote } from './ExternalLinks.component'
-import { getAllApps, getExternalLinks } from './ExternalLinks.service'
+import { RoleBasedInfoNote, NoExternalLinksView } from './ExternalLinks.component'
+import { deleteExternalLink, getAllApps, getExternalLinks } from './ExternalLinks.service'
 import {
     ExternalLink,
     ExternalLinkIdentifierType,
+    ExternalLinkMapListSortableKeys,
     ExternalLinkScopeType,
     ExternalLinksProps,
+    ExternalListUrlFiltersType,
     IdentifierOptionType,
     OptionTypeWithIcon,
+    parseSearchParams,
 } from './ExternalLinks.type'
-import { ReactComponent as EditIcon } from '../../assets/icons/ic-pencil.svg'
-import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
-import { getMonitoringToolIcon, onImageLoadError, sortByUpdatedOn } from './ExternalLinks.utils'
+
 import { DOCUMENTATION, SERVER_MODE } from '../../config'
-import { ApplicationFilter, AppliedFilterChips, ClusterFilter, SearchInput } from './ExternalLinksFilters'
 import AddExternalLink from './ExternalLinksCRUD/AddExternalLink'
-import DeleteExternalLinkDialog from './ExternalLinksCRUD/DeleteExternalLinkDialog'
-import './externalLinks.scss'
+import './styles.scss'
+import { AddLinkButton } from './AddLinkButton'
+import { ExternalLinkList } from './ExternalLinkList'
+import { sortByUpdatedOn } from './ExternalLinks.utils'
+import { ExternalLinkFilter } from './ExternalLinkFilter'
 
 const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
     const { appId } = useParams<{ appId: string }>()
-    const history = useHistory()
-    const location = useLocation()
-    const { url } = useRouteMatch()
-    const queryParams = new URLSearchParams(location.search)
     const [isLoading, setLoading] = useState(false)
-    const [isAPICallInProgress, setAPICallInProgress] = useState(false)
     const [showAddLinkDialog, setShowAddLinkDialog] = useState(false)
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
     const [monitoringTools, setMonitoringTools] = useState<OptionTypeWithIcon[]>([])
     const [externalLinks, setExternalLinks] = useState<ExternalLink[]>([])
-    const [clusters, setClusters] = useState<IdentifierOptionType[]>([])
+    const [clusterList, setClustersList] = useState<IdentifierOptionType[]>([])
     const [allApps, setAllApps] = useState<IdentifierOptionType[]>([])
-    const [appliedClusters, setAppliedClusters] = useState<IdentifierOptionType[]>([])
-    const [appliedApps, setAppliedApps] = useState<IdentifierOptionType[]>([])
-    const [filteredExternalLinks, setFilteredExternalLinks] = useState<ExternalLink[]>([])
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [selectedLink, setSelectedLink] = useState<ExternalLink>()
     const { serverMode } = useMainContext()
     const isFullMode = serverMode === SERVER_MODE.FULL
 
-    useEffect(() => {
-        initExternalLinksData()
-    }, [])
+    const urlFilters = useUrlFilters<ExternalLinkMapListSortableKeys, ExternalListUrlFiltersType>({
+        initialSortKey: ExternalLinkMapListSortableKeys.linkName,
+        parseSearchParams,
+    })
 
-    useEffect(() => {
-        if (externalLinks.length > 0) {
-            /**
-             * 1. If both clusters & search query params are present then filter by both and set filtered external links
-             * 2. If only clusters query param is present then filter by cluster ids & set filtered external links
-             * 3. If only search query param is present then filter by searched term & set filtered external links
-             * 4. Else set default external links
-             */
-            if (queryParams.has('clusters') || queryParams.has('apps')) {
-                const _appliedClusterIds = queryParams.get('clusters')?.split(',')
-                const _appliedAppIds = queryParams.get('apps')?.split(',')
-
-                // #1 - Filter the links by applied clusterIds
-                const filteredByClusterIds = filterByClusterIds(_appliedClusterIds, !_appliedAppIds?.length)
-                const filteredByAppIds = filterByAppIds(_appliedAppIds, filteredByClusterIds)
-                let _filteredExternalLinks = [...filteredByClusterIds, ...filteredByAppIds]
-
-                // #2 - Check if we have any external links filtered by applied clusterIds
-                if (queryParams.has('search') && _filteredExternalLinks.length > 0) {
-                    // #3 - If yes then filter the filtered external links further by searched term
-                    _filteredExternalLinks = filterBySearchTerm(_filteredExternalLinks)
-                }
-
-                // #4 - Set filtered external links
-                setFilteredExternalLinks(_filteredExternalLinks)
-            } else if (queryParams.has('search')) {
-                setFilteredExternalLinks(filterBySearchTerm(externalLinks))
-            } else {
-                setFilteredExternalLinks(externalLinks)
-            }
-        }
-    }, [location.search, externalLinks])
+    const { searchKey, handleSearch, updateSearchParams, clusters, apps, clearFilters, sortOrder } = urlFilters
 
     const initExternalLinksData = () => {
         setLoading(true)
@@ -136,7 +106,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                         category: tool.category,
                     })).sort(sortOptionsByValue) || [],
                 )
-                setClusters(
+                setClustersList(
                     clustersResp.result
                         ?.map((cluster) => ({
                             label: cluster.cluster_name,
@@ -166,318 +136,169 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
             })
     }
 
-    const filterByClusterIds = (_appliedClusterIds: string[], defaultToAll: boolean): ExternalLink[] => {
-        /**
-         * 1. If appliedClusterIds are not present then return empty array
-         * 2. If appliedClusterIds are present but doesn't have any value then
-         * - if defaultToAll is true then return all externalLinks as default
-         * - else return empty array as there'll be further filtering based on appliedAppIds
-         * 3. If appliedClusterIds are present and has value then filter & return filtered external links
-         */
-        if (_appliedClusterIds) {
-            if (_appliedClusterIds.length === 1 && !_appliedClusterIds[0]) {
-                return defaultToAll ? externalLinks : []
-            }
-            if (_appliedClusterIds.length > 0) {
-                return externalLinks.filter(
-                    (link) =>
-                        link.identifiers.length === 0 ||
-                        link.identifiers.some((_identifier) => _appliedClusterIds.includes(`${_identifier.clusterId}`)),
-                )
-            }
-        }
-
-        return []
-    }
-
-    const filterByAppIds = (_appliedAppIds: string[], filteredByClusterIds: ExternalLink[]): ExternalLink[] => {
-        /**
-         * 1. If appliedAppIds are not present then return empty array
-         * 2. If appliedAppIds are present but doesn't have any value then
-         * - return empty array if filteredByClusterIds contains any link as it'll be the same
-         * - else return all externalLinks as default
-         * 3. If appliedAppIds are present and have value then
-         * - filter external links & assign to filteredByAppIds
-         * - if filteredByClusterIds contains any link, remove duplicates from filteredByAppIds & return
-         * - else return filteredByAppIds
-         */
-        if (_appliedAppIds) {
-            if (_appliedAppIds.length === 1 && !_appliedAppIds[0]) {
-                // If contains any link then return empty as it'll be the same array
-                // Else return all external links as default
-                return filteredByClusterIds.length > 0 ? [] : externalLinks
-            }
-            if (_appliedAppIds.length > 0) {
-                const filteredByAppIds = externalLinks.filter(
-                    (link) =>
-                        link.identifiers.length === 0 ||
-                        link.identifiers.some((_identifier) =>
-                            _appliedAppIds.includes(
-                                `${_identifier.identifier}_${
-                                    _identifier.type === ExternalLinkIdentifierType.DevtronApp ? 'd' : 'h'
-                                }`,
-                            ),
-                        ),
-                )
-
-                // Filter out duplicates from filteredByAppIds if filteredByClusterIds contains any link & return
-                // Else return filteredByAppIds
-                if (filteredByClusterIds.length > 0) {
-                    const filteredIds = filteredByClusterIds.map((_link) => _link.id)
-                    return filteredByAppIds.filter((_link) => !filteredIds.includes(_link.id))
-                }
-
-                return filteredByAppIds
-            }
-        }
-
-        return []
-    }
-
-    const filterBySearchTerm = (_externalLinks: ExternalLink[]): ExternalLink[] => {
-        const _searchTerm = queryParams.get('search').trim().toLowerCase()
-
-        /**
-         * 1. If search query param is present and has value then filter & return filtered external links
-         * 2. Else return passed _externalLinks
-         */
-        if (_searchTerm) {
-            return _externalLinks.filter(
-                (link: ExternalLink) =>
-                    link.name.toLowerCase().includes(_searchTerm) ||
-                    monitoringTools
-                        .find((tool) => tool.value === link.monitoringToolId)
-                        ?.label.toLowerCase()
-                        .includes(_searchTerm),
-            )
-        }
-
-        return _externalLinks
-    }
+    useEffect(() => {
+        initExternalLinksData()
+    }, [])
 
     const handleAddLinkClick = (): void => {
         setShowAddLinkDialog(true)
         setSelectedLink(undefined)
     }
 
-    const renderSearchFilterWrapper = (): JSX.Element => {
-        return (
-            <div className="search-filter-wrapper">
-                <SearchInput queryParams={queryParams} history={history} url={url} />
-                {!isAppConfigView && (
-                    <>
-                        {isFullMode && (
-                            <ApplicationFilter
-                                allApps={allApps}
-                                appliedApps={appliedApps}
-                                setAppliedApps={setAppliedApps}
-                                queryParams={queryParams}
-                                history={history}
-                                url={url}
-                            />
-                        )}
-                        <ClusterFilter
-                            clusters={clusters}
-                            appliedClusters={appliedClusters}
-                            setAppliedClusters={setAppliedClusters}
-                            queryParams={queryParams}
-                            history={history}
-                            url={url}
-                        />
-                    </>
-                )}
-            </div>
-        )
+    const handleExternalLinksUsingSearch = (searchText: string): void => {
+        handleSearch(searchText)
     }
 
-    const getScopeLabel = (link: ExternalLink): string => {
-        const _identifiersLen = link.identifiers.length
-        const _labelPostfix = `${link.type === ExternalLinkScopeType.ClusterLevel ? 'cluster' : 'application'}${
-            _identifiersLen === 0 || _identifiersLen > 1 ? 's' : ''
-        }`
+    const renderFilters = (): JSX.Element => (
+        <div className="flex dc__gap-8">
+            <SearchBar
+                initialSearchText={searchKey}
+                containerClassName="w-250"
+                handleEnter={handleExternalLinksUsingSearch}
+                inputProps={{
+                    placeholder: 'Search',
+                    autoFocus: true,
+                }}
+                dataTestId="external-link-app-search"
+            />
+            {!isAppConfigView && (
+                <ExternalLinkFilter
+                    allApps={allApps}
+                    updateSearchParams={updateSearchParams}
+                    isFullMode={isFullMode}
+                    clusterList={clusterList}
+                    clusters={clusters}
+                    apps={apps}
+                />
+            )}
+        </div>
+    )
 
-        if (_identifiersLen === 0) {
-            return `All ${_labelPostfix}`
+    const filterConfig = {
+        clusters,
+        apps,
+    }
+
+    const filteredExternalLinks = useMemo(() => {
+        const hasClusters = clusters.length > 0
+        const hasApps = apps.length > 0
+        const hasSearchKey = !!searchKey
+
+        // If no filters are applied, return the sorted full list
+        if (!hasClusters && !hasApps && !hasSearchKey) {
+            return [...externalLinks].sort((a, b) => stringComparatorBySortOrder(a.name, b.name, sortOrder))
         }
-        return `${_identifiersLen} ${_labelPostfix}`
-    }
 
-    const editLink = (link: ExternalLink): void => {
-        setSelectedLink(link)
-        setShowAddLinkDialog(true)
-    }
-
-    const renderExternalLinksHeader = (): JSX.Element => {
-        return (
-            <div
-                className={`external-links__header h-40 fs-12 fw-6 pl-20 bcn-0 dc__uppercase ${
-                    isAppConfigView ? 'app-config-view' : ''
-                }`}
-            >
-                <div className="external-links__cell--icon" />
-                <div className="external-links__cell--tool__name">
-                    <span className="external-links__cell-header cn-7 fs-12 fw-6">Name</span>
-                </div>
-                <div className="external-links__cell--cluster">
-                    <span className="external-links__cell-header cn-7 fs-12 fw-6">Description</span>
-                </div>
-                {!isAppConfigView && (
-                    <div className="external-links__cell--cluster">
-                        <span className="external-links__cell-header cn-7 fs-12 fw-6">Scope</span>
-                    </div>
-                )}
-                <div className="external-links__cell--url__template">
-                    <span className="external-links__cell-header cn-7 fs-12 fw-6">Url Template</span>
-                </div>
-            </div>
+        const parsedAppliedApps = new Set(
+            apps.map((app) => {
+                const [_appId, , type] = app.split('|')
+                return `${_appId}|${type}`
+            }),
         )
+
+        // Filter based on clusters, apps, and search key
+        const filteredList = externalLinks.filter((link) => {
+            let matchesCluster = false
+            let matchesApp = false
+            let matchesSearch = !hasSearchKey // If searchKey is empty, default to true
+
+            // Search Key filtering with AND logic where cluster and app filters are applied
+            if (hasSearchKey) {
+                matchesSearch = link.name.toLowerCase().includes(searchKey.toLowerCase())
+                // If search is applied without cluster or app filters, return early
+                if (!hasClusters && !hasApps) {
+                    return matchesSearch
+                }
+            }
+            if (!matchesSearch) return false
+
+            // Cluster filtering
+            if (hasClusters) {
+                if (clusters.length === 1 && !clusters[0]) {
+                    matchesCluster = true // If empty cluster is selected, show all
+                } else {
+                    matchesCluster =
+                        link.identifiers?.length === 0 || // No identifiers (global match)
+                        link.identifiers.some(({ clusterId }) => clusters.includes(`${clusterId}`))
+                }
+            }
+
+            // App filtering
+            if (!matchesCluster && hasApps) {
+                matchesApp =
+                    link.identifiers?.length === 0 || // No identifiers (global match)
+                    link.identifiers.some(({ appId: _appId, type }) => parsedAppliedApps.has(`${_appId}|${type}`))
+            }
+
+            // Apply OR logic: If any condition matches, return true
+            return matchesCluster || matchesApp
+        })
+
+        // Sort after filtering
+        return filteredList.sort((a, b) => stringComparatorBySortOrder(a.name, b.name, sortOrder))
+    }, [externalLinks, clusters, apps, searchKey, sortOrder])
+
+    const getFormattedFilterValue = (filterKey: keyof ExternalListUrlFiltersType, filterValue: string) => {
+        if (filterKey === 'apps') {
+            const [, appName] = filterValue.split('|')
+            return appName
+        }
+        if (filterKey === 'clusters') {
+            const cluster = clusterList.find((_cluster) => _cluster.value === filterValue)
+            return cluster?.label || ''
+        }
+        return ''
     }
 
-    const renderExternalLinks = (filteredLinksLen: number): JSX.Element => {
-        return (
-            <>
-                {filteredExternalLinks.map((link, idx) => {
-                    return (
-                        <Fragment key={`external-link-${idx}`}>
-                            <div className={`external-link ${isAppConfigView ? 'app-config-view' : ''}`}>
-                                <div className="external-links__cell--icon">
-                                    <img
-                                        src={getMonitoringToolIcon(monitoringTools, link.monitoringToolId)}
-                                        style={{
-                                            width: '24px',
-                                            height: '24px',
-                                        }}
-                                        onError={onImageLoadError}
-                                    />
-                                </div>
-                                <div
-                                    className="external-links__cell--tool__name cn-9 fs-13 dc__ellipsis-right"
-                                    data-testid={`external-link-name-${link.name}`}
-                                >
-                                    {link.name}
-                                </div>
-                                <div className="external-links__cell--tool__name cn-9 fs-13 dc__ellipsis-right">
-                                    {link.description ? (
-                                        <Tippy
-                                            className="default-tt dc__mxw-300 dc__word-break"
-                                            arrow={false}
-                                            placement="top-start"
-                                            content={link.description}
-                                        >
-                                            <span data-testid={`external-link-description-${link.name}`}>
-                                                {link.description}
-                                            </span>
-                                        </Tippy>
-                                    ) : (
-                                        '-'
-                                    )}
-                                </div>
-                                {!isAppConfigView && (
-                                    <div
-                                        className="external-links__cell--scope cn-9 fs-13 dc__ellipsis-right"
-                                        data-testid={`external-link-scope-${link.name}`}
-                                    >
-                                        {getScopeLabel(link)}
-                                    </div>
-                                )}
-                                <div className="external-links__cell--url__template cn-9 fs-13 dc__ellipsis-right">
-                                    <Tippy
-                                        className="default-tt dc__mxw-300 dc__word-break"
-                                        arrow={false}
-                                        placement="top-start"
-                                        content={link.url}
-                                    >
-                                        <span data-testid={`external-link-url-${link.name}`}>{link.url}</span>
-                                    </Tippy>
-                                </div>
-                                <div className="external-link-actions">
-                                    <EditIcon
-                                        className="icon-dim-20 cursor mr-16"
-                                        onClick={() => {
-                                            editLink(link)
-                                        }}
-                                        data-testid={`external-link-edit-button-${link.name}`}
-                                    />
-                                    <DeleteIcon
-                                        className="icon-dim-20 cursor"
-                                        onClick={() => {
-                                            setSelectedLink(link)
-                                            setShowDeleteDialog(true)
-                                        }}
-                                        data-testid={`external-link-delete-button-${link.name}`}
-                                    />
-                                </div>
-                            </div>
-                            {idx !== filteredLinksLen - 1 && <div className="external-link__divider w-100 bcn-1" />}
-                        </Fragment>
-                    )
-                })}
-            </>
-        )
-    }
-
-    const renderExternalLinksView = (): JSX.Element => {
-        const filteredLinksLen = filteredExternalLinks.length
-
-        return (
-            <div className="external-links-wrapper">
-                <div className={`flex dc__content-space ${isAppConfigView ? 'mb-12' : 'mb-16'}`}>
-                    <h3 className="title flex left cn-9 fs-18 fw-6 lh-24 m-0" data-testid="external-links-heading">
-                        External Links
-                        <InfoIconTippy
-                            heading="External Links"
-                            infoText="Configure links to third-party applications (e.g. Kibana, New Relic) for quick access. Configured
+    const renderExternalLinksView = (): JSX.Element => (
+        <div
+            className={`flexbox-col ${isAppConfigView ? 'dc__gap-16' : 'dc__gap-8'} external-links-wrapper pt-16 flex-grow-1 h-100`}
+        >
+            <div className="flex dc__content-space px-20">
+                <h3 className="title flex left cn-9 fs-18 fw-6 lh-24 m-0" data-testid="external-links-heading">
+                    External Links
+                    <InfoIconTippy
+                        heading="External Links"
+                        infoText="Configure links to third-party applications (e.g. Kibana, New Relic) for quick access. Configured
                     links will be available in the App details page."
-                            documentationLink={DOCUMENTATION.EXTERNAL_LINKS}
-                            iconClassName="icon-dim-20 fcn-6 ml-8"
-                        />
-                    </h3>
-                    <div className="cta-search-filter-container flex">
-                        {renderSearchFilterWrapper()}
-                        <div className="h-20 dc__border-right mr-8 ml-8" />
-                        <AddLinkButton handleOnClick={handleAddLinkClick} />
-                    </div>
-                </div>
-                {isAppConfigView && <RoleBasedInfoNote userRole={userRole} listingView />}
-                {!isAppConfigView && (appliedClusters.length > 0 || appliedApps.length > 0) && (
-                    <AppliedFilterChips
-                        appliedClusters={appliedClusters}
-                        setAppliedClusters={setAppliedClusters}
-                        appliedApps={appliedApps}
-                        setAppliedApps={setAppliedApps}
-                        queryParams={queryParams}
-                        history={history}
-                        url={url}
+                        documentationLink={DOCUMENTATION.EXTERNAL_LINKS}
+                        iconClassName="icon-dim-20 fcn-6 ml-8"
                     />
-                )}
-                <div className={`external-links dc__border bcn-0 ${isAppConfigView ? 'app-config-view__listing' : ''}`}>
-                    {isAPICallInProgress ? (
-                        <Progressing pageLoader />
-                    ) : (
-                        <>
-                            {(appliedClusters.length > 0 || queryParams.get('search')) && filteredLinksLen === 0 && (
-                                <NoMatchingResults />
-                            )}
-                            {filteredLinksLen > 0 && (
-                                <>
-                                    {renderExternalLinksHeader()}
-                                    <div className="external-links__list dc__overflow-scroll">
-                                        {renderExternalLinks(filteredLinksLen)}
-                                    </div>
-                                </>
-                            )}
-                        </>
-                    )}
+                </h3>
+                <div className="cta-search-filter-container flex h-100">
+                    {renderFilters()}
+                    <div className="h-20 dc__border-right mr-8 ml-8" />
+                    <AddLinkButton handleOnClick={handleAddLinkClick} />
                 </div>
             </div>
-        )
-    }
+            {isAppConfigView ? (
+                <RoleBasedInfoNote userRole={userRole} listingView />
+            ) : (
+                <FilterChips<ExternalListUrlFiltersType>
+                    filterConfig={filterConfig}
+                    clearFilters={clearFilters}
+                    className="px-20"
+                    onRemoveFilter={updateSearchParams}
+                    getFormattedValue={getFormattedFilterValue}
+                />
+            )}
+            <ExternalLinkList
+                filteredExternalLinks={filteredExternalLinks}
+                isAppConfigView={isAppConfigView}
+                setSelectedLink={setSelectedLink}
+                setShowDeleteDialog={setShowDeleteDialog}
+                setShowAddLinkDialog={setShowAddLinkDialog}
+                monitoringTools={monitoringTools}
+                isLoading={isLoading}
+            />
+        </div>
+    )
 
     const handleDialogVisibility = () => {
         setShowAddLinkDialog(!showAddLinkDialog)
     }
 
-    const renderExternalLinksContainer = () => {
+    const renderExternalLinkListWrapper = () => {
         if (errorStatusCode > 0) {
             return (
                 <div className="error-screen-wrapper flex column h-100">
@@ -491,18 +312,37 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                     isAppConfigView={isAppConfigView}
                     userRole={userRole}
                     handleAddLinkClick={handleAddLinkClick}
-                    history={history}
                 />
             )
         }
+
         return renderExternalLinksView()
     }
 
-    return isLoading ? (
-        <Progressing pageLoader />
-    ) : (
-        <div className={`external-links-container dc__m-auto ${errorStatusCode > 0 ? 'error-view' : ''}`}>
-            {renderExternalLinksContainer()}
+    const hideDeleteConfirmationModal = () => setShowDeleteDialog(false)
+
+    const onDelete = async (): Promise<void> => {
+        await deleteExternalLink(selectedLink.id, isAppConfigView ? appId : '')
+        if (isAppConfigView) {
+            const { result } = await getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp)
+            setExternalLinks(
+                result?.ExternalLinks?.filter(
+                    (_link) => _link.isEditable && _link.type === ExternalLinkScopeType.AppLevel,
+                ).sort(sortByUpdatedOn) || [],
+            )
+        } else {
+            const { result } = await getExternalLinks()
+            setExternalLinks(result?.ExternalLinks?.sort(sortByUpdatedOn) || [])
+        }
+    }
+
+    if (isLoading) {
+        return <Progressing pageLoader />
+    }
+
+    return (
+        <div className={`external-links-container bg__primary h-100 ${errorStatusCode > 0 ? 'error-view' : ''}`}>
+            {renderExternalLinkListWrapper()}
             {showAddLinkDialog && (
                 <AddExternalLink
                     appId={appId}
@@ -528,19 +368,24 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                             value: '*',
                             type: ExternalLinkIdentifierType.Cluster,
                         } as IdentifierOptionType,
-                    ].concat(clusters)}
+                    ].concat(clusterList)}
                     setExternalLinks={setExternalLinks}
                 />
             )}
-            {showDeleteDialog && selectedLink && (
-                <DeleteExternalLinkDialog
-                    appId={appId}
-                    isAppConfigView={isAppConfigView}
-                    selectedLink={selectedLink}
-                    isAPICallInProgress={isAPICallInProgress}
-                    setAPICallInProgress={setAPICallInProgress}
-                    setExternalLinks={setExternalLinks}
-                    setShowDeleteConfirmation={setShowDeleteDialog}
+            {selectedLink && showDeleteDialog && (
+                <DeleteConfirmationModal
+                    title={selectedLink?.name}
+                    component={DeleteComponentsName.Link}
+                    subtitle={
+                        <>
+                            <p className="m-0 ls-20 fs-13 cn-7">
+                                &apos;{selectedLink?.name}&apos; links will no longer be shown in applications.
+                            </p>
+                            <p className="m-0 ls-20 fs-13 cn-7">Are you sure ?</p>
+                        </>
+                    }
+                    onDelete={onDelete}
+                    closeConfirmationModal={hideDeleteConfirmationModal}
                 />
             )}
         </div>

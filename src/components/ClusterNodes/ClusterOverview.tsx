@@ -271,7 +271,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
             return
         }
         return (
-            <div className="mb-16 dc__border br-4 pt-12 bcn-0">
+            <div className="mb-16 dc__border br-4 pt-12 bg__primary">
                 <div className="flexbox pointer mb-12 pl-16 pr-16">
                     <Error className="mt-2 mb-2 mr-8 icon-dim-20" />
                     <span className="fw-6 fs-13 cn-9 mr-16">
@@ -326,8 +326,8 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
             <>
                 {/* Commented to be used in future */}
                 {/* {cardDetailsInBar()} */}
-                <div className="dc__grid-row-one-half dc__gap-16 pb-16">
-                    <div className="flexbox dc__gap-12 dc__content-space dc__overflow-scroll bcn-0 br-4 en-2 bw-1 pt-16 pl-16 pb-16 pr-16">
+                <div className="dc__grid-cols-2 dc__gap-16 pb-16">
+                    <div className="flexbox dc__gap-12 dc__content-space dc__overflow-auto bg__primary br-4 en-2 bw-1 pt-16 pl-16 pb-16 pr-16">
                         <div>
                             <div className="dc__align-left fs-13 fw-4 cn-7 dc__ellipsis-right">CPU Usage</div>
                             <div className="dc__align-left fs-24 fw-4 cn-9">
@@ -354,7 +354,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
                         </div>
                     </div>
 
-                    <div className="flexbox dc__gap-12 dc__content-space dc__overflow-scroll bcn-0 br-4 en-2 bw-1 pt-16 pl-16 pb-16 pr-16">
+                    <div className="flexbox dc__gap-12 dc__content-space dc__overflow-auto bg__primary br-4 en-2 bw-1 pt-16 pl-16 pb-16 pr-16">
                         <div>
                             <div className="dc__align-left fs-13 fw-4 cn-7 dc__ellipsis-right">Memory Usage</div>
                             <div className="dc__align-left fs-24 fw-4 cn-9">
@@ -400,7 +400,6 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
             kind: upgradeClusterLowerCaseKind,
             name: UPGRADE_CLUSTER_CONSTANTS.NAME,
             url: URL,
-            iconPath: UPGRADE_CLUSTER_CONSTANTS.ICON_PATH,
             dynamicTitle: `${UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE} to v${selectedVersion}`,
             tippyConfig: getUpgradeCompatibilityTippyConfig({
                 targetK8sVersion: selectedVersion
@@ -421,7 +420,6 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
                     <EditableTextArea
                         emptyState={defaultClusterShortDescription}
                         placeholder={defaultClusterShortDescription}
-                        rows={4}
                         updateContent={handleUpdateClusterDescription}
                         initialText={clusterDetails.shortDescription}
                         validations={{
@@ -487,23 +485,23 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
                 />
             )
         }
+
         if (isLoading || errorMsg) {
             return (
-                <div className="flex flex-grow-1">
-                    <ConnectingToClusterState
-                        loader={isLoading}
-                        errorMsg={errorMsg}
-                        selectedCluster={selectedCluster}
-                        handleRetry={handleRetry}
-                        requestAbortController={requestAbortControllerRef.current}
-                    />
-                </div>
+                <ConnectingToClusterState
+                    loader={isLoading}
+                    errorMsg={errorMsg}
+                    selectedCluster={selectedCluster}
+                    handleRetry={handleRetry}
+                    requestAbortController={requestAbortControllerRef.current}
+                />
             )
         }
+
         return (
             <div
                 className="p-20 dc__column-gap-32 h-100 dc__overflow-auto flexbox flex-justify-center"
-                style={{ backgroundImage: 'linear-gradient(249deg, #D4E6F7 0%, var(--N0)50.58%)' }}
+                style={{ backgroundImage: 'linear-gradient(249deg, var(--B100) 0%, var(--bg-primary) 50.58%)' }}
             >
                 {renderSideInfoData()}
                 <div className="dc__mxw-1068 flex-grow-1 mw-none">
@@ -524,19 +522,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
         )
     }
 
-    const renderClusterSummary = (): JSX.Element => {
-        return (
-            <div
-                className={`dc__border-left resource-details-container bcn-0 dc__overflow-scroll ${
-                    errorStatusCode || errorCode ? 'flex' : ''
-                }`}
-            >
-                {renderState()}
-            </div>
-        )
-    }
-
-    return renderClusterSummary()
+    return renderState()
 }
 
 export default React.memo(ClusterOverview)

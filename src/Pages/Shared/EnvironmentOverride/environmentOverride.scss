@@ -50,7 +50,7 @@
 }
 
 .override-key-value {
-    background: #fafafa;
+    background: var(--bg-secondary);
     border-radius: 4px;
     padding: 16px;
     display: grid;
@@ -163,26 +163,6 @@ div.override-container {
 
     .override-subtitle {
         font-weight: 400;
-    }
-}
-
-.override-textarea-container {
-    display: flex;
-    & > div {
-        width: 100%;
-    }
-    textarea {
-        width: calc(50% - 8px);
-        border: 1px solid var(--N200);
-        border-radius: 4px;
-        resize: vertical;
-        height: 100%;
-        &:disabled {
-            background: var(--N100);
-        }
-        &:first-child {
-            margin-right: 16px;
-        }
     }
 }
 

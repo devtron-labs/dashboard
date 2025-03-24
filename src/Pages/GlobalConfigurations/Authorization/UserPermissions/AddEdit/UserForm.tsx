@@ -17,7 +17,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
     showError,
-    DeleteDialog,
     ServerErrors,
     OptionType,
     UserStatus,
@@ -48,6 +47,7 @@ import {
 import { createUserPermissionPayload, validateDirectPermissionForm } from '../../utils'
 import { excludeKeyAndClusterValue } from '../../Shared/components/K8sObjectPermissions/utils'
 import { getDefaultUserStatusAndTimeout } from '../../libUtils'
+import { DeleteUserPermission } from '../DeleteUserPermission'
 
 const UserAutoAssignedRoleGroupsTable = importComponentFromFELibrary('UserAutoAssignedRoleGroupsTable')
 const UserPermissionsInfoBar = importComponentFromFELibrary('UserPermissionsInfoBar', null, 'function')
@@ -78,6 +78,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
         handleUserStatusUpdate,
         showStatus,
         isSaveDisabled,
+        allowManageAllAccess,
     } = usePermissionConfiguration()
     const _userData = userData as User
 
@@ -130,7 +131,10 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
     }
 
     const handleSubmit = async () => {
-        if (!validateForm() || !validateDirectPermissionForm(directPermission, setDirectPermission).isValid) {
+        if (
+            !validateForm() ||
+            !validateDirectPermissionForm(directPermission, setDirectPermission, allowManageAllAccess).isValid
+        ) {
             return
         }
 
@@ -146,6 +150,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
             k8sPermission,
             permissionType,
             userGroups: selectedUserGroups,
+            canManageAllAccess: allowManageAllAccess,
             ...getDefaultUserStatusAndTimeout(),
         })
 
@@ -208,21 +213,9 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
         setEmailState((prevEmailState) => ({ ...prevEmailState, emails: newValue || [], emailError: '' }))
     }
 
-    const handleDelete = async () => {
-        setSubmitting(true)
-        try {
-            await deleteUser(_userData.id)
-            ToastManager.showToast({
-                variant: ToastVariantType.success,
-                description: 'User deleted',
-            })
-            setDeleteConfirmationModal(false)
-            _redirectToUserPermissionList()
-        } catch (err) {
-            showError(err)
-        } finally {
-            setSubmitting(false)
-        }
+    const onDelete = async () => {
+        await deleteUser(_userData.id)
+        _redirectToUserPermissionList()
     }
 
     const handleKeyDown = useCallback(
@@ -354,6 +347,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                             hideDirectPermissions={
                                 window._env_.FEATURE_HIDE_USER_DIRECT_PERMISSIONS_FOR_NON_SUPER_ADMINS && !isSuperAdmin
                             }
+                            isAddMode={isAddMode}
                         />
                     )}
                 </div>
@@ -391,12 +385,10 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                 </div>
             </div>
             {deleteConfirmationModal && (
-                <DeleteDialog
-                    title={`Delete user '${emailState.emails[0]?.value || ''}'?`}
-                    description="Deleting this user will remove the user and revoke all their permissions."
-                    delete={handleDelete}
-                    closeDelete={toggleDeleteConfirmationModal}
-                    apiCallInProgress={submitting}
+                <DeleteUserPermission
+                    title={emailState.emails[0]?.value || ''}
+                    onDelete={onDelete}
+                    closeConfirmationModal={toggleDeleteConfirmationModal}
                 />
             )}
         </div>

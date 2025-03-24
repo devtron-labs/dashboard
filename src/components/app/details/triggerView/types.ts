@@ -463,14 +463,6 @@ export interface ApplicationConditionResponse {
     message: string
 }
 
-export enum CIPipelineNodeType {
-    EXTERNAL_CI = 'EXTERNAL-CI',
-    CI = 'CI',
-    LINKED_CI = 'LINKED-CI',
-    JOB_CI = 'JOB-CI',
-    LINKED_CD = 'LINKED_CD',
-}
-
 export interface Task {
     name?: string
     type?: string
@@ -679,7 +671,6 @@ export interface MaterialSourceProps {
     selectMaterial: (materialId: string, ciPipelineId?: number) => void
     refreshMaterial?: RefreshMaterialType
     ciPipelineId?: number
-    fromTriggerInfo?: boolean
     clearSearch?: (e: any) => void
 }
 
@@ -733,14 +724,11 @@ export interface CIWebhookPayload {
 export interface WebhookReceivedPayloadModalType
     extends Pick<TriggerViewState, 'webhookPayloads' | 'workflowId' | 'isWebhookPayloadLoading'>,
         Pick<CIMaterialProps, 'getWebhookPayload'> {
-    fromBulkCITrigger?: boolean
     title: string
     material: CIMaterialType[]
     pipelineId: string
-    fromAppGrouping?: boolean
     isJobView?: boolean
     appId: string
-    isBulkCIWebhook?: boolean
 }
 
 export type OffendingWorkflowQueryParamType = `policy/${PolicyKindType}|identifier|${string}`

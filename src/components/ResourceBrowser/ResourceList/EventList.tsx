@@ -20,7 +20,6 @@ import { highlightSearchText, Tooltip, WidgetEventDetails } from '@devtron-labs/
 import { importComponentFromFELibrary } from '@Components/common'
 import { EVENT_LIST } from '../Constants'
 import { EventListType } from '../Types'
-import { getScrollableResourceClass } from '../Utils'
 
 const ExplainEventButton = importComponentFromFELibrary('ExplainEventButton', null, 'function')
 
@@ -28,27 +27,22 @@ export const EventList = ({
     listRef,
     filteredData,
     handleResourceClick,
-    paginatedView,
-    syncError,
     searchText,
     setWidgetEventDetails,
 }: EventListType) => (
-    <div className="dc__overflow-scroll">
-        <div
-            className={`event-list-row${ExplainEventButton ? '__explain' : ''} dc__zi-1 dc__min-width-fit-content dc__position-sticky bcn-0 dc__top-0 fw-6 cn-7 fs-13 dc__border-bottom px-20 py-8 dc__uppercase h-36`}
-        >
-            {Object.values(EVENT_LIST.headerKeys).map((title) => (
-                <div>
-                    <Tooltip key={title} content={title} alwaysShowTippyOnHover>
-                        <span className="dc__ellipsis-right">{title}</span>
-                    </Tooltip>
-                </div>
-            ))}
-        </div>
-        <div
-            ref={listRef}
-            className={`${getScrollableResourceClass('scrollable-event-list', paginatedView, syncError)} dc__min-width-fit-content`}
-        >
+    <div className="dc__overflow-auto">
+        <div ref={listRef} className="scrollable-event-list dc__min-width-fit-content flexbox-col">
+            <div
+                className={`event-list-row${ExplainEventButton ? '__explain' : ''} dc__zi-1 dc__min-width-fit-content dc__position-sticky bg__primary dc__top-0 fw-6 cn-7 fs-13 dc__border-bottom px-20 py-8 dc__uppercase h-36`}
+            >
+                {Object.values(EVENT_LIST.headerKeys).map((title) => (
+                    <div>
+                        <Tooltip key={title} content={title} alwaysShowTippyOnHover>
+                            <span className="dc__ellipsis-right">{title}</span>
+                        </Tooltip>
+                    </div>
+                ))}
+            </div>
             {filteredData?.map((eventData) => {
                 const eventDetails: WidgetEventDetails = {
                     message: eventData.message as string,

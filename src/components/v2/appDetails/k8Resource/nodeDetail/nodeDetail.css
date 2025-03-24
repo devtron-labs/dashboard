@@ -33,11 +33,11 @@
 }
 
 .dark-background {
-    background-color: #0b0f22;
+    background-color: var(--terminal-bg);
 }
 
 .summary-view__card {
-    background-color: #f2f4f7;
+    background-color: var(--bg-tertiary);
 }
 
 .containers-select__group {
@@ -50,7 +50,7 @@
     font-weight: 600;
     text-transform: none;
     color: var(--N900);
-    background-color: var(--window-bg);
+    background-color: var(--bg-tertiary);
     padding: 4px 10px;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
@@ -59,6 +59,6 @@
 
 .node-detail__sticky {
     position: sticky;
-    top: 120px;
+    top: 43px;
     z-index: 10;
 }

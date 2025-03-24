@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react'
+import React, { Dispatch, ReactNode, SetStateAction } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 import {
     ACTION_STATE,
@@ -24,15 +24,12 @@ import {
     PodMetadatum,
     ReleaseMode,
     AppEnvironment,
-    DeploymentNodeType,
-    RuntimeParamsTriggerPayloadType,
     HelmReleaseStatus,
     DynamicDataTableRowType,
     TagsTableColumnsType,
     DynamicDataTableCellErrorType,
-    RuntimePluginVariables,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { DeploymentStatusDetailsBreakdownDataType, ErrorItem } from './details/appDetails/appDetails.type'
+import { DeploymentStatusDetailsBreakdownDataType, ErrorItem, HibernationModalTypes } from './details/appDetails/appDetails.type'
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
 import { APP_TYPE } from '@Config/constants'
 
@@ -44,12 +41,6 @@ export interface AddNewAppProps extends RouteComponentProps<{}> {
 export interface OptionType {
     label: string
     value: string
-}
-
-export interface ExtendedOptionType extends OptionType {
-    format?: string
-    variableType?: string
-    refVariableStage?: string
 }
 
 export interface NumberOptionType {
@@ -551,22 +542,6 @@ export interface AboutAppInfoModalProps extends Pick<AppOverviewProps, 'appType'
     projectsList?: Teams[]
 }
 
-export interface DeleteComponentProps {
-    setDeleting: (boolean) => void
-    toggleConfirmation: any
-    deleteComponent: (any) => Promise<any>
-    title: string
-    component: string
-    payload: any
-    confirmationDialogDescription?: string
-    redirectTo?: boolean
-    url?: string
-    reload?: () => void
-    configuration?: string
-    dataTestid?: string
-    closeCustomComponent?: () => void
-}
-
 export interface JobPipeline {
     ciPipelineID: number
     ciPipelineName: string
@@ -595,7 +570,7 @@ export interface SourceInfoType {
     environments: AppEnvironment[]
     showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
     showUrlInfo?: React.Dispatch<React.SetStateAction<boolean>>
-    showHibernateModal?: React.Dispatch<React.SetStateAction<'' | 'resume' | 'hibernate'>>
+    showHibernateModal?: React.Dispatch<React.SetStateAction<HibernationModalTypes>>
     deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
     loadingDetails?: boolean
     loadingResourceTree?: boolean
@@ -608,6 +583,7 @@ export interface SourceInfoType {
     setErrorsList?: React.Dispatch<React.SetStateAction<ErrorItem[]>>
     filteredEnvIds?: string
     deploymentUserActionState?: ACTION_STATE
+    setHibernationPatchChartName?: Dispatch<SetStateAction<string>>
 }
 
 export interface AppDetailsCDButtonType
@@ -643,26 +619,4 @@ export interface EditDescRequest {
     active: boolean
     default: boolean
     description: string
-}
-
-export interface TriggerCDNodeServiceProps {
-    pipelineId: any
-    ciArtifactId: any
-    appId: string
-    stageType: DeploymentNodeType
-    deploymentWithConfig?: string
-    wfrId?: number
-    abortSignal?: AbortSignal
-    /**
-     * Would be available only case of PRE/POST CD
-     */
-    runtimeParams?: RuntimePluginVariables[]
-}
-
-export interface TriggerCDPipelinePayloadType {
-    pipelineId: number
-    appId: number
-    ciArtifactId: number
-    cdWorkflowType: string
-    runtimeParamsPayload: RuntimeParamsTriggerPayloadType
 }

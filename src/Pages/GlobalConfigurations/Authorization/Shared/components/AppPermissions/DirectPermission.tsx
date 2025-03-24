@@ -24,6 +24,9 @@ import {
     Button,
     ButtonVariantType,
     ButtonStyleType,
+    capitalizeFirstLetter,
+    SelectPickerProps,
+    UserRoleConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { HELM_APP_UNASSIGNED_PROJECT } from '../../../../../../config'
@@ -35,8 +38,9 @@ import { DirectPermissionsRoleFilter } from '../../../types'
 import { getIsStatusDropdownDisabled } from '../../../libUtils'
 import EnvironmentSelector from './EnvironmentSelector'
 import WorkflowSelector from './WorkflowSelector'
-import RoleSelector from './RoleSelector'
 import AppOrJobSelector from './AppOrJobSelector'
+import RoleSelector from './RoleSelector'
+import JobRoleSelector from './JobRoleSelector'
 
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
 
@@ -53,6 +57,7 @@ const DirectPermission = ({
     environmentClusterOptions,
     getListForAccessType,
 }: DirectPermissionRowProps) => {
+    const { setDirectPermission, allowManageAllAccess } = usePermissionConfiguration()
     const [workflowList, setWorkflowList] = useState<WorkflowListType>({ loading: false, options: [] })
 
     const { showStatus, userStatus } = usePermissionConfiguration()
@@ -73,6 +78,19 @@ const DirectPermission = ({
         )
     }
 
+    const handleUpdateDirectPermissionRoleConfig = (updatedRoleConfig: UserRoleConfig) => {
+        const { baseRole, accessManagerRoles } = updatedRoleConfig
+        setDirectPermission((prevPermissions) => {
+            const tempPermissions = [...structuredClone(prevPermissions)]
+            tempPermissions[index].roleConfig = updatedRoleConfig
+
+            tempPermissions[index].roleConfigError =
+                !baseRole && (allowManageAllAccess ? true : !accessManagerRoles.size)
+
+            return tempPermissions
+        })
+    }
+
     const projectOptions: SelectPickerOptionType[] = [
         ...(permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
             ? [
@@ -82,8 +100,18 @@ const DirectPermission = ({
                   },
               ]
             : []),
-        ...projectsList,
-    ].map((project) => ({ label: project.name, value: project.name, description: project.description }))
+        ...projectsList[permission.accessType],
+    ].map((project) => ({
+        label: project.name === HELM_APP_UNASSIGNED_PROJECT ? capitalizeFirstLetter(project.name) : project.name,
+        value: project.name,
+    }))
+
+    const formatProjectOptionLabel: SelectPickerProps['formatOptionLabel'] = (option) =>
+        option.label === HELM_APP_UNASSIGNED_PROJECT ? (
+            <span className="dc__first-letter-capitalize dc__inline-block">{option.label}</span>
+        ) : (
+            option.label
+        )
 
     return (
         <>
@@ -95,6 +123,7 @@ const DirectPermission = ({
                 options={projectOptions}
                 onChange={handleDirectPermissionChange}
                 size={ComponentSizeType.large}
+                formatOptionLabel={formatProjectOptionLabel}
             />
 
             <div style={{ order: isAccessTypeJob ? 3 : 0 }}>
@@ -127,7 +156,17 @@ const DirectPermission = ({
                 </div>
             )}
             <div style={{ order: isAccessTypeJob ? 4 : 0 }}>
-                <RoleSelector permission={permission} handleDirectPermissionChange={handleDirectPermissionChange} />
+                {isAccessTypeJob ? (
+                    <JobRoleSelector
+                        permission={permission}
+                        handleUpdateDirectPermissionRoleConfig={handleUpdateDirectPermissionRoleConfig}
+                    />
+                ) : (
+                    <RoleSelector
+                        permission={permission}
+                        handleUpdateDirectPermissionRoleConfig={handleUpdateDirectPermissionRoleConfig}
+                    />
+                )}
             </div>
             {showStatus && (
                 <div className="h-36 flexbox flex-align-center" style={{ order: 5 }}>

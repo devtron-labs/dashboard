@@ -35,6 +35,7 @@ import {
     EntityTypes,
     Button,
     ButtonVariantType,
+    ActionTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -65,7 +66,7 @@ import { executeWebhookAPI, getExternalCIConfig, getWebhookAPITokenList } from '
 import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessaging'
 import { createUserPermissionPayload } from '../../../Pages/GlobalConfigurations/Authorization/utils'
 import { ChartGroupPermissionsFilter } from '../../../Pages/GlobalConfigurations/Authorization/types'
-import { ActionTypes, PermissionType } from '../../../Pages/GlobalConfigurations/Authorization/constants'
+import { PermissionType } from '../../../Pages/GlobalConfigurations/Authorization/constants'
 import {
     getDefaultStatusAndTimeout,
     getDefaultUserStatusAndTimeout,
@@ -330,7 +331,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
             <div className="flexbox dc__content-space mb-16">
                 <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32 p-6">
                     <div className="bcg-5 cn-0 lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2">POST</div>
-                    <div className="bcn-0 pl-8 w-100">{webhookDetails?.webhookUrl}</div>
+                    <div className="bg__primary pl-8 w-100">{webhookDetails?.webhookUrl}</div>
                     <div className="flex">
                         <ClipboardButton content={webhookDetails?.webhookUrl} />
                     </div>
@@ -348,7 +349,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
 
     const renderWebhookTokenLabel = (): JSX.Element => {
         return (
-            <div className="lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2 flex w-100px dc__border-right">
+            <div className="lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2 flex w-120 br-4 border__primary dc__no-right-radius dc__no-right-border">
                 api-token
                 <Tippy
                     className="default-white no-content-padding tippy-shadow w-300"
@@ -377,16 +378,19 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
 
     const renderWebhookURLTokenContainer = (): JSX.Element => {
         return (
-            <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32 mb-16">
+            <div className="flexbox w-100 dc__position-rel h-32 mb-16">
                 {renderWebhookTokenLabel()}
                 <CustomInput
                     name="api-token"
                     placeholder="Enter API token"
-                    rootClassName="bcn-0 dc__no-border-imp w-100 h-32 pt-5-imp p-0-8-imp"
                     onChange={handleTokenChange}
                     value={tryoutAPIToken}
                     error={showTryoutAPITokenError && WEBHOOK_NO_API_TOKEN_ERROR}
-                    inputWrapClassName="w-100"
+                    fullWidth
+                    borderRadiusConfig={{
+                        left: false,
+                    }}
+                    size={ComponentSizeType.medium}
                 />
             </div>
         )
@@ -444,6 +448,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
             <div>
                 <div className="mt-16">
                     <CustomInput
+                        placeholder="Enter token name"
                         name="token-name"
                         label="Token name"
                         value={tokenName}
@@ -689,11 +694,18 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
         return (
             <div className="br-4 fs-13 fw-4 cn-9 en-2 bw-1 p-2 pr-5">
                 <CodeEditor
-                    value={modifiedSampleString}
-                    onChange={changePayload}
-                    height="300px"
                     mode={MODES.JSON}
                     noParsing
+                    codeEditorProps={{
+                        value: modifiedSampleString,
+                        onChange: changePayload,
+                        height: 300,
+                    }}
+                    codeMirrorProps={{
+                        value: modifiedSampleString,
+                        onChange: changePayload,
+                        height: 300,
+                    }}
                 />
             </div>
         )
@@ -714,7 +726,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
 
     const renderTokenPermissionSection = (): JSX.Element | null => {
         return (
-            <div className="bcn-0 p-16 mb-16 br-4 bw-1 en-2">
+            <div className="bg__primary p-16 mb-16 br-4 bw-1 en-2">
                 <InfoColourBar
                     message="Authentication via API token is required to allow requests from an external service."
                     classname="info_bar mb-16"
@@ -741,7 +753,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
 
     const renderPlayGroundSection = (): JSX.Element | null => {
         return (
-            <div className="bcn-0 p-16 br-4 bw-1 en-2 mb-16">
+            <div className="bg__primary p-16 br-4 bw-1 en-2 mb-16">
                 {generateTabHeader(PLAYGROUND_TAB_LIST, selectedPlaygroundTab, setSelectedPlaygroundTab)}
                 {selectedPlaygroundTab === PLAYGROUND_TAB_LIST[0].key && renderWebhookURLSection()}
                 {selectedPlaygroundTab === PLAYGROUND_TAB_LIST[1].key && renderSampleCurlSection()}
@@ -764,7 +776,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
 
     const renderSampleResponseSection = (): JSX.Element | null => {
         return (
-            <div className="bcn-0 p-16 br-4 bw-1 en-2">
+            <div className="bg__primary p-16 br-4 bw-1 en-2">
                 <div className="cn-9 fs-13 fw-6 mb-8">Responses</div>
                 <div className="cn-9 fs-13 fw-6 mb-8">
                     <div className="response-row dc__border-bottom pt-8 pb-8">
@@ -881,7 +893,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
 
     const renderHeaderSection = (): JSX.Element => {
         return (
-            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
+            <div className="flex flex-align-center flex-justify dc__border-bottom bg__primary pt-16 pr-20 pb-16 pl-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">Webhook Details</h2>
                 <button type="button" className="dc__transparent flex icon-dim-24" onClick={closeWebhook}>
                     <Close className="icon-dim-24" />
@@ -892,7 +904,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
 
     const renderBodySection = (): JSX.Element => {
         return (
-            <div className={`p-20 webhook-body ${isSuperAdmin ? 'super-admin-view' : ''}`}>
+            <div className="p-20 webhook-body flex-grow-1 dc__overflow-auto">
                 {renderTokenPermissionSection()}
                 {renderPlayGroundSection()}
                 {selectedPlaygroundTab === PLAYGROUND_TAB_LIST[0].key && renderSampleResponseSection()}
@@ -903,7 +915,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
     const renderFooterSection = (): JSX.Element => {
         return (
             <div
-                className="dc__border-top flex flex-align-center flex-justify bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0"
+                className="dc__border-top flex flex-align-center flex-justify bg__primary pt-16 pr-20 pb-16 pl-20"
                 style={{ width: '75%', minWidth: '1024px', maxWidth: '1200px' }}
             >
                 <div className="flexbox pt-8 pb-8">
@@ -935,16 +947,16 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
             return <Reload />
         }
         return (
-            <>
+            <div className='flexbox-col flex-grow-1 mh-0'>
                 {renderBodySection()}
                 {!isSuperAdmin && renderFooterSection()}
-            </>
+            </div>
         )
     }
 
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            <div className="dc__window-bg h-100 webhook-details-container" ref={appStatusDetailRef}>
+            <div className="bg__tertiary h-100 flexbox-col webhook-details-container" ref={appStatusDetailRef}>
                 {renderHeaderSection()}
                 {renderPageDetails()}
             </div>

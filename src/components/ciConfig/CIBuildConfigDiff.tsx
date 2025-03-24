@@ -57,13 +57,20 @@ export const CIBuildConfigDiff = ({
                 {showInEditor ? (
                     <td colSpan={2}>
                         <CodeEditor
-                            defaultValue={baseValue}
-                            value={overridenValue}
                             mode={MODES.DOCKERFILE}
-                            height="300px"
                             readOnly
                             diffView
                             noParsing
+                            codeEditorProps={{
+                                value: overridenValue,
+                                defaultValue: baseValue,
+                                height: 300,
+                            }}
+                            codeMirrorProps={{
+                                modifiedValue: overridenValue,
+                                originalValue: baseValue,
+                                height: 300,
+                            }}
                         />
                     </td>
                 ) : (
@@ -126,7 +133,7 @@ export const CIBuildConfigDiff = ({
                 </table>
             )}
             <div
-                className={`flex right p-10 bcn-0 cursor dc__bottom-radius-4 fs-13 fw-4 lh-20 ${
+                className={`flex right p-10 bg__primary cursor dc__bottom-radius-4 fs-13 fw-4 lh-20 ${
                     showOverrides ? 'dc__border-top' : ''
                 }`}
                 onClick={toggleOverridesVisibility}

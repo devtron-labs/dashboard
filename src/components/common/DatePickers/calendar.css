@@ -16,20 +16,27 @@
 
 /* OVerride Date picker */
 
-.DayPicker__horizontal {
+.DayPicker__horizontal, .SingleDatePicker_picker {
     z-index: 11;
     box-shadow:
         0 2px 6px rgba(0, 0, 0, 0.05),
         0 0 0 1px rgba(0, 0, 0, 0.07);
+    background: var(--bg-overlay-primary);
 }
 
 .DateRangePickerInput__withBorder {
     border: solid 1px var(--N200);
+    background-color: var(--bg-secondary);
 }
 
 .DateRangePickerInput {
     height: 40px;
     border-radius: 4px;
+}
+
+.DateInput__small {
+    background: var(--transparent);
+    padding: 4px 8px;
 }
 
 .DateInput__small,
@@ -40,6 +47,7 @@
 
 .DateInput_input {
     font-weight: 400;
+    border: none;
 }
 
 .DateInput_input__focused {
@@ -83,7 +91,7 @@
     font-size: 13px;
     border-bottom: none;
     cursor: pointer;
-    background-color: var(--N50);
+    background-color: var(--bg-secondary);
 }
 
 .SingleDatePickerInput__withBorder .DateInput_input__focused#single_date_picker {
@@ -100,7 +108,60 @@
 }
 
 .SingleDatePickerInput__withBorder .DayPicker .CalendarDay[aria-disabled='true'] {
-    border: 1px solid rgb(228, 231, 231) !important;
-    color: rgb(202, 204, 205) !important;
-    background: rgb(255, 255, 255) !important;
+    border: 1px solid var(--N100) !important;
+    color: var(--N200) !important;
+    background: var(--bg-primary) !important;
+}
+
+.CalendarMonthGrid__horizontal, .CalendarMonth {
+    background: var(--transparent);
+}
+
+.CalendarMonth_caption {
+    color: var(--N700);
+}
+
+.DayPickerNavigation_button__default {
+    border: 1px solid var(--N200);
+    background-color: var(--transparent);
+    color: var(--N200);
+
+    &:hover,&:active,&:focus-visible,&:focus {
+        border-color: var(--N300);
+        background-color: var(--transparent);
+    }
+}
+
+.DayPickerNavigation_svg__horizontal {
+    fill: var(--N600);
+}
+
+.CalendarDay {
+    border: 1px solid var(--N200) !important;
+    color: var(--N700) !important;
+    background: var(--transparent) !important;
+
+    &[aria-disabled="true"] {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    &[aria-label^="Selected"] {
+        background: var(--B300) !important;
+        color: var(--N0) !important;
+    }
+
+    &:hover:not([aria-disabled="true"]) {
+        color: var(--B500) !important;
+        background: var(--bg-secondary) !important;
+    }
+}
+
+.DateRangePicker_picker {
+    background: var(--bg-overlay-primary);
+    border-radius: 4px;
+}
+
+.DateRangePickerInput_arrow {
+    color: var(--N700);
 }

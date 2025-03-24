@@ -26,11 +26,13 @@ import {
     DEFAULT_BASE_PAGE_SIZE,
     ErrorScreenManager,
     GenericFilterEmptyState,
+    getClassNameForStickyHeaderWithShadow,
     getIsRequestAborted,
     handleUTCTime,
     Pagination,
     SortableTableHeaderCell,
     useAsync,
+    useStickyEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ContentCard from '@Components/common/ContentCard/ContentCard'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '@Components/onboardingGuide/OnboardingGuide.constants'
@@ -67,8 +69,14 @@ const DevtronAppList = ({
     changePage,
     changePageSize,
     setAppCount,
+    appListContainerRef,
 }: DevtronAppListProps) => {
     const history = useHistory()
+
+    const { stickyElementRef, isStuck: isHeaderStuck } = useStickyEvent({
+        identifier: 'app-list',
+        containerRef: appListContainerRef,
+    })
 
     const [expandedState, setExpandedState] = useState<DevtronAppExpandedState>(INITIAL_EXPANDED_STATE)
 
@@ -250,7 +258,13 @@ const DevtronAppList = ({
 
     const renderAppList = () => (
         <div className="app-list" data-testid="app-list-container">
-            <div className="app-list__header dc__position-sticky dc__top-47">
+            <div
+                ref={stickyElementRef}
+                className={`app-list__header ${!isArgoInstalled ? 'app-list__header--argo-not-installed' : ''} ${getClassNameForStickyHeaderWithShadow(
+                    isHeaderStuck,
+                    'dc__top-47',
+                )}`}
+            >
                 <div className="app-list__cell--icon flex left cursor" onClick={toggleExpandAllRow}>
                     <Arrow className={`icon-dim-24 p-2 ${getArrowIconClass()}`} />
                 </div>
@@ -327,7 +341,7 @@ const DevtronAppList = ({
                             {!expandedState.expandedRow[app.id] ? (
                                 <Link
                                     to={redirectToAppDetails(app, app.defaultEnv.id)}
-                                    className={`app-list__row ${len ? 'dc__hover-icon' : ''}`}
+                                    className={`app-list__row ${!isArgoInstalled ? 'app-list__row--argo-not-installed' : ''} ${len ? 'dc__hover-icon' : ''}`}
                                     data-testid="app-list-row"
                                 >
                                     <div className="app-list__cell--icon">
@@ -351,7 +365,7 @@ const DevtronAppList = ({
                                             data-testid="devtron-app-status"
                                         >
                                             <AppStatus
-                                                appStatus={app.defaultEnv.appStatus}
+                                                status={app.defaultEnv.appStatus}
                                                 isVirtualEnv={app.defaultEnv.isVirtualEnvironment}
                                             />
                                         </div>

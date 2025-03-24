@@ -28,13 +28,13 @@ import {
     stopPropagation,
     TabGroup,
     TabProps,
+    Textarea,
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import { ReactComponent as Abort } from '../../assets/icons/ic-abort.svg'
 import Info from '../../assets/icons/ic-info-outline-grey.svg'
@@ -113,7 +113,7 @@ export default function CreateAppGroup({
 
     const renderHeaderSection = (): JSX.Element => {
         return (
-            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 py-12 px-20">
+            <div className="flex flex-align-center flex-justify dc__border-bottom bg__primary py-12 px-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">Save filter</h2>
                 <button
                     type="button"
@@ -184,14 +184,11 @@ export default function CreateAppGroup({
         setAuthorizedAppList(_authorizedAppList)
     }
 
-    const renderEmptyState = (title?: string): JSX.Element => {
+    const renderEmptyState = (): JSX.Element => {
         return (
-            <GenericEmptyState
-                title={title}
-                image={Info}
-                imageClassName="h-20 scn-6"
-                styles={{ height: 'calc(100vh - 420px)' }}
-            />
+            <div className="flex-grow-1">
+                <GenericEmptyState title="No matching results" image={Info} imageClassName="h-20 scn-6" />
+            </div>
         )
     }
 
@@ -210,7 +207,7 @@ export default function CreateAppGroup({
         }
 
         return (
-            <div>
+            <div className='flexbox-col flex-grow-1'>
                 <SearchBar
                     inputProps={{
                         placeholder: `Search ${filterParentTypeMsg}'s`,
@@ -220,9 +217,9 @@ export default function CreateAppGroup({
                     handleEnter={handleAppSearchEnterChange}
                     dataTestId="create-app-group"
                 />
-                <div>
+                <div className='flexbox-col flex-grow-1'>
                     {filteredAuthList.length <= 0 && filteredUnAuthList.length <= 0
-                        ? renderEmptyState('No matching results')
+                        ? renderEmptyState()
                         : filteredAuthList.map((app) => {
                               return (
                                   <div
@@ -273,7 +270,7 @@ export default function CreateAppGroup({
         }
 
         return (
-            <div>
+            <div className='flexbox-col flex-grow-1'>
                 <SearchBar
                     inputProps={{
                         placeholder: `Search ${filterParentTypeMsg}'s`,
@@ -282,9 +279,9 @@ export default function CreateAppGroup({
                     initialSearchText={allAppSearchText}
                     handleEnter={handleAllAppSearchEnterChange}
                 />
-                <div>
+                <div className='flexbox-col flex-grow-1'>
                     {filteredAllApps.length <= 0
-                        ? renderEmptyState('No matching results')
+                        ? renderEmptyState()
                         : filteredAllApps.map((app) => (
                               <ConditionalWrap
                                   condition={unAuthorizedApps.get(app.appName) === true}
@@ -354,38 +351,32 @@ export default function CreateAppGroup({
             return <Progressing pageLoader />
         }
         return (
-            <div className="p-20 bcn-0 dc__overflow-auto flex-grow-1">
+            <div className="flexbox-col p-20 bg__primary dc__overflow-auto flex-grow-1">
                 <div className="form__row mb-16">
                     <CustomInput
                         label="Name"
-                        tabIndex={1}
                         placeholder="Enter filter name"
                         value={appGroupName}
                         name="name"
                         onChange={onInputChange}
                         disabled={selectedAppGroup && !!selectedAppGroup.value}
-                        isRequiredField
+                        required
                         error={showErrorMsg && nameErrorMessage()}
                     />
                 </div>
-                <div className="form__row mb-16">
-                    <span className="form__label">Description (Max 50 characters)</span>
-                    <textarea
-                        tabIndex={2}
+                <div className="mb-16">
+                    <Textarea
+                        label="Description (Max 50 characters)"
                         placeholder="Write a description for this filter"
-                        className="form__textarea"
                         value={appGroupDescription}
                         name="description"
                         onChange={onInputChange}
+                        error={
+                            showErrorMsg && appGroupDescription?.length > 50 && 'Max 50 char is allowed in description'
+                        }
                     />
-                    {showErrorMsg && appGroupDescription?.length > 50 && (
-                        <span className="form__error">
-                            <Error className="form__icon form__icon--error" />
-                            Max 50 char is allowed in description
-                        </span>
-                    )}
                 </div>
-                <div>
+                <div className='flexbox-col flex-grow-1'>
                     <div className="dc__border-bottom mb-8">
                         <TabGroup
                             tabs={[
@@ -478,7 +469,7 @@ export default function CreateAppGroup({
 
     const renderFooterSection = (): JSX.Element => {
         return (
-            <div className="dc__border-top flex right bcn-0 py-16 px-20 w-800">
+            <div className="dc__border-top flex right bg__primary py-16 px-20 w-800">
                 <button className="cta cancel flex h-36 mr-12" onClick={closePopup}>
                     Cancel
                 </button>
@@ -491,7 +482,7 @@ export default function CreateAppGroup({
 
     return (
         <Drawer position="right" width="800px" onEscape={closePopup}>
-            <div className="dc__window-bg h-100 flexbox-col" ref={CreateGroupRef}>
+            <div className="bg__tertiary h-100 flexbox-col" ref={CreateGroupRef}>
                 {renderHeaderSection()}
                 {renderBodySection()}
                 {renderFooterSection()}

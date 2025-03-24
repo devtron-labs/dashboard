@@ -189,7 +189,6 @@ const TerminalComponent = ({
                 <MessageUI
                     msg="This resource no longer exists"
                     size={32}
-                    minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
                 />
             )
         )
@@ -255,6 +254,7 @@ const TerminalComponent = ({
                 setSocketConnection,
                 socketConnection,
                 sessionId,
+                isTerminalTab: showTerminal,
             },
         },
         metadata: isResourceBrowserView
@@ -271,16 +271,14 @@ const TerminalComponent = ({
     }
 
     return (
-        <div className={`${showTerminal ? '' : 'pod-terminal-hidden'}`}>
-            <TerminalWrapper
-                dataTestId="terminal-editor-header"
-                selectionListData={selectionListData}
-                socketConnection={socketConnection}
-                setSocketConnection={setSocketConnection}
-                isResourceBrowserView={isResourceBrowserView}
-                className={isResourceBrowserView ? 'k8s-resource-view-container' : 'terminal-view-container'}
-            />
-        </div>
+        <TerminalWrapper
+            dataTestId="terminal-editor-header"
+            selectionListData={selectionListData}
+            socketConnection={socketConnection}
+            setSocketConnection={setSocketConnection}
+            isResourceBrowserView={isResourceBrowserView}
+            className={showTerminal ? '' : 'pod-terminal-hidden'}
+        />
     )
 }
 

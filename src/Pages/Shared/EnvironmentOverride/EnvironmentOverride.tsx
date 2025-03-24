@@ -16,22 +16,17 @@
 
 import { useState, useEffect } from 'react'
 
-import { ApprovalConfigDataKindType, getIsApprovalPolicyConfigured, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import {
-    useParams,
-    useRouteMatch,
-    useHistory,
-    useLocation,
-    Redirect,
-    Route,
-    Switch,
-    generatePath,
-} from 'react-router-dom'
+    ApprovalConfigDataKindType,
+    getIsApprovalPolicyConfigured,
+    Reload,
+    CMSecretComponentType,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { useParams, useRouteMatch, useHistory, useLocation, Route, Switch, generatePath } from 'react-router-dom'
 
 import { mapByKey, ErrorBoundary, useAppContext } from '@Components/common'
 import { APP_COMPOSE_STAGE, URLS, getAppComposeURL } from '@Config/index'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
-import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/types'
 import { DeploymentTemplate } from '@Pages/Applications'
 import { ComponentStates, EnvironmentOverrideComponentProps } from './EnvironmentOverrides.types'
 
@@ -196,7 +191,6 @@ const EnvironmentOverride = ({
                             envName={getEnvName()}
                         />
                     </Route>
-                    <Redirect to={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`} />
                 </Switch>
             </div>
         </ErrorBoundary>

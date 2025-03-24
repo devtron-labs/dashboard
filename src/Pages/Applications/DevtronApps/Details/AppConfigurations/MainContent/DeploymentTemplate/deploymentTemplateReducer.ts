@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import YAML from 'yaml'
 import {
     CompareFromApprovalOptionsValuesType,
@@ -33,6 +49,7 @@ interface InitializeStateBasePayloadType
         | ConfigEditorStatesType.PUBLISHED_EDITOR
         | 'chartDetails'
         | 'lockedConfigKeysWithLockType'
+        | 'migratedFrom'
     > {}
 
 interface GetDeploymentTemplateInitialStateParamsType {
@@ -286,6 +303,7 @@ export const getDeploymentTemplateInitialState = ({
     selectedProtectionViewTab: ProtectConfigTabsType.EDIT_DRAFT,
     isLoadingChangedChartDetails: false,
     areCommentsPresent: false,
+    migratedFrom: null,
 })
 
 const handleSwitchToYAMLMode = (state: DeploymentTemplateStateType): DeploymentTemplateStateType => {
@@ -453,6 +471,7 @@ export const deploymentTemplateReducer = (
                 chartDetails,
                 lockedConfigKeysWithLockType,
                 currentEditorTemplateData,
+                migratedFrom,
             } = action.payload
 
             return {
@@ -464,6 +483,7 @@ export const deploymentTemplateReducer = (
                 currentEditorTemplateData,
                 isLoadingInitialData: false,
                 initialLoadError: null,
+                migratedFrom,
             }
         }
 
@@ -476,6 +496,7 @@ export const deploymentTemplateReducer = (
                 draftTemplateData,
                 currentEditorTemplateData,
                 selectedProtectionViewTab,
+                migratedFrom,
             } = action.payload
 
             return {
@@ -490,6 +511,7 @@ export const deploymentTemplateReducer = (
                 areCommentsPresent: draftTemplateData?.latestDraft?.commentsCount > 0,
                 isLoadingInitialData: false,
                 initialLoadError: null,
+                migratedFrom,
             }
         }
 

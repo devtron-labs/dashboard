@@ -41,13 +41,13 @@ export class ExpandedRow extends Component<ExpandedRowProps> {
                     <div className="app-list__cell--icon" />
                     <div className="app-list__cell app-list__cell--name">
                         <svg className="app-status app-status--pseudo" preserveAspectRatio="none" viewBox="0 0 200 40">
-                            <line x1="0" y1="20" x2="300" y2="20" stroke={color} strokeWidth="1" />
+                            <line x1="0" y1="20" x2="100%" y2="20" stroke={color} strokeWidth="1" />
                             <line x1="0" y1="15" x2="0" y2="25" stroke={color} strokeWidth="1" />
                         </svg>
                     </div>
                     {this.props.isArgoInstalled && (
                         <div className="app-list__cell app-list__cell--app_status">
-                            <AppStatus appStatus={env.appStatus} isVirtualEnv={env.isVirtualEnvironment} />
+                            <AppStatus status={env.appStatus} isVirtualEnv={env.isVirtualEnvironment} />
                         </div>
                     )}
                     <div className="app-list__cell app-list__cell--env">{env.name}</div>

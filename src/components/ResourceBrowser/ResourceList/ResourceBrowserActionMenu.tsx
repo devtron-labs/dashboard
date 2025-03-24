@@ -64,6 +64,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
     handleResourceClick,
     removeTabByIdentifier,
     hideDeleteResource,
+    handleClearBulkSelection,
 }) => {
     const { installedModuleMap } = useMainContext()
 
@@ -104,7 +105,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
     return (
         <>
             <PopupMenu autoClose>
-                <PopupMenu.Button rootClassName="flex ml-auto p-4" isKebab>
+                <PopupMenu.Button rootClassName="flex ml-auto p-4 dc__no-background" isKebab>
                     <MenuDots className="node-actions-menu-icon icon-dim-16" data-testid="popup-menu-button" />
                 </PopupMenu.Button>
                 <PopupMenu.Body rootClassName="dc__border pt-4 pb-4">
@@ -118,7 +119,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
                             onClick={handleResourceClick}
                             data-testid="manifest-option-link"
                         >
-                            <ManifestIcon className="icon-dim-16 scn-8 mr-8 dc__no-shrink" />
+                            <ManifestIcon className="icon-dim-16 scn-6 mr-8 dc__no-shrink" />
                             <span className="cn-9">{RESOURCE_ACTION_MENU.manifest}</span>
                         </span>
                         <span
@@ -130,7 +131,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
                             onClick={handleResourceClick}
                             data-testid="events-option-link"
                         >
-                            <CalendarIcon className="icon-dim-16 mr-8" />
+                            <CalendarIcon className="icon-dim-16 mr-8 fcn-6" />
                             <span className="cn-9">{RESOURCE_ACTION_MENU.Events}</span>
                         </span>
                         {selectedResource?.gvk?.Kind === Nodes.Pod && (
@@ -144,7 +145,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
                                     onClick={handleResourceClick}
                                     data-testid="logs-option-link"
                                 >
-                                    <LogAnalyzerIcon className="icon-dim-16 mr-8" />
+                                    <LogAnalyzerIcon className="icon-dim-16 mr-8 fcn-6" />
                                     <span className="cn-9">{RESOURCE_ACTION_MENU.logs}</span>
                                 </span>
                                 <span
@@ -156,7 +157,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
                                     onClick={handleResourceClick}
                                     data-testid="terminal-option-link"
                                 >
-                                    <TerminalIcon className="icon-dim-16 mr-8" />
+                                    <TerminalIcon className="icon-dim-16 mr-8 fcn-6" />
                                     <span className="cn-9">{RESOURCE_ACTION_MENU.terminal}</span>
                                 </span>
                             </>
@@ -185,6 +186,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
                     getResourceListData={getResourceListData}
                     toggleDeleteDialog={toggleDeleteDialog}
                     removeTabByIdentifier={removeTabByIdentifier}
+                    handleClearBulkSelection={handleClearBulkSelection}
                 />
             )}
 

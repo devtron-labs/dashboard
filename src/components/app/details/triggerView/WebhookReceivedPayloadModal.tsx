@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { URLS } from '@Config/routes'
 import {
     Button,
@@ -17,18 +33,15 @@ import { WebhookReceivedPayloadModalType } from './types'
 import { CiWebhookModal } from './CiWebhookDebuggingModal'
 
 export const WebhookReceivedPayloadModal = ({
-    fromBulkCITrigger = false,
     title,
     webhookPayloads,
     material,
     pipelineId,
     isWebhookPayloadLoading,
     workflowId,
-    fromAppGrouping = false,
     isJobView = false,
     getWebhookPayload,
     appId,
-    isBulkCIWebhook = false,
 }: WebhookReceivedPayloadModalType) => {
     const { push } = useHistory()
     const { url } = useRouteMatch()
@@ -54,9 +67,7 @@ export const WebhookReceivedPayloadModal = ({
 
     function renderWebhookMaterialHeader() {
         return (
-            <div
-                className={`ci-webhook-header flex dc__content-space px-20 py-12 dc__border-bottom ${fromBulkCITrigger ? 'bcn-0' : ''}`}
-            >
+            <div className="ci-webhook-header flex dc__content-space px-20 py-12 dc__border-bottom">
                 <h2
                     data-testid="build-deploy-pipeline-name-heading"
                     className="modal__title flex left fs-16 dc__gap-12"
@@ -117,14 +128,14 @@ export const WebhookReceivedPayloadModal = ({
             )
         }
         return (
-            <div className={`h-100 ${fromBulkCITrigger ? 'dc__position-fixed bcn-0 env-modal-width full-height' : ''}`}>
+            <div className="flexbox-col flex-grow-1">
                 <CiWebhookModal
                     webhookPayloads={webhookPayloads}
                     ciPipelineMaterialId={+material[0].id}
                     ciPipelineId={+pipelineId}
                     isWebhookPayloadLoading={isWebhookPayloadLoading}
                     workflowId={workflowId}
-                    fromAppGrouping={fromAppGrouping}
+                    fromAppGrouping={false}
                     isJobView={isJobView}
                     appId={appId}
                 />
@@ -132,15 +143,10 @@ export const WebhookReceivedPayloadModal = ({
         )
     }
 
-    if (isBulkCIWebhook) {
-        // For bulk CI webhook, we don't need to show the modal as a child of the trigger view
-        return null
-    }
-
     return (
         <VisibleModal>
             <div
-                className="modal-body--ci-material h-100 w-100 flexbox-col dc__overflow-hidden"
+                className="modal-body--ci-material h-100 w-100 flexbox-col border__primary--left dc__overflow-hidden"
                 onClick={stopPropagation}
             >
                 {renderWebhookMaterialHeader()}

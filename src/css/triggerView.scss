@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-.svg-wrapper-trigger {
-    min-height: calc(100vh - 80px);
-    padding: 16px 20px;
-    overflow: auto;
-}
-
 .material__error {
     width: 150px;
     color: var(--R500);
@@ -29,8 +23,8 @@
 }
 
 .material-list {
-    width: 234px;
-    background-color: var(--white);
+    max-width: 234px;
+    background-color: var(--bg-primary);
 }
 
 .material-list__title {
@@ -44,7 +38,7 @@
 }
 
 .material-list__title--border-bottom {
-    border-bottom: solid 1px #dedede;
+    border-bottom: solid 1px var(--N200);
 }
 
 .material-list__item {
@@ -58,7 +52,7 @@
 
 .material-selected {
     box-shadow: inset 4px 0 0 0 var(--B500);
-    background-color: var(--window-bg);
+    background-color: var(--bg-tertiary);
 }
 
 .material-refresh {
@@ -87,27 +81,15 @@
 }
 
 .select-material {
-    background-color: var(--window-bg);
+    background-color: var(--bg-tertiary);
     overflow: auto;
     flex: 1;
-}
-
-.select-material--trigger-view {
-    height: calc(100vh - 116px);
-}
-
-.select-material__empty-state-container {
-    height: calc(100% - 74px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
 }
 
 .material-history {
     width: 530px;
     border: solid 1px var(--N200);
-    background-color: var(--white);
+    background-color: var(--bg-primary);
     border-radius: 4px;
 }
 
@@ -125,7 +107,7 @@
         box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 
         .approval-text {
-            color: #0066cc;
+            color: var(--B500);
         }
     }
 }
@@ -144,7 +126,7 @@
     grid-column-gap: 10px;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--white);
+    background-color: var(--bg-primary);
     border-radius: 4px;
     cursor: pointer;
 
@@ -188,7 +170,7 @@
 }
 
 .material-history-selected {
-    box-shadow: 0px 2px 2px rgb(217, 236, 255);
+    box-shadow: 0px 2px 2px var(--B100);
     border: solid 1px var(--B400);
 }
 
@@ -199,7 +181,7 @@
 }
 
 .material-history__source-info {
-    background-color: var(--white);
+    background-color: var(--bg-primary);
     padding: 12px 16px;
     margin: 16px;
     border-radius: 4px;
@@ -217,7 +199,7 @@
     text-align: right;
     width: 100%;
     margin: 5px 0;
-    background-color: var(--white);
+    background-color: var(--bg-primary);
     border: none;
     font-family: 'Open Sans', sans-serif;
     display: flex;
@@ -263,12 +245,6 @@
     line-height: 16px;
 }
 
-.commit-hash--cd {
-    background-color: transparent;
-    margin-left: 0px;
-    display: inline-block;
-}
-
 .commit-hash--docker {
     white-space: nowrap;
     background-color: var(--N100);
@@ -281,27 +257,13 @@
     margin-right: 4px;
 }
 
-.trigger-modal {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 5;
-    display: block;
-    overflow: hidden;
-    outline: 0;
-    background-color: rgb(0, 0, 0);
-    background-color: rgba(0, 0, 0, 0.4);
-}
-
 .trigger-modal__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
     color: var(--N900);
-    border-bottom: solid 1px #d6dbdf;
+    border-bottom: solid 1px var(--N200);
     margin: 0px;
 
     .modal__title {
@@ -309,96 +271,6 @@
         font-weight: 400;
         line-height: 20px;
     }
-}
-
-.cta-with-img {
-    &.cta-with-img--ci-trigger-btn {
-        width: 260px;
-        padding: 14px;
-        height: 50px;
-        border-radius: 4px;
-        background-color: var(--B500);
-        color: var(--white);
-        font-size: 13px;
-        font-weight: 600;
-        line-height: 1.43;
-        letter-spacing: normal;
-        margin-left: auto;
-        user-select: none;
-    }
-
-    &.cta-with-img--cd-trigger-btn {
-        width: auto;
-        padding: 8px 16px;
-        height: 36px;
-        border-radius: 4px;
-        background-color: var(--B500);
-        color: var(--white);
-        font-size: 13px;
-        font-weight: 600;
-        line-height: 20px;
-        letter-spacing: normal;
-        margin-left: auto;
-        -webkit-user-select: none;
-        user-select: none;
-    }
-}
-
-.trigger-btn__icon,
-.trigger-job-btn__icon {
-    width: 16px;
-    height: 16px;
-    margin-right: 6px;
-}
-
-.cta-with-img.cta-with-img--ci-trigger-btn .trigger-job-btn__icon path {
-    fill: none !important;
-    stroke: var(--N0) !important;
-}
-
-.cta-with-img.cta-with-img--ci-trigger-btn:disabled .trigger-job-btn__icon path {
-    stroke: var(--N400) !important;
-}
-
-.cta-with-img--ci-trigger-btn:disabled svg path[fill='#FFF'],
-.cta-with-img--cd-trigger-btn:disabled svg path[fill='#FFF'] {
-    fill: var(--N400);
-}
-
-.caching-label {
-    font-size: 14px;
-    font-weight: 600;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.43;
-    letter-spacing: normal;
-    color: var(--N700);
-    position: relative;
-    cursor: pointer;
-    display: flex;
-    user-select: none;
-    align-items: center;
-
-    input {
-        opacity: 0;
-
-        &:checked {
-            & + .check {
-                display: inline-block;
-            }
-        }
-    }
-}
-
-.check {
-    display: none;
-    position: absolute;
-    top: 2px;
-    left: 0;
-    background-image: url('../assets/icons/appstatus/ic-check.svg');
-    background-size: 100% 100%;
-    width: 20px;
-    height: 20px;
 }
 
 .form__checkbox-label--ignore-cache {
@@ -421,22 +293,9 @@
     }
 }
 
-.trigger-btn {
-    &:hover {
-        background-color: #0558af;
-    }
-}
-
-.material-detail {
-    border-bottom: solid 1px silver;
-    margin: 10px;
-    display: flex;
-}
-
 .trigger-modal__body {
     display: flex;
-    background-color: var(--window-bg);
-    height: calc(100vh - 49px);
+    background-color: var(--bg-tertiary);
     overflow: auto;
     flex-direction: column;
     padding: 20px;
@@ -453,42 +312,18 @@
 .trigger-modal__body .show-older-images-cta.cta.ghosted:hover,
 .trigger-modal__body .show-older-images-cta.cta.ghosted:active,
 .trigger-modal__body .show-older-images-cta.cta.ghosted:focus {
-    background: white;
+    background: var(--bg-primary);
     color: var(--B500);
     border: 1px solid var(--B500);
-}
-
-.config-text {
-    display: flex;
-    flex-direction: column;
-    color: var(--N700);
-}
-
-.config-text--bold {
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.43;
-    letter-spacing: normal;
-}
-
-.trigger-modal__small-text {
-    display: block;
-    font-size: 10px;
-    font-weight: 500;
-    line-height: 1.4;
-    letter-spacing: normal;
-}
-
-.w-fs-160 {
-    width: 160px;
 }
 
 .modal-body--cd-material {
     width: 800px;
     position: fixed;
     right: 0;
-    background: var(--N000);
+    background: var(--bg-primary);
     top: 0;
+    border-left: 1px solid var(--border-primary);
 
     &.contains-diff-view {
         width: 100%;
@@ -502,33 +337,11 @@
 }
 
 .modal-body--ci-material {
-    position: fixed;
     min-width: 800px;
+    margin-left: auto;
     max-width: 1024px;
-    right: 0;
-    background: var(--N000);
-    top: 0;
-}
-
-.trigger-modal__empty-state {
-    background-color: var(--window-bg);
-    font-family: 'Open Sans', sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: calc(100vh - 50px);
-    width: 100%;
-}
-
-.cd-material__img {
-    width: 250px;
-    height: 200px;
-}
-
-.empty-state__img--ci-material {
-    width: 200px !important;
-    height: 160px !important;
+    background: var(--bg-primary);
+    height: 100%;
 }
 
 @keyframes spin {
@@ -541,20 +354,13 @@
     }
 }
 
-.security-tab {
-    padding: 1px 20px 20px 20px;
-    background-color: var(--N000);
-    overflow: auto;
-    max-height: 292px;
-}
-
 .security-tab-empty {
-    height: 192px;
+    height: 162px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: var(--N000);
+    background-color: var(--bg-primary);
     border-radius: 0 0 4px 4px;
 }
 
@@ -568,19 +374,10 @@
     color: var(--N900);
 }
 
-.security-tab-empty__subtitle {
-    font-size: 12px;
-    font-weight: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    text-align: center;
-    color: #404040;
-}
-
 .tab-list {
     &.tab-list--vulnerability {
         padding: 0 0 0 20px;
-        background-color: var(--N000);
+        background-color: var(--bg-primary);
         border: solid 1px var(--N200);
         border-left: none;
         border-right: none;
@@ -597,15 +394,6 @@
     &.tab-list__tab-link--vulnerability {
         padding: 8px 0;
     }
-}
-
-.security-tab__last-scanned {
-    font-size: 12px;
-    font-weight: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    margin: 12px 0;
-    color: var(--N700);
 }
 
 .url-table_row {
@@ -634,61 +422,8 @@
     align-items: center;
     padding: 16px 20px;
     box-shadow: inset 0 1px 0 0 var(--N200);
-    background-color: var(--white);
-    position: absolute;
+    background-color: var(--bg-primary);
     width: 100%;
     bottom: 0px;
     z-index: 9;
-
-    &.trigger-modal__trigger--empty-state {
-        height: calc(100vh - 72px);
-        position: static;
-        box-shadow: none;
-    }
-
-    .deploy-config-select__group {
-        padding-top: 4px;
-        padding-bottom: 4px;
-
-        .deploy-config-select__group-heading {
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: none;
-            color: var(--N900);
-            background-color: var(--window-bg);
-            padding: 4px 10px;
-            border-top-left-radius: 4px;
-            border-top-right-radius: 4px;
-            margin: 0;
-        }
-    }
-}
-
-.trigger-modal__config-diff-status {
-    &:not(.config-not-found):hover {
-        background-color: var(--N100);
-    }
-
-    svg {
-        &.config-diff-found-icon {
-            path {
-                &:last-of-type {
-                    fill: var(--R500);
-                }
-            }
-        }
-
-        &.no-config-found-icon {
-            path {
-                &:nth-of-type(2) {
-                    fill: var(--Y500);
-                }
-            }
-        }
-    }
-}
-
-.trigger-modal__config-diff-status svg.loader__svg path,
-.trigger-modal__config-diff-status svg.config-diff-found-icon path:nth-of-type(2) {
-    fill: white;
 }

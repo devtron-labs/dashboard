@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { useEffect, useMemo, useRef } from 'react'
 import { Prompt, useLocation, useParams } from 'react-router-dom'
 
@@ -17,19 +33,22 @@ import {
     useAsync,
     checkIfPathIsMatching,
     usePrompt,
+    CM_SECRET_STATE,
+    ConfigMapSecretReadyOnly,
+    ToggleResolveScopedVariables,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
 import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
 import { importComponentFromFELibrary } from '@Components/common'
-import { NoPublishedVersionEmptyState, SelectMergeStrategy, ToggleResolveScopedVariables } from '@Pages/Applications'
+import { NoPublishedVersionEmptyState, SelectMergeStrategy } from '@Pages/Applications'
 
+import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
 import { getConfigMapSecretManifest } from './ConfigMapSecret.service'
-import { CM_SECRET_STATE, ConfigMapSecretDryRunProps } from './types'
+import { ConfigMapSecretDryRunProps } from './types'
 import { renderExternalInfo } from './helpers'
 import { getDryRunConfigMapSecretData } from './utils'
 
-import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
 import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'
 
 const DryRunEditorModeSelect = importComponentFromFELibrary('DryRunEditorModeSelect', null, 'function')
@@ -174,14 +193,14 @@ export const ConfigMapSecretDryRun = ({
                     cmSecretStateLabel={CM_SECRET_STATE.BASE}
                     configMapSecretData={{ ...dryRunConfigMapSecretData, mergeStrategy: null }}
                     areScopeVariablesResolving={areScopeVariablesResolving}
+                    fallbackMergeStrategy={DEFAULT_MERGE_STRATEGY}
                 />
-                <div className="px-16 pb-16">
-                    {renderExternalInfo(
-                        dryRunConfigMapSecretData.externalType,
-                        dryRunConfigMapSecretData.external,
-                        componentType,
-                    )}
-                </div>
+                {renderExternalInfo(
+                    dryRunConfigMapSecretData.externalType,
+                    dryRunConfigMapSecretData.external,
+                    componentType,
+                    'mr-16 ml-16',
+                )}
             </>
         )
     }
@@ -212,7 +231,7 @@ export const ConfigMapSecretDryRun = ({
                     />
                 </div>
             </div>
-            <div className="flex-grow-1 dc__overflow-auto">{renderLHSContent()}</div>
+            {renderLHSContent()}
         </div>
     )
 
@@ -232,9 +251,18 @@ export const ConfigMapSecretDryRun = ({
                     reload: reloadConfigMapSecretManifest,
                 }}
             >
-                <div className="flex-grow-1 dc__overflow-scroll">
-                    <CodeEditor value={configMapSecretManifest?.manifest} height="100%" mode={MODES.YAML} readOnly />
-                </div>
+                <CodeEditor
+                    mode={MODES.YAML}
+                    readOnly
+                    codeEditorProps={{
+                        value: configMapSecretManifest?.manifest,
+                        height: '100%',
+                    }}
+                    codeMirrorProps={{
+                        value: configMapSecretManifest?.manifest,
+                        height: 'fitToParent',
+                    }}
+                />
             </APIResponseHandler>
         </div>
     )

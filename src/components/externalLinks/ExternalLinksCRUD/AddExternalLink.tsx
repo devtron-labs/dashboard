@@ -123,12 +123,12 @@ export default function AddExternalLink({
         if (selectedIdentifiers.length === 0) {
             if (selectedLink.type === ExternalLinkScopeType.ClusterLevel) {
                 for (const _selectedIdentifier of selectedLink.identifiers) {
-                    const _seletedCluster = clusters.find(
+                    const _selectedCluster = clusters.find(
                         (_cluster) => _selectedIdentifier.clusterId === +_cluster.value,
                     )
 
-                    if (_seletedCluster) {
-                        selectedIdentifiers.push(_seletedCluster)
+                    if (_selectedCluster) {
+                        selectedIdentifiers.push(_selectedCluster)
                     }
                 }
             } else {
@@ -140,15 +140,15 @@ export default function AddExternalLink({
                             type: _selectedIdentifier.type,
                         })
                     } else {
-                        const _seletedApp = allApps.find((_app) => {
+                        const _selectedApp = allApps.find((_app) => {
                             const _appValue = _app.value.split('|')
                             return (
                                 _selectedIdentifier.identifier === _appValue[0] &&
                                 _selectedIdentifier.type === _appValue[2]
                             )
                         })
-                        if (_seletedApp) {
-                            selectedIdentifiers.push(_seletedApp)
+                        if (_selectedApp) {
+                            selectedIdentifiers.push(_selectedApp)
                         }
                     }
                 }
@@ -267,7 +267,7 @@ export default function AddExternalLink({
 
     const renderConfigureLinkActionColumn = (): JSX.Element => {
         return (
-            <div className="configure-link-action-container">
+            <div className="configure-link-action-container flexbox-col flex-grow-1 dc__overflow-auto p-20 mw-720 dc__border-right dc__break-word">
                 {!selectedLink && (
                     <div
                         className="link-add-another fs-13 fw-6 mb-16 cursor"
@@ -296,7 +296,7 @@ export default function AddExternalLink({
                                     showDelete={linksLen > 1}
                                 />
                                 {linksLen > 1 && idx !== linksLen - 1 && (
-                                    <hr className="external-links-divider mt-16 mb-16" />
+                                    <div className="divider__primary" />
                                 )}
                             </Fragment>
                         )
@@ -307,7 +307,7 @@ export default function AddExternalLink({
 
     const renderConfigureLinkInfoColumn = (): JSX.Element => {
         return (
-            <div className="configure-link-info-container px-16 py-20">
+            <div className="px-16 py-20 dc__break-word dc__overflow-auto">
                 <div className="flexbox dc__content-space dc__align-items-center">
                     <div className="flexbox dc__gap-8 dc__align-items-center">
                         <Help className="icon-dim-20 fcv-5" />
@@ -518,8 +518,8 @@ export default function AddExternalLink({
             maxWidth="1200px"
             onEscape={handleDialogVisibility}
         >
-            <div className="modal__body">
-                <div className="modal__header">
+            <div className="modal__body flexbox-col flex-grow-1">
+                <div className="modal__header dc__border-bottom">
                     <h3 className="modal__title fs-16">{selectedLink ? 'Update Link' : 'Add Link'}</h3>
                     <button
                         type="button"
@@ -530,13 +530,11 @@ export default function AddExternalLink({
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
-                <hr className="modal__divider mt-0 mb-0" />
-                <div className="modal__content">
+                <div className="modal__content flexbox-col flex-grow-1 dc__overflow-hidden">
                     {renderConfigureLinkActionColumn()}
                     {renderConfigureLinkInfoColumn()}
                 </div>
-                <hr className="modal__divider mt-0 mb-0" />
-                <div className="modal__buttons">
+                <div className="modal__buttons dc__border-top">
                     <button
                         className="cta lh-36 h-36"
                         onClick={saveLinks}

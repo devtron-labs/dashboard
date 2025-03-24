@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, useRouteMatch } from 'react-router-dom'
 import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import IndexStore from '../../../index.store'
@@ -75,7 +75,7 @@ const EventsComponent = ({
                     setEvents([])
                     setLoading(false)
                 })
-        } catch (err) {
+        } catch {
             setEvents([])
             setLoading(false)
         }
@@ -83,9 +83,7 @@ const EventsComponent = ({
 
     const renderContent = () => {
         if (isDeleted) {
-            return (
-                <MessageUI msg={MESSAGING_UI.NO_RESOURCE} size={32} minHeight={isResourceBrowserView ? '200px' : ''} />
-            )
+            return <MessageUI msg={MESSAGING_UI.NO_RESOURCE} size={32} />
         }
 
         if (events.length) {
@@ -96,7 +94,7 @@ const EventsComponent = ({
     }
 
     return (
-        <div className="flex-grow-1" style={{ background: 'var(--terminal-bg)' }}>
+        <div className="flex-grow-1 flexbox-col dc__overflow-auto" style={{ background: 'var(--terminal-bg)' }}>
             {renderContent()}
         </div>
     )

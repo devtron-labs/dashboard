@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { SyntheticEvent } from 'react'
 import { Operation } from 'fast-json-patch'
 import {
@@ -15,6 +31,7 @@ import {
     ProtectConfigTabsType,
     DraftMetadataDTO,
     OverrideMergeStrategyType,
+    PipelineMigratedFromType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 export enum ConfigEditorStatesType {
@@ -167,6 +184,15 @@ export interface DeploymentTemplateStateType {
      * Will send handler in DraftComment which onchange would update this state
      */
     areCommentsPresent: boolean
+    /**
+     * Readonly flag to show the user that the pipeline is migrated from external app to devtron, and can't change its version or delete override
+     */
+    migratedFrom: PipelineMigratedFromType
+}
+
+export interface HandleFetchDeploymentTemplateReturnType
+    extends Partial<Pick<DeploymentTemplateStateType, 'migratedFrom'>> {
+    deploymentTemplateConfigState: DeploymentTemplateConfigState
 }
 
 export interface DeploymentTemplateOptionsHeaderProps
@@ -182,6 +208,7 @@ export interface DeploymentTemplateOptionsHeaderProps
     areChartsLoading: boolean
     showDeleteOverrideDraftEmptyState: boolean
     isUnSet: boolean
+    migratedFrom: DeploymentTemplateStateType['migratedFrom']
 }
 
 // Can derive editMode from url as well, just wanted the typing to be more explicit
@@ -237,7 +264,7 @@ export interface DeploymentTemplateCTAProps
     isDryRunView: boolean
 }
 
-export interface DeleteOverrideDialogProps {
+export interface DeleteOverrideDialogProps extends Pick<DeploymentTemplateProps, 'environmentName'> {
     environmentConfigId: number
     handleReload: () => void
     handleClose: () => void
@@ -255,6 +282,7 @@ export interface DTChartSelectorProps
             | 'areChartsLoading'
             | 'parsingError'
             | 'restoreLastSavedTemplate'
+            | 'migratedFrom'
         > {
     selectChart: (selectedChart: DeploymentChartVersionType) => void
     selectedChartRefId: number
@@ -290,6 +318,7 @@ interface EnvironmentConfigDTO {
     status: number
     mergeStrategy: OverrideMergeStrategyType
     envOverridePatchValues: Record<string, string>
+    migratedFrom: PipelineMigratedFromType
 }
 
 export interface EnvironmentOverrideDeploymentTemplateDTO {
@@ -345,7 +374,8 @@ export interface DeploymentTemplateConfigDTO {
     guiSchema: string
 }
 
-export interface GetPublishedAndBaseDeploymentTemplateReturnType {
+export interface GetPublishedAndBaseDeploymentTemplateReturnType
+    extends Pick<HandleFetchDeploymentTemplateReturnType, 'migratedFrom'> {
     publishedTemplateState: DeploymentTemplateConfigState
     baseDeploymentTemplateState: DeploymentTemplateConfigState
 }
@@ -357,7 +387,8 @@ export interface GetChartListReturnType
             'charts' | 'chartsMetadata' | 'globalChartDetails' | 'latestAppChartRef'
         > {}
 
-export interface HandleInitializeTemplatesWithoutDraftParamsType {
+export interface HandleInitializeTemplatesWithoutDraftParamsType
+    extends Pick<DeploymentTemplateStateType, 'migratedFrom'> {
     baseDeploymentTemplateState: DeploymentTemplateStateType['baseDeploymentTemplateData']
     publishedTemplateState: DeploymentTemplateStateType['publishedTemplateData']
     chartDetailsState: DeploymentTemplateStateType['chartDetails']

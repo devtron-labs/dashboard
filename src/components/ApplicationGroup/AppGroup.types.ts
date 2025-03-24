@@ -35,7 +35,11 @@ import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
 import { MultiValue } from 'react-select'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
 import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
-import { AppConfigState, EnvConfigurationState } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
+import {
+    AppConfigState,
+    EnvConfigurationsNavProps,
+    EnvConfigurationState,
+} from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 import { WebhookPayloadType } from '@Components/app/details/triggerView/types'
 import { TIME_STAMP_ORDER } from '@Components/app/details/triggerView/Constants'
 
@@ -113,7 +117,7 @@ export interface BulkCITriggerType extends BulkRuntimeParamsType {
     closePopup: (e) => void
     updateBulkInputMaterial: (materialList: Record<string, any[]>) => void
     onClickTriggerBulkCI: (appIgnoreCache: Record<number, boolean>, appsToRetry?: Record<string, boolean>) => void
-    getWebhookPayload: (id, webhookTimeStampOrder: typeof TIME_STAMP_ORDER) => void
+    getWebhookPayload: (id, webhookTimeStampOrder?: typeof TIME_STAMP_ORDER) => void
     webhookPayloads: WebhookPayloadType
     setWebhookPayloads: React.Dispatch<React.SetStateAction<WebhookPayloadType>>
     isWebhookPayloadLoading: boolean
@@ -174,13 +178,16 @@ export interface WorkflowsResponseType {
     filteredCIPipelines: Map<string, any>
 }
 
-export interface TriggerResponseModalType {
-    closePopup: (e) => void
+export interface TriggerResponseModalBodyProps {
     responseList: ResponseRowType[]
     isLoading: boolean
-    onClickRetryBuild: (appsToRetry: Record<string, boolean>) => void
     isVirtualEnv?: boolean
     envName?: string
+}
+
+export interface TriggerResponseModalFooterProps extends Pick<TriggerResponseModalBodyProps, 'isLoading' | 'responseList'> {
+    onClickRetryBuild: (appsToRetry: Record<string, boolean>) => void
+    closePopup: (e) => void
 }
 
 export interface TriggerModalRowType {
@@ -253,7 +260,7 @@ export interface EnvSelectorType {
 export interface ApplicationRouteType {
     envAppList: ConfigAppList[]
     envConfig: EnvConfigurationState
-    fetchEnvConfig: () => void
+    fetchEnvConfig: EnvConfigurationsNavProps['fetchEnvConfig']
     appIdToAppApprovalConfigMap: AppConfigState['envIdToEnvApprovalConfigurationMap']
 }
 
@@ -272,6 +279,8 @@ export interface EnvironmentsListViewType
     extends Partial<Pick<UseUrlFiltersReturnType<never>, 'changePage' | 'changePageSize' | 'clearFilters'>> {
     isSuperAdmin: boolean
     filterConfig?: AppGroupFilterConfig
+    appListResponse: EnvAppType
+    appListLoading: boolean
 }
 
 export interface EnvironmentLinkProps {
@@ -499,6 +508,7 @@ export interface HibernateModalProps {
     showDefaultDrawer: boolean
     openedHibernateModalType: HibernateModalType
     isDeploymentBlockedViaWindow: boolean
+    onClose?: () => void
 }
 
 export interface StatusDrawer {
@@ -524,6 +534,7 @@ export interface RestartWorkloadModalProps {
     setRestartLoader: React.Dispatch<React.SetStateAction<boolean>>
     hibernateInfoMap: Record<number, HibernateInfoMapProps>
     isDeploymentBlockedViaWindow: boolean
+    onClose?: () => void
 }
 
 export interface RestartStatusListDrawerProps {

@@ -1,5 +1,21 @@
-import { useMemo } from 'react'
-import { generatePath, Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useEffect, useMemo, useState } from 'react'
+import { generatePath, Route, Switch, useRouteMatch } from 'react-router-dom'
 
 import {
     ApprovalConfigDataKindType,
@@ -8,16 +24,18 @@ import {
     GenericEmptyState,
     getIsApprovalPolicyConfigured,
     Progressing,
-    useAsync,
+    CMSecretComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
 import { importComponentFromFELibrary } from '@Components/common'
-import { ConfigMapSecretWrapper, CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret'
+import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret'
 import { DeploymentConfigCompare, DeploymentTemplate } from '@Pages/Applications'
 import { getEnvConfig } from '@Pages/Applications/DevtronApps/service'
 import { EnvConfigurationsNav } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/Navigation/EnvConfigurationsNav'
 
+import { EnvConfigType } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
+import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
 import { ReleaseConfigurationContextType } from './types'
 
 import './styles.scss'
@@ -26,7 +44,7 @@ const useReleaseConfigurationContext = importComponentFromFELibrary('useReleaseC
 const ConfigurationsAppEnvSelector = importComponentFromFELibrary('ConfigurationsAppEnvSelector', null, 'function')
 
 const renderNullState = () => (
-    <div className="bcn-0">
+    <div className="bg__primary">
         <GenericEmptyState
             title="No application x environment selected"
             subTitle="Select application and environment to view configurations"
@@ -49,12 +67,29 @@ export const Configurations = () => {
         envIdToEnvApprovalConfigurationMap,
     }: ReleaseConfigurationContextType = useReleaseConfigurationContext()
 
-    // ASYNC CALLS
-    const [envConfigResLoading, envConfigRes, , fetchEnvConfig] = useAsync(
-        () => getEnvConfig(+appId, +envId),
-        [appId, envId],
-        !!(appId && envId),
-    )
+    const [envConfigResLoading, setEnvConfigResLoading] = useState<boolean>(false)
+    const [envConfigRes, setEnvConfigRes] = useState<EnvConfigType>(null)
+
+    const fetchEnvConfig = async (propEnvId?: number, callback?: Parameters<typeof getEnvConfig>[2]) => {
+        if (!appId || !envId) {
+            return
+        }
+
+        try {
+            setEnvConfigResLoading(true)
+            const res = await getEnvConfig(+appId, +envId, callback)
+            setEnvConfigRes(res)
+        } catch {
+            // Do nothing
+        } finally {
+            setEnvConfigResLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        fetchEnvConfig()
+    }, [appId, envId])
 
     // CONSTANTS
     const envConfig = {
@@ -75,7 +110,7 @@ export const Configurations = () => {
     // RENDERERS
     const renderConfigSideNav = () => (
         <Switch>
-            <Route path={`${path}/:resourceType(${Object.values(EnvResourceType).join('|')})`}>
+            <Route key={appId} path={`${path}/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?`}>
                 <EnvConfigurationsNav
                     envConfig={envConfig}
                     environments={environments}
@@ -139,7 +174,6 @@ export const Configurations = () => {
                     />
                 </div>
             </Route>
-            <Redirect to={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`} />
         </Switch>
     )
 
@@ -147,17 +181,18 @@ export const Configurations = () => {
         <Switch>
             <Route
                 key={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}`}
-                path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
+                path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
             >
                 {({ match, location }) => {
                     const basePath = generatePath(path, match.params)
-                    // Set the resourceTypePath based on the resourceType from the URL parameters.
-                    // If the resourceType is 'Manifest' or 'PipelineStrategy', use 'deployment-template' as the back URL.
-                    // Otherwise, use the actual resourceType from the URL, which could be 'deployment-template', 'configmap', or 'secrets'.
-                    const resourceTypePath = `/${match.params.resourceType === EnvResourceType.Manifest || match.params.resourceType === EnvResourceType.PipelineStrategy ? EnvResourceType.DeploymentTemplate : match.params.resourceType}`
+                    // Used in cm/cs
                     const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
 
-                    const goBackURL = `${basePath}${resourceTypePath}${resourceNamePath}`
+                    const goBackURL =
+                        match.params.resourceType === EnvResourceType.Manifest ||
+                        match.params.resourceType === EnvResourceType.PipelineStrategy
+                            ? basePath
+                            : `${basePath}/${match.params.resourceType}${resourceNamePath}`
 
                     return showConfig ? (
                         <DeploymentConfigCompare
@@ -177,8 +212,8 @@ export const Configurations = () => {
                 }}
             </Route>
             <Route>
-                <div className="release-configurations dc__grid h-100 dc__overflow-hidden">
-                    <div className="flexbox-col min-h-100 bcn-0 dc__border-right">
+                <div className="deploy-config-collapsible-layout dc__grid release-config-layout h-100 dc__overflow-hidden">
+                    <div className="collapsible-sidebar flexbox-col min-h-100 bg__primary dc__border-right">
                         <ConfigurationsAppEnvSelector />
                         {showConfig ? renderConfigSideNav() : null}
                     </div>

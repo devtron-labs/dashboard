@@ -28,6 +28,8 @@ import {
     DATE_TIME_FORMATS,
     SortableTableHeaderCell,
     stringComparatorBySortOrder,
+    useStickyEvent,
+    getClassNameForStickyHeaderWithShadow,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -41,9 +43,7 @@ import NoClusterSelectImage from '../../../assets/icons/ic-select-cluster.svg'
 import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
 import HelmCluster from '../../../assets/img/guided-helm-cluster.png'
 import DeployCICD from '../../../assets/img/guide-onboard.png'
-import { Empty } from '../list/emptyView/Empty'
 import { AllCheckModal } from '../../checkList/AllCheckModal'
-import { ReactComponent as InfoFill } from '../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as InfoFillPurple } from '../../../assets/icons/ic-info-filled-purple.svg'
 import { ReactComponent as ErrorExclamationIcon } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
@@ -62,12 +62,12 @@ import {
     APP_LIST_HEADERS,
     HELM_PERMISSION_MESSAGE,
     SELECT_CLUSTER_FROM_FILTER_NOTE,
-    ClearFiltersLabel,
     appListLoadingArray,
 } from './Constants'
 import { LEARN_MORE } from '../../../config/constantMessaging'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
 import { HelmAppListResponse, HelmApp, AppListSortableKeys, HelmAppListProps } from './AppListType'
+import AskToClearFilters from './AppListComponents'
 
 const HelmAppList = ({
     serverMode,
@@ -84,6 +84,7 @@ const HelmAppList = ({
     changePage,
     changePageSize,
     setShowPulsatingDot,
+    appListContainerRef,
 }: HelmAppListProps) => {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING)
     const [errorResponseCode, setErrorResponseCode] = useState(0)
@@ -134,6 +135,12 @@ const HelmAppList = ({
 
         return { filteredHelmAppList, filteredListTotalSize }
     }, [devtronInstalledHelmAppsList, externalHelmAppsList, filterConfig])
+
+    const { stickyElementRef, isStuck: isHeaderStuck } = useStickyEvent({
+        identifier: 'helm-app-list',
+        containerRef: appListContainerRef,
+        isStickyElementMounted: dataStateType === AppListViewType.LIST && filteredListTotalSize > 0
+    })
 
     // component load
     useEffect(() => {
@@ -326,7 +333,9 @@ const HelmAppList = ({
 
     function renderHeaders() {
         return (
-            <div className="app-list__header dc__position-sticky dc__top-47">
+            <div ref={stickyElementRef} className={`app-list__header ${
+                getClassNameForStickyHeaderWithShadow(isHeaderStuck, 'dc__top-47')
+            }`}>
                 <div className="app-list__cell--icon" />
                 <div className="app-list__cell app-list__cell--name">
                     {sseConnection && <span>{APP_LIST_HEADERS.ReleaseName}</span>}
@@ -380,7 +389,7 @@ const HelmAppList = ({
     }
 
     const renderFetchError = (externalHelmListFetchError: string, index: number) => (
-        <div className="bcn-0" key={index}>
+        <div className="bg__primary" key={index}>
             <div className="h-8" />
             <div className="ea-fetch-error-message above-header-message flex left">
                 <span className="mr-8 flex">
@@ -411,7 +420,7 @@ const HelmAppList = ({
             </div>
             {isArgoInstalled && (
                 <div className="app-list__cell app-list__cell--namespace">
-                    <AppStatus appStatus={app.appStatus} isVirtualEnv={app.environmentDetail.isVirtualEnvironment} />
+                    <AppStatus status={app.appStatus} isVirtualEnv={app.environmentDetail.isVirtualEnvironment} />
                 </div>
             )}
             <div className="app-list__cell app-list__cell--env">
@@ -453,7 +462,7 @@ const HelmAppList = ({
         return (
             <div data-testid="helm-app-list-container">
                 {!clusterIdsCsv && (
-                    <div className="bcn-0" data-testid="helm-app-list">
+                    <div className="bg__primary" data-testid="helm-app-list">
                         <div className="h-8" />
                         <div className="cluster-select-message-strip above-header-message flex left">
                             <span className="mr-8 flex">
@@ -510,7 +519,7 @@ const HelmAppList = ({
         return (
             <div
                 style={{ width: '600px', margin: 'auto', marginTop: '20px' }}
-                className="bcn-0 pt-20 pb-20 pl-20 pr-20 br-8 en-1 bw-1 mt-20"
+                className="bg__primary pt-20 pb-20 pl-20 pr-20 br-8 en-1 bw-1 mt-20"
             >
                 <AllCheckModal />
             </div>
@@ -519,7 +528,7 @@ const HelmAppList = ({
 
     function askToSelectClusterId() {
         return (
-            <div className="dc__position-rel" style={{ height: 'calc(100vh - 150px)' }}>
+            <div className="dc__position-rel flex-grow-1">
                 <GenericEmptyState
                     image={NoClusterSelectImage}
                     title={APP_LIST_EMPTY_STATE_MESSAGING.heading}
@@ -529,37 +538,12 @@ const HelmAppList = ({
         )
     }
 
-    function askToClearFilters(showTipToSelectCluster?: boolean) {
-        return (
-            <Empty
-                view={AppListViewType.NO_RESULT}
-                title={APP_LIST_EMPTY_STATE_MESSAGING.noAppsFound}
-                message={APP_LIST_EMPTY_STATE_MESSAGING.noAppsFoundInfoText}
-                buttonLabel={ClearFiltersLabel}
-                clickHandler={clearAllFilters}
-            >
-                {showTipToSelectCluster && (
-                    <div className="mt-18">
-                        <p
-                            className="bcb-1 cn-9 fs-13 pt-10 pb-10 pl-16 pr-16 eb-2 bw-1 br-4 cluster-tip flex left top"
-                            style={{ width: '300px' }}
-                        >
-                            <span>
-                                <InfoFill className="icon-dim-20" />
-                            </span>
-                            <div className="ml-12 cn-9" style={{ textAlign: 'start' }}>
-                                <span className="fw-6">Tip </span>
-                                <span>{APP_LIST_EMPTY_STATE_MESSAGING.selectCluster}</span>
-                            </div>
-                        </p>
-                    </div>
-                )}
-            </Empty>
-        )
-    }
-
     function askToClearFiltersWithSelectClusterTip() {
-        return <div className="flex column">{askToClearFilters(true)}</div>
+        return (
+            <div className="flex column">
+                <AskToClearFilters clearAllFilters={clearAllFilters} showTipToSelectCluster />
+            </div>
+        )
     }
 
     function askToConnectAClusterForNoResult() {
@@ -571,7 +555,7 @@ const HelmAppList = ({
             </Link>
         )
         return (
-            <div className="dc__position-rel" style={{ height: 'calc(100vh - 150px)' }}>
+            <div className="dc__position-rel flex-grow-1">
                 <GenericEmptyState
                     image={noChartInClusterImage}
                     title={APP_LIST_EMPTY_STATE_MESSAGING.noHelmChartsFound}
@@ -605,7 +589,7 @@ const HelmAppList = ({
             return askToConnectAClusterForNoResult()
         }
         if (_isAnyFilterationApplied()) {
-            return askToClearFilters()
+            return <AskToClearFilters clearAllFilters={clearAllFilters} />
         }
         if (!clusterIdsCsv) {
             return askToSelectClusterId()
@@ -642,7 +626,7 @@ const HelmAppList = ({
     }
     if (dataStateType === AppListViewType.ERROR) {
         return (
-            <div className="dc__loading-wrapper">
+            <div className="flex-grow-1">
                 <ErrorScreenManager code={errorResponseCode} />
             </div>
         )

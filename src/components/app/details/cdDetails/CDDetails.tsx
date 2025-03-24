@@ -307,7 +307,7 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
                 </div>
             )}
             <div className="ci-details__body">
-                <div className="flexbox-col flex-grow-1 dc__overflow-scroll h-100" ref={scrollableRef}>
+                <div className="flexbox-col flex-grow-1 dc__overflow-auto h-100" ref={scrollableRef}>
                     {triggerHistory.size > 0 || fetchTriggerIdData ? (
                         <Route
                             path={`${path

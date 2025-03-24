@@ -15,7 +15,7 @@
  */
 
 .ci-details {
-    background-color: var(--white);
+    background-color: var(--bg-primary);
     overflow: hidden;
     height: 100%;
     width: 100%;
@@ -23,9 +23,6 @@
     display: flex;
 
     .ci-artifact {
-        .add-image-button {
-            margin-left: 52px;
-        }
         &.ci-artifact--report {
             svg path {
                 fill: currentColor;
@@ -47,10 +44,10 @@
         overflow: hidden;
         flex-basis: 280px;
         transition: flex-basis 0.3s;
+        flex-shrink: 0;
     }
 
     .ci-details__body {
-        flex-basis: calc(100% - 280px);
         transition: flex-basis 0.3s;
         display: flex;
         flex-direction: column;
@@ -66,7 +63,7 @@
 
             .trigger-details__summary {
                 .inprogress-status-color {
-                    color: var(--inprogress-orange);
+                    color: var(--O500);
                 }
             }
         }
@@ -107,7 +104,7 @@
 
 .trigger-outputs-container {
     width: 100%;
-    background: var(--window-bg);
+    background: var(--bg-tertiary);
 
     .hover-trigger {
         .tippy-box.default-tt {
@@ -130,16 +127,6 @@
     border-bottom: 1px solid var(--N100);
 }
 
-.build-card-popup {
-    box-shadow: 0 2px 4px -1px rgba(0, 56, 112, 0.3);
-
-    .ci-material-detail {
-        display: grid;
-        grid-template-columns: 20px 1fr;
-        column-gap: 8px;
-    }
-}
-
 .ci-details__build-card-container {
     text-decoration: unset;
     padding: 0 16px;
@@ -158,10 +145,6 @@
         grid-template-columns: 20px 1fr;
         padding: 12px 0;
         column-gap: 12px;
-    }
-
-    .app-status__icon {
-        position: unset;
     }
 }
 
@@ -186,7 +169,7 @@
 .ci-trigger-details {
     display: flex;
     flex: 1;
-    background-color: var(--window-bg);
+    background-color: var(--bg-tertiary);
 }
 
 .cta.cta--cancel-ci {
@@ -197,41 +180,10 @@
     width: 280px;
 }
 
-.trigger-info {
-    flex: 1 1;
-    border: solid 1px #ededed;
-    margin: 0px;
-}
-
-.trigger-info__title {
-    padding-left: 30px;
-    text-transform: capitalize;
-    color: #262626;
-    font-size: 18px;
-    font-weight: 600;
-    letter-spacing: 0.005em;
-    background-color: rgba(0, 0, 0, 0.02);
-    border: solid 1px #ededed;
-    padding: 12px 24px;
-    margin: 0px;
-}
-
-.trigger-info__body {
-    display: flex;
-    flex: 1 1;
-    overflow-x: auto;
-}
-
-.trigger-info__info {
-    margin: 0px;
-    padding: 12px 24px;
-    border-right: solid 1px #ededed;
-}
-
 .info {
     width: 100%;
     font-size: 13px;
-    color: #262626;
+    color: var(--N900);
     text-transform: lowercase;
     font-weight: 500;
     margin-bottom: 0px;
@@ -254,18 +206,12 @@
     display: block;
 }
 
-.logs__title {
-    border: solid 1px #ededed;
-    padding: 15px 30px;
-    background-color: rgba(0, 0, 0, 0.02);
-}
-
 .logs__body {
     padding: 16px 24px;
     overflow: auto;
     min-height: 100%;
-    background: #0b0f22;
-    color: white;
+    background: var(--terminal-bg);
+    color: var(--white);
     font-family: monospace;
 }
 
@@ -284,7 +230,7 @@
     }
 
     svg path {
-        fill: white;
+        fill: var(--white);
     }
 }
 
@@ -376,7 +322,7 @@
 .image-tag-parent-card {
     &:hover {
         .image-tags-container {
-            background-color: var(--N50);
+            background-color: var(--bg-secondary);
         }
         .image-tags-container-edit__icon {
             display: block;

@@ -20,7 +20,6 @@ import {
     showError,
     Progressing,
     ErrorScreenManager,
-    DeleteDialog,
     InfoColourBar,
     ConditionalWrap,
     WorkflowNodeType,
@@ -31,9 +30,14 @@ import {
     ToastVariantType,
     ToastManager,
     TARGET_IDS,
+    CIPipelineNodeType,
+    ChangeCIPayloadType,
+    WorkflowOptionsModal,
+    ConfirmationModal,
+    ConfirmationModalVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { ChangeCIPayloadType, PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
+import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
 import { URLS, AppConfigStatus, ViewType, DOCUMENTATION } from '../../config'
 import { importComponentFromFELibrary } from '../common'
 import { Workflow } from './Workflow'
@@ -56,21 +60,18 @@ import { ReactComponent as ICAddWhite } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as ICClose } from '../../assets/icons/ic-close.svg'
 import { getHostURLConfiguration, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
 import './workflowEditor.scss'
-import { CIPipelineNodeType } from '../app/details/triggerView/types'
 import CDSuccessModal from './CDSuccessModal'
-import NoGitOpsConfiguredWarning from './NoGitOpsConfiguredWarning'
 import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'
-import DeprecatedWarningModal from './DeprecatedWarningModal'
-import nojobs from '../../assets/img/empty-joblist@2x.png'
+import nojobs from '../../assets/img/empty-joblist.webp'
 import CDPipeline from '../cdPipeline/CDPipeline'
 import EmptyWorkflow from './EmptyWorkflow'
-import { WORKFLOW_EDITOR_HEADER_TIPPY } from './workflowEditor.constants'
-import WorkflowOptionsModal from './WorkflowOptionsModal'
 import { WorkflowCreate } from '../app/details/triggerView/config'
 import { LinkedCIDetail } from '../../Pages/Shared/LinkedCIDetailsModal'
+import { WORKFLOW_EDITOR_HEADER_TIPPY } from './constants'
 
 export const pipelineContext = createContext<PipelineContext>(null)
 const SyncEnvironment = importComponentFromFELibrary('SyncEnvironment')
+const LINKED_CD_SOURCE_VARIANT = importComponentFromFELibrary('LINKED_CD_SOURCE_VARIANT', null, 'function')
 
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     workflowTimer = null
@@ -94,8 +95,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             workflowId: 0,
             allCINodesMap: undefined,
             showSuccessScreen: false,
-            showNoGitOpsWarningPopup: false,
-            cdLink: '',
             noGitOpsConfiguration: false,
             noGitOpsModuleInstalledAndConfigured: false,
             showOpenCIPipelineBanner:
@@ -252,6 +251,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.setState({ view: ViewType.LOADING })
     }
 
+    closeDeleteModal = () => this.setState({ showDeleteDialog: false })
+
     deleteWorkflow = (appId?: string, workflowId?: number) => {
         deleteWorkflow(appId || this.props.match.params.appId, workflowId || this.state.workflowId)
             .then((response) => {
@@ -266,7 +267,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 }
 
                 if (response.status.toLowerCase() === 'ok') {
-                    this.setState({ showDeleteDialog: false })
+                    this.closeDeleteModal()
                     this.handleDisplayLoader()
                     ToastManager.showToast({
                         variant: ToastVariantType.success,
@@ -350,14 +351,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             LINK = `${LINK}&childPipelineId=${childPipelineId}`
         }
 
-        if (this.state.noGitOpsConfiguration) {
-            this.setState({
-                showNoGitOpsWarningPopup: true,
-                cdLink: LINK,
-            })
-        } else {
-            this.props.history.push(LINK)
-        }
+        this.props.history.push(LINK)
     }
 
     openCreateWorkflow = (): string => {
@@ -410,25 +404,27 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.resetChangeCIPayload()
     }
 
-    hideNoGitOpsWarning = (isContinueWithHelm: boolean) => {
-        this.setState({ showNoGitOpsWarningPopup: false })
-        if (isContinueWithHelm) {
-            this.props.history.push(this.state.cdLink)
-        }
-    }
-
     renderDeleteDialog = () => {
         const wf = this.state.workflows.find((wf) => wf.id === this.state.workflowId)
-        if (this.state.showDeleteDialog) {
-            return (
-                <DeleteDialog
-                    title={`Delete '${wf?.name}' ?`}
-                    description={`Are you sure you want to delete this workflow from '${this.state.appName}'?`}
-                    closeDelete={() => this.setState({ showDeleteDialog: false })}
-                    delete={this.deleteWorkflow}
-                />
-            )
-        }
+        //As delete api gives 200 in case of cannot delete, so we using this component despite of DeleteConfirmationModal
+        return (
+            <ConfirmationModal
+                title={`Delete workflow '${wf?.name}' ?`}
+                variant={ConfirmationModalVariantType.delete}
+                subtitle={`Are you sure you want to delete this workflow from '${this.state.appName}'?`}
+                handleClose={this.closeDeleteModal}
+                buttonConfig={{
+                    secondaryButtonConfig: {
+                        text: 'Cancel',
+                        onClick: this.closeDeleteModal,
+                    },
+                    primaryButtonConfig: {
+                        text: 'Delete',
+                        onClick: () => this.deleteWorkflow(),
+                    },
+                }}
+            />
+        )
     }
 
     closeSuccessPopup = () => {
@@ -578,6 +574,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     getWorkflows={this.getWorkflows}
                                     refreshParentWorkflows={this.props.getWorkflows}
                                     envIds={this.state.envIds}
+                                    isGitOpsInstalledButNotConfigured={this.state.noGitOpsConfiguration}
                                     noGitOpsModuleInstalledAndConfigured={
                                         this.state.noGitOpsModuleInstalledAndConfigured
                                     }
@@ -605,7 +602,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                 connectCDPipelines={this.getLen()}
                                 close={this.closePipeline}
                                 getWorkflows={this.getWorkflows}
-                                deleteWorkflow={this.deleteWorkflow}
                                 isJobView={this.props.isJobView}
                                 isJobCI={isJobCI}
                                 changeCIPayload={this.state.changeCIPayload}
@@ -613,9 +609,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         )
                     }}
                 />
-                <Route path={`${this.props.match.path}/deprecated-warning`}>
-                    <DeprecatedWarningModal closePopup={this.closePipeline} />
-                </Route>
                 {!this.props.isJobView && [
                     <Route
                         key={`${this.props.match.path}/webhook/`}
@@ -636,7 +629,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     connectCDPipelines={this.getLen()}
                                     close={this.closePipeline}
                                     getWorkflows={this.getWorkflows}
-                                    deleteWorkflow={this.deleteWorkflow}
                                 />
                             )
                         }}
@@ -749,7 +741,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
                     <button
                         type="button"
-                        className="pt-6 pb-6 pl-12 pr-12 flex dc__gap-4 bcn-0 h-100 cn-9 fs-13 fw-4 lh-20 dc__hover-n50 dc__no-border dc__outline-none-imp dc__right-radius-4"
+                        className="pt-6 pb-6 pl-12 pr-12 flex dc__gap-4 bg__primary h-100 cn-9 fs-13 fw-4 lh-20 dc__hover-n50 dc__no-border dc__outline-none-imp dc__right-radius-4"
                         onClick={this.handleClearSelectedNode}
                     >
                         <ICClose className="icon-dim-12 fcn-9" />
@@ -905,7 +897,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
         return (
             <div
-                className="workflow-editor bcn-0"
+                className="workflow-editor bg__primary dc__overflow-auto"
                 data-testid="workflow-editor-page"
                 // Added for showing the tippy on ApprovalNode
                 id={TARGET_IDS.WORKFLOW_EDITOR_CONTAINER}
@@ -936,10 +928,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 {this.renderRouter()}
                 {this.renderHostErrorMessage()}
                 {this.renderWorkflows()}
-                {this.renderDeleteDialog()}
-                {this.state.showNoGitOpsWarningPopup && (
-                    <NoGitOpsConfiguredWarning closePopup={this.hideNoGitOpsWarning} />
-                )}
+                {this.state.showDeleteDialog && this.renderDeleteDialog()}
                 {this.state.showOpenCIPipelineBanner && this.renderOpenCIPipelineBanner()}
             </div>
         )
@@ -952,7 +941,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
         if (this.state.view === ViewType.ERROR) {
             return (
-                <div className="dc__loading-wrapper">
+                <div className="flex-grow-1">
                     <ErrorScreenManager code={this.state.code} />
                 </div>
             )
@@ -981,6 +970,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         workflows={this.state.workflows}
                         getWorkflows={this.getWorkflows}
                         resetChangeCIPayload={this.resetChangeCIPayload}
+                        linkedCDSourceVariant={LINKED_CD_SOURCE_VARIANT}
                     />
                 )}
             </>

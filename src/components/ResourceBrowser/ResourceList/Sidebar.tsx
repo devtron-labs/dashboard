@@ -169,7 +169,7 @@ const Sidebar = ({
             /* NOTE: if we push here the history will be lost */
             !selectedResource,
         )
-    }, [nodeType, k8sObjectOptionsList])
+    }, [nodeType, k8sObjectOptionsList, isOpen])
 
     const selectedChildRef: React.Ref<HTMLButtonElement> = (node) => {
         /**
@@ -308,8 +308,8 @@ const Sidebar = ({
     const noOptionsMessage = () => 'No matching kind'
 
     return (
-        <div className="k8s-object-container">
-            <div className="k8s-object-kind-search bcn-0 pt-16 pb-8 w-200 dc__m-auto cursor">
+        <div className="w-250 dc__no-shrink dc__overflow-hidden flexbox-col">
+            <div className="k8s-object-kind-search bg__primary pt-16 pb-8 px-10 w-100 cursor">
                 <ReactSelect
                     ref={searchInputRef}
                     placeholder="Jump to Kind"
@@ -338,7 +338,8 @@ const Sidebar = ({
                     }}
                 />
             </div>
-            <div className="k8s-object-wrapper flexbox-col dc__border-top-n1 p-8 dc__user-select-none">
+
+            <div className="dc__overflow-auto flexbox-col flex-grow-1 dc__border-top-n1 p-8 dc__user-select-none">
                 <div className="pb-8 flexbox-col">
                     {!!list?.size && !!list.get(AggregationKeys.Nodes) && (
                         <SidebarChildButton
@@ -385,7 +386,7 @@ const Sidebar = ({
                             <div key={`${k8sObject.name}-parent`}>
                                 <button
                                     type="button"
-                                    className={`dc__unset-button-styles dc__zi-1 bcn-0 w-100 ${k8sObject.isExpanded ? 'dc__position-sticky' : ''}`}
+                                    className={`dc__unset-button-styles dc__zi-1 bg__primary w-100 ${k8sObject.isExpanded ? 'dc__position-sticky' : ''}`}
                                     style={{ top: '-8px' }}
                                     data-group-name={k8sObject.name}
                                     onClick={getGroupHeadingClickHandler(false, true)}

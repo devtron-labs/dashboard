@@ -16,20 +16,20 @@
 
 import React, { lazy, Suspense } from 'react'
 import { useRouteMatch, useHistory, Route, Switch, Redirect, useLocation, generatePath } from 'react-router-dom'
-
 import {
     Progressing,
     EnvResourceType,
     BASE_CONFIGURATION_ENV_ID,
     ApprovalConfigDataKindType,
     getIsApprovalPolicyConfigured,
+    CMSecretComponentType,
+    Button,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Next } from '@Icons/ic-arrow-forward.svg'
-import { URLS } from '@Config/index'
+import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE, URLS } from '@Config/index'
 import { ErrorBoundary, useAppContext } from '@Components/common'
 import ExternalLinks from '@Components/externalLinks/ExternalLinks'
-import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/types'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
 
 import { NextButtonProps, STAGE_NAME } from '../AppConfig.types'
@@ -51,18 +51,16 @@ const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, current
     const nextUrl = navItems[index + 1].href
     if (!isCiPipeline) {
         return (
-            <div className="app-compose__next-section">
-                <button
-                    type="button"
+            <div className="app-compose__next-section flex right">
+                <Button
                     disabled={isDisabled}
-                    className="cta dc__align-right flex"
                     onClick={() => {
                         history.push(nextUrl)
                     }}
-                >
-                    <span className="mr-5">Next </span>
-                    <Next className="icon-dim-18" />
-                </button>
+                    text="Next"
+                    endIcon={<Next />}
+                    dataTestId="app-compose-next-button"
+                />
             </div>
         )
     }
@@ -104,21 +102,23 @@ const AppComposeRouter = () => {
         // currently the logic for redirection to next unlocked stage is in respondOnSuccess function can be done for MaterialList also
         <Switch>
             <Route path={`${path}/${URLS.APP_GIT_CONFIG}`}>
-                <>
-                    <MaterialList
-                        respondOnSuccess={respondOnSuccess}
-                        isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
-                        toggleRepoSelectionTippy={toggleRepoSelectionTippy}
-                        setRepo={setRepoState}
-                        isJobView={isJobView}
-                    />
+                <div className="flexbox-col flex-grow-1 dc__content-space h-100 dc__overflow-hidden">
+                    <div className="flex-grow-1 dc__overflow-auto">
+                        <MaterialList
+                            respondOnSuccess={respondOnSuccess}
+                            isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
+                            toggleRepoSelectionTippy={toggleRepoSelectionTippy}
+                            setRepo={setRepoState}
+                            isJobView={isJobView}
+                        />
+                    </div>
                     <NextButton
                         currentStageName={STAGE_NAME.GIT_MATERIAL}
                         navItems={navItems}
                         isDisabled={!isUnlocked.workflowEditor}
                         isCiPipeline={isCiPipeline}
                     />
-                </>
+                </div>
             </Route>
             {isUnlocked.workflowEditor && [
                 <Route
@@ -135,7 +135,10 @@ const AppComposeRouter = () => {
                         reloadEnvironments={reloadEnvironments}
                     />
                 </Route>,
-                <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
+                <Route
+                    key={`${path}/${URLS.BASE_CONFIG}/${URLS.APP_CM_CONFIG}`}
+                    path={`${path}/${URLS.BASE_CONFIG}/${URLS.APP_CM_CONFIG}/:name?`}
+                >
                     <ConfigMapSecretWrapper
                         isJob
                         isApprovalPolicyConfigured={false}
@@ -147,7 +150,10 @@ const AppComposeRouter = () => {
                         envName=""
                     />
                 </Route>,
-                <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
+                <Route
+                    key={`${path}/${URLS.BASE_CONFIG}/${URLS.APP_CS_CONFIG}`}
+                    path={`${path}/${URLS.BASE_CONFIG}/${URLS.APP_CS_CONFIG}/:name?`}
+                >
                     <ConfigMapSecretWrapper
                         isJob
                         isApprovalPolicyConfigured={false}
@@ -182,21 +188,24 @@ const AppComposeRouter = () => {
     const renderAppViewRoutes = (): JSX.Element => (
         <Switch>
             <Route path={`${path}/${URLS.APP_GIT_CONFIG}`}>
-                <>
-                    <MaterialList
-                        respondOnSuccess={respondOnSuccess}
-                        isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
-                        toggleRepoSelectionTippy={toggleRepoSelectionTippy}
-                        setRepo={setRepoState}
-                    />
+                <div className="flexbox-col flex-grow-1 dc__content-space h-100 dc__overflow-hidden">
+                    <div className="flex-grow-1 dc__overflow-auto">
+                        <MaterialList
+                            respondOnSuccess={respondOnSuccess}
+                            isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
+                            toggleRepoSelectionTippy={toggleRepoSelectionTippy}
+                            setRepo={setRepoState}
+                        />
+                    </div>
                     <NextButton
                         currentStageName={STAGE_NAME.GIT_MATERIAL}
                         navItems={navItems}
                         isDisabled={!isUnlocked.dockerBuildConfig}
                         isCiPipeline={isCiPipeline}
                     />
-                </>
+                </div>
             </Route>
+
             {isUnlocked.dockerBuildConfig && (
                 <Route path={`${path}/${URLS.APP_DOCKER_CONFIG}`}>
                     <CIConfig
@@ -206,8 +215,15 @@ const AppComposeRouter = () => {
                     />
                 </Route>
             )}
+
+            {(isUnlocked.deploymentTemplate || isUnlocked.workflowEditor) && (
+                <Route path={`${path}/${URLS.BASE_CONFIG}`} exact>
+                    <Progressing pageLoader />
+                </Route>
+            )}
+
             {isUnlocked.deploymentTemplate && (
-                <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
+                <Route path={`${path}/${URLS.BASE_CONFIG}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
                     <DeploymentTemplate
                         respondOnSuccess={respondOnSuccess}
                         isCiPipeline={isCiPipeline}
@@ -248,7 +264,10 @@ const AppComposeRouter = () => {
                         reloadAppConfig={reloadAppConfig}
                     />
                 </Route>,
-                <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
+                <Route
+                    key={`${path}/${URLS.BASE_CONFIG}/${URLS.APP_CM_CONFIG}`}
+                    path={`${path}/${URLS.BASE_CONFIG}/${URLS.APP_CM_CONFIG}/:name?`}
+                >
                     <ConfigMapSecretWrapper
                         isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
                             approvalConfigMapForBaseConfiguration?.[ApprovalConfigDataKindType.configMap],
@@ -261,7 +280,10 @@ const AppComposeRouter = () => {
                         envName=""
                     />
                 </Route>,
-                <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
+                <Route
+                    key={`${path}/${URLS.BASE_CONFIG}/${URLS.APP_CS_CONFIG}`}
+                    path={`${path}/${URLS.BASE_CONFIG}/${URLS.APP_CS_CONFIG}/:name?`}
+                >
                     <ConfigMapSecretWrapper
                         isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
                             approvalConfigMapForBaseConfiguration?.[ApprovalConfigDataKindType.configSecret],
@@ -294,20 +316,22 @@ const AppComposeRouter = () => {
                 </Route>,
                 <Route
                     key={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}`}
-                    path={`${path}/:envId(\\d+)?/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
+                    path={`${path}/:envId(\\d+)?/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
                 >
                     {({ match }) => {
                         const basePath = generatePath(path, match.params)
                         const envOverridePath = match.params.envId
                             ? `/${URLS.APP_ENV_OVERRIDE_CONFIG}/${match.params.envId}`
-                            : ''
-                        // Set the resourceTypePath based on the resourceType from the URL parameters.
-                        // If the resourceType is 'Manifest' or 'PipelineStrategy', use 'deployment-template' as the back URL.
-                        // Otherwise, use the actual resourceType from the URL, which could be 'deployment-template', 'configmap', or 'secrets'.
-                        const resourceTypePath = `/${match.params.resourceType === EnvResourceType.Manifest || match.params.resourceType === EnvResourceType.PipelineStrategy ? EnvResourceType.DeploymentTemplate : match.params.resourceType}`
+                            : `/${URLS.BASE_CONFIG}`
+
+                        // Used in CM/CS
                         const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
 
-                        const goBackURL = `${basePath}${envOverridePath}${resourceTypePath}${resourceNamePath}`
+                        const goBackURL =
+                            match.params.resourceType === EnvResourceType.Manifest ||
+                            match.params.resourceType === EnvResourceType.PipelineStrategy
+                                ? `${basePath}${envOverridePath}`
+                                : `${basePath}${envOverridePath}/${match.params.resourceType}${resourceNamePath}`
 
                         return (
                             <DeploymentConfigCompare

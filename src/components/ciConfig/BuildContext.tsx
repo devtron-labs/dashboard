@@ -33,9 +33,9 @@ const getBuildContextAdditionalContent = () => (
     <div className="p-12 fs-13">
         To build all files from the root, use (.) as the build context, or set build context by referring a subdirectory
         path such as
-        <span className="bcn-1 pt-2 pb-2 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">/myfolder</span>
+        <span className="bcn-1 pt-2 pb-2 br-6 pl-4 pr-4 mono fs-13 fw-4 cn-7">/myfolder</span>
         or
-        <span className="bcn-1 pt-2 pb-2 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">/myfolder/buildhere</span>
+        <span className="bcn-1 pt-2 pb-2 br-6 pl-4 pr-4 mono fs-13 fw-4 cn-7">/myfolder/buildhere</span>
         if path not set, default path will be root dir of selected git repository
     </div>
 )
@@ -210,8 +210,9 @@ const BuildContext: FunctionComponent<BuildContextProps> = ({
                             />
 
                             <CustomInput
-                                type="text"
-                                rootClassName="file-name"
+                                borderRadiusConfig={{
+                                    left: false,
+                                }}
                                 data-testid="build-context-path-text-box"
                                 placeholder="Project Path"
                                 name="buildContext"

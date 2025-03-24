@@ -19,7 +19,6 @@ import { GroupBase } from 'react-select'
 import { useParams } from 'react-router-dom'
 import {
     Progressing,
-    DeleteDialog,
     RadioGroup,
     RadioGroupItem,
     ConditionalWrap,
@@ -32,6 +31,7 @@ import {
     SelectPickerOptionType,
     SelectPickerProps,
     MarkDown,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
@@ -52,25 +52,21 @@ import {
     ChartVersionSelectorType,
     ChartVersionValuesSelectorType,
     DeleteApplicationButtonProps,
-    DeleteChartDialogProps,
     DeploymentAppRadioGroupType,
     DeploymentAppSelectorType,
     UpdateApplicationButtonProps,
     ValueNameInputType,
     gitOpsDrawerType,
 } from './ChartValuesView.type'
-import {
-    DELETE_CHART_APP_DESCRIPTION_LINES,
-    DELETE_PRESET_VALUE_DESCRIPTION_LINES,
-    UPDATE_APP_BUTTON_TEXTS,
-} from './ChartValuesView.constants'
+import { UPDATE_APP_BUTTON_TEXTS } from './ChartValuesView.constants'
 import { DeploymentAppTypeNameMapping, REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
-import { DELETE_ACTION, repoType } from '../../../../config'
+import { repoType } from '../../../../config'
 import UserGitRepo from '../../../gitOps/UserGitRepo'
 import { getChartValuesFiltered } from '@Components/charts/charts.helper'
 import { ChartValuesType } from '@Components/charts/charts.types'
+import { ConfigureGitopsInfoBlock } from '@Components/workflowEditor/ConfigureGitopsInfoBlock'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
@@ -217,6 +213,38 @@ const RadioWithTippy = (children, isFromCDPipeline: boolean, tippyContent: strin
     )
 }
 
+const GitOpsActionBlock = ({
+    deploymentAppType,
+    areGitopsCredentialsConfigured,
+    gitOpsRepoConfigInfoBar,
+    isGitOpsRepoNotConfigured,
+    allowedDeploymentTypes,
+}: Pick<
+    DeploymentAppRadioGroupType,
+    | 'deploymentAppType'
+    | 'areGitopsCredentialsConfigured'
+    | 'gitOpsRepoConfigInfoBar'
+    | 'allowedDeploymentTypes'
+    | 'isGitOpsRepoNotConfigured'
+>) => {
+    const gitOpsNotConfiguredText =
+        allowedDeploymentTypes.length == 1 ? GITOPS_REPO_REQUIRED_FOR_ENV : GITOPS_REPO_REQUIRED
+
+    if (deploymentAppType !== DeploymentAppTypes.GITOPS) {
+        return null
+    }
+
+    if (!areGitopsCredentialsConfigured) {
+        return <ConfigureGitopsInfoBlock />
+    }
+
+    if (isGitOpsRepoNotConfigured) {
+        return gitOpsRepoConfigInfoBar(gitOpsNotConfiguredText)
+    }
+
+    return null
+}
+
 export const DeploymentAppRadioGroup = ({
     isDisabled,
     deploymentAppType,
@@ -226,61 +254,59 @@ export const DeploymentAppRadioGroup = ({
     isFromCDPipeline,
     isGitOpsRepoNotConfigured,
     gitOpsRepoConfigInfoBar,
-}: DeploymentAppRadioGroupType): JSX.Element => {
-    const gitOpsNotCongiguredText =
-        allowedDeploymentTypes.length == 1 ? GITOPS_REPO_REQUIRED_FOR_ENV : GITOPS_REPO_REQUIRED
-    return (
-        <>
-            <RadioGroup
-                value={deploymentAppType}
-                name="DeploymentAppTypeGroup"
-                onChange={handleOnChange}
-                disabled={isDisabled}
-                className={rootClassName ?? ''}
+    areGitopsCredentialsConfigured = true,
+}: DeploymentAppRadioGroupType): JSX.Element => (
+    <div className="flexbox-col dc__gap-16">
+        <RadioGroup
+            value={deploymentAppType}
+            name="DeploymentAppTypeGroup"
+            onChange={handleOnChange}
+            disabled={isDisabled}
+            className={rootClassName ?? ''}
+        >
+            <ConditionalWrap
+                condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
+                wrap={(children) =>
+                    RadioWithTippy(children, isFromCDPipeline, 'Deployment to this environment is not allowed via Helm')
+                }
             >
-                <ConditionalWrap
-                    condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
-                    wrap={(children) =>
-                        RadioWithTippy(
-                            children,
-                            isFromCDPipeline,
-                            'Deployment to this environment is not allowed via Helm',
-                        )
-                    }
+                <RadioGroupItem
+                    dataTestId="helm-deployment"
+                    value={DeploymentAppTypes.HELM}
+                    disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
                 >
-                    <RadioGroupItem
-                        dataTestId="helm-deployment"
-                        value={DeploymentAppTypes.HELM}
-                        disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
-                    >
-                        Helm
-                    </RadioGroupItem>
-                </ConditionalWrap>
-                <ConditionalWrap
-                    condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
-                    wrap={(children) =>
-                        RadioWithTippy(
-                            children,
-                            isFromCDPipeline,
-                            'Deployment to this environment is not allowed via GitOps',
-                        )
-                    }
+                    Helm
+                </RadioGroupItem>
+            </ConditionalWrap>
+            <ConditionalWrap
+                condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
+                wrap={(children) =>
+                    RadioWithTippy(
+                        children,
+                        isFromCDPipeline,
+                        'Deployment to this environment is not allowed via GitOps',
+                    )
+                }
+            >
+                <RadioGroupItem
+                    dataTestId="gitops-deployment"
+                    value={DeploymentAppTypes.GITOPS}
+                    disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
                 >
-                    <RadioGroupItem
-                        dataTestId="gitops-deployment"
-                        value={DeploymentAppTypes.GITOPS}
-                        disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
-                    >
-                        GitOps
-                    </RadioGroupItem>
-                </ConditionalWrap>
-            </RadioGroup>
-            {deploymentAppType === DeploymentAppTypes.GITOPS && isGitOpsRepoNotConfigured && (
-                <div className="mt-16">{gitOpsRepoConfigInfoBar(gitOpsNotCongiguredText)}</div>
-            )}
-        </>
-    )
-}
+                    GitOps
+                </RadioGroupItem>
+            </ConditionalWrap>
+        </RadioGroup>
+
+        <GitOpsActionBlock
+            deploymentAppType={deploymentAppType}
+            areGitopsCredentialsConfigured={areGitopsCredentialsConfigured}
+            gitOpsRepoConfigInfoBar={gitOpsRepoConfigInfoBar}
+            isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
+            allowedDeploymentTypes={allowedDeploymentTypes}
+        />
+    </div>
+)
 
 export const GitOpsDrawer = ({
     commonState,
@@ -366,8 +392,8 @@ export const GitOpsDrawer = ({
             {(isDeploymentAllowed || isDrawerOpen) && (
                 <div>
                     <Drawer onEscape={handleCloseButton} position="right" width="800px">
-                        <div className="cluster-form dc__position-rel h-100 bcn-0">
-                            <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
+                        <div className="cluster-form dc__position-rel h-100 bg__primary">
+                            <div className="flex flex-align-center dc__border-bottom flex-justify bg__primary pb-12 pt-12 pl-20 pr-20">
                                 <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
                                     <span className="fw-6 fs-16 cn-9">Git Repository</span>
                                 </h2>
@@ -391,7 +417,7 @@ export const GitOpsDrawer = ({
                                 />
                             </div>
                         </div>
-                        <div className="w-100 dc__border-top flex right pb-12 pt-12 pl-20 pr-20 dc__position-fixed dc__position-abs bcn-0 dc__bottom-0">
+                        <div className="w-100 dc__border-top flex right pb-12 pt-12 pl-20 pr-20 dc__position-fixed dc__position-abs bg__primary dc__bottom-0">
                             <button
                                 data-testid="cancel_button"
                                 className="cta cancel h-36 lh-36 mr-10"
@@ -415,7 +441,7 @@ export const GitOpsDrawer = ({
             )}
             {(gitOpsState && allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) !== -1) ||
             (showRepoSelector && window._env_.HIDE_GITOPS_OR_HELM_OPTION) ? (
-                <div className="form__input dashed mt-10 flex bc-n50">
+                <div className="form__input dashed mt-10 flex bg__secondary">
                     <div className="">
                         <span>
                             Commit deployment manifests to
@@ -434,7 +460,6 @@ export const GitOpsDrawer = ({
                         renderValidationErrorLabel()}
                 </div>
             ) : null}
-            <hr />
         </>
     )
 }
@@ -620,7 +645,7 @@ export const ChartVersionValuesSelector = ({
 
 export const ActiveReadmeColumn = ({ fetchingReadMe, activeReadMe }: ActiveReadmeColumnProps) => {
     return (
-        <div className="chart-values-view__readme dc__overflow-scroll dc__border-right">
+        <div className="dc__overflow-auto dc__border-right">
             <div
                 className="code-editor__header flex left fs-12 fw-6 cn-7 dc__position-sticky dc__top-0 dc__zi-1"
                 data-testid="readme-heading"
@@ -628,52 +653,6 @@ export const ActiveReadmeColumn = ({ fetchingReadMe, activeReadMe }: ActiveReadm
                 Readme
             </div>
             {fetchingReadMe ? <Progressing pageLoader /> : <MarkDown markdown={activeReadMe} />}
-        </div>
-    )
-}
-
-export const DeleteChartDialog = ({
-    appName,
-    handleDelete,
-    toggleConfirmation,
-    isCreateValueView,
-    disableButton,
-}: DeleteChartDialogProps) => {
-    const closeConfirmation = () => {
-        toggleConfirmation(false)
-    }
-    const handleForceDelete = () => {
-        handleDelete(DELETE_ACTION.DELETE)
-    }
-    return (
-        <DeleteDialog
-            apiCallInProgress={disableButton}
-            title={`Delete '${appName}' ?`}
-            delete={handleForceDelete}
-            closeDelete={closeConfirmation}
-        >
-            {isCreateValueView ? (
-                <DeleteDialog.Description>
-                    <p>{DELETE_PRESET_VALUE_DESCRIPTION_LINES.First}</p>
-                    <p>{DELETE_PRESET_VALUE_DESCRIPTION_LINES.Second}</p>
-                </DeleteDialog.Description>
-            ) : (
-                <DeleteDialog.Description>
-                    <p>{DELETE_CHART_APP_DESCRIPTION_LINES.First}</p>
-                    <p>{DELETE_CHART_APP_DESCRIPTION_LINES.Second}</p>
-                </DeleteDialog.Description>
-            )}
-        </DeleteDialog>
-    )
-}
-
-const renderValidationErrorLabel = (message?: string): JSX.Element => {
-    return (
-        <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6">
-            <div className="error-label-icon">
-                <Error className="icon-dim-16" />
-            </div>
-            <div className="ml-4 cr-5">{message || REQUIRED_FIELD_MSG}</div>
         </div>
     )
 }
@@ -691,14 +670,13 @@ export const ValueNameInput = ({
             <CustomInput
                 name="value-name"
                 label="Name"
-                tabIndex={1}
                 placeholder="Eg. value-template"
                 value={valueName}
                 onChange={(e) => handleValueNameChange(e.target.value)}
                 onBlur={() => handleValueNameOnBlur()}
                 disabled={valueNameDisabled}
                 data-testid="preset-values-name-input"
-                isRequiredField
+                required
                 error={invalidValueName && (invalidValueNameMessage || REQUIRED_FIELD_MSG)}
             />
         </div>
@@ -713,21 +691,19 @@ export const AppNameInput = ({
     invalidAppNameMessage,
 }: AppNameInputType) => {
     return (
-        <div className="w-100">
-            <CustomInput
-                name="app-name"
-                tabIndex={1}
-                label="App Name"
-                placeholder="Eg. app-name"
-                value={appName}
-                onChange={(e) => handleAppNameChange(e.target.value)}
-                onBlur={handleAppNameOnBlur}
-                data-testid="app-name-input"
-                isRequiredField
-                error={invalidAppName && (invalidAppNameMessage || REQUIRED_FIELD_MSG)}
-                rootClassName="h-32"
-            />
-        </div>
+        <CustomInput
+            name="app-name"
+            label="App Name"
+            placeholder="Eg. app-name"
+            value={appName}
+            onChange={(e) => handleAppNameChange(e.target.value)}
+            onBlur={handleAppNameOnBlur}
+            data-testid="app-name-input"
+            required
+            error={invalidAppName && (invalidAppNameMessage || REQUIRED_FIELD_MSG)}
+            size={ComponentSizeType.medium}
+            fullWidth
+        />
     )
 }
 
@@ -777,9 +753,7 @@ export const UpdateApplicationButton = ({
             type="button"
             tabIndex={6}
             disabled={isUpdateInProgress || isDeleteInProgress}
-            className={`chart-values-view__update-cta cta ${
-                isUpdateInProgress || isDeleteInProgress ? 'disabled' : ''
-            }`}
+            className={`cta ${isUpdateInProgress || isDeleteInProgress ? 'disabled' : ''}`}
             onClick={deployOrUpdateApplication}
             data-testid="preset-save-values-button"
         >

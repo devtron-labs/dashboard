@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import Help from '../../../assets/icons/ic-help-green.svg'
-import { ReactComponent as GreenCheck } from '../../../assets/icons/ic-check.svg'
-import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
+import { ButtonProps, ButtonVariantType, InfoBlock, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import './validateForm.css'
 
 export enum VALIDATION_STATUS {
@@ -28,127 +24,96 @@ export enum VALIDATION_STATUS {
     DRY_RUN = 'DRY_RUN',
 }
 
-function renderOnClickValidate(onClickValidate) {
-    return (
-        <a onClick={() => onClickValidate()} className="fw-6 onlink pointer dc__link ">
-            VALIDATE
-        </a>
-    )
-}
+const getOnClickValidateButtonProps = (onClickValidate: () => void): ButtonProps => ({
+    dataTestId: 'validate-button',
+    text: 'Validate',
+    onClick: onClickValidate,
+    variant: ButtonVariantType.text,
+})
 
-const ValidateDryRun = ({ onClickValidate, configName }) => {
-    return (
-        <div className="eb-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col w-100">
-            <div className="flex flex-justify">
-                <div className="flex">
-                    <img src={Help} className="icon-dim-20" />
-                    <div className="fs-13">
-                        <span className="ml-8 fw-6">
-                            Perform a dry run to validate the below {configName} configurations.
-                        </span>
-                    </div>
-                </div>
-                {renderOnClickValidate(onClickValidate)}
+const ValidateDryRun = ({ onClickValidate, configName }) => (
+    <InfoBlock
+        heading={`Perform a dry run to validate the below ${configName} configurations.`}
+        buttonProps={getOnClickValidateButtonProps(onClickValidate)}
+    />
+)
+
+const ValidateLoading = ({ message }) => (
+    <InfoBlock
+        customIcon={
+            <div className="icon-dim-20 flex">
+                <Progressing />
             </div>
-        </div>
-    )
-}
+        }
+        heading={message}
+    />
+)
 
-const ValidateLoading = ({ message }) => {
-    return (
-        <div className="eb-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col w-100">
-            <div className="flex left">
-                <div>
-                    <Progressing />
-                </div>
-                <div className="fs-13">
-                    <span className="ml-8 fw-6">{message}</span>
-                </div>
+const ValidateSuccess = ({ onClickValidate, warning }) => (
+    <div className="w-100">
+        <InfoBlock
+            variant="success"
+            heading="Configurations validated"
+            buttonProps={getOnClickValidateButtonProps(onClickValidate)}
+            borderRadiusConfig={{
+                bottom: !warning,
+            }}
+            borderConfig={{
+                bottom: !warning,
+            }}
+        />
+        {warning && (
+            <div className="p-16 bw-1 en-2 br-4 success-warning">
+                <span className="fs-13 cn-9">{warning}</span>
             </div>
-        </div>
-    )
-}
+        )}
+    </div>
+)
 
-const ValidateSuccess = ({ onClickValidate, warning }) => {
-    return (
-        <div className="w-100">
-            <div
-                className={`${warning ? 'success-no-border' : 'success-border_rad'} git_success pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col bcg-1`}
-            >
-                <div className="flex flex-justify">
-                    <div className="flex">
-                        <GreenCheck className="icon-dim-20 scg-5" />
-                        <div className="fs-13">
-                            <span className="ml-8 fw-6">Configurations validated</span>
-                        </div>
-                    </div>
-                    {renderOnClickValidate(onClickValidate)}
-                </div>
-            </div>
-            {warning && (
-                <div className="p-16 bw-1 en-2 br-4 success-warning">
-                    <span className="fs-13 cn-9">{warning}</span>
-                </div>
-            )}
-        </div>
-    )
-}
+const ValidateFailure = ({ formId, validationError, onClickValidate, isChartRepo = false, warning, showValidate }) => (
+    <div className="br-4 bw-1 bg__primary flexbox-col w-100">
+        <InfoBlock
+            variant="error"
+            heading="Configurations validation failed"
+            buttonProps={
+                isChartRepo || (formId && showValidate) ? getOnClickValidateButtonProps(onClickValidate) : null
+            }
+            borderConfig={{
+                bottom: false,
+            }}
+            borderRadiusConfig={{
+                bottom: false,
+            }}
+        />
 
-const ValidateFailure = ({
-    formId,
-    validationError,
-    onClickValidate,
-    validatedTime = '',
-    isChartRepo = false,
-    warning,
-    showValidate,
-}) => {
-    return (
-        <div className=" br-4 bw-1 bcn-0 flexbox-col w-100">
-            <div className="flex config_failure er-2 bcr-1 pt-10 pb-10 pl-13 pr-16 br-4 bw-1 flex-justify">
-                <div className="flex">
-                    <Error className="icon-dim-20 ml--3 stroke_width" />
-                    <div className="fs-13">
-                        <span className="ml-8 fw-6">Configurations validation failed</span>
-                    </div>
-                </div>
-                {isChartRepo && (
-                    <a onClick={() => onClickValidate()} className="fw-6 onlink pointer dc__link ">
-                        VALIDATE
-                    </a>
+        <div className="flex left config_failure-actions en-2 py-10 px-16 br-4 bw-1">
+            <div className="fs-13">
+                {isChartRepo ? (
+                    <>
+                        <div>{validationError?.errtitle} </div>
+                        <span className="fw-6">Error: </span> {validationError?.errMessage}
+                    </>
+                ) : (
+                    <>
+                        <p className="mt-0 mb-0">Devtron was unable to perform the following actions.</p>
+                        {Object.entries(validationError).map(([value, name]) => (
+                            <p key={value} className="mt-4 mb-0">
+                                <span className="fw-6 dc__lowercase">{value}: </span>
+                                {name}
+                            </p>
+                        ))}
+                        {warning && (
+                            <p className="mt-4 mb-0">
+                                <span className="fw-6 dc__lowercase">NOTE: </span>
+                                {warning}
+                            </p>
+                        )}
+                    </>
                 )}
-                {!isChartRepo && formId && showValidate && renderOnClickValidate(onClickValidate)}
-            </div>
-            <div className="flex left config_failure-actions en-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1">
-                <div className="fs-13">
-                    {isChartRepo && (
-                        <>
-                            <div>{validationError?.errtitle} </div>
-                            <span className="fw-6">Error: </span> {validationError?.errMessage}
-                        </>
-                    )}
-                    {!isChartRepo && (
-                        <>
-                            <p className="mt-0 mb-0">Devtron was unable to perform the following actions.</p>
-                            {Object.entries(validationError).map(([value, name]) => (
-                                <p key={value} className="mt-4 mb-0">
-                                    <span className="fw-6 dc__lowercase">{value}: </span>
-                                    {name}
-                                </p>
-                            ))}
-                            {warning && (
-                                <p className="mt-4 mb-0">
-                                    <span className="fw-6 dc__lowercase">NOTE: </span>
-                                    {warning}
-                                </p>
-                            )}
-                        </>
-                    )}
-                </div>
             </div>
         </div>
-    )
-}
+    </div>
+)
 
 export const ValidateForm = ({
     id,
@@ -159,18 +124,21 @@ export const ValidateForm = ({
     configName,
     warning = '',
     showValidate = true,
-}) => {
-    return (
-        <>
-            {!id && configName === 'chart repo' && validationStatus != VALIDATION_STATUS.LOADER}
-            {id && validationStatus === VALIDATION_STATUS.DRY_RUN && (
-             <div className="w-100">  <ValidateDryRun onClickValidate={onClickValidate} configName={configName} /></div>
-            )}
-            {validationStatus === VALIDATION_STATUS.LOADER && (
-               <div className="w-100"> <ValidateLoading message="Validating repo configuration. Please wait… " /></div>
-            )}
-            {validationStatus === VALIDATION_STATUS.FAILURE && (
-              <div className='w-100'> <ValidateFailure
+}) => (
+    <>
+        {id && validationStatus === VALIDATION_STATUS.DRY_RUN && (
+            <div className="w-100">
+                <ValidateDryRun onClickValidate={onClickValidate} configName={configName} />
+            </div>
+        )}
+        {validationStatus === VALIDATION_STATUS.LOADER && (
+            <div className="w-100">
+                <ValidateLoading message="Validating repo configuration. Please wait… " />
+            </div>
+        )}
+        {validationStatus === VALIDATION_STATUS.FAILURE && (
+            <div className="w-100">
+                <ValidateFailure
                     validationError={validationError}
                     onClickValidate={onClickValidate}
                     formId={id}
@@ -178,11 +146,12 @@ export const ValidateForm = ({
                     warning={warning}
                     showValidate={showValidate}
                 />
-                </div> 
-            )}
-            {validationStatus === VALIDATION_STATUS.SUCCESS && (
-               <div className='w-100'><ValidateSuccess onClickValidate={onClickValidate} warning={warning} /></div> 
-            )}
-        </>
-    )
-}
+            </div>
+        )}
+        {validationStatus === VALIDATION_STATUS.SUCCESS && (
+            <div className="w-100">
+                <ValidateSuccess onClickValidate={onClickValidate} warning={warning} />
+            </div>
+        )}
+    </>
+)

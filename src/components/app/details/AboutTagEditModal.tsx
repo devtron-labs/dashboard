@@ -80,8 +80,11 @@ export default function AboutTagEditModal({
             if (!currentKey && !currentVal) {
                 continue
             }
-            const {isValid: isKeyValid, errorMessages: keyErrorMessages} = validateTagKeyValue(currentKey)
-            const {isValid: isValueValid, errorMessages: valueErrorMessages} = validateTagValue(currentVal, currentKey)
+            const { isValid: isKeyValid, errorMessages: keyErrorMessages } = validateTagKeyValue(currentKey)
+            const { isValid: isValueValid, errorMessages: valueErrorMessages } = validateTagValue(
+                currentVal,
+                currentKey,
+            )
             if (!isKeyValid || !isValueValid) {
                 invalidLabels = true
                 updatedTagsError[element.id].tagKey = { isValid: isKeyValid, errorMessages: keyErrorMessages }
@@ -131,11 +134,7 @@ export default function AboutTagEditModal({
     const renderAboutModalInfo = (): JSX.Element => {
         return (
             <>
-                <div
-                    className="cn-7 p-20 dc__overflow-scroll"
-                    data-testid="tag-input-form"
-                    style={{ height: 'calc(100vh - 122px)' }}
-                >
+                <div className="flex-grow-1 cn-7 p-20 dc__overflow-auto" data-testid="tag-input-form">
                     {MandatoryTagsContainer ? (
                         <MandatoryTagsContainer
                             appType={appType}
@@ -158,7 +157,7 @@ export default function AboutTagEditModal({
                         />
                     )}
                 </div>
-                <div className="form__buttons dc__border-top pt-16 pb-16 pl-20 pr-20 dc__gap-12">
+                <div className="form__buttons dc__border-top py-16 px-20 dc__gap-12">
                     <Button
                         dataTestId="overview-tag-cancel-button"
                         size={ComponentSizeType.large}
@@ -182,7 +181,7 @@ export default function AboutTagEditModal({
 
     return (
         <Drawer position="right" width="800px" onClose={onClose} onEscape={onClose}>
-            <div className="h-100 bcn-0 create-app-container" onClick={stopPropagation}>
+            <div className="h-100 flexbox-col bg__primary create-app-container" onClick={stopPropagation}>
                 <div className="flex dc__content-space pt-16 pb-16 pl-20 pr-20 dc__border-bottom">
                     <h2 className="fs-16 cn-9 fw-6 m-0">Manage tags</h2>
                     <Close className="icon-dim-20 cursor" onClick={onClose} />

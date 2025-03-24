@@ -26,6 +26,7 @@ import {
     versionComparatorBySortOrder,
     InvalidYAMLTippyWrapper,
     ComponentSizeType,
+    PipelineMigratedFromType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { sortObjectArrayAlphabetically } from '@Components/common'
 import { DEPLOYMENT } from '@Config/constants'
@@ -115,11 +116,11 @@ const ChartSelectorDropdown = ({
                     />
                 </div>
             </PopupMenu.Button>
-            <PopupMenu.Body rootClassName="dc__overflow-scroll mxh-350 w-400 dc__border br-4">
+            <PopupMenu.Body rootClassName="dc__overflow-auto mxh-350 w-400 dc__border br-4">
                 <>
                     {customCharts.length > 0 && (
                         <div
-                            className="pt-12 pr-12 pb-8 pl-12 dc__position-sticky bcn-0 top-0 dc__top-radius-4"
+                            className="pt-12 pr-12 pb-8 pl-12 dc__position-sticky bg__primary top-0 dc__top-radius-4"
                             onClick={stopPropagation}
                         >
                             <RadioGroup
@@ -209,6 +210,7 @@ const DTChartSelector = ({
     areChartsLoading,
     parsingError,
     restoreLastSavedTemplate,
+    migratedFrom,
 }: DTChartSelectorProps) => {
     const filteredCharts = selectedChart
         ? charts
@@ -253,6 +255,17 @@ const DTChartSelector = ({
                     isSearchable={false}
                     variant={SelectPickerVariantType.BORDER_LESS}
                     size={ComponentSizeType.small}
+                    placeholder="Select version"
+                    isDisabled={migratedFrom === PipelineMigratedFromType.ARGO_APPLICATION}
+                    disabledTippyContent={
+                        <div className="flexbox-col dc__gap-2 dc__mxw-200">
+                            <h6 className="m-0 fs-12 fw-6 lh-18">Cannot change chart version</h6>
+
+                            <span className="fs-12 fw-4 lh-18">
+                                Chart version cannot be changed for deployments migrated from Argo CD Applications
+                            </span>
+                        </div>
+                    }
                 />
             </div>
         )

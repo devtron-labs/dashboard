@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
-import { components } from 'react-select'
-import { ReactComponent as SearchIcon } from '../../../assets/icons/ic-search.svg'
-import { ReactComponent as ClearIcon } from '../../../assets/icons/ic-error.svg'
-import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
+import React, { useState, useEffect, MouseEventHandler } from 'react'
+import { components, ValueContainerProps, ClearIndicatorProps } from 'react-select'
+import { Button, ButtonVariantType, ComponentSizeType, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as SearchIcon } from '@Icons/ic-search.svg'
+import { ReactComponent as ClearIcon } from '@Icons/ic-error.svg'
+import { ReactComponent as Warning } from '@Icons/ic-warning.svg'
 import { handleUTCTime } from '../../common'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import { SidebarChildButtonPropsType } from '../Types'
 
-export const KindSearchValueContainer = (props) => {
-    const { selectProps } = props
+export const KindSearchValueContainer = (props: ValueContainerProps) => {
+    const { selectProps, children } = props
     return (
         <components.ValueContainer {...props}>
             <div className="flex left dc__position-abs w-100">
@@ -35,19 +36,28 @@ export const KindSearchValueContainer = (props) => {
                     <span className="cn-5 dc__ellipsis-right ml-8">{selectProps.placeholder}</span>
                 )}
             </div>
-            {React.cloneElement(props.children[1])}
+            {React.cloneElement(children[1])}
         </components.ValueContainer>
     )
 }
 
-export const KindSearchClearIndicator = (props) => {
+export const KindSearchClearIndicator = (props: ClearIndicatorProps) => {
+    const { selectProps, isFocused } = props
+
     return (
         <components.ClearIndicator {...props}>
             <div className="icon-dim-16">
-                {props.selectProps.inputValue && (
-                    <ClearIcon className="clear-kind-search-icon icon-dim-16" onClick={props.selectProps.onBlur} />
+                {selectProps.inputValue && (
+                    <button
+                        type="button"
+                        className="dc__unset-button-styles"
+                        onClick={selectProps.onBlur as unknown as MouseEventHandler<HTMLButtonElement>}
+                        aria-label="Clear kind search"
+                    >
+                        <ClearIcon className="clear-kind-search-icon dc__no-shrink icon-dim-16" />
+                    </button>
                 )}
-                {!props.isFocused && <ShortcutKeyBadge shortcutKey="k" rootClassName="kind-search-shortcut-key" />}
+                {!isFocused && <ShortcutKeyBadge shortcutKey="k" rootClassName="kind-search-shortcut-key" />}
             </div>
         </components.ClearIndicator>
     )
@@ -65,10 +75,15 @@ const WarningStrip: React.FC<{ lastSyncTime: string; callback: () => void }> = (
         <div className="fs-13 flex left w-100 bcy-1 h-32 warning-icon-y7-imp dc__border-bottom-y2">
             <div className="pl-12 flex fs-13 pt-6 pb-6 pl-12">
                 <Warning className="icon-dim-20 mr-8" />
-                <span>Last synced {timePassed}. The data might be stale. </span>
-                <button className="cb-5 ml-4 fw-6 dc__unset-button-styles cursor" onClick={callback}>
-                    Sync now
-                </button>
+                <span>Last synced {timePassed}. The data might be stale.</span>
+                &nbsp;
+                <Button
+                    variant={ButtonVariantType.text}
+                    size={ComponentSizeType.xs}
+                    text="Sync now"
+                    dataTestId="sync-resource-list"
+                    onClick={callback}
+                />
             </div>
         </div>
     )
@@ -102,12 +117,14 @@ export const SidebarChildButton: React.FC<SidebarChildButtonPropsType> = ({
         onClick={onClick}
         aria-label={`Select ${text}`}
     >
-        <div
-            className={`fs-13 pointer dc__ellipsis-right dc__align-left dc__border-radius-4-imp fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
-                isSelected ? 'bcb-1 cb-5' : 'cn-7 dc__hover-n50'
-            }`}
-        >
-            {text}
-        </div>
+        <Tooltip content={text} placement="right">
+            <div
+                className={`fs-13 pointer dc__ellipsis-right dc__align-left dc__border-radius-4-imp fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
+                    isSelected ? 'bcb-1 cb-5' : 'cn-9 dc__hover-n50'
+                }`}
+            >
+                {text}
+            </div>
+        </Tooltip>
     </button>
 )

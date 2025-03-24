@@ -1,9 +1,26 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import type { Meta, StoryObj } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 
 import {
     Button,
     CustomInput,
+    PasswordField,
     useForm,
     UseFormSubmitHandler,
     UseFormValidations,
@@ -34,7 +51,7 @@ const validations: UseFormValidations<FormData> = {
     },
 }
 
-const FormComponent = ({ validationMode }: { validationMode: 'onChange' | 'onBlur' }) => {
+const FormComponent = ({ validationMode }: Pick<Parameters<typeof useForm>[0], 'validationMode'>) => {
     const { data, errors, register, handleSubmit, formState } = useForm<FormData>({
         initialValues: { email: '', password: '' },
         validations,
@@ -52,15 +69,21 @@ const FormComponent = ({ validationMode }: { validationMode: 'onChange' | 'onBlu
                     label="Email"
                     value={data.email}
                     {...register('email')}
-                    inputProps={{ type: 'email' }}
-                    noTrim
+                    type="email"
+                    shouldTrim={false}
+                    placeholder="Enter Email"
                 />
                 {errors.email && <p className="m-0 cr-5">{errors.email}</p>}
             </div>
-            <div>
-                <CustomInput label="Password" value={data.password} {...register('password')} type="password" noTrim />
-                {errors.password && <p className="m-0 cr-5">{errors.password}</p>}
-            </div>
+            <PasswordField
+                placeholder="Enter Password"
+                label="Password"
+                value={data.password}
+                {...register('password')}
+                shouldTrim={false}
+                error={errors.password}
+                shouldShowDefaultPlaceholderOnBlur={false}
+            />
             <Button dataTestId="useForm-story-submit-btn" buttonProps={{ type: 'submit' }} text="Submit" />
             <div style={{ marginTop: '20px' }}>
                 <strong>Form State:</strong>
@@ -89,5 +112,11 @@ export const FormWithOnChangeValidationMode: Story = {
 export const FormWithOnBlurValidationMode: Story = {
     args: {
         validationMode: 'onBlur',
+    },
+}
+
+export const FormWithAllValidationMode: Story = {
+    args: {
+        validationMode: 'all',
     },
 }

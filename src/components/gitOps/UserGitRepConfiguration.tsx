@@ -15,12 +15,18 @@
  */
 
 import { FunctionComponent, useEffect, useState } from 'react'
-import { GitOpsAuthModeType, InfoColourBar, Progressing, showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    GitOpsAuthModeType,
+    InfoBlock,
+    Progressing,
+    showError,
+    ToastManager,
+    ToastVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { gitOpsConfigDevtron, getGitOpsRepoConfig } from '../../services/service'
 import UserGitRepo from './UserGitRepo'
 import { UserGitRepoConfigurationProps } from './gitops.type'
 import { repoType } from '../../config'
-import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { ReloadNoGitOpsRepoConfiguredModal } from '../workflowEditor/NoGitOpsRepoConfiguredWarning'
 
 const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> = ({
@@ -29,7 +35,7 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
     reloadAppConfig,
 }: UserGitRepoConfigurationProps) => {
     const [gitOpsRepoURL, setGitOpsRepoURL] = useState('')
-    const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT)
+    const [selectedRepoType, setSelectedRepoType] = useState(null)
     const [authMode, setAuthMode] = useState<GitOpsAuthModeType>(null)
     const [isEditable, setIsEditable] = useState(false)
     const [showReloadModal, setShowReloadModal] = useState(false)
@@ -56,16 +62,9 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
             })
     }, [])
 
-    const renderInfoColorBar = () => {
-        return (
-            <InfoColourBar
-                message="GitOps repository for this application is immutable once saved."
-                classname="warn"
-                Icon={Warn}
-                iconClass="warning-icon"
-            />
-        )
-    }
+    const renderInfoColorBar = () => (
+        <InfoBlock description="GitOps repository for this application is immutable once saved." variant="warning" />
+    )
 
     const renderSavedGitOpsRepoState = (repoURL) => (
         <>
@@ -81,9 +80,9 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
                             manifests to sync with your live Kubernetes cluster.
                         </div>
                         <div className="fs-13 fw-4 flexbox-col mt-16 mb-16">
-                            <div className="">Configurations for this application will be committed to:</div>
+                            <div>Configurations for this application will be committed to:</div>
                             <a
-                                className="dc__ff-monospace dc__link dc_max-width__max-content"
+                                className="mono dc__link dc_max-width__max-content"
                                 href={repoURL}
                                 target="_blank"
                                 rel="noreferrer noopener"
@@ -103,6 +102,14 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
     }
 
     function handleSaveButton() {
+        if (selectedRepoType === null) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Please select a configuration before saving',
+            })
+            return
+        }
+
         const payload = {
             appId,
             gitRepoURL: selectedRepoType === repoType.DEFAULT ? 'Default' : gitOpsRepoURL,
@@ -130,26 +137,27 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
     }
 
     return (
-        <div className="w-100 h-100 bcn-0 pt-16 flexbox-col">
-            <div className="w-960">
-                <div className="fs-16 fcn-9 fw-6 ml-20 mb-8" data-testid="gitops-config-heading">
-                    GitOps Configuration
+        <div className="w-100 h-100 bg__primary pt-16 flexbox-col flex-grow-1 dc__overflow-auto dc__content-space">
+            <div className="flex-grow-1 dc__overflow-auto">
+                <div className="w-960">
+                    <div className="fs-16 fcn-9 fw-6 ml-20 mb-8" data-testid="gitops-config-heading">
+                        GitOps Configuration
+                    </div>
+                    {isEditable ? (
+                        <UserGitRepo
+                            setSelectedRepoType={setSelectedRepoType}
+                            selectedRepoType={selectedRepoType}
+                            repoURL={gitOpsRepoURL}
+                            setRepoURL={setGitOpsRepoURL}
+                            authMode={authMode}
+                        />
+                    ) : (
+                        renderSavedGitOpsRepoState(gitOpsRepoURL)
+                    )}
                 </div>
-                {isEditable ? (
-                    <UserGitRepo
-                        setSelectedRepoType={setSelectedRepoType}
-                        selectedRepoType={selectedRepoType}
-                        repoURL={gitOpsRepoURL}
-                        setRepoURL={setGitOpsRepoURL}
-                        authMode={authMode}
-                    />
-                ) : (
-                    renderSavedGitOpsRepoState(gitOpsRepoURL)
-                )}
             </div>
             {isEditable && (
-                <div className="pl-16 w-960">
-                    <hr />
+                <div className="flex left w-100 px-20 py-16 dc__border-top-n1">
                     <button
                         data-testid="save_cluster_list_button_after_selection"
                         className="cta h-36 lh-36 "

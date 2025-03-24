@@ -18,7 +18,7 @@
     display: grid;
     grid-template-rows: 48px 1fr;
     grid-template-columns: 250px 1fr;
-    height: 100vh;
+    height: 100%;
 
     a {
         color: var(--B500);
@@ -28,7 +28,7 @@
         grid-template-columns: 100%;
 
         &.white-background {
-            background-color: white !important;
+            background-color: var(--bg-primary) !important;
         }
     }
 
@@ -38,8 +38,8 @@
 
     .stack-manager__navigation {
         padding: 24px 12px;
-        border-right: solid 1px #d6dbdf;
-        background-color: white;
+        border-right: solid 1px var(--N200);
+        background-color: var(--bg-primary);
 
         a.stack-manager__navlink {
             font-size: 13px;
@@ -103,7 +103,7 @@
 
                     .badge {
                         background-color: var(--B500);
-                        color: white;
+                        color: var(--N0);
                     }
                 }
             }
@@ -125,7 +125,7 @@
         max-height: 100%;
 
         &.about-devtron {
-            background-color: white;
+            background-color: var(--bg-primary);
         }
     }
 }

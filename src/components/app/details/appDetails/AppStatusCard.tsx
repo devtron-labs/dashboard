@@ -17,7 +17,7 @@
 import React from 'react'
 import Tippy from '@tippyjs/react'
 import ReactGA from 'react-ga4'
-import { AppType, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { AppStatus, AppType, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { AppStatusCardType } from './appDetails.type'
 import LoadingCard from './LoadingCard'
@@ -65,7 +65,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
         <div
             data-testid="app-status-card"
             onClick={showApplicationDetailedModal}
-            className={`app-details-info-card pointer flex left bcn-0 br-8 mr-12 lh-20 ${
+            className={`app-details-info-card pointer flex left bg__primary br-8 mr-12 lh-20 ${
                 displayMessage ? 'w-250' : 'w-200'
             }`}
         >
@@ -91,11 +91,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
                         </div>
                     </div>
                 </div>
-                <div className="flex br-4">
-                    <figure
-                        className={`dc__app-summary__icon dc__zi-0 ${status.toLowerCase().replace(/ /g, '-')} h-24 w-24 dc__bs-contain m-auto`}
-                    />
-                </div>
+                <AppStatus status={status} iconSize={24} hideMessage showAnimatedIcon hideIconTooltip />
             </div>
             <div className="app-details-info-card__bottom-container">{renderBottomContainer()}</div>
         </div>

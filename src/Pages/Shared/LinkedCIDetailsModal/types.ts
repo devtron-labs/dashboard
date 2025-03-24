@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import { BaseFilterQueryParams, UseUrlFiltersReturnType, WorkflowType } from '@devtron-labs/devtron-fe-common-lib'
-import { StatusConstants } from '../../../components/app/list-new/Constants'
-import { DEPLOYMENT_STATUS, TriggerType } from '../../../config'
+import {
+    BaseFilterQueryParams,
+    UseUrlFiltersReturnType,
+    WorkflowType,
+    TriggerType,
+    StatusType,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { DEPLOYMENT_STATUS } from '../../../config'
 import { SortableKeys } from './constants'
 
 export interface LinkedCIDetailModalProps {
@@ -27,9 +32,7 @@ export interface LinkedCIDetailModalProps {
 export interface LinkedCIAppDto {
     appId: number
     appName: string
-    deploymentStatus:
-        | (typeof DEPLOYMENT_STATUS)[keyof typeof DEPLOYMENT_STATUS]
-        | typeof StatusConstants.NOT_DEPLOYED.titleCase
+    deploymentStatus: (typeof DEPLOYMENT_STATUS)[keyof typeof DEPLOYMENT_STATUS] | StatusType.NOT_DEPLOYED
     environmentId: number
     environmentName: string
     triggerMode: (typeof TriggerType)[keyof typeof TriggerType]

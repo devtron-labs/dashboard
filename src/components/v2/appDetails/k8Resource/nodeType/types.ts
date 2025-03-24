@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { NodeType } from '@devtron-labs/devtron-fe-common-lib'
+import { CSSProperties } from 'react'
 import { NodeDetailTabsType } from '../../../../app/types'
 
 export interface PodPopupProps {
@@ -26,4 +27,9 @@ export interface PodPopupProps {
 export interface NodePodStatus {
     running: number
     all: number
+}
+
+export interface NoPodProps {
+    selectMessage: string
+    style?: CSSProperties
 }

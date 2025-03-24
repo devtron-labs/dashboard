@@ -22,20 +22,16 @@ import {
     ErrorScreenManager,
     BreadCrumb,
     useBreadcrumb,
-    DeleteDialog,
     GenericEmptyState,
     PageHeader,
     SearchBar,
-    ToastManager,
-    ToastVariantType,
+    DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
 import { DOCUMENTATION, Moment12HourFormat, URLS } from '../../../config'
 import emptyCustomChart from '../../../assets/img/app-not-configured.png'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
-import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
-import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Delete } from '../../../assets/icons/ic-delete-interactive.svg'
@@ -48,7 +44,8 @@ import {
     getChartVersionsMin,
 } from '../charts.service'
 import './savedValues.scss'
-import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
+import { DeleteComponentsName, EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
+import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo/ApplicationDeletionInfo'
 
 export default function SavedValuesList() {
     const history: RouteComponentProps['history'] = useHistory()
@@ -107,23 +104,11 @@ export default function SavedValuesList() {
             }/${chartValueId}`,
         )
     }
+    const hideDeleteModal = () => setShowDeleteDialog(false)
 
-    const deleteChartValue = () => {
-        deleteChartValues(selectedValue.id)
-            .then(() => {
-                ToastManager.showToast({
-                    variant: ToastVariantType.success,
-                    description: 'Deleted successfully',
-                })
-                getData()
-            })
-            .catch((error) => {
-                showError(error)
-            })
-            .finally(() => {
-                setShowDeleteDialog(false)
-                setSelectedValue(null)
-            })
+    const onDelete = async () => {
+        await deleteChartValues(selectedValue.id)
+        getData()
     }
 
     const handleFilterChanges = (_searchText: string): void => {
@@ -159,20 +144,13 @@ export default function SavedValuesList() {
 
     const renderDeleteDialog = (): JSX.Element => {
         return (
-            <DeleteDialog
-                title={`Delete preset value '${selectedValue.name}'?`}
-                delete={deleteChartValue}
-                closeDelete={() => {
-                    setShowDeleteDialog(false)
-                }}
-            >
-                <DeleteDialog.Description>
-                    <p className="fs-14 cn-7 lh-20">
-                        This will delete the preset value and it will no longer be available to be used for deployment.
-                    </p>
-                    <p className="fs-14 cn-7 lh-20">Are you sure?</p>
-                </DeleteDialog.Description>
-            </DeleteDialog>
+            <DeleteConfirmationModal
+                title={selectedValue?.name}
+                subtitle={<ApplicationDeletionInfo isPresetValue />}
+                component={DeleteComponentsName.Preset}
+                onDelete={onDelete}
+                closeConfirmationModal={hideDeleteModal}
+            />
         )
     }
 
@@ -228,16 +206,14 @@ export default function SavedValuesList() {
 
     const renderEmptyState = (title?: string, subTitle?: string, showClearButton?: boolean): JSX.Element => {
         return (
-            <div className="dc__position-rel" style={{ height: 'calc(100vh - 235px)' }}>
-                <GenericEmptyState
-                    image={emptyCustomChart}
-                    heightToDeduct={235}
-                    title={title || EMPTY_STATE_STATUS.SAVED_VALUES_EMPTY_STATE.TITLE}
-                    subTitle={subTitle || EMPTY_STATE_STATUS.SAVED_VALUES_EMPTY_STATE.SUBTITLE}
-                    isButtonAvailable={showClearButton}
-                    renderButton={renderClearSearchButton}
-                />
-            </div>
+            <GenericEmptyState
+                image={emptyCustomChart}
+                title={title || EMPTY_STATE_STATUS.SAVED_VALUES_EMPTY_STATE.TITLE}
+                subTitle={subTitle || EMPTY_STATE_STATUS.SAVED_VALUES_EMPTY_STATE.SUBTITLE}
+                isButtonAvailable={showClearButton}
+                renderButton={renderClearSearchButton}
+                classname="flex-grow-1"
+            />
         )
     }
 
@@ -256,12 +232,12 @@ export default function SavedValuesList() {
 
     const renderSavedValuesList = (): JSX.Element => {
         return (
-            <div className="preset-values-container">
+            <div className="preset-values-container flexbox-col flex-grow-1 dc__overflow-auto">
                 <div className="cn-9 fw-6 fs-16" data-testid="preset-page-heading">
                     Preset values
                 </div>
                 {renderSubtitleAndNewButton('Customize, Dry Run and Save values so they’re ready to be used later.')}
-                <div className="mt-16 en-2 bw-1 bcn-0 br-8" style={{ minHeight: 'calc(100vh - 235px)' }}>
+                <div className="mt-16 en-2 bw-1 bg__primary br-8 flexbox-col flex-grow-1">
                     {savedValueList.length === 0 ? (
                         renderEmptyState()
                     ) : filteredSavedValueList.length === 0 ? (
@@ -381,10 +357,10 @@ export default function SavedValuesList() {
         )
     }
     return (
-        <>
+        <div className="flexbox-col h-100 dc__overflow-hidden">
             <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
             {renderSavedValuesList()}
             {showDeleteDialog && renderDeleteDialog()}
-        </>
+        </div>
     )
 }

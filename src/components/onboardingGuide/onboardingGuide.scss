@@ -22,11 +22,7 @@
     }
 
     .onboarding-header {
-        background: var(--window-bg);
-    }
-
-    .onboarding__bottom {
-        height: calc(100vh - 300px);
+        background: var(--bg-tertiary);
     }
 
     .onboarding__line {
@@ -44,10 +40,6 @@
 
 .guide_skip a:hover {
     color: var(--B500);
-}
-
-.guide-body {
-    height: calc(100vh - 454px);
 }
 
 .common-guide__container {

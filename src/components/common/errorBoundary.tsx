@@ -17,14 +17,17 @@
 import { Component } from 'react'
 import * as Sentry from '@sentry/browser'
 import { Reload } from '@devtron-labs/devtron-fe-common-lib'
-import bugFixing from '../../assets/img/bug_fixing.svg'
+import bugFixing from '../../assets/img/bug-fixing.webp'
 
 interface errorBoundaryState {
     eventId: any
     hasError: boolean
     isChunkLoadError: boolean
 }
-export default class ErrorBoundary extends Component<{}, errorBoundaryState> {
+
+interface ErrorBoundaryProps {}
+
+export default class ErrorBoundary extends Component<ErrorBoundaryProps, errorBoundaryState> {
     constructor(props) {
         super(props)
         this.state = { eventId: null, hasError: false, isChunkLoadError: false }
@@ -56,11 +59,11 @@ export default class ErrorBoundary extends Component<{}, errorBoundaryState> {
     render() {
         if (this.state.hasError) {
             return this.state.isChunkLoadError ? (
-                <div style={{ height: '100vh' }}>
+                <div className="bg__tertiary" style={{ height: '100vh' }}>
                     <Reload />
                 </div>
             ) : (
-                <div className="flex column" style={{ width: '100%', height: '100%' }}>
+                <div className="flex column bg__tertiary" style={{ width: '100%', height: '100vh' }}>
                     <img src={bugFixing} alt="" style={{ height: '300px', width: 'auto', marginBottom: '20px' }} />
                     <h2 style={{ marginBottom: '20px' }}>We encountered an error.</h2>
                     <a

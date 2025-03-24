@@ -17,8 +17,6 @@
 import { useState, useEffect } from 'react'
 import {
     showError,
-    DeleteDialog,
-    ResizableTextarea,
     CustomInput,
     useMainContext,
     ToastVariantType,
@@ -28,6 +26,7 @@ import {
     ComponentSizeType,
     ButtonStyleType,
     Button,
+    Textarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory } from 'react-router-dom'
 import { ReactComponent as ICDeleteInteractive } from '@Icons/ic-delete-interactive.svg'
@@ -41,8 +40,9 @@ import {
     PermissionConfigurationForm,
     usePermissionConfiguration,
 } from '../../Shared/components/PermissionConfigurationForm'
-import { getIsSuperAdminPermission, getRoleFilters, validateDirectPermissionForm } from '../../utils'
+import { getIsSuperAdminPermission, getRolesAndAccessRoles, validateDirectPermissionForm } from '../../utils'
 import { excludeKeyAndClusterValue } from '../../Shared/components/K8sObjectPermissions/utils'
+import { DeleteUserPermission } from '../../UserPermissions/DeleteUserPermission'
 
 const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const { serverMode } = useMainContext()
@@ -57,6 +57,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
         currentK8sPermissionRef,
         data: permissionGroup,
         isSaveDisabled,
+        allowManageAllAccess,
     } = usePermissionConfiguration()
     const _permissionGroup = permissionGroup as PermissionGroup
 
@@ -98,10 +99,20 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
             setName((_name) => ({ ..._name, error: 'Group name is mandatory' }))
             return
         }
-        if (!isSuperAdminPermission && !validateDirectPermissionForm(directPermission, setDirectPermission).isValid) {
+        if (
+            !isSuperAdminPermission &&
+            !validateDirectPermissionForm(directPermission, setDirectPermission, allowManageAllAccess).isValid
+        ) {
             return
         }
         setSubmitting(true)
+
+        const { roleFilters, accessRoleFilters } = getRolesAndAccessRoles({
+            k8sPermission,
+            directPermission,
+            serverMode,
+            chartPermission,
+        })
 
         const payload: PermissionGroupCreateOrUpdatePayload = {
             // ID 0 denotes create operation
@@ -109,12 +120,9 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
             name: name.value,
             description,
             superAdmin: isSuperAdminPermission,
-            roleFilters: getRoleFilters({
-                k8sPermission,
-                directPermission,
-                serverMode,
-                chartPermission,
-            }),
+            roleFilters,
+            ...(accessRoleFilters.length ? { accessRoleFilters } : {}),
+            canManageAllAccess: allowManageAllAccess,
         }
 
         try {
@@ -139,21 +147,9 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
         }
     }
 
-    const handleDelete = async () => {
-        setSubmitting(true)
-        try {
-            await deletePermissionGroup(_permissionGroup.id)
-            ToastManager.showToast({
-                variant: ToastVariantType.success,
-                description: 'Group deleted',
-            })
-            setDeleteConfirmationModal(false)
-            _redirectToPermissionGroupList()
-        } catch (err) {
-            showError(err)
-        } finally {
-            setSubmitting(false)
-        }
+    const onDelete = async () => {
+        await deletePermissionGroup(_permissionGroup.id)
+        _redirectToPermissionGroupList()
     }
 
     return (
@@ -190,27 +186,19 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
                         value={name.value}
                         data-testid="permission-group-name-textbox"
                         onChange={handleGroupNameChange}
-                        isRequiredField
+                        required
                         error={name.error}
                         placeholder="Eg. Project managers"
                     />
-                    <div>
-                        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                        <label htmlFor="permission-group-description" className="form__label">
-                            Description
-                        </label>
-                        <ResizableTextarea
-                            name="permission-group-description"
-                            maxHeight={300}
-                            className="w-100"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            data-testid="permission-group-description-textbox"
-                            placeholder="Enter a description for this group"
-                        />
-                    </div>
+                    <Textarea
+                        label="Description"
+                        name="permission-group-description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Enter a description for this group"
+                    />
                     <div className="dc__border-top" />
-                    <PermissionConfigurationForm showUserPermissionGroupSelector={false} />
+                    <PermissionConfigurationForm showUserPermissionGroupSelector={false} isAddMode={isAddMode} />
                 </div>
                 <div className="flexbox pt-16 pl-20 pr-20 dc__border-top-n1 dc__align-items-center dc__align-self-stretch dc__gap-8">
                     <Button
@@ -245,12 +233,11 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
                         )}
                 </div>
                 {deleteConfirmationModal && (
-                    <DeleteDialog
-                        title={`Delete group '${name.value}'?`}
-                        description="Deleting this group will revoke permissions from users added to this group."
-                        closeDelete={toggleDeleteConfirmationModal}
-                        delete={handleDelete}
-                        apiCallInProgress={submitting}
+                    <DeleteUserPermission
+                        title={name.value}
+                        onDelete={onDelete}
+                        closeConfirmationModal={toggleDeleteConfirmationModal}
+                        isUserGroup
                     />
                 )}
             </div>

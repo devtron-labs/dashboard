@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { generatePath, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
 import {
@@ -34,8 +34,10 @@ import EnvironmentOverride from '@Pages/Shared/EnvironmentOverride/EnvironmentOv
 import { ENV_CONFIG_PATH_REG } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.constants'
 import { DeploymentConfigCompare } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/DeploymentConfigCompare'
 
+import { EnvConfigType } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
+import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
 import { getConfigAppList } from '../../AppGroup.service'
-import { AppGroupDetailDefaultType, ConfigAppList } from '../../AppGroup.types'
+import { AppGroupDetailDefaultType, ApplicationRouteType, ConfigAppList } from '../../AppGroup.types'
 import ApplicationRoute from './ApplicationRoutes'
 
 const getApprovalPolicyConfigForEnv: (envId: number) => Promise<ResourceIdToResourceApprovalPolicyConfigMapType> =
@@ -59,10 +61,33 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
             ]),
         [filteredAppIds],
     )
-    const [envConfigLoading, envConfigRes, , refetch] = useAsync(
-        () => (appId ? getEnvConfig(+appId, +envId) : null),
-        [],
-    )
+
+    const [envConfigLoading, setEnvConfigLoading] = useState<boolean>(false)
+    const [envConfigRes, setEnvConfigRes] = useState<EnvConfigType>(null)
+
+    const fetchEnvConfig = async (
+        propsEnvId?: number,
+        callback?: Parameters<ApplicationRouteType['fetchEnvConfig']>[1],
+    ) => {
+        setEnvConfigLoading(true)
+        try {
+            if (appId) {
+                const res = await getEnvConfig(+appId, +envId, callback)
+                setEnvConfigRes(res)
+            } else {
+                setEnvConfigRes(null)
+            }
+        } catch {
+            // Do nothing
+        } finally {
+            setEnvConfigLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        fetchEnvConfig()
+    }, [])
 
     const envConfig = {
         config: envConfigRes,
@@ -112,7 +137,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
 
     if (loading || !envAppList.length || isAppNotPresentInEnv) {
         return (
-            <div className="loading-state">
+            <div className="flex-grow-1">
                 <Progressing pageLoader />
             </div>
         )
@@ -121,17 +146,17 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
     return (
         <Switch>
             <Route
-                path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
+                path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
             >
                 {({ match, location }) => {
                     const basePath = generatePath(path, match.params)
-                    // Set the resourceTypePath based on the resourceType from the URL parameters.
-                    // If the resourceType is 'Manifest' or 'PipelineStrategy', use 'deployment-template' as the back URL.
-                    // Otherwise, use the actual resourceType from the URL, which could be 'deployment-template', 'configmap', or 'secrets'.
-                    const resourceTypePath = `/${match.params.resourceType === EnvResourceType.Manifest || match.params.resourceType === EnvResourceType.PipelineStrategy ? EnvResourceType.DeploymentTemplate : match.params.resourceType}`
+                    // Used in cm/cs
                     const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
-
-                    const goBackURL = `${basePath}${resourceTypePath}${resourceNamePath}`
+                    const goBackURL =
+                        match.params.resourceType === EnvResourceType.Manifest ||
+                        match.params.resourceType === EnvResourceType.PipelineStrategy
+                            ? basePath
+                            : `${basePath}/${match.params.resourceType}${resourceNamePath}`
 
                     return (
                         <DeploymentConfigCompare
@@ -148,15 +173,15 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
                 }}
             </Route>
             <Route>
-                <div className="env-compose">
+                <div className="env-compose deploy-config-collapsible-layout flex-grow-1">
                     <div
-                        className={`env-compose__nav ${pathname.match(ENV_CONFIG_PATH_REG) ? 'env-configurations' : ''}`}
+                        className={`env-compose__nav collapsible-sidebar ${pathname.match(ENV_CONFIG_PATH_REG) ? 'env-configurations' : ''}`}
                     >
                         <ApplicationRoute
                             key={appId}
                             envAppList={envAppList}
                             envConfig={envConfig}
-                            fetchEnvConfig={refetch}
+                            fetchEnvConfig={fetchEnvConfig}
                             appIdToAppApprovalConfigMap={appIdToAppApprovalConfigMap}
                         />
                     </div>
@@ -168,7 +193,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
                                 reloadEnvironments={noop}
                                 envName={envName}
                                 envConfig={envConfig}
-                                fetchEnvConfig={refetch}
+                                fetchEnvConfig={fetchEnvConfig}
                                 onErrorRedirectURL={generatePath(path, { envId })}
                                 appOrEnvIdToResourceApprovalConfigurationMap={appIdToAppApprovalConfigMap}
                             />

@@ -39,7 +39,7 @@ export default function RotateResponseModal({
 
     const renderHeaderSection = (): JSX.Element => {
         return (
-            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
+            <div className="flex flex-align-center flex-justify dc__border-bottom dc__no-shrink pt-16 pr-20 pb-16 pl-20">
                 <span className="fs-16 fw-6 flex m-0 lh-20 cn-9">
                     <button type="button" className="dc__transparent icon-dim-24 mr-16" onClick={() => setResult(null)}>
                         <BackIcon />
@@ -60,9 +60,9 @@ export default function RotateResponseModal({
     }
     const renderResponseBodySection = (): JSX.Element => {
         return (
-            <div className="response-list-container bcn-0 dc__height-inherit dc__overflow-auto">
+            <div className="response-list-container flexbox-col flex-grow-1 dc__height-inherit dc__overflow-auto">
                 <div
-                    className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom response-row dc__border-bottom pt-8 pb-8"
+                    className="dc__position-sticky dc__top-0 bg__primary dc__border-bottom response-row dc__border-bottom pt-8 pb-8"
                     style={{ zIndex: 1 }}
                 >
                     <div className="fs-12 fw-6 cn-7 ml-20">RESOURCE</div>
@@ -92,7 +92,7 @@ export default function RotateResponseModal({
 
     const renderFooterSection = (): JSX.Element => {
         return (
-            <div className="dc__border-top flex bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 restart-modal-width right">
+            <div className="dc__border-top flex py-16 px-20 right">
                 <button className="cta cancel flex h-36 mr-12" data-testid="close-popup" onClick={onClose}>
                     Close
                 </button>
@@ -144,10 +144,12 @@ export default function RotateResponseModal({
     }
 
     return (
-        <>
-            {renderHeaderSection()}
-            {renderResponseBodySection()}
+        <div className="flexbox-col flex-grow-1 dc__content-space dc__overflow-auto">
+            <div className="flexbox-col flex-grow-1 dc__overflow-auto">
+                {renderHeaderSection()}
+                {renderResponseBodySection()}
+            </div>
             {renderFooterSection()}
-        </>
+        </div>
     )
 }

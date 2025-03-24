@@ -24,6 +24,7 @@ import {
     SelectPickerVariantType,
     getCVEUrlFromCVEName,
     ConditionalWrap,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink } from 'react-router-dom'
 import {
@@ -99,6 +100,7 @@ export class SecurityPolicyEdit extends Component<
         this.state = {
             view: ViewType.LOADING,
             showWhitelistModal: false,
+            addCVEEnvId: null,
             result: {
                 level: this.props.level,
                 policies: [],
@@ -106,7 +108,6 @@ export class SecurityPolicyEdit extends Component<
             isCveError: false,
             showLoadingOverlay: false,
         }
-        this.toggleAddCveModal = this.toggleAddCveModal.bind(this)
         this.updateSeverity = this.updateSeverity.bind(this)
         this.saveCVE = this.saveCVE.bind(this)
         this.updateCVE = this.updateCVE.bind(this)
@@ -210,6 +211,7 @@ export class SecurityPolicyEdit extends Component<
             (policy.policy.isOverriden && actionLowerCase === policy.policy.action.toLowerCase()) ||
             (policy.policy.inherited && actionLowerCase === VulnerabilityAction.inherit)
         ) {
+            this.setState({ showLoadingOverlay: false })
             return
         }
 
@@ -256,8 +258,12 @@ export class SecurityPolicyEdit extends Component<
         }
     }
 
-    toggleAddCveModal(): void {
-        this.setState({ showWhitelistModal: !this.state.showWhitelistModal })
+    openWhitelistModal = (envId?: number) => {
+        this.setState({ showWhitelistModal: true, addCVEEnvId: envId ?? null })
+    }
+
+    closeWhitelistModal = () => {
+        this.setState({ showWhitelistModal: false, addCVEEnvId: null })
     }
 
     createCVEPayload(
@@ -398,7 +404,10 @@ export class SecurityPolicyEdit extends Component<
         )
     }
 
-    renderPolicyListHeader = () => {
+    renderPolicyListHeader = (envId: number) => {
+        const handleAddCVE = () => {
+            this.openWhitelistModal(envId)
+        }
         return (
             <div className="flexbox flex-justify mt-20">
                 <div>
@@ -416,7 +425,7 @@ export class SecurityPolicyEdit extends Component<
                         </a>
                     </p>
                 </div>
-                <button type="button" className="cta small flex" onClick={() => this.toggleAddCveModal()}>
+                <button type="button" className="cta small flex" onClick={handleAddCVE}>
                     <Add className="icon-dim-16 mr-5" />
                     Add CVE Policy
                 </button>
@@ -451,8 +460,10 @@ export class SecurityPolicyEdit extends Component<
                                             href={getCVEUrlFromCVEName(cve.name)}
                                             rel="noopener noreferrer"
                                             target="_blank"
+                                            className="dc__inline-flex dc__align-items-center dc__gap-4"
                                         >
                                             {cve.name}
+                                            <Icon name="ic-open-in-new" size={14} color={null} />
                                         </a>
                                     </td>
                                     <td className="security-policy__data-cell">
@@ -499,7 +510,7 @@ export class SecurityPolicyEdit extends Component<
         return (
             <div
                 className="br-4 en-1 bw-1 w-100 cn-5 flex mt-10"
-                style={{ height: '100px', backgroundColor: '#f7fafc' }}
+                style={{ height: '100px', backgroundColor: 'var(--bg-secondary)' }}
             >
                 No specific CVEs blocked or allowed.
             </div>
@@ -563,9 +574,6 @@ export class SecurityPolicyEdit extends Component<
         }
 
         const isCollapsible = this.props.level === 'application'
-        const setCVEErrorToTrue = () => {
-            this.setState({ isCveError: true })
-        }
 
         const wrapWithLoadingOverlay = (children) => (
             <div className="dc__position-rel">
@@ -604,7 +612,7 @@ export class SecurityPolicyEdit extends Component<
                                     <>
                                         {isCollapsible ? <div className="mb-20" /> : null}
                                         {this.renderVulnerabilitiesCard(v, v.severities)}
-                                        {this.renderPolicyListHeader()}
+                                        {this.renderPolicyListHeader(v.envId)}
                                         {v.cves.length
                                             ? this.renderPolicyList(v.cves, v.envId)
                                             : this.renderEmptyPolicyList()}
@@ -617,9 +625,8 @@ export class SecurityPolicyEdit extends Component<
                 {this.state.showWhitelistModal ? (
                     <AddCveModal
                         saveCVE={this.saveCVE}
-                        close={this.toggleAddCveModal}
-                        isCveError={this.state.isCveError}
-                        setCVEErrorToTrue={setCVEErrorToTrue}
+                        close={this.closeWhitelistModal}
+                        envId={this.state.addCVEEnvId}
                     />
                 ) : null}
             </>

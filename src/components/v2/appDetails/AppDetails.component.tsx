@@ -20,8 +20,10 @@ import { useLocation, useParams } from 'react-router-dom'
 import {
     DeploymentAppTypes,
     Progressing,
+    noop,
     processDeploymentStatusDetailsData,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { ClusterMetaDataBar } from '@Components/common/ClusterMetaDataBar/ClusterMetaDataBar'
 import { AppDetailsComponentType, AppType } from './appDetails.type'
 import IndexStore from './index.store'
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component'
@@ -39,7 +41,6 @@ import {
 } from '../../app/details/appDetails/appDetails.type'
 import { useSharedState } from '../utils/useSharedState'
 import ReleaseStatusEmptyState from './ReleaseStatusEmptyState'
-import { ClusterMetaDataBar } from '../../common/ClusterMetaDataBar/ClusterMetaDataBar'
 
 let deploymentStatusTimer = null
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
@@ -84,7 +85,7 @@ const AppDetailsComponent = ({
 
     useEffect(() => {
         if (appDetails?.appType === AppType.EXTERNAL_HELM_CHART && params.appId) {
-            getSaveTelemetry(params.appId)
+            getSaveTelemetry(params.appId).catch(noop)
         }
     }, [])
     useEffect(() => {
@@ -97,6 +98,27 @@ const AppDetailsComponent = ({
         shouldFetchTimelineRef.current = isModalOpen
     }, [location.search])
 
+    const clearDeploymentStatusTimer = (): void => {
+        if (deploymentStatusTimer) {
+            clearTimeout(deploymentStatusTimer)
+        }
+    }
+
+    const getDeploymentDetailStepsData = (showTimeline?: boolean): void => {
+        const shouldFetchTimeline = showTimeline ?? shouldFetchTimelineRef.current
+
+        // Deployments status details for Helm apps
+        getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline, '', true)
+            .then((deploymentStatusDetailRes) => {
+                // eslint-disable-next-line @typescript-eslint/no-use-before-define
+                processDeploymentStatusData(deploymentStatusDetailRes.result)
+                if (shouldFetchTimeline) {
+                    setIsInitialTimelineDataLoading(false)
+                }
+            })
+            .catch(noop)
+    }
+
     useEffect(() => {
         // Get deployment status timeline on ArgoCD apps in devtron helm apps
         // i.e. Devtron Helm app deployed through GitOps /Manifest Download
@@ -108,26 +130,6 @@ const AppDetailsComponent = ({
             clearDeploymentStatusTimer()
         }
     }, [appDetails.appId])
-
-    const clearDeploymentStatusTimer = (): void => {
-        if (deploymentStatusTimer) {
-            clearTimeout(deploymentStatusTimer)
-        }
-    }
-
-    const getDeploymentDetailStepsData = (showTimeline?: boolean): void => {
-        const shouldFetchTimeline = showTimeline ?? shouldFetchTimelineRef.current
-
-        // Deployments status details for Helm apps
-        getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline, '', true).then(
-            (deploymentStatusDetailRes) => {
-                processDeploymentStatusData(deploymentStatusDetailRes.result)
-                if (shouldFetchTimeline) {
-                    setIsInitialTimelineDataLoading(false)
-                }
-            },
-        )
-    }
 
     const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {
         const processedDeploymentStatusDetailsData =
@@ -187,56 +189,60 @@ const AppDetailsComponent = ({
     }
 
     return (
-        <div className="helm-details" data-testid="app-details-wrapper">
-            <div className="app-info-bg-gradient">
-                <EnvironmentSelectorComponent
-                    isExternalApp={isExternalApp}
-                    _init={_init}
-                    loadingDetails={loadingDetails}
-                    loadingResourceTree={loadingResourceTree || !appDetails?.appType}
-                    isVirtualEnvironment={isVirtualEnv.current}
-                />
-                {!appDetails.deploymentAppDeleteRequest && (
-                    <EnvironmentStatusComponent
-                        loadingDetails={loadingDetails || !appDetails?.appType}
-                        loadingResourceTree={loadingResourceTree || !appDetails?.appType}
-                        deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                        isVirtualEnvironment={isVirtualEnv.current}
-                        refetchDeploymentStatus={getDeploymentDetailStepsData}
-                    />
-                )}
-            </div>
+        <>
+            <div className="dc__overflow-hidden flex-grow-1 flexbox-col dc__position-rel">
+                <div className="helm-details dc__overflow-auto flex-grow-1" data-testid="app-details-wrapper">
+                    <div className="app-info-bg-gradient">
+                        <EnvironmentSelectorComponent
+                            isExternalApp={isExternalApp}
+                            _init={_init}
+                            loadingDetails={loadingDetails}
+                            loadingResourceTree={loadingResourceTree || !appDetails?.appType}
+                            isVirtualEnvironment={isVirtualEnv.current}
+                        />
+                        {!appDetails.deploymentAppDeleteRequest && (
+                            <EnvironmentStatusComponent
+                                loadingDetails={loadingDetails || !appDetails?.appType}
+                                loadingResourceTree={loadingResourceTree || !appDetails?.appType}
+                                deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                                isVirtualEnvironment={isVirtualEnv.current}
+                                refetchDeploymentStatus={getDeploymentDetailStepsData}
+                            />
+                        )}
+                    </div>
 
-            {!appDetails.deploymentAppDeleteRequest && (
-                <AppLevelExternalLinks
-                    helmAppDetails={appDetails}
-                    externalLinks={externalLinks}
-                    monitoringTools={monitoringTools}
-                />
-            )}
-            {loadingResourceTree ? (
-                <div className="bcn-0 dc__border-top h-100">
-                    <Progressing pageLoader fullHeight size={32} fillColor="var(--N500)" />
+                    {!appDetails.deploymentAppDeleteRequest && (
+                        <AppLevelExternalLinks
+                            helmAppDetails={appDetails}
+                            externalLinks={externalLinks}
+                            monitoringTools={monitoringTools}
+                        />
+                    )}
+                    {loadingResourceTree ? (
+                        <div className="bg__primary dc__border-top h-100">
+                            <Progressing pageLoader fullHeight size={32} fillColor="var(--N500)" />
+                        </div>
+                    ) : (
+                        renderHelmAppDetails()
+                    )}
+
+                    {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
+                        <DeploymentStatusDetailModal
+                            appName={appDetails.appName}
+                            environmentName={appDetails.environmentName}
+                            deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                            isVirtualEnvironment={isVirtualEnv.current}
+                            isLoading={isInitialTimelineDataLoading}
+                        />
+                    )}
                 </div>
-            ) : (
-                renderHelmAppDetails()
-            )}
-
-            {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
-                <DeploymentStatusDetailModal
-                    appName={appDetails.appName}
-                    environmentName={appDetails.environmentName}
-                    deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                    isVirtualEnvironment={isVirtualEnv.current}
-                    isLoading={isInitialTimelineDataLoading}
-                />
-            )}
+            </div>
             <ClusterMetaDataBar
                 clusterName={appDetails.clusterName}
                 namespace={appDetails.namespace}
                 clusterId={appDetails.clusterId?.toString()}
             />
-        </div>
+        </>
     )
 }
 

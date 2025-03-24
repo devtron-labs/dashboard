@@ -23,6 +23,8 @@ import {
     CustomInput,
     CodeEditor,
     MarkDown,
+    MODES,
+    isCodeMirrorEnabled,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import { Select, mapByKey, useKeyDown, Info, Pencil } from '../common'
@@ -33,14 +35,13 @@ import { ValuesYamlConfirmDialog } from './dialogs/ValuesYamlConfirmDialog'
 import { ReactComponent as LockIcon } from '../../assets/icons/ic-locked.svg'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-alert-triangle.svg'
 import { getSavedValuesListURL } from './charts.helper'
-import { renderAdditionalErrorInfo } from './charts.util'
 
-interface AdvancedConfig extends AdvancedConfigHelpers {
+interface AdvancedConfigProps extends AdvancedConfigHelpers {
     chart: ChartGroupEntry
     index: number
 }
 
-const AdvancedConfig: React.FC<AdvancedConfig> = ({
+const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
     chart,
     index,
     fetchChartValues,
@@ -189,7 +190,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({
 
     return (
         <>
-            <div className="advanced-config flex">
+            <div className="advanced-config flexbox flex-grow-1">
                 <form action="" className="advanced-config__form">
                     <h1 className="form__title form__title--mb-24" data-testid="advanced-option-heading">
                         {chartName}
@@ -197,19 +198,27 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({
                     {handleNameChange && (
                         <div className="mb-16">
                             <CustomInput
+                                placeholder="Enter app name"
                                 name="appName"
                                 label="App name"
-                                rootClassName={`${appName?.error ? 'form__input--error' : ''}`}
                                 value={appName.value}
                                 onChange={(e) => handleNameChange(index, e.target.value)}
                                 data-testid="advanced-option-app-name-box"
-                                isRequiredField
+                                required
                                 error={appName?.error}
-                                additionalErrorInfo={renderAdditionalErrorInfo(
-                                    handleNameChange,
-                                    appName.suggestedName,
-                                    index,
-                                )}
+                                helperText={
+                                    appName.suggestedName ? (
+                                        <>
+                                            Suggested Name:
+                                            <span
+                                                className="anchor pointer"
+                                                onClick={() => handleNameChange(index, appName.suggestedName)}
+                                            >
+                                                {appName.suggestedName}
+                                            </span>
+                                        </>
+                                    ) : null
+                                }
                             />
                         </div>
                     )}
@@ -326,7 +335,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({
                                                         {name} ({chartVersion})
                                                     </span>
                                                     {environmentName && (
-                                                        <span style={{ color: '#404040', fontSize: '12px' }}>
+                                                        <span style={{ color: 'var(--N700)', fontSize: '12px' }}>
                                                             {environmentName}
                                                         </span>
                                                     )}
@@ -365,23 +374,32 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({
                             </div>
                         </div>
                     )}
-                    <div className="code-editor-container" data-testid="code-editor-code-editor-container">
+                    <CodeEditor.Container>
                         <CodeEditor
-                            value={valuesYaml}
-                            noParsing
-                            loading={loading}
-                            readOnly={!handleValuesYaml}
-                            onChange={
-                                handleValuesYaml
+                            codeEditorProps={{
+                                value: valuesYaml,
+                                onChange: handleValuesYaml
                                     ? (valuesYaml) => {
                                           handleValuesYaml(index, valuesYaml)
                                       }
-                                    : () => {}
-                            }
-                            mode="yaml"
+                                    : () => {},
+                            }}
+                            codeMirrorProps={{
+                                value: valuesYaml,
+                                height: 'auto',
+                                onChange: handleValuesYaml
+                                    ? (valuesYaml) => {
+                                          handleValuesYaml(index, valuesYaml)
+                                      }
+                                    : () => {},
+                            }}
+                            noParsing
+                            loading={loading}
+                            readOnly={!handleValuesYaml}
+                            mode={MODES.YAML}
                         >
                             <CodeEditor.Header>
-                                <div className="flex" style={{ justifyContent: 'space-between', width: '100%' }}>
+                                <div className="flex dc__content-space w-100">
                                     <span data-testid="code-editor-code-editor-container-heading">
                                         {appName.value}.yaml
                                     </span>
@@ -412,7 +430,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({
                                 <CodeEditor.Warning text="The values configuration was created for a different chart version. Review the diff before continuing." />
                             ) : null}
                         </CodeEditor>
-                    </div>
+                    </CodeEditor.Container>
                 </form>
             </div>
             {showReadme && (
@@ -469,7 +487,7 @@ const ReadmeCharts = ({ readme, valuesYaml, onChange, handleClose, chart }) => {
         <div className="advanced-config__readme">
             <h3>{chart.chartMetaData.chartName}</h3>
             <div className="readme-config-container" data-testid="readme-container">
-                <div className="readme-config--header">
+                <div className="readme-config--header vertical-divider">
                     <h5 className="flex left">Readme.md</h5>
                     <h5 className="flex left">
                         {chart?.name?.value}.yaml
@@ -482,12 +500,19 @@ const ReadmeCharts = ({ readme, valuesYaml, onChange, handleClose, chart }) => {
                     </div>
                     <div className="right column">
                         <CodeEditor
-                            value={valuesYaml}
-                            mode="yaml"
+                            mode={MODES.YAML}
                             noParsing
                             readOnly={!onChange}
-                            height="100%"
-                            onChange={onChange ? (valuesYaml) => onChange(valuesYaml) : () => {}}
+                            codeEditorProps={{
+                                value: valuesYaml,
+                                height: '100%',
+                                onChange: onChange ? onChange : () => {},
+                            }}
+                            codeMirrorProps={{
+                                value: valuesYaml,
+                                height: '100%',
+                                onChange: onChange ? onChange : () => {},
+                            }}
                         />
                     </div>
                 </div>
@@ -563,7 +588,7 @@ const ValuesDiffViewer = ({
             <h3>{chartName}</h3>
             <div className="readme-config-container" data-testid="check-diff-container">
                 {/* TODO: use code editor header */}
-                <div className="readme-config--header">
+                <div className="readme-config--header vertical-divider">
                     <h5 className="flex left">
                         <Select
                             rootClassName="values-select"
@@ -625,17 +650,34 @@ const ValuesDiffViewer = ({
                         <Pencil style={{ marginLeft: 'auto' }} />
                     </h5>
                 </div>
-                <div className="readme-config--body" style={{ gridTemplateColumns: '1fr' }}>
+                <div
+                    {...(isCodeMirrorEnabled()
+                        ? {
+                              className: 'mw-none mh-0',
+                          }
+                        : {
+                              className: 'readme-config--body',
+                              style: { gridTemplateColumns: '1fr' },
+                          })}
+                >
                     <CodeEditor
-                        defaultValue={originalValuesYaml}
-                        value={valuesYaml}
-                        mode="yaml"
+                        mode={MODES.YAML}
                         noParsing
                         loading={loading && !originalValuesYaml}
                         readOnly={!onChange}
-                        height="100%"
                         diffView
-                        onChange={onChange ? (valuesYaml) => onChange(valuesYaml) : () => {}}
+                        codeEditorProps={{
+                            value: valuesYaml,
+                            defaultValue: originalValuesYaml,
+                            height: '100%',
+                            onChange: onChange ? (valuesYaml) => onChange(valuesYaml) : () => {},
+                        }}
+                        codeMirrorProps={{
+                            modifiedValue: valuesYaml,
+                            originalValue: originalValuesYaml,
+                            height: '100%',
+                            onModifiedValueChange: onChange ? (valuesYaml) => onChange(valuesYaml) : () => {},
+                        }}
                     />
                 </div>
             </div>

@@ -231,7 +231,7 @@ const ManageRegistry = ({
                         ...base,
                         border: `1px solid var(--N200)`,
                         borderRadius: `4px`,
-                        background: 'white',
+                        background: 'var(--bg-primary)',
                         height: '30px',
                         margin: '0 8px 0 0',
                         padding: '1px',
@@ -277,7 +277,7 @@ const ManageRegistry = ({
                             ...base,
                             border: `1px solid var(--N200)`,
                             borderRadius: `4px`,
-                            background: 'white',
+                            background: 'var(--bg-primary)',
                             height: '30px',
                             margin: '0 8px 0 0',
                             padding: '1px',
@@ -335,7 +335,7 @@ const ManageRegistry = ({
         <div className="en-2 bw-1 br-4 fs-13 mb-20">
             <div
                 className="p-16 dc__border-bottom flex dc__content-space"
-                style={{ backgroundColor: 'var(--N50)' }}
+                style={{ backgroundColor: 'var(--bg-secondary)' }}
                 onClick={onClickHideManageModal}
             >
                 <div className="flex left">
@@ -409,72 +409,56 @@ const ManageRegistry = ({
                             Icon={InfoIcon}
                             iconClass="icon-dim-20"
                         />
-                        <CustomInput
-                            tabIndex={2}
-                            placeholder="Enter image pull secret seperated by comma"
-                            rootClassName="mt-8"
-                            name={CredentialType.NAME}
-                            value={credentialValue}
-                            onChange={onClickSpecifyImagePullSecret}
-                            autoFocus
-                            error={errorValidation && REQUIRED_FIELD_MSG}
-                        />
+                        <div className="mt-8">
+                            <CustomInput
+                                placeholder="Enter image pull secret separated by comma"
+                                name={CredentialType.NAME}
+                                value={credentialValue}
+                                onChange={onClickSpecifyImagePullSecret}
+                                autoFocus
+                                error={errorValidation && REQUIRED_FIELD_MSG}
+                            />
+                        </div>
                     </>
                 )}
                 {credentialsType === CredentialType.CUSTOM_CREDENTIAL && (
                     <div className="flexbox w-100 cn-7">
                         <div className="flexbox w-100 mb-16">
                             <div className="w-50 mr-8">
-                                <div className="mb-6"> Registry URL</div>
-                                <input
-                                    tabIndex={3}
+                                <CustomInput
+                                    label="Registry URL"
                                     placeholder="Enter registry URL"
-                                    className="form__input"
                                     name="server"
                                     value={customCredential?.server}
                                     onChange={onClickSpecifyImagePullSecret}
                                     autoFocus
-                                    autoComplete="off"
                                 />
                             </div>
                             <div className="w-50">
-                                <div className="mb-6">Email</div>
-                                <input
-                                    tabIndex={4}
+                                <CustomInput
+                                    label="Email"
                                     placeholder="Enter email"
-                                    className="form__input"
                                     name="email"
                                     value={customCredential?.email}
                                     onChange={onClickSpecifyImagePullSecret}
-                                    autoFocus
-                                    autoComplete="off"
                                 />
                             </div>
                         </div>
                         <div className="w-50 mr-8">
-                            <div className="mb-6">Username</div>
-                            <input
-                                tabIndex={5}
+                            <CustomInput
+                                label="Username"
                                 placeholder="Enter username"
-                                className="form__input"
                                 name="username"
                                 value={customCredential?.username}
                                 onChange={onClickSpecifyImagePullSecret}
-                                autoFocus
-                                autoComplete="off"
                             />
                         </div>
                         <div className="w-50">
-                            <div className="mb-6">Password</div>
-                            <input
-                                tabIndex={6}
+                            <CustomInput
                                 placeholder="Enter password"
-                                className="form__input"
                                 name="password"
                                 value={customCredential?.password}
                                 onChange={onClickSpecifyImagePullSecret}
-                                autoFocus
-                                autoComplete="off"
                             />
                         </div>
                     </div>

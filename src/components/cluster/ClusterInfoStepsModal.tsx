@@ -45,7 +45,7 @@ const ClusterInfoSteps = ({ command, clusterName }: ClusterStepModal) => {
             additionalInfo: (
                 <div className="dc__position-rel cluster-modal-container dc__align-left bcn-1 lh-20 mt-2 br-4">
                     <div
-                        className="fs-13 fw-4 h-100 dc__overflow-scroll dc__ff-monospace pl-10 pt-10 pb-10 pr-36"
+                        className="fs-13 fw-4 h-100 dc__overflow-auto mono pl-10 pt-10 pb-10 pr-36"
                         id="command-code"
                     >
                         {command}
@@ -83,7 +83,7 @@ const ClusterInfoSteps = ({ command, clusterName }: ClusterStepModal) => {
         <div className="p-12 fs-13 fw-4">
             {infoItems.map((item, key) => (
                 <div className="cluster-modal-wrapper ">
-                    <div className="cluster-modal-number flex mr-16 bw-1 bcn-0 en-2 icon-dim-24">{key + 1}</div>
+                    <div className="cluster-modal-number flex mr-16 bw-1 bg__primary en-2 icon-dim-24">{key + 1}</div>
                     <div className="cluster-inner-container flexbox-col dc__border-left pt-2 pr-44 pb-20 pl-28 lh-20 dc__align-start dc__content-start">
                         {item.info && <div>{item.info}</div>}
                         {item.additionalInfo && item.additionalInfo}
@@ -96,7 +96,7 @@ const ClusterInfoSteps = ({ command, clusterName }: ClusterStepModal) => {
 
 export default function ClusterInfoStepsModal({ subTitle, command, clusterName }: ClusterStepModal) {
     return (
-        <div className="fs-13 fw-4 br-4 en-2 bcn-0 cluster-modal-shadow">
+        <div className="fs-13 fw-4 br-4 en-2 bg__primary cluster-modal-shadow">
             <h2 className="flex left fs-14 fw-6 p-12 m-0">
                 <Help className="icon-dim-20 fcv-5 mr-12" />
                 Get Server URL & Bearer token

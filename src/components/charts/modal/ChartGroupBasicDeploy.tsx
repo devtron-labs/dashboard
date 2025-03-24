@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
-import { ComponentSizeType, CustomInput, DialogForm, DialogFormSubmit, SelectPicker, showError } from '@devtron-labs/devtron-fe-common-lib'
-import ReactSelect from 'react-select'
+import { Component } from 'react'
+import { ComponentSizeType, CustomInput, DialogForm, DialogFormSubmit, SelectPicker, showError, DEFAULT_ROUTE_PROMPT_MESSAGE } from '@devtron-labs/devtron-fe-common-lib'
 import { ProjectType, ChartGroupEntry, EnvironmentType } from '../charts.types'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-edit.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
-import { renderAdditionalErrorInfo } from '../charts.util'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import { getEnvironmentListMin } from '../../../services/service'
 import { Prompt } from 'react-router-dom'
-import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../config'
 
 interface ChartGroupBasicDeployProps {
     projects: ProjectType[]
@@ -257,23 +254,28 @@ const ApplicationNameList = ({ charts, handleNameChange, showAppNames }) => {
                             />
                             <div className="w-100">
                                 <CustomInput
-                                    name="name"
+                                    placeholder="Enter chart name"
+                                    name={`chart-name-edit-input-${index}`}
                                     label={`${chart.chartMetaData.chartRepoName}/${chart.chartMetaData.chartName}`}
-                                    labelClassName="form__label--lower"
-                                    rootClassName={`form__input ${chart?.name?.error ? 'form__input--error' : ''}`}
-                                    data-testid={`chart-name-edit-input-${index}`}
-                                    tabIndex={index + 1}
                                     value={chart.name.value}
                                     onChange={(event) => {
                                         handleNameChange(index, event.target.value)
                                     }}
                                     error={chart.name.error}
-                                    isRequiredField
-                                    additionalErrorInfo={renderAdditionalErrorInfo(
-                                        handleNameChange,
-                                        chart.name.suggestedName,
-                                        index,
-                                    )}
+                                    required
+                                    helperText={
+                                        chart.name.suggestedName ? (
+                                            <>
+                                                Suggested Name:
+                                                <span
+                                                    className="anchor pointer"
+                                                    onClick={(e) => handleNameChange(index, chart.name.suggestedName)}
+                                                >
+                                                    {chart.name.suggestedName}
+                                                </span>
+                                            </>
+                                        ) : null
+                                    }
                                 />
                             </div>
                         </div>

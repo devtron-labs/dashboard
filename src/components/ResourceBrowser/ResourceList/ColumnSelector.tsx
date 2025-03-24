@@ -16,8 +16,13 @@
 
 import { useState, useMemo, useRef } from 'react'
 import { MultiValue, SelectInstance } from 'react-select'
-import { Button, ButtonVariantType, SelectPicker, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICGears } from '@Icons/ic-nav-gear.svg'
+import {
+    Button,
+    ButtonVariantType,
+    Icon,
+    SelectPicker,
+    SelectPickerOptionType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { OPTIONAL_NODE_LIST_HEADERS } from '../Constants'
 import { ColumnSelectorType } from '../Types'
 import { saveAppliedColumnsInLocalStorage } from './utils'
@@ -64,7 +69,7 @@ const ColumnSelector = ({ setVisibleColumns, visibleColumns }: ColumnSelectorTyp
     }
 
     const renderMenuListFooter = () => (
-        <div className="bcn-0 p-8 dc__border-top-n1 w-100">
+        <div className="bg__primary p-8 dc__border-top-n1 w-100">
             <Button
                 text="Apply"
                 onClick={handleApplySelectedColumns}
@@ -78,13 +83,12 @@ const ColumnSelector = ({ setVisibleColumns, visibleColumns }: ColumnSelectorTyp
     return (
         <SelectPicker
             selectRef={selectRef}
-            classNamePrefix="node-column-list-filter"
             inputId="node-column-list-filter"
             closeMenuOnSelect={false}
             controlShouldRenderValue={false}
             fullWidth
             hideSelectedOptions={false}
-            icon={<ICGears className="dc__no-shrink icon-dim-16 scn-6" />}
+            icon={<Icon name="ic-gear" color="N600" size={16} />}
             isSearchable
             menuIsOpen={isMenuOpen}
             onMenuOpen={handleMenuOpen}
@@ -96,6 +100,7 @@ const ColumnSelector = ({ setVisibleColumns, visibleColumns }: ColumnSelectorTyp
             value={selectedColumns}
             renderMenuListFooter={renderMenuListFooter}
             isClearable={false}
+            shouldMenuAlignRight
         />
     )
 }

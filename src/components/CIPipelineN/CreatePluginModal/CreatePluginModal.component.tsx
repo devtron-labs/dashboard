@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { useContext, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import ReactGA from 'react-ga4'
@@ -398,10 +414,10 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
     return (
         <VisibleModal2 close={handleCloseModal}>
             <div
-                className="bcn-0 dc__position-fixed dc__right-0 dc__top-0 h-100 flexbox-col dc__content-space w-800"
+                className="bg__primary dc__position-fixed dc__right-0 dc__top-0 h-100 flexbox-col dc__content-space w-800"
                 onClick={stopPropagation}
             >
-                <div className="flexbox-col flex-grow-1 dc__overflow-scroll">
+                <div className="flexbox-col flex-grow-1 dc__overflow-auto">
                     <div className="py-12 px-20 flexbox dc__content-space dc__border-bottom">
                         <h2 className="m-0 cn-9 fs-16 fw-6 lh-24">Save as plugin</h2>
 

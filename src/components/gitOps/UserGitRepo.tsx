@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-import React, { FunctionComponent } from 'react'
-import { GitOpsAuthModeType, InfoColourBar, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
+import { FunctionComponent, SyntheticEvent } from 'react'
+import {
+    CustomInput,
+    GitOpsAuthModeType,
+    InfoBlock,
+    RadioGroup,
+    RadioGroupItem,
+} from '@devtron-labs/devtron-fe-common-lib'
 import './gitops.scss'
 import { repoType } from '../../config/constants'
-import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
+import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
 import { UserGitRepoProps } from './gitops.type'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
@@ -33,8 +38,8 @@ const UserGitRepo: FunctionComponent<UserGitRepoProps> = ({
 }: UserGitRepoProps) => {
     const isAuthModeSSH = authMode === GitOpsAuthModeType.SSH
 
-    const repoTypeChange = () => {
-        const newRepoType = selectedRepoType === repoType.DEFAULT ? repoType.CONFIGURE : repoType.DEFAULT
+    const repoTypeChange = (event: SyntheticEvent) => {
+        const newRepoType = (event.target as HTMLInputElement).value
         setSelectedRepoType(newRepoType)
     }
 
@@ -42,47 +47,33 @@ const UserGitRepo: FunctionComponent<UserGitRepoProps> = ({
         setRepoURL(event.target.value)
     }
 
-    const renderValidationErrorLabel = (message?: string): JSX.Element => {
-        return (
-            <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6">
-                <div className="error-label-icon">
-                    <Error className="icon-dim-16" />
-                </div>
-                <div className="ml-4 cr-5">{message || REQUIRED_FIELD_MSG}</div>
-            </div>
-        )
-    }
-
     const InputUrlBox = () => {
         const _repoUrl = repoURL
         return (
             <div className={`${!isAuthModeSSH ? 'ml-26' : ''} mt-8`}>
-                <div className="gitops__id fw-5 fs-13 mb-8 dc__required-field">Git Repo URL</div>
-                <input
-                    type="text"
-                    autoComplete="off"
+                <CustomInput
+                    label="Git Repo URL"
+                    required
                     name="name"
                     value={_repoUrl.trim()}
                     placeholder="Enter repository URL"
-                    className="form__input"
                     onChange={onChange}
                     disabled={staleData}
+                    error={_repoUrl.length === 0 ? REQUIRED_FIELD_MSG : null}
+                    autoFocus
                 />
-                {_repoUrl.length === 0 && renderValidationErrorLabel()}
             </div>
         )
     }
 
-    const renderInfoColorBar = () => {
-        return (
-            <InfoColourBar
-                message="GitOps repository cannot be changed for this application once deployed."
-                classname="warn mb-16"
-                Icon={Warn}
-                iconClass="icon-dim-20 warning-icon"
+    const renderInfoColorBar = () => (
+        <div className="mb-16">
+            <InfoBlock
+                variant="warning"
+                description="GitOps repository cannot be changed for this application once deployed."
             />
-        )
-    }
+        </div>
+    )
 
     return (
         <div className="pt-16 pl-20">

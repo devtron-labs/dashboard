@@ -27,9 +27,22 @@ import {
     UserListFilterParams,
     UserStatus,
     CustomRoles,
+    ResourceVersionType,
+    ACCESS_TYPE_MAP,
+    EntityTypes,
+    EnvironmentListHelmResult,
+    K8sResourceDetailType,
+    ApiResourceType,
+    Teams,
+    EnvListMinDTO,
+    SERVER_MODE,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { ChartGroup } from '@Components/charts/charts.types'
+import { AppIdWorkflowNamesMapping, Cluster, ProjectFilteredApps } from '@Services/service.types'
+import { JobList } from '@Components/Jobs/Types'
 import { Routes } from '../../../config'
 import {
+    GetUserResourceOptionsProps,
     PermissionGroup,
     PermissionGroupBulkDeletePayload,
     PermissionGroupCreateOrUpdatePayload,
@@ -39,12 +52,16 @@ import {
     UserCreateOrUpdateParamsType,
     UserCreateOrUpdatePayloadType,
     UserDto,
+    UserAccessResourceKind,
     UserRole,
+    GetUserPermissionResourcesPayload,
+    GetUserAccessAllWorkflowsParams,
 } from './types'
 import { transformPermissionGroupResponse, transformUserResponse } from './utils'
 import { SortableKeys as PermissionGroupListSortableKeys } from './PermissionGroups/List/constants'
 import { importComponentFromFELibrary } from '../../../components/common'
 import { getUserGroupsPayload } from './libUtils'
+import { EnvironmentsListType, ProjectsListType } from './Shared/components/AppPermissions/types'
 
 const getUserStatusAndTimeoutPayload: (
     userStatus: UserStatus,
@@ -59,7 +76,7 @@ const getStatusAndTimeoutPayload = importComponentFromFELibrary('getStatusAndTim
 // User Permissions
 export const getUserById = async (userId: User['id']): Promise<User> => {
     try {
-        const { result } = (await get(`${Routes.USER}/${userId}`)) as ResponseType<UserDto>
+        const { result } = (await get(`${Routes.USER}/${Routes.API_VERSION_V2}/${userId}`)) as ResponseType<UserDto>
 
         return transformUserResponse(result)
     } catch (error) {
@@ -101,7 +118,8 @@ export const createOrUpdateUser = ({
     const options: APIOptions = {
         timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : null,
     }
-    return isUpdate ? put(Routes.USER, _data, options) : post(Routes.USER, _data, options)
+    const url = `${Routes.USER}/${Routes.API_VERSION_V2}`
+    return isUpdate ? put(url, _data, options) : post(url, _data, options)
 }
 
 export const deleteUser = (userId: User['id']) => trash(`${Routes.USER}/${userId}`)
@@ -148,7 +166,9 @@ export const deleteUserInBulk = (payload: UserBulkDeletePayload) =>
 // Permission Groups
 export const getPermissionGroupById = async (groupId: PermissionGroup['id']): Promise<PermissionGroup> => {
     try {
-        const { result } = (await get(`${Routes.USER_ROLE_GROUP}/${groupId}`)) as ResponseType<PermissionGroupDto>
+        const { result } = (await get(
+            `${Routes.USER_ROLE_GROUP}/${Routes.API_VERSION_V2}/${groupId}`,
+        )) as ResponseType<PermissionGroupDto>
         return transformPermissionGroupResponse(result)
     } catch (error) {
         showError(error)
@@ -180,7 +200,8 @@ export const createOrUpdatePermissionGroup = ({
         timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : null,
     }
 
-    return isUpdate ? put(Routes.USER_ROLE_GROUP, _payload, options) : post(Routes.USER_ROLE_GROUP, _payload, options)
+    const url = `${Routes.USER_ROLE_GROUP}/${Routes.API_VERSION_V2}`
+    return isUpdate ? put(url, _payload, options) : post(url, _payload, options)
 }
 
 export const getPermissionGroupList = async (
@@ -237,3 +258,118 @@ export const getCustomRoles = async (): Promise<ResponseType<CustomRoles[]>> => 
 
 export const getUserRole = (appName?: string): Promise<ResponseType<UserRole>> =>
     get(getUrlWithSearchParams(Routes.USER_CHECK_ROLE, { appName }))
+
+const getUserResourceOptions = async <T>({ kind, payload, options }: GetUserResourceOptionsProps): Promise<T> => {
+    const url = `${Routes.USER_RESOURCE_OPTIONS}/${kind}/${ResourceVersionType.alpha1}`
+    const { result } = await post<{ data: T }>(url, payload, options)
+    return result.data
+}
+
+export const getUserAccessChartGroups = () =>
+    getUserResourceOptions<{ groups: ChartGroup[] }>({
+        kind: UserAccessResourceKind.CHART_GROUP,
+        payload: { entity: EntityTypes.CHART_GROUP },
+    })
+
+export const getUserAccessEnvListForHelmApps = () =>
+    getUserResourceOptions<EnvironmentListHelmResult[]>({
+        kind: UserAccessResourceKind.HELM_ENVS,
+        payload: { entity: EntityTypes.DIRECT, accessType: ACCESS_TYPE_MAP.HELM_APPS },
+    })
+
+export const getUserAccessJobList = ({ teamIds }: Pick<GetUserPermissionResourcesPayload, 'teamIds'>) =>
+    getUserResourceOptions<JobList['result']['jobContainers']>({
+        kind: UserAccessResourceKind.JOBS,
+        payload: { entity: EntityTypes.JOB, teamIds },
+    })
+
+export const getUserAccessK8sResourceList = ({
+    clusterId,
+    k8sRequest,
+}: Pick<GetUserPermissionResourcesPayload, 'clusterId' | 'k8sRequest'>) =>
+    getUserResourceOptions<K8sResourceDetailType>({
+        kind: UserAccessResourceKind.CLUSTER_RESOURCES,
+        payload: { entity: EntityTypes.CLUSTER, k8sRequest, clusterId },
+    })
+
+export const getUserAccessResourceGroupList = ({ clusterId }: Pick<GetUserPermissionResourcesPayload, 'clusterId'>) =>
+    getUserResourceOptions<ApiResourceType>({
+        kind: UserAccessResourceKind.API_RESOURCES,
+        payload: { entity: EntityTypes.CLUSTER, clusterId },
+    })
+
+export const getUserAccessNamespaceList = ({ clusterId }: Pick<GetUserPermissionResourcesPayload, 'clusterId'>) =>
+    getUserResourceOptions<string[]>({
+        kind: UserAccessResourceKind.NAMESPACES,
+        payload: { entity: EntityTypes.CLUSTER, clusterId },
+    })
+
+export const getUserAccessClusterList = () =>
+    getUserResourceOptions<Cluster[]>({
+        kind: UserAccessResourceKind.CLUSTER,
+        payload: { entity: EntityTypes.CLUSTER },
+    })
+
+export const getUserAccessAllWorkflows = ({ appIds, options }: GetUserAccessAllWorkflowsParams) =>
+    getUserResourceOptions<AppIdWorkflowNamesMapping>({
+        kind: UserAccessResourceKind.JOBS,
+        payload: { entity: EntityTypes.JOB, appIds },
+        options,
+    })
+
+export const getUserAccessProjectFilteredApps = ({
+    accessType,
+    teamIds,
+}: Pick<GetUserPermissionResourcesPayload, 'accessType' | 'teamIds'>) =>
+    getUserResourceOptions<ProjectFilteredApps['result']>({
+        kind:
+            accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
+                ? UserAccessResourceKind.DEVTRON_APPS
+                : UserAccessResourceKind.HELM_APPS,
+        payload: { entity: EntityTypes.DIRECT, accessType, teamIds },
+    })
+
+export const getUserAccessEnvironmentList = async (): Promise<EnvironmentsListType> => {
+    const [devtronEnvironments, jobEnvironments] = await Promise.all([
+        getUserResourceOptions<EnvListMinDTO[]>({
+            kind: UserAccessResourceKind.ENVIRONMENT,
+            payload: { entity: EntityTypes.DIRECT, accessType: ACCESS_TYPE_MAP.DEVTRON_APPS },
+        }),
+        getUserResourceOptions<EnvListMinDTO[]>({
+            kind: UserAccessResourceKind.ENVIRONMENT,
+            payload: { entity: EntityTypes.JOB },
+        }),
+    ])
+
+    return {
+        [ACCESS_TYPE_MAP.DEVTRON_APPS]: devtronEnvironments,
+        [ACCESS_TYPE_MAP.JOBS]: jobEnvironments,
+    }
+}
+
+export const getUserAccessProjectList = async (serverMode: SERVER_MODE): Promise<ProjectsListType> => {
+    const [devtronProjects, helmProjects, jobProjects] = await Promise.all([
+        serverMode === SERVER_MODE.EA_ONLY
+            ? Promise.resolve([])
+            : getUserResourceOptions<Teams[]>({
+                  kind: UserAccessResourceKind.TEAM,
+                  payload: { entity: EntityTypes.DIRECT, accessType: ACCESS_TYPE_MAP.DEVTRON_APPS },
+              }),
+        getUserResourceOptions<Teams[]>({
+            kind: UserAccessResourceKind.TEAM,
+            payload: { entity: EntityTypes.DIRECT, accessType: ACCESS_TYPE_MAP.HELM_APPS },
+        }),
+        serverMode === SERVER_MODE.EA_ONLY
+            ? Promise.resolve([])
+            : getUserResourceOptions<Teams[]>({
+                  kind: UserAccessResourceKind.TEAM,
+                  payload: { entity: EntityTypes.JOB },
+              }),
+    ])
+
+    return {
+        [ACCESS_TYPE_MAP.DEVTRON_APPS]: devtronProjects,
+        [ACCESS_TYPE_MAP.HELM_APPS]: helmProjects,
+        [ACCESS_TYPE_MAP.JOBS]: jobProjects,
+    }
+}

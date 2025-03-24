@@ -21,21 +21,23 @@ import * as XtermWebfont from 'xterm-webfont'
 import SockJS from 'sockjs-client'
 import moment from 'moment'
 import {
-    useMainContext,
     LogResizeButton,
     IS_PLATFORM_MAC_OS,
     UseRegisterShortcutProvider,
+    getComponentSpecificThemeClass,
+    AppThemeType,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as ICDevtronLogo } from '@Icons/ic-devtron.svg'
 import CopyToast, { handleSelectionChange } from '../CopyToast'
 import { elementDidMount } from '../../../../../../common/helpers/Helpers'
 import { CLUSTER_STATUS, SocketConnectionType } from '../../../../../../ClusterNodes/constants'
 import { TERMINAL_STATUS } from './constants'
-import './terminal.scss'
 import { TerminalViewType } from './terminal.type'
 import { restrictXtermAccessibilityWidth } from './terminal.utils'
-import { ReactComponent as ICDevtronLogo } from '@Icons/ic-devtron.svg'
+import './terminal.scss'
 
-export default function TerminalView({
+const TerminalView = ({
     terminalRef,
     sessionId,
     socketConnection,
@@ -47,8 +49,7 @@ export default function TerminalView({
     terminalMessageData,
     clearTerminal,
     dataTestId,
-    isResourceBrowserView,
-}: TerminalViewType) {
+}: TerminalViewType) => {
     const socket = useRef(null)
     const termDivRef = useRef(null)
     const [firstMessageReceived, setFirstMessageReceived] = useState(false)
@@ -56,12 +57,11 @@ export default function TerminalView({
     const [fullScreenView, setFullScreenView] = useState(false)
     const [popupText, setPopupText] = useState<boolean>(false)
     const fitAddon = useRef(null)
-    const { isSuperAdmin } = useMainContext()
 
-    function resizeSocket() {
+    const resizeSocket = () => {
         if (terminalRef.current && fitAddon.current && isTerminalTab) {
             const dim = fitAddon.current?.proposeDimensions()
-            if (!dim || isNaN(dim.cols) || isNaN(dim.rows)) {
+            if (!dim || Number.isNaN(dim.cols) || Number.isNaN(dim.rows)) {
                 return
             }
             if (socket.current?.readyState === WebSocket.OPEN) {
@@ -74,45 +74,15 @@ export default function TerminalView({
     useEffect(() => {
         /* requestAnimationFrame: will defer the resizeSocket callback to the next repaint;
          * sparing us from - ResizeObserver loop completed with undelivered notifications */
-        if (!termDivRef.current) {
-            return
-        }
         const observer = new ResizeObserver(() => window.requestAnimationFrame(resizeSocket))
         observer.observe(termDivRef.current)
-        return () => observer.disconnect()
+        return () => {
+            observer.disconnect()
+        }
     }, [termDivRef.current])
 
-    useEffect(() => {
-        if (!terminalRef.current) {
-            elementDidMount('#terminal-id').then(() => {
-                createNewTerminal()
-            })
-        }
-        if (sessionId && terminalRef.current) {
-            setIsReconnection(true)
-            restrictXtermAccessibilityWidth()
-            postInitialize(sessionId)
-        } else {
-            setSocketConnection(SocketConnectionType.DISCONNECTED)
-        }
-    }, [sessionId])
-
-    useEffect(() => {
-        if (popupText) {
-            setTimeout(() => setPopupText(false), 2000)
-        }
-    }, [popupText])
-
-    useEffect(() => {
-        if (socketConnection === SocketConnectionType.DISCONNECTING) {
-            if (socket.current) {
-                socket.current.close()
-                socket.current = undefined
-            }
-        }
-    }, [socketConnection])
-
     const createNewTerminal = () => {
+        // eslint-disable-next-line no-param-reassign
         terminalRef.current = new Terminal({
             scrollback: 99999,
             fontSize: 14,
@@ -121,8 +91,10 @@ export default function TerminalView({
             fontFamily: 'Inconsolata',
             screenReaderMode: true,
             theme: {
-                background: '#0B0F22',
-                foreground: '#FFFFFF',
+                // Cannot use variables here
+                // Using hex code for --terminal-bg
+                background: '#181920',
+                foreground: '#ffffff',
             },
         })
         handleSelectionChange(terminalRef.current, setPopupText)
@@ -132,6 +104,7 @@ export default function TerminalView({
          * for production the value will be `webFontAddon.current = new XtermWebfont.default()`
          * for local the value will be `webFontAddon.current = new XtermWebfont()`
          */
+        // eslint-disable-next-line new-cap
         const webFontAddon = XtermWebfont.default ? new XtermWebfont.default() : new XtermWebfont()
         terminalRef.current.loadAddon(fitAddon.current)
         terminalRef.current.loadAddon(webFontAddon)
@@ -157,7 +130,7 @@ export default function TerminalView({
         return socketURL
     }
 
-    const postInitialize = (sessionId: string) => {
+    const postInitialize = (sessId: string) => {
         const socketURL = generateSocketURL()
 
         socket.current?.close()
@@ -179,7 +152,7 @@ export default function TerminalView({
             _terminal.setOption('disableStdin', false)
         }
 
-        _terminal.onData(function (data) {
+        _terminal.onData((data) => {
             resizeSocket()
             const inData = { Op: 'stdin', SessionID: '', Data: data }
             if (_socket?.readyState === WebSocket.OPEN) {
@@ -187,11 +160,11 @@ export default function TerminalView({
             }
         })
 
-        _socket.onopen = function () {
+        _socket.onopen = () => {
             if (typeof terminalMessageData === 'function') {
                 terminalMessageData(CLUSTER_STATUS.RUNNING, TERMINAL_STATUS.SUCCEDED)
             }
-            const startData = { Op: 'bind', SessionID: sessionId }
+            const startData = { Op: 'bind', SessionID: sessId }
             _socket.send(JSON.stringify(startData))
 
             const dim = _fitAddon?.proposeDimensions()
@@ -208,7 +181,7 @@ export default function TerminalView({
             }
         }
 
-        _socket.onmessage = function (evt) {
+        _socket.onmessage = (evt) => {
             _terminal.write(JSON.parse(evt.data).Data)
             enableInput()
 
@@ -217,7 +190,7 @@ export default function TerminalView({
             }
         }
 
-        _socket.onclose = function (evt) {
+        _socket.onclose = () => {
             disableInput()
             _terminal.writeln('')
             _terminal.writeln('---------------------------------------------')
@@ -226,11 +199,43 @@ export default function TerminalView({
             setSocketConnection(SocketConnectionType.DISCONNECTED)
         }
 
-        _socket.onerror = function (evt) {
+        _socket.onerror = () => {
             disableInput()
             setSocketConnection(SocketConnectionType.DISCONNECTED)
         }
     }
+
+    useEffect(() => {
+        if (!terminalRef.current) {
+            elementDidMount('#terminal-id')
+                .then(() => {
+                    createNewTerminal()
+                })
+                .catch(noop)
+        }
+        if (sessionId && terminalRef.current) {
+            setIsReconnection(true)
+            restrictXtermAccessibilityWidth()
+            postInitialize(sessionId)
+        } else {
+            setSocketConnection(SocketConnectionType.DISCONNECTED)
+        }
+    }, [sessionId])
+
+    useEffect(() => {
+        if (popupText) {
+            setTimeout(() => setPopupText(false), 2000)
+        }
+    }, [popupText])
+
+    useEffect(() => {
+        if (socketConnection === SocketConnectionType.DISCONNECTING) {
+            if (socket.current) {
+                socket.current.close()
+                socket.current = undefined
+            }
+        }
+    }, [socketConnection])
 
     useEffect(() => {
         if (firstMessageReceived) {
@@ -262,7 +267,9 @@ export default function TerminalView({
             socket.current?.close()
             terminalRef.current?.dispose()
             socket.current = undefined
+            // eslint-disable-next-line no-param-reassign
             terminalRef.current = undefined
+            // eslint-disable-next-line no-param-reassign
             terminalRef.current = undefined
             fitAddon.current = null
         }
@@ -275,45 +282,53 @@ export default function TerminalView({
         }
     }, [clearTerminal])
 
+    useEffect(() => {
+        resizeSocket()
+    }, [fullScreenView])
+
     // NOTE: by default events from textarea are also ignored
     // since terminal is a textarea we need to override the ignoreTags property
     return (
         <UseRegisterShortcutProvider ignoreTags={['input']}>
-            <div
-                className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ''} terminal-wrapper`}
-                data-testid={dataTestId}
-            >
+            <div className="terminal-wrapper flex-grow-1 dc__gap-6" data-testid={dataTestId}>
                 {renderConnectionStrip()}
-                {fullScreenView && (
-                    <div className="w-100 flexbox dc__gap-6 dc__align-items-center px-12 py-4 terminal-wrapper__metadata">
-                        <ICDevtronLogo className="fcn-0 icon-dim-16 dc__no-shrink" />
-                        {Object.entries(metadata).map(([key, value], index, arr) => (
-                            <React.Fragment key={key}>
-                                <span className="dc__first-letter-capitalize fs-12 cn-0 lh-20">
-                                    {key}:&nbsp;{value || '-'}
-                                </span>
-                                {index < arr.length - 1 && <div className="dc__divider h12" />}
-                            </React.Fragment>
-                        ))}
-                    </div>
-                )}
                 <div
-                    ref={termDivRef}
-                    id="terminal-id"
-                    data-testid="terminal-editor-container"
-                    className={`mt-8 mb-4 terminal-component ${
-                        fullScreenView ? 'terminal-component--fullscreen' : ''
-                    } ml-20 ${!isResourceBrowserView && !fullScreenView && isSuperAdmin ? 'terminal-component__zoom--bottom-41' : ''}`}
+                    className={`flexbox-col flex-grow-1 dc__overflow-hidden ${getComponentSpecificThemeClass(AppThemeType.dark)}`}
                 >
-                    <CopyToast showCopyToast={popupText} />
-                    <LogResizeButton
-                        shortcutCombo={[IS_PLATFORM_MAC_OS ? 'Meta' : 'Control', 'Shift', 'F']}
-                        showOnlyWhenPathIncludesLogs={false}
-                        fullScreenView={fullScreenView}
-                        setFullScreenView={handleToggleFullscreen}
-                    />
+                    {fullScreenView && (
+                        <div className="w-100 flexbox dc__gap-6 dc__align-items-center px-12 py-4 terminal-wrapper__metadata">
+                            <ICDevtronLogo className="icon__white icon-dim-16 dc__no-shrink" />
+                            {Object.entries(metadata).map(([key, value], index, arr) => (
+                                <React.Fragment key={key}>
+                                    <span className="dc__first-letter-capitalize fs-12 text__white lh-20">
+                                        {key}:&nbsp;{value || '-'}
+                                    </span>
+                                    {index < arr.length - 1 && <div className="divider__primary h12" />}
+                                </React.Fragment>
+                            ))}
+                        </div>
+                    )}
+                    <div
+                        ref={termDivRef}
+                        id="terminal-id"
+                        data-testid="terminal-editor-container"
+                        className={`terminal-component ${fullScreenView ? 'terminal-component--fullscreen' : ''} ml-20`}
+                        data-is-fullscreen={fullScreenView}
+                    >
+                        <CopyToast showCopyToast={popupText} />
+                        {isTerminalTab && (
+                            <LogResizeButton
+                                shortcutCombo={[IS_PLATFORM_MAC_OS ? 'Meta' : 'Control', 'Shift', 'F']}
+                                showOnlyWhenPathIncludesLogs={false}
+                                fullScreenView={fullScreenView}
+                                setFullScreenView={handleToggleFullscreen}
+                            />
+                        )}
+                    </div>
                 </div>
             </div>
         </UseRegisterShortcutProvider>
     )
 }
+
+export default TerminalView

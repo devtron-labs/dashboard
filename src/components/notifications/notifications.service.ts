@@ -16,9 +16,8 @@
 
 import { get, post, trash, put, ResponseType, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config/constants'
-import { NotificationConfiguration } from './NotificationTab'
 import { FilterOptions, PipelineType } from './AddNotification'
-import { SMTPConfigResponseType, WebhookAttributesResponseType } from './types'
+import { NotificationConfiguration, SMTPConfigResponseType, WebhookAttributesResponseType } from './types'
 
 interface UpdateNotificationEvent {
     id: number
@@ -35,7 +34,6 @@ interface SaveNotificationPayload {
         eventTypeIds: number[]
     }[]
     providers: { configId: number; dest: 'ses' | 'slack' | ''; recipient: string }[]
-    sesConfigId: number
 }
 
 interface SaveNotificationResponseType extends ResponseType {
@@ -84,7 +82,7 @@ interface SESConfigResponseType extends ResponseType {
     }
 }
 
-function createSaveNotificationPayload(selectedPipelines, providers, sesConfigId: number): SaveNotificationPayload {
+function createSaveNotificationPayload(selectedPipelines, providers): SaveNotificationPayload {
     const allPipelines = selectedPipelines.map((config) => {
         const eventTypeIds = []
         if (config.trigger) {
@@ -119,30 +117,21 @@ function createSaveNotificationPayload(selectedPipelines, providers, sesConfigId
         }
     })
     providers = providers.map((p) => {
-        if (p.data.configId) {
-            return {
-                configId: p.data.configId,
-                dest: p.data.dest,
-                recipient: '',
-            }
-        }
         return {
-            configId: 0,
+            configId: p.data.configId || 0,
             dest: p.data.dest || '',
-            recipient: p.data.recipient,
+            recipient: p.data.recipient || '',
         }
     })
     return {
         notificationConfigRequest: allPipelines,
         providers,
-        sesConfigId,
     }
 }
 
-export function saveNotification(selectedPipelines, providers, sesConfigId): Promise<SaveNotificationResponseType> {
-    const URL = `${Routes.NOTIFIER}`
-    const payload = createSaveNotificationPayload(selectedPipelines, providers, sesConfigId)
-    return post(URL, payload)
+export function saveNotification(selectedPipelines, providers): Promise<SaveNotificationResponseType> {
+    const payload = createSaveNotificationPayload(selectedPipelines, providers)
+    return post<SaveNotificationResponseType['result'] , SaveNotificationPayload>(`${Routes.NOTIFIER}/${Routes.API_VERSION_V2}`, payload)
 }
 
 export function getChannelConfigs(): Promise<ResponseType> {
@@ -342,12 +331,8 @@ export function deleteNotifications(requestBody, singleDeletedId): Promise<Delet
     return trash(URL, payload)
 }
 
-export function saveEmailConfiguration(data, channel: string): Promise<UpdateConfigResponseType> {
+export function saveEmailConfiguration(payload): Promise<UpdateConfigResponseType> {
     const URL = `${Routes.NOTIFIER}/channel`
-    const payload = {
-        channel,
-        configs: [data],
-    }
     return post(URL, payload)
 }
 
@@ -386,58 +371,12 @@ export function getWebhookConfiguration(webhookConfigId: number): Promise<Respon
     return get(`${Routes.NOTIFIER}/channel/webhook/${webhookConfigId}`)
 }
 
-export function saveUpdateWebhookConfiguration(data): Promise<UpdateConfigResponseType> {
-    const headerObj = {}
-    const headerPayload = data.payload !== '' ? data.payload : ''
-    data.header.forEach((element) => {
-        if (element.key != '') {
-            headerObj[element.key] = element.value
-        }
-    })
-
-    const payload = {
-        channel: 'webhook',
-        configs: [
-            {
-                id: Number(data.id),
-                configName: data.configName,
-                webhookUrl: data.webhookUrl,
-                header: headerObj,
-                payload: headerPayload,
-            },
-        ],
-    }
+export function saveUpdateWebhookConfiguration(payload): Promise<UpdateConfigResponseType> {
     return post(`${Routes.NOTIFIER}/channel`, payload)
 }
 
-export function saveSlackConfiguration(data): Promise<UpdateConfigResponseType> {
+export function saveSlackConfiguration(payload): Promise<UpdateConfigResponseType> {
     const URL = `${Routes.NOTIFIER}/channel`
-    const payload = {
-        channel: 'slack',
-        configs: [
-            {
-                configName: data.configName,
-                webhookUrl: data.webhookUrl,
-                teamId: data.projectId,
-            },
-        ],
-    }
-    return post(URL, payload)
-}
-
-export function updateSlackConfiguration(data): Promise<UpdateConfigResponseType> {
-    const URL = `${Routes.NOTIFIER}/channel`
-    const payload = {
-        channel: 'slack',
-        configs: [
-            {
-                id: data.id,
-                configName: data.configName,
-                webhookUrl: data.webhookUrl,
-                teamId: data.projectId,
-            },
-        ],
-    }
     return post(URL, payload)
 }
 

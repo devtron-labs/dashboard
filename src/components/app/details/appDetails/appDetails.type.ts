@@ -194,6 +194,8 @@ export interface DetailsType {
     filteredEnvIds?: string
     deploymentUserActionState?: ACTION_STATE
     onCloseHideDeploymentWindowConfirmationModal?: () => void
+    appDetails: any
+    setAppDetails: React.Dispatch<React.SetStateAction<AppDetails>>
 }
 
 export interface DeletedAppComponentType extends SyncErrorType {
@@ -269,4 +271,10 @@ export interface UseGetAppSecurityDetailsReturnType {
     scanResultResponse: ResponseType<ScanResultDTO>
     scanResultError: ServerErrors
     reloadScanResult: () => void
+}
+
+export enum HibernationModalTypes {
+    HIBERNATE = 'hibernate',
+    RESUME = 'resume',
+    CONFIGURE_PATCH = 'configurePatch',
 }

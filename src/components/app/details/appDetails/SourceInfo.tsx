@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import moment from 'moment'
 import {
@@ -26,7 +26,9 @@ import {
     DATE_TIME_FORMATS,
     DeploymentAppTypes,
     handleUTCTime,
+    Progressing,
     ReleaseMode,
+    showError,
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICCamera } from '@Icons/ic-camera.svg'
@@ -48,11 +50,13 @@ import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
 import HelmAppConfigApplyStatusCard from '@Components/v2/appDetails/sourceInfo/environmentStatus/HelmAppConfigApplyStatusCard'
+import { HibernationModalTypes } from './appDetails.type'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
 const ConfigSyncStatusButton = importComponentFromFELibrary('ConfigSyncStatusButton', null, 'function')
 const SwapTraffic = importComponentFromFELibrary('SwapTraffic', null, 'function')
+const getHibernationPatchConfig = importComponentFromFELibrary('getHibernationPatchConfig', null, 'function')
 
 export const SourceInfo = ({
     appDetails,
@@ -74,7 +78,9 @@ export const SourceInfo = ({
     setErrorsList,
     filteredEnvIds,
     deploymentUserActionState,
+    setHibernationPatchChartName,
 }: SourceInfoType) => {
+    const [hibernationPatchResponseLoading, setHibernationPatchResponseLoading] = useState<boolean>(false)
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
     const status = appDetails?.resourceTree?.status || ''
@@ -82,10 +88,9 @@ export const SourceInfo = ({
     const conditions = appDetails?.resourceTree?.conditions
     let message = null
     const Rollout = appDetails?.resourceTree?.nodes?.filter(({ kind }) => kind === Nodes.Rollout)
-    const isExternalCI = appDetails?.dataSource === 'EXTERNAL'
-    // helmMigratedAppNotTriggered means the app is migrated from a helm release and has not been deployed yet i.e. CD Pipeline has not been triggered
-    const helmMigratedAppNotTriggered =
-        appDetails?.releaseMode === ReleaseMode.MIGRATE_HELM && !appDetails?.isPipelineTriggered
+    // appMigratedFromExternalSourceAndIsNotTriggered means the app is migrated from a helm/argo release and has not been deployed yet i.e. CD Pipeline has not been triggered
+    const appMigratedFromExternalSourceAndIsNotTriggered =
+        appDetails?.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && !appDetails?.isPipelineTriggered
     const isIsolatedEnv = isVirtualEnvironment && !!appDetails?.resourceTree
 
     if (
@@ -108,8 +113,33 @@ export const SourceInfo = ({
         showUrlInfo(true)
     }
 
-    const onClickShowHibernateModal = (): void => {
-        showHibernateModal(isHibernated ? 'resume' : 'hibernate')
+    const onClickShowHibernateModal = async (): Promise<void> => {
+        if (isHibernated) {
+            showHibernateModal(HibernationModalTypes.RESUME)
+            return
+        }
+        if (getHibernationPatchConfig) {
+            try {
+                setHibernationPatchResponseLoading(true)
+                const result = await getHibernationPatchConfig({
+                    appId: appDetails.appId ?? +params.appId,
+                    envId: appDetails.environmentId ?? +envId,
+                })
+                const { isHibernationPatchConfigured, chartName } = result
+                if (isHibernationPatchConfigured) {
+                    showHibernateModal(HibernationModalTypes.HIBERNATE)
+                } else {
+                    showHibernateModal(HibernationModalTypes.CONFIGURE_PATCH)
+                    setHibernationPatchChartName(chartName)
+                }
+            } catch (error) {
+                showError(error)
+            } finally {
+                setHibernationPatchResponseLoading(false)
+            }
+            return
+        }
+        showHibernateModal(HibernationModalTypes.HIBERNATE)
     }
 
     const shimmerLoaderBlocks = () => {
@@ -130,10 +160,7 @@ export const SourceInfo = ({
 
         return (
             <div className="flex left w-100">
-                <EnvSelector
-                    environments={environments}
-                    disabled={loadingDetails || loadingResourceTree || (params.envId && !showCommitInfo)}
-                />
+                <EnvSelector environments={environments} />
                 {appDetails?.deploymentAppType && (
                     <Tooltip
                         placement="top"
@@ -172,8 +199,8 @@ export const SourceInfo = ({
                     <Tooltip
                         content={
                             <div className="fw-4 lh-18 flexbox-col dc__ga-2">
-                                <h6 className="fs-12 fw-6 cn-0 m-0">Last snapshot received</h6>
-                                <p className="m-0 fs-12 cn-50">
+                                <h6 className="fs-12 fw-6 m-0">Last snapshot received</h6>
+                                <p className="m-0 fs-12">
                                     {moment(appDetails.resourceTree.lastSnapshotTime).format(
                                         DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT,
                                     )}
@@ -207,18 +234,6 @@ export const SourceInfo = ({
                                         style={ButtonStyleType.neutral}
                                     />
                                 )}
-                                {window._env_.FEATURE_SWAP_TRAFFIC_ENABLE &&
-                                    SwapTraffic &&
-                                    !!appDetails.pcoId &&
-                                    !appDetails.trafficSwitched && (
-                                        <SwapTraffic
-                                            appName={appDetails.appName}
-                                            envName={appDetails.environmentName}
-                                            appId={appDetails.appId}
-                                            envId={appDetails.environmentId}
-                                            pcoId={appDetails.pcoId}
-                                        />
-                                    )}
                                 {!isVirtualEnvironment && showHibernateModal && (
                                     <Button
                                         dataTestId="app-details-hibernate-modal-button"
@@ -226,13 +241,17 @@ export const SourceInfo = ({
                                         variant={ButtonVariantType.secondary}
                                         text={isHibernated ? 'Restore pod count' : 'Scale pods to 0'}
                                         startIcon={
-                                            <ScaleDown
-                                                className={`${isHibernated ? 'dc__flip-180' : ''} dc__transition--transform`}
-                                            />
+                                            hibernationPatchResponseLoading ? (
+                                                <Progressing />
+                                            ) : (
+                                                <ScaleDown
+                                                    className={`${isHibernated ? 'dc__flip-180' : ''} dc__transition--transform`}
+                                                />
+                                            )
                                         }
                                         onClick={onClickShowHibernateModal}
                                         component={ButtonComponentType.button}
-                                        disabled={isApprovalConfigured}
+                                        disabled={isApprovalConfigured || hibernationPatchResponseLoading}
                                         style={ButtonStyleType.neutral}
                                         showTooltip={isApprovalConfigured}
                                         tooltipProps={{
@@ -259,6 +278,18 @@ export const SourceInfo = ({
                                         }}
                                     />
                                 )}
+                                {window._env_.FEATURE_SWAP_TRAFFIC_ENABLE &&
+                                    SwapTraffic &&
+                                    !!appDetails.pcoId &&
+                                    !appDetails.trafficSwitched && (
+                                        <SwapTraffic
+                                            appName={appDetails.appName}
+                                            envName={appDetails.environmentName}
+                                            appId={appDetails.appId}
+                                            envId={appDetails.environmentId}
+                                            pcoId={appDetails.pcoId}
+                                        />
+                                    )}
                                 <AppDetailsCDButton
                                     appId={appDetails.appId}
                                     environmentId={appDetails.environmentId}
@@ -316,7 +347,7 @@ export const SourceInfo = ({
                                   message={message}
                               />
                           )}
-                          {!helmMigratedAppNotTriggered && (
+                          {!appMigratedFromExternalSourceAndIsNotTriggered && (
                               <>
                                   {!loadingResourceTree && (
                                       <IssuesCard
@@ -335,7 +366,7 @@ export const SourceInfo = ({
                               </>
                           )}
                           {isVirtualEnvironment && !isIsolatedEnv && renderGeneratedManifestDownloadCard()}
-                          {!helmMigratedAppNotTriggered && (
+                          {!appMigratedFromExternalSourceAndIsNotTriggered && (
                               <>
                                   <DeploymentStatusCard
                                       deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
@@ -364,7 +395,7 @@ export const SourceInfo = ({
                                   filteredEnvIds={filteredEnvIds}
                               />
                           )}
-                          {!appDetails?.deploymentAppDeleteRequest && !helmMigratedAppNotTriggered && (
+                          {!appDetails?.deploymentAppDeleteRequest && !appMigratedFromExternalSourceAndIsNotTriggered && (
                               <SecurityVulnerabilityCard
                                   cardLoading={cardLoading}
                                   appId={params.appId}

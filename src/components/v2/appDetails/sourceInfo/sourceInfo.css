@@ -14,34 +14,6 @@
  * limitations under the License.
  */
 
-.events-logs__dropdown-selector {
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-    max-height: 30px;
-    /*
-    .pod-selector-button,
-    .container-selector-button {
-        width: 200px;
-        background: transparent;
-        border: 1px solid transparent;
-        justify-content: space-between;
-        border-radius: 4px;
-
-        span.dc__ellipsis-left {
-            border-radius: 4px;
-            padding: 8px 10px 8px 12px;
-            font-size: 12px;
-            color: white;
-            text-align: left;
-        }
-    }
-
-    .popup-button {
-        border: unset;
-    } */
-}
-
 .helm-delete-wrapper {
     padding: 0 4px !important;
 }
@@ -56,12 +28,6 @@
     box-shadow: 0 2px 4px 0 rgba(21, 21, 21, 0.3);
 }
 
-.events-logs__label {
-    margin-right: 10px;
-    /* color: white; */
-    opacity: 0.6;
-}
-
 .scale-workload__btn {
     max-height: 32px;
     min-width: 150px;
@@ -72,7 +38,7 @@
     user-select: none;
     border: 1px solid var(--N200);
     color: var(--N700);
-    background: white;
+    background: var(--bg-primary);
     opacity: 0.7;
 }
 

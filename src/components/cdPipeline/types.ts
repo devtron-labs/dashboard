@@ -15,8 +15,13 @@
  */
 
 import { Dispatch, MutableRefObject, SetStateAction } from 'react'
-import { PipelineFormType, PluginDetailPayloadType, ReleaseMode } from '@devtron-labs/devtron-fe-common-lib'
-import { ChangeCIPayloadType } from '../workflowEditor/types'
+import {
+    PipelineFormType,
+    PluginDetailPayloadType,
+    ReleaseMode,
+    ChangeCIPayloadType,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { MigrateToDevtronFormState } from './cdPipeline.types'
 
 // Have added any type for most of these since they were legacy do not know the implications of changing them
 export interface CDPipelineProps {
@@ -30,6 +35,7 @@ export interface CDPipelineProps {
     changeCIPayload?: ChangeCIPayloadType
     noGitOpsModuleInstalledAndConfigured: any
     isGitOpsRepoNotConfigured: any
+    isGitOpsInstalledButNotConfigured: boolean
     reloadAppConfig: () => void
     handleDisplayLoader: () => void
 }
@@ -46,7 +52,6 @@ export interface ForceDeleteMessageType {
 }
 
 export interface DeleteCDNodeProps {
-    showDeleteDialog: boolean
     deleteDialog: DeleteDialogType
     setDeleteDialog: React.Dispatch<React.SetStateAction<DeleteDialogType>> | ((deleteDialog: DeleteDialogType) => void)
     clusterName: string
@@ -65,7 +70,13 @@ export interface PullImageDigestToggleType {
 }
 
 export interface BuildCDProps
-    extends Pick<CDPipelineProps, 'envIds' | 'isGitOpsRepoNotConfigured' | 'noGitOpsModuleInstalledAndConfigured'> {
+    extends Pick<
+        CDPipelineProps,
+        | 'envIds'
+        | 'isGitOpsRepoNotConfigured'
+        | 'noGitOpsModuleInstalledAndConfigured'
+        | 'isGitOpsInstalledButNotConfigured'
+    > {
     isAdvanced: boolean
     setIsVirtualEnvironment: Dispatch<SetStateAction<boolean>>
     noStrategyAvailable: MutableRefObject<boolean>
@@ -80,4 +91,6 @@ export interface BuildCDProps
         form: PipelineFormType,
         requiredPluginIds?: PluginDetailPayloadType['pluginIds'],
     ) => Promise<void>
+    migrateToDevtronFormState: MigrateToDevtronFormState
+    setMigrateToDevtronFormState: Dispatch<SetStateAction<MigrateToDevtronFormState>>
 }

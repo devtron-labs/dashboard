@@ -26,6 +26,9 @@ import {
     UseRegisterShortcutProvider,
     UserEmailProvider,
     customEnv,
+    ThemeProvider,
+    ConfirmationModalProvider,
+    BaseConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import App from './App'
 
@@ -108,7 +111,6 @@ if (!window || !window._env_) {
         SENTRY_PERFORMANCE_ENABLED: false,
         SENTRY_DSN: '',
         SENTRY_TRACES_SAMPLE_RATE: 0.2,
-        HOTJAR_ENABLED: false,
         GA_ENABLED: false,
         GTM_ENABLED: false,
         APPLICATION_METRICS_ENABLED: true,
@@ -122,17 +124,15 @@ if (!window || !window._env_) {
         HELM_APP_DETAILS_POLLING_INTERVAL: 30000,
         EA_APP_DETAILS_POLLING_INTERVAL: 30000,
         CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.ai',
-        // Remove this in next sprint, have'nt removed yet for backward compatibility
         HIDE_GITOPS_OR_HELM_OPTION: false,
-        HIDE_APPLICATION_GROUPS: false,
         K8S_CLIENT: import.meta.env.VITE_K8S_CLIENT === 'true',
         CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL: 7000,
         CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT: 7,
         ENABLE_CHART_SEARCH_IN_HELM_DEPLOY: false,
-        HIDE_EXCLUDE_INCLUDE_GIT_COMMITS: true,
+        HIDE_EXCLUDE_INCLUDE_GIT_COMMITS: false,
         ENABLE_BUILD_CONTEXT: false,
         CLAIR_TOOL_VERSION: 'V4',
-        ENABLE_RESTART_WORKLOAD: false,
+        ENABLE_RESTART_WORKLOAD: true,
         ENABLE_SCOPED_VARIABLES: true,
         DEFAULT_CI_TRIGGER_TYPE_MANUAL: false,
         ANNOUNCEMENT_BANNER_MSG: '',
@@ -143,15 +143,15 @@ if (!window || !window._env_) {
         TRIGGER_API_TIMEOUT: 60000,
         LOGIN_DT_LOGO: '',
         SIDEBAR_DT_LOGO: '',
-        ENABLE_EXTERNAL_ARGO_CD: false,
+        ENABLE_EXTERNAL_ARGO_CD: true,
         API_BATCH_SIZE: 20,
-        SERVICE_WORKER_TIMEOUT: '3',
         FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE: false,
+        SERVICE_WORKER_TIMEOUT: '3',
         HIDE_RELEASES: false,
-        HIDE_RESOURCE_WATCHER: true,
+        HIDE_RESOURCE_WATCHER: false,
         ORGANIZATION_NAME: '',
-        FEATURE_EXTERNAL_FLUX_CD_ENABLE: false,
-        FEATURE_SCOPED_VARIABLE_ENVIRONMENT_LIST_ENABLE: false,
+        FEATURE_EXTERNAL_FLUX_CD_ENABLE: true,
+        FEATURE_SCOPED_VARIABLE_ENVIRONMENT_LIST_ENABLE: true,
         HIDE_NETWORK_STATUS_INTERFACE: true,
         SYSTEM_CONTROLLER_LISTING_TIMEOUT: 60000 * 5,
         FEATURE_IMAGE_PROMOTION_ENABLE: false,
@@ -168,20 +168,28 @@ if (!window || !window._env_) {
         FEATURE_DEFAULT_LANDING_RB_ENABLE: false,
         FEATURE_CLUSTER_MAP_ENABLE: true,
         FEATURE_ACTION_AUDIOS_ENABLE: true,
+        FEATURE_EXPERIMENTAL_THEMING_ENABLE: import.meta.env.DEV,
+        FEATURE_CODE_MIRROR_ENABLE: true,
+        FEATURE_DEFAULT_AUTHENTICATED_VIEW_ENABLE: false,
     }
 }
 
 ReactDOM.render(
     <React.StrictMode>
         {window.top === window.self ? (
-            <BrowserRouter basename={window.__BASE_URL__}>
-                <UseRegisterShortcutProvider>
-                    <UserEmailProvider>
-                        <App />
-                    </UserEmailProvider>
-                </UseRegisterShortcutProvider>
-                <ToastManagerContainer />
-            </BrowserRouter>
+            <ThemeProvider>
+                <BrowserRouter basename={window.__BASE_URL__}>
+                    <UseRegisterShortcutProvider>
+                        <UserEmailProvider>
+                            <ConfirmationModalProvider>
+                                <App />
+                                <BaseConfirmationModal />
+                            </ConfirmationModalProvider>
+                        </UserEmailProvider>
+                    </UseRegisterShortcutProvider>
+                    <ToastManagerContainer />
+                </BrowserRouter>
+            </ThemeProvider>
         ) : null}
     </React.StrictMode>,
     root,

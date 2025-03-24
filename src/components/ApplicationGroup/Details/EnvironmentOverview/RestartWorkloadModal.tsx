@@ -16,7 +16,6 @@
 
 import { useEffect, useRef, useState } from 'react'
 import {
-    ButtonWithLoader,
     CHECKBOX_VALUE,
     Checkbox,
     Drawer,
@@ -27,7 +26,9 @@ import {
     stopPropagation,
     usePrompt,
     useSearchString,
+    DEFAULT_ROUTE_PROMPT_MESSAGE,
     ApiQueuingWithBatch,
+    Button,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt, useHistory, useLocation } from 'react-router-dom'
 import {
@@ -51,7 +52,6 @@ import { RestartStatusListDrawer } from './RestartStatusListDrawer'
 import { importComponentFromFELibrary } from '../../../common'
 import { AllExpandableDropdown } from './AllExpandableDropdown'
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
-import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../../config'
 
 const BulkDeployResistanceTippy = importComponentFromFELibrary('BulkDeployResistanceTippy')
 
@@ -63,6 +63,7 @@ export const RestartWorkloadModal = ({
     envId,
     hibernateInfoMap,
     isDeploymentBlockedViaWindow,
+    onClose,
 }: RestartWorkloadModalProps) => {
     const [bulkRotatePodsMap, setBulkRotatePodsMap] = useState<Record<number, BulkRotatePodsMetaData>>({})
     const [expandedAppIds, setExpandedAppIds] = useState<number[]>([])
@@ -112,6 +113,8 @@ export const RestartWorkloadModal = ({
 
         abortControllerRef.current.abort()
         history.push({ search: new URLSearchParams(newParams).toString() })
+
+        onClose?.()
     }
 
     const getPodsToRotate = async (selectedAppIds: number[]) => {
@@ -309,7 +312,7 @@ export const RestartWorkloadModal = ({
         if (errorResponse?.length > 0) {
             return (
                 <div className="dc__border-left cn-7 p-8 ml-8">
-                    <div className="dc__border-dashed p-20 flex center bc-n50">
+                    <div className="dc__border-dashed p-20 flex center bg__secondary">
                         <div className="w-300 dc__align-center">
                             <div className="fw-6">Restarting workloads is not allowed</div>
                             <div>
@@ -324,7 +327,7 @@ export const RestartWorkloadModal = ({
         if (resourceKeys.length === 0) {
             return (
                 <div className="dc__border-left cn-7 p-8 ml-8">
-                    <div className="dc__border-dashed p-20 flex center bc-n50">
+                    <div className="dc__border-dashed p-20 flex center bg__secondary">
                         <div className="w-300 dc__align-center">
                             <div className="fw-6"> No workloads found.</div>
                             <div>
@@ -347,7 +350,9 @@ export const RestartWorkloadModal = ({
                             className="flex left dc__border-left cursor"
                             onClick={() => handleWorkloadSelection(appId, kindName, APP_DETAILS_TEXT.KIND_NAME)}
                         >
-                            <div className={`p-8 flex left w-100 ml-8 dc__hover-n50 ${isChecked ? 'bc-b50' : 'bcn-0'}`}>
+                            <div
+                                className={`p-8 flex left w-100 ml-8 dc__hover-n50 ${isChecked ? 'bc-b50' : 'bg__primary'}`}
+                            >
                                 <Checkbox
                                     rootClassName="mt-3 mb-3 w-28"
                                     dataTestId="enforce-policy"
@@ -368,7 +373,7 @@ export const RestartWorkloadModal = ({
     }
 
     const renderRestartWorkloadModalListItems = () => (
-        <div className="drawer-body-section__list-drawer dc__overflow-auto bcn-0">
+        <div className="dc__overflow-auto bg__primary">
             {Object.keys(bulkRotatePodsMap).map((appId) => (
                 <div className="pl-16 pr-16" key={appId}>
                     <div key={appId} className="flex dc__content-space cursor dc__hover-n50">
@@ -427,38 +432,34 @@ export const RestartWorkloadModal = ({
         }
         if (restartLoader) {
             return (
-                <div className="drawer-section__empty flex">
-                    <GenericEmptyState
-                        title={`Fetching workload for ${isCurrentSelected ? selectedAppDetailsList.application : `${selectedAppDetailsList.length} Applications`}`}
-                        subTitle={APP_DETAILS_TEXT.APP_GROUP_RESTART_WORKLOAD_SUBTITLE}
-                        SvgImage={MechanicalIcon}
-                    />
-                </div>
+                <GenericEmptyState
+                    title={`Fetching workload for ${isCurrentSelected ? selectedAppDetailsList.application : `${selectedAppDetailsList.length} Applications`}`}
+                    subTitle={APP_DETAILS_TEXT.APP_GROUP_RESTART_WORKLOAD_SUBTITLE}
+                    SvgImage={MechanicalIcon}
+                />
             )
         }
 
         if (statusModalLoading) {
             return (
-                <div className="drawer-section__empty flex">
-                    <GenericEmptyState
-                        title={`Restarting selected workload on ${envName}`}
-                        subTitle={APP_DETAILS_TEXT.APP_GROUP_RESTART_WORKLOAD_SUBTITLE}
-                        SvgImage={MechanicalIcon}
-                    >
-                        <InfoColourBar
-                            message={APP_DETAILS_TEXT.APP_GROUP_EMPTY_WORKLOAD_INFO_BAR}
-                            classname="warn cn-9 lh-2 w-100"
-                            Icon={Warn}
-                            iconClass="warning-icon h-100-imp"
-                            iconSize={20}
-                        />
-                    </GenericEmptyState>
-                </div>
+                <GenericEmptyState
+                    title={`Restarting selected workload on ${envName}`}
+                    subTitle={APP_DETAILS_TEXT.APP_GROUP_RESTART_WORKLOAD_SUBTITLE}
+                    SvgImage={MechanicalIcon}
+                >
+                    <InfoColourBar
+                        message={APP_DETAILS_TEXT.APP_GROUP_EMPTY_WORKLOAD_INFO_BAR}
+                        classname="warn cn-9 lh-2 w-100"
+                        Icon={Warn}
+                        iconClass="warning-icon h-100-imp"
+                        iconSize={20}
+                    />
+                </GenericEmptyState>
             )
         }
 
         return (
-            <div className="flexbox-col">
+            <div className="flexbox-col dc__overflow-auto">
                 <InfoColourBar
                     message={APP_DETAILS_TEXT.APP_GROUP_INFO_TEXT}
                     classname="info_bar dc__no-border-radius dc__no-top-border"
@@ -595,25 +596,20 @@ export const RestartWorkloadModal = ({
     }
 
     const onSave = async () => {
-        if (isDisabled()) {
-            return null
-        }
         if (!showStatusModal && !showResistanceBox && Object.keys(hibernateInfoMap).length > 0) {
             setShowResistanceBox(true)
-        } else {
-            const functionCalls = createFunctionCallsFromRestartPodMap()
-            setStatusModalLoading(true)
-            ApiQueuingWithBatch(functionCalls)
-                .then(async () => {})
-                .catch(() => {})
-                .finally(() => {
-                    setShowStatusModal(true)
-                    setShowResistanceBox(false)
-                    setStatusModalLoading(false)
-                })
+            return
         }
-
-        return null
+        const functionCalls = createFunctionCallsFromRestartPodMap()
+        setStatusModalLoading(true)
+        ApiQueuingWithBatch(functionCalls)
+            .then(async () => {})
+            .catch(() => {})
+            .finally(() => {
+                setShowStatusModal(true)
+                setShowResistanceBox(false)
+                setStatusModalLoading(false)
+            })
     }
 
     const renderFooterSection = () => (
@@ -623,23 +619,19 @@ export const RestartWorkloadModal = ({
                     <button
                         type="button"
                         onClick={closeDrawer}
-                        className="flex bcn-0 dc__border-radius-4-imp h-36 pl-16 pr-16 pt-8 pb-8 dc__border"
+                        className="flex bg__primary dc__border-radius-4-imp h-36 pl-16 pr-16 pt-8 pb-8 dc__border"
                     >
                         Close
                     </button>
                 )}
-                <ButtonWithLoader
-                    rootClassName={`cta flex h-36 pl-16 pr-16 pt-8 pb-8 dc__border-radius-4-imp dc__gap-8 ${isDisabled() ? 'dc__disabled' : ''}`}
+                <Button
+                    dataTestId="rotate-workloads-button"
+                    startIcon={showStatusModal ? <Retry /> : <RotateIcon />}
                     isLoading={restartLoader}
+                    disabled={isDisabled()}
                     onClick={onSave}
-                >
-                    {showStatusModal ? (
-                        <Retry className="icon-dim-16 icon-dim-16 scn-0 dc__no-svg-fill" />
-                    ) : (
-                        <RotateIcon className="dc__no-svg-fill icon-dim-16 scn-0" />
-                    )}
-                    {showStatusModal ? APP_DETAILS_TEXT.RETRY_FAILED : APP_DETAILS_TEXT.RESTART_WORKLOAD}
-                </ButtonWithLoader>
+                    text={showStatusModal ? APP_DETAILS_TEXT.RETRY_FAILED : APP_DETAILS_TEXT.RESTART_WORKLOAD}
+                />
             </div>
         </div>
     )
@@ -649,12 +641,7 @@ export const RestartWorkloadModal = ({
             return <ErrorScreenManager code={errorStatusCode} />
         }
 
-        return (
-            <>
-                {renderRestartWorkloadModalList()}
-                {renderFooterSection()}
-            </>
-        )
+        return renderRestartWorkloadModalList()
     }
 
     const hideResistanceBox = (): void => {
@@ -665,10 +652,13 @@ export const RestartWorkloadModal = ({
             <Drawer onEscape={closeDrawer} position="right" width="800" parentClassName="h-100">
                 <div
                     onClick={stopPropagation}
-                    className="bulk-restart-workload-wrapper bcn-0 cn-9 w-800 h-100 fs-13 lh-20"
+                    className="flexbox-col dc__content-space bg__primary cn-9 w-800 h-100 fs-13 lh-20"
                 >
-                    {renderHeaderSection()}
-                    {renderBodySection()}
+                    <div className="flexbox-col flex-grow-1 dc__overflow-hidden">
+                        {renderHeaderSection()}
+                        {renderBodySection()}
+                    </div>
+                    {renderFooterSection()}
                 </div>
                 {isDeploymentBlockedViaWindow && showResistanceBox && BulkDeployResistanceTippy && (
                     <BulkDeployResistanceTippy

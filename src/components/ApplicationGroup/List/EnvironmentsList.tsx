@@ -23,12 +23,17 @@ import {
     SelectPickerOptionType,
     FilterSelectPicker,
     FilterChips,
+    GenericEmptyState,
+    ErrorScreenManager,
+    ImageType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import appGroupEmpty from '@Images/application-group-empty-state.webp'
 import './EnvironmentsList.scss'
 import EnvironmentsListView from './EnvironmentListView'
 import { getClusterListMinWithoutAuth } from '../../../services/service'
 import { AppGroupAdminType, AppGroupUrlFilters, AppGroupUrlFiltersType } from '../AppGroup.types'
 import { parseSearchParams } from '../AppGroup.utils'
+import { getEnvAppList } from '../AppGroup.service'
 
 const EnvironmentsList = ({ isSuperAdmin }: AppGroupAdminType) => {
     const urlFilters = useUrlFilters<never, AppGroupUrlFiltersType>({
@@ -51,6 +56,12 @@ const EnvironmentsList = ({ isSuperAdmin }: AppGroupAdminType) => {
         () => ({ searchKey, cluster, offset, pageSize }),
         [searchKey, JSON.stringify(cluster), offset, pageSize],
     )
+
+    const [appListLoading, appListResponse, appListError, reloadAppList] = useAsync(
+        () => getEnvAppList(filterConfig),
+        [filterConfig],
+    )
+    const areFiltersApplied = filterConfig.searchKey || filterConfig.cluster.length > 0
 
     const [clusterListLoading, clusterListRes, clusterListError, reloadClusterList] =
         useAsync(getClusterListMinWithoutAuth)
@@ -103,10 +114,56 @@ const EnvironmentsList = ({ isSuperAdmin }: AppGroupAdminType) => {
         />
     )
 
-    return (
-        <div className="flexbox-col h-100 dc__overflow-scroll">
-            <PageHeader headerName="Application Groups" showAnnouncementHeader />
-            <div className="env-list bcn-0">
+    const renderHeader = () => (
+        <div className="flex dc__content-space pl-20 pr-20 pt-16 pb-16" data-testid="search-env-and-cluster">
+            {renderSearch()}
+            <FilterSelectPicker
+                placeholder="Clusters"
+                inputId="app-group-cluster-filter"
+                options={clusterOptions}
+                appliedFilterOptions={selectedClusters}
+                isDisabled={clusterListLoading}
+                isLoading={clusterListLoading}
+                optionListError={clusterListError}
+                reloadOptionList={reloadClusterList}
+                handleApplyFilter={handleApplyClusterFilter}
+                shouldMenuAlignRight
+            />
+        </div>
+    )
+
+    const renderBody = () => {
+        if (!appListLoading) {
+            if (appListError) {
+                return (
+                    <div className="flexbox-col flex-grow-1">
+                        {areFiltersApplied && (
+                            <>
+                                {renderHeader()}
+                                {renderAppliedFilters()}
+                            </>
+                        )}
+                        <ErrorScreenManager code={appListError?.code} reload={reloadAppList} />
+                    </div>
+                )
+            }
+
+            if (!appListResponse?.result?.envList?.length && !areFiltersApplied) {
+                return (
+                    <div className="h-100">
+                        <GenericEmptyState
+                            image={appGroupEmpty}
+                            imageType={ImageType.Large}
+                            title="Your Applications, Organized by Environments"
+                            subTitle="Application Groups show deployed applications by environment. If you don't see any, you either lack access or no applications are deployed in your environments."
+                        />
+                    </div>
+                )
+            }
+        }
+
+        return (
+            <div className="env-list bg__primary">
                 <div className="flex dc__content-space pl-20 pr-20 pt-16 pb-16" data-testid="search-env-and-cluster">
                     {renderSearch()}
                     <FilterSelectPicker
@@ -129,8 +186,17 @@ const EnvironmentsList = ({ isSuperAdmin }: AppGroupAdminType) => {
                     clearFilters={clearFilters}
                     changePage={changePage}
                     changePageSize={changePageSize}
+                    appListLoading={appListLoading}
+                    appListResponse={appListResponse}
                 />
             </div>
+        )
+    }
+
+    return (
+        <div className="flexbox-col h-100 dc__overflow-auto">
+            <PageHeader headerName="Application Groups" showAnnouncementHeader />
+            {renderBody()}
         </div>
     )
 }

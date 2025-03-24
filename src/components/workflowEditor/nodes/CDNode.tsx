@@ -16,11 +16,15 @@
 
 import React, { Component, ReactElement } from 'react'
 import { Link } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
 import {
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
     ConditionalWrap,
     ConfirmationDialog,
     DeploymentAppTypes,
+    Icon,
     MODAL_TYPE,
     ServerErrors,
     showError,
@@ -29,8 +33,6 @@ import {
     WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
-import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
-import { ReactComponent as ICDelete } from '../../../assets/icons/ic-delete-interactive.svg'
 import { CDNodeProps, CDNodeState } from '../types'
 import {
     BUTTON_TEXT,
@@ -183,7 +185,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
 
     renderReadOnlyCard() {
         return (
-            <div className="workflow-node dc__overflow-scroll">
+            <div className="workflow-node dc__overflow-auto">
                 <div className="workflow-node__title flex">
                     <div className="workflow-node__full-width-minus-Icon">
                         <span className="workflow-node__text-light">Deploy</span>
@@ -193,7 +195,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                             ))}
                         </div>
                     </div>
-                    <div className="workflow-node__icon-common workflow-node__CD-icon" />
+                    <Icon name="ic-cd" size={20} color={null} />
                 </div>
             </div>
         )
@@ -267,7 +269,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         />
     )
 
-    renderDeleteConformationDialog = () => {
+    renderDeleteConfirmationDialog = () => {
         if (this.state.showDeploymentConfirmationDeleteDialog && DeploymentWindowConfirmationDialog) {
             return this.renderDeploymentWindowConfirmationModal()
         } else if (this.state.showDeletePipelinePopup) {
@@ -291,13 +293,13 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         }
 
         return (
-            <div
-                className={`workflow-node__icon-common dc__no-shrink pt-12 pb-12 mr-12 ${
-                    this.props.isVirtualEnvironment
-                        ? 'workflow-node__CD-rocket-icon'
-                        : 'workflow-node__CD-icon dc__flip'
-                }`}
-            />
+            <div className={`flex ${!this.props.isVirtualEnvironment ? 'dc__flip pl-12 ' : 'pr-12'}`}>
+                <Icon
+                    name={this.props.isVirtualEnvironment ? 'ic-paper-plane-color' : 'ic-cd'}
+                    size={20}
+                    color={null}
+                />
+            </div>
         )
     }
 
@@ -350,38 +352,49 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
 
                         {!this.props.isOffendingPipelineView && selectedNodeKey !== currentNodeKey && (
                             <div className="flexbox-col h-100 dc__border-left-n1 w-24 dc__align-items-center">
-                                <Tippy
-                                    placement="right"
-                                    className="default-tt"
-                                    content={
-                                        <span className="add-cd-btn-tippy">
-                                            {this.props.addNewPipelineBlocked
-                                                ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.'
-                                                : 'Add deployment pipeline'}
-                                        </span>
-                                    }
+                                <div
+                                    className="dc__grid-rows-2 ci-node__action-button dc__right-radius-8 h-100 dc__border-left-n1 w-24 dc__align-items-center"
                                 >
-                                    <div className="flex h-100 w-100 dc__border-bottom-n1--important">
-                                        <button
-                                            type="button"
-                                            className="flex h-100 w-100 p-0 dc__outline-none-imp bcn-0 dc__no-border workflow-node__title--add-cd-icon dc__hover-b500  pt-4 pb-4 pl-6 pr-6 workflow-node__title--top-right-rad-8"
-                                            disabled={this.props.addNewPipelineBlocked}
+                                    <div className="dc__border-bottom-n1">
+                                        <Button
+                                            ariaLabel={
+                                                this.props.addNewPipelineBlocked
+                                                    ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.'
+                                                    : 'Add deployment pipeline'
+                                            }
+                                            variant={ButtonVariantType.borderLess}
+                                            dataTestId={`cd-pipeline-node-add-button-${this.props.environmentName}`}
                                             onClick={this.handleAddNewNode}
-                                        >
-                                            <Add className="icon-dim-12" />
-                                        </button>
+                                            icon={<Icon size={12} name="ic-add" color={null} />}
+                                            disabled={this.props.addNewPipelineBlocked}
+                                            size={ComponentSizeType.xxs_small_icon}
+                                            style={ButtonStyleType.neutral}
+                                            fullWidth
+                                            showTooltip
+                                            tooltipProps={{
+                                                placement: 'right',
+                                                content: this.props.addNewPipelineBlocked
+                                                    ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.'
+                                                    : 'Add deployment pipeline',
+                                            }}
+                                        />
                                     </div>
-                                </Tippy>
-
-                                <Tippy placement="right" content="Delete pipeline" className="default-tt">
-                                    <button
-                                        type="button"
-                                        className="flex h-100 w-100 dc__hover-r500 workflow-node__title--bottom-right-rad-8 pt-4 pb-4 pl-6 pr-6 dc__outline-none-imp bcn-0 dc__no-border workflow-node__title--delete-cd-icon"
+                                    <Button
+                                        ariaLabel="Delete pipeline"
+                                        variant={ButtonVariantType.borderLess}
+                                        dataTestId={`cd-pipeline-node-delete-button-${this.props.environmentName}`}
+                                        size={ComponentSizeType.xxs_small_icon}
+                                        showAriaLabelInTippy
                                         onClick={this.handleDeleteCDNode}
-                                    >
-                                        <ICDelete className="icon-dim-12" />
-                                    </button>
-                                </Tippy>
+                                        style={ButtonStyleType.negativeGrey}
+                                        icon={<Icon name="ic-delete" color={null} size={12} />}
+                                        showTooltip
+                                        tooltipProps={{
+                                            placement: 'right',
+                                            content: 'Delete Pipeline',
+                                        }}
+                                    />
+                                </div>
                             </div>
                         )}
                     </div>
@@ -404,21 +417,21 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                 >
                     {this.props.cdNamesList?.length > 0 ? this.renderReadOnlyCard() : this.renderCardContent()}
                 </foreignObject>
-                
-                <DeleteCDNode
-                    showDeleteDialog={this.state.showDeleteDialog}
-                    deleteDialog={this.state.deleteDialog}
-                    setDeleteDialog={this.handleDeleteDialogUpdate}
-                    clusterName={this.state.clusterName}
-                    appName={this.props.appName}
-                    hideDeleteModal={this.handleHideDeleteModal}
-                    deleteCD={this.deleteCD}
-                    deploymentAppType={this.props.deploymentAppType ?? ''}
-                    forceDeleteData={this.state.forceDeleteData}
-                    deleteTitleName={this.props.environmentName}
-                    isLoading={this.state.deleteInProgress}
-                />
-                {this.renderDeleteConformationDialog()}
+                {this.state.showDeleteDialog && (
+                    <DeleteCDNode
+                        deleteDialog={this.state.deleteDialog}
+                        setDeleteDialog={this.handleDeleteDialogUpdate}
+                        clusterName={this.state.clusterName}
+                        appName={this.props.appName}
+                        hideDeleteModal={this.handleHideDeleteModal}
+                        deleteCD={this.deleteCD}
+                        deploymentAppType={this.props.deploymentAppType ?? ''}
+                        forceDeleteData={this.state.forceDeleteData}
+                        deleteTitleName={this.props.environmentName}
+                        isLoading={this.state.deleteInProgress}
+                    />
+                )}
+                {this.renderDeleteConfirmationDialog()}
             </>
         )
     }

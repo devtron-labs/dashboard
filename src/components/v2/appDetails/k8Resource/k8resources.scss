@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-.k8-resources-node-tree {
-    flex: 0 0 270px;
-    min-height: 532px;
-    overflow-y: auto;
-}
-
-.resource-node-wrapper {
-    min-height: calc(100vh - 120px);
-}
-
 .node-container-fluid {
     width: 100%;
     margin-right: auto;
@@ -31,7 +21,7 @@
     padding-right: 0;
     padding-left: 0;
     height: '600px';
-    overflow: 'scroll';
+    overflow: 'auto';
 }
 
 .node-row {

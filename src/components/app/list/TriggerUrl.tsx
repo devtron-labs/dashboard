@@ -82,7 +82,7 @@ export const TriggerUrlModal = ({ appId, envId, installedAppId, isExternalApp, c
 
     return (
         <VisibleModal className="" close={close}>
-            <div onClick={stopPropogation} className="modal-body--ci-material h-100 dc__overflow-hidden">
+            <div onClick={stopPropogation} className="flexbox-col flex-grow-1 modal-body--ci-material h-100 dc__overflow-hidden">
                 <div className="trigger-modal__header">
                     <h1 className="modal__title flex left fs-16" data-testid="app-details-url-heading">
                         URLs
@@ -92,7 +92,7 @@ export const TriggerUrlModal = ({ appId, envId, installedAppId, isExternalApp, c
                     </button>
                 </div>
 
-                <div className="dc__overflow-scroll" style={{ height: 'calc(100% - 67px)' }}>
+                <div className="dc__overflow-auto flexbox-col flex-grow-1">
                     {loading ? (
                         <Progressing pageLoader />
                     ) : Object.values(data).every((value) => !value.length) ? (

@@ -17,7 +17,7 @@
 import React, { Component } from 'react'
 import { NavLink, RouteComponentProps } from 'react-router-dom'
 import ReactGA from 'react-ga4'
-import { URLS as CommonURLS, MainContext } from '@devtron-labs/devtron-fe-common-lib'
+import { URLS as CommonURLS, Icon, MainContext } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ModuleNameMap,
     MODULE_STATUS_POLLING_INTERVAL,
@@ -25,39 +25,27 @@ import {
     SERVER_MODE,
     URLS,
 } from '../../../config'
-import { ReactComponent as ApplicationsIcon } from '../../../assets/icons/ic-nav-applications.svg'
-import { ReactComponent as ChartStoreIcon } from '../../../assets/icons/ic-nav-helm.svg'
-import { ReactComponent as SecurityIcon } from '../../../assets/icons/ic-nav-security.svg'
-import { ReactComponent as BulkEditIcon } from '../../../assets/icons/ic-nav-code.svg'
-import { ReactComponent as GlobalConfigIcon } from '../../../assets/icons/ic-nav-gear.svg'
-import { ReactComponent as StackManagerIcon } from '../../../assets/icons/ic-nav-stack.svg'
-import { ReactComponent as ReleasesIcon } from '../../../assets/icons/ic-open-box.svg'
-import { ReactComponent as ICBrowser } from '../../../assets/icons/ic-browser.svg'
 // Fallback Icon
 import NavSprite from '../../../assets/icons/navigation-sprite.svg'
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg'
 import { Command, CommandErrorBoundary } from '../../command'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import './navigation.scss'
-import { ReactComponent as CubeIcon } from '../../../assets/icons/ic-cube.svg'
-import { ReactComponent as JobsIcon } from '../../../assets/icons/ic-k8s-job.svg'
-import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
-import { ReactComponent as ResourceWatcherIcon } from '../../../assets/icons/ic-monitoring.svg'
 import { importComponentFromFELibrary } from '../helpers/Helpers'
 import { OrganizationFrame, OrganizationTextLogo } from '../../../Pages/Shared'
+import { NavigationListItemType } from './types'
 
 const hideResourceWatcher = !importComponentFromFELibrary('ResourceWatcherRouter')
 const hideSoftwareDistributionHub = !importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
 const hideNetworkStatusInterface = !importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
 
-const NavigationList = [
+const NavigationList: NavigationListItemType[] = [
     {
         title: 'Applications',
         dataTestId: 'click-on-application',
         type: 'link',
-        iconClass: 'nav-short-apps',
-        icon: ApplicationsIcon,
+        icon: 'ic-grid-view',
         href: URLS.APP,
         isAvailableInEA: true,
     },
@@ -65,8 +53,7 @@ const NavigationList = [
         title: 'Jobs',
         dataTestId: 'click-on-job',
         type: 'link',
-        iconClass: 'nav-short-jobs',
-        icon: JobsIcon,
+        icon: 'ic-k8s-job',
         href: URLS.JOB,
         isAvailableInEA: false,
         markOnlyForSuperAdmin: false,
@@ -75,18 +62,15 @@ const NavigationList = [
         title: 'Application Groups',
         dataTestId: 'click-on-application-groups',
         type: 'link',
-        iconClass: 'nav-short-env',
-        icon: EnvIcon,
+        icon: 'ic-app-group',
         href: URLS.APPLICATION_GROUP,
         isAvailableInEA: false,
-        forceHideEnvKey: 'HIDE_APPLICATION_GROUPS',
     },
     {
         title: 'Software Distribution Hub',
         dataTestId: 'click-on-releases',
         type: 'link',
-        iconClass: 'nav-short-env',
-        icon: ReleasesIcon,
+        icon: 'ic-open-box',
         href: URLS.SOFTWARE_DISTRIBUTION_HUB,
         isAvailableInEA: false,
         forceHideEnvKey: 'HIDE_RELEASES',
@@ -96,8 +80,7 @@ const NavigationList = [
         title: 'Network status interface',
         dataTestId: 'click-on-network-status-interface',
         type: 'link',
-        iconClass: 'scn-0',
-        icon: ICBrowser,
+        icon: 'ic-browser',
         href: CommonURLS.NETWORK_STATUS_INTERFACE,
         isAvailableInEA: true,
         forceHideEnvKey: 'HIDE_NETWORK_STATUS_INTERFACE',
@@ -107,8 +90,7 @@ const NavigationList = [
         title: 'Resource Browser',
         dataTestId: 'click-on-resource-browser',
         type: 'link',
-        iconClass: 'nav-short-resource-browser',
-        icon: CubeIcon,
+        icon: 'ic-cube',
         href: URLS.RESOURCE_BROWSER,
         isAvailableInEA: true,
         markAsBeta: false,
@@ -119,8 +101,7 @@ const NavigationList = [
         dataTestId: 'click-on-resource-watcher',
         type: 'link',
         href: URLS.RESOURCE_WATCHER,
-        iconClass: 'nav-resource-watcher',
-        icon: ResourceWatcherIcon,
+        icon: 'ic-monitoring',
         isAvailableInEA: true,
         forceHideEnvKey: 'HIDE_RESOURCE_WATCHER',
         hideNav: hideResourceWatcher,
@@ -129,8 +110,7 @@ const NavigationList = [
         title: 'Chart Store',
         dataTestId: 'click-on-chart-store',
         type: 'link',
-        iconClass: 'nav-short-helm',
-        icon: ChartStoreIcon,
+        icon: 'ic-helm',
         href: URLS.CHARTS,
         isAvailableInEA: true,
     },
@@ -139,8 +119,7 @@ const NavigationList = [
         dataTestId: 'click-on-security',
         type: 'link',
         href: URLS.SECURITY,
-        iconClass: 'nav-security',
-        icon: SecurityIcon,
+        icon: 'ic-shield-check',
         moduleName: ModuleNameMap.SECURITY_CLAIR,
         moduleNameTrivy: ModuleNameMap.SECURITY_TRIVY,
     },
@@ -149,8 +128,7 @@ const NavigationList = [
         dataTestId: 'click-on-bulk-edit',
         type: 'link',
         href: URLS.BULK_EDITS,
-        iconClass: 'nav-bulk-update',
-        icon: BulkEditIcon,
+        icon: 'ic-code',
         isAvailableInEA: false,
     },
     {
@@ -158,19 +136,17 @@ const NavigationList = [
         dataTestId: 'click-on-global-configuration',
         type: 'link',
         href: URLS.GLOBAL_CONFIG,
-        iconClass: 'nav-short-global',
-        icon: GlobalConfigIcon,
+        icon: 'ic-gear',
         isAvailableInEA: true,
         isAvailableInDesktop: true,
     },
 ]
 
-const NavigationStack = {
+const NavigationStack: NavigationListItemType = {
     title: 'Devtron Stack Manager',
     dataTestId: 'click-on-stack-manager',
     type: 'link',
-    iconClass: 'nav-short-stack',
-    icon: StackManagerIcon,
+    icon: 'ic-stack',
     href: URLS.STACK_MANAGER,
 }
 interface NavigationType extends RouteComponentProps<{}> {
@@ -283,42 +259,7 @@ export default class Navigation extends Component<
         this.props.history.push('/login')
     }
 
-    renderNavButton(item) {
-        return (
-            <button
-                type="button"
-                key={`side-nav-${item.title}`}
-                className="dc__transparent pl-0"
-                onClick={(e) => {
-                    if (!this.state.isCommandBarActive) {
-                        ReactGA.event({
-                            category: 'Command Bar',
-                            action: 'Open (Click)',
-                            label: `${this.props.location.pathname.replace(/\d+/g, '')}`,
-                        })
-                    } else {
-                        ReactGA.event({
-                            category: 'Command Bar',
-                            action: 'Close',
-                            label: '',
-                        })
-                    }
-                    this.toggleCommandBar(!this.state.isCommandBarActive)
-                }}
-            >
-                <div className="short-nav--flex">
-                    <div className="svg-container flex">
-                        <item.icon className="icon-dim-20" />
-                    </div>
-                    <div className="expandable-active-nav">
-                        <div className="title-container flex left">{item.title}</div>
-                    </div>
-                </div>
-            </button>
-        )
-    }
-
-    renderNavLink(item, className = '') {
+    renderNavLink(item: NavigationListItemType, className = '') {
         return (
             <NavLink
                 to={item.href}
@@ -334,8 +275,8 @@ export default class Navigation extends Component<
             >
                 <div className="short-nav__item-selected" />
                 <div className="short-nav--flex">
-                    <div className={`svg-container flex ${item.iconClass}`} data-testid={item?.dataTestId}>
-                        <item.icon className="icon-dim-20" />
+                    <div className="svg-container flex" data-testid={item.dataTestId}>
+                        <Icon name={item.icon} size={20} color="white" />
                     </div>
                     <div className="expandable-active-nav">
                         <div className="title-container flex left">{item.title}</div>
@@ -420,9 +361,6 @@ export default class Navigation extends Component<
                         </NavLink>
                         {NavigationList.map((item) => {
                             if (this.canShowNavOption(item)) {
-                                if (item.type === 'button') {
-                                    return this.renderNavButton(item)
-                                }
                                 return this.renderNavLink(item)
                             }
                         })}

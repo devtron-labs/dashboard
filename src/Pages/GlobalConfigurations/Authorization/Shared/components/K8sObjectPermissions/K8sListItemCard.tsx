@@ -22,7 +22,6 @@ import {
     InfoColourBar,
     OptionType,
     GVKType,
-    getK8sResourceList,
     EntityTypes,
     ApiResourceGroupType,
     Button,
@@ -30,8 +29,16 @@ import {
     SelectPicker,
     ButtonVariantType,
     ButtonStyleType,
+    ResourceListPayloadType,
+    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
+import {
+    getUserAccessClusterList,
+    getUserAccessK8sResourceList,
+    getUserAccessNamespaceList,
+    getUserAccessResourceGroupList,
+} from '@Pages/GlobalConfigurations/Authorization/authorization.service'
 import {
     processK8SObjects,
     convertToOptionsList,
@@ -39,19 +46,13 @@ import {
     sortOptionsByLabel,
     importComponentFromFELibrary,
 } from '../../../../../../components/common'
-import {
-    getClusterList,
-    getResourceGroupList,
-    namespaceListByClusterId,
-} from '../../../../../../components/ResourceBrowser/ResourceBrowser.service'
-import { K8SObjectType, ResourceListPayloadType } from '../../../../../../components/ResourceBrowser/Types'
+import { K8SObjectType } from '../../../../../../components/ResourceBrowser/Types'
 import { formatOptionLabel } from '../../../../../../components/v2/common/ReactSelect.utils'
 import { ReactComponent as Clone } from '../../../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Delete } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as InfoIcon } from '../../../../../../assets/icons/info-filled.svg'
 import { multiSelectAllState } from './utils'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
-import { parseData } from '../../../utils'
 import { ALL_NAMESPACE } from '../../../constants'
 import { K8sPermissionActionType, K8S_PERMISSION_INFO_MESSAGE } from './constants'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
@@ -78,7 +79,7 @@ const K8sListItemCard = ({
 }: K8sListItemCardType) => {
     const { customRoles } = useAuthorizationContext()
     const { showStatus, userStatus } = usePermissionConfiguration()
-    const [clusterOptions, setClusterOptions] = useState<OptionType[]>([])
+    const [clusterOptions, setClusterOptions] = useState<SelectPickerOptionType<string>[]>([])
     const [processedData, setProcessedData] = useState<Map<string, K8SObjectType>>()
     const [allInKindMapping, setAllInKindMapping] = useState<OptionType[]>([])
     const [
@@ -103,7 +104,7 @@ const K8sListItemCard = ({
             isNamespaceListLoading: true,
         })
         try {
-            const { result } = await namespaceListByClusterId(clusterId)
+            const result = await getUserAccessNamespaceList({ clusterId: +clusterId })
             const options = [ALL_NAMESPACE, ...(result ? convertToOptionsList(result.sort()) : [])]
             setNamespaceMapping((prevMapping) => ({ ...prevMapping, [clusterId]: options }))
         } catch (err) {
@@ -144,10 +145,10 @@ const K8sListItemCard = ({
                     },
                 },
             }
-            const { result } = await getK8sResourceList(resourceListPayload)
-            if (result) {
+            const data = await getUserAccessK8sResourceList(resourceListPayload)
+            if (data) {
                 const _data =
-                    result.data?.map((ele) => ({ label: ele.name, value: ele.name })).sort(sortOptionsByLabel) ?? []
+                    data.data?.map((ele) => ({ label: ele.name, value: ele.name })).sort(sortOptionsByLabel) ?? []
                 const _optionList = [{ label: 'All resources', value: SELECT_ALL_VALUE }, ..._data]
                 setObjectMapping((prevMapping) => ({
                     ...prevMapping,
@@ -217,7 +218,7 @@ const K8sListItemCard = ({
             isApiGroupListLoading: true,
         })
         try {
-            const { result: resourceGroupList } = await getResourceGroupList(clusterId)
+            const resourceGroupList = await getUserAccessResourceGroupList({ clusterId })
             if (resourceGroupList.apiResources) {
                 const _processedData = processK8SObjects(resourceGroupList.apiResources, '', true)
                 const _k8SObjectMap = _processedData.k8SObjectMap
@@ -271,7 +272,7 @@ const K8sListItemCard = ({
             isClusterListLoading: true,
         })
         try {
-            const { result } = await getClusterList()
+            const result = await getUserAccessClusterList()
             if (result) {
                 const filteredClusterList = result.filter((item) => !item?.isVirtualCluster)
                 const _clusterOptions = convertToOptionsList(
@@ -364,11 +365,13 @@ const K8sListItemCard = ({
         handleK8sPermission(action, index)
     }
 
-    const k8sOptions = parseData(customRoles.customRoles, EntityTypes.CLUSTER).map((role) => ({
-        label: role.roleDisplayName,
-        value: role.roleName,
-        description: role.roleDescription,
-    }))
+    const k8sOptions = customRoles.customRoles
+        .filter((role) => role.entity === EntityTypes.CLUSTER)
+        .map((role) => ({
+            label: role.roleDisplayName,
+            value: role.roleName,
+            description: role.roleDescription,
+        }))
 
     const handleUserStatusUpdate = (
         status: K8sPermissionFilter['status'],
@@ -389,7 +392,7 @@ const K8sListItemCard = ({
     }
 
     return (
-        <div className="mt-16 mb-16 flexbox-col dc__gap-12 dc__border br-4 p-16 bcn-0">
+        <div className="mt-16 mb-16 flexbox-col dc__gap-12 dc__border br-4 p-16 bg__primary">
             <div className="cn-7 fs-13 fw-4 lh-20 flex dc__content-space">
                 <span>Cluster</span>
                 {!selectedPermissionAction && (
@@ -443,7 +446,7 @@ const K8sListItemCard = ({
                         hideSelectedOptions={false}
                         size={ComponentSizeType.large}
                     />
-                    <div className="dc__grid-row-one-half dc__gap-12 w-100">
+                    <div className="dc__grid-cols-2 dc__gap-12 w-100">
                         <SelectPicker
                             inputId="k8s-permission-select-api-group-dropdown"
                             placeholder="Select API group"

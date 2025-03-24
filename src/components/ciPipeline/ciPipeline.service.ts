@@ -26,13 +26,14 @@ import {
     getModuleConfigured,
     ModuleNameMap,
     VariableTypeFormat,
+    TriggerType,
+    ChangeCIPayloadType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
+import { Routes, SourceTypeMap, ViewType } from '../../config'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
 import { CIPipelineBuildType, PatchAction } from './types'
 import { safeTrim } from '../../util/Util'
-import { ChangeCIPayloadType } from '../workflowEditor/types'
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }
@@ -292,12 +293,15 @@ export function deleteCIPipeline(
     isExternalCI: boolean,
     webhookConditionList,
 ) {
-    const ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
+    const updatedCI = {
+        id: ciPipeline.id,
+        name: formData.name,
+    }
     const request = {
         appId,
         appWorkflowId: workflowId,
         action: PatchAction.DELETE,
-        ciPipeline: ci,
+        ciPipeline: updatedCI,
     }
     return savePipeline(request).then((response) => {
         return parseCIResponse(

@@ -15,7 +15,13 @@
  */
 
 import React, { Component } from 'react'
-import { showError, Progressing, ErrorScreenManager, GenericEmptyState, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    GenericEmptyState,
+    SelectPicker,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { generatePath } from 'react-router-dom'
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Label, ReferenceLine } from 'recharts'
 import moment from 'moment'
@@ -29,8 +35,6 @@ import { getAppOtherEnvironmentMin } from '../../../../services/service'
 import { DeploymentTableModal } from './DeploymentTableModal'
 import { BenchmarkModal } from './BenchmarkModal'
 import {
-    DropdownIndicator,
-    styles,
     BenchmarkLine,
     frequencyXAxisLabel,
     leadTimeXAxisLabel,
@@ -43,13 +47,12 @@ import {
     EliteCategoryMessage,
     FailureLegendEmptyState,
 } from './deploymentMetrics.util'
-import { Option } from '../../../v2/common/ReactSelect.utils'
-import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
+import AppNotDeployed from '../../../../assets/img/app-not-deployed.svg'
 import SelectEnvImage from '../../../../assets/img/ic-empty-dep-metrics@2x.png'
-import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as Deploy } from '../../../../assets/icons/ic-deploy.svg'
-import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
-import { ReactComponent as Fail } from '../../../../assets/icons/ic-error-exclamation.svg'
+import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
+import { ReactComponent as Deploy } from '@Icons/ic-nav-rocket.svg'
+import { ReactComponent as Success } from '@Icons/appstatus/healthy.svg'
+import { ReactComponent as Fail } from '@Icons/ic-error-exclamation.svg'
 import './deploymentMetrics.scss'
 import { DeploymentMetricsProps, DeploymentMetricsState } from './deploymentMetrics.types'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
@@ -255,7 +258,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
 
     renderInputs() {
         return (
-            <div className="deployment-metrics__inputs bcn-0">
+            <div className="deployment-metrics__inputs bg__primary">
                 <div className="w-180" data-testid="select-environment">
                     <SelectPicker
                         inputId="deployment-metrics-select-environment"
@@ -544,12 +547,9 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
         const env = this.state.environments.find((e) => e.value === Number(this.props.match.params.envId))
         const envName = env ? env.label : ''
         return (
-            <div>
+            <div className="flexbox-col flex-grow-1">
                 {this.renderInputs()}
-                <div
-                    className="dc__position-rel"
-                    style={{ backgroundColor: 'var(--N000)', height: 'calc(100vh - 150px' }}
-                >
+                <div className="dc__position-rel bg__primary flex-grow-1">
                     <GenericEmptyState
                         image={AppNotDeployed}
                         title={EMPTY_STATE_STATUS.RENDER_EMPTY_STATE.TITILE}
@@ -562,7 +562,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
 
     renderNoEnvironmentView() {
         return (
-            <div className="dc__position-rel" style={{ backgroundColor: 'var(--N000)', height: 'calc(100vh - 80px' }}>
+            <div className="flex-grow-1">
                 <GenericEmptyState
                     image={SelectEnvImage}
                     title={EMPTY_STATE_STATUS.RENDER_NO_ENVIORNMENT_STATE.TITLE}
@@ -574,12 +574,9 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
 
     renderSelectEnvironmentView() {
         return (
-            <div>
+            <div className="flexbox-col flex-grow-1">
                 {this.renderInputs()}
-                <div
-                    className="dc__position-rel"
-                    style={{ backgroundColor: 'var(--N000)', height: 'calc(100vh - 150px' }}
-                >
+                <div className="dc__position-rel flex-grow-1 bg__primary">
                     <GenericEmptyState
                         image={SelectEnvImage}
                         title={EMPTY_STATE_STATUS.RENDER_SELECT_ENVIRONMENT_VIEW.TITLE}
@@ -623,7 +620,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
     render() {
         if (this.state.view === ViewType.LOADING) {
             return (
-                <div>
+                <div className="flex-grow-1">
                     <Progressing pageLoader />
                 </div>
             )

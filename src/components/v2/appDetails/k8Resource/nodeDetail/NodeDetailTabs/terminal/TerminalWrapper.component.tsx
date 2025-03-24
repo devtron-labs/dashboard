@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { SocketConnectionType } from '../../../../../../ClusterNodes/constants'
 import { useOnline } from '../../../../../../common'
 import { TERMINAL_TEXT } from './constants'
@@ -74,10 +73,14 @@ export default function TerminalWrapper({
     }
 
     return (
-        <div className={className} data-testid={dataTestId}>
-            <div className="flex bcn-0 pl-20 h-32 terminal-action-strip dc__zi-11">{firstStrip()}</div>
+        <div className={`${className} flex-grow-1 flexbox-col dc__overflow-hidden`} data-testid={dataTestId}>
+            <div className="flex bg__primary pl-20 h-32 terminal-action-strip dc__zi-11 border__secondary--bottom dc__no-shrink">
+                {firstStrip()}
+            </div>
             {selectionListData.secondRow && (
-                <div className="flex left bcn-0 pl-20 dc__border-top terminal-action-strip dc__gap-12">{secondStrip()}</div>
+                <div className="flex left bg__primary pl-20 border__secondary--bottom terminal-action-strip dc__gap-12 dc__no-shrink">
+                    {secondStrip()}
+                </div>
             )}
             {typeof selectionListData.tabSwitcher.terminalTabWrapper === 'function'
                 ? selectionListData.tabSwitcher.terminalTabWrapper(renderTerminalView())

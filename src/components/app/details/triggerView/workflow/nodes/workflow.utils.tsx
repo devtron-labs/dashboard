@@ -48,7 +48,7 @@ export const getNodeSideHeadingAndClass = (
     }
 
     if (isDeploymentBlocked) {
-        return { heading: DO_NOT_DEPLOY, className: 'bcy-5 cn-9 dc__opacity-1' }
+        return { heading: DO_NOT_DEPLOY, className: 'bcy-5 text__black--imp dc__opacity-1' }
     }
 
     return { heading: triggerType, className: '' }

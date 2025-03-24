@@ -29,7 +29,7 @@ const GuideCommonHeader = ({ loginCount, title, subtitle, isGettingStartedClicke
 
     return (
         <div className="common-guide__container">
-            <div className="deploy-manage__header mh-300 dc__window-bg bcn-1">
+            <div className="deploy-manage__header mh-300 bg__tertiary bcn-1">
                 {showCloseIcon && (
                     <button
                         type="button"

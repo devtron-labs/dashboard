@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { CodeEditor, ConfigurationType, MarkDown, MODES, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
@@ -62,18 +78,14 @@ const DeploymentTemplateForm = ({
     const renderEditorHeader = () => {
         if (showReadMe) {
             return (
-                <CodeEditor.Header className="flex left p-0-imp dc__border-bottom-n1" hideDefaultSplitHeader>
-                    <div className="flexbox px-16 py-6 dc__content-space fs-12 fw-6 cn-9 bcn-0">
-                        <div className="flexbox w-100 dc__gap-8 dc__align-items-center">
-                            <div className="flexbox dc__gap-8 dc__align-items-center">
-                                {!readOnly && <ICPencil className="icon-dim-16 dc__no-shrink" />}
+                <CodeEditor.Header hideDefaultSplitHeader>
+                    <div className="flexbox dc__gap-8 dc__align-items-center fs-12 fw-6 cn-9">
+                        {!readOnly && <ICPencil className="icon-dim-16 dc__no-shrink" />}
 
-                                <span className="cn-9 fs-12 fw-6 lh-20">
-                                    {getHeadingPrefix()}
-                                    {selectedChart?.version && ` (v${selectedChart.version})`}
-                                </span>
-                            </div>
-                        </div>
+                        <span className="cn-9 fs-12 fw-6 lh-20">
+                            {getHeadingPrefix()}
+                            {selectedChart?.version && ` (v${selectedChart.version})`}
+                        </span>
                     </div>
                 </CodeEditor.Header>
             )
@@ -87,28 +99,43 @@ const DeploymentTemplateForm = ({
     }
 
     return (
-        <div className={`dc__overflow-scroll flex-grow-1 ${showReadMe ? 'dc__grid-half' : 'flexbox-col'}`}>
+        <div className={`dc__overflow-auto flex-grow-1 ${showReadMe ? 'dc__grid-half' : 'flexbox-col'}`}>
             {showReadMe && (
-                <div className="flexbox-col dc__border-right dc__overflow-scroll">
-                    <div className="flexbox dc__gap-8 bcn-0 px-12 py-6 dc__border-bottom-n1 flex left py-6">
+                <div className="flexbox-col dc__border-right dc__overflow-auto">
+                    <div className="flexbox dc__gap-8 bg__primary px-12 pt-6 pb-5 dc__border-bottom flex left">
                         <ICBookOpen className="icon-dim-16 dc__no-shrink scn-9" />
                         <span className="fs-12 fw-6 cn-9 lh-20">{`Readme ${selectedChart ? `(v${selectedChart.version})` : ''}`}</span>
                     </div>
 
-                    <MarkDown markdown={readMe} className="dc__overflow-scroll" />
+                    <MarkDown markdown={readMe} className="dc__overflow-auto" />
                 </div>
             )}
 
-            <div className="flexbox-col dc__overflow-scroll flex-grow-1">
+            <div className="flexbox-col dc__overflow-auto flex-grow-1">
                 <CodeEditor
-                    value={editedDocument}
-                    schemaURI={getEditorSchemaURIFromChartNameAndVersion(selectedChart?.name, selectedChart?.version)}
-                    onChange={readOnly ? noop : editorOnChange}
                     mode={MODES.YAML}
-                    validatorSchema={schema}
                     readOnly={readOnly}
                     noParsing
-                    height="100%"
+                    codeEditorProps={{
+                        value: editedDocument,
+                        schemaURI: getEditorSchemaURIFromChartNameAndVersion(
+                            selectedChart?.name,
+                            selectedChart?.version,
+                        ),
+                        onChange: readOnly ? noop : editorOnChange,
+                        validatorSchema: schema,
+                        height: '100%',
+                    }}
+                    codeMirrorProps={{
+                        value: editedDocument,
+                        schemaURI: getEditorSchemaURIFromChartNameAndVersion(
+                            selectedChart?.name,
+                            selectedChart?.version,
+                        ),
+                        onChange: readOnly ? noop : editorOnChange,
+                        validatorSchema: schema,
+                        height: '100%',
+                    }}
                 >
                     {renderEditorHeader()}
                 </CodeEditor>

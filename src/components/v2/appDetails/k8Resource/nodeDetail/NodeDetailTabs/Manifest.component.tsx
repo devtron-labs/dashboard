@@ -35,11 +35,18 @@ import {
     YAMLStringify,
     InfoColourBar,
     logExceptionToSentry,
+    CodeEditorThemesKeys,
+    noop,
+    AppThemeType,
+    isCodeMirrorEnabled,
+    getComponentSpecificThemeClass,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
 import { ReactComponent as ICInfoFilled } from '@Icons/ic-info-filled.svg'
+import { importComponentFromFELibrary } from '@Components/common'
+import { DEFAULT_CLUSTER_ID } from '@Components/cluster/cluster.type'
 import { NodeDetailTab } from '../nodeDetail.type'
 import {
     createResource,
@@ -55,6 +62,7 @@ import {
     ManifestActionPropsType,
     ManifestCodeEditorMode,
     ManifestViewRefType,
+    Node,
     NodeType,
 } from '../../../appDetails.type'
 import { appendRefetchDataToUrl } from '../../../../../util/URLUtil'
@@ -68,7 +76,6 @@ import {
     SAVE_DATA_VALIDATION_ERROR_MSG,
 } from '../../../../values/chartValuesDiff/ChartValuesView.constants'
 import { getDecodedEncodedSecretManifestData, getTrimmedManifestData } from '../nodeDetail.util'
-import { importComponentFromFELibrary } from '@Components/common'
 
 const renderOutOfSyncWarning = importComponentFromFELibrary('renderOutOfSyncWarning', null, 'function')
 const getManifestGUISchema = importComponentFromFELibrary('getManifestGUISchema', null, 'function')
@@ -94,7 +101,7 @@ const ManifestComponent = ({
     handleUpdateUnableToParseManifest,
     handleManifestGUIErrors,
     manifestGUIFormRef,
-    isExternalApp,
+    isManifestEditable,
 }: ManifestActionPropsType) => {
     const location = useLocation()
     const history = useHistory()
@@ -166,6 +173,7 @@ const ManifestComponent = ({
     const isReadOnlyView = showManifestCompareView || !isEditMode
 
     useEffectAfterMount(() => {
+        // eslint-disable-next-line no-param-reassign
         manifestViewRef.current = {
             data: {
                 error,
@@ -195,7 +203,7 @@ const ManifestComponent = ({
     ])
 
     const handleInitializeGUISchema = async (abortSignal: AbortSignal) => {
-        if (!getManifestGUISchema || isExternalApp) {
+        if (!getManifestGUISchema || !isManifestEditable) {
             return
         }
 
@@ -208,7 +216,7 @@ const ManifestComponent = ({
         })
 
         const guiSchemaResponse = await getManifestGUISchema({
-            clusterId: resourceRequestPayload.clusterId,
+            clusterId: DEFAULT_CLUSTER_ID,
             gvk: resourceRequestPayload.k8sRequest.resourceIdentifier.groupVersionKind,
             signal: abortSignal,
         })
@@ -217,7 +225,8 @@ const ManifestComponent = ({
     }
 
     const handleInitializeLockedManifestKeys = async (signal: AbortSignal) => {
-        if (!getLockedManifestKeys || isExternalApp) {
+        // NOTE: this feature is only applicable to non-superadmins
+        if (!getLockedManifestKeys || !isManifestEditable || isSuperAdmin) {
             return
         }
 
@@ -230,7 +239,7 @@ const ManifestComponent = ({
         })
 
         const lockedKeysResponse = await getLockedManifestKeys({
-            clusterId: resourceRequestPayload.clusterId,
+            clusterId: DEFAULT_CLUSTER_ID,
             gvk: resourceRequestPayload.k8sRequest.resourceIdentifier.groupVersionKind,
             signal,
         })
@@ -253,12 +262,13 @@ const ManifestComponent = ({
         )
 
         const _isResourceMissing =
-            appDetails.appType === AppType.EXTERNAL_HELM_CHART && _selectedResource?.['health']?.status === 'Missing'
+            appDetails.appType === AppType.EXTERNAL_HELM_CHART &&
+            (_selectedResource as unknown as Node)?.health?.status === 'Missing'
         setIsResourceMissing(_isResourceMissing)
         const _showDesiredAndCompareManifest =
             !isResourceBrowserView &&
             appDetails.appType === AppType.EXTERNAL_HELM_CHART &&
-            !_selectedResource?.['parentRefs']?.length
+            !(_selectedResource as unknown as Node)?.parentRefs?.length
         setShowDesiredAndCompareManifest(_showDesiredAndCompareManifest)
 
         if (
@@ -332,7 +342,7 @@ const ManifestComponent = ({
                         setError(true)
                         showError(err)
                     })
-            } catch (err) {
+            } catch {
                 setLoading(false)
             }
         }
@@ -354,7 +364,9 @@ const ManifestComponent = ({
                 if (jsonManifestData?.metadata?.managedFields) {
                     setTrimedManifestEditorData(getTrimmedManifestData(jsonManifestData, true) as string)
                 }
-            } catch {}
+            } catch {
+                noop()
+            }
             toggleManagedFields(false)
         }
     }, [isEditMode, modifiedManifest])
@@ -370,7 +382,9 @@ const ManifestComponent = ({
                         setTrimedManifestEditorData(getTrimmedManifestData(jsonManifestData, true) as string)
                     }
                 }
-            } catch {}
+            } catch {
+                noop()
+            }
         }
     }, [activeManifestEditorData, hideManagedFields, showManifestCompareView])
 
@@ -408,13 +422,13 @@ const ManifestComponent = ({
         setActiveManifestEditorData(modifiedManifest)
     }
 
-    const handleCallApplyChangesAPI = (manifest: string): Promise<void> =>
+    const handleCallApplyChangesAPI = (manifestString: string): Promise<void> =>
         new Promise<void>((resolve) => {
             updateManifestResourceHelmApps(
                 appDetails,
                 params.podName,
                 params.nodeType,
-                manifest,
+                manifestString,
                 isResourceBrowserView,
                 selectedResource,
             )
@@ -442,9 +456,9 @@ const ManifestComponent = ({
                             description: TOAST_ACCESS_DENIED.SUBTITLE,
                         })
                     } else if (err.code === 400 || err.code === 409 || err.code === 422) {
-                        const error = err['errors'] && err['errors'][0]
-                        if (error && error.code && error.userMessage) {
-                            setErrorText(`ERROR ${err.code} > Message: “${error.userMessage}”`)
+                        const er = err.errors && err.errors[0]
+                        if (er && er.code && er.userMessage) {
+                            setErrorText(`ERROR ${err.code} > Message: “${er.userMessage}”`)
                         } else {
                             showError(err)
                         }
@@ -544,7 +558,7 @@ const ManifestComponent = ({
                 handleEditLiveManifest()
                 break
             case ManifestCodeEditorMode.APPLY_CHANGES:
-                handleApplyChanges()
+                handleApplyChanges().catch(noop)
                 break
             default:
             // DO NOTHING
@@ -572,47 +586,48 @@ const ManifestComponent = ({
         setShowLockedDiffModal(false)
     }
 
+    const renderNoContentToDecodeTippy = (children) => (
+        <Tippy
+            className="default-tt w-200"
+            arrow={false}
+            placement="top-start"
+            content="Nothing to decode, data field not found."
+        >
+            {children}
+        </Tippy>
+    )
+
     const renderShowDecodedValueCheckbox = () => {
         let jsonManifestData
+
         try {
             jsonManifestData = YAML.parse(trimedManifestEditorData)
         } catch {
             return null
         }
-        if (jsonManifestData?.kind === 'Secret' && !isEditMode && secretViewAccess) {
-            return (
-                <ConditionalWrap
-                    condition={!jsonManifestData?.data}
-                    wrap={(children) => (
-                        <Tippy
-                            className="default-tt w-200"
-                            arrow={false}
-                            placement="top-start"
-                            content="Nothing to decode, data field not found."
-                        >
-                            {children}
-                        </Tippy>
-                    )}
-                >
-                    <div
-                        className={`${
-                            !jsonManifestData?.data ? 'dc__opacity-0_5 cursor-not-allowed' : ''
-                        } flex left ml-8`}
-                    >
-                        <Checkbox
-                            rootClassName={`${
-                                !jsonManifestData?.data ? 'dc__opacity-0_5 cursor-not-allowed' : 'cursor'
-                            } mb-0-imp h-18`}
-                            id="showDecodedValue"
-                            isChecked={showDecodedData}
-                            onChange={() => onChangeToggleShowDecodedValue(jsonManifestData)}
-                            value={CHECKBOX_VALUE.CHECKED}
-                        />
-                        Show decoded Value
-                    </div>
-                </ConditionalWrap>
-            )
+
+        if (jsonManifestData?.kind !== 'Secret' || isEditMode || !secretViewAccess) {
+            return null
         }
+
+        return (
+            <ConditionalWrap condition={!jsonManifestData?.data} wrap={renderNoContentToDecodeTippy}>
+                <div
+                    className={`${!jsonManifestData?.data ? 'dc__opacity-0_5 cursor-not-allowed' : ''} flex left ml-8`}
+                >
+                    <Checkbox
+                        rootClassName={`${
+                            !jsonManifestData?.data ? 'dc__opacity-0_5 cursor-not-allowed' : 'cursor'
+                        } mb-0-imp h-18`}
+                        id="showDecodedValue"
+                        isChecked={showDecodedData}
+                        onChange={() => onChangeToggleShowDecodedValue(jsonManifestData)}
+                        value={CHECKBOX_VALUE.CHECKED}
+                    />
+                    Show decoded Value
+                </div>
+            </ConditionalWrap>
+        )
     }
 
     const getCodeEditorValue = () => {
@@ -645,7 +660,7 @@ const ManifestComponent = ({
         return (
             <InfoColourBar
                 message={message}
-                classname="w-100 m-0 code-editor__information dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
+                classname="w-100 m-0 fs-12 fw-4 lh-16 cn-9 py-8 px-16 bcb-1 dc__border-bottom dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
                 Icon={ICInfoFilled}
                 iconClass="icon-dim-16"
                 linkClass="dc__truncate--clamp-6"
@@ -665,7 +680,7 @@ const ManifestComponent = ({
         return (
             <InfoColourBar
                 message={errorText}
-                classname="w-100 m-0 code-editor__error dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
+                classname="w-100 m-0 fs-12 fw-4 lh-16 py-8 px-16 bco-1 co-5 dc__border-bottom dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
                 Icon={ICErrorExclamation}
                 iconClass="icon-dim-16"
                 linkClass="dc__truncate--clamp-6"
@@ -692,43 +707,62 @@ const ManifestComponent = ({
         }
 
         return (
-            <CodeEditor
-                defaultValue={showManifestCompareView && desiredManifest}
-                cleanData={showManifestCompareView}
-                diffView={showManifestCompareView}
-                theme="vs-dark--dt"
-                height={isResourceBrowserView ? 'calc(100vh - 119px)' : 'calc(100vh - 77px)'}
-                value={getCodeEditorValue()}
-                mode={MODES.YAML}
-                readOnly={isReadOnlyView}
-                onChange={handleEditorValueChange}
-                loading={loading}
-                customLoader={
-                    <MessageUI
-                        msg={loadingMsg}
-                        icon={MsgUIType.LOADING}
-                        size={24}
-                        minHeight={isResourceBrowserView ? 'calc(100vh - 151px)' : ''}
-                    />
+            <div
+                className={
+                    !isCodeMirrorEnabled()
+                        ? `${getComponentSpecificThemeClass(AppThemeType.dark)} flex-grow-1 flexbox-col`
+                        : ''
                 }
-                focus={isEditMode}
             >
-                {renderEditorInfo(true)}
+                <CodeEditor
+                    cleanData={showManifestCompareView}
+                    diffView={showManifestCompareView}
+                    mode={MODES.YAML}
+                    readOnly={isReadOnlyView}
+                    loading={loading}
+                    customLoader={<MessageUI msg={loadingMsg} icon={MsgUIType.LOADING} size={24} />}
+                    codeEditorProps={{
+                        theme: CodeEditorThemesKeys.vsDarkDT,
+                        value: getCodeEditorValue(),
+                        defaultValue: showManifestCompareView ? desiredManifest : '',
+                        onChange: handleEditorValueChange,
+                        focus: isEditMode,
+                        height: '0',
+                    }}
+                    codeMirrorProps={{
+                        theme: AppThemeType.dark,
+                        height: '100%',
+                        ...(showManifestCompareView
+                            ? {
+                                  diffView: true,
+                                  originalValue: desiredManifest,
+                                  modifiedValue: getCodeEditorValue(),
+                                  onModifiedValueChange: handleEditorValueChange,
+                              }
+                            : {
+                                  diffView: false,
+                                  value: getCodeEditorValue(),
+                                  onChange: handleEditorValueChange,
+                                  autoFocus: isEditMode,
+                              }),
+                    }}
+                >
+                    {renderEditorInfo(true)}
 
-                {!loading &&
-                    !error &&
-                    isConfigDriftEnabled &&
-                    'hasDrift' in _selectedResource &&
-                    _selectedResource.hasDrift &&
-                    !showManifestCompareView &&
-                    renderOutOfSyncWarning &&
-                    renderOutOfSyncWarning(handleDesiredManifestOpen)}
-                {showManifestCompareView && (
-                    <CodeEditor.Header hideDefaultSplitHeader className="p-0">
-                        <div className="dc__split-header">
-                            <div className="dc__split-header__pane flexbox dc__align-items-center dc__content-space dc__gap-8">
-                                <span>Desired manifest</span>
+                    {!loading &&
+                        !error &&
+                        isConfigDriftEnabled &&
+                        'hasDrift' in _selectedResource &&
+                        _selectedResource.hasDrift &&
+                        !showManifestCompareView &&
+                        renderOutOfSyncWarning &&
+                        renderOutOfSyncWarning(handleDesiredManifestOpen)}
+                    {showManifestCompareView && (
+                        <CodeEditor.Header hideDefaultSplitHeader>
+                            <div className="flex dc__content-space dc__gap-8 pr-16">
+                                <p className="m-0 cn-9">Desired manifest</p>
                                 <button
+                                    type="button"
                                     className="dc__unset-button-styles flex"
                                     aria-label="Close Desired Manifest"
                                     onClick={handleDesiredManifestClose}
@@ -736,42 +770,34 @@ const ManifestComponent = ({
                                     <ICClose className="icon-dim-16 scn-0" />
                                 </button>
                             </div>
-                            <div className="dc__split-header__pane">Live manifest</div>
-                        </div>
-                    </CodeEditor.Header>
-                )}
+                            <p className="m-0 cn-9 pl-16">Live manifest</p>
+                        </CodeEditor.Header>
+                    )}
 
-                {renderErrorBar(true)}
-            </CodeEditor>
+                    {renderErrorBar(true)}
+                </CodeEditor>
+            </div>
         )
     }
 
     return isDeleted ? (
         <div className="h-100 flex-grow-1">
-            <MessageUI
-                msg="This resource no longer exists"
-                size={32}
-                minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
-            />
+            <MessageUI msg="This resource no longer exists" size={32} />
         </div>
     ) : (
         <div
-            className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ' '} manifest-container flexbox-col flex-grow-1 dc__overflow-scroll`}
+            className="manifest-container flexbox-col flex-grow-1 dc__overflow-auto"
             data-testid="app-manifest-container"
-            style={{ background: '#0B0F22' }}
+            style={{
+                background: 'var(--terminal-bg)',
+            }}
         >
-            {error && !loading && (
-                <MessageUI
-                    msg="Manifest not available"
-                    size={24}
-                    minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
-                />
-            )}
+            {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
             {!error && (
                 <div
                     className={`${
-                        manifestFormConfigurationType === ConfigurationType.GUI ? 'bcn-0' : ''
-                    } flexbox-col flex-grow-1 dc__overflow-scroll h-100`}
+                        manifestFormConfigurationType === ConfigurationType.GUI ? 'bg__primary' : ''
+                    } flexbox-col flex-grow-1 dc__overflow-auto`}
                 >
                     {isResourceMissing && !loading && !showManifestCompareView ? (
                         <MessageUI

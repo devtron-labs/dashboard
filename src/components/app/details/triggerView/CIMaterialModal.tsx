@@ -74,9 +74,11 @@ export const CIMaterialModal = ({
     }, [selectedCIPipeline])
 
     const renderBranchCIModal = () => (
-        <VisibleModal className="" close={closeCIModal}>
-            (
-            <div className="modal-body--ci-material h-100 w-100 flexbox-col" onClick={stopPropagation}>
+        <VisibleModal className="flexbox-col flex-grow-1 mh-0 h-100" close={closeCIModal}>
+            <div
+                className="modal-body--ci-material w-100 border__primary--left flexbox-col flex-grow-1 mh-0"
+                onClick={stopPropagation}
+            >
                 {loader ? (
                     <>
                         <div className="trigger-modal__header flex right">
@@ -90,9 +92,7 @@ export const CIMaterialModal = ({
                                 dataTestId="ci-material-close-button"
                             />
                         </div>
-                        <div style={{ height: 'calc(100% - 55px)' }}>
-                            <Progressing pageLoader size={32} />
-                        </div>
+                        <Progressing pageLoader size={32} />
                     </>
                 ) : (
                     <CIMaterial
@@ -104,7 +104,6 @@ export const CIMaterialModal = ({
                     />
                 )}
             </div>
-            )
         </VisibleModal>
     )
 

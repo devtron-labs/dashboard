@@ -16,7 +16,14 @@
 
 import { useState } from 'react'
 import Tippy from '@tippyjs/react'
-import { Progressing, showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Progressing,
+    RegistryIcon,
+    RegistryType,
+    showError,
+    ToastManager,
+    ToastVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { List } from '../../globalConfigurations/GlobalConfiguration'
 import { updateChartProviderList, updateSyncSpecificChart } from '../charts.service'
 import { ReactComponent as SyncIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
@@ -25,7 +32,17 @@ import { ChartListType } from '../charts.types'
 import { getNonEditableChartRepoText } from '../../common'
 import { TOAST_INFO } from '../../../config/constantMessaging'
 
-const ChartListPopUpRow = ({ index, list, enabled, toggleEnabled }: { index: number; list: ChartListType, enabled: boolean, toggleEnabled: (enable: boolean) => void }) => {
+const ChartListPopUpRow = ({
+    index,
+    list,
+    enabled,
+    toggleEnabled,
+}: {
+    index: number
+    list: ChartListType
+    enabled: boolean
+    toggleEnabled: (enable: boolean) => void
+}) => {
     const [isSpecificChartRefetchLoading, setSpecificChartRefetchLoading] = useState(false)
     const [isToggleLoading, setToggleLoading] = useState(false)
 
@@ -82,7 +99,7 @@ const ChartListPopUpRow = ({ index, list, enabled, toggleEnabled }: { index: num
             <List key={`chart-row-${index}`}>
                 <List.Logo>
                     {list.isOCIRegistry ? (
-                        <div className={`dc__registry-icon ${list.registryProvider}`} />
+                        <RegistryIcon registryType={list.registryProvider as RegistryType} />
                     ) : (
                         <Helm className="icon-dim-20 fcb-5 dc__vertical-align-middle " />
                     )}

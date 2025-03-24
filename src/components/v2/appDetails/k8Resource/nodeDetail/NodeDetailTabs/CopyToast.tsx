@@ -25,7 +25,7 @@ interface toastType {
 
 const CopyToast = ({ showCopyToast }: toastType) => (
     <span
-        className={`br-8 bcn-0 cn-9 clipboard-toast ${showCopyToast ? 'clipboard-toast--show' : ''}`}
+        className={`br-8 bg__primary cn-9 clipboard-toast ${showCopyToast ? 'clipboard-toast--show' : ''}`}
         style={{ zIndex: 9 }}
     >
         <CheckIcon className="icon-dim-24 scn-9" />

@@ -106,7 +106,7 @@ export const GitInfoMaterial = ({
     function renderMaterialHeader() {
         return (
             <div
-                className={`ci-webhook-header flex dc__content-space pl-20 pr-16 py-12 dc__border-bottom ${fromBulkCITrigger ? 'bcn-0' : ''}`}
+                className={`ci-webhook-header flex dc__content-space pl-20 pr-16 py-12 dc__border-bottom ${fromBulkCITrigger ? 'bg__primary' : ''}`}
             >
                 <h2
                     data-testid="build-deploy-pipeline-name-heading"
@@ -152,7 +152,7 @@ export const GitInfoMaterial = ({
         }))
 
         return (
-            <div className="material-list dc__overflow-hidden" style={{ height: 'calc(100vh - 136px)' }}>
+            <div className="material-list dc__overflow-hidden flexbox-col flex-grow-1 mh-0">
                 {RuntimeParamTabs ? (
                     <div className="flex pt-12 pb-12 pl-16 pr-16 dc__gap-4">
                         <RuntimeParamTabs
@@ -267,7 +267,7 @@ export const GitInfoMaterial = ({
                 </div>
                 {showExcludePopUp && (
                     <div
-                        className="flex left p-10 pointer dc__position-abs dc__top-26 dc__right-0 h-40 w-182 bcn-0 br-4 dc__zi-20"
+                        className="flex left p-10 pointer dc__position-abs dc__top-26 dc__right-0 h-40 w-182 bg__primary br-4 dc__zi-20"
                         style={{
                             boxShadow: '0 2px 4px 0 rgba(21, 21, 21, 0.3)',
                         }}
@@ -294,7 +294,7 @@ export const GitInfoMaterial = ({
         const excludeIncludeEnv = !window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS
 
         return (
-            <div className="flex dc__content-space dc__position-sticky py-8 px-16 dc__top-0  dc__backdrop-filter-5 dc__background-opacity-75-per">
+            <div className="flex dc__content-space dc__position-sticky py-8 px-16 dc__top-0 bg__tertiary">
                 {renderBranchChangeHeader(_selectedMaterial)}
                 {!_selectedMaterial.isRepoError && !_selectedMaterial.isBranchError && (
                     <div className="flex right dc__gap-8">
@@ -314,7 +314,7 @@ export const GitInfoMaterial = ({
 
     const renderWebhookHeader = () =>
         selectedMaterial.type === SourceTypeMap.WEBHOOK && (
-            <div className="flex left cn-7 fs-13 fw-6 px-20 py-14 dc__gap-8 dc__backdrop-filter-5 dc__background-opacity-75-per dc__position-sticky dc__top-0">
+            <div className="flex left cn-7 fs-13 fw-6 px-20 py-14 dc__gap-8 bg__tertiary dc__position-sticky dc__top-0">
                 <Info className="icon-dim-16" />
                 <div className="flex left dc__gap-4 cn-9">
                     <span className="lh-20 cn-9">Showing results matching</span>
@@ -344,81 +344,90 @@ export const GitInfoMaterial = ({
 
         if (materialError || !anyCommit) {
             return (
-                <div className="select-material select-material--trigger-view">
+                <div className="select-material">
                     {showHeader && renderMaterialHistoryHeader(_selectedMaterial)}
-
-                    <div className="select-material__empty-state-container flex dc__position-rel">
-                        <EmptyStateCIMaterial
-                            isRepoError={_selectedMaterial.isRepoError}
-                            isBranchError={_selectedMaterial.isBranchError}
-                            isDockerFileError={_selectedMaterial.isDockerFileError}
-                            isWebHook={isWebhook}
-                            gitMaterialName={_selectedMaterial.gitMaterialName}
-                            sourceValue={_selectedMaterial.value}
-                            repoErrorMsg={_selectedMaterial.repoErrorMsg}
-                            branchErrorMsg={_selectedMaterial.branchErrorMsg}
-                            dockerFileErrorMsg={_selectedMaterial.dockerFileErrorMsg}
-                            repoUrl={_selectedMaterial.gitURL}
-                            isMaterialLoading={_selectedMaterial.isMaterialLoading}
-                            onRetry={onRetry}
-                            anyCommit={anyCommit}
-                            noSearchResults={_selectedMaterial.noSearchResult}
-                            noSearchResultsMsg={_selectedMaterial.noSearchResultsMsg}
-                            clearSearch={clearFilters}
-                            handleGoToWorkFlowEditor={goToWorkFlowEditor}
-                            showAllCommits={showAllCommits}
-                            toggleExclude={toggleExclude}
-                        />
-                    </div>
+                    <EmptyStateCIMaterial
+                        isRepoError={_selectedMaterial.isRepoError}
+                        isBranchError={_selectedMaterial.isBranchError}
+                        isDockerFileError={_selectedMaterial.isDockerFileError}
+                        isWebHook={isWebhook}
+                        gitMaterialName={_selectedMaterial.gitMaterialName}
+                        sourceValue={_selectedMaterial.value}
+                        repoErrorMsg={_selectedMaterial.repoErrorMsg}
+                        branchErrorMsg={_selectedMaterial.branchErrorMsg}
+                        dockerFileErrorMsg={_selectedMaterial.dockerFileErrorMsg}
+                        repoUrl={_selectedMaterial.gitURL}
+                        isMaterialLoading={_selectedMaterial.isMaterialLoading}
+                        onRetry={onRetry}
+                        anyCommit={anyCommit}
+                        noSearchResults={_selectedMaterial.noSearchResult}
+                        noSearchResultsMsg={_selectedMaterial.noSearchResultsMsg}
+                        clearSearch={clearFilters}
+                        handleGoToWorkFlowEditor={goToWorkFlowEditor}
+                        showAllCommits={showAllCommits}
+                        toggleExclude={toggleExclude}
+                    />
                 </div>
             )
         }
 
         if (RuntimeParameters && currentSidebarTab === CIMaterialSidebarType.PARAMETERS) {
             return (
-                <RuntimeParameters
-                    // Have to add key for appId since key value config would not be updated incase of app change
-                    key={`runtime-parameters-${appId}`}
-                    appId={+appId}
-                    heading={getRuntimeParametersHeading()}
-                    parameters={runtimeParams}
-                    handleChange={handleRuntimeParamChange}
-                    errorState={runtimeParamsErrorState}
-                    handleError={handleRuntimeParamError}
-                    uploadFile={uploadFile}
-                />
+                <div className="bg__tertiary dc__overflow-auto flex-1 p-16">
+                    <RuntimeParameters
+                        // Have to add key for appId since key value config would not be updated incase of app change
+                        key={`runtime-parameters-${appId}`}
+                        appId={+appId}
+                        heading={getRuntimeParametersHeading()}
+                        parameters={runtimeParams}
+                        handleChange={handleRuntimeParamChange}
+                        errorState={runtimeParamsErrorState}
+                        handleError={handleRuntimeParamError}
+                        uploadFile={uploadFile}
+                    />
+                </div>
             )
         }
 
         return (
-            <div className="select-material select-material--trigger-view">
+            <div className="select-material">
                 {showHeader && renderMaterialHistoryHeader(selectedMaterial)}
                 {renderWebhookHeader()}
-                <MaterialHistory
-                    material={selectedMaterial}
-                    pipelineName={pipelineName}
-                    ciPipelineId={String(pipelineId)}
-                    selectCommit={triggerViewContext.selectCommit}
-                />
+                <div className="py-12 px-16">
+                    <MaterialHistory
+                        material={selectedMaterial}
+                        pipelineName={pipelineName}
+                        ciPipelineId={String(pipelineId)}
+                        selectCommit={triggerViewContext.selectCommit}
+                    />
+                </div>
             </div>
         )
     }
     const nodeType: CommonNodeAttr['type'] = 'CI'
 
     const renderWebhookContent = () => (
-        <div className={` ${fromBulkCITrigger ? 'dc__position-fixed bcn-0 env-modal-width full-height' : ''}`}>
-            <CiWebhookModal
-                webhookPayloads={webhookPayloads}
-                ciPipelineMaterialId={material[0].id}
-                ciPipelineId={+pipelineId}
-                isWebhookPayloadLoading={isWebhookPayloadLoading}
-                workflowId={workflowId}
-                fromAppGrouping={fromAppGrouping}
-                appId={appId}
-                isJobView={isJobView}
-            />
-        </div>
+        <CiWebhookModal
+            webhookPayloads={webhookPayloads}
+            ciPipelineMaterialId={material[0].id}
+            ciPipelineId={+pipelineId}
+            isWebhookPayloadLoading={isWebhookPayloadLoading}
+            workflowId={workflowId}
+            fromAppGrouping={fromAppGrouping}
+            appId={appId}
+            isJobView={isJobView}
+        />
     )
+
+    const renderBody = () =>
+        isBulkCIWebhook ? (
+            renderWebhookContent()
+        ) : (
+            <div className="flexbox flex-grow-1 mh-0">
+                {!fromBulkCITrigger && renderMaterialSource()}
+                {renderMaterialHistory(selectedMaterial)}
+            </div>
+        )
 
     return (
         <>
@@ -437,16 +446,7 @@ export const GitInfoMaterial = ({
                     isJobView={isJobCI}
                 />
             ) : (
-                <div className={`m-lr-0 ${fromBulkCITrigger ? '' : 'flexbox'}`}>
-                    {isBulkCIWebhook ? (
-                        renderWebhookContent()
-                    ) : (
-                        <>
-                            {!fromBulkCITrigger && renderMaterialSource()}
-                            {renderMaterialHistory(selectedMaterial)}
-                        </>
-                    )}
-                </div>
+                renderBody()
             )}
         </>
     )

@@ -25,6 +25,7 @@ import {
     ALL_NAMESPACE_OPTION,
     SortableTableHeaderCell,
     ClusterDetail,
+    ClusterStatusType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import dayjs, { Dayjs } from 'dayjs'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -136,7 +137,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
             <div
                 key={`cluster-${clusterData.id}`}
                 className={`cluster-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class dc__visible-hover dc__visible-hover--parent
-                 ${clusterListLoader ? 'show-shimmer-loading' : ''}`}
+                 ${clusterListLoader ? 'show-shimmer-loading dc__align-items-center' : ''}`}
             >
                 <div data-testid={`cluster-row-${clusterData.name}`} className="flex left dc__overflow-hidden">
                     <Link
@@ -160,7 +161,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                                 </Tooltip>
                             )}
 
-                            {CompareClusterButton && (
+                            {CompareClusterButton && clusterData.status !== ClusterStatusType.CONNECTION_FAILED && (
                                 <CompareClusterButton sourceClusterId={clusterData.id} isIconButton />
                             )}
 
@@ -215,7 +216,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     }
 
     return (
-        <div className="cluster-list-main-container flex-grow-1 flexbox-col bcn-0 dc__overflow-auto">
+        <div className="cluster-list-main-container flex-grow-1 flexbox-col bg__primary dc__overflow-auto">
             <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16 dc__zi-4">
                 <div className="flex dc__gap-12">
                     <SearchBar
@@ -268,7 +269,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                 </div>
             ) : (
                 <div data-testid="cluster-list-container" className="flexbox-col flex-grow-1">
-                    <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase bcn-0 dc__position-sticky dc__top-0 dc__zi-3">
+                    <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase bg__primary dc__position-sticky dc__top-0 dc__zi-3">
                         {Object.entries(ClusterMapListSortableKeys).map(([cellName, cellKey]) => (
                             <SortableTableHeaderCell
                                 key={cellName}

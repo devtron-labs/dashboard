@@ -25,7 +25,6 @@ export default function MaterialSource({
     refreshMaterial,
     selectMaterial,
     ciPipelineId,
-    fromTriggerInfo,
     clearSearch,
 }: MaterialSourceProps) {
     const renderErrorMessage = (mat: CIMaterialType): string => {
@@ -96,10 +95,7 @@ export default function MaterialSource({
     }
 
     return (
-        <div
-            className="select-material--trigger-view__sidebar dc__overflow-scroll"
-            style={{ height: fromTriggerInfo ? '100%' : 'calc(100% - 44px)' }}
-        >
+        <div className="flexbox-col flex-grow-1 dc__overflow-auto">
             {material.map((mat, index) => {
                 return (
                     <div

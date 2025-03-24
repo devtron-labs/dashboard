@@ -20,7 +20,6 @@ import {
     Drawer,
     ErrorScreenManager,
     OptionType,
-    RefVariableType,
     ServerErrors,
     showError,
     VariableType,
@@ -48,27 +47,33 @@ import {
     getEnvironmentListMinPublic,
     uploadCDPipelineFile,
     getGlobalVariables,
+    FloatingVariablesSuggestions,
+    saveCDPipeline,
+    TriggerType,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { CDDeploymentTabText, RegistryPayloadType, SourceTypeMap, TriggerType, ViewType } from '../../config'
-import {
-    FloatingVariablesSuggestions,
-    getPluginIdsFromBuildStage,
-    importComponentFromFELibrary,
-    sortObjectArrayAlphabetically,
-} from '../common'
+import { CDDeploymentTabText, RegistryPayloadType, SourceTypeMap, ViewType } from '../../config'
+import { getPluginIdsFromBuildStage, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
-import { CD_PATCH_ACTION, GeneratedHelmPush } from './cdPipeline.types'
+import {
+    CD_PATCH_ACTION,
+    GeneratedHelmPush,
+    MigrateArgoAppToCDPipelineRequiredPayloadType,
+    MigrateToDevtronFormState,
+} from './cdPipeline.types'
 import {
     deleteCDPipeline,
     getCDPipelineConfig,
     getCDPipelineNameSuggestion,
     getConfigMapAndSecrets,
     getDeploymentStrategyList,
-    saveCDPipeline,
     updateCDPipeline,
 } from './cdPipeline.service'
 import { Sidebar } from '../CIPipelineN/Sidebar'
@@ -87,6 +92,7 @@ import {
 import {
     calculateLastStepDetailsLogic,
     checkUniqueness,
+    getMigrateToDevtronRequiredPayload,
     handleDeleteCDNodePipeline,
     validateTask,
 } from './cdpipeline.util'
@@ -103,6 +109,8 @@ import {
     gitOpsRepoNotConfiguredWithOptionsHidden,
 } from '../gitOps/constants'
 import { BuildCDProps, CDPipelineProps, DeleteDialogType, ForceDeleteMessageType } from './types'
+import { MIGRATE_TO_DEVTRON_FORM_STATE } from './constants'
+import { getConfigureGitOpsCredentialsButtonProps } from '@Components/workflowEditor/ConfigureGitopsInfoBlock'
 
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 const processPluginData: (params: ProcessPluginDataParamsType) => Promise<ProcessPluginDataReturnType> =
@@ -113,7 +121,6 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     null,
     'function',
 )
-const ReleaseModeTabs = importComponentFromFELibrary('ReleaseModeTabs', null, 'function')
 
 export default function CDPipeline({
     location,
@@ -124,9 +131,10 @@ export default function CDPipeline({
     envIds,
     noGitOpsModuleInstalledAndConfigured,
     changeCIPayload,
-    isGitOpsRepoNotConfigured,
+    isGitOpsRepoNotConfigured: isGitOpsRepoNotConfiguredProp,
     reloadAppConfig,
     handleDisplayLoader,
+    isGitOpsInstalledButNotConfigured,
 }: CDPipelineProps) {
     const isCdPipeline = true
     const urlParams = new URLSearchParams(location.search)
@@ -199,6 +207,9 @@ export default function CDPipeline({
         isDigestEnforcedForPipeline: false,
         isDigestEnforcedForEnv: false,
     })
+    const [migrateToDevtronFormState, setMigrateToDevtronFormState] = useState<MigrateToDevtronFormState>(
+        structuredClone(MIGRATE_TO_DEVTRON_FORM_STATE),
+    )
     const [configMapAndSecrets, setConfigMapAndSecrets] = useState([])
     const [savedCustomTagPattern, setSavedCustomTagPattern] = useState<string>('')
     const [selectedTaskIndex, setSelectedTaskIndex] = useState<number>(0)
@@ -258,6 +269,14 @@ export default function CDPipeline({
     const [hideScopedVariableWidget, setHideScopedVariableWidget] = useState<boolean>(false)
     const [disableParentModalClose, setDisableParentModalClose] = useState<boolean>(false)
     const [mandatoryPluginData, setMandatoryPluginData] = useState<MandatoryPluginDataType>(null)
+
+    const isMigratingFromExternalApp = formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && !cdPipelineId
+
+    const isExternalArgoPipeline =
+        formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS &&
+        formData.deploymentAppType === DeploymentAppTypes.GITOPS
+
+    const isGitOpsRepoNotConfigured = isExternalArgoPipeline ? false : isGitOpsRepoNotConfiguredProp
 
     const handleHideScopedVariableWidgetUpdate: PipelineContext['handleHideScopedVariableWidgetUpdate'] = (
         hideScopedVariableWidgetValue: boolean,
@@ -530,7 +549,7 @@ export default function CDPipeline({
     }
 
     const updateStateFromResponse = (pipelineConfigFromRes, environments, form, dockerRegistries): void => {
-        sortObjectArrayAlphabetically(environments, 'name')
+        sortObjectArrayAlphabetically(environments, isMigratingFromExternalApp ? 'environment_name' : 'name')
         environments = environments.map((env) => {
             return {
                 ...env,
@@ -675,6 +694,11 @@ export default function CDPipeline({
             }),
         }
 
+        // Have to enforce type like this otherwise pipeline variable would have taken type from MigrateArgoAppToCDPipelineRequiredPayloadType and would throw error in case of virtual env.
+        const migrateToDevtronRequiredPayload: Omit<MigrateArgoAppToCDPipelineRequiredPayloadType, 'deploymentAppType'> & { deploymentAppType: DeploymentAppTypes } = isMigratingFromExternalApp
+            ? getMigrateToDevtronRequiredPayload(migrateToDevtronFormState)
+            : null
+
         const pipeline = {
             name: formData.name,
             appWorkflowId: +workflowId,
@@ -682,7 +706,7 @@ export default function CDPipeline({
             environmentId: formData.environmentId,
             namespace: formData.namespace,
             id: +cdPipelineId,
-            strategies: formData.releaseMode === ReleaseMode.MIGRATE_HELM ? [] : formData.savedStrategies,
+            strategies: formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS ? [] : formData.savedStrategies,
             parentPipelineType,
             parentPipelineId: +parentPipelineId,
             isClusterCdActive: formData.isClusterCdActive,
@@ -710,6 +734,7 @@ export default function CDPipeline({
             customTagStage: formData?.customTagStage ? formData.customTagStage : StageTypeEnums.PRE_CD,
             isDigestEnforcedForPipeline: formData.isDigestEnforcedForPipeline,
             isDigestEnforcedForEnv: formData.isDigestEnforcedForEnv,
+            ...migrateToDevtronRequiredPayload,
         }
 
         if (isVirtualEnvironment) {
@@ -720,7 +745,7 @@ export default function CDPipeline({
             pipeline.triggerType =
                 formData.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH
                     ? TriggerType.Manual
-                    : formData.triggerType // In case of virtual environment trigger type will always be manual
+                    : (formData.triggerType as MigrateToDevtronFormState['triggerType']) // In case of virtual environment trigger type will always be manual
         }
 
         // Its not allowed to switch from external to external
@@ -916,73 +941,94 @@ export default function CDPipeline({
         return false
     }
 
-    const savePipeline = () => {
-        if (checkForGitOpsRepoNotConfigured()) {
-            return
-        }
-        const isUnique = checkUniqueness(formData, true)
-        if (!isUnique) {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'All task names must be unique',
-            })
-            return
-        }
-        setLoadingData(true)
-        validateStage(BuildStageVariable.PreBuild, formData)
-        validateStage(BuildStageVariable.Build, formData)
-        validateStage(BuildStageVariable.PostBuild, formData)
-        if (
-            !formDataErrorObj.buildStage.isValid ||
-            !formDataErrorObj.preBuildStage.isValid ||
-            !formDataErrorObj.postBuildStage.isValid
-        ) {
-            setLoadingData(false)
-            if (formData.name === '') {
+    const savePipeline = async () => {
+        if (!isMigratingFromExternalApp) {
+            if (formData.deploymentAppType === DeploymentAppTypes.GITOPS && isGitOpsInstalledButNotConfigured) {
                 ToastManager.showToast({
                     variant: ToastVariantType.error,
-                    description: MULTI_REQUIRED_FIELDS_MSG,
+                    title: 'GitOps credentials not configured',
+                    description: 'GitOps credentials is required to deploy applications via GitOps',
+                    buttonProps: getConfigureGitOpsCredentialsButtonProps({
+                        size: ComponentSizeType.small,
+                        style: ButtonStyleType.neutral,
+                    })
                 })
+
+                return
             }
-            return
+
+            if (checkForGitOpsRepoNotConfigured()) {
+                return
+            }
+            const isUnique = checkUniqueness(formData, true)
+            if (!isUnique) {
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: 'All task names must be unique',
+                })
+                return
+            }
+            setLoadingData(true)
+            validateStage(BuildStageVariable.PreBuild, formData)
+            validateStage(BuildStageVariable.Build, formData)
+            validateStage(BuildStageVariable.PostBuild, formData)
+
+            if (
+                !formDataErrorObj.buildStage.isValid ||
+                !formDataErrorObj.preBuildStage.isValid ||
+                !formDataErrorObj.postBuildStage.isValid
+            ) {
+                setLoadingData(false)
+                if (formData.name === '') {
+                    ToastManager.showToast({
+                        variant: ToastVariantType.error,
+                        description: MULTI_REQUIRED_FIELDS_MSG,
+                    })
+                }
+                return
+            }
         }
 
+        setLoadingData(true)
         const request = responseCode()
-
         const _form = { ...formData }
 
-        const promise = cdPipelineId ? updateCDPipeline(request) : saveCDPipeline(request)
-        promise
-            .then((response) => {
-                if (response.result) {
-                    const pipelineConfigFromRes = response.result.pipelines[0]
-                    updateStateFromResponse(pipelineConfigFromRes, _form.environments, _form, dockerRegistries)
-                    let envName = pipelineConfigFromRes.environmentName
-                    if (!envName) {
-                        const selectedEnv: Environment = _form.environments.find((env) => env.id == _form.environmentId)
-                        envName = selectedEnv.name
-                    }
-                    setFormData(_form)
-                    close(
-                        pipelineConfigFromRes.parentPipelineType !== PipelineType.WEBHOOK,
-                        _form.environmentId,
-                        envName,
-                        pipelineConfigFromRes.cdPipelineId
-                            ? 'Deployment pipeline updated'
-                            : 'Deployment pipeline created',
-                        !cdPipelineId,
-                    )
-                    getWorkflows()
+        try {
+            const promiseArr = cdPipelineId
+                ? [updateCDPipeline(request), null]
+                : [saveCDPipeline(request), isMigratingFromExternalApp ? getEnvironmentListMinPublic(true) : null]
+            const [response, environmentRes] = await Promise.all(promiseArr)
+            if (response.result) {
+                const pipelineConfigFromRes = response.result.pipelines[0]
+                updateStateFromResponse(
+                    pipelineConfigFromRes,
+                    environmentRes?.result ?? _form.environments,
+                    _form,
+                    dockerRegistries,
+                )
+                let envName = pipelineConfigFromRes.environmentName
+                if (!envName) {
+                    const selectedEnv: Environment = environmentRes.result.find((env) => env.id == _form.environmentId)
+                    envName = selectedEnv.name
                 }
-            })
-            .catch((error: ServerErrors) => {
-                setLoadingData(false)
-                if (error.code === 409) {
-                    setReloadNoGitOpsRepoConfiguredModal(true)
-                } else {
-                    showError(error)
-                }
-            })
+                setFormData(_form)
+                close(
+                    pipelineConfigFromRes.parentPipelineType !== PipelineType.WEBHOOK,
+                    _form.environmentId,
+                    envName,
+                    pipelineConfigFromRes.cdPipelineId ? 'Deployment pipeline updated' : 'Deployment pipeline created',
+                    !cdPipelineId,
+                )
+                getWorkflows()
+            }
+        } catch (error) {
+            setLoadingData(false)
+            if (error.code === 409) {
+                setReloadNoGitOpsRepoConfiguredModal(true)
+            } else {
+                showError(error)
+            }
+        }
     }
 
     const hideDeleteModal = () => {
@@ -1116,32 +1162,28 @@ export default function CDPipeline({
     const renderSecondaryButton = () => {
         if (cdPipelineId) {
             return (
-                <button
-                    data-testid="ci-delete-pipeline-button"
-                    type="button"
-                    className="cta cta--workflow delete mr-16"
+                <Button
+                    text="Delete Pipeline"
+                    variant={ButtonVariantType.secondary}
+                    style={ButtonStyleType.negative}
+                    dataTestId="ci-delete-pipeline-button"
                     onClick={openDeleteModal}
-                >
-                    Delete Pipeline
-                </button>
+                />
             )
         }
-        if (!isAdvanced && formData.releaseMode !== ReleaseMode.MIGRATE_HELM) {
+        if (!isAdvanced && formData.releaseMode !== ReleaseMode.MIGRATE_EXTERNAL_APPS && !isWebhookCD) {
             return (
-                !isWebhookCD && (
-                    <button
-                        type="button"
-                        data-testid="create-build-pipeline-advanced-options-button"
-                        className="cta cta--workflow cancel mr-16 flex dc__gap-6"
-                        onClick={handleAdvanceClick}
-                    >
-                        Advanced options
-                        {mandatoryPluginData &&
-                            (!mandatoryPluginData.isValidPre || !mandatoryPluginData.isValidPost) && (
-                                <ICWarning className="icon-dim-16 warning-icon-y7-imp dc__no-shrink" />
-                            )}
-                    </button>
-                )
+                <button
+                    type="button"
+                    data-testid="create-build-pipeline-advanced-options-button"
+                    className="cta cta--workflow cancel mr-16 flex dc__gap-6"
+                    onClick={handleAdvanceClick}
+                >
+                    Advanced options
+                    {mandatoryPluginData && (!mandatoryPluginData.isValidPre || !mandatoryPluginData.isValidPost) && (
+                        <ICWarning className="icon-dim-16 warning-icon-y7-imp dc__no-shrink" />
+                    )}
+                </button>
             )
         }
         return null
@@ -1154,8 +1196,13 @@ export default function CDPipeline({
         close()
     }
 
-    const handleSelectMigrateHelmRelease = () => {
-        setFormData({ ...formData, releaseMode: ReleaseMode.MIGRATE_HELM, deploymentAppType: DeploymentAppTypes.HELM })
+    const handleSelectMigrateToDevtron = () => {
+        setFormData({
+            ...formData,
+            releaseMode: ReleaseMode.MIGRATE_EXTERNAL_APPS,
+            // This will select default deployment app type (Helm) and then last configured deployment app type then
+            deploymentAppType: migrateToDevtronFormState.deploymentAppType,
+        })
     }
 
     const handleSelectNewDeployment = () => {
@@ -1223,7 +1270,7 @@ export default function CDPipeline({
     const renderCDPipelineBody = () => {
         if (pageState === ViewType.ERROR) {
             return (
-                <div className="pipeline-empty-state">
+                <div className="flex-grow-1">
                     <hr className="divider m-0" />
                     <div className="h-100 flex">
                         <ErrorScreenManager code={errorCode} />
@@ -1250,7 +1297,7 @@ export default function CDPipeline({
                 <hr className="divider m-0" />
                 <pipelineContext.Provider value={contextValue}>
                     <div
-                        className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''} ${
+                        className={`${isAdvanced ? 'pipeline-container' : ''} ${
                             activeStageName === BuildStageVariable.Build ? 'no-side-bar' : ''
                         }`}
                     >
@@ -1284,6 +1331,9 @@ export default function CDPipeline({
                                     noGitOpsModuleInstalledAndConfigured={noGitOpsModuleInstalledAndConfigured}
                                     releaseMode={formData.releaseMode}
                                     getMandatoryPluginData={getMandatoryPluginData}
+                                    migrateToDevtronFormState={migrateToDevtronFormState}
+                                    setMigrateToDevtronFormState={setMigrateToDevtronFormState}
+                                    isGitOpsInstalledButNotConfigured={isGitOpsInstalledButNotConfigured}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />
@@ -1308,10 +1358,19 @@ export default function CDPipeline({
 
         // Disable button if environment or release name is not selected
         const getButtonDisabledMessage = (): string => {
+            if (isMigratingFromExternalApp) {
+                const isLinkable = migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.HELM ? migrateToDevtronFormState.migrateFromHelmFormState.validationResponse.isLinkable : migrateToDevtronFormState.migrateFromArgoFormState.validationResponse.isLinkable
+                if (!isLinkable) {
+                    return 'Please resolve errors before proceeding'
+                }
+
+                return ''
+            }
+
             if (!formData.environmentId) {
                 return 'Please select an environment'
             }
-            if (formData.releaseMode === ReleaseMode.MIGRATE_HELM && !formData.deploymentAppName) {
+            if (formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && !formData.deploymentAppName) {
                 return 'Please select a release'
             }
             return ''
@@ -1323,7 +1382,7 @@ export default function CDPipeline({
                     isAdvanced ? 'advanced-option-container' : 'bottom-border-radius'
                 }`}
             >
-                <div className="flex flex-align-center flex-justify bcn-0 px-20 py-12">
+                <div className="flex flex-align-center flex-justify bg__primary px-20 py-12">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
                         {title}
                     </h2>
@@ -1331,19 +1390,43 @@ export default function CDPipeline({
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
-                {!isAdvanced && ReleaseModeTabs && (
-                    <ReleaseModeTabs
-                        handleSelectMigrateHelmRelease={handleSelectMigrateHelmRelease}
-                        handleSelectNewDeployment={handleSelectNewDeployment}
-                        releaseMode={formData.releaseMode}
-                    />
+
+                {!isAdvanced && (
+                    <div className="px-20">
+                        <TabGroup
+                            tabs={[
+                                {
+                                    tabType: 'button',
+                                    active: formData.releaseMode === ReleaseMode.NEW_DEPLOYMENT,
+                                    label: 'New Deployment',
+                                    id: ReleaseMode.NEW_DEPLOYMENT,
+                                    props: {
+                                        onClick: handleSelectNewDeployment,
+                                        'data-testid': 'new-deployment-tab',
+                                    },
+                                },
+                                {
+                                    tabType: 'button',
+                                    active: formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS,
+                                    label: 'Migrate to Devtron',
+                                    id: ReleaseMode.MIGRATE_EXTERNAL_APPS,
+                                    props: {
+                                        onClick: handleSelectMigrateToDevtron,
+                                        'data-testid': 'migrate-to-devtron-tab',
+                                    },
+                                },
+                            ]}
+                            alignActiveBorderWithContainer
+                        />
+                    </div>
                 )}
+
                 {renderCDPipelineBody()}
                 {pageState !== ViewType.LOADING && pageState !== ViewType.ERROR && (
                     <div
-                        className={`ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
+                        className={`ci-button-container bg__primary pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
                             !isWebhookCD &&
-                            !(formData.releaseMode === ReleaseMode.MIGRATE_HELM && !isAdvanced) &&
+                            !(formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && !isAdvanced) &&
                             (cdPipelineId || !isAdvanced)
                                 ? 'flex-justify'
                                 : 'justify-right'
@@ -1378,9 +1461,8 @@ export default function CDPipeline({
                         reload={reloadAppConfig}
                     />
                 )}
-                {cdPipelineId && (
+                {cdPipelineId && showDeleteModal && (
                     <DeleteCDNode
-                        showDeleteDialog={showDeleteModal}
                         deleteDialog={deleteDialog}
                         setDeleteDialog={setDeleteDialog}
                         clusterName={formData.clusterName}

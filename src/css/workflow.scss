@@ -15,9 +15,9 @@
  */
 
 .workflow {
-    border: solid 1px #d6dbdf;
+    border: solid 1px var(--N200);
     border-radius: 8px;
-    background-color: white;
+    background-color: var(--bg-primary);
     width: 100%;
 }
 
@@ -54,7 +54,7 @@
 .workflow__header {
     padding: 8px 16px;
     border-radius: 8px 8px 0 0;
-    border-bottom: solid 1px #d6dbdf;
+    border-bottom: solid 1px var(--N200);
     display: flex;
     align-items: center;
 }
@@ -78,7 +78,7 @@
 .workflow-node {
     height: 100%;
     width: 100%;
-    background: var(--white);
+    background: var(--bg-primary);
     border-radius: 8px;
     border: solid 1px var(--N200);
     position: relative;
@@ -99,8 +99,7 @@
 
 .workflow-node__trigger-type {
     height: 16px;
-    opacity: 0.4;
-    background-color: #1e2360;
+    background-color: var(--bg-pipeline-trigger-type);
     color: var(--white);
     margin: 0px;
     transform: rotate(-90deg);
@@ -163,65 +162,9 @@
     margin-top: 0px;
 }
 
-.workflow-node__configure-btn {
-    border: none;
-    padding: 0px;
-    position: absolute;
-    right: 12px;
-    top: 12px;
-}
-
-.workflow-node__btn-icon {
-    width: 20px;
-    height: 20px;
-}
-
-.workflow-node__git-icon {
-    display: block;
-    width: 20px;
-    height: 20px;
-    background-image: url('../assets/icons/git/git.svg');
-    background-size: 100% 100%;
-}
-
-.workflow-node__CI-icon {
-    background-image: url('../assets/icons/ic-CI.svg');
-}
-
-.workflow-node__CD-pre-post-icon {
-    background-image: url('../assets/icons/ic-cd-stage.svg');
-}
-
-.workflow-node__CI-webhook-icon {
-    background-image: url('../assets/icons/ic-CIWebhook.svg');
-}
-
-.workflow-node__CI-linked-icon {
-    background-image: url('../assets/icons/ic-CILinked.svg');
-}
-
-.workflow-node__CD-icon {
-    background-image: url('../assets/icons/ic-CD.svg');
-}
-
-.workflow-node__CD-rocket-icon {
-    background-image: url('../assets/icons/ic-paper-rocket.svg');
-}
-
-.workflow-node__job-icon {
-    background-image: url('../assets/icons/ic-job-node.svg');
-}
-
 .workflow-node__full-width-minus-Icon {
     flex: 1;
     min-width: 0;
-}
-
-.workflow-node__icon-common {
-    display: block;
-    width: 20px;
-    height: 20px;
-    background-size: 100% 100%;
 }
 
 .workflow-node__add-cd-btn {
@@ -231,7 +174,7 @@
     transform: translate(-50%, -50%);
     border: solid 1px var(--N200);
     font-size: 10px;
-    background-color: var(--white);
+    background-color: var(--bg-primary);
     width: 22px;
     height: 22px;
     padding: 0px;
@@ -249,7 +192,7 @@
     letter-spacing: normal;
     text-align: center;
     color: var(--N700);
-    background-color: var(--white);
+    background-color: var(--bg-primary);
 }
 
 .workflow-node__deploy-btn--ci {
@@ -262,7 +205,7 @@
     border-radius: 4px;
     border: solid 1px var(--N200);
     margin-right: 8px;
-    background-color: var(--white);
+    background-color: var(--bg-primary);
 }
 
 .workflow-node__title {
@@ -337,7 +280,7 @@
     position: absolute;
     display: none;
     background-color: var(--N700);
-    color: var(--white);
+    color: var(--N0);
     font-size: 12px;
     font-weight: 600;
     line-height: 1.4;

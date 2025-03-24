@@ -55,7 +55,7 @@ export default function VariablesList({ variablesList, handleClearFilters }: { v
     }
 
     return (
-        <div className="dc__overflow-scroll h-100 flex column dc__content-start dc__align-start bcn-0 dc__align-self-stretch flex-grow-1 dc__no-shrink">
+        <div className="dc__overflow-auto h-100 flex column dc__content-start dc__align-start bg__primary dc__align-self-stretch flex-grow-1 dc__no-shrink">
             <Grid container spacing={0} containerClass="w-100">
                 <Grid item xs={3} itemClass="dc__ellipsis-right">
                     {renderVariablesListItem({

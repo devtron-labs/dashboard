@@ -27,11 +27,11 @@ import {
     PipelineFormType,
     OptionType,
     DynamicDataTableCellValidationState,
+    ChangeCIPayloadType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router-dom'
 import { ValidateInputOutputVariableCellProps } from '@Components/CIPipelineN/VariableDataTable/types'
 import { HostURLConfig } from '../../services/service.types'
-import { ChangeCIPayloadType } from '../workflowEditor/types'
 
 export interface ExternalCIPipelineState {
     code: number
@@ -278,7 +278,6 @@ export interface CIPipelineType {
     connectCDPipelines: number
     getWorkflows: () => void
     close: () => void
-    deleteWorkflow: (appId?: string, workflowId?: number) => any
     isJobView?: boolean
     isJobCI?: boolean
     changeCIPayload?: ChangeCIPayloadType
@@ -344,7 +343,6 @@ export interface CIPipelineProps
     connectCDPipelines: number
     getWorkflows: () => void
     close: () => void
-    deleteWorkflow?: (appId?: string, workflowId?: number) => any
     changeCIPayload?: ChangeCIPayloadType
 }
 
@@ -366,7 +364,7 @@ export interface ValidationRulesType {
         props: ValidateInputOutputVariableCellProps,
     ) => DynamicDataTableCellValidationState
     conditionDetail: (value: object) => ErrorObj
-    sourceValue: (value: string) => ErrorObj
+    sourceValue: (value: string, doRegexValidation: boolean) => ErrorObj
     mountPathMap: (value: object) => ErrorObj
 }
 export interface SourceMaterialsProps {

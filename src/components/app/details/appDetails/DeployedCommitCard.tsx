@@ -16,7 +16,7 @@
 
 import React, { useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
-import { getCITriggerInfo, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { getCITriggerInfo, GitProviderIcon, GitProviderType, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg'
 import { DeployedCommitCardType } from './appDetails.type'
@@ -65,7 +65,7 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
         <div
             data-testid="deployed-commit-card"
             onClick={showCommitInfoDrawer}
-            className="app-details-info-card pointer flex left bcn-0 br-8 mr-12 lh-20 w-200"
+            className="app-details-info-card pointer flex left bg__primary br-8 mr-12 lh-20 w-200"
         >
             <div className="app-details-info-card__top-container flex">
                 <div className="app-details-info-card__top-container__content">
@@ -85,10 +85,10 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
                     </div>
                     <div className="flex fs-12 fw-4">
                         <CommitIcon className="icon-dim-20" />
-                        <div className="dc__ellipsis-right cn-7 ml-2 fw-4 fs-12 dc__ff-monospace">{commitId}</div>
+                        <div className="dc__ellipsis-right cn-7 ml-2 fw-4 fs-12 mono">{commitId}</div>
                     </div>
                 </div>
-                <div className="dc__git-logo" />
+                <GitProviderIcon gitProvider={GitProviderType.GIT} size={24} />
                 {/* @TODO: This should be dynamic, dependent on the source */}
                 {/* <GitHub className="github-icon" /> */}
             </div>

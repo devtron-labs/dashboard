@@ -22,17 +22,18 @@ import {
     TaskErrorObj,
     VariableType,
     SelectedNode,
-    WorkflowType,
     PluginDataStoreType,
     PipelineFormType,
     MandatoryPluginDataType,
     CiPipeline,
     UploadFileDTO,
     UploadFileProps,
+    ChangeCIPayloadType,
+    CIPipelineNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router-dom'
 import { HostURLConfig } from '../../services/service.types'
-import { CIPipelineNodeType, CdPipelineResult } from '../app/details/triggerView/types'
+import { CdPipelineResult } from '../app/details/triggerView/types'
 import { InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 import { LoadingState } from '../ciConfig/types'
 import { DeleteDialogType, ForceDeleteMessageType } from '../cdPipeline/types'
@@ -40,13 +41,6 @@ import { WorkflowProps } from './Workflow'
 
 export interface BlackListedCI {
     [key: number]: CiPipeline
-}
-
-export interface ChangeCIPayloadType {
-    appWorkflowId: number
-    switchFromCiPipelineId?: number
-    appId: number
-    switchFromExternalCiPipelineId?: number
 }
 
 export interface WorkflowPositionState {
@@ -75,8 +69,6 @@ export interface WorkflowEditState {
     environmentId?: number
     environmentName?: string
     successTitle?: string
-    showNoGitOpsWarningPopup?: boolean
-    cdLink?: string
     noGitOpsConfiguration?: boolean
     noGitOpsModuleInstalledAndConfigured?: boolean
     envToShowWebhookTippy?: number
@@ -212,10 +204,6 @@ export interface WebhookTippyType {
     hideTippy: () => void
 }
 
-export interface DeprecatedWarningModalType {
-    closePopup: () => void
-}
-
 export interface CDNodeState {
     showDeletePipelinePopup: boolean
     showDeleteDialog: boolean
@@ -340,32 +328,16 @@ export interface PipelineContext {
     uploadFile: (file: UploadFileProps) => Promise<UploadFileDTO>
 }
 
-export interface SourceTypeCardProps {
-    title: string
-    subtitle: string
-    image: string
-    alt: string
-    handleCardAction: (e: React.MouseEvent | React.KeyboardEvent) => void
-    dataTestId: string
-    type: string
-    disableInfo: string
-}
-
-export interface WorkflowOptionsModalProps {
-    handleCloseWorkflowOptionsModal: () => void
-    addCIPipeline: (type: CIPipelineNodeType, workflowId?: number | string) => void
-    addWebhookCD: (workflowId?: number | string) => void
-    addLinkedCD: (changeCIPayload: ChangeCIPayloadType) => void
-    showLinkedCDSource: boolean
-    resetChangeCIPayload: () => void
-    // ------------------ Optional types ------------------
-    changeCIPayload?: ChangeCIPayloadType
-    workflows?: WorkflowType[]
-    getWorkflows?: () => void
-}
-
 export interface ToggleCDSelectButtonProps {
     addNewPipelineBlocked: boolean
     onClickAddNode: (event: any) => void
     testId: string
+    deleteConfig?: {
+        appId: string
+        appWorkflowId: number
+        pipelineId: number
+        pipelineName: string
+    }
+    getWorkflows?: () => void
+    hideDeleteButton?: boolean
 }

@@ -47,7 +47,7 @@ const PermissionGroupTable = ({
 
     return (
         <div className="flexbox-col flex-grow-1 show-shimmer-loading">
-            <div className="user-permission__header cn-7 fs-12 fw-6 lh-20 dc__uppercase pl-20 pr-20 dc__border-bottom dc__position-sticky dc__top-0 bcn-0 dc__zi-1">
+            <div className="user-permission__header cn-7 fs-12 fw-6 lh-20 dc__uppercase pl-20 pr-20 dc__border-bottom dc__position-sticky dc__top-0 bg__primary dc__zi-1">
                 {isLoading ? (
                     <span className="child child-shimmer-loading" />
                 ) : (
@@ -77,7 +77,7 @@ const PermissionGroupTable = ({
             ) : (
                 <>
                     <div className="fs-13 fw-4 lh-20 cn-9 flex-grow-1">
-                        {permissionGroups.map((permissionGroup, index) => (
+                        {permissionGroups.map(({ superAdmin, ...permissionGroup }, index) => (
                             <PermissionGroupRow
                                 {...permissionGroup}
                                 index={index}
@@ -86,6 +86,7 @@ const PermissionGroupTable = ({
                                 isChecked={isBulkSelectionApplied || bulkSelectionState[permissionGroup.id]}
                                 toggleChecked={toggleCheckForBulkSelection}
                                 showCheckbox={isSomeRowChecked}
+                                hasSuperAdminPermission={superAdmin}
                             />
                         ))}
                     </div>

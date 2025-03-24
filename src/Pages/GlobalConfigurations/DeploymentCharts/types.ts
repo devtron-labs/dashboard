@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ResponseType, DeploymentChartType } from '@devtron-labs/devtron-fe-common-lib'
+import { ResponseType, DeploymentChartType, UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface ChartUploadType {
     chartName: string
@@ -44,6 +44,14 @@ export interface UploadButtonProps {
     handleOpenUploadChartModal: () => void
 }
 
-export interface DeploymentChartsListHeaderProps extends UploadButtonProps {}
+export interface DeploymentChartsListHeaderProps
+    extends UploadButtonProps,
+        Pick<UseUrlFiltersReturnType<never>, 'handleSearch' | 'searchKey'> {}
 
 export interface DownloadChartButtonProps extends Pick<DeploymentChartType, 'name' | 'versions'> {}
+
+export enum DeploymentChartsListSortableKeys {
+    CHART_NAME = 'chartName',
+    CHART_VERSION = 'chartVersion',
+    UPLOADED_BY = 'uploadedBy',
+}

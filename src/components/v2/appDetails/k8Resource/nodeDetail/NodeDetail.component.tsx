@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useRef, useState, useMemo } from 'react'
-import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router-dom'
+import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router-dom'
 import {
     showError,
     Checkbox,
@@ -30,28 +30,30 @@ import {
     FormProps,
     ToastManager,
     ToastVariantType,
+    OptionsBase,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { ReactComponent as ICCheck } from '@Icons/ic-check.svg'
+import { EDITOR_VIEW } from '@Config/constants'
+import { importComponentFromFELibrary } from '@Components/common'
+import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
 import EventsComponent from './NodeDetailTabs/Events.component'
 import LogsComponent from './NodeDetailTabs/Logs.component'
 import ManifestComponent from './NodeDetailTabs/Manifest.component'
 import TerminalComponent from './NodeDetailTabs/Terminal.component'
-import SummaryComponent from './NodeDetailTabs/Summary.component'
 import { NodeDetailTab, ParamsType } from './nodeDetail.type'
 import {
     AppType,
     ManifestActionPropsType,
     ManifestCodeEditorMode,
     ManifestViewRefType,
+    Node,
     NodeDetailPropsType,
     NodeType,
     Options,
-    OptionsBase,
 } from '../../appDetails.type'
-import AppDetailsStore from '../../appDetails.store'
-import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
 import { getManifestResource } from './nodeDetail.api'
 import MessageUI, { MsgUIType } from '../../../common/message.ui'
@@ -63,8 +65,6 @@ import { ReactComponent as EphemeralIcon } from '../../../../../assets/icons/ic-
 import { ReactComponent as DeleteIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
 import { CLUSTER_NODE_ACTIONS_LABELS } from '../../../../ClusterNodes/constants'
 import DeleteResourcePopup from '../../../../ResourceBrowser/ResourceList/DeleteResourcePopup'
-import { EDITOR_VIEW } from '@Config/constants'
-import { importComponentFromFELibrary } from '@Components/common'
 
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', false, 'function')
 const ToggleManifestConfigurationMode = importComponentFromFELibrary(
@@ -85,10 +85,6 @@ const NodeDetailComponent = ({
     clusterName = '',
 }: NodeDetailPropsType) => {
     const location = useLocation()
-    const [applicationObjectTabs] = useSharedState(
-        AppDetailsStore.getAppDetailsTabs(),
-        AppDetailsStore.getAppDetailsTabsObservable(),
-    )
     const appDetails = IndexStore.getAppDetails()
     const params = useParams<ParamsType>()
     const [tabs, setTabs] = useState([])
@@ -120,8 +116,11 @@ const NodeDetailComponent = ({
     }
 
     const _selectedResource = useMemo(
-        () => lowercaseKindToResourceGroupMap[params.nodeType.toLowerCase()],
-        [lowercaseKindToResourceGroupMap, params.nodeType],
+        () =>
+            lowercaseKindToResourceGroupMap[
+                `${params.group === K8S_EMPTY_GROUP ? '' : params.group?.toLowerCase()}-${params.nodeType.toLowerCase()}`
+            ],
+        [lowercaseKindToResourceGroupMap, params.nodeType, params.group],
     )
 
     const resourceName = isResourceBrowserView ? params.node : params.podName
@@ -149,10 +148,11 @@ const NodeDetailComponent = ({
             (window._env_.FEATURE_CONFIG_DRIFT_ENABLE &&
                 appDetails.appType === AppType.DEVTRON_APP &&
                 isFELibAvailable)) &&
-        !currentResource?.['parentRefs']?.length
+        !(currentResource as unknown as Node)?.parentRefs?.length
 
     const isResourceMissing =
-        appDetails.appType === AppType.EXTERNAL_HELM_CHART && currentResource?.['health']?.status === 'Missing'
+        appDetails.appType === AppType.EXTERNAL_HELM_CHART &&
+        (currentResource as unknown as Node)?.health?.status === 'Missing'
 
     const [containers, setContainers] = useState<Options[]>(
         (isResourceBrowserView ? selectedResource?.containers ?? [] : getContainersData(podMetaData)) as Options[],
@@ -205,22 +205,10 @@ const NodeDetailComponent = ({
         }
     }, [params.nodeType])
 
-    useEffect(() => {
-        if (
-            isResourceBrowserView &&
-            !loadingResources &&
-            selectedResource &&
-            resourceName &&
-            params.nodeType === Nodes.Pod.toLowerCase()
-        ) {
-            getContainersFromManifest()
-        }
-    }, [loadingResources, resourceName, params.namespace])
-
     const getContainersFromManifest = async () => {
         try {
             const nullCaseName = isResourceBrowserView && params.nodeType === 'pod' ? resourceName : ''
-            const { result } = await getManifestResource(
+            const { result } = (await getManifestResource(
                 appDetails,
                 resourceName,
                 params.nodeType,
@@ -230,7 +218,7 @@ const NodeDetailComponent = ({
                     name: selectedResource.name ? selectedResource.name : nullCaseName,
                     namespace: selectedResource.namespace ? selectedResource.namespace : params.namespace,
                 },
-            ) as any
+            )) as any
             const _resourceContainers = []
             if (result?.manifestResponse?.manifest?.spec) {
                 if (Array.isArray(result.manifestResponse.manifest.spec.containers)) {
@@ -254,7 +242,7 @@ const NodeDetailComponent = ({
                 }
             }
 
-            if (result?.manifestResponse.ephemeralContainers) {
+            if (result?.manifestResponse?.ephemeralContainers) {
                 _resourceContainers.push(
                     ...result.manifestResponse.ephemeralContainers.map((_container) => ({
                         name: _container.name,
@@ -275,11 +263,11 @@ const NodeDetailComponent = ({
             }
         } catch (err) {
             // when resource is deleted
-            if (Array.isArray(err['errors']) && err['errors'].some((_err) => _err.code === '404')) {
+            if (Array.isArray(err.errors) && err.errors.some((_err) => _err.code === '404')) {
                 setResourceDeleted(true)
                 setHideDeleteButton(true)
                 // when user is not authorized to view resource
-            } else if (err['code'] === 403) {
+            } else if (err.code === 403) {
                 setHideDeleteButton(true)
                 showError(err)
             } else {
@@ -295,46 +283,30 @@ const NodeDetailComponent = ({
         }
     }
 
+    useEffect(() => {
+        if (
+            isResourceBrowserView &&
+            !loadingResources &&
+            selectedResource &&
+            resourceName &&
+            params.nodeType === Nodes.Pod.toLowerCase()
+        ) {
+            getContainersFromManifest().catch(noop)
+        }
+    }, [loadingResources, resourceName, params.namespace])
+
     const handleManifestGUIError: ManifestActionPropsType['handleManifestGUIErrors'] = (errors = []) => {
         setManifestErrors(errors)
     }
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
         setSelectedTabName(_tabName)
-        updateTabUrl?.({
-            url: _url
+        updateTabUrl({
+            url: _url,
         })
-
-        /**
-         * NOTE: resource browser handles creation of missing tabs;
-         * Need to remove this whole function and not keep missing tab creation
-         * logic here. Instead it should be the concern on this component & should
-         * only be done on component mount */
-        if (isResourceBrowserView) {
-            return
-        }
-
-        /* NOTE: this setTimeout is dangerous; Need to refactor later */
-        if (!AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)) {
-            setTimeout(() => {
-                let _urlToCreate = _url
-
-                const query = new URLSearchParams(window.location.search)
-
-                if (query.get('container')) {
-                    _urlToCreate = `${_urlToCreate}?container=${query.get('container')}`
-                }
-
-                AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, _urlToCreate)
-            }, 500)
-        }
     }
 
-    const currentTab = applicationObjectTabs.filter((tab) => {
-        return tab.name.toLowerCase() === `${params.nodeType}/...${resourceName?.slice(-6)}`
-    })
     const isDeleted =
-        (currentTab?.[0] ? currentTab[0].isDeleted : false) ||
         (isResourceBrowserView && isResourceDeleted) ||
         (!isResourceBrowserView &&
             !(
@@ -370,9 +342,7 @@ const NodeDetailComponent = ({
         setShowDeleteDialog((prevState) => !prevState)
     }
 
-    const getComponentKeyFromParams = () => {
-        return Object.values(params).join('/')
-    }
+    const getComponentKeyFromParams = () => Object.values(params).join('/')
 
     const handleManifestApplyChanges = () => {
         const isFormValid = !manifestGUIFormRef.current?.validateForm || manifestGUIFormRef.current.validateForm()
@@ -387,12 +357,6 @@ const NodeDetailComponent = ({
         }
 
         setManifestCodeEditorMode(ManifestCodeEditorMode.APPLY_CHANGES)
-    }
-
-    const handleManifestCancel = () => {
-        handleManifestGUIError([])
-        handleUpdateUnableToParseManifest(false)
-        setManifestCodeEditorMode(ManifestCodeEditorMode.CANCEL)
     }
 
     const handleManifestEdit = () => setManifestCodeEditorMode(ManifestCodeEditorMode.EDIT)
@@ -436,60 +400,61 @@ const NodeDetailComponent = ({
         setUnableToParseManifest(value)
     }
 
+    const handleManifestCancel = () => {
+        handleManifestGUIError([])
+        handleUpdateUnableToParseManifest(false)
+        setManifestCodeEditorMode(ManifestCodeEditorMode.CANCEL)
+    }
+
+    const isManifestEditable =
+        isExternalApp ||
+        isResourceBrowserView ||
+        (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS && appDetails.deploymentAppDeleteRequest)
+
     const renderManifestTabHeader = () => (
         <>
-            {(isExternalApp ||
-                isResourceBrowserView ||
-                (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&
-                    appDetails.deploymentAppDeleteRequest)) &&
-                manifestCodeEditorMode &&
-                !showManifestCompareView &&
-                !isResourceMissing && (
-                    <>
-                        <div className="ml-12 mr-12 tab-cell-border" />
-                        {manifestCodeEditorMode === ManifestCodeEditorMode.EDIT ? (
-                            <div className="flex dc__gap-12">
-                                {ToggleManifestConfigurationMode && !isExternalApp && (
-                                    <ToggleManifestConfigurationMode
-                                        mode={manifestFormConfigurationType}
-                                        handleToggle={handleToggleManifestConfigurationMode}
-                                        isDisabled={unableToParseManifest || doesManifestGUIContainsError}
-                                    />
-                                )}
+            {isManifestEditable && manifestCodeEditorMode && !showManifestCompareView && !isResourceMissing && (
+                <>
+                    <div className="ml-12 mr-12 tab-cell-border" />
+                    {manifestCodeEditorMode === ManifestCodeEditorMode.EDIT ? (
+                        <div className="flex dc__gap-12">
+                            {ToggleManifestConfigurationMode && isManifestEditable && (
+                                <ToggleManifestConfigurationMode
+                                    mode={manifestFormConfigurationType}
+                                    handleToggle={handleToggleManifestConfigurationMode}
+                                    isDisabled={unableToParseManifest || doesManifestGUIContainsError}
+                                />
+                            )}
 
-                                <button
-                                    type="button"
-                                    className={`dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4 ${doesManifestGUIContainsError ? 'dc__disabled' : ''}`}
-                                    onClick={handleManifestApplyChanges}
-                                    disabled={doesManifestGUIContainsError}
-                                >
-                                    <>
-                                        <ICCheck className="icon-dim-16 scb-5" />
-                                        <span>Apply changes</span>
-                                    </>
-                                </button>
-                                <button
-                                    type="button"
-                                    className="dc__unset-button-styles fs-12 lh-1-5 fw-6 flex cn-6"
-                                    onClick={handleManifestCancel}
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        ) : (
                             <button
                                 type="button"
-                                className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
-                                onClick={handleManifestEdit}
+                                className={`dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4 ${doesManifestGUIContainsError ? 'dc__disabled' : ''}`}
+                                onClick={handleManifestApplyChanges}
+                                disabled={doesManifestGUIContainsError}
                             >
-                                <>
-                                    <ICPencil className="icon-dim-16 scb-5" />
-                                    <span>Edit live manifest</span>
-                                </>
+                                <ICCheck className="icon-dim-16 scb-5" />
+                                <span>Apply changes</span>
                             </button>
-                        )}
-                    </>
-                )}
+                            <button
+                                type="button"
+                                className="dc__unset-button-styles fs-12 lh-1-5 fw-6 flex cn-6"
+                                onClick={handleManifestCancel}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    ) : (
+                        <button
+                            type="button"
+                            className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
+                            onClick={handleManifestEdit}
+                        >
+                            <ICPencil className="icon-dim-16 scb-5" />
+                            <span>Edit live manifest</span>
+                        </button>
+                    )}
+                </>
+            )}
             {manifestCodeEditorMode === ManifestCodeEditorMode.READ &&
                 !showManifestCompareView &&
                 (showDesiredAndCompareManifest || isResourceMissing) && (
@@ -508,23 +473,19 @@ const NodeDetailComponent = ({
         </>
     )
 
-    const TAB_GROUP_CONFIG: TabProps[] = tabs?.map((tab: string, idx: number) => {
-        return {
-            id: `${idx}resourceTreeTab`,
-            label: capitalizeFirstLetter(tab),
-            tabType: 'navLink',
-            props: {
-                to: `${url}/${tab.toLowerCase()}${location.search}`,
-                ['data-testid']: `${tab.toLowerCase()}-nav-link`,
-            }
-        }
-    })
+    const TAB_GROUP_CONFIG: TabProps[] = tabs?.map((tab: string, idx: number) => ({
+        id: `${idx}resourceTreeTab`,
+        label: capitalizeFirstLetter(tab),
+        tabType: 'navLink',
+        props: {
+            to: `${url}/${tab.toLowerCase()}${location.search}`,
+            'data-testid': `${tab.toLowerCase()}-nav-link`,
+        },
+    }))
 
     return (
         <>
-            <div
-                className={`w-100 pr-20 pl-20 bcn-0 flex dc__border-bottom dc__content-space ${!isResourceBrowserView ? 'node-detail__sticky' : ''}`}
-            >
+            <div className="w-100 pr-20 pl-20 bg__primary flex border__secondary--bottom dc__content-space h-32">
                 <div className="flex left">
                     <TabGroup tabs={TAB_GROUP_CONFIG} size={ComponentSizeType.medium} alignActiveBorderWithContainer />
                     {selectedTabName === NodeDetailTab.TERMINAL && (
@@ -589,7 +550,7 @@ const NodeDetailComponent = ({
                             handleUpdateUnableToParseManifest={handleUpdateUnableToParseManifest}
                             handleManifestGUIErrors={handleManifestGUIError}
                             manifestGUIFormRef={manifestGUIFormRef}
-                            isExternalApp={isExternalApp}
+                            isManifestEditable={isManifestEditable}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`}>
@@ -618,12 +579,6 @@ const NodeDetailComponent = ({
                             />
                         </div>
                     </Route>
-                    {/* NOTE: this seems like an obsolete component? since it can't be reached through UI */}
-                    {!isResourceBrowserView && (
-                        <Route path={`${path}/${NodeDetailTab.SUMMARY}`}>
-                            <SummaryComponent selectedTab={handleSelectedTab} />
-                        </Route>
-                    )}
                     {!location.pathname.endsWith('/terminal') && (
                         <Redirect to={`${path}/${NodeDetailTab.MANIFEST.toLowerCase()}`} />
                     )}
@@ -646,7 +601,12 @@ const NodeDetailComponent = ({
                     setContainers={setContainers}
                     switchSelectedContainer={switchSelectedContainer}
                     selectedNamespaceByClickingPod={selectedResource?.namespace}
-                    handleSuccess={getContainersFromManifest}
+                    // getContainersFromManifest can only be used from resource browser
+                    {...(isResourceBrowserView
+                        ? {
+                              handleSuccess: getContainersFromManifest,
+                          }
+                        : {})}
                 />
             )}
             {isResourceBrowserView && showDeleteDialog && (
@@ -664,6 +624,7 @@ const NodeDetailComponent = ({
                     getResourceListData={getContainersFromManifest}
                     toggleDeleteDialog={toggleDeleteDialog}
                     removeTabByIdentifier={removeTabByIdentifier}
+                    handleClearBulkSelection={noop}
                 />
             )}
         </>

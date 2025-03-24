@@ -18,7 +18,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import { TAKING_LONGER_TO_CONNECT, TRYING_TO_CONNECT, CONNECTION_TIMEOUT_TIME } from '../Constants'
 import { ConnectingToClusterStateProps, URLParams } from '../Types'
-import CouldNotConnectImg from '../../../assets/img/app-not-deployed.png'
+import CouldNotConnectImg from '../../../assets/img/app-not-deployed.svg'
 import { StyledProgressBar } from '../../common/formFields/Widgets/Widgets'
 import { URLS } from '../../../config'
 
@@ -110,12 +110,7 @@ const ConnectingToClusterState: React.FC<ConnectingToClusterStateProps> = ({
     }
 
     const renderClusterState = () => (
-        <div
-            className="flex column dc__text-center"
-            style={{
-                height: 'calc(100vh - 152px)',
-            }}
-        >
+        <div className="flex column dc__text-center">
             {renderSelectionState()}
             {showCancel && !errorMsg && (
                 <span className="fs-13 fw-6 lh-20 cr-5 cursor" onClick={handleCancelClick}>
@@ -125,16 +120,7 @@ const ConnectingToClusterState: React.FC<ConnectingToClusterStateProps> = ({
         </div>
     )
 
-    return (
-        <div
-            className="flex column bcn-0"
-            style={{
-                height: 'calc(100vh - 84px)',
-            }}
-        >
-            {renderClusterState()}
-        </div>
-    )
+    return <div className="flex column flex-grow-1 bg__primary">{renderClusterState()}</div>
 }
 
 export default ConnectingToClusterState

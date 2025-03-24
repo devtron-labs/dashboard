@@ -15,6 +15,8 @@
  */
 
 import { RouteComponentProps } from 'react-router-dom'
+import { Dispatch, SetStateAction } from 'react'
+import { SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { SERVER_MODE_TYPE } from '../../config'
 import { OptionType } from '../app/types'
 
@@ -148,7 +150,7 @@ export interface ClusterStepModal {
 }
 
 export interface ClusterTerminalParamsType {
-    selectedImage: OptionType
+    selectedImage: SelectPickerOptionType<string>
     selectedNamespace: OptionType
     selectedNode: OptionType
     selectedShell: OptionType
@@ -175,6 +177,51 @@ export interface ClusterFormType {
 
 export const RemoteConnectionTypeCluster = 'cluster'
 
-export type ClusterFormProps = Record<string, any> & {
-    isProd: boolean
+export type ClusterFormProps = {
+    /**
+     * @default false
+     */
+    isProd?: boolean
+    cluster_name: string
+    server_url: string
+    active: boolean
+    config: any
+    reload: () => void
+    prometheus_url: string
+    prometheusAuth: any
+    defaultClusterComponent: any
+    proxyUrl: string
+    sshUsername: string
+    sshPassword: string
+    sshAuthKey: string
+    sshServerAddress: string
+    isConnectedViaProxy: boolean
+    isConnectedViaSSHTunnel: boolean
+    isTlsConnection: boolean
+    toggleCheckTlsConnection: any
+    setTlsConnectionFalse: any
+    toggleKubeConfigFile: any
+    isKubeConfigFile: boolean
+    isClusterDetails: boolean
+    toggleClusterDetails: any
+    isVirtualCluster: boolean
+} & (
+    | {
+          id: number
+          toggleEditMode: Dispatch<SetStateAction<boolean>>
+          handleCloseCreateClusterForm?: never
+      }
+    | {
+          handleCloseCreateClusterForm: () => void
+          id?: never
+          toggleEditMode?: never
+      }
+)
+
+export interface AddClusterFormPrefilledInfoType {
+    serverURL: string
+}
+
+export interface AddEnvironmentFormPrefilledInfoType {
+    namespace: string
 }

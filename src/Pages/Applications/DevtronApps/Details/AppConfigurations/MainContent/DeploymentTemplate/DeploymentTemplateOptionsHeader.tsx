@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
     ConfigurationType,
     InvalidYAMLTippyWrapper,
@@ -24,6 +40,7 @@ const DeploymentTemplateOptionsHeader = ({
     isGuiSupported,
     areChartsLoading,
     showDeleteOverrideDraftEmptyState,
+    migratedFrom,
 }: DeploymentTemplateOptionsHeaderProps) => {
     if (isCompareView || showReadMe || showDeleteOverrideDraftEmptyState) {
         return null
@@ -39,7 +56,7 @@ const DeploymentTemplateOptionsHeader = ({
     }
 
     return (
-        <div className="flexbox dc__align-items-center dc__content-space bcn-0 dc__gap-8">
+        <div className="flexbox dc__align-items-center dc__content-space bg__primary dc__gap-8">
             {isGuiSupported && (
                 <>
                     <InvalidYAMLTippyWrapper
@@ -74,6 +91,7 @@ const DeploymentTemplateOptionsHeader = ({
                 areChartsLoading={areChartsLoading}
                 parsingError={parsingError}
                 restoreLastSavedTemplate={restoreLastSavedTemplate}
+                migratedFrom={migratedFrom}
             />
         </div>
     )

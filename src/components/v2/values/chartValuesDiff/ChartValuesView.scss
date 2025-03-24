@@ -14,350 +14,305 @@
  * limitations under the License.
  */
 
-@import './ChartValuesViewUtils.scss';
-
 .chart-values-view__container {
-    & .react-monaco-editor-container {
-        flex-grow: 1;
-    }
+  & .react-monaco-editor-container {
+    flex-grow: 1;
+  }
 
-    &.readmeOpened {
-        .chart-values-view__wrapper {
-            grid-template-columns: 50% 50%;
-
-            .chart-values-view__details {
-                display: none;
-            }
-        }
-    }
-
-    &.comparisonOpened {
-        .chart-values-view__wrapper {
-            grid-template-columns: 100%;
-
-            .chart-values-view__details {
-                display: none;
-            }
-        }
-    }
-
-    .chart-values-view__tabs-container {
-        height: 48px;
-        padding: 10px 16px;
-
-        .chart-values-view__option {
-            padding: 4px 8px;
-
-            &.disabled {
-                opacity: 0.5;
-                user-select: none;
-                cursor: not-allowed;
-            }
-
-            &.opened,
-            &:hover {
-                background-color: var(--N100);
-                border-radius: 4px;
-            }
-        }
-
-        .option-open__icon path {
-            stroke: var(--N700);
-        }
-
-        .option-close__icon use {
-            fill: var(--N700);
-        }
-    }
-
+  &.readmeOpened {
     .chart-values-view__wrapper {
-        display: grid;
-        grid-template-columns: 300px 1fr;
-        transition: all 0.2s ease-out;
+      grid-template-columns: 50% 50%;
 
-        .compare-values-select__group,
-        .values-environment-select__group {
-            padding-top: 0;
-            padding-bottom: 0;
+      .chart-values-view__details {
+        display: none;
+      }
+    }
+  }
 
-            .compare-values-select__group-heading,
-            .values-environment-select__group-heading {
-                font-size: 12px;
-                font-weight: 600;
-                text-transform: none;
-                color: var(--N900);
-                background-color: var(--window-bg);
-                padding: 4px 10px;
-                border-top-left-radius: 4px;
-                border-top-right-radius: 4px;
-                margin: 0;
+  &.comparisonOpened {
+    .chart-values-view__wrapper {
+      grid-template-columns: 100%;
+
+      .chart-values-view__details {
+        display: none;
+      }
+    }
+  }
+
+  .chart-values-view__tabs-container {
+    height: 48px;
+    padding: 10px 16px;
+
+    .chart-values-view__option {
+      padding: 4px 8px;
+
+      &.disabled {
+        opacity: 0.5;
+        user-select: none;
+        cursor: not-allowed;
+      }
+
+      &.opened,
+      &:hover {
+        background-color: var(--N100);
+        border-radius: 4px;
+      }
+    }
+
+    .option-open__icon path {
+      stroke: var(--N700);
+    }
+
+    .option-close__icon use {
+      fill: var(--N700);
+    }
+  }
+
+  .chart-values-view__wrapper {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    transition: all 0.2s ease-out;
+
+    .compare-values-select__group,
+    .values-environment-select__group {
+      padding-top: 0;
+      padding-bottom: 0;
+
+      .compare-values-select__group-heading,
+      .values-environment-select__group-heading {
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: none;
+        color: var(--N900);
+        background-color: var(--bg-tertiary);
+        padding: 4px 10px;
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+        margin: 0;
+      }
+    }
+
+    .chart-values-view__details {
+
+      .chart-values__project-container .chart-values__project-label,
+      .chart-values__environment-container .chart-values__environment-label,
+      .chart-values__deployment-type h2 {
+        margin: 0 0 4px;
+        padding: 0;
+      }
+
+      .refetch-charts {
+        &.refetching {
+          cursor: not-allowed;
+
+          svg {
+            animation-name: refetch;
+            animation-duration: 1s;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+          }
+
+          @keyframes refetch {
+            0% {
+              transform: rotate(360deg);
             }
+
+            100% {
+              transform: rotate(0deg);
+            }
+          }
+        }
+      }
+
+      .chart-values-view__delete-cta {
+        position: absolute;
+        bottom: 12px;
+        width: 268px;
+      }
+
+      .chart-deprecated-wrapper {
+        padding: 10px 12px;
+        line-height: 18px;
+        border: 1px solid var(--Y200);
+
+        .chart-deprecated-icon path:nth-child(2) {
+          fill: var(--Y700);
+        }
+      }
+
+      .no-helm-chart-linked {
+        color: var(--N900);
+        padding: 10px 12px;
+        border: 1px solid var(--R200);
+        margin-top: 12px;
+      }
+
+      .no-helm-chart-linked svg path:nth-child(2) {
+        fill: var(--R500);
+      }
+
+      .repo-chart-selector {
+        >div:first-child {
+          width: 100%;
         }
 
-        .chart-values-view__details {
-            padding: 16px;
-            overflow: scroll;
+        .sticky-information__bottom {
+          display: grid;
+          grid-template-columns: 26px calc(100% - 26px);
+          background-color: var(--V100);
+          justify-content: flex-start;
+          padding: 10px 12px;
+          margin: 8px 8px;
+          border-radius: 4px;
 
-            .chart-values__project-container .chart-values__project-label,
-            .chart-values__environment-container .chart-values__environment-label,
-            .chart-values__deployment-type h2 {
-                margin: 0 0 4px;
-                padding: 0;
-            }
-
-            .refetch-charts {
-                &.refetching {
-                    cursor: not-allowed;
-
-                    svg {
-                        animation-name: refetch;
-                        animation-duration: 1s;
-                        animation-iteration-count: infinite;
-                        animation-timing-function: linear;
-                    }
-
-                    @keyframes refetch {
-                        0% {
-                            transform: rotate(360deg);
-                        }
-                        100% {
-                            transform: rotate(0deg);
-                        }
-                    }
-                }
-            }
-
-            .chart-values-view__delete-cta {
-                position: absolute;
-                bottom: 12px;
-                width: 268px;
-            }
-
-            .chart-deprecated-wrapper {
-                padding: 10px 12px;
-                line-height: 18px;
-                border: 1px solid var(--Y200);
-
-                .chart-deprecated-icon path:nth-child(2) {
-                    fill: var(--Y700);
-                }
-            }
-
-            .no-helm-chart-linked {
-                color: var(--N900);
-                padding: 10px 12px;
-                border: 1px solid var(--R200);
-                margin-top: 12px;
-            }
-
-            .no-helm-chart-linked svg path:nth-child(2) {
-                fill: var(--R500);
-            }
-
-            .repo-chart-selector {
-                > div:first-child {
-                    width: 100%;
-                }
-
-                .sticky-information__bottom {
-                    display: grid;
-                    grid-template-columns: 26px calc(100% - 26px);
-                    background-color: var(--V100);
-                    justify-content: flex-start;
-                    padding: 10px 12px;
-                    margin: 8px 8px;
-                    border-radius: 4px;
-
-                    a {
-                        color: var(--B500);
-                    }
-                }
-
-                .repochart-dropdown-wrap {
-                    padding: 12px 16px;
-                    cursor: pointer;
-                    &:hover {
-                        background-color: var(--N100);
-                    }
-                    .select__check-icon {
-                        position: absolute;
-                        left: 20px;
-                    }
-
-                    .dropdown__deprecated-text {
-                        font-size: 12px;
-                        line-height: 1.33;
-                        color: var(--Y700);
-                    }
-                }
-            }
-
-            .form__row {
-                margin-bottom: 12px;
-
-                &.form__row--w-100 {
-                    width: 100%;
-                }
-
-                .form__input {
-                    height: 32px;
-                    background-color: var(--N50);
-                }
-            }
-
-            .required-field::after {
-                content: ' *';
-                color: var(--R500);
-            }
-
-            .error-label .error-label-icon {
-                width: 16px;
-                height: 16px;
-
-                svg g path:nth-of-type(2) {
-                    fill: var(--R500);
-                }
-            }
-
-            .connect-to-chart-wrapper {
-                padding: 8px 10px !important;
-
-                .connect-to-chart-icon {
-                    path:last-of-type {
-                        fill: var(--B500);
-                    }
-                }
-            }
+          a {
+            color: var(--B500);
+          }
         }
 
-        .chart-values-view__readme {
-            .code-editor__header {
-                height: 32px;
-                padding: 0 12px;
-                border-bottom: none;
-            }
-        }
+        .repochart-dropdown-wrap {
+          padding: 12px 16px;
+          cursor: pointer;
 
-        .chart-values-view__gui-form-container {
-            border-bottom: 1px solid var(--N100);
-            overflow: scroll;
+          &:hover {
+            background-color: var(--N100);
+          }
 
-            & .rjsf-form-template__container {
-                max-width: 800px;
-                min-width: 400px;
-            }
-        }
-
-        .chart-values-view__editor {
-            display: flex;
-            flex-direction: column;
-
-            & .empty-state {
-                .subtitle {
-                    overflow-wrap: break-word;
-                }
-
-                & > svg {
-                    width: 20px !important;
-                    height: 20px !important;
-                    max-height: none;
-                }
-            }
-
-            .code-editor-container {
-                display: flex;
-                flex-direction: column;
-                flex-grow: 1;
-                border: none;
-                border-bottom: 1px solid var(--N100);
-                height: auto;
-                .monaco-editor {
-                    .monaco-editor-background,
-                    .margin {
-                        background-color: var(--N000) !important;
-                    }
-                }
-                .code-editor__warning {
-                    color: var(--N900);
-                    background-color: var(--Y100);
-
-                    .code-editor__information-info-icon path:nth-child(2) {
-                        fill: var(--Y700);
-                    }
-                }
-
-                .code-editor__header,
-                .chart-values-view__diff-view-header {
-                    height: 32px;
-                    padding: 0 12px;
-                    border-bottom: none;
-                    background: var(--N100) !important;
-                }
-
-                .chart-values-view__diff-view-header {
-                    display: grid;
-                    grid-template-columns: 48.5% 51.5%;
-
-                    .chart-values-view__diff-view-default {
-                        border-right: 1px solid var(--N200);
-                    }
-                }
-
-                & .details-loader-height {
-                    height: 100%;
-                }
-
-                & .details-loader {
-                    width: 100%;
-                }
-            }
-        }
-
-        .chart-values-view__update-cta {
+          .select__check-icon {
             position: absolute;
-            bottom: 12px;
-            right: 20px;
+            left: 20px;
+          }
+
+          .dropdown__deprecated-text {
+            font-size: 12px;
+            line-height: 1.33;
+            color: var(--Y700);
+          }
+        }
+      }
+
+      .form__row {
+        margin-bottom: 12px;
+
+        &.form__row--w-100 {
+          width: 100%;
         }
 
-        .cta {
-            height: 36px;
-            line-height: 20px;
+        .form__input {
+          height: 32px;
+          background-color: var(--bg-secondary);
         }
+      }
+
+      .required-field::after {
+        content: ' *';
+        color: var(--R500);
+      }
+
+      .error-label .error-label-icon {
+        width: 16px;
+        height: 16px;
+
+        svg g path:nth-of-type(2) {
+          fill: var(--R500);
+        }
+      }
+
+      .connect-to-chart-wrapper {
+        padding: 8px 10px !important;
+
+        .connect-to-chart-icon {
+          path:last-of-type {
+            fill: var(--B500);
+          }
+        }
+      }
     }
 
-    .chart-values-view__hr-divider {
+    .chart-values-view__gui-form-container {
+      border-bottom: 1px solid var(--N100);
+
+      & .rjsf-form-template__container {
+        max-width: 800px;
+        min-width: 400px;
+      }
+    }
+
+    .chart-values-view__editor {
+      display: flex;
+      flex-direction: column;
+
+      & .empty-state {
+        .subtitle {
+          overflow-wrap: break-word;
+        }
+
+        &>svg {
+          width: 20px !important;
+          height: 20px !important;
+          max-height: none;
+        }
+      }
+
+
+
+      .code-editor__warning {
+        color: var(--N900);
+        background-color: var(--Y100);
+
+        .code-editor__information-info-icon path:nth-child(2) {
+          fill: var(--Y700);
+        }
+      }
+
+      & .details-loader-height {
+        height: 100%;
+      }
+
+      & .details-loader {
         width: 100%;
-        height: 1px;
+      }
     }
+  }
+
+  .cta {
+    height: 36px;
+    line-height: 20px;
+  }
+}
+
+.chart-values-view__hr-divider {
+  width: 100%;
+  height: 1px;
 }
 
 .no-readme-icon path:nth-child(2) {
-    fill: var(--N500);
+  fill: var(--N500);
 }
 
 .tippy-black-container.default-black {
-    .link-chart-icon {
-        path:last-of-type {
-            fill: var(--Y500);
-        }
+  .link-chart-icon {
+    path:last-of-type {
+      fill: var(--Y500);
     }
+  }
 }
 
 .manifest-repo-link {
-    white-space: nowrap;
+  white-space: nowrap;
 }
 
 .chart-values-deployment-radio {
-    .form__radio-group{
-        border: none;
-    }
+  .form__radio-group {
+    border: none;
+  }
 
-    .form__radio-item {
-        border-right: none;
-        padding: 4px;
-    }
+  .form__radio-item {
+    border-right: none;
+    padding: 4px;
+  }
 
-    .form__radio-item-content{
-        padding: 0px;
-    }
+  .form__radio-item-content {
+    padding: 0px;
+  }
 }

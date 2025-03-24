@@ -311,7 +311,6 @@ export default function ChartGroupUpdate({}) {
                                 ) : !chartList.length ? (
                                     <ChartEmptyState
                                         onClickViewChartButton={handleViewAllCharts}
-                                        heightToDeduct={150}
                                     />
                                 ) : (
                                     <div className={`${!isGrid ? 'chart-list-view ' : ''}`}>
@@ -369,7 +368,7 @@ export default function ChartGroupUpdate({}) {
 
 const ChartList = ({ availableCharts, selectedInstances, addChart, subtractChart, isGrid }) => {
     return (
-        <div className={`chart-grid bcn-0 ${!isGrid ? 'list-view' : ''}`}>
+        <div className={`chart-grid bg__primary ${!isGrid ? 'list-view' : ''}`}>
             {[...availableCharts.values()].map((chart: Chart, idx) => (
                 <ChartSelect
                     key={chart.id}

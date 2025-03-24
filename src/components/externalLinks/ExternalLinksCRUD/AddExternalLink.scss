@@ -52,17 +52,8 @@
         .modal__content {
             display: grid;
             grid-template-columns: 1fr 320px;
-            height: calc(100% - 110px);
-
-            .configure-link-action-container,
-            .configure-link-info-container {
-                overflow-wrap: break-word;
-                overflow-y: scroll;
-            }
 
             .configure-link-action-container {
-                padding: 20px;
-                border-right: 1px solid var(--N200);
 
                 .link-add-another {
                     display: flex;
@@ -85,8 +76,7 @@
                     }
                 }
 
-                .link-identifiers,
-                .link-text-area {
+                .link-identifiers {
                     label {
                         margin-bottom: 6px;
                     }
@@ -115,21 +105,6 @@
                     .configure-link-action-content {
                         display: grid;
                         row-gap: 8px;
-
-                        .link-name {
-                            display: flex;
-                            flex-direction: column;
-
-                            input {
-                                width: 100%;
-                                height: 36px;
-                                padding: 10px 6px;
-                                background-color: var(--N50);
-                                color: var(--N900);
-                                border: 1px solid var(--N200);
-                                border-radius: 4px;
-                            }
-                        }
                     }
 
                     .link-monitoring-tool {
@@ -148,73 +123,6 @@
                                 }
                             }
                         }
-                    }
-                }
-
-                .link-text-area {
-                    display: flex;
-                    flex-direction: column;
-
-                    textarea {
-                        width: 100%;
-                        min-height: 36px;
-                        resize: vertical;
-                        padding: 6px 8px;
-                        background-color: var(--N50);
-                        color: var(--N900);
-                        border: 1px solid var(--N200);
-                        border-radius: 4px;
-
-                        &::placeholder {
-                            color: var(--N500);
-                        }
-
-                        &:-ms-input-placeholder {
-                            color: var(--N500);
-                        }
-                    }
-                }
-            }
-
-            .configure-link-info-container {
-
-                .configure-link-info-list {
-                    padding: 20px 15px 0;
-                    margin-bottom: 0;
-                    color: var(--N900);
-
-                    li,
-                    p {
-                        font-size: 13px;
-                    }
-
-                    li,
-                    p,
-                    a {
-                        line-height: 1.5;
-                    }
-
-                    li {
-                        font-weight: 600;
-                    }
-
-                    ul {
-                        padding: 0 0 0 21px;
-                        margin: 0 0 12px;
-
-                        li {
-                            font-size: 12px;
-                            font-weight: 400;
-                            width: fit-content;
-                            margin-bottom: 8px;
-                            list-style: disc;
-                        }
-                    }
-
-                    a {
-                        color: var(--B500);
-                        font-size: 12px;
-                        font-weight: 600;
                     }
                 }
             }

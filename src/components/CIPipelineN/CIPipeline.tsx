@@ -22,8 +22,6 @@ import {
     ConditionalWrap,
     VisibleModal,
     Drawer,
-    DeleteDialog,
-    RefVariableType,
     VariableType,
     MandatoryPluginDataType,
     ButtonWithLoader,
@@ -48,18 +46,19 @@ import {
     ResourceKindType,
     uploadCIPipelineFile,
     getGlobalVariables,
+    FloatingVariablesSuggestions,
+    TriggerType,
+    DeleteCINodeButton,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
-    FloatingVariablesSuggestions,
     getParsedBranchValuesForPlugin,
     getPluginIdsFromBuildStage,
     importComponentFromFELibrary,
     sortObjectArrayAlphabetically,
 } from '../common'
-import { BuildStageVariable, BuildTabText, JobPipelineTabText, TriggerType, URLS, ViewType } from '../../config'
+import { BuildStageVariable, BuildTabText, JobPipelineTabText, URLS, ViewType } from '../../config'
 import {
-    deleteCIPipeline,
     getInitData,
     getInitDataWithCIPipeline,
     saveCIPipeline,
@@ -72,7 +71,6 @@ import { Sidebar } from './Sidebar'
 import { Build } from './Build'
 import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning.svg'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
 import { LoadingState } from '../ciConfig/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from '../cdPipeline/cdpipeline.util'
@@ -87,7 +85,6 @@ export default function CIPipeline({
     connectCDPipelines,
     getWorkflows,
     close,
-    deleteWorkflow,
     isJobView,
     isJobCI,
     changeCIPayload,
@@ -119,7 +116,6 @@ export default function CIPipeline({
         failed: false,
     })
     const [apiInProgress, setApiInProgress] = useState<boolean>(false)
-    const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
     const [selectedTaskIndex, setSelectedTaskIndex] = useState<number>(0)
     const [globalVariables, setGlobalVariables] = useState<PipelineContext['globalVariables']>([])
     const [inputVariablesListFromPrevStep, setInputVariablesListFromPrevStep] = useState<{
@@ -418,7 +414,7 @@ export default function CIPipeline({
             let valid = _formData.materials.reduce((isValid, mat) => {
                 isValid =
                     isValid &&
-                    validationRules.sourceValue(mat.regex || mat.value, mat.type !== SourceTypeMap.WEBHOOK).isValid
+                    validationRules.sourceValue(mat.regex || mat.value, mat.type === SourceTypeMap.BranchRegex).isValid
                 return isValid
             }, true)
             if (_formData.materials.length > 1) {
@@ -535,45 +531,9 @@ export default function CIPipeline({
         close()
     }
 
-    const deletePipeline = (): void => {
-        deleteCIPipeline(
-            formData,
-            ciPipeline,
-            formData.materials,
-            Number(appId),
-            Number(workflowId),
-            false,
-            formData.webhookConditionList,
-        )
-            .then((response) => {
-                if (response) {
-                    ToastManager.showToast({
-                        variant: ToastVariantType.success,
-                        description: 'Pipeline Deleted',
-                    })
-                    setPageState(ViewType.FORM)
-                    handleClose()
-                    deleteWorkflow(appId, Number(workflowId))
-                }
-            })
-            .catch((error: ServerErrors) => {
-                showError(error)
-            })
-    }
-
-    const closeCIDeleteModal = (): void => {
-        setShowDeleteModal(false)
-    }
-
-    const renderDeleteCIModal = () => {
-        return (
-            <DeleteDialog
-                title={`Delete '${formData.name}' ?`}
-                description={`Are you sure you want to delete this CI Pipeline from '${appName}' ?`}
-                closeDelete={closeCIDeleteModal}
-                delete={deletePipeline}
-            />
-        )
+    const onClose = () => {
+        setPageState(ViewType.FORM)
+        handleClose()
     }
 
     const renderSecondaryButton = () => {
@@ -592,17 +552,21 @@ export default function CIPipeline({
                         </Tippy>
                     )}
                 >
-                    <button
-                        data-testid="ci-delete-pipeline-button"
-                        type="button"
-                        className="cta cta--workflow delete mr-16"
+                    <DeleteCINodeButton
+                        testId="ci-delete-pipeline-button"
                         disabled={!canDeletePipeline}
-                        onClick={() => {
-                            setShowDeleteModal(true)
+                        showIconOnly={false}
+                        isJobView={isJobView}
+                        title={ciPipeline.name}
+                        deletePayloadConfig={{
+                            appId: appId,
+                            appWorkflowId: Number(workflowId),
+                            pipelineId: Number(ciPipelineId),
+                            pipelineName: ciPipeline.name,
                         }}
-                    >
-                        Delete Pipeline
-                    </button>
+                        onDelete={onClose}
+                        getWorkflows={getWorkflows}
+                    />
                 </ConditionalWrap>
             )
         }
@@ -659,7 +623,7 @@ export default function CIPipeline({
             if (formData.name === '' || branchNameNotPresent) {
                 ToastManager.showToast({
                     variant: ToastVariantType.error,
-                    description: MULTI_REQUIRED_FIELDS_MSG,
+                    description: 'Please ensure all fields are valid',
                 })
             }
             return
@@ -861,7 +825,7 @@ export default function CIPipeline({
                 )}
                 <hr className="divider m-0" />
                 <pipelineContext.Provider value={contextValue}>
-                    <div className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''}`}>
+                    <div className={`${isAdvanced ? 'pipeline-container' : ''}`}>
                         {isAdvanced && (
                             <div className="sidebar-container">
                                 <Sidebar
@@ -902,7 +866,7 @@ export default function CIPipeline({
                 </pipelineContext.Provider>
                 {pageState !== ViewType.LOADING && (
                     <div
-                        className={`ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
+                        className={`ci-button-container bg__primary pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
                             ciPipelineId || !isAdvanced ? 'flex-justify' : 'justify-right'
                         } `}
                     >
@@ -929,7 +893,6 @@ export default function CIPipeline({
                         )}
                     </div>
                 )}
-                {ciPipelineId && showDeleteModal && renderDeleteCIModal()}
             </>
         )
     }
@@ -941,7 +904,7 @@ export default function CIPipeline({
                     isAdvanced ? 'advanced-option-container' : 'bottom-border-radius'
                 }`}
             >
-                <div className="flex flex-align-center flex-justify bcn-0 py-12 px-20">
+                <div className="flex flex-align-center flex-justify bg__primary py-12 px-20">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
                         {title}
                     </h2>

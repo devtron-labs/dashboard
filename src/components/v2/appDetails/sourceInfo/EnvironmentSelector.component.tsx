@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Select from 'react-select'
 import {
     showError,
     PopupMenu,
     multiSelectStyles,
-    ForceDeleteDialog,
     ServerErrors,
     DeploymentAppTypes,
     ToastManager,
     ToastVariantType,
+    ForceDeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './sourceInfo.css'
 import { useParams, useHistory, useRouteMatch } from 'react-router-dom'
@@ -41,15 +41,15 @@ import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-inte
 import { deleteApplicationRelease } from '../../../external-apps/ExternalAppService'
 import { deleteInstalledChart } from '../../../charts/charts.service'
 import { ReactComponent as Dots } from '../../assets/icons/ic-menu-dot.svg'
-import { DeleteChartDialog } from '../../values/chartValuesDiff/ChartValuesView.component'
-import { DELETE_ACTION, checkIfDevtronOperatorHelmRelease } from '../../../../config'
+import { DELETE_ACTION, URLS, checkIfDevtronOperatorHelmRelease } from '../../../../config'
 import { ReactComponent as BinWithDots } from '../../../../assets/icons/ic-delete-dots.svg'
 import { DELETE_DEPLOYMENT_PIPELINE, DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
 import { getAppOtherEnvironmentMin } from '../../../../services/service'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
-import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
+import ClusterNotReachableDialog from '../../../common/ClusterNotReachableDialog/ClusterNotReachableDialog'
 import { getEnvironmentName } from './utils'
 import { getAppId } from '../k8Resource/nodeDetail/nodeDetail.api'
+import { DeleteChartDialog } from '@Components/v2/values/chartValuesDiff/DeleteChartDialog'
 
 const EnvironmentSelectorComponent = ({
     isExternalApp,
@@ -162,10 +162,6 @@ const EnvironmentSelectorComponent = ({
         showNonCascadeDeleteDialog(false)
     }
 
-    const onClickNonCascadeDelete = async () => {
-        await deleteResourceAction(DELETE_ACTION.NONCASCADE_DELETE)
-    }
-
     async function deleteResourceAction(deleteAction: DELETE_ACTION) {
         try {
             const response = await getDeleteApplicationApi(deleteAction)
@@ -200,9 +196,20 @@ const EnvironmentSelectorComponent = ({
         }
     }
 
+    const redirectToHelmList = () => {
+        history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`)
+    }
+
     const handleForceDelete = async () => {
         await deleteResourceAction(DELETE_ACTION.FORCE_DELETE)
+        redirectToHelmList()
     }
+
+    const onClickNonCascadeDelete = async () => {
+        await deleteResourceAction(DELETE_ACTION.NONCASCADE_DELETE)
+        redirectToHelmList()
+    }
+
     const handleDelete = async () => {
         setShowDeleteConfirmation(true)
         await deleteResourceAction(DELETE_ACTION.DELETE)
@@ -221,6 +228,8 @@ const EnvironmentSelectorComponent = ({
         templateType: appDetails.fluxTemplateType,
     })
 
+    const closeForceConfirmationModal = () => showForceDeleteDialog(false)
+
     return (
         <div className="flexbox flex-justify pl-20 pr-20 pt-16 pb-16">
             <div>
@@ -231,8 +240,8 @@ const EnvironmentSelectorComponent = ({
                             preserveAspectRatio="none"
                             style={{ width: '100%', height: '100%', display: 'flex' }}
                         >
-                            <path d="M0 20 L200 20 Z" strokeWidth="1" stroke="#0066cc" />
-                            <path d="M0 10 L0, 30" strokeWidth="2" stroke="#0066cc" />
+                            <path d="M0 20 L200 20 Z" strokeWidth="1" stroke="var(--B500)" />
+                            <path d="M0 10 L0, 30" strokeWidth="2" stroke="var(--B500)" />
                         </svg>
                         <div
                             className="bcb-5 br-10 cn-0 pl-8 pr-8"
@@ -278,13 +287,13 @@ const EnvironmentSelectorComponent = ({
                                             backgroundColor: 'transparent',
                                             minHeight: '24px !important',
                                         }),
-                                        singleValue: (base, state) => ({ ...base, fontWeight: 600, color: '#06c' }),
+                                        singleValue: (base) => ({ ...base, fontWeight: 600, color: 'var(--B500)' }),
                                         indicatorsContainer: (provided, state) => ({
                                             ...provided,
                                             height: '24px',
                                         }),
                                     }}
-                                    className="bw-1 eb-2 br-4 bcn-0"
+                                    className="bw-1 eb-2 br-4 bg__primary"
                                     components={{
                                         IndicatorSeparator: null,
                                     }}
@@ -292,7 +301,7 @@ const EnvironmentSelectorComponent = ({
                             )}
                             {(!environments || environments.length === 0) && appDetails && (
                                 <div
-                                    className="bw-1 eb-2 br-4 bcn-0 pl-12 pr-12 pt-4 pb-4"
+                                    className="bw-1 eb-2 br-4 bg__primary pl-12 pr-12 pt-4 pb-4"
                                     style={{ minWidth: '200px' }}
                                     data-testid="env-name-app-details"
                                 >
@@ -378,12 +387,12 @@ const EnvironmentSelectorComponent = ({
                                     <Dots className="pod-info__dots icon-dim-20 icon-color-n6" />
                                 </PopupMenu.Button>
                                 <PopupMenu.Body>
-                                    <div className="helm-delete-pop-up bcn-0 br-4">
-                                        {' '}
+                                    <div className="helm-delete-pop-up bg__primary br-4">
                                         <Popup />
                                     </div>
                                 </PopupMenu.Body>
                             </PopupMenu>
+
                             {showDeleteConfirmation && (
                                 <DeleteChartDialog
                                     appName={appDetails.appName}
@@ -394,18 +403,18 @@ const EnvironmentSelectorComponent = ({
                             )}
                         </div>
                     )}
+
                     {forceDeleteDialog && (
-                        <ForceDeleteDialog
-                            forceDeleteDialogTitle={forceDeleteDialogTitle}
-                            onClickDelete={handleForceDelete}
-                            closeDeleteModal={() => {
-                                showForceDeleteDialog(false)
-                            }}
-                            forceDeleteDialogMessage={forceDeleteDialogMessage}
+                        <ForceDeleteConfirmationModal
+                            title={forceDeleteDialogTitle}
+                            subtitle={forceDeleteDialogMessage}
+                            onDelete={handleForceDelete}
+                            closeConfirmationModal={closeForceConfirmationModal}
                         />
                     )}
+
                     {nonCascadeDeleteDialog && (
-                        <ClusterNotReachableDailog
+                        <ClusterNotReachableDialog
                             clusterName={clusterName}
                             onClickCancel={onClickHideNonCascadeDeletePopup}
                             onClickDelete={onClickNonCascadeDelete}

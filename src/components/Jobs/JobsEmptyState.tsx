@@ -17,7 +17,7 @@
 import { GenericEmptyState, GenericFilterEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { JobListViewType, JOBLIST_EMPTY_STATE_MESSAGING } from './Constants'
 import { JobsEmptyProps } from './Types'
-import nojobs from '../../assets/img/empty-joblist@2x.png'
+import nojobs from '../../assets/img/empty-joblist.webp'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 
 export default function JobsEmptyState(props: JobsEmptyProps) {
@@ -45,12 +45,5 @@ export default function JobsEmptyState(props: JobsEmptyProps) {
         return <GenericFilterEmptyState handleClearFilters={props.clickHandler} />
     }
 
-    return (
-        <div
-            className="bcn-0"
-            style={{ height: `calc(100vh - ${props.view === JobListViewType.NO_RESULT ? '146px' : '48px'})` }}
-        >
-            {props.view === JobListViewType.NO_RESULT ? renderNoResultsView() : renderNoJobsView()}
-        </div>
-    )
+    return props.view === JobListViewType.NO_RESULT ? renderNoResultsView() : renderNoJobsView()
 }

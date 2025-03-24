@@ -2,7 +2,29 @@ import React from 'react'
 import type { Preview } from '@storybook/react'
 import '../src/css/application.scss'
 import { BrowserRouter } from 'react-router-dom'
-import { ToastManagerContainer } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ThemeProvider,
+    ToastManagerContainer,
+    ThemeSwitcher,
+    noop,
+    customEnv,
+    DEVTRON_BASE_MAIN_ID,
+    ConfirmationModalProvider,
+    BaseConfirmationModal,
+    useTheme,
+} from '@devtron-labs/devtron-fe-common-lib'
+import  { SwitchThemeDialog } from '../src/Pages/Shared'
+
+const SwitchThemeDialogWrapper = () => {
+    const { showThemeSwitcherDialog, themePreference, handleThemeSwitcherDialogVisibilityChange } = useTheme()
+    const handleClose = () => {
+        handleThemeSwitcherDialogVisibilityChange(false)
+    }
+
+    return (
+        showThemeSwitcherDialog ? <SwitchThemeDialog initialThemePreference={themePreference} handleClose={handleClose} disableAPICalls /> : null
+    )
+}
 
 const preview: Preview = {
     parameters: {
@@ -12,29 +34,36 @@ const preview: Preview = {
                 date: /Date$/i,
             },
         },
-        backgrounds: {
-            values: [
-                {
-                    name: 'Light',
-                    value: 'var(--N0)',
-                },
-                {
-                    name: 'Dark',
-                    value: 'var(--N700)',
-                },
-            ],
-            default: 'Light',
-        },
     },
-    tags: ['autodocs'],
-    decorators: (Story) => (
-        <>
-            <BrowserRouter>
-                <Story />
-            </BrowserRouter>
-            <ToastManagerContainer />
-        </>
-    ),
+    decorators: (Story) => {
+        if (!window._env_) {
+            window._env_ = {
+                FEATURE_EXPERIMENTAL_THEMING_ENABLE: true,
+            } as customEnv
+        }
+
+        return (
+            <ThemeProvider>
+                <ConfirmationModalProvider>
+                    <div id={DEVTRON_BASE_MAIN_ID}>
+                        <div className="dc__border-bottom mb-10">
+                            <ThemeSwitcher onChange={noop} />
+                        </div>
+                        <BrowserRouter>
+                            <Story />
+                        </BrowserRouter>
+                        <ToastManagerContainer />
+                    </div>
+
+                    <SwitchThemeDialogWrapper />
+
+                    <div id="animated-dialog-backdrop" />
+
+                    <BaseConfirmationModal />
+                </ConfirmationModalProvider>
+            </ThemeProvider>
+        )
+    },
 }
 
 export default preview

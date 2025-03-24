@@ -201,30 +201,30 @@ export const TaskDetailComponent = () => {
         <>
             <PluginDetailHeader handlePluginVersionChange={handlePluginVersionChange} />
 
-            <div className="p-20 dc__overflow-scroll">
+            <div className="p-20 dc__overflow-auto">
                 <div>
-                    <div className="row-container mb-12">
-                        <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">Task name</div>
+                    <div className="mb-12">
                         <CustomInput
-                            rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
-                            data-testid="preBuild-task-name-textbox"
                             type="text"
                             onChange={(e) => handleNameChange(e)}
                             value={selectedStep.name}
                             name="task-name"
+                            placeholder="Enter task name"
+                            label="Task name"
                             error={renderTaskNameError()}
+                            required
+                            layout="row"
                         />
                     </div>
-                    <div className="row-container mb-12">
-                        <div className="fw-6 fs-13 lh-32 cn-7 ">Description</div>
+                    <div className="mb-12">
                         <CustomInput
-                            rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
-                            data-testid="preBuild-task-description-textbox"
+                            label="Description"
                             type="text"
                             onChange={(e) => handleDescriptionChange(e)}
                             value={selectedStep.description}
                             placeholder="Enter task description"
                             name="task-description"
+                            layout="row"
                         />
                     </div>
 

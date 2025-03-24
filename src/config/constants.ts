@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { DOCUMENTATION_HOME_PAGE, DOCUMENTATION_VERSION, SelectPickerOptionType, ToastManager, ROUTES as COMMON_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DOCUMENTATION_HOME_PAGE,
+    DOCUMENTATION_VERSION,
+    SelectPickerOptionType,
+    ToastManager,
+    ROUTES as COMMON_ROUTES,
+    EnvResourceType,
+} from '@devtron-labs/devtron-fe-common-lib'
 export const DEFAULT_STATUS = 'checking'
 export const DEFAULT_STATUS_TEXT = 'Checking Status'
 export const DEFAULTK8SVERSION = 'v1.16.0'
@@ -53,7 +60,6 @@ export const Routes = {
     CD_CONFIG_PATCH: 'app/cd-pipeline/patch',
     WORKFLOW_EDITOR: 'edit/workflow',
 
-    CD_TRIGGER_POST: 'app/cd-pipeline/trigger',
     CD_TRIGGER_STATUS: 'app/vsm',
 
     DEPLOYMENT_TEMPLATE: 'app/template',
@@ -79,9 +85,11 @@ export const Routes = {
     APP_OTHER_ENVIRONMENT: 'app/other-env',
     APP_OTHER_ENVIRONMENT_MIN: 'app/other-env/min',
     APP_CI_PIPELINE: 'ci-pipeline/min',
+    APP_CD_PIPELINE_VALIDATE_LINK_REQUEST: 'app/cd-pipeline/validate-link-request',
     ARGO_APPLICATION: 'argo-application/detail',
     EPHEMERAL_CONTAINERS: 'k8s/resources/ephemeralContainers',
     APP_EDIT: 'app/edit',
+    APPLICATION_EXTERNAL_HELM_RELEASE: 'application/external-helm-release',
 
     JOB_CI_DETAIL: 'job/ci-pipeline/list',
 
@@ -177,7 +185,6 @@ export const Routes = {
     LOGS: 'k8s/pods/logs',
     NONCASCADE_DELETE_HELM_APP: 'app-store/installed-app/delete',
     NONCASCADE_DELETE_DEVTRON_APP: 'app/delete',
-    DELETE_RESOURCE: 'k8s/resource/delete',
     CREATE_RESOURCE: COMMON_ROUTES.CREATE_RESOURCE,
     HELM_RELEASE_APP_DELETE_API: 'application/delete',
     HELM_RELEASE_APP_UPDATE_WITHOUT_LINKING_API: 'application/update',
@@ -208,10 +215,8 @@ export const Routes = {
     CLUSTER_LIST_MIN: 'k8s/capacity/cluster/list/raw',
     CLUSTER_CAPACITY: 'k8s/capacity/cluster',
     NODE_LIST: 'k8s/capacity/node/list',
-    NODE_CAPACITY: 'k8s/capacity/node',
     TAINTS_EDIT: 'k8s/capacity/node/taints/edit',
     HELM_APP_TEMPLATE_CHART: 'application/template-chart',
-    TELEMETRY_EVENT: 'telemetry/event',
     DEPLOYMENT_STATUS: 'app/deployment-status/timeline',
     HELM_DEPLOYMENT_STATUS_TIMELINE_INSTALLED_APP: 'app-store/deployment-status/timeline',
     MANUAL_SYNC: 'app/deployment-status/manual-sync',
@@ -252,13 +257,13 @@ export const Routes = {
     EDIT: 'edit',
     JOB_CONFIG_ENVIRONMENTS: 'config/environment',
     PERMISSION: 'permission/check',
-    SCOPED_GLOBAL_VARIABLES: 'global/variables',
     SCOPED_GLOBAL_VARIABLES_DETAIL: 'global/variables/detail',
     GVK: 'gvk',
     USER: 'user',
     ENV_CONFIG: 'config/autocomplete',
     SECURITY_SCAN_CVE_EXPOSURE: 'security/scan/cve/exposure',
-    CONFIG_MANIFEST: 'config/manifest'
+    CONFIG_MANIFEST: 'config/manifest',
+    USER_RESOURCE_OPTIONS: 'user/resource/options'
 }
 
 export enum ViewType {
@@ -285,11 +290,7 @@ export const PATTERNS = {
     STRING: /[A-Za-z0-9]+$/,
     APP_NAME: '^[a-z][a-z0-9-]*[a-z0-9]$/*',
     CD_PIPELINE_NAME: `^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`,
-    CONFIG_MAP_AND_SECRET_KEY: /^[-._a-zA-Z0-9]+$/,
-    CONFIGMAP_AND_SECRET_NAME: /^[a-z0-9][a-z0-9-.]*[a-z0-9]$/,
-    ALL_DIGITS_BETWEEN_0_AND_7: /^[0-7]*$/,
     APP_LABEL_CHIP: /^.+:.+$/,
-    CONFIG_MAP_AND_SECRET_MULTPLS_KEYS: /^[-._a-zA-Z0-9\,\?\s]*[-._a-zA-Z0-9\s]$/,
     VARIABLE: /^[A-z0-9-_]+$/,
     API_TOKEN: '^[a-z0-9][a-z0-9_-]*[a-z0-9]$/*',
     NAMESPACE: '^[a-z0-9]+([a-z0-9-?]*[a-z0-9])?$',
@@ -302,14 +303,8 @@ export const PATTERNS = {
     START_END_ALPHANUMERIC: /^([A-Za-z0-9]).*[A-Za-z0-9]$|^[A-Za-z0-9]{1}$/,
     ALPHANUMERIC_WITH_SPECIAL_CHAR: /^[A-Za-z0-9._-]+$/, // allow alphanumeric,(.) ,(-),(_)
     CUSTOM_TAG: /^(?![.-])([a-zA-Z0-9_.-]*\{[Xx]\}[a-zA-Z0-9_.-]*)(?<![.-])$/, // Allowed: Alphanumeric characters, including (_) (.) (-) {x} {X} but cannot begin or end with (.) or (-)
-    ALPHANUMERIC_WITH_SPECIAL_CHAR_AND_SLASH: /^[A-Za-z0-9._/-]+$/, // allow alphanumeric,(.) ,(-),(_),(/)
     ESCAPED_CHARACTERS: /[.*+?^${}()|[\]\\]/g,
 }
-
-export const TriggerType = {
-    Auto: 'AUTOMATIC',
-    Manual: 'MANUAL',
-} as const
 
 export const repoType = {
     DEFAULT: 'DEFAULT',
@@ -444,10 +439,6 @@ export const HEADER_TEXT = {
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
 
-export const PREVIEW_DEVTRON = 'https://preview.devtron.ai'
-
-export const PRIVACY_POLICY = 'https://devtron.ai/privacy-policy'
-
 export const NETSHOOT_LINK = 'https://github.com/nicolaka/netshoot'
 
 export const BUSYBOX_LINK = 'https://busybox.net/'
@@ -506,9 +497,9 @@ export const EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT = {
 
 export const CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT = {
     heading: 'Deployment Charts',
-    infoText: 'Devtron provides charts that cover most use cases.',
+    infoText: 'Deployment charts in the Deployment Template are used to deploy Devtron applications.',
     additionalParagraphText:
-        'In case you need to add certain capabilities to a chart provided by Devtron, you can download the chart, make required changes and upload the chart.',
+        'Devtron offers charts for most use cases. If needed, you can download a chart, modify it, and re-upload it to add specific capabilities.',
     documentationLinkText: 'View documentation',
 }
 
@@ -917,8 +908,6 @@ export const REQUIRED_FIELDS_MISSING = 'Some required fields are missing'
  * Value for select all identifier
  */
 export const SELECT_ALL_VALUE = '*'
-export const DEFAULT_ROUTE_PROMPT_MESSAGE =
-    "Please don't wander off! Reloading or going back might disrupt the ongoing operation."
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -930,7 +919,8 @@ export enum DEFAULT_CONTAINER_NAME {
     DEVTRON_DEBUG_TERMINAL = 'devtron-debug-terminal',
 }
 
-export const UPDATE_AVAILABLE_TOAST_PROGRESS_BG: Parameters<typeof ToastManager.showToast>[0]['progressBarBg'] = 'linear-gradient(90deg, #3A1C71 0%, #D76D77 49.95%, #FFAF7B 100%)'
+export const UPDATE_AVAILABLE_TOAST_PROGRESS_BG: Parameters<typeof ToastManager.showToast>[0]['progressBarBg'] =
+    'linear-gradient(90deg, #3A1C71 0%, #D76D77 49.95%, #FFAF7B 100%)'
 
 export const EDITOR_VIEW = {
     UNDEFINED: 'UNDEFINED',
@@ -939,3 +929,5 @@ export const EDITOR_VIEW = {
 }
 
 export const DEVTRON_IFRAME_PRIMARY: string = 'devtronIframePrimary'
+
+export const DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE = `:resourceType(${Object.values(EnvResourceType).join('|')})`

@@ -38,6 +38,7 @@ import {
     validateTagValue,
     DynamicDataTableCellErrorType,
     TagsTableColumnsType,
+    Textarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import AsyncSelect from 'react-select/async'
 import { importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../common'
@@ -319,11 +320,11 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     _multiSelectStyles = {
         ...multiSelectStyles,
         control: (base, state) => ({
-            ...base,
+            ...multiSelectStyles.control(base, state),
             cursor: 'pointer',
         }),
         menu: (base, state) => ({
-            ...base,
+            ...multiSelectStyles.menu(base, state),
             marginTop: 'auto',
         }),
         menuList: (base) => {
@@ -338,7 +339,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
 
     renderHeaderSection = (): JSX.Element => {
         return (
-            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12 pl-20">
+            <div className="flex flex-align-center flex-justify dc__border-bottom bg__primary pt-12 pr-20 pb-12 pl-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">Create {this.props.isJobView ? 'job' : 'application'}</h2>
                 <button
                     type="button"
@@ -355,6 +356,13 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     loadAppListOptions = (inputValue: string) => appListOptions(inputValue, this.props.isJobView)
 
     renderBodySection = (): JSX.Element => {
+        if (this.state.view === ViewType.LOADING) {
+            return <Progressing pageLoader />
+        }
+        if (this.state.view === ViewType.ERROR) {
+            return <Reload />
+        }
+
         const errorObject = [
             this.rules.appName(this.state.form.appName),
             this.rules.team(this.state.form.projectId),
@@ -364,49 +372,35 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         const showError = this.state.showErrors
         const { appNameErrors } = this.state
         return (
-            <div className="scrollable-content p-20">
+            <div className="scrollable-content dc__overflow-auto p-20">
                 <div className="form__row">
-                    <div className={`${this.props.isJobView ? 'mb-12' : ''}`}>
-                        <CustomInput
-                            data-testid={`${this.props.isJobView ? 'job' : 'app'}-name-textbox`}
-                            name="app-name"
-                            label={`${this.props.isJobView ? 'Job' : 'App'} Name`}
-                            value={this.state.form.appName}
-                            placeholder={`e.g. my-first-${this.props.isJobView ? 'job' : 'app'}`}
-                            autoFocus
-                            tabIndex={1}
-                            onChange={this.handleAppName}
-                            isRequiredField
-                            error={appNameErrors && !this.state.isValid.appName && errorObject[0].message}
+                    <CustomInput
+                        data-testid={`${this.props.isJobView ? 'job' : 'app'}-name-textbox`}
+                        name="app-name"
+                        label={`${this.props.isJobView ? 'Job' : 'App'} Name`}
+                        value={this.state.form.appName}
+                        placeholder={`e.g. my-first-${this.props.isJobView ? 'job' : 'app'}`}
+                        autoFocus
+                        onChange={this.handleAppName}
+                        required
+                        error={appNameErrors && !this.state.isValid.appName && errorObject[0].message}
+                        helperText={
+                            !this.props.isJobView &&
+                            'Apps are NOT env specific and can be used to deploy to multiple environments.'
+                        }
+                    />
+                    <div className="mt-16">
+                        <Textarea
+                            label="Description"
+                            name={this.props.isJobView ? 'job-description' : 'app-description'}
+                            value={this.state.form.description}
+                            placeholder={
+                                this.props.isJobView ? 'Describe this job' : 'Write a description for this application'
+                            }
+                            onChange={this.updateCreateAppFormDescription}
+                            error={!this.state.isValid.description ? errorObject[3].message : null}
                         />
                     </div>
-                    {!this.props.isJobView && (
-                        <span className="form__text-field-info form__text-field-info--create-app">
-                            <Info className="form__icon form__icon--info form__icon--create-app" />
-                            Apps are NOT env specific and can be used to deploy to multiple environments.
-                        </span>
-                    )}
-                    <span className="form__label mt-16">Description</span>
-                    <textarea
-                        data-testid="description-textbox"
-                        className="form__textarea dc__resizable-textarea--vertical"
-                        name={this.props.isJobView ? 'job-description' : 'app-description'}
-                        value={this.state.form.description}
-                        placeholder={
-                            this.props.isJobView ? 'Describe this job' : 'Write a description for this application'
-                        }
-                        tabIndex={2}
-                        onChange={this.updateCreateAppFormDescription}
-                        rows={4}
-                    />
-                    <span className="form__error">
-                        {!this.state.isValid.description ? (
-                            <>
-                                <Error className="form__icon form__icon--error" />
-                                {errorObject[3].message} <br />
-                            </>
-                        ) : null}
-                    </span>
                 </div>
 
                 <div className="form__row clone-apps dc__inline-block">
@@ -454,7 +448,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                                     Option,
                                 }}
                                 placeholder={`Select ${this.props.isJobView ? 'job' : 'app'}`}
-                                tabIndex={3}
                             />
                             <span className="form__error">
                                 {showError && !this.state.isValid.cloneAppId ? (
@@ -480,8 +473,9 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 )}
 
                 <div className="form__row">
-                    <span className="form__label dc__required-field">Project</span>
                     <SelectPicker
+                        required
+                        label="Project"
                         classNamePrefix="create-app__select-project"
                         inputId="create-app__select-project"
                         name="create-app__select-project"
@@ -489,15 +483,8 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         options={this.state.projects}
                         onChange={(selected: OptionType) => this.handleProject(+selected.value)}
                         placeholder="Select project"
+                        error={showError && !this.state.isValid.projectId ? errorObject[1].message : null}
                     />
-                    <span className="form__error">
-                        {showError && !this.state.isValid.projectId ? (
-                            <>
-                                <Error className="form__icon form__icon--error" />
-                                {errorObject[1].message}
-                            </>
-                        ) : null}
-                    </span>
                 </div>
 
                 {MandatoryTagsContainer ? (
@@ -526,7 +513,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
 
     renderFooterSection = (): JSX.Element => {
         return (
-            <div className="w-800 dc__border-top flex right px-20 py-16 dc__position-fixed dc__bottom-0">
+            <div className="w-800 dc__border-top flex right px-20 py-16">
                 <Button
                     onClick={this.createApp}
                     dataTestId={`${this.state.form.appCreationType === AppCreationType.Existing ? 'clone' : 'create'}-${
@@ -542,27 +529,18 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         )
     }
 
-    renderPageDetails = (): JSX.Element => {
-        if (this.state.view === ViewType.LOADING) {
-            return <Progressing pageLoader />
-        }
-        if (this.state.view === ViewType.ERROR) {
-            return <Reload />
-        }
-        return (
-            <>
-                {this.renderBodySection()}
-                {this.renderFooterSection()}
-            </>
-        )
-    }
-
     render() {
         return (
             <Drawer position="right" width="800px">
-                <div className="h-100 bcn-0 create-app-container" ref={this.createAppRef}>
-                    {this.renderHeaderSection()}
-                    {this.renderPageDetails()}
+                <div
+                    className="flexbox-col h-100 bg__primary dc__content-space create-app-container"
+                    ref={this.createAppRef}
+                >
+                    <div className='flexbox-col flex-grow-1 dc__overflow-hidden' >
+                        {this.renderHeaderSection()}
+                        {this.renderBodySection()}
+                    </div>
+                    {this.renderFooterSection()}
                 </div>
             </Drawer>
         )

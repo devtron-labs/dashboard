@@ -545,7 +545,7 @@ export default function DevtronStackManager({
                 handleBreadcrumbClick={handleBreadcrumbClick}
             />
             {stackDetails.isLoading ? (
-                <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
+                <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />
             ) : stackDetails.errorStatusCode > 0 ? (
                 <div className="flex">
                     <ErrorScreenManager code={stackDetails.errorStatusCode} />

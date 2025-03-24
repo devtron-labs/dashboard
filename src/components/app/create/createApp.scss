@@ -16,8 +16,6 @@
 
 .create-app-container {
     .scrollable-content {
-        height: calc(100vh - 120px);
-        overflow: auto;
 
         .info-container--create-app {
             padding: 10px 12px;
@@ -34,22 +32,8 @@
             margin-bottom: 16px;
             span.form__label {
                 font-size: 12px;
-                color: #404040;
-            }
-
-            .form__text-field-info--create-app {
-                align-items: flex-start;
-
-                .form__icon--create-app {
-                    position: relative;
-                    top: 3px;
-                }
+                color: var(--N700);
             }
         }
-    }
-
-    .mandatory-tag-key-container {
-        min-width: 345px;
-        width: 345px;
     }
 }

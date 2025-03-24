@@ -30,7 +30,6 @@ const K8SResourceTabComponent = ({
     renderRefreshBar,
     addTab,
     isOpen,
-    showStaleDataWarning,
     updateK8sResourceTab,
     updateK8sResourceTabLastSyncMoment,
     setWidgetEventDetails,
@@ -55,7 +54,7 @@ const K8SResourceTabComponent = ({
 
     if (error?.code === 403) {
         return (
-            <div className="resource-browser bcn-0 flex">
+            <div className="resource-browser bg__primary flex">
                 <ErrorScreenManager code={403} />
             </div>
         )
@@ -74,7 +73,7 @@ const K8SResourceTabComponent = ({
     }
 
     return (
-        <div className="resource-browser bcn-0">
+        <div className="flex-grow-1 flexbox bg__primary dc__overflow-hidden">
             <Sidebar
                 apiResources={k8SObjectMap?.result.apiResources || null}
                 selectedResource={selectedResource}
@@ -90,7 +89,6 @@ const K8SResourceTabComponent = ({
                 addTab={addTab}
                 isOpen={isOpen}
                 renderRefreshBar={renderRefreshBar}
-                showStaleDataWarning={showStaleDataWarning}
                 updateK8sResourceTab={updateK8sResourceTab}
                 setWidgetEventDetails={setWidgetEventDetails}
                 handleResourceClick={handleResourceClick}

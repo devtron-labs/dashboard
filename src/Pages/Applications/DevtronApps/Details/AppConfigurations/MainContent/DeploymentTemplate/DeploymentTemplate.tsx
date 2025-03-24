@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { useEffect, SyntheticEvent, useMemo, useReducer, Reducer, useRef } from 'react'
 import ReactGA from 'react-ga4'
 import {
@@ -43,15 +59,16 @@ import {
     getIsRequestAborted,
     DraftAction,
     checkIfPathIsMatching,
+    FloatingVariablesSuggestions,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt, useLocation, useParams } from 'react-router-dom'
 import YAML from 'yaml'
-import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
+import { importComponentFromFELibrary } from '@Components/common'
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
-import { URLS } from '@Config/routes'
+import { APP_COMPOSE_STAGE, getAppComposeURL } from '@Config/routes'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
-import deleteOverrideEmptyStateImage from '@Images/no-artifact@2x.png'
+import deleteOverrideEmptyStateImage from '@Images/no-artifact.webp'
 import {
     ConfigEditorStatesType,
     DeploymentTemplateProps,
@@ -59,6 +76,7 @@ import {
     DeploymentTemplateURLConfigType,
     GetLockConfigEligibleAndIneligibleChangesType,
     GetPublishedAndBaseDeploymentTemplateReturnType,
+    HandleFetchDeploymentTemplateReturnType,
     HandleFetchGlobalDeploymentTemplateParamsType,
     HandleInitializeTemplatesWithoutDraftParamsType,
     UpdateBaseDTPayloadType,
@@ -182,6 +200,7 @@ const DeploymentTemplate = ({
         resolvedPublishedTemplate,
         areCommentsPresent,
         wasGuiOrHideLockedKeysEdited,
+        migratedFrom: pipelineMigratedFrom,
     } = state
 
     const manifestAbortController = useRef<AbortController>(new AbortController())
@@ -238,7 +257,7 @@ const DeploymentTemplate = ({
 
     const isGuiSupported = isEditMode && !showDeleteOverrideDraftEmptyState
 
-    const baseDeploymentTemplateURL = `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_DEPLOYMENT_CONFIG}`
+    const baseDeploymentTemplateURL = getAppComposeURL(appId, APP_COMPOSE_STAGE.DEPLOYMENT_TEMPLATE)
 
     /**
      * Means has no global config
@@ -737,9 +756,16 @@ const DeploymentTemplate = ({
     const handleFetchDeploymentTemplate = async (
         chartInfo: DeploymentChartVersionType,
         lockedConfigKeys: string[] = lockedConfigKeysWithLockType.config,
-    ): Promise<DeploymentTemplateConfigState> => {
+    ): Promise<HandleFetchDeploymentTemplateReturnType> => {
         if (!envId) {
-            return handleFetchGlobalDeploymentTemplate({ globalChartDetails: chartInfo, lockedConfigKeys })
+            const deploymentTemplateConfigState = await handleFetchGlobalDeploymentTemplate({
+                globalChartDetails: chartInfo,
+                lockedConfigKeys,
+            })
+
+            return {
+                deploymentTemplateConfigState,
+            }
         }
 
         const {
@@ -754,30 +780,33 @@ const DeploymentTemplate = ({
             namespace,
             envOverrideValues,
             mergeStrategy,
+            migratedFrom,
             envOverridePatchValues,
         } = environmentConfig || {}
 
         // In case of no override it same as saying we have override with no patch value
         return {
-            ...getEnvOverrideEditorCommonState({
-                id,
-                status,
-                manualReviewed,
-                active,
-                namespace,
-                lockedConfigKeys,
-                mergeStrategy,
-                envOverridePatchValues,
-                mergedTemplateObject: IsOverride ? envOverrideValues || globalConfig : globalConfig,
-                isOverridden: !!IsOverride,
-            }),
-
-            schema,
-            readme,
-            guiSchema,
-            isAppMetricsEnabled: appMetrics,
-            selectedChart: chartInfo,
-            selectedChartRefId: +chartInfo.id,
+            deploymentTemplateConfigState: {
+                ...getEnvOverrideEditorCommonState({
+                    id,
+                    status,
+                    manualReviewed,
+                    active,
+                    namespace,
+                    lockedConfigKeys,
+                    mergeStrategy,
+                    envOverridePatchValues,
+                    mergedTemplateObject: IsOverride ? envOverrideValues || globalConfig : globalConfig,
+                    isOverridden: !!IsOverride,
+                }),
+                schema,
+                readme,
+                guiSchema,
+                isAppMetricsEnabled: appMetrics,
+                selectedChart: chartInfo,
+                selectedChartRefId: +chartInfo.id,
+            },
+            migratedFrom,
         }
     }
 
@@ -786,7 +815,10 @@ const DeploymentTemplate = ({
         lockedConfigKeys: string[],
     ): Promise<GetPublishedAndBaseDeploymentTemplateReturnType> => {
         const shouldFetchBaseDeploymentData = !!envId
-        const [templateData, baseDeploymentTemplateDataResponse] = await Promise.all([
+        const [
+            { deploymentTemplateConfigState: publishedTemplateConfigState, migratedFrom },
+            baseDeploymentTemplateDataResponse,
+        ] = await Promise.all([
             handleFetchDeploymentTemplate(chartRefsData.selectedChart, lockedConfigKeys),
             shouldFetchBaseDeploymentData
                 ? handleFetchGlobalDeploymentTemplate({
@@ -797,10 +829,11 @@ const DeploymentTemplate = ({
         ])
 
         return {
-            publishedTemplateState: templateData,
+            publishedTemplateState: publishedTemplateConfigState,
             baseDeploymentTemplateState: shouldFetchBaseDeploymentData
                 ? baseDeploymentTemplateDataResponse
-                : templateData,
+                : publishedTemplateConfigState,
+            migratedFrom,
         }
     }
 
@@ -809,6 +842,7 @@ const DeploymentTemplate = ({
         publishedTemplateState,
         chartDetailsState,
         lockedConfigKeysWithLockTypeState,
+        migratedFrom,
     }: HandleInitializeTemplatesWithoutDraftParamsType) => {
         const clonedTemplateData = structuredClone(publishedTemplateState)
         delete clonedTemplateData.editorTemplateWithoutLockedKeys
@@ -839,6 +873,7 @@ const DeploymentTemplate = ({
                 chartDetails: chartDetailsState,
                 lockedConfigKeysWithLockType: lockedConfigKeysWithLockTypeState,
                 currentEditorTemplateData: currentEditorState,
+                migratedFrom,
             },
         })
     }
@@ -847,10 +882,9 @@ const DeploymentTemplate = ({
         chartRefsData: Awaited<ReturnType<typeof getChartList>>,
         lockedKeysConfig: typeof lockedConfigKeysWithLockType,
     ) => {
-        const { publishedTemplateState, baseDeploymentTemplateState } = await getPublishedAndBaseDeploymentTemplate(
-            chartRefsData,
-            lockedKeysConfig.config,
-        )
+        const { publishedTemplateState, baseDeploymentTemplateState, migratedFrom } =
+            await getPublishedAndBaseDeploymentTemplate(chartRefsData, lockedKeysConfig.config)
+
         handleInitializeTemplatesWithoutDraft({
             baseDeploymentTemplateState,
             publishedTemplateState,
@@ -861,6 +895,7 @@ const DeploymentTemplate = ({
                 latestAppChartRef: chartRefsData.latestAppChartRef,
             },
             lockedConfigKeysWithLockTypeState: lockedKeysConfig,
+            migratedFrom,
         })
     }
 
@@ -883,7 +918,8 @@ const DeploymentTemplate = ({
             throw publishedAndBaseTemplateDataResponse.reason
         }
 
-        const { publishedTemplateState, baseDeploymentTemplateState } = publishedAndBaseTemplateDataResponse.value
+        const { publishedTemplateState, baseDeploymentTemplateState, migratedFrom } =
+            publishedAndBaseTemplateDataResponse.value
 
         const shouldInitializeWithoutDraft =
             draftPromiseResponse.status === 'rejected' ||
@@ -904,6 +940,7 @@ const DeploymentTemplate = ({
                     latestAppChartRef: chartRefsData.latestAppChartRef,
                 },
                 lockedConfigKeysWithLockTypeState: lockedKeysConfig,
+                migratedFrom,
             })
             return
         }
@@ -956,6 +993,7 @@ const DeploymentTemplate = ({
                     draftTemplateState.latestDraft?.draftState === DraftState.AwaitApproval
                         ? ProtectConfigTabsType.COMPARE
                         : ProtectConfigTabsType.EDIT_DRAFT,
+                migratedFrom,
             },
         })
     }
@@ -1223,7 +1261,9 @@ const DeploymentTemplate = ({
         })
 
         try {
-            const selectedChartTemplateDetails = await handleFetchDeploymentTemplate(selectedChart)
+            const { deploymentTemplateConfigState: selectedChartTemplateDetails } =
+                await handleFetchDeploymentTemplate(selectedChart)
+
             dispatch({
                 type: DeploymentTemplateActionType.CHART_CHANGE_SUCCESS,
                 payload: {
@@ -1481,6 +1521,7 @@ const DeploymentTemplate = ({
             showDeleteOverrideDraftEmptyState,
             isApprovalPolicyConfigured,
             isDeleteOverrideDraftPresent: isDeleteOverrideDraft,
+            migratedFrom: pipelineMigratedFrom,
         }),
         popupNodeType,
         popupMenuNode: ProtectionViewToolbarPopupNode ? (
@@ -1497,7 +1538,7 @@ const DeploymentTemplate = ({
     const renderEditorComponent = () => {
         if (isResolvingVariables || isLoadingChangedChartDetails || !!isLoadingMergedTemplate) {
             return (
-                <div className="flex h-100 flex-grow-1 dc__overflow-scroll">
+                <div className="flex h-100 flex-grow-1 dc__overflow-auto">
                     <Progressing pageLoader />
                 </div>
             )
@@ -1527,7 +1568,7 @@ const DeploymentTemplate = ({
         if (isCompareView) {
             return (
                 <CompareConfigView
-                    className="flex-grow-1 dc__overflow-scroll"
+                    className="flex-grow-1 dc__overflow-auto"
                     compareFromSelectedOptionValue={compareFromSelectedOptionValue}
                     handleCompareFromOptionSelection={handleCompareFromOptionSelection}
                     isApprovalView={isApprovalView}
@@ -1678,7 +1719,7 @@ const DeploymentTemplate = ({
         }
 
         return (
-            <div className="flexbox dc__gap-6 dc__align-items-center dc__border-top-n1 bc-n50 py-6 px-10">
+            <div className="flexbox dc__gap-6 dc__align-items-center dc__border-top-n1 bg__secondary py-6 px-10">
                 <ICInfoOutlineGrey className="flex icon-dim-16 dc__no-shrink scn-6" />
                 <div className="flexbox">
                     <span className="cn-8 fs-12 fw-4 lh-20 dc__truncate">
@@ -1693,7 +1734,7 @@ const DeploymentTemplate = ({
     }
 
     const renderValuesView = () => (
-        <div className="flexbox-col flex-grow-1 dc__overflow-scroll">
+        <div className="flexbox-col flex-grow-1 dc__overflow-auto">
             {window._env_.ENABLE_SCOPED_VARIABLES && (
                 <div className="app-config-variable-widget-position">
                     <FloatingVariablesSuggestions
@@ -1798,6 +1839,7 @@ const DeploymentTemplate = ({
                                 isGuiSupported={isGuiSupported}
                                 areChartsLoading={false}
                                 showDeleteOverrideDraftEmptyState={showDeleteOverrideDraftEmptyState}
+                                migratedFrom={pipelineMigratedFrom}
                             />
                         )}
                     </ConfigToolbar>
@@ -1827,7 +1869,7 @@ const DeploymentTemplate = ({
         }
 
         return (
-            <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-scroll bcn-0">
+            <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-auto bg__primary">
                 {renderBody()}
 
                 {showDeleteOverrideDialog && (
@@ -1837,6 +1879,7 @@ const DeploymentTemplate = ({
                         handleClose={handleCloseDeleteOverrideDialog}
                         handleProtectionError={handleDeleteOverrideProtectionError}
                         reloadEnvironments={reloadEnvironments}
+                        environmentName={environmentName}
                     />
                 )}
 
@@ -1890,9 +1933,7 @@ const DeploymentTemplate = ({
 
     return (
         <>
-            <div
-                className={`h-100 dc__window-bg ${showDraftComments ? 'deployment-template__comments-view' : 'flexbox'}`}
-            >
+            <div className="h-100 bg__tertiary flexbox">
                 {renderDeploymentTemplate()}
 
                 {DraftComments && showDraftComments && (

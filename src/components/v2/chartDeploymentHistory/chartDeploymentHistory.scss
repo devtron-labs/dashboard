@@ -16,7 +16,7 @@
 
 .ci-details__history.deployment-cards {
     grid-template-rows: 30px 1fr !important;
-    flex-basis: 305px;
+    flex: 0 0 305px;
 }
 
 .ci-details__build-card {
@@ -46,7 +46,7 @@
 }
 
 .error-exclamation-icon path {
-    fill: #767d84;
+    fill: var(--N600);
 }
 
 .ci-details {
@@ -94,7 +94,7 @@
 }
 
 .docker-wrapper {
-    background-color: white;
+    background-color: var(--bg-primary);
     width: 600px;
     max-height: 500px;
     margin: auto;

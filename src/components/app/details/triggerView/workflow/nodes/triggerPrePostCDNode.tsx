@@ -16,7 +16,12 @@
 
 import { Component } from 'react'
 import { Link } from 'react-router-dom'
-import { DeploymentAppTypes, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DeploymentAppTypes,
+    stopPropagation,
+    getWorkflowNodeStatusTitle,
+    Icon,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerPrePostCDNodeProps, TriggerPrePostCDNodeState } from '../../types'
 import { TriggerStatus } from '../../../../config'
 import { BUILD_STATUS, URLS, DEFAULT_STATUS } from '../../../../../../config'
@@ -45,7 +50,7 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                 this.props.id,
                 this.props.match.params.envId === this.props.environmentId.toString(),
                 '',
-                this.props.type
+                this.props.type,
             )
         }
         return `${this.props.match.url.replace(URLS.APP_TRIGGER, URLS.APP_CD_DETAILS)}/${this.props.environmentId}/${
@@ -63,7 +68,7 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
             return (
                 <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
                     <span data-testid={`${this.props.title}-trigger-status-${this.props.index}`}>
-                        {this.props.status}
+                        {getWorkflowNodeStatusTitle(this.props.status)}
                     </span>
                     <>
                         {this.props.status && <span className="mr-5 ml-5">/</span>}
@@ -125,12 +130,12 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                                 >
                                     <span>{heading}</span>
                                 </div>
-                                <div className="workflow-node__title flex">
+                                <div className="workflow-node__title flex dc__gap-8">
                                     <div className="workflow-node__full-width-minus-Icon">
                                         <span className="workflow-node__text-light">Stage</span>
                                         <span className="">{stage}</span>
                                     </div>
-                                    <div className="workflow-node__icon-common ml-8 workflow-node__CD-pre-post-icon" />
+                                    <Icon name="ic-node-script" size={20} color={null} />
                                 </div>
                                 {this.renderStatus(isClickable, status)}
                                 <div className="workflow-node__btn-grp">

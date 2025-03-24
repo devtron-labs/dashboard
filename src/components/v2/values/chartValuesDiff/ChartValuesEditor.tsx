@@ -15,13 +15,21 @@
  */
 
 import moment from 'moment'
-import React, { useEffect, useState } from 'react'
-import { showError, DetailsProgressing, YAMLStringify, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
-import ReactSelect, { components } from 'react-select'
+import { useEffect, useState } from 'react'
+import {
+    showError,
+    DetailsProgressing,
+    YAMLStringify,
+    CodeEditor,
+    versionComparatorBySortOrder,
+    MODES,
+    SelectPicker,
+    SelectPickerVariantType,
+    ComponentSizeType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { Moment12HourFormat } from '../../../../config'
 import { getChartValues } from '../../../charts/charts.service'
-import { Option } from '../../common/ReactSelect.utils'
 import { getDeploymentManifestDetails } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import { ReactComponent as Lock } from '../../../../assets/icons/ic-locked.svg'
 import {
@@ -39,30 +47,7 @@ import {
     MANIFEST_OUTPUT_INFO_TEXT,
     MANIFEST_OUTPUT_TIPPY_CONTENT,
 } from './ChartValuesView.constants'
-import { getCompareValuesSelectStyles } from './ChartValuesView.utils'
-
-const formatOptionLabel = (option: ChartValuesDiffOptionType): JSX.Element => {
-    return (
-        <div className="flex left column">
-            <span className="w-100 dc__ellipsis-right">
-                {option.label}&nbsp;{option.version && `(${option.version})`}
-            </span>
-            {option.info && <small className="cn-6">{option.info}</small>}
-        </div>
-    )
-}
-
-const customValueContainer = (props: any): JSX.Element => {
-    return (
-        <components.ValueContainer {...props}>
-            {props.selectProps.value?.label}&nbsp;
-            {props.selectProps.value?.version && `(${props.selectProps.value.version})`}
-            {React.cloneElement(props.children[1], {
-                style: { position: 'absolute' },
-            })}
-        </components.ValueContainer>
-    )
-}
+import { getFormattedChartValuesDiffOptionLabel } from './ChartValuesView.utils'
 
 const CompareWithDropdown = ({
     deployedChartValues,
@@ -102,7 +87,10 @@ const CompareWithDropdown = ({
                 },
                 {
                     label: GROUPED_OPTION_LABELS.DefaultValues,
-                    options: defaultChartValues?.length > 0 ? defaultChartValues : noOptions,
+                    options:
+                        defaultChartValues?.length > 0
+                            ? [...defaultChartValues].sort((a, b) => versionComparatorBySortOrder(a.version, b.version))
+                            : noOptions,
                 },
             )
         }
@@ -110,21 +98,16 @@ const CompareWithDropdown = ({
     }, [deployedChartValues, defaultChartValues, deploymentHistoryOptionsList])
 
     return (
-        <ReactSelect
+        <SelectPicker
+            inputId="compare-values-select"
+            classNamePrefix="compare-values-select"
+            variant={SelectPickerVariantType.BORDER_LESS}
             options={groupedOptions}
-            isMulti={false}
             isSearchable={false}
             value={selectedVersionForDiff}
-            classNamePrefix="compare-values-select"
             isOptionDisabled={(option) => option.value === 0}
-            formatOptionLabel={formatOptionLabel}
-            components={{
-                IndicatorSeparator: null,
-                ValueContainer: customValueContainer,
-                Option,
-            }}
-            styles={getCompareValuesSelectStyles()}
             onChange={handleSelectedVersionForDiff}
+            menuSize={ComponentSizeType.medium}
         />
     )
 }
@@ -179,10 +162,11 @@ export default function ChartValuesEditor({
             for (let index = 0; index < chartValuesList.length; index++) {
                 const _chartValue = chartValuesList[index]
                 const processedChartValue = {
-                    label: _chartValue.name,
+                    label: getFormattedChartValuesDiffOptionLabel(_chartValue.name, _chartValue.chartVersion),
                     value: _chartValue.id,
                     appStoreVersionId: _chartValue.appStoreVersionId || 0,
                     info: _chartValue.environmentName ? `Deployed on: ${_chartValue.environmentName}` : '',
+                    description: _chartValue.environmentName ? `Deployed on: ${_chartValue.environmentName}` : '',
                     kind: _chartValue.kind,
                     version: _chartValue.chartVersion,
                 }
@@ -199,7 +183,10 @@ export default function ChartValuesEditor({
             }
             const deploymentHistoryOptionsList = deploymentHistoryList.map((_deploymentHistory) => {
                 return {
-                    label: moment(new Date(_deploymentHistory.deployedAt.seconds * 1000)).format(Moment12HourFormat),
+                    label: getFormattedChartValuesDiffOptionLabel(
+                        moment(new Date(_deploymentHistory.deployedAt.seconds * 1000)).format(Moment12HourFormat),
+                        _deploymentHistory.chartMetadata.chartVersion,
+                    ),
                     value: _deploymentHistory.version,
                     info: '',
                     version: _deploymentHistory.chartMetadata.chartVersion,
@@ -351,96 +338,108 @@ export default function ChartValuesEditor({
     }
 
     return (
-        <div
-            className="code-editor-container"
-            data-testid="code-editor-container"
+        <CodeEditor
+            diffView={comparisonView}
+            noParsing
+            mode={MODES.YAML}
+            loading={loading || valuesForDiffState.loadingValuesForDiff}
+            customLoader={
+                <DetailsProgressing size={32}>
+                    {manifestView && !comparisonView && (
+                        <span className="fs-13 fw-4 cn-7 mt-8">
+                            Generating the manifest. <br /> Please wait...
+                        </span>
+                    )}
+                </DetailsProgressing>
+            }
+            readOnly={manifestView}
+            codeEditorProps={{
+                height: '0',
+                defaultValue: comparisonView
+                    ? manifestView
+                        ? valuesForDiffState.selectedManifestForDiff
+                        : valuesForDiffState.selectedValuesForDiff
+                    : '',
+                value: manifestView ? generatedManifest : valuesText,
+                onChange: onChange,
+            }}
+            codeMirrorProps={{
+                height: 'fitToParent',
+                ...(comparisonView
+                    ? {
+                          diffView: true,
+                          originalValue: manifestView
+                              ? valuesForDiffState.selectedManifestForDiff
+                              : valuesForDiffState.selectedValuesForDiff,
+                          modifiedValue: manifestView ? generatedManifest : valuesText,
+                          onModifiedValueChange: onChange,
+                      }
+                    : {
+                          diffView: false,
+                          value: manifestView ? generatedManifest : valuesText,
+                          onChange,
+                      }),
+            }}
         >
-            <CodeEditor
-                height="0"
-                defaultValue={
-                    comparisonView
-                        ? manifestView
-                            ? valuesForDiffState.selectedManifestForDiff
-                            : valuesForDiffState.selectedValuesForDiff
-                        : ''
-                }
-                value={manifestView ? generatedManifest : valuesText}
-                diffView={comparisonView}
-                noParsing
-                mode="yaml"
-                onChange={onChange}
-                loading={loading || valuesForDiffState.loadingValuesForDiff}
-                customLoader={
-                    <DetailsProgressing size={32}>
-                        {manifestView && !comparisonView && (
-                            <span className="fs-13 fw-4 cn-7 mt-8">
-                                Generating the manifest. <br /> Please wait...
-                            </span>
-                        )}
-                    </DetailsProgressing>
-                }
-                readOnly={manifestView}
-            >
-                {showEditorHeader && (
-                    <CodeEditor.Header>
-                        <div className="flex fs-12 fw-6 cn-7">
-                            <Edit className="icon-dim-16 mr-10" />
-                            values.yaml
-                        </div>
-                    </CodeEditor.Header>
-                )}
-                {!manifestView && showInfoText && hasChartChanged && (
-                    <CodeEditor.Warning
-                        className="dc__ellipsis-right"
-                        text={`Please ensure that the values are compatible with "${repoChartValue.chartRepoName}/${repoChartValue.chartName}"`}
-                    />
-                )}
-                {manifestView && (
-                    <CodeEditor.Information className="dc__ellipsis-right" text={MANIFEST_OUTPUT_INFO_TEXT}>
-                        <Tippy
-                            className="default-tt w-250"
-                            arrow={false}
-                            placement="bottom"
-                            content={MANIFEST_OUTPUT_TIPPY_CONTENT}
-                        >
-                            <span className="cursor cb-5 fw-6">&nbsp;Know more</span>
-                        </Tippy>
-                    </CodeEditor.Information>
-                )}
-                {comparisonView && (
-                    <div className="code-editor__header chart-values-view__diff-view-header">
-                        <div className="chart-values-view__diff-view-default flex left fs-12 fw-6 cn-7">
-                            <span style={{ width: '90px' }} data-testid="compare-with-heading">
-                                Compare with:
-                            </span>
-                            <CompareWithDropdown
-                                deployedChartValues={valuesForDiffState.deployedChartValues}
-                                defaultChartValues={valuesForDiffState.defaultChartValues}
-                                presetChartValues={valuesForDiffState.presetChartValues}
-                                deploymentHistoryOptionsList={valuesForDiffState.deploymentHistoryOptionsList}
-                                selectedVersionForDiff={valuesForDiffState.selectedVersionForDiff}
-                                handleSelectedVersionForDiff={handleSelectedVersionForDiff}
-                                manifestView={manifestView}
-                            />
-                        </div>
-                        <div className="chart-values-view__diff-view-current flex left fs-12 fw-6 cn-7 pl-12">
-                            {manifestView ? (
-                                <>
-                                    <Lock className="icon-dim-16 mr-8" />
-                                    <span>Manifest output for current YAML</span>
-                                </>
-                            ) : (
-                                <>
-                                    <Edit className="icon-dim-16 mr-10" />
-                                    values.yaml&nbsp;
-                                    {(selectedChartValues?.chartVersion || repoChartValue?.version) &&
-                                        `(${selectedChartValues?.chartVersion || repoChartValue?.version})`}
-                                </>
-                            )}
-                        </div>
+            {showEditorHeader && (
+                <CodeEditor.Header>
+                    <div className="flex fs-12 fw-6 cn-7">
+                        <Edit className="icon-dim-16 mr-10" />
+                        values.yaml
                     </div>
-                )}
-            </CodeEditor>
-        </div>
+                </CodeEditor.Header>
+            )}
+            {!manifestView && showInfoText && hasChartChanged && (
+                <CodeEditor.Warning
+                    className="dc__ellipsis-right"
+                    text={`Please ensure that the values are compatible with "${repoChartValue.chartRepoName}/${repoChartValue.chartName}"`}
+                />
+            )}
+            {manifestView && (
+                <CodeEditor.Information className="dc__ellipsis-right" text={MANIFEST_OUTPUT_INFO_TEXT}>
+                    <Tippy
+                        className="default-tt w-250"
+                        arrow={false}
+                        placement="bottom"
+                        content={MANIFEST_OUTPUT_TIPPY_CONTENT}
+                    >
+                        <span className="cursor cb-5 fw-6">&nbsp;Know more</span>
+                    </Tippy>
+                </CodeEditor.Information>
+            )}
+            {comparisonView && (
+                <CodeEditor.Header hideDefaultSplitHeader>
+                    <div className="flex left fs-12 fw-6 cn-7">
+                        <span style={{ width: '90px' }} data-testid="compare-with-heading">
+                            Compare with:
+                        </span>
+                        <CompareWithDropdown
+                            deployedChartValues={valuesForDiffState.deployedChartValues}
+                            defaultChartValues={valuesForDiffState.defaultChartValues}
+                            presetChartValues={valuesForDiffState.presetChartValues}
+                            deploymentHistoryOptionsList={valuesForDiffState.deploymentHistoryOptionsList}
+                            selectedVersionForDiff={valuesForDiffState.selectedVersionForDiff}
+                            handleSelectedVersionForDiff={handleSelectedVersionForDiff}
+                            manifestView={manifestView}
+                        />
+                    </div>
+                    <div className="chart-values-view__diff-view-current flex left fs-12 fw-6 cn-7 pl-12">
+                        {manifestView ? (
+                            <>
+                                <Lock className="icon-dim-16 mr-8" />
+                                <span>Manifest output for current YAML</span>
+                            </>
+                        ) : (
+                            <>
+                                <Edit className="icon-dim-16 mr-10" />
+                                values.yaml&nbsp;
+                                {(selectedChartValues?.chartVersion || repoChartValue?.version) &&
+                                    `(${selectedChartValues?.chartVersion || repoChartValue?.version})`}
+                            </>
+                        )}
+                    </div>
+                </CodeEditor.Header>
+            )}
+        </CodeEditor>
     )
 }

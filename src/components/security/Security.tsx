@@ -20,8 +20,7 @@ import { PageHeader, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
 import { SecurityPoliciesTab } from './SecurityPoliciesTab'
 import { SecurityScansTab } from './SecurityScansTab/SecurityScansTab'
 import './security.scss'
-import { DOCUMENTATION, SERVER_MODE, SERVER_MODE_TYPE } from '../../config'
-import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState'
+import { DOCUMENTATION, SERVER_MODE_TYPE } from '../../config'
 
 interface SecurityProps extends RouteComponentProps<{}> {
     serverMode: SERVER_MODE_TYPE
@@ -98,27 +97,12 @@ export class Security extends Component<SecurityProps> {
         )
     }
 
-    renderEmptyStateForEAOnlyMode = () => {
-        return (
-            <div style={{ height: 'calc(100vh - 250px)' }}>
-                <EAEmptyState
-                    title="Integrated DevSecOps"
-                    msg="Enable security scanning to identify vulnerabilities in your container and protect from external attacks. Manage security policies to allow or block specific vulnerabilities."
-                    stateType={EAEmptyStateType.SECURITY}
-                    knowMoreLink={DOCUMENTATION.SECURITY}
-                />
-            </div>
-        )
-    }
-
     render() {
         return (
-            <div className="security-scan-container bcn-0 flexbox-col min-h-100">
+            <div className="security-scan-container bg__primary flexbox-col min-h-100">
                 <div className="security-scan flexbox-col flex-grow-1">
                     {this.renderPageheader()}
-                    {this.props.serverMode === SERVER_MODE.EA_ONLY
-                        ? this.renderEmptyStateForEAOnlyMode()
-                        : this.renderRouter()}
+                    {this.renderRouter()}
                 </div>
             </div>
         )

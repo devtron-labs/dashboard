@@ -14,16 +14,8 @@
  * limitations under the License.
  */
 
-.gitops__id {
-    color: #404040;
-}
-.form__label {
-    &.form__label--fs-13 {
-        font-size: 13px;
-    }
-}
 .git_impt {
-    border: solid 1px #c5bbfa;
+    border: solid 1px var(--V200);
 }
 .config_failure {
     border-bottom: 0px;
@@ -47,7 +39,7 @@
 
 .form__radio-item {
     &.disabled {
-        background-color: var(--N0);
+        background-color: var(--bg-primary);
         opacity: 0.5;
     }
 }

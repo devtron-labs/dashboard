@@ -41,7 +41,6 @@ import {
     reloadLocation,
 } from './components/common'
 import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG, URLS } from './config'
-import Hotjar from './components/Hotjar/Hotjar'
 import { validateToken } from './services/service'
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'))
@@ -321,15 +320,15 @@ export default function App() {
             <Suspense fallback={null}>
                 {validating ? (
                     <div className="full-height-width">
-                        <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
+                        <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />
                     </div>
                 ) : (
                     <>
                         {errorPage ? (
-                            <div className="full-height-width">
+                            <div className="full-height-width bg__tertiary">
                                 <Reload />
                             </div>
-                        ) : (
+                            ) : (
                             <ErrorBoundary>
                                 <BreadcrumbStore>
                                     <Switch>
@@ -347,13 +346,9 @@ export default function App() {
                                             to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`}
                                         />
                                     </Switch>
-                                    <div id="full-screen-modal" />
                                     <div id="visible-modal" />
                                     <div id="visible-modal-2" />
                                     <div id="animated-dialog-backdrop" />
-                                    {import.meta.env.VITE_NODE_ENV === 'production' &&
-                                        window._env_ &&
-                                        window._env_.HOTJAR_ENABLED && <Hotjar />}
                                 </BreadcrumbStore>
                             </ErrorBoundary>
                         )}

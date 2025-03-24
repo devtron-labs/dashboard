@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { DeploymentAppTypes, post, put, trash, Host, HandleDownloadProps, createResourceRequestBody, GVKType, ResourceManifestDTO } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, post, put, trash, HandleDownloadProps, createResourceRequestBody, GVKType, ResourceManifestDTO, SelectedResourceType } from '@devtron-labs/devtron-fe-common-lib'
 import { CUSTOM_LOGS_FILTER, Routes } from '../../../../../config'
-import { AppDetails, AppType, SelectedResourceType } from '../../appDetails.type'
+import { AppDetails, AppType } from '../../appDetails.type'
 import {
     AppDetailsAppIdentifierProps,
     EphemeralContainerProps,
@@ -65,7 +65,7 @@ export const getManifestResource = (
         selectedResource,
     })
 
-    if (window._env_.FEATURE_CONFIG_DRIFT_ENABLE && getDesiredAndLiveManifest && ad.appType === AppType.DEVTRON_APP && !isResourceBrowserView) {
+    if (!isResourceBrowserView && window._env_.FEATURE_CONFIG_DRIFT_ENABLE && getDesiredAndLiveManifest && ad.appType === AppType.DEVTRON_APP) {
         return getDesiredAndLiveManifest(requestData, signal)
     }
 

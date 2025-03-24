@@ -21,11 +21,11 @@ import {
     Progressing,
     stopPropagation,
     OptionType,
-    DeleteDialog,
     ErrorScreenManager,
     ResourceKindType,
     ToastManager,
     ToastVariantType,
+    DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import {
@@ -49,6 +49,7 @@ import { CreateGroupAppListType, FilterParentType, GroupOptionType } from '../..
 import { getAppOtherEnvironmentMin } from '../../../services/service'
 import { appGroupPermission, deleteEnvGroup, getEnvGroupList } from '../../ApplicationGroup/AppGroup.service'
 import CreateAppGroup from '../../ApplicationGroup/CreateAppGroup'
+import { DeleteComponentsName } from '@Config/constantMessaging'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
@@ -57,7 +58,6 @@ const AppDetails = lazy(() => import('./appDetails/AppDetails'))
 const IndexComponent = lazy(() => import('../../v2/index'))
 
 const CDDetails = lazy(() => import('./cdDetails/CDDetails'))
-const TestRunList = lazy(() => import('./testViewer/TestRunList'))
 
 export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const { path } = useRouteMatch()
@@ -77,7 +77,6 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const [clickedGroup, setClickedGroup] = useState<GroupOptionType>(null)
     const [showDeleteGroup, setShowDeleteGroup] = useState<boolean>(false)
     const [isPopupBox, setIsPopupBox] = useState(false)
-    const [deleting, setDeleting] = useState<boolean>(false)
     const [apiError, setApiError] = useState(null)
     const [initLoading, setInitLoading] = useState<boolean>(false)
 
@@ -299,27 +298,12 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     }
 
     async function handleDelete() {
-        if (deleting) {
-            return
-        }
-        setDeleting(true)
-        try {
             await deleteEnvGroup(appId, clickedGroup.value, FilterParentType.app)
-            ToastManager.showToast({
-                variant: ToastVariantType.success,
-                description: 'Successfully deleted',
-            })
-            setShowDeleteGroup(false)
             getSavedFilterData(
                 selectedGroupFilter[0] && clickedGroup.value !== selectedGroupFilter[0].value
                     ? +selectedGroupFilter[0].value
                     : null,
             )
-        } catch (serverError) {
-            showError(serverError)
-        } finally {
-            setDeleting(false)
-        }
     }
 
     const closeDeleteGroup = () => {
@@ -343,7 +327,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
 
     const _filteredEnvIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
     return (
-        <div className="app-details-page dc__overflow-scroll">
+        <div className="app-details-page flexbox-col w-100 h-100 dc__overflow-auto">
             {!isV2 && (
                 <AppHeader
                     appName={appName}
@@ -371,14 +355,16 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                     filterParentType={FilterParentType.app}
                 />
             )}
+
             {showDeleteGroup && isPopupBox && (
-                <DeleteDialog
-                    title={`Delete filter '${clickedGroup?.label}' ?`}
-                    description="Are you sure you want to delete this filter?"
-                    delete={handleDelete}
-                    closeDelete={closeDeleteGroup}
+                <DeleteConfirmationModal
+                    title={clickedGroup?.label}
+                    component={DeleteComponentsName.Filter}
+                    onDelete={handleDelete}
+                    closeConfirmationModal={closeDeleteGroup}
                 />
             )}
+
             <ErrorBoundary>
                 <Suspense fallback={<Progressing pageLoader />}>
                     <Switch>
@@ -426,14 +412,12 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                                 filteredEnvIds={_filteredEnvIds}
                             />
                         </Route>
-                        {/* commented for time being */}
-                        {/* <Route path={`${path}/tests/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
-                            render={() => <TestRunList />}
-                        /> */}
                         <Redirect to={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} />
                     </Switch>
                 </Suspense>
             </ErrorBoundary>
+
+            <div className='dc__no-shrink' id="cluster-meta-data-bar__container" />
         </div>
     )
 }

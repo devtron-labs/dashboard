@@ -20,7 +20,13 @@ import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { DatePickerType2 as DateRangePicker } from '../../../common'
 import { AppMetricsTabType, ChartType, StatusType, ChartTypes, StatusTypes, AppMetricsTab } from './appDetails.type'
-import { getIframeSrc, isK8sVersionValid, ThroughputSelect, getCalendarValue, LatencySelect } from './utils'
+import {
+    getIframeSrc,
+    isK8sVersionValid,
+    ThroughputSelect,
+    getCalendarValue,
+    LatencySelect,
+} from './utils'
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg'
 import { DEFAULTK8SVERSION } from '../../../../config'
 import { APP_METRICS_CALENDAR_INPUT_DATE_FORMAT } from './constants'
@@ -48,6 +54,9 @@ export interface GraphModalProps {
     k8sVersion: string
     selectedLatency: number
     close: () => void
+    getIframeSrcWrapper: (
+        params: Omit<Parameters<typeof getIframeSrc>[0], 'grafanaTheme'>,
+    ) => ReturnType<typeof getIframeSrc>
 }
 
 interface GraphModalState {
@@ -134,58 +143,62 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
             k8sVersion,
         }
 
-        const cpu = getIframeSrc(appInfo, ChartType.Cpu, this.state.calendarInputs, tab, false)
-        const ram = getIframeSrc(appInfo, ChartType.Ram, this.state.calendarInputs, tab, false)
-        const latency = getIframeSrc(
+        const cpu = this.props.getIframeSrcWrapper({
+            appInfo, chartName: ChartType.Cpu, calendarInputs: this.state.calendarInputs, tab, isLegendRequired: false
+        })
+        const ram = this.props.getIframeSrcWrapper({
+            appInfo, chartName: ChartType.Ram, calendarInputs: this.state.calendarInputs, tab, isLegendRequired: false
+        })
+        const latency = this.props.getIframeSrcWrapper({
             appInfo,
-            ChartType.Latency,
-            this.state.calendarInputs,
+            chartName: ChartType.Latency,
+            calendarInputs: this.state.calendarInputs,
             tab,
-            false,
-            undefined,
-            this.state.selectedLatency,
-        )
-        const status2xx = getIframeSrc(
+            isLegendRequired: false,
+            statusCode: undefined,
+            latency: this.state.selectedLatency,
+        })
+        const status2xx = this.props.getIframeSrcWrapper({
             appInfo,
-            ChartType.Status,
-            this.state.calendarInputs,
+            chartName: ChartType.Status,
+            calendarInputs: this.state.calendarInputs,
             tab,
-            false,
-            StatusType.status2xx,
-        )
-        const status4xx = getIframeSrc(
+            isLegendRequired: false,
+            statusCode: StatusType.status2xx,
+        })
+        const status4xx = this.props.getIframeSrcWrapper({
             appInfo,
-            ChartType.Status,
-            this.state.calendarInputs,
+            chartName: ChartType.Status,
+            calendarInputs: this.state.calendarInputs,
             tab,
-            false,
-            StatusType.status4xx,
-        )
-        const status5xx = getIframeSrc(
+            isLegendRequired: false,
+            statusCode: StatusType.status4xx,
+        })
+        const status5xx = this.props.getIframeSrcWrapper({
             appInfo,
-            ChartType.Status,
-            this.state.calendarInputs,
+            chartName: ChartType.Status,
+            calendarInputs: this.state.calendarInputs,
             tab,
-            false,
-            StatusType.status5xx,
-        )
-        const throughput = getIframeSrc(
+            isLegendRequired: false,
+            statusCode: StatusType.status5xx,
+        })
+        const throughput = this.props.getIframeSrcWrapper({
             appInfo,
-            ChartType.Status,
-            this.state.calendarInputs,
+            chartName: ChartType.Status,
+            calendarInputs: this.state.calendarInputs,
             tab,
-            false,
-            StatusType.Throughput,
-        )
-        const mainChartUrl = getIframeSrc(
+            isLegendRequired: false,
+            statusCode: StatusType.Throughput,
+        })
+        const mainChartUrl = this.props.getIframeSrcWrapper({
             appInfo,
-            this.state.mainChartName,
-            this.state.calendarInputs,
+            chartName: this.state.mainChartName,
+            calendarInputs: this.state.calendarInputs,
             tab,
-            true,
-            this.state.statusCode,
-            this.state.selectedLatency,
-        )
+            isLegendRequired: true,
+            statusCode: this.state.statusCode,
+            latency: this.state.selectedLatency,
+        })
 
         return { cpu, ram, throughput, status2xx, status4xx, status5xx, latency, mainChartUrl }
     }
@@ -310,15 +323,15 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
             newPodHash: this.props.newPodHash,
             k8sVersion,
         }
-        return getIframeSrc(
+        return this.props.getIframeSrcWrapper({
             appInfo,
-            chartType,
-            this.state.calendarInputs,
-            this.state.tab,
-            true,
+            chartName: chartType,
+            calendarInputs: this.state.calendarInputs,
+            tab: this.state.tab,
+            isLegendRequired: true,
             statusCode,
-            selectedLatency,
-        )
+            latency: selectedLatency,
+        })
     }
 
     render() {
@@ -326,7 +339,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
 
         return (
             <VisibleModal className="" close={this.props.close}>
-                <div className="modal__body modal__body--full-screen" onClick={(e) => e.stopPropagation()}>
+                <div className="dc__position-abs dc__top-20 dc__left-20 dc__right-20 dc__bottom-20 dc__overflow-auto bg__primary br-8" onClick={(e) => e.stopPropagation()}>
                     <div className="modal__header p-24 m-0">
                         <h1 className="modal__title mb-0">{this.props.appName}/application metrics</h1>
                         <Close className="icon-dim-20 cursor" onClick={this.props.close} />

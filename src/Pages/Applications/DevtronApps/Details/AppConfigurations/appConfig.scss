@@ -17,8 +17,7 @@
 .app-compose {
     display: grid;
     grid-template-columns: 255px 1fr;
-    height: calc(100vh - 77px);
-    background: white;
+    background: var(--bg-primary);
     overflow: hidden;
 
     &.app-compose-for-env-compare {
@@ -30,12 +29,9 @@
     }
 
     .app-compose__nav {
-        padding: 16px 12px;
-        border-right: solid 1px #d6dbdf;
-        background: white;
+        border-right: solid 1px var(--N200);
+        background: var(--bg-primary);
         height: 100%;
-        display: grid;
-        grid-template-columns: 1fr;
         overflow: hidden;
 
         &.app-compose-env-configurations__nav {
@@ -43,51 +39,19 @@
             display: block
         }
 
-        &.app-compose-with-no-gitops-config__nav {
-            grid-template-rows: 110px repeat(4, 32px) 54px 1fr auto;
-
-            &.hide-app-config-help {
-                grid-template-rows: repeat(4, 32px) 54px 1fr auto;
-
-                &.hide-external-links {
-                    grid-template-rows: repeat(4, 32px) 1fr auto;
-                }
-            }
-
-            &.job-compose__side-nav {
-                grid-template-rows: 110px repeat(3, 32px) 1fr;
-
-                &.hide-app-config-help {
-                    grid-template-rows: repeat(3, 32px) 1fr;
-                }
-            }
-        }
-
-        &.app-compose-with-gitops-config__nav {
-            grid-template-rows: 110px repeat(5, 32px) 54px 1fr auto;
-
-            &.hide-app-config-help {
-                grid-template-rows: repeat(5, 32px) 54px 1fr auto;
-
-                &.hide-external-links {
-                    grid-template-rows: repeat(5, 32px) 1fr auto;
-                }
-            }
-        }
-
         .help-container {
-            background-color: #f3f0ff;
+            background-color: var(--V100);
             padding: 8px 12px;
             border-radius: 4px;
             height: 100px;
 
             .progress-container {
-                background-color: #ffffff;
+                background-color: var(--bg-primary);
                 margin: 5px 0 10px 0;
                 font-size: 12px;
 
                 .progress-tracker {
-                    background-color: #1dad70;
+                    background-color: var(--G500);
                     height: 4px;
                     width: 1%;
                 }
@@ -101,19 +65,11 @@
                 color: var(--B500);
             }
         }
-
-        .cta-delete-app {
-            bottom: 0;
-
-            .cta.delete {
-                width: calc(100% - 8px);
-            }
-        }
     }
 
     .app-compose__main {
         overflow: auto;
-        background-color: var(--window-bg);
+        background-color: var(--bg-tertiary);
     }
 
     .app-compose__nav-item {
@@ -141,7 +97,7 @@
 
         &:hover:not(.no-hover) {
             text-decoration: none;
-            background: var(--N50);
+            background: var(--bg-secondary);
         }
 
         &.active {
@@ -172,7 +128,7 @@
         grid-template-columns: 16px 1fr;
         grid-column-gap: 8px;
         align-content: initial;
-        color: #f32e2e;
+        color: var(--R500);
         font-size: 12px;
 
         svg {
@@ -184,14 +140,9 @@
     }
 
     .app-compose__next-section {
-        position: fixed;
-        bottom: 0;
-        width: calc(100% - 240px - 72px);
-        height: 64px;
-        padding: 12px 24px;
-        background-color: rgba(242, 244, 247, 0.8);
-        box-shadow: inset 0 1px 0 0 #d6dbdf;
-        z-index: var(--index-next-section);
+        padding: 12px 20px;
+        background-color: var(--bg-tertiary);
+        box-shadow: inset 0 1px 0 0 var(--N200);
     }
 
     .app-compose__nav-icon {

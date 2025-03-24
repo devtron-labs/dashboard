@@ -1,7 +1,24 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
     ConfigHeaderTabType,
     ConfigToolbarPopupMenuConfigType,
     DeploymentTemplateHistoryType,
+    PipelineMigratedFromType,
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
@@ -123,6 +140,7 @@ export const getConfigToolbarPopupConfig = ({
     isDeleteOverrideDraftPresent = false,
     isDeleteDisabled = false,
     deleteDisabledTooltip = '',
+    migratedFrom,
 }: GetConfigToolbarPopupConfigProps): ConfigToolbarProps['popupConfig']['menuConfig'] => {
     if (isPublishedValuesView && !isPublishedConfigPresent) {
         return null
@@ -163,7 +181,11 @@ export const getConfigToolbarPopupConfig = ({
             text: 'Delete override',
             onClick: handleDeleteOverride,
             dataTestId: 'delete-override',
-            disabled: isLoading,
+            disabled: isLoading || migratedFrom === PipelineMigratedFromType.ARGO_APPLICATION,
+            tooltipText:
+                migratedFrom === PipelineMigratedFromType.ARGO_APPLICATION
+                    ? 'Override cannot be deleted for deployments migrated from Argo CD Applications'
+                    : null,
             icon: <ICDeleteInteractive className="scr-5 dc__no-shrink icon-dim-16" />,
             variant: 'negative',
         })

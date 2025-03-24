@@ -51,7 +51,7 @@
     }
 
     .table__row {
-        border-bottom: solid 1px #f5f5f5;
+        border-bottom: solid 1px var(--N100);
         cursor: pointer;
     }
 
@@ -66,7 +66,6 @@
     }
 
     .security-policy {
-        height: calc(100vh - 80px);
         display: flex;
         width: 100%;
     }
@@ -81,9 +80,8 @@
         border-radius: 4px;
         margin: 0 24px 20px 24px;
         min-width: 750px;
-        width: calc(100% - 48px);
         border: solid 1px var(--N200);
-        background-color: var(--N000);
+        background-color: var(--bg-primary);
     }
 
     .security-policy__table {
@@ -100,7 +98,7 @@
         line-height: 1.5;
         letter-spacing: normal;
         color: var(--N500);
-        border-bottom: solid 1px #f5f5f5;
+        border-bottom: solid 1px var(--N100);
     }
 
     .security-policy__data-cell {
@@ -111,7 +109,7 @@
         letter-spacing: normal;
         color: var(--N600);
         text-transform: capitalize;
-        border-bottom: solid 1px #f5f5f5;
+        border-bottom: solid 1px var(--N100);
     }
 
     .security-policy__overriden {
@@ -223,8 +221,7 @@
     }
 
     .vulnerability-exp {
-        background-color: white;
-        min-height: calc(100vh - 80px);
+        background-color: var(--bg-primary);
     }
 
     .form__input--cve-search {
@@ -269,7 +266,7 @@
     .security-policy-cluster__table {
         width: 100%;
         min-width: 400px;
-        background-color: white;
+        background-color: var(--bg-primary);
         border-radius: inherit;
     }
 
@@ -293,16 +290,6 @@
         color: var(--B500);
         line-height: 1.5;
         box-shadow: inset 0 -1px 0 0 var(--N100);
-    }
-
-    .scanned-object {
-        margin: 20px;
-        padding: 16px;
-        box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.1);
-    }
-
-    .trigger-modal__body--security-scan {
-        height: calc(100vh - 87px);
     }
 
     .whitelist-cve__cve-id {

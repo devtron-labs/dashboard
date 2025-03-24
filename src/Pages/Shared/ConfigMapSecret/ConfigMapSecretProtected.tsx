@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { useMemo, useState } from 'react'
 import YAML from 'yaml'
 
@@ -11,15 +27,20 @@ import {
     Progressing,
     ProtectConfigTabsType,
     SelectPickerOptionType,
+    CM_SECRET_STATE,
+    CMSecretConfigData,
+    getConfigMapSecretPayload,
+    getConfigMapSecretReadOnlyValues,
+    ConfigMapSecretReadyOnly,
+    isNullOrUndefined,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { CompareConfigView, CompareConfigViewProps, NoPublishedVersionEmptyState } from '@Pages/Applications'
 import { importComponentFromFELibrary } from '@Components/common'
 
-import { CM_SECRET_STATE, CMSecretConfigData, ConfigMapSecretProtectedProps } from './types'
-import { getConfigMapSecretPayload, getConfigMapSecretReadOnlyValues } from './utils'
+import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
+import { ConfigMapSecretProtectedProps } from './types'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
-import { ConfigMapSecretReadyOnly } from './ConfigMapSecretReadyOnly'
 import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'
 
 const ConfigMapSecretApproveButton = importComponentFromFELibrary('ConfigMapSecretApproveButton', null, 'function')
@@ -119,6 +140,7 @@ export const ConfigMapSecretProtected = ({
             componentType,
             configMapSecretData: diffViewData,
             cmSecretStateLabel,
+            fallbackMergeStrategy: DEFAULT_MERGE_STRATEGY,
         })
 
         return {
@@ -170,6 +192,7 @@ export const ConfigMapSecretProtected = ({
                       }
                     : null,
             isJob,
+            fallbackMergeStrategy: DEFAULT_MERGE_STRATEGY,
         })
 
         return {
@@ -205,7 +228,7 @@ export const ConfigMapSecretProtected = ({
         <ConfigMapSecretForm
             configMapSecretData={configMapSecretData}
             inheritedConfigMapSecretData={inheritedConfigMapSecretData}
-            id={id}
+            isCreateView={isNullOrUndefined(id)}
             componentType={componentType}
             cmSecretStateLabel={
                 selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT &&
@@ -271,6 +294,7 @@ export const ConfigMapSecretProtected = ({
                         isJob={isJob}
                         configMapSecretData={publishedConfigMapSecretData}
                         areScopeVariablesResolving={areScopeVariablesResolving}
+                        fallbackMergeStrategy={DEFAULT_MERGE_STRATEGY}
                     />
                 )
             case ProtectConfigTabsType.EDIT_DRAFT:

@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { useContext, useMemo, useRef } from 'react'
 
 import {
@@ -24,6 +40,7 @@ import {
     FILE_MOUNT_DIR,
     FILE_UPLOAD_SIZE_UNIT_OPTIONS,
     getVariableDataTableHeaders,
+    VARIABLE_DATA_TABLE_CELL_BOOL_VALUES,
     VARIABLE_DATA_TABLE_EMPTY_ROW_MESSAGE,
 } from './constants'
 import {
@@ -322,11 +339,11 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                     selectedRow.data.val = getValColumnRowProps({
                         ...defaultRowValColumnParams,
                         value: valColumnRowValue,
-                        ...(!customState.blockCustomValue && rowAction.actionValue.valColumnSelectedValue
+                        ...(!customState.blockCustomValue && valColumnSelectedValue
                             ? {
-                                  variableType: rowAction.actionValue.valColumnSelectedValue.variableType,
-                                  refVariableName: rowAction.actionValue.valColumnSelectedValue.value,
-                                  refVariableStage: rowAction.actionValue.valColumnSelectedValue.refVariableStage,
+                                  variableType: valColumnSelectedValue.variableType,
+                                  refVariableName: valColumnSelectedValue.value,
+                                  refVariableStage: valColumnSelectedValue.refVariableStage,
                               }
                             : {}),
                         format: data.format.value as VariableTypeFormat,
@@ -335,7 +352,18 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                             choices: customState.choices,
                         },
                     })
-                    selectedRow.customState.valColumnSelectedValue = rowAction.actionValue.valColumnSelectedValue
+                    if (
+                        valColumnSelectedValue &&
+                        data.format.value === VariableTypeFormat.BOOL &&
+                        VARIABLE_DATA_TABLE_CELL_BOOL_VALUES.includes(valColumnSelectedValue.label as string)
+                    ) {
+                        selectedRow.customState.valColumnSelectedValue = {
+                            label: (valColumnSelectedValue.label as string).toUpperCase(),
+                            value: valColumnSelectedValue.value.toUpperCase(),
+                        }
+                    } else {
+                        selectedRow.customState.valColumnSelectedValue = valColumnSelectedValue
+                    }
                 }
                 break
 
@@ -550,7 +578,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                         : {})}
                 />
             ) : (
-                <div className="p-8 bcn-50 dc__border-dashed--n3 br-4">
+                <div className="p-8 bg__secondary dc__border-dashed--n3 br-4">
                     <p className="m-0 fs-12 lh-18 cn-7">{VARIABLE_DATA_TABLE_EMPTY_ROW_MESSAGE[type]}</p>
                 </div>
             )}

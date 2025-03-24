@@ -18,7 +18,7 @@ import { Component } from 'react'
 import { showError, Progressing, VisibleModal, RadioGroup, RadioGroupItem, ToastVariantType, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
 import CreatableSelect from 'react-select/creatable'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg'
+import { ReactComponent as Slack } from '../../assets/icons/slack-logo.svg'
 import { ReactComponent as Email } from '../../assets/icons/ic-mail.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg'
@@ -232,7 +232,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
                         <span className="form__label mb-16">
                             Recipient will be removed from the respective notification.
                         </span>
-                        <div className="form__input form__input--textarea">
+                        <div className="form__input h-132">
                             {this.state.savedRecipients.map((p) => {
                                 return (
                                     <div className="dc__devtron-tag mr-5 mb-5">

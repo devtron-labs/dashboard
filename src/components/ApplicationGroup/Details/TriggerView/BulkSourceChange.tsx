@@ -14,20 +14,27 @@
  * limitations under the License.
  */
 
-import { CustomInput, Drawer, InfoColourBar, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    CustomInput,
+    Drawer,
+    InfoColourBar,
+} from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
 import SourceUpdateResponseModal from './SourceUpdateResponseModal'
 import { BulkSourceChangeProps } from './types'
 
-export default function BulkSourceChange({
+const BulkSourceChange = ({
     closePopup,
     responseList,
     changeBranch,
     loading,
     selectedAppCount,
-}: BulkSourceChangeProps) {
+}: BulkSourceChangeProps) => {
     const sourceChangeDetailRef = useRef<HTMLDivElement>(null)
 
     const [showResponseModal, setShowResponseModal] = useState(false)
@@ -81,36 +88,31 @@ export default function BulkSourceChange({
         changeBranch(branchName)
     }
 
-    const renderHeaderSection = (): JSX.Element | null => {
-        return (
-            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0">Change branch for {selectedAppCount} applications</h2>
-                <button
-                    type="button"
-                    className="dc__transparent flex icon-dim-24"
-                    disabled={loading}
-                    onClick={closeBulkCIModal}
-                >
-                    <Close className="icon-dim-24" />
-                </button>
-            </div>
-        )
-    }
+    const renderHeaderSection = (): JSX.Element | null => (
+        <div className="flex flex-justify dc__border-bottom px-20 py-16">
+            <h2 className="fs-16 fw-6 lh-1-43 m-0">Change branch for {selectedAppCount} applications</h2>
+            <button
+                type="button"
+                className="dc__transparent flex icon-dim-24"
+                disabled={loading}
+                onClick={closeBulkCIModal}
+                aria-label="close"
+            >
+                <Close className="icon-dim-24" />
+            </button>
+        </div>
+    )
 
-    const renderInfoBar = (): JSX.Element => {
-        return (
-            <InfoColourBar
-                message="Branch will be changed only for build pipelines with source type as ‘Branch Fixed’ or ‘Branch Regex’."
-                classname="warn dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border"
-                Icon={Warn}
-                iconClass="warning-icon"
-            />
-        )
-    }
+    const renderInfoBar = (): JSX.Element => (
+        <InfoColourBar
+            message="Branch will be changed only for build pipelines with source type as ‘Branch Fixed’ or ‘Branch Regex’."
+            classname="warn dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border"
+            Icon={Warn}
+            iconClass="warning-icon"
+        />
+    )
 
-    const checkInput = (): boolean => {
-        return branchName === ''
-    }
+    const checkInput = (): boolean => branchName === ''
 
     const handleInputChange = (e): void => {
         setBranchName(e.target.value)
@@ -124,7 +126,7 @@ export default function BulkSourceChange({
             <div className="p-20">
                 <div className="form__row">
                     <CustomInput
-                        labelClassName="dc__required-field"
+                        required
                         name="branch_name"
                         disabled={false}
                         value={branchName}
@@ -134,27 +136,41 @@ export default function BulkSourceChange({
                         placeholder="Enter branch name"
                     />
                 </div>
-                <div className="flexbox">
-                    <button
-                        data-testid="cancel_button"
-                        className="cta cancel h-36 lh-36"
-                        type="button"
+                <div className="flexbox dc__gap-12">
+                    <Button
+                        dataTestId="cancel_button"
                         onClick={closeBulkCIModal}
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        data-testid="save_cluster_after_entering_cluster_details"
-                        className="cta ml-12 h-36 lh-36"
+                        text="Cancel"
+                        style={ButtonStyleType.neutral}
+                        variant={ButtonVariantType.secondary}
+                    />
+                    <Button
+                        dataTestId="bulk-update-branch"
                         onClick={updateBranch}
+                        text="Update branch"
+                        style={ButtonStyleType.neutral}
+                        variant={ButtonVariantType.secondary}
                         disabled={isDisabled}
-                    >
-                        {loading ? <Progressing /> : 'Update branch'}
-                    </button>
+                        isLoading={loading}
+                    />
                 </div>
             </div>
         )
     }
+
+    // ASK: Why there is no retry button for failed request?
+    const renderFooterSection = (): JSX.Element => (
+        <div className="dc__border-top flex bg__primary px-20 py-16 right">
+            <Button
+                dataTestId="close-popup"
+                onClick={closePopup}
+                text="Close"
+                variant={ButtonVariantType.secondary}
+                style={ButtonStyleType.neutral}
+            />
+        </div>
+    )
+
     return (
         <Drawer
             position="right"
@@ -162,21 +178,22 @@ export default function BulkSourceChange({
             minWidth={showResponseModal ? '1024px' : '600px'}
             maxWidth={showResponseModal ? '1200px' : '600px'}
         >
-            <div className="dc__window-bg h-100 bcn-0 bulk-ci-trigger-container" ref={sourceChangeDetailRef}>
-                {renderHeaderSection()}
-                {showResponseModal ? (
-                    <SourceUpdateResponseModal
-                        closePopup={closePopup}
-                        isLoading={loading}
-                        responseList={responseList}
-                    />
-                ) : (
-                    <>
-                        {renderInfoBar()}
-                        {renderForm()}
-                    </>
-                )}
+            <div className="bg__primary bulk-ci-trigger-container" ref={sourceChangeDetailRef}>
+                <div className="flexbox-col flex-grow-1 dc__overflow-hidden">
+                    {renderHeaderSection()}
+                    {showResponseModal ? (
+                        <SourceUpdateResponseModal isLoading={loading} responseList={responseList} />
+                    ) : (
+                        <>
+                            {renderInfoBar()}
+                            {renderForm()}
+                        </>
+                    )}
+                </div>
+                {showResponseModal && renderFooterSection()}
             </div>
         </Drawer>
     )
 }
+
+export default BulkSourceChange

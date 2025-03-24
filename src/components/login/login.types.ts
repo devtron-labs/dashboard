@@ -14,26 +14,12 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router-dom'
-import { UseUserEmailContextType } from '@devtron-labs/devtron-fe-common-lib'
+import { SSOConfigDTO, SSOProvider } from '@Pages/GlobalConfigurations'
 
-export interface SSOConfig {
-    id: number
-    name: string
-    label: string
-    active: boolean
+export interface SSOConfigLoginList extends Pick<SSOConfigDTO, 'id' | 'active' | 'url'> {
+    name: SSOProvider
 }
 
-export interface LoginFormState {
-    continueUrl: string
-    loginList: SSOConfig[]
-    form: {
-        username: string
-        password: string
-    }
-    loading: boolean
-}
-
-export interface LoginProps extends RouteComponentProps<{}> {
-    setEmail: UseUserEmailContextType['setEmail']
+export interface LoginFormType {
+    loginList: SSOConfigLoginList[]
 }

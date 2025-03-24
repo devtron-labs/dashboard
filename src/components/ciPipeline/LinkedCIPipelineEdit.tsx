@@ -168,11 +168,11 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
     _multiSelectStyles = {
         ...multiSelectStyles,
         control: (base, state) => ({
-            ...base,
+            ...multiSelectStyles.control(base, state),
             cursor: 'pointer',
         }),
         menu: (base, state) => ({
-            ...base,
+            ...multiSelectStyles.menu(base, state),
             marginTop: 'auto',
             zIndex: 4,
         }),
@@ -185,7 +185,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
             }
         },
         valueContainer: (base, state) => ({
-            ...base,
+            ...multiSelectStyles.valueContainer(base, state),
             color: 'var(--N900)',
             background: state.isDisabled ? 'var(--N100) !important' : 'var(--N50) !important',
         }),
@@ -360,7 +360,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                             value={this.state.form.name}
                             onChange={this.handleName}
                             data-testid="pipeline-name-for-linked"
-                            isRequiredField
+                            required
                             error={this.getErrorMessage()}
                         />
                     </label>

@@ -1,12 +1,28 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import type { Meta, StoryObj } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 import {
     ComponentSizeType,
+    Icon,
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerProps,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICCube } from '@Icons/ic-cube.svg'
 import { ReactComponent as ICEnv } from '@Icons/ic-env.svg'
 
 const meta = {
@@ -96,7 +112,7 @@ export const IconInControl: Story = {
     ...Default,
     args: {
         ...Default.args,
-        icon: <ICCube className="scb-5" />,
+        icon: <Icon color="B500" name="ic-cube" />,
     },
 }
 
@@ -151,7 +167,7 @@ export const MenuListFooter: Story = {
     args: {
         ...Default.args,
         renderMenuListFooter: () => (
-            <div className="px-8 py-6 dc__border-top bcn-50 cn-6">
+            <div className="px-8 py-6 dc__border-top bg__secondary cn-6">
                 <div>Foot note</div>
             </div>
         ),
@@ -254,5 +270,31 @@ export const CustomPlaceholder: Story = {
     args: {
         ...Default.args,
         placeholder: 'Custom Placeholder',
+    },
+}
+
+export const WithLabelHelperTippy: Story = {
+    ...Required,
+    args: {
+        ...Required.args,
+        label: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis maiores natus dolorum porro vero ad quod suscipit. Eveniet quidem nemo assumenda, tempora dolore aliquam accusamus nam dolorum ad molestias libero.',
+        labelTippyCustomizedConfig: {
+            heading: 'Heading',
+            infoText: 'Info text',
+            documentationLink: 'https://www.devtron.ai',
+            documentationLinkText: 'Documentation',
+        },
+    },
+}
+
+export const WithLabelHelperTippyInRowLayout: Story = {
+    ...Required,
+    args: {
+        ...Required.args,
+        label: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis maiores natus dolorum porro vero ad quod suscipit. Eveniet quidem nemo assumenda, tempora dolore aliquam accusamus nam dolorum ad molestias libero.',
+        layout: 'row',
+        labelTooltipConfig: {
+            content: 'Helper Text',
+        },
     },
 }

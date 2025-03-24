@@ -15,10 +15,6 @@
  */
 
 .env-list {
-    &.no-result-container {
-        height: calc(100vh - 48px);
-        overflow: hidden;
-    }
 
     .env-list-row {
         display: grid;
@@ -27,24 +23,15 @@
     }
 }
 
-.env-empty-state {
-    height: calc(100vh - 48px);
-}
-
-.loading-state {
-    height: calc(100vh - 78px);
-}
-
 .env-compose {
     display: grid;
     grid-template-columns: 255px 1fr;
-    height: calc(100vh - 77px);
-    background: white;
+    background: var(--bg-primary);
     overflow: hidden;
 
     .env-compose__nav {
-        border-right: solid 1px #d6dbdf;
-        background: white;
+        border-right: solid 1px var(--N200);
+        background: var(--bg-primary);
         height: 100%;
         overflow: hidden;
         display: grid;
@@ -57,7 +44,7 @@
 
     .env-compose__main {
         overflow: auto;
-        background-color: var(--window-bg);
+        background-color: var(--bg-tertiary);
     }
 
     .yaml-container {
@@ -89,7 +76,7 @@
 
     &:hover:not(.no-hover) {
         text-decoration: none;
-        background: var(--N50);
+        background: var(--bg-secondary);
     }
 
     &.active {
@@ -111,7 +98,7 @@
     padding: 6px 20px;
     display: flex;
     flex-wrap: wrap;
-    background-color: var(--white);
+    background-color: var(--bg-primary);
     z-index: var(--app-list-header-index);
 
     .saved-env-filter {
@@ -119,7 +106,7 @@
         align-items: center;
         border-radius: 4px;
         border: solid 1px var(--N200);
-        background-color: #f7fafc;
+        background-color: var(--bg-secondary);
         padding-left: 6px;
         padding-right: 6px;
         -webkit-user-select: none;
@@ -138,14 +125,14 @@
         font-size: 14px;
         line-height: 1;
         margin-left: 10px;
-        color: #72767a;
+        color: var(--N500);
         border: none;
         padding: 1px;
-        background-color: #f7fafc;
+        background-color: var(--bg-secondary);
     }
 
     .saved-env-filters__clear-btn {
-        background-color: var(--white);
+        background-color: var(--bg-primary);
         height: 24px;
         text-transform: capitalize;
         font-size: 12px;

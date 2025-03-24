@@ -27,7 +27,6 @@ import {
     ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
-import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { HostURLConfigState, HostURLConfigProps } from './hosturl.type'
 import { HEADER_TEXT, NO_HOST_URL, ViewType } from '../../config'
@@ -190,7 +189,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
             )
         }
         if (this.state.view === ViewType.LOADING) {
-            return <div className='bcn-0 h-100'><Progressing pageLoader /></div>
+            return <div className='bg__primary h-100'><Progressing pageLoader /></div>
         }
         if (this.state.view === ViewType.ERROR) {
             return (
@@ -200,7 +199,10 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
             )
         }
         return (
-            <section className="flex column left top bcn-0 h-100 dc__gap-24 px-20 py-16" data-testid="section-host-url">
+            <section
+                className="flex column left top bg__primary h-100 dc__gap-24 px-20 py-16"
+                data-testid="section-host-url"
+            >
                 <FeatureTitleWithInfo
                     title={HEADER_TEXT.HOST_URL.title}
                     renderDescriptionContent={() => HEADER_TEXT.HOST_URL.description}
@@ -209,7 +211,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                     dataTestId="host-url-heading"
                 />
                 <form
-                    className="flex left column dc__gap-16 bcn-0 br-8 bw-1 en-2 p-20"
+                    className="flex left column dc__gap-16 bg__primary br-8 bw-1 en-2 p-20"
                     data-testid="form-host-url"
                     onSubmit={this.onSave}
                 >
@@ -233,38 +235,36 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                             name="host-url"
                             label="Host URL"
                             value={this.state.form.value || window.location.origin}
-                            dataTestid="host"
-                            tabIndex={1}
                             placeholder="Enter Host URL"
                             onChange={this.handleChange}
-                            data-testid="host-url-textbox"
-                            isRequiredField
+                            required
                             error={!this.state.isHostUrlValid && NO_HOST_URL}
+                            helperText={
+                                <>
+                                    Auto-detected from your browser:
+                                    <button
+                                        type="button"
+                                        onClick={(e) => this.handleHostURLLocation(window.location.origin)}
+                                        className="hosturl__url fw-4 cg-5 py-0"
+                                        data-testid="clickable-url"
+                                    >
+                                        {window.location.origin}
+                                    </button>
+                                </>
+                            }
                         />
-                        <div className="hosturl__autodetection flex fs-12 left pt-4">
-                            <Warn className="icon-dim-16 mr-4 " />
-                            Auto-detected from your browser:
-                            <button
-                                type="button"
-                                onClick={(e) => this.handleHostURLLocation(window.location.origin)}
-                                className="hosturl__url fw-4 cg-5"
-                                data-testid="clickable-url"
-                            >
-                                {window.location.origin}
-                            </button>
-                        </div>
                     </div>
                     <div className="flex left w-100 dc__border-top-n1 pt-16">
-                            <button
-                                type="submit"
-                                tabIndex={2}
-                                disabled={this.state.saveLoading}
-                                className="cta small"
-                                data-testid="host-url-update-button"
-                            >
-                                {this.state.saveLoading ? <Progressing /> : this.state.form.id ? 'Update' : 'Save'}
-                            </button>
-                        </div>
+                        <button
+                            type="submit"
+                            tabIndex={2}
+                            disabled={this.state.saveLoading}
+                            className="cta small"
+                            data-testid="host-url-update-button"
+                        >
+                            {this.state.saveLoading ? <Progressing /> : this.state.form.id ? 'Update' : 'Save'}
+                        </button>
+                    </div>
                 </form>
             </section>
         )

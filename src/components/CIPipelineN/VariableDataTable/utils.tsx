@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
     ConditionType,
     DynamicDataTableCellErrorType,
@@ -28,6 +44,7 @@ import {
     FILE_UPLOAD_SIZE_UNIT_OPTIONS,
     FORMAT_COLUMN_OPTIONS,
     VAL_COLUMN_DROPDOWN_LABEL,
+    VARIABLE_DATA_TABLE_CELL_BOOL_VALUES,
 } from './constants'
 import {
     GetValColumnRowPropsType,
@@ -37,7 +54,7 @@ import {
     VariableDataCustomState,
 } from './types'
 
-export const getOptionsForValColumn = ({
+const getOptionsForValColumn = ({
     inputVariablesListFromPrevStep,
     activeStageName,
     selectedTaskIndex,
@@ -193,7 +210,7 @@ export const getOptionsForValColumn = ({
     ]
 }
 
-export const getVariableColumnRowProps = () => {
+const getVariableColumnRowProps = () => {
     const data: VariableDataRowType['data']['variable'] = {
         value: '',
         type: DynamicDataTableRowDataType.TEXT,
@@ -205,7 +222,7 @@ export const getVariableColumnRowProps = () => {
     return data
 }
 
-export const getFormatColumnRowProps = ({
+const getFormatColumnRowProps = ({
     format,
     isCustomTask,
 }: Pick<VariableType, 'format'> & { isCustomTask: boolean }): VariableDataRowType['data']['format'] => {
@@ -283,9 +300,7 @@ export const getValColumnRowProps = ({
             props: {
                 placeholder: 'Enter value or variable',
                 options: optionsForValColumn,
-                isCreatable:
-                    format !== VariableTypeFormat.BOOL &&
-                    (!valueConstraint?.choices?.length || !valueConstraint.blockCustomValue),
+                isCreatable: !valueConstraint?.choices?.length || !valueConstraint.blockCustomValue,
                 icon:
                     refVariableStage || (variableType && variableType !== RefVariableType.NEW) ? (
                         <SystemVariableIcon />
@@ -317,8 +332,20 @@ export const getValColumnRowValue = (
 ) => {
     const isSystemVariable = checkForSystemVariable(valColumnSelectedValue)
     const isDateFormat = !isSystemVariable && value && format === VariableTypeFormat.DATE
+    const isBoolFormat =
+        !isSystemVariable &&
+        value &&
+        format === VariableTypeFormat.BOOL &&
+        VARIABLE_DATA_TABLE_CELL_BOOL_VALUES.includes(value)
 
-    return isDateFormat ? getGoLangFormattedDateWithTimezone(valColumnSelectedValue.value) : value
+    if (isDateFormat) {
+        return getGoLangFormattedDateWithTimezone(valColumnSelectedValue.value)
+    }
+    if (isBoolFormat) {
+        return value.toUpperCase()
+    }
+
+    return value
 }
 
 export const getEmptyVariableDataTableRow = ({

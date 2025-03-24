@@ -17,9 +17,7 @@
 import { useState, useEffect, Fragment } from 'react'
 import { useParams, useLocation, useRouteMatch, NavLink, Link } from 'react-router-dom'
 import {
-    EnvResourceType,
     showError,
-    DeleteDialog,
     ConfirmationDialog,
     InfoColourBar,
     PopupMenu,
@@ -28,6 +26,8 @@ import {
     ToastVariantType,
     ToastManager,
     SelectPicker,
+    DeleteConfirmationModal,
+    EnvResourceType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICStamp } from '@Icons/ic-stamp.svg'
 import { URLS, DOCUMENTATION } from '../../../../../../config'
@@ -61,52 +61,39 @@ const EnvOverridesHelpNote = () => (
 const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected }: JobEnvOverrideRouteProps) => {
     const { url } = useRouteMatch()
     const { appId, workflowsRes } = useAppConfigurationContext()
+
     const [showConfirmationDialog, setConfirmationDialog] = useState(false)
     const [showDelete, setDeleteView] = useState(false)
     const [deletePipeline, setDeletePipeline] = useState()
 
-    const deleteEnvHandler = () => {
-        const requestBody = { envId: envOverride.environmentId, appId }
-        deleteJobEnvironment(requestBody)
-            .then(() => {
-                ToastManager.showToast({
-                    variant: ToastVariantType.success,
-                    description: 'Deleted Successfully',
-                })
-                reload()
-                setDeleteView(false)
-            })
-            .catch((error) => {
-                showError(error)
-            })
+    const onCloseDeleteModal = () => {
+        setDeleteView(false)
     }
 
-    const handleDeleteConfirmation = () => {
-        setDeleteView(false)
-        deleteEnvHandler()
+    const deleteEnvHandler = async () => {
+        const requestBody = { envId: envOverride.environmentId, appId }
+        await deleteJobEnvironment(requestBody)
+        reload()
+    }
+    const handleDeleteConfirmation = async () => {
+        onCloseDeleteModal()
+        await deleteEnvHandler()
     }
 
     const handleCancelDelete = () => {
-        setDeleteView(false)
+        onCloseDeleteModal()
         setDeletePipeline(null)
     }
 
-    const handleViewPipeline = () => {
-        setDeleteView(false)
-    }
-
     const renderDeleteDialog = (): JSX.Element => (
-        <DeleteDialog
-            title={`Delete configurations for environment '${envOverride.environmentName}'?`}
-            delete={deleteEnvHandler}
-            closeDelete={handleCancelDelete}
+        <DeleteConfirmationModal
+            title={envOverride.environmentName}
+            component="configurations for environment"
+            onDelete={deleteEnvHandler}
+            closeConfirmationModal={handleCancelDelete}
         >
-            <DeleteDialog.Description>
-                <p className="fs-13 cn-7 lh-1-54">
-                    Are you sure you want to delete configurations for this environment?
-                </p>
-            </DeleteDialog.Description>
-        </DeleteDialog>
+            <p className="fs-13 cn-7 lh-1-54">Are you sure you want to delete configurations for this environment?</p>
+        </DeleteConfirmationModal>
     )
 
     const renderConfirmationDeleteModal = (pipeline, path: string): JSX.Element => (
@@ -117,7 +104,7 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
             />
             <p className="fs-13 cn-7 lh-1-54">
                 {`Pipeline ‘${pipeline.name}‘ is using configurations for environment ‘${envOverride.environmentName}’.`}
-                <Link to={path} onClick={handleViewPipeline} className="ml-2">
+                <Link to={path} onClick={onCloseDeleteModal} className="ml-2">
                     View pipeline
                 </Link>
             </p>
@@ -154,7 +141,10 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
         const path = pipeline
             ? `${url}/${URLS.APP_WORKFLOW_CONFIG}/${workFlow?.id}/ci-pipeline/${pipeline?.id}/pre-build`
             : ''
-        return !showConfirmationDialog ? renderDeleteDialog() : renderConfirmationDeleteModal(pipeline, path)
+        if (showConfirmationDialog) {
+            return renderConfirmationDeleteModal(pipeline, path)
+        }
+        return renderDeleteDialog()
     }
 
     const toggleDeleteDialog = (e) => {
@@ -192,7 +182,7 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
         <div className="flexbox dc__align-items-center dc__content-space pr-8">
             <NavLink
                 data-testid="env-deployment-template"
-                className="app-compose__nav-item  app-compose__nav-item--job cursor dc__gap-8"
+                className="app-compose__nav-item app-compose__nav-item--job cursor dc__gap-8"
                 to={`${URLS.APP_ENV_OVERRIDE_CONFIG}/${envOverride.environmentId}/${EnvResourceType.ConfigMap}`}
             >
                 <span className="dc__truncate">{envOverride.environmentName}</span>
@@ -312,7 +302,7 @@ const EnvironmentOverrideRouter = ({
     const renderEnvsNav = (): JSX.Element => {
         if (environments.length) {
             return (
-                <div className="w-100" style={{ height: 'calc(100% - 60px)' }} data-testid="env-override-list">
+                <div className="w-100" data-testid="env-override-list">
                     {environments.map((env) => {
                         const isApprovalApplicable =
                             envIdToEnvApprovalConfigurationMap?.[env.environmentId]?.isApprovalApplicable
@@ -332,7 +322,7 @@ const EnvironmentOverrideRouter = ({
                                         renderNavItem({
                                             title: env.environmentName,
                                             isProtectionAllowed: isApprovalApplicable,
-                                            href: `${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}/${EnvResourceType.DeploymentTemplate}`,
+                                            href: `${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}`,
                                         })
                                     )}
                                 </Fragment>

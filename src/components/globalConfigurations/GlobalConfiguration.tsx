@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { lazy, useState, useEffect, Suspense, isValidElement } from 'react'
+import { lazy, useState, useEffect, Suspense, isValidElement, PropsWithChildren, LazyExoticComponent } from 'react'
 import { Route, NavLink, Router, Switch, Redirect, useHistory, useLocation } from 'react-router-dom'
 import {
     showError,
@@ -31,7 +31,6 @@ import { URLS } from '../../config'
 import { ErrorBoundary, importComponentFromFELibrary } from '../common'
 import arrowTriangle, { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { AddNotification } from '../notifications/AddNotification'
-import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
 import { getHostURLConfiguration, getAppCheckList } from '../../services/service'
 import './globalConfigurations.scss'
 import {
@@ -44,9 +43,10 @@ import {
 import ExternalLinks from '../externalLinks/ExternalLinks'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { BodyType, ProtectedInputType } from './globalConfiguration.type'
+import { BodyType } from './globalConfiguration.type'
 import { GlobalConfigurationProvider, useGlobalConfiguration } from './GlobalConfigurationProvider'
 import { OffendingPipelineModalAppView } from '@Pages/GlobalConfigurations/PluginPolicy/OffendingPipelineModal'
+import { ListProps } from './types'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -157,7 +157,7 @@ export default function GlobalConfiguration(props) {
                     <section className="global-configuration__navigation">
                         <NavItem serverMode={serverMode} />
                     </section>
-                    <section className="global-configuration__component-wrapper">
+                    <section className="global-configuration__component-wrapper bg__secondary">
                         <Suspense fallback={<Progressing pageLoader />}>
                             <ErrorBoundary>
                                 <Body
@@ -185,9 +185,20 @@ const NavItem = ({ serverMode }) => {
         Authorization: !location.pathname.startsWith('/global-config/auth'),
     })
     const { tippyConfig, setTippyConfig } = useGlobalConfiguration()
+    const {
+        featureGitOpsFlags: { isFeatureGitOpsEnabled },
+    } = useMainContext()
 
     let moduleStatusTimer = null
-    const ConfigRequired = [
+    const ConfigRequired: {
+        name: string
+        href: string
+        component: LazyExoticComponent<any>
+        isAvailableInEA: boolean
+        moduleName?: string
+        isAvailableInDesktop?: boolean
+        hideRoute?: boolean
+    }[] = [
         {
             name: 'Host URL',
             href: URLS.GLOBAL_CONFIG_HOST_URL,
@@ -198,7 +209,8 @@ const NavItem = ({ serverMode }) => {
             name: 'GitOps ',
             href: URLS.GLOBAL_CONFIG_GITOPS,
             component: GitOpsConfiguration,
-            moduleName: ModuleNameMap.ARGO_CD,
+            hideRoute: !isFeatureGitOpsEnabled,
+            isAvailableInEA: isFeatureGitOpsEnabled,
         },
         { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project, isAvailableInEA: true },
         {
@@ -333,11 +345,12 @@ const NavItem = ({ serverMode }) => {
                     to={`${route.href}`}
                     activeClassName="active-route"
                     data-testid={route.dataTestId}
-                    className={`${route.name === 'API tokens' &&
+                    className={`${
+                        route.name === 'API tokens' &&
                         location.pathname.startsWith(`${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}`)
-                        ? 'active-route'
-                        : ''
-                        }`}
+                            ? 'active-route'
+                            : ''
+                    }`}
                     onClick={(e) => {
                         if (!preventOnClickOp) {
                             handleGroupCollapsedState(e, route)
@@ -402,6 +415,7 @@ const NavItem = ({ serverMode }) => {
             {ConfigRequired.map(
                 (route) =>
                     ((!window._env_.K8S_CLIENT &&
+                        !route.hideRoute &&
                         ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) ||
                             route.isAvailableInEA ||
                             installedModuleMap.current?.[route.moduleName])) ||
@@ -573,7 +587,10 @@ const NavItem = ({ serverMode }) => {
 }
 
 const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, isSuperAdmin }: BodyType) => {
-    const location = useLocation()
+    const {
+        featureGitOpsFlags: { isFeatureGitOpsEnabled },
+    } = useMainContext()
+
     const defaultRoute = (): string => {
         if (window._env_.K8S_CLIENT) {
             return URLS.GLOBAL_CONFIG_CLUSTER
@@ -589,13 +606,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             <Route
                 path={URLS.GLOBAL_CONFIG_CLUSTER}
                 render={(props) => {
-                    return (
-                        <ClusterList
-                            {...props}
-                            serverMode={serverMode}
-                            isSuperAdmin={isSuperAdmin || window._env_.K8S_CLIENT}
-                        />
-                    )
+                    return <ClusterList {...props} isSuperAdmin={isSuperAdmin || window._env_.K8S_CLIENT} />
                 }}
             />
             {!window._env_.K8S_CLIENT && [
@@ -617,13 +628,21 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                           />,
                       ]
                     : []),
-                <Route
-                    key={URLS.GLOBAL_CONFIG_GITOPS}
-                    path={URLS.GLOBAL_CONFIG_GITOPS}
-                    render={(props) => {
-                        return <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
-                    }}
-                />,
+
+                ...(isFeatureGitOpsEnabled
+                    ? [
+                          <Route
+                              key={URLS.GLOBAL_CONFIG_GITOPS}
+                              path={URLS.GLOBAL_CONFIG_GITOPS}
+                              render={(props) => {
+                                  return (
+                                      <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
+                                  )
+                              }}
+                          />,
+                      ]
+                    : []),
+
                 <Route
                     key={URLS.GLOBAL_CONFIG_PROJECT}
                     path={URLS.GLOBAL_CONFIG_PROJECT}
@@ -818,132 +837,18 @@ const DropDown = ({ className = '', dataTestid = '', style = {}, src = null, ...
     )
 }
 
-export const List = ({ dataTestId = '', children = null, className = '', ...props }) => {
-    return (
-        <div className={`list ${className}`} {...props} data-testid={dataTestId}>
-            {children}
-        </div>
-    )
-}
-
-function handleError(error: any): any[] {
-    if (!error) {
-        return []
-    }
-
-    if (!Array.isArray(error)) {
-        return [error]
-    }
-
-    return error
-}
-
-export const ProtectedInput = ({
-    name,
-    value,
-    error,
-    onChange,
-    label = '',
-    tabIndex = 1,
-    disabled = false,
-    hidden = true,
-    labelClassName = '',
-    placeholder = '',
-    dataTestid = '',
-    onBlur = (e) => { },
-    isRequiredField = false,
-}: ProtectedInputType) => {
-    const [shown, toggleShown] = useState(false)
-    useEffect(() => {
-        toggleShown(!hidden)
-    }, [hidden])
-
-    return (
-        <div className="flex column left top ">
-            <label
-                htmlFor=""
-                className={`form__label ${labelClassName} ${isRequiredField ? 'dc__required-field' : ''}`}
-            >
-                {label}
-            </label>
-            <div className="dc__position-rel w-100">
-                <input
-                    data-testid={dataTestid}
-                    type={shown ? 'text' : 'password'}
-                    tabIndex={tabIndex}
-                    className={error ? 'form__input form__input--error pl-42' : 'form__input pl-42'}
-                    name={name}
-                    placeholder={placeholder}
-                    onChange={(e) => {
-                        e.persist()
-                        onChange(e)
-                    }}
-                    value={value}
-                    disabled={disabled}
-                    onBlur={onBlur}
-                />
-                <ShowHide
-                    className="protected-input__toggle"
-                    hidden={!shown}
-                    defaultOnClick={(e) => toggleShown(!shown)}
-                    disabled={disabled}
-                />
-            </div>
-            {error && (
-                <div className="form__error">
-                    <FormError className="form__icon form__icon--error" />
-                    {error}
-                </div>
-            )}
-        </div>
-    )
-}
-
-export const ShowHide = ({
-    hidden = true,
+export const List = ({
+    dataTestId = '',
+    children = null,
     className = '',
-    onClick = null,
-    defaultOnClick = null,
-    disabled = false,
-}) => {
-    return hidden ? (
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            className={className}
-            viewBox="0 0 24 24"
-            onClick={disabled ? () => { } : onClick || defaultOnClick}
-        >
-            <g fill="none" fillRule="evenodd">
-                <path d="M0 0h24v24H0V0zm0 0h24v24H0V0zm0 0h24v24H0V0zm0 0h24v24H0V0z" />
-                <path
-                    fill="#767D84"
-                    d="M12 6a9.77 9.77 0 0 1 8.82 5.5 9.647 9.647 0 0 1-2.41 3.12l1.41 1.41c1.39-1.23 2.49-2.77 3.18-4.53C21.27 7.11 17 4 12 4c-1.27 0-2.49.2-3.64.57l1.65 1.65C10.66 6.09 11.32 6 12 6zm-1.07 1.14L13 9.21c.57.25 1.03.71 1.28 1.28l2.07 2.07c.08-.34.14-.7.14-1.07C16.5 9.01 14.48 7 12 7c-.37 0-.72.05-1.07.14zM2.01 3.87l2.68 2.68A11.738 11.738 0 0 0 1 11.5C2.73 15.89 7 19 12 19c1.52 0 2.98-.29 4.32-.82l3.42 3.42 1.41-1.41L3.42 2.45 2.01 3.87zm7.5 7.5l2.61 2.61c-.04.01-.08.02-.12.02a2.5 2.5 0 0 1-2.5-2.5c0-.05.01-.08.01-.13zm-3.4-3.4l1.75 1.75a4.6 4.6 0 0 0-.36 1.78 4.507 4.507 0 0 0 6.27 4.14l.98.98c-.88.24-1.8.38-2.75.38a9.77 9.77 0 0 1-8.82-5.5c.7-1.43 1.72-2.61 2.93-3.53z"
-                />
-            </g>
-        </svg>
-    ) : (
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            className={className}
-            viewBox="0 0 24 24"
-            onClick={disabled ? () => { } : onClick || defaultOnClick}
-        >
-            <g fill="none" fillRule="evenodd">
-                <path d="M0 0h24v24H0z" />
-                <path
-                    fill="#959BA1"
-                    d="M12 6a9.77 9.77 0 0 1 8.82 5.5A9.77 9.77 0 0 1 12 17a9.77 9.77 0 0 1-8.82-5.5A9.77 9.77 0 0 1 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5a2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1 0-5m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z"
-                />
-            </g>
-        </svg>
-    )
-}
+    internalRef = null,
+    ...props
+}: PropsWithChildren<ListProps>) => (
+    <div ref={internalRef} className={`list ${className}`} {...props} data-testid={dataTestId}>
+        {children}
+    </div>
+)
 
-ProtectedInput.ShowHide = ShowHide
 List.Logo = Logo
 List.Title = Title
 List.Toggle = ListToggle

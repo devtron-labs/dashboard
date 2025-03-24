@@ -60,7 +60,7 @@ export const renderOptionIcon = (option: string) => {
     return isGitLab || isGitHub || isBitBucket ? (
         <>
             {isGitLab && <GitLab className="mr-8 dc__vertical-align-middle icon-dim-20" />}
-            {isGitHub && <GitHub className="mr-8 dc__vertical-align-middle icon-dim-20" />}
+            {isGitHub && <GitHub className="mr-8 dc__vertical-align-middle icon-dim-20 fcn-8" />}
             {isBitBucket && <BitBucket className="mr-8 dc__vertical-align-middle icon-dim-20" />}
         </>
     ) : (
@@ -608,8 +608,9 @@ export default function CIBuildpackBuildOptions({
                         </span>
                         <CustomInput
                             data-testid="build-pack-project-path-textbox"
-                            tabIndex={4}
-                            rootClassName="file-name"
+                            borderRadiusConfig={{
+                                left: false,
+                            }}
                             placeholder="Project path"
                             name="projectPath"
                             value={projectPathVal === './' ? '' : projectPathVal}
