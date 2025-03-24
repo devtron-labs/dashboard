@@ -77,9 +77,9 @@ export const Default: Story = {
     args: {
         name: 'segmented-control',
         segments,
-        onChange: action('changed'),
         size: ComponentSizeType.medium,
         fullWidth: false,
+        disabled: false,
     },
 }
 
