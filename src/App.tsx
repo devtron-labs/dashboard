@@ -165,6 +165,7 @@ export default function App() {
             navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
         }
         // If not K8S_CLIENT then validateToken otherwise directly redirect
+        //  No need to validate token if on license auth page
         if (!window._env_.K8S_CLIENT && location.pathname !== CommonURLS.LICENSE_AUTH) {
             // By Passing validations for direct email approval notifications
             if (isDirectApprovalNotification) {

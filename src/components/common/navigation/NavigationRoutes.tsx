@@ -39,6 +39,7 @@ import {
     MODES,
     useTheme,
     AppThemeType,
+    LicenseInfoDialogType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -141,6 +142,7 @@ export default function NavigationRoutes() {
     const [showGettingStartedCard, setShowGettingStartedCard] = useState(true)
     const [isGettingStartedClicked, setGettingStartedClicked] = useState(false)
     const [moduleInInstallingState, setModuleInInstallingState] = useState('')
+    const [showLicenseData, setShowLicenseData] = useState<boolean>(false)
     const installedModuleMap = useRef<Record<string, boolean>>({})
     const showCloseButtonAfterGettingStartedClicked = () => {
         setHelpGettingStartedClicked(true)
@@ -160,7 +162,7 @@ export default function NavigationRoutes() {
     })
     const [userPreferences, setUserPreferences] = useState<UserPreferencesType>(null)
     const [userPreferencesError, setUserPreferencesError] = useState<ServerErrors>(null)
-    const [isLicenseInfoDialogOpen, setIsLicenseInfoDialogOpen] = useState<boolean>(false)
+    const [licenseInfoDialogType, setLicenseInfoDialogType] = useState<LicenseInfoDialogType>(null)
     const {
         showThemeSwitcherDialog,
         handleThemeSwitcherDialogVisibilityChange,
@@ -171,7 +173,7 @@ export default function NavigationRoutes() {
     const { isAirgapped, isManifestScanningEnabled, canOnlyViewPermittedEnvOrgLevel } = environmentDataState
 
     const handleCloseLicenseInfoDialog = () => {
-        setIsLicenseInfoDialogOpen(false)
+        setLicenseInfoDialogType(null)
     }
 
     const getInit = async (_serverMode: string) => {
@@ -479,8 +481,8 @@ export default function NavigationRoutes() {
     }
     const _isOnboardingPage = isOnboardingPage()
 
-    const handleOpenLicenseInfoDialog = () => {
-        setIsLicenseInfoDialogOpen(true)
+    const handleOpenLicenseInfoDialog = (initialDialogTab?: LicenseInfoDialogType.ABOUT | LicenseInfoDialogType.LICENSE) => {
+        setLicenseInfoDialogType(initialDialogTab || LicenseInfoDialogType.ABOUT)
     }
 
     return (
@@ -517,6 +519,8 @@ export default function NavigationRoutes() {
                         />
                     ) : null,
                 handleOpenLicenseInfoDialog,
+                showLicenseData,
+                setShowLicenseData,
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
@@ -528,10 +532,11 @@ export default function NavigationRoutes() {
                         handleUpdateUserThemePreference={handleUpdateUserThemePreference}
                     />
                 )}
-                {isLicenseInfoDialogOpen && LicenseInfoDialog && (
+                {licenseInfoDialogType && LicenseInfoDialog && (
                     <LicenseInfoDialog
                         handleCloseLicenseInfoDialog={handleCloseLicenseInfoDialog}
                         currentVersion={currentServerInfo.serverInfo?.currentVersion}
+                        initialDialogType={licenseInfoDialogType}
                     />
                 )}
                 {!_isOnboardingPage && (
