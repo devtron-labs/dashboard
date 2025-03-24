@@ -1105,10 +1105,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@1.9.6-beta-1":
-  version "1.9.6-beta-1"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.9.6-beta-1.tgz#baeb138f64ee8cc74ad59aacf285b3ef4a4f42ac"
-  integrity sha512-qz3ChF/zl3ojr3RCXg6dg/VD9OBDzrwN48b40rUzOP9UWC35u+vhFjaybEKOXcu1bZIE1fHK7jJjy/ZYP5LI5w==
+"@devtron-labs/devtron-fe-common-lib@1.9.7":
+  version "1.9.7"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.9.7.tgz#fd4762ceb43f4c2d6b41491f39c35effda5b4fca"
+  integrity sha512-hdFjLTetYwbL/9nsmhGYYtnaCldFE5Lt/Ofg33TxzA0FGLYcDJQngRELpMArCKr3/RsxNvUUgEgGPNxtnNnZew==
   dependencies:
     "@codemirror/lang-json" "6.0.1"
     "@codemirror/lang-yaml" "6.1.2"
@@ -1124,7 +1124,6 @@
     "@uiw/codemirror-extensions-hyper-link" "4.23.10"
     "@uiw/codemirror-theme-github" "4.23.7"
     "@uiw/react-codemirror" "4.23.7"
-    "@xyflow/react" "12.4.2"
     ansi_up "^5.2.1"
     codemirror-json-schema "0.8.0"
     dayjs "^1.11.13"

@@ -44,7 +44,6 @@ export const K8SResourceList = ({
     addTab,
     renderRefreshBar,
     isOpen,
-    showStaleDataWarning,
     updateK8sResourceTab,
     setWidgetEventDetails,
     handleResourceClick,
@@ -116,7 +115,6 @@ export const K8SResourceList = ({
             resourceList={resourceList}
             clusterId={clusterId}
             clusterName={clusterName}
-            showStaleDataWarning={showStaleDataWarning}
             selectedResource={selectedResource}
             reloadResourceListData={reloadResourceListData}
             selectedNamespace={selectedNamespace}

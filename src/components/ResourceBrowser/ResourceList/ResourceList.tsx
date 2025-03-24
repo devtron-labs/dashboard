@@ -482,7 +482,6 @@ const ResourceList = () => {
                 refreshData,
             )}
             isOpen={!!getTabById(ResourceBrowserTabsId.k8s_Resources)?.isSelected}
-            showStaleDataWarning={isDataStale}
             updateK8sResourceTab={getUpdateTabUrlForId(getTabById(ResourceBrowserTabsId.k8s_Resources)?.id)}
             updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
             setWidgetEventDetails={setWidgetEventDetails}
