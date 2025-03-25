@@ -46,13 +46,9 @@ const AppSelector = ({
         !!appName && !!appId,
     )
 
-    const handleRecentVisitedApps = () => {
+    useEffect(() => {
         if (!result) return
         setRecentlyVisitedDevtronApps(result)
-    }
-
-    useEffect(() => {
-        handleRecentVisitedApps()
     }, [result])
 
     if (!recentlyVisitedDevtronApps) {
@@ -83,7 +79,7 @@ const AppSelector = ({
                 {
                     value: 0,
                     label: 'Type 3 characters to search all applications',
-                    // isDisabled: true,
+                    isDisabled: true,
                 },
             ],
         },

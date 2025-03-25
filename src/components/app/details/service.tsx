@@ -24,13 +24,9 @@ export const getRecentlyVisitedDevtronApps = async (): Promise<BaseAppMetaData[]
             }),
         )
 
-        if (!result?.value) {
-            return null
-        }
-
-        return result?.value ? JSON.parse(result.value) : []
+        return result?.value ? JSON.parse(result.value) : null
     } catch (error) {
         showError(error)
-        return []
+        return null
     }
 }

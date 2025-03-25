@@ -84,12 +84,10 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const [initLoading, setInitLoading] = useState<boolean>(false)
     const [recentlyVisitedDevtronApps, setRecentlyVisitedDevtronApps] = useState<BaseAppMetaData[]>([])
     const [invalidAppId, setInvalidAppId] = useState<number>(null)
+
     useEffect(() => {
-        const fetchData = async () => {
-            setInitLoading(true)
-            await getAppMetaInfoRes()
-        }
-        fetchData()
+        setInitLoading(true)
+        getAppMetaInfoRes()
 
         Promise.all([getSavedFilterData(), getAppListData()])
             .then((response) => {
@@ -121,13 +119,9 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         !!appName && !!appId && !!invalidAppId,
     )
 
-    const handleRecentVisitedApps = () => {
+    useEffect(() => {
         if (!result) return
         setRecentlyVisitedDevtronApps(result)
-    }
-
-    useEffect(() => {
-        handleRecentVisitedApps()
     }, [result])
 
     const getSavedFilterData = async (groupId?: number): Promise<GroupOptionType[]> => {
