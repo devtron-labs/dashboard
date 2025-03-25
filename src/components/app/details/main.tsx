@@ -115,14 +115,20 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         }
     }, [appId])
 
-    const [loading, result] = useAsync(() => fetchRecentlyVisitedDevtronApps(appId, appName, invalidAppId), [appId, appName, invalidAppId], !!appName && !!appId && !!invalidAppId)
+    const [, result] = useAsync(
+        () => fetchRecentlyVisitedDevtronApps(appId, appName, invalidAppId),
+        [appId, appName, invalidAppId],
+        !!appName && !!appId && !!invalidAppId,
+    )
+
+    const handleRecentVisitedApps = () => {
+        if (!result) return
+        setRecentlyVisitedDevtronApps(result)
+    }
 
     useEffect(() => {
-        // Update the recently visited apps list while ensuring the invalid app is excluded.
-        if (!appId || !invalidAppId || !appName || loading ) return
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        setRecentlyVisitedDevtronApps(result)
-    }, [appId, invalidAppId, appName, loading])
+        handleRecentVisitedApps()
+    }, [result])
 
     const getSavedFilterData = async (groupId?: number): Promise<GroupOptionType[]> => {
         setSelectedAppList([])

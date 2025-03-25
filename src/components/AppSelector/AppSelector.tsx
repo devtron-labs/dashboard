@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 /*
  * Copyright (c) 2024. Devtron Inc.
  *
@@ -39,18 +40,20 @@ const AppSelector = ({
     const selectRef = useRef<SelectInstance>(null)
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
-    const [loading, result] = useAsync(
+    const [, result] = useAsync(
         () => fetchRecentlyVisitedDevtronApps(appId, appName),
         [appId, appName],
         !!appName && !!appId,
     )
 
-    useEffect(() => {
-        // Update the recently visited apps list while ensuring the invalid app is excluded.
-        if (!appId || !appName || loading) return
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    const handleRecentVisitedApps = () => {
+        if (!result) return
         setRecentlyVisitedDevtronApps(result)
-    }, [appId, !appName, loading])
+    }
+
+    useEffect(() => {
+        handleRecentVisitedApps()
+    }, [result])
 
     if (!recentlyVisitedDevtronApps) {
         return null
