@@ -144,7 +144,7 @@ const AppSelector = ({
             onChange={onChange}
             value={defaultOptions[0]}
             variant={SelectPickerVariantType.BORDER_LESS}
-            size={ComponentSizeType.large}
+            size={ComponentSizeType.xl}
             placeholder={appName}
             isOptionDisabled={(option: RecentSelectPickerTypes) => option.isDisabled}
         />
