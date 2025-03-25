@@ -39,12 +39,7 @@ export const getCentralAPIHealth = async (): Promise<void> => {
 
         clearTimeout(timeoutId)
 
-        if (!response.ok) {
-            setCentralAPIHealthInLocalStorage(false, existingHealthObj)
-            return
-        }
-
-        setCentralAPIHealthInLocalStorage(true, existingHealthObj)
+        setCentralAPIHealthInLocalStorage(response.ok, existingHealthObj)
     } catch {
         clearTimeout(timeoutId)
         setCentralAPIHealthInLocalStorage(false, existingHealthObj)
