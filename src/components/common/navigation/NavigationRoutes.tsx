@@ -40,6 +40,7 @@ import {
     useTheme,
     AppThemeType,
     LicenseInfoDialogType,
+    DevtronLicenseInfo,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -142,7 +143,7 @@ export default function NavigationRoutes() {
     const [showGettingStartedCard, setShowGettingStartedCard] = useState(true)
     const [isGettingStartedClicked, setGettingStartedClicked] = useState(false)
     const [moduleInInstallingState, setModuleInInstallingState] = useState('')
-    const [showLicenseData, setShowLicenseData] = useState<boolean>(false)
+    const [licenseData, setLicenseData] = useState<DevtronLicenseInfo>(null)
     const installedModuleMap = useRef<Record<string, boolean>>({})
     const showCloseButtonAfterGettingStartedClicked = () => {
         setHelpGettingStartedClicked(true)
@@ -519,8 +520,8 @@ export default function NavigationRoutes() {
                         />
                     ) : null,
                 handleOpenLicenseInfoDialog,
-                showLicenseData,
-                setShowLicenseData,
+                licenseData,
+                setLicenseData,
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
