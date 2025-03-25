@@ -120,7 +120,7 @@ const Login = () => {
     }
 
     const renderSSOLoginPage = () => (
-        <div className="flexbox-col dc__gap-12">
+        <div className="flexbox-col dc__gap-12 p-36">
             {loginList
                 .filter((sso) => sso.active)
                 .map((item) => (
@@ -155,22 +155,14 @@ const Login = () => {
     const renderAdminLoginPage = () => <LoginForm loginList={loginList} />
 
     const renderDevtronLogo = () => (
-        <div className="flex column dc__gap-16 dc__text-center">
-            {window._env_.LOGIN_DT_LOGO ? (
-                <img
-                    src={window._env_.LOGIN_DT_LOGO}
-                    alt="login-dt-logo"
-                    width="170px"
-                    height="120px"
-                    className="flexbox dc__align-self-center fcb-5"
-                />
-            ) : (
-                <Icon name="ic-login-devtron-logo" color={null} size={null} />
-            )}
-
-            <p className="fs-16 lh-20 m-0 w-300 dc__align-self-center cn-9">
-                Your tool for Rapid, Reliable & Repeatable deployments
-            </p>
+        <div className="flexbox-col dc__align-items-center bg__secondary px-36 py-32 dc__gap-20">
+            <div className="flex p-6 border__primary br-8 dc__w-fit-content bg__white">
+                <Icon name="ic-devtron" color={null} size={40} />
+            </div>
+            <div className="flexbox-col dc__gap-4">
+                <span className="cn-9 text-center font-merriweather fs-20 fw-7 lh-1-5">Devtron</span>
+                <span className="cn-8 fs-16 fw-4 lh-1-5">Login to Devtron dashboard</span>
+            </div>
         </div>
     )
 
@@ -188,8 +180,8 @@ const Login = () => {
                 <LoginBanner />
             </div>
             <div className="flex">
-                <div className="login-card__wrapper br-12 mw-420 bg__primary dc__border">
-                    <div className="flexbox-col dc__gap-32 p-36">
+                <div className="login-card__wrapper dc__overflow-hidden br-12 mw-420 bg__primary dc__border">
+                    <div className="flexbox-col">
                         {renderDevtronLogo()}
                         {renderLoginContent()}
                     </div>
