@@ -41,6 +41,7 @@ export const getCentralAPIHealth = async (): Promise<void> => {
 
         if (!response.ok) {
             setCentralAPIHealthInLocalStorage(false, existingHealthObj)
+            return
         }
 
         setCentralAPIHealthInLocalStorage(true, existingHealthObj)
