@@ -156,7 +156,7 @@ export interface BaseAppMetaData {
     appName: string
 }
 
-export interface AppMetaInfo extends BaseAppMetaData {
+export interface AppMetaInfo extends BaseAppMetaData, Partial<Pick<CreateAppFormStateType, 'templateConfig'>>  {
     createdBy: string
     description: string
     createdOn: string
