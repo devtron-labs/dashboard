@@ -35,6 +35,7 @@ import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.
 import { importComponentFromFELibrary } from '../helpers/Helpers'
 import { OrganizationFrame, OrganizationTextLogo } from '../../../Pages/Shared'
 import { NavigationListItemType } from './types'
+import { getShowStackManager } from 'src/utils'
 
 const hideResourceWatcher = !importComponentFromFELibrary('ResourceWatcherRouter')
 const hideSoftwareDistributionHub = !importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
@@ -156,6 +157,7 @@ interface NavigationType extends RouteComponentProps<{}> {
     isSuperAdmin: boolean
     isAirgapped: boolean
     currentServerInfo: MainContext['currentServerInfo']
+    showLicenseData: boolean
 }
 
 export default class Navigation extends Component<
@@ -340,6 +342,11 @@ export default class Navigation extends Component<
         )
     }
 
+    showStackManager = getShowStackManager(
+        this.props.currentServerInfo.serverInfo?.installationType,
+        this.props.showLicenseData,
+    )
+
     render() {
         return (
             <>
@@ -364,9 +371,7 @@ export default class Navigation extends Component<
                                 return this.renderNavLink(item)
                             }
                         })}
-                        {!window._env_.K8S_CLIENT &&
-                         !this.props.isAirgapped &&
-                         this.props.currentServerInfo.serverInfo?.installationType !== 'enterprise' && (
+                        {!window._env_.K8S_CLIENT && !this.props.isAirgapped && this.showStackManager && (
                             <>
                                 <div className="short-nav__divider" />
                                 {this.renderNavLink(NavigationStack, 'short-nav__stack-manager')}

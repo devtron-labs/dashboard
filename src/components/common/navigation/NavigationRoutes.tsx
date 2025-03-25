@@ -81,6 +81,7 @@ import { DEFAULT_GIT_OPS_FEATURE_FLAGS } from './constants'
 import { ParsedTabsData, ParsedTabsDataV1 } from '../DynamicTabs/types'
 import { SwitchThemeDialog } from '@Pages/Shared'
 import { SwitchThemeDialogProps } from '@Pages/Shared/SwitchThemeDialog/types'
+import { getShowStackManager } from 'src/utils'
 
 // Monaco Editor worker initialization
 self.MonacoEnvironment = {
@@ -486,6 +487,8 @@ export default function NavigationRoutes() {
         setLicenseInfoDialogType(initialDialogTab || LicenseInfoDialogType.ABOUT)
     }
 
+    const showStackManager = getShowStackManager(currentServerInfo.serverInfo?.installationType, !!licenseData)
+
     return (
         <MainContextProvider
             value={{
@@ -551,6 +554,7 @@ export default function NavigationRoutes() {
                         installedModuleMap={installedModuleMap}
                         isSuperAdmin={isSuperAdmin}
                         isAirgapped={isAirgapped}
+                        showLicenseData={!!licenseData}
                     />
                 )}
                 {serverMode && (
@@ -643,7 +647,7 @@ export default function NavigationRoutes() {
                                                       </Route>,
                                                   ]
                                                 : []),
-                                            ...(currentServerInfo.serverInfo?.installationType !== 'enterprise'
+                                            ...(showStackManager
                                                 ? [
                                                       <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
                                                           <DevtronStackManager

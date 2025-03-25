@@ -5,6 +5,7 @@ import {
     DATE_TIME_FORMATS,
     getCentralAPIHealthObjectFromLocalStorage,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { InstallationType } from '@Components/v2/devtronStackManager/DevtronStackManager.type'
 
 const setCentralAPIHealthInLocalStorage = (health: boolean, existingHealthObj: CentralAPILocalConfig) => {
     const updatedObject: CentralAPILocalConfig = {
@@ -45,3 +46,6 @@ export const getCentralAPIHealth = async (): Promise<void> => {
         setCentralAPIHealthInLocalStorage(false, existingHealthObj)
     }
 }
+
+export const getShowStackManager = (installationType: InstallationType, showLicenseData: boolean) =>
+    installationType === InstallationType.ENTERPRISE ? showLicenseData : true
