@@ -24,10 +24,8 @@ import {
     ComponentSizeType,
     AsyncSelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { getRecentlyVisitedDevtronApps, updateRecentlyVisitedDevtronApps } from '@Components/app/details/service'
-import { AppMetaInfo } from '@Components/app/types'
 import { AppSelectorType, RecentSelectPickerTypes } from './types'
-import { appListOptions, noOptionsMessage } from './AppSelectorUtil'
+import { appListOptions, fetchRecentlyVisitedDevtronApps, noOptionsMessage } from './AppSelectorUtil'
 
 const AppSelector = ({
     onChange,
@@ -41,31 +39,11 @@ const AppSelector = ({
     const abortControllerRef = useRef<AbortController>(new AbortController())
     const noFoundEnvId = localStorage.getItem('notFoundEnvId')
 
-    const fetchRecentlyVisitedDevtronApps = async () => {
-        try {
-            const response = await getRecentlyVisitedDevtronApps()
-
-            // Combine current app with previous list
-            const combinedList = [{ appId, appName }, ...response] as AppMetaInfo[]
-
-            // Ensure unique entries using a Map
-            const uniqueApps = Array.from(new Map(combinedList.map((app) => [Number(app.appId), app])).values())
-
-            // Trim the list to 5 items
-            const trimmedList = uniqueApps.slice(0, 6)
-
-            setRecentlyVisitedDevtronApps(trimmedList)
-            await updateRecentlyVisitedDevtronApps(trimmedList)
-        } catch (error) {
-            showError(error)
-        }
-    }
-
     useEffect(() => {
         if (!appName || !appId) return
 
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        fetchRecentlyVisitedDevtronApps().catch(showError)
+        fetchRecentlyVisitedDevtronApps(appId, appName, setRecentlyVisitedDevtronApps, noFoundEnvId).catch(showError)
     }, [appId, appName])
 
     if (!recentlyVisitedDevtronApps) {

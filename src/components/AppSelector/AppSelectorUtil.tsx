@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-import {
-    getIsRequestAborted,
-    SelectPickerOptionType,
-    ServerErrors,
-    showError,
-} from '@devtron-labs/devtron-fe-common-lib'
-import { BaseAppMetaData } from '@Components/app/types'
+import { getIsRequestAborted, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { AppMetaInfo, BaseAppMetaData } from '@Components/app/types'
+import { getRecentlyVisitedDevtronApps, updateRecentlyVisitedDevtronApps } from '@Components/app/details/service'
+import React from 'react'
 import { getAppListMin } from '../../services/service'
 
 let timeoutId
@@ -76,31 +73,27 @@ export const appListOptions = (inputValue: string, isJobView?: boolean, signal?:
     })
 }
 
-export const filteredRecentlyVisitedApps = (
-    inputValue: string,
-    recentlyVisitedDevtronApps: BaseAppMetaData[],
-): SelectPickerOptionType<number>[] =>
-    inputValue?.length &&
-    recentlyVisitedDevtronApps
-        .filter((app) => app.appName.toLowerCase().includes(inputValue.toLowerCase()))
-        .map((app) => ({ value: app.appId, label: app.appName }))
+export const fetchRecentlyVisitedDevtronApps = async (
+    appId: number,
+    appName: string,
+    setRecentlyVisitedDevtronApps: React.Dispatch<React.SetStateAction<BaseAppMetaData[]>>,
+    invalidAppId?: string,
+) => {
+    try {
+        const response = await getRecentlyVisitedDevtronApps()
 
-export const recentlyVisitedDevtronAppsOptions = (
-    recentlyVisitedDevtronApps: BaseAppMetaData[],
-    inputValue?: string,
-): Promise<{ label: string; options: { value: number; label: any }[] }[]> =>
-    new Promise((resolve) => {
-        if (timeoutId) {
-            clearTimeout(timeoutId)
-        }
-        resolve([
-            {
-                label: 'Recently Visited',
-                options:
-                    filteredRecentlyVisitedApps(inputValue, recentlyVisitedDevtronApps)?.length ||
-                    inputValue?.length < 3
-                        ? filteredRecentlyVisitedApps(inputValue, recentlyVisitedDevtronApps)
-                        : recentlyVisitedDevtronApps.map((app) => ({ value: app.appId, label: app.appName })),
-            },
-        ])
-    })
+        // Combine current app with previous list
+        const combinedList = [{ appId, appName }, ...response] as AppMetaInfo[]
+
+        // Ensure unique entries using a Map
+        const uniqueApps = Array.from(new Map(combinedList.map((app) => [Number(app.appId), app])).values())
+
+        // Trim the list to 5 items && remove the invalid/deleted app
+        const trimmedList = uniqueApps.filter((app) => Number(app.appId) !== Number(invalidAppId)).slice(0, 6)
+
+        setRecentlyVisitedDevtronApps(trimmedList)
+        await updateRecentlyVisitedDevtronApps(trimmedList)
+    } catch (error) {
+        showError(error)
+    }
+}
