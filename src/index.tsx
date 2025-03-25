@@ -139,7 +139,6 @@ if (!window || !window._env_) {
         HIDE_DEFAULT_CLUSTER: false,
         GLOBAL_API_TIMEOUT: 60000,
         TRIGGER_API_TIMEOUT: 60000,
-        LOGIN_DT_LOGO: '',
         SIDEBAR_DT_LOGO: '',
         ENABLE_EXTERNAL_ARGO_CD: true,
         API_BATCH_SIZE: 20,
