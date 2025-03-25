@@ -51,6 +51,7 @@ import { getAppOtherEnvironmentMin } from '../../../services/service'
 import { appGroupPermission, deleteEnvGroup, getEnvGroupList } from '../../ApplicationGroup/AppGroup.service'
 import CreateAppGroup from '../../ApplicationGroup/CreateAppGroup'
 import { DeleteComponentsName } from '@Config/constantMessaging'
+import { fetchRecentlyVisitedDevtronApps } from '@Components/AppSelector/AppSelectorUtil'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
@@ -81,6 +82,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const [apiError, setApiError] = useState(null)
     const [initLoading, setInitLoading] = useState<boolean>(false)
     const [recentlyVisitedDevtronApps, setRecentlyVisitedDevtronApps] = useState<AppMetaInfo[]>([])
+    const [invalidAppId, setInvalidAppId] = useState<number>(null)
     useEffect(() => {
         const fetchData = async () => {
             setInitLoading(true)
@@ -111,6 +113,13 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
             setAppListOptions([])
         }
     }, [appId])
+
+    useEffect(() => {
+        // Update the recently visited apps list while ensuring the invalid app is excluded.
+        if (!appId || !invalidAppId || !appName) return
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        fetchRecentlyVisitedDevtronApps(appId, appName, setRecentlyVisitedDevtronApps, invalidAppId ).catch(showError)
+    }, [appId, invalidAppId, !appName])
 
     const getSavedFilterData = async (groupId?: number): Promise<GroupOptionType[]> => {
         setSelectedAppList([])
@@ -191,7 +200,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
             }
         } catch (err) {
             if (err.code === 404) {
-                localStorage.setItem('notFoundEnvId', appId)
+                setInvalidAppId(+appId)
             }
             setApiError(err)
             showError(err)

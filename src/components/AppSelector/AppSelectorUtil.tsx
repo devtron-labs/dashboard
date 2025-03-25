@@ -77,22 +77,21 @@ export const fetchRecentlyVisitedDevtronApps = async (
     appId: number,
     appName: string,
     setRecentlyVisitedDevtronApps: React.Dispatch<React.SetStateAction<BaseAppMetaData[]>>,
-    invalidAppId?: string,
+    invalidAppId?: number,
 ) => {
     try {
         const response = await getRecentlyVisitedDevtronApps()
-
         // Combine current app with previous list
         const combinedList = [{ appId, appName }, ...response] as AppMetaInfo[]
 
         // Ensure unique entries using a Map
         const uniqueApps = Array.from(new Map(combinedList.map((app) => [Number(app.appId), app])).values())
 
-        // Trim the list to 5 items && remove the invalid/deleted app
-        const trimmedList = uniqueApps.filter((app) => Number(app.appId) !== Number(invalidAppId)).slice(0, 6)
+        // Filter out the invalid/deleted app first, then trim the list
+        const filteredList = uniqueApps.filter((app) => Number(app.appId) !== invalidAppId).slice(0, 6)
 
-        setRecentlyVisitedDevtronApps(trimmedList)
-        await updateRecentlyVisitedDevtronApps(trimmedList)
+        setRecentlyVisitedDevtronApps(filteredList)
+        await updateRecentlyVisitedDevtronApps(filteredList)
     } catch (error) {
         showError(error)
     }
