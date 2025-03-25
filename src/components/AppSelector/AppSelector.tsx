@@ -39,6 +39,7 @@ const AppSelector = ({
 }: AppSelectorType) => {
     const selectRef = useRef<SelectInstance>(null)
     const abortControllerRef = useRef<AbortController>(new AbortController())
+    const noFoundEnvId = localStorage.getItem('notFoundEnvId')
 
     const fetchRecentlyVisitedDevtronApps = async () => {
         try {
@@ -87,6 +88,7 @@ const AppSelector = ({
                     ? filteredRecentlyVisitedApps(inputValue)
                     : recentlyVisitedDevtronApps
                           .filter((app) => app.appId !== appId)
+                          .filter((app) => +noFoundEnvId !== app.appId)
                           .map((app) => ({ value: app.appId, label: app.appName })),
         },
         {
@@ -95,7 +97,7 @@ const AppSelector = ({
                 {
                     value: 0,
                     label: 'Type 3 characters to search all applications',
-                    isDisabled: true,
+                    // isDisabled: true,
                 },
             ],
         },

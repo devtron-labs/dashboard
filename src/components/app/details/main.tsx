@@ -190,6 +190,9 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 return result
             }
         } catch (err) {
+            if (err.code === 404) {
+                localStorage.setItem('notFoundEnvId', appId)
+            }
             setApiError(err)
             showError(err)
         }
