@@ -23,6 +23,7 @@ import {
     SelectPickerVariantType,
     ComponentSizeType,
     AsyncSelectPicker,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { AppSelectorType, RecentSelectPickerTypes } from './types'
 import { appListOptions, fetchRecentlyVisitedDevtronApps, noOptionsMessage } from './AppSelectorUtil'
@@ -37,14 +38,19 @@ const AppSelector = ({
 }: AppSelectorType) => {
     const selectRef = useRef<SelectInstance>(null)
     const abortControllerRef = useRef<AbortController>(new AbortController())
-    const noFoundEnvId = localStorage.getItem('notFoundEnvId')
+
+    const [loading, result] = useAsync(
+        () => fetchRecentlyVisitedDevtronApps(appId, appName),
+        [appId, appName],
+        !!appName && !!appId,
+    )
 
     useEffect(() => {
-        if (!appName || !appId) return
-
+        // Update the recently visited apps list while ensuring the invalid app is excluded.
+        if (!appId || !appName || loading) return
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        fetchRecentlyVisitedDevtronApps(appId, appName, setRecentlyVisitedDevtronApps, noFoundEnvId).catch(showError)
-    }, [appId, appName])
+        setRecentlyVisitedDevtronApps(result)
+    }, [appId, !appName, loading])
 
     if (!recentlyVisitedDevtronApps) {
         return null
@@ -66,7 +72,6 @@ const AppSelector = ({
                     ? filteredRecentlyVisitedApps(inputValue)
                     : recentlyVisitedDevtronApps
                           .filter((app) => app.appId !== appId)
-                          .filter((app) => +noFoundEnvId !== app.appId)
                           .map((app) => ({ value: app.appId, label: app.appName })),
         },
         {

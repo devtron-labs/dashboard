@@ -15,9 +15,8 @@
  */
 
 import { getIsRequestAborted, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { AppMetaInfo, BaseAppMetaData } from '@Components/app/types'
+import { BaseAppMetaData } from '@Components/app/types'
 import { getRecentlyVisitedDevtronApps, updateRecentlyVisitedDevtronApps } from '@Components/app/details/service'
-import React from 'react'
 import { getAppListMin } from '../../services/service'
 
 let timeoutId
@@ -76,23 +75,27 @@ export const appListOptions = (inputValue: string, isJobView?: boolean, signal?:
 export const fetchRecentlyVisitedDevtronApps = async (
     appId: number,
     appName: string,
-    setRecentlyVisitedDevtronApps: React.Dispatch<React.SetStateAction<BaseAppMetaData[]>>,
     invalidAppId?: number,
-) => {
+): Promise<BaseAppMetaData[]> => {
     try {
-        const response = await getRecentlyVisitedDevtronApps()
+        const response = (await getRecentlyVisitedDevtronApps()) ?? []
+
+        // Ensure all items have valid `appId` and `appName`
+        const validResponse = response.filter((app): app is BaseAppMetaData => !!app?.appId && !!app?.appName)
+
         // Combine current app with previous list
-        const combinedList = [{ appId, appName }, ...response] as AppMetaInfo[]
+        const combinedList = [{ appId, appName }, ...validResponse]
 
-        // Ensure unique entries using a Map
-        const uniqueApps = Array.from(new Map(combinedList.map((app) => [Number(app.appId), app])).values())
+        // Ensure unique entries using a Set
+        const uniqueApps = Array.from(new Map(combinedList.map((app) => [app.appId, app])).values())
 
-        // Filter out the invalid/deleted app first, then trim the list
-        const filteredList = uniqueApps.filter((app) => Number(app.appId) !== invalidAppId).slice(0, 6)
+        // Filter out invalid app and limit to 6
+        const filteredList = uniqueApps.filter((app) => app.appId !== invalidAppId).slice(0, 6)
 
-        setRecentlyVisitedDevtronApps(filteredList)
         await updateRecentlyVisitedDevtronApps(filteredList)
+        return filteredList
     } catch (error) {
         showError(error)
+        return []
     }
 }

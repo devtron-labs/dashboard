@@ -27,6 +27,7 @@ import {
     ToastVariantType,
     URLS as CommonURLS,
     DeleteConfirmationModal,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import {
@@ -38,7 +39,7 @@ import {
 import { APP_TYPE, URLS } from '../../../config'
 import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import { getAppMetaInfo } from '../service'
-import { AppMetaInfo } from '../types'
+import { AppMetaInfo, BaseAppMetaData } from '../types'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
 import { AppDetailsProps } from './triggerView/types'
 import Overview from '../Overview/Overview'
@@ -81,7 +82,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const [isPopupBox, setIsPopupBox] = useState(false)
     const [apiError, setApiError] = useState(null)
     const [initLoading, setInitLoading] = useState<boolean>(false)
-    const [recentlyVisitedDevtronApps, setRecentlyVisitedDevtronApps] = useState<AppMetaInfo[]>([])
+    const [recentlyVisitedDevtronApps, setRecentlyVisitedDevtronApps] = useState<BaseAppMetaData[]>([])
     const [invalidAppId, setInvalidAppId] = useState<number>(null)
     useEffect(() => {
         const fetchData = async () => {
@@ -114,12 +115,14 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         }
     }, [appId])
 
+    const [loading, result] = useAsync(() => fetchRecentlyVisitedDevtronApps(appId, appName, invalidAppId), [appId, appName, invalidAppId], !!appName && !!appId)
+
     useEffect(() => {
         // Update the recently visited apps list while ensuring the invalid app is excluded.
-        if (!appId || !invalidAppId || !appName) return
+        if (!appId || !invalidAppId || !appName || loading ) return
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        fetchRecentlyVisitedDevtronApps(appId, appName, setRecentlyVisitedDevtronApps, invalidAppId ).catch(showError)
-    }, [appId, invalidAppId, !appName])
+        setRecentlyVisitedDevtronApps(result)
+    }, [appId, invalidAppId, appName, loading])
 
     const getSavedFilterData = async (groupId?: number): Promise<GroupOptionType[]> => {
         setSelectedAppList([])
