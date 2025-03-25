@@ -115,7 +115,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         }
     }, [appId])
 
-    const [loading, result] = useAsync(() => fetchRecentlyVisitedDevtronApps(appId, appName, invalidAppId), [appId, appName, invalidAppId], !!appName && !!appId)
+    const [loading, result] = useAsync(() => fetchRecentlyVisitedDevtronApps(appId, appName, invalidAppId), [appId, appName, invalidAppId], !!appName && !!appId && !!invalidAppId)
 
     useEffect(() => {
         // Update the recently visited apps list while ensuring the invalid app is excluded.

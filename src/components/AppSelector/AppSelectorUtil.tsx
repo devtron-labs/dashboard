@@ -90,7 +90,7 @@ export const fetchRecentlyVisitedDevtronApps = async (
         const uniqueApps = Array.from(new Map(combinedList.map((app) => [app.appId, app])).values())
 
         // Filter out invalid app and limit to 6
-        const filteredList = uniqueApps.filter((app) => app.appId !== invalidAppId).slice(0, 6)
+        const filteredList = uniqueApps.filter((app) => Number(app.appId) !== invalidAppId).slice(0, 6)
 
         await updateRecentlyVisitedDevtronApps(filteredList)
         return filteredList
