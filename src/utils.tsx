@@ -1,6 +1,6 @@
 import moment from 'moment'
 import {
-    CENTRAL_API_CONNECTIVITY_KEY,
+    CENTRAL_API_LOCAL_STORAGE_KEY,
     CentralAPILocalConfig,
     DATE_TIME_FORMATS,
     getCentralAPIHealthObjectFromLocalStorage,
@@ -12,7 +12,7 @@ const setCentralAPIHealthInLocalStorage = (health: boolean, existingHealthObj: C
         isConnected: health || existingHealthObj.isConnected,
         updateCount: existingHealthObj.updateCount + 1,
     }
-    localStorage.setItem(CENTRAL_API_CONNECTIVITY_KEY, JSON.stringify(updatedObject))
+    localStorage.setItem(CENTRAL_API_LOCAL_STORAGE_KEY, JSON.stringify(updatedObject))
 }
 
 export const getCentralAPIHealth = async (): Promise<void> => {

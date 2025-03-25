@@ -143,7 +143,7 @@ export default function NavigationRoutes() {
     const [showGettingStartedCard, setShowGettingStartedCard] = useState(true)
     const [isGettingStartedClicked, setGettingStartedClicked] = useState(false)
     const [moduleInInstallingState, setModuleInInstallingState] = useState('')
-    const [licenseData, setLicenseData] = useState<DevtronLicenseInfo>(null)
+    const [licenseData, setLicenseData] = useState<DevtronLicenseInfo | null>(null)
     const installedModuleMap = useRef<Record<string, boolean>>({})
     const showCloseButtonAfterGettingStartedClicked = () => {
         setHelpGettingStartedClicked(true)
