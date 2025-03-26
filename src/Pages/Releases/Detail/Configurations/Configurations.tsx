@@ -70,14 +70,14 @@ export const Configurations = () => {
     const [envConfigResLoading, setEnvConfigResLoading] = useState<boolean>(false)
     const [envConfigRes, setEnvConfigRes] = useState<EnvConfigType>(null)
 
-    const fetchEnvConfig = async (propEnvId?: number, callback?: Parameters<typeof getEnvConfig>[2]) => {
+    const fetchEnvConfig = async (propEnvId?: number, callback?: Parameters<typeof getEnvConfig>[3]) => {
         if (!appId || !envId) {
             return
         }
 
         try {
             setEnvConfigResLoading(true)
-            const res = await getEnvConfig(+appId, +envId, callback)
+            const res = await getEnvConfig(+appId, +envId, false, callback)
             setEnvConfigRes(res)
         } catch {
             // Do nothing
@@ -121,6 +121,7 @@ export const Configurations = () => {
                     showComparison
                     hideEnvSelector
                     appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                    isTemplateView={false}
                 />
             </Route>
         </Switch>
@@ -141,6 +142,7 @@ export const Configurations = () => {
                         isExceptionUser={
                             approvalConfigForEnv?.[ApprovalConfigDataKindType.deploymentTemplate].isExceptionUser
                         }
+                        isTemplateView={false}
                     />
                 </div>
             </Route>
@@ -158,6 +160,7 @@ export const Configurations = () => {
                         )}
                         clusterId={null}
                         isExceptionUser={approvalConfigForEnv?.[ApprovalConfigDataKindType.configMap].isExceptionUser}
+                        isTemplateView={false}
                     />
                 </div>
             </Route>
@@ -178,6 +181,7 @@ export const Configurations = () => {
                         isExceptionUser={
                             approvalConfigForEnv?.[ApprovalConfigDataKindType.configSecret].isExceptionUser
                         }
+                        isTemplateView={false}
                     />
                 </div>
             </Route>

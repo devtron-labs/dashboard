@@ -135,7 +135,7 @@ const NavigationList: NavigationListItemType[] = [
         title: 'Global Configurations',
         dataTestId: 'click-on-global-configuration',
         type: 'link',
-        href: URLS.GLOBAL_CONFIG,
+        href: CommonURLS.GLOBAL_CONFIG,
         icon: 'ic-gear',
         isAvailableInEA: true,
         isAvailableInDesktop: true,

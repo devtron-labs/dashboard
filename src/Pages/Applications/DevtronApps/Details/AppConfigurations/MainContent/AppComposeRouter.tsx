@@ -92,6 +92,7 @@ const AppComposeRouter = () => {
         envConfig,
         fetchEnvConfig,
         envIdToEnvApprovalConfigurationMap,
+        isTemplateView,
     } = useAppConfigurationContext()
     const { currentAppName } = useAppContext()
 
@@ -110,6 +111,7 @@ const AppComposeRouter = () => {
                             toggleRepoSelectionTippy={toggleRepoSelectionTippy}
                             setRepo={setRepoState}
                             isJobView={isJobView}
+                            appId={appId}
                         />
                     </div>
                     <NextButton
@@ -133,6 +135,7 @@ const AppComposeRouter = () => {
                         isJobView={isJobView}
                         envList={environments}
                         reloadEnvironments={reloadEnvironments}
+                        isTemplateView={isTemplateView}
                     />
                 </Route>,
                 <Route
@@ -149,6 +152,7 @@ const AppComposeRouter = () => {
                         appName={currentAppName}
                         envName=""
                         isExceptionUser={false}
+                        isTemplateView={isTemplateView}
                     />
                 </Route>,
                 <Route
@@ -166,6 +170,7 @@ const AppComposeRouter = () => {
                         appName={currentAppName}
                         envName=""
                         isExceptionUser={false}
+                        isTemplateView={isTemplateView}
                     />
                 </Route>,
                 <Route path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}>
@@ -180,6 +185,7 @@ const AppComposeRouter = () => {
                             onErrorRedirectURL={lastUnlockedStage}
                             appName={currentAppName}
                             appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                            isTemplateView={isTemplateView}
                         />
                     )}
                 </Route>,
@@ -197,6 +203,8 @@ const AppComposeRouter = () => {
                             isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
                             toggleRepoSelectionTippy={toggleRepoSelectionTippy}
                             setRepo={setRepoState}
+                            isTemplateView={isTemplateView}
+                            appId={appId}
                         />
                     </div>
                     <NextButton
@@ -214,6 +222,8 @@ const AppComposeRouter = () => {
                         respondOnSuccess={respondOnSuccess}
                         isCDPipeline={isCDPipeline}
                         isCiPipeline={isCiPipeline}
+                        isTemplateView={isTemplateView}
+                        appId={appId}
                     />
                 </Route>
             )}
@@ -238,15 +248,16 @@ const AppComposeRouter = () => {
                             approvalConfigMapForBaseConfiguration?.[ApprovalConfigDataKindType.deploymentTemplate]
                                 .isExceptionUser ?? false
                         }
+                        isTemplateView={isTemplateView}
                     />
                 </Route>
             )}
-            {canShowExternalLinks && (
+            {!isTemplateView && canShowExternalLinks && (
                 <Route path={`${path}/${URLS.APP_EXTERNAL_LINKS}`}>
                     <ExternalLinks isAppConfigView userRole={userRole} />
                 </Route>
             )}
-            {isGitOpsConfigurationRequired && (
+            {!isTemplateView && isGitOpsConfigurationRequired && (
                 <Route path={`${path}/${URLS.APP_GITOPS_CONFIG}`}>
                     <UserGitRepoConfiguration
                         respondOnSuccess={respondOnSuccess}
@@ -268,6 +279,7 @@ const AppComposeRouter = () => {
                         filteredEnvIds={filteredEnvIds}
                         reloadEnvironments={reloadEnvironments}
                         reloadAppConfig={reloadAppConfig}
+                        isTemplateView={isTemplateView}
                     />
                 </Route>,
                 <Route
@@ -288,6 +300,7 @@ const AppComposeRouter = () => {
                             approvalConfigMapForBaseConfiguration?.[ApprovalConfigDataKindType.configMap]
                                 .isExceptionUser
                         }
+                        isTemplateView={isTemplateView}
                     />
                 </Route>,
                 <Route
@@ -309,6 +322,7 @@ const AppComposeRouter = () => {
                             approvalConfigMapForBaseConfiguration?.[ApprovalConfigDataKindType.configSecret]
                                 .isExceptionUser
                         }
+                        isTemplateView={isTemplateView}
                     />
                 </Route>,
                 <Route
@@ -325,45 +339,48 @@ const AppComposeRouter = () => {
                             onErrorRedirectURL={lastUnlockedStage}
                             appName={currentAppName}
                             appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                            isTemplateView={isTemplateView}
                         />
                     )}
                 </Route>,
-                <Route
-                    key={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}`}
-                    path={`${path}/:envId(\\d+)?/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
-                >
-                    {({ match }) => {
-                        const basePath = generatePath(path, match.params)
-                        const envOverridePath = match.params.envId
-                            ? `/${URLS.APP_ENV_OVERRIDE_CONFIG}/${match.params.envId}`
-                            : `/${URLS.BASE_CONFIG}`
+                !isTemplateView && (
+                    <Route
+                        key={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}`}
+                        path={`${path}/:envId(\\d+)?/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
+                    >
+                        {({ match }) => {
+                            const basePath = generatePath(path, match.params)
+                            const envOverridePath = match.params.envId
+                                ? `/${URLS.APP_ENV_OVERRIDE_CONFIG}/${match.params.envId}`
+                                : `/${URLS.BASE_CONFIG}`
 
-                        // Used in CM/CS
-                        const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
+                            // Used in CM/CS
+                            const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
 
-                        const goBackURL =
-                            match.params.resourceType === EnvResourceType.Manifest ||
-                            match.params.resourceType === EnvResourceType.PipelineStrategy
-                                ? `${basePath}${envOverridePath}`
-                                : `${basePath}${envOverridePath}/${match.params.resourceType}${resourceNamePath}`
+                            const goBackURL =
+                                match.params.resourceType === EnvResourceType.Manifest ||
+                                match.params.resourceType === EnvResourceType.PipelineStrategy
+                                    ? `${basePath}${envOverridePath}`
+                                    : `${basePath}${envOverridePath}/${match.params.resourceType}${resourceNamePath}`
 
-                        return (
-                            <DeploymentConfigCompare
-                                type="app"
-                                appName={currentAppName}
-                                environments={environments.map(({ environmentId, environmentName }) => ({
-                                    id: environmentId,
-                                    name: environmentName,
-                                }))}
-                                goBackURL={goBackURL}
-                                getNavItemHref={(resourceType, resourceName) =>
-                                    `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
-                                }
-                                appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
-                            />
-                        )
-                    }}
-                </Route>,
+                            return (
+                                <DeploymentConfigCompare
+                                    type="app"
+                                    appName={currentAppName}
+                                    environments={environments.map(({ environmentId, environmentName }) => ({
+                                        id: environmentId,
+                                        name: environmentName,
+                                    }))}
+                                    goBackURL={goBackURL}
+                                    getNavItemHref={(resourceType, resourceName) =>
+                                        `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
+                                    }
+                                    appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                                />
+                            )
+                        }}
+                    </Route>
+                ),
             ]}
             {/* Redirect route is there when current path url has something after /edit */}
             {location.pathname !== url && <Redirect to={lastUnlockedStage} />}

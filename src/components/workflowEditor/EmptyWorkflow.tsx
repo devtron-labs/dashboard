@@ -48,7 +48,7 @@ export default function EmptyWorkflow(props: EmptyWorkflowProps) {
             return
         }
         const message = SUCCESS_CREATION
-        const promise = createWorkflow(request)
+        const promise = createWorkflow(request, false)
         promise
             .then((response) => {
                 ToastManager.showToast({

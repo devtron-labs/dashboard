@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { URLS as COMMON_URLS, EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
+import { AppConfigProps, URLS as COMMON_URLS, EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
+import { generatePath } from 'react-router-dom'
 
 export interface NavItem {
     title: string
@@ -54,7 +55,6 @@ export const URLS = {
     APP_CI_DETAILS: 'ci-details',
     APP_CD_DETAILS: 'cd-details',
     APP_DEPLOYMENT_METRICS: 'deployment-metrics',
-    APP_CONFIG: 'edit',
     APP_GIT_CONFIG: 'materials',
     APP_DOCKER_CONFIG: 'docker-build-config',
     APP_GITOPS_CONFIG: 'gitops-config',
@@ -78,7 +78,6 @@ export const URLS = {
     LOGIN_ADMIN: '/login/admin', //
     LOGIN_SSO: '/login/sso',
     GIT_OPS_CONFIG: '/gitops/config',
-    GLOBAL_CONFIG: '/global-config',
     GLOBAL_CONFIG_HOST_URL: '/global-config/host-url',
     GLOBAL_CONFIG_GIT: '/global-config/git',
     GLOBAL_CONFIG_GITOPS: '/global-config/gitops',
@@ -156,8 +155,12 @@ const ORDERED_APP_COMPOSE_ROUTES: { stage: string; path: string }[] = [
     { stage: APP_COMPOSE_STAGE.ENV_OVERRIDE, path: URLS.APP_ENV_OVERRIDE_CONFIG },
 ]
 
-export const getAppComposeURL = (appId: string, appStage?: APP_COMPOSE_STAGE, isJobView?: boolean): string => {
-    const _url = `${isJobView ? URLS.JOB : URLS.APP}/${appId}/${URLS.APP_CONFIG}`
+export const getAppComposeURL = (appId: string, appStage: APP_COMPOSE_STAGE | null, isJobView: boolean | null, isTemplateView: AppConfigProps['isTemplateView']): string => {
+    const _url = isTemplateView
+        ? `${generatePath(COMMON_URLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+              appId,
+          })}/${COMMON_URLS.APP_CONFIG}`
+        : `${isJobView ? URLS.JOB : URLS.APP}/${appId}/${COMMON_URLS.APP_CONFIG}`
     if (!appStage) {
         return _url
     }

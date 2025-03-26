@@ -25,11 +25,11 @@ import {
     HeaderWithCreateButton,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { CreateAppModal } from '@Pages/App/CreateAppModal'
 import { URLS } from '../../../config'
 import { INITIAL_EMPTY_MASTER_FILTERS, JobListViewType } from '../Constants'
 import JobListContainer from './JobListContainer'
 import { getJobStatusLabelFromValue, parseSearchParams } from '../Utils'
-import { AddNewApp } from '../../app/create/CreateApp'
 import { getJobsInitFilters } from '../Service'
 import '../../app/list/list.scss'
 import {
@@ -136,18 +136,9 @@ const JobsList = () => {
 
     const renderCreateJobRouter = () => (
         <Switch>
-            <Route
-                path={`${path}/${URLS.CREATE_JOB}`}
-                render={({ history: routeHistory, location: routeLocation, match }) => (
-                    <AddNewApp
-                        isJobView
-                        close={closeJobCreateModal}
-                        history={routeHistory}
-                        location={routeLocation}
-                        match={match}
-                    />
-                )}
-            />
+            <Route path={`${path}/${URLS.CREATE_JOB}`}>
+                <CreateAppModal isJobView handleClose={closeJobCreateModal} />
+            </Route>
         </Switch>
     )
 

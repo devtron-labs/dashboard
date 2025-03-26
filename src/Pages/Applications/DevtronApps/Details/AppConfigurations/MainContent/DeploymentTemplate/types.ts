@@ -31,6 +31,7 @@ import {
     ProtectConfigTabsType,
     DraftMetadataDTO,
     OverrideMergeStrategyType,
+    AppConfigProps,
     PipelineMigratedFromType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -63,7 +64,7 @@ type EnvOverrideDeploymentTemplateProps = {
     isCiPipeline?: never
 }
 
-export type DeploymentTemplateProps = {
+export type DeploymentTemplateProps = Required<Pick<AppConfigProps, 'isTemplateView'>> & {
     isApprovalPolicyConfigured: boolean
     isExceptionUser: boolean
     reloadEnvironments: () => void
@@ -274,7 +275,7 @@ export interface DeploymentTemplateCTAProps
     isDryRunView: boolean
 }
 
-export interface DeleteOverrideDialogProps extends Pick<DeploymentTemplateProps, 'environmentName'> {
+export interface DeleteOverrideDialogProps extends Pick<DeploymentTemplateProps, 'isTemplateView' | 'environmentName'> {
     environmentConfigId: number
     handleReload: () => void
     handleClose: () => void

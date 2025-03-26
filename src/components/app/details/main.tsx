@@ -25,6 +25,7 @@ import {
     ResourceKindType,
     ToastManager,
     ToastVariantType,
+    URLS as CommonURLS,
     DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
@@ -157,7 +158,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const getAppListData = async (): Promise<OptionType[]> => {
         setSelectedAppList([])
         setAppListLoading(true)
-        const { result } = await getAppOtherEnvironmentMin(appId)
+        const { result } = await getAppOtherEnvironmentMin(appId, false)
         const appListOptionsList = result?.length
             ? result
                   .map((app): OptionType => {
@@ -405,7 +406,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                         >
                             <CDDetails key={appId} filteredEnvIds={_filteredEnvIds} />
                         </Route>
-                        <Route path={`${path}/${URLS.APP_CONFIG}`}>
+                        <Route path={`${path}/${CommonURLS.APP_CONFIG}`}>
                             <AppConfig
                                 appName={appName}
                                 resourceKind={ResourceKindType.devtronApplication}

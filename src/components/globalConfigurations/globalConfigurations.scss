@@ -20,6 +20,14 @@
     grid-template-columns: 240px 1fr;
     height: 100%;
 
+    &--full-content {
+        display: block;
+
+        .global-configuration__component-wrapper {
+            height: 100%;
+        }
+    }
+
     .dc__page-header {
         grid-column: 1 / -1;
     }

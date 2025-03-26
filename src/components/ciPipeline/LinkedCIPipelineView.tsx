@@ -28,6 +28,7 @@ import {
     ToastVariantType,
     ToastManager,
     TriggerType,
+    URLS as CommonURLS,
     Button,
     ButtonVariantType,
     ButtonStyleType,
@@ -92,12 +93,12 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
 
     componentDidMount() {
         document.addEventListener('keydown', this.escFunction)
-        getInitDataWithCIPipeline(this.props.match.params.appId, this.props.match.params.ciPipelineId, true)
+        getInitDataWithCIPipeline(this.props.match.params.appId, this.props.match.params.ciPipelineId, true, this.props.isTemplateView)
             .then((response) => {
                 this.setState({ ...response, loadingData: false }, () => {
                     this.generateSourceUrl().catch(() => {
                         this.setState({
-                            sourcePipelineURL: `${URLS.APP}/${this.state.ciPipeline.parentAppId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`,
+                            sourcePipelineURL: `${URLS.APP}/${this.state.ciPipeline.parentAppId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`,
                         })
                     })
                 })
@@ -120,7 +121,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
 
     async generateSourceUrl() {
         const parentCiPipelineId = this.state.ciPipeline.parentCiPipeline
-        const { result } = await getWorkflowList(this.state.ciPipeline.parentAppId)
+        const { result } = await getWorkflowList(this.state.ciPipeline.parentAppId, null, this.props.isTemplateView)
         let wf
         if (result.workflows) {
             const allWorkflows = result.workflows
@@ -141,9 +142,10 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 parentCiPipelineId,
                 false,
                 false,
+                this.props.isTemplateView,
             )
             this.setState({
-                sourcePipelineURL: `${URLS.APP}/${this.state.ciPipeline.parentAppId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${url}`,
+                sourcePipelineURL: `${URLS.APP}/${this.state.ciPipeline.parentAppId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${url}`,
             })
         }
     }
@@ -258,6 +260,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                         getWorkflows={this.props.getWorkflows}
                         showIconOnly={false}
                         onDelete={this.onClose}
+                        isTemplateView={this.props.isTemplateView}
                     />
                 </ConditionalWrap>
             )

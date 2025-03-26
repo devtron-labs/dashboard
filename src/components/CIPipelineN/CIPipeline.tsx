@@ -88,6 +88,7 @@ export default function CIPipeline({
     isJobView,
     isJobCI,
     changeCIPayload,
+    isTemplateView,
 }: CIPipelineType) {
     let { appId, workflowId, ciPipelineId } = useParams<{ appId: string; workflowId: string; ciPipelineId: string }>()
     if (ciPipelineId === '0') {
@@ -241,7 +242,7 @@ export default function CIPipeline({
     }
 
     // mandatory plugins are applicable for job ci but not jobs
-    const areMandatoryPluginPossible = !isJobView && !!processPluginData
+    const areMandatoryPluginPossible = !isJobView && !isTemplateView && !!processPluginData
 
     // NOTE: Wrap this method in try catch block to handle error
     const getMandatoryPluginData = async (
@@ -453,7 +454,7 @@ export default function CIPipeline({
             setPageState(ViewType.LOADING)
             await getSecurityModuleStatus()
             if (ciPipelineId) {
-                const ciPipelineResponse = await getInitDataWithCIPipeline(appId, ciPipelineId, true)
+                const ciPipelineResponse = await getInitDataWithCIPipeline(appId, ciPipelineId, true, isTemplateView)
                 if (ciPipelineResponse) {
                     const preBuildVariable = calculateLastStepDetail(
                         false,
@@ -480,7 +481,7 @@ export default function CIPipeline({
                     setIsAdvanced(true)
                 }
             } else {
-                const ciPipelineResponse = await getInitData(appId, true, isJobCard)
+                const ciPipelineResponse = await getInitData(appId, true, isJobCard, isTemplateView)
                 if (ciPipelineResponse) {
                     setFormData(ciPipelineResponse.result.form)
                     await getInitialPlugins(ciPipelineResponse.result.form)
@@ -566,6 +567,7 @@ export default function CIPipeline({
                         }}
                         onDelete={onClose}
                         getWorkflows={getWorkflows}
+                        isTemplateView={isTemplateView}
                     />
                 </ConditionalWrap>
             )
@@ -675,6 +677,7 @@ export default function CIPipeline({
             formData.webhookConditionList,
             formData.ciPipelineSourceTypeOptions,
             changeCIPayload,
+            isTemplateView,
         )
             .then((response) => {
                 if (response) {
@@ -858,6 +861,8 @@ export default function CIPipeline({
                                     isSecurityModuleInstalled={isSecurityModuleInstalled}
                                     isJobView={isJobCard}
                                     getPluginData={getPluginData}
+                                    appId={appId}
+                                    isTemplateView={isTemplateView}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />
@@ -936,6 +941,7 @@ export default function CIPipeline({
                         appId={appId}
                         envId={selectedEnv?.id ? String(selectedEnv.id) : null}
                         clusterId={selectedEnv?.clusterId}
+                        isTemplateView={isTemplateView}
                     />
                 </div>
             </div>
