@@ -148,6 +148,7 @@ const AppComposeRouter = () => {
                         onErrorRedirectURL={lastUnlockedStage}
                         appName={currentAppName}
                         envName=""
+                        isExceptionUser={false}
                     />
                 </Route>,
                 <Route
@@ -164,6 +165,7 @@ const AppComposeRouter = () => {
                         onErrorRedirectURL={lastUnlockedStage}
                         appName={currentAppName}
                         envName=""
+                        isExceptionUser={false}
                     />
                 </Route>,
                 <Route path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}>
@@ -232,6 +234,10 @@ const AppComposeRouter = () => {
                         )}
                         reloadEnvironments={reloadEnvironments}
                         fetchEnvConfig={fetchEnvConfig}
+                        isExceptionUser={
+                            approvalConfigMapForBaseConfiguration?.[ApprovalConfigDataKindType.deploymentTemplate]
+                                .isExceptionUser ?? false
+                        }
                     />
                 </Route>
             )}
@@ -278,6 +284,10 @@ const AppComposeRouter = () => {
                         onErrorRedirectURL={lastUnlockedStage}
                         appName={currentAppName}
                         envName=""
+                        isExceptionUser={
+                            approvalConfigMapForBaseConfiguration?.[ApprovalConfigDataKindType.configMap]
+                                .isExceptionUser
+                        }
                     />
                 </Route>,
                 <Route
@@ -295,6 +305,10 @@ const AppComposeRouter = () => {
                         onErrorRedirectURL={lastUnlockedStage}
                         appName={currentAppName}
                         envName=""
+                        isExceptionUser={
+                            approvalConfigMapForBaseConfiguration?.[ApprovalConfigDataKindType.configSecret]
+                                .isExceptionUser
+                        }
                     />
                 </Route>,
                 <Route

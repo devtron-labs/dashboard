@@ -65,6 +65,7 @@ type EnvOverrideDeploymentTemplateProps = {
 
 export type DeploymentTemplateProps = {
     isApprovalPolicyConfigured: boolean
+    isExceptionUser: boolean
     reloadEnvironments: () => void
     fetchEnvConfig: (environmentId: number) => void
 } & (BaseDeploymentTemplateProps | EnvOverrideDeploymentTemplateProps)
@@ -188,6 +189,10 @@ export interface DeploymentTemplateStateType {
      * Readonly flag to show the user that the pipeline is migrated from external app to devtron, and can't change its version or delete override
      */
     migratedFrom: PipelineMigratedFromType
+    /** Whether the express edit view is visible. */
+    isExpressEditView: boolean
+    /** Whether the express edit comparison view is visible. */
+    isExpressEditComparisonView: boolean
 }
 
 export interface HandleFetchDeploymentTemplateReturnType
@@ -218,7 +223,12 @@ export interface DeploymentTemplateFormProps
         Pick<DeploymentTemplateEditorDataStateType, 'latestDraft'>,
         Pick<
             DeploymentTemplateStateType,
-            'showReadMe' | 'lockedConfigKeysWithLockType' | 'hideLockedKeys' | 'editMode'
+            | 'showReadMe'
+            | 'lockedConfigKeysWithLockType'
+            | 'hideLockedKeys'
+            | 'editMode'
+            | 'isExpressEditView'
+            | 'isExpressEditComparisonView'
         > {
     editorOnChange: (value: string) => void
     readOnly: boolean

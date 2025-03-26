@@ -136,6 +136,16 @@ export type ConfigToolbarProps = Pick<
      */
     isApprovalPolicyConfigured?: boolean
     /**
+     * Config to show express edit button.
+     */
+    expressEditButtonConfig?: {
+        isVisible: boolean
+        showPromptTooltip: boolean
+        onClick: () => void
+        onClose: () => void
+        onDoNotShowAgainClose: () => void
+    }
+    /**
      * @default false
      */
     isApprovalPending?: boolean
@@ -193,6 +203,8 @@ export interface GetConfigToolbarPopupConfigProps {
     isDeleteDisabled?: boolean
     deleteDisabledTooltip?: string
     migratedFrom?: PipelineMigratedFromType
+    isExceptionUser?: boolean
+    handleExpressDeleteOverride?: () => void
 }
 
 type ConfigDryRunManifestProps =

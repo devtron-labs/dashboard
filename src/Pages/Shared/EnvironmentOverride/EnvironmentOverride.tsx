@@ -150,6 +150,9 @@ const EnvironmentOverride = ({
                             reloadEnvironments={reloadEnvironments}
                             clusterId={clusterId}
                             fetchEnvConfig={fetchEnvConfig}
+                            isExceptionUser={
+                                approvalConfigMap?.[ApprovalConfigDataKindType.deploymentTemplate].isExceptionUser
+                            }
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
@@ -169,6 +172,7 @@ const EnvironmentOverride = ({
                             isJob={isJob}
                             appName={getAppName()}
                             envName={getEnvName()}
+                            isExceptionUser={approvalConfigMap?.[ApprovalConfigDataKindType.configMap].isExceptionUser}
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
@@ -189,6 +193,9 @@ const EnvironmentOverride = ({
                             isJob={isJob}
                             appName={getAppName()}
                             envName={getEnvName()}
+                            isExceptionUser={
+                                approvalConfigMap?.[ApprovalConfigDataKindType.configSecret].isExceptionUser
+                            }
                         />
                     </Route>
                 </Switch>

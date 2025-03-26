@@ -60,6 +60,7 @@ import {
     DraftAction,
     checkIfPathIsMatching,
     FloatingVariablesSuggestions,
+    useOneTimePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt, useLocation, useParams } from 'react-router-dom'
 import YAML from 'yaml'
@@ -141,11 +142,13 @@ const DraftComments = importComponentFromFELibrary('DraftComments')
 const DeleteOverrideDraftModal = importComponentFromFELibrary('DeleteOverrideDraftModal')
 const ProtectionViewToolbarPopupNode = importComponentFromFELibrary('ProtectionViewToolbarPopupNode', null, 'function')
 const getConfigAfterOperations = importComponentFromFELibrary('getConfigAfterOperations', null, 'function')
+const ExpressEditHeader = importComponentFromFELibrary('ExpressEditHeader', null, 'function')
 
 const DeploymentTemplate = ({
     respondOnSuccess = noop,
     isCiPipeline = false,
     isApprovalPolicyConfigured,
+    isExceptionUser,
     reloadEnvironments,
     environmentName,
     clusterId,
@@ -201,11 +204,21 @@ const DeploymentTemplate = ({
         areCommentsPresent,
         wasGuiOrHideLockedKeysEdited,
         migratedFrom: pipelineMigratedFrom,
+        isExpressEditView,
+        isExpressEditComparisonView,
     } = state
 
     const manifestAbortController = useRef<AbortController>(new AbortController())
     const loadMergedTemplateAbortController = useRef<AbortController>(new AbortController())
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [])
+
+    const {
+        showPrompt,
+        handleClose: closePromptTooltip,
+        handleDoNotShowAgainClose: permanentClosePromptTooltip,
+    } = useOneTimePrompt({
+        localStorageKey: 'express-edit-prompt-tooltip',
+    })
 
     const isDryRunView = configHeaderTab === ConfigHeaderTabType.DRY_RUN
     const isInheritedView = configHeaderTab === ConfigHeaderTabType.INHERITED
@@ -1492,6 +1505,41 @@ const DeploymentTemplate = ({
         }
     }
 
+    const handleExpressEditClick = () => {
+        dispatch({
+            type: DeploymentTemplateActionType.IS_EXPRESS_EDIT_VIEW,
+            payload: true,
+        })
+    }
+
+    const handleExpressEditViewClose = () => {
+        dispatch({
+            type: DeploymentTemplateActionType.IS_EXPRESS_EDIT_VIEW,
+            payload: false,
+        })
+
+        dispatch({
+            type: DeploymentTemplateActionType.IS_EXPRESS_EDIT_COMPARISON_VIEW,
+            payload: false,
+        })
+    }
+
+    const toggleExpressEditComparisonView = () => {
+        dispatch({
+            type: DeploymentTemplateActionType.IS_EXPRESS_EDIT_COMPARISON_VIEW,
+            payload: !isExpressEditComparisonView,
+        })
+    }
+
+    const handleExpressDeleteOverride = () => {
+        dispatch({
+            type: DeploymentTemplateActionType.SHOW_DELETE_OVERRIDE_DIALOG,
+            payload: {
+                isApprovalPolicyConfigured,
+            },
+        })
+    }
+
     const getIsAppMetricsEnabledForCTA = (): boolean => !!currentViewEditorState?.isAppMetricsEnabled
 
     const hideToggleLockedKeysMenuOption =
@@ -1522,6 +1570,8 @@ const DeploymentTemplate = ({
             isApprovalPolicyConfigured,
             isDeleteOverrideDraftPresent: isDeleteOverrideDraft,
             migratedFrom: pipelineMigratedFrom,
+            isExceptionUser,
+            handleExpressDeleteOverride,
         }),
         popupNodeType,
         popupMenuNode: ProtectionViewToolbarPopupNode ? (
@@ -1643,6 +1693,8 @@ const DeploymentTemplate = ({
                 latestDraft={draftTemplateData?.latestDraft}
                 isGuiSupported={isGuiSupported}
                 mergeStrategy={currentViewEditorState?.mergeStrategy}
+                isExpressEditView={isExpressEditView}
+                isExpressEditComparisonView={isExpressEditComparisonView}
             />
         )
     }
@@ -1662,7 +1714,8 @@ const DeploymentTemplate = ({
             !!chartDetails?.charts?.length &&
             window._env_.APPLICATION_METRICS_ENABLED &&
             grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED &&
-            !isCompareView
+            !isCompareView &&
+            !isExpressEditComparisonView
 
         const isAppMetricsEnabled = getIsAppMetricsEnabledForCTA()
 
@@ -1688,6 +1741,8 @@ const DeploymentTemplate = ({
                     restoreLastSavedYAML={restoreLastSavedTemplate}
                     isDryRunView={isDryRunView}
                     handleApprovalLockConfigError={handleApprovalLockConfigError}
+                    isExpressEditView={isExpressEditView}
+                    handleExpressEditViewCancel={handleExpressEditViewClose}
                 />
             )
         }
@@ -1773,18 +1828,27 @@ const DeploymentTemplate = ({
 
         return (
             <>
-                <ConfigHeader
-                    configHeaderTab={configHeaderTab}
-                    handleTabChange={handleConfigHeaderTabChange}
-                    isDisabled={!!currentEditorTemplateData?.parsingError}
-                    areChangesPresent={areChangesPresent}
-                    isOverridable={!!envId}
-                    showNoOverride={showNoOverrideTab}
-                    parsingError={currentEditorTemplateData?.parsingError}
-                    restoreLastSavedYAML={restoreLastSavedTemplate}
-                />
-
-                {!showNoOverrideEmptyState && (
+                {!isExpressEditView ? (
+                    <ConfigHeader
+                        configHeaderTab={configHeaderTab}
+                        handleTabChange={handleConfigHeaderTabChange}
+                        isDisabled={!!currentEditorTemplateData?.parsingError}
+                        areChangesPresent={areChangesPresent}
+                        isOverridable={!!envId}
+                        showNoOverride={showNoOverrideTab}
+                        parsingError={currentEditorTemplateData?.parsingError}
+                        restoreLastSavedYAML={restoreLastSavedTemplate}
+                    />
+                ) : (
+                    ExpressEditHeader && (
+                        <ExpressEditHeader
+                            isComparisonView={isExpressEditComparisonView}
+                            toggleComparison={toggleExpressEditComparisonView}
+                            handleClose={handleExpressEditViewClose}
+                        />
+                    )
+                )}
+                {!showNoOverrideEmptyState && !isExpressEditComparisonView && (
                     <ConfigToolbar
                         baseConfigurationURL={baseDeploymentTemplateURL}
                         selectedProtectionViewTab={selectedProtectionViewTab}
@@ -1804,12 +1868,19 @@ const DeploymentTemplate = ({
                         parsingError={currentEditorTemplateData?.parsingError}
                         configHeaderTab={configHeaderTab}
                         isApprovalPolicyConfigured={isApprovalPolicyConfigured}
+                        expressEditButtonConfig={{
+                            isVisible: isExceptionUser && isApprovalPolicyConfigured && !isExpressEditView,
+                            showPromptTooltip: showPrompt && areChangesPresent,
+                            onClick: handleExpressEditClick,
+                            onClose: closePromptTooltip,
+                            onDoNotShowAgainClose: permanentClosePromptTooltip,
+                        }}
                         isApprovalPending={isApprovalPending}
                         isDraftPresent={isDraftAvailable}
                         userApprovalMetadata={draftTemplateData?.latestDraft?.userApprovalMetadata}
                         isPublishedConfigPresent={isPublishedConfigPresent}
                         restoreLastSavedYAML={restoreLastSavedTemplate}
-                        showEnableReadMeButton={isEditMode}
+                        showEnableReadMeButton={isEditMode && !isExpressEditView}
                         showDeleteOverrideDraftEmptyState={showDeleteOverrideDraftEmptyState}
                         draftId={draftTemplateData?.latestDraft?.draftId}
                         draftVersionId={draftTemplateData?.latestDraft?.draftVersionId}
@@ -1890,10 +1961,11 @@ const DeploymentTemplate = ({
                         resourceType={3}
                         resourceName={getDeploymentTemplateResourceName(environmentName)}
                         prepareDataToSave={handlePrepareDataToSaveForProtectedDeleteOverride}
-                        // TODO: Should rename it to handleClose after merging cm/cs
-                        toggleModal={handleToggleDeleteDraftOverrideDialog}
+                        handleClose={handleToggleDeleteDraftOverrideDialog}
                         latestDraft={draftTemplateData?.latestDraft}
                         reload={handleReload}
+                        showExpressOption={isExceptionUser && !isDraftAvailable}
+                        isExceptionUser={isExceptionUser}
                     />
                 )}
 
@@ -1916,15 +1988,18 @@ const DeploymentTemplate = ({
                     <SaveChangesModal
                         appId={Number(appId)}
                         envId={+envId || BASE_CONFIGURATION_ENV_ID}
+                        envName={environmentName}
                         resourceType={3}
                         resourceName={getDeploymentTemplateResourceName(environmentName)}
                         prepareDataToSave={prepareDataToSave}
-                        toggleModal={handleCloseSaveChangesModal}
+                        handleClose={handleCloseSaveChangesModal}
                         latestDraft={draftTemplateData?.latestDraft}
                         reload={handleReload}
                         showAsModal={!showLockedTemplateDiffModal}
                         saveEligibleChangesCb={showLockedTemplateDiffModal}
                         handleProcessSaveResponse={handleProcessSaveDraftResponse}
+                        showExpressOption={isExceptionUser && !isDraftAvailable}
+                        isExceptionUser={isExceptionUser && isExpressEditView}
                     />
                 )}
             </div>

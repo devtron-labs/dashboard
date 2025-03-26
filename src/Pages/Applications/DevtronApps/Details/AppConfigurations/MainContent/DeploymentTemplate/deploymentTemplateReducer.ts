@@ -104,6 +104,8 @@ export enum DeploymentTemplateActionType {
     LOAD_CURRENT_EDITOR_MERGED_TEMPLATE = 'LOAD_CURRENT_EDITOR_MERGED_TEMPLATE',
     CURRENT_EDITOR_MERGED_TEMPLATE_FETCH_ERROR = 'CURRENT_EDITOR_MERGED_TEMPLATE_ERROR',
     LOCK_CHANGES_DETECTED_FROM_DRAFT_API = 'LOCK_CHANGES_DETECTED_FROM_DRAFT_API',
+    IS_EXPRESS_EDIT_VIEW = 'IS_EXPRESS_EDIT_VIEW',
+    IS_EXPRESS_EDIT_COMPARISON_VIEW = 'IS_EXPRESS_EDIT_COMPARISON_VIEW',
 }
 
 type DeploymentTemplateNoPayloadActions =
@@ -252,6 +254,14 @@ export type DeploymentTemplateActionState =
           type: DeploymentTemplateActionType.CURRENT_EDITOR_MERGED_TEMPLATE_FETCH_ERROR
           payload: Pick<DeploymentTemplateStateType['currentEditorTemplateData'], 'mergedTemplateError'>
       }
+    | {
+          type: DeploymentTemplateActionType.IS_EXPRESS_EDIT_VIEW
+          payload: DeploymentTemplateStateType['isExpressEditView']
+      }
+    | {
+          type: DeploymentTemplateActionType.IS_EXPRESS_EDIT_COMPARISON_VIEW
+          payload: DeploymentTemplateStateType['isExpressEditComparisonView']
+      }
 
 export const getDeploymentTemplateInitialState = ({
     isSuperAdmin,
@@ -304,6 +314,8 @@ export const getDeploymentTemplateInitialState = ({
     isLoadingChangedChartDetails: false,
     areCommentsPresent: false,
     migratedFrom: null,
+    isExpressEditView: false,
+    isExpressEditComparisonView: false,
 })
 
 const handleSwitchToYAMLMode = (state: DeploymentTemplateStateType): DeploymentTemplateStateType => {
@@ -953,6 +965,12 @@ export const deploymentTemplateReducer = (
                     showLockedDiffForApproval: false,
                 },
             }
+
+        case DeploymentTemplateActionType.IS_EXPRESS_EDIT_VIEW:
+            return { ...state, isExpressEditView: action.payload }
+
+        case DeploymentTemplateActionType.IS_EXPRESS_EDIT_COMPARISON_VIEW:
+            return { ...state, isExpressEditComparisonView: action.payload }
 
         default:
             return state

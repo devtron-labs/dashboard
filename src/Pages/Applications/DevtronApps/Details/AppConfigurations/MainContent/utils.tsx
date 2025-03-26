@@ -51,6 +51,12 @@ const getEditHistoryPopupButtonConfig = importComponentFromFELibrary(
     'function',
 )
 
+const getExpressDeleteOverridePopupButtonConfig = importComponentFromFELibrary(
+    'getExpressDeleteOverridePopupButtonConfig',
+    null,
+    'function',
+)
+
 const getValuesViewTabText = (
     isOverridable: Parameters<typeof getConfigHeaderTabConfig>[1],
     showNoOverride: Parameters<typeof getConfigHeaderTabConfig>[2],
@@ -141,6 +147,8 @@ export const getConfigToolbarPopupConfig = ({
     isDeleteDisabled = false,
     deleteDisabledTooltip = '',
     migratedFrom,
+    isExceptionUser,
+    handleExpressDeleteOverride,
 }: GetConfigToolbarPopupConfigProps): ConfigToolbarProps['popupConfig']['menuConfig'] => {
     if (isPublishedValuesView && !isPublishedConfigPresent) {
         return null
@@ -174,6 +182,16 @@ export const getConfigToolbarPopupConfig = ({
         if (deleteDraftConfig) {
             secondConfigSegment.push(deleteDraftConfig)
         }
+    }
+
+    if (
+        getExpressDeleteOverridePopupButtonConfig &&
+        isExceptionUser &&
+        isDeleteOverrideDraftPresent &&
+        configHeaderTab === ConfigHeaderTabType.VALUES
+    ) {
+        const expressDeleteOverrideConfig = getExpressDeleteOverridePopupButtonConfig(handleExpressDeleteOverride)
+        secondConfigSegment.push(expressDeleteOverrideConfig)
     }
 
     if (isOverridden && configHeaderTab === ConfigHeaderTabType.VALUES && !isDeleteOverrideDraftPresent) {

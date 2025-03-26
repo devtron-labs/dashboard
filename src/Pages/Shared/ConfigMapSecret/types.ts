@@ -78,6 +78,7 @@ export interface CMSecretWrapperProps
     isApprovalPolicyConfigured?: boolean
     envName: string
     appName: string
+    isExceptionUser: boolean
 }
 
 export interface ConfigMapSecretContainerProps extends Omit<CMSecretWrapperProps, 'parentState' | 'setParentState'> {

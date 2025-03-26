@@ -40,6 +40,7 @@ import SelectMergeStrategy from './SelectMergeStrategy'
 const ProtectionViewTabGroup = importComponentFromFELibrary('ProtectionViewTabGroup', null, 'function')
 const MergePatchWithTemplateCheckbox = importComponentFromFELibrary('MergePatchWithTemplateCheckbox', null, 'function')
 const ConfigApproversInfoTippy = importComponentFromFELibrary('ConfigApproversInfoTippy', null, 'function')
+const ExpressEditButton = importComponentFromFELibrary('ExpressEditButton', null, 'function')
 const ProtectConfigShowCommentsButton = importComponentFromFELibrary(
     'ProtectConfigShowCommentsButton',
     null,
@@ -112,6 +113,7 @@ const ConfigToolbar = ({
 
     configHeaderTab,
     isApprovalPolicyConfigured = false,
+    expressEditButtonConfig,
     isApprovalPending,
     isDraftPresent,
     draftId,
@@ -148,9 +150,9 @@ const ConfigToolbar = ({
 
     const isEditView = !!(
         configHeaderTab === ConfigHeaderTabType.VALUES &&
-        (isApprovalPolicyConfigured && isDraftPresent
-            ? selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT
-            : true)
+        (!isApprovalPolicyConfigured ||
+            !isDraftPresent ||
+            selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT)
     )
 
     const showProtectedTabs =
@@ -158,6 +160,8 @@ const ConfigToolbar = ({
         isDraftPresent &&
         configHeaderTab === ConfigHeaderTabType.VALUES &&
         !!ProtectionViewTabGroup
+
+    const showExpressEditButton = expressEditButtonConfig?.isVisible && isEditView
 
     const getLHSActionNodes = (): JSX.Element => {
         if (configHeaderTab === ConfigHeaderTabType.INHERITED) {
@@ -390,6 +394,12 @@ const ConfigToolbar = ({
                 {children}
                 {renderSelectMergeStrategy()}
             </div>
+
+            {showExpressEditButton && (
+                <div className="ml-auto">
+                    <ExpressEditButton {...(expressEditButtonConfig ?? {})} />
+                </div>
+            )}
 
             {isPublishedValuesView && !isPublishedConfigPresent ? null : (
                 <div className="flexbox dc__align-items-center dc__gap-8">

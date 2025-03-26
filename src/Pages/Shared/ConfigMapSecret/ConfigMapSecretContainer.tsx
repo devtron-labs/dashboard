@@ -54,6 +54,7 @@ import {
     UseFormErrorHandler,
     UseFormSubmitHandler,
     isNullOrUndefined,
+    useOneTimePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { APP_COMPOSE_STAGE, getAppComposeURL } from '@Config/routes'
@@ -116,6 +117,7 @@ export const ConfigMapSecretContainer = ({
     parentName,
     appChartRef,
     reloadEnvironments,
+    isExceptionUser,
 }: ConfigMapSecretContainerProps) => {
     // HOOKS
     const location = useLocation()
@@ -159,6 +161,14 @@ export const ConfigMapSecretContainer = ({
     })
 
     const { data: formData, errors: formErrors, formState, setValue, handleSubmit, reset } = useFormProps
+
+    const {
+        showPrompt,
+        handleClose: closePromptTooltip,
+        handleDoNotShowAgainClose: permanentClosePromptTooltip,
+    } = useOneTimePrompt({
+        localStorageKey: 'express-edit-prompt-tooltip',
+    })
 
     // CONSTANTS
     const componentName = CM_SECRET_COMPONENT_NAME[componentType]
@@ -578,6 +588,10 @@ export const ConfigMapSecretContainer = ({
         })
     }
 
+    const handleExpressDeleteOverride = () => {
+        setOpenDeleteModal('deleteModal')
+    }
+
     const closeDeleteModal = () => setOpenDeleteModal(null)
 
     const handleOpenDiscardDraftPopup = () => setPopupNodeType(ConfigToolbarPopupNodeType.DISCARD_DRAFT)
@@ -628,7 +642,7 @@ export const ConfigMapSecretContainer = ({
     }
 
     const handleMergeStrategyChange = (strategy: OverrideMergeStrategyType) => {
-        setValue('mergeStrategy', strategy)
+        setValue('mergeStrategy', strategy, { shouldDirty: true })
 
         if (
             !formState.isDirty &&
@@ -672,7 +686,7 @@ export const ConfigMapSecretContainer = ({
         })
     }
 
-    const toggleSaveChangesModal = () => setShowDraftSaveModal(false)
+    const handleSaveChangesModalClose = () => setShowDraftSaveModal(false)
 
     const handleToggleShowTemplateMergedWithPatch = () => setShouldMergeTemplateWithPatches((prev) => !prev)
 
@@ -822,6 +836,8 @@ export const ConfigMapSecretContainer = ({
                 draftData?.action !== DraftAction.Delete &&
                 !isCreateState,
             isDeleteOverrideDraftPresent: draftData?.action === DraftAction.Delete,
+            isExceptionUser,
+            handleExpressDeleteOverride,
         }),
         popupNodeType,
         popupMenuNode: ProtectionViewToolbarPopupNode ? (
@@ -1002,6 +1018,13 @@ export const ConfigMapSecretContainer = ({
                         handleMergeStrategyChange={handleMergeStrategyChange}
                         userApprovalMetadata={draftData?.userApprovalMetadata}
                         isApprovalPolicyConfigured={isApprovalPolicyConfigured}
+                        expressEditButtonConfig={{
+                            isVisible: isExceptionUser && isApprovalPolicyConfigured, // && !isExpressEditView,
+                            showPromptTooltip: showPrompt && formState.isDirty,
+                            onClick: () => {}, // handleExpressEditClick,
+                            onClose: closePromptTooltip,
+                            onDoNotShowAgainClose: permanentClosePromptTooltip,
+                        }}
                         hidePatchOption={isJob || formData.external}
                         isMergeStrategySelectorDisabled={resolveScopedVariables}
                         areCommentsPresent={areCommentsPresent}
@@ -1057,13 +1080,17 @@ export const ConfigMapSecretContainer = ({
                     <SaveChangesModal
                         appId={+appId}
                         envId={envId ? +envId : -1}
+                        envName={envName}
                         resourceType={componentType}
                         resourceName={draftPayload.configData[0].name}
                         prepareDataToSave={() => draftPayload}
-                        toggleModal={toggleSaveChangesModal}
+                        handleClose={handleSaveChangesModalClose}
                         latestDraft={draftData}
                         reload={reloadSaveChangesModal}
                         showAsModal
+                        // TODO: add condition from api here
+                        showExpressEdit={isExceptionUser}
+                        isExpressEditView
                     />
                 )}
                 {DraftComments && showComments && draftData && (

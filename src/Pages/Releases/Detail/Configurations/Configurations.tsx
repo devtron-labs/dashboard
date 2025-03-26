@@ -138,6 +138,9 @@ export const Configurations = () => {
                         reloadEnvironments={reloadEnvironments}
                         environmentName={selectedEnv.name}
                         clusterId={null}
+                        isExceptionUser={
+                            approvalConfigForEnv?.[ApprovalConfigDataKindType.deploymentTemplate].isExceptionUser
+                        }
                     />
                 </div>
             </Route>
@@ -154,6 +157,7 @@ export const Configurations = () => {
                             approvalConfigForEnv?.[ApprovalConfigDataKindType.configMap],
                         )}
                         clusterId={null}
+                        isExceptionUser={approvalConfigForEnv?.[ApprovalConfigDataKindType.configMap].isExceptionUser}
                     />
                 </div>
             </Route>
@@ -171,6 +175,9 @@ export const Configurations = () => {
                             approvalConfigForEnv?.[ApprovalConfigDataKindType.configSecret],
                         )}
                         clusterId={null}
+                        isExceptionUser={
+                            approvalConfigForEnv?.[ApprovalConfigDataKindType.configSecret].isExceptionUser
+                        }
                     />
                 </div>
             </Route>
