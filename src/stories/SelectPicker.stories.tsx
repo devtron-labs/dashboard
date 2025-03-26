@@ -17,6 +17,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 import {
+    ButtonVariantType,
     ComponentSizeType,
     Icon,
     SelectPicker,
@@ -162,15 +163,48 @@ export const HelperText: Story = {
     },
 }
 
-export const MenuListFooter: Story = {
+export const MenuListFooterWithText: Story = {
     ...Default,
     args: {
         ...Default.args,
-        renderMenuListFooter: () => (
-            <div className="px-8 py-6 dc__border-top bg__secondary cn-6">
-                <div>Foot note</div>
-            </div>
-        ),
+        menuListFooterConfig: {
+            type: 'text',
+            value: 'Footer text',
+        },
+    },
+}
+
+export const MenuListFooterPrimaryButton: Story = {
+    ...Default,
+    args: {
+        ...Default.args,
+        menuListFooterConfig: {
+            type: 'button',
+            buttonProps: {
+                text: 'Primary Button',
+                variant: ButtonVariantType.primary,
+                onClick: action('footer button clicked'),
+                dataTestId: 'footer-button',
+                startIcon: <ICEnv />,
+            },
+        },
+    },
+}
+
+export const MenuListFooterBorderLessButton: Story = {
+    ...Default,
+    args: {
+        ...Default.args,
+        menuListFooterConfig: {
+            type: 'button',
+            buttonProps: {
+                text: 'Border Less Button',
+                variant: ButtonVariantType.borderLess,
+                onClick: action('footer button clicked'),
+                dataTestId: 'footer-button',
+                startIcon: <ICEnv />,
+            },
+        },
     },
 }
 

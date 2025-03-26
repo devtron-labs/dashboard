@@ -35,8 +35,9 @@ import {
     DeleteConfirmationModal,
     Textarea,
     ERROR_STATUS_CODE,
+    ButtonComponentType,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { NavLink } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { MaterialViewProps, MaterialViewState } from './material.types'
 import { URLS } from '../../config'
@@ -612,16 +613,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         this.props.handleProviderChange(selected, this.props.material.url)
     }
 
-    renderGitProviderOptionsFooter = () => (
-        <NavLink
-            to={URLS.GLOBAL_CONFIG_GIT}
-            className="flex left dc__gap-8 dc__border-top bg__primary px-8 py-10 cb-5 dc__block fw-6 fs-13 lh-20 anchor cursor dc__no-decor dc__hover-n50"
-        >
-            <Add className="icon-dim-20 dc__no-shrink fcb-5" data-testid="add-git-account-option" />
-            <span>Add Git Account</span>
-        </NavLink>
-    )
-
     onDelete = async () => {
         const deletePayload = {
             appId: this.props.appId,
@@ -686,10 +677,23 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             value={selectedGitProviderOption}
                             required
                             error={this.props.isError.gitProvider}
-                            renderMenuListFooter={this.renderGitProviderOptionsFooter}
+                            menuListFooterConfig={{
+                                type: 'button',
+                                buttonProps: {
+                                    component: ButtonComponentType.link,
+                                    variant: ButtonVariantType.borderLess,
+                                    linkProps: {
+                                        to: URLS.GLOBAL_CONFIG_GIT,
+                                    },
+                                    text: 'Add Git Account',
+                                    startIcon: <Icon name="ic-add" color={null} />,
+                                    dataTestId: 'add-git-account-option',
+                                },
+                            }}
                             onChange={this.handleGitProviderChange}
                             name="material-view__select-project"
                             size={ComponentSizeType.large}
+                            menuIsOpen
                         />
                     </div>
                     <div className="flex-grow-1">
