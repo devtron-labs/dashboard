@@ -144,6 +144,7 @@ export default function NavigationRoutes() {
     const [showGettingStartedCard, setShowGettingStartedCard] = useState(true)
     const [isGettingStartedClicked, setGettingStartedClicked] = useState(false)
     const [moduleInInstallingState, setModuleInInstallingState] = useState('')
+    // licenseData is only set if showLicenseData is received as true
     const [licenseData, setLicenseData] = useState<DevtronLicenseInfo | null>(null)
     const installedModuleMap = useRef<Record<string, boolean>>({})
     const showCloseButtonAfterGettingStartedClicked = () => {
@@ -554,9 +555,10 @@ export default function NavigationRoutes() {
                         installedModuleMap={installedModuleMap}
                         isSuperAdmin={isSuperAdmin}
                         isAirgapped={isAirgapped}
-                        showLicenseData={!!licenseData}
+                        showStackManager={showStackManager}
                     />
                 )}
+                {console.log({showStackManager, currentServerInfo, showLicenseData: !!licenseData})}
                 {serverMode && (
                     <div
                         className={`main flexbox-col bg__primary ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} m-8 br-6 dc__overflow-hidden`}
