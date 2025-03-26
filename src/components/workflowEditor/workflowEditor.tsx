@@ -146,7 +146,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     getWorkflows = () => {
         this.getHostURLConfig()
         this.checkGitOpsConfiguration()
-        getCreateWorkflows(this.props.match.params.appId, this.props.isJobView, this.props.filteredEnvIds, this.props.isTemplateView)
+        getCreateWorkflows(
+            this.props.match.params.appId,
+            this.props.isJobView,
+            this.props.filteredEnvIds,
+            this.props.isTemplateView,
+        )
             .then((result) => {
                 const allCINodeMap = new Map()
                 const allDeploymentNodeMap = new Map()
@@ -256,8 +261,17 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     closeDeleteModal = () => this.setState({ showDeleteDialog: false })
 
+    getAllWorkflows = () => {
+        this.getWorkflows()
+        this.props.getWorkflows()
+    }
+
     deleteWorkflow = (appId?: string, workflowId?: number) => {
-        deleteWorkflow(appId || this.props.match.params.appId, workflowId || this.state.workflowId, this.props.isTemplateView)
+        deleteWorkflow(
+            appId || this.props.match.params.appId,
+            workflowId || this.state.workflowId,
+            this.props.isTemplateView,
+        )
             .then((response) => {
                 if (response.errors) {
                     const { errors } = response
@@ -276,8 +290,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         variant: ToastVariantType.success,
                         description: 'Workflow Deleted',
                     })
-                    this.getWorkflows()
-                    this.props.getWorkflows()
+                    this.getAllWorkflows()
                 }
             })
             .catch((errors) => {
@@ -397,9 +410,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                           appId: this.props.match.params.appId,
                       })
                     : `${this.props.isJobView ? URLS.JOB : URLS.APP}/${this.props.match.params.appId}`
-            }/${CommonURLS.APP_CONFIG}/${
-                URLS.APP_WORKFLOW_CONFIG
-            }`,
+            }/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`,
         )
         this.props.getWorkflows()
     }
@@ -640,7 +651,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                 appName={this.state.appName}
                                 connectCDPipelines={this.getLen()}
                                 close={this.closePipeline}
-                                getWorkflows={this.getWorkflows}
+                                getWorkflows={this.getAllWorkflows}
                                 isJobView={this.props.isJobView}
                                 isJobCI={isJobCI}
                                 changeCIPayload={this.state.changeCIPayload}
@@ -668,7 +679,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     appName={this.state.appName}
                                     connectCDPipelines={this.getLen()}
                                     close={this.closePipeline}
-                                    getWorkflows={this.getWorkflows}
+                                    getWorkflows={this.getAllWorkflows}
                                     isTemplateView={this.props.isTemplateView}
                                 />
                             )
@@ -704,7 +715,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                       closeModal={this.closePipeline}
                                       cdPipelines={this.state.cachedCDConfigResponse.pipelines ?? []}
                                       blackListedIds={this.state.blackListedCI ?? {}}
-                                      deleteWorkflow={this.deleteWorkflow}
                                       getWorkflows={this.getWorkflows}
                                       workflows={this.state.workflows}
                                       isTemplateView={this.props.isTemplateView}
@@ -890,6 +900,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             handleSelectedNodeChange={this.handleSelectedNodeChange}
                             appName={this.state.appName}
                             getWorkflows={this.getWorkflows}
+                            refreshParentWorkflows={this.props.getWorkflows}
                             reloadEnvironments={this.props.reloadEnvironments}
                             workflowPositionState={this.state.workflowPositionState}
                             handleDisplayLoader={this.handleDisplayLoader}
