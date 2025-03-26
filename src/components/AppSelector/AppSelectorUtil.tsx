@@ -21,18 +21,14 @@ import { getAppListMin } from '../../services/service'
 
 let timeoutId
 
-export const noOptionsMessage = (
-    inputObj: { inputValue: string },
+export const getNoOptionsMessage = (
+    inputValue: string,
     isRecentlyVisitedFilteredAppsAvailable?: boolean,
-): string => {
-    if (!inputObj?.inputValue) return null
+): string | null => {
+    if (inputValue.length < 3) {
+        return isRecentlyVisitedFilteredAppsAvailable ? 'Type 3 chars to see matching results' : 'No matching results'
+    }
 
-    if (inputObj.inputValue.length < 3 && !isRecentlyVisitedFilteredAppsAvailable) {
-        return 'No matching results'
-    }
-    if (inputObj.inputValue.length < 3) {
-        return 'Type 3 chars to see matching results'
-    }
     return 'No matching results'
 }
 
@@ -98,4 +94,35 @@ export const fetchRecentlyVisitedDevtronApps = async (
         showError(error)
         return []
     }
+}
+
+export const getFilteredRecentlyVisitedApps = (
+    inputValue: string,
+    recentlyVisitedDevtronApps: BaseAppMetaData[],
+    appId: number,
+) =>
+    recentlyVisitedDevtronApps
+        .filter((app) => app.appName.toLowerCase().includes(inputValue.toLowerCase()))
+        .filter((app) => app.appId !== appId)
+        .map((app) => ({ value: app.appId, label: app.appName }))
+
+export const getDropdownOptions = (
+    inputValue: string,
+    recentlyVisitedDevtronApps: BaseAppMetaData[],
+    appId: number,
+) => {
+    const filteredApps = getFilteredRecentlyVisitedApps(inputValue, recentlyVisitedDevtronApps, appId)
+    return [
+        {
+            label: 'Recently Visited',
+            options:
+                filteredApps.length || inputValue?.length < 3
+                    ? filteredApps
+                    : [{ value: 0, label: 'No matching results' }],
+        },
+        {
+            label: 'All Applications',
+            options: [{ value: 0, label: 'Type 3 characters to search all applications', isDisabled: true }],
+        },
+    ]
 }

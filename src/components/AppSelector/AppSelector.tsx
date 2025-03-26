@@ -14,20 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { useEffect, useRef } from 'react'
-import { Props as SelectProps, SelectInstance, GroupBase, OptionsOrGroups } from 'react-select'
+import { useEffect, useRef, useMemo } from 'react'
+import { SelectInstance, GroupBase, OptionsOrGroups } from 'react-select'
 import {
     abortPreviousRequests,
-    SelectPickerOptionType,
     showError,
     SelectPickerVariantType,
     ComponentSizeType,
-    AsyncSelectPicker,
     useAsync,
+    SelectPickerOptionType,
+    AsyncSelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { AppSelectorType, RecentSelectPickerTypes } from './types'
-import { appListOptions, fetchRecentlyVisitedDevtronApps, noOptionsMessage } from './AppSelectorUtil'
+import { getDropdownOptions, fetchRecentlyVisitedDevtronApps, getNoOptionsMessage } from './AppSelectorUtil'
+import { fetchAllAppListGroupedOptions } from './AppSelectorService'
 
 const AppSelector = ({
     onChange,
@@ -47,98 +47,66 @@ const AppSelector = ({
     )
 
     useEffect(() => {
-        if (!result) return
-        setRecentlyVisitedDevtronApps(result)
+        if (result) {
+            setRecentlyVisitedDevtronApps(result)
+        }
     }, [result])
 
-    if (!recentlyVisitedDevtronApps) {
-        return null
-    }
+    const memoizedDropdownOptions = useMemo(
+        () => (inputValue) => getDropdownOptions(inputValue, recentlyVisitedDevtronApps, appId),
+        [recentlyVisitedDevtronApps, appId],
+    )
 
-    const filteredRecentlyVisitedApps = (inputValue) =>
-        inputValue?.length &&
-        recentlyVisitedDevtronApps
-            .filter((app) => app.appName.toLowerCase().includes(inputValue.toLowerCase()))
-            .map((app) => ({ value: app.appId, label: app.appName }))
+    if (!recentlyVisitedDevtronApps) return null
 
-    const recentlyVisitedDevtronAppsOptions = (
-        inputValue?: string,
-    ): OptionsOrGroups<RecentSelectPickerTypes, GroupBase<RecentSelectPickerTypes>> => [
-        {
-            label: 'Recently Visited',
-            options:
-                filteredRecentlyVisitedApps(inputValue)?.length || inputValue?.length < 3
-                    ? filteredRecentlyVisitedApps(inputValue)
-                    : recentlyVisitedDevtronApps
-                          .filter((app) => app.appId !== appId)
-                          .map((app) => ({ value: app.appId, label: app.appName })),
-        },
-        {
-            label: 'All Applications',
-            options: [
-                {
-                    value: 0,
-                    label: 'Type 3 characters to search all applications',
-                    isDisabled: true,
-                },
-            ],
-        },
-    ]
-
-    const allAppListGroupedOptions = async (inputValue) => {
+    const loadAllAppListOptions = async (inputValue: string) => {
         try {
-            const response = await appListOptions(inputValue, isJobView, abortControllerRef.current.signal)
-            return [
-                {
-                    label: 'All Applications',
-                    options: response,
-                },
-            ]
+            const response = await abortPreviousRequests(
+                () => fetchAllAppListGroupedOptions(inputValue, isJobView, abortControllerRef.current.signal),
+                abortControllerRef,
+            )
+            return response || []
         } catch (error) {
             showError(error)
-            return [{ label: 'All Applications', options: [] }]
+            return []
         }
     }
 
-    const loadAllAppListOptions = (inputValue) =>
-        abortPreviousRequests(() => allAppListGroupedOptions(inputValue), abortControllerRef)
-
-    const defaultOptions = [{ value: appId, label: appName }]
-
+    // Load App Options Based on Input
     const appResponse = async (
-        inputValue,
+        inputValue: string,
     ): Promise<OptionsOrGroups<SelectPickerOptionType<number>, GroupBase<SelectPickerOptionType<number>>>> => {
         if (!inputValue) {
-            // Show recently visited apps when clicking the dropdown
-            return recentlyVisitedDevtronApps.length ? recentlyVisitedDevtronAppsOptions() : defaultOptions
+            return recentlyVisitedDevtronApps.length
+                ? memoizedDropdownOptions(inputValue)
+                : [{ value: appId, label: appName }]
         }
 
-        if (inputValue.length <= 2 && recentlyVisitedDevtronApps.length) {
-            // Show recently visited apps when typing less than 3 characters
-            return recentlyVisitedDevtronAppsOptions(inputValue)
+        if (inputValue.length <= 2) {
+            return memoizedDropdownOptions(inputValue)
         }
 
-        // ✅ Extracting only `options` from the grouped object
         return loadAllAppListOptions(inputValue)
     }
 
-    const handleOnKeyDown: SelectProps['onKeyDown'] = (event) => {
+    const handleOnKeyDown = (event) => {
         if (event.key === 'Escape') {
             selectRef.current?.inputRef.blur()
         }
     }
 
+    const noOptionsMessage = (inputObj: { inputValue: string }) =>
+        getNoOptionsMessage(inputObj?.inputValue, recentlyVisitedDevtronApps.length > 0)
+
     return (
         <AsyncSelectPicker
             blurInputOnSelect
             onKeyDown={handleOnKeyDown}
-            defaultOptions={recentlyVisitedDevtronApps.length ? recentlyVisitedDevtronAppsOptions() : defaultOptions}
+            defaultOptions={memoizedDropdownOptions('')}
             loadOptions={appResponse}
-            noOptionsMessage={(inputObj) =>
-                noOptionsMessage(inputObj, filteredRecentlyVisitedApps(inputObj?.inputValue)?.length > 0)
-            }
+            noOptionsMessage={noOptionsMessage}
             onChange={onChange}
-            value={defaultOptions[0]}
+            value={{ value: appId, label: appName }}
             variant={SelectPickerVariantType.BORDER_LESS}
             size={ComponentSizeType.xl}
             placeholder={appName}
