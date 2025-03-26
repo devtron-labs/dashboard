@@ -55,14 +55,14 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
             value = (
                 <span>
                     If you need webhook based CI for apps with multiple code sources,&nbsp;
-                    <Link
+                    <a
                         className="anchor"
                         rel="noreferrer"
-                        to="https://github.com/devtron-labs/devtron/issues"
+                        href="https://github.com/devtron-labs/devtron/issues"
                         target="_blank"
                     >
                         Create a github issue
-                    </Link>
+                    </a>
                 </span>
             )
         } else if (_isSingleGit) {
@@ -79,14 +79,14 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
                 value = (
                     <span>
                         If you want to trigger CI using any other mechanism,&nbsp;
-                        <Link
+                        <a
                             className="anchor"
                             rel="noreferrer"
-                            to="https://github.com/devtron-labs/devtron/issues"
+                            href="https://github.com/devtron-labs/devtron/issues"
                             target="_blank"
                         >
                             Create a github issue
-                        </Link>
+                        </a>
                     </span>
                 )
             }
