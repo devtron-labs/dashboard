@@ -14,16 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useEffect, useRef, useMemo } from 'react'
-import { SelectInstance, GroupBase, OptionsOrGroups } from 'react-select'
+import { useEffect, useRef, useMemo, useState } from 'react'
+import { SelectInstance } from 'react-select'
 import {
-    abortPreviousRequests,
-    showError,
     SelectPickerVariantType,
     ComponentSizeType,
     useAsync,
-    SelectPickerOptionType,
-    AsyncSelectPicker,
+    SelectPicker,
+    SelectPickerProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { AppSelectorType, RecentlyVisitedSelectPickerTypes } from './types'
 import { getDropdownOptions, fetchRecentlyVisitedDevtronApps, getNoOptionsMessage } from './AppSelectorUtil'
@@ -39,6 +37,9 @@ const AppSelector = ({
 }: AppSelectorType) => {
     const selectRef = useRef<SelectInstance>(null)
     const abortControllerRef = useRef<AbortController>(new AbortController())
+    const [options, setOptions] = useState([])
+    const [inputValue, setInputValue] = useState('')
+    const [areOptionsLoading, setAreOptionsLoading] = useState(false)
 
     const [, result] = useAsync(
         () => fetchRecentlyVisitedDevtronApps(appId, appName),
@@ -53,38 +54,33 @@ const AppSelector = ({
     }, [result])
 
     const memoizedDropdownOptions = useMemo(
-        () => (inputValue) => getDropdownOptions(inputValue, recentlyVisitedDevtronApps, appId),
+        () => (_inputValue) => getDropdownOptions(_inputValue, recentlyVisitedDevtronApps, appId),
         [recentlyVisitedDevtronApps, appId],
     )
 
-    const loadAllAppListOptions = async (inputValue: string) => {
-        try {
-            const response = await abortPreviousRequests(
-                () => fetchAllAppListGroupedOptions(inputValue, isJobView, abortControllerRef.current.signal),
-                abortControllerRef,
-            )
-            return response || []
-        } catch (error) {
-            showError(error)
-            return []
-        }
-    }
-
-    // Load App Options Based on Input
-    const loadOptions = async (
-        inputValue: string,
-    ): Promise<OptionsOrGroups<SelectPickerOptionType<number>, GroupBase<SelectPickerOptionType<number>>>> => {
-        if (!inputValue) {
+    const loadOptions = async (_inputValue: string) => {
+        if (!_inputValue) {
             return recentlyVisitedDevtronApps?.length
-                ? memoizedDropdownOptions(inputValue)
+                ? memoizedDropdownOptions(_inputValue)
                 : [{ value: appId, label: appName }]
         }
 
-        if (inputValue.length <= 2) {
-            return memoizedDropdownOptions(inputValue)
+        if (_inputValue.length <= 2) {
+            return memoizedDropdownOptions(_inputValue)
         }
 
-        return loadAllAppListOptions(inputValue)
+        setAreOptionsLoading(true)
+        const response = await fetchAllAppListGroupedOptions(_inputValue, isJobView, abortControllerRef.current.signal)
+        setAreOptionsLoading(false)
+
+        return response || []
+    }
+
+    const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
+        setInputValue(val)
+        const _options = await loadOptions(val)
+
+        setOptions(_options)
     }
 
     const handleOnKeyDown = (event) => {
@@ -93,24 +89,23 @@ const AppSelector = ({
         }
     }
 
-    const noOptionsMessage = (inputObj: { inputValue: string }) =>
-        getNoOptionsMessage(inputObj?.inputValue, recentlyVisitedDevtronApps?.length > 0)
-
     if (!recentlyVisitedDevtronApps) return null
 
     return (
-        <AsyncSelectPicker
-            blurInputOnSelect
+        <SelectPicker
+            inputId={`${isJobView ? 'job' : 'app'}-name`}
             onKeyDown={handleOnKeyDown}
-            defaultOptions={memoizedDropdownOptions('')}
-            loadOptions={loadOptions}
-            noOptionsMessage={noOptionsMessage}
+            options={options}
+            inputValue={inputValue}
+            onInputChange={onInputChange}
+            isLoading={areOptionsLoading}
+            noOptionsMessage={getNoOptionsMessage}
             onChange={onChange}
             value={{ value: appId, label: appName }}
             variant={SelectPickerVariantType.BORDER_LESS}
-            size={ComponentSizeType.xl}
             placeholder={appName}
             isOptionDisabled={(option: RecentlyVisitedSelectPickerTypes) => option.isDisabled}
+            size={ComponentSizeType.xl}
         />
     )
 }

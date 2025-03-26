@@ -21,16 +21,7 @@ import { getAppListMin } from '../../services/service'
 
 let timeoutId
 
-export const getNoOptionsMessage = (
-    inputValue: string,
-    isRecentlyVisitedFilteredAppsAvailable?: boolean,
-): string | null => {
-    if (inputValue.length < 3) {
-        return isRecentlyVisitedFilteredAppsAvailable ? 'Type 3 chars to see matching results' : 'No matching results'
-    }
-
-    return 'No matching results'
-}
+export const getNoOptionsMessage = (): string | null => 'No matching results'
 
 export const appListOptions = (inputValue: string, isJobView?: boolean, signal?: AbortSignal): Promise<[]> => {
     const options = signal ? { signal } : null
