@@ -54,19 +54,17 @@ const AppSelector = ({
     }, [result])
 
     const memoizedDropdownOptions = useMemo(
-        () => (_inputValue) => getDropdownOptions(_inputValue, recentlyVisitedDevtronApps, appId),
+        () => () => getDropdownOptions(inputValue, recentlyVisitedDevtronApps, appId),
         [recentlyVisitedDevtronApps, appId],
     )
 
     const loadOptions = async (_inputValue: string) => {
         if (!_inputValue) {
-            return recentlyVisitedDevtronApps?.length
-                ? memoizedDropdownOptions(_inputValue)
-                : [{ value: appId, label: appName }]
+            return recentlyVisitedDevtronApps?.length ? memoizedDropdownOptions() : [{ value: appId, label: appName }]
         }
 
         if (_inputValue.length <= 2) {
-            return memoizedDropdownOptions(_inputValue)
+            return memoizedDropdownOptions()
         }
 
         setAreOptionsLoading(true)
@@ -91,6 +89,14 @@ const AppSelector = ({
 
     if (!recentlyVisitedDevtronApps) return null
 
+    const customSelect = (option, searchText: string) => {
+        if (option.data.value === 0) {
+            return true
+        }
+
+        return option.data.label.toLowerCase().includes(searchText.toLowerCase())
+    }
+
     return (
         <SelectPicker
             inputId={`${isJobView ? 'job' : 'app'}-name`}
@@ -106,6 +112,7 @@ const AppSelector = ({
             placeholder={appName}
             isOptionDisabled={(option: RecentlyVisitedSelectPickerTypes) => option.isDisabled}
             size={ComponentSizeType.xl}
+            filterOption={customSelect}
         />
     )
 }
