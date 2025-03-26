@@ -114,6 +114,7 @@ import {
     getEnvOverrideDeploymentTemplate,
     getBaseDeploymentTemplate,
     getChartList,
+    deleteOverrideDeploymentTemplate,
 } from './service'
 import ConfigHeader from '../ConfigHeader'
 import './DeploymentTemplate.scss'
@@ -137,6 +138,11 @@ const getJsonPath = importComponentFromFELibrary('getJsonPath', null, 'function'
 const getLockConfigEligibleAndIneligibleChanges: GetLockConfigEligibleAndIneligibleChangesType =
     importComponentFromFELibrary('getLockConfigEligibleAndIneligibleChanges', null, 'function')
 const ProtectedDeploymentTemplateCTA = importComponentFromFELibrary('ProtectedDeploymentTemplateCTA', null, 'function')
+const ExpressEditDeploymentTemplateCTA = importComponentFromFELibrary(
+    'ExpressEditDeploymentTemplateCTA',
+    null,
+    'function',
+)
 const DeploymentTemplateLockedDiff = importComponentFromFELibrary('DeploymentTemplateLockedDiff')
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DraftComments = importComponentFromFELibrary('DraftComments')
@@ -144,6 +150,7 @@ const DeleteOverrideDraftModal = importComponentFromFELibrary('DeleteOverrideDra
 const ProtectionViewToolbarPopupNode = importComponentFromFELibrary('ProtectionViewToolbarPopupNode', null, 'function')
 const getConfigAfterOperations = importComponentFromFELibrary('getConfigAfterOperations', null, 'function')
 const ExpressEditHeader = importComponentFromFELibrary('ExpressEditHeader', null, 'function')
+const ExpressDeleteOverrideModal = importComponentFromFELibrary('ExpressDeleteOverrideModal', null, 'function')
 
 const DeploymentTemplate = ({
     respondOnSuccess = noop,
@@ -208,6 +215,7 @@ const DeploymentTemplate = ({
         migratedFrom: pipelineMigratedFrom,
         isExpressEditView,
         isExpressEditComparisonView,
+        showExpressDeleteDraftOverrideDialog,
     } = state
 
     const manifestAbortController = useRef<AbortController>(new AbortController())
@@ -1095,12 +1103,13 @@ const DeploymentTemplate = ({
      *
      * @param skipReadmeAndSchema - true only while doing handleSave
      */
-    const prepareDataToSave = (
-        skipReadmeAndSchema: boolean = false,
-        fromDeleteOverride: boolean = false,
-    ): UpdateBaseDTPayloadType | UpdateEnvironmentDTPayloadType => {
+    const prepareDataToSave = ({
+        skipReadmeAndSchema = false,
+        fromDeleteOverride = false,
+        isExpressEdit = false,
+    } = {}): UpdateBaseDTPayloadType | UpdateEnvironmentDTPayloadType => {
         if (!envId) {
-            return getUpdateBaseDeploymentTemplatePayload(state, +appId, skipReadmeAndSchema)
+            return getUpdateBaseDeploymentTemplatePayload(state, +appId, skipReadmeAndSchema, isExpressEdit)
         }
 
         // NOTE: We don't handle lock keys in case of deletion of override
@@ -1108,11 +1117,11 @@ const DeploymentTemplate = ({
             return getDeleteProtectedOverridePayload(state, +envId, skipReadmeAndSchema)
         }
 
-        return getUpdateEnvironmentDTPayload(state, +envId, skipReadmeAndSchema)
+        return getUpdateEnvironmentDTPayload(state, +envId, skipReadmeAndSchema, isExpressEdit)
     }
 
     // NOTE: This is a hack ideally BE should not even take data for this, they should only need action
-    const handlePrepareDataToSaveForProtectedDeleteOverride = () => prepareDataToSave(false, true)
+    const handlePrepareDataToSaveForProtectedDeleteOverride = () => prepareDataToSave({ fromDeleteOverride: true })
 
     /**
      * @description - This function returns a method to save deployment template which is based on whether it is base or env override
@@ -1161,14 +1170,18 @@ const DeploymentTemplate = ({
         })
     }
 
-    const handleSaveTemplate = async () => {
+    const handleSaveTemplate = async (isExpressEdit: boolean = false) => {
         dispatch({
             type: DeploymentTemplateActionType.INITIATE_SAVE,
         })
 
         try {
             const apiService = getSaveAPIService()
-            const response = await apiService(prepareDataToSave(true), null, isTemplateView)
+            const response = await apiService(
+                prepareDataToSave({ skipReadmeAndSchema: true, isExpressEdit }),
+                null,
+                isTemplateView,
+            )
 
             const isLockConfigError = !!response?.result?.isLockConfigError
 
@@ -1246,6 +1259,60 @@ const DeploymentTemplate = ({
         }
 
         await handleSaveTemplate()
+    }
+
+    const handleExpressEditSave = async (e: SyntheticEvent) => {
+        e.preventDefault()
+
+        if (shouldValidateLockChanges && !showLockedTemplateDiffModal) {
+            const { ineligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
+                documents: getLockedDiffModalDocuments({
+                    isApprovalView: false,
+                    state,
+                }),
+                lockedConfigKeysWithLockType,
+            })
+
+            if (Object.keys(ineligibleChanges || {}).length) {
+                dispatch({
+                    type: DeploymentTemplateActionType.LOCKED_CHANGES_DETECTED_ON_SAVE,
+                })
+
+                return
+            }
+        }
+
+        await handleSaveTemplate(true)
+    }
+
+    const handleExpressDelete = async () => {
+        dispatch({
+            type: DeploymentTemplateActionType.INITIATE_SAVE,
+        })
+
+        try {
+            await deleteOverrideDeploymentTemplate(
+                currentEditorTemplateData?.environmentConfig?.id,
+                Number(appId),
+                Number(envId),
+                false,
+                true,
+                getDeploymentTemplateResourceName(environmentName),
+            )
+            await handleReload()
+
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Restored to global',
+            })
+        } catch (err) {
+            showError(err)
+        } finally {
+            dispatch({
+                type: DeploymentTemplateActionType.FINISH_SAVE,
+                payload: { isLockConfigError: false },
+            })
+        }
     }
 
     const handleTriggerSaveFromLockedModal = async () => {
@@ -1559,12 +1626,17 @@ const DeploymentTemplate = ({
         })
     }
 
-    const handleExpressDeleteOverride = () => {
+    const openExpressDeleteDraftOverrideDialog = () => {
         dispatch({
-            type: DeploymentTemplateActionType.SHOW_DELETE_OVERRIDE_DIALOG,
-            payload: {
-                isApprovalPolicyConfigured,
-            },
+            type: DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DRAFT_OVERRIDE_DIALOG,
+            payload: true,
+        })
+    }
+
+    const closeExpressDeleteDraftOverrideDialog = () => {
+        dispatch({
+            type: DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DRAFT_OVERRIDE_DIALOG,
+            payload: false,
         })
     }
 
@@ -1599,7 +1671,7 @@ const DeploymentTemplate = ({
             isDeleteOverrideDraftPresent: isDeleteOverrideDraft,
             migratedFrom: pipelineMigratedFrom,
             isExceptionUser,
-            handleExpressDeleteOverride,
+            handleExpressDeleteDraftOverride: openExpressDeleteDraftOverrideDialog,
         }),
         popupNodeType,
         popupMenuNode: ProtectionViewToolbarPopupNode ? (
@@ -1749,6 +1821,23 @@ const DeploymentTemplate = ({
 
         const isDisabled = isLoadingSideEffects || resolveScopedVariables || !!currentEditorTemplateData.parsingError
 
+        if (ExpressEditDeploymentTemplateCTA && isExceptionUser && isExpressEditView) {
+            return (
+                <ExpressEditDeploymentTemplateCTA
+                    isAppMetricsEnabled={isAppMetricsEnabled}
+                    showApplicationMetrics={showApplicationMetrics}
+                    isLoading={isLoadingSideEffects}
+                    selectedChart={selectedChart}
+                    isDisabled={isDisabled}
+                    toggleAppMetrics={handleAppMetricsToggle}
+                    parsingError={currentEditorTemplateData?.parsingError}
+                    restoreLastSavedYAML={restoreLastSavedTemplate}
+                    handleExpressEditPublish={handleTriggerSave}
+                    handleExpressEditCancel={handleExpressEditViewClose}
+                />
+            )
+        }
+
         if (isApprovalPolicyConfigured && ProtectedDeploymentTemplateCTA) {
             return (
                 <ProtectedDeploymentTemplateCTA
@@ -1769,8 +1858,6 @@ const DeploymentTemplate = ({
                     restoreLastSavedYAML={restoreLastSavedTemplate}
                     isDryRunView={isDryRunView}
                     handleApprovalLockConfigError={handleApprovalLockConfigError}
-                    isExpressEditView={isExpressEditView}
-                    handleExpressEditViewCancel={handleExpressEditViewClose}
                 />
             )
         }
@@ -1901,7 +1988,8 @@ const DeploymentTemplate = ({
                         configHeaderTab={configHeaderTab}
                         isApprovalPolicyConfigured={isApprovalPolicyConfigured}
                         expressEditButtonConfig={{
-                            isVisible: isExceptionUser && isApprovalPolicyConfigured && !isExpressEditView,
+                            isVisible:
+                                isExceptionUser && isApprovalPolicyConfigured && !isExpressEditView && isDraftAvailable,
                             showPromptTooltip: showPrompt && areChangesPresent,
                             onClick: handleExpressEditClick,
                             onClose: closePromptTooltip,
@@ -1997,8 +2085,19 @@ const DeploymentTemplate = ({
                         handleClose={handleToggleDeleteDraftOverrideDialog}
                         latestDraft={draftTemplateData?.latestDraft}
                         reload={handleReload}
-                        showExpressOption={isExceptionUser && !isDraftAvailable}
-                        isExceptionUser={isExceptionUser}
+                        expressChangeConfig={{
+                            showOption: isExceptionUser && !isDraftAvailable,
+                            onClick: handleExpressDelete,
+                            isLoading: isLoadingSideEffects,
+                        }}
+                    />
+                )}
+
+                {ExpressDeleteOverrideModal && showExpressDeleteDraftOverrideDialog && (
+                    <ExpressDeleteOverrideModal
+                        isLoading={isLoadingSideEffects}
+                        handleDelete={handleExpressDelete}
+                        handleClose={closeExpressDeleteDraftOverrideDialog}
                     />
                 )}
 
@@ -2031,8 +2130,11 @@ const DeploymentTemplate = ({
                         showAsModal={!showLockedTemplateDiffModal}
                         saveEligibleChangesCb={showLockedTemplateDiffModal}
                         handleProcessSaveResponse={handleProcessSaveDraftResponse}
-                        showExpressOption={isExceptionUser && !isDraftAvailable}
-                        isExceptionUser={isExceptionUser && isExpressEditView}
+                        expressChangeConfig={{
+                            showOption: isExceptionUser && !isDraftAvailable,
+                            onClick: handleExpressEditSave,
+                            isLoading: isLoadingSideEffects,
+                        }}
                     />
                 )}
             </div>

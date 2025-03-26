@@ -25,6 +25,7 @@ import {
     ResponseType,
     trash,
     getTemplateAPIRoute,
+    getUrlWithSearchParams,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getChartReferencesForAppAndEnv } from '@Services/service'
 import {
@@ -129,13 +130,18 @@ export function deleteOverrideDeploymentTemplate(
     appId: number,
     envId: number,
     isTemplateView: AppConfigProps['isTemplateView'],
+    isExpressEdit?: boolean,
+    resourceName?: string,
 ) {
     const url = isTemplateView
         ? getTemplateAPIRoute({
               type: GetTemplateAPIRouteType.CONFIG_DEPLOYMENT_TEMPLATE_ENV,
               queryParams: { id: appId, envId, chartRefId: id },
           })
-        : `${Routes.ENVIRONMENT_CONFIG}/reset/${appId}/${envId}/${id}`
+        : getUrlWithSearchParams(`${Routes.ENVIRONMENT_CONFIG}/reset/${appId}/${envId}/${id}`, {
+              isExpressEdit,
+              resourceName,
+          })
 
     return trash(url)
 }

@@ -204,7 +204,7 @@ export interface GetConfigToolbarPopupConfigProps {
     deleteDisabledTooltip?: string
     migratedFrom?: PipelineMigratedFromType
     isExceptionUser?: boolean
-    handleExpressDeleteOverride?: () => void
+    handleExpressDeleteDraftOverride?: () => void
 }
 
 type ConfigDryRunManifestProps =

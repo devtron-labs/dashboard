@@ -592,9 +592,7 @@ export const ConfigMapSecretContainer = ({
         })
     }
 
-    const handleExpressDeleteOverride = () => {
-        setOpenDeleteModal('deleteModal')
-    }
+    const handleExpressDeleteDraftOverride = () => setOpenDeleteModal('deleteModal')
 
     const closeDeleteModal = () => setOpenDeleteModal(null)
 
@@ -843,7 +841,7 @@ export const ConfigMapSecretContainer = ({
                 !isCreateState,
             isDeleteOverrideDraftPresent: draftData?.action === DraftAction.Delete,
             isExceptionUser,
-            handleExpressDeleteOverride,
+            handleExpressDeleteDraftOverride,
         }),
         popupNodeType,
         popupMenuNode: ProtectionViewToolbarPopupNode ? (

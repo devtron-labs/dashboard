@@ -148,7 +148,7 @@ export const getConfigToolbarPopupConfig = ({
     deleteDisabledTooltip = '',
     migratedFrom,
     isExceptionUser,
-    handleExpressDeleteOverride,
+    handleExpressDeleteDraftOverride,
 }: GetConfigToolbarPopupConfigProps): ConfigToolbarProps['popupConfig']['menuConfig'] => {
     if (isPublishedValuesView && !isPublishedConfigPresent) {
         return null
@@ -190,8 +190,10 @@ export const getConfigToolbarPopupConfig = ({
         isDeleteOverrideDraftPresent &&
         configHeaderTab === ConfigHeaderTabType.VALUES
     ) {
-        const expressDeleteOverrideConfig = getExpressDeleteOverridePopupButtonConfig(handleExpressDeleteOverride)
-        secondConfigSegment.push(expressDeleteOverrideConfig)
+        const expressDeleteDraftOverrideConfig = getExpressDeleteOverridePopupButtonConfig(
+            handleExpressDeleteDraftOverride,
+        )
+        secondConfigSegment.push(expressDeleteDraftOverrideConfig)
     }
 
     if (isOverridden && configHeaderTab === ConfigHeaderTabType.VALUES && !isDeleteOverrideDraftPresent) {

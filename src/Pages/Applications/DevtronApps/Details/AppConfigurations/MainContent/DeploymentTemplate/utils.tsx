@@ -488,6 +488,7 @@ export const getUpdateBaseDeploymentTemplatePayload = (
     state: DeploymentTemplateStateType,
     appId: number,
     skipReadmeAndSchema: boolean,
+    isExpressEdit: boolean,
 ): UpdateBaseDTPayloadType => {
     const {
         currentEditorTemplateData,
@@ -521,6 +522,8 @@ export const getUpdateBaseDeploymentTemplatePayload = (
                   schema: currentEditorTemplateData.schema,
               }
             : {}),
+
+        isExpressEdit,
     }
 }
 
@@ -564,6 +567,7 @@ export const getUpdateEnvironmentDTPayload = (
     state: DeploymentTemplateStateType,
     envId: number,
     skipReadmeAndSchema: boolean,
+    isExpressEdit: boolean,
 ): UpdateEnvironmentDTPayloadType => {
     const {
         currentEditorTemplateData,
@@ -609,6 +613,7 @@ export const getUpdateEnvironmentDTPayload = (
 
         mergeStrategy: currentEditorTemplateData.mergeStrategy,
         envOverrideValues: editorTemplateObject,
+        isExpressEdit,
     }
 }
 

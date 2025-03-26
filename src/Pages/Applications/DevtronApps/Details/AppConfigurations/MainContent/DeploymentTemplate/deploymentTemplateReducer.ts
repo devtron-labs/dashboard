@@ -90,6 +90,7 @@ export enum DeploymentTemplateActionType {
     TOGGLE_APP_METRICS = 'TOGGLE_APP_METRICS',
     UPDATE_MERGE_STRATEGY = 'UPDATE_MERGE_STRATEGY',
     SHOW_DELETE_OVERRIDE_DIALOG = 'SHOW_DELETE_OVERRIDE_DIALOG',
+    SHOW_EXPRESS_DELETE_DRAFT_OVERRIDE_DIALOG = 'SHOW_EXPRESS_DELETE_DRAFT_OVERRIDE_DIALOG',
     DELETE_LOCAL_OVERRIDE = 'DELETE_LOCAL_OVERRIDE',
     OVERRIDE_TEMPLATE = 'OVERRIDE_TEMPLATE',
     DELETE_OVERRIDE_CONCURRENT_PROTECTION_ERROR = 'DELETE_OVERRIDE_CONCURRENT_PROTECTION_ERROR',
@@ -262,6 +263,10 @@ export type DeploymentTemplateActionState =
           type: DeploymentTemplateActionType.IS_EXPRESS_EDIT_COMPARISON_VIEW
           payload: DeploymentTemplateStateType['isExpressEditComparisonView']
       }
+    | {
+          type: DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DRAFT_OVERRIDE_DIALOG
+          payload: DeploymentTemplateStateType['showExpressDeleteDraftOverrideDialog']
+      }
 
 export const getDeploymentTemplateInitialState = ({
     isSuperAdmin,
@@ -316,6 +321,7 @@ export const getDeploymentTemplateInitialState = ({
     migratedFrom: null,
     isExpressEditView: false,
     isExpressEditComparisonView: false,
+    showExpressDeleteDraftOverrideDialog: false,
 })
 
 const handleSwitchToYAMLMode = (state: DeploymentTemplateStateType): DeploymentTemplateStateType => {
@@ -971,6 +977,12 @@ export const deploymentTemplateReducer = (
 
         case DeploymentTemplateActionType.IS_EXPRESS_EDIT_COMPARISON_VIEW:
             return { ...state, isExpressEditComparisonView: action.payload }
+
+        case DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DRAFT_OVERRIDE_DIALOG:
+            return {
+                ...state,
+                showExpressDeleteDraftOverrideDialog: action.payload,
+            }
 
         default:
             return state

@@ -173,6 +173,7 @@ export interface DeploymentTemplateStateType {
     isLoadingChangedChartDetails: boolean
     showDeleteOverrideDialog: boolean
     showDeleteDraftOverrideDialog: boolean
+    showExpressDeleteDraftOverrideDialog: boolean
     /**
      * This mode can only be activated when user is in edit mode
      */
@@ -447,6 +448,7 @@ interface UpdateDTCommonPayloadType {
     saveEligibleChanges: boolean
     readme?: string
     schema?: Record<string, string>
+    isExpressEdit?: boolean
 }
 
 export type UpdateEnvironmentDTPayloadType = UpdateDTCommonPayloadType &
