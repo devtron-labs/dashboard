@@ -25,7 +25,7 @@ import {
     SelectPickerOptionType,
     AsyncSelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { AppSelectorType, RecentSelectPickerTypes } from './types'
+import { AppSelectorType, RecentlyVisitedSelectPickerTypes } from './types'
 import { getDropdownOptions, fetchRecentlyVisitedDevtronApps, getNoOptionsMessage } from './AppSelectorUtil'
 import { fetchAllAppListGroupedOptions } from './AppSelectorService'
 
@@ -57,8 +57,6 @@ const AppSelector = ({
         [recentlyVisitedDevtronApps, appId],
     )
 
-    if (!recentlyVisitedDevtronApps) return null
-
     const loadAllAppListOptions = async (inputValue: string) => {
         try {
             const response = await abortPreviousRequests(
@@ -73,11 +71,11 @@ const AppSelector = ({
     }
 
     // Load App Options Based on Input
-    const appResponse = async (
+    const loadOptions = async (
         inputValue: string,
     ): Promise<OptionsOrGroups<SelectPickerOptionType<number>, GroupBase<SelectPickerOptionType<number>>>> => {
         if (!inputValue) {
-            return recentlyVisitedDevtronApps.length
+            return recentlyVisitedDevtronApps?.length
                 ? memoizedDropdownOptions(inputValue)
                 : [{ value: appId, label: appName }]
         }
@@ -96,21 +94,23 @@ const AppSelector = ({
     }
 
     const noOptionsMessage = (inputObj: { inputValue: string }) =>
-        getNoOptionsMessage(inputObj?.inputValue, recentlyVisitedDevtronApps.length > 0)
+        getNoOptionsMessage(inputObj?.inputValue, recentlyVisitedDevtronApps?.length > 0)
+
+    if (!recentlyVisitedDevtronApps) return null
 
     return (
         <AsyncSelectPicker
             blurInputOnSelect
             onKeyDown={handleOnKeyDown}
             defaultOptions={memoizedDropdownOptions('')}
-            loadOptions={appResponse}
+            loadOptions={loadOptions}
             noOptionsMessage={noOptionsMessage}
             onChange={onChange}
             value={{ value: appId, label: appName }}
             variant={SelectPickerVariantType.BORDER_LESS}
             size={ComponentSizeType.xl}
             placeholder={appName}
-            isOptionDisabled={(option: RecentSelectPickerTypes) => option.isDisabled}
+            isOptionDisabled={(option: RecentlyVisitedSelectPickerTypes) => option.isDisabled}
         />
     )
 }

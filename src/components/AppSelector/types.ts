@@ -10,7 +10,6 @@ export interface AppSelectorType extends Pick<SelectPickerProps, 'onChange'> {
     setRecentlyVisitedDevtronApps?: Dispatch<SetStateAction<BaseAppMetaData[]>>
 }
 
-export interface RecentSelectPickerTypes extends SelectPickerOptionType {
+export interface RecentlyVisitedSelectPickerTypes extends SelectPickerOptionType<number> {
     isDisabled?: boolean
-    value: number
 }
