@@ -693,7 +693,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             onChange={this.handleGitProviderChange}
                             name="material-view__select-project"
                             size={ComponentSizeType.large}
-                            menuIsOpen
                         />
                     </div>
                     <div className="flex-grow-1">
