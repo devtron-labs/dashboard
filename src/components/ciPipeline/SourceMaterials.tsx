@@ -61,7 +61,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
                         href="https://github.com/devtron-labs/devtron/issues"
                         target="_blank"
                     >
-                        Create a github issue
+                        Create a GitHub issue
                     </a>
                 </span>
             )
@@ -85,7 +85,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
                             href="https://github.com/devtron-labs/devtron/issues"
                             target="_blank"
                         >
-                            Create a github issue
+                            Create a GitHub issue
                         </a>
                     </span>
                 )
