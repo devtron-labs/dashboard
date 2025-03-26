@@ -679,7 +679,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     appName={this.state.appName}
                                     connectCDPipelines={this.getLen()}
                                     close={this.closePipeline}
-                                    getWorkflows={this.getWorkflows}
+                                    getWorkflows={this.getAllWorkflows}
                                     isTemplateView={this.props.isTemplateView}
                                 />
                             )
@@ -718,6 +718,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                       getWorkflows={this.getWorkflows}
                                       workflows={this.state.workflows}
                                       isTemplateView={this.props.isTemplateView}
+                                      refreshParentWorkflows={this.props.getWorkflows}
                                   />
                               </Route>,
                           ]
@@ -899,7 +900,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             selectedNode={this.state.selectedNode}
                             handleSelectedNodeChange={this.handleSelectedNodeChange}
                             appName={this.state.appName}
-                            getWorkflows={this.getAllWorkflows}
+                            getWorkflows={this.getWorkflows}
+                            refreshParentWorkflows={this.props.getWorkflows}
                             reloadEnvironments={this.props.reloadEnvironments}
                             workflowPositionState={this.state.workflowPositionState}
                             handleDisplayLoader={this.handleDisplayLoader}
