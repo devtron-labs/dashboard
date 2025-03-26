@@ -718,7 +718,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                       getWorkflows={this.getWorkflows}
                                       workflows={this.state.workflows}
                                       isTemplateView={this.props.isTemplateView}
-                                      refreshParentWorkflows={this.props.getWorkflows}
                                   />
                               </Route>,
                           ]
