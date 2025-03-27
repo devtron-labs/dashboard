@@ -28,9 +28,11 @@ import {
     OptionType,
     DynamicDataTableCellValidationState,
     ChangeCIPayloadType,
+    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router-dom'
 import { ValidateInputOutputVariableCellProps } from '@Components/CIPipelineN/VariableDataTable/types'
+import { AdvancedConfigOptionsProps } from '@Components/ciConfig/types'
 import { HostURLConfig } from '../../services/service.types'
 
 export interface ExternalCIPipelineState {
@@ -273,12 +275,11 @@ export const DockerConfigOverrideKeys = {
     buildContext: 'buildContext',
 }
 
-export interface CIPipelineType {
+export interface CIPipelineType extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     appName: string
     connectCDPipelines: number
     getWorkflows: () => void
     close: () => void
-    deleteWorkflow: (appId?: string, workflowId?: number) => any
     isJobView?: boolean
     isJobCI?: boolean
     changeCIPayload?: ChangeCIPayloadType
@@ -339,12 +340,12 @@ export interface LinkedCIPipelineState {
 }
 
 export interface CIPipelineProps
-    extends RouteComponentProps<{ appId: string; ciPipelineId: string; workflowId: string }> {
+    extends RouteComponentProps<{ appId: string; ciPipelineId: string; workflowId: string }>,
+        Required<Pick<AppConfigProps, 'isTemplateView'>> {
     appName: string
     connectCDPipelines: number
     getWorkflows: () => void
     close: () => void
-    deleteWorkflow?: (appId?: string, workflowId?: number) => any
     changeCIPayload?: ChangeCIPayloadType
 }
 
@@ -395,7 +396,9 @@ export interface WebhookCIProps {
     copyToClipboard: (text: string, callback) => void
 }
 
-export interface BuildType {
+export interface BuildType
+    extends Pick<AdvancedConfigOptionsProps, 'appId'>,
+        Required<Pick<AppConfigProps, 'isTemplateView'>> {
     showFormError: boolean
     isAdvanced: boolean
     ciPipeline: CIPipelineDataType

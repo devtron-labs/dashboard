@@ -44,6 +44,7 @@
         overflow: hidden;
         flex-basis: 280px;
         transition: flex-basis 0.3s;
+        flex-shrink: 0;
     }
 
     .ci-details__body {

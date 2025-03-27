@@ -20,7 +20,6 @@ import { highlightSearchText, Tooltip, WidgetEventDetails } from '@devtron-labs/
 import { importComponentFromFELibrary } from '@Components/common'
 import { EVENT_LIST } from '../Constants'
 import { EventListType } from '../Types'
-import { getScrollableResourceClass } from '../Utils'
 
 const ExplainEventButton = importComponentFromFELibrary('ExplainEventButton', null, 'function')
 
@@ -28,150 +27,147 @@ export const EventList = ({
     listRef,
     filteredData,
     handleResourceClick,
-    paginatedView,
-    syncError,
     searchText,
     setWidgetEventDetails,
 }: EventListType) => (
-    <div
-        ref={listRef}
-        className={`${getScrollableResourceClass('scrollable-event-list', paginatedView, syncError)} dc__min-width-fit-content dc__overflow-auto`}
-    >
-        <div
-            className={`event-list-row${ExplainEventButton ? '__explain' : ''} dc__zi-1 dc__min-width-fit-content dc__position-sticky bg__primary dc__top-0 fw-6 cn-7 fs-13 dc__border-bottom px-20 py-8 dc__uppercase h-36`}
-        >
-            {Object.values(EVENT_LIST.headerKeys).map((title) => (
-                <div>
-                    <Tooltip key={title} content={title} alwaysShowTippyOnHover>
-                        <span className="dc__ellipsis-right">{title}</span>
-                    </Tooltip>
-                </div>
-            ))}
-        </div>
-        {filteredData?.map((eventData) => {
-            const eventDetails: WidgetEventDetails = {
-                message: eventData.message as string,
-                namespace: eventData.namespace as string,
-                object: eventData[EVENT_LIST.dataKeys.involvedObject] as string,
-                source: eventData.source as string,
-                age: eventData.age as string,
-                count: eventData.count as number,
-                lastSeen: eventData[EVENT_LIST.dataKeys.lastSeen] as string,
-            }
-            const handleExplainEventClick = () => {
-                setWidgetEventDetails(eventDetails)
-            }
-            return (
-                <div
-                    key={Object.values(eventData).join('-')}
-                    className={`event-list-row${ExplainEventButton ? '__explain' : ''} cn-9 fs-13 dc__border-bottom-n1 px-20 py-12 hover-class`}
-                >
+    <div className="dc__overflow-auto">
+        <div ref={listRef} className="scrollable-event-list dc__min-width-fit-content flexbox-col">
+            <div
+                className={`event-list-row${ExplainEventButton ? '__explain' : ''} dc__zi-1 dc__min-width-fit-content dc__position-sticky bg__primary dc__top-0 fw-6 cn-7 fs-13 dc__border-bottom px-20 py-8 dc__uppercase h-36`}
+            >
+                {Object.values(EVENT_LIST.headerKeys).map((title) => (
+                    <div>
+                        <Tooltip key={title} content={title} alwaysShowTippyOnHover>
+                            <span className="dc__ellipsis-right">{title}</span>
+                        </Tooltip>
+                    </div>
+                ))}
+            </div>
+            {filteredData?.map((eventData) => {
+                const eventDetails: WidgetEventDetails = {
+                    message: eventData.message as string,
+                    namespace: eventData.namespace as string,
+                    object: eventData[EVENT_LIST.dataKeys.involvedObject] as string,
+                    source: eventData.source as string,
+                    age: eventData.age as string,
+                    count: eventData.count as number,
+                    lastSeen: eventData[EVENT_LIST.dataKeys.lastSeen] as string,
+                }
+                const handleExplainEventClick = () => {
+                    setWidgetEventDetails(eventDetails)
+                }
+                return (
                     <div
-                        className={`app-summary__status-name dc__highlight-text f-${(eventData.type as string)?.toLowerCase()}`}
+                        key={Object.values(eventData).join('-')}
+                        className={`event-list-row${ExplainEventButton ? '__explain' : ''} cn-9 fs-13 dc__border-bottom-n1 px-20 py-12 hover-class`}
                     >
-                        <span
-                            dangerouslySetInnerHTML={{
-                                __html: DOMPurify.sanitize(
-                                    highlightSearchText({
-                                        searchText,
-                                        text: eventData.type as string,
-                                        highlightClasses: 'p-0 fw-6 bcy-2',
-                                    }),
-                                ),
-                            }}
-                        />
-                    </div>
-                    <div className="dc__highlight-text dc__break-word">
-                        <span
-                            dangerouslySetInnerHTML={{
-                                __html: DOMPurify.sanitize(
-                                    highlightSearchText({
-                                        searchText,
-                                        text: eventData.message as string,
-                                        highlightClasses: 'p-0 fw-6 bcy-2',
-                                    }),
-                                ),
-                            }}
-                        />
-                    </div>
-                    <Tooltip content={eventData.namespace}>
-                        <div className="dc__ellipsis-right dc__highlight-text">
+                        <div
+                            className={`app-summary__status-name dc__highlight-text f-${(eventData.type as string)?.toLowerCase()}`}
+                        >
                             <span
                                 dangerouslySetInnerHTML={{
                                     __html: DOMPurify.sanitize(
                                         highlightSearchText({
                                             searchText,
-                                            text: eventData.namespace as string,
+                                            text: eventData.type as string,
                                             highlightClasses: 'p-0 fw-6 bcy-2',
                                         }),
                                     ),
                                 }}
                             />
                         </div>
-                    </Tooltip>
-                    <div className="flexbox dc__align-start">
-                        <Tooltip content={eventData[EVENT_LIST.dataKeys.involvedObject]}>
-                            <button
-                                type="button"
-                                className="dc__unset-button-styles dc__ellipsis-right"
-                                data-name={eventData[EVENT_LIST.dataKeys.involvedObject]}
-                                data-namespace={eventData.namespace}
-                                data-origin="event"
-                                onClick={handleResourceClick}
-                                aria-label="Select event involved object"
-                            >
+                        <div className="dc__highlight-text dc__break-word">
+                            <span
+                                dangerouslySetInnerHTML={{
+                                    __html: DOMPurify.sanitize(
+                                        highlightSearchText({
+                                            searchText,
+                                            text: eventData.message as string,
+                                            highlightClasses: 'p-0 fw-6 bcy-2',
+                                        }),
+                                    ),
+                                }}
+                            />
+                        </div>
+                        <Tooltip content={eventData.namespace}>
+                            <div className="dc__ellipsis-right dc__highlight-text">
                                 <span
-                                    className="dc__link cursor"
                                     dangerouslySetInnerHTML={{
                                         __html: DOMPurify.sanitize(
                                             highlightSearchText({
                                                 searchText,
-                                                text: eventData[EVENT_LIST.dataKeys.involvedObject] as string,
+                                                text: eventData.namespace as string,
                                                 highlightClasses: 'p-0 fw-6 bcy-2',
                                             }),
                                         ),
                                     }}
                                 />
-                            </button>
+                            </div>
                         </Tooltip>
-                    </div>
-                    <Tooltip content={eventData.source}>
-                        <div className="dc__ellipsis-right dc__highlight-text">
+                        <div className="flexbox dc__align-start">
+                            <Tooltip content={eventData[EVENT_LIST.dataKeys.involvedObject]}>
+                                <button
+                                    type="button"
+                                    className="dc__unset-button-styles dc__ellipsis-right"
+                                    data-name={eventData[EVENT_LIST.dataKeys.involvedObject]}
+                                    data-namespace={eventData.namespace}
+                                    data-origin="event"
+                                    onClick={handleResourceClick}
+                                    aria-label="Select event involved object"
+                                >
+                                    <span
+                                        className="dc__link cursor"
+                                        dangerouslySetInnerHTML={{
+                                            __html: DOMPurify.sanitize(
+                                                highlightSearchText({
+                                                    searchText,
+                                                    text: eventData[EVENT_LIST.dataKeys.involvedObject] as string,
+                                                    highlightClasses: 'p-0 fw-6 bcy-2',
+                                                }),
+                                            ),
+                                        }}
+                                    />
+                                </button>
+                            </Tooltip>
+                        </div>
+                        <Tooltip content={eventData.source}>
+                            <div className="dc__ellipsis-right dc__highlight-text">
+                                <span
+                                    dangerouslySetInnerHTML={{
+                                        __html: DOMPurify.sanitize(
+                                            highlightSearchText({
+                                                searchText,
+                                                text: eventData.source as string,
+                                                highlightClasses: 'p-0 fw-6 bcy-2',
+                                            }),
+                                        ),
+                                    }}
+                                />
+                            </div>
+                        </Tooltip>
+                        <div>{eventData.count}</div>
+                        <div className="dc__highlight-text">
                             <span
                                 dangerouslySetInnerHTML={{
                                     __html: DOMPurify.sanitize(
                                         highlightSearchText({
                                             searchText,
-                                            text: eventData.source as string,
+                                            text: eventData.age as string,
                                             highlightClasses: 'p-0 fw-6 bcy-2',
                                         }),
                                     ),
                                 }}
                             />
                         </div>
-                    </Tooltip>
-                    <div>{eventData.count}</div>
-                    <div className="dc__highlight-text">
-                        <span
-                            dangerouslySetInnerHTML={{
-                                __html: DOMPurify.sanitize(
-                                    highlightSearchText({
-                                        searchText,
-                                        text: eventData.age as string,
-                                        highlightClasses: 'p-0 fw-6 bcy-2',
-                                    }),
-                                ),
-                            }}
-                        />
+                        <div>{eventData[EVENT_LIST.dataKeys.lastSeen]}</div>
+                        {ExplainEventButton && eventData.type === 'Warning' ? (
+                            <ExplainEventButton handleExplainEventClick={handleExplainEventClick} />
+                        ) : (
+                            <span />
+                        )}
                     </div>
-                    <div>{eventData[EVENT_LIST.dataKeys.lastSeen]}</div>
-                    {ExplainEventButton && eventData.type === 'Warning' ? (
-                        <ExplainEventButton handleExplainEventClick={handleExplainEventClick} />
-                    ) : (
-                        <span />
-                    )}
-                </div>
-            )
-        })}
+                )
+            })}
+        </div>
     </div>
 )

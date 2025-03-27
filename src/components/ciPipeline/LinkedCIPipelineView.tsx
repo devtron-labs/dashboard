@@ -28,12 +28,15 @@ import {
     ToastVariantType,
     ToastManager,
     TriggerType,
-    DeleteConfirmationModal,
-    ERROR_STATUS_CODE,
+    URLS as CommonURLS,
+    Button,
+    ButtonVariantType,
+    ButtonStyleType,
+    DeleteCINodeButton,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { getInitDataWithCIPipeline, deleteCIPipeline } from './ciPipeline.service'
+import { getInitDataWithCIPipeline } from './ciPipeline.service'
 import { ViewType, URLS } from '../../config'
 import { CIPipelineProps, CIPipelineState } from './types'
 import { getCIPipelineURL, Info } from '../common'
@@ -42,7 +45,6 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
 import { SourceMaterials } from './SourceMaterials'
 import './ciPipeline.scss'
-import { DeleteComponentsName } from '@Config/constantMessaging'
 
 export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIPipelineState> {
     constructor(props) {
@@ -91,19 +93,19 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
 
     componentDidMount() {
         document.addEventListener('keydown', this.escFunction)
-        getInitDataWithCIPipeline(this.props.match.params.appId, this.props.match.params.ciPipelineId, true)
+        getInitDataWithCIPipeline(this.props.match.params.appId, this.props.match.params.ciPipelineId, true, this.props.isTemplateView)
             .then((response) => {
                 this.setState({ ...response, loadingData: false }, () => {
                     this.generateSourceUrl().catch(() => {
                         this.setState({
-                            sourcePipelineURL: `${URLS.APP}/${this.state.ciPipeline.parentAppId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`,
+                            sourcePipelineURL: `${URLS.APP}/${this.state.ciPipeline.parentAppId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`,
                         })
                     })
                 })
             })
             .catch((error: ServerErrors) => {
                 showError(error)
-                this.setState({ loadingData: false })
+                this.setState({ loadingData: false, view: ViewType.FORM })
             })
     }
 
@@ -119,7 +121,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
 
     async generateSourceUrl() {
         const parentCiPipelineId = this.state.ciPipeline.parentCiPipeline
-        const { result } = await getWorkflowList(this.state.ciPipeline.parentAppId)
+        const { result } = await getWorkflowList(this.state.ciPipeline.parentAppId, null, this.props.isTemplateView)
         let wf
         if (result.workflows) {
             const allWorkflows = result.workflows
@@ -140,9 +142,10 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 parentCiPipelineId,
                 false,
                 false,
+                this.props.isTemplateView,
             )
             this.setState({
-                sourcePipelineURL: `${URLS.APP}/${this.state.ciPipeline.parentAppId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${url}`,
+                sourcePipelineURL: `${URLS.APP}/${this.state.ciPipeline.parentAppId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${url}`,
             })
         }
     }
@@ -161,25 +164,6 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 variant: ToastVariantType.error,
                 description: 'Fill the required fields or cancel changes',
             })
-        }
-    }
-
-    onDelete = async () => {
-        await deleteCIPipeline(
-            this.state.form,
-            this.state.ciPipeline,
-            this.state.form.materials,
-            +this.props.match.params.appId,
-            +this.props.match.params.workflowId,
-            this.state.ciPipeline.isExternal,
-            this.state.form.webhookConditionList,
-        )
-        this.props.close()
-
-        if (this.props.deleteWorkflow) {
-            this.props.deleteWorkflow(this.props.match.params.appId, +this.props.match.params.workflowId)
-        } else {
-            this.props.getWorkflows()
         }
     }
 
@@ -226,23 +210,36 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
         )
     }
 
+    onClose = () => this.props.close() // Need to fix this: while direct use of close in onclick opening What do you want to do next? modal
+
     renderHeader() {
         return (
-            <>
-                <div className="flex left pt-15 pb-15 pl-20 pr-20">
-                    <h2 className="fs-16 fw-6 m-0">Linked build pipeline</h2>
-                    <button type="button" className="dc__transparent ml-auto" onClick={() => this.props.close()}>
-                        <Close className="icon-dim-24" />
-                    </button>
-                </div>
-                <hr className="divider mt-0" />
-            </>
+            <div className="flex left py-16 px-20 dc__content-space dc__border-bottom">
+                <h2 className="fs-16 fw-6 m-0">Linked build pipeline</h2>
+                <Button
+                    dataTestId="linked-ci-pipeline-close-button"
+                    icon={<Close />}
+                    ariaLabel="Close"
+                    showAriaLabelInTippy={false}
+                    onClick={this.onClose}
+                    variant={ButtonVariantType.borderLess}
+                    style={ButtonStyleType.negativeGrey}
+                />
+            </div>
         )
     }
 
-    renderSecondaryButtton() {
+    renderDeleteButton() {
+        const canDeletePipeline = this.props.connectCDPipelines === 0 && this.state.ciPipeline.linkedCount === 0
+
+        const deleteConfig = {
+            appId: this.props.match.params.appId,
+            pipelineId: this.state.ciPipeline.id,
+            pipelineName: this.state.ciPipeline.name,
+            appWorkflowId: Number(this.props.match.params.workflowId),
+        }
+
         if (this.props.match.params.ciPipelineId) {
-            const canDeletePipeline = this.props.connectCDPipelines === 0 && this.state.ciPipeline.linkedCount === 0
             return (
                 <ConditionalWrap
                     condition={!canDeletePipeline}
@@ -255,17 +252,16 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                         </Tippy>
                     )}
                 >
-                    <button
-                        type="button"
-                        className="cta cta--workflow delete mr-16"
+                    <DeleteCINodeButton
+                        testId="delete-linked-pipeline"
                         disabled={!canDeletePipeline}
-                        onClick={() => {
-                            this.setState({ showDeleteModal: true })
-                        }}
-                        data-testid="delete-linked-pipeline"
-                    >
-                        Delete Pipeline
-                    </button>
+                        deletePayloadConfig={deleteConfig}
+                        title={this.state.form.name}
+                        getWorkflows={this.props.getWorkflows}
+                        showIconOnly={false}
+                        onDelete={this.onClose}
+                        isTemplateView={this.props.isTemplateView}
+                    />
                 </ConditionalWrap>
             )
         }
@@ -297,17 +293,6 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 </label>
                 {this.renderTriggerType()}
                 {this.renderMaterials()}
-                {this.props.match.params.ciPipelineId && this.state.showDeleteModal && (
-                    <DeleteConfirmationModal
-                        title={this.state.form.name}
-                        component={DeleteComponentsName.LinkedBuildPipeline}
-                        subtitle={`Are you sure you want to delete this linked CI Pipeline from '${this.props.appName}' ?`}
-                        closeConfirmationModal={this.closeCIDeleteModal}
-                        onDelete={this.onDelete}
-                        successToastMessage="Pipeline Deleted"
-                        errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.BAD_REQUEST}
-                    />
-                )}
             </>
         )
     }
@@ -317,13 +302,13 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
             <VisibleModal className="">
                 <div className="modal__body p-0 br-0 modal__body--ci">
                     {this.renderHeader()}
-                    <div className="pl-20 pr-20 pb-20">
+                    <div className="px-20 py-16">
                         {this.renderInfoDialog()}
                         {this.renderCIPipelineBody()}
                     </div>
                     {this.state.view !== ViewType.LOADING && (
-                        <div className="ci-button-container bg__primary pt-12 pb-12 pl-20 pr-20 flex flex-justify">
-                            {this.renderSecondaryButtton()}
+                        <div className="ci-button-container py-12 px-20 flex flex-justify dc__gap-16">
+                            {this.renderDeleteButton()}
                             <Link
                                 to={this.state.sourcePipelineURL}
                                 target="_blank"

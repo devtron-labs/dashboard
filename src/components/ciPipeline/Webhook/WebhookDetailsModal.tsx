@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { Fragment, useEffect, useRef, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -72,7 +72,7 @@ import {
     getDefaultUserStatusAndTimeout,
 } from '../../../Pages/GlobalConfigurations/Authorization/libUtils'
 
-export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
+export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType) => {
     const { appId, webhookId } = useParams<{
         appId: string
         webhookId: string
@@ -161,7 +161,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
         try {
             const [{ result: _userRole }, { result: _webhookDetails }] = await Promise.all([
                 getUserRole(),
-                getExternalCIConfig(appId, webhookId),
+                getExternalCIConfig(appId, webhookId, isTemplateView),
             ])
             const _isSuperAdmin = _userRole?.superAdmin
             setIsSuperAdmin(_isSuperAdmin)
@@ -532,7 +532,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                 {Object.keys(schemaData).map((key) => {
                     const data = schemaData[key]
                     return (
-                        <div className="json-schema-row pt-8 pb-8 fw-4 fs-13">
+                        <div className="json-schema-row pt-8 pb-8 fw-4 fs-13" key={key}>
                             <span className="dc__ellipsis-right">{key}</span>
                             <span className="dc__ellipsis-right">
                                 {data.createLink ? (
@@ -565,10 +565,10 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                         return null
                     }
                     return (
-                        <>
+                        <Fragment key={key}>
                             <div className="cn-9 fs-13 fw-6 mt-8 mb-8">{key}</div>
                             {renderSchema(schema[key], `${schemaName}-root` + `-${key}`)}
-                        </>
+                        </Fragment>
                     )
                 })}
             </div>
@@ -904,7 +904,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
 
     const renderBodySection = (): JSX.Element => {
         return (
-            <div className={`p-20 webhook-body ${isSuperAdmin ? 'super-admin-view' : ''}`}>
+            <div className="p-20 webhook-body flex-grow-1 dc__overflow-auto">
                 {renderTokenPermissionSection()}
                 {renderPlayGroundSection()}
                 {selectedPlaygroundTab === PLAYGROUND_TAB_LIST[0].key && renderSampleResponseSection()}
@@ -915,7 +915,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
     const renderFooterSection = (): JSX.Element => {
         return (
             <div
-                className="dc__border-top flex flex-align-center flex-justify bg__primary pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0"
+                className="dc__border-top flex flex-align-center flex-justify bg__primary pt-16 pr-20 pb-16 pl-20"
                 style={{ width: '75%', minWidth: '1024px', maxWidth: '1200px' }}
             >
                 <div className="flexbox pt-8 pb-8">
@@ -947,16 +947,16 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
             return <Reload />
         }
         return (
-            <>
+            <div className='flexbox-col flex-grow-1 mh-0'>
                 {renderBodySection()}
                 {!isSuperAdmin && renderFooterSection()}
-            </>
+            </div>
         )
     }
 
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            <div className="bg__tertiary h-100 webhook-details-container" ref={appStatusDetailRef}>
+            <div className="bg__tertiary h-100 flexbox-col webhook-details-container" ref={appStatusDetailRef}>
                 {renderHeaderSection()}
                 {renderPageDetails()}
             </div>

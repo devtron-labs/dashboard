@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { lazy, useState, useEffect, Suspense, isValidElement, LazyExoticComponent } from 'react'
+import { lazy, useState, useEffect, Suspense, isValidElement, PropsWithChildren, LazyExoticComponent } from 'react'
 import { Route, NavLink, Router, Switch, Redirect, useHistory, useLocation } from 'react-router-dom'
 import {
     showError,
@@ -46,6 +46,9 @@ import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.ser
 import { BodyType } from './globalConfiguration.type'
 import { GlobalConfigurationProvider, useGlobalConfiguration } from './GlobalConfigurationProvider'
 import { OffendingPipelineModalAppView } from '@Pages/GlobalConfigurations/PluginPolicy/OffendingPipelineModal'
+import { getShouldHidePageHeaderAndSidebar } from './utils'
+import AppConfig from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
+import { ListProps } from './types'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -61,7 +64,6 @@ const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
 // NOTE: Might import from index itself
 const BuildInfra = lazy(() => import('../../Pages/GlobalConfigurations/BuildInfra/BuildInfra'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
-const PluginsPolicyV1 = importComponentFromFELibrary('PluginsPolicyV1')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy', null, 'function')
 const FilterConditions = importComponentFromFELibrary('FilterConditions')
 const LockDeploymentConfiguration = importComponentFromFELibrary('LockDeploymentConfiguration', null, 'function')
@@ -70,6 +72,7 @@ const CatalogFramework = importComponentFromFELibrary('CatalogFramework')
 const PullImageDigest = importComponentFromFELibrary('PullImageDigest')
 const DeploymentWindow = importComponentFromFELibrary('DeploymentWindowComponent')
 const ImagePromotion = importComponentFromFELibrary('ImagePromotion')
+const DevtronAppTemplates = importComponentFromFELibrary('DevtronAppTemplates', null, 'function')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -83,6 +86,8 @@ export default function GlobalConfiguration(props) {
         chartStageCompleted: 0,
     })
     const { serverMode } = useMainContext()
+
+    const shouldHidePageHeaderAndSidebar = getShouldHidePageHeaderAndSidebar(location.pathname)
 
     useEffect(() => {
         serverMode !== SERVER_MODE.EA_ONLY && getHostURLConfig()
@@ -149,14 +154,16 @@ export default function GlobalConfiguration(props) {
     }
 
     return (
-        <main className="global-configuration">
-            <PageHeader headerName="Global Configurations" />
+        <main className={`global-configuration ${shouldHidePageHeaderAndSidebar ? 'global-configuration--full-content' : ''}`}>
+            {!shouldHidePageHeaderAndSidebar && <PageHeader headerName="Global Configurations" />}
             <Router history={useHistory()}>
                 <GlobalConfigurationProvider>
-                    <section className="global-configuration__navigation">
-                        <NavItem serverMode={serverMode} />
-                    </section>
-                    <section className="global-configuration__component-wrapper">
+                    {!shouldHidePageHeaderAndSidebar && (
+                        <section className="global-configuration__navigation">
+                            <NavItem serverMode={serverMode} />
+                        </section>
+                    )}
+                    <section className="global-configuration__component-wrapper bg__secondary">
                         <Suspense fallback={<Progressing pageLoader />}>
                             <ErrorBoundary>
                                 <Body
@@ -276,6 +283,16 @@ const NavItem = ({ serverMode }) => {
             moduleName: ModuleNameMap.NOTIFICATION,
             isAvailableInEA: false,
         },
+        ...(window._env_.FEATURE_APPLICATION_TEMPLATES_ENABLE
+            ? [
+                  {
+                      name: 'Application Templates',
+                      href: CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP,
+                      component: DevtronAppTemplates,
+                      isAvailableInEA: false,
+                  },
+              ]
+            : []),
     ]
 
     useEffect(() => {
@@ -746,17 +763,11 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                         <ImagePromotion isSuperAdmin={isSuperAdmin} />
                     </Route>
                 ),
-                window._env_.FEATURE_CD_MANDATORY_PLUGINS_ENABLE
-                    ? PluginsPolicy && (
-                          <Route path={URLS.GLOBAL_CONFIG_PLUGIN_POLICY}>
-                              <PluginsPolicy OfflinePipelineModalAppView={OffendingPipelineModalAppView} />
-                          </Route>
-                      )
-                    : PluginsPolicyV1 && (
-                          <Route path={URLS.GLOBAL_CONFIG_PLUGIN_POLICY}>
-                              <PluginsPolicyV1 />
-                          </Route>
-                      ),
+                PluginsPolicy && (
+                    <Route path={URLS.GLOBAL_CONFIG_PLUGIN_POLICY}>
+                        <PluginsPolicy OfflinePipelineModalAppView={OffendingPipelineModalAppView} />
+                    </Route>
+                ),
                 PullImageDigest && (
                     <Route path={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}>
                         <PullImageDigest isSuperAdmin={isSuperAdmin} />
@@ -775,6 +786,11 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 LockDeploymentConfiguration && (
                     <Route path={URLS.GLOBAL_CONFIG_LOCK_DEPLOYMENT_CONFIGURATION}>
                         <LockDeploymentConfiguration />
+                    </Route>
+                ),
+                window._env_.FEATURE_APPLICATION_TEMPLATES_ENABLE && DevtronAppTemplates && (
+                    <Route path={CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP}>
+                        <DevtronAppTemplates AppConfig={AppConfig} />
                     </Route>
                 ),
             ]}
@@ -836,13 +852,17 @@ const DropDown = ({ className = '', dataTestid = '', style = {}, src = null, ...
     )
 }
 
-export const List = ({ dataTestId = '', children = null, className = '', ...props }) => {
-    return (
-        <div className={`list ${className}`} {...props} data-testid={dataTestId}>
-            {children}
-        </div>
-    )
-}
+export const List = ({
+    dataTestId = '',
+    children = null,
+    className = '',
+    internalRef = null,
+    ...props
+}: PropsWithChildren<ListProps>) => (
+    <div ref={internalRef} className={`list ${className}`} {...props} data-testid={dataTestId}>
+        {children}
+    </div>
+)
 
 List.Logo = Logo
 List.Title = Title

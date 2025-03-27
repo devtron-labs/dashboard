@@ -106,7 +106,6 @@ import {
     ChartValuesViewType,
 } from './ChartValuesView.type'
 import { chartValuesReducer, initState } from './ChartValuesView.reducer'
-import { ValidationRules } from '../../../app/create/validationRules'
 import { getAndUpdateSchemaValue, updateGeneratedManifest } from './ChartValuesView.utils'
 import { getAppId } from '../../appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import ChartValuesGUIForm from './ChartValuesGUIView'
@@ -134,6 +133,7 @@ import ClusterNotReachableDialog from '../../../common/ClusterNotReachableDialog
 import { VIEW_MODE } from '@Pages/Shared/ConfigMapSecret/constants'
 import IndexStore from '../../appDetails/index.store'
 import { AUTO_GENERATE_GITOPS_REPO, CHART_VALUE_ID } from './constant'
+import { validateAppName } from '@Pages/App/CreateAppModal/utils'
 import { DeleteChartDialog } from './DeleteChartDialog'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
@@ -198,7 +198,6 @@ const ChartValuesView = ({
 
     const [obj] = useJsonYaml(commonState.modifiedValuesYaml, 4, 'yaml', true)
     const isUpdate = isExternalApp || (commonState.installedConfig?.environmentId && commonState.installedConfig.teamId)
-    const validationRules = new ValidationRules()
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
 
     const isPresetValueView =
@@ -807,7 +806,7 @@ const ChartValuesView = ({
     }
 
     const isValidData = (validatedAppName?: { isValid: boolean; message: string }) => {
-        const _validatedAppName = validatedAppName || validationRules.appName(appName)
+        const _validatedAppName = validatedAppName || validateAppName(appName)
 
         if (
             isDeployChartView &&
@@ -912,7 +911,7 @@ const ChartValuesView = ({
             return
         }
 
-        const validatedName = validationRules.appName(isCreateValueView ? valueName : appName)
+        const validatedName = validateAppName(isCreateValueView ? valueName : appName)
         if (!isRequestDataValid(validatedName)) {
             // If some validation error occurred, close the readme column or comparision column
             // to show the validations errors
@@ -1126,7 +1125,7 @@ const ChartValuesView = ({
     const handleTabSwitch = (e) => {
         if (e?.target && e.target.value !== commonState.activeTab) {
             if (e.target.value === 'manifest') {
-                const validatedName = validationRules.appName(isCreateValueView ? valueName : appName)
+                const validatedName = validateAppName(isCreateValueView ? valueName : appName)
                 if (isCreateValueView && !validatedName.isValid) {
                     dispatch({
                         type: ChartValuesViewActionTypes.multipleOptions,
@@ -1430,7 +1429,7 @@ const ChartValuesView = ({
     }
 
     const handleAppNameChange = (newAppName: string) => {
-        const validatedAppName = validationRules.appName(newAppName)
+        const validatedAppName = validateAppName(newAppName)
         if (!validatedAppName.isValid && commonState.invalidAppNameMessage !== validatedAppName.message) {
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
@@ -1493,7 +1492,7 @@ const ChartValuesView = ({
 
     const renderChartValuesEditor = () => {
         return (
-            <div className="chart-values-view__editor mw-none">
+            <div className="chart-values-view__editor mw-none dc__overflow-auto">
                 {commonState.activeTab === 'manifest' && commonState.valuesEditorError ? (
                     <GenericEmptyState title="" subTitle={commonState.valuesEditorError} />
                 ) : (
@@ -1534,7 +1533,7 @@ const ChartValuesView = ({
         )
     }
     const handleValueNameChange = (newValueName: string) => {
-        const validatedValueName = validationRules.appName(newValueName)
+        const validatedValueName = validateAppName(newValueName)
         if (!validatedValueName.isValid && commonState.invalidAppNameMessage !== validatedValueName.message) {
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
@@ -1918,14 +1917,14 @@ const ChartValuesView = ({
 
     if (commonState.isLoading || isProjectLoading) {
         return (
-            <div className="dc__loading-wrapper">
+            <div className="flex-grow-1">
                 <Progressing pageLoader />
             </div>
         )
     }
     if (commonState.errorResponseCode) {
         return (
-            <div className="dc__height-reduce-48">
+            <div className="flex-grow-1">
                 <ErrorScreenManager code={commonState.errorResponseCode} />
             </div>
         )

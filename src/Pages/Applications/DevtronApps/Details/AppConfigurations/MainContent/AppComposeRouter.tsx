@@ -23,6 +23,7 @@ import {
     ApprovalConfigDataKindType,
     getIsApprovalPolicyConfigured,
     CMSecretComponentType,
+    Button,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Next } from '@Icons/ic-arrow-forward.svg'
@@ -50,18 +51,16 @@ const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, current
     const nextUrl = navItems[index + 1].href
     if (!isCiPipeline) {
         return (
-            <div className="app-compose__next-section">
-                <button
-                    type="button"
+            <div className="app-compose__next-section flex right">
+                <Button
                     disabled={isDisabled}
-                    className="cta dc__align-right flex"
                     onClick={() => {
                         history.push(nextUrl)
                     }}
-                >
-                    <span className="mr-5">Next </span>
-                    <Next className="icon-dim-18" />
-                </button>
+                    text="Next"
+                    endIcon={<Next />}
+                    dataTestId="app-compose-next-button"
+                />
             </div>
         )
     }
@@ -93,6 +92,7 @@ const AppComposeRouter = () => {
         envConfig,
         fetchEnvConfig,
         envIdToEnvApprovalConfigurationMap,
+        isTemplateView,
     } = useAppConfigurationContext()
     const { currentAppName } = useAppContext()
 
@@ -103,21 +103,24 @@ const AppComposeRouter = () => {
         // currently the logic for redirection to next unlocked stage is in respondOnSuccess function can be done for MaterialList also
         <Switch>
             <Route path={`${path}/${URLS.APP_GIT_CONFIG}`}>
-                <>
-                    <MaterialList
-                        respondOnSuccess={respondOnSuccess}
-                        isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
-                        toggleRepoSelectionTippy={toggleRepoSelectionTippy}
-                        setRepo={setRepoState}
-                        isJobView={isJobView}
-                    />
+                <div className="flexbox-col flex-grow-1 dc__content-space h-100 dc__overflow-hidden">
+                    <div className="flex-grow-1 dc__overflow-auto">
+                        <MaterialList
+                            respondOnSuccess={respondOnSuccess}
+                            isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
+                            toggleRepoSelectionTippy={toggleRepoSelectionTippy}
+                            setRepo={setRepoState}
+                            isJobView={isJobView}
+                            appId={appId}
+                        />
+                    </div>
                     <NextButton
                         currentStageName={STAGE_NAME.GIT_MATERIAL}
                         navItems={navItems}
                         isDisabled={!isUnlocked.workflowEditor}
                         isCiPipeline={isCiPipeline}
                     />
-                </>
+                </div>
             </Route>
             {isUnlocked.workflowEditor && [
                 <Route
@@ -132,6 +135,7 @@ const AppComposeRouter = () => {
                         isJobView={isJobView}
                         envList={environments}
                         reloadEnvironments={reloadEnvironments}
+                        isTemplateView={isTemplateView}
                     />
                 </Route>,
                 <Route
@@ -147,6 +151,7 @@ const AppComposeRouter = () => {
                         onErrorRedirectURL={lastUnlockedStage}
                         appName={currentAppName}
                         envName=""
+                        isTemplateView={isTemplateView}
                     />
                 </Route>,
                 <Route
@@ -163,6 +168,7 @@ const AppComposeRouter = () => {
                         onErrorRedirectURL={lastUnlockedStage}
                         appName={currentAppName}
                         envName=""
+                        isTemplateView={isTemplateView}
                     />
                 </Route>,
                 <Route path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}>
@@ -177,6 +183,7 @@ const AppComposeRouter = () => {
                             onErrorRedirectURL={lastUnlockedStage}
                             appName={currentAppName}
                             appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                            isTemplateView={isTemplateView}
                         />
                     )}
                 </Route>,
@@ -187,20 +194,24 @@ const AppComposeRouter = () => {
     const renderAppViewRoutes = (): JSX.Element => (
         <Switch>
             <Route path={`${path}/${URLS.APP_GIT_CONFIG}`}>
-                <>
-                    <MaterialList
-                        respondOnSuccess={respondOnSuccess}
-                        isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
-                        toggleRepoSelectionTippy={toggleRepoSelectionTippy}
-                        setRepo={setRepoState}
-                    />
+                <div className="flexbox-col flex-grow-1 dc__content-space h-100 dc__overflow-hidden">
+                    <div className="flex-grow-1 dc__overflow-auto">
+                        <MaterialList
+                            respondOnSuccess={respondOnSuccess}
+                            isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
+                            toggleRepoSelectionTippy={toggleRepoSelectionTippy}
+                            setRepo={setRepoState}
+                            isTemplateView={isTemplateView}
+                            appId={appId}
+                        />
+                    </div>
                     <NextButton
                         currentStageName={STAGE_NAME.GIT_MATERIAL}
                         navItems={navItems}
                         isDisabled={!isUnlocked.dockerBuildConfig}
                         isCiPipeline={isCiPipeline}
                     />
-                </>
+                </div>
             </Route>
 
             {isUnlocked.dockerBuildConfig && (
@@ -209,6 +220,8 @@ const AppComposeRouter = () => {
                         respondOnSuccess={respondOnSuccess}
                         isCDPipeline={isCDPipeline}
                         isCiPipeline={isCiPipeline}
+                        isTemplateView={isTemplateView}
+                        appId={appId}
                     />
                 </Route>
             )}
@@ -229,15 +242,16 @@ const AppComposeRouter = () => {
                         )}
                         reloadEnvironments={reloadEnvironments}
                         fetchEnvConfig={fetchEnvConfig}
+                        isTemplateView={isTemplateView}
                     />
                 </Route>
             )}
-            {canShowExternalLinks && (
+            {!isTemplateView && canShowExternalLinks && (
                 <Route path={`${path}/${URLS.APP_EXTERNAL_LINKS}`}>
                     <ExternalLinks isAppConfigView userRole={userRole} />
                 </Route>
             )}
-            {isGitOpsConfigurationRequired && (
+            {!isTemplateView && isGitOpsConfigurationRequired && (
                 <Route path={`${path}/${URLS.APP_GITOPS_CONFIG}`}>
                     <UserGitRepoConfiguration
                         respondOnSuccess={respondOnSuccess}
@@ -259,6 +273,7 @@ const AppComposeRouter = () => {
                         filteredEnvIds={filteredEnvIds}
                         reloadEnvironments={reloadEnvironments}
                         reloadAppConfig={reloadAppConfig}
+                        isTemplateView={isTemplateView}
                     />
                 </Route>,
                 <Route
@@ -275,6 +290,7 @@ const AppComposeRouter = () => {
                         onErrorRedirectURL={lastUnlockedStage}
                         appName={currentAppName}
                         envName=""
+                        isTemplateView={isTemplateView}
                     />
                 </Route>,
                 <Route
@@ -292,6 +308,7 @@ const AppComposeRouter = () => {
                         onErrorRedirectURL={lastUnlockedStage}
                         appName={currentAppName}
                         envName=""
+                        isTemplateView={isTemplateView}
                     />
                 </Route>,
                 <Route
@@ -308,45 +325,48 @@ const AppComposeRouter = () => {
                             onErrorRedirectURL={lastUnlockedStage}
                             appName={currentAppName}
                             appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                            isTemplateView={isTemplateView}
                         />
                     )}
                 </Route>,
-                <Route
-                    key={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}`}
-                    path={`${path}/:envId(\\d+)?/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
-                >
-                    {({ match }) => {
-                        const basePath = generatePath(path, match.params)
-                        const envOverridePath = match.params.envId
-                            ? `/${URLS.APP_ENV_OVERRIDE_CONFIG}/${match.params.envId}`
-                            : `/${URLS.BASE_CONFIG}`
+                !isTemplateView && (
+                    <Route
+                        key={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}`}
+                        path={`${path}/:envId(\\d+)?/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
+                    >
+                        {({ match }) => {
+                            const basePath = generatePath(path, match.params)
+                            const envOverridePath = match.params.envId
+                                ? `/${URLS.APP_ENV_OVERRIDE_CONFIG}/${match.params.envId}`
+                                : `/${URLS.BASE_CONFIG}`
 
-                        // Used in CM/CS
-                        const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
+                            // Used in CM/CS
+                            const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
 
-                        const goBackURL =
-                            match.params.resourceType === EnvResourceType.Manifest ||
-                            match.params.resourceType === EnvResourceType.PipelineStrategy
-                                ? `${basePath}${envOverridePath}`
-                                : `${basePath}${envOverridePath}/${match.params.resourceType}${resourceNamePath}`
+                            const goBackURL =
+                                match.params.resourceType === EnvResourceType.Manifest ||
+                                match.params.resourceType === EnvResourceType.PipelineStrategy
+                                    ? `${basePath}${envOverridePath}`
+                                    : `${basePath}${envOverridePath}/${match.params.resourceType}${resourceNamePath}`
 
-                        return (
-                            <DeploymentConfigCompare
-                                type="app"
-                                appName={currentAppName}
-                                environments={environments.map(({ environmentId, environmentName }) => ({
-                                    id: environmentId,
-                                    name: environmentName,
-                                }))}
-                                goBackURL={goBackURL}
-                                getNavItemHref={(resourceType, resourceName) =>
-                                    `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
-                                }
-                                appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
-                            />
-                        )
-                    }}
-                </Route>,
+                            return (
+                                <DeploymentConfigCompare
+                                    type="app"
+                                    appName={currentAppName}
+                                    environments={environments.map(({ environmentId, environmentName }) => ({
+                                        id: environmentId,
+                                        name: environmentName,
+                                    }))}
+                                    goBackURL={goBackURL}
+                                    getNavItemHref={(resourceType, resourceName) =>
+                                        `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
+                                    }
+                                    appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                                />
+                            )
+                        }}
+                    </Route>
+                ),
             ]}
             {/* Redirect route is there when current path url has something after /edit */}
             {location.pathname !== url && <Redirect to={lastUnlockedStage} />}

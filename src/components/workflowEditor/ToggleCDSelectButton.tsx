@@ -14,37 +14,63 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import Tippy from '@tippyjs/react'
+import {
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    DeleteCINodeButton,
+    Icon,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ToggleCDSelectButtonProps } from './types'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 
-export default function ToggleCDSelectButton({
+const ToggleCDSelectButton = ({
     addNewPipelineBlocked,
     onClickAddNode,
     testId,
-}: ToggleCDSelectButtonProps) {
-    return (
-        <Tippy
-            className="default-tt"
-            arrow={false}
-            placement="top"
-            content={
-                <span style={{ display: 'block', width: '145px' }}>
-                    {addNewPipelineBlocked
+    deleteConfig,
+    getWorkflows,
+    hideDeleteButton = false,
+    isTemplateView,
+}: ToggleCDSelectButtonProps) => (
+    <div
+        className={`${!hideDeleteButton ? 'dc__grid-rows-2' : 'flex'} ci-node__action-button dc__right-radius-8 h-100 dc__border-left-n1 w-24 dc__align-items-center`}
+    >
+        <div className={`${!hideDeleteButton ? 'dc__border-bottom-n1' : ''}`}>
+            <Button
+                ariaLabel={
+                    addNewPipelineBlocked
                         ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.'
-                        : 'Add deployment pipeline'}
-                </span>
-            }
-        >
-            <button
-                className="flex h-100 pl-6 pr-6 pt-0 pb-0 dc__outline-none-imp bg__primary dc__no-border dc__hover-b500 pt-4 pb-4 pl-6 pr-6 dc__border-left-n1--important workflow-node__title--top-right-rad-8 workflow-node__title--bottom-right-rad-8 workflow-node__title--add-cd-icon"
-                data-testid={testId}
-                type="button"
+                        : 'Add deployment pipeline'
+                }
+                variant={ButtonVariantType.borderLess}
+                dataTestId={`${testId}-add-button`}
                 onClick={onClickAddNode}
-            >
-                <Add className={`icon-dim-12 fcn-6 ${addNewPipelineBlocked ? 'dc__disabled' : ''}`} />
-            </button>
-        </Tippy>
-    )
-}
+                icon={<Icon size={12} name="ic-add" color={null} />}
+                disabled={addNewPipelineBlocked}
+                size={ComponentSizeType.xxs_small_icon}
+                style={ButtonStyleType.neutral}
+                fullWidth
+                showTooltip
+                tooltipProps={{
+                    placement: 'right',
+                    content: addNewPipelineBlocked
+                        ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.'
+                        : 'Add deployment pipeline',
+                }}
+            />
+        </div>
+
+        {!hideDeleteButton && (
+            <DeleteCINodeButton
+                testId={`${testId}-delete-button`}
+                deletePayloadConfig={deleteConfig}
+                title={deleteConfig.pipelineName}
+                getWorkflows={getWorkflows}
+                isTemplateView={isTemplateView}
+            />
+        )}
+    </div>
+)
+
+export default ToggleCDSelectButton

@@ -36,6 +36,7 @@ import {
     InfoColourBar,
     logExceptionToSentry,
     CodeEditorThemesKeys,
+    noop,
     AppThemeType,
     isCodeMirrorEnabled,
     getComponentSpecificThemeClass,
@@ -44,6 +45,8 @@ import Tippy from '@tippyjs/react'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
 import { ReactComponent as ICInfoFilled } from '@Icons/ic-info-filled.svg'
+import { importComponentFromFELibrary } from '@Components/common'
+import { DEFAULT_CLUSTER_ID } from '@Components/cluster/cluster.type'
 import { NodeDetailTab } from '../nodeDetail.type'
 import {
     createResource,
@@ -59,6 +62,7 @@ import {
     ManifestActionPropsType,
     ManifestCodeEditorMode,
     ManifestViewRefType,
+    Node,
     NodeType,
 } from '../../../appDetails.type'
 import { appendRefetchDataToUrl } from '../../../../../util/URLUtil'
@@ -72,8 +76,6 @@ import {
     SAVE_DATA_VALIDATION_ERROR_MSG,
 } from '../../../../values/chartValuesDiff/ChartValuesView.constants'
 import { getDecodedEncodedSecretManifestData, getTrimmedManifestData } from '../nodeDetail.util'
-import { importComponentFromFELibrary } from '@Components/common'
-import { DEFAULT_CLUSTER_ID } from '@Components/cluster/cluster.type'
 
 const renderOutOfSyncWarning = importComponentFromFELibrary('renderOutOfSyncWarning', null, 'function')
 const getManifestGUISchema = importComponentFromFELibrary('getManifestGUISchema', null, 'function')
@@ -171,6 +173,7 @@ const ManifestComponent = ({
     const isReadOnlyView = showManifestCompareView || !isEditMode
 
     useEffectAfterMount(() => {
+        // eslint-disable-next-line no-param-reassign
         manifestViewRef.current = {
             data: {
                 error,
@@ -259,12 +262,13 @@ const ManifestComponent = ({
         )
 
         const _isResourceMissing =
-            appDetails.appType === AppType.EXTERNAL_HELM_CHART && _selectedResource?.['health']?.status === 'Missing'
+            appDetails.appType === AppType.EXTERNAL_HELM_CHART &&
+            (_selectedResource as unknown as Node)?.health?.status === 'Missing'
         setIsResourceMissing(_isResourceMissing)
         const _showDesiredAndCompareManifest =
             !isResourceBrowserView &&
             appDetails.appType === AppType.EXTERNAL_HELM_CHART &&
-            !_selectedResource?.['parentRefs']?.length
+            !(_selectedResource as unknown as Node)?.parentRefs?.length
         setShowDesiredAndCompareManifest(_showDesiredAndCompareManifest)
 
         if (
@@ -338,7 +342,7 @@ const ManifestComponent = ({
                         setError(true)
                         showError(err)
                     })
-            } catch (err) {
+            } catch {
                 setLoading(false)
             }
         }
@@ -360,7 +364,9 @@ const ManifestComponent = ({
                 if (jsonManifestData?.metadata?.managedFields) {
                     setTrimedManifestEditorData(getTrimmedManifestData(jsonManifestData, true) as string)
                 }
-            } catch {}
+            } catch {
+                noop()
+            }
             toggleManagedFields(false)
         }
     }, [isEditMode, modifiedManifest])
@@ -376,7 +382,9 @@ const ManifestComponent = ({
                         setTrimedManifestEditorData(getTrimmedManifestData(jsonManifestData, true) as string)
                     }
                 }
-            } catch {}
+            } catch {
+                noop()
+            }
         }
     }, [activeManifestEditorData, hideManagedFields, showManifestCompareView])
 
@@ -414,13 +422,13 @@ const ManifestComponent = ({
         setActiveManifestEditorData(modifiedManifest)
     }
 
-    const handleCallApplyChangesAPI = (manifest: string): Promise<void> =>
+    const handleCallApplyChangesAPI = (manifestString: string): Promise<void> =>
         new Promise<void>((resolve) => {
             updateManifestResourceHelmApps(
                 appDetails,
                 params.podName,
                 params.nodeType,
-                manifest,
+                manifestString,
                 isResourceBrowserView,
                 selectedResource,
             )
@@ -448,9 +456,9 @@ const ManifestComponent = ({
                             description: TOAST_ACCESS_DENIED.SUBTITLE,
                         })
                     } else if (err.code === 400 || err.code === 409 || err.code === 422) {
-                        const error = err['errors'] && err['errors'][0]
-                        if (error && error.code && error.userMessage) {
-                            setErrorText(`ERROR ${err.code} > Message: “${error.userMessage}”`)
+                        const er = err.errors && err.errors[0]
+                        if (er && er.code && er.userMessage) {
+                            setErrorText(`ERROR ${err.code} > Message: “${er.userMessage}”`)
                         } else {
                             showError(err)
                         }
@@ -550,7 +558,7 @@ const ManifestComponent = ({
                 handleEditLiveManifest()
                 break
             case ManifestCodeEditorMode.APPLY_CHANGES:
-                handleApplyChanges()
+                handleApplyChanges().catch(noop)
                 break
             default:
             // DO NOTHING
@@ -578,47 +586,48 @@ const ManifestComponent = ({
         setShowLockedDiffModal(false)
     }
 
+    const renderNoContentToDecodeTippy = (children) => (
+        <Tippy
+            className="default-tt w-200"
+            arrow={false}
+            placement="top-start"
+            content="Nothing to decode, data field not found."
+        >
+            {children}
+        </Tippy>
+    )
+
     const renderShowDecodedValueCheckbox = () => {
         let jsonManifestData
+
         try {
             jsonManifestData = YAML.parse(trimedManifestEditorData)
         } catch {
             return null
         }
-        if (jsonManifestData?.kind === 'Secret' && !isEditMode && secretViewAccess) {
-            return (
-                <ConditionalWrap
-                    condition={!jsonManifestData?.data}
-                    wrap={(children) => (
-                        <Tippy
-                            className="default-tt w-200"
-                            arrow={false}
-                            placement="top-start"
-                            content="Nothing to decode, data field not found."
-                        >
-                            {children}
-                        </Tippy>
-                    )}
-                >
-                    <div
-                        className={`${
-                            !jsonManifestData?.data ? 'dc__opacity-0_5 cursor-not-allowed' : ''
-                        } flex left ml-8`}
-                    >
-                        <Checkbox
-                            rootClassName={`${
-                                !jsonManifestData?.data ? 'dc__opacity-0_5 cursor-not-allowed' : 'cursor'
-                            } mb-0-imp h-18`}
-                            id="showDecodedValue"
-                            isChecked={showDecodedData}
-                            onChange={() => onChangeToggleShowDecodedValue(jsonManifestData)}
-                            value={CHECKBOX_VALUE.CHECKED}
-                        />
-                        Show decoded Value
-                    </div>
-                </ConditionalWrap>
-            )
+
+        if (jsonManifestData?.kind !== 'Secret' || isEditMode || !secretViewAccess) {
+            return null
         }
+
+        return (
+            <ConditionalWrap condition={!jsonManifestData?.data} wrap={renderNoContentToDecodeTippy}>
+                <div
+                    className={`${!jsonManifestData?.data ? 'dc__opacity-0_5 cursor-not-allowed' : ''} flex left ml-8`}
+                >
+                    <Checkbox
+                        rootClassName={`${
+                            !jsonManifestData?.data ? 'dc__opacity-0_5 cursor-not-allowed' : 'cursor'
+                        } mb-0-imp h-18`}
+                        id="showDecodedValue"
+                        isChecked={showDecodedData}
+                        onChange={() => onChangeToggleShowDecodedValue(jsonManifestData)}
+                        value={CHECKBOX_VALUE.CHECKED}
+                    />
+                    Show decoded Value
+                </div>
+            </ConditionalWrap>
+        )
     }
 
     const getCodeEditorValue = () => {
@@ -698,7 +707,11 @@ const ManifestComponent = ({
         }
 
         return (
-            <div className={!isCodeMirrorEnabled() ? getComponentSpecificThemeClass(AppThemeType.dark) : ''} style={{ height: isResourceBrowserView ? 'calc(100vh - 119px)' : 'calc(100vh - 77px)' }}>
+            <div
+                className={`flex-grow-1 flexbox-col ${
+                    !isCodeMirrorEnabled() ? getComponentSpecificThemeClass(AppThemeType.dark) : ''
+                }`}
+            >
                 <CodeEditor
                     cleanData={showManifestCompareView}
                     diffView={showManifestCompareView}
@@ -712,11 +725,11 @@ const ManifestComponent = ({
                         defaultValue: showManifestCompareView ? desiredManifest : '',
                         onChange: handleEditorValueChange,
                         focus: isEditMode,
-                        height: '100%',
+                        height: '0',
                     }}
                     codeMirrorProps={{
                         theme: AppThemeType.dark,
-                        height: '100%',
+                        height: 'fitToParent',
                         ...(showManifestCompareView
                             ? {
                                   diffView: true,
@@ -771,11 +784,10 @@ const ManifestComponent = ({
         </div>
     ) : (
         <div
-            className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ' '} manifest-container flexbox-col flex-grow-1 dc__overflow-auto`}
+            className="manifest-container flexbox-col flex-grow-1 dc__overflow-auto"
             data-testid="app-manifest-container"
             style={{
                 background: 'var(--terminal-bg)',
-                ...(!isResourceBrowserView ? { minHeight: 'calc(100vh - 152px)' } : {}),
             }}
         >
             {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
@@ -783,7 +795,7 @@ const ManifestComponent = ({
                 <div
                     className={`${
                         manifestFormConfigurationType === ConfigurationType.GUI ? 'bg__primary' : ''
-                    } flexbox-col flex-grow-1 dc__overflow-auto h-100`}
+                    } flexbox-col flex-grow-1 dc__overflow-hidden`}
                 >
                     {isResourceMissing && !loading && !showManifestCompareView ? (
                         <MessageUI

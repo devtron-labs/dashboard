@@ -8,8 +8,6 @@ vite.config.mts
 # The following files have eslint errors/warnings
 src/App.tsx
 src/Pages/GlobalConfigurations/Authorization/APITokens/__tests__/ApiTokens.test.tsx
-src/components/AppSelector/AppSelector.tsx
-src/components/AppSelector/AppSelectorUtil.tsx
 src/components/AppSelector/ChartSelector.tsx
 src/components/ApplicationGroup/AppGroup.service.ts
 src/components/ApplicationGroup/AppGroup.types.ts
@@ -33,11 +31,7 @@ src/components/ApplicationGroup/Details/EnvironmentOverview/HibernateStatusRow.t
 src/components/ApplicationGroup/Details/EnvironmentOverview/__test__/EnvironmentOverview.test.tsx
 src/components/ApplicationGroup/Details/TriggerView/BulkCDTrigger.tsx
 src/components/ApplicationGroup/Details/TriggerView/BulkCITrigger.tsx
-src/components/ApplicationGroup/Details/TriggerView/BulkSourceChange.tsx
 src/components/ApplicationGroup/Details/TriggerView/EnvTriggerView.tsx
-src/components/ApplicationGroup/Details/TriggerView/SourceUpdateResponseModal.tsx
-src/components/ApplicationGroup/Details/TriggerView/TriggerModalTableRow.tsx
-src/components/ApplicationGroup/Details/TriggerView/TriggerResponseModal.tsx
 src/components/ApplicationGroup/SearchBar.tsx
 src/components/CIPipelineN/AdvancedConfigOptions.tsx
 src/components/CIPipelineN/Build.tsx
@@ -93,7 +87,6 @@ src/components/app/create/validationRules.ts
 src/components/app/details/AboutAppInfoModal.tsx
 src/components/app/details/AboutTagEditModal.tsx
 src/components/app/details/AppHeader.tsx
-src/components/app/details/appDetails/AppDetails.tsx
 src/components/app/details/appDetails/AppMetrics.tsx
 src/components/app/details/appDetails/AppStatusCard.tsx
 src/components/app/details/appDetails/DeploymentStatusDetailModal.tsx
@@ -170,7 +163,6 @@ src/components/charts/charts.util.tsx
 src/components/charts/dialogs/ValuesYamlConfirmDialog.tsx
 src/components/charts/discoverChartDetail/About.tsx
 src/components/charts/discoverChartDetail/ChartDeploymentList.tsx
-src/components/charts/discoverChartDetail/ChartVersionSelectorModal.tsx
 src/components/charts/discoverChartDetail/DiscoverChartDetails.tsx
 src/components/charts/list/ChartGroup.tsx
 src/components/charts/list/ChartListPopUp.tsx
@@ -336,7 +328,6 @@ src/components/security/security.service.ts
 src/components/security/security.util.tsx
 src/components/terminal/TerminalWrapper.tsx
 src/components/util/KeyValueFileInput.tsx
-src/components/v2/appDetails/AppDetails.component.tsx
 src/components/v2/appDetails/ReleaseStatusEmptyState.tsx
 src/components/v2/appDetails/SyncError.component.tsx
 src/components/v2/appDetails/__tests__/index.store.test.ts
@@ -345,16 +336,8 @@ src/components/v2/appDetails/appDetails.type.ts
 src/components/v2/appDetails/ea/EAAppDetail.component.tsx
 src/components/v2/appDetails/k8Resource/FilterResource.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/EphemeralContainerDrawer.tsx
-src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetail.component.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/CustomLogsModal/CustomLogsModal.tsx
-src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/Events.component.tsx
-src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/EventsTable.tsx
-src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/LogViewer.component.tsx
-src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/Logs.component.tsx
-src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/Manifest.component.tsx
-src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/Summary.component.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/Terminal.component.tsx
-src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/Terminal.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/TerminalWrapper.component.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/__tests__/Terminal.component.test.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/__tests__/TerminalWrapper.test.tsx
@@ -408,7 +391,6 @@ src/components/workflowEditor/EmptyWorkflow.tsx
 src/components/workflowEditor/NoGitOpsConfiguredWarning.tsx
 src/components/workflowEditor/NoGitOpsRepoConfiguredWarning.tsx
 src/components/workflowEditor/PipelineSelect.tsx
-src/components/workflowEditor/ToggleCDSelectButton.tsx
 src/components/workflowEditor/Workflow.tsx
 src/components/workflowEditor/nodes/CDNode.tsx
 src/components/workflowEditor/nodes/CINode.tsx

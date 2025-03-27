@@ -205,14 +205,14 @@ const EnvironmentOverrideRouter = ({
     const [ciPipelines, setCIPipelines] = useState([])
     const [isEnvLoading, setIsEnvLoading] = useState(false)
 
-    const { isJobView, getWorkflows, reloadEnvironments, environments } = useAppConfigurationContext()
+    const { isJobView, getWorkflows, reloadEnvironments, environments, isTemplateView } = useAppConfigurationContext()
 
     const getJobOtherEnvironment = async () => {
         setIsEnvLoading(true)
         try {
             const [{ result: envListMinRes }, { result: ciConfigRes }] = await Promise.all([
                 getEnvironmentListMinPublic(),
-                getCIConfig(Number(appId)),
+                getCIConfig(Number(appId), isTemplateView),
             ])
             const list = []
             envListMinRes?.forEach((env) => {
@@ -302,7 +302,7 @@ const EnvironmentOverrideRouter = ({
     const renderEnvsNav = (): JSX.Element => {
         if (environments.length) {
             return (
-                <div className="w-100" style={{ height: 'calc(100% - 60px)' }} data-testid="env-override-list">
+                <div className="w-100" data-testid="env-override-list">
                     {environments.map((env) => {
                         const isApprovalApplicable =
                             envIdToEnvApprovalConfigurationMap?.[env.environmentId]?.isApprovalApplicable

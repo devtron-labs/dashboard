@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import { post } from '@devtron-labs/devtron-fe-common-lib'
-import { Routes } from '../../../config'
+import { URLS as CommonURLS } from '@devtron-labs/devtron-fe-common-lib'
 
-export function createApp(request) {
-    const URL = `${Routes.APP}`
-    return post(URL, request)
-}
+export const getShouldHidePageHeaderAndSidebar = (pathname: string) =>
+    !!new RegExp(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL.replace(':appId', '')).test(pathname)

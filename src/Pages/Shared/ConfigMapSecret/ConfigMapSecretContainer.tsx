@@ -116,6 +116,7 @@ export const ConfigMapSecretContainer = ({
     parentName,
     appChartRef,
     reloadEnvironments,
+    isTemplateView,
 }: ConfigMapSecretContainerProps) => {
     // HOOKS
     const location = useLocation()
@@ -191,6 +192,7 @@ export const ConfigMapSecretContainer = ({
         appId,
         isSecret ? APP_COMPOSE_STAGE.SECRETS : APP_COMPOSE_STAGE.CONFIG_MAPS,
         isJob,
+        isTemplateView,
     )
     const headerMessage =
         cmSecretStateLabel === CM_SECRET_STATE.ENV ||
@@ -232,6 +234,7 @@ export const ConfigMapSecretContainer = ({
                                   resourceId: id,
                                   isJob,
                                   abortControllerRef,
+                                  isTemplateView,
                               })
                             : null,
                         // Fetch Base Configuration (Inherited Tab Data)
@@ -249,6 +252,7 @@ export const ConfigMapSecretContainer = ({
                                   resourceId: isJob ? id : null,
                                   isJob,
                                   abortControllerRef,
+                                  isTemplateView,
                               })
                             : null,
                         // Fetch Draft Configuration
@@ -736,6 +740,7 @@ export const ConfigMapSecretContainer = ({
                     appId: +appId,
                     payload: payloadData,
                     signal: abortControllerRef.current.signal,
+                    isTemplateView,
                 }
 
                 await (isSecret ? updateSecret : updateConfigMap)(updateConfigMapSecretParams)
@@ -746,6 +751,7 @@ export const ConfigMapSecretContainer = ({
                     envId: +envId,
                     payload: payloadData,
                     signal: abortControllerRef.current.signal,
+                    isTemplateView,
                 }
 
                 await (isSecret ? overRideSecret : overRideConfigMap)(overrideConfigMapSecretParams)
@@ -953,6 +959,7 @@ export const ConfigMapSecretContainer = ({
             updateCMSecret={updateCMSecret}
             closeDeleteModal={closeDeleteModal}
             handleError={handleError}
+            isTemplateView={isTemplateView}
         />
     )
 
@@ -989,7 +996,7 @@ export const ConfigMapSecretContainer = ({
                     showNoOverride={showNoOverride}
                     parsingError={parsingError}
                     restoreLastSavedYAML={restoreLastSavedYAML}
-                    hideTabs={{ inherited: isJob, dryRun: isJob }}
+                    hideTabs={{ inherited: isJob, dryRun: isJob || isTemplateView }}
                 />
                 {!hideConfigToolbar && (
                     <ConfigToolbar
@@ -1046,10 +1053,12 @@ export const ConfigMapSecretContainer = ({
     return (
         <>
             <Prompt when={shouldPrompt} message={checkIfPathIsMatching(location.pathname)} />
-            <div
-                className={`configmap-secret-container p-8 h-100 dc__position-rel ${showComments ? 'with-comment-drawer' : ''}`}
-            >
-                <div className="dc__border br-4 dc__overflow-hidden h-100 bg__primary">{renderContent()}</div>
+            <div className="configmap-secret-container flexbox w-100 dc__content-space h-100 dc__position-rel">
+                <div className="p-8 flexbox flex-grow-1 mw-none">
+                    <div className="dc__border br-4 dc__overflow-hidden h-100 bg__primary flex-grow-1">
+                        {renderContent()}
+                    </div>
+                </div>
                 {renderDeleteModal()}
                 {SaveChangesModal && showDraftSaveModal && (
                     <SaveChangesModal
@@ -1074,7 +1083,13 @@ export const ConfigMapSecretContainer = ({
                 )}
                 {window._env_.ENABLE_SCOPED_VARIABLES && (
                     <div className="app-config-variable-widget-position">
-                        <FloatingVariablesSuggestions zIndex={100} appId={appId} envId={envId} clusterId={clusterId} />
+                        <FloatingVariablesSuggestions
+                            zIndex={100}
+                            appId={appId}
+                            envId={envId}
+                            clusterId={clusterId}
+                            isTemplateView={isTemplateView}
+                        />
                     </div>
                 )}
             </div>

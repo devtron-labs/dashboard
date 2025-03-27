@@ -25,11 +25,11 @@ import {
     HeaderWithCreateButton,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { CreateAppModal } from '@Pages/App/CreateAppModal'
 import { URLS } from '../../../config'
 import { INITIAL_EMPTY_MASTER_FILTERS, JobListViewType } from '../Constants'
 import JobListContainer from './JobListContainer'
 import { getJobStatusLabelFromValue, parseSearchParams } from '../Utils'
-import { AddNewApp } from '../../app/create/CreateApp'
 import { getJobsInitFilters } from '../Service'
 import '../../app/list/list.scss'
 import {
@@ -136,18 +136,9 @@ const JobsList = () => {
 
     const renderCreateJobRouter = () => (
         <Switch>
-            <Route
-                path={`${path}/${URLS.CREATE_JOB}`}
-                render={({ history: routeHistory, location: routeLocation, match }) => (
-                    <AddNewApp
-                        isJobView
-                        close={closeJobCreateModal}
-                        history={routeHistory}
-                        location={routeLocation}
-                        match={match}
-                    />
-                )}
-            />
+            <Route path={`${path}/${URLS.CREATE_JOB}`}>
+                <CreateAppModal isJobView handleClose={closeJobCreateModal} />
+            </Route>
         </Switch>
     )
 
@@ -156,11 +147,9 @@ const JobsList = () => {
     }
 
     return (
-        <div className="jobs-view-container h-100 bg__primary">
+        <div className="jobs-view-container h-100 flexbox-col flex-grow-1 bg__primary">
             {dataStateType === JobListViewType.LOADING && (
-                <div className="w-100 h-100vh">
-                    <DevtronProgressing parentClasses="h-100 w-100 flex bg__primary" classes="icon-dim-80" />
-                </div>
+                <DevtronProgressing parentClasses="h-100 w-100 flex bg__primary" classes="icon-dim-80" />
             )}
             {dataStateType === JobListViewType.LIST && (
                 <>

@@ -25,6 +25,7 @@ import {
     ResourceKindType,
     ToastManager,
     ToastVariantType,
+    URLS as CommonURLS,
     DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
@@ -157,7 +158,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const getAppListData = async (): Promise<OptionType[]> => {
         setSelectedAppList([])
         setAppListLoading(true)
-        const { result } = await getAppOtherEnvironmentMin(appId)
+        const { result } = await getAppOtherEnvironmentMin(appId, false)
         const appListOptionsList = result?.length
             ? result
                   .map((app): OptionType => {
@@ -327,7 +328,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
 
     const _filteredEnvIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
     return (
-        <div className="app-details-page dc__overflow-auto">
+        <div className="app-details-page flexbox-col w-100 h-100 dc__overflow-auto">
             {!isV2 && (
                 <AppHeader
                     appName={appName}
@@ -405,7 +406,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                         >
                             <CDDetails key={appId} filteredEnvIds={_filteredEnvIds} />
                         </Route>
-                        <Route path={`${path}/${URLS.APP_CONFIG}`}>
+                        <Route path={`${path}/${CommonURLS.APP_CONFIG}`}>
                             <AppConfig
                                 appName={appName}
                                 resourceKind={ResourceKindType.devtronApplication}
@@ -416,6 +417,8 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                     </Switch>
                 </Suspense>
             </ErrorBoundary>
+
+            <div className='dc__no-shrink' id="cluster-meta-data-bar__container" />
         </div>
     )
 }

@@ -38,6 +38,7 @@ import {
     TabProps,
     ToastManager,
     ToastVariantType,
+    URLS as CommonURLS,
     DeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
@@ -414,7 +415,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             return <Progressing pageLoader />
         }
         if (showEmpty) {
-            return <div className="env-empty-state flex w-100">{renderEmpty()}</div>
+            return <div className="flex flex-grow-1 w-100">{renderEmpty()}</div>
         }
         const _filteredAppsIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
         return (
@@ -445,7 +446,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                         >
                             <EnvCDDetails filteredAppIds={_filteredAppsIds} />
                         </Route>
-                        <Route path={`${path}/${URLS.APP_CONFIG}/:appId(\\d+)?`}>
+                        <Route path={`${path}/${CommonURLS.APP_CONFIG}/:appId(\\d+)?`}>
                             <EnvConfig filteredAppIds={_filteredAppsIds} envName={envName} />
                         </Route>
                         <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />
@@ -456,7 +457,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     }
 
     return (
-        <div className="env-details-page h-100vh flexbox-col">
+        <div className="env-details-page h-100 dc__overflow-hidden flexbox-col">
             <EnvHeader
                 envName={envName}
                 setEnvName={setEnvName}
@@ -665,7 +666,7 @@ export const EnvHeader = ({
                 tabType: 'navLink',
                 icon: Settings,
                 props: {
-                    to: `${match.url}/${URLS.APP_CONFIG}`,
+                    to: `${match.url}/${CommonURLS.APP_CONFIG}`,
                     onClick: (event) =>
                         handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.ConfigurationClicked.action),
                     'data-testid': 'group-configuration',

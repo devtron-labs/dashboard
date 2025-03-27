@@ -15,7 +15,7 @@
  */
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import {
     Switch,
     Route,
@@ -43,13 +43,12 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCommonAppFilters } from '@Services/service'
 import { Cluster } from '@Services/service.types'
+import { CreateAppModal } from '@Pages/App/CreateAppModal'
 import { useAppContext } from '../../common'
-import { SERVER_MODE, DOCUMENTATION } from '../../../config'
+import { SERVER_MODE } from '../../../config'
 import HelmAppList from './HelmAppList'
 import { AppListPropType } from '../list/types'
-import { AddNewApp } from '../create/CreateApp'
 import '../list/list.scss'
-import EAEmptyState, { EAEmptyStateType } from '../../common/eaEmptyState/EAEmptyState'
 import { APP_LIST_LOCAL_STORAGE_KEY, APP_LISTING_URLS, FLUX_CD_HELM_RELEASE_LABEL } from './Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import {
@@ -86,6 +85,8 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
     const [fetchingExternalApps, setFetchingExternalApps] = useState<boolean>(false)
     const [appCount, setAppCount] = useState<number>(0)
     const [showPulsatingDot, setShowPulsatingDot] = useState<boolean>(false)
+
+    const appListContainerRef = useRef<HTMLDivElement>(null)
 
     // check for external argoCD app
     const isExternalArgo =
@@ -293,6 +294,12 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
             />
         )
 
+    const removePageNumber = (search: string) => {
+        const searchParams = new URLSearchParams(search)
+        searchParams.delete('pageNumber')
+        return searchParams.toString() ? `?${searchParams.toString()}` : ''
+    }
+
     const tabs: TabProps[] = [
         ...(serverMode === SERVER_MODE.FULL
             ? [
@@ -303,7 +310,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                       props: {
                           to: {
                               pathname: getChangeAppTabURL(AppListConstants.AppTabs.DEVTRON_APPS),
-                              search: location.search,
+                              search: removePageNumber(location.search),
                           },
                           'data-testid': 'devtron-app-list-button',
                       },
@@ -317,7 +324,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
             props: {
                 to: {
                     pathname: getChangeAppTabURL(AppListConstants.AppTabs.HELM_APPS),
-                    search: location.search,
+                    search: removePageNumber(location.search),
                 },
                 'data-testid': 'helm-app-list-button',
             },
@@ -331,7 +338,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                       props: {
                           to: {
                               pathname: getChangeAppTabURL(AppListConstants.AppTabs.ARGO_APPS),
-                              search: location.search,
+                              search: removePageNumber(location.search),
                           },
                           'data-testid': 'argo-app-list-button',
                       },
@@ -347,7 +354,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                       props: {
                           to: {
                               pathname: getChangeAppTabURL(AppListConstants.AppTabs.FLUX_APPS),
-                              search: location.search,
+                              search: removePageNumber(location.search),
                           },
                           'data-testid': 'flux-app-list-button',
                       },
@@ -401,25 +408,16 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
         return (
             <Switch>
                 {APP_LISTING_URLS.map((currentUrl) => (
-                    <Route
-                        path={`${currentUrl}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
-                        key={currentUrl}
-                        render={(props) => (
-                            <AddNewApp
-                                close={closeDevtronAppCreateModal}
-                                match={props.match}
-                                location={props.location}
-                                history={props.history}
-                            />
-                        )}
-                    />
+                    <Route path={`${currentUrl}/${AppListConstants.CREATE_DEVTRON_APP_URL}`} key={currentUrl}>
+                        <CreateAppModal handleClose={closeDevtronAppCreateModal} isJobView={false} />
+                    </Route>
                 ))}
             </Switch>
         )
     }
 
     return (
-        <div className="flexbox-col h-100 dc__overflow-auto">
+        <div ref={appListContainerRef} className="flexbox-col h-100 dc__overflow-auto">
             <HeaderWithCreateButton headerName="Applications" />
             <AppListFilters
                 filterConfig={filterConfig}
@@ -459,17 +457,8 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                     syncListData={syncListData}
                     updateDataSyncing={updateDataSyncing}
                     setAppCount={setAppCount}
+                    appListContainerRef={appListContainerRef}
                 />
-            )}
-            {params.appType === AppListConstants.AppType.DEVTRON_APPS && serverMode === SERVER_MODE.EA_ONLY && (
-                <div style={{ height: 'calc(100vh - 250px)' }}>
-                    <EAEmptyState
-                        title="Create, build, deploy and debug custom apps"
-                        msg="Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI."
-                        stateType={EAEmptyStateType.DEVTRONAPPS}
-                        knowMoreLink={DOCUMENTATION.HOME_PAGE}
-                    />
-                </div>
             )}
             {params.appType === AppListConstants.AppType.HELM_APPS && (
                 <>
@@ -488,6 +477,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                         changePage={changePage}
                         changePageSize={changePageSize}
                         setShowPulsatingDot={setShowPulsatingDot}
+                        appListContainerRef={appListContainerRef}
                     />
                     {fetchingExternalApps && (
                         <div className="mt-16">
@@ -510,6 +500,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                     changePageSize={changePageSize}
                     handleSorting={handleSorting}
                     setShowPulsatingDot={setShowPulsatingDot}
+                    appListContainerRef={appListContainerRef}
                 />
             )}
             {tabs.every((tab) => tab.id !== params.appType) && <Redirect {...(tabs[0].props as RedirectProps)} />}

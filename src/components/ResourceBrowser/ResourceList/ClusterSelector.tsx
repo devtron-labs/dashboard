@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import ReactSelect from 'react-select'
+import React, { useRef } from 'react'
+import ReactSelect, { SelectInstance, Props as SelectProps } from 'react-select'
+import { AppSelectorDropdownIndicator, APP_SELECTOR_STYLES } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '../../../config'
-import { appSelectorStyle, DropdownIndicator } from '../../AppSelector/AppSelectorUtil'
 import {
     clusterOverviewNodeText,
     ERROR_SCREEN_LEARN_MORE,
@@ -29,25 +29,36 @@ import { ClusterSelectorType } from '../Types'
 import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
 
 const ClusterSelector: React.FC<ClusterSelectorType> = ({ onChange, clusterList, clusterId }) => {
+    const selectRef = useRef<SelectInstance>(null)
+
     let filteredClusterList = clusterList
     if (window._env_.HIDE_DEFAULT_CLUSTER) {
         filteredClusterList = clusterList.filter((item) => Number(item.value) !== DEFAULT_CLUSTER_ID)
     }
     const defaultOption = filteredClusterList.find((item) => String(item.value) === clusterId)
 
+    const handleOnKeyDown: SelectProps['onKeyDown'] = (event) => {
+        if (event.key === 'Escape') {
+            selectRef.current?.inputRef.blur()
+        }
+    }
+
     return (
         <div className="flexbox dc__align-items-center dc__gap-12">
             <ReactSelect
                 classNamePrefix="cluster-select-header"
                 options={filteredClusterList}
+                ref={selectRef}
                 onChange={onChange}
+                blurInputOnSelect
+                onKeyDown={handleOnKeyDown}
                 components={{
                     IndicatorSeparator: null,
-                    DropdownIndicator,
+                    DropdownIndicator: AppSelectorDropdownIndicator,
                     LoadingIndicator: null,
                 }}
                 value={defaultOption}
-                styles={appSelectorStyle}
+                styles={APP_SELECTOR_STYLES}
             />
             {defaultOption?.isProd && <span className="px-6 py-2 br-4 bcb-1 cb-7 fs-12 lh-16 fw-5">Production</span>}
         </div>

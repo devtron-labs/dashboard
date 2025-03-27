@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { Component, createContext } from 'react'
-import { Route, Switch, withRouter, NavLink } from 'react-router-dom'
+import { Component, createContext } from 'react'
+import { Route, Switch, withRouter, NavLink, generatePath } from 'react-router-dom'
 import {
     showError,
     Progressing,
@@ -33,8 +33,10 @@ import {
     CIPipelineNodeType,
     ChangeCIPayloadType,
     WorkflowOptionsModal,
+    URLS as CommonURLS,
     ConfirmationModal,
     ConfirmationModalVariantType,
+    deleteWorkflow,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
@@ -46,7 +48,6 @@ import {
     getCreateWorkflows,
     getMaxYFromFirstLevelDownstream,
 } from '../app/details/triggerView/workflow.service'
-import { deleteWorkflow } from './service'
 import AddWorkflow from './CreateWorkflow'
 import CIPipeline from '../CIPipelineN/CIPipeline'
 import emptyWorkflow from '../../assets/img/ic-empty-workflow@3x.png'
@@ -145,7 +146,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     getWorkflows = () => {
         this.getHostURLConfig()
         this.checkGitOpsConfiguration()
-        getCreateWorkflows(this.props.match.params.appId, this.props.isJobView, this.props.filteredEnvIds)
+        getCreateWorkflows(
+            this.props.match.params.appId,
+            this.props.isJobView,
+            this.props.filteredEnvIds,
+            this.props.isTemplateView,
+        )
             .then((result) => {
                 const allCINodeMap = new Map()
                 const allDeploymentNodeMap = new Map()
@@ -207,15 +213,17 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     async checkGitOpsConfiguration(): Promise<void> {
-        try {
-            const { result } = await isGitOpsModuleInstalledAndConfigured()
-            if (result.isInstalled && !result.isConfigured) {
-                this.setState({ noGitOpsConfiguration: true })
-            }
-            if (!result.isInstalled || !result.isConfigured) {
-                this.setState({ noGitOpsModuleInstalledAndConfigured: true })
-            }
-        } catch (error) {}
+        if (!this.props.isTemplateView) {
+            try {
+                const { result } = await isGitOpsModuleInstalledAndConfigured()
+                if (result.isInstalled && !result.isConfigured) {
+                    this.setState({ noGitOpsConfiguration: true })
+                }
+                if (!result.isInstalled || !result.isConfigured) {
+                    this.setState({ noGitOpsModuleInstalledAndConfigured: true })
+                }
+            } catch (error) {}
+        }
     }
 
     showDeleteDialog = (workflowId: number) => {
@@ -253,8 +261,17 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     closeDeleteModal = () => this.setState({ showDeleteDialog: false })
 
+    getAllWorkflows = () => {
+        this.getWorkflows()
+        this.props.getWorkflows()
+    }
+
     deleteWorkflow = (appId?: string, workflowId?: number) => {
-        deleteWorkflow(appId || this.props.match.params.appId, workflowId || this.state.workflowId)
+        deleteWorkflow(
+            appId || this.props.match.params.appId,
+            workflowId || this.state.workflowId,
+            this.props.isTemplateView,
+        )
             .then((response) => {
                 if (response.errors) {
                     const { errors } = response
@@ -273,8 +290,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         variant: ToastVariantType.success,
                         description: 'Workflow Deleted',
                     })
-                    this.getWorkflows()
-                    this.props.getWorkflows()
+                    this.getAllWorkflows()
                 }
             })
             .catch((errors) => {
@@ -283,7 +299,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     handleCISelect = (workflowId: number | string, type: CIPipelineNodeType) => {
-        let link = `${URLS.APP}/${this.props.match.params.appId}/edit/workflow/${workflowId}`
+        let link = `${
+            this.props.isTemplateView
+                ? generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+                      appId: this.props.match.params.appId,
+                  })
+                : `${URLS.APP}/${this.props.match.params.appId}`
+        }/edit/workflow/${workflowId}`
         switch (type) {
             case 'CI':
                 link = `${link}/ci-pipeline/0`
@@ -310,7 +332,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     addWebhookCD = (workflowId?: number | string) => {
         this.props.history.push(
-            `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${
+            `${
+                this.props.isTemplateView
+                    ? generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+                          appId: this.props.match.params.appId,
+                      })
+                    : `${URLS.APP}/${this.props.match.params.appId}`
+            }/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${
                 workflowId || 0
             }/${PipelineType.WEBHOOK.toLowerCase()}/0/${URLS.APP_CD_CONFIG}/0/build`,
         )
@@ -319,7 +347,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     // Replace this with addCISelect
     addLinkedCD = (changeCIPayload?: ChangeCIPayloadType) => {
         this.props.history.push(
-            `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${
+            `${
+                this.props.isTemplateView
+                    ? generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+                          appId: this.props.match.params.appId,
+                      })
+                    : `${URLS.APP}/${this.props.match.params.appId}`
+            }/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${
                 changeCIPayload?.appWorkflowId ?? 0
             }/${URLS.LINKED_CD}?changeCi=${Number(!!changeCIPayload)}&switchFromCiPipelineId=${
                 changeCIPayload?.switchFromCiPipelineId ?? 0
@@ -339,7 +373,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         const ciURL = isWebhookCD
             ? `${PipelineType.WEBHOOK.toLowerCase()}/0`
             : `${URLS.APP_CI_CONFIG.toLowerCase()}/${ciPipelineId}`
-        let LINK = `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${
+        let LINK = `${
+            this.props.isTemplateView
+                ? `${generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+                      appId: this.props.match.params.appId,
+                  })}`
+                : `${URLS.APP}/${this.props.match.params.appId}`
+        }/${CommonURLS.APP_CONFIG}/${
             URLS.APP_WORKFLOW_CONFIG
         }/${workflowId}/${ciURL}/${URLS.APP_CD_CONFIG}/0/build?parentPipelineType=${parentPipelineType}&addType=${
             addType ?? AddPipelineType.PARALLEL
@@ -364,9 +404,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     closeAddWorkflow = () => {
         this.props.history.push(
-            `${this.props.isJobView ? URLS.JOB : URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${
-                URLS.APP_WORKFLOW_CONFIG
-            }`,
+            `${
+                this.props.isTemplateView
+                    ? generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+                          appId: this.props.match.params.appId,
+                      })
+                    : `${this.props.isJobView ? URLS.JOB : URLS.APP}/${this.props.match.params.appId}`
+            }/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`,
         )
         this.props.getWorkflows()
     }
@@ -378,9 +422,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         successTitle?: string,
         showWebhookTippy?: boolean,
     ) => {
-        const _url = `${this.props.isJobView ? URLS.JOB : URLS.APP}/${this.props.match.params.appId}/${
-            URLS.APP_CONFIG
-        }/${URLS.APP_WORKFLOW_CONFIG}`
+        const _url = this.props.isTemplateView
+            ? `${generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+                  appId: this.props.match.params.appId,
+              })}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`
+            : `${this.props.isJobView ? URLS.JOB : URLS.APP}/${this.props.match.params.appId}/${
+                  CommonURLS.APP_CONFIG
+              }/${URLS.APP_WORKFLOW_CONFIG}`
         this.props.history.push(_url)
 
         if (showSuccessCD) {
@@ -537,6 +585,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                 name={this.state.appName}
                                 onClose={this.closeAddWorkflow}
                                 getWorkflows={this.getWorkflows}
+                                isTemplateView={this.props.isTemplateView}
                             />
                         )
                     }}
@@ -582,6 +631,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     changeCIPayload={this.state.changeCIPayload}
                                     reloadAppConfig={this.props.reloadAppConfig}
                                     handleDisplayLoader={this.handleDisplayLoader}
+                                    isTemplateView={this.props.isTemplateView}
                                 />
                             )
                         }}
@@ -601,11 +651,11 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                 appName={this.state.appName}
                                 connectCDPipelines={this.getLen()}
                                 close={this.closePipeline}
-                                getWorkflows={this.getWorkflows}
-                                deleteWorkflow={this.deleteWorkflow}
+                                getWorkflows={this.getAllWorkflows}
                                 isJobView={this.props.isJobView}
                                 isJobCI={isJobCI}
                                 changeCIPayload={this.state.changeCIPayload}
+                                isTemplateView={this.props.isTemplateView}
                             />
                         )
                     }}
@@ -615,7 +665,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         key={`${this.props.match.path}/webhook/`}
                         path={`${this.props.match.path}/webhook/:webhookId`}
                     >
-                        <WebhookDetailsModal close={this.closePipeline} />
+                        <WebhookDetailsModal close={this.closePipeline} isTemplateView={this.props.isTemplateView} />
                     </Route>,
                     <Route
                         key={`${this.props.match.path}/linked-ci/`}
@@ -629,8 +679,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     appName={this.state.appName}
                                     connectCDPipelines={this.getLen()}
                                     close={this.closePipeline}
-                                    getWorkflows={this.getWorkflows}
-                                    deleteWorkflow={this.deleteWorkflow}
+                                    getWorkflows={this.getAllWorkflows}
+                                    isTemplateView={this.props.isTemplateView}
                                 />
                             )
                         }}
@@ -649,6 +699,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     close={this.closePipeline}
                                     getWorkflows={this.getWorkflows}
                                     changeCIPayload={this.state.changeCIPayload}
+                                    isTemplateView={this.props.isTemplateView}
                                 />
                             )
                         }}
@@ -664,9 +715,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                       closeModal={this.closePipeline}
                                       cdPipelines={this.state.cachedCDConfigResponse.pipelines ?? []}
                                       blackListedIds={this.state.blackListedCI ?? {}}
-                                      deleteWorkflow={this.deleteWorkflow}
                                       getWorkflows={this.getWorkflows}
                                       workflows={this.state.workflows}
+                                      isTemplateView={this.props.isTemplateView}
                                   />
                               </Route>,
                           ]
@@ -849,9 +900,11 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             handleSelectedNodeChange={this.handleSelectedNodeChange}
                             appName={this.state.appName}
                             getWorkflows={this.getWorkflows}
+                            refreshParentWorkflows={this.props.getWorkflows}
                             reloadEnvironments={this.props.reloadEnvironments}
                             workflowPositionState={this.state.workflowPositionState}
                             handleDisplayLoader={this.handleDisplayLoader}
+                            isTemplateView={this.props.isTemplateView}
                         />
                     )
                 })}
@@ -899,7 +952,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
         return (
             <div
-                className="workflow-editor bg__primary"
+                className="workflow-editor bg__primary dc__overflow-auto"
                 data-testid="workflow-editor-page"
                 // Added for showing the tippy on ApprovalNode
                 id={TARGET_IDS.WORKFLOW_EDITOR_CONTAINER}
@@ -943,7 +996,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
         if (this.state.view === ViewType.ERROR) {
             return (
-                <div className="dc__loading-wrapper">
+                <div className="flex-grow-1">
                     <ErrorScreenManager code={this.state.code} />
                 </div>
             )
@@ -959,6 +1012,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         envName={this.state.environmentName}
                         closeSuccessPopup={this.closeSuccessPopup}
                         successTitle={this.state.successTitle}
+                        isTemplateView={this.props.isTemplateView}
                     />
                 )}
                 {this.state.showWorkflowOptionsModal && (
@@ -973,6 +1027,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         getWorkflows={this.getWorkflows}
                         resetChangeCIPayload={this.resetChangeCIPayload}
                         linkedCDSourceVariant={LINKED_CD_SOURCE_VARIANT}
+                        isTemplateView={this.props.isTemplateView}
                     />
                 )}
             </>

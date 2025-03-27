@@ -43,6 +43,7 @@ import {
     UploadFileDTO,
     UploadFileProps,
     DynamicDataTableCellValidationState,
+    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
@@ -671,7 +672,6 @@ export interface MaterialSourceProps {
     selectMaterial: (materialId: string, ciPipelineId?: number) => void
     refreshMaterial?: RefreshMaterialType
     ciPipelineId?: number
-    fromTriggerInfo?: boolean
     clearSearch?: (e: any) => void
 }
 
@@ -725,19 +725,16 @@ export interface CIWebhookPayload {
 export interface WebhookReceivedPayloadModalType
     extends Pick<TriggerViewState, 'webhookPayloads' | 'workflowId' | 'isWebhookPayloadLoading'>,
         Pick<CIMaterialProps, 'getWebhookPayload'> {
-    fromBulkCITrigger?: boolean
     title: string
     material: CIMaterialType[]
     pipelineId: string
-    fromAppGrouping?: boolean
     isJobView?: boolean
     appId: string
-    isBulkCIWebhook?: boolean
 }
 
 export type OffendingWorkflowQueryParamType = `policy/${PolicyKindType}|identifier|${string}`
 
-export interface GetInitialWorkflowsParamsType {
+export interface GetInitialWorkflowsParamsType extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     id: any
     dimensions: WorkflowDimensions
     workflowOffset: Offset

@@ -72,7 +72,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
         setEnvConfigLoading(true)
         try {
             if (appId) {
-                const res = await getEnvConfig(+appId, +envId, callback)
+                const res = await getEnvConfig(+appId, +envId, false, callback)
                 setEnvConfigRes(res)
             } else {
                 setEnvConfigRes(null)
@@ -137,7 +137,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
 
     if (loading || !envAppList.length || isAppNotPresentInEnv) {
         return (
-            <div className="loading-state">
+            <div className="flex-grow-1">
                 <Progressing pageLoader />
             </div>
         )
@@ -173,9 +173,9 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
                 }}
             </Route>
             <Route>
-                <div className="env-compose flex-grow-1">
+                <div className="env-compose deploy-config-collapsible-layout flex-grow-1">
                     <div
-                        className={`env-compose__nav ${pathname.match(ENV_CONFIG_PATH_REG) ? 'env-configurations' : ''}`}
+                        className={`env-compose__nav collapsible-sidebar ${pathname.match(ENV_CONFIG_PATH_REG) ? 'env-configurations' : ''}`}
                     >
                         <ApplicationRoute
                             key={appId}
@@ -196,6 +196,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
                                 fetchEnvConfig={fetchEnvConfig}
                                 onErrorRedirectURL={generatePath(path, { envId })}
                                 appOrEnvIdToResourceApprovalConfigurationMap={appIdToAppApprovalConfigMap}
+                                isTemplateView={false}
                             />
                         </div>
                     ) : (

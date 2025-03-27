@@ -16,7 +16,7 @@
 
 import {
     get,
-    post,
+    savePipeline,
     MaterialType,
     Githost,
     ScriptType,
@@ -28,6 +28,9 @@ import {
     VariableTypeFormat,
     TriggerType,
     ChangeCIPayloadType,
+    AppConfigProps,
+    GetTemplateAPIRouteType,
+    getTemplateAPIRoute,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes, SourceTypeMap, ViewType } from '../../config'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
@@ -39,70 +42,86 @@ const emptyStepsData = () => {
     return { id: 0, steps: [] }
 }
 
-export function savePipeline(request, isRegexMaterial = false): Promise<any> {
-    let url
-    if (isRegexMaterial) {
-        url = `${Routes.CI_PIPELINE_PATCH}/regex`
-    } else {
-        url = `${Routes.CI_PIPELINE_PATCH}`
-    }
-    return post(url, request)
-}
-
-export function getCIPipelineNameSuggestion(appId: string | number): Promise<any> {
-    const URL = `app/pipeline/suggest/ci/${appId}`
+function getCIPipelineNameSuggestion(appId: string | number, isTemplateView: AppConfigProps['isTemplateView']): Promise<any> {
+    const URL = isTemplateView ? getTemplateAPIRoute({
+        type: GetTemplateAPIRouteType.PIPELINE_SUGGEST_CI,
+        queryParams: {
+            id: appId,
+        }
+    }) : `app/pipeline/suggest/ci/${appId}`
     return get(URL)
 }
 
 export function getInitData(
     appId: string | number,
     includeWebhookData: boolean = false,
-    isJobCard: boolean
+    isJobCard: boolean,
+    isTemplateView: AppConfigProps['isTemplateView'],
 ): Promise<any> {
     return Promise.all([
-        getCIPipelineNameSuggestion(appId),
-        getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true, isJobCard),
+        getCIPipelineNameSuggestion(appId, isTemplateView),
+        getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true, isJobCard, isTemplateView),
         getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
-    ]).then(([pipelineNameRes, pipelineMetaConfig, { result: { enabled: isBlobStorageConfigured } }]) => {
-        const scanEnabled =
-            window._env_ && (window._env_.RECOMMEND_SECURITY_SCANNING || window._env_.FORCE_SECURITY_SCANNING)
-        return {
-            result: {
-                form: {
-                    name: !isJobCard ? pipelineNameRes.result : '',
-                    args: [{ key: '', value: '' }],
-                    materials: pipelineMetaConfig.result.materials,
-                    gitHost: pipelineMetaConfig.result.gitHost,
-                    webhookEvents: pipelineMetaConfig.result.webhookEvents,
-                    ciPipelineSourceTypeOptions: pipelineMetaConfig.result.ciPipelineSourceTypeOptions,
-                    webhookConditionList: pipelineMetaConfig.result.webhookConditionList,
-                    triggerType: window._env_.DEFAULT_CI_TRIGGER_TYPE_MANUAL ? TriggerType.Manual : TriggerType.Auto,
-                    beforeDockerBuildScripts: [],
-                    afterDockerBuildScripts: [],
-                    preBuildStage: emptyStepsData(),
-                    postBuildStage: emptyStepsData(),
-                    scanEnabled,
-                    ciPipelineEditable: true,
-                    workflowCacheConfig: pipelineMetaConfig.result.workflowCacheConfig ?? null
-                },
-                loadingData: false,
-                isAdvanced: false,
-                isBlobStorageConfigured,
+    ]).then(
+        ([
+            pipelineNameRes,
+            pipelineMetaConfig,
+            {
+                result: { enabled: isBlobStorageConfigured },
             },
-        }
-    })
+        ]) => {
+            const scanEnabled =
+                window._env_ && (window._env_.RECOMMEND_SECURITY_SCANNING || window._env_.FORCE_SECURITY_SCANNING)
+            return {
+                result: {
+                    form: {
+                        name: !isJobCard ? pipelineNameRes.result : '',
+                        args: [{ key: '', value: '' }],
+                        materials: pipelineMetaConfig.result.materials,
+                        gitHost: pipelineMetaConfig.result.gitHost,
+                        webhookEvents: pipelineMetaConfig.result.webhookEvents,
+                        ciPipelineSourceTypeOptions: pipelineMetaConfig.result.ciPipelineSourceTypeOptions,
+                        webhookConditionList: pipelineMetaConfig.result.webhookConditionList,
+                        triggerType: window._env_.DEFAULT_CI_TRIGGER_TYPE_MANUAL
+                            ? TriggerType.Manual
+                            : TriggerType.Auto,
+                        beforeDockerBuildScripts: [],
+                        afterDockerBuildScripts: [],
+                        preBuildStage: emptyStepsData(),
+                        postBuildStage: emptyStepsData(),
+                        scanEnabled,
+                        ciPipelineEditable: true,
+                        workflowCacheConfig: pipelineMetaConfig.result.workflowCacheConfig ?? null,
+                    },
+                    loadingData: false,
+                    isAdvanced: false,
+                    isBlobStorageConfigured,
+                },
+            }
+        },
+    )
 }
 
-export function getCIPipeline(appId: string, ciPipelineId: string): Promise<any> {
-    const URL = `${Routes.CI_CONFIG_GET}/${appId}/${ciPipelineId}`
+export function getCIPipeline(
+    appId: string,
+    ciPipelineId: string,
+    isTemplateView: AppConfigProps['isTemplateView'],
+): Promise<any> {
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CI_PIPELINE,
+              queryParams: { id: String(appId), pipelineId: ciPipelineId },
+          })
+        : `${Routes.CI_CONFIG_GET}/${appId}/${ciPipelineId}`
     return get(URL)
 }
 
 function getPipelineBaseMetaConfiguration(
     appId: string,
-    queryParams: Record<'pipelineType', CIPipelineBuildType.CI_BUILD | CIPipelineBuildType.CI_JOB>
+    queryParams: Record<'pipelineType', CIPipelineBuildType.CI_BUILD | CIPipelineBuildType.CI_JOB>,
+    isTemplateView: AppConfigProps['isTemplateView']
 ): Promise<any> {
-    return getSourceConfig(appId, queryParams).then((response) => {
+    return getSourceConfig(appId, queryParams, isTemplateView).then((response) => {
         const materials = response?.result?.material?.map((mat) => {
             return {
                 id: 0,
@@ -125,7 +144,7 @@ function getPipelineBaseMetaConfiguration(
                 webhookEvents: undefined,
                 webhookConditionList: undefined,
                 ciPipelineSourceTypeOptions: _baseCiPipelineSourceTypeOptions,
-                workflowCacheConfig: response?.result?.workflowCacheConfig ?? null
+                workflowCacheConfig: response?.result?.workflowCacheConfig ?? null,
             },
         }
     })
@@ -136,12 +155,17 @@ export function getPipelineMetaConfiguration(
     includeWebhookData: boolean = false,
     isNewPipeline: boolean = true,
     isJobCard = false,
+    isTemplateView: AppConfigProps['isTemplateView'],
 ): Promise<any> {
-    return getPipelineBaseMetaConfiguration(appId, {
-        // NOTE: need to send pipelineType to get corresponding workflowCacheConfig;
-        // this queryParam will be ignored in oss
-        pipelineType: isJobCard ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD
-    }).then((baseResponse) => {
+    return getPipelineBaseMetaConfiguration(
+        appId,
+        {
+            // NOTE: need to send pipelineType to get corresponding workflowCacheConfig;
+            // this queryParam will be ignored in oss
+            pipelineType: isJobCard ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD,
+        },
+        isTemplateView,
+    ).then((baseResponse) => {
         // if webhook data is not to be included, or materials not found, or multigit new pipeline, then return
         const _materials = baseResponse.result.materials || []
         if (!includeWebhookData || _materials.length == 0 || (isNewPipeline && _materials.length > 1)) {
@@ -182,32 +206,41 @@ export function getInitDataWithCIPipeline(
     appId: string,
     ciPipelineId: string,
     includeWebhookData: boolean = false,
+    isTemplateView: AppConfigProps['isTemplateView']
 ): Promise<any> {
     return Promise.all([
-        getCIPipeline(appId, ciPipelineId),
+        getCIPipeline(appId, ciPipelineId, isTemplateView),
         // NOTE: isJobCard parameter does not matter in this case
         // isJobCard is only relevant to fetch workflowCacheConfig in meta config
         // by default BE will send global cache config for that pipelineType (JOB or CI_BUILD)
-        getPipelineMetaConfiguration(appId, includeWebhookData, false, false),
+        getPipelineMetaConfiguration(appId, includeWebhookData, false, false, isTemplateView),
         getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
-    ]).then(([ciPipelineRes, pipelineMetaConfig, { result: { enabled: isBlobStorageConfigured } }]) => {
-        const ciPipeline = ciPipelineRes?.result
-        const pipelineMetaConfigResult = pipelineMetaConfig?.result
-        return parseCIResponse(
-            pipelineMetaConfig.code,
-            ciPipeline,
-            pipelineMetaConfigResult.materials,
-            pipelineMetaConfigResult.gitHost,
-            pipelineMetaConfigResult.webhookEvents,
-            pipelineMetaConfigResult.ciPipelineSourceTypeOptions,
-            isBlobStorageConfigured,
-        )
-    })
+    ]).then(
+        ([
+            ciPipelineRes,
+            pipelineMetaConfig,
+            {
+                result: { enabled: isBlobStorageConfigured },
+            },
+        ]) => {
+            const ciPipeline = ciPipelineRes?.result
+            const pipelineMetaConfigResult = pipelineMetaConfig?.result
+            return parseCIResponse(
+                pipelineMetaConfig.code,
+                ciPipeline,
+                pipelineMetaConfigResult.materials,
+                pipelineMetaConfigResult.gitHost,
+                pipelineMetaConfigResult.webhookEvents,
+                pipelineMetaConfigResult.ciPipelineSourceTypeOptions,
+                isBlobStorageConfigured,
+            )
+        },
+    )
 }
 
 export function saveLinkedCIPipeline(
     parentCIPipeline,
-    params: { name: string; appId: number; workflowId: number },
+    { isTemplateView, ...params }: { name: string; appId: number; workflowId: number; isTemplateView: AppConfigProps['isTemplateView'] },
     changeCIPayload?: ChangeCIPayloadType,
 ) {
     delete parentCIPipeline['beforeDockerBuildScripts']
@@ -232,7 +265,7 @@ export function saveLinkedCIPipeline(
         request.switchFromExternalCiPipelineId = changeCIPayload.switchFromExternalCiPipelineId
     }
 
-    return savePipeline(request).then((response) => {
+    return savePipeline(request, { isTemplateView }).then((response) => {
         const ciPipelineFromRes = response?.result?.ciPipelines[0]
         return {
             code: response.code,
@@ -254,7 +287,8 @@ export function saveCIPipeline(
     isExternalCI,
     webhookConditionList,
     ciPipelineSourceTypeOptions,
-    changeCIPayload?: ChangeCIPayloadType,
+    changeCIPayload: ChangeCIPayloadType,
+    isTemplateView: AppConfigProps['isTemplateView']
 ) {
     const ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
 
@@ -271,7 +305,7 @@ export function saveCIPipeline(
         request.switchFromExternalCiPipelineId = changeCIPayload.switchFromExternalCiPipelineId
     }
 
-    return savePipeline(request).then((response) => {
+    return savePipeline(request, { isTemplateView }).then((response) => {
         const ciPipelineFromRes = response.result.ciPipelines[0]
         return parseCIResponse(
             response.code,
@@ -292,15 +326,19 @@ export function deleteCIPipeline(
     workflowId: number,
     isExternalCI: boolean,
     webhookConditionList,
+    isTemplateView: AppConfigProps['isTemplateView']
 ) {
-    const ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
+    const updatedCI = {
+        id: ciPipeline.id,
+        name: formData.name,
+    }
     const request = {
         appId,
         appWorkflowId: workflowId,
         action: PatchAction.DELETE,
-        ciPipeline: ci,
+        ciPipeline: updatedCI,
     }
-    return savePipeline(request).then((response) => {
+    return savePipeline(request, { isTemplateView }).then((response) => {
         return parseCIResponse(
             response.code,
             response?.result?.ciPipelines[0],

@@ -138,7 +138,10 @@ export const usePipelineDeploymentConfig = ({
             const [secretsData, secretsDataCDRollback, ..._pipelineDeploymentConfigRes] = await Promise.allSettled([
                 !isSuperAdmin && payloads[0] && payloads[1] ? getCompareSecretsData([payloads[0], payloads[1]]) : null,
                 !isSuperAdmin && payloads[0] && payloads[2] ? getCompareSecretsData([payloads[0], payloads[2]]) : null,
-                ...payloads.map((payload) => payload && getAppEnvDeploymentConfig({ params: payload })),
+                ...payloads.map(
+                    (payload) =>
+                        payload && getAppEnvDeploymentConfig({ params: payload, appId: null, isTemplateView: false }),
+                ),
             ])
 
             // NOTE: for security reasons secretsData from getAppEnvDeploymentConfig

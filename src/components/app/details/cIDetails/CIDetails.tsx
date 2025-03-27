@@ -595,7 +595,7 @@ const HistoryLogs = ({
                     />
                     {(scrollToTop || scrollToBottom) && (
                         <Scroller
-                            style={{ position: 'fixed', bottom: '52px', right: '12px', zIndex: '4' }}
+                            style={{ position: 'absolute', bottom: '52px', right: '12px', zIndex: '4' }}
                             {...{ scrollToTop, scrollToBottom }}
                         />
                     )}
@@ -607,7 +607,7 @@ const HistoryLogs = ({
                     {loading ? (
                         <Progressing pageLoader />
                     ) : (
-                        <div className="p-16 flexbox-col dc__gap-8">
+                        <div className="p-16 flexbox-col dc__gap-8 flex-grow-1">
                             {isJobCI && CiArtifactsArrayCards}
                             <Artifacts
                                 status={triggerDetails.status}

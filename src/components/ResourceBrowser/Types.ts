@@ -123,7 +123,6 @@ export interface ResourceFilterOptionsProps extends Pick<SidebarType, 'updateK8s
 
 export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden'> {
     addTab: UseTabsReturnType['addTab']
-    showStaleDataWarning: boolean
     setWidgetEventDetails: React.Dispatch<WidgetEventDetails>
     handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>, shouldOverrideSelectedResourceKind?: boolean) => void
     lowercaseKindToResourceGroupMap: Record<string, ApiResourceGroupType>
@@ -171,8 +170,6 @@ export interface EventListType extends Pick<K8SResourceListType, 'setWidgetEvent
     listRef: React.MutableRefObject<HTMLDivElement>
     filteredData: K8sResourceDetailType['data']
     handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
-    paginatedView: boolean
-    syncError: boolean
     searchText: string
 }
 
@@ -207,7 +204,6 @@ export interface K8SResourceTabComponentProps
     selectedCluster: ClusterOptionType
     renderRefreshBar: () => JSX.Element
     addTab: UseTabsReturnType['addTab']
-    showStaleDataWarning: boolean
     updateK8sResourceTabLastSyncMoment: () => void
     isOpen: boolean
 }

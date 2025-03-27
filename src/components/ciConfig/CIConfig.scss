@@ -44,8 +44,8 @@
 
     .form-row__docker {
         display: grid;
-        grid-template-columns: 240px 1fr;
-        grid-column-gap: 8px;
+        grid-template-columns: 250px 1fr;
+        grid-column-gap: 16px;
 
         &.buildpack-option-wrapper {
             display: flex;
@@ -143,24 +143,11 @@
     }
 }
 
-.app-compose__main {
-    .save-build-configuration {
-        bottom: 0;
-        right: 0;
-        padding: 12px 20px;
-        width: calc(100% - 255px);
-    }
-}
-
 .modal__body {
     &.modal__config-override-diff {
         width: 100%;
         height: 100%;
         margin-top: 0;
-
-        .config-override-diff__view {
-            height: calc(100% - 56px);
-        }
 
         .workflow {
             &.workflow--create {

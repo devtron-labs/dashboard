@@ -33,18 +33,15 @@ import { WebhookReceivedPayloadModalType } from './types'
 import { CiWebhookModal } from './CiWebhookDebuggingModal'
 
 export const WebhookReceivedPayloadModal = ({
-    fromBulkCITrigger = false,
     title,
     webhookPayloads,
     material,
     pipelineId,
     isWebhookPayloadLoading,
     workflowId,
-    fromAppGrouping = false,
     isJobView = false,
     getWebhookPayload,
     appId,
-    isBulkCIWebhook = false,
 }: WebhookReceivedPayloadModalType) => {
     const { push } = useHistory()
     const { url } = useRouteMatch()
@@ -70,9 +67,7 @@ export const WebhookReceivedPayloadModal = ({
 
     function renderWebhookMaterialHeader() {
         return (
-            <div
-                className={`ci-webhook-header flex dc__content-space px-20 py-12 dc__border-bottom ${fromBulkCITrigger ? 'bg__primary' : ''}`}
-            >
+            <div className="ci-webhook-header flex dc__content-space px-20 py-12 dc__border-bottom">
                 <h2
                     data-testid="build-deploy-pipeline-name-heading"
                     className="modal__title flex left fs-16 dc__gap-12"
@@ -133,26 +128,19 @@ export const WebhookReceivedPayloadModal = ({
             )
         }
         return (
-            <div
-                className={`h-100 ${fromBulkCITrigger ? 'dc__position-fixed bg__primary env-modal-width full-height' : ''}`}
-            >
+            <div className="flexbox-col flex-grow-1">
                 <CiWebhookModal
                     webhookPayloads={webhookPayloads}
                     ciPipelineMaterialId={+material[0].id}
                     ciPipelineId={+pipelineId}
                     isWebhookPayloadLoading={isWebhookPayloadLoading}
                     workflowId={workflowId}
-                    fromAppGrouping={fromAppGrouping}
+                    fromAppGrouping={false}
                     isJobView={isJobView}
                     appId={appId}
                 />
             </div>
         )
-    }
-
-    if (isBulkCIWebhook) {
-        // For bulk CI webhook, we don't need to show the modal as a child of the trigger view
-        return null
     }
 
     return (

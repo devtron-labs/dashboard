@@ -26,6 +26,7 @@ import {
     Material,
     SelectPickerOptionType,
     CiPipeline,
+    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { OptionTypeWithIcon } from '@Components/externalLinks/ExternalLinks.type'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
@@ -96,20 +97,23 @@ export interface LoadingState {
     failed: boolean
 }
 
-export interface CIConfigProps {
+export interface CIConfigProps
+    extends Pick<CIContainerRegistryConfigProps, 'isCreateAppView'>,
+        Required<Pick<AppConfigProps, 'isTemplateView'>> {
     respondOnSuccess: (redirection?: boolean) => void
     configOverrideView?: boolean
     allowOverride?: boolean
     parentState?: CIConfigParentState
-    setParentState?: React.Dispatch<React.SetStateAction<CIConfigParentState>>
-    updateDockerConfigOverride?: (key, value) => void
+    setParentState?: (parentState: CIConfigParentState) => void
+    updateDockerConfigOverride?: (key: string, value) => void
     isCDPipeline?: boolean
     isCiPipeline?: boolean
     loadingStateFromParent?: LoadingState
     setLoadingStateFromParent?: React.Dispatch<React.SetStateAction<LoadingState>>
+    appId: string
 }
 
-export interface CIConfigDiffViewProps {
+export interface CIConfigDiffViewProps extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     parentReloading: boolean
     ciConfig: CiPipelineResult
     configOverridenPipelines: CiPipeline[]
@@ -140,7 +144,9 @@ export interface SourceConfigType {
     templateId: number
     material: SelectedGitMaterialType[]
 }
-export interface CIConfigFormProps {
+export interface CIConfigFormProps
+    extends Required<Pick<CIConfigProps, 'isCreateAppView' | 'parentState' | 'setParentState'>>,
+        Pick<CIConfigProps, 'isTemplateView'> {
     parentReloading: boolean
     dockerRegistries: any
     sourceConfig: SourceConfigType
@@ -154,12 +160,13 @@ export interface CIConfigFormProps {
     isCDPipeline: boolean
     isCiPipeline: boolean
     parentState: CIConfigParentState
-    setParentState: React.Dispatch<React.SetStateAction<CIConfigParentState>>
     loadingStateFromParent?: LoadingState
     setLoadingStateFromParent?: React.Dispatch<React.SetStateAction<LoadingState>>
 }
 
-export interface AdvancedConfigOptionsProps {
+export interface AdvancedConfigOptionsProps
+    extends Pick<CIConfigProps, 'appId'>,
+        Required<Pick<AppConfigProps, 'isTemplateView'>> {
     ciPipeline: CIPipelineDataType
 }
 
@@ -228,7 +235,7 @@ export interface CIFormStateOptionType {
     value: any
     error: string
 }
-export interface CIContainerRegistryConfigProps {
+export interface CIContainerRegistryConfigProps extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     appId: string
     configOverrideView: boolean
     ciConfig: CiPipelineResult
@@ -242,6 +249,7 @@ export interface CIContainerRegistryConfigProps {
     currentRegistry: any
     handleOnChangeConfig: (e) => void
     isCDPipeline: boolean
+    isCreateAppView?: boolean
 }
 
 export interface CIBuildArgType {
