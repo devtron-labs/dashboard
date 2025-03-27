@@ -74,10 +74,19 @@ const AppSelector = ({
         return response || []
     }
 
+    useEffect(() => {
+        // Fetch options on component mount
+        const fetchOptions = async () => {
+            const _options = await loadOptions('')
+            setOptions(_options)
+        }
+
+        fetchOptions()
+    }, [])
+
     const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
         setInputValue(val)
         const _options = await loadOptions(val)
-
         setOptions(_options)
     }
 
