@@ -35,6 +35,8 @@ import {
     PipelineMigratedFromType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ConfigToolbarProps } from '../types'
+
 export enum ConfigEditorStatesType {
     CURRENT_EDITOR = 'currentEditorTemplateData',
     PUBLISHED_EDITOR = 'publishedTemplateData',
@@ -195,6 +197,7 @@ export interface DeploymentTemplateStateType {
     isExpressEditView: boolean
     /** Whether the express edit comparison view is visible. */
     isExpressEditComparisonView: boolean
+    showExpressEditPublishConfirmationModal: boolean
 }
 
 export interface HandleFetchDeploymentTemplateReturnType
@@ -222,7 +225,7 @@ export interface DeploymentTemplateOptionsHeaderProps
 export interface DeploymentTemplateFormProps
     extends Pick<DeploymentTemplateProps, 'environmentName'>,
         Pick<DeploymentTemplateConfigState, 'guiSchema' | 'selectedChart' | 'schema' | 'mergeStrategy'>,
-        Pick<DeploymentTemplateEditorDataStateType, 'latestDraft'>,
+        Pick<DeploymentTemplateEditorDataStateType, 'latestDraft' | 'isAppMetricsEnabled'>,
         Pick<
             DeploymentTemplateStateType,
             | 'showReadMe'
@@ -240,6 +243,12 @@ export interface DeploymentTemplateFormProps
     handleChangeToYAMLMode: () => void
     isGuiSupported: boolean
     isUnSet: boolean
+    publishedTemplateData: DeploymentTemplateStateType['publishedTemplateData']
+    draftTemplateData: DeploymentTemplateStateType['draftTemplateData']
+    handleAppMetricsToggle: () => void
+    handleMergeStrategyChange: ConfigToolbarProps['handleMergeStrategyChange']
+    charts: DeploymentTemplateStateType['chartDetails']['charts']
+    handleChartChange: (selectedChart: DeploymentChartVersionType) => void
 }
 
 export interface DeploymentTemplateGUIViewProps

@@ -14,14 +14,26 @@
  * limitations under the License.
  */
 
-import { CodeEditor, ConfigurationType, MarkDown, MODES, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { useState } from 'react'
+import {
+    CodeEditor,
+    ConfigurationType,
+    DeploymentTemplateConfigState,
+    MarkDown,
+    MODES,
+    noop,
+    OverrideMergeStrategyType,
+    SelectPickerOptionType,
+    versionComparatorBySortOrder,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 import { DeploymentTemplateFormProps } from './types'
 import { GUIView as DeploymentTemplateGUIView } from './GUIView'
-import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from './constants'
+import { APPLICATION_METRICS_DROPDOWN_OPTIONS, DEPLOYMENT_TEMPLATE_LABELS_KEYS } from './constants'
 import { getEditorSchemaURIFromChartNameAndVersion } from './utils'
+import { MERGE_STRATEGY_OPTIONS } from '../constants'
 
 const ExpressEditEditor = importComponentFromFELibrary('ExpressEditEditor', null, 'function')
 
@@ -46,7 +58,18 @@ const DeploymentTemplateForm = ({
     mergeStrategy,
     isExpressEditView,
     isExpressEditComparisonView,
+    publishedTemplateData,
+    draftTemplateData,
+    isAppMetricsEnabled,
+    handleAppMetricsToggle,
+    handleMergeStrategyChange,
+    charts,
+    handleChartChange,
 }: DeploymentTemplateFormProps) => {
+    // STATES
+    const [expressEditComparisonViewLHSValue, setExpressEditComparisonViewLHSValue] =
+        useState<DeploymentTemplateConfigState>(draftTemplateData)
+
     if (editMode === ConfigurationType.GUI && isGuiSupported) {
         return (
             <DeploymentTemplateGUIView
@@ -67,6 +90,84 @@ const DeploymentTemplateForm = ({
             />
         )
     }
+
+    // HANDLERS
+    const handleExpressEditCompareWithChange = (isDraft: boolean) => {
+        setExpressEditComparisonViewLHSValue(isDraft ? draftTemplateData : publishedTemplateData)
+    }
+
+    const onChartSelect = (selected: SelectPickerOptionType) => {
+        handleChartChange(charts.find((chart) => chart.id === selected.value) || selectedChart)
+    }
+
+    const toggleApplicationMetrics = () => {
+        handleAppMetricsToggle()
+    }
+
+    // CONFIGS
+    const filteredCharts = selectedChart
+        ? charts
+              .filter((cv) => cv.name === selectedChart.name)
+              .sort((a, b) => versionComparatorBySortOrder(a.version, b.version))
+        : []
+
+    const dataDiffConfig = [
+        {
+            title: 'Chart',
+            lhs: {
+                displayValue: selectedChart?.name,
+            },
+            rhs: {
+                displayValue: expressEditComparisonViewLHSValue?.selectedChart?.name,
+            },
+        },
+        {
+            title: 'Version',
+            lhs: {
+                displayValue: expressEditComparisonViewLHSValue?.selectedChart?.version,
+                value: expressEditComparisonViewLHSValue?.selectedChart?.id,
+            },
+            rhs: {
+                value: selectedChart?.id,
+                dropdownConfig: {
+                    options: filteredCharts.map((chart) => ({
+                        label: chart.version,
+                        value: chart.id,
+                    })),
+                    onChange: onChartSelect,
+                },
+            },
+        },
+        {
+            title: 'Merge strategy',
+            lhs: {
+                displayValue: expressEditComparisonViewLHSValue?.mergeStrategy,
+            },
+            rhs: {
+                value: mergeStrategy,
+                dropdownConfig: {
+                    options: MERGE_STRATEGY_OPTIONS,
+                    onChange: (newValue: SelectPickerOptionType) => {
+                        handleMergeStrategyChange(newValue.value as OverrideMergeStrategyType)
+                    },
+                },
+            },
+        },
+        {
+            title: 'Application metrics',
+            lhs: {
+                displayValue: expressEditComparisonViewLHSValue?.isAppMetricsEnabled ? 'Enabled' : 'Disabled',
+                value: expressEditComparisonViewLHSValue?.isAppMetricsEnabled?.toString(),
+            },
+            rhs: {
+                value: isAppMetricsEnabled.toString(),
+                dropdownConfig: {
+                    options: APPLICATION_METRICS_DROPDOWN_OPTIONS,
+                    onChange: toggleApplicationMetrics,
+                },
+            },
+        },
+    ]
 
     const getHeadingPrefix = (): string => {
         if (latestDraft) {
@@ -108,31 +209,26 @@ const DeploymentTemplateForm = ({
             {ExpressEditEditor && isExpressEditView ? (
                 <ExpressEditEditor
                     isComparisonView={isExpressEditComparisonView}
-                    tableConfig={[
-                        {
-                            title: 'Chart',
-                            value: 'Rollout deployment',
-                            lhsValue: 'Rollout deployment',
-                        },
-                        {
-                            title: 'Version',
-                            value: '3.5.0',
-                            lhsValue: '3.5.0',
-                            dropdownConfig: { options: [], onChange: () => {} },
-                        },
-                        {
-                            title: 'Merge strategy',
-                            value: 'Patch',
-                            lhsValue: 'Patch',
-                            dropdownConfig: { options: [], onChange: () => {} },
-                        },
-                        {
-                            title: 'Application metrics',
-                            value: 'Disabled',
-                            lhsValue: 'Disabled',
-                            dropdownConfig: { options: [], onChange: () => {} },
-                        },
-                    ]}
+                    dataDiffConfig={dataDiffConfig}
+                    readOnly={readOnly}
+                    lhsEditor={{
+                        value: expressEditComparisonViewLHSValue?.editorTemplate,
+                        schemaURI: getEditorSchemaURIFromChartNameAndVersion(
+                            expressEditComparisonViewLHSValue?.selectedChart?.name,
+                            expressEditComparisonViewLHSValue?.selectedChart?.version,
+                        ),
+                        validatorSchema: expressEditComparisonViewLHSValue?.schema,
+                    }}
+                    rhsEditor={{
+                        value: editedDocument,
+                        onChange: editorOnChange,
+                        schemaURI: getEditorSchemaURIFromChartNameAndVersion(
+                            selectedChart?.name,
+                            selectedChart?.version,
+                        ),
+                        validatorSchema: schema,
+                    }}
+                    handleCompareWithChange={handleExpressEditCompareWithChange}
                 />
             ) : (
                 <>

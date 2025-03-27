@@ -148,6 +148,7 @@ export const getConfigToolbarPopupConfig = ({
     deleteDisabledTooltip = '',
     migratedFrom,
     isExceptionUser,
+    isExpressEditView,
     handleExpressDeleteDraftOverride,
 }: GetConfigToolbarPopupConfigProps): ConfigToolbarProps['popupConfig']['menuConfig'] => {
     if (isPublishedValuesView && !isPublishedConfigPresent) {
@@ -170,14 +171,24 @@ export const getConfigToolbarPopupConfig = ({
         }
     }
 
-    if (getEditHistoryPopupButtonConfig && isDraftAvailable && configHeaderTab === ConfigHeaderTabType.VALUES) {
+    if (
+        getEditHistoryPopupButtonConfig &&
+        !isExpressEditView &&
+        isDraftAvailable &&
+        configHeaderTab === ConfigHeaderTabType.VALUES
+    ) {
         const activityHistoryConfig = getEditHistoryPopupButtonConfig(handleShowEditHistory, isLoading)
         if (activityHistoryConfig) {
             firstConfigSegment.push(activityHistoryConfig)
         }
     }
 
-    if (getDeleteDraftPopupButtonConfig && isDraftAvailable && configHeaderTab === ConfigHeaderTabType.VALUES) {
+    if (
+        getDeleteDraftPopupButtonConfig &&
+        !isExpressEditView &&
+        isDraftAvailable &&
+        configHeaderTab === ConfigHeaderTabType.VALUES
+    ) {
         const deleteDraftConfig = getDeleteDraftPopupButtonConfig(handleDiscardDraft, isLoading)
         if (deleteDraftConfig) {
             secondConfigSegment.push(deleteDraftConfig)

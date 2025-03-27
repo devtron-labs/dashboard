@@ -54,6 +54,7 @@ interface InitializeStateBasePayloadType
 
 interface GetDeploymentTemplateInitialStateParamsType {
     isSuperAdmin: boolean
+    isExceptionUser: boolean
 }
 
 export enum DeploymentTemplateActionType {
@@ -107,6 +108,7 @@ export enum DeploymentTemplateActionType {
     LOCK_CHANGES_DETECTED_FROM_DRAFT_API = 'LOCK_CHANGES_DETECTED_FROM_DRAFT_API',
     IS_EXPRESS_EDIT_VIEW = 'IS_EXPRESS_EDIT_VIEW',
     IS_EXPRESS_EDIT_COMPARISON_VIEW = 'IS_EXPRESS_EDIT_COMPARISON_VIEW',
+    SHOW_EXPRESS_EDIT_PUBLISH_CONFIRMATION_MODAL = 'SHOW_EXPRESS_EDIT_PUBLISH_CONFIRMATION_MODAL',
 }
 
 type DeploymentTemplateNoPayloadActions =
@@ -257,7 +259,10 @@ export type DeploymentTemplateActionState =
       }
     | {
           type: DeploymentTemplateActionType.IS_EXPRESS_EDIT_VIEW
-          payload: DeploymentTemplateStateType['isExpressEditView']
+          payload: {
+              isExpressEditView: DeploymentTemplateStateType['isExpressEditView']
+              currentEditorTemplateData: DeploymentTemplateEditorDataStateType
+          }
       }
     | {
           type: DeploymentTemplateActionType.IS_EXPRESS_EDIT_COMPARISON_VIEW
@@ -267,9 +272,14 @@ export type DeploymentTemplateActionState =
           type: DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DRAFT_OVERRIDE_DIALOG
           payload: DeploymentTemplateStateType['showExpressDeleteDraftOverrideDialog']
       }
+    | {
+          type: DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_PUBLISH_CONFIRMATION_MODAL
+          payload: DeploymentTemplateStateType['showExpressEditPublishConfirmationModal']
+      }
 
 export const getDeploymentTemplateInitialState = ({
     isSuperAdmin,
+    isExceptionUser,
 }: GetDeploymentTemplateInitialStateParamsType): DeploymentTemplateStateType => ({
     isLoadingInitialData: true,
     initialLoadError: null,
@@ -313,7 +323,7 @@ export const getDeploymentTemplateInitialState = ({
     showDeleteOverrideDialog: false,
     showDeleteDraftOverrideDialog: false,
     showReadMe: false,
-    editMode: isSuperAdmin ? ConfigurationType.YAML : ConfigurationType.GUI,
+    editMode: isSuperAdmin || isExceptionUser ? ConfigurationType.YAML : ConfigurationType.GUI,
     shouldMergeTemplateWithPatches: false,
     selectedProtectionViewTab: ProtectConfigTabsType.EDIT_DRAFT,
     isLoadingChangedChartDetails: false,
@@ -322,6 +332,7 @@ export const getDeploymentTemplateInitialState = ({
     isExpressEditView: false,
     isExpressEditComparisonView: false,
     showExpressDeleteDraftOverrideDialog: false,
+    showExpressEditPublishConfirmationModal: false,
 })
 
 const handleSwitchToYAMLMode = (state: DeploymentTemplateStateType): DeploymentTemplateStateType => {
@@ -973,15 +984,33 @@ export const deploymentTemplateReducer = (
             }
 
         case DeploymentTemplateActionType.IS_EXPRESS_EDIT_VIEW:
-            return { ...state, isExpressEditView: action.payload }
+            return {
+                ...state,
+                ...handleReApplyLockedKeys(state),
+                ...handleUnResolveScopedVariables(),
+                ...action.payload,
+                isExpressEditComparisonView: false,
+            }
 
         case DeploymentTemplateActionType.IS_EXPRESS_EDIT_COMPARISON_VIEW:
-            return { ...state, isExpressEditComparisonView: action.payload }
+            return {
+                ...state,
+                ...handleSwitchToYAMLMode(state),
+                ...handleReApplyLockedKeys(state),
+                ...handleUnResolveScopedVariables(),
+                isExpressEditComparisonView: action.payload,
+            }
 
         case DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DRAFT_OVERRIDE_DIALOG:
             return {
                 ...state,
                 showExpressDeleteDraftOverrideDialog: action.payload,
+            }
+
+        case DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_PUBLISH_CONFIRMATION_MODAL:
+            return {
+                ...state,
+                showExpressEditPublishConfirmationModal: action.payload,
             }
 
         default:

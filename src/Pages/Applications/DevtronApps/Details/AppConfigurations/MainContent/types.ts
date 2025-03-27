@@ -136,16 +136,6 @@ export type ConfigToolbarProps = Pick<
      */
     isApprovalPolicyConfigured?: boolean
     /**
-     * Config to show express edit button.
-     */
-    expressEditButtonConfig?: {
-        isVisible: boolean
-        showPromptTooltip: boolean
-        onClick: () => void
-        onClose: () => void
-        onDoNotShowAgainClose: () => void
-    }
-    /**
      * @default false
      */
     isApprovalPending?: boolean
@@ -166,6 +156,17 @@ export type ConfigToolbarProps = Pick<
     headerMessage?: string
     showDeleteOverrideDraftEmptyState: boolean
     handleReload: () => void
+    /**
+     * Config to show express edit button.
+     */
+    expressEditButtonConfig?: {
+        isVisible: boolean
+        showPromptTooltip: boolean
+        onClick: () => void
+        onClose: () => void
+        onDoNotShowAgainClose: () => void
+    }
+    isExpressEditView?: boolean
 } & ConfigToolbarReadMeProps
 
 interface ConfigToolbarPopupMenuLockedConfigDataType {
@@ -204,6 +205,7 @@ export interface GetConfigToolbarPopupConfigProps {
     deleteDisabledTooltip?: string
     migratedFrom?: PipelineMigratedFromType
     isExceptionUser?: boolean
+    isExpressEditView?: boolean
     handleExpressDeleteDraftOverride?: () => void
 }
 

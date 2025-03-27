@@ -26,6 +26,7 @@ import {
     ComponentSizeType,
     InvalidYAMLTippyWrapper,
     ToggleResolveScopedVariables,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -113,7 +114,6 @@ const ConfigToolbar = ({
 
     configHeaderTab,
     isApprovalPolicyConfigured = false,
-    expressEditButtonConfig,
     isApprovalPending,
     isDraftPresent,
     draftId,
@@ -127,6 +127,9 @@ const ConfigToolbar = ({
     isPublishedConfigPresent = true,
     headerMessage,
     showDeleteOverrideDraftEmptyState,
+
+    expressEditButtonConfig,
+    isExpressEditView,
 }: ConfigToolbarProps) => {
     const { envId } = useParams<BaseURLParams>()
     const isDisabled = disableAllActions || !!parsingError
@@ -161,9 +164,21 @@ const ConfigToolbar = ({
         configHeaderTab === ConfigHeaderTabType.VALUES &&
         !!ProtectionViewTabGroup
 
-    const showExpressEditButton = expressEditButtonConfig?.isVisible && isEditView
+    const showExpressEditButton = expressEditButtonConfig?.isVisible && isEditView && !showDeleteOverrideDraftEmptyState
 
     const getLHSActionNodes = (): JSX.Element => {
+        if (isExpressEditView) {
+            return (
+                <>
+                    <div className="flex dc__gap-6">
+                        <Icon name="ic-pencil" color="N700" />
+                        <p className="m-0 fs-13 lh-20 cn-9">Editing Published</p>
+                    </div>
+                    <div className="divider__secondary" />
+                </>
+            )
+        }
+
         if (configHeaderTab === ConfigHeaderTabType.INHERITED) {
             return (
                 <div className="flexbox dc__align-items-center dc__gap-6">
@@ -228,7 +243,7 @@ const ConfigToolbar = ({
         const shouldRenderCommentsView = !!isDraftPresent
         const hasNothingToRender = !shouldRenderApproverInfoTippy && !shouldRenderCommentsView
 
-        if (!isApprovalPolicyConfigured || hasNothingToRender) {
+        if (!isApprovalPolicyConfigured || hasNothingToRender || isExpressEditView) {
             return null
         }
 
