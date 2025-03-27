@@ -8,10 +8,9 @@ import {
 import { InstallationType } from '@Components/v2/devtronStackManager/DevtronStackManager.type'
 
 const setCentralAPIHealthInLocalStorage = (health: boolean, existingHealthObj: CentralAPILocalConfig) => {
-    const isConnected = existingHealthObj.isConnected ?? false
     const updatedObject: CentralAPILocalConfig = {
         lastUpdatedDate: moment().format(DATE_TIME_FORMATS['DD/MM/YYYY']),
-        isConnected: health || isConnected,
+        isConnected: health || existingHealthObj.isConnected,
         updateCount: existingHealthObj.updateCount + 1,
     }
     localStorage.setItem(CENTRAL_API_LOCAL_STORAGE_KEY, JSON.stringify(updatedObject))
