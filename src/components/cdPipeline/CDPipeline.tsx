@@ -134,6 +134,7 @@ export default function CDPipeline({
     isGitOpsRepoNotConfigured: isGitOpsRepoNotConfiguredProp,
     reloadAppConfig,
     handleDisplayLoader,
+    isTemplateView,
     isGitOpsInstalledButNotConfigured,
 }: CDPipelineProps) {
     const isCdPipeline = true
@@ -332,7 +333,7 @@ export default function CDPipeline({
     }
 
     const getEnvCDPipelineName = (form) => {
-        Promise.all([getCDPipelineNameSuggestion(appId), getEnvironmentListMinPublic(true)])
+        Promise.all([getCDPipelineNameSuggestion(appId, isTemplateView), getEnvironmentListMinPublic(true)])
             .then(([cpPipelineName, envList]) => {
                 form.name = cpPipelineName.result
                 let list = envList.result || []
@@ -364,7 +365,7 @@ export default function CDPipeline({
 
     const getInit = () => {
         Promise.all([
-            getDeploymentStrategyList(appId),
+            getDeploymentStrategyList(appId, isTemplateView),
             getGlobalVariables({ appId: Number(appId), isCD: true }),
             getDockerRegistryMinAuth(appId, true),
         ])
@@ -447,7 +448,7 @@ export default function CDPipeline({
     }
 
     const getMandatoryPluginData: BuildCDProps['getMandatoryPluginData'] = async (form, requiredPluginIds = []) => {
-        if (!processPluginData) {
+        if (!processPluginData || isTemplateView) {
             return
         }
 
@@ -468,7 +469,7 @@ export default function CDPipeline({
     }
 
     const getCDPipeline = (form, dockerRegistries): void => {
-        getCDPipelineConfig(appId, cdPipelineId)
+        getCDPipelineConfig(appId, cdPipelineId, isTemplateView)
             .then(async (result) => {
                 const pipelineConfigFromRes = result.pipelineConfig
                 updateStateFromResponse(pipelineConfigFromRes, result.environments, form, dockerRegistries)
@@ -509,7 +510,7 @@ export default function CDPipeline({
     }
 
     const getConfigMapSecrets = () => {
-        getConfigMapAndSecrets(appId, formData.environmentId)
+        getConfigMapAndSecrets(appId, formData.environmentId, isTemplateView)
             .then((response) => {
                 setConfigMapAndSecrets(response.list)
             })
@@ -519,7 +520,7 @@ export default function CDPipeline({
     }
 
     const getCDeploymentWindowState = async (envId: string) => {
-        if (getDeploymentWindowProfileMetaData) {
+        if (getDeploymentWindowProfileMetaData && !isTemplateView) {
             const { userActionState } = await getDeploymentWindowProfileMetaData(appId, envId)
             if (userActionState && userActionState !== ACTION_STATE.ALLOWED) {
                 setShowDeploymentWindowConfirmation(true)
@@ -921,22 +922,24 @@ export default function CDPipeline({
         const isGitOpsRepoNotConfiguredAndGitopsEnforced =
             isGitOpsRepoNotConfiguredAndOptionsVisible && formData.allowedDeploymentTypes.length == 1
 
-        if (isGitOpsRepoNotConfiguredAndOptionsVisible) {
-            setGitOpsRepoConfiguredWarning({ show: true, text: gitOpsRepoNotConfigured })
-        }
-        if (isGitOpsRepoNotConfiguredAndGitopsEnforced) {
-            setGitOpsRepoConfiguredWarning({
-                show: true,
-                text: gitOpsRepoNotConfiguredWithEnforcedEnv(formData.environmentName),
-            })
-        }
+        if (!isTemplateView) {
+            if (isGitOpsRepoNotConfiguredAndOptionsVisible) {
+                setGitOpsRepoConfiguredWarning({ show: true, text: gitOpsRepoNotConfigured })
+            }
+            if (isGitOpsRepoNotConfiguredAndGitopsEnforced) {
+                setGitOpsRepoConfiguredWarning({
+                    show: true,
+                    text: gitOpsRepoNotConfiguredWithEnforcedEnv(formData.environmentName),
+                })
+            }
 
-        if (
-            gitOpsRepoNotConfiguredAndOptionsHidden ||
-            isGitOpsRepoNotConfiguredAndGitopsEnforced ||
-            isGitOpsRepoNotConfiguredAndOptionsVisible
-        ) {
-            return true
+            if (
+                gitOpsRepoNotConfiguredAndOptionsHidden ||
+                isGitOpsRepoNotConfiguredAndGitopsEnforced ||
+                isGitOpsRepoNotConfiguredAndOptionsVisible
+            ) {
+                return true
+            }
         }
         return false
     }
@@ -995,8 +998,10 @@ export default function CDPipeline({
 
         try {
             const promiseArr = cdPipelineId
-                ? [updateCDPipeline(request), null]
-                : [saveCDPipeline(request), isMigratingFromExternalApp ? getEnvironmentListMinPublic(true) : null]
+                ? [updateCDPipeline(request, isTemplateView), null]
+                : [saveCDPipeline(request, {
+                        isTemplateView
+                    }), isMigratingFromExternalApp ? getEnvironmentListMinPublic(true) : null]
             const [response, environmentRes] = await Promise.all(promiseArr)
             if (response.result) {
                 const pipelineConfigFromRes = response.result.pipelines[0]
@@ -1065,7 +1070,11 @@ export default function CDPipeline({
                 id: +cdPipelineId,
             },
         }
-        deleteCDPipeline(payload, force, cascadeDelete)
+        deleteCDPipeline(payload, {
+            force,
+            cascadeDelete,
+            isTemplateView,
+        })
             .then((response) => {
                 if (response.result) {
                     if (
@@ -1333,6 +1342,7 @@ export default function CDPipeline({
                                     getMandatoryPluginData={getMandatoryPluginData}
                                     migrateToDevtronFormState={migrateToDevtronFormState}
                                     setMigrateToDevtronFormState={setMigrateToDevtronFormState}
+                                    isTemplateView={isTemplateView}
                                     isGitOpsInstalledButNotConfigured={isGitOpsInstalledButNotConfigured}
                                 />
                             </Route>
@@ -1509,6 +1519,7 @@ export default function CDPipeline({
                         appId={appId}
                         envId={formData?.environmentId ? String(formData.environmentId) : null}
                         clusterId={formData?.clusterId}
+                        isTemplateView={isTemplateView}
                     />
                 </div>
             </div>

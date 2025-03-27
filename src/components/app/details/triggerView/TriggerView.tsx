@@ -986,6 +986,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 this.state.ciNodeId,
                 true,
                 false,
+                false,
             ),
         )
     }

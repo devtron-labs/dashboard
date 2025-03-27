@@ -45,7 +45,15 @@ export class StaticNode extends Component<StaticNodeProps> {
                 }`}
                 onClick={this.props.handleGoToWorkFlowEditor}
             >
-                <GitProviderIcon gitProvider={GitProviderType.GIT} />
+                <GitProviderIcon
+                    {...(this.props.url
+                        ? {
+                              gitRepoUrl: this.props.url,
+                          }
+                        : {
+                              gitProvider: GitProviderType.GIT,
+                          })}
+                />
                 <div className="workflow-node__title workflow-node__title--static">
                     <span>/{this.props.title}</span>
                     <CiPipelineSourceConfig

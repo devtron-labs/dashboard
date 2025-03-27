@@ -30,7 +30,6 @@ const K8SResourceTabComponent = ({
     renderRefreshBar,
     addTab,
     isOpen,
-    showStaleDataWarning,
     updateK8sResourceTab,
     updateK8sResourceTabLastSyncMoment,
     setWidgetEventDetails,
@@ -54,11 +53,7 @@ const K8SResourceTabComponent = ({
     const errorMessage = error?.errors?.[0]?.userMessage || error?.message || null
 
     if (error?.code === 403) {
-        return (
-            <div className="resource-browser bg__primary flex">
-                <ErrorScreenManager code={403} />
-            </div>
-        )
+        return <ErrorScreenManager code={403} />
     }
 
     if (loading || error) {
@@ -90,7 +85,6 @@ const K8SResourceTabComponent = ({
                 addTab={addTab}
                 isOpen={isOpen}
                 renderRefreshBar={renderRefreshBar}
-                showStaleDataWarning={showStaleDataWarning}
                 updateK8sResourceTab={updateK8sResourceTab}
                 setWidgetEventDetails={setWidgetEventDetails}
                 handleResourceClick={handleResourceClick}

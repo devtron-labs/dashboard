@@ -32,6 +32,7 @@ import {
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerVariantType,
+    URLS as CommonURLS,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -298,6 +299,7 @@ export const EnvConfigurationsNav = ({
     hideEnvSelector,
     compareWithURL,
     appOrEnvIdToResourceApprovalConfigurationMap,
+    isTemplateView,
 }: EnvConfigurationsNavProps) => {
     const history = useHistory()
     const { isSuperAdmin } = useMainContext()
@@ -372,7 +374,7 @@ export const EnvConfigurationsNav = ({
         }
 
         // Truncate the path to the base application configuration path
-        const truncatedPath = `${path.split(URLS.APP_CONFIG)[0]}${URLS.APP_CONFIG}`
+        const truncatedPath = `${path.split(CommonURLS.APP_CONFIG)[0]}${CommonURLS.APP_CONFIG}`
 
         // Build the new app path, conditionally adding the environment override config when switching to environment
         const appPath = `${truncatedPath}${
@@ -457,7 +459,7 @@ export const EnvConfigurationsNav = ({
     return (
         <nav className="flexbox-col h-100 dc__overflow-hidden w-100">
             {!hideEnvSelector && renderEnvSelector()}
-            {showComparison && renderCompareWithBtn()}
+            {!isTemplateView && showComparison && renderCompareWithBtn()}
 
             <div className="mw-none p-8 flex-grow-1 dc__overflow-auto">
                 {isLoading || !resourceData ? (
