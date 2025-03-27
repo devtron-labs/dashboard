@@ -276,6 +276,8 @@ p.sentence-case:first-letter {
     display: none;
 }
 
+$checkbox-hover-bg-image: url('../assets/icons/ic-checkbox-hover.svg');
+
 .form__checkbox-container {
     width: 20px;
     height: 20px;
@@ -287,7 +289,16 @@ p.sentence-case:first-letter {
     transition: background-image 0.17s;
 
     &:hover {
-        background-image: url('../assets/icons/ic-checkbox-hover.svg');
+        background-image: url($checkbox-hover-bg-image);
+    }
+}
+
+// Class for checkbox parent container, if added to parent container, hover effect will be applied to checkbox
+.checkbox__parent-container {
+    &:hover {
+        .form__checkbox-container {
+            background-image: $checkbox-hover-bg-image;
+        }
     }
 }
 

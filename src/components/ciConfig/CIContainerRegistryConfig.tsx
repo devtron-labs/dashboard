@@ -25,10 +25,11 @@ import {
     RegistryIcon,
     SelectPicker,
     URLS as CommonURLs,
+    ButtonVariantType,
+    ButtonComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ArrowIcon } from '../../assets/icons/ic-arrow-left.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { Routes, URLS } from '../../config'
 import { _multiSelectStyles } from './CIConfig.utils'
 import { CIContainerRegistryConfigProps } from './types'
@@ -118,17 +119,6 @@ export default function CIContainerRegistryConfig({
         }
     }
 
-    const renderContainerRegistryMenuList = (): JSX.Element => (
-        <NavLink
-            to={URLS.GLOBAL_CONFIG_DOCKER}
-            className="flex left dc__gap-8 dc__border-top bg__primary px-8 py-10 cb-5 dc__block fw-6 fs-13 lh-20 anchor cursor dc__no-decor dc__hover-n50"
-            data-testid="add-container-registry-button"
-        >
-            <Add className="icon-dim-20 dc__no-shrink fcb-5" />
-            <span>Add Container Registry</span>
-        </NavLink>
-    )
-
     return (
         <div className={isCreateAppView ? '' : 'white-card white-card__docker-config dc__position-rel mb-12'}>
             {!isCreateAppView && (
@@ -157,7 +147,23 @@ export default function CIContainerRegistryConfig({
                             options={getContainerRegistryOptions()}
                             value={selectedRegistry ? getCustomRegistryOption(selectedRegistry) : null}
                             required
-                            renderMenuListFooter={configOverrideView ? undefined : renderContainerRegistryMenuList}
+                            menuListFooterConfig={
+                                configOverrideView
+                                    ? undefined
+                                    : {
+                                          type: 'button',
+                                          buttonProps: {
+                                              text: 'Add Container Registry',
+                                              variant: ButtonVariantType.borderLess,
+                                              component: ButtonComponentType.link,
+                                              dataTestId: 'add-container-registry-button',
+                                              linkProps: {
+                                                  to: URLS.GLOBAL_CONFIG_DOCKER,
+                                              },
+                                              startIcon: <Icon name="ic-add" color={null} />
+                                          },
+                                      }
+                            }
                             onChange={handleRegistryChange}
                             size={ComponentSizeType.large}
                         />

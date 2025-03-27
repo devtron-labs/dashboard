@@ -16,18 +16,10 @@
 
 import { SelectPicker, SelectPickerProps } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as WarningIcon } from '@Icons/ic-warning.svg'
-import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { TARGET_PLATFORM_LIST } from './CIConfig.utils'
 import { SelectorMessaging } from './ciConfigConstant'
 import { TargetPlatformSelectorType } from './types'
-
-const renderMenuListFooter = () => (
-    <div className="cn-5 px-12 py-4 dc__italic-font-style flex left dc__gap-6">
-        <ICInfoOutlineGrey className="icon-dim-16 icon-n6" />
-        {SelectorMessaging.TARGET_SELECTOR_MENU}
-    </div>
-)
 
 const TargetPlatformSelector = ({
     allowOverride,
@@ -126,7 +118,10 @@ const TargetPlatformSelector = ({
                     inputId="target-platform__select"
                     onChange={handlePlatformChange}
                     hideSelectedOptions={false}
-                    renderMenuListFooter={renderMenuListFooter}
+                    menuListFooterConfig={{
+                        type: 'text',
+                        value: SelectorMessaging.TARGET_SELECTOR_MENU,
+                    }}
                     onBlur={handleCreatableBlur}
                 />
             )}

@@ -40,6 +40,7 @@ import {
     DeleteConfirmationModal,
     Textarea,
     PasswordField,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -628,17 +629,6 @@ const GitForm = ({
         toggleCollapse(false)
     }
 
-    const renderGitHostBottom = () => {
-        return (
-            <button
-                className="flex left dc__gap-8 px-10 py-8 cb-5 cursor bg__primary dc__react-select__bottom dc__border-top dc__transparent fw-6"
-                onClick={onClickAddGitAccountHandler}
-            >
-                <Add className="icon-dim-20 fcb-5 dc__vertical-align-bottom" /> <span>Add Git Host</span>
-            </button>
-        )
-    }
-
     const TippyMessage = {
         authMessage: 'Authentication type cannot be switched from HTTPS to SSH or vice versa.',
     }
@@ -833,7 +823,16 @@ const GitForm = ({
                         isSearchable
                         isClearable={false}
                         options={hostListOption}
-                        renderMenuListFooter={renderGitHostBottom}
+                        menuListFooterConfig={{
+                            type: 'button',
+                            buttonProps: {
+                                text: 'Add Git Host',
+                                onClick: onClickAddGitAccountHandler,
+                                variant: ButtonVariantType.borderLess,
+                                dataTestId: 'add-git-host',
+                                startIcon: <Icon name="ic-add" color={null} />
+                            },
+                        }}
                         onChange={(e) => handleGithostChange(e)}
                         isDisabled={gitHostId}
                         size={ComponentSizeType.large}

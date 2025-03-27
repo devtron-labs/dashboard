@@ -32,6 +32,7 @@ import {
     SelectPickerProps,
     MarkDown,
     ComponentSizeType,
+    ButtonVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
@@ -561,23 +562,6 @@ export const ChartValuesSelector = ({
         },
     ]
 
-    const renderMenuListFooter = () => {
-        if (hideCreateNewOption) {
-            return null
-        }
-
-        return (
-            <button
-                className="dc__transparent fs-13 lh-20 flex left dc__gap-6 cb-5 px-12 py-4"
-                onClick={redirectToChartValues}
-                data-testid="add-preset-values-button-dropdown"
-            >
-                <ICAdd className="icon-dim-20 dc__no-shrink fcb-5" />
-                Create preset value
-            </button>
-        )
-    }
-
     const getOptionValue: SelectPickerProps<ChartValuesType>['getOptionValue'] = (option) =>
         `${option.value.id} ${option.value.kind}`
 
@@ -598,7 +582,20 @@ export const ChartValuesSelector = ({
         <SelectPicker<ChartValuesType, false>
             inputId="chart-values-selector"
             options={selectOptions}
-            renderMenuListFooter={renderMenuListFooter}
+            menuListFooterConfig={
+                !hideCreateNewOption
+                    ? {
+                          type: 'button',
+                          buttonProps: {
+                              variant: ButtonVariantType.borderLess,
+                              text: 'Create preset value',
+                              startIcon: <ICAdd className="icon-dim-20" />,
+                              dataTestId: 'add-preset-values-button-dropdown',
+                              onClick: redirectToChartValues,
+                          },
+                      }
+                    : null
+            }
             getOptionValue={getOptionValue}
             label="Chart Values"
             onChange={handleChange}

@@ -147,6 +147,10 @@
 
     &__primary-translucent {
         border: 1px solid var(--border-primary-translucent);
+
+        &--top {
+            border-top: 1px solid var(--border-primary-translucent);
+        }
     }
 
     &__secondary {

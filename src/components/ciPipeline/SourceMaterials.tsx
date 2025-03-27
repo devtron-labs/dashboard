@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { SourceTypeMap, URLS } from '../../config'
 import git from '../../assets/icons/git/git.svg'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outline-purple.svg'
@@ -28,6 +28,7 @@ import {
     ConditionalWrap,
     SelectPicker,
     ComponentSizeType,
+    SelectPickerProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 
@@ -44,53 +45,57 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
         _materials.push(_webhookTypeMaterial)
     }
 
-    const renderInfoBarForMultiGitWebhook = () => {
-        return (
-            <InfoColourBar
-                message="If you need webhook based CI for apps with multiple code sources,"
-                classname="info_bar question-bar ml-8 mb-8 mr-8"
-                Icon={Info}
-                redirectLink="https://github.com/devtron-labs/devtron/issues"
-                linkText="Create a github issue"
-            />
-        )
-    }
-
-    const renderInfoBarForSingleGitWebhookAndNoHostUrl = () => {
-        return (
-            <InfoColourBar
-                message="Select git host for this git account to view all supported options."
-                classname="info_bar question-bar ml-8 mb-8 mr-8"
-                Icon={Info}
-                redirectLink={URLS.GLOBAL_CONFIG_GIT}
-                linkText="Select git host"
-                internalLink
-            />
-        )
-    }
-
-    const renderInfoBarForSingleGitWebhook = () => {
-        return (
-            <InfoColourBar
-                message="If you want to trigger CI using any other mechanism,"
-                classname="info_bar question-bar ml-8 mb-8 mr-8"
-                Icon={Info}
-                redirectLink="https://github.com/devtron-labs/devtron/issues"
-                linkText="Create a github issue"
-            />
-        )
-    }
-
-    const renderSourceMaterialDropdownFooter = (): JSX.Element => {
+    const getMenuListFooterConfig = (): SelectPickerProps['menuListFooterConfig'] => {
         const _isMultiGit = props.includeWebhookEvents && isMultiGit
         const _isSingleGit = props.includeWebhookEvents && !isMultiGit
-        return (
-            <>
-                {_isMultiGit && renderInfoBarForMultiGitWebhook()}
-                {_isSingleGit && !_materials[0].gitHostId && renderInfoBarForSingleGitWebhookAndNoHostUrl()}
-                {_isSingleGit && _materials[0].gitHostId > 0 && renderInfoBarForSingleGitWebhook()}
-            </>
-        )
+
+        let value: SelectPickerProps['menuListFooterConfig']['value'] = null
+
+        if (_isMultiGit) {
+            value = (
+                <span>
+                    If you need webhook based CI for apps with multiple code sources,&nbsp;
+                    <a
+                        className="anchor"
+                        rel="noreferrer"
+                        href="https://github.com/devtron-labs/devtron/issues"
+                        target="_blank"
+                    >
+                        Create a GitHub issue
+                    </a>
+                </span>
+            )
+        } else if (_isSingleGit) {
+            if (!_materials[0].gitHostId) {
+                value = (
+                    <span>
+                        Select git host for this git account to view all supported options.&nbsp;
+                        <Link className="anchor" to={URLS.GLOBAL_CONFIG_GIT}>
+                            Select git host
+                        </Link>
+                    </span>
+                )
+            } else if (_materials[0].gitHostId > 0) {
+                value = (
+                    <span>
+                        If you want to trigger CI using any other mechanism,&nbsp;
+                        <a
+                            className="anchor"
+                            rel="noreferrer"
+                            href="https://github.com/devtron-labs/devtron/issues"
+                            target="_blank"
+                        >
+                            Create a GitHub issue
+                        </a>
+                    </span>
+                )
+            }
+        }
+
+        return {
+            type: 'text',
+            value,
+        }
     }
 
     async function onBlur() {
@@ -176,7 +181,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
                                             onChange={(selected) =>
                                                 props?.selectSourceType(selected, mat.gitMaterialId)
                                             }
-                                            renderMenuListFooter={renderSourceMaterialDropdownFooter}
+                                            menuListFooterConfig={getMenuListFooterConfig()}
                                             isClearable={false}
                                             size={ComponentSizeType.large}
                                             getOptionValue={(option) => `${option.value}-${option.label}`}
