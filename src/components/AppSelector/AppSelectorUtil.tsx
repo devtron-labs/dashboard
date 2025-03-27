@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getIsRequestAborted, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { getIsRequestAborted, NO_MATCHING_RESULT, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { BaseAppMetaData } from '@Components/app/types'
 import { getRecentlyVisitedDevtronApps, updateRecentlyVisitedDevtronApps } from '@Components/app/details/service'
 import { getAppListMin } from '../../services/service'
@@ -22,8 +22,6 @@ import { AllApplicationsMetaData } from './constants'
 import { RecentlyVisitedOptionsType } from './types'
 
 let timeoutId
-
-export const getNoOptionsMessage = (): string | null => 'No matching results'
 
 export const appListOptions = (inputValue: string, isJobView?: boolean, signal?: AbortSignal): Promise<[]> => {
     const options = signal ? { signal } : null
@@ -111,7 +109,7 @@ export const getDropdownOptions = (
             options:
                 filteredApps.length || inputValue?.length < 3
                     ? filteredApps
-                    : [{ value: 0, label: 'No matching results' }],
+                    : [{ value: 0, label: NO_MATCHING_RESULT }],
         },
         AllApplicationsMetaData,
     ]

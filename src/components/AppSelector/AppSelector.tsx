@@ -22,9 +22,10 @@ import {
     useAsync,
     SelectPicker,
     SelectPickerProps,
+    AppSelectorNoOptionsMessage as appSelectorNoOptionsMessage,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { AppSelectorType, RecentlyVisitedOptionsType, RecentlyVisitedOptions } from './types'
-import { getDropdownOptions, fetchRecentlyVisitedDevtronApps, getNoOptionsMessage } from './AppSelectorUtil'
+import { getDropdownOptions, fetchRecentlyVisitedDevtronApps } from './AppSelectorUtil'
 import { fetchAllAppListGroupedOptions } from './AppSelectorService'
 import { AllApplicationsMetaData } from './constants'
 
@@ -107,6 +108,14 @@ const AppSelector = ({
 
         return option.data.label.toLowerCase().includes(searchText.toLowerCase())
     }
+
+    const getNoOptionsMessage = () =>
+        appSelectorNoOptionsMessage(
+            {
+                inputValue,
+            },
+            true,
+        )
 
     return (
         <SelectPicker

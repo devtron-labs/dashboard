@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
-import { multiSelectStyles, noop, stopPropagation, Environment } from '@devtron-labs/devtron-fe-common-lib'
+import { stopPropagation, NO_MATCHING_RESULT } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ArrowDown } from '../assets/icons/ic-chevron-down.svg'
 import { CLUSTER_TERMINAL_MESSAGING } from '../../ClusterNodes/constants'
 
@@ -146,7 +145,10 @@ export const DropdownIndicator = (props) => {
     )
 }
 
-export const noMatchingOptions = () => 'No matching results'
+/**
+ * @deprecated - use from fe-common AppSelectorNoOptionsMessage
+ */
+export const noMatchingOptions = () => NO_MATCHING_RESULT
 
 export const formatOptionLabel = (option): JSX.Element => {
     return (
