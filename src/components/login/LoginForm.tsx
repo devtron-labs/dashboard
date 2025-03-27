@@ -136,7 +136,7 @@ export const LoginForm = ({ loginList }: LoginFormType) => {
             </div>
             <div className="flexbox-col dc__gap-12">
                 <Button
-                    disabled={loading}
+                    disabled={loading || !form.password}
                     isLoading={loading}
                     dataTestId="login-button"
                     text="Login"
