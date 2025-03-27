@@ -1,5 +1,6 @@
 import { AppHeaderType } from '@Components/app/types'
 import { SelectPickerOptionType, SelectPickerProps } from '@devtron-labs/devtron-fe-common-lib'
+import { GroupBase } from 'react-select'
 
 export interface AppSelectorType
     extends Pick<SelectPickerProps, 'onChange'>,
@@ -8,6 +9,11 @@ export interface AppSelectorType
     isJobView?: boolean
 }
 
-export interface RecentlyVisitedSelectPickerTypes extends SelectPickerOptionType<number> {
+export interface RecentlyVisitedOptions extends SelectPickerOptionType<number> {
     isDisabled?: boolean
+}
+
+export interface RecentlyVisitedOptionsType extends GroupBase<SelectPickerOptionType<number>> {
+    label: string
+    options: RecentlyVisitedOptions[]
 }

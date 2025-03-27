@@ -23,9 +23,10 @@ import {
     SelectPicker,
     SelectPickerProps,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { AppSelectorType, RecentlyVisitedSelectPickerTypes } from './types'
+import { AppSelectorType, RecentlyVisitedOptionsType, RecentlyVisitedOptions } from './types'
 import { getDropdownOptions, fetchRecentlyVisitedDevtronApps, getNoOptionsMessage } from './AppSelectorUtil'
 import { fetchAllAppListGroupedOptions } from './AppSelectorService'
+import { AllApplicationsMetaData } from './constants'
 
 const AppSelector = ({
     onChange,
@@ -37,7 +38,7 @@ const AppSelector = ({
 }: AppSelectorType) => {
     const selectRef = useRef<SelectInstance>(null)
     const abortControllerRef = useRef<AbortController>(new AbortController())
-    const [options, setOptions] = useState([])
+    const [options, setOptions] = useState<RecentlyVisitedOptionsType[]>([])
     const [inputValue, setInputValue] = useState('')
     const [areOptionsLoading, setAreOptionsLoading] = useState(false)
 
@@ -53,14 +54,14 @@ const AppSelector = ({
         }
     }, [result])
 
-    const memoizedDropdownOptions = useMemo(
+    const memoizedDropdownOptions: RecentlyVisitedOptionsType[] = useMemo(
         () => getDropdownOptions(inputValue, recentlyVisitedDevtronApps, appId),
         [recentlyVisitedDevtronApps, appId, inputValue],
     )
 
     const loadOptions = async (_inputValue: string) => {
         if (!_inputValue) {
-            return recentlyVisitedDevtronApps?.length ? memoizedDropdownOptions : [{ value: appId, label: appName }]
+            return recentlyVisitedDevtronApps?.length ? memoizedDropdownOptions : [AllApplicationsMetaData]
         }
 
         if (_inputValue.length <= 2) {
@@ -77,12 +78,12 @@ const AppSelector = ({
     useEffect(() => {
         // Fetch options on component mount
         const fetchOptions = async () => {
-            const _options = await loadOptions('')
+            const _options: RecentlyVisitedOptionsType[] = await loadOptions('')
             setOptions(_options)
         }
 
         fetchOptions()
-    }, [])
+    }, [recentlyVisitedDevtronApps])
 
     const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
         setInputValue(val)
@@ -120,7 +121,7 @@ const AppSelector = ({
             value={{ value: appId, label: appName }}
             variant={SelectPickerVariantType.BORDER_LESS}
             placeholder={appName}
-            isOptionDisabled={(option: RecentlyVisitedSelectPickerTypes) => option.isDisabled}
+            isOptionDisabled={(option: RecentlyVisitedOptions) => option.isDisabled}
             size={ComponentSizeType.xl}
             filterOption={customSelect}
             menuSize={ComponentSizeType.medium}

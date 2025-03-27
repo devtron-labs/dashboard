@@ -18,6 +18,8 @@ import { getIsRequestAborted, ServerErrors, showError } from '@devtron-labs/devt
 import { BaseAppMetaData } from '@Components/app/types'
 import { getRecentlyVisitedDevtronApps, updateRecentlyVisitedDevtronApps } from '@Components/app/details/service'
 import { getAppListMin } from '../../services/service'
+import { AllApplicationsMetaData } from './constants'
+import { RecentlyVisitedOptionsType } from './types'
 
 let timeoutId
 
@@ -101,7 +103,7 @@ export const getDropdownOptions = (
     inputValue: string,
     recentlyVisitedDevtronApps: BaseAppMetaData[],
     appId: number,
-) => {
+): RecentlyVisitedOptionsType[] => {
     const filteredApps = getFilteredRecentlyVisitedApps(inputValue, recentlyVisitedDevtronApps, appId)
     return [
         {
@@ -111,9 +113,6 @@ export const getDropdownOptions = (
                     ? filteredApps
                     : [{ value: 0, label: 'No matching results' }],
         },
-        {
-            label: 'All Applications',
-            options: [{ value: 0, label: 'Type 3 characters to search all applications', isDisabled: true }],
-        },
+        AllApplicationsMetaData,
     ]
 }
