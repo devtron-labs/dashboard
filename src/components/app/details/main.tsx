@@ -117,7 +117,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const [, result] = useAsync(
         () => fetchRecentlyVisitedDevtronApps(appId, appName, invalidAppId),
         [appId, appName, invalidAppId],
-        !!appName && !!appId && !!invalidAppId,
+        !!appName && !!invalidAppId && !isV2,
     )
 
     useEffect(() => {

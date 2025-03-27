@@ -19,7 +19,7 @@ import { BaseAppMetaData } from '@Components/app/types'
 import { getRecentlyVisitedDevtronApps, updateRecentlyVisitedDevtronApps } from '@Components/app/details/service'
 import { getAppListMin } from '../../services/service'
 import { AllApplicationsMetaData } from './constants'
-import { RecentlyVisitedOptionsType } from './types'
+import { RecentlyVisitedGroupedOptionsType } from './types'
 
 let timeoutId
 
@@ -73,14 +73,14 @@ export const fetchRecentlyVisitedDevtronApps = async (
         // Combine current app with previous list
         const combinedList = [{ appId, appName }, ...validResponse]
 
-        // Ensure unique entries using a Set
-        const uniqueApps = Array.from(new Map(combinedList.map((app) => [app.appId, app])).values())
-
         // Filter out invalid app and limit to 6
-        const filteredList = uniqueApps.filter((app) => Number(app.appId) !== invalidAppId).slice(0, 6)
+        // Ensure unique entries using a Set
+        const uniqueFilteredApps = Array.from(new Map(combinedList.map((app) => [app.appId, app])).values())
+            .filter((app) => Number(app.appId) !== invalidAppId)
+            .slice(0, 6)
 
-        await updateRecentlyVisitedDevtronApps(filteredList)
-        return filteredList
+        await updateRecentlyVisitedDevtronApps(uniqueFilteredApps)
+        return uniqueFilteredApps
     } catch (error) {
         showError(error)
         return []
@@ -93,15 +93,14 @@ export const getFilteredRecentlyVisitedApps = (
     appId: number,
 ) =>
     recentlyVisitedDevtronApps
-        .filter((app) => app.appName.toLowerCase().includes(inputValue.toLowerCase()))
-        .filter((app) => app.appId !== appId)
+        .filter((app) => app.appId !== appId && app.appName.toLowerCase().includes(inputValue.toLowerCase()))
         .map((app) => ({ value: app.appId, label: app.appName }))
 
 export const getDropdownOptions = (
     inputValue: string,
     recentlyVisitedDevtronApps: BaseAppMetaData[],
     appId: number,
-): RecentlyVisitedOptionsType[] => {
+): RecentlyVisitedGroupedOptionsType[] => {
     const filteredApps = getFilteredRecentlyVisitedApps(inputValue, recentlyVisitedDevtronApps, appId)
     return [
         {

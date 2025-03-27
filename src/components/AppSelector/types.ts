@@ -13,7 +13,7 @@ export interface RecentlyVisitedOptions extends SelectPickerOptionType<number> {
     isDisabled?: boolean
 }
 
-export interface RecentlyVisitedOptionsType extends GroupBase<SelectPickerOptionType<number>> {
+export interface RecentlyVisitedGroupedOptionsType extends GroupBase<SelectPickerOptionType<number>> {
     label: string
     options: RecentlyVisitedOptions[]
 }

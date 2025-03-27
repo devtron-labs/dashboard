@@ -1,6 +1,6 @@
-import { RecentlyVisitedOptionsType } from './types'
+import { RecentlyVisitedGroupedOptionsType } from './types'
 
-export const AllApplicationsMetaData: RecentlyVisitedOptionsType = {
+export const AllApplicationsMetaData: RecentlyVisitedGroupedOptionsType = {
     label: 'All Applications',
     options: [{ value: 0, label: 'Type 3 characters to search all applications', isDisabled: true }],
 }

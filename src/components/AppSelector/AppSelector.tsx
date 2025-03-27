@@ -24,7 +24,7 @@ import {
     SelectPickerProps,
     AppSelectorNoOptionsMessage as appSelectorNoOptionsMessage,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { AppSelectorType, RecentlyVisitedOptionsType, RecentlyVisitedOptions } from './types'
+import { AppSelectorType, RecentlyVisitedGroupedOptionsType, RecentlyVisitedOptions } from './types'
 import { getDropdownOptions, fetchRecentlyVisitedDevtronApps } from './AppSelectorUtil'
 import { fetchAllAppListGroupedOptions } from './AppSelectorService'
 import { AllApplicationsMetaData } from './constants'
@@ -39,7 +39,7 @@ const AppSelector = ({
 }: AppSelectorType) => {
     const selectRef = useRef<SelectInstance>(null)
     const abortControllerRef = useRef<AbortController>(new AbortController())
-    const [options, setOptions] = useState<RecentlyVisitedOptionsType[]>([])
+    const [options, setOptions] = useState<RecentlyVisitedGroupedOptionsType[]>([])
     const [inputValue, setInputValue] = useState('')
     const [areOptionsLoading, setAreOptionsLoading] = useState(false)
 
@@ -55,7 +55,7 @@ const AppSelector = ({
         }
     }, [result])
 
-    const memoizedDropdownOptions: RecentlyVisitedOptionsType[] = useMemo(
+    const memoizedDropdownOptions: RecentlyVisitedGroupedOptionsType[] = useMemo(
         () => getDropdownOptions(inputValue, recentlyVisitedDevtronApps, appId),
         [recentlyVisitedDevtronApps, appId, inputValue],
     )
@@ -79,7 +79,7 @@ const AppSelector = ({
     useEffect(() => {
         // Fetch options on component mount
         const fetchOptions = async () => {
-            const _options: RecentlyVisitedOptionsType[] = await loadOptions('')
+            const _options: RecentlyVisitedGroupedOptionsType[] = await loadOptions('')
             setOptions(_options)
         }
 
