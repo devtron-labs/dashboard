@@ -55,8 +55,6 @@ export const AppHeader = ({
     openCreateGroup,
     openDeleteGroup,
     isSuperAdmin,
-    recentlyVisitedDevtronApps,
-    setRecentlyVisitedDevtronApps,
 }: AppHeaderType) => {
     const { appId } = useParams<{ appId }>()
     const match = useRouteMatch()
@@ -135,15 +133,7 @@ export const AppHeader = ({
         {
             alias: {
                 ':appId(\\d+)': {
-                    component: (
-                        <AppSelector
-                            onChange={handleAppChange}
-                            appId={appId}
-                            appName={appName}
-                            recentlyVisitedDevtronApps={recentlyVisitedDevtronApps}
-                            setRecentlyVisitedDevtronApps={setRecentlyVisitedDevtronApps}
-                        />
-                    ),
+                    component: <AppSelector onChange={handleAppChange} appId={appId} appName={appName} />,
                     linked: false,
                 },
                 app: {
@@ -152,7 +142,7 @@ export const AppHeader = ({
                 },
             },
         },
-        [appId, appName, recentlyVisitedDevtronApps],
+        [appId, appName],
     )
 
     const renderAppDetailsTabs = () => {

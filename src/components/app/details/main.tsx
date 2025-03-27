@@ -83,7 +83,6 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const [isPopupBox, setIsPopupBox] = useState(false)
     const [apiError, setApiError] = useState(null)
     const [initLoading, setInitLoading] = useState<boolean>(false)
-    const [recentlyVisitedDevtronApps, setRecentlyVisitedDevtronApps] = useState<BaseAppMetaData[]>([])
     const [invalidAppId, setInvalidAppId] = useState<number>(null)
 
     useEffect(() => {
@@ -114,16 +113,6 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         }
     }, [appId])
 
-    const [, result] = useAsync(
-        () => fetchRecentlyVisitedDevtronApps(appId, appName, invalidAppId),
-        [appId, appName, invalidAppId],
-        !!appName && !!invalidAppId && !isV2,
-    )
-
-    useEffect(() => {
-        if (!result) return
-        setRecentlyVisitedDevtronApps(result)
-    }, [result])
 
     const getSavedFilterData = async (groupId?: number): Promise<GroupOptionType[]> => {
         setSelectedAppList([])
@@ -204,7 +193,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
             }
         } catch (err) {
             if (err.code === API_STATUS_CODES.NOT_FOUND) {
-                setInvalidAppId(+appId)
+               await fetchRecentlyVisitedDevtronApps(appId, appName, true)
             }
             setApiError(err)
             showError(err)
@@ -366,8 +355,6 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                     openCreateGroup={openCreateGroup}
                     openDeleteGroup={openDeleteGroup}
                     isSuperAdmin
-                    recentlyVisitedDevtronApps={recentlyVisitedDevtronApps}
-                    setRecentlyVisitedDevtronApps={setRecentlyVisitedDevtronApps}
                 />
             )}
             {showCreateGroup && (

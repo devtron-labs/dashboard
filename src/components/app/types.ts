@@ -186,8 +186,6 @@ export interface AppHeaderType extends GroupFilterType {
     appName: string
     appMetaInfo: AppMetaInfo
     reloadMandatoryProjects: boolean
-    recentlyVisitedDevtronApps: BaseAppMetaData[]
-    setRecentlyVisitedDevtronApps: Dispatch<SetStateAction<BaseAppMetaData[]>>
 }
 
 interface ResourceTree {

@@ -62,7 +62,7 @@ export const appListOptions = (inputValue: string, isJobView?: boolean, signal?:
 export const fetchRecentlyVisitedDevtronApps = async (
     appId: number,
     appName: string,
-    invalidAppId?: number,
+    isInvalidAppId: boolean = false,
 ): Promise<BaseAppMetaData[]> => {
     try {
         const response = (await getRecentlyVisitedDevtronApps()) ?? []
@@ -75,9 +75,8 @@ export const fetchRecentlyVisitedDevtronApps = async (
 
         // Filter out invalid app and limit to 6
         // Ensure unique entries using a Set
-        const uniqueFilteredApps = Array.from(new Map(combinedList.map((app) => [app.appId, app])).values())
-            .filter((app) => Number(app.appId) !== invalidAppId)
-            .slice(0, 6)
+        const uniqueApps = Array.from(new Map(combinedList.map((app) => [app.appId, app])).values()).slice(0, 6)
+        const uniqueFilteredApps = isInvalidAppId ? uniqueApps.filter((app) => app.appId !== appId) : uniqueApps
 
         await updateRecentlyVisitedDevtronApps(uniqueFilteredApps)
         return uniqueFilteredApps

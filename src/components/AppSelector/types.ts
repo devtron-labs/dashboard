@@ -2,9 +2,7 @@ import { AppHeaderType } from '@Components/app/types'
 import { SelectPickerOptionType, SelectPickerProps } from '@devtron-labs/devtron-fe-common-lib'
 import { GroupBase } from 'react-select'
 
-export interface AppSelectorType
-    extends Pick<SelectPickerProps, 'onChange'>,
-        Partial<Pick<AppHeaderType, 'recentlyVisitedDevtronApps' | 'setRecentlyVisitedDevtronApps' | 'appName'>> {
+export interface AppSelectorType extends Pick<SelectPickerProps, 'onChange'>, Pick<AppHeaderType, 'appName'> {
     appId: number
     isJobView?: boolean
 }

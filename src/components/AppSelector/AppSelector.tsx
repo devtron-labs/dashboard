@@ -24,26 +24,21 @@ import {
     SelectPickerProps,
     AppSelectorNoOptionsMessage as appSelectorNoOptionsMessage,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { BaseAppMetaData } from '@Components/app/types'
 import { AppSelectorType, RecentlyVisitedGroupedOptionsType, RecentlyVisitedOptions } from './types'
 import { getDropdownOptions, fetchRecentlyVisitedDevtronApps } from './AppSelectorUtil'
 import { fetchAllAppListGroupedOptions } from './AppSelectorService'
 import { AllApplicationsMetaData } from './constants'
 
-const AppSelector = ({
-    onChange,
-    appId,
-    appName,
-    isJobView,
-    recentlyVisitedDevtronApps,
-    setRecentlyVisitedDevtronApps,
-}: AppSelectorType) => {
+const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) => {
     const selectRef = useRef<SelectInstance>(null)
     const abortControllerRef = useRef<AbortController>(new AbortController())
     const [options, setOptions] = useState<RecentlyVisitedGroupedOptionsType[]>([])
     const [inputValue, setInputValue] = useState('')
     const [areOptionsLoading, setAreOptionsLoading] = useState(false)
+    const [recentlyVisitedDevtronApps, setRecentlyVisitedDevtronApps] = useState<BaseAppMetaData[]>([])
 
-    const [, result] = useAsync(
+    const [loading, result] = useAsync(
         () => fetchRecentlyVisitedDevtronApps(appId, appName),
         [appId, appName],
         !!appName && !!appId,
@@ -84,7 +79,7 @@ const AppSelector = ({
         }
 
         fetchOptions()
-    }, [recentlyVisitedDevtronApps])
+    }, [recentlyVisitedDevtronApps, inputValue])
 
     const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
         setInputValue(val)
@@ -124,7 +119,7 @@ const AppSelector = ({
             options={options}
             inputValue={inputValue}
             onInputChange={onInputChange}
-            isLoading={areOptionsLoading}
+            isLoading={areOptionsLoading || loading}
             noOptionsMessage={getNoOptionsMessage}
             onChange={onChange}
             value={{ value: appId, label: appName }}
