@@ -87,6 +87,7 @@ import {
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
     SortingOrder,
+    SegmentedControlProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -740,9 +741,8 @@ const CDMaterial = ({
         setCurrentSidebarTab(e.target.value as CDMaterialSidebarType)
     }
 
-    const handleFilterTabsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        e.stopPropagation()
-        const { value } = e.target
+    const handleFilterTabsChange: SegmentedControlProps['onChange'] = (selectedSegment) => {
+        const { value } = selectedSegment
         setState((prevState) => ({
             ...prevState,
             filterView: value as FilterConditionViews,
