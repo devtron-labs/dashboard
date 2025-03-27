@@ -708,11 +708,9 @@ const ManifestComponent = ({
 
         return (
             <div
-                className={
-                    !isCodeMirrorEnabled()
-                        ? `${getComponentSpecificThemeClass(AppThemeType.dark)} flex-grow-1 flexbox-col`
-                        : ''
-                }
+                className={`flex-grow-1 flexbox-col ${
+                    !isCodeMirrorEnabled() ? getComponentSpecificThemeClass(AppThemeType.dark) : ''
+                }`}
             >
                 <CodeEditor
                     cleanData={showManifestCompareView}
@@ -731,7 +729,7 @@ const ManifestComponent = ({
                     }}
                     codeMirrorProps={{
                         theme: AppThemeType.dark,
-                        height: '100%',
+                        height: 'fitToParent',
                         ...(showManifestCompareView
                             ? {
                                   diffView: true,
@@ -797,7 +795,7 @@ const ManifestComponent = ({
                 <div
                     className={`${
                         manifestFormConfigurationType === ConfigurationType.GUI ? 'bg__primary' : ''
-                    } flexbox-col flex-grow-1 dc__overflow-auto`}
+                    } flexbox-col flex-grow-1 dc__overflow-hidden`}
                 >
                     {isResourceMissing && !loading && !showManifestCompareView ? (
                         <MessageUI
