@@ -96,7 +96,7 @@ export const LoginForm = ({ loginList }: LoginFormType) => {
     }
 
     return (
-        <form className="flexbox-col dc__gap-32" autoComplete="on" onSubmit={onSubmitLogin} noValidate>
+        <form className="flexbox-col p-36 dc__gap-32" autoComplete="on" onSubmit={onSubmitLogin} noValidate>
             <div className="flexbox-col dc__gap-16">
                 <CustomInput
                     placeholder="Enter username"

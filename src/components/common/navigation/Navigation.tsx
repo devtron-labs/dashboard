@@ -156,6 +156,7 @@ interface NavigationType extends RouteComponentProps<{}> {
     isSuperAdmin: boolean
     isAirgapped: boolean
     currentServerInfo: MainContext['currentServerInfo']
+    showStackManager: boolean
 }
 
 export default class Navigation extends Component<
@@ -364,9 +365,7 @@ export default class Navigation extends Component<
                                 return this.renderNavLink(item)
                             }
                         })}
-                        {!window._env_.K8S_CLIENT &&
-                         !this.props.isAirgapped &&
-                         this.props.currentServerInfo.serverInfo?.installationType !== 'enterprise' && (
+                        {!window._env_.K8S_CLIENT && !this.props.isAirgapped && this.props.showStackManager && (
                             <>
                                 <div className="short-nav__divider" />
                                 {this.renderNavLink(NavigationStack, 'short-nav__stack-manager')}

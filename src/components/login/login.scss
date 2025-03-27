@@ -16,17 +16,6 @@
 
  // Login css
 .login {
-    .login__bg {
-        // This is beyond color palette thus using hex code
-        background-color: #cee7ff;
-    }
-
-    .login__image {
-        background-image: url('../../assets//img//bg-login.png');
-        background-size: auto 100%;
-        background-position: right;
-        background-repeat: no-repeat;
-    }
 
     .login-card__wrapper {
         box-shadow: var(--shadow-overlay);

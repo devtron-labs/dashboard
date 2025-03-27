@@ -338,7 +338,7 @@ export default function DevtronStackManager({
         })
 
         // 1. Execute all APIs - get all modules, get logPodName & releaseNotes
-        Promise.allSettled([getAllModules(), getLogPodName(), getReleasesNotes()])
+        Promise.allSettled([getAllModules(), getLogPodName(), getReleasesNotes(serverInfo.installationType)])
             .then((responses: { status: string; value?: any; reason?: any }[]) => {
                 const allModulesRes: AllModuleInfoResponse = responses[0].value
                 const allModulesErrorRes = responses[0].reason
