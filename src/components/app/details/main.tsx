@@ -28,6 +28,7 @@ import {
     URLS as CommonURLS,
     DeleteConfirmationModal,
     useAsync,
+    API_STATUS_CODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import {
@@ -202,7 +203,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 return result
             }
         } catch (err) {
-            if (err.code === 404) {
+            if (err.code === API_STATUS_CODES.NOT_FOUND) {
                 setInvalidAppId(+appId)
             }
             setApiError(err)

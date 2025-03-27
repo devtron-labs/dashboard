@@ -54,17 +54,17 @@ const AppSelector = ({
     }, [result])
 
     const memoizedDropdownOptions = useMemo(
-        () => () => getDropdownOptions(inputValue, recentlyVisitedDevtronApps, appId),
-        [recentlyVisitedDevtronApps, appId],
+        () => getDropdownOptions(inputValue, recentlyVisitedDevtronApps, appId),
+        [recentlyVisitedDevtronApps, appId, inputValue],
     )
 
     const loadOptions = async (_inputValue: string) => {
         if (!_inputValue) {
-            return recentlyVisitedDevtronApps?.length ? memoizedDropdownOptions() : [{ value: appId, label: appName }]
+            return recentlyVisitedDevtronApps?.length ? memoizedDropdownOptions : [{ value: appId, label: appName }]
         }
 
         if (_inputValue.length <= 2) {
-            return memoizedDropdownOptions()
+            return memoizedDropdownOptions
         }
 
         setAreOptionsLoading(true)
@@ -90,6 +90,7 @@ const AppSelector = ({
     if (!recentlyVisitedDevtronApps) return null
 
     const customSelect = (option, searchText: string) => {
+        // Show meta info in the 'All Applications' option
         if (option.data.value === 0) {
             return true
         }
@@ -113,6 +114,7 @@ const AppSelector = ({
             isOptionDisabled={(option: RecentlyVisitedSelectPickerTypes) => option.isDisabled}
             size={ComponentSizeType.xl}
             filterOption={customSelect}
+            menuSize={ComponentSizeType.medium}
         />
     )
 }

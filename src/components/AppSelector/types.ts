@@ -1,13 +1,11 @@
-import { BaseAppMetaData } from '@Components/app/types'
-import { Dispatch, SetStateAction } from 'react'
+import { AppHeaderType } from '@Components/app/types'
 import { SelectPickerOptionType, SelectPickerProps } from '@devtron-labs/devtron-fe-common-lib'
 
-export interface AppSelectorType extends Pick<SelectPickerProps, 'onChange'> {
+export interface AppSelectorType
+    extends Pick<SelectPickerProps, 'onChange'>,
+        Partial<Pick<AppHeaderType, 'recentlyVisitedDevtronApps' | 'setRecentlyVisitedDevtronApps' | 'appName'>> {
     appId: number
-    appName: string
     isJobView?: boolean
-    recentlyVisitedDevtronApps?: BaseAppMetaData[]
-    setRecentlyVisitedDevtronApps?: Dispatch<SetStateAction<BaseAppMetaData[]>>
 }
 
 export interface RecentlyVisitedSelectPickerTypes extends SelectPickerOptionType<number> {
