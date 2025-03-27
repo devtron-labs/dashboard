@@ -937,9 +937,9 @@
     regenerator-runtime "^0.14.0"
 
 "@babel/runtime@^7.18.6", "@babel/runtime@^7.2.0":
-  version "7.26.10"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.26.10.tgz#a07b4d8fa27af131a633d7b3524db803eb4764c2"
-  integrity sha512-2WJMeRQPHKSPemqk/awGrAiuFfzBmOIPXKizAsVhWH9YJqLZ0H+HS4c8loHGgW6utJ3E/ejXQUsiGaQy2NZ9Fw==
+  version "7.27.0"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.27.0.tgz#fbee7cf97c709518ecc1f590984481d5460d4762"
+  integrity sha512-VtPOkrdPHZsKc/clNqyi9WUA8TINkZ4cGk63UUE3u4pmB2k+ZMQRDuIOagv8UVd6j7k0T3+RRIb7beKTebNbcw==
   dependencies:
     regenerator-runtime "^0.14.0"
 
@@ -1046,10 +1046,19 @@
   dependencies:
     "@codemirror/language" "^6.0.0"
 
-"@codemirror/lint@6.8.4", "@codemirror/lint@^6.0.0":
+"@codemirror/lint@6.8.4":
   version "6.8.4"
   resolved "https://registry.yarnpkg.com/@codemirror/lint/-/lint-6.8.4.tgz#7d8aa5d1a6dec89ffcc23ad45ddca2e12e90982d"
   integrity sha512-u4q7PnZlJUojeRe8FJa/njJcMctISGgPQ4PnWsd9268R4ZTtU+tfFYmwkBvgcrK2+QQ8tYFVALVb5fVJykKc5A==
+  dependencies:
+    "@codemirror/state" "^6.0.0"
+    "@codemirror/view" "^6.35.0"
+    crelt "^1.0.5"
+
+"@codemirror/lint@^6.0.0":
+  version "6.8.5"
+  resolved "https://registry.yarnpkg.com/@codemirror/lint/-/lint-6.8.5.tgz#9edaa808e764e28e07665b015951934c8ec3a418"
+  integrity sha512-s3n3KisH7dx3vsoeGMxsbRAgKe4O1vbrnKBClm99PU0fWxmxsx5rR2PfqQgIt+2MMJBHbiJ5rfIdLYfB9NNvsA==
   dependencies:
     "@codemirror/state" "^6.0.0"
     "@codemirror/view" "^6.35.0"
@@ -1117,10 +1126,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@1.9.8-beta-7":
-  version "1.9.8-beta-7"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.9.8-beta-7.tgz#2e24aaab8e0ac77c9c04000f584efa75a45243e5"
-  integrity sha512-EBGoFRDWKnUTZw8PWQvj0b8KV3fGDQO2BPZsKJp5zco99sTsIqJs2KproSr1ZAgxAf8yhndYwQ01HFR5GfuB3A==
+"@devtron-labs/devtron-fe-common-lib@1.9.8-beta-10":
+  version "1.9.8-beta-10"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.9.8-beta-10.tgz#31f99b75fd7c1b56df39fedc42c7d726cb791838"
+  integrity sha512-eo2vYLE/W+PcMteWvcMKCJmR7a9+cRky7rCEkWt2qJ4VhBmME0GQ+Ci/BPoOO58dVdk/w9j55zcCbO63Sb5Zow==
   dependencies:
     "@codemirror/lang-json" "6.0.1"
     "@codemirror/lang-yaml" "6.1.2"

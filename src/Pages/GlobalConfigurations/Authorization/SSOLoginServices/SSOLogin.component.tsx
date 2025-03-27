@@ -25,6 +25,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable react/destructuring-assignment */
 import React, { Component, createRef } from 'react'
+import ReactGA from 'react-ga4'
 import {
     showError,
     Progressing,
@@ -189,6 +190,11 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
     handleSSOClick(event): void {
         const newsso = event.target.value
+        ReactGA.event({
+            category: 'login-card__sso-item',
+            action: `LOGIN_WITH_${newsso}_CLICKED`,
+        })
+
         getSSOConfig(newsso)
             .then((response) => {
                 this.setConfig(response, newsso)
