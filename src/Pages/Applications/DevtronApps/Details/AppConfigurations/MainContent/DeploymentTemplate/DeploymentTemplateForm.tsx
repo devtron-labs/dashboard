@@ -138,21 +138,25 @@ const DeploymentTemplateForm = ({
                 },
             },
         },
-        {
-            title: 'Merge strategy',
-            lhs: {
-                displayValue: expressEditComparisonViewLHSValue?.mergeStrategy,
-            },
-            rhs: {
-                value: mergeStrategy,
-                dropdownConfig: {
-                    options: MERGE_STRATEGY_OPTIONS,
-                    onChange: (newValue: SelectPickerOptionType) => {
-                        handleMergeStrategyChange(newValue.value as OverrideMergeStrategyType)
-                    },
-                },
-            },
-        },
+        ...(environmentName
+            ? [
+                  {
+                      title: 'Merge strategy',
+                      lhs: {
+                          displayValue: expressEditComparisonViewLHSValue?.mergeStrategy,
+                      },
+                      rhs: {
+                          value: mergeStrategy,
+                          dropdownConfig: {
+                              options: MERGE_STRATEGY_OPTIONS,
+                              onChange: (newValue: SelectPickerOptionType) => {
+                                  handleMergeStrategyChange(newValue.value as OverrideMergeStrategyType)
+                              },
+                          },
+                      },
+                  },
+              ]
+            : []),
         {
             title: 'Application metrics',
             lhs: {
