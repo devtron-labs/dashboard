@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Switch, Route, Redirect, useParams, useRouteMatch } from 'react-router-dom'
 import {
     showError,
@@ -27,6 +27,8 @@ import {
     ToastVariantType,
     URLS as CommonURLS,
     DeleteConfirmationModal,
+    useAsync,
+    API_STATUS_CODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import {
@@ -38,7 +40,7 @@ import {
 import { APP_TYPE, URLS } from '../../../config'
 import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import { getAppMetaInfo } from '../service'
-import { AppMetaInfo } from '../types'
+import { AppMetaInfo, BaseAppMetaData } from '../types'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
 import { AppDetailsProps } from './triggerView/types'
 import Overview from '../Overview/Overview'
@@ -51,6 +53,7 @@ import { getAppOtherEnvironmentMin } from '../../../services/service'
 import { appGroupPermission, deleteEnvGroup, getEnvGroupList } from '../../ApplicationGroup/AppGroup.service'
 import CreateAppGroup from '../../ApplicationGroup/CreateAppGroup'
 import { DeleteComponentsName } from '@Config/constantMessaging'
+import { fetchRecentlyVisitedDevtronApps } from '@Components/AppSelector/AppSelectorUtil'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
@@ -80,10 +83,12 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const [isPopupBox, setIsPopupBox] = useState(false)
     const [apiError, setApiError] = useState(null)
     const [initLoading, setInitLoading] = useState<boolean>(false)
+    const [invalidAppId, setInvalidAppId] = useState<number>(null)
 
     useEffect(() => {
         setInitLoading(true)
         getAppMetaInfoRes()
+
         Promise.all([getSavedFilterData(), getAppListData()])
             .then((response) => {
                 const groupFilterOptionsList = response[0]
@@ -107,6 +112,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
             setAppListOptions([])
         }
     }, [appId])
+
 
     const getSavedFilterData = async (groupId?: number): Promise<GroupOptionType[]> => {
         setSelectedAppList([])
@@ -186,6 +192,9 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 return result
             }
         } catch (err) {
+            if (err.code === API_STATUS_CODES.NOT_FOUND) {
+               await fetchRecentlyVisitedDevtronApps(appId, appName, true)
+            }
             setApiError(err)
             showError(err)
         }
@@ -299,12 +308,12 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     }
 
     async function handleDelete() {
-            await deleteEnvGroup(appId, clickedGroup.value, FilterParentType.app)
-            getSavedFilterData(
-                selectedGroupFilter[0] && clickedGroup.value !== selectedGroupFilter[0].value
-                    ? +selectedGroupFilter[0].value
-                    : null,
-            )
+        await deleteEnvGroup(appId, clickedGroup.value, FilterParentType.app)
+        getSavedFilterData(
+            selectedGroupFilter[0] && clickedGroup.value !== selectedGroupFilter[0].value
+                ? +selectedGroupFilter[0].value
+                : null,
+        )
     }
 
     const closeDeleteGroup = () => {
@@ -327,6 +336,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     }
 
     const _filteredEnvIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
+
     return (
         <div className="app-details-page flexbox-col w-100 h-100 dc__overflow-auto">
             {!isV2 && (
@@ -418,7 +428,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 </Suspense>
             </ErrorBoundary>
 
-            <div className='dc__no-shrink' id="cluster-meta-data-bar__container" />
+            <div className="dc__no-shrink" id="cluster-meta-data-bar__container" />
         </div>
     )
 }

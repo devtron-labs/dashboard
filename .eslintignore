@@ -86,7 +86,6 @@ src/components/app/create/CreateApp.tsx
 src/components/app/create/validationRules.ts
 src/components/app/details/AboutAppInfoModal.tsx
 src/components/app/details/AboutTagEditModal.tsx
-src/components/app/details/AppHeader.tsx
 src/components/app/details/appDetails/AppMetrics.tsx
 src/components/app/details/appDetails/AppStatusCard.tsx
 src/components/app/details/appDetails/DeploymentStatusDetailModal.tsx

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 /*
  * Copyright (c) 2024. Devtron Inc.
  *
@@ -13,59 +14,121 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { useRef } from 'react'
+import { useEffect, useRef, useMemo, useState } from 'react'
+import { SelectInstance } from 'react-select'
 import {
-    abortPreviousRequests,
-    APP_SELECTOR_STYLES,
-    AppSelectorDropdownIndicator,
-    AppSelectorNoOptionsMessage,
+    SelectPickerVariantType,
+    ComponentSizeType,
+    useAsync,
+    SelectPicker,
+    SelectPickerProps,
+    AppSelectorNoOptionsMessage as appSelectorNoOptionsMessage,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Props as SelectProps, SelectInstance } from 'react-select'
-import AsyncSelect from 'react-select/async'
-import { appListOptions } from './AppSelectorUtil'
-
-interface AppSelectorType {
-    onChange: ({ label, value }) => void
-    appId: number
-    appName: string
-    isJobView?: boolean
-}
+import { BaseAppMetaData } from '@Components/app/types'
+import { AppSelectorType, RecentlyVisitedGroupedOptionsType, RecentlyVisitedOptions } from './types'
+import { getDropdownOptions, fetchRecentlyVisitedDevtronApps } from './AppSelectorUtil'
+import { fetchAllAppListGroupedOptions } from './AppSelectorService'
+import { AllApplicationsMetaData } from './constants'
 
 const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) => {
     const selectRef = useRef<SelectInstance>(null)
-
     const abortControllerRef = useRef<AbortController>(new AbortController())
+    const [options, setOptions] = useState<RecentlyVisitedGroupedOptionsType[]>([])
+    const [inputValue, setInputValue] = useState('')
+    const [areOptionsLoading, setAreOptionsLoading] = useState(false)
+    const [recentlyVisitedDevtronApps, setRecentlyVisitedDevtronApps] = useState<BaseAppMetaData[]>([])
 
-    const defaultOptions = [{ value: appId, label: appName }]
-    const loadAppListOptions = (inputValue: string) =>
-        abortPreviousRequests(
-            () => appListOptions(inputValue, isJobView, abortControllerRef.current.signal),
-            abortControllerRef,
-        )
+    const [loading, result] = useAsync(
+        () => fetchRecentlyVisitedDevtronApps(appId, appName),
+        [appId, appName],
+        !!appName && !!appId,
+    )
 
-    const handleOnKeyDown: SelectProps['onKeyDown'] = (event) => {
+    useEffect(() => {
+        if (result) {
+            setRecentlyVisitedDevtronApps(result)
+        }
+    }, [result])
+
+    const memoizedDropdownOptions: RecentlyVisitedGroupedOptionsType[] = useMemo(
+        () => getDropdownOptions(inputValue, recentlyVisitedDevtronApps, appId),
+        [recentlyVisitedDevtronApps, appId, inputValue],
+    )
+
+    const loadOptions = async (_inputValue: string) => {
+        if (!_inputValue) {
+            return recentlyVisitedDevtronApps?.length ? memoizedDropdownOptions : [AllApplicationsMetaData]
+        }
+
+        if (_inputValue.length <= 2) {
+            return memoizedDropdownOptions
+        }
+
+        setAreOptionsLoading(true)
+        const response = await fetchAllAppListGroupedOptions(_inputValue, isJobView, abortControllerRef.current.signal)
+        setAreOptionsLoading(false)
+
+        return response || []
+    }
+
+    useEffect(() => {
+        // Fetch options on component mount
+        const fetchOptions = async () => {
+            const _options: RecentlyVisitedGroupedOptionsType[] = await loadOptions('')
+            setOptions(_options)
+        }
+
+        fetchOptions()
+    }, [recentlyVisitedDevtronApps, inputValue])
+
+    const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
+        setInputValue(val)
+        const _options = await loadOptions(val)
+        setOptions(_options)
+    }
+
+    const handleOnKeyDown = (event) => {
         if (event.key === 'Escape') {
             selectRef.current?.inputRef.blur()
         }
     }
 
+    if (!recentlyVisitedDevtronApps) return null
+
+    const customSelect = (option, searchText: string) => {
+        // Show meta info in the 'All Applications' option
+        if (option.data.value === 0) {
+            return true
+        }
+
+        return option.data.label.toLowerCase().includes(searchText.toLowerCase())
+    }
+
+    const getNoOptionsMessage = () =>
+        appSelectorNoOptionsMessage(
+            {
+                inputValue,
+            },
+            true,
+        )
+
     return (
-        <AsyncSelect
-            ref={selectRef}
-            blurInputOnSelect
+        <SelectPicker
+            inputId={`${isJobView ? 'job' : 'app'}-name`}
             onKeyDown={handleOnKeyDown}
-            defaultOptions
-            loadOptions={loadAppListOptions}
-            noOptionsMessage={AppSelectorNoOptionsMessage}
+            options={options}
+            inputValue={inputValue}
+            onInputChange={onInputChange}
+            isLoading={areOptionsLoading || loading}
+            noOptionsMessage={getNoOptionsMessage}
             onChange={onChange}
-            components={{
-                IndicatorSeparator: null,
-                DropdownIndicator: AppSelectorDropdownIndicator,
-                LoadingIndicator: null,
-            }}
-            value={defaultOptions[0]}
-            styles={APP_SELECTOR_STYLES}
+            value={{ value: appId, label: appName }}
+            variant={SelectPickerVariantType.BORDER_LESS}
+            placeholder={appName}
+            isOptionDisabled={(option: RecentlyVisitedOptions) => option.isDisabled}
+            size={ComponentSizeType.xl}
+            filterOption={customSelect}
+            menuSize={ComponentSizeType.medium}
         />
     )
 }

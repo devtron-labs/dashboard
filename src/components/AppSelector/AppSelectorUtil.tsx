@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-import { getIsRequestAborted, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { getIsRequestAborted, NO_MATCHING_RESULT, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { BaseAppMetaData } from '@Components/app/types'
+import { getRecentlyVisitedDevtronApps, updateRecentlyVisitedDevtronApps } from '@Components/app/details/service'
 import { getAppListMin } from '../../services/service'
+import { AllApplicationsMetaData } from './constants'
+import { RecentlyVisitedGroupedOptionsType } from './types'
 
 let timeoutId
 
@@ -53,4 +57,58 @@ export const appListOptions = (inputValue: string, isJobView?: boolean, signal?:
                 })
         }, 300)
     })
+}
+
+export const fetchRecentlyVisitedDevtronApps = async (
+    appId: number,
+    appName: string,
+    isInvalidAppId: boolean = false,
+): Promise<BaseAppMetaData[]> => {
+    try {
+        const response = (await getRecentlyVisitedDevtronApps()) ?? []
+
+        // Ensure all items have valid `appId` and `appName`
+        const validResponse = response.filter((app): app is BaseAppMetaData => !!app?.appId && !!app?.appName)
+
+        // Combine current app with previous list
+        const combinedList = [{ appId, appName }, ...validResponse]
+
+        // Filter out invalid app and limit to 6
+        // Ensure unique entries using a Set
+        const uniqueApps = Array.from(new Map(combinedList.map((app) => [app.appId, app])).values()).slice(0, 6)
+        const uniqueFilteredApps = isInvalidAppId ? uniqueApps.filter((app) => app.appId !== appId) : uniqueApps
+
+        await updateRecentlyVisitedDevtronApps(uniqueFilteredApps)
+        return uniqueFilteredApps
+    } catch (error) {
+        showError(error)
+        return []
+    }
+}
+
+export const getFilteredRecentlyVisitedApps = (
+    inputValue: string,
+    recentlyVisitedDevtronApps: BaseAppMetaData[],
+    appId: number,
+) =>
+    recentlyVisitedDevtronApps
+        .filter((app) => app.appId !== appId && app.appName.toLowerCase().includes(inputValue.toLowerCase()))
+        .map((app) => ({ value: app.appId, label: app.appName }))
+
+export const getDropdownOptions = (
+    inputValue: string,
+    recentlyVisitedDevtronApps: BaseAppMetaData[],
+    appId: number,
+): RecentlyVisitedGroupedOptionsType[] => {
+    const filteredApps = getFilteredRecentlyVisitedApps(inputValue, recentlyVisitedDevtronApps, appId)
+    return [
+        {
+            label: 'Recently Visited',
+            options:
+                filteredApps.length || inputValue?.length < 3
+                    ? filteredApps
+                    : [{ value: 0, label: NO_MATCHING_RESULT }],
+        },
+        AllApplicationsMetaData,
+    ]
 }

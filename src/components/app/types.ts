@@ -151,9 +151,12 @@ interface GitMaterial {
     redirectionUrl: string
 }
 
-export interface AppMetaInfo extends Partial<Pick<CreateAppFormStateType, 'templateConfig'>> {
+export interface BaseAppMetaData {
     appId: number
     appName: string
+}
+
+export interface AppMetaInfo extends BaseAppMetaData, Partial<Pick<CreateAppFormStateType, 'templateConfig'>>  {
     createdBy: string
     description: string
     createdOn: string

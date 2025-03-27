@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Nodes } from '@devtron-labs/devtron-fe-common-lib'
+import { NO_MATCHING_RESULT, Nodes } from '@devtron-labs/devtron-fe-common-lib'
 import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg'
 import { AggregationKeys, AggregationKeysType } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
@@ -233,7 +233,7 @@ export const RESOURCE_LIST_ERROR_STATE = {
 }
 
 export const RESOURCE_LIST_EMPTY_STATE = {
-    title: 'No matching results',
+    title: NO_MATCHING_RESULT,
     subTitle: (kind: string): string => `We could not find any matching ${kind || 'resource'}.`,
 }
 

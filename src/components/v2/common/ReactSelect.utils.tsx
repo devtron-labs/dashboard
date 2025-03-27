@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
-import { multiSelectStyles, noop, stopPropagation, Environment } from '@devtron-labs/devtron-fe-common-lib'
+import { stopPropagation, NO_MATCHING_RESULT } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ArrowDown } from '../assets/icons/ic-chevron-down.svg'
 import { CLUSTER_TERMINAL_MESSAGING } from '../../ClusterNodes/constants'
 
@@ -146,7 +145,10 @@ export const DropdownIndicator = (props) => {
     )
 }
 
-export const noMatchingOptions = () => 'No matching results'
+/**
+ * @deprecated - use from fe-common AppSelectorNoOptionsMessage
+ */
+export const noMatchingOptions = () => NO_MATCHING_RESULT
 
 export const formatOptionLabel = (option): JSX.Element => {
     return (
@@ -183,48 +185,4 @@ export const GroupHeading = (props) => {
             </div>
         </components.GroupHeading>
     )
-}
-
-export const groupHeaderStyle = {
-    group: (base) => ({
-        ...base,
-        paddingTop: 0,
-        paddingBottom: 0,
-    }),
-    groupHeading: (base) => ({
-        ...base,
-        fontWeight: 600,
-        fontSize: '12px',
-        textTransform: 'lowercase',
-        height: '28px',
-        color: 'var(--N900)',
-        backgroundColor: 'var(--N100)',
-        marginBottom: 0,
-    }),
-}
-
-export const groupStyle = () => {
-    return {
-        ...multiSelectStyles,
-        menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
-        control: (base) => ({ ...base, border: '1px solid var(--N200)', width: '450px' }),
-        group: (base) => ({
-            ...base,
-            paddingTop: 0,
-            paddingBottom: 0,
-        }),
-        groupHeading: (base) => ({
-            ...base,
-            fontWeight: 600,
-            fontSize: '12px',
-            height: '28px',
-            color: 'var(--N900)',
-            backgroundColor: 'var(--N100)',
-            marginBottom: 0,
-        }),
-        indicatorsContainer: (provided, state) => ({
-            ...provided,
-        }),
-        option: getCustomOptionSelectionStyle(),
-    }
 }
