@@ -125,7 +125,7 @@ const Login = () => {
             {loginList
                 .filter((sso) => sso.active)
                 .map((item) => (
-                    <div className="login-button">
+                    <div className="login-button" key={item.name}>
                         <Button
                             variant={ButtonVariantType.secondary}
                             text={`Login with ${item.name}`}

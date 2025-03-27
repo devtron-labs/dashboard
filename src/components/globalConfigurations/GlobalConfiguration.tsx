@@ -64,7 +64,6 @@ const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
 // NOTE: Might import from index itself
 const BuildInfra = lazy(() => import('../../Pages/GlobalConfigurations/BuildInfra/BuildInfra'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
-const PluginsPolicyV1 = importComponentFromFELibrary('PluginsPolicyV1')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy', null, 'function')
 const FilterConditions = importComponentFromFELibrary('FilterConditions')
 const LockDeploymentConfiguration = importComponentFromFELibrary('LockDeploymentConfiguration', null, 'function')
@@ -764,17 +763,11 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                         <ImagePromotion isSuperAdmin={isSuperAdmin} />
                     </Route>
                 ),
-                window._env_.FEATURE_CD_MANDATORY_PLUGINS_ENABLE
-                    ? PluginsPolicy && (
-                          <Route path={URLS.GLOBAL_CONFIG_PLUGIN_POLICY}>
-                              <PluginsPolicy OfflinePipelineModalAppView={OffendingPipelineModalAppView} />
-                          </Route>
-                      )
-                    : PluginsPolicyV1 && (
-                          <Route path={URLS.GLOBAL_CONFIG_PLUGIN_POLICY}>
-                              <PluginsPolicyV1 />
-                          </Route>
-                      ),
+                PluginsPolicy && (
+                    <Route path={URLS.GLOBAL_CONFIG_PLUGIN_POLICY}>
+                        <PluginsPolicy OfflinePipelineModalAppView={OffendingPipelineModalAppView} />
+                    </Route>
+                ),
                 PullImageDigest && (
                     <Route path={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}>
                         <PullImageDigest isSuperAdmin={isSuperAdmin} />
@@ -799,7 +792,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <Route path={CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP}>
                         <DevtronAppTemplates AppConfig={AppConfig} />
                     </Route>
-                )
+                ),
             ]}
             <Redirect to={defaultRoute()} />
         </Switch>

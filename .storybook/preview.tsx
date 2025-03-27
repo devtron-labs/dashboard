@@ -38,9 +38,7 @@ const preview: Preview = {
     },
     decorators: (Story) => {
         if (!window._env_) {
-            window._env_ = {
-                FEATURE_EXPERIMENTAL_THEMING_ENABLE: true,
-            } as customEnv
+            window._env_ = {} as customEnv
         }
 
         return (

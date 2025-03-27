@@ -1161,11 +1161,7 @@ export const getParsedBranchValuesForPlugin = (branchName: string): string => {
         return ''
     }
 
-    if (window._env_.FEATURE_CD_MANDATORY_PLUGINS_ENABLE) {
-        return `[${branchName}]`
-    }
-
-    return branchName
+    return `[${branchName}]`
 }
 
 export const getAppFilterLocalStorageKey = (filterParentType: FilterParentType): AppEnvLocalStorageKeyType =>
