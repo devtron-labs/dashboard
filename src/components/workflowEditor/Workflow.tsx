@@ -99,6 +99,7 @@ export interface WorkflowProps
     handleSelectedNodeChange?: (selectedNode: SelectedNode) => void
     appName?: string
     getWorkflows?: () => void
+    refreshParentWorkflows?: () => void
     reloadEnvironments?: () => void
     workflowPositionState?: WorkflowPositionState
     handleDisplayLoader?: () => void
@@ -394,6 +395,10 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         return `${this.props.match.url}/${getWebhookDetailsURL(this.props.id.toString(), node.id)}`
     }
 
+    getAllWorkflows = () => {
+        this.props.getWorkflows()
+        this.props.refreshParentWorkflows()
+    }
 
     renderCINodes(node) {
         return (
@@ -435,7 +440,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 match={this.props.match}
                 isOffendingPipelineView={this.props.isOffendingPipelineView}
                 appId={this.props.match.params.appId}
-                getWorkflows={this.props.getWorkflows}
+                getWorkflows={this.getAllWorkflows}
                 isTemplateView={this.props.isTemplateView}
             />
         )
@@ -474,7 +479,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 deploymentAppDeleteRequest={node.deploymentAppDeleteRequest}
                 readOnly={this.props.isOffendingPipelineView}
                 appId={this.props.match.params.appId}
-                getWorkflows={this.props.getWorkflows}
+                getWorkflows={this.getAllWorkflows}
                 workflowId={this.props.id}
                 isTemplateView={this.props.isTemplateView}
             />

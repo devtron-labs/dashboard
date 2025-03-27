@@ -32,6 +32,7 @@ import {
     ToastVariantType,
     OptionsBase,
     noop,
+    SegmentedControlProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
@@ -386,8 +387,8 @@ const NodeDetailComponent = ({
         )
     }
 
-    const handleToggleManifestConfigurationMode = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setManifestFormConfigurationType(e.target.value as ConfigurationType)
+    const handleToggleManifestConfigurationMode: SegmentedControlProps['onChange'] = (selectedSegment) => {
+        setManifestFormConfigurationType(selectedSegment.value as ConfigurationType)
     }
 
     const handleSwitchToYAMLMode = () => {

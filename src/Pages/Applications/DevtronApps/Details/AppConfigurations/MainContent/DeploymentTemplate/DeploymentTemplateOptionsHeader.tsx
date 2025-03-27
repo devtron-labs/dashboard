@@ -19,7 +19,8 @@ import {
     InvalidYAMLTippyWrapper,
     SegmentedControl,
     CONFIGURATION_TYPE_OPTIONS,
-    SegmentedControlVariant,
+    SegmentedControlProps,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import DTChartSelector from './DTChartSelector'
 import { DeploymentTemplateOptionsHeaderProps } from './types'
@@ -46,8 +47,8 @@ const DeploymentTemplateOptionsHeader = ({
         return null
     }
 
-    const handleToggleEditMode = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.value === ConfigurationType.YAML) {
+    const handleToggleEditMode: SegmentedControlProps['onChange'] = (selectedSegment) => {
+        if (selectedSegment.value === ConfigurationType.YAML) {
             handleChangeToYAMLMode()
             return
         }
@@ -65,13 +66,12 @@ const DeploymentTemplateOptionsHeader = ({
                     >
                         <div>
                             <SegmentedControl
-                                tabs={CONFIGURATION_TYPE_OPTIONS}
-                                initialTab={editMode}
+                                segments={CONFIGURATION_TYPE_OPTIONS}
+                                value={editMode}
                                 onChange={handleToggleEditMode}
                                 disabled={!!parsingError}
-                                rootClassName="h-20"
+                                size={ComponentSizeType.xs}
                                 name="dt-yaml-gui-segmented-control"
-                                variant={SegmentedControlVariant.GRAY_ON_WHITE}
                             />
                         </div>
                     </InvalidYAMLTippyWrapper>

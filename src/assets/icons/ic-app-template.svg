@@ -1,3 +1,19 @@
+<!--
+  - Copyright (c) 2024. Devtron Inc.
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
 <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" vector-effect="non-scaling-effect">
 <rect width="48" height="48" rx="6" fill="#FFF8ED"/>
 <path d="M9 11.5001C9 10.1193 10.1193 9 11.5001 9H36.5007C37.8814 9 39.0007 10.1193 39.0007 11.5001V14.0001C39.0007 15.3809 37.8814 16.5002 36.5007 16.5002H11.5001C10.1193 16.5002 9 15.3809 9 14.0001V11.5001Z" fill="#FFC266"/>
