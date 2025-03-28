@@ -34,10 +34,6 @@ export const getCentralAPIHealth = async (): Promise<void> => {
         const url = `${window?._env_?.CENTRAL_API_ENDPOINT}/${Routes.HEALTH}`
         const response = await fetch(url, {
             signal: controller.signal,
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
         })
 
         clearTimeout(timeoutId)
