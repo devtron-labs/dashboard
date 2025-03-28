@@ -51,8 +51,8 @@ const getEditHistoryPopupButtonConfig = importComponentFromFELibrary(
     'function',
 )
 
-const getExpressDeletePopupButtonConfig = importComponentFromFELibrary(
-    'getExpressDeletePopupButtonConfig',
+const getExpressDeleteDraftPopupButtonConfig = importComponentFromFELibrary(
+    'getExpressDeleteDraftPopupButtonConfig',
     null,
     'function',
 )
@@ -223,13 +223,13 @@ export const getConfigToolbarPopupConfig = ({
     }
 
     if (
-        getExpressDeletePopupButtonConfig &&
-        (isDeletable || isOverridden) &&
+        getExpressDeleteDraftPopupButtonConfig &&
         isExceptionUser &&
+        isDeleteOverrideDraftPresent &&
         configHeaderTab === ConfigHeaderTabType.VALUES
     ) {
-        const expressDeleteConfig = getExpressDeletePopupButtonConfig(handleExpressDelete, isOverridden)
-        secondConfigSegment.push(expressDeleteConfig)
+        const expressDeleteDraftConfig = getExpressDeleteDraftPopupButtonConfig(handleExpressDelete, isOverridden)
+        secondConfigSegment.push(expressDeleteDraftConfig)
     }
 
     return {

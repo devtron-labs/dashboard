@@ -157,6 +157,10 @@ export interface DeploymentTemplateStateType {
      */
     showSaveChangesModal: boolean
     /**
+     * Would show confirmation modal for express edit when draft is present. (draft will be discarded warning)
+     */
+    showExpressEditConfirmationModal: boolean
+    /**
      * To replace the opened popup menu body in config toolbar
      */
     popupNodeType: ConfigToolbarPopupNodeType
@@ -175,7 +179,8 @@ export interface DeploymentTemplateStateType {
     isLoadingChangedChartDetails: boolean
     showDeleteOverrideDialog: boolean
     showDeleteDraftOverrideDialog: boolean
-    showExpressDeleteDialog: boolean
+    showExpressDeleteDraftDialog: boolean
+
     /**
      * This mode can only be activated when user is in edit mode
      */
@@ -197,7 +202,6 @@ export interface DeploymentTemplateStateType {
     isExpressEditView: boolean
     /** Whether the express edit comparison view is visible. */
     isExpressEditComparisonView: boolean
-    showExpressEditPublishConfirmationModal: boolean
 }
 
 export interface HandleFetchDeploymentTemplateReturnType

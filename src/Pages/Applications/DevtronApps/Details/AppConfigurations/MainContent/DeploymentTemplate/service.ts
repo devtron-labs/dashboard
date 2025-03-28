@@ -130,8 +130,8 @@ export function deleteOverrideDeploymentTemplate(
     appId: number,
     envId: number,
     isTemplateView: AppConfigProps['isTemplateView'],
-    isExpressEdit?: boolean,
     resourceName?: string,
+    isExpressEdit?: boolean,
 ) {
     const url = isTemplateView
         ? getTemplateAPIRoute({

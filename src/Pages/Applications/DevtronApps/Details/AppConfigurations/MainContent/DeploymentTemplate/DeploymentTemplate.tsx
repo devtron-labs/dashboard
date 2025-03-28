@@ -151,8 +151,8 @@ const DeleteOverrideDraftModal = importComponentFromFELibrary('DeleteOverrideDra
 const ProtectionViewToolbarPopupNode = importComponentFromFELibrary('ProtectionViewToolbarPopupNode', null, 'function')
 const getConfigAfterOperations = importComponentFromFELibrary('getConfigAfterOperations', null, 'function')
 const ExpressEditHeader = importComponentFromFELibrary('ExpressEditHeader', null, 'function')
-const ExpressDeleteModal = importComponentFromFELibrary('ExpressDeleteModal', null, 'function')
-const ExpressEditSaveModal = importComponentFromFELibrary('ExpressEditSaveModal', null, 'function')
+const ExpressDeleteDraftModal = importComponentFromFELibrary('ExpressDeleteDraftModal', null, 'function')
+const ExpressEditConfirmationModal = importComponentFromFELibrary('ExpressEditConfirmationModal', null, 'function')
 
 const DeploymentTemplate = ({
     respondOnSuccess = noop,
@@ -217,8 +217,8 @@ const DeploymentTemplate = ({
         migratedFrom: pipelineMigratedFrom,
         isExpressEditView,
         isExpressEditComparisonView,
-        showExpressDeleteDialog,
-        showExpressEditPublishConfirmationModal,
+        showExpressDeleteDraftDialog,
+        showExpressEditConfirmationModal,
     } = state
 
     const manifestAbortController = useRef<AbortController>(new AbortController())
@@ -1180,13 +1180,6 @@ const DeploymentTemplate = ({
         })
     }
 
-    const closeExpressEditPublishConfirmationModal = () => {
-        dispatch({
-            type: DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_PUBLISH_CONFIRMATION_MODAL,
-            payload: { showExpressEditPublishConfirmationModal: false },
-        })
-    }
-
     const handleSaveTemplate = async (isExpressEdit: boolean = false) => {
         dispatch({
             type: DeploymentTemplateActionType.INITIATE_SAVE,
@@ -1241,14 +1234,7 @@ const DeploymentTemplate = ({
         }
     }
 
-    const handleTriggerSave = async (e: SyntheticEvent) => {
-        e.preventDefault()
-
-        ReactGA.event({
-            category: 'devtronapp-configuration-dt',
-            action: editMode === ConfigurationType.GUI ? 'clicked-saved-via-gui' : 'clicked-saved-via-yaml',
-        })
-
+    const checkForLockedKeys = () => {
         if (shouldValidateLockChanges) {
             const { ineligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
                 documents: getLockedDiffModalDocuments({
@@ -1263,8 +1249,24 @@ const DeploymentTemplate = ({
                     type: DeploymentTemplateActionType.LOCKED_CHANGES_DETECTED_ON_SAVE,
                 })
 
-                return
+                return true
             }
+        }
+
+        return false
+    }
+
+    const handleTriggerSave = async (e: SyntheticEvent) => {
+        e.preventDefault()
+
+        ReactGA.event({
+            category: 'devtronapp-configuration-dt',
+            action: editMode === ConfigurationType.GUI ? 'clicked-saved-via-gui' : 'clicked-saved-via-yaml',
+        })
+
+        const ineligibleChanges = checkForLockedKeys()
+        if (ineligibleChanges) {
+            return
         }
 
         if (isApprovalPolicyConfigured) {
@@ -1278,56 +1280,27 @@ const DeploymentTemplate = ({
         await handleSaveTemplate()
     }
 
-    const handleExpressEditSave = async (e: SyntheticEvent) => {
+    const handleExpressEditPublish = async (e: SyntheticEvent) => {
         e.preventDefault()
 
-        if (shouldValidateLockChanges && !showLockedTemplateDiffModal) {
-            const { ineligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
-                documents: getLockedDiffModalDocuments({
-                    isApprovalView: false,
-                    state,
-                }),
-                lockedConfigKeysWithLockType,
+        const ineligibleChanges = checkForLockedKeys()
+        if (ineligibleChanges) {
+            return
+        }
+
+        if (isDraftAvailable) {
+            dispatch({
+                type: DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_CONFIRMATION_MODAL,
+                payload: { showExpressEditConfirmationModal: true },
             })
 
-            if (Object.keys(ineligibleChanges || {}).length) {
-                dispatch({
-                    type: DeploymentTemplateActionType.LOCKED_CHANGES_DETECTED_ON_SAVE,
-                })
-
-                return
-            }
+            return
         }
 
         await handleSaveTemplate(true)
     }
 
-    const handleExpressEditPublish = async (e: SyntheticEvent) => {
-        e.preventDefault()
-
-        if (shouldValidateLockChanges) {
-            const { ineligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
-                documents: getLockedDiffModalDocuments({
-                    isApprovalView: false,
-                    state,
-                }),
-                lockedConfigKeysWithLockType,
-            })
-
-            if (Object.keys(ineligibleChanges || {}).length) {
-                dispatch({
-                    type: DeploymentTemplateActionType.LOCKED_CHANGES_DETECTED_ON_SAVE,
-                })
-
-                return
-            }
-        }
-
-        dispatch({
-            type: DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_PUBLISH_CONFIRMATION_MODAL,
-            payload: { showExpressEditPublishConfirmationModal: true },
-        })
-    }
+    const handleExpressEditWithDraftSave = () => handleSaveTemplate(true)
 
     const handleExpressDelete = async () => {
         dispatch({
@@ -1340,8 +1313,8 @@ const DeploymentTemplate = ({
                 Number(appId),
                 Number(envId),
                 false,
-                true,
                 getDeploymentTemplateResourceName(environmentName),
+                true,
             )
             await handleReload()
 
@@ -1361,10 +1334,14 @@ const DeploymentTemplate = ({
 
     const handleTriggerSaveFromLockedModal = async () => {
         if (isExceptionUser && isExpressEditView) {
-            dispatch({
-                type: DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_PUBLISH_CONFIRMATION_MODAL,
-                payload: { showExpressEditPublishConfirmationModal: true },
-            })
+            if (isDraftAvailable) {
+                dispatch({
+                    type: DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_CONFIRMATION_MODAL,
+                    payload: { showExpressEditConfirmationModal: true },
+                })
+            } else {
+                await handleSaveTemplate(true)
+            }
 
             return
         }
@@ -1684,6 +1661,13 @@ const DeploymentTemplate = ({
         editorStateBeforeExpressEditView.current = null
     }
 
+    const closeExpressEditPublishConfirmationModal = () => {
+        dispatch({
+            type: DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_CONFIRMATION_MODAL,
+            payload: { showExpressEditConfirmationModal: false },
+        })
+    }
+
     const toggleExpressEditComparisonView = () => {
         dispatch({
             type: DeploymentTemplateActionType.TOGGLE_EXPRESS_EDIT_COMPARISON_VIEW,
@@ -1692,15 +1676,15 @@ const DeploymentTemplate = ({
 
     const openExpressDeleteDialog = () => {
         dispatch({
-            type: DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DIALOG,
-            payload: { showExpressDeleteDialog: true },
+            type: DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DRAFT_DIALOG,
+            payload: { showExpressDeleteDraftDialog: true },
         })
     }
 
     const closeExpressDeleteDialog = () => {
         dispatch({
-            type: DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DIALOG,
-            payload: { showExpressDeleteDialog: false },
+            type: DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DRAFT_DIALOG,
+            payload: { showExpressDeleteDraftDialog: false },
         })
     }
 
@@ -2036,7 +2020,6 @@ const DeploymentTemplate = ({
                             isComparisonView={isExpressEditComparisonView}
                             toggleComparison={toggleExpressEditComparisonView}
                             handleClose={handleExpressEditViewClose}
-                            hideComparisonButton={!isPublishedConfigPresent}
                         />
                     )
                 )}
@@ -2158,11 +2141,16 @@ const DeploymentTemplate = ({
                         handleClose={handleToggleDeleteDraftOverrideDialog}
                         latestDraft={draftTemplateData?.latestDraft}
                         reload={handleReload}
+                        expressDeleteConfig={{
+                            showExpressDelete: isExceptionUser,
+                            onClick: handleExpressDelete,
+                            isLoading: isLoadingSideEffects,
+                        }}
                     />
                 )}
 
-                {ExpressDeleteModal && showExpressDeleteDialog && (
-                    <ExpressDeleteModal
+                {ExpressDeleteDraftModal && showExpressDeleteDraftDialog && (
+                    <ExpressDeleteDraftModal
                         isLoading={isLoadingSideEffects}
                         handleDelete={handleExpressDelete}
                         handleClose={closeExpressDeleteDialog}
@@ -2202,10 +2190,10 @@ const DeploymentTemplate = ({
                     />
                 )}
 
-                {ExpressEditSaveModal && showExpressEditPublishConfirmationModal && (
-                    <ExpressEditSaveModal
+                {ExpressEditConfirmationModal && showExpressEditConfirmationModal && (
+                    <ExpressEditConfirmationModal
                         handleClose={closeExpressEditPublishConfirmationModal}
-                        handleSave={handleExpressEditSave}
+                        handleSave={handleExpressEditWithDraftSave}
                         isLoading={isLoadingSideEffects}
                     />
                 )}
