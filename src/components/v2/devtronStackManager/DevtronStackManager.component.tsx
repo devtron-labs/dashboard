@@ -880,7 +880,8 @@ export const InstallationWrapper = ({
             return isUpgradeView
                 ? { text: `Update to ${upgradeVersion.toLowerCase()}`, Icon: null }
                 : { text: 'Install', Icon: InstallIcon }
-        } else if (
+        }
+        if (
             installationStatus === ModuleStatus.INSTALL_FAILED ||
             installationStatus === ModuleStatus.UPGRADE_FAILED ||
             installationStatus === ModuleStatus.TIMEOUT ||
