@@ -1724,7 +1724,6 @@ const ChartValuesView = ({
                                     isVirtualEnvironment={appDetails?.isVirtualEnvironment}
                                 />
                             )}
-                           { console.log('allowedDeploymentTypes', allowedDeploymentTypes) }
                             {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && showDeploymentTools && (
                                 <DeploymentAppSelector
                                     commonState={commonState}
