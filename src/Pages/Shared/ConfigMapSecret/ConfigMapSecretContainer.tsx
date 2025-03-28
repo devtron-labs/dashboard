@@ -592,7 +592,7 @@ export const ConfigMapSecretContainer = ({
         })
     }
 
-    const handleExpressDeleteDraftOverride = () => setOpenDeleteModal('deleteModal')
+    const handleExpressDelete = () => setOpenDeleteModal('deleteModal')
 
     const closeDeleteModal = () => setOpenDeleteModal(null)
 
@@ -841,7 +841,7 @@ export const ConfigMapSecretContainer = ({
                 !isCreateState,
             isDeleteOverrideDraftPresent: draftData?.action === DraftAction.Delete,
             isExceptionUser,
-            handleExpressDeleteDraftOverride,
+            handleExpressDelete,
         }),
         popupNodeType,
         popupMenuNode: ProtectionViewToolbarPopupNode ? (
@@ -1023,8 +1023,8 @@ export const ConfigMapSecretContainer = ({
                         handleMergeStrategyChange={handleMergeStrategyChange}
                         userApprovalMetadata={draftData?.userApprovalMetadata}
                         isApprovalPolicyConfigured={isApprovalPolicyConfigured}
+                        isExceptionUser={isExceptionUser}
                         expressEditButtonConfig={{
-                            isVisible: isExceptionUser && isApprovalPolicyConfigured, // && !isExpressEditView,
                             showPromptTooltip: showPrompt && formState.isDirty,
                             onClick: () => {}, // handleExpressEditClick,
                             onClose: closePromptTooltip,

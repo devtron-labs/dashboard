@@ -128,8 +128,9 @@ const ConfigToolbar = ({
     headerMessage,
     showDeleteOverrideDraftEmptyState,
 
-    expressEditButtonConfig,
+    isExceptionUser,
     isExpressEditView,
+    expressEditButtonConfig,
 }: ConfigToolbarProps) => {
     const { envId } = useParams<BaseURLParams>()
     const isDisabled = disableAllActions || !!parsingError
@@ -164,7 +165,8 @@ const ConfigToolbar = ({
         configHeaderTab === ConfigHeaderTabType.VALUES &&
         !!ProtectionViewTabGroup
 
-    const showExpressEditButton = expressEditButtonConfig?.isVisible && isEditView && !showDeleteOverrideDraftEmptyState
+    const showExpressEditButton =
+        isExceptionUser && !isExpressEditView && isEditView && !showDeleteOverrideDraftEmptyState
 
     const getLHSActionNodes = (): JSX.Element => {
         if (isExpressEditView) {

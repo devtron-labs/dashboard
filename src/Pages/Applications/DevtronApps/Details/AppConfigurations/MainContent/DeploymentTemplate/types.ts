@@ -175,7 +175,7 @@ export interface DeploymentTemplateStateType {
     isLoadingChangedChartDetails: boolean
     showDeleteOverrideDialog: boolean
     showDeleteDraftOverrideDialog: boolean
-    showExpressDeleteDraftOverrideDialog: boolean
+    showExpressDeleteDialog: boolean
     /**
      * This mode can only be activated when user is in edit mode
      */

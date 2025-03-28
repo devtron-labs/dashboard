@@ -68,7 +68,7 @@ const DeploymentTemplateForm = ({
 }: DeploymentTemplateFormProps) => {
     // STATES
     const [expressEditComparisonViewLHSValue, setExpressEditComparisonViewLHSValue] =
-        useState<DeploymentTemplateConfigState>(draftTemplateData)
+        useState<DeploymentTemplateConfigState>(latestDraft ? draftTemplateData : publishedTemplateData)
 
     if (editMode === ConfigurationType.GUI && isGuiSupported) {
         return (
@@ -232,6 +232,7 @@ const DeploymentTemplateForm = ({
                         ),
                         validatorSchema: schema,
                     }}
+                    showDraftOption={!!latestDraft}
                     handleCompareWithChange={handleExpressEditCompareWithChange}
                 />
             ) : (

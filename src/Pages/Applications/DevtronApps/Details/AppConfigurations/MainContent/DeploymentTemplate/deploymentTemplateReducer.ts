@@ -91,7 +91,7 @@ export enum DeploymentTemplateActionType {
     TOGGLE_APP_METRICS = 'TOGGLE_APP_METRICS',
     UPDATE_MERGE_STRATEGY = 'UPDATE_MERGE_STRATEGY',
     SHOW_DELETE_OVERRIDE_DIALOG = 'SHOW_DELETE_OVERRIDE_DIALOG',
-    SHOW_EXPRESS_DELETE_DRAFT_OVERRIDE_DIALOG = 'SHOW_EXPRESS_DELETE_DRAFT_OVERRIDE_DIALOG',
+    SHOW_EXPRESS_DELETE_DIALOG = 'SHOW_EXPRESS_DELETE_DIALOG',
     DELETE_LOCAL_OVERRIDE = 'DELETE_LOCAL_OVERRIDE',
     OVERRIDE_TEMPLATE = 'OVERRIDE_TEMPLATE',
     DELETE_OVERRIDE_CONCURRENT_PROTECTION_ERROR = 'DELETE_OVERRIDE_CONCURRENT_PROTECTION_ERROR',
@@ -107,7 +107,7 @@ export enum DeploymentTemplateActionType {
     CURRENT_EDITOR_MERGED_TEMPLATE_FETCH_ERROR = 'CURRENT_EDITOR_MERGED_TEMPLATE_ERROR',
     LOCK_CHANGES_DETECTED_FROM_DRAFT_API = 'LOCK_CHANGES_DETECTED_FROM_DRAFT_API',
     IS_EXPRESS_EDIT_VIEW = 'IS_EXPRESS_EDIT_VIEW',
-    IS_EXPRESS_EDIT_COMPARISON_VIEW = 'IS_EXPRESS_EDIT_COMPARISON_VIEW',
+    TOGGLE_EXPRESS_EDIT_COMPARISON_VIEW = 'TOGGLE_EXPRESS_EDIT_COMPARISON_VIEW',
     SHOW_EXPRESS_EDIT_PUBLISH_CONFIRMATION_MODAL = 'SHOW_EXPRESS_EDIT_PUBLISH_CONFIRMATION_MODAL',
 }
 
@@ -139,6 +139,7 @@ type DeploymentTemplateNoPayloadActions =
     | DeploymentTemplateActionType.CLOSE_LOCKED_DIFF_MODAL
     | DeploymentTemplateActionType.UPDATE_CONFIG_HEADER_TAB
     | DeploymentTemplateActionType.LOCK_CHANGES_DETECTED_FROM_DRAFT_API
+    | DeploymentTemplateActionType.TOGGLE_EXPRESS_EDIT_COMPARISON_VIEW
 
 interface LoadMergedTemplateBasePayloadType {
     editorStates: ConfigEditorStatesType[]
@@ -265,16 +266,12 @@ export type DeploymentTemplateActionState =
           }
       }
     | {
-          type: DeploymentTemplateActionType.IS_EXPRESS_EDIT_COMPARISON_VIEW
-          payload: DeploymentTemplateStateType['isExpressEditComparisonView']
-      }
-    | {
-          type: DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DRAFT_OVERRIDE_DIALOG
-          payload: DeploymentTemplateStateType['showExpressDeleteDraftOverrideDialog']
+          type: DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DIALOG
+          payload: Pick<DeploymentTemplateStateType, 'showExpressDeleteDialog'>
       }
     | {
           type: DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_PUBLISH_CONFIRMATION_MODAL
-          payload: DeploymentTemplateStateType['showExpressEditPublishConfirmationModal']
+          payload: Pick<DeploymentTemplateStateType, 'showExpressEditPublishConfirmationModal'>
       }
 
 export const getDeploymentTemplateInitialState = ({
@@ -331,7 +328,7 @@ export const getDeploymentTemplateInitialState = ({
     migratedFrom: null,
     isExpressEditView: false,
     isExpressEditComparisonView: false,
-    showExpressDeleteDraftOverrideDialog: false,
+    showExpressDeleteDialog: false,
     showExpressEditPublishConfirmationModal: false,
 })
 
@@ -992,25 +989,20 @@ export const deploymentTemplateReducer = (
                 isExpressEditComparisonView: false,
             }
 
-        case DeploymentTemplateActionType.IS_EXPRESS_EDIT_COMPARISON_VIEW:
+        case DeploymentTemplateActionType.TOGGLE_EXPRESS_EDIT_COMPARISON_VIEW:
             return {
                 ...state,
                 ...handleSwitchToYAMLMode(state),
                 ...handleReApplyLockedKeys(state),
                 ...handleUnResolveScopedVariables(),
-                isExpressEditComparisonView: action.payload,
+                isExpressEditComparisonView: !state.isExpressEditComparisonView,
             }
 
-        case DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DRAFT_OVERRIDE_DIALOG:
-            return {
-                ...state,
-                showExpressDeleteDraftOverrideDialog: action.payload,
-            }
-
+        case DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DIALOG:
         case DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_PUBLISH_CONFIRMATION_MODAL:
             return {
                 ...state,
-                showExpressEditPublishConfirmationModal: action.payload,
+                ...action.payload,
             }
 
         default:

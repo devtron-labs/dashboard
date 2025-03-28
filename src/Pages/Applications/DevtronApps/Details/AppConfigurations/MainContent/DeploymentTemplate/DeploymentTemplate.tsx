@@ -151,7 +151,7 @@ const DeleteOverrideDraftModal = importComponentFromFELibrary('DeleteOverrideDra
 const ProtectionViewToolbarPopupNode = importComponentFromFELibrary('ProtectionViewToolbarPopupNode', null, 'function')
 const getConfigAfterOperations = importComponentFromFELibrary('getConfigAfterOperations', null, 'function')
 const ExpressEditHeader = importComponentFromFELibrary('ExpressEditHeader', null, 'function')
-const ExpressDeleteOverrideModal = importComponentFromFELibrary('ExpressDeleteOverrideModal', null, 'function')
+const ExpressDeleteModal = importComponentFromFELibrary('ExpressDeleteModal', null, 'function')
 const ExpressEditSaveModal = importComponentFromFELibrary('ExpressEditSaveModal', null, 'function')
 
 const DeploymentTemplate = ({
@@ -217,7 +217,7 @@ const DeploymentTemplate = ({
         migratedFrom: pipelineMigratedFrom,
         isExpressEditView,
         isExpressEditComparisonView,
-        showExpressDeleteDraftOverrideDialog,
+        showExpressDeleteDialog,
         showExpressEditPublishConfirmationModal,
     } = state
 
@@ -260,9 +260,14 @@ const DeploymentTemplate = ({
         compareFromSelectedOptionValue === CompareFromApprovalOptionsValuesType.APPROVAL_PENDING
 
     const showNoOverrideTab =
-        !!envId && !isDraftAvailable && !publishedTemplateData?.isOverridden && !currentEditorTemplateData?.isOverridden
+        !!envId &&
+        !isDraftAvailable &&
+        !publishedTemplateData?.isOverridden &&
+        !currentEditorTemplateData?.isOverridden &&
+        !isExpressEditView
 
-    const showNoOverrideEmptyState = showNoOverrideTab && configHeaderTab === ConfigHeaderTabType.VALUES
+    const showNoOverrideEmptyState =
+        showNoOverrideTab && configHeaderTab === ConfigHeaderTabType.VALUES && !isExpressEditView
     const isDeleteOverrideDraft = !!envId && draftTemplateData?.latestDraft?.action === DraftAction.Delete
     const showDeleteOverrideDraftEmptyState =
         isDeleteOverrideDraft &&
@@ -1178,7 +1183,7 @@ const DeploymentTemplate = ({
     const closeExpressEditPublishConfirmationModal = () => {
         dispatch({
             type: DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_PUBLISH_CONFIRMATION_MODAL,
-            payload: false,
+            payload: { showExpressEditPublishConfirmationModal: false },
         })
     }
 
@@ -1295,8 +1300,6 @@ const DeploymentTemplate = ({
         }
 
         await handleSaveTemplate(true)
-
-        closeExpressEditPublishConfirmationModal()
     }
 
     const handleExpressEditPublish = async (e: SyntheticEvent) => {
@@ -1322,7 +1325,7 @@ const DeploymentTemplate = ({
 
         dispatch({
             type: DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_PUBLISH_CONFIRMATION_MODAL,
-            payload: true,
+            payload: { showExpressEditPublishConfirmationModal: true },
         })
     }
 
@@ -1360,7 +1363,7 @@ const DeploymentTemplate = ({
         if (isExceptionUser && isExpressEditView) {
             dispatch({
                 type: DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_PUBLISH_CONFIRMATION_MODAL,
-                payload: true,
+                payload: { showExpressEditPublishConfirmationModal: true },
             })
 
             return
@@ -1683,22 +1686,21 @@ const DeploymentTemplate = ({
 
     const toggleExpressEditComparisonView = () => {
         dispatch({
-            type: DeploymentTemplateActionType.IS_EXPRESS_EDIT_COMPARISON_VIEW,
-            payload: !isExpressEditComparisonView,
+            type: DeploymentTemplateActionType.TOGGLE_EXPRESS_EDIT_COMPARISON_VIEW,
         })
     }
 
-    const openExpressDeleteDraftOverrideDialog = () => {
+    const openExpressDeleteDialog = () => {
         dispatch({
-            type: DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DRAFT_OVERRIDE_DIALOG,
-            payload: true,
+            type: DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DIALOG,
+            payload: { showExpressDeleteDialog: true },
         })
     }
 
-    const closeExpressDeleteDraftOverrideDialog = () => {
+    const closeExpressDeleteDialog = () => {
         dispatch({
-            type: DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DRAFT_OVERRIDE_DIALOG,
-            payload: false,
+            type: DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DIALOG,
+            payload: { showExpressDeleteDialog: false },
         })
     }
 
@@ -1734,7 +1736,7 @@ const DeploymentTemplate = ({
             migratedFrom: pipelineMigratedFrom,
             isExceptionUser,
             isExpressEditView,
-            handleExpressDeleteDraftOverride: openExpressDeleteDraftOverrideDialog,
+            handleExpressDelete: openExpressDeleteDialog,
         }),
         popupNodeType,
         popupMenuNode: ProtectionViewToolbarPopupNode ? (
@@ -2034,6 +2036,7 @@ const DeploymentTemplate = ({
                             isComparisonView={isExpressEditComparisonView}
                             toggleComparison={toggleExpressEditComparisonView}
                             handleClose={handleExpressEditViewClose}
+                            hideComparisonButton={!isPublishedConfigPresent}
                         />
                     )
                 )}
@@ -2068,10 +2071,9 @@ const DeploymentTemplate = ({
                         draftVersionId={draftTemplateData?.latestDraft?.draftVersionId}
                         handleReload={handleReload}
                         requestedUserId={draftTemplateData?.latestDraft?.requestedUserId}
+                        isExceptionUser={isExceptionUser}
                         isExpressEditView={isExpressEditView}
                         expressEditButtonConfig={{
-                            isVisible:
-                                isExceptionUser && isApprovalPolicyConfigured && !isExpressEditView && isDraftAvailable,
                             showPromptTooltip: showPrompt && areChangesPresent,
                             onClick: handleExpressEditClick,
                             onClose: closePromptTooltip,
@@ -2156,19 +2158,15 @@ const DeploymentTemplate = ({
                         handleClose={handleToggleDeleteDraftOverrideDialog}
                         latestDraft={draftTemplateData?.latestDraft}
                         reload={handleReload}
-                        expressChangeConfig={{
-                            showOption: isExceptionUser && !isDeleteOverrideDraft,
-                            onClick: handleExpressDelete,
-                            isLoading: isLoadingSideEffects,
-                        }}
                     />
                 )}
 
-                {ExpressDeleteOverrideModal && showExpressDeleteDraftOverrideDialog && (
-                    <ExpressDeleteOverrideModal
+                {ExpressDeleteModal && showExpressDeleteDialog && (
+                    <ExpressDeleteModal
                         isLoading={isLoadingSideEffects}
                         handleDelete={handleExpressDelete}
-                        handleClose={closeExpressDeleteDraftOverrideDialog}
+                        handleClose={closeExpressDeleteDialog}
+                        isOverride={publishedTemplateData?.isOverridden}
                     />
                 )}
 
@@ -2201,11 +2199,6 @@ const DeploymentTemplate = ({
                         showAsModal={!showLockedTemplateDiffModal}
                         saveEligibleChangesCb={showLockedTemplateDiffModal}
                         handleProcessSaveResponse={handleProcessSaveDraftResponse}
-                        expressChangeConfig={{
-                            showOption: isExceptionUser && !isDraftAvailable,
-                            onClick: handleExpressEditSave,
-                            isLoading: isLoadingSideEffects,
-                        }}
                     />
                 )}
 

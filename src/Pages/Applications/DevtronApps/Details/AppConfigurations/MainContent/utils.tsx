@@ -51,8 +51,8 @@ const getEditHistoryPopupButtonConfig = importComponentFromFELibrary(
     'function',
 )
 
-const getExpressDeleteOverridePopupButtonConfig = importComponentFromFELibrary(
-    'getExpressDeleteOverridePopupButtonConfig',
+const getExpressDeletePopupButtonConfig = importComponentFromFELibrary(
+    'getExpressDeletePopupButtonConfig',
     null,
     'function',
 )
@@ -109,7 +109,7 @@ export const PopupMenuItem = ({
     variant,
     tooltipText,
 }: ConfigToolbarPopupMenuConfigType) => (
-    <Tooltip alwaysShowTippyOnHover={!!tooltipText} content={tooltipText}>
+    <Tooltip alwaysShowTippyOnHover={!!tooltipText} content={tooltipText} placement="left">
         <div>
             <button
                 className={`flexbox dc__transparent dc__hover-n50 dc__align-items-center py-6 px-8 w-100 dc__gap-8 ${variant === 'negative' ? 'cr-5' : 'cn-9'} ${disabled ? 'dc__disabled' : ''}`}
@@ -149,7 +149,7 @@ export const getConfigToolbarPopupConfig = ({
     migratedFrom,
     isExceptionUser,
     isExpressEditView,
-    handleExpressDeleteDraftOverride,
+    handleExpressDelete,
 }: GetConfigToolbarPopupConfigProps): ConfigToolbarProps['popupConfig']['menuConfig'] => {
     if (isPublishedValuesView && !isPublishedConfigPresent) {
         return null
@@ -195,18 +195,6 @@ export const getConfigToolbarPopupConfig = ({
         }
     }
 
-    if (
-        getExpressDeleteOverridePopupButtonConfig &&
-        isExceptionUser &&
-        isDeleteOverrideDraftPresent &&
-        configHeaderTab === ConfigHeaderTabType.VALUES
-    ) {
-        const expressDeleteDraftOverrideConfig = getExpressDeleteOverridePopupButtonConfig(
-            handleExpressDeleteDraftOverride,
-        )
-        secondConfigSegment.push(expressDeleteDraftOverrideConfig)
-    }
-
     if (isOverridden && configHeaderTab === ConfigHeaderTabType.VALUES && !isDeleteOverrideDraftPresent) {
         secondConfigSegment.push({
             text: 'Delete override',
@@ -232,6 +220,16 @@ export const getConfigToolbarPopupConfig = ({
             variant: 'negative',
             tooltipText: isDeleteDisabled ? deleteDisabledTooltip : '',
         })
+    }
+
+    if (
+        getExpressDeletePopupButtonConfig &&
+        (isDeletable || isOverridden) &&
+        isExceptionUser &&
+        configHeaderTab === ConfigHeaderTabType.VALUES
+    ) {
+        const expressDeleteConfig = getExpressDeletePopupButtonConfig(handleExpressDelete, isOverridden)
+        secondConfigSegment.push(expressDeleteConfig)
     }
 
     return {
