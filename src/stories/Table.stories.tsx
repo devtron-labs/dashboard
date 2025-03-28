@@ -36,10 +36,29 @@ const CellComponent = ({ field, value, signals, row, isRowActive }: TableCellCom
             }
         }
 
+        const getCallback =
+            (text: string) =>
+            ({
+                detail: {
+                    activeRowData: { id },
+                },
+            }) => {
+                if (id === row.id && field === 'name') {
+                    alert(text)
+                }
+            }
+
+        const deletePressedCallback = getCallback(`Delete pressed for ${value}`)
+        const openContextMenuCallback = getCallback(`Open context menu for ${value}`)
+
         signals.addEventListener(TableSignalEnum.ENTER_PRESSED, rowEnterPressedCallback)
+        signals.addEventListener(TableSignalEnum.DELETE_PRESSED, deletePressedCallback)
+        signals.addEventListener(TableSignalEnum.OPEN_CONTEXT_MENU, openContextMenuCallback)
 
         return () => {
             signals.removeEventListener(TableSignalEnum.ENTER_PRESSED, rowEnterPressedCallback)
+            signals.removeEventListener(TableSignalEnum.DELETE_PRESSED, deletePressedCallback)
+            signals.addEventListener(TableSignalEnum.OPEN_CONTEXT_MENU, openContextMenuCallback)
         }
     }, [])
 
