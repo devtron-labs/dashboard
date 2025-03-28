@@ -75,7 +75,7 @@ export const ConfigMapSecretDeleteModal = ({
                     resourceType={componentType}
                     resourceName={configName}
                     prepareDataToSave={prepareDataToDeleteOverrideDraft}
-                    toggleModal={closeDeleteModal}
+                    handleClose={closeDeleteModal}
                     latestDraft={draftData}
                     reload={updateCMSecret}
                 />

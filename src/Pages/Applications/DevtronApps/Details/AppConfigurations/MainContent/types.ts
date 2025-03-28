@@ -156,6 +156,18 @@ export type ConfigToolbarProps = Pick<
     headerMessage?: string
     showDeleteOverrideDraftEmptyState: boolean
     handleReload: () => void
+
+    /**
+     * Config for exception user.
+     */
+    isExceptionUser?: boolean
+    isExpressEditView?: boolean
+    expressEditButtonConfig?: {
+        showPromptTooltip: boolean
+        onClick: () => void
+        onClose: () => void
+        onDoNotShowAgainClose: () => void
+    }
 } & ConfigToolbarReadMeProps
 
 interface ConfigToolbarPopupMenuLockedConfigDataType {
@@ -193,6 +205,9 @@ export interface GetConfigToolbarPopupConfigProps {
     isDeleteDisabled?: boolean
     deleteDisabledTooltip?: string
     migratedFrom?: PipelineMigratedFromType
+    isExceptionUser?: boolean
+    isExpressEditView?: boolean
+    handleExpressDelete?: () => void
 }
 
 type ConfigDryRunManifestProps =

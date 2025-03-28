@@ -151,6 +151,7 @@ const AppComposeRouter = () => {
                         onErrorRedirectURL={lastUnlockedStage}
                         appName={currentAppName}
                         envName=""
+                        isExceptionUser={false}
                         isTemplateView={isTemplateView}
                     />
                 </Route>,
@@ -168,6 +169,7 @@ const AppComposeRouter = () => {
                         onErrorRedirectURL={lastUnlockedStage}
                         appName={currentAppName}
                         envName=""
+                        isExceptionUser={false}
                         isTemplateView={isTemplateView}
                     />
                 </Route>,
@@ -242,6 +244,10 @@ const AppComposeRouter = () => {
                         )}
                         reloadEnvironments={reloadEnvironments}
                         fetchEnvConfig={fetchEnvConfig}
+                        isExceptionUser={
+                            approvalConfigMapForBaseConfiguration?.[ApprovalConfigDataKindType.deploymentTemplate]
+                                .isExceptionUser ?? false
+                        }
                         isTemplateView={isTemplateView}
                     />
                 </Route>
@@ -290,6 +296,10 @@ const AppComposeRouter = () => {
                         onErrorRedirectURL={lastUnlockedStage}
                         appName={currentAppName}
                         envName=""
+                        isExceptionUser={
+                            approvalConfigMapForBaseConfiguration?.[ApprovalConfigDataKindType.configMap]
+                                .isExceptionUser
+                        }
                         isTemplateView={isTemplateView}
                     />
                 </Route>,
@@ -308,6 +318,10 @@ const AppComposeRouter = () => {
                         onErrorRedirectURL={lastUnlockedStage}
                         appName={currentAppName}
                         envName=""
+                        isExceptionUser={
+                            approvalConfigMapForBaseConfiguration?.[ApprovalConfigDataKindType.configSecret]
+                                .isExceptionUser
+                        }
                         isTemplateView={isTemplateView}
                     />
                 </Route>,

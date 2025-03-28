@@ -14,13 +14,28 @@
  * limitations under the License.
  */
 
-import { CodeEditor, ConfigurationType, MarkDown, MODES, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { useMemo, useState } from 'react'
+import {
+    CodeEditor,
+    ConfigurationType,
+    DeploymentTemplateConfigState,
+    MarkDown,
+    MODES,
+    noop,
+    OverrideMergeStrategyType,
+    SelectPickerOptionType,
+    versionComparatorBySortOrder,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
+import { importComponentFromFELibrary } from '@Components/common'
 import { DeploymentTemplateFormProps } from './types'
 import { GUIView as DeploymentTemplateGUIView } from './GUIView'
-import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from './constants'
+import { APPLICATION_METRICS_DROPDOWN_OPTIONS, DEPLOYMENT_TEMPLATE_LABELS_KEYS } from './constants'
 import { getEditorSchemaURIFromChartNameAndVersion } from './utils'
+import { MERGE_STRATEGY_OPTIONS } from '../constants'
+
+const ExpressEditDiffEditor = importComponentFromFELibrary('ExpressEditDiffEditor', null, 'function')
 
 const DeploymentTemplateForm = ({
     editMode,
@@ -41,7 +56,35 @@ const DeploymentTemplateForm = ({
     latestDraft,
     isGuiSupported,
     mergeStrategy,
+    isExpressEditComparisonView,
+    publishedTemplateData,
+    draftTemplateData,
+    isAppMetricsEnabled,
+    handleAppMetricsToggle,
+    handleMergeStrategyChange,
+    charts,
+    handleChartChange,
 }: DeploymentTemplateFormProps) => {
+    // STATES
+    const [expressEditComparisonViewLHS, setExpressEditComparisonViewLHS] = useState<DeploymentTemplateConfigState>(
+        draftTemplateData ||
+            (!(environmentName && !publishedTemplateData?.isOverridden) ? publishedTemplateData : null),
+    )
+
+    const chartVersionDropdownOptions = useMemo(
+        () =>
+            editMode === ConfigurationType.YAML && selectedChart
+                ? charts
+                      .filter((cv) => cv.name === selectedChart.name)
+                      .sort((a, b) => versionComparatorBySortOrder(a.version, b.version))
+                      .map((chart) => ({
+                          label: chart.version,
+                          value: chart.id,
+                      }))
+                : [],
+        [selectedChart, charts, editMode],
+    )
+
     if (editMode === ConfigurationType.GUI && isGuiSupported) {
         return (
             <DeploymentTemplateGUIView
@@ -62,6 +105,83 @@ const DeploymentTemplateForm = ({
             />
         )
     }
+
+    // HANDLERS
+    const handleExpressEditCompareWithChange = (isDraft: boolean) => {
+        setExpressEditComparisonViewLHS(isDraft ? draftTemplateData : publishedTemplateData)
+    }
+
+    const onChartSelect = (selected: SelectPickerOptionType) => {
+        handleChartChange(charts.find((chart) => chart.id === selected.value) || selectedChart)
+    }
+
+    const onMergeStrategySelect = (newValue: SelectPickerOptionType) => {
+        handleMergeStrategyChange(newValue.value as OverrideMergeStrategyType)
+    }
+
+    const toggleApplicationMetrics = () => {
+        handleAppMetricsToggle()
+    }
+
+    // CONFIGS
+    const dataDiffConfig = [
+        {
+            title: 'Chart',
+            lhs: {
+                displayValue: expressEditComparisonViewLHS?.selectedChart?.name,
+            },
+            rhs: {
+                displayValue: selectedChart?.name,
+            },
+        },
+        {
+            title: 'Version',
+            lhs: {
+                displayValue: expressEditComparisonViewLHS?.selectedChart?.version,
+                value: expressEditComparisonViewLHS?.selectedChart?.id,
+            },
+            rhs: {
+                value: selectedChart?.id,
+                dropdownConfig: {
+                    options: chartVersionDropdownOptions,
+                    onChange: onChartSelect,
+                },
+            },
+        },
+        ...(environmentName
+            ? [
+                  {
+                      title: 'Merge strategy',
+                      lhs: {
+                          displayValue: expressEditComparisonViewLHS?.mergeStrategy,
+                      },
+                      rhs: {
+                          value: mergeStrategy,
+                          dropdownConfig: {
+                              options: MERGE_STRATEGY_OPTIONS,
+                              onChange: onMergeStrategySelect,
+                          },
+                      },
+                  },
+              ]
+            : []),
+        {
+            title: 'Application metrics',
+            lhs: {
+                displayValue:
+                    expressEditComparisonViewLHS &&
+                    (expressEditComparisonViewLHS.isAppMetricsEnabled ? 'Enabled' : 'Disabled'),
+                value: expressEditComparisonViewLHS?.isAppMetricsEnabled?.toString(),
+            },
+            rhs: {
+                value: isAppMetricsEnabled.toString(),
+                dropdownConfig: {
+                    options: APPLICATION_METRICS_DROPDOWN_OPTIONS,
+                    onChange: toggleApplicationMetrics,
+                },
+            },
+        },
+    ]
 
     const getHeadingPrefix = (): string => {
         if (latestDraft) {
@@ -98,7 +218,28 @@ const DeploymentTemplateForm = ({
         return null
     }
 
-    return (
+    return ExpressEditDiffEditor && isExpressEditComparisonView ? (
+        <ExpressEditDiffEditor
+            dataDiffConfig={dataDiffConfig}
+            readOnly={readOnly}
+            lhsEditor={{
+                value: expressEditComparisonViewLHS?.editorTemplate,
+                schemaURI: getEditorSchemaURIFromChartNameAndVersion(
+                    expressEditComparisonViewLHS?.selectedChart?.name,
+                    expressEditComparisonViewLHS?.selectedChart?.version,
+                ),
+                validatorSchema: expressEditComparisonViewLHS?.schema,
+            }}
+            rhsEditor={{
+                value: editedDocument,
+                onChange: editorOnChange,
+                schemaURI: getEditorSchemaURIFromChartNameAndVersion(selectedChart?.name, selectedChart?.version),
+                validatorSchema: schema,
+            }}
+            showDraftOption={!!latestDraft}
+            handleCompareWithChange={handleExpressEditCompareWithChange}
+        />
+    ) : (
         <div className={`dc__overflow-auto flex-grow-1 ${showReadMe ? 'dc__grid-half' : 'flexbox-col'}`}>
             {showReadMe && (
                 <div className="flexbox-col dc__border-right dc__overflow-auto">
