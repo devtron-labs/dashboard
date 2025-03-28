@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Meta, StoryObj } from '@storybook/react'
 import {
     Button,
@@ -18,24 +19,13 @@ import {
 import { ReactComponent as ICPlay } from '@Icons/ic-play-outline.svg'
 import { ReactComponent as ICPause } from '@Icons/ic-pause.svg'
 import { ReactComponent as ICWarning } from '@Icons/ic-warning-y6.svg'
-import { useEffect, useState } from 'react'
 
-const CellComponent = ({ field, value, signals, row }: TableCellComponentProps) => {
-    const [isRowActive, setIsRowActive] = useState(false)
-
+const CellComponent = ({ field, value, signals, row, isRowActive }: TableCellComponentProps) => {
     const handleButtonClick = () => {
         alert(`Row ${value} clicked`)
     }
 
     useEffect(() => {
-        const rowChangeCallback = ({
-            detail: {
-                activeRowData: { id },
-            },
-        }) => {
-            setIsRowActive(id === row.id)
-        }
-
         const rowEnterPressedCallback = ({
             detail: {
                 activeRowData: { id },
@@ -46,13 +36,9 @@ const CellComponent = ({ field, value, signals, row }: TableCellComponentProps) 
             }
         }
 
-        signals.addEventListener(TableSignalEnum.ACTIVE_ROW_CHANGED, rowChangeCallback)
-
         signals.addEventListener(TableSignalEnum.ENTER_PRESSED, rowEnterPressedCallback)
 
         return () => {
-            signals.removeEventListener(TableSignalEnum.ACTIVE_ROW_CHANGED, rowChangeCallback)
-
             signals.removeEventListener(TableSignalEnum.ENTER_PRESSED, rowEnterPressedCallback)
         }
     }, [])
@@ -166,7 +152,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 const BulkActionsComponent = () => (
-    <>
+    <div className="flexbox dc__gap-4">
         <Button
             icon={<ICPause />}
             dataTestId="rb-bulk-action__action-widget--cordon"
@@ -190,7 +176,7 @@ const BulkActionsComponent = () => (
             onClick={() => alert('Play clicked!')}
             showAriaLabelInTippy
         />
-    </>
+    </div>
 )
 
 const ViewWrapper = ({ children, handleSearch, searchKey }: TableViewWrapperProps) => (
@@ -237,5 +223,8 @@ export const TableTemplate: Story = {
             showSeparatorBetweenRows: true,
         },
         ViewWrapper,
+        additionalFilterProps: {
+            initialSortKey: 'name',
+        },
     } as TableProps,
 }
