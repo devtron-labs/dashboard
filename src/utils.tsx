@@ -6,6 +6,7 @@ import {
     getCentralAPIHealthObjectFromLocalStorage,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { InstallationType } from '@Components/v2/devtronStackManager/DevtronStackManager.type'
+import { Routes } from '@Config/constants'
 
 const setCentralAPIHealthInLocalStorage = (health: boolean, existingHealthObj: CentralAPILocalConfig) => {
     const updatedObject: CentralAPILocalConfig = {
@@ -30,7 +31,8 @@ export const getCentralAPIHealth = async (): Promise<void> => {
     const timeoutId = setTimeout(() => controller.abort(), window._env_.GLOBAL_API_TIMEOUT)
 
     try {
-        const response = await fetch(window?._env_?.CENTRAL_API_ENDPOINT, {
+        const url = `${window?._env_?.CENTRAL_API_ENDPOINT}/${Routes.HEALTH}`
+        const response = await fetch(url, {
             signal: controller.signal,
             method: 'GET',
             headers: {
