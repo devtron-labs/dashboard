@@ -869,13 +869,8 @@ export const InstallationWrapper = ({
     return (
         <>
             <div className="module-details__install-wrapper">
-                {serverInfo?.installationType && serverInfo.installationType !== InstallationType.OSS_HELM ? (
-                    <>
-                        {serverInfo.installationType === InstallationType.OSS_KUBECTL && (
-                            <NotSupportedNote isUpgradeView={isUpgradeView} />
-                        )}
-                        {serverInfo.installationType === InstallationType.ENTERPRISE && <ManagedByNote />}
-                    </>
+                {serverInfo?.installationType && serverInfo.installationType === InstallationType.OSS_KUBECTL ? (
+                    <NotSupportedNote isUpgradeView={isUpgradeView} />
                 ) : (
                     <>
                         {installationStatus !== ModuleStatus.INSTALLING &&
@@ -997,11 +992,10 @@ export const InstallationWrapper = ({
                 )}
                 {serverInfo?.installationType &&
                     (serverInfo.installationType === InstallationType.OSS_KUBECTL ||
-                        (serverInfo.installationType === InstallationType.OSS_HELM &&
-                            (installationStatus === ModuleStatus.INSTALL_FAILED ||
-                                installationStatus === ModuleStatus.UPGRADE_FAILED ||
-                                installationStatus === ModuleStatus.TIMEOUT ||
-                                installationStatus === ModuleStatus.UNKNOWN))) && <GetHelpCard />}
+                        installationStatus === ModuleStatus.INSTALL_FAILED ||
+                        installationStatus === ModuleStatus.UPGRADE_FAILED ||
+                        installationStatus === ModuleStatus.TIMEOUT ||
+                        installationStatus === ModuleStatus.UNKNOWN) && <GetHelpCard />}
                 {!isUpgradeView && modulesList && <DependentModuleList modulesList={dependentModuleList} />}
             </div>
             {renderPrerequisiteConfirmationModal()}
@@ -1035,7 +1029,6 @@ export const ModuleDetailsView = ({
     toggled,
     setToggled,
 }: ModuleDetailsViewType): JSX.Element | null => {
-    const queryParams = new URLSearchParams(location.search)
     useEffect(() => {
         if (!moduleDetails && !new URLSearchParams(location.search).get('id')) {
             setDetailsMode('')
@@ -1124,26 +1117,6 @@ export const NoIntegrationsInstalledView = (): JSX.Element => {
                 isButtonAvailable
                 renderButton={renderDiscoverIntegrationsButton}
             />
-        </div>
-    )
-}
-
-const ManagedByNote = (): JSX.Element => {
-    return (
-        <div className="managed-by__note-wrapper mb-16">
-            <div className="managed-by__note flex top left br-4 cn-9 bcb-1">
-                <div className="icon-dim-20 mr-12">
-                    <Info className="icon-dim-20" />
-                </div>
-                <div>
-                    <h2 className="managed-by__note-title m-0 p-0 fs-13 fw-6 lh-20">Managed by Devtron Inc.</h2>
-                    <p className="fs-13 fw-4 mb-0 mt-4 lh-20">
-                        Devtron stack is managed by Devtron Inc.
-                        <br />
-                        For any support, please contact your Devtron representative.
-                    </p>
-                </div>
-            </div>
         </div>
     )
 }
