@@ -236,7 +236,6 @@ export interface DeploymentTemplateFormProps
             | 'lockedConfigKeysWithLockType'
             | 'hideLockedKeys'
             | 'editMode'
-            | 'isExpressEditView'
             | 'isExpressEditComparisonView'
         > {
     editorOnChange: (value: string) => void

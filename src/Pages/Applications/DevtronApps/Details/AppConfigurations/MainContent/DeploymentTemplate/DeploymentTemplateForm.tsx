@@ -35,7 +35,7 @@ import { APPLICATION_METRICS_DROPDOWN_OPTIONS, DEPLOYMENT_TEMPLATE_LABELS_KEYS }
 import { getEditorSchemaURIFromChartNameAndVersion } from './utils'
 import { MERGE_STRATEGY_OPTIONS } from '../constants'
 
-const ExpressEditEditor = importComponentFromFELibrary('ExpressEditEditor', null, 'function')
+const ExpressEditDiffEditor = importComponentFromFELibrary('ExpressEditDiffEditor', null, 'function')
 
 const DeploymentTemplateForm = ({
     editMode,
@@ -56,7 +56,6 @@ const DeploymentTemplateForm = ({
     latestDraft,
     isGuiSupported,
     mergeStrategy,
-    isExpressEditView,
     isExpressEditComparisonView,
     publishedTemplateData,
     draftTemplateData,
@@ -219,77 +218,69 @@ const DeploymentTemplateForm = ({
         return null
     }
 
-    return (
+    return ExpressEditDiffEditor && isExpressEditComparisonView ? (
+        <ExpressEditDiffEditor
+            dataDiffConfig={dataDiffConfig}
+            readOnly={readOnly}
+            lhsEditor={{
+                value: expressEditComparisonViewLHS?.editorTemplate,
+                schemaURI: getEditorSchemaURIFromChartNameAndVersion(
+                    expressEditComparisonViewLHS?.selectedChart?.name,
+                    expressEditComparisonViewLHS?.selectedChart?.version,
+                ),
+                validatorSchema: expressEditComparisonViewLHS?.schema,
+            }}
+            rhsEditor={{
+                value: editedDocument,
+                onChange: editorOnChange,
+                schemaURI: getEditorSchemaURIFromChartNameAndVersion(selectedChart?.name, selectedChart?.version),
+                validatorSchema: schema,
+            }}
+            showDraftOption={!!latestDraft}
+            handleCompareWithChange={handleExpressEditCompareWithChange}
+        />
+    ) : (
         <div className={`dc__overflow-auto flex-grow-1 ${showReadMe ? 'dc__grid-half' : 'flexbox-col'}`}>
-            {ExpressEditEditor && isExpressEditView ? (
-                <ExpressEditEditor
-                    isComparisonView={isExpressEditComparisonView}
-                    dataDiffConfig={dataDiffConfig}
+            {showReadMe && (
+                <div className="flexbox-col dc__border-right dc__overflow-auto">
+                    <div className="flexbox dc__gap-8 bg__primary px-12 pt-6 pb-5 dc__border-bottom flex left">
+                        <ICBookOpen className="icon-dim-16 dc__no-shrink scn-9" />
+                        <span className="fs-12 fw-6 cn-9 lh-20">{`Readme ${selectedChart ? `(v${selectedChart.version})` : ''}`}</span>
+                    </div>
+
+                    <MarkDown markdown={readMe} className="dc__overflow-auto" />
+                </div>
+            )}
+
+            <div className="flexbox-col dc__overflow-auto flex-grow-1">
+                <CodeEditor
+                    mode={MODES.YAML}
                     readOnly={readOnly}
-                    lhsEditor={{
-                        value: expressEditComparisonViewLHS?.editorTemplate,
-                        schemaURI: getEditorSchemaURIFromChartNameAndVersion(
-                            expressEditComparisonViewLHS?.selectedChart?.name,
-                            expressEditComparisonViewLHS?.selectedChart?.version,
-                        ),
-                        validatorSchema: expressEditComparisonViewLHS?.schema,
-                    }}
-                    rhsEditor={{
+                    noParsing
+                    codeEditorProps={{
                         value: editedDocument,
-                        onChange: editorOnChange,
                         schemaURI: getEditorSchemaURIFromChartNameAndVersion(
                             selectedChart?.name,
                             selectedChart?.version,
                         ),
+                        onChange: readOnly ? noop : editorOnChange,
                         validatorSchema: schema,
+                        height: '100%',
                     }}
-                    showDraftOption={!!latestDraft}
-                    handleCompareWithChange={handleExpressEditCompareWithChange}
-                />
-            ) : (
-                <>
-                    {showReadMe && (
-                        <div className="flexbox-col dc__border-right dc__overflow-auto">
-                            <div className="flexbox dc__gap-8 bg__primary px-12 pt-6 pb-5 dc__border-bottom flex left">
-                                <ICBookOpen className="icon-dim-16 dc__no-shrink scn-9" />
-                                <span className="fs-12 fw-6 cn-9 lh-20">{`Readme ${selectedChart ? `(v${selectedChart.version})` : ''}`}</span>
-                            </div>
-
-                            <MarkDown markdown={readMe} className="dc__overflow-auto" />
-                        </div>
-                    )}
-
-                    <div className="flexbox-col dc__overflow-auto flex-grow-1">
-                        <CodeEditor
-                            mode={MODES.YAML}
-                            readOnly={readOnly}
-                            noParsing
-                            codeEditorProps={{
-                                value: editedDocument,
-                                schemaURI: getEditorSchemaURIFromChartNameAndVersion(
-                                    selectedChart?.name,
-                                    selectedChart?.version,
-                                ),
-                                onChange: readOnly ? noop : editorOnChange,
-                                validatorSchema: schema,
-                                height: '100%',
-                            }}
-                            codeMirrorProps={{
-                                value: editedDocument,
-                                schemaURI: getEditorSchemaURIFromChartNameAndVersion(
-                                    selectedChart?.name,
-                                    selectedChart?.version,
-                                ),
-                                onChange: readOnly ? noop : editorOnChange,
-                                validatorSchema: schema,
-                                height: '100%',
-                            }}
-                        >
-                            {renderEditorHeader()}
-                        </CodeEditor>
-                    </div>
-                </>
-            )}
+                    codeMirrorProps={{
+                        value: editedDocument,
+                        schemaURI: getEditorSchemaURIFromChartNameAndVersion(
+                            selectedChart?.name,
+                            selectedChart?.version,
+                        ),
+                        onChange: readOnly ? noop : editorOnChange,
+                        validatorSchema: schema,
+                        height: '100%',
+                    }}
+                >
+                    {renderEditorHeader()}
+                </CodeEditor>
+            </div>
         </div>
     )
 }

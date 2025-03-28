@@ -1842,7 +1842,6 @@ const DeploymentTemplate = ({
                 latestDraft={draftTemplateData?.latestDraft}
                 isGuiSupported={isGuiSupported}
                 mergeStrategy={currentViewEditorState?.mergeStrategy}
-                isExpressEditView={isExpressEditView}
                 isExpressEditComparisonView={isExpressEditComparisonView}
                 publishedTemplateData={publishedTemplateData}
                 draftTemplateData={draftTemplateData}
