@@ -239,7 +239,7 @@ const ChartValuesView = ({
             dispatch({
                 type: ChartValuesViewActionTypes.updateGitOpsConfiguration,
                 payload: {
-                    showNoGitOpsWarning: result.isInstalled && !result.isConfigured,
+                    showNoGitOpsWarning: result.isInstalled && !result.isConfigured && !isUpdateAppView,
                     authMode: result.authMode,
                 },
             })
@@ -1724,6 +1724,7 @@ const ChartValuesView = ({
                                     isVirtualEnvironment={appDetails?.isVirtualEnvironment}
                                 />
                             )}
+                           { console.log('allowedDeploymentTypes', allowedDeploymentTypes) }
                             {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && showDeploymentTools && (
                                 <DeploymentAppSelector
                                     commonState={commonState}
