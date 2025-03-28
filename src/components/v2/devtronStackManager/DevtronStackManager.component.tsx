@@ -919,6 +919,7 @@ export const InstallationWrapper = ({
                                             showTooltip={isInstallButtonDisabled}
                                             text={text}
                                             startIcon={<Icon />}
+                                            fullWidth
                                         />
                                     )}
                                     {isUpgradeView && preRequisiteList.length > 0 && (
