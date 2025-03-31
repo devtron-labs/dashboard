@@ -322,7 +322,7 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
                                                 ?.filter((variable) => variable.name)
                                                 .map((variable) => ({ label: variable.name, value: variable.id }))}
                                             isSearchable={false}
-                                            variant={SelectPickerVariantType.BORDER_LESS}
+                                            variant={SelectPickerVariantType.COMPACT}
                                         />
                                     </div>
                                     <SelectPicker
