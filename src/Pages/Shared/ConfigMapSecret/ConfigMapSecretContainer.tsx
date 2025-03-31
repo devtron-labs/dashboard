@@ -1199,6 +1199,12 @@ export const ConfigMapSecretContainer = ({
                         latestDraft={draftData}
                         reload={reloadSaveChangesModal}
                         showAsModal
+                        isCreate={isCreateState}
+                        showExpressCreate={isExceptionUser && isCreateState}
+                        expressCreateConfig={{
+                            isLoading: isSubmitting,
+                            onClick: expressEditSubmitHandler,
+                        }}
                     />
                 )}
                 {ExpressEditConfirmationModal && showExpressEditConfirmationModal && (

@@ -38,9 +38,14 @@ import {
     CMSecretExternalType,
     getSelectPickerOptionByValue,
     getSecretDataTypeOptions,
+    getConfigMapSecretFormInitialValues,
+    CMSecretComponentType,
+    configMapSecretMountDataMap,
+    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ResourceConfigStage } from '@Pages/Applications/DevtronApps/service.types'
+import { MERGE_STRATEGY_OPTIONS } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
 
 import {
     ConfigMapSecretFormProps,
@@ -397,17 +402,130 @@ export const getExpressEditComparisonViewLHS = ({
     isDraft,
     draftData,
     publishedConfigMapSecretData,
+    isSecret,
 }: {
     isDraft: boolean
     draftData: CMSecretDraftData
     publishedConfigMapSecretData: CMSecretConfigData
-}) =>
-    isDraft && draftData
-        ? {
-              ...draftData.parsedData.configData[0],
-              unAuthorized: false,
-          }
-        : publishedConfigMapSecretData || null
+    isSecret: boolean
+}) => {
+    if (isDraft && draftData) {
+        return getConfigMapSecretFormInitialValues({
+            configMapSecretData: { ...draftData.parsedData.configData[0], unAuthorized: false },
+            cmSecretStateLabel: null,
+            fallbackMergeStrategy: null,
+            componentType: isSecret ? CMSecretComponentType.Secret : CMSecretComponentType.ConfigMap,
+        })
+    }
+
+    if (publishedConfigMapSecretData) {
+        return getConfigMapSecretFormInitialValues({
+            configMapSecretData: publishedConfigMapSecretData,
+            cmSecretStateLabel: null,
+            fallbackMergeStrategy: null,
+            componentType: isSecret ? CMSecretComponentType.Secret : CMSecretComponentType.ConfigMap,
+        })
+    }
+
+    return null
+}
+
+export const getCMCSExpressEditComparisonDataDiffConfig = ({
+    lhs,
+    rhs,
+    onMergeStrategySelect,
+}: {
+    lhs: ConfigMapSecretUseFormProps
+    rhs: ConfigMapSecretUseFormProps
+    onMergeStrategySelect: (newValue: SelectPickerOptionType) => void
+}) => [
+    ...(rhs.mergeStrategy
+        ? [
+              {
+                  title: 'Merge strategy',
+                  lhs: {
+                      displayValue: lhs?.mergeStrategy,
+                  },
+                  rhs: {
+                      value: rhs.mergeStrategy,
+                      dropdownConfig: {
+                          options: MERGE_STRATEGY_OPTIONS,
+                          onChange: onMergeStrategySelect,
+                      },
+                  },
+              },
+          ]
+        : []),
+    {
+        title: 'Data type',
+        lhs: {
+            displayValue: lhs ? getConfigMapSecretDataType(lhs.external, lhs.externalType, rhs.isSecret) : null,
+        },
+        rhs: {
+            displayValue: getConfigMapSecretDataType(rhs.external, rhs.externalType, rhs.isSecret),
+        },
+    },
+    {
+        title: 'Mount data as',
+        lhs: {
+            displayValue: lhs ? configMapSecretMountDataMap[lhs.selectedType].title : null,
+        },
+        rhs: {
+            displayValue: configMapSecretMountDataMap[rhs.selectedType].title,
+        },
+    },
+    {
+        title: 'Volume mount path',
+        lhs: {
+            displayValue: lhs?.volumeMountPath,
+        },
+        rhs: {
+            displayValue: rhs.volumeMountPath,
+        },
+    },
+    {
+        title: 'Set Sub Path',
+        lhs: {
+            displayValue:
+                (configMapSecretMountDataMap[lhs?.selectedType]?.value === 'volume' &&
+                    (lhs?.isSubPathChecked ? 'True' : 'False')) ||
+                '',
+        },
+        rhs: {
+            displayValue:
+                (configMapSecretMountDataMap[rhs.selectedType].value === 'volume' &&
+                    (rhs.isSubPathChecked ? 'True' : 'False')) ||
+                '',
+        },
+    },
+    {
+        title: 'Subpath Values',
+        lhs: {
+            displayValue: lhs?.externalSubpathValues,
+        },
+        rhs: {
+            displayValue: rhs.externalSubpathValues,
+        },
+    },
+    {
+        title: 'File Permission',
+        lhs: {
+            displayValue: lhs?.filePermission,
+        },
+        rhs: {
+            displayValue: rhs.filePermission,
+        },
+    },
+    {
+        title: 'Role ARN',
+        lhs: {
+            displayValue: lhs?.roleARN,
+        },
+        rhs: {
+            displayValue: rhs.roleARN,
+        },
+    },
+]
 
 export const getConfigMapSecretError = <T extends unknown>(res: PromiseSettledResult<T>) =>
     res.status === 'rejected' && res.reason?.code !== ERROR_STATUS_CODE.NOT_FOUND ? res.reason : null

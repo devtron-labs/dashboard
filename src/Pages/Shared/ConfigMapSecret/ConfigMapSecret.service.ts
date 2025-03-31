@@ -52,7 +52,14 @@ import {
 
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
 
-export const updateConfigMap = ({ id, appId, payload, signal, isTemplateView }: UpdateConfigMapSecretProps) => {
+export const updateConfigMap = ({
+    id,
+    appId,
+    payload,
+    signal,
+    isTemplateView,
+    isExpressEdit,
+}: UpdateConfigMapSecretProps) => {
     const URL = isTemplateView
         ? getTemplateAPIRoute({ type: GetTemplateAPIRouteType.CONFIG_CM, queryParams: { id: appId } })
         : `${Routes.APP_CREATE_CONFIG_MAP}`
@@ -63,6 +70,7 @@ export const updateConfigMap = ({ id, appId, payload, signal, isTemplateView }: 
             ...(id && { id }),
             appId,
             configData: [payload],
+            isExpressEdit,
         },
         { signal },
     )
@@ -131,7 +139,14 @@ export const overRideConfigMap = ({
     )
 }
 
-export const updateSecret = ({ id, appId, payload, signal, isTemplateView }: UpdateConfigMapSecretProps) => {
+export const updateSecret = ({
+    id,
+    appId,
+    payload,
+    signal,
+    isTemplateView,
+    isExpressEdit,
+}: UpdateConfigMapSecretProps) => {
     const URL = isTemplateView
         ? getTemplateAPIRoute({
               type: GetTemplateAPIRouteType.CONFIG_CS,
@@ -145,6 +160,7 @@ export const updateSecret = ({ id, appId, payload, signal, isTemplateView }: Upd
             ...(id && { id }),
             appId,
             configData: [payload],
+            isExpressEdit,
         },
         { signal },
     )
@@ -185,7 +201,14 @@ export const deleteEnvSecret = ({
     return trash(url)
 }
 
-export const overRideSecret = ({ appId, envId, payload, signal, isTemplateView }: OverrideConfigMapSecretProps) => {
+export const overRideSecret = ({
+    appId,
+    envId,
+    payload,
+    signal,
+    isTemplateView,
+    isExpressEdit,
+}: OverrideConfigMapSecretProps) => {
     const url = isTemplateView
         ? getTemplateAPIRoute({
               type: GetTemplateAPIRouteType.CONFIG_CS,
@@ -201,6 +224,7 @@ export const overRideSecret = ({ appId, envId, payload, signal, isTemplateView }
             appId,
             environmentId: envId,
             configData: [payload],
+            isExpressEdit,
         },
         { signal },
     )

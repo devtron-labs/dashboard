@@ -36,7 +36,6 @@ import {
     CODE_EDITOR_RADIO_STATE,
     PATTERNS,
     MODES,
-    CMSecretConfigData,
     OverrideMergeStrategyType,
     SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -45,7 +44,6 @@ import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { ReactComponent as HideIcon } from '@Icons/ic-visibility-off.svg'
 import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
 import { importComponentFromFELibrary } from '@Components/common'
-import { MERGE_STRATEGY_OPTIONS } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
 
 import {
     CODE_EDITOR_RADIO_STATE_VALUE,
@@ -55,7 +53,11 @@ import {
     VIEW_MODE,
 } from './constants'
 import { externalTypeSecretCodeEditorDataHeaders, renderYamlInfoText } from './helpers'
-import { getConfigMapSecretDataType, getExpressEditComparisonViewLHS, getLockedYamlString } from './utils'
+import {
+    getCMCSExpressEditComparisonDataDiffConfig,
+    getExpressEditComparisonViewLHS,
+    getLockedYamlString,
+} from './utils'
 import { ConfigMapSecretDataProps } from './types'
 
 const ExpressEditDiffEditor = importComponentFromFELibrary('ExpressEditDiffEditor', null, 'function')
@@ -78,8 +80,13 @@ export const ConfigMapSecretData = ({
     // STATES
     const [secretMode, setSecretMode] = useState(false)
     const [codeEditorRadio, setCodeEditorRadio] = useState(CODE_EDITOR_RADIO_STATE.DATA)
-    const [expressEditComparisonViewLHS, setExpressEditComparisonViewLHS] = useState<CMSecretConfigData>(
-        getExpressEditComparisonViewLHS({ isDraft: true, draftData, publishedConfigMapSecretData }),
+    const [expressEditComparisonViewLHS, setExpressEditComparisonViewLHS] = useState<typeof data>(
+        getExpressEditComparisonViewLHS({
+            isDraft: true,
+            draftData,
+            publishedConfigMapSecretData,
+            isSecret: data.isSecret,
+        }),
     )
 
     // CONSTANTS
@@ -115,103 +122,6 @@ export const ConfigMapSecretData = ({
     const onMergeStrategySelect = (newValue: SelectPickerOptionType) => {
         handleMergeStrategyChange(newValue.value as OverrideMergeStrategyType)
     }
-
-    const dataDiffConfig = [
-        ...(data.mergeStrategy
-            ? [
-                  {
-                      title: 'Merge strategy',
-                      lhs: {
-                          displayValue: expressEditComparisonViewLHS?.mergeStrategy,
-                      },
-                      rhs: {
-                          value: data.mergeStrategy,
-                          dropdownConfig: {
-                              options: MERGE_STRATEGY_OPTIONS,
-                              onChange: onMergeStrategySelect,
-                          },
-                      },
-                  },
-              ]
-            : []),
-        {
-            title: 'Data type',
-            lhs: {
-                displayValue: expressEditComparisonViewLHS?.data
-                    ? getConfigMapSecretDataType(
-                          expressEditComparisonViewLHS.external,
-                          expressEditComparisonViewLHS.externalType,
-                          data.isSecret,
-                      )
-                    : null,
-            },
-            rhs: {
-                displayValue: getConfigMapSecretDataType(data.external, data.externalType, data.isSecret),
-            },
-        },
-        {
-            title: 'Mount data as',
-            lhs: {
-                displayValue: expressEditComparisonViewLHS?.data
-                    ? configMapSecretMountDataMap[expressEditComparisonViewLHS.type].title
-                    : null,
-            },
-            rhs: {
-                displayValue: configMapSecretMountDataMap[data.selectedType].title,
-            },
-        },
-        {
-            title: 'Volume mount path',
-            lhs: {
-                displayValue: expressEditComparisonViewLHS?.mountPath,
-            },
-            rhs: {
-                displayValue: data.volumeMountPath,
-            },
-        },
-        {
-            title: 'Set Sub Path',
-            lhs: {
-                displayValue:
-                    (configMapSecretMountDataMap[expressEditComparisonViewLHS?.type]?.value === 'volume' &&
-                        (expressEditComparisonViewLHS?.subPath ? 'True' : 'False')) ||
-                    '',
-            },
-            rhs: {
-                displayValue:
-                    (configMapSecretMountDataMap[data.selectedType]?.value === 'volume' &&
-                        (data.isSubPathChecked ? 'True' : 'False')) ||
-                    '',
-            },
-        },
-        {
-            title: 'Subpath Values',
-            lhs: {
-                displayValue: expressEditComparisonViewLHS?.subPath,
-            },
-            rhs: {
-                displayValue: data.externalSubpathValues,
-            },
-        },
-        {
-            title: 'File Permission',
-            lhs: {
-                displayValue: expressEditComparisonViewLHS?.filePermission,
-            },
-            rhs: {
-                displayValue: data.filePermission,
-            },
-        },
-        {
-            title: 'Role ARN',
-            lhs: {
-                displayValue: expressEditComparisonViewLHS?.roleARN,
-            },
-            rhs: {
-                displayValue: data.roleARN,
-            },
-        },
-    ]
 
     const keyValueTableHandleChange =
         (onChange: (value: unknown) => void) => (rowId: string | number, headerKey: string, value: string) => {
@@ -338,7 +248,12 @@ export const ConfigMapSecretData = ({
 
     const handleExpressEditCompareWithChange = (isDraft: boolean) => {
         setExpressEditComparisonViewLHS(
-            getExpressEditComparisonViewLHS({ isDraft, draftData, publishedConfigMapSecretData }),
+            getExpressEditComparisonViewLHS({
+                isDraft,
+                draftData,
+                publishedConfigMapSecretData,
+                isSecret: data.isSecret,
+            }),
         )
     }
 
@@ -417,14 +332,14 @@ export const ConfigMapSecretData = ({
 
         return isExpressEditComparisonView ? (
             <ExpressEditDiffEditor
-                dataDiffConfig={dataDiffConfig}
+                dataDiffConfig={getCMCSExpressEditComparisonDataDiffConfig({
+                    lhs: expressEditComparisonViewLHS,
+                    rhs: data,
+                    onMergeStrategySelect,
+                })}
                 readOnly={readOnly}
                 lhsEditor={{
-                    value: YAMLStringify(
-                        expressEditComparisonViewLHS?.mergeStrategy === OverrideMergeStrategyType.PATCH
-                            ? expressEditComparisonViewLHS?.patchData || ''
-                            : expressEditComparisonViewLHS?.data || '',
-                    ),
+                    value: expressEditComparisonViewLHS.yaml,
                 }}
                 rhsEditor={{
                     value: getCodeEditorValue(),
