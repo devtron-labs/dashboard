@@ -23,11 +23,29 @@ import {
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerProps,
+    SelectPickerVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICEnv } from '@Icons/ic-env.svg'
 
 const meta = {
     component: SelectPicker,
+    argTypes: {
+        variant: {
+            options: Object.values(SelectPickerVariantType),
+            control: { type: 'radio' },
+        },
+        size: {
+            options: Object.values(ComponentSizeType),
+            control: { type: 'select' },
+        },
+        menuSize: {
+            options: Object.values(ComponentSizeType),
+            control: { type: 'select' },
+        },
+        shouldMenuAlignRight: {
+            control: { type: 'boolean' },
+        },
+    },
 } satisfies Meta<SelectPickerProps>
 
 export default meta
