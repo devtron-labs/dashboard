@@ -291,14 +291,6 @@ p.sentence-case:first-letter {
     }
 }
 
-.form__checkbox-parent {
-    &--active, &:hover {
-        .form__checkbox-container {
-            background-image: url('../assets/icons/ic-checkbox-hover.svg');
-        }
-    }
-}
-
 .form__checkbox:checked[value='INTERMEDIATE'] ~ .form__checkbox-container {
     background-image: url('../assets/icons/ic-checkbox-intermediate.svg');
 }
