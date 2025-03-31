@@ -275,11 +275,10 @@ const EphemeralContainerDrawer = ({
                             content: EPHEMERAL_CONTAINER.IMAGE,
                         }}
                         required
-                        renderMenuListFooter={() => (
-                            <div className="fw-4 lh-20 pl-8 pr-8 pt-6 pb-6 cn-7 fs-13 dc__italic-font-style">
-                                {CLUSTER_TERMINAL_MESSAGING.CUSTOM_PATH}
-                            </div>
-                        )}
+                        menuListFooterConfig={{
+                            type: 'text',
+                            value: CLUSTER_TERMINAL_MESSAGING.CUSTOM_PATH,
+                        }}
                         isCreatable
                         size={ComponentSizeType.large}
                         layout="row"
