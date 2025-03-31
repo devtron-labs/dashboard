@@ -68,6 +68,10 @@ export const Default: Story = {
         label: 'Select Picker Label',
         options,
         onChange: action('clicked'),
+        variant: SelectPickerVariantType.DEFAULT,
+        size: ComponentSizeType.medium,
+        menuSize: ComponentSizeType.small,
+        shouldMenuAlignRight: false,
     },
 }
 
