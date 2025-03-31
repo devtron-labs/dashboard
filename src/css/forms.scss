@@ -295,7 +295,7 @@ $checkbox-hover-bg-image: url('../assets/icons/ic-checkbox-hover.svg');
 
 // Class for checkbox parent container, if added to parent container, hover effect will be applied to checkbox
 .checkbox__parent-container {
-    &:hover {
+    &--active, &:hover {
         .form__checkbox-container {
             background-image: $checkbox-hover-bg-image;
         }
