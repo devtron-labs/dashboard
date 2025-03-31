@@ -207,7 +207,7 @@ export interface GetConfigToolbarPopupConfigProps {
     migratedFrom?: PipelineMigratedFromType
     isExceptionUser?: boolean
     isExpressEditView?: boolean
-    handleExpressDelete?: () => void
+    handleExpressDeleteDraft?: () => void
 }
 
 type ConfigDryRunManifestProps =

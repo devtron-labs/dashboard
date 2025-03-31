@@ -1103,6 +1103,7 @@ const DeploymentTemplate = ({
                 isExceptionUser,
             },
         })
+        editorStateBeforeExpressEditView.current = null
 
         fetchEnvConfig(+envId || BASE_CONFIGURATION_ENV_ID)
         reloadEnvironments()
@@ -1674,14 +1675,14 @@ const DeploymentTemplate = ({
         })
     }
 
-    const openExpressDeleteDialog = () => {
+    const openExpressDeleteDraftDialog = () => {
         dispatch({
             type: DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DRAFT_DIALOG,
             payload: { showExpressDeleteDraftDialog: true },
         })
     }
 
-    const closeExpressDeleteDialog = () => {
+    const closeExpressDeleteDraftDialog = () => {
         dispatch({
             type: DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DRAFT_DIALOG,
             payload: { showExpressDeleteDraftDialog: false },
@@ -1720,7 +1721,7 @@ const DeploymentTemplate = ({
             migratedFrom: pipelineMigratedFrom,
             isExceptionUser,
             isExpressEditView,
-            handleExpressDelete: openExpressDeleteDialog,
+            handleExpressDeleteDraft: openExpressDeleteDraftDialog,
         }),
         popupNodeType,
         popupMenuNode: ProtectionViewToolbarPopupNode ? (
@@ -2152,7 +2153,7 @@ const DeploymentTemplate = ({
                     <ExpressDeleteDraftModal
                         isLoading={isLoadingSideEffects}
                         handleDelete={handleExpressDelete}
-                        handleClose={closeExpressDeleteDialog}
+                        handleClose={closeExpressDeleteDraftDialog}
                         isOverride={publishedTemplateData?.isOverridden}
                     />
                 )}

@@ -412,17 +412,16 @@ const ConfigToolbar = ({
                 {renderSelectMergeStrategy()}
             </div>
 
-            {showExpressEditButton && (
-                <div className="ml-auto">
-                    <ExpressEditButton {...(expressEditButtonConfig ?? {})} />
-                </div>
-            )}
-
-            {isPublishedValuesView && !isPublishedConfigPresent ? null : (
+            {(showExpressEditButton || !isPublishedValuesView || isPublishedConfigPresent) && (
                 <div className="flexbox dc__align-items-center dc__gap-8">
-                    {renderProtectedConfigActions()}
-                    {renderReadmeAndScopedVariablesBlock()}
-                    {renderPopupMenu()}
+                    {showExpressEditButton && <ExpressEditButton {...(expressEditButtonConfig ?? {})} />}
+                    {isPublishedValuesView && !isPublishedConfigPresent ? null : (
+                        <>
+                            {renderProtectedConfigActions()}
+                            {renderReadmeAndScopedVariablesBlock()}
+                            {renderPopupMenu()}
+                        </>
+                    )}
                 </div>
             )}
         </div>

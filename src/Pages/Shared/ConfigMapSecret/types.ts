@@ -110,6 +110,8 @@ export type ConfigMapSecretFormProps = Required<
         isCreateView?: boolean
         configMapSecretData: CMSecretConfigData
         inheritedConfigMapSecretData: CMSecretConfigData
+        publishedConfigMapSecretData: CMSecretConfigData
+        draftData: CMSecretDraftData
         cmSecretStateLabel: CM_SECRET_STATE
         isSubmitting?: boolean
         areScopeVariablesResolving: boolean
@@ -124,9 +126,23 @@ export type ConfigMapSecretFormProps = Required<
          * This is also being used in BuildInfra
          */
         isJob?: boolean
+        /** Whether the express edit view is visible. */
+        isExpressEditView: boolean
+        /** Whether the express edit comparison view is visible. */
+        isExpressEditComparisonView: boolean
+        /** Handler for changing merge strategy. */
+        handleMergeStrategyChange: (strategy: OverrideMergeStrategyType) => void
     }
 
-export interface ConfigMapSecretDataProps extends Pick<ConfigMapSecretFormProps, 'useFormProps'> {
+export interface ConfigMapSecretDataProps
+    extends Pick<
+        ConfigMapSecretFormProps,
+        | 'useFormProps'
+        | 'isExpressEditComparisonView'
+        | 'draftData'
+        | 'publishedConfigMapSecretData'
+        | 'handleMergeStrategyChange'
+    > {
     isESO: boolean
     isHashiOrAWS: boolean
     isUnAuthorized: boolean
@@ -134,11 +150,11 @@ export interface ConfigMapSecretDataProps extends Pick<ConfigMapSecretFormProps,
     isPatchMode: boolean
 }
 
-export type CMSecretDeleteModalType = 'deleteModal' | 'protectedDeleteModal'
+export type CMSecretDeleteModalType = 'deleteModal' | 'protectedDeleteModal' | 'expressDeleteDraft'
 
 export interface ConfigMapSecretDeleteModalProps
     extends Pick<ConfigMapSecretFormProps, 'componentType' | 'cmSecretStateLabel'>,
-        Pick<ConfigMapSecretContainerProps, 'isTemplateView'> {
+        Pick<ConfigMapSecretContainerProps, 'isTemplateView' | 'isExceptionUser'> {
     appId: number
     envId: number
     id: number
@@ -175,9 +191,13 @@ export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 
         | 'isJob'
         | 'disableDataTypeChange'
         | 'onSubmit'
+        | 'onCancel'
         | 'areScopeVariablesResolving'
         | 'appChartRef'
         | 'useFormProps'
+        | 'isExpressEditView'
+        | 'isExpressEditComparisonView'
+        | 'handleMergeStrategyChange'
     > &
     Pick<ConfigMapSecretDeleteModalProps, 'updateCMSecret'> & {
         id: number
@@ -236,11 +256,12 @@ export interface ConfigMapSecretCommonAPIProps {
 export interface UpdateConfigMapSecretProps
     extends Pick<ConfigMapSecretCommonAPIProps, 'appId' | 'id' | 'payload' | 'signal'> {
     isTemplateView: AppConfigProps['isTemplateView']
+    isExpressEdit: boolean
 }
 
 export interface DeleteConfigMapSecretProps
     extends Pick<ConfigMapSecretCommonAPIProps, 'id' | 'appId' | 'name'>,
-        Pick<UpdateConfigMapSecretProps, 'isTemplateView'> {}
+        Pick<UpdateConfigMapSecretProps, 'isTemplateView' | 'isExpressEdit'> {}
 
 export interface DeleteEnvConfigMapSecretProps
     extends DeleteConfigMapSecretProps,
@@ -248,7 +269,7 @@ export interface DeleteEnvConfigMapSecretProps
 
 export interface OverrideConfigMapSecretProps
     extends Pick<ConfigMapSecretCommonAPIProps, 'appId' | 'envId' | 'payload' | 'signal'>,
-        Pick<UpdateConfigMapSecretProps, 'isTemplateView'> {}
+        Pick<UpdateConfigMapSecretProps, 'isTemplateView' | 'isExpressEdit'> {}
 
 export interface GetCMSecretProps extends Pick<ConfigMapSecretCommonAPIProps, 'id' | 'appId' | 'name' | 'signal'> {
     componentType: CMSecretComponentType

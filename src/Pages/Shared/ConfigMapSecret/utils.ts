@@ -34,6 +34,10 @@ import {
     CM_SECRET_STATE,
     CMSecretConfigData,
     getConfigMapSecretPayload,
+    configMapDataTypeOptions,
+    CMSecretExternalType,
+    getSelectPickerOptionByValue,
+    getSecretDataTypeOptions,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ResourceConfigStage } from '@Pages/Applications/DevtronApps/service.types'
@@ -370,6 +374,40 @@ export const getDryRunConfigMapSecretData = ({
 
     return configMapSecretData
 }
+
+export const getConfigMapSecretDataType = (
+    external: boolean,
+    externalType: CMSecretExternalType,
+    isSecret: boolean,
+) => {
+    if (!isSecret) {
+        return configMapDataTypeOptions.find(({ value }) =>
+            external && externalType === ''
+                ? value === CMSecretExternalType.KubernetesConfigMap
+                : value === externalType,
+        ).label as string
+    }
+
+    return external && externalType === ''
+        ? CMSecretExternalType.KubernetesSecret
+        : (getSelectPickerOptionByValue(getSecretDataTypeOptions(false, true), externalType).label as string)
+}
+
+export const getExpressEditComparisonViewLHS = ({
+    isDraft,
+    draftData,
+    publishedConfigMapSecretData,
+}: {
+    isDraft: boolean
+    draftData: CMSecretDraftData
+    publishedConfigMapSecretData: CMSecretConfigData
+}) =>
+    isDraft && draftData
+        ? {
+              ...draftData.parsedData.configData[0],
+              unAuthorized: false,
+          }
+        : publishedConfigMapSecretData || null
 
 export const getConfigMapSecretError = <T extends unknown>(res: PromiseSettledResult<T>) =>
     res.status === 'rejected' && res.reason?.code !== ERROR_STATUS_CODE.NOT_FOUND ? res.reason : null
