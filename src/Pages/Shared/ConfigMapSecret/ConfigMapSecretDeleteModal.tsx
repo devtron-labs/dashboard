@@ -125,8 +125,13 @@ export const ConfigMapSecretDeleteModal = ({
                 resourceType={componentType}
                 resourceName={configName}
                 latestDraft={draftData}
-                toggleModal={closeDeleteModal}
+                handleClose={closeDeleteModal}
                 reload={updateCMSecret}
+                expressDeleteConfig={{
+                    showExpressDelete: isExceptionUser,
+                    onClick: handleExpressDelete,
+                    isLoading: isExpressDeleting,
+                }}
             />
         ) : null
     }
