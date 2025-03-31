@@ -176,28 +176,6 @@
             }
         }
     }
-
-    .create-resource-container {
-        .created-resource-row {
-            display: grid;
-            grid-template-columns: 150px 200px 150px auto;
-            grid-column-gap: 16px;
-        }
-
-        .created-resource-list {
-            overflow-y: auto;
-
-            .created-resource-row {
-                &:hover {
-                    background-color: var(--bg-secondary);
-                }
-            }
-        }
-
-        & .react-monaco-editor-container {
-            flex-grow: 1;
-        }
-    }
 }
 
 .cluster-terminal-hidden {
@@ -210,4 +188,26 @@
 
 .cluster-terminal-hidden * {
     height: 0 !important;
+}
+
+.create-resource-container {
+    .created-resource-row {
+        display: grid;
+        grid-template-columns: 150px 200px 150px auto;
+        grid-column-gap: 16px;
+    }
+
+    .created-resource-list {
+        overflow-y: auto;
+
+        .created-resource-row {
+            &:hover {
+                background-color: var(--bg-secondary);
+            }
+        }
+    }
+
+    & .react-monaco-editor-container {
+        flex-grow: 1;
+    }
 }

@@ -19,7 +19,6 @@ import React from 'react'
 import { ModuleNameMap } from '../../../config'
 import { SuccessModalType } from './DevtronStackManager.type'
 import { ReactComponent as UpToDateIcon } from '../../../assets/icons/ic-celebration.svg'
-import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
 
 export const SuccessModalComponent = ({
     moduleDetails,
@@ -85,7 +84,6 @@ export const SuccessModalComponent = ({
         <ConfirmationDialog>
             <div className="module-details__upgrade-success">
                 <div className="flex column mb-40 mt-40">
-                    <img src={LatestVersionCelebration} />
                     <UpToDateIcon className="icon-dim-48" />
                 </div>
                 <ConfirmationDialog.Body title={`${enabledTool} is enabled`} />
