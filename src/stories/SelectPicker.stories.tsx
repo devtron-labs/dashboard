@@ -27,6 +27,11 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICEnv } from '@Icons/ic-env.svg'
 
+const SELECT_PICKER_LAYOUT_MAP: Record<SelectPickerProps['layout'], null> = {
+    row: null,
+    column: null,
+}
+
 const meta = {
     component: SelectPicker,
     argTypes: {
@@ -44,6 +49,10 @@ const meta = {
         },
         shouldMenuAlignRight: {
             control: { type: 'boolean' },
+        },
+        layout: {
+            options: Object.keys(SELECT_PICKER_LAYOUT_MAP),
+            control: { type: 'select' },
         },
     },
 } satisfies Meta<SelectPickerProps>
@@ -72,6 +81,7 @@ export const Default: Story = {
         size: ComponentSizeType.medium,
         menuSize: ComponentSizeType.small,
         shouldMenuAlignRight: false,
+        layout: 'column',
     },
 }
 
