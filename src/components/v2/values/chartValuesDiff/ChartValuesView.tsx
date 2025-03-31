@@ -238,7 +238,7 @@ const ChartValuesView = ({
             dispatch({
                 type: ChartValuesViewActionTypes.updateGitOpsConfiguration,
                 payload: {
-                    showNoGitOpsWarning: result.isInstalled && !result.isConfigured,
+                    showNoGitOpsWarning: result.isInstalled && !result.isConfigured && !isUpdateAppView,
                     authMode: result.authMode,
                 },
             })
