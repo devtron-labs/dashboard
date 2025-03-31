@@ -294,7 +294,7 @@ export const ConfigMapSecretData = ({
         })
 
         return (
-            <div className="dc__border br-4 dc__overflow-hidden">
+            <CodeEditor.Container overflowHidden>
                 <CodeEditor
                     key={codeEditorRadio}
                     mode={MODES.YAML}
@@ -351,7 +351,7 @@ export const ConfigMapSecretData = ({
                     )}
                 </CodeEditor>
                 {!data.external && data.yamlMode && renderYamlInfoText()}
-            </div>
+            </CodeEditor.Container>
         )
     }
 

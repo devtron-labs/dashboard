@@ -852,33 +852,36 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         )
 
         const renderSSOContent = () => (
-            <div className="flex column left dc__mxw-1000 w-100 pb-64">
-                <div className="px-20 py-16 dc__gap-24 flex column left w-100">
-                    <FeatureTitleWithInfo
-                        title={HEADER_TEXT.SSO_LOGIN.title}
-                        renderDescriptionContent={() => HEADER_TEXT.SSO_LOGIN.description}
-                        docLink={DOCUMENTATION.GLOBAL_CONFIG_SSO}
-                        showInfoIconTippy
-                        dataTestId="sso-login-heading"
-                    />
-                    {renderSSOBody()}
+            <div className="flexbox-col dc__content-space flex-grow-1 dc__overflow-auto">
+                <div className="flexbox-col flex-grow-1 px-20 py-16 dc__overflow-auto">
+                    <div className="dc__gap-24 flexbox-col flex-grow-1 w-100 dc__mxw-1000">
+                        <FeatureTitleWithInfo
+                            title={HEADER_TEXT.SSO_LOGIN.title}
+                            renderDescriptionContent={() => HEADER_TEXT.SSO_LOGIN.description}
+                            docLink={DOCUMENTATION.GLOBAL_CONFIG_SSO}
+                            showInfoIconTippy
+                            dataTestId="sso-login-heading"
+                        />
+                        {renderSSOBody()}
+                    </div>
                 </div>
-                <div className="px-20 py-16 dc__border-top-n1 w-100 dc__position-fixed bg__primary dc__bottom-0">
-                    <button
+                <div className="px-20 py-16 dc__border-top-n1 w-100 bg__primary dc__no-shrink">
+                    <Button
                         onClick={this.onLoginConfigSave}
-                        tabIndex={5}
-                        type="submit"
                         disabled={this.state.saveLoading}
-                        className="cta small"
-                        data-testid="sso-save-button"
-                    >
-                        {this.state.saveLoading ? <Progressing /> : this.renderButtonText()}
-                    </button>
+                        dataTestId="sso-save-button"
+                        size={ComponentSizeType.medium}
+                        isLoading={this.state.saveLoading}
+                        text={this.renderButtonText()}
+                        buttonProps={{
+                            type: 'submit',
+                        }}
+                    />
                 </div>
             </div>
         )
         return (
-            <section className="bg__primary sso-login__wrapper min-h-100">
+            <section className="bg__primary sso-login__wrapper h-100 flexbox-col dc__overflow-hidden">
                 {renderSSOContent()}
                 {/* Confirmation Modal for SSO Change */}
                 {showSSOChangeConfirmationModal && (
