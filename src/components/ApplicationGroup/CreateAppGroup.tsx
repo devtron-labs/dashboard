@@ -22,6 +22,7 @@ import {
     CustomInput,
     Drawer,
     GenericEmptyState,
+    NO_MATCHING_RESULT,
     Progressing,
     SearchBar,
     showError,
@@ -187,7 +188,7 @@ export default function CreateAppGroup({
     const renderEmptyState = (): JSX.Element => {
         return (
             <div className="flex-grow-1">
-                <GenericEmptyState title="No matching results" image={Info} imageClassName="h-20 scn-6" />
+                <GenericEmptyState title={NO_MATCHING_RESULT} image={Info} imageClassName="h-20 scn-6" />
             </div>
         )
     }

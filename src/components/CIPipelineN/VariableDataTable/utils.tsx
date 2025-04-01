@@ -298,7 +298,7 @@ export const getValColumnRowProps = ({
             type: DynamicDataTableRowDataType.SELECT_TEXT,
             value: variableType === RefVariableType.NEW ? value : refVariableName || '',
             props: {
-                placeholder: 'Enter value or variable',
+                // placeholder: 'Enter value or variable',
                 options: optionsForValColumn,
                 isCreatable: !valueConstraint?.choices?.length || !valueConstraint.blockCustomValue,
                 icon:
