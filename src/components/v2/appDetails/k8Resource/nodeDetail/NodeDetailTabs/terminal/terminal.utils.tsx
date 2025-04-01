@@ -93,7 +93,7 @@ const reactSelect = (selectData: ReactSelectType) => {
                 options={selectData.options}
                 value={selectData.value}
                 onChange={selectData.onChange}
-                variant={SelectPickerVariantType.BORDER_LESS}
+                variant={SelectPickerVariantType.COMPACT}
                 showSelectedOptionIcon={false}
             />
         </>

@@ -53,6 +53,7 @@ export default function CIContainerRegistryConfig({
     isTemplateView,
 }: CIContainerRegistryConfigProps) {
     const [selectedRegistry, setSelectedRegistry] = useState(currentRegistry)
+    const containerRegistryLabel = `Container Repository ${selectedRegistry && REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.desiredFormat}`
 
     const getCustomRegistryOption = (registry) => ({
         ...registry,
@@ -160,7 +161,7 @@ export default function CIContainerRegistryConfig({
                                               linkProps: {
                                                   to: URLS.GLOBAL_CONFIG_DOCKER,
                                               },
-                                              startIcon: <Icon name="ic-add" color={null} />
+                                              startIcon: <Icon name="ic-add" color={null} />,
                                           },
                                       }
                             }
@@ -171,12 +172,13 @@ export default function CIContainerRegistryConfig({
                     {registry.error && <label className="form__error">{registry.error}</label>}
                 </div>
                 <div className={`form__field flex-grow-1 ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                    <label htmlFor="" className="form__label">
-                        Container Repository&nbsp;
-                        {selectedRegistry && REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.desiredFormat}
-                    </label>
                     {configOverrideView && !allowOverride ? (
-                        <span className="fs-14 fw-4 lh-20 cn-9">{ciConfig?.dockerRepository}</span>
+                        <>
+                            <label htmlFor="" className="form__label dc__truncate">
+                                {containerRegistryLabel}
+                            </label>
+                            <span className="fs-14 fw-4 lh-20 cn-9">{ciConfig?.dockerRepository}</span>
+                        </>
                     ) : (
                         <CustomInput
                             placeholder={
@@ -195,6 +197,7 @@ export default function CIContainerRegistryConfig({
                             disabled={configOverrideView && !allowOverride}
                             data-testid="container-repository-textbox"
                             error={repository_name.error}
+                            label={containerRegistryLabel}
                         />
                     )}
                     {!ciConfig && selectedRegistry?.registryType === 'ecr' && (
