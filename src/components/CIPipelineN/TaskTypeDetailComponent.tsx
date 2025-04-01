@@ -209,12 +209,6 @@ export const TaskTypeDetailComponent = () => {
         }
     }
 
-    const renderMenuListFooter = () => (
-        <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">
-            Type to enter a custom value. Press Enter to accept.
-        </div>
-    )
-
     const renderContainerScript = () => {
         const errorObj = formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail
 
@@ -237,7 +231,10 @@ export const TaskTypeDetailComponent = () => {
                             onBlur={handleCreatableBlur}
                             onKeyDown={handleKeyDown}
                             isCreatable
-                            renderMenuListFooter={renderMenuListFooter}
+                            menuListFooterConfig={{
+                                type: 'text',
+                                value: 'Type to enter a custom value. Press Enter to accept.',
+                            }}
                         />
                         {selectedContainerImage?.label && (
                             <div className="flex icon-dim-32 dc__position-abs dc__top-0 dc__right-20">

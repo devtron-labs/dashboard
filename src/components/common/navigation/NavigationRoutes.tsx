@@ -477,7 +477,7 @@ export default function NavigationRoutes() {
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
-                {window._env_.FEATURE_EXPERIMENTAL_THEMING_ENABLE && showThemeSwitcherDialog && (
+                {showThemeSwitcherDialog && (
                     <SwitchThemeDialog
                         initialThemePreference={userPreferences?.themePreference}
                         handleClose={handleCloseSwitchThemeDialog}
