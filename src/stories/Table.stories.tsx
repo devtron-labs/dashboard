@@ -205,12 +205,7 @@ const ViewWrapper = ({ children, handleSearch, searchKey }: TableViewWrapperProp
         className="w-100 flexbox-col flex-grow-1 bg__primary dc__overflow-hidden dc__gap-16 py-12"
     >
         <div className="flexbox w-100 dc__align-start px-20">
-            <SearchBar
-                handleSearchChange={handleSearch}
-                initialSearchText={searchKey}
-                size={ComponentSizeType.medium}
-                containerClassName="w-300"
-            />
+            <SearchBar handleSearchChange={handleSearch} initialSearchText={searchKey} containerClassName="w-300" />
         </div>
 
         {children}
