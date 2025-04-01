@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import {
     abortPreviousRequests,
     APP_SELECTOR_STYLES,
     AppSelectorDropdownIndicator,
     AppSelectorNoOptionsMessage,
+    showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Props as SelectProps, SelectInstance } from 'react-select'
 import AsyncSelect from 'react-select/async'
@@ -28,9 +29,20 @@ import { appListOptions } from './AppSelectorUtil'
 import { AppSelectorType } from './AppSelector.types'
 
 const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) => {
-    const { recentlyVisitedDevtronApps } = useUserPreferences()
-    console.log(recentlyVisitedDevtronApps)
+    const { recentlyVisitedDevtronApps, handleFetchUserPreferences } = useUserPreferences()
     const selectRef = useRef<SelectInstance>(null)
+    useEffect(() => {
+        const fetch = async () => {
+            try {
+                await handleFetchUserPreferences()
+            } catch (error) {
+                showError(error)
+            }
+        }
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        fetch()
+        console.log(recentlyVisitedDevtronApps)
+    }, [])
 
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
