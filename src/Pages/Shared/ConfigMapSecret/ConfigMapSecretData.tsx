@@ -69,6 +69,7 @@ export const ConfigMapSecretData = ({
     isHashiOrAWS,
     readOnly,
     isPatchMode,
+    isOverridden,
     isExpressEditComparisonView,
     draftData,
     publishedConfigMapSecretData,
@@ -86,6 +87,7 @@ export const ConfigMapSecretData = ({
             draftData,
             publishedConfigMapSecretData,
             isSecret: data.isSecret,
+            isOverridden,
         }),
     )
 
@@ -253,6 +255,7 @@ export const ConfigMapSecretData = ({
                 draftData,
                 publishedConfigMapSecretData,
                 isSecret: data.isSecret,
+                isOverridden,
             }),
         )
     }
@@ -339,7 +342,7 @@ export const ConfigMapSecretData = ({
                 })}
                 readOnly={readOnly}
                 lhsEditor={{
-                    value: expressEditComparisonViewLHS.yaml,
+                    value: expressEditComparisonViewLHS?.yaml || '',
                 }}
                 rhsEditor={{
                     value: getCodeEditorValue(),

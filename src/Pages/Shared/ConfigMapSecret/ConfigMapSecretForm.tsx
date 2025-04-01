@@ -414,6 +414,7 @@ export const ConfigMapSecretForm = ({
                                 useFormProps={useFormProps}
                                 readOnly={isFormDisabled}
                                 isPatchMode={isPatchMode}
+                                isOverridden={cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN}
                                 draftData={draftData}
                                 publishedConfigMapSecretData={publishedConfigMapSecretData}
                                 isExpressEditComparisonView={isExpressEditComparisonView}

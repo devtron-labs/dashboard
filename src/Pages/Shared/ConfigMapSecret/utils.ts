@@ -403,11 +403,13 @@ export const getExpressEditComparisonViewLHS = ({
     draftData,
     publishedConfigMapSecretData,
     isSecret,
+    isOverridden,
 }: {
     isDraft: boolean
     draftData: CMSecretDraftData
     publishedConfigMapSecretData: CMSecretConfigData
     isSecret: boolean
+    isOverridden: boolean
 }) => {
     if (isDraft && draftData) {
         return getConfigMapSecretFormInitialValues({
@@ -418,7 +420,7 @@ export const getExpressEditComparisonViewLHS = ({
         })
     }
 
-    if (publishedConfigMapSecretData) {
+    if (isOverridden && publishedConfigMapSecretData) {
         return getConfigMapSecretFormInitialValues({
             configMapSecretData: publishedConfigMapSecretData,
             cmSecretStateLabel: null,
