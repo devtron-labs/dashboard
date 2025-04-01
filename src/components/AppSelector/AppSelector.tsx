@@ -16,8 +16,8 @@
 
 import { useEffect, useRef, useState } from 'react'
 import {
-    AppSelectorNoOptionsMessage,
     ComponentSizeType,
+    AppSelectorNoOptionsMessage as appSelectorNoOptionsMessage,
     SelectPicker,
     SelectPickerProps,
     SelectPickerVariantType,
@@ -27,22 +27,27 @@ import {
 import { useUserPreferences } from '@Components/common/UserPrefrences/useUserPrefrences'
 import { appListSelectOptions } from './AppSelectorUtil'
 import { AppSelectorType, RecentlyVisitedOptions } from './AppSelector.types'
+import { fetchRecentlyVisitedDevtronApps } from './service'
 
 const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) => {
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
-    const { recentlyVisitedDevtronApps, handleFetchUserPreferences } = useUserPreferences()
+    const { recentlyVisitedDevtronApps, handleFetchUserPreferences, setRecentlyVisitedDevtronApps } =
+        useUserPreferences()
     const [inputValue, setInputValue] = useState('')
 
     const [loading, selectOptions] = useAsync(
-        () => appListSelectOptions(inputValue, isJobView, abortControllerRef.current.signal),
-        [recentlyVisitedDevtronApps, inputValue, isJobView],
+        () =>
+            appListSelectOptions(inputValue, isJobView, abortControllerRef.current.signal, recentlyVisitedDevtronApps),
+        [inputValue, isJobView, recentlyVisitedDevtronApps],
         !!appName && !!appId,
     )
 
     useEffect(() => {
         const fetch = async () => {
             try {
+                const res = await fetchRecentlyVisitedDevtronApps(appId, appName)
+                setRecentlyVisitedDevtronApps(res)
                 await handleFetchUserPreferences()
             } catch (error) {
                 showError(error)
@@ -50,11 +55,17 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
         }
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         fetch()
-    }, [])
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    }, [appId, appName])
 
     const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
         setInputValue(val)
     }
+
+    const customSelect = (option, searchText: string) =>
+        option.data.value === 0 || option.data.label.toLowerCase().includes(searchText.toLowerCase())
+
+    const getNoOptions = () => appSelectorNoOptionsMessage(null, true)
 
     return (
         <SelectPicker
@@ -63,7 +74,7 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
             inputValue={inputValue}
             onInputChange={onInputChange}
             isLoading={loading}
-            noOptionsMessage={AppSelectorNoOptionsMessage}
+            noOptionsMessage={getNoOptions}
             onChange={onChange}
             value={{ value: appId, label: appName }}
             variant={SelectPickerVariantType.BORDER_LESS}
@@ -71,6 +82,7 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
             isOptionDisabled={(option: RecentlyVisitedOptions) => option.isDisabled}
             size={ComponentSizeType.xl}
             menuSize={ComponentSizeType.medium}
+            filterOption={customSelect}
         />
     )
 }

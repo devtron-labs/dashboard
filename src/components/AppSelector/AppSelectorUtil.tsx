@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getIsRequestAborted, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { BaseAppMetaData, getIsRequestAborted, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppListMin } from '../../services/service'
 import { RecentlyVisitedGroupedOptionsType, RecentlyVisitedOptions } from './AppSelector.types'
 import { AllApplicationsMetaData } from './constants'
@@ -67,6 +67,7 @@ export const appListSelectOptions = (
     inputValue: string,
     isJobView?: boolean,
     signal?: AbortSignal,
+    recentlyVisitedDevtronApps?: BaseAppMetaData[],
 ): Promise<RecentlyVisitedGroupedOptionsType[]> => {
     const options = signal ? { signal } : null
 
@@ -76,7 +77,16 @@ export const appListSelectOptions = (
         }
         timeoutId = setTimeout(() => {
             if (inputValue.length < 3) {
-                resolve([AllApplicationsMetaData])
+                resolve([
+                    {
+                        label: 'Recently Visited',
+                        options: recentlyVisitedDevtronApps.map((app: BaseAppMetaData) => ({
+                            label: app.appName,
+                            value: app.appId,
+                        })) as RecentlyVisitedOptions[],
+                    },
+                    AllApplicationsMetaData,
+                ])
             } else {
                 getAppListMin(null, options, inputValue, isJobView ?? false)
                     .then((response) => {
