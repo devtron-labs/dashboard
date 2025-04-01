@@ -1296,11 +1296,15 @@ const DeploymentTemplate = ({
             })
         } catch (err) {
             showError(err)
+            dispatch({
+                type: DeploymentTemplateActionType.FINISH_SAVE,
+                payload: { isLockConfigError: false },
+            })
         }
     }
 
     const handleTriggerSaveFromLockedModal = async () => {
-        if (isExceptionUser && isExpressEditView) {
+        if (isExpressEdit) {
             if (isDraftAvailable) {
                 dispatch({
                     type: DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_CONFIRMATION_MODAL,
@@ -1855,7 +1859,7 @@ const DeploymentTemplate = ({
 
         const isDisabled = isLoadingSideEffects || resolveScopedVariables || !!currentEditorTemplateData.parsingError
 
-        if (ExpressEditDeploymentTemplateCTA && isExceptionUser && isExpressEditView) {
+        if (ExpressEditDeploymentTemplateCTA && isExpressEdit) {
             return (
                 <ExpressEditDeploymentTemplateCTA
                     isAppMetricsEnabled={isAppMetricsEnabled}
