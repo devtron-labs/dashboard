@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import {
     CodeEditor,
     ConfigurationType,
-    DeploymentTemplateConfigState,
     MarkDown,
     MODES,
     noop,
     OverrideMergeStrategyType,
     SelectPickerOptionType,
-    versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
@@ -57,26 +55,19 @@ const DeploymentTemplateForm = ({
     isGuiSupported,
     mergeStrategy,
     isExpressEditComparisonView,
-    publishedTemplateData,
-    draftTemplateData,
     isAppMetricsEnabled,
     handleAppMetricsToggle,
     handleMergeStrategyChange,
     charts,
     handleChartChange,
+    expressEditComparisonViewLHS,
+    handleExpressEditCompareWithChange,
 }: DeploymentTemplateFormProps) => {
-    // STATES
-    const [expressEditComparisonViewLHS, setExpressEditComparisonViewLHS] = useState<DeploymentTemplateConfigState>(
-        draftTemplateData ||
-            (!(environmentName && !publishedTemplateData?.isOverridden) ? publishedTemplateData : null),
-    )
-
     const chartVersionDropdownOptions = useMemo(
         () =>
-            editMode === ConfigurationType.YAML && selectedChart
+            selectedChart
                 ? charts
                       .filter((cv) => cv.name === selectedChart.name)
-                      .sort((a, b) => versionComparatorBySortOrder(a.version, b.version))
                       .map((chart) => ({
                           label: chart.version,
                           value: chart.id,
@@ -107,10 +98,6 @@ const DeploymentTemplateForm = ({
     }
 
     // HANDLERS
-    const handleExpressEditCompareWithChange = (isDraft: boolean) => {
-        setExpressEditComparisonViewLHS(isDraft ? draftTemplateData : publishedTemplateData)
-    }
-
     const onChartSelect = (selected: SelectPickerOptionType) => {
         handleChartChange(charts.find((chart) => chart.id === selected.value) || selectedChart)
     }
@@ -171,10 +158,10 @@ const DeploymentTemplateForm = ({
                 displayValue:
                     expressEditComparisonViewLHS &&
                     (expressEditComparisonViewLHS.isAppMetricsEnabled ? 'Enabled' : 'Disabled'),
-                value: expressEditComparisonViewLHS?.isAppMetricsEnabled?.toString(),
+                value: expressEditComparisonViewLHS?.isAppMetricsEnabled,
             },
             rhs: {
-                value: isAppMetricsEnabled.toString(),
+                value: isAppMetricsEnabled,
                 dropdownConfig: {
                     options: APPLICATION_METRICS_DROPDOWN_OPTIONS,
                     onChange: toggleApplicationMetrics,

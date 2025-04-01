@@ -484,12 +484,17 @@ export const handleInitializeDraftData = ({
     return response
 }
 
-export const getUpdateBaseDeploymentTemplatePayload = (
-    state: DeploymentTemplateStateType,
-    appId: number,
-    skipReadmeAndSchema: boolean,
-    isExpressEdit: boolean,
-): UpdateBaseDTPayloadType => {
+export const getUpdateBaseDeploymentTemplatePayload = ({
+    state,
+    appId,
+    skipReadmeAndSchema,
+    isExpressEdit,
+}: {
+    state: DeploymentTemplateStateType
+    appId: number
+    skipReadmeAndSchema: boolean
+    isExpressEdit: boolean
+}): UpdateBaseDTPayloadType => {
     const {
         currentEditorTemplateData,
         wasGuiOrHideLockedKeysEdited,

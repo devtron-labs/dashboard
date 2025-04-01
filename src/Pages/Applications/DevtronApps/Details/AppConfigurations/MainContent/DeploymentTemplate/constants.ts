@@ -74,7 +74,7 @@ export const CHART_NAME_TO_DOC_SEGMENT: Readonly<Record<string, string>> = {
     StatefulSet: 'statefulset',
 }
 
-export const APPLICATION_METRICS_DROPDOWN_OPTIONS: SelectPickerOptionType[] = [
-    { label: 'Enabled', value: 'true' },
-    { label: 'Disabled', value: 'false' },
+export const APPLICATION_METRICS_DROPDOWN_OPTIONS: SelectPickerOptionType<boolean>[] = [
+    { label: 'Enabled', value: true },
+    { label: 'Disabled', value: false },
 ]

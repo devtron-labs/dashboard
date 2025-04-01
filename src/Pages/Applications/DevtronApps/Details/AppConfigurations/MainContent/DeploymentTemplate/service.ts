@@ -26,6 +26,7 @@ import {
     trash,
     getTemplateAPIRoute,
     getUrlWithSearchParams,
+    versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getChartReferencesForAppAndEnv } from '@Services/service'
 import {
@@ -125,14 +126,21 @@ export const getEnvOverrideDeploymentTemplate = async (
     return addGUISchemaIfAbsent(data, chartName)
 }
 
-export function deleteOverrideDeploymentTemplate(
-    id: number,
-    appId: number,
-    envId: number,
-    isTemplateView: AppConfigProps['isTemplateView'],
-    resourceName?: string,
-    isExpressEdit?: boolean,
-) {
+export function deleteOverrideDeploymentTemplate({
+    id,
+    appId,
+    envId,
+    isTemplateView,
+    resourceName,
+    isExpressEdit,
+}: {
+    id: number
+    appId: number
+    envId: number
+    isTemplateView: AppConfigProps['isTemplateView']
+    resourceName?: string
+    isExpressEdit?: boolean
+}) {
     const url = isTemplateView
         ? getTemplateAPIRoute({
               type: GetTemplateAPIRouteType.CONFIG_DEPLOYMENT_TEMPLATE_ENV,
@@ -175,6 +183,9 @@ export const getChartList = async ({
     const chartRefResp = await getChartReferencesForAppAndEnv(+appId, +envId, isTemplateView)
 
     const { chartRefs, latestAppChartRef, latestChartRef, latestEnvChartRef, chartMetadata } = chartRefResp.result
+    // Sorting chartRefs by version
+    chartRefs?.sort((a, b) => versionComparatorBySortOrder(a.version, b.version))
+
     // Adding another layer of security
     const envChartRef = envId ? latestEnvChartRef : null
 
@@ -185,7 +196,7 @@ export const getChartList = async ({
     const selectedGlobalChart = chartRefs?.find((chartRef) => chartRef.id === globalChartRefId) ?? chartRefs?.[0]
 
     return {
-        charts: chartRefs || [],
+        charts: chartRefs,
         chartsMetadata: chartMetadata || {},
         selectedChartRefId: selectedChartId,
         selectedChart: chart,

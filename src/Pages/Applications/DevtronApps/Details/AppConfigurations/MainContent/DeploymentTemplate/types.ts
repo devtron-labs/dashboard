@@ -202,6 +202,8 @@ export interface DeploymentTemplateStateType {
     isExpressEditView: boolean
     /** Whether the express edit comparison view is visible. */
     isExpressEditComparisonView: boolean
+    /** LHS state for Express Edit Comparison View. */
+    expressEditComparisonViewLHS: DeploymentTemplateConfigState
 }
 
 export interface HandleFetchDeploymentTemplateReturnType
@@ -237,6 +239,7 @@ export interface DeploymentTemplateFormProps
             | 'hideLockedKeys'
             | 'editMode'
             | 'isExpressEditComparisonView'
+            | 'expressEditComparisonViewLHS'
         > {
     editorOnChange: (value: string) => void
     readOnly: boolean
@@ -246,12 +249,11 @@ export interface DeploymentTemplateFormProps
     handleChangeToYAMLMode: () => void
     isGuiSupported: boolean
     isUnSet: boolean
-    publishedTemplateData: DeploymentTemplateStateType['publishedTemplateData']
-    draftTemplateData: DeploymentTemplateStateType['draftTemplateData']
     handleAppMetricsToggle: () => void
     handleMergeStrategyChange: ConfigToolbarProps['handleMergeStrategyChange']
     charts: DeploymentTemplateStateType['chartDetails']['charts']
     handleChartChange: (selectedChart: DeploymentChartVersionType) => void
+    handleExpressEditCompareWithChange: (isDraft: boolean) => void
 }
 
 export interface DeploymentTemplateGUIViewProps
