@@ -93,82 +93,81 @@ type ConfigToolbarReadMeProps =
 export type ConfigToolbarProps = Pick<
     DraftMetadataDTO,
     'draftId' | 'draftVersionId' | 'userApprovalMetadata' | 'requestedUserId'
-> & {
-    configHeaderTab: ConfigHeaderTabType
-    handleToggleScopedVariablesView: () => void
-    resolveScopedVariables: boolean
-    /**
-     * Route for redirection to base configurations shown in case configHeaderTab is inherited
-     */
-    baseConfigurationURL: string
-    /**
-     * Will feed the selected tab in the protection tab group
-     */
-    selectedProtectionViewTab: ProtectConfigTabsType
-    handleProtectionViewTabChange: (tab: ProtectConfigTabsType) => void
+> &
+    Pick<GetConfigToolbarPopupConfigProps, 'isExceptionUser' | 'isExpressEditView'> & {
+        configHeaderTab: ConfigHeaderTabType
+        handleToggleScopedVariablesView: () => void
+        resolveScopedVariables: boolean
+        /**
+         * Route for redirection to base configurations shown in case configHeaderTab is inherited
+         */
+        baseConfigurationURL: string
+        /**
+         * Will feed the selected tab in the protection tab group
+         */
+        selectedProtectionViewTab: ProtectConfigTabsType
+        handleProtectionViewTabChange: (tab: ProtectConfigTabsType) => void
 
-    handleToggleCommentsView: () => void
-    /**
-     * Would show red dot on comments icon if comments are present
-     */
-    areCommentsPresent: boolean
+        handleToggleCommentsView: () => void
+        /**
+         * Would show red dot on comments icon if comments are present
+         */
+        areCommentsPresent: boolean
 
-    showMergePatchesButton: boolean
-    shouldMergeTemplateWithPatches: boolean
-    handleToggleShowTemplateMergedWithPatch: () => void
+        showMergePatchesButton: boolean
+        shouldMergeTemplateWithPatches: boolean
+        handleToggleShowTemplateMergedWithPatch: () => void
 
-    mergeStrategy: OverrideMergeStrategyType
-    handleMergeStrategyChange: (strategy: OverrideMergeStrategyType) => void
-    hidePatchOption?: boolean
-    isMergeStrategySelectorDisabled?: boolean
+        mergeStrategy: OverrideMergeStrategyType
+        handleMergeStrategyChange: (strategy: OverrideMergeStrategyType) => void
+        hidePatchOption?: boolean
+        isMergeStrategySelectorDisabled?: boolean
 
-    /**
-     * Used to place toggle editor view and chart selectors in deployment template
-     */
-    children?: ReactNode
-    /**
-     * If provided, will show popup menu on click three dots button
-     * If empty/null, will not show the button
-     */
-    popupConfig?: ConfigToolbarPopupConfigType
-    /**
-     * @default false
-     */
-    isApprovalPolicyConfigured?: boolean
-    /**
-     * @default false
-     */
-    isApprovalPending?: boolean
-    isDraftPresent?: boolean
-    /**
-     * @default - false
-     * If given would disable all the actions
-     */
-    disableAllActions?: boolean
-    parsingError: string
-    restoreLastSavedYAML: () => void
-    /**
-     * This key means if have saved a draft and have not proposed it yet, and we are creating a new entity like override.
-     * @default - true
-     * If false we will hide all the action in toolbar.
-     */
-    isPublishedConfigPresent?: boolean
-    headerMessage?: string
-    showDeleteOverrideDraftEmptyState: boolean
-    handleReload: () => void
+        /**
+         * Used to place toggle editor view and chart selectors in deployment template
+         */
+        children?: ReactNode
+        /**
+         * If provided, will show popup menu on click three dots button
+         * If empty/null, will not show the button
+         */
+        popupConfig?: ConfigToolbarPopupConfigType
+        /**
+         * @default false
+         */
+        isApprovalPolicyConfigured?: boolean
+        /**
+         * @default false
+         */
+        isApprovalPending?: boolean
+        isDraftPresent?: boolean
+        /**
+         * @default - false
+         * If given would disable all the actions
+         */
+        disableAllActions?: boolean
+        parsingError: string
+        restoreLastSavedYAML: () => void
+        /**
+         * This key means if have saved a draft and have not proposed it yet, and we are creating a new entity like override.
+         * @default - true
+         * If false we will hide all the action in toolbar.
+         */
+        isPublishedConfigPresent?: boolean
+        headerMessage?: string
+        showDeleteOverrideDraftEmptyState: boolean
+        handleReload: () => void
 
-    /**
-     * Config for exception user.
-     */
-    isExceptionUser?: boolean
-    isExpressEditView?: boolean
-    expressEditButtonConfig?: {
-        showPromptTooltip: boolean
-        onClick: () => void
-        onClose: () => void
-        onDoNotShowAgainClose: () => void
-    }
-} & ConfigToolbarReadMeProps
+        /**
+         * Config for exception user.
+         */
+        expressEditButtonConfig?: {
+            showPromptTooltip: boolean
+            onClick: () => void
+            onClose: () => void
+            onDoNotShowAgainClose: () => void
+        }
+    } & ConfigToolbarReadMeProps
 
 interface ConfigToolbarPopupMenuLockedConfigDataType {
     /**

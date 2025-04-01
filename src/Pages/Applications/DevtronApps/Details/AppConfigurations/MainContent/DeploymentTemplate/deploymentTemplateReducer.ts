@@ -109,6 +109,7 @@ export enum DeploymentTemplateActionType {
     IS_EXPRESS_EDIT_VIEW = 'IS_EXPRESS_EDIT_VIEW',
     TOGGLE_EXPRESS_EDIT_COMPARISON_VIEW = 'TOGGLE_EXPRESS_EDIT_COMPARISON_VIEW',
     SHOW_EXPRESS_EDIT_CONFIRMATION_MODAL = 'SHOW_EXPRESS_EDIT_CONFIRMATION_MODAL',
+    SET_EXPRESS_EDIT_COMPARISON_VIEW_LHS = 'SET_EXPRESS_EDIT_COMPARISON_VIEW_LHS',
 }
 
 type DeploymentTemplateNoPayloadActions =
@@ -273,6 +274,10 @@ export type DeploymentTemplateActionState =
           type: DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_CONFIRMATION_MODAL
           payload: Pick<DeploymentTemplateStateType, 'showExpressEditConfirmationModal'>
       }
+    | {
+          type: DeploymentTemplateActionType.SET_EXPRESS_EDIT_COMPARISON_VIEW_LHS
+          payload: Pick<DeploymentTemplateStateType, 'expressEditComparisonViewLHS'>
+      }
 
 export const getDeploymentTemplateInitialState = ({
     isSuperAdmin,
@@ -330,6 +335,7 @@ export const getDeploymentTemplateInitialState = ({
     isExpressEditComparisonView: false,
     showExpressDeleteDraftDialog: false,
     showExpressEditConfirmationModal: false,
+    expressEditComparisonViewLHS: null,
 })
 
 const handleSwitchToYAMLMode = (state: DeploymentTemplateStateType): DeploymentTemplateStateType => {
@@ -986,6 +992,11 @@ export const deploymentTemplateReducer = (
                 ...handleReApplyLockedKeys(state),
                 ...handleUnResolveScopedVariables(),
                 ...action.payload,
+                expressEditComparisonViewLHS:
+                    state.draftTemplateData ||
+                    (!state.publishedTemplateData?.environmentConfig || state.publishedTemplateData?.isOverridden
+                        ? state.publishedTemplateData
+                        : null),
                 isExpressEditComparisonView: false,
             }
 
@@ -1000,6 +1011,7 @@ export const deploymentTemplateReducer = (
 
         case DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DRAFT_DIALOG:
         case DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_CONFIRMATION_MODAL:
+        case DeploymentTemplateActionType.SET_EXPRESS_EDIT_COMPARISON_VIEW_LHS:
             return {
                 ...state,
                 ...action.payload,

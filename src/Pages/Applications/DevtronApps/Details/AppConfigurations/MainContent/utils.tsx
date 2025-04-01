@@ -158,6 +158,9 @@ export const getConfigToolbarPopupConfig = ({
     const firstConfigSegment: ConfigToolbarPopupMenuConfigType[] = []
     const secondConfigSegment: ConfigToolbarPopupMenuConfigType[] = []
 
+    const showButtonInDraftValuesViewNonExpressEdit =
+        !isExpressEditView && isDraftAvailable && configHeaderTab === ConfigHeaderTabType.VALUES
+
     if (getToggleViewLockedKeysPopupButtonConfig && lockedConfigData && !showDeleteOverrideDraftEmptyState) {
         const lockedKeysConfig = getToggleViewLockedKeysPopupButtonConfig(
             lockedConfigData.areLockedKeysPresent,
@@ -171,24 +174,14 @@ export const getConfigToolbarPopupConfig = ({
         }
     }
 
-    if (
-        getEditHistoryPopupButtonConfig &&
-        !isExpressEditView &&
-        isDraftAvailable &&
-        configHeaderTab === ConfigHeaderTabType.VALUES
-    ) {
+    if (getEditHistoryPopupButtonConfig && showButtonInDraftValuesViewNonExpressEdit) {
         const activityHistoryConfig = getEditHistoryPopupButtonConfig(handleShowEditHistory, isLoading)
         if (activityHistoryConfig) {
             firstConfigSegment.push(activityHistoryConfig)
         }
     }
 
-    if (
-        getDeleteDraftPopupButtonConfig &&
-        !isExpressEditView &&
-        isDraftAvailable &&
-        configHeaderTab === ConfigHeaderTabType.VALUES
-    ) {
+    if (getDeleteDraftPopupButtonConfig && showButtonInDraftValuesViewNonExpressEdit) {
         const deleteDraftConfig = getDeleteDraftPopupButtonConfig(handleDiscardDraft, isLoading)
         if (deleteDraftConfig) {
             secondConfigSegment.push(deleteDraftConfig)
