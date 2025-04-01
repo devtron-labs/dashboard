@@ -2099,7 +2099,9 @@ const DeploymentTemplate = ({
         }
 
         return (
-            <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-auto bg__primary">
+            <div
+                className={`br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-auto bg__primary ${isExpressEditView ? 'border__primary-warning' : 'border__primary'}`}
+            >
                 {renderBody()}
 
                 {showDeleteOverrideDialog && (

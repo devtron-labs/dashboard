@@ -141,6 +141,7 @@ export type ConfigToolbarProps = Pick<
          */
         isApprovalPending?: boolean
         isDraftPresent?: boolean
+        isUnpublished?: boolean
         /**
          * @default - false
          * If given would disable all the actions

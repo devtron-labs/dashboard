@@ -116,6 +116,7 @@ const ConfigToolbar = ({
     isApprovalPolicyConfigured = false,
     isApprovalPending,
     isDraftPresent,
+    isUnpublished = false,
     draftId,
     draftVersionId,
     requestedUserId,
@@ -414,7 +415,9 @@ const ConfigToolbar = ({
 
             {(showExpressEditButton || !isPublishedValuesView || isPublishedConfigPresent) && (
                 <div className="flexbox dc__align-items-center dc__gap-8">
-                    {showExpressEditButton && <ExpressEditButton {...(expressEditButtonConfig ?? {})} />}
+                    {showExpressEditButton && (
+                        <ExpressEditButton disabled={isUnpublished} {...(expressEditButtonConfig ?? {})} />
+                    )}
                     {isPublishedValuesView && !isPublishedConfigPresent ? null : (
                         <>
                             {renderProtectedConfigActions()}
