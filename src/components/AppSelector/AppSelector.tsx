@@ -14,23 +14,32 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
-    abortPreviousRequests,
-    APP_SELECTOR_STYLES,
-    AppSelectorDropdownIndicator,
     AppSelectorNoOptionsMessage,
+    ComponentSizeType,
+    SelectPicker,
+    SelectPickerProps,
+    SelectPickerVariantType,
     showError,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Props as SelectProps, SelectInstance } from 'react-select'
-import AsyncSelect from 'react-select/async'
 import { useUserPreferences } from '@Components/common/UserPrefrences/useUserPrefrences'
-import { appListOptions } from './AppSelectorUtil'
-import { AppSelectorType } from './AppSelector.types'
+import { appListSelectOptions } from './AppSelectorUtil'
+import { AppSelectorType, RecentlyVisitedOptions } from './AppSelector.types'
 
 const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) => {
+    const abortControllerRef = useRef<AbortController>(new AbortController())
+
     const { recentlyVisitedDevtronApps, handleFetchUserPreferences } = useUserPreferences()
-    const selectRef = useRef<SelectInstance>(null)
+    const [inputValue, setInputValue] = useState('')
+
+    const [loading, selectOptions] = useAsync(
+        () => appListSelectOptions(inputValue, isJobView, abortControllerRef.current.signal),
+        [recentlyVisitedDevtronApps, inputValue, isJobView],
+        !!appName && !!appId,
+    )
+
     useEffect(() => {
         const fetch = async () => {
             try {
@@ -41,40 +50,27 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
         }
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         fetch()
-        console.log(recentlyVisitedDevtronApps)
     }, [])
 
-    const abortControllerRef = useRef<AbortController>(new AbortController())
-
-    const defaultOptions = [{ value: appId, label: appName }]
-    const loadAppListOptions = (inputValue: string) =>
-        abortPreviousRequests(
-            () => appListOptions(inputValue, isJobView, abortControllerRef.current.signal),
-            abortControllerRef,
-        )
-
-    const handleOnKeyDown: SelectProps['onKeyDown'] = (event) => {
-        if (event.key === 'Escape') {
-            selectRef.current?.inputRef.blur()
-        }
+    const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
+        setInputValue(val)
     }
 
     return (
-        <AsyncSelect
-            ref={selectRef}
-            blurInputOnSelect
-            onKeyDown={handleOnKeyDown}
-            defaultOptions
-            loadOptions={loadAppListOptions}
+        <SelectPicker
+            inputId={`${isJobView ? 'job' : 'app'}-name`}
+            options={selectOptions || []}
+            inputValue={inputValue}
+            onInputChange={onInputChange}
+            isLoading={loading}
             noOptionsMessage={AppSelectorNoOptionsMessage}
             onChange={onChange}
-            components={{
-                IndicatorSeparator: null,
-                DropdownIndicator: AppSelectorDropdownIndicator,
-                LoadingIndicator: null,
-            }}
-            value={defaultOptions[0]}
-            styles={APP_SELECTOR_STYLES}
+            value={{ value: appId, label: appName }}
+            variant={SelectPickerVariantType.BORDER_LESS}
+            placeholder={appName}
+            isOptionDisabled={(option: RecentlyVisitedOptions) => option.isDisabled}
+            size={ComponentSizeType.xl}
+            menuSize={ComponentSizeType.medium}
         />
     )
 }
