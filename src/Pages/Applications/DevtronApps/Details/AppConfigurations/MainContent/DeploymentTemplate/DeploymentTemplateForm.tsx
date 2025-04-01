@@ -99,6 +99,9 @@ const DeploymentTemplateForm = ({
 
     // HANDLERS
     const onChartSelect = (selected: SelectPickerOptionType) => {
+        if (selected.value === selectedChart.id) {
+            return
+        }
         handleChartChange(charts.find((chart) => chart.id === selected.value) || selectedChart)
     }
 
