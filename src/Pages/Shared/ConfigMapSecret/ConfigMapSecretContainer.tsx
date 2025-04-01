@@ -1075,7 +1075,7 @@ export const ConfigMapSecretContainer = ({
         <>
             <Prompt when={shouldPrompt} message={checkIfPathIsMatching(location.pathname)} />
             <div className="configmap-secret-container flexbox w-100 dc__content-space h-100 dc__position-rel">
-                <div className="p-8 flexbox flex-grow-1">
+                <div className="p-8 flexbox flex-grow-1 mw-none">
                     <div className="dc__border br-4 dc__overflow-hidden h-100 bg__primary flex-grow-1">
                         {renderContent()}
                     </div>
