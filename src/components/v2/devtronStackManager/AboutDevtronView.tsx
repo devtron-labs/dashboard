@@ -118,9 +118,7 @@ const AboutDevtronView = ({
                 <div className="about-devtron__details">
                     <h2 className="about-devtron__view-heading cn-9 fs-20 fw-6">
                         Devtron
-                        {serverInfo?.currentVersion && serverInfo.installationType === InstallationType.OSS_HELM
-                            ? ` (${serverInfo.currentVersion.toLowerCase()})`
-                            : ''}
+                        {serverInfo?.currentVersion && <span>{serverInfo.currentVersion.toLowerCase()}</span>}
                     </h2>
                     <div className="about-devtron__view-tabs w-100">
                         {renderTabs()}
