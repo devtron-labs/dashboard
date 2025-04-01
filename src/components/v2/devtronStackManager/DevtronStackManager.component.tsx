@@ -61,7 +61,6 @@ import { ReactComponent as Info } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Note } from '../../../assets/icons/ic-note.svg'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
-import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
 import { DOCUMENTATION, MODULE_STATUS, MODULE_TYPE_SECURITY, ModuleNameMap, URLS } from '../../../config'
 import Carousel from '../../common/Carousel/Carousel'
 import {
@@ -542,7 +541,6 @@ const InstallationStatus = ({
                             data-testid="module-status-updated"
                             className="module-details__upgrade-success flex column"
                         >
-                            <img src={LatestVersionCelebration} />
                             <UpToDateIcon className="icon-dim-40" />
                             <span className="mt-12">You're using the latest version of Devtron.</span>
                         </div>

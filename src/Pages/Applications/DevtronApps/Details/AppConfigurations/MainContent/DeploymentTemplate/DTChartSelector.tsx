@@ -249,7 +249,7 @@ const DTChartSelector = ({
                     value={selectedOption}
                     onChange={onSelectChartVersion}
                     isSearchable={false}
-                    variant={SelectPickerVariantType.BORDER_LESS}
+                    variant={SelectPickerVariantType.COMPACT}
                     size={ComponentSizeType.small}
                     placeholder="Select version"
                     isDisabled={migratedFrom === PipelineMigratedFromType.ARGO_APPLICATION}
