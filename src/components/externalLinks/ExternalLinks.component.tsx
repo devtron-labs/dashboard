@@ -393,7 +393,7 @@ export const NodeLevelExternalLinks = ({
                     options={nodeLevelExternalLinks}
                     isSearchable={false}
                     shouldMenuAlignRight
-                    variant={SelectPickerVariantType.BORDER_LESS}
+                    variant={SelectPickerVariantType.COMPACT}
                     onChange={onClickExternalLink}
                 />
             </div>

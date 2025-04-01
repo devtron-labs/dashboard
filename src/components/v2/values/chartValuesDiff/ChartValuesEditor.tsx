@@ -101,7 +101,7 @@ const CompareWithDropdown = ({
         <SelectPicker
             inputId="compare-values-select"
             classNamePrefix="compare-values-select"
-            variant={SelectPickerVariantType.BORDER_LESS}
+            variant={SelectPickerVariantType.COMPACT}
             options={groupedOptions}
             isSearchable={false}
             value={selectedVersionForDiff}
