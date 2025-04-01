@@ -109,11 +109,22 @@ $svg-fill-hex-to-var: (
 // These are just hack, not to be further extended
 .theme {
     &__dark {
+        $checkbox-hover-bg-image: url('../assets/icons/dark/ic-checkbox-hover.svg');
+
         .form__checkbox-container {
             background-image: url('../assets/icons/dark/ic-checkbox-unselected.svg');
 
             &:hover {
-                background-image: url('../assets/icons/dark/ic-checkbox-hover.svg');
+                background-image: $checkbox-hover-bg-image;
+            }
+        }
+
+        // Class for checkbox parent container, if added to parent container, hover effect will be applied to checkbox
+        .checkbox__parent-container {
+            &:hover {
+                .form__checkbox-container {
+                    background-image: $checkbox-hover-bg-image;
+                }
             }
         }
 

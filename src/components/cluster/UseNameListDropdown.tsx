@@ -42,7 +42,7 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
             isSearchable={false}
             menuPosition="fixed"
             onChange={handleUserChange}
-            variant={SelectPickerVariantType.BORDER_LESS}
+            variant={SelectPickerVariantType.COMPACT}
         />
     )
 }

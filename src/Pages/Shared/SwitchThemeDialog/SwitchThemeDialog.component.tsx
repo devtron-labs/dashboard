@@ -203,7 +203,6 @@ const SwitchThemeDialog = ({
                 },
             }}
             isLandscapeView
-            showConfetti={!initialThemePreference}
         >
             <div className="dc__grid dc__column-gap-16 theme-preference-option__container">
                 {THEME_PREFERENCE_OPTION_LIST.map((value) => (

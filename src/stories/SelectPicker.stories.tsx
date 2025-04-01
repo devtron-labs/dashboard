@@ -17,16 +17,44 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 import {
+    ButtonVariantType,
     ComponentSizeType,
     Icon,
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerProps,
+    SelectPickerVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICEnv } from '@Icons/ic-env.svg'
 
+const SELECT_PICKER_LAYOUT_MAP: Record<SelectPickerProps['layout'], null> = {
+    row: null,
+    column: null,
+}
+
 const meta = {
     component: SelectPicker,
+    argTypes: {
+        variant: {
+            options: Object.values(SelectPickerVariantType),
+            control: { type: 'radio' },
+        },
+        size: {
+            options: Object.values(ComponentSizeType),
+            control: { type: 'select' },
+        },
+        menuSize: {
+            options: Object.values(ComponentSizeType),
+            control: { type: 'select' },
+        },
+        shouldMenuAlignRight: {
+            control: { type: 'boolean' },
+        },
+        layout: {
+            options: Object.keys(SELECT_PICKER_LAYOUT_MAP),
+            control: { type: 'select' },
+        },
+    },
 } satisfies Meta<SelectPickerProps>
 
 export default meta
@@ -49,6 +77,11 @@ export const Default: Story = {
         label: 'Select Picker Label',
         options,
         onChange: action('clicked'),
+        variant: SelectPickerVariantType.DEFAULT,
+        size: ComponentSizeType.medium,
+        menuSize: ComponentSizeType.small,
+        shouldMenuAlignRight: false,
+        layout: 'column',
     },
 }
 
@@ -162,15 +195,48 @@ export const HelperText: Story = {
     },
 }
 
-export const MenuListFooter: Story = {
+export const MenuListFooterWithText: Story = {
     ...Default,
     args: {
         ...Default.args,
-        renderMenuListFooter: () => (
-            <div className="px-8 py-6 dc__border-top bg__secondary cn-6">
-                <div>Foot note</div>
-            </div>
-        ),
+        menuListFooterConfig: {
+            type: 'text',
+            value: 'Footer text',
+        },
+    },
+}
+
+export const MenuListFooterPrimaryButton: Story = {
+    ...Default,
+    args: {
+        ...Default.args,
+        menuListFooterConfig: {
+            type: 'button',
+            buttonProps: {
+                text: 'Primary Button',
+                variant: ButtonVariantType.primary,
+                onClick: action('footer button clicked'),
+                dataTestId: 'footer-button',
+                startIcon: <ICEnv />,
+            },
+        },
+    },
+}
+
+export const MenuListFooterBorderLessButton: Story = {
+    ...Default,
+    args: {
+        ...Default.args,
+        menuListFooterConfig: {
+            type: 'button',
+            buttonProps: {
+                text: 'Border Less Button',
+                variant: ButtonVariantType.borderLess,
+                onClick: action('footer button clicked'),
+                dataTestId: 'footer-button',
+                startIcon: <ICEnv />,
+            },
+        },
     },
 }
 
