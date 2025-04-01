@@ -17,7 +17,7 @@
 import React, { useEffect } from 'react'
 import AboutDevtron from '../../../assets/img/about-devtron@2x.png'
 import { InstallationWrapper } from './DevtronStackManager.component'
-import { AboutDevtronViewType } from './DevtronStackManager.type'
+import { AboutDevtronViewType, InstallationType } from './DevtronStackManager.type'
 import './AboutDevtronView.scss'
 import { URLS } from '../../../config'
 import { MarkDown, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
@@ -118,7 +118,9 @@ const AboutDevtronView = ({
                 <div className="about-devtron__details">
                     <h2 className="about-devtron__view-heading cn-9 fs-20 fw-6">
                         Devtron
-                        {serverInfo?.currentVersion && <span>&nbsp;({serverInfo.currentVersion.toLowerCase()})</span>}
+                        {serverInfo?.currentVersion && serverInfo.installationType !== InstallationType.OSS_KUBECTL && (
+                            <span>&nbsp;({serverInfo.currentVersion.toLowerCase()})</span>
+                        )}
                     </h2>
                     <div className="about-devtron__view-tabs w-100">
                         {renderTabs()}
