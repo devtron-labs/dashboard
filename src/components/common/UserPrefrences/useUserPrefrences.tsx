@@ -4,6 +4,9 @@ import {
     getUserPreferences,
     useTheme,
     ViewIsPipelineRBACConfiguredRadioTabs,
+    ResourceKindType,
+    ResourcesKindTypeActions,
+    BaseAppMetaData,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useState } from 'react'
 import { importComponentFromFELibrary } from '../helpers/Helpers'
@@ -14,6 +17,7 @@ const migrateUserPreferences: (userPreferences: UserPreferencesType) => Promise<
 export const useUserPreferences = () => {
     const [userPreferences, setUserPreferences] = useState<UserPreferencesType>(null)
     const [userPreferencesError, setUserPreferencesError] = useState<ServerErrors>(null)
+    const [recentlyVisitedDevtronApps, setRecentlyVisitedDevtronApps] = useState<BaseAppMetaData[]>([])
 
     const { handleThemeSwitcherDialogVisibilityChange, handleThemePreferenceChange } = useTheme()
 
@@ -36,6 +40,14 @@ export const useUserPreferences = () => {
             } else {
                 handleInitializeUserPreferencesFromResponse(userPreferencesResponse)
             }
+            const _recentlyVisitedDevtronApps = userPreferencesResponse?.resources?.[
+                ResourceKindType.devtronApplication
+            ]?.[ResourcesKindTypeActions.RECENTLY_VISITED]?.length
+                ? userPreferencesResponse?.resources[ResourceKindType.devtronApplication][
+                      ResourcesKindTypeActions.RECENTLY_VISITED
+                  ]
+                : []
+            setRecentlyVisitedDevtronApps(_recentlyVisitedDevtronApps)
         } catch (error) {
             setUserPreferencesError(error)
         }
@@ -62,5 +74,7 @@ export const useUserPreferences = () => {
         handleFetchUserPreferences,
         handleUpdatePipelineRBACViewSelectedTab,
         handleUpdateUserThemePreference,
+        recentlyVisitedDevtronApps,
+        setRecentlyVisitedDevtronApps,
     }
 }

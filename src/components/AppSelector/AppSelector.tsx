@@ -23,16 +23,13 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Props as SelectProps, SelectInstance } from 'react-select'
 import AsyncSelect from 'react-select/async'
+import { useUserPreferences } from '@Components/common/UserPrefrences/useUserPrefrences'
 import { appListOptions } from './AppSelectorUtil'
-
-interface AppSelectorType {
-    onChange: ({ label, value }) => void
-    appId: number
-    appName: string
-    isJobView?: boolean
-}
+import { AppSelectorType } from './AppSelector.types'
 
 const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) => {
+    const { recentlyVisitedDevtronApps } = useUserPreferences()
+    console.log(recentlyVisitedDevtronApps)
     const selectRef = useRef<SelectInstance>(null)
 
     const abortControllerRef = useRef<AbortController>(new AbortController())
