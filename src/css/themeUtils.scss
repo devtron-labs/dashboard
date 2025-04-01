@@ -159,6 +159,10 @@
         &--bottom {
             border-bottom: 1px solid var(--border-secondary);
         }
+
+        &--left {
+            border-left: 1px solid var(--border-secondary);
+        }
     }
 
     &__secondary-translucent {

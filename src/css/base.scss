@@ -5122,3 +5122,27 @@ details[open] {
         }
     }
 }
+
+.dc__place-self-center {
+    place-self: center;
+}
+
+.twelve-col-layout {
+    grid-template-columns: repeat(12, 1fr);
+}
+
+.dc__mxw-50-per {
+    max-width: 50%;
+}
+
+.mh-100vh {
+    min-height: 100vh;
+}
+
+.mh-170 {
+    min-height: 170px;
+}
+
+.mw-76 {
+    min-width: 76px;
+}

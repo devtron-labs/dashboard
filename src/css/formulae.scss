@@ -593,3 +593,15 @@ $color-suffix: 00;
 .steps-with-trail--normal {
     @include steps-with-trail(20px, 24px, 16px, 40px)
 }
+
+@for $i from 1 through 12 {
+    @for $j from 1 through 12 {
+        .grid-col-#{$i}-#{$j} {
+            grid-column: #{$i} / span #{$j};
+        }
+    }
+
+    .grid-col-#{$i}--end {
+        grid-column: #{$i} / -1;
+    }
+}
