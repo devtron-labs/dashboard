@@ -378,6 +378,10 @@ a:focus {
     top: 88px;
 }
 
+.dc__top-180 {
+    top: 180px;
+}
+
 .dc__bottom-0 {
     bottom: 0;
 }
@@ -3993,6 +3997,10 @@ button.anchor {
     gap: 32px;
 }
 
+.dc__gap-72 {
+    gap: 72px
+}
+
 .dc__flip-y {
     transform: scaleY(-1);
 }
@@ -4088,6 +4096,14 @@ textarea::placeholder {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
+    word-break: break-word;
+}
+
+.dc__truncate--clamp-4 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
     word-break: break-word;
 }
 
@@ -5105,4 +5121,28 @@ details[open] {
             overflow: hidden;
         }
     }
+}
+
+.dc__place-self-center {
+    place-self: center;
+}
+
+.twelve-col-layout {
+    grid-template-columns: repeat(12, 1fr);
+}
+
+.dc__mxw-50-per {
+    max-width: 50%;
+}
+
+.mh-100vh {
+    min-height: 100vh;
+}
+
+.mh-170 {
+    min-height: 170px;
+}
+
+.mw-76 {
+    min-width: 76px;
 }
