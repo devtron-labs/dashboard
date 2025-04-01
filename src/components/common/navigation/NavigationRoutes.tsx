@@ -79,6 +79,7 @@ import { DEFAULT_GIT_OPS_FEATURE_FLAGS } from './constants'
 import { ParsedTabsData, ParsedTabsDataV1 } from '../DynamicTabs/types'
 import { SwitchThemeDialog } from '@Pages/Shared'
 import { SwitchThemeDialogProps } from '@Pages/Shared/SwitchThemeDialog/types'
+import { useUserPreferences } from './useUserPrefrences'
 
 // Monaco Editor worker initialization
 self.MonacoEnvironment = {
@@ -157,11 +158,20 @@ export default function NavigationRoutes() {
         canOnlyViewPermittedEnvOrgLevel: false,
         featureGitOpsFlags: structuredClone(DEFAULT_GIT_OPS_FEATURE_FLAGS),
     })
-    const [userPreferences, setUserPreferences] = useState<UserPreferencesType>(null)
-    const [userPreferencesError, setUserPreferencesError] = useState<ServerErrors>(null)
 
-    const { showThemeSwitcherDialog, handleThemeSwitcherDialogVisibilityChange, handleThemePreferenceChange, appTheme } =
-        useTheme()
+    const {
+        showThemeSwitcherDialog,
+        handleThemeSwitcherDialogVisibilityChange,
+        appTheme,
+    } = useTheme()
+
+    const {
+        userPreferences,
+        userPreferencesError,
+        handleFetchUserPreferences,
+        handleUpdatePipelineRBACViewSelectedTab,
+        handleUpdateUserThemePreference,
+    } = useUserPreferences()
 
     const { isAirgapped, isManifestScanningEnabled, canOnlyViewPermittedEnvOrgLevel } = environmentDataState
 
@@ -353,31 +363,6 @@ export default function NavigationRoutes() {
         }
     }
 
-    const handleInitializeUserPreferencesFromResponse = (userPreferencesResponse: UserPreferencesType) => {
-        if (window._env_.FEATURE_EXPERIMENTAL_THEMING_ENABLE && !userPreferencesResponse?.themePreference) {
-            handleThemeSwitcherDialogVisibilityChange(true)
-        } else if (userPreferencesResponse?.themePreference) {
-            handleThemePreferenceChange(userPreferencesResponse?.themePreference)
-        }
-
-        setUserPreferences(userPreferencesResponse)
-    }
-
-    const handleFetchUserPreferences = async () => {
-        try {
-            setUserPreferencesError(null)
-            const userPreferencesResponse = await getUserPreferences()
-            if (migrateUserPreferences) {
-                const migratedUserPreferences = await migrateUserPreferences(userPreferencesResponse)
-                handleInitializeUserPreferencesFromResponse(migratedUserPreferences)
-            } else {
-                handleInitializeUserPreferencesFromResponse(userPreferencesResponse)
-            }
-        } catch (error) {
-            setUserPreferencesError(error)
-        }
-    }
-
     const handleFetchInitialData = async () => {
         try {
             const [serverModeResponse, environmentDataResponse] = await Promise.all([
@@ -440,21 +425,6 @@ export default function NavigationRoutes() {
     const isOnboardingPage = () => {
         const _pathname = location.pathname.endsWith('/') ? location.pathname.slice(0, -1) : location.pathname
         return _pathname === `/${URLS.GETTING_STARTED}` || _pathname === `/dashboard/${URLS.GETTING_STARTED}`
-    }
-
-    // To handle in case through browser prompt user cancelled the refresh
-    const handleUpdatePipelineRBACViewSelectedTab = (selectedTab: ViewIsPipelineRBACConfiguredRadioTabs) => {
-        setUserPreferences((prev) => ({
-            ...prev,
-            pipelineRBACViewSelectedTab: selectedTab,
-        }))
-    }
-
-    const handleUpdateUserThemePreference = (themePreference: UserPreferencesType['themePreference']) => {
-        setUserPreferences((prev) => ({
-            ...prev,
-            themePreference,
-        }))
     }
 
     if (pageState === ViewType.LOADING) {
