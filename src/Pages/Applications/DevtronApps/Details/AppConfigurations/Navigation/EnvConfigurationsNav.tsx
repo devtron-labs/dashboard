@@ -404,7 +404,7 @@ export const EnvConfigurationsNav = ({
                 <SelectPicker<number, false>
                     inputId="env-config-selector"
                     classNamePrefix="env-config-selector"
-                    variant={SelectPickerVariantType.BORDER_LESS}
+                    variant={SelectPickerVariantType.COMPACT}
                     isClearable={false}
                     value={getSelectPickerOptionByValue(envOptions, parsedResourceId, baseEnvOption[0])}
                     options={envOptions}

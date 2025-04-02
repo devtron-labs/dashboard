@@ -121,7 +121,7 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
                 value={selectedMaterial}
                 onChange={handleGitRepoChange}
                 classNamePrefix="build-config__select-repository-containing-code"
-                variant={SelectPickerVariantType.BORDER_LESS}
+                variant={SelectPickerVariantType.COMPACT}
             />
 
             <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
@@ -134,7 +134,7 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
                 value={selectedLanguage}
                 isSearchable={false}
                 onChange={handleLanguageSelection}
-                variant={SelectPickerVariantType.BORDER_LESS}
+                variant={SelectPickerVariantType.COMPACT}
             />
             {selectedLanguageFrameworks?.[0]?.value && (
                 <>
@@ -148,7 +148,7 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
                         classNamePrefix="build-config__select-framework"
                         isSearchable={false}
                         onChange={handleFrameworkSelection}
-                        variant={SelectPickerVariantType.BORDER_LESS}
+                        variant={SelectPickerVariantType.COMPACT}
                     />
                 </>
             )}

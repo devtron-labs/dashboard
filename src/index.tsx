@@ -136,12 +136,9 @@ if (!window || !window._env_) {
         ENABLE_SCOPED_VARIABLES: true,
         DEFAULT_CI_TRIGGER_TYPE_MANUAL: false,
         ANNOUNCEMENT_BANNER_MSG: '',
-        LOGIN_PAGE_IMAGE: '',
-        LOGIN_PAGE_IMAGE_BG: '',
         HIDE_DEFAULT_CLUSTER: false,
         GLOBAL_API_TIMEOUT: 60000,
         TRIGGER_API_TIMEOUT: 60000,
-        LOGIN_DT_LOGO: '',
         SIDEBAR_DT_LOGO: '',
         ENABLE_EXTERNAL_ARGO_CD: true,
         API_BATCH_SIZE: 20,
@@ -155,7 +152,6 @@ if (!window || !window._env_) {
         HIDE_NETWORK_STATUS_INTERFACE: true,
         SYSTEM_CONTROLLER_LISTING_TIMEOUT: 60000 * 5,
         FEATURE_IMAGE_PROMOTION_ENABLE: false,
-        FEATURE_CD_MANDATORY_PLUGINS_ENABLE: true,
         FEATURE_HIDE_USER_DIRECT_PERMISSIONS_FOR_NON_SUPER_ADMINS: false,
         FEATURE_CONFIG_DRIFT_ENABLE: false,
         FEATURE_PROMO_EMBEDDED_BUTTON_TEXT: '',
@@ -168,10 +164,10 @@ if (!window || !window._env_) {
         FEATURE_DEFAULT_LANDING_RB_ENABLE: false,
         FEATURE_CLUSTER_MAP_ENABLE: true,
         FEATURE_ACTION_AUDIOS_ENABLE: true,
-        FEATURE_EXPERIMENTAL_THEMING_ENABLE: import.meta.env.DEV,
         FEATURE_APPLICATION_TEMPLATES_ENABLE: true,
         FEATURE_CODE_MIRROR_ENABLE: true,
         FEATURE_DEFAULT_AUTHENTICATED_VIEW_ENABLE: false,
+        GATEKEEPER_URL: 'devtron.ai',
     }
 }
 

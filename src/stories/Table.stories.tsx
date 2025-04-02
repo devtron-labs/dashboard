@@ -15,7 +15,6 @@ import {
     TableProps,
     TableViewWrapperProps,
     TableSignalEnum,
-    TABLE_ID_MAP,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICPlay } from '@Icons/ic-play-outline.svg'
 import { ReactComponent as ICPause } from '@Icons/ic-pause.svg'
@@ -217,7 +216,7 @@ export const TableTemplate: Story = {
         columns: COLUMNS,
         rows: ROWS,
         filtersVariant: FiltersTypeEnum.STATE,
-        id: TABLE_ID_MAP.STORYBOOK,
+        id: 'table__story',
         paginationVariant: PaginationEnum.PAGINATED,
         emptyStateConfig: {
             noRowsConfig: {

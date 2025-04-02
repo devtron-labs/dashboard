@@ -24,6 +24,7 @@ import { CLAIR_TOOL_VERSION_V4, ModuleNameMap, TRIVY_TOOL_VERSION, URLS } from '
 import { handleError } from './DevtronStackManager.component'
 import { executeModuleAction, executeModuleEnableAction, executeServerAction } from './DevtronStackManager.service'
 import {
+    InstallationType,
     ModuleActionRequest,
     ModuleActions,
     ModuleDetails,
@@ -207,4 +208,10 @@ export const AppStatusClass = {
     [ModuleStatus.TIMEOUT]: 'degraded',
     [ModuleStatus.INSTALL_FAILED]: 'degraded',
     [ModuleStatus.INSTALLED]: 'healthy',
+}
+
+export const INSTALLATION_TYPE_TO_REPO_MAP = {
+    [InstallationType.ENTERPRISE]: 'devtron-enterprise',
+    [InstallationType.OSS_HELM]: 'devtron',
+    [InstallationType.OSS_KUBECTL]: 'devtron'
 }
