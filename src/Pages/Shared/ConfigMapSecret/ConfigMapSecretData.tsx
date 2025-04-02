@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 
 import {
     Button,
@@ -38,6 +38,7 @@ import {
     MODES,
     OverrideMergeStrategyType,
     SelectPickerOptionType,
+    isCodeMirrorEnabled,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
@@ -47,7 +48,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 
 import {
     CODE_EDITOR_RADIO_STATE_VALUE,
-    CONFIG_MAP_SECRET_NO_DATA_ERROR,
+    CONFIG_MAP_SECRET_REQUIRED_FIELD_ERROR,
     DATA_HEADER_MAP,
     sampleJSONs,
     VIEW_MODE,
@@ -90,6 +91,20 @@ export const ConfigMapSecretData = ({
             isOverridden,
         }),
     )
+
+    useEffect(() => {
+        // Set the initial state of the express edit comparison view LHS, whenever the isExpressEditComparisonView changes.
+        // This is used to show the draft data in the comparison view by default on opening.
+        setExpressEditComparisonViewLHS(
+            getExpressEditComparisonViewLHS({
+                isDraft: true,
+                draftData,
+                publishedConfigMapSecretData,
+                isSecret: data.isSecret,
+                isOverridden,
+            }),
+        )
+    }, [isExpressEditComparisonView])
 
     // CONSTANTS
     const isLocked = data.isSecret && (secretMode || (data.externalType === '' && isUnAuthorized))
@@ -194,7 +209,7 @@ export const ConfigMapSecretData = ({
         const hasDataError =
             data.hasCurrentDataErr ||
             ((errors.yaml || errors.currentData) &&
-                (errors.yaml?.[0] || errors.currentData?.[0]) !== CONFIG_MAP_SECRET_NO_DATA_ERROR)
+                (errors.yaml?.[0] || errors.currentData?.[0]) !== CONFIG_MAP_SECRET_REQUIRED_FIELD_ERROR)
 
         // If there are validation errors, show a toast notification and return the current mode without switching.
         if (hasDataError) {
@@ -401,12 +416,14 @@ export const ConfigMapSecretData = ({
                             </div>
                         </div>
                     </CodeEditor.Header>
-                    {codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA && errors[codeEditorFormKey] && (
-                        <div className="flex left px-16 py-8 dc__gap-8 bcr-1 cr-5 fs-12 lh-20">
-                            <ICErrorExclamation className="icon-dim-16 dc__no-shrink" />
-                            <p className="m-0">{errors[codeEditorFormKey]}</p>
-                        </div>
-                    )}
+                    {!isCodeMirrorEnabled() &&
+                        codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA &&
+                        errors[codeEditorFormKey] && (
+                            <div className="flex left px-16 py-8 dc__gap-8 bcr-1 cr-5 fs-12 lh-20">
+                                <ICErrorExclamation className="icon-dim-16 dc__no-shrink" />
+                                <p className="m-0">{errors[codeEditorFormKey]}</p>
+                            </div>
+                        )}
                 </CodeEditor>
                 {!data.external && data.yamlMode && renderYamlInfoText()}
             </CodeEditor.Container>

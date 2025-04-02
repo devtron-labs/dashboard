@@ -55,6 +55,7 @@ import {
     UseFormSubmitHandler,
     isNullOrUndefined,
     useOneTimePrompt,
+    CONFIG_MAP_SECRET_YAML_PARSE_ERROR,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { APP_COMPOSE_STAGE, getAppComposeURL } from '@Config/routes'
@@ -82,7 +83,11 @@ import {
     getConfigMapSecretStateLabel,
     parseConfigMapSecretSearchParams,
 } from './utils'
-import { CM_SECRET_COMPONENT_NAME, CONFIG_MAP_SECRET_NO_DATA_ERROR } from './constants'
+import {
+    CM_SECRET_COMPONENT_NAME,
+    CONFIG_MAP_SECRET_DATA_KEYS,
+    CONFIG_MAP_SECRET_REQUIRED_FIELD_ERROR,
+} from './constants'
 import {
     CMSecretDeleteModalType,
     CMSecretDraftPayloadType,
@@ -198,7 +203,7 @@ export const ConfigMapSecretContainer = ({
             cmSecretStateLabel === CM_SECRET_STATE.INHERITED
         ) &&
         (formData.external ? formErrors.esoSecretYaml : formErrors.yaml)?.[0]
-    const parsingError = yamlError && yamlError !== CONFIG_MAP_SECRET_NO_DATA_ERROR ? yamlError : ''
+    const parsingError = yamlError && yamlError !== CONFIG_MAP_SECRET_REQUIRED_FIELD_ERROR ? yamlError : ''
 
     // GA EVENT CATEGORY (BASED ON CM/SECRET)
     const gaEventCategory = `devtronapp-configuration-${isSecret ? 'secret' : 'cm'}`
@@ -871,11 +876,36 @@ export const ConfigMapSecretContainer = ({
         }
 
     const onError: UseFormErrorHandler<ConfigMapSecretUseFormProps> = (errors) => {
-        if (errors.currentData?.[0] === CONFIG_MAP_SECRET_NO_DATA_ERROR) {
+        const hasRequiredFieldErrorInDataKeys = CONFIG_MAP_SECRET_DATA_KEYS.some(
+            (key) => errors[key]?.[0] === CONFIG_MAP_SECRET_REQUIRED_FIELD_ERROR,
+        )
+
+        const hasRequiredFieldErrorsOutsideDataKeys = Object.keys(errors).some(
+            (key: keyof ConfigMapSecretUseFormProps) =>
+                !CONFIG_MAP_SECRET_DATA_KEYS.includes(key) &&
+                errors[key]?.[0] === CONFIG_MAP_SECRET_REQUIRED_FIELD_ERROR,
+        )
+
+        if (hasRequiredFieldErrorsOutsideDataKeys || hasRequiredFieldErrorInDataKeys) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
-                description: `Please add ${CM_SECRET_COMPONENT_NAME[componentType]} data before saving.`,
+                title: 'Input required',
+                description:
+                    hasRequiredFieldErrorInDataKeys && !hasRequiredFieldErrorsOutsideDataKeys
+                        ? `Please add ${CM_SECRET_COMPONENT_NAME[componentType]} data before saving.`
+                        : 'Some required fields are missing',
             })
+            return
+        }
+
+        const hasInvalidYamlError = CONFIG_MAP_SECRET_DATA_KEYS.some((key) => !!errors[key]?.[0])
+        if (hasInvalidYamlError) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                title: 'Invalid YAML',
+                description: CONFIG_MAP_SECRET_YAML_PARSE_ERROR,
+            })
+            return
         }
 
         if (errors.hasCurrentDataErr?.[0]) {
@@ -898,7 +928,7 @@ export const ConfigMapSecretContainer = ({
 
     const formSubmitHandler = handleSubmit(onSubmit(), onError)
     const dryRunSubmitHandler = handleSubmit(onSubmit(), onDryRunError)
-    const expressEditSubmitHandler = handleSubmit(onSubmit(true), onDryRunError)
+    const expressEditSubmitHandler = handleSubmit(onSubmit(true), onError)
 
     // CONFIG TOOLBAR POPUP MENU
     const toolbarPopupConfig: ConfigToolbarProps['popupConfig'] = {

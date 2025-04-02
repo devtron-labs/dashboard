@@ -95,8 +95,13 @@ export const ConfigMapSecretDeleteModal = ({
 
     const prepareDataToDeleteOverrideDraft = () => ({ id })
 
-    // RENDERERS
-    const renderProtectedDeleteModal = () => {
+    const onError = (err) => handleError(DraftAction.Delete, err)
+
+    if (!openDeleteModal) {
+        return null
+    }
+
+    if (openDeleteModal === 'protectedDeleteModal') {
         if (isDeleteOverride) {
             return DeleteOverrideDraftModal ? (
                 <DeleteOverrideDraftModal
@@ -136,9 +141,18 @@ export const ConfigMapSecretDeleteModal = ({
         ) : null
     }
 
-    const onError = (err) => handleError(DraftAction.Delete, err)
+    if (openDeleteModal === 'expressDeleteDraft') {
+        return ExpressDeleteDraftModal ? (
+            <ExpressDeleteDraftModal
+                isLoading={isExpressDeleting}
+                handleDelete={handleExpressDelete}
+                handleClose={closeDeleteModal}
+                isOverride={cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN}
+            />
+        ) : null
+    }
 
-    const renderDeleteModal = () => (
+    return (
         <DeleteConfirmationModal
             title={configName}
             component={isDeleteOverride ? DeleteComponentsName.Override : CM_SECRET_COMPONENT_NAME[componentType]}
@@ -153,27 +167,5 @@ export const ConfigMapSecretDeleteModal = ({
             onError={onError}
             primaryButtonText={isDeleteOverride ? 'Delete Override' : 'Delete'}
         />
-    )
-
-    const renderExpressDeleteDraftModal = () =>
-        ExpressDeleteDraftModal && (
-            <ExpressDeleteDraftModal
-                isLoading={isExpressDeleting}
-                handleDelete={handleExpressDelete}
-                handleClose={closeDeleteModal}
-                isOverride={cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN}
-            />
-        )
-
-    if (!openDeleteModal) {
-        return null
-    }
-
-    return (
-        <>
-            {openDeleteModal === 'protectedDeleteModal' && renderProtectedDeleteModal()}
-            {openDeleteModal === 'deleteModal' && renderDeleteModal()}
-            {openDeleteModal === 'expressDeleteDraft' && renderExpressDeleteDraftModal()}
-        </>
     )
 }
