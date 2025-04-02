@@ -917,7 +917,7 @@ export const InstallationWrapper = ({
                                             }}
                                             showTooltip={isInstallButtonDisabled}
                                             text={text}
-                                            startIcon={<Icon />}
+                                            startIcon={Icon ? <Icon /> : null}
                                             fullWidth
                                         />
                                     )}
