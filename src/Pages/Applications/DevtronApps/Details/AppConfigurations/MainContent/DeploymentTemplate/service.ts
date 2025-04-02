@@ -196,7 +196,7 @@ export const getChartList = async ({
     const selectedGlobalChart = chartRefs?.find((chartRef) => chartRef.id === globalChartRefId) ?? chartRefs?.[0]
 
     return {
-        charts: chartRefs,
+        charts: chartRefs || [],
         chartsMetadata: chartMetadata || {},
         selectedChartRefId: selectedChartId,
         selectedChart: chart,

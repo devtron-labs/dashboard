@@ -1101,6 +1101,7 @@ const DeploymentTemplate = ({
                 isExceptionUser,
             },
         })
+        editorStateBeforeExpressEditView.current = null
 
         fetchEnvConfig(+envId || BASE_CONFIGURATION_ENV_ID)
         reloadEnvironments()
@@ -1646,14 +1647,14 @@ const DeploymentTemplate = ({
         })
     }
 
-    const openExpressDeleteDialog = () => {
+    const openExpressDeleteDraftDialog = () => {
         dispatch({
             type: DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DRAFT_DIALOG,
             payload: { showExpressDeleteDraftDialog: true },
         })
     }
 
-    const closeExpressDeleteDialog = () => {
+    const closeExpressDeleteDraftDialog = () => {
         dispatch({
             type: DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DRAFT_DIALOG,
             payload: { showExpressDeleteDraftDialog: false },
@@ -1703,7 +1704,7 @@ const DeploymentTemplate = ({
             migratedFrom: pipelineMigratedFrom,
             isExceptionUser,
             isExpressEditView,
-            handleExpressDelete: openExpressDeleteDialog,
+            handleExpressDeleteDraft: openExpressDeleteDraftDialog,
         }),
         popupNodeType,
         popupMenuNode: ProtectionViewToolbarPopupNode ? (
@@ -2098,7 +2099,9 @@ const DeploymentTemplate = ({
         }
 
         return (
-            <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-auto bg__primary">
+            <div
+                className={`br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-auto bg__primary ${isExpressEditView ? 'border__primary-warning' : 'border__primary'}`}
+            >
                 {renderBody()}
 
                 {showDeleteOverrideDialog && (
@@ -2135,7 +2138,7 @@ const DeploymentTemplate = ({
                     <ExpressDeleteDraftModal
                         isLoading={isLoadingSideEffects}
                         handleDelete={handleExpressDelete}
-                        handleClose={closeExpressDeleteDialog}
+                        handleClose={closeExpressDeleteDraftDialog}
                         isOverride={publishedTemplateData?.isOverridden}
                     />
                 )}

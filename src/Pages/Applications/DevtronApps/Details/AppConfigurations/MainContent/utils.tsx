@@ -149,7 +149,7 @@ export const getConfigToolbarPopupConfig = ({
     migratedFrom,
     isExceptionUser,
     isExpressEditView,
-    handleExpressDelete,
+    handleExpressDeleteDraft,
 }: GetConfigToolbarPopupConfigProps): ConfigToolbarProps['popupConfig']['menuConfig'] => {
     if (isPublishedValuesView && !isPublishedConfigPresent) {
         return null
@@ -221,7 +221,7 @@ export const getConfigToolbarPopupConfig = ({
         isDeleteOverrideDraftPresent &&
         configHeaderTab === ConfigHeaderTabType.VALUES
     ) {
-        const expressDeleteDraftConfig = getExpressDeleteDraftPopupButtonConfig(handleExpressDelete, isOverridden)
+        const expressDeleteDraftConfig = getExpressDeleteDraftPopupButtonConfig(handleExpressDeleteDraft, isOverridden)
         secondConfigSegment.push(expressDeleteDraftConfig)
     }
 

@@ -141,6 +141,7 @@ export type ConfigToolbarProps = Pick<
          */
         isApprovalPending?: boolean
         isDraftPresent?: boolean
+        isUnpublished?: boolean
         /**
          * @default - false
          * If given would disable all the actions
@@ -206,7 +207,7 @@ export interface GetConfigToolbarPopupConfigProps {
     migratedFrom?: PipelineMigratedFromType
     isExceptionUser?: boolean
     isExpressEditView?: boolean
-    handleExpressDelete?: () => void
+    handleExpressDeleteDraft?: () => void
 }
 
 type ConfigDryRunManifestProps =

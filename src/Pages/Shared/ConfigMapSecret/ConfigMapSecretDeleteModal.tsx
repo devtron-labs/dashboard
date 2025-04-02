@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
+import { useState } from 'react'
 import {
     CMSecretComponentType,
     CM_SECRET_STATE,
     DeleteConfirmationModal,
     DraftAction,
+    ToastManager,
+    ToastVariantType,
+    showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
@@ -30,6 +34,7 @@ import { ConfigMapSecretDeleteModalProps } from './types'
 
 const DeleteModal = importComponentFromFELibrary('DeleteModal')
 const DeleteOverrideDraftModal = importComponentFromFELibrary('DeleteOverrideDraftModal')
+const ExpressDeleteDraftModal = importComponentFromFELibrary('ExpressDeleteDraftModal', null, 'function')
 
 export const ConfigMapSecretDeleteModal = ({
     appId,
@@ -44,23 +49,48 @@ export const ConfigMapSecretDeleteModal = ({
     updateCMSecret,
     handleError,
     isTemplateView,
+    isExceptionUser,
 }: ConfigMapSecretDeleteModalProps) => {
     // STATES
+    const [isExpressDeleting, setIsExpressDeleting] = useState<boolean>(false)
 
     // CONSTANTS
     const isDeleteOverride = cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
     const isSecret = componentType === CMSecretComponentType.Secret
 
     // METHODS
-    const handleDelete = async () => {
+    const handleDelete = async (isExpressEdit = false) => {
         if (envId) {
-            const deleteEnvConfigMapSecretParams = { id, appId, envId, name: configName, isTemplateView }
+            const deleteEnvConfigMapSecretParams = {
+                id,
+                appId,
+                envId,
+                name: configName,
+                isTemplateView,
+                isExpressEdit,
+            }
             await (isSecret ? deleteEnvSecret : deleteEnvConfigMap)(deleteEnvConfigMapSecretParams)
         } else {
-            const deleteConfigMapSecretParams = { id, appId, name: configName, isTemplateView }
+            const deleteConfigMapSecretParams = { id, appId, name: configName, isTemplateView, isExpressEdit }
             await (isSecret ? deleteSecret : deleteConfigMap)(deleteConfigMapSecretParams)
         }
         updateCMSecret()
+    }
+
+    const handleExpressDelete = async () => {
+        setIsExpressDeleting(true)
+        try {
+            await handleDelete(true)
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: isDeleteOverride && envId ? 'Restored to global' : 'Successfully Deleted',
+            })
+            closeDeleteModal()
+        } catch (err) {
+            showError(err)
+        } finally {
+            setIsExpressDeleting(false)
+        }
     }
 
     const prepareDataToDeleteOverrideDraft = () => ({ id })
@@ -78,6 +108,11 @@ export const ConfigMapSecretDeleteModal = ({
                     handleClose={closeDeleteModal}
                     latestDraft={draftData}
                     reload={updateCMSecret}
+                    expressDeleteConfig={{
+                        showExpressDelete: isExceptionUser,
+                        onClick: handleExpressDelete,
+                        isLoading: isExpressDeleting,
+                    }}
                 />
             ) : null
         }
@@ -90,8 +125,13 @@ export const ConfigMapSecretDeleteModal = ({
                 resourceType={componentType}
                 resourceName={configName}
                 latestDraft={draftData}
-                toggleModal={closeDeleteModal}
+                handleClose={closeDeleteModal}
                 reload={updateCMSecret}
+                expressDeleteConfig={{
+                    showExpressDelete: isExceptionUser,
+                    onClick: handleExpressDelete,
+                    isLoading: isExpressDeleting,
+                }}
             />
         ) : null
     }
@@ -115,6 +155,16 @@ export const ConfigMapSecretDeleteModal = ({
         />
     )
 
+    const renderExpressDeleteDraftModal = () =>
+        ExpressDeleteDraftModal && (
+            <ExpressDeleteDraftModal
+                isLoading={isExpressDeleting}
+                handleDelete={handleExpressDelete}
+                handleClose={closeDeleteModal}
+                isOverride={cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN}
+            />
+        )
+
     if (!openDeleteModal) {
         return null
     }
@@ -123,6 +173,7 @@ export const ConfigMapSecretDeleteModal = ({
         <>
             {openDeleteModal === 'protectedDeleteModal' && renderProtectedDeleteModal()}
             {openDeleteModal === 'deleteModal' && renderDeleteModal()}
+            {openDeleteModal === 'expressDeleteDraft' && renderExpressDeleteDraftModal()}
         </>
     )
 }

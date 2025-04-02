@@ -116,6 +116,7 @@ const ConfigToolbar = ({
     isApprovalPolicyConfigured = false,
     isApprovalPending,
     isDraftPresent,
+    isUnpublished = false,
     draftId,
     draftVersionId,
     requestedUserId,
@@ -412,17 +413,18 @@ const ConfigToolbar = ({
                 {renderSelectMergeStrategy()}
             </div>
 
-            {showExpressEditButton && (
-                <div className="ml-auto">
-                    <ExpressEditButton {...(expressEditButtonConfig ?? {})} />
-                </div>
-            )}
-
-            {isPublishedValuesView && !isPublishedConfigPresent ? null : (
+            {(showExpressEditButton || !isPublishedValuesView || isPublishedConfigPresent) && (
                 <div className="flexbox dc__align-items-center dc__gap-8">
-                    {renderProtectedConfigActions()}
-                    {renderReadmeAndScopedVariablesBlock()}
-                    {renderPopupMenu()}
+                    {showExpressEditButton && (
+                        <ExpressEditButton disabled={isUnpublished} {...(expressEditButtonConfig ?? {})} />
+                    )}
+                    {isPublishedValuesView && !isPublishedConfigPresent ? null : (
+                        <>
+                            {renderProtectedConfigActions()}
+                            {renderReadmeAndScopedVariablesBlock()}
+                            {renderPopupMenu()}
+                        </>
+                    )}
                 </div>
             )}
         </div>

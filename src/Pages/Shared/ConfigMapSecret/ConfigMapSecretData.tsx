@@ -36,11 +36,14 @@ import {
     CODE_EDITOR_RADIO_STATE,
     PATTERNS,
     MODES,
+    OverrideMergeStrategyType,
+    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { ReactComponent as HideIcon } from '@Icons/ic-visibility-off.svg'
 import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
+import { importComponentFromFELibrary } from '@Components/common'
 
 import {
     CODE_EDITOR_RADIO_STATE_VALUE,
@@ -50,8 +53,14 @@ import {
     VIEW_MODE,
 } from './constants'
 import { externalTypeSecretCodeEditorDataHeaders, renderYamlInfoText } from './helpers'
-import { getLockedYamlString } from './utils'
+import {
+    getCMCSExpressEditComparisonDataDiffConfig,
+    getExpressEditComparisonViewLHS,
+    getLockedYamlString,
+} from './utils'
 import { ConfigMapSecretDataProps } from './types'
+
+const ExpressEditDiffEditor = importComponentFromFELibrary('ExpressEditDiffEditor', null, 'function')
 
 export const ConfigMapSecretData = ({
     useFormProps,
@@ -60,6 +69,11 @@ export const ConfigMapSecretData = ({
     isHashiOrAWS,
     readOnly,
     isPatchMode,
+    isOverridden,
+    isExpressEditComparisonView,
+    draftData,
+    publishedConfigMapSecretData,
+    handleMergeStrategyChange,
 }: ConfigMapSecretDataProps) => {
     // USE FORM PROPS
     const { data, errors, setValue, register } = useFormProps
@@ -67,6 +81,15 @@ export const ConfigMapSecretData = ({
     // STATES
     const [secretMode, setSecretMode] = useState(false)
     const [codeEditorRadio, setCodeEditorRadio] = useState(CODE_EDITOR_RADIO_STATE.DATA)
+    const [expressEditComparisonViewLHS, setExpressEditComparisonViewLHS] = useState<typeof data>(
+        getExpressEditComparisonViewLHS({
+            isDraft: true,
+            draftData,
+            publishedConfigMapSecretData,
+            isSecret: data.isSecret,
+            isOverridden,
+        }),
+    )
 
     // CONSTANTS
     const isLocked = data.isSecret && (secretMode || (data.externalType === '' && isUnAuthorized))
@@ -96,6 +119,10 @@ export const ConfigMapSecretData = ({
             },
             id,
         })),
+    }
+
+    const onMergeStrategySelect = (newValue: SelectPickerOptionType) => {
+        handleMergeStrategyChange(newValue.value as OverrideMergeStrategyType)
     }
 
     const keyValueTableHandleChange =
@@ -221,11 +248,24 @@ export const ConfigMapSecretData = ({
         return codeEditorValue
     }
 
+    const handleExpressEditCompareWithChange = (isDraft: boolean) => {
+        setExpressEditComparisonViewLHS(
+            getExpressEditComparisonViewLHS({
+                isDraft,
+                draftData,
+                publishedConfigMapSecretData,
+                isSecret: data.isSecret,
+                isOverridden,
+            }),
+        )
+    }
+
     // RENDERERS
     const renderDataEditorSelector = () => {
         if (
             (data.isSecret && data.externalType === CMSecretExternalType.KubernetesSecret) ||
-            (!data.isSecret && data.external)
+            (!data.isSecret && data.external) ||
+            isExpressEditComparisonView
         ) {
             return null
         }
@@ -293,7 +333,25 @@ export const ConfigMapSecretData = ({
             isCustomComponent: true,
         })
 
-        return (
+        return isExpressEditComparisonView ? (
+            <ExpressEditDiffEditor
+                dataDiffConfig={getCMCSExpressEditComparisonDataDiffConfig({
+                    lhs: expressEditComparisonViewLHS,
+                    rhs: data,
+                    onMergeStrategySelect,
+                })}
+                readOnly={readOnly}
+                lhsEditor={{
+                    value: expressEditComparisonViewLHS?.yaml || '',
+                }}
+                rhsEditor={{
+                    value: getCodeEditorValue(),
+                    onChange: !isLocked && !data.isResolvedData ? onChange : noop,
+                }}
+                showDraftOption={!!draftData}
+                handleCompareWithChange={handleExpressEditCompareWithChange}
+            />
+        ) : (
             <CodeEditor.Container overflowHidden>
                 <CodeEditor
                     key={codeEditorRadio}
@@ -411,7 +469,7 @@ export const ConfigMapSecretData = ({
     }
 
     return (
-        <div className="flexbox-col dc__gap-12">
+        <div className="flex-grow-1 flexbox-col dc__gap-12">
             {renderDataEditorSelector()}
             {!data.external &&
                 (data.yamlMode
