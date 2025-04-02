@@ -80,6 +80,7 @@ export interface CMSecretWrapperProps
     isApprovalPolicyConfigured?: boolean
     envName: string
     appName: string
+    isExceptionUser: boolean
     isTemplateView: AppConfigProps['isTemplateView']
 }
 
