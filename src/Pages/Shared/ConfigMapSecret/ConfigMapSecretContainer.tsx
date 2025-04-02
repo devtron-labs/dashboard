@@ -892,7 +892,7 @@ export const ConfigMapSecretContainer = ({
                 title: 'Input required',
                 description:
                     hasRequiredFieldErrorInDataKeys && !hasRequiredFieldErrorsOutsideDataKeys
-                        ? `Please add ${CM_SECRET_COMPONENT_NAME[componentType]} data before saving.`
+                        ? `Please add ${CM_SECRET_COMPONENT_NAME[componentType]} data before saving`
                         : 'Some required fields are missing',
             })
             return
@@ -921,7 +921,7 @@ export const ConfigMapSecretContainer = ({
         if (hasErrors) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
-                description: 'Please resolve form errors before saving.',
+                description: 'Please resolve form errors before saving',
             })
         }
     }
