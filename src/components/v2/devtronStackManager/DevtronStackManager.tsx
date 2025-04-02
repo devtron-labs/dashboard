@@ -107,7 +107,7 @@ export default function DevtronStackManager({
             _getDetailsForAllModules(stackDetails.discoverModulesList, stackDetails)
             _getLogPodName()
         },
-        serverInfo?.installationType === InstallationType.OSS_HELM ? 30000 : null,
+        serverInfo?.installationType === InstallationType.OSS_KUBECTL ? null : 30000,
     )
 
     /**
@@ -562,8 +562,8 @@ export default function DevtronStackManager({
                                 handleTabChange={handleTabChange}
                                 showInitializing={!logPodName && serverMode === SERVER_MODE.FULL}
                                 showVersionInfo={
-                                    serverInfo?.currentVersion &&
-                                    serverInfo.installationType === InstallationType.OSS_HELM
+                                    !!serverInfo?.currentVersion &&
+                                    serverInfo.installationType !== InstallationType.OSS_KUBECTL
                                 }
                             />
                         </section>
