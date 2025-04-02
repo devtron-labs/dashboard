@@ -992,11 +992,6 @@ export const deploymentTemplateReducer = (
                 ...handleReApplyLockedKeys(state),
                 ...handleUnResolveScopedVariables(),
                 ...action.payload,
-                expressEditComparisonViewLHS:
-                    state.draftTemplateData ||
-                    (!state.publishedTemplateData?.environmentConfig || state.publishedTemplateData?.isOverridden
-                        ? state.publishedTemplateData
-                        : null),
                 isExpressEditComparisonView: false,
             }
 
@@ -1006,6 +1001,11 @@ export const deploymentTemplateReducer = (
                 ...handleSwitchToYAMLMode(state),
                 ...handleReApplyLockedKeys(state),
                 ...handleUnResolveScopedVariables(),
+                expressEditComparisonViewLHS:
+                    state.draftTemplateData ||
+                    (!state.publishedTemplateData?.environmentConfig || state.publishedTemplateData?.isOverridden
+                        ? state.publishedTemplateData
+                        : null),
                 isExpressEditComparisonView: !state.isExpressEditComparisonView,
             }
 

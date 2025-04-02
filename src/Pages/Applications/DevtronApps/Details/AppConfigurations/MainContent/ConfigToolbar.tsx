@@ -166,6 +166,12 @@ const ConfigToolbar = ({
         configHeaderTab === ConfigHeaderTabType.VALUES &&
         !!ProtectionViewTabGroup
 
+    const hideMergeStrategy =
+        !mergeStrategy ||
+        !envId ||
+        showDeleteOverrideDraftEmptyState ||
+        (!isEditView && !(isPublishedValuesView && !!isPublishedConfigPresent))
+
     const showExpressEditButton =
         isExceptionUser && !isExpressEditView && isEditView && !showDeleteOverrideDraftEmptyState
 
@@ -175,9 +181,9 @@ const ConfigToolbar = ({
                 <>
                     <div className="flex dc__gap-6">
                         <Icon name="ic-pencil" color="N700" />
-                        <p className="m-0 fs-13 lh-20 cn-9">Editing Published</p>
+                        <p className="m-0 fs-12 lh-18 cn-9">Editing Published</p>
                     </div>
-                    <div className="divider__secondary" />
+                    {(children || !hideMergeStrategy) && <div className="divider__secondary" />}
                 </>
             )
         }
@@ -315,12 +321,7 @@ const ConfigToolbar = ({
     }
 
     const renderSelectMergeStrategy = () => {
-        if (
-            !mergeStrategy ||
-            !envId ||
-            showDeleteOverrideDraftEmptyState ||
-            (!isEditView && !(isPublishedValuesView && !!isPublishedConfigPresent))
-        ) {
+        if (hideMergeStrategy) {
             return null
         }
 
