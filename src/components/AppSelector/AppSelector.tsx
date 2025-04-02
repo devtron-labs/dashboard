@@ -27,8 +27,9 @@ import {
     BaseAppMetaData,
     getNoMatchingResultText,
     useUserPreferences,
+    AppSelectorNoOptionsMessage as appSelectorNoOptionsMessage,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { appListSelectOptions } from './AppSelectorUtil'
+import { appListOptions } from './AppSelectorUtil'
 import { AppSelectorType, RecentlyVisitedOptions } from './AppSelector.types'
 
 const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) => {
@@ -43,8 +44,7 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
         ] || ([] as BaseAppMetaData[])
 
     const [loading, selectOptions] = useAsync(
-        () =>
-            appListSelectOptions(inputValue, isJobView, abortControllerRef.current.signal, recentlyVisitedDevtronApps),
+        () => appListOptions(inputValue, isJobView, abortControllerRef.current.signal, recentlyVisitedDevtronApps),
         [inputValue, isJobView, recentlyVisitedDevtronApps],
         !!appName && !!appId,
     )
@@ -66,10 +66,20 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
         setInputValue(val)
     }
 
-    const customSelect = (option, searchText: string) =>
-        option.data.value === 0 || option.data.label.toLowerCase().includes(searchText.toLowerCase())
+    const customSelect: SelectPickerProps['filterOption'] = (option, searchText: string) => {
+        const label = option.data.label as string
+        return option.data.value === 0 || label.toLowerCase().includes(searchText.toLowerCase())
+    }
 
     const getDisabledOptions = (option: RecentlyVisitedOptions) => option.isDisabled
+
+    const noOptionsMessage = () =>
+        isJobView
+            ? appSelectorNoOptionsMessage({
+                  inputValue,
+              })
+            : getNoMatchingResultText()
+
     return (
         <SelectPicker
             inputId={`${isJobView ? 'job' : 'app'}-name`}
@@ -77,7 +87,7 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
             inputValue={inputValue}
             onInputChange={onInputChange}
             isLoading={loading}
-            noOptionsMessage={getNoMatchingResultText}
+            noOptionsMessage={noOptionsMessage}
             onChange={onChange}
             value={{ value: appId, label: appName }}
             variant={SelectPickerVariantType.BORDER_LESS}
