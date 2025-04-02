@@ -17,24 +17,30 @@
 import { useEffect, useRef, useState } from 'react'
 import {
     ComponentSizeType,
-    AppSelectorNoOptionsMessage as appSelectorNoOptionsMessage,
     SelectPicker,
     SelectPickerProps,
     SelectPickerVariantType,
     showError,
     useAsync,
+    ResourceKindType,
+    ResourcesKindTypeActions,
+    BaseAppMetaData,
+    getNoMatchingResultText,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useUserPreferences } from '@Components/common/UserPrefrences/useUserPrefrences'
 import { appListSelectOptions } from './AppSelectorUtil'
 import { AppSelectorType, RecentlyVisitedOptions } from './AppSelector.types'
-import { fetchRecentlyVisitedDevtronApps } from './service'
 
 const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) => {
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
-    const { recentlyVisitedDevtronApps, handleFetchUserPreferences, setRecentlyVisitedDevtronApps } =
-        useUserPreferences()
+    const { userPreferences, fetchRecentlyVisitedParsedApps } = useUserPreferences()
     const [inputValue, setInputValue] = useState('')
+
+    const recentlyVisitedDevtronApps =
+        userPreferences?.resources?.[ResourceKindType.devtronApplication]?.[
+            ResourcesKindTypeActions.RECENTLY_VISITED
+        ] || ([] as BaseAppMetaData[])
 
     const [loading, selectOptions] = useAsync(
         () =>
@@ -43,19 +49,17 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
         !!appName && !!appId,
     )
 
-    useEffect(() => {
-        const fetch = async () => {
-            try {
-                const res = await fetchRecentlyVisitedDevtronApps(appId, appName)
-                setRecentlyVisitedDevtronApps(res)
-                await handleFetchUserPreferences()
-            } catch (error) {
-                showError(error)
-            }
+    const handleMount = async () => {
+        try {
+            await fetchRecentlyVisitedParsedApps(appId, appName)
+        } catch (error) {
+            showError(error)
         }
+    }
+
+    useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        fetch()
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        handleMount()
     }, [appId, appName])
 
     const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
@@ -65,8 +69,7 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
     const customSelect = (option, searchText: string) =>
         option.data.value === 0 || option.data.label.toLowerCase().includes(searchText.toLowerCase())
 
-    const getNoOptions = () => appSelectorNoOptionsMessage(null, true)
-
+    const getDisabledOptions = (option: RecentlyVisitedOptions) => option.isDisabled
     return (
         <SelectPicker
             inputId={`${isJobView ? 'job' : 'app'}-name`}
@@ -74,15 +77,15 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
             inputValue={inputValue}
             onInputChange={onInputChange}
             isLoading={loading}
-            noOptionsMessage={getNoOptions}
+            noOptionsMessage={getNoMatchingResultText}
             onChange={onChange}
             value={{ value: appId, label: appName }}
             variant={SelectPickerVariantType.BORDER_LESS}
             placeholder={appName}
-            isOptionDisabled={(option: RecentlyVisitedOptions) => option.isDisabled}
+            isOptionDisabled={getDisabledOptions}
             size={ComponentSizeType.xl}
-            menuSize={ComponentSizeType.medium}
             filterOption={customSelect}
+            shouldShowLoadingMessage
         />
     )
 }
