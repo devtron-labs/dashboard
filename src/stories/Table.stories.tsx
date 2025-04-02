@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Meta, StoryObj } from '@storybook/react'
+import { action } from '@storybook/addon-actions'
 import {
     Button,
     ButtonComponentType,
@@ -22,7 +23,7 @@ import { ReactComponent as ICWarning } from '@Icons/ic-warning-y6.svg'
 
 const CellComponent = ({ field, value, signals, row, isRowActive }: TableCellComponentProps) => {
     const handleButtonClick = () => {
-        alert(`Row ${value} clicked`)
+        action(`Row ${value} clicked`)
     }
 
     useEffect(() => {
@@ -44,7 +45,7 @@ const CellComponent = ({ field, value, signals, row, isRowActive }: TableCellCom
                 },
             }) => {
                 if (id === row.id && field === 'name') {
-                    alert(text)
+                    action(text)
                 }
             }
 
@@ -58,7 +59,7 @@ const CellComponent = ({ field, value, signals, row, isRowActive }: TableCellCom
         return () => {
             signals.removeEventListener(TableSignalEnum.ENTER_PRESSED, rowEnterPressedCallback)
             signals.removeEventListener(TableSignalEnum.DELETE_PRESSED, deletePressedCallback)
-            signals.addEventListener(TableSignalEnum.OPEN_CONTEXT_MENU, openContextMenuCallback)
+            signals.removeEventListener(TableSignalEnum.OPEN_CONTEXT_MENU, openContextMenuCallback)
         }
     }, [])
 
@@ -180,7 +181,7 @@ const BulkActionsComponent = () => (
             variant={ButtonVariantType.borderLess}
             ariaLabel="Pause"
             size={ComponentSizeType.small}
-            onClick={() => alert('Pause clicked')}
+            onClick={() => action('Pause clicked')}
             showAriaLabelInTippy
         />
 
@@ -192,7 +193,7 @@ const BulkActionsComponent = () => (
             variant={ButtonVariantType.borderLess}
             ariaLabel="Play"
             size={ComponentSizeType.small}
-            onClick={() => alert('Play clicked!')}
+            onClick={() => action('Play clicked!')}
             showAriaLabelInTippy
         />
     </div>
