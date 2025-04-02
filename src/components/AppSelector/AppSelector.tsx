@@ -23,23 +23,23 @@ import {
     showError,
     useAsync,
     ResourceKindType,
-    ResourcesKindTypeActions,
+    UserPreferenceResourceActions,
     BaseAppMetaData,
     getNoMatchingResultText,
+    useUserPreferences,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useUserPreferences } from '@Components/common/UserPrefrences/useUserPrefrences'
 import { appListSelectOptions } from './AppSelectorUtil'
 import { AppSelectorType, RecentlyVisitedOptions } from './AppSelector.types'
 
 const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) => {
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
-    const { userPreferences, fetchRecentlyVisitedParsedApps } = useUserPreferences()
+    const { userPreferences, fetchRecentlyVisitedParsedApps } = useUserPreferences({})
     const [inputValue, setInputValue] = useState('')
 
     const recentlyVisitedDevtronApps =
         userPreferences?.resources?.[ResourceKindType.devtronApplication]?.[
-            ResourcesKindTypeActions.RECENTLY_VISITED
+            UserPreferenceResourceActions.RECENTLY_VISITED
         ] || ([] as BaseAppMetaData[])
 
     const [loading, selectOptions] = useAsync(

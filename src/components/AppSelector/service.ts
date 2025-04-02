@@ -2,7 +2,7 @@ import {
     BaseAppMetaData,
     getUserPreferences,
     ResourceKindType,
-    ResourcesKindTypeActions,
+    UserPreferenceResourceActions,
     showError,
     updateUserPreferences,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -15,8 +15,9 @@ export const fetchRecentlyVisitedDevtronApps = async (
     try {
         const response = await getUserPreferences()
         const recentApps =
-            response?.resources?.[ResourceKindType.devtronApplication]?.[ResourcesKindTypeActions.RECENTLY_VISITED] ||
-            []
+            response?.resources?.[ResourceKindType.devtronApplication]?.[
+                UserPreferenceResourceActions.RECENTLY_VISITED
+            ] || []
 
         // Ensure all items have valid `appId` and `appName`
         const validApps = recentApps.filter((app) => app?.appId && app?.appName)

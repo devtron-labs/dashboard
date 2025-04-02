@@ -35,10 +35,10 @@ import {
     ViewIsPipelineRBACConfiguredRadioTabs,
     EnvironmentDataValuesDTO,
     UserPreferencesType,
-    getUserPreferences,
     MODES,
     useTheme,
     AppThemeType,
+    useUserPreferences,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -79,7 +79,6 @@ import { DEFAULT_GIT_OPS_FEATURE_FLAGS } from './constants'
 import { ParsedTabsData, ParsedTabsDataV1 } from '../DynamicTabs/types'
 import { SwitchThemeDialog } from '@Pages/Shared'
 import { SwitchThemeDialogProps } from '@Pages/Shared/SwitchThemeDialog/types'
-import { useUserPreferences } from '../UserPrefrences/useUserPrefrences'
 
 // Monaco Editor worker initialization
 self.MonacoEnvironment = {
@@ -113,6 +112,8 @@ const SoftwareDistributionHubRenderProvider = importComponentFromFELibrary(
     null,
     'function',
 )
+const migrateUserPreferences: (userPreferences: UserPreferencesType) => Promise<UserPreferencesType> =
+    importComponentFromFELibrary('migrateUserPreferences', null, 'function')
 
 const ViewIsPipelineRBACConfigured: FunctionComponent<{
     userPreferences: UserPreferencesType
@@ -165,7 +166,7 @@ export default function NavigationRoutes() {
         handleFetchUserPreferences,
         handleUpdateUserThemePreference,
         handleUpdatePipelineRBACViewSelectedTab,
-    } = useUserPreferences()
+    } = useUserPreferences({ migrateUserPreferences })
 
     const { isAirgapped, isManifestScanningEnabled, canOnlyViewPermittedEnvOrgLevel } = environmentDataState
 
