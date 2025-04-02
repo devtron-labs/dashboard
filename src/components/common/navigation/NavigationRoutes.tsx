@@ -155,13 +155,18 @@ export default function NavigationRoutes() {
     const [environmentDataState, setEnvironmentDataState] = useState<
         Pick<
             MainContext,
-            'isAirgapped' | 'isManifestScanningEnabled' | 'canOnlyViewPermittedEnvOrgLevel' | 'featureGitOpsFlags'
+            | 'isAirgapped'
+            | 'isManifestScanningEnabled'
+            | 'canOnlyViewPermittedEnvOrgLevel'
+            | 'featureGitOpsFlags'
+            | 'isScoopConfigured'
         >
     >({
         isAirgapped: false,
         isManifestScanningEnabled: false,
         canOnlyViewPermittedEnvOrgLevel: false,
         featureGitOpsFlags: structuredClone(DEFAULT_GIT_OPS_FEATURE_FLAGS),
+        isScoopConfigured: false,
     })
     const [userPreferences, setUserPreferences] = useState<UserPreferencesType>(null)
     const [userPreferencesError, setUserPreferencesError] = useState<ServerErrors>(null)
@@ -342,6 +347,7 @@ export default function NavigationRoutes() {
             isManifestScanningEnabled: false,
             canOnlyViewPermittedEnvOrgLevel: false,
             featureGitOpsFlags: structuredClone(DEFAULT_GIT_OPS_FEATURE_FLAGS),
+            isScoopConfigured: false,
         }
 
         if (!getEnvironmentData) {
@@ -361,6 +367,7 @@ export default function NavigationRoutes() {
                 isManifestScanningEnabled: result.isManifestScanningEnabled,
                 canOnlyViewPermittedEnvOrgLevel: result.canOnlyViewPermittedEnvOrgLevel,
                 featureGitOpsFlags: parsedFeatureGitOpsFlags,
+                isScoopConfigured: result.isScoopConfigured ?? false,
             }
         } catch {
             return fallbackResponse
@@ -408,6 +415,7 @@ export default function NavigationRoutes() {
                 isManifestScanningEnabled: environmentDataResponse.isManifestScanningEnabled,
                 canOnlyViewPermittedEnvOrgLevel: environmentDataResponse.canOnlyViewPermittedEnvOrgLevel,
                 featureGitOpsFlags: environmentDataResponse.featureGitOpsFlags,
+                isScoopConfigured: environmentDataResponse.isScoopConfigured,
             })
 
             setServerMode(serverModeResponse)
@@ -484,7 +492,9 @@ export default function NavigationRoutes() {
     }
     const _isOnboardingPage = isOnboardingPage()
 
-    const handleOpenLicenseInfoDialog = (initialDialogTab?: LicenseInfoDialogType.ABOUT | LicenseInfoDialogType.LICENSE) => {
+    const handleOpenLicenseInfoDialog = (
+        initialDialogTab?: LicenseInfoDialogType.ABOUT | LicenseInfoDialogType.LICENSE,
+    ) => {
         setLicenseInfoDialogType(initialDialogTab || LicenseInfoDialogType.ABOUT)
     }
 
@@ -526,6 +536,7 @@ export default function NavigationRoutes() {
                 handleOpenLicenseInfoDialog,
                 licenseData,
                 setLicenseData,
+                isScoopConfigured: environmentDataState.isScoopConfigured,
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>

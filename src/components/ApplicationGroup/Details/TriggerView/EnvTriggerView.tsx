@@ -1429,7 +1429,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         return true
     }
 
-    const onClickTriggerBulkCD = (appsToRetry?: Record<string, boolean>) => {
+    const onClickTriggerBulkCD = (skipIfHibernated: boolean, appsToRetry?: Record<string, boolean>) => {
         if (isCDLoading || !validateBulkRuntimeParams()) {
             return
         }
@@ -1482,6 +1482,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         ...(getRuntimeParamsPayload
                             ? { runtimeParamsPayload: getRuntimeParamsPayload(runtimeParams[currentAppId] ?? []) }
                             : {}),
+                        skipIfHibernated: skipIfHibernated,
                     }),
                 )
             } else {
@@ -1941,7 +1942,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
     if (!filteredWorkflows.length) {
         return (
-            <div className='flex-grow-1'>
+            <div className="flex-grow-1">
                 <AppNotConfigured />
             </div>
         )
@@ -2099,7 +2100,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         )
     }
 
-    const renderBulkSourchChange = (): JSX.Element | null => {
+    const renderBulkSourceChange = (): JSX.Element | null => {
         if (!showBulkSourceChangeModal) {
             return null
         }
@@ -2452,12 +2453,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     {renderBulkCDMaterial()}
                     {renderBulkCIMaterial()}
                     {renderApprovalMaterial()}
-                    {renderBulkSourchChange()}
+                    {renderBulkSourceChange()}
                 </TriggerViewContext.Provider>
                 <div />
             </div>
             {!!selectedAppList.length && (
-                <div className="flexbox dc__gap-8 dc__content-space dc__border-top w-100 bg__primary pt-12 pr-20 pb-12 pl-20">
+                <div className="flexbox dc__gap-8 dc__content-space dc__border-top w-100 bg__primary px-20 py-12">
                     {renderSelectedApps()}
                     {renderBulkTriggerActionButtons()}
                 </div>
