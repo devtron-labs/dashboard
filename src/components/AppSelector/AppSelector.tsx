@@ -51,7 +51,7 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
     )
 
     const [, getInit] = useAsync(
-        () => fetchRecentlyVisitedParsedApps(appId, appName),
+        () => fetchRecentlyVisitedParsedApps({ appId, appName }),
         [appId, appName],
         !!appName && !!appId && !isJobView,
     )
@@ -110,7 +110,6 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
             isOptionDisabled={getDisabledOptions}
             size={ComponentSizeType.xl}
             filterOption={customSelect}
-            shouldShowLoadingMessage
         />
     )
 }

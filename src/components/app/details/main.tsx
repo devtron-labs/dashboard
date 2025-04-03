@@ -191,7 +191,11 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
             }
         } catch (err) {
             if (err.code === API_STATUS_CODES.NOT_FOUND) {
-                await fetchRecentlyVisitedParsedApps(appId, appName, true)
+                try {
+                    await fetchRecentlyVisitedParsedApps({ appId, appName, isInvalidAppId: true })
+                } catch (error) {
+                    showError(error)
+                }
             }
             setApiError(err)
             showError(err)
