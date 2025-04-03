@@ -166,7 +166,11 @@ const SwitchThemeDialog = ({
         setIsSaving(true)
 
         if (!disableAPICalls) {
-            const isSuccessful = await updateUserPreferences({ ...currentUserPreferences, themePreference, appTheme })
+            const isSuccessful = await updateUserPreferences({
+                path: 'themePreference',
+                value: { ...currentUserPreferences, themePreference, appTheme },
+            })
+
             if (isSuccessful) {
                 handleSuccess()
             }

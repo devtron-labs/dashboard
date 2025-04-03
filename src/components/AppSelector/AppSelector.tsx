@@ -15,6 +15,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
+import ReactGA from 'react-ga4'
 import {
     ComponentSizeType,
     SelectPicker,
@@ -28,7 +29,6 @@ import {
     getNoMatchingResultText,
     useUserPreferences,
     AppSelectorNoOptionsMessage as appSelectorNoOptionsMessage,
-    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { appListOptions } from './AppSelectorUtil'
 import { AppSelectorType, RecentlyVisitedOptions } from './AppSelector.types'
@@ -53,24 +53,23 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
     const [, getInit] = useAsync(
         () => fetchRecentlyVisitedParsedApps(appId, appName),
         [appId, appName],
-        !!appName && !!appId,
+        !!appName && !!appId && !isJobView,
     )
 
-    const handleMount = async () => {
+    const fetchInit = async () => {
         try {
-            if (!isJobView) {
-                await getInit
-            } else {
-                noop()
-            }
+            await getInit
+            ReactGA.event({
+                category: 'App Selector',
+                action: 'DA_SWITCH_RECENTLY_VISITED_CLICKED',
+            })
         } catch (error) {
             showError(error)
         }
     }
-
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        handleMount()
+        fetchInit()
     }, [appId, appName])
 
     const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {

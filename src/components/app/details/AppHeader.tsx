@@ -122,7 +122,7 @@ export const AppHeader = ({
             history.push(`${newUrl}/${tab}`)
             ReactGA.event({
                 category: 'App Selector',
-                action: 'App Selection Changed',
+                action: 'DA_SWITCH_SEARCHED_APP_CLICKED',
                 label: tab,
             })
         },
