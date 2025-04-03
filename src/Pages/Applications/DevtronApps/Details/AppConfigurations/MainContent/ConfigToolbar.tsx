@@ -214,6 +214,7 @@ const ConfigToolbar = ({
                                     selectedTab={selectedProtectionViewTab}
                                     handleProtectionViewTabChange={handleProtectionViewTabChange}
                                     isApprovalPending={isApprovalPending}
+                                    hasPublishedConfig={isPublishedConfigPresent}
                                     isDisabled={isDisabled}
                                     parsingError={parsingError}
                                     restoreLastSavedYAML={restoreLastSavedYAML}

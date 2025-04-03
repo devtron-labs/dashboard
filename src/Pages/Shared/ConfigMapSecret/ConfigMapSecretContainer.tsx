@@ -736,6 +736,8 @@ export const ConfigMapSecretContainer = ({
 
     const handleToggleShowTemplateMergedWithPatch = () => setShouldMergeTemplateWithPatches((prev) => !prev)
 
+    const handleNoPublishedStateRedirectClick = () => setSelectedProtectionViewTab(ProtectConfigTabsType.EDIT_DRAFT)
+
     const reloadSaveChangesModal = () => {
         setShowDraftSaveModal(false)
         updateCMSecret(draftPayload.configData[0].name)
@@ -994,6 +996,7 @@ export const ConfigMapSecretContainer = ({
                 appChartRef={appChartRef}
                 shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
                 handleMergeStrategyChange={handleMergeStrategyChange}
+                handleNoPublishedStateRedirectClick={handleNoPublishedStateRedirectClick}
                 useFormProps={useFormProps}
             />
         ) : (

@@ -209,6 +209,7 @@ export type ConfigMapSecretProtectedProps = Pick<ConfigMapSecretContainerProps, 
         selectedProtectionViewTab: ProtectConfigTabsType
     } & {
         shouldMergeTemplateWithPatches: boolean
+        handleNoPublishedStateRedirectClick: () => void
     }
 
 export type ConfigMapSecretDryRunProps = Pick<

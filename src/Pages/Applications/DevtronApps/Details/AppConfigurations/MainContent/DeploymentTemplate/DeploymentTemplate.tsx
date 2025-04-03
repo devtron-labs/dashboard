@@ -779,6 +779,15 @@ const DeploymentTemplate = ({
         await handleConfigHeaderTabChange(ConfigHeaderTabType.INHERITED)
     }
 
+    const handleNoPublishedVersionEmptyStateRedirection = () => {
+        dispatch({
+            type: DeploymentTemplateActionType.UPDATE_PROTECTION_VIEW_TAB,
+            payload: {
+                selectedProtectionViewTab: ProtectConfigTabsType.EDIT_DRAFT,
+            },
+        })
+    }
+
     const getCurrentTemplateSelectedChart = (): DeploymentChartVersionType => currentViewEditorState?.selectedChart
 
     const getCurrentTemplateGUISchema = (): string => {
@@ -1803,7 +1812,12 @@ const DeploymentTemplate = ({
         }
 
         if (showNoPublishedVersionEmptyState) {
-            return <NoPublishedVersionEmptyState />
+            return (
+                <NoPublishedVersionEmptyState
+                    showRedirectButton
+                    onRedirectClick={handleNoPublishedVersionEmptyStateRedirection}
+                />
+            )
         }
 
         return (
