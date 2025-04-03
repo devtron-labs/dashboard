@@ -30,7 +30,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 const WRONG_CODE = `import { bpfrpt_proptype_WindowScroller } from "../WindowScroller.js";`
-const TARGET_URL = 'https://preview.devtron.info/'
+const TARGET_URL = 'https://preview.devtron.ai/'
 
 function reactVirtualized(): PluginOption {
     return {

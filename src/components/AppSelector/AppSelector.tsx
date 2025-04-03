@@ -28,6 +28,7 @@ import {
     getNoMatchingResultText,
     useUserPreferences,
     AppSelectorNoOptionsMessage as appSelectorNoOptionsMessage,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { appListOptions } from './AppSelectorUtil'
 import { AppSelectorType, RecentlyVisitedOptions } from './AppSelector.types'
@@ -49,9 +50,19 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
         !!appName && !!appId && !!recentlyVisitedDevtronApps.length,
     )
 
+    const [, getInit] = useAsync(
+        () => fetchRecentlyVisitedParsedApps(appId, appName),
+        [appId, appName],
+        !!appName && !!appId,
+    )
+
     const handleMount = async () => {
         try {
-            await fetchRecentlyVisitedParsedApps(appId, appName)
+            if (!isJobView) {
+                await getInit
+            } else {
+                noop()
+            }
         } catch (error) {
             showError(error)
         }
