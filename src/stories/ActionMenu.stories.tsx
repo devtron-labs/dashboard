@@ -40,6 +40,7 @@ const options: ActionMenuProps['options'] = [
                 label: 'Group Label 1',
                 value: 'group-value-1',
                 startIcon: <Icon name="ic-cube" color="N800" />,
+                isDisabled: true,
             },
             {
                 label: 'Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elit',
@@ -48,6 +49,7 @@ const options: ActionMenuProps['options'] = [
                 tooltipProps: {
                     content: 'There is an error',
                 },
+                type: 'negative',
             },
             {
                 label: 'Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elit',
