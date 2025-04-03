@@ -26,15 +26,16 @@ import {
     UserPreferenceResourceActions,
     BaseAppMetaData,
     getNoMatchingResultText,
+    useUserPreferences,
+    AppSelectorNoOptionsMessage as appSelectorNoOptionsMessage,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useUserPreferences } from '@Components/common/UserPrefrences/useUserPrefrences'
-import { appListSelectOptions } from './AppSelectorUtil'
+import { appListOptions } from './AppSelectorUtil'
 import { AppSelectorType, RecentlyVisitedOptions } from './AppSelector.types'
 
 const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) => {
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
-    const { userPreferences, fetchRecentlyVisitedParsedApps } = useUserPreferences()
+    const { userPreferences, fetchRecentlyVisitedParsedApps } = useUserPreferences({})
     const [inputValue, setInputValue] = useState('')
 
     const recentlyVisitedDevtronApps =
@@ -43,10 +44,9 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
         ] || ([] as BaseAppMetaData[])
 
     const [loading, selectOptions] = useAsync(
-        () =>
-            appListSelectOptions(inputValue, isJobView, abortControllerRef.current.signal, recentlyVisitedDevtronApps),
-        [inputValue, isJobView, recentlyVisitedDevtronApps],
-        !!appName && !!appId,
+        () => appListOptions(inputValue, isJobView, abortControllerRef.current.signal, recentlyVisitedDevtronApps),
+        [inputValue, isJobView],
+        !!appName && !!appId && !!recentlyVisitedDevtronApps.length,
     )
 
     const handleMount = async () => {
@@ -66,18 +66,33 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
         setInputValue(val)
     }
 
-    const customSelect = (option, searchText: string) =>
-        option.data.value === 0 || option.data.label.toLowerCase().includes(searchText.toLowerCase())
+    const customSelect: SelectPickerProps['filterOption'] = (option, searchText: string) => {
+        const label = option.data.label as string
+        return option.data.value === 0 || label.toLowerCase().includes(searchText.toLowerCase())
+    }
 
-    const getDisabledOptions = (option: RecentlyVisitedOptions) => option.isDisabled
+    const getDisabledOptions = (option: RecentlyVisitedOptions): SelectPickerProps['isDisabled'] => option.isDisabled
+
+    const noOptionsMessage = () =>
+        isJobView
+            ? appSelectorNoOptionsMessage({
+                  inputValue,
+              })
+            : getNoMatchingResultText()
+
+    const _selectOption = selectOptions?.map((section) => ({
+        ...section,
+        options: section.label === 'Recently Visited' ? section.options.slice(1) : section.options,
+    }))
+
     return (
         <SelectPicker
             inputId={`${isJobView ? 'job' : 'app'}-name`}
-            options={selectOptions || []}
+            options={_selectOption || []}
             inputValue={inputValue}
             onInputChange={onInputChange}
             isLoading={loading}
-            noOptionsMessage={getNoMatchingResultText}
+            noOptionsMessage={noOptionsMessage}
             onChange={onChange}
             value={{ value: appId, label: appName }}
             variant={SelectPickerVariantType.BORDER_LESS}

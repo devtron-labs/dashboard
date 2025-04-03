@@ -115,6 +115,8 @@ const SoftwareDistributionHubRenderProvider = importComponentFromFELibrary(
     null,
     'function',
 )
+const migrateUserPreferences: (userPreferences: UserPreferencesType) => Promise<UserPreferencesType> =
+    importComponentFromFELibrary('migrateUserPreferences', null, 'function')
 
 const ViewIsPipelineRBACConfigured: FunctionComponent<{
     userPreferences: UserPreferencesType
@@ -170,9 +172,10 @@ export default function NavigationRoutes() {
         handleFetchUserPreferences,
         handleUpdateUserThemePreference,
         handleUpdatePipelineRBACViewSelectedTab,
-    } = useUserPreferences({})
+    } = useUserPreferences({ migrateUserPreferences })
+
     const [licenseInfoDialogType, setLicenseInfoDialogType] = useState<LicenseInfoDialogType>(null)
-  
+
 
     const { isAirgapped, isManifestScanningEnabled, canOnlyViewPermittedEnvOrgLevel } = environmentDataState
 
