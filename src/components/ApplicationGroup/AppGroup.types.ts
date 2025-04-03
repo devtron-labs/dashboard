@@ -133,7 +133,7 @@ export interface BulkCDTriggerType extends BulkRuntimeParamsType {
     appList: BulkCDDetailType[]
     closePopup: (e) => void
     updateBulkInputMaterial: (materialList: Record<string, any>) => void
-    onClickTriggerBulkCD: (appsToRetry?: Record<string, boolean>) => void
+    onClickTriggerBulkCD: (skipIfHibernated: boolean, appsToRetry?: Record<string, boolean>) => void
     changeTab?: (
         materrialId: string | number,
         artifactId: number,

@@ -157,6 +157,7 @@ export default function NavigationRoutes() {
         isManifestScanningEnabled: false,
         canOnlyViewPermittedEnvOrgLevel: false,
         featureGitOpsFlags: structuredClone(DEFAULT_GIT_OPS_FEATURE_FLAGS),
+        deployUnhibernatedAppOnly: false,
         devtronManagedLicensingEnabled: false,
     })
     const [userPreferences, setUserPreferences] = useState<UserPreferencesType>(null)
@@ -339,6 +340,7 @@ export default function NavigationRoutes() {
             isManifestScanningEnabled: false,
             canOnlyViewPermittedEnvOrgLevel: false,
             featureGitOpsFlags: structuredClone(DEFAULT_GIT_OPS_FEATURE_FLAGS),
+            deployUnhibernatedAppOnly: false,
             devtronManagedLicensingEnabled: false,
         }
 
@@ -359,6 +361,7 @@ export default function NavigationRoutes() {
                 isManifestScanningEnabled: result.isManifestScanningEnabled,
                 canOnlyViewPermittedEnvOrgLevel: result.canOnlyViewPermittedEnvOrgLevel,
                 featureGitOpsFlags: parsedFeatureGitOpsFlags,
+                deployUnhibernatedAppOnly: result.deployUnhibernatedAppOnly ?? false,
                 devtronManagedLicensingEnabled: result.devtronManagedLicensingEnabled || false,
             }
         } catch {
@@ -407,6 +410,7 @@ export default function NavigationRoutes() {
                 isManifestScanningEnabled: environmentDataResponse.isManifestScanningEnabled,
                 canOnlyViewPermittedEnvOrgLevel: environmentDataResponse.canOnlyViewPermittedEnvOrgLevel,
                 featureGitOpsFlags: environmentDataResponse.featureGitOpsFlags,
+                deployUnhibernatedAppOnly: environmentDataResponse.deployUnhibernatedAppOnly,
                 devtronManagedLicensingEnabled: environmentDataResponse.devtronManagedLicensingEnabled,
             })
 
@@ -528,6 +532,7 @@ export default function NavigationRoutes() {
                 handleOpenLicenseInfoDialog,
                 licenseData,
                 setLicenseData,
+                deployUnhibernatedAppOnly: environmentDataState.deployUnhibernatedAppOnly,
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
