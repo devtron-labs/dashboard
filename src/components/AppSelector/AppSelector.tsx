@@ -39,7 +39,7 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
     const [inputValue, setInputValue] = useState('')
 
     const recentlyVisitedDevtronApps =
-        userPreferences?.resources[ResourceKindType.devtronApplication][
+        userPreferences?.resources?.[ResourceKindType.devtronApplication]?.[
             UserPreferenceResourceActions.RECENTLY_VISITED
         ] || ([] as BaseAppMetaData[])
 

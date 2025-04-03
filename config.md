@@ -30,9 +30,6 @@
 | HIDE_DEFAULT_CLUSTER                         | "true"     | Hide default cluster                                                                                             |
 | HIDE_EXCLUDE_INCLUDE_GIT_COMMITS             | "true"     | Hide exclude include git commits                                                                                 |
 | HIDE_GITOPS_OR_HELM_OPTION                   | "false"    | Enable GitOps and Helm option                                                                                    |
-| LOGIN_DT_LOGO                                | ""         | Devtron logo for login page                                                                                      |
-| LOGIN_PAGE_IMAGE                             | ""         | Login page image url                                                                                             |
-| LOGIN_PAGE_IMAGE_BG                          | ""         | Login page image background color code                                                                           |
 | ORGANIZATION_NAME                            | ""         | Name of the organization                                                                                         |
 | POSTHOG_ENABLED                              | "true"     | PostHog integration status                                                                                       |
 | POSTHOG_TOKEN                                | XXXXXXXX   | PostHog API token                                                                                                |
