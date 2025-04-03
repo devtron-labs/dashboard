@@ -34,6 +34,10 @@ const linkProps: ButtonProps<ButtonComponentType.link>['linkProps'] = {
     target: '_blank',
 }
 
+const anchorProps: ButtonProps<ButtonComponentType.anchor>['anchorProps'] = {
+    href: 'https://www.devtron.ai',
+}
+
 const meta = {
     component: Button,
     argTypes: {
@@ -67,6 +71,7 @@ const ButtonTemplate: Story = {
         style: ButtonStyleType.default,
         size: ComponentSizeType.large,
         linkProps,
+        anchorProps,
         onClick: action('Button clicked'),
         disabled: false,
         isLoading: false,

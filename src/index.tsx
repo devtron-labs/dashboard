@@ -136,12 +136,9 @@ if (!window || !window._env_) {
         ENABLE_SCOPED_VARIABLES: true,
         DEFAULT_CI_TRIGGER_TYPE_MANUAL: false,
         ANNOUNCEMENT_BANNER_MSG: '',
-        LOGIN_PAGE_IMAGE: '',
-        LOGIN_PAGE_IMAGE_BG: '',
         HIDE_DEFAULT_CLUSTER: false,
         GLOBAL_API_TIMEOUT: 60000,
         TRIGGER_API_TIMEOUT: 60000,
-        LOGIN_DT_LOGO: '',
         SIDEBAR_DT_LOGO: '',
         ENABLE_EXTERNAL_ARGO_CD: true,
         API_BATCH_SIZE: 20,
@@ -170,6 +167,7 @@ if (!window || !window._env_) {
         FEATURE_APPLICATION_TEMPLATES_ENABLE: true,
         FEATURE_CODE_MIRROR_ENABLE: true,
         FEATURE_DEFAULT_AUTHENTICATED_VIEW_ENABLE: false,
+        GATEKEEPER_URL: 'devtron.ai',
     }
 }
 

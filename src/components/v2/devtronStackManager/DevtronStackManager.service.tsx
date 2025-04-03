@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { get, post, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import { get, getUrlWithSearchParams, post, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICSparkles } from '@Icons/ic-sparkles.svg'
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
 import { ModuleNameMap, Routes, UPDATE_AVAILABLE_TOAST_PROGRESS_BG } from '../../../config'
 import {
     AllModuleInfoResponse,
+    InstallationType,
     LogPodNameResponse,
     ModuleActionRequest,
     ModuleActionResponse,
@@ -30,6 +31,7 @@ import {
     ServerInfoResponse,
 } from './DevtronStackManager.type'
 import { reloadLocation } from '../../common'
+import { INSTALLATION_TYPE_TO_REPO_MAP } from './DevtronStackManager.utils'
 
 let moduleStatusMap: Record<string, ModuleInfo> = {}
 let serverInfo: ServerInfoResponse
@@ -172,7 +174,12 @@ export const getAllModules = (): Promise<AllModuleInfoResponse> =>
         res.json(),
     )
 
-export const getReleasesNotes = (): Promise<ReleaseNotesResponse> =>
-    fetch(`${window._env_.CENTRAL_API_ENDPOINT}/${Routes.RELEASE_NOTES_API}`).then((res) => res.json())
+export const getReleasesNotes = async (installationType: InstallationType): Promise<ReleaseNotesResponse> => {
+    const url = getUrlWithSearchParams(`${window._env_.CENTRAL_API_ENDPOINT}/${Routes.RELEASE_NOTES_API}`, {
+        repo: INSTALLATION_TYPE_TO_REPO_MAP[installationType],
+    })
+    const response = await fetch(url)
+    return response.json()
+}
 
 export const getLogPodName = (): Promise<LogPodNameResponse> => get(Routes.LOG_PODNAME_API)
