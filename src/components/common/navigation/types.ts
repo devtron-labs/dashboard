@@ -15,7 +15,12 @@
  */
 
 import { URLS } from '@Config/routes'
-import { customEnv, IconsProps, URLS as CommonURLS } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    customEnv,
+    IconsProps,
+    URLS as CommonURLS,
+    EnvironmentDataValuesDTO,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 export interface NavigationListItemType {
     title: string
@@ -31,4 +36,8 @@ export interface NavigationListItemType {
     isAvailableInDesktop?: boolean
     moduleName?: string
     moduleNameTrivy?: string
+}
+
+export interface EnvironmentDataStateType extends Omit<EnvironmentDataValuesDTO, 'isAirGapEnvironment'> {
+    isAirgapped: boolean
 }
