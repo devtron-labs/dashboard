@@ -5,7 +5,7 @@ import {
     useTheme,
     ViewIsPipelineRBACConfiguredRadioTabs,
     ResourceKindType,
-    ResourcesKindTypeActions,
+    UserPreferenceResourceActions,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useState } from 'react'
 import { importComponentFromFELibrary } from '../helpers/Helpers'
@@ -23,7 +23,7 @@ export const useUserPreferences = () => {
         const userPreferencesResponse = await getUserPreferences()
         const _recentApps =
             userPreferencesResponse?.resources?.[ResourceKindType.devtronApplication]?.[
-                ResourcesKindTypeActions.RECENTLY_VISITED
+                UserPreferenceResourceActions.RECENTLY_VISITED
             ] || []
 
         // Ensure all items have valid `appId` and `appName`
@@ -41,7 +41,7 @@ export const useUserPreferences = () => {
                 ...prev?.resources,
                 [ResourceKindType.devtronApplication]: {
                     ...prev?.resources?.[ResourceKindType.devtronApplication],
-                    [ResourcesKindTypeActions.RECENTLY_VISITED]: uniqueFilteredApps,
+                    [UserPreferenceResourceActions.RECENTLY_VISITED]: uniqueFilteredApps,
                 },
             },
         }))

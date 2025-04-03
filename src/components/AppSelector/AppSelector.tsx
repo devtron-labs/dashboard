@@ -23,7 +23,7 @@ import {
     showError,
     useAsync,
     ResourceKindType,
-    ResourcesKindTypeActions,
+    UserPreferenceResourceActions,
     BaseAppMetaData,
     getNoMatchingResultText,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -39,7 +39,7 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
 
     const recentlyVisitedDevtronApps =
         userPreferences?.resources?.[ResourceKindType.devtronApplication]?.[
-            ResourcesKindTypeActions.RECENTLY_VISITED
+            UserPreferenceResourceActions.RECENTLY_VISITED
         ] || ([] as BaseAppMetaData[])
 
     const [loading, selectOptions] = useAsync(
