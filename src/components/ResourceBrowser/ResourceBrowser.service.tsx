@@ -24,6 +24,8 @@ import {
     getUrlWithSearchParams,
     getK8sResourceListPayload,
     stringComparatorBySortOrder,
+    Nodes,
+    getNamespaceListMin,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RefObject } from 'react'
 import { Routes } from '../../config'
@@ -75,6 +77,40 @@ export const getResourceData = async ({
             const response = await getNodeList(clusterId, abortControllerRef)
 
             return parseNodeList(response)
+        }
+
+        if (selectedResource.gvk.Kind.toLowerCase() === Nodes.Namespace.toLowerCase()) {
+            const { result } = await getNamespaceListMin(clusterId)
+            const [{ environments }] = result
+
+            const response = await getK8sResourceList(
+                getK8sResourceListPayload(clusterId, selectedNamespace.value.toLowerCase(), selectedResource, filters),
+                abortControllerRef.current.signal,
+            )
+
+            const namespaceToEnvironmentMap = environments.reduce(
+                (acc, { environmentName, namespace, environmentId }) => {
+                    if (environmentId === 0) {
+                        return acc
+                    }
+
+                    acc[namespace] = environmentName
+                    return acc
+                },
+                {},
+            )
+
+            return {
+                ...response,
+                result: {
+                    ...response.result,
+                    headers: [...response.result.headers, 'environment'],
+                    data: response.result.data.map((data) => ({
+                        ...data,
+                        environment: namespaceToEnvironmentMap[data.name as string],
+                    })),
+                },
+            }
         }
 
         return await getK8sResourceList(

@@ -39,6 +39,9 @@ import {
     Nodes,
     ALL_NAMESPACE_OPTION,
     useResizableTableConfig,
+    Button,
+    ButtonVariantType,
+    ButtonComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import DOMPurify from 'dompurify'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
@@ -52,6 +55,7 @@ import {
     getManifestResource,
     updateManifestResourceHelmApps,
 } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
+import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Components/cluster/constants'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import {
     DEFAULT_K8SLIST_PAGE_SIZE,
@@ -129,7 +133,7 @@ const BaseResourceListContent = ({
 
     const { searchParams } = useSearchString()
 
-    const isNodeListing = selectedResource?.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind
+    const isNodeListing = selectedResource?.gvk.Kind.toLowerCase() === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
 
     const {
         selectedIdentifiers: bulkSelectionState,
@@ -382,6 +386,14 @@ const BaseResourceListContent = ({
         }
     }
 
+    const getAddEnvironmentClickHandler = (namespace: string) => () => {
+        const environmentFormData = {
+            namespace,
+        }
+
+        localStorage.setItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY, JSON.stringify(environmentFormData))
+    }
+
     const renderResourceRow = (resourceData: K8sResourceDetailDataType): JSX.Element => {
         const lowercaseKind = (resourceData.kind as string)?.toLowerCase()
         // Redirection and actions are not possible for Events since the required data for the same is not available
@@ -516,6 +528,19 @@ const BaseResourceListContent = ({
                                         }}
                                     />
                                 </Tooltip>
+                                {columnName === 'environment' && !resourceData.environment && (
+                                    <Button
+                                        text="Add environment"
+                                        dataTestId="add-environment"
+                                        variant={ButtonVariantType.text}
+                                        component={ButtonComponentType.link}
+                                        linkProps={{
+                                            to: `${URLS.GLOBAL_CONFIG_CLUSTER}/${selectedCluster.label}${URLS.CREATE_ENVIRONMENT}`,
+                                            target: '_blank',
+                                        }}
+                                        onClick={getAddEnvironmentClickHandler(resourceData.name as string)}
+                                    />
+                                )}
                                 {columnName === 'status' && isNodeUnschedulable && (
                                     <>
                                         <span className="dc__bullet mr-4 ml-4 mw-4 bcn-4" />
