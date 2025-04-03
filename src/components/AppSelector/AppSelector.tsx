@@ -39,14 +39,14 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
     const [inputValue, setInputValue] = useState('')
 
     const recentlyVisitedDevtronApps =
-        userPreferences?.resources?.[ResourceKindType.devtronApplication]?.[
+        userPreferences?.resources[ResourceKindType.devtronApplication][
             UserPreferenceResourceActions.RECENTLY_VISITED
         ] || ([] as BaseAppMetaData[])
 
     const [loading, selectOptions] = useAsync(
         () => appListOptions(inputValue, isJobView, abortControllerRef.current.signal, recentlyVisitedDevtronApps),
-        [inputValue, isJobView, recentlyVisitedDevtronApps],
-        !!appName && !!appId,
+        [inputValue, isJobView],
+        !!appName && !!appId && !!recentlyVisitedDevtronApps.length,
     )
 
     const handleMount = async () => {
@@ -71,7 +71,7 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
         return option.data.value === 0 || label.toLowerCase().includes(searchText.toLowerCase())
     }
 
-    const getDisabledOptions = (option: RecentlyVisitedOptions) => option.isDisabled
+    const getDisabledOptions = (option: RecentlyVisitedOptions): SelectPickerProps['isDisabled'] => option.isDisabled
 
     const noOptionsMessage = () =>
         isJobView
@@ -80,10 +80,15 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
               })
             : getNoMatchingResultText()
 
+    const _selectOption = selectOptions?.map((section) => ({
+        ...section,
+        options: section.label === 'Recently Visited' ? section.options.slice(1) : section.options,
+    }))
+
     return (
         <SelectPicker
             inputId={`${isJobView ? 'job' : 'app'}-name`}
-            options={selectOptions || []}
+            options={_selectOption || []}
             inputValue={inputValue}
             onInputChange={onInputChange}
             isLoading={loading}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Switch, Route, Redirect, useParams, useRouteMatch } from 'react-router-dom'
 import {
     showError,
@@ -27,6 +27,8 @@ import {
     ToastVariantType,
     URLS as CommonURLS,
     DeleteConfirmationModal,
+    API_STATUS_CODES,
+    useUserPreferences,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import {
@@ -80,6 +82,8 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const [isPopupBox, setIsPopupBox] = useState(false)
     const [apiError, setApiError] = useState(null)
     const [initLoading, setInitLoading] = useState<boolean>(false)
+
+    const { fetchRecentlyVisitedParsedApps } = useUserPreferences({})
 
     useEffect(() => {
         setInitLoading(true)
@@ -186,6 +190,9 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 return result
             }
         } catch (err) {
+            if (err.code === API_STATUS_CODES.NOT_FOUND) {
+                await fetchRecentlyVisitedParsedApps(appId, appName, true)
+            }
             setApiError(err)
             showError(err)
         }
@@ -299,12 +306,12 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     }
 
     async function handleDelete() {
-            await deleteEnvGroup(appId, clickedGroup.value, FilterParentType.app)
-            getSavedFilterData(
-                selectedGroupFilter[0] && clickedGroup.value !== selectedGroupFilter[0].value
-                    ? +selectedGroupFilter[0].value
-                    : null,
-            )
+        await deleteEnvGroup(appId, clickedGroup.value, FilterParentType.app)
+        getSavedFilterData(
+            selectedGroupFilter[0] && clickedGroup.value !== selectedGroupFilter[0].value
+                ? +selectedGroupFilter[0].value
+                : null,
+        )
     }
 
     const closeDeleteGroup = () => {
@@ -418,7 +425,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 </Suspense>
             </ErrorBoundary>
 
-            <div className='dc__no-shrink' id="cluster-meta-data-bar__container" />
+            <div className="dc__no-shrink" id="cluster-meta-data-bar__container" />
         </div>
     )
 }
