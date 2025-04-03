@@ -9,6 +9,7 @@ export interface AppSelectorType extends Pick<SelectPickerProps, 'onChange'>, Pi
 
 export interface RecentlyVisitedOptions extends SelectPickerOptionType<number> {
     isDisabled?: boolean
+    isRecentlyVisited?: boolean
 }
 
 export interface RecentlyVisitedGroupedOptionsType extends GroupBase<SelectPickerOptionType<number>> {

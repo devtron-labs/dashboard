@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, useState } from 'react'
-import ReactGA from 'react-ga4'
+import { useRef, useState } from 'react'
 import {
     ComponentSizeType,
     SelectPicker,
     SelectPickerProps,
     SelectPickerVariantType,
-    showError,
     useAsync,
     ResourceKindType,
     UserPreferenceResourceActions,
@@ -50,27 +48,12 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
         !!appName && !!appId && !!recentlyVisitedDevtronApps.length,
     )
 
-    const [, getInit] = useAsync(
+    // fetching recently visited apps
+    const [,] = useAsync(
         () => fetchRecentlyVisitedParsedApps({ appId, appName }),
         [appId, appName],
         !!appName && !!appId && !isJobView,
     )
-
-    const fetchInit = async () => {
-        try {
-            await getInit
-            ReactGA.event({
-                category: 'App Selector',
-                action: 'DA_SWITCH_RECENTLY_VISITED_CLICKED',
-            })
-        } catch (error) {
-            showError(error)
-        }
-    }
-    useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        fetchInit()
-    }, [appId, appName])
 
     const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
         setInputValue(val)

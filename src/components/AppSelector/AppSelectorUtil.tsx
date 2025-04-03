@@ -43,6 +43,7 @@ export const appListOptions = (
                                   options: recentlyVisitedDevtronApps.map((app: BaseAppMetaData) => ({
                                       label: app.appName,
                                       value: app.appId,
+                                      isRecentlyVisited: true,
                                   })) as RecentlyVisitedOptions[],
                               },
                               AllApplicationsMetaData,
