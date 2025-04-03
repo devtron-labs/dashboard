@@ -169,7 +169,8 @@ export default function NavigationRoutes() {
         appTheme,
     } = useTheme()
 
-    const { isAirgapped, isManifestScanningEnabled, canOnlyViewPermittedEnvOrgLevel, devtronManagedLicensingEnabled } = environmentDataState
+    const { isAirgapped, isManifestScanningEnabled, canOnlyViewPermittedEnvOrgLevel, devtronManagedLicensingEnabled } =
+        environmentDataState
 
     const handleCloseLicenseInfoDialog = () => {
         setLicenseInfoDialogType(null)
