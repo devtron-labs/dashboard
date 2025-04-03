@@ -81,7 +81,6 @@ import clair from '../../../assets/icons/ic-trivy-to-clair.svg'
 import warn from '../../../assets/icons/ic-error-medium.svg'
 import { SuccessModalComponent } from './SuccessModalComponent'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
-import { getShowStackManager } from 'src/utils'
 
 const getInstallationStatusLabel = (
     installationStatus: ModuleStatus,
@@ -254,8 +253,6 @@ export const NavItem = ({
     showInitializing,
     showVersionInfo,
 }: StackManagerNavItemType): JSX.Element => {
-    const { currentServerInfo, licenseData } = useMainContext()
-
     const getNavLink = (route: StackManagerNavLinkType): JSX.Element => {
         return (
             <NavLink
@@ -304,18 +301,12 @@ export const NavItem = ({
         )
     }
 
-    const showAboutDevtronTab = getShowStackManager(currentServerInfo?.serverInfo?.installationType, !!licenseData)
-
     return (
         <div className="flex column left">
             <div className="section-heading cn-6 fs-12 fw-6 pl-8 mb-8 dc__uppercase">Integrations</div>
             {ModulesSection.map((route) => getNavLink(route))}
-            {showAboutDevtronTab && (
-                <>
-                    <hr className="mt-8 mb-8 w-100 checklist__divider" />
-                    {getNavLink(AboutSection)}
-                </>
-            )}
+            <hr className="mt-8 mb-8 w-100 checklist__divider" />
+            {getNavLink(AboutSection)}
         </div>
     )
 }
@@ -917,7 +908,7 @@ export const InstallationWrapper = ({
                                             }}
                                             showTooltip={isInstallButtonDisabled}
                                             text={text}
-                                            startIcon={<Icon />}
+                                            startIcon={Icon ? <Icon /> : null}
                                             fullWidth
                                         />
                                     )}
