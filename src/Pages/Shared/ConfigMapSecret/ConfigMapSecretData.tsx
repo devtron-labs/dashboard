@@ -70,7 +70,7 @@ export const ConfigMapSecretData = ({
     isHashiOrAWS,
     readOnly,
     isPatchMode,
-    isOverridden,
+    hasPublishedConfig,
     isExpressEditComparisonView,
     draftData,
     publishedConfigMapSecretData,
@@ -88,7 +88,7 @@ export const ConfigMapSecretData = ({
             draftData,
             publishedConfigMapSecretData,
             isSecret: data.isSecret,
-            isOverridden,
+            hasPublishedConfig,
         }),
     )
 
@@ -101,7 +101,7 @@ export const ConfigMapSecretData = ({
                 draftData,
                 publishedConfigMapSecretData,
                 isSecret: data.isSecret,
-                isOverridden,
+                hasPublishedConfig,
             }),
         )
     }, [isExpressEditComparisonView])
@@ -270,7 +270,7 @@ export const ConfigMapSecretData = ({
                 draftData,
                 publishedConfigMapSecretData,
                 isSecret: data.isSecret,
-                isOverridden,
+                hasPublishedConfig,
             }),
         )
     }

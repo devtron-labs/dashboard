@@ -148,7 +148,7 @@ export interface ConfigMapSecretDataProps
     isUnAuthorized: boolean
     readOnly: boolean
     isPatchMode: boolean
-    isOverridden: boolean
+    hasPublishedConfig: boolean
 }
 
 export type CMSecretDeleteModalType = 'deleteModal' | 'protectedDeleteModal' | 'expressDeleteDraft'

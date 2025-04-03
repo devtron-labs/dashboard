@@ -173,7 +173,7 @@ const ConfigToolbar = ({
         (!isEditView && !(isPublishedValuesView && !!isPublishedConfigPresent))
 
     const showExpressEditButton =
-        isExceptionUser && !isExpressEditView && isEditView && !showDeleteOverrideDraftEmptyState
+        !!ExpressEditButton && isExceptionUser && !isExpressEditView && isEditView && !showDeleteOverrideDraftEmptyState
 
     const getLHSActionNodes = (): JSX.Element => {
         if (isExpressEditView) {
