@@ -81,7 +81,7 @@ import { DEFAULT_GIT_OPS_FEATURE_FLAGS } from './constants'
 import { ParsedTabsData, ParsedTabsDataV1 } from '../DynamicTabs/types'
 import { SwitchThemeDialog } from '@Pages/Shared'
 import { SwitchThemeDialogProps } from '@Pages/Shared/SwitchThemeDialog/types'
-import { getShowStackManager } from 'src/utils'
+import { EnvironmentDataStateType } from './types'
 
 // Monaco Editor worker initialization
 self.MonacoEnvironment = {
@@ -152,21 +152,13 @@ export default function NavigationRoutes() {
     }
     const [environmentId, setEnvironmentId] = useState(null)
     const contextValue = useMemo(() => ({ environmentId, setEnvironmentId }), [environmentId])
-    const [environmentDataState, setEnvironmentDataState] = useState<
-        Pick<
-            MainContext,
-            | 'isAirgapped'
-            | 'isManifestScanningEnabled'
-            | 'canOnlyViewPermittedEnvOrgLevel'
-            | 'featureGitOpsFlags'
-            | 'isScoopConfigured'
-        >
-    >({
+    const [environmentDataState, setEnvironmentDataState] = useState<EnvironmentDataStateType>({
         isAirgapped: false,
         isManifestScanningEnabled: false,
         canOnlyViewPermittedEnvOrgLevel: false,
         featureGitOpsFlags: structuredClone(DEFAULT_GIT_OPS_FEATURE_FLAGS),
-        isScoopConfigured: false,
+        deployUnhibernatedAppOnly: false,
+        devtronManagedLicensingEnabled: false,
     })
     const [userPreferences, setUserPreferences] = useState<UserPreferencesType>(null)
     const [userPreferencesError, setUserPreferencesError] = useState<ServerErrors>(null)
@@ -178,7 +170,8 @@ export default function NavigationRoutes() {
         appTheme,
     } = useTheme()
 
-    const { isAirgapped, isManifestScanningEnabled, canOnlyViewPermittedEnvOrgLevel } = environmentDataState
+    const { isAirgapped, isManifestScanningEnabled, canOnlyViewPermittedEnvOrgLevel, devtronManagedLicensingEnabled } =
+        environmentDataState
 
     const handleCloseLicenseInfoDialog = () => {
         setLicenseInfoDialogType(null)
@@ -347,7 +340,8 @@ export default function NavigationRoutes() {
             isManifestScanningEnabled: false,
             canOnlyViewPermittedEnvOrgLevel: false,
             featureGitOpsFlags: structuredClone(DEFAULT_GIT_OPS_FEATURE_FLAGS),
-            isScoopConfigured: false,
+            deployUnhibernatedAppOnly: false,
+            devtronManagedLicensingEnabled: false,
         }
 
         if (!getEnvironmentData) {
@@ -367,7 +361,8 @@ export default function NavigationRoutes() {
                 isManifestScanningEnabled: result.isManifestScanningEnabled,
                 canOnlyViewPermittedEnvOrgLevel: result.canOnlyViewPermittedEnvOrgLevel,
                 featureGitOpsFlags: parsedFeatureGitOpsFlags,
-                isScoopConfigured: result.isScoopConfigured ?? false,
+                deployUnhibernatedAppOnly: result.deployUnhibernatedAppOnly ?? false,
+                devtronManagedLicensingEnabled: result.devtronManagedLicensingEnabled || false,
             }
         } catch {
             return fallbackResponse
@@ -415,7 +410,8 @@ export default function NavigationRoutes() {
                 isManifestScanningEnabled: environmentDataResponse.isManifestScanningEnabled,
                 canOnlyViewPermittedEnvOrgLevel: environmentDataResponse.canOnlyViewPermittedEnvOrgLevel,
                 featureGitOpsFlags: environmentDataResponse.featureGitOpsFlags,
-                isScoopConfigured: environmentDataResponse.isScoopConfigured,
+                deployUnhibernatedAppOnly: environmentDataResponse.deployUnhibernatedAppOnly,
+                devtronManagedLicensingEnabled: environmentDataResponse.devtronManagedLicensingEnabled,
             })
 
             setServerMode(serverModeResponse)
@@ -498,7 +494,7 @@ export default function NavigationRoutes() {
         setLicenseInfoDialogType(initialDialogTab || LicenseInfoDialogType.ABOUT)
     }
 
-    const showStackManager = getShowStackManager(currentServerInfo.serverInfo?.installationType, !!licenseData)
+    const showStackManager = !devtronManagedLicensingEnabled
 
     return (
         <MainContextProvider
@@ -536,7 +532,7 @@ export default function NavigationRoutes() {
                 handleOpenLicenseInfoDialog,
                 licenseData,
                 setLicenseData,
-                isScoopConfigured: environmentDataState.isScoopConfigured,
+                deployUnhibernatedAppOnly: environmentDataState.deployUnhibernatedAppOnly,
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
