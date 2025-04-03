@@ -101,12 +101,27 @@ const options: ActionMenuProps['options'] = [
     },
 ]
 
-export const Default: Story = {
+export const WithButtonElement: Story = {
     args: {
         options,
         disableDescriptionEllipsis: false,
         children: <Button text="Open Action Menu" dataTestId="action-menu" />,
-        // children: <div>Open Action menu</div>,
+        onClick: action('option clicked'),
+    },
+}
+
+export const WithIconButtonElement: Story = {
+    args: {
+        options,
+        disableDescriptionEllipsis: false,
+        children: (
+            <Button
+                icon={<Icon name="ic-cube" color="N800" />}
+                ariaLabel="action-menu"
+                showAriaLabelInTippy={false}
+                dataTestId="action-menu"
+            />
+        ),
         onClick: action('option clicked'),
     },
 }
