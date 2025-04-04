@@ -131,6 +131,7 @@ export interface AppDetails extends CDModalProps {
     releaseMode: ReleaseMode
     trafficSwitched?: boolean
     pcoId?: number
+    grafanaDataSourceUrl?: string
 }
 
 export interface LabelTag {

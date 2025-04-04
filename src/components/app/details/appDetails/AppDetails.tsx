@@ -821,6 +821,7 @@ export const Details: React.FC<DetailsType> = ({
                             environment={environment}
                             podMap={aggregatedNodes.nodes.Pod}
                             k8sVersion={appDetails.k8sVersion}
+                            grafanaDataSourceUrl={appDetails.grafanaDataSourceUrl}
                         />
                     )}
                     {isExternalToolAvailable && (
