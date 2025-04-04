@@ -158,7 +158,7 @@ export const AppMetrics: React.FC<
 
                 setDatasource({
                     isLoading: false,
-                    isConfigured: !!grafanaDataSourceId,
+                    isConfigured: true,
                     isHealthy: datasourceHealthyRes?.status.toLowerCase() === 'success',
                     dataSourceName: datasourceConfiguredRes?.name || '',
                 })
