@@ -317,6 +317,7 @@ class ClusterList extends Component<ClusterListProps, any> {
                         return (
                             <ClusterEnvironmentDrawer
                                 reload={this.initialise}
+                                clusterName={clusterName}
                                 id={null}
                                 environmentName={null}
                                 clusterId={clusterId}
@@ -809,7 +810,7 @@ const Cluster = ({
             {showWindow && (
                 <ClusterEnvironmentDrawer
                     reload={reload}
-                    cluster_name={cluster_name}
+                    clusterName={cluster_name}
                     {...environment}
                     hideClusterDrawer={hideClusterDrawer}
                     isVirtual={isVirtualCluster}
