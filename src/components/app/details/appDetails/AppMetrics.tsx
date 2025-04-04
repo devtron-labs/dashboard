@@ -50,7 +50,7 @@ import {
     ModuleNameMap,
     URLS,
 } from '../../../../config'
-import { isDatasourceConfigured, isDatasourceHealthy } from './appDetails.service'
+import { isDatasourceHealthy } from './appDetails.service'
 import { getHostURLConfiguration } from '../../../../services/service'
 import PrometheusErrorImage from '../../../../assets/img/ic-error-prometheus.png'
 import HostErrorImage from '../../../../assets/img/ic-error-hosturl.png'
@@ -64,8 +64,9 @@ export const AppMetrics: React.FC<{
     environment
     podMap: Map<string, any>
     k8sVersion
-    addExtraSpace: boolean
-}> = ({ appName, environment, podMap, k8sVersion, addExtraSpace }) => {
+    addExtraSpace: boolean,
+    grafanaDataSourceUrl?: string
+}> = ({ appName, environment, podMap, k8sVersion, addExtraSpace, grafanaDataSourceUrl }) => {
     const { appTheme } = useTheme()
     const { appMetrics, environmentName, infraMetrics } = environment
     const [calendar, setDateRange] = useState<{ startDate: Moment; endDate: Moment }>({
@@ -135,18 +136,16 @@ export const AppMetrics: React.FC<{
 
     async function checkDatasource() {
         try {
-            let datasourceConfiguredRes
             let datasourceHealthyRes
             let hostUrlRes
             hostUrlRes = await getHostURLConfiguration()
             setHostURLConfig(hostUrlRes.result)
-            datasourceConfiguredRes = await isDatasourceConfigured(environmentName)
-            if (datasourceConfiguredRes.id) {
-                datasourceHealthyRes = await isDatasourceHealthy(datasourceConfiguredRes.id)
+            if (grafanaDataSourceUrl) {
+                datasourceHealthyRes = await isDatasourceHealthy(grafanaDataSourceUrl)
             }
             setDatasource({
                 isLoading: false,
-                isConfigured: !!datasourceConfiguredRes.id,
+                isConfigured: !!grafanaDataSourceUrl,
                 isHealthy: datasourceHealthyRes.status.toLowerCase() === 'success',
             })
         } catch (error) {
