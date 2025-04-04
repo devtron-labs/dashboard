@@ -25,7 +25,7 @@ import {
     ButtonWithLoader,
     ToastManager,
     ToastVariantType,
-    AppSelectorNoOptionsMessage
+    AppSelectorNoOptionsMessage,
 } from '@devtron-labs/devtron-fe-common-lib'
 import AsyncSelect from 'react-select/async'
 import { saveLinkedCIPipeline } from './ciPipeline.service'
@@ -310,7 +310,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
         )
     }
 
-    loadAppListOptions = (inputValue: string) => appListOptions({inputValue})
+    loadAppListOptions = (inputValue: string) => appListOptions({ inputValue })
 
     getErrorMessage = () => {
         if (!this.state.form.name) {
