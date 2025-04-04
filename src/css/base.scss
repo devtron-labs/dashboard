@@ -5146,3 +5146,28 @@ details[open] {
 .mw-76 {
     min-width: 76px;
 }
+
+.image-tags-container {
+    .image-tags-container-edit__icon {
+        display: none;
+    }
+
+    .image-tag-left-border {
+        border-left: 2px solid var(--N200);
+    }
+}
+
+.image-tag-parent-card {
+    &:hover {
+        .image-tags-container {
+            background-color: var(--bg-secondary);
+        }
+        .image-tags-container-edit__icon {
+            display: block;
+        }
+
+        .image-tag-left-border {
+            border-color: var(--N50);
+        }
+    }
+}

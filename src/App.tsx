@@ -42,7 +42,6 @@ import {
 } from './components/common'
 import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG, URLS } from './config'
 import { validateToken } from './services/service'
-import { getCentralAPIHealth } from './utils'
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'))
 const Login = lazy(() => import('./components/login/Login'))
@@ -178,8 +177,6 @@ export default function App() {
             setValidating(false)
             defaultRedirection()
         }
-
-        getCentralAPIHealth()
 
         return () => {
             navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange)
