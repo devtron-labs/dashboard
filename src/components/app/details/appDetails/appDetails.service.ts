@@ -20,9 +20,9 @@ import { fetchWithFullRoute } from '../../../../services/fetchWithFullRoute'
 import { ClusterConnectionResponse, DeploymentStatusDetailsResponse, ModuleConfigResponse } from './appDetails.type'
 import { AppType } from '../../../v2/appDetails/appDetails.type'
 
-export function isDatasourceConfigured(dataSourceId: number) {
+export function isDatasourceConfigured(grafanaDataSourceId: number) {
     const root = window.__ORCHESTRATOR_ROOT__.replace('/orchestrator', '')
-    const URL = `${root}/grafana/api/datasources/${dataSourceId}`
+    const URL = `${root}/grafana/api/datasources/${grafanaDataSourceId}`
     return fetchWithFullRoute(URL, 'GET')
 }
 

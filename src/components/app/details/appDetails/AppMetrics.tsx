@@ -15,18 +15,18 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { not, Progressing, ToastManager, ToastVariantType, useAsync, useTheme } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    not,
+    Progressing,
+    ToastManager,
+    ToastVariantType,
+    useAsync,
+    useTheme,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, Link, NavLink } from 'react-router-dom'
 import moment, { Moment } from 'moment'
 import Tippy from '@tippyjs/react'
-import {
-    getIframeSrc,
-    ThroughputSelect,
-    getCalendarValue,
-    isK8sVersionValid,
-    LatencySelect,
-    AppInfo,
-} from './utils'
+import { getIframeSrc, ThroughputSelect, getCalendarValue, isK8sVersionValid, LatencySelect, AppInfo } from './utils'
 import {
     ChartTypes,
     AppMetricsTab,
@@ -61,13 +61,15 @@ import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManage
 import { APP_METRICS_CALENDAR_INPUT_DATE_FORMAT } from './constants'
 import { AppDetails } from '@Components/app/types'
 
-export const AppMetrics: React.FC<{
-    appName: string
-    environment
-    podMap: Map<string, any>
-    k8sVersion
-    addExtraSpace: boolean
-} & Pick<AppDetails, 'dataSourceId'>> = ({ appName, podMap, k8sVersion, addExtraSpace, environment, dataSourceId }) => {
+export const AppMetrics: React.FC<
+    {
+        appName: string
+        environment
+        podMap: Map<string, any>
+        k8sVersion
+        addExtraSpace: boolean
+    } & Pick<AppDetails, 'grafanaDataSourceId'>
+> = ({ appName, podMap, k8sVersion, addExtraSpace, environment, grafanaDataSourceId }) => {
     const { appTheme } = useTheme()
     const { appMetrics, infraMetrics } = environment
     const [calendar, setDateRange] = useState<{ startDate: Moment; endDate: Moment }>({
@@ -79,7 +81,7 @@ export const AppMetrics: React.FC<{
         endDate: 'now',
     })
     const [datasource, setDatasource] = useState<{
-        isLoading: boolean,
+        isLoading: boolean
         isConfigured: boolean
         isHealthy: boolean
         dataSourceName: string
@@ -145,24 +147,29 @@ export const AppMetrics: React.FC<{
 
     async function checkDatasource() {
         try {
-            let datasourceConfiguredRes
-            let datasourceHealthyRes
-            let hostUrlRes
-        
-            hostUrlRes = await getHostURLConfiguration()
+            const hostUrlRes = await getHostURLConfiguration()
             setHostURLConfig(hostUrlRes.result)
-            datasourceConfiguredRes = await isDatasourceConfigured(dataSourceId)
 
-            if (datasourceConfiguredRes.id) {
-                datasourceHealthyRes = await isDatasourceHealthy(datasourceConfiguredRes.id)
+            if (grafanaDataSourceId) {
+                const [datasourceConfiguredRes, datasourceHealthyRes] = await Promise.all([
+                    isDatasourceConfigured(grafanaDataSourceId),
+                    isDatasourceHealthy(grafanaDataSourceId),
+                ])
+
+                setDatasource({
+                    isLoading: false,
+                    isConfigured: !!grafanaDataSourceId,
+                    isHealthy: datasourceHealthyRes?.status.toLowerCase() === 'success',
+                    dataSourceName: datasourceConfiguredRes?.name || '',
+                })
+            } else {
+                setDatasource({
+                    isLoading: false,
+                    isConfigured: false,
+                    isHealthy: false,
+                    dataSourceName: '',
+                })
             }
-    
-            setDatasource({
-                isLoading: false,
-                isConfigured: !!datasourceConfiguredRes.id,
-                isHealthy: datasourceHealthyRes?.status.toLowerCase() === 'success',
-                dataSourceName: datasourceConfiguredRes.name,
-            })
         } catch (error) {
             setDatasource({
                 ...datasource,
@@ -184,10 +191,11 @@ export const AppMetrics: React.FC<{
         setCalendarValue(str)
     }
 
-    const getIframeSrcWrapper: GraphModalProps['getIframeSrcWrapper'] = (params) => getIframeSrc({
-        ...params,
-        grafanaTheme: appTheme,
-    })
+    const getIframeSrcWrapper: GraphModalProps['getIframeSrcWrapper'] = (params) =>
+        getIframeSrc({
+            ...params,
+            grafanaTheme: appTheme,
+        })
 
     function handleStatusChange(selected): void {
         if (!isK8sVersionValid(k8sVersion)) {
@@ -206,7 +214,7 @@ export const AppMetrics: React.FC<{
             calendarInputs,
             tab,
             isLegendRequired: true,
-            statusCode: selected.value
+            statusCode: selected.value,
         })
         setStatusCode(selected.value)
         setGraphs({
@@ -227,7 +235,13 @@ export const AppMetrics: React.FC<{
             k8sVersion,
         }
         const latency = getIframeSrcWrapper({
-            appInfo, chartName: ChartType.Latency, calendarInputs, tab, isLegendRequired: true, statusCode: undefined, latency: selected.value
+            appInfo,
+            chartName: ChartType.Latency,
+            calendarInputs,
+            tab,
+            isLegendRequired: true,
+            statusCode: undefined,
+            latency: selected.value,
         })
         setLatency(selected.value)
         setGraphs({
@@ -259,10 +273,18 @@ export const AppMetrics: React.FC<{
             k8sVersion,
         }
         const cpu = getIframeSrcWrapper({
-            appInfo, chartName: ChartType.Cpu, calendarInputs, tab: newTab, isLegendRequired: true
+            appInfo,
+            chartName: ChartType.Cpu,
+            calendarInputs,
+            tab: newTab,
+            isLegendRequired: true,
         })
         const ram = getIframeSrcWrapper({
-            appInfo, chartName: ChartType.Ram, calendarInputs, tab: newTab, isLegendRequired: true
+            appInfo,
+            chartName: ChartType.Ram,
+            calendarInputs,
+            tab: newTab,
+            isLegendRequired: true,
         })
         const latency = getIframeSrcWrapper({
             appInfo,
@@ -279,7 +301,7 @@ export const AppMetrics: React.FC<{
             calendarInputs,
             tab: newTab,
             isLegendRequired: true,
-            statusCode: StatusType.Throughput
+            statusCode: StatusType.Throughput,
         })
         setGraphs({
             cpu,
@@ -309,6 +331,7 @@ export const AppMetrics: React.FC<{
     if (
         !datasource.isConfigured ||
         !datasource.isHealthy ||
+        !datasource.dataSourceName ||
         !hostURLConfig ||
         hostURLConfig.value !== window.location.origin
     ) {
@@ -323,10 +346,7 @@ export const AppMetrics: React.FC<{
     }
 
     return (
-        <section
-            data-testid="app-metrices-wrapper"
-            className="app-summary bg__primary pl-24 pr-24 pb-20 w-100"
-        >
+        <section data-testid="app-metrices-wrapper" className="app-summary bg__primary pl-24 pr-24 pb-20 w-100">
             {(appMetrics || infraMetrics) && (
                 <div className="flex" style={{ justifyContent: 'space-between', height: '68px' }}>
                     <span className="fs-14 fw-6 cn-7 flex left mr-9">
@@ -528,10 +548,7 @@ const EnableAppMetrics = () => {
 
 const MonitoringModuleNotInstalled = ({ addSpace }: { addSpace: string }) => {
     return (
-        <div
-            data-testid="app-metrices-wrapper"
-            className={`bcv-1 w-100 pt-18 pb-18 pl-20 pr-20 ${addSpace}`}
-        >
+        <div data-testid="app-metrices-wrapper" className={`bcv-1 w-100 pt-18 pb-18 pl-20 pr-20 ${addSpace}`}>
             <div className="flex left w-100 lh-20">
                 <span className="fs-14 fw-6 cv-5 flex left mr-16">
                     <GraphIcon className="mr-8 fcv-5 icon-dim-20" />
