@@ -998,9 +998,9 @@ export const deploymentTemplateReducer = (
         case DeploymentTemplateActionType.TOGGLE_EXPRESS_EDIT_COMPARISON_VIEW:
             return {
                 ...state,
-                ...handleSwitchToYAMLMode(state),
                 ...handleReApplyLockedKeys(state),
                 ...handleUnResolveScopedVariables(),
+                ...handleSwitchToYAMLMode(state),
                 expressEditComparisonViewLHS:
                     state.draftTemplateData ||
                     (!state.publishedTemplateData?.environmentConfig || state.publishedTemplateData?.isOverridden

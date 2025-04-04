@@ -1902,7 +1902,7 @@ const DeploymentTemplate = ({
                     toggleAppMetrics={handleAppMetricsToggle}
                     parsingError={currentEditorTemplateData?.parsingError}
                     restoreLastSavedYAML={restoreLastSavedTemplate}
-                    handleExpressEditPublish={handleSaveTemplate}
+                    handleExpressEditPublish={handleTriggerSave}
                     handleExpressEditCancel={handleExpressEditViewClose}
                 />
             )
