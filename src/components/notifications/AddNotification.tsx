@@ -30,6 +30,9 @@ import {
     SelectAllGroupedResourceIdentifiers,
     ToastVariantType,
     ToastManager,
+    NO_MATCHING_RESULT,
+    TYPE_3_CHARACTERS_TO_SEE_MATCHING_RESULTS,
+    TYPE_TO_SEE_MATCHING_RESULTS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps, Link } from 'react-router-dom'
 import { components } from 'react-select'
@@ -670,8 +673,8 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                             onKeyDown={this.handleFilterTag}
                             placeholder={
                                 unsavedFilter.type === FilterOptions.APPLICATION
-                                    ? 'Type 3 chars to see matching results'
-                                    : 'Type to see matching results'
+                                    ? TYPE_3_CHARACTERS_TO_SEE_MATCHING_RESULTS
+                                    : TYPE_TO_SEE_MATCHING_RESULTS
                             }
                             onChange={this.handleFilterInput}
                             value={this.state.filterInput}
@@ -708,13 +711,13 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                         this.state.filterInput.length > 0 && (
                             <div className="pipeline-filter__menu select-button--pipeline-filter loading-applist">
                                 {unsavedFilter.type === FilterOptions.APPLICATION
-                                    ? 'Type 3 chars to see matching results'
-                                    : 'Type to see matching results'}
+                                    ? TYPE_3_CHARACTERS_TO_SEE_MATCHING_RESULTS
+                                    : TYPE_TO_SEE_MATCHING_RESULTS}
                             </div>
                         )
                     ) : (
                         <div className="pipeline-filter__menu select-button--pipeline-filter loading-applist">
-                            {this.state.isApplistLoading ? 'loading' : 'No matching results'}
+                            {this.state.isApplistLoading ? 'loading' : NO_MATCHING_RESULT}
                         </div>
                     )
                 ) : null}

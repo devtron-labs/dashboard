@@ -1769,8 +1769,6 @@ const ChartValuesView = ({
                                         handleRepoChartValueChange={handleRepoChartValueChange}
                                         repoChartValue={commonState.repoChartValue}
                                         chartDetails={commonState.repoChartValue}
-                                        showConnectToChartTippy={commonState.showConnectToChartTippy}
-                                        hideConnectToChartTippy={hideConnectToChartTippy}
                                     />
                                 )}
                             {!isDeployChartView &&

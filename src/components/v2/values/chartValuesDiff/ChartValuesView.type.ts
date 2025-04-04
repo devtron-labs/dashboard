@@ -162,8 +162,6 @@ export interface ChartRepoSelectorType extends ChartSelectorType {
     handleRepoChartValueChange?: (event: any) => void
     repoChartOptionLabel?: (props: any) => JSX.Element
     chartDetails?: ChartRepoOptions
-    showConnectToChartTippy: boolean
-    hideConnectToChartTippy: () => void
 }
 
 export interface ChartDeprecatedType {

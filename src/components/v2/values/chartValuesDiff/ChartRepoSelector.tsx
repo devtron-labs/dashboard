@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { components } from 'react-select'
 import AsyncSelect from 'react-select/async'
 import { NavLink } from 'react-router-dom'
@@ -25,8 +25,9 @@ import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg
 import { ReactComponent as Refetch } from '../../../../assets/icons/ic-restore.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled-purple.svg'
 import { URLS } from '../../../../config'
-import { getCommonSelectStyle, noMatchingOptions } from '../../common/ReactSelect.utils'
+import { getCommonSelectStyle } from '../../common/ReactSelect.utils'
 import { CHART_DEPCRECATED_TEXTS, CONNECT_CHART_REPO_TEXTS } from './ChartValuesView.constants'
+import { getNoMatchingResultText} from '@devtron-labs/devtron-fe-common-lib'
 
 export const ChartRepoSelector = ({
     isExternal,
@@ -35,8 +36,6 @@ export const ChartRepoSelector = ({
     repoChartValue,
     handleRepoChartValueChange,
     chartDetails,
-    showConnectToChartTippy,
-    hideConnectToChartTippy,
 }: ChartRepoSelectorType) => {
     const [repoChartAPIMade, setRepoChartAPIMade] = useState(false)
     const [repoChartOptions, setRepoChartOptions] = useState<ChartRepoOptions[] | null>(
@@ -183,7 +182,7 @@ export const ChartRepoSelector = ({
                         loadOptions={repoChartLoadOptions}
                         onFocus={onFocus}
                         onChange={handleRepoChartValueChange}
-                        noOptionsMessage={noMatchingOptions}
+                        noOptionsMessage={getNoMatchingResultText}
                         isLoading={!repoChartAPIMade || refetchingCharts}
                         isClearable={isExternal && !installedAppInfo}
                         components={{

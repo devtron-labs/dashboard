@@ -28,6 +28,7 @@ import {
     DynamicDataTableRowType,
     TagsTableColumnsType,
     DynamicDataTableCellErrorType,
+    BaseAppMetaData,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentStatusDetailsBreakdownDataType, ErrorItem, HibernationModalTypes } from './details/appDetails/appDetails.type'
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
@@ -151,7 +152,7 @@ interface GitMaterial {
     redirectionUrl: string
 }
 
-export interface AppMetaInfo extends Partial<Pick<CreateAppFormStateType, 'templateConfig'>> {
+export interface AppMetaInfo extends BaseAppMetaData, Partial<Pick<CreateAppFormStateType, 'templateConfig'>> {
     appId: number
     appName: string
     createdBy: string
