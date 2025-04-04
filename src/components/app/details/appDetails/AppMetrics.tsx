@@ -67,7 +67,7 @@ export const AppMetrics: React.FC<{
     addExtraSpace: boolean
 }> = ({ appName, environment, podMap, k8sVersion, addExtraSpace }) => {
     const { appTheme } = useTheme()
-    const { appMetrics, environmentName, infraMetrics } = environment
+    const { appMetrics, environmentName, environmentId, infraMetrics } = environment
     const [calendar, setDateRange] = useState<{ startDate: Moment; endDate: Moment }>({
         startDate: moment().subtract(5, 'minute'),
         endDate: moment(),
@@ -140,7 +140,7 @@ export const AppMetrics: React.FC<{
             let hostUrlRes
             hostUrlRes = await getHostURLConfiguration()
             setHostURLConfig(hostUrlRes.result)
-            datasourceConfiguredRes = await isDatasourceConfigured(environmentName)
+            datasourceConfiguredRes = await isDatasourceConfigured(environmentName, environmentId)
             if (datasourceConfiguredRes.id) {
                 datasourceHealthyRes = await isDatasourceHealthy(datasourceConfiguredRes.id)
             }

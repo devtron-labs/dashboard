@@ -20,9 +20,9 @@ import { fetchWithFullRoute } from '../../../../services/fetchWithFullRoute'
 import { ClusterConnectionResponse, DeploymentStatusDetailsResponse, ModuleConfigResponse } from './appDetails.type'
 import { AppType } from '../../../v2/appDetails/appDetails.type'
 
-export function isDatasourceConfigured(envName: string) {
+export function isDatasourceConfigured(envName: string, envId: number) {
     const root = window.__ORCHESTRATOR_ROOT__.replace('/orchestrator', '')
-    const URL = `${root}/grafana/api/datasources/id/Prometheus-${envName}`
+    const URL = `${root}/grafana/api/datasources/id/Prometheus-${envName}-${envId}`
     return fetchWithFullRoute(URL, 'GET')
 }
 
