@@ -131,6 +131,7 @@ export interface AppDetails extends CDModalProps {
     releaseMode: ReleaseMode
     trafficSwitched?: boolean
     pcoId?: number
+    dataSourceId?: number
 }
 
 export interface LabelTag {

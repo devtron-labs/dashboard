@@ -25,6 +25,7 @@ import {
     getCalendarValue,
     isK8sVersionValid,
     LatencySelect,
+    AppInfo,
 } from './utils'
 import {
     ChartTypes,
@@ -58,6 +59,7 @@ import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstat
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { APP_METRICS_CALENDAR_INPUT_DATE_FORMAT } from './constants'
+import { AppDetails } from '@Components/app/types'
 
 export const AppMetrics: React.FC<{
     appName: string
@@ -65,9 +67,9 @@ export const AppMetrics: React.FC<{
     podMap: Map<string, any>
     k8sVersion
     addExtraSpace: boolean
-}> = ({ appName, environment, podMap, k8sVersion, addExtraSpace }) => {
+} & Pick<AppDetails, 'dataSourceId'>> = ({ appName, podMap, k8sVersion, addExtraSpace, environment, dataSourceId }) => {
     const { appTheme } = useTheme()
-    const { appMetrics, environmentName, infraMetrics } = environment
+    const { appMetrics, infraMetrics } = environment
     const [calendar, setDateRange] = useState<{ startDate: Moment; endDate: Moment }>({
         startDate: moment().subtract(5, 'minute'),
         endDate: moment(),
@@ -76,10 +78,16 @@ export const AppMetrics: React.FC<{
         startDate: 'now-5m',
         endDate: 'now',
     })
-    const [datasource, setDatasource] = useState({
+    const [datasource, setDatasource] = useState<{
+        isLoading: boolean,
+        isConfigured: boolean
+        isHealthy: boolean
+        dataSourceName: string
+    }>({
         isLoading: true,
         isConfigured: false,
         isHealthy: false,
+        dataSourceName: '',
     })
     const [focusedInput, setFocusedInput] = useState(CalendarFocusInput.StartDate)
     const [tab, setTab] = useState<AppMetricsTabType>(AppMetricsTab.Aggregate)
@@ -96,6 +104,8 @@ export const AppMetrics: React.FC<{
         throughput: '',
         latency: '',
     })
+
+    const { dataSourceName } = datasource
     const addSpace: string = addExtraSpace ? 'mb-16' : ''
     const pod = podMap?.values().next().value
     const newPodHash = pod?.networkingInfo?.labels?.['rollouts-pod-template-hash']
@@ -138,16 +148,20 @@ export const AppMetrics: React.FC<{
             let datasourceConfiguredRes
             let datasourceHealthyRes
             let hostUrlRes
+        
             hostUrlRes = await getHostURLConfiguration()
             setHostURLConfig(hostUrlRes.result)
-            datasourceConfiguredRes = await isDatasourceConfigured(environmentName)
+            datasourceConfiguredRes = await isDatasourceConfigured(dataSourceId)
+
             if (datasourceConfiguredRes.id) {
                 datasourceHealthyRes = await isDatasourceHealthy(datasourceConfiguredRes.id)
             }
+    
             setDatasource({
                 isLoading: false,
                 isConfigured: !!datasourceConfiguredRes.id,
-                isHealthy: datasourceHealthyRes.status.toLowerCase() === 'success',
+                isHealthy: datasourceHealthyRes?.status.toLowerCase() === 'success',
+                dataSourceName: datasourceConfiguredRes.name,
             })
         } catch (error) {
             setDatasource({
@@ -179,10 +193,10 @@ export const AppMetrics: React.FC<{
         if (!isK8sVersionValid(k8sVersion)) {
             k8sVersion = DEFAULTK8SVERSION
         }
-        const appInfo = {
+        const appInfo: AppInfo = {
             appId,
             envId,
-            environmentName,
+            dataSourceName,
             newPodHash,
             k8sVersion,
         }
@@ -205,10 +219,10 @@ export const AppMetrics: React.FC<{
         if (!isK8sVersionValid(k8sVersion)) {
             k8sVersion = DEFAULTK8SVERSION
         }
-        const appInfo = {
+        const appInfo: AppInfo = {
             appId,
             envId,
-            environmentName,
+            dataSourceName,
             newPodHash,
             k8sVersion,
         }
@@ -237,10 +251,10 @@ export const AppMetrics: React.FC<{
             })
         }
 
-        const appInfo = {
+        const appInfo: AppInfo = {
             appId,
             envId,
-            environmentName,
+            dataSourceName,
             newPodHash,
             k8sVersion,
         }
@@ -348,7 +362,7 @@ export const AppMetrics: React.FC<{
                                     appName={appName}
                                     infraMetrics={environment.infraMetrics}
                                     appMetrics={environment.appMetrics}
-                                    environmentName={environmentName}
+                                    dataSourceName={dataSourceName}
                                     chartName={chartName}
                                     newPodHash={newPodHash}
                                     calendar={calendar}
