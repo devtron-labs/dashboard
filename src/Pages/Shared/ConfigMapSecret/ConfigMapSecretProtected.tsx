@@ -66,6 +66,7 @@ export const ConfigMapSecretProtected = ({
     isExpressEditView,
     isExpressEditComparisonView,
     handleMergeStrategyChange,
+    handleNoPublishedStateRedirectClick,
 }: ConfigMapSecretProtectedProps) => {
     // HOOKS
     const { data: formData } = useFormProps
@@ -288,7 +289,13 @@ export const ConfigMapSecretProtected = ({
         switch (selectedProtectionViewTab) {
             case ProtectConfigTabsType.PUBLISHED:
                 if (cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED || !publishedConfigMapSecretData) {
-                    return <NoPublishedVersionEmptyState isOverride={false} />
+                    return (
+                        <NoPublishedVersionEmptyState
+                            isOverride={false}
+                            showRedirectButton
+                            onRedirectClick={handleNoPublishedStateRedirectClick}
+                        />
+                    )
                 }
 
                 if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED) {

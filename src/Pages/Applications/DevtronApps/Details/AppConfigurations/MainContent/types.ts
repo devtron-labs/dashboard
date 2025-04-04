@@ -338,6 +338,8 @@ export interface BaseConfigurationNavigationProps {
 
 export interface NoPublishedVersionEmptyStateProps {
     isOverride?: boolean
+    showRedirectButton?: boolean
+    onRedirectClick?: () => void
 }
 
 export type SelectMergeStrategyProps = {

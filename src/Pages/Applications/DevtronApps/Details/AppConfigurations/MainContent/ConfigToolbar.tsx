@@ -173,7 +173,7 @@ const ConfigToolbar = ({
         (!isEditView && !(isPublishedValuesView && !!isPublishedConfigPresent))
 
     const showExpressEditButton =
-        isExceptionUser && !isExpressEditView && isEditView && !showDeleteOverrideDraftEmptyState
+        !!ExpressEditButton && isExceptionUser && !isExpressEditView && isEditView && !showDeleteOverrideDraftEmptyState
 
     const getLHSActionNodes = (): JSX.Element => {
         if (isExpressEditView) {
@@ -214,6 +214,7 @@ const ConfigToolbar = ({
                                     selectedTab={selectedProtectionViewTab}
                                     handleProtectionViewTabChange={handleProtectionViewTabChange}
                                     isApprovalPending={isApprovalPending}
+                                    hasPublishedConfig={isPublishedConfigPresent}
                                     isDisabled={isDisabled}
                                     parsingError={parsingError}
                                     restoreLastSavedYAML={restoreLastSavedYAML}

@@ -462,6 +462,7 @@ interface UpdateDTCommonPayloadType {
     saveEligibleChanges: boolean
     readme?: string
     schema?: Record<string, string>
+    resourceName: string
     isExpressEdit?: boolean
 }
 

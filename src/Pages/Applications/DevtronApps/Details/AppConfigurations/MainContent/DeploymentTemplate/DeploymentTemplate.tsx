@@ -779,6 +779,15 @@ const DeploymentTemplate = ({
         await handleConfigHeaderTabChange(ConfigHeaderTabType.INHERITED)
     }
 
+    const handleNoPublishedVersionEmptyStateRedirection = () => {
+        dispatch({
+            type: DeploymentTemplateActionType.UPDATE_PROTECTION_VIEW_TAB,
+            payload: {
+                selectedProtectionViewTab: ProtectConfigTabsType.EDIT_DRAFT,
+            },
+        })
+    }
+
     const getCurrentTemplateSelectedChart = (): DeploymentChartVersionType => currentViewEditorState?.selectedChart
 
     const getCurrentTemplateGUISchema = (): string => {
@@ -1116,15 +1125,32 @@ const DeploymentTemplate = ({
         | UpdateBaseDTPayloadType
         | UpdateEnvironmentDTPayloadType => {
         if (!envId) {
-            return getUpdateBaseDeploymentTemplatePayload({ state, appId: +appId, skipReadmeAndSchema, isExpressEdit })
+            return getUpdateBaseDeploymentTemplatePayload({
+                state,
+                appId: +appId,
+                skipReadmeAndSchema,
+                isExpressEdit,
+                resourceName: getDeploymentTemplateResourceName(environmentName),
+            })
         }
 
         // NOTE: We don't handle lock keys in case of deletion of override
         if (fromDeleteOverride) {
-            return getDeleteProtectedOverridePayload(state, +envId, skipReadmeAndSchema)
+            return getDeleteProtectedOverridePayload(
+                state,
+                +envId,
+                skipReadmeAndSchema,
+                getDeploymentTemplateResourceName(environmentName),
+            )
         }
 
-        return getUpdateEnvironmentDTPayload(state, +envId, skipReadmeAndSchema, isExpressEdit)
+        return getUpdateEnvironmentDTPayload(
+            state,
+            +envId,
+            skipReadmeAndSchema,
+            isExpressEdit,
+            getDeploymentTemplateResourceName(environmentName),
+        )
     }
 
     // NOTE: This is a hack ideally BE should not even take data for this, they should only need action
@@ -1803,7 +1829,12 @@ const DeploymentTemplate = ({
         }
 
         if (showNoPublishedVersionEmptyState) {
-            return <NoPublishedVersionEmptyState />
+            return (
+                <NoPublishedVersionEmptyState
+                    showRedirectButton
+                    onRedirectClick={handleNoPublishedVersionEmptyStateRedirection}
+                />
+            )
         }
 
         return (
