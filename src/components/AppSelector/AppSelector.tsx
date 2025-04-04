@@ -15,6 +15,7 @@
  */
 
 import { useRef, useState } from 'react'
+import ReactGA from 'react-ga4'
 import {
     ComponentSizeType,
     SelectPicker,
@@ -27,9 +28,12 @@ import {
     getNoMatchingResultText,
     useUserPreferences,
     AppSelectorNoOptionsMessage as appSelectorNoOptionsMessage,
+    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { ActionMeta } from 'react-select'
 import { appListOptions } from './AppSelectorUtil'
 import { AppSelectorType, RecentlyVisitedOptions } from './AppSelector.types'
+import { APP_DETAILS_GA_EVENTS } from './constants'
 
 const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) => {
     const abortControllerRef = useRef<AbortController>(new AbortController())
@@ -43,13 +47,19 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
         ] || ([] as BaseAppMetaData[])
 
     const [loading, selectOptions] = useAsync(
-        () => appListOptions(inputValue, isJobView, abortControllerRef.current.signal, recentlyVisitedDevtronApps),
+        () =>
+            appListOptions({
+                inputValue,
+                isJobView,
+                signal: abortControllerRef.current.signal,
+                recentlyVisitedDevtronApps,
+            }),
         [inputValue, isJobView],
         !!appName && !!appId && !!recentlyVisitedDevtronApps.length,
     )
 
-    // fetching recently visited apps
-    const [,] = useAsync(
+    // fetching recently visited apps only in case of devtron apps
+    useAsync(
         () => fetchRecentlyVisitedParsedApps({ appId, appName }),
         [appId, appName],
         !!appName && !!appId && !isJobView,
@@ -78,6 +88,18 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
         options: section.label === 'Recently Visited' ? section.options.slice(1) : section.options,
     }))
 
+    const handleChange = (
+        selectedOption: RecentlyVisitedOptions,
+        actionMeta: ActionMeta<SelectPickerOptionType<string | number>>,
+    ) => {
+        onChange(selectedOption, actionMeta)
+        ReactGA.event(
+            selectedOption.isRecentlyVisited
+                ? APP_DETAILS_GA_EVENTS.RecentlyVisitedApps
+                : APP_DETAILS_GA_EVENTS.SearchesAppClicked,
+        )
+    }
+
     return (
         <SelectPicker
             inputId={`${isJobView ? 'job' : 'app'}-name`}
@@ -86,7 +108,7 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
             onInputChange={onInputChange}
             isLoading={loading}
             noOptionsMessage={noOptionsMessage}
-            onChange={onChange}
+            onChange={handleChange}
             value={{ value: appId, label: appName }}
             variant={SelectPickerVariantType.BORDER_LESS}
             placeholder={appName}

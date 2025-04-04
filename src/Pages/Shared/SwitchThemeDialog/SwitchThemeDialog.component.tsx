@@ -124,7 +124,6 @@ const ThemePreferenceOption = ({
 const SwitchThemeDialog = ({
     initialThemePreference,
     handleClose,
-    currentUserPreferences,
     handleUpdateUserThemePreference,
     disableAPICalls = false,
 }: SwitchThemeDialogProps) => {
@@ -168,7 +167,7 @@ const SwitchThemeDialog = ({
         if (!disableAPICalls) {
             const isSuccessful = await updateUserPreferences({
                 path: 'themePreference',
-                value: { ...currentUserPreferences, themePreference, appTheme },
+                value: { themePreference, appTheme },
             })
 
             if (isSuccessful) {

@@ -1,5 +1,5 @@
 import { AppHeaderType } from '@Components/app/types'
-import { SelectPickerOptionType, SelectPickerProps } from '@devtron-labs/devtron-fe-common-lib'
+import { BaseAppMetaData, SelectPickerOptionType, SelectPickerProps } from '@devtron-labs/devtron-fe-common-lib'
 import { GroupBase } from 'react-select'
 
 export interface AppSelectorType extends Pick<SelectPickerProps, 'onChange'>, Pick<AppHeaderType, 'appName'> {
@@ -15,4 +15,11 @@ export interface RecentlyVisitedOptions extends SelectPickerOptionType<number> {
 export interface RecentlyVisitedGroupedOptionsType extends GroupBase<SelectPickerOptionType<number>> {
     label: string
     options: RecentlyVisitedOptions[]
+}
+
+export interface AppListOptionsTypes {
+    inputValue: string
+    isJobView?: boolean
+    signal?: AbortSignal
+    recentlyVisitedDevtronApps?: BaseAppMetaData[] | []
 }

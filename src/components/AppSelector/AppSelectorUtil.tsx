@@ -16,17 +16,17 @@
 
 import { BaseAppMetaData, getIsRequestAborted, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppListMin } from '../../services/service'
-import { RecentlyVisitedGroupedOptionsType, RecentlyVisitedOptions } from './AppSelector.types'
+import { AppListOptionsTypes, RecentlyVisitedGroupedOptionsType, RecentlyVisitedOptions } from './AppSelector.types'
 import { AllApplicationsMetaData } from './constants'
 
 let timeoutId
 
-export const appListOptions = (
-    inputValue: string,
-    isJobView?: boolean,
-    signal?: AbortSignal,
-    recentlyVisitedDevtronApps?: BaseAppMetaData[] | [],
-): Promise<RecentlyVisitedGroupedOptionsType[]> => {
+export const appListOptions = ({
+    inputValue,
+    isJobView = false,
+    signal,
+    recentlyVisitedDevtronApps,
+}: AppListOptionsTypes): Promise<RecentlyVisitedGroupedOptionsType[]> => {
     const options = signal ? { signal } : null
 
     return new Promise((resolve) => {
@@ -53,19 +53,19 @@ export const appListOptions = (
             } else {
                 getAppListMin(null, options, inputValue, isJobView ?? false)
                     .then((response) => {
-                        let appList = []
-                        if (response.result) {
-                            appList = [
-                                {
-                                    label: `All ${isJobView ? 'Jobs' : 'Applications'}`,
-                                    options: response.result.map((res) => ({
-                                        value: res.id,
-                                        label: res.name,
-                                    })) as RecentlyVisitedOptions[],
-                                },
-                            ] as RecentlyVisitedGroupedOptionsType[]
-                        }
-                        resolve(appList as [])
+                        const appList = response.result
+                            ? ([
+                                  {
+                                      label: `All ${isJobView ? 'Jobs' : 'Applications'}`,
+                                      options: response.result.map((res) => ({
+                                          value: res.id,
+                                          label: res.name,
+                                      })) as RecentlyVisitedOptions[],
+                                  },
+                              ] as RecentlyVisitedGroupedOptionsType[])
+                            : []
+
+                        resolve(appList)
                     })
                     .catch((errors: ServerErrors) => {
                         if (!getIsRequestAborted(errors)) {

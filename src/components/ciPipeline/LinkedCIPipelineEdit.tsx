@@ -310,7 +310,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
         )
     }
 
-    loadAppListOptions = (inputValue: string) => appListOptions(inputValue, false)
+    loadAppListOptions = (inputValue: string) => appListOptions({inputValue})
 
     getErrorMessage = () => {
         if (!this.state.form.name) {
