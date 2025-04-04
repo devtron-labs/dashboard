@@ -38,7 +38,12 @@ const DeleteOverrideDialog = ({
     const { appId, envId } = useParams<BaseURLParams>()
 
     const handleDelete = async () => {
-        await deleteOverrideDeploymentTemplate(environmentConfigId, Number(appId), Number(envId), isTemplateView)
+        await deleteOverrideDeploymentTemplate({
+            id: environmentConfigId,
+            appId: Number(appId),
+            envId: Number(envId),
+            isTemplateView,
+        })
         handleReload()
     }
 

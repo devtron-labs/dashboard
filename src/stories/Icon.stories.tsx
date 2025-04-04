@@ -16,17 +16,36 @@
 
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { Icon, iconMap, IconsProps } from '@devtron-labs/devtron-fe-common-lib'
+import { Icon, iconMap, IconsProps, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 
-const options = Object.keys(iconMap)
+const icons = Object.keys(iconMap) as (keyof typeof iconMap)[]
+
+const IconRenderer = ({ color, ...props }: Omit<Partial<IconsProps>, 'name'>) => (
+    <div
+        className="dc__grid dc__gap-12"
+        style={{
+            gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))',
+        }}
+    >
+        {icons.map((icon) => (
+            <div key={icon} className="flexbox-col text-center dc__gap-4 bg__primary px-4 py-2">
+                <Icon name={icon} color={color} size={80} {...props} />
+                <Tooltip content={icon}>
+                    <p className="m-0 fs-12 lh-18 cn-9 dc__ellipsis-right">{icon}</p>
+                </Tooltip>
+            </div>
+        ))}
+    </div>
+)
 
 const meta = {
-    component: Icon,
+    component: IconRenderer,
     argTypes: {
-        name: {
-            options,
-            control: {
-                type: 'select',
+        color: {
+            control: 'text',
+            type: 'string',
+            table: {
+                defaultValue: null,
             },
         },
     },
@@ -37,9 +56,5 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
-    args: {
-        name: options[0] as IconsProps['name'],
-        size: 80,
-        color: null,
-    },
+    args: {},
 }

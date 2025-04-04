@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 
 import {
     Button,
@@ -36,22 +36,32 @@ import {
     CODE_EDITOR_RADIO_STATE,
     PATTERNS,
     MODES,
+    OverrideMergeStrategyType,
+    SelectPickerOptionType,
+    isCodeMirrorEnabled,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { ReactComponent as HideIcon } from '@Icons/ic-visibility-off.svg'
 import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
+import { importComponentFromFELibrary } from '@Components/common'
 
 import {
     CODE_EDITOR_RADIO_STATE_VALUE,
-    CONFIG_MAP_SECRET_NO_DATA_ERROR,
+    CONFIG_MAP_SECRET_REQUIRED_FIELD_ERROR,
     DATA_HEADER_MAP,
     sampleJSONs,
     VIEW_MODE,
 } from './constants'
 import { externalTypeSecretCodeEditorDataHeaders, renderYamlInfoText } from './helpers'
-import { getLockedYamlString } from './utils'
+import {
+    getCMCSExpressEditComparisonDataDiffConfig,
+    getExpressEditComparisonViewLHS,
+    getLockedYamlString,
+} from './utils'
 import { ConfigMapSecretDataProps } from './types'
+
+const ExpressEditDiffEditor = importComponentFromFELibrary('ExpressEditDiffEditor', null, 'function')
 
 export const ConfigMapSecretData = ({
     useFormProps,
@@ -60,6 +70,11 @@ export const ConfigMapSecretData = ({
     isHashiOrAWS,
     readOnly,
     isPatchMode,
+    hasPublishedConfig,
+    isExpressEditComparisonView,
+    draftData,
+    publishedConfigMapSecretData,
+    handleMergeStrategyChange,
 }: ConfigMapSecretDataProps) => {
     // USE FORM PROPS
     const { data, errors, setValue, register } = useFormProps
@@ -67,6 +82,29 @@ export const ConfigMapSecretData = ({
     // STATES
     const [secretMode, setSecretMode] = useState(false)
     const [codeEditorRadio, setCodeEditorRadio] = useState(CODE_EDITOR_RADIO_STATE.DATA)
+    const [expressEditComparisonViewLHS, setExpressEditComparisonViewLHS] = useState<typeof data>(
+        getExpressEditComparisonViewLHS({
+            isDraft: true,
+            draftData,
+            publishedConfigMapSecretData,
+            isSecret: data.isSecret,
+            hasPublishedConfig,
+        }),
+    )
+
+    useEffect(() => {
+        // Set the initial state of the express edit comparison view LHS, whenever the isExpressEditComparisonView changes.
+        // This is used to show the draft data in the comparison view by default on opening.
+        setExpressEditComparisonViewLHS(
+            getExpressEditComparisonViewLHS({
+                isDraft: true,
+                draftData,
+                publishedConfigMapSecretData,
+                isSecret: data.isSecret,
+                hasPublishedConfig,
+            }),
+        )
+    }, [isExpressEditComparisonView])
 
     // CONSTANTS
     const isLocked = data.isSecret && (secretMode || (data.externalType === '' && isUnAuthorized))
@@ -96,6 +134,10 @@ export const ConfigMapSecretData = ({
             },
             id,
         })),
+    }
+
+    const onMergeStrategySelect = (newValue: SelectPickerOptionType) => {
+        handleMergeStrategyChange(newValue.value as OverrideMergeStrategyType)
     }
 
     const keyValueTableHandleChange =
@@ -167,7 +209,7 @@ export const ConfigMapSecretData = ({
         const hasDataError =
             data.hasCurrentDataErr ||
             ((errors.yaml || errors.currentData) &&
-                (errors.yaml?.[0] || errors.currentData?.[0]) !== CONFIG_MAP_SECRET_NO_DATA_ERROR)
+                (errors.yaml?.[0] || errors.currentData?.[0]) !== CONFIG_MAP_SECRET_REQUIRED_FIELD_ERROR)
 
         // If there are validation errors, show a toast notification and return the current mode without switching.
         if (hasDataError) {
@@ -221,11 +263,24 @@ export const ConfigMapSecretData = ({
         return codeEditorValue
     }
 
+    const handleExpressEditCompareWithChange = (isDraft: boolean) => {
+        setExpressEditComparisonViewLHS(
+            getExpressEditComparisonViewLHS({
+                isDraft,
+                draftData,
+                publishedConfigMapSecretData,
+                isSecret: data.isSecret,
+                hasPublishedConfig,
+            }),
+        )
+    }
+
     // RENDERERS
     const renderDataEditorSelector = () => {
         if (
             (data.isSecret && data.externalType === CMSecretExternalType.KubernetesSecret) ||
-            (!data.isSecret && data.external)
+            (!data.isSecret && data.external) ||
+            isExpressEditComparisonView
         ) {
             return null
         }
@@ -293,7 +348,25 @@ export const ConfigMapSecretData = ({
             isCustomComponent: true,
         })
 
-        return (
+        return isExpressEditComparisonView ? (
+            <ExpressEditDiffEditor
+                dataDiffConfig={getCMCSExpressEditComparisonDataDiffConfig({
+                    lhs: expressEditComparisonViewLHS,
+                    rhs: data,
+                    onMergeStrategySelect,
+                })}
+                readOnly={readOnly}
+                lhsEditor={{
+                    value: expressEditComparisonViewLHS?.yaml || '',
+                }}
+                rhsEditor={{
+                    value: getCodeEditorValue(),
+                    onChange: !isLocked && !data.isResolvedData ? onChange : noop,
+                }}
+                showDraftOption={!!draftData}
+                handleCompareWithChange={handleExpressEditCompareWithChange}
+            />
+        ) : (
             <CodeEditor.Container overflowHidden>
                 <CodeEditor
                     key={codeEditorRadio}
@@ -343,12 +416,14 @@ export const ConfigMapSecretData = ({
                             </div>
                         </div>
                     </CodeEditor.Header>
-                    {codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA && errors[codeEditorFormKey] && (
-                        <div className="flex left px-16 py-8 dc__gap-8 bcr-1 cr-5 fs-12 lh-20">
-                            <ICErrorExclamation className="icon-dim-16 dc__no-shrink" />
-                            <p className="m-0">{errors[codeEditorFormKey]}</p>
-                        </div>
-                    )}
+                    {!isCodeMirrorEnabled() &&
+                        codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA &&
+                        errors[codeEditorFormKey] && (
+                            <div className="flex left px-16 py-8 dc__gap-8 bcr-1 cr-5 fs-12 lh-20">
+                                <ICErrorExclamation className="icon-dim-16 dc__no-shrink" />
+                                <p className="m-0">{errors[codeEditorFormKey]}</p>
+                            </div>
+                        )}
                 </CodeEditor>
                 {!data.external && data.yamlMode && renderYamlInfoText()}
             </CodeEditor.Container>
@@ -411,7 +486,7 @@ export const ConfigMapSecretData = ({
     }
 
     return (
-        <div className="flexbox-col dc__gap-12">
+        <div className="flex-grow-1 flexbox-col dc__gap-12">
             {renderDataEditorSelector()}
             {!data.external &&
                 (data.yamlMode

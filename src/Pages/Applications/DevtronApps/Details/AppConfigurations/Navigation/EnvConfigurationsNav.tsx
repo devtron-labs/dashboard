@@ -48,7 +48,8 @@ import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
 import ReactGA from 'react-ga4'
 import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
 import { EnvConfigRouteParams, EnvConfigurationsNavProps, EnvConfigObjectKey, EnvConfigType } from '../AppConfig.types'
-import { getEnvConfiguration, getNavigationPath } from './Navigation.helper'
+import { getEnvConfiguration, getNavigationPath, getUnnamedIconConfig } from './Navigation.helper'
+
 // LOADING SHIMMER
 const ShimmerText = ({ width }: { width: string }) => (
     <div className={`p-8 h-32 w-${width}`}>
@@ -126,6 +127,11 @@ const EnvConfigurationsNavContent = ({
                     href: getNavigationPath(path, params, resourceType, 'create'),
                     configState: ResourceConfigState.Unnamed,
                     subtitle: '',
+                    ...getUnnamedIconConfig(
+                        appOrEnvIdToResourceApprovalConfigurationMap?.[parsedResourceId || BASE_CONFIGURATION_ENV_ID]
+                            ?.approvalConfigurationMap,
+                        resourceType,
+                    ),
                 },
             ],
         }
