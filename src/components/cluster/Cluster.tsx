@@ -35,7 +35,7 @@ import {
     useStickyEvent,
     getClassNameForStickyHeaderWithShadow,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Route, useHistory, withRouter } from 'react-router-dom'
+import { generatePath, Route, useHistory, withRouter } from 'react-router-dom'
 import { ReactComponent as ClusterIcon } from '@Icons/ic-cluster.svg'
 import { importComponentFromFELibrary, useForm } from '../common'
 import { List } from '../globalConfigurations/GlobalConfiguration'
@@ -57,6 +57,8 @@ import { getEnvName } from './cluster.util'
 import ClusterForm from './ClusterForm'
 import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
 import { EnvironmentDeleteComponent } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/EnvironmentDeleteComponent'
+import CreateCluster from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/CreateCluster.component'
+import { CreateClusterTypeEnum } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
 
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 const getSSHConfig: (
@@ -250,7 +252,7 @@ class ClusterList extends Component<ClusterListProps, any> {
                     <Button
                         dataTestId="add_cluster_button"
                         linkProps={{
-                            to: URLS.GLOBAL_CONFIG_CREATE_CLUSTER,
+                            to: generatePath(URLS.GLOBAL_CONFIG_CREATE_CLUSTER, { type: CreateClusterTypeEnum.CONNECT_CLUSTER }),
                         }}
                         component={ButtonComponentType.link}
                         startIcon={<Add />}
@@ -276,32 +278,7 @@ class ClusterList extends Component<ClusterListProps, any> {
                 )}
 
                 <Route path={URLS.GLOBAL_CONFIG_CREATE_CLUSTER}>
-                    <Drawer position="right" width="1000px" onEscape={this.handleRedirectToClusterList}>
-                        <ClusterForm
-                            {...getSSHConfig(this.state)}
-                            cluster_name={this.state.cluster_name}
-                            server_url={this.state.server_url}
-                            active
-                            config={{}}
-                            reload={this.initialise}
-                            prometheus_url=""
-                            prometheusAuth={this.state.prometheus}
-                            defaultClusterComponent={this.state.defaultClusterComponent}
-                            isTlsConnection={this.state.isTlsConnection}
-                            isClusterDetails={this.state.isClusterDetails}
-                            proxyUrl={this.state.proxyUrl}
-                            isConnectedViaProxy={this.state.isConnectedViaProxy}
-                            isConnectedViaSSHTunnel={this.state.isConnectedViaSSHTunnel}
-                            toggleCheckTlsConnection={this.toggleCheckTlsConnection}
-                            setTlsConnectionFalse={this.setTlsConnectionFalse}
-                            toggleKubeConfigFile={this.toggleKubeConfigFile}
-                            isKubeConfigFile={this.state.isKubeConfigFile}
-                            toggleClusterDetails={this.toggleClusterDetails}
-                            handleCloseCreateClusterForm={this.handleRedirectToClusterList}
-                            isVirtualCluster={false}
-                            isProd={false}
-                        />
-                    </Drawer>
+                    <CreateCluster />
                 </Route>
 
                 <Route
