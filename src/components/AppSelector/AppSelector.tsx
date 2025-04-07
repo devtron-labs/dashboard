@@ -46,6 +46,9 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
             UserPreferenceResourceActions.RECENTLY_VISITED
         ] || ([] as BaseAppMetaData[])
 
+    const isAppDataAvailable = !!appId && !!appName
+    const shouldFetchAppOptions = isJobView ? true : !!recentlyVisitedDevtronApps.length
+
     const [loading, selectOptions] = useAsync(
         () =>
             appListOptions({
@@ -55,14 +58,14 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
                 recentlyVisitedDevtronApps,
             }),
         [inputValue, isJobView],
-        !!appName && !!appId && !!recentlyVisitedDevtronApps.length,
+        isAppDataAvailable && shouldFetchAppOptions,
     )
 
     // fetching recently visited apps only in case of devtron apps
     useAsync(
         () => fetchRecentlyVisitedParsedApps({ appId, appName }),
         [appId, appName],
-        !!appName && !!appId && !isJobView,
+        isAppDataAvailable && !isJobView,
     )
 
     const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
@@ -93,11 +96,14 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
         actionMeta: ActionMeta<SelectPickerOptionType<string | number>>,
     ) => {
         onChange(selectedOption, actionMeta)
-        ReactGA.event(
-            selectedOption.isRecentlyVisited
-                ? APP_DETAILS_GA_EVENTS.RecentlyVisitedApps
-                : APP_DETAILS_GA_EVENTS.SearchesAppClicked,
-        )
+
+        if (!isJobView) {
+            ReactGA.event(
+                selectedOption.isRecentlyVisited
+                    ? APP_DETAILS_GA_EVENTS.RecentlyVisitedApps
+                    : APP_DETAILS_GA_EVENTS.SearchesAppClicked,
+            )
+        }
     }
 
     return (

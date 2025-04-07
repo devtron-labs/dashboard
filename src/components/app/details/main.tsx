@@ -85,9 +85,37 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
 
     const { fetchRecentlyVisitedParsedApps } = useUserPreferences({})
 
+    const getAppMetaInfoRes = async (shouldResetAppName: boolean = false): Promise<AppMetaInfo> => {
+        try {
+            if (shouldResetAppName) {
+                setAppName('')
+            }
+            setApiError(null)
+            const { result } = await getAppMetaInfo(Number(appId))
+            if (result) {
+                setAppName(result.appName)
+                setAppMetaInfo(result)
+                setReloadMandatoryProjects(!reloadMandatoryProjects)
+                return result
+            }
+        } catch (err) {
+            if (err.code === API_STATUS_CODES.NOT_FOUND || err.code === API_STATUS_CODES.PERMISSION_DENIED) {
+                try {
+                    await fetchRecentlyVisitedParsedApps({ appId, appName: '' })
+                } catch {
+                    // Do nothing
+                }
+            }
+            setApiError(err)
+            showError(err)
+        }
+    }
+
+    const getAppMetaInfoAndResetAppName = () => getAppMetaInfoRes(true)
+
     useEffect(() => {
         setInitLoading(true)
-        getAppMetaInfoRes()
+        getAppMetaInfoAndResetAppName()
         Promise.all([getSavedFilterData(), getAppListData()])
             .then((response) => {
                 const groupFilterOptionsList = response[0]
@@ -177,29 +205,6 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         setAppListOptions(appListOptionsList)
         setAppListLoading(false)
         return appListOptionsList
-    }
-
-    const getAppMetaInfoRes = async (): Promise<AppMetaInfo> => {
-        try {
-            setApiError(null)
-            const { result } = await getAppMetaInfo(Number(appId))
-            if (result) {
-                setAppName(result.appName)
-                setAppMetaInfo(result)
-                setReloadMandatoryProjects(!reloadMandatoryProjects)
-                return result
-            }
-        } catch (err) {
-            if (err.code === API_STATUS_CODES.NOT_FOUND) {
-                try {
-                    await fetchRecentlyVisitedParsedApps({ appId, appName, isInvalidAppId: true })
-                } catch {
-                    // Do nothing
-                }
-            }
-            setApiError(err)
-            showError(err)
-        }
     }
 
     const handleToast = (action: string) =>
@@ -334,7 +339,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     }
 
     if (apiError) {
-        return <ErrorScreenManager code={apiError.code} reload={getAppMetaInfoRes} />
+        return <ErrorScreenManager code={apiError.code} reload={getAppMetaInfoAndResetAppName} />
     }
 
     const _filteredEnvIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
