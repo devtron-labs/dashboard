@@ -827,6 +827,13 @@ export const ConfigMapSecretContainer = ({
                 variant: ToastVariantType.notAuthorized,
                 description: 'You cannot make any changes',
             })
+        } else if (err.code === API_STATUS_CODES.CONFLICT) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description:
+                    'You are not an exception user anymore. Copy your changes to avoid losing them, then refresh the page.',
+            })
+            closeExpressEditPublishConfirmationModal()
         } else {
             showError(err)
         }

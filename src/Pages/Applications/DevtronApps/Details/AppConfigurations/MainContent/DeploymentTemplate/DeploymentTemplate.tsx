@@ -1247,8 +1247,27 @@ const DeploymentTemplate = ({
             })
         } catch (error) {
             const isProtectionError = error.code === API_STATUS_CODES.LOCKED
+            const isExceptionError = error.code === API_STATUS_CODES.CONFLICT
 
-            showError(error)
+            if (!isExceptionError) {
+                showError(error)
+            }
+
+            if (isExceptionError) {
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description:
+                        'You are not an exception user anymore. Copy your changes to avoid losing them, then refresh the page.',
+                })
+
+                dispatch({
+                    type: DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_CONFIRMATION_MODAL,
+                    payload: {
+                        showExpressEditConfirmationModal: false,
+                    },
+                })
+            }
+
             dispatch({
                 type: DeploymentTemplateActionType.SAVE_ERROR,
                 payload: {
