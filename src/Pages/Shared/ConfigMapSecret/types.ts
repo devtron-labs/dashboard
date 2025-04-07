@@ -138,6 +138,7 @@ export interface ConfigMapSecretDataProps
     extends Pick<
         ConfigMapSecretFormProps,
         | 'useFormProps'
+        | 'isExpressEditView'
         | 'isExpressEditComparisonView'
         | 'draftData'
         | 'publishedConfigMapSecretData'

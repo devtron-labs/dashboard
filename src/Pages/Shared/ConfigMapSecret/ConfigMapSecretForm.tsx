@@ -420,6 +420,7 @@ export const ConfigMapSecretForm = ({
                                 }
                                 draftData={draftData}
                                 publishedConfigMapSecretData={publishedConfigMapSecretData}
+                                isExpressEditView={isExpressEditView}
                                 isExpressEditComparisonView={isExpressEditComparisonView}
                                 handleMergeStrategyChange={handleMergeStrategyChange}
                             />

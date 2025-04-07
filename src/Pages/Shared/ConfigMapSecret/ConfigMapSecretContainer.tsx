@@ -141,7 +141,8 @@ export const ConfigMapSecretContainer = ({
     // REFS
     const abortControllerRef = useRef<AbortController>()
     const savedFormData = useRef<ConfigMapSecretUseFormProps>()
-    const formValuesBeforeExpressEditView = useRef<ConfigMapSecretUseFormProps>()
+    const formValuesBeforeExpressEditView = useRef<ConfigMapSecretUseFormProps>(null)
+    const expressEditFormInitialValues = useRef<ConfigMapSecretUseFormProps>(null)
 
     // STATES
     const [selectedProtectionViewTab, setSelectedProtectionViewTab] = useState<ProtectConfigTabsType>(null)
@@ -156,6 +157,7 @@ export const ConfigMapSecretContainer = ({
     const [areCommentsPresent, setAreCommentsPresent] = useState(false)
     const [dryRunEditorMode, setDryRunEditorMode] = useState<DryRunEditorMode>(DryRunEditorMode.VALUES_FROM_DRAFT)
     const [shouldMergeTemplateWithPatches, setShouldMergeTemplateWithPatches] = useState(false)
+    const [showExpressEditPromptTooltip, setShowExpressEditPromptTooltip] = useState<boolean>(false)
     const [isExpressEditView, setIsExpressEditView] = useState<boolean>(false)
     const [isExpressEditComparisonView, setIsExpressEditComparisonView] = useState<boolean>(false)
     const [showExpressEditConfirmationModal, setShowExpressEditConfirmationModal] = useState<boolean>(false)
@@ -417,6 +419,13 @@ export const ConfigMapSecretContainer = ({
         }
     }, [formInitialValues])
 
+    // SHOW EXPRESS EDIT PROMPT TOOLTIP ON FORM DIRTY
+    useEffect(() => {
+        if (formState.isDirty && !showExpressEditPromptTooltip) {
+            setShowExpressEditPromptTooltip(true)
+        }
+    }, [formState.isDirty])
+
     // DATA CONSTANTS
     const isError = configHasBeenDeleted || configMapSecretResErr
     const isLoading =
@@ -612,7 +621,8 @@ export const ConfigMapSecretContainer = ({
          */
         const isESO = isSecret && hasESO(formData.externalType)
         const yamlFormKey = isESO ? 'esoSecretYaml' : 'yaml'
-        setValue(yamlFormKey, formInitialValues[yamlFormKey], { shouldDirty: true })
+        setValue(yamlFormKey, formInitialValues[yamlFormKey], { shouldDirty: true, triggerError: true })
+        setValue('currentData', formInitialValues.currentData, { shouldDirty: true, triggerError: true })
     }
 
     const toggleDraftComments = () => setShowComments(!showComments)
@@ -706,6 +716,7 @@ export const ConfigMapSecretContainer = ({
             setValue('yaml', yaml)
             setValue('currentData', currentData)
         } else if (strategy !== formData.mergeStrategy) {
+            const initialValues = isExpressEditView ? expressEditFormInitialValues.current : formInitialValues
             reset(
                 {
                     ...(strategy === OverrideMergeStrategyType.PATCH
@@ -716,7 +727,7 @@ export const ConfigMapSecretContainer = ({
                               configMapSecretData: inheritedConfigMapSecretData,
                               fallbackMergeStrategy: DEFAULT_MERGE_STRATEGY,
                           })
-                        : formInitialValues),
+                        : initialValues),
                     mergeStrategy: strategy,
                     yamlMode: formData.yamlMode,
                     currentData: formData.currentData,
@@ -750,15 +761,19 @@ export const ConfigMapSecretContainer = ({
         unResolveScopeVariables()
         setIsExpressEditView(true)
 
-        const expressEditFormInitialValues = getConfigMapSecretFormInitialValues({
-            configMapSecretData,
-            componentType,
-            cmSecretStateLabel,
-            isJob,
-            fallbackMergeStrategy: DEFAULT_MERGE_STRATEGY,
-        })
+        expressEditFormInitialValues.current = {
+            ...getConfigMapSecretFormInitialValues({
+                configMapSecretData,
+                componentType,
+                cmSecretStateLabel,
+                isJob,
+                fallbackMergeStrategy: DEFAULT_MERGE_STRATEGY,
+            }),
+            yamlMode: formValuesBeforeExpressEditView.current.yamlMode,
+        }
 
-        reset(expressEditFormInitialValues, { keepInitialValues: true })
+        reset(expressEditFormInitialValues.current, { formInitialValues: expressEditFormInitialValues.current })
+        closePromptTooltip()
     }
 
     const toggleExpressEditComparisonView = () => {
@@ -771,8 +786,16 @@ export const ConfigMapSecretContainer = ({
         setIsExpressEditView(false)
         setIsExpressEditComparisonView(false)
 
-        reset(formValuesBeforeExpressEditView.current, { triggerDirty: true, keepInitialValues: true })
+        const resetValues = { ...formValuesBeforeExpressEditView.current, yamlMode: formData.yamlMode }
+        const resetInitialValues = { ...formInitialValues, yamlMode: formData.yamlMode }
+
+        reset(resetValues, {
+            triggerDirty: true,
+            triggerError: true,
+            formInitialValues: resetInitialValues,
+        })
         formValuesBeforeExpressEditView.current = null
+        expressEditFormInitialValues.current = null
     }
 
     const closeExpressEditPublishConfirmationModal = () => {
@@ -1199,7 +1222,7 @@ export const ConfigMapSecretContainer = ({
                         isExpressEditView={isExpressEditView}
                         isExceptionUser={isExceptionUser}
                         expressEditButtonConfig={{
-                            showPromptTooltip: showPrompt && formState.isDirty,
+                            showPromptTooltip: showPrompt && showExpressEditPromptTooltip,
                             onClick: handleExpressEditClick,
                             onClose: closePromptTooltip,
                             onDoNotShowAgainClose: permanentClosePromptTooltip,

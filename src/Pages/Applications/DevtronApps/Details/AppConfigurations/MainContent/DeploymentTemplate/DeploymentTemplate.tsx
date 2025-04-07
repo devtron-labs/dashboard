@@ -220,6 +220,7 @@ const DeploymentTemplate = ({
         showExpressDeleteDraftDialog,
         showExpressEditConfirmationModal,
         expressEditComparisonViewLHS,
+        showExpressEditPromptTooltip,
     } = state
 
     const manifestAbortController = useRef<AbortController>(new AbortController())
@@ -1097,6 +1098,14 @@ const DeploymentTemplate = ({
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         handleInitialDataLoad()
     }, [])
+
+    useEffect(() => {
+        if (areChangesPresent && !showExpressEditPromptTooltip) {
+            dispatch({
+                type: DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_PROMPT_TOOLTIP,
+            })
+        }
+    }, [areChangesPresent])
 
     const handleReload = async () => {
         updateSearchParams({
@@ -2071,7 +2080,7 @@ const DeploymentTemplate = ({
                         isExceptionUser={isExceptionUser}
                         isExpressEditView={isExpressEditView}
                         expressEditButtonConfig={{
-                            showPromptTooltip: showPrompt && areChangesPresent,
+                            showPromptTooltip: showPrompt && showExpressEditPromptTooltip,
                             onClick: handleExpressEditClick,
                             onClose: closePromptTooltip,
                             onDoNotShowAgainClose: permanentClosePromptTooltip,

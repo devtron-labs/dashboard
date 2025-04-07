@@ -71,6 +71,7 @@ export const ConfigMapSecretData = ({
     readOnly,
     isPatchMode,
     hasPublishedConfig,
+    isExpressEditView,
     isExpressEditComparisonView,
     draftData,
     publishedConfigMapSecretData,
@@ -91,20 +92,6 @@ export const ConfigMapSecretData = ({
             hasPublishedConfig,
         }),
     )
-
-    useEffect(() => {
-        // Set the initial state of the express edit comparison view LHS, whenever the isExpressEditComparisonView changes.
-        // This is used to show the draft data in the comparison view by default on opening.
-        setExpressEditComparisonViewLHS(
-            getExpressEditComparisonViewLHS({
-                isDraft: true,
-                draftData,
-                publishedConfigMapSecretData,
-                isSecret: data.isSecret,
-                hasPublishedConfig,
-            }),
-        )
-    }, [isExpressEditComparisonView])
 
     // CONSTANTS
     const isLocked = data.isSecret && (secretMode || (data.externalType === '' && isUnAuthorized))
@@ -197,14 +184,23 @@ export const ConfigMapSecretData = ({
     const toggleSecretMode = () => setSecretMode(!secretMode)
 
     /**
-     * Toggles between YAML view mode and key-value pair mode in the editor.
+     * Toggles the editor mode between YAML view and key-value pair view.
      *
-     * @param e - The change event triggered by switching modes (YAML or key-value pair).
-     * @returns The current mode if there are unresolved errors, or the selected mode.
+     * @param mode - The selected mode to switch to, either YAML or key-value pair view.
+     *
+     * @remarks
+     * - This function ensures that there are no validation errors before switching modes.
+     * - If there are validation errors in `yaml` or `currentData` that are not equal to the `NO_DATA_ERROR`,
+     *   a toast notification is displayed, and the mode switch is prevented.
+     * - The function uses `setValue` from `useForm` to update the `yamlMode` state without marking the form as dirty.
+     *   This is because switching modes does not alter the data, and the dirty state is unnecessary.
+     *
+     * @throws Will display a toast notification if there are unresolved validation errors.
+     * ```
      */
-    const toggleYamlMode = (e: ChangeEvent<HTMLInputElement>) => {
+    const toggleYamlMode = (mode: (typeof VIEW_MODE)[keyof typeof VIEW_MODE]) => {
         // The selected mode from the event (either YAML view or key-value pair view).
-        const yamlMode = e.target.value
+
         // Check if there are any errors in 'yaml' or 'currentData' and ensure they are not equal to the 'NO_DATA_ERROR' error.
         const hasDataError =
             data.hasCurrentDataErr ||
@@ -228,7 +224,12 @@ export const ConfigMapSecretData = ({
          * Additionally, we require the form state for data processing upon submission, so we're not using useState.
          */
         // Set 'yamlMode' true if the selected mode is YAML, otherwise return false.
-        setValue('yamlMode', yamlMode === VIEW_MODE.YAML)
+        setValue('yamlMode', mode === VIEW_MODE.YAML)
+    }
+
+    const handleGuiYamlSwitch = (e: ChangeEvent<HTMLInputElement>) => {
+        const { value } = e.target
+        toggleYamlMode(value as (typeof VIEW_MODE)[keyof typeof VIEW_MODE])
     }
 
     const handleCodeEditorRadioChange = (e: ChangeEvent<HTMLInputElement>) =>
@@ -275,6 +276,26 @@ export const ConfigMapSecretData = ({
         )
     }
 
+    // USE-EFFECTS
+    useEffect(() => {
+        // Switch to YAML mode if the user is in the express edit comparison view.
+        if (isExpressEditComparisonView) {
+            toggleYamlMode(VIEW_MODE.YAML)
+        }
+
+        // Set the initial state of the express edit comparison view LHS, whenever the isExpressEditComparisonView changes.
+        // This is used to show the draft data in the comparison view by default on opening.
+        setExpressEditComparisonViewLHS(
+            getExpressEditComparisonViewLHS({
+                isDraft: true,
+                draftData,
+                publishedConfigMapSecretData,
+                isSecret: data.isSecret,
+                hasPublishedConfig,
+            }),
+        )
+    }, [isExpressEditComparisonView])
+
     // RENDERERS
     const renderDataEditorSelector = () => {
         if (
@@ -296,7 +317,7 @@ export const ConfigMapSecretData = ({
                         initialTab={data.yamlMode ? VIEW_MODE.YAML : VIEW_MODE.GUI}
                         name="yamlMode"
                         /** @note Check comment inside `toggleYamlMode` to see why we haven't used register method from useForm */
-                        onChange={toggleYamlMode}
+                        onChange={handleGuiYamlSwitch}
                     >
                         {Object.keys(VIEW_MODE).map((key) =>
                             VIEW_MODE[key] !== VIEW_MODE.MANIFEST ? (
@@ -436,7 +457,7 @@ export const ConfigMapSecretData = ({
         return (
             <div>
                 <KeyValueTable
-                    key={data.isResolvedData.toString()}
+                    key={`${isExpressEditView}-${data.isResolvedData}`}
                     isAdditionNotAllowed={secretMode || data.yamlMode || data.external}
                     readOnly={readOnly || secretMode}
                     isSortable

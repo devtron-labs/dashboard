@@ -110,6 +110,7 @@ export enum DeploymentTemplateActionType {
     TOGGLE_EXPRESS_EDIT_COMPARISON_VIEW = 'TOGGLE_EXPRESS_EDIT_COMPARISON_VIEW',
     SHOW_EXPRESS_EDIT_CONFIRMATION_MODAL = 'SHOW_EXPRESS_EDIT_CONFIRMATION_MODAL',
     SET_EXPRESS_EDIT_COMPARISON_VIEW_LHS = 'SET_EXPRESS_EDIT_COMPARISON_VIEW_LHS',
+    SHOW_EXPRESS_EDIT_PROMPT_TOOLTIP = 'SHOW_EXPRESS_EDIT_PROMPT_TOOLTIP',
 }
 
 type DeploymentTemplateNoPayloadActions =
@@ -141,6 +142,7 @@ type DeploymentTemplateNoPayloadActions =
     | DeploymentTemplateActionType.UPDATE_CONFIG_HEADER_TAB
     | DeploymentTemplateActionType.LOCK_CHANGES_DETECTED_FROM_DRAFT_API
     | DeploymentTemplateActionType.TOGGLE_EXPRESS_EDIT_COMPARISON_VIEW
+    | DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_PROMPT_TOOLTIP
 
 interface LoadMergedTemplateBasePayloadType {
     editorStates: ConfigEditorStatesType[]
@@ -336,6 +338,7 @@ export const getDeploymentTemplateInitialState = ({
     showExpressDeleteDraftDialog: false,
     showExpressEditConfirmationModal: false,
     expressEditComparisonViewLHS: null,
+    showExpressEditPromptTooltip: false,
 })
 
 const handleSwitchToYAMLMode = (state: DeploymentTemplateStateType): DeploymentTemplateStateType => {
@@ -1016,6 +1019,9 @@ export const deploymentTemplateReducer = (
                 ...state,
                 ...action.payload,
             }
+
+        case DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_PROMPT_TOOLTIP:
+            return { ...state, showExpressEditPromptTooltip: true }
 
         default:
             return state
