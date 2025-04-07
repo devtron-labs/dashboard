@@ -20,18 +20,24 @@ import { fetchWithFullRoute } from '../../../../services/fetchWithFullRoute'
 import {
     ClusterConnectionResponse,
     DataSourceDetailsDTO,
+    DataSourceDetailsQueryParams,
+    DataSourceDetailsType,
     DeploymentStatusDetailsResponse,
     ModuleConfigResponse,
 } from './appDetails.type'
 import { AppType } from '../../../v2/appDetails/appDetails.type'
 
-export const getDataSourceDetailsFromEnvironment = async (envName: string): Promise<DataSourceDetailsDTO> => {
+export const getDataSourceDetailsFromEnvironment = async (envName: string): Promise<DataSourceDetailsType> => {
     try {
         const {
-            result: { dataSourceName, dataSourceId },
-        } = await get<DataSourceDetailsDTO>(getUrlWithSearchParams('/health', { envName }))
+            result: { name, id },
+        } = await get<DataSourceDetailsDTO>(
+            getUrlWithSearchParams(Routes.ENV_DATA_SOURCE_NAME, {
+                environment: envName,
+            } satisfies DataSourceDetailsQueryParams),
+        )
 
-        return { dataSourceName, dataSourceId }
+        return { dataSourceName: name, dataSourceId: id }
     } catch {
         return {
             dataSourceName: '',

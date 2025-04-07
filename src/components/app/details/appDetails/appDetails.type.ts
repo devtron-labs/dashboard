@@ -133,6 +133,15 @@ export interface ModuleConfigResponse extends ResponseType {
 }
 
 export interface DataSourceDetailsDTO {
+    id: number
+    name: string
+}
+
+export interface DataSourceDetailsQueryParams {
+    environment: string
+}
+
+export interface DataSourceDetailsType {
     dataSourceName: string
     dataSourceId: number
 }
