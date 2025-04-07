@@ -95,6 +95,8 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
         selectedOption: RecentlyVisitedOptions,
         actionMeta: ActionMeta<SelectPickerOptionType<string | number>>,
     ) => {
+        if (selectedOption.label === appName) return
+
         onChange(selectedOption, actionMeta)
 
         if (!isJobView) {
