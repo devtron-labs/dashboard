@@ -817,7 +817,6 @@ export const Details: React.FC<DetailsType> = ({
                     {environment && !isVirtualEnvRef.current && (
                         <AppMetrics
                             appName={appDetails.appName}
-                            grafanaDataSourceId={appDetails.grafanaDataSourceId}
                             addExtraSpace={!isExternalToolAvailable}
                             environment={environment}
                             podMap={aggregatedNodes.nodes.Pod}

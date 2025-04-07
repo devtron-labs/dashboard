@@ -51,7 +51,7 @@ import {
     ModuleNameMap,
     URLS,
 } from '../../../../config'
-import { isDatasourceConfigured, isDatasourceHealthy } from './appDetails.service'
+import { getDataSourceDetailsFromEnvironment, isDatasourceHealthy } from './appDetails.service'
 import { getHostURLConfiguration } from '../../../../services/service'
 import PrometheusErrorImage from '../../../../assets/img/ic-error-prometheus.png'
 import HostErrorImage from '../../../../assets/img/ic-error-hosturl.png'
@@ -59,7 +59,6 @@ import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstat
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { APP_METRICS_CALENDAR_INPUT_DATE_FORMAT } from './constants'
-import { AppDetails } from '@Components/app/types'
 
 export const AppMetrics: React.FC<
     {
@@ -68,10 +67,10 @@ export const AppMetrics: React.FC<
         podMap: Map<string, any>
         k8sVersion
         addExtraSpace: boolean
-    } & Pick<AppDetails, 'grafanaDataSourceId'>
-> = ({ appName, podMap, k8sVersion, addExtraSpace, environment, grafanaDataSourceId }) => {
+    }
+> = ({ appName, podMap, k8sVersion, addExtraSpace, environment }) => {
     const { appTheme } = useTheme()
-    const { appMetrics, infraMetrics } = environment
+    const { appMetrics, infraMetrics, environmentName } = environment
     const [calendar, setDateRange] = useState<{ startDate: Moment; endDate: Moment }>({
         startDate: moment().subtract(5, 'minute'),
         endDate: moment(),
@@ -150,17 +149,16 @@ export const AppMetrics: React.FC<
             const hostUrlRes = await getHostURLConfiguration()
             setHostURLConfig(hostUrlRes.result)
 
-            if (grafanaDataSourceId) {
-                const [datasourceConfiguredRes, datasourceHealthyRes] = await Promise.all([
-                    isDatasourceConfigured(grafanaDataSourceId),
-                    isDatasourceHealthy(grafanaDataSourceId),
-                ])
+            const { dataSourceName, dataSourceId } = await getDataSourceDetailsFromEnvironment(environmentName)
+
+            if (dataSourceId) {
+                const datasourceHealthyRes = await isDatasourceHealthy(dataSourceId)
 
                 setDatasource({
                     isLoading: false,
                     isConfigured: true,
                     isHealthy: datasourceHealthyRes?.status.toLowerCase() === 'success',
-                    dataSourceName: datasourceConfiguredRes?.name || '',
+                    dataSourceName,
                 })
             } else {
                 setDatasource({

@@ -14,16 +14,30 @@
  * limitations under the License.
  */
 
-import { ResponseType, get, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { ResponseType, get, getUrlWithSearchParams, trash } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../../../config'
 import { fetchWithFullRoute } from '../../../../services/fetchWithFullRoute'
-import { ClusterConnectionResponse, DeploymentStatusDetailsResponse, ModuleConfigResponse } from './appDetails.type'
+import {
+    ClusterConnectionResponse,
+    DataSourceDetailsDTO,
+    DeploymentStatusDetailsResponse,
+    ModuleConfigResponse,
+} from './appDetails.type'
 import { AppType } from '../../../v2/appDetails/appDetails.type'
 
-export function isDatasourceConfigured(grafanaDataSourceId: number) {
-    const root = window.__ORCHESTRATOR_ROOT__.replace('/orchestrator', '')
-    const URL = `${root}/grafana/api/datasources/${grafanaDataSourceId}`
-    return fetchWithFullRoute(URL, 'GET')
+export const getDataSourceDetailsFromEnvironment = async (envName: string): Promise<DataSourceDetailsDTO> => {
+    try {
+        const {
+            result: { dataSourceName, dataSourceId },
+        } = await get<DataSourceDetailsDTO>(getUrlWithSearchParams('/health', { envName }))
+
+        return { dataSourceName, dataSourceId }
+    } catch {
+        return {
+            dataSourceName: '',
+            dataSourceId: null,
+        }
+    }
 }
 
 export function isDatasourceHealthy(datasourceId: number | string) {

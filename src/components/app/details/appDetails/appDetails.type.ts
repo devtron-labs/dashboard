@@ -132,6 +132,11 @@ export interface ModuleConfigResponse extends ResponseType {
     }
 }
 
+export interface DataSourceDetailsDTO {
+    dataSourceName: string
+    dataSourceId: number
+}
+
 export interface ClusterConnectionResponse extends ResponseType {
     result?: {
         clusterReachable: boolean
