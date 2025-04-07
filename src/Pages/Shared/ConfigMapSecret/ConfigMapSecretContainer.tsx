@@ -54,6 +54,8 @@ import {
     UseFormErrorHandler,
     UseFormSubmitHandler,
     isNullOrUndefined,
+    useOneTimePrompt,
+    CONFIG_MAP_SECRET_YAML_PARSE_ERROR,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { APP_COMPOSE_STAGE, getAppComposeURL } from '@Config/routes'
@@ -81,7 +83,11 @@ import {
     getConfigMapSecretStateLabel,
     parseConfigMapSecretSearchParams,
 } from './utils'
-import { CM_SECRET_COMPONENT_NAME, CONFIG_MAP_SECRET_NO_DATA_ERROR } from './constants'
+import {
+    CM_SECRET_COMPONENT_NAME,
+    CONFIG_MAP_SECRET_DATA_KEYS,
+    CONFIG_MAP_SECRET_REQUIRED_FIELD_ERROR,
+} from './constants'
 import {
     CMSecretDeleteModalType,
     CMSecretDraftPayloadType,
@@ -102,6 +108,8 @@ const ProtectionViewToolbarPopupNode = importComponentFromFELibrary('ProtectionV
 const DraftComments = importComponentFromFELibrary('DraftComments')
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DISABLE_DELETE_TOOLTIP_TEXT = importComponentFromFELibrary('DISABLE_DELETE_TOOLTIP_TEXT', null, 'function')
+const ExpressEditHeader = importComponentFromFELibrary('ExpressEditHeader', null, 'function')
+const ExpressEditConfirmationModal = importComponentFromFELibrary('ExpressEditConfirmationModal', null, 'function')
 
 export const ConfigMapSecretContainer = ({
     componentType = CMSecretComponentType.ConfigMap,
@@ -116,6 +124,7 @@ export const ConfigMapSecretContainer = ({
     parentName,
     appChartRef,
     reloadEnvironments,
+    isExceptionUser,
     isTemplateView,
 }: ConfigMapSecretContainerProps) => {
     // HOOKS
@@ -132,6 +141,8 @@ export const ConfigMapSecretContainer = ({
     // REFS
     const abortControllerRef = useRef<AbortController>()
     const savedFormData = useRef<ConfigMapSecretUseFormProps>()
+    const formValuesBeforeExpressEditView = useRef<ConfigMapSecretUseFormProps>(null)
+    const expressEditFormInitialValues = useRef<ConfigMapSecretUseFormProps>(null)
 
     // STATES
     const [selectedProtectionViewTab, setSelectedProtectionViewTab] = useState<ProtectConfigTabsType>(null)
@@ -146,6 +157,10 @@ export const ConfigMapSecretContainer = ({
     const [areCommentsPresent, setAreCommentsPresent] = useState(false)
     const [dryRunEditorMode, setDryRunEditorMode] = useState<DryRunEditorMode>(DryRunEditorMode.VALUES_FROM_DRAFT)
     const [shouldMergeTemplateWithPatches, setShouldMergeTemplateWithPatches] = useState(false)
+    const [showExpressEditPromptTooltip, setShowExpressEditPromptTooltip] = useState<boolean>(false)
+    const [isExpressEditView, setIsExpressEditView] = useState<boolean>(false)
+    const [isExpressEditComparisonView, setIsExpressEditComparisonView] = useState<boolean>(false)
+    const [showExpressEditConfirmationModal, setShowExpressEditConfirmationModal] = useState<boolean>(false)
 
     // FORM INITIALIZATION
     const useFormProps = useForm<ConfigMapSecretUseFormProps>({
@@ -160,6 +175,14 @@ export const ConfigMapSecretContainer = ({
     })
 
     const { data: formData, errors: formErrors, formState, setValue, handleSubmit, reset } = useFormProps
+
+    const {
+        showPrompt,
+        handleClose: closePromptTooltip,
+        handleDoNotShowAgainClose: permanentClosePromptTooltip,
+    } = useOneTimePrompt({
+        localStorageKey: 'express-edit-prompt-tooltip',
+    })
 
     // CONSTANTS
     const componentName = CM_SECRET_COMPONENT_NAME[componentType]
@@ -182,7 +205,7 @@ export const ConfigMapSecretContainer = ({
             cmSecretStateLabel === CM_SECRET_STATE.INHERITED
         ) &&
         (formData.external ? formErrors.esoSecretYaml : formErrors.yaml)?.[0]
-    const parsingError = yamlError && yamlError !== CONFIG_MAP_SECRET_NO_DATA_ERROR ? yamlError : ''
+    const parsingError = yamlError && yamlError !== CONFIG_MAP_SECRET_REQUIRED_FIELD_ERROR ? yamlError : ''
 
     // GA EVENT CATEGORY (BASED ON CM/SECRET)
     const gaEventCategory = `devtronapp-configuration-${isSecret ? 'secret' : 'cm'}`
@@ -396,6 +419,13 @@ export const ConfigMapSecretContainer = ({
         }
     }, [formInitialValues])
 
+    // SHOW EXPRESS EDIT PROMPT TOOLTIP ON FORM DIRTY
+    useEffect(() => {
+        if (formState.isDirty && !showExpressEditPromptTooltip) {
+            setShowExpressEditPromptTooltip(true)
+        }
+    }, [formState.isDirty])
+
     // DATA CONSTANTS
     const isError = configHasBeenDeleted || configMapSecretResErr
     const isLoading =
@@ -404,11 +434,14 @@ export const ConfigMapSecretContainer = ({
         (!!id && !isError && !(configMapSecretData || inheritedConfigMapSecretData || draftData))
     const isHashiOrAWS = configMapSecretData && hasHashiOrAWS(configMapSecretData.externalType)
     const hideConfigToolbar =
-        cmSecretStateLabel === CM_SECRET_STATE.INHERITED &&
-        configHeaderTab === ConfigHeaderTabType.VALUES &&
-        !hideNoOverrideEmptyState &&
-        !draftData
+        (cmSecretStateLabel === CM_SECRET_STATE.INHERITED &&
+            configHeaderTab === ConfigHeaderTabType.VALUES &&
+            !hideNoOverrideEmptyState &&
+            !draftData) ||
+        isExpressEditComparisonView
+
     const showNoOverride = cmSecretStateLabel === CM_SECRET_STATE.INHERITED && !hideNoOverrideEmptyState && !draftData
+    const isDraftAvailable = isApprovalPolicyConfigured && !!draftData
 
     // SET DRAFT DATA BASED STATES
     useEffect(() => {
@@ -421,6 +454,18 @@ export const ConfigMapSecretContainer = ({
             )
         }
     }, [draftData])
+
+    // GLOBAL HANDLERS
+    const unResolveScopeVariables = () => {
+        setResolveScopedVariables(false)
+        if (savedFormData.current) {
+            reset(
+                { ...savedFormData.current, mergeStrategy: formData.mergeStrategy, yamlMode: formData.yamlMode },
+                { keepInitialValues: true, keepDirty: true },
+            )
+            savedFormData.current = null
+        }
+    }
 
     // ERROR HANDLING
     useEffect(() => {
@@ -448,7 +493,7 @@ export const ConfigMapSecretContainer = ({
         }
 
         if (reloadResolvedScopeVariablesResErr) {
-            setResolveScopedVariables(false)
+            unResolveScopeVariables()
         }
     }, [
         configMapSecretData,
@@ -466,7 +511,7 @@ export const ConfigMapSecretContainer = ({
             resolvedScopeVariablesRes &&
             !resolvedScopeVariablesRes.areVariablesPresent
         ) {
-            setResolveScopedVariables(false)
+            unResolveScopeVariables()
             ToastManager.showToast({
                 title: 'Error',
                 description: 'No valid variable found on this page',
@@ -480,12 +525,6 @@ export const ConfigMapSecretContainer = ({
         if (resolveScopedVariables && resolvedFormData) {
             savedFormData.current = formData
             reset({ ...resolvedFormData, isResolvedData: true }, { keepInitialValues: true, keepDirty: true })
-        } else if (savedFormData.current) {
-            reset(
-                { ...savedFormData.current, mergeStrategy: formData.mergeStrategy, yamlMode: formData.yamlMode },
-                { keepInitialValues: true, keepDirty: true },
-            )
-            savedFormData.current = null
         }
     }, [resolveScopedVariables, resolvedFormData])
 
@@ -518,9 +557,24 @@ export const ConfigMapSecretContainer = ({
     }, [selectedCMSecret, isLoading])
 
     // METHODS
-    const updateCMSecret = (configName?: string) => {
-        setResolveScopedVariables(false)
+    const resetToInitialState = () => {
+        unResolveScopeVariables()
         setHideNoOverrideEmptyState(false)
+        setOpenDeleteModal(null)
+        setShowDraftSaveModal(false)
+        setAreCommentsPresent(false)
+        setShouldMergeTemplateWithPatches(false)
+        setIsExpressEditView(false)
+        setIsExpressEditComparisonView(false)
+        setShowExpressEditConfirmationModal(false)
+
+        formValuesBeforeExpressEditView.current = null
+    }
+
+    const updateCMSecret = (configName?: string) => {
+        // RESET STATES
+        resetToInitialState()
+
         fetchEnvConfig(+envId || -1)
 
         if (isCreateState) {
@@ -567,7 +621,8 @@ export const ConfigMapSecretContainer = ({
          */
         const isESO = isSecret && hasESO(formData.externalType)
         const yamlFormKey = isESO ? 'esoSecretYaml' : 'yaml'
-        setValue(yamlFormKey, formInitialValues[yamlFormKey], { shouldDirty: true })
+        setValue(yamlFormKey, formInitialValues[yamlFormKey], { shouldDirty: true, triggerError: true })
+        setValue('currentData', formInitialValues.currentData, { shouldDirty: true, triggerError: true })
     }
 
     const toggleDraftComments = () => setShowComments(!showComments)
@@ -581,6 +636,8 @@ export const ConfigMapSecretContainer = ({
             action: 'clicked-delete-override',
         })
     }
+
+    const handleExpressDeleteDraft = () => setOpenDeleteModal('expressDeleteDraft')
 
     const closeDeleteModal = () => setOpenDeleteModal(null)
 
@@ -610,15 +667,24 @@ export const ConfigMapSecretContainer = ({
     }
 
     const handleToggleScopedVariablesView = () => {
+        const updatedResolveScopedVariables = !resolveScopedVariables
+
         ReactGA.event({
             category: gaEventCategory,
-            action: resolveScopedVariables ? 'clicked-unresolve-scoped-variable' : 'clicked-resolve-scoped-variable',
+            action: updatedResolveScopedVariables
+                ? 'clicked-resolve-scoped-variable'
+                : 'clicked-unresolve-scoped-variable',
         })
-        setResolveScopedVariables(!resolveScopedVariables)
+
+        if (updatedResolveScopedVariables) {
+            setResolveScopedVariables(true)
+        } else {
+            unResolveScopeVariables()
+        }
     }
 
     const handleCreateOverride = () => {
-        setResolveScopedVariables(false)
+        unResolveScopeVariables()
         setHideNoOverrideEmptyState(true)
         ReactGA.event({
             category: gaEventCategory,
@@ -632,7 +698,7 @@ export const ConfigMapSecretContainer = ({
     }
 
     const handleMergeStrategyChange = (strategy: OverrideMergeStrategyType) => {
-        setValue('mergeStrategy', strategy)
+        setValue('mergeStrategy', strategy, { shouldDirty: true })
 
         if (
             !formState.isDirty &&
@@ -650,6 +716,7 @@ export const ConfigMapSecretContainer = ({
             setValue('yaml', yaml)
             setValue('currentData', currentData)
         } else if (strategy !== formData.mergeStrategy) {
+            const initialValues = isExpressEditView ? expressEditFormInitialValues.current : formInitialValues
             reset(
                 {
                     ...(strategy === OverrideMergeStrategyType.PATCH
@@ -660,7 +727,7 @@ export const ConfigMapSecretContainer = ({
                               configMapSecretData: inheritedConfigMapSecretData,
                               fallbackMergeStrategy: DEFAULT_MERGE_STRATEGY,
                           })
-                        : formInitialValues),
+                        : initialValues),
                     mergeStrategy: strategy,
                     yamlMode: formData.yamlMode,
                     currentData: formData.currentData,
@@ -676,14 +743,63 @@ export const ConfigMapSecretContainer = ({
         })
     }
 
-    const toggleSaveChangesModal = () => setShowDraftSaveModal(false)
+    const handleSaveChangesModalClose = () => setShowDraftSaveModal(false)
 
     const handleToggleShowTemplateMergedWithPatch = () => setShouldMergeTemplateWithPatches((prev) => !prev)
+
+    const handleNoPublishedStateRedirectClick = () => setSelectedProtectionViewTab(ProtectConfigTabsType.EDIT_DRAFT)
 
     const reloadSaveChangesModal = () => {
         setShowDraftSaveModal(false)
         updateCMSecret(draftPayload.configData[0].name)
         setDraftPayload(null)
+    }
+
+    // EXPRESS EDIT HANDLERS
+    const handleExpressEditClick = () => {
+        formValuesBeforeExpressEditView.current = savedFormData.current || formData
+        unResolveScopeVariables()
+        setIsExpressEditView(true)
+
+        expressEditFormInitialValues.current = {
+            ...getConfigMapSecretFormInitialValues({
+                configMapSecretData,
+                componentType,
+                cmSecretStateLabel,
+                isJob,
+                fallbackMergeStrategy: DEFAULT_MERGE_STRATEGY,
+            }),
+            yamlMode: formValuesBeforeExpressEditView.current.yamlMode,
+        }
+
+        reset(expressEditFormInitialValues.current, { formInitialValues: expressEditFormInitialValues.current })
+        closePromptTooltip()
+    }
+
+    const toggleExpressEditComparisonView = () => {
+        unResolveScopeVariables()
+        setIsExpressEditComparisonView(!isExpressEditComparisonView)
+    }
+
+    const handleExpressEditViewClose = () => {
+        unResolveScopeVariables()
+        setIsExpressEditView(false)
+        setIsExpressEditComparisonView(false)
+
+        const resetValues = { ...formValuesBeforeExpressEditView.current, yamlMode: formData.yamlMode }
+        const resetInitialValues = { ...formInitialValues, yamlMode: formData.yamlMode }
+
+        reset(resetValues, {
+            triggerDirty: true,
+            triggerError: true,
+            formInitialValues: resetInitialValues,
+        })
+        formValuesBeforeExpressEditView.current = null
+        expressEditFormInitialValues.current = null
+    }
+
+    const closeExpressEditPublishConfirmationModal = () => {
+        setShowExpressEditConfirmationModal(false)
     }
 
     const handleError = (actionType: DraftAction, err: any, payloadData?: CMSecretPayloadType) => {
@@ -711,76 +827,121 @@ export const ConfigMapSecretContainer = ({
                 variant: ToastVariantType.notAuthorized,
                 description: 'You cannot make any changes',
             })
+        } else if (err.code === API_STATUS_CODES.CONFLICT) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description:
+                    'You are not an exception user anymore. Copy your changes to avoid losing them, then refresh the page.',
+            })
+            closeExpressEditPublishConfirmationModal()
         } else {
             showError(err)
         }
     }
 
-    const onSubmit: UseFormSubmitHandler<ConfigMapSecretUseFormProps> = async (data) => {
-        const payloadData = getConfigMapSecretPayload(data)
+    const onSubmit =
+        (isExpressEdit = false): UseFormSubmitHandler<ConfigMapSecretUseFormProps> =>
+        async (data) => {
+            const payloadData = getConfigMapSecretPayload(data)
 
-        if (isApprovalPolicyConfigured) {
-            setDraftPayload({
-                id: id ?? 0,
-                appId: +appId,
-                configData: [payloadData],
-                environmentId: envId ? +envId : null,
+            if (isExpressEdit && isDraftAvailable && !showExpressEditConfirmationModal) {
+                setShowExpressEditConfirmationModal(true)
+                return
+            }
+
+            if (isApprovalPolicyConfigured && !isExpressEdit) {
+                setDraftPayload({
+                    id: id ?? 0,
+                    appId: +appId,
+                    configData: [payloadData],
+                    environmentId: envId ? +envId : null,
+                })
+                setShowDraftSaveModal(true)
+                return
+            }
+
+            try {
+                setIsSubmitting(true)
+                let toastTitle = ''
+
+                if (!envId) {
+                    const updateConfigMapSecretParams = {
+                        id,
+                        appId: +appId,
+                        payload: payloadData,
+                        signal: abortControllerRef.current.signal,
+                        isTemplateView,
+                        isExpressEdit,
+                    }
+
+                    await (isSecret ? updateSecret : updateConfigMap)(updateConfigMapSecretParams)
+                    toastTitle = `${payloadData.name ? 'Updated' : 'Saved'}`
+                } else {
+                    const overrideConfigMapSecretParams = {
+                        appId: +appId,
+                        envId: +envId,
+                        payload: payloadData,
+                        signal: abortControllerRef.current.signal,
+                        isTemplateView,
+                        isExpressEdit,
+                    }
+
+                    await (isSecret ? overRideSecret : overRideConfigMap)(overrideConfigMapSecretParams)
+                    toastTitle = 'Overridden'
+                }
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    title: toastTitle,
+                    description: 'Changes will be reflected after next deployment.',
+                })
+                setIsSubmitting(false)
+
+                if (isExpressEdit) {
+                    ReactGA.event({ category: 'APP_EXPRESS_EDIT_PUBLISHED', action: 'APP_EXPRESS_EDIT_PUBLISHED' })
+                }
+
+                if (!abortControllerRef.current.signal.aborted) {
+                    updateCMSecret(payloadData.name)
+                }
+            } catch (err) {
+                setIsSubmitting(false)
+                if (!abortControllerRef.current.signal.aborted) {
+                    handleError(DraftAction.Update, err, payloadData)
+                }
+            }
+        }
+
+    const onError: UseFormErrorHandler<ConfigMapSecretUseFormProps> = (errors) => {
+        const hasRequiredFieldErrorInDataKeys = CONFIG_MAP_SECRET_DATA_KEYS.some(
+            (key) => errors[key]?.[0] === CONFIG_MAP_SECRET_REQUIRED_FIELD_ERROR,
+        )
+
+        const hasRequiredFieldErrorsOutsideDataKeys = Object.keys(errors).some(
+            (key: keyof ConfigMapSecretUseFormProps) =>
+                !CONFIG_MAP_SECRET_DATA_KEYS.includes(key) &&
+                errors[key]?.[0] === CONFIG_MAP_SECRET_REQUIRED_FIELD_ERROR,
+        )
+
+        if (hasRequiredFieldErrorsOutsideDataKeys || hasRequiredFieldErrorInDataKeys) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                title: 'Input required',
+                description:
+                    hasRequiredFieldErrorInDataKeys && !hasRequiredFieldErrorsOutsideDataKeys
+                        ? `Please add ${CM_SECRET_COMPONENT_NAME[componentType]} data before saving`
+                        : 'Some required fields are missing',
             })
-            setShowDraftSaveModal(true)
             return
         }
 
-        try {
-            setIsSubmitting(true)
-            let toastTitle = ''
-
-            if (!envId) {
-                const updateConfigMapSecretParams = {
-                    id,
-                    appId: +appId,
-                    payload: payloadData,
-                    signal: abortControllerRef.current.signal,
-                    isTemplateView,
-                }
-
-                await (isSecret ? updateSecret : updateConfigMap)(updateConfigMapSecretParams)
-                toastTitle = `${payloadData.name ? 'Updated' : 'Saved'}`
-            } else {
-                const overrideConfigMapSecretParams = {
-                    appId: +appId,
-                    envId: +envId,
-                    payload: payloadData,
-                    signal: abortControllerRef.current.signal,
-                    isTemplateView,
-                }
-
-                await (isSecret ? overRideSecret : overRideConfigMap)(overrideConfigMapSecretParams)
-                toastTitle = 'Overridden'
-            }
-            ToastManager.showToast({
-                variant: ToastVariantType.success,
-                title: toastTitle,
-                description: 'Changes will be reflected after next deployment.',
-            })
-            setIsSubmitting(false)
-
-            if (!abortControllerRef.current.signal.aborted) {
-                updateCMSecret(payloadData.name)
-            }
-        } catch (err) {
-            setIsSubmitting(false)
-            if (!abortControllerRef.current.signal.aborted) {
-                handleError(DraftAction.Update, err, payloadData)
-            }
-        }
-    }
-
-    const onError: UseFormErrorHandler<ConfigMapSecretUseFormProps> = (errors) => {
-        if (errors.currentData?.[0] === CONFIG_MAP_SECRET_NO_DATA_ERROR) {
+        const hasInvalidYamlError = CONFIG_MAP_SECRET_DATA_KEYS.some((key) => !!errors[key]?.[0])
+        if (hasInvalidYamlError) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
-                description: `Please add ${CM_SECRET_COMPONENT_NAME[componentType]} data before saving.`,
+                title: 'Invalid YAML',
+                description: CONFIG_MAP_SECRET_YAML_PARSE_ERROR,
             })
+            return
         }
 
         if (errors.hasCurrentDataErr?.[0]) {
@@ -796,13 +957,14 @@ export const ConfigMapSecretContainer = ({
         if (hasErrors) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
-                description: 'Please resolve form errors before saving.',
+                description: 'Please resolve form errors before saving',
             })
         }
     }
 
-    const formSubmitHandler = handleSubmit(onSubmit, onError)
-    const dryRunSubmitHandler = handleSubmit(onSubmit, onDryRunError)
+    const formSubmitHandler = handleSubmit(onSubmit(), onError)
+    const dryRunSubmitHandler = handleSubmit(onSubmit(), onDryRunError)
+    const expressEditSubmitHandler = handleSubmit(onSubmit(true), onError)
 
     // CONFIG TOOLBAR POPUP MENU
     const toolbarPopupConfig: ConfigToolbarProps['popupConfig'] = {
@@ -814,7 +976,7 @@ export const ConfigMapSecretContainer = ({
             isPublishedConfigPresent: !!configMapSecretData,
             unableToParseData: !!parsingError,
             isLoading: isLoading || isSubmitting,
-            isDraftAvailable: !!draftData,
+            isDraftAvailable,
             handleDiscardDraft: handleOpenDiscardDraftPopup,
             handleShowEditHistory,
             handleDelete,
@@ -828,6 +990,9 @@ export const ConfigMapSecretContainer = ({
                 draftData?.action !== DraftAction.Delete &&
                 !isCreateState,
             isDeleteOverrideDraftPresent: draftData?.action === DraftAction.Delete,
+            isExceptionUser,
+            handleExpressDeleteDraft,
+            isExpressEditView,
         }),
         popupNodeType,
         popupMenuNode: ProtectionViewToolbarPopupNode ? (
@@ -842,43 +1007,46 @@ export const ConfigMapSecretContainer = ({
     }
 
     // RENDERERS
+    const getCommonProps = (onCancel: ConfigMapSecretFormProps['onCancel']) => ({
+        cmSecretStateLabel,
+        componentType,
+        isJob,
+        isExpressEditView,
+        isExpressEditComparisonView,
+        disableDataTypeChange: isDeleteDisabled,
+        areScopeVariablesResolving: resolvedScopeVariablesResLoading,
+        appChartRef,
+        handleMergeStrategyChange,
+        onSubmit: isExpressEditView ? expressEditSubmitHandler : formSubmitHandler,
+        onCancel: isExpressEditView ? handleExpressEditViewClose : onCancel,
+        useFormProps,
+    })
+
     const renderForm = ({ onCancel }: Pick<ConfigMapSecretFormProps, 'onCancel'>) =>
         isApprovalPolicyConfigured && draftData ? (
             <ConfigMapSecretProtected
-                cmSecretStateLabel={cmSecretStateLabel}
+                {...getCommonProps(onCancel)}
                 componentName={componentName}
                 publishedConfigMapSecretData={resolvedConfigMapSecretData ?? configMapSecretData}
                 draftData={resolvedDraftData ?? draftData}
                 inheritedConfigMapSecretData={resolvedInheritedConfigMapSecretData ?? inheritedConfigMapSecretData}
                 id={id}
-                onSubmit={formSubmitHandler}
                 selectedProtectionViewTab={selectedProtectionViewTab}
                 updateCMSecret={updateCMSecret}
-                componentType={componentType}
-                isJob={isJob}
-                disableDataTypeChange={isDeleteDisabled}
                 parentName={parentName}
-                areScopeVariablesResolving={resolvedScopeVariablesResLoading}
-                appChartRef={appChartRef}
                 shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
-                useFormProps={useFormProps}
+                handleNoPublishedStateRedirectClick={handleNoPublishedStateRedirectClick}
             />
         ) : (
             <ConfigMapSecretForm
+                {...getCommonProps(onCancel)}
                 isCreateView={isNullOrUndefined(id)}
-                cmSecretStateLabel={cmSecretStateLabel}
-                componentType={componentType}
                 configMapSecretData={configMapSecretData}
                 inheritedConfigMapSecretData={inheritedConfigMapSecretData}
-                isJob={isJob}
-                isApprovalPolicyConfigured={isApprovalPolicyConfigured}
+                publishedConfigMapSecretData={configMapSecretData}
+                draftData={null}
+                isApprovalPolicyConfigured={false}
                 isSubmitting={isSubmitting}
-                disableDataTypeChange={isDeleteDisabled}
-                onSubmit={formSubmitHandler}
-                onCancel={onCancel}
-                areScopeVariablesResolving={resolvedScopeVariablesResLoading}
-                appChartRef={appChartRef}
-                useFormProps={useFormProps}
             />
         )
 
@@ -960,6 +1128,7 @@ export const ConfigMapSecretContainer = ({
             closeDeleteModal={closeDeleteModal}
             handleError={handleError}
             isTemplateView={isTemplateView}
+            isExceptionUser={isExceptionUser}
         />
     )
 
@@ -984,20 +1153,30 @@ export const ConfigMapSecretContainer = ({
 
         return (
             <div className="flexbox-col h-100">
-                <ConfigHeader
-                    configHeaderTab={configHeaderTab}
-                    handleTabChange={handleActionWithFormValidation(handleTabChange)}
-                    isDisabled={isLoading}
-                    areChangesPresent={formState.isDirty}
-                    isOverridable={
-                        cmSecretStateLabel === CM_SECRET_STATE.INHERITED ||
-                        cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
-                    }
-                    showNoOverride={showNoOverride}
-                    parsingError={parsingError}
-                    restoreLastSavedYAML={restoreLastSavedYAML}
-                    hideTabs={{ inherited: isJob, dryRun: isJob || isTemplateView }}
-                />
+                {!isExpressEditView ? (
+                    <ConfigHeader
+                        configHeaderTab={configHeaderTab}
+                        handleTabChange={handleActionWithFormValidation(handleTabChange)}
+                        isDisabled={isLoading}
+                        areChangesPresent={formState.isDirty}
+                        isOverridable={
+                            cmSecretStateLabel === CM_SECRET_STATE.INHERITED ||
+                            cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
+                        }
+                        showNoOverride={showNoOverride}
+                        parsingError={parsingError}
+                        restoreLastSavedYAML={restoreLastSavedYAML}
+                        hideTabs={{ inherited: isJob, dryRun: isJob || isTemplateView }}
+                    />
+                ) : (
+                    ExpressEditHeader && (
+                        <ExpressEditHeader
+                            isComparisonView={isExpressEditComparisonView}
+                            toggleComparison={toggleExpressEditComparisonView}
+                            handleClose={handleExpressEditViewClose}
+                        />
+                    )
+                )}
                 {!hideConfigToolbar && (
                     <ConfigToolbar
                         configHeaderTab={configHeaderTab}
@@ -1013,9 +1192,10 @@ export const ConfigMapSecretContainer = ({
                         isMergeStrategySelectorDisabled={resolveScopedVariables}
                         areCommentsPresent={areCommentsPresent}
                         disableAllActions={isLoading || isSubmitting || !!parsingError}
-                        isDraftPresent={!!draftData}
+                        isDraftPresent={isDraftAvailable}
                         isPublishedConfigPresent={cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED}
                         isApprovalPending={draftData?.draftState === DraftState.AwaitApproval}
+                        isUnpublished={cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED}
                         showDeleteOverrideDraftEmptyState={
                             isCreateState ||
                             (draftData?.action === DraftAction.Delete &&
@@ -1043,6 +1223,14 @@ export const ConfigMapSecretContainer = ({
                         draftVersionId={draftData?.draftVersionId}
                         handleReload={updateCMSecret}
                         requestedUserId={draftData?.requestedUserId}
+                        isExpressEditView={isExpressEditView}
+                        isExceptionUser={isExceptionUser}
+                        expressEditButtonConfig={{
+                            showPromptTooltip: showPrompt && showExpressEditPromptTooltip,
+                            onClick: handleExpressEditClick,
+                            onClose: closePromptTooltip,
+                            onDoNotShowAgainClose: permanentClosePromptTooltip,
+                        }}
                     />
                 )}
                 {renderConfigHeaderTabContent()}
@@ -1055,7 +1243,9 @@ export const ConfigMapSecretContainer = ({
             <Prompt when={shouldPrompt} message={checkIfPathIsMatching(location.pathname)} />
             <div className="configmap-secret-container flexbox w-100 dc__content-space h-100 dc__position-rel">
                 <div className="p-8 flexbox flex-grow-1 mw-none">
-                    <div className="dc__border br-4 dc__overflow-hidden h-100 bg__primary flex-grow-1">
+                    <div
+                        className={`br-4 dc__overflow-hidden h-100 bg__primary flex-grow-1 ${isExpressEditView ? 'border__primary-warning' : 'border__primary'}`}
+                    >
                         {renderContent()}
                     </div>
                 </div>
@@ -1064,13 +1254,27 @@ export const ConfigMapSecretContainer = ({
                     <SaveChangesModal
                         appId={+appId}
                         envId={envId ? +envId : -1}
+                        envName={envName}
                         resourceType={componentType}
                         resourceName={draftPayload.configData[0].name}
                         prepareDataToSave={() => draftPayload}
-                        toggleModal={toggleSaveChangesModal}
+                        handleClose={handleSaveChangesModalClose}
                         latestDraft={draftData}
                         reload={reloadSaveChangesModal}
                         showAsModal
+                        isCreate={isCreateState}
+                        showExpressCreate={isExceptionUser && isCreateState}
+                        expressCreateConfig={{
+                            isLoading: isSubmitting,
+                            onClick: expressEditSubmitHandler,
+                        }}
+                    />
+                )}
+                {ExpressEditConfirmationModal && showExpressEditConfirmationModal && (
+                    <ExpressEditConfirmationModal
+                        handleClose={closeExpressEditPublishConfirmationModal}
+                        handleSave={expressEditSubmitHandler}
+                        isLoading={isSubmitting}
                     />
                 )}
                 {DraftComments && showComments && draftData && (

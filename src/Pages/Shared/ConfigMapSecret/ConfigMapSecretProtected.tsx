@@ -22,7 +22,6 @@ import {
     CompareFromApprovalOptionsValuesType,
     DraftAction,
     DraftState,
-    noop,
     OverrideMergeStrategyType,
     Progressing,
     ProtectConfigTabsType,
@@ -60,9 +59,14 @@ export const ConfigMapSecretProtected = ({
     inheritedConfigMapSecretData,
     areScopeVariablesResolving,
     onSubmit,
+    onCancel,
     updateCMSecret,
     shouldMergeTemplateWithPatches,
     useFormProps,
+    isExpressEditView,
+    isExpressEditComparisonView,
+    handleMergeStrategyChange,
+    handleNoPublishedStateRedirectClick,
 }: ConfigMapSecretProtectedProps) => {
     // HOOKS
     const { data: formData } = useFormProps
@@ -228,6 +232,8 @@ export const ConfigMapSecretProtected = ({
         <ConfigMapSecretForm
             configMapSecretData={configMapSecretData}
             inheritedConfigMapSecretData={inheritedConfigMapSecretData}
+            publishedConfigMapSecretData={publishedConfigMapSecretData}
+            draftData={draftData}
             isCreateView={isNullOrUndefined(id)}
             componentType={componentType}
             cmSecretStateLabel={
@@ -241,11 +247,14 @@ export const ConfigMapSecretProtected = ({
             appChartRef={appChartRef}
             isApprovalPolicyConfigured
             isDraft
+            isExpressEditView={isExpressEditView}
+            isExpressEditComparisonView={isExpressEditComparisonView}
             disableDataTypeChange={disableDataTypeChange}
             isSubmitting={false}
-            onCancel={noop}
+            onCancel={onCancel}
             onSubmit={onSubmit}
             areScopeVariablesResolving={areScopeVariablesResolving}
+            handleMergeStrategyChange={handleMergeStrategyChange}
             useFormProps={useFormProps}
         />
     )
@@ -280,7 +289,13 @@ export const ConfigMapSecretProtected = ({
         switch (selectedProtectionViewTab) {
             case ProtectConfigTabsType.PUBLISHED:
                 if (cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED || !publishedConfigMapSecretData) {
-                    return <NoPublishedVersionEmptyState isOverride={false} />
+                    return (
+                        <NoPublishedVersionEmptyState
+                            isOverride={false}
+                            showRedirectButton
+                            onRedirectClick={handleNoPublishedStateRedirectClick}
+                        />
+                    )
                 }
 
                 if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED) {

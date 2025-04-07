@@ -139,6 +139,9 @@ export const Configurations = () => {
                         reloadEnvironments={reloadEnvironments}
                         environmentName={selectedEnv.name}
                         clusterId={null}
+                        isExceptionUser={
+                            approvalConfigForEnv?.[ApprovalConfigDataKindType.deploymentTemplate].isExceptionUser
+                        }
                         isTemplateView={false}
                     />
                 </div>
@@ -156,6 +159,7 @@ export const Configurations = () => {
                             approvalConfigForEnv?.[ApprovalConfigDataKindType.configMap],
                         )}
                         clusterId={null}
+                        isExceptionUser={approvalConfigForEnv?.[ApprovalConfigDataKindType.configMap].isExceptionUser}
                         isTemplateView={false}
                     />
                 </div>
@@ -174,6 +178,9 @@ export const Configurations = () => {
                             approvalConfigForEnv?.[ApprovalConfigDataKindType.configSecret],
                         )}
                         clusterId={null}
+                        isExceptionUser={
+                            approvalConfigForEnv?.[ApprovalConfigDataKindType.configSecret].isExceptionUser
+                        }
                         isTemplateView={false}
                     />
                 </div>

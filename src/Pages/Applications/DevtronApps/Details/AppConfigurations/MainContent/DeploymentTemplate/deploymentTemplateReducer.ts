@@ -54,6 +54,7 @@ interface InitializeStateBasePayloadType
 
 interface GetDeploymentTemplateInitialStateParamsType {
     isSuperAdmin: boolean
+    isExceptionUser: boolean
 }
 
 export enum DeploymentTemplateActionType {
@@ -90,6 +91,7 @@ export enum DeploymentTemplateActionType {
     TOGGLE_APP_METRICS = 'TOGGLE_APP_METRICS',
     UPDATE_MERGE_STRATEGY = 'UPDATE_MERGE_STRATEGY',
     SHOW_DELETE_OVERRIDE_DIALOG = 'SHOW_DELETE_OVERRIDE_DIALOG',
+    SHOW_EXPRESS_DELETE_DRAFT_DIALOG = 'SHOW_EXPRESS_DELETE_DRAFT_DIALOG',
     DELETE_LOCAL_OVERRIDE = 'DELETE_LOCAL_OVERRIDE',
     OVERRIDE_TEMPLATE = 'OVERRIDE_TEMPLATE',
     DELETE_OVERRIDE_CONCURRENT_PROTECTION_ERROR = 'DELETE_OVERRIDE_CONCURRENT_PROTECTION_ERROR',
@@ -104,6 +106,11 @@ export enum DeploymentTemplateActionType {
     LOAD_CURRENT_EDITOR_MERGED_TEMPLATE = 'LOAD_CURRENT_EDITOR_MERGED_TEMPLATE',
     CURRENT_EDITOR_MERGED_TEMPLATE_FETCH_ERROR = 'CURRENT_EDITOR_MERGED_TEMPLATE_ERROR',
     LOCK_CHANGES_DETECTED_FROM_DRAFT_API = 'LOCK_CHANGES_DETECTED_FROM_DRAFT_API',
+    IS_EXPRESS_EDIT_VIEW = 'IS_EXPRESS_EDIT_VIEW',
+    TOGGLE_EXPRESS_EDIT_COMPARISON_VIEW = 'TOGGLE_EXPRESS_EDIT_COMPARISON_VIEW',
+    SHOW_EXPRESS_EDIT_CONFIRMATION_MODAL = 'SHOW_EXPRESS_EDIT_CONFIRMATION_MODAL',
+    SET_EXPRESS_EDIT_COMPARISON_VIEW_LHS = 'SET_EXPRESS_EDIT_COMPARISON_VIEW_LHS',
+    SHOW_EXPRESS_EDIT_PROMPT_TOOLTIP = 'SHOW_EXPRESS_EDIT_PROMPT_TOOLTIP',
 }
 
 type DeploymentTemplateNoPayloadActions =
@@ -134,6 +141,8 @@ type DeploymentTemplateNoPayloadActions =
     | DeploymentTemplateActionType.CLOSE_LOCKED_DIFF_MODAL
     | DeploymentTemplateActionType.UPDATE_CONFIG_HEADER_TAB
     | DeploymentTemplateActionType.LOCK_CHANGES_DETECTED_FROM_DRAFT_API
+    | DeploymentTemplateActionType.TOGGLE_EXPRESS_EDIT_COMPARISON_VIEW
+    | DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_PROMPT_TOOLTIP
 
 interface LoadMergedTemplateBasePayloadType {
     editorStates: ConfigEditorStatesType[]
@@ -252,9 +261,29 @@ export type DeploymentTemplateActionState =
           type: DeploymentTemplateActionType.CURRENT_EDITOR_MERGED_TEMPLATE_FETCH_ERROR
           payload: Pick<DeploymentTemplateStateType['currentEditorTemplateData'], 'mergedTemplateError'>
       }
+    | {
+          type: DeploymentTemplateActionType.IS_EXPRESS_EDIT_VIEW
+          payload: {
+              isExpressEditView: DeploymentTemplateStateType['isExpressEditView']
+              currentEditorTemplateData: DeploymentTemplateEditorDataStateType
+          }
+      }
+    | {
+          type: DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DRAFT_DIALOG
+          payload: Pick<DeploymentTemplateStateType, 'showExpressDeleteDraftDialog'>
+      }
+    | {
+          type: DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_CONFIRMATION_MODAL
+          payload: Pick<DeploymentTemplateStateType, 'showExpressEditConfirmationModal'>
+      }
+    | {
+          type: DeploymentTemplateActionType.SET_EXPRESS_EDIT_COMPARISON_VIEW_LHS
+          payload: Pick<DeploymentTemplateStateType, 'expressEditComparisonViewLHS'>
+      }
 
 export const getDeploymentTemplateInitialState = ({
     isSuperAdmin,
+    isExceptionUser,
 }: GetDeploymentTemplateInitialStateParamsType): DeploymentTemplateStateType => ({
     isLoadingInitialData: true,
     initialLoadError: null,
@@ -298,12 +327,18 @@ export const getDeploymentTemplateInitialState = ({
     showDeleteOverrideDialog: false,
     showDeleteDraftOverrideDialog: false,
     showReadMe: false,
-    editMode: isSuperAdmin ? ConfigurationType.YAML : ConfigurationType.GUI,
+    editMode: isSuperAdmin || isExceptionUser ? ConfigurationType.YAML : ConfigurationType.GUI,
     shouldMergeTemplateWithPatches: false,
     selectedProtectionViewTab: ProtectConfigTabsType.EDIT_DRAFT,
     isLoadingChangedChartDetails: false,
     areCommentsPresent: false,
     migratedFrom: null,
+    isExpressEditView: false,
+    isExpressEditComparisonView: false,
+    showExpressDeleteDraftDialog: false,
+    showExpressEditConfirmationModal: false,
+    expressEditComparisonViewLHS: null,
+    showExpressEditPromptTooltip: false,
 })
 
 const handleSwitchToYAMLMode = (state: DeploymentTemplateStateType): DeploymentTemplateStateType => {
@@ -953,6 +988,40 @@ export const deploymentTemplateReducer = (
                     showLockedDiffForApproval: false,
                 },
             }
+
+        case DeploymentTemplateActionType.IS_EXPRESS_EDIT_VIEW:
+            return {
+                ...state,
+                ...handleReApplyLockedKeys(state),
+                ...handleUnResolveScopedVariables(),
+                ...action.payload,
+                isExpressEditComparisonView: false,
+            }
+
+        case DeploymentTemplateActionType.TOGGLE_EXPRESS_EDIT_COMPARISON_VIEW:
+            return {
+                ...state,
+                ...handleReApplyLockedKeys(state),
+                ...handleUnResolveScopedVariables(),
+                ...handleSwitchToYAMLMode(state),
+                expressEditComparisonViewLHS:
+                    state.draftTemplateData ||
+                    (!state.publishedTemplateData?.environmentConfig || state.publishedTemplateData?.isOverridden
+                        ? state.publishedTemplateData
+                        : null),
+                isExpressEditComparisonView: !state.isExpressEditComparisonView,
+            }
+
+        case DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DRAFT_DIALOG:
+        case DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_CONFIRMATION_MODAL:
+        case DeploymentTemplateActionType.SET_EXPRESS_EDIT_COMPARISON_VIEW_LHS:
+            return {
+                ...state,
+                ...action.payload,
+            }
+
+        case DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_PROMPT_TOOLTIP:
+            return { ...state, showExpressEditPromptTooltip: true }
 
         default:
             return state
