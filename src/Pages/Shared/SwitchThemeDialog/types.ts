@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AppThemeType, UserPreferencesType, useTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { AppThemeType, useTheme } from '@devtron-labs/devtron-fe-common-lib'
 
 type ThemePreferenceType = ReturnType<typeof useTheme>['themePreference']
 
@@ -27,7 +27,6 @@ export type SwitchThemeDialogProps = {
     handleClose: () => void
 } & (
     | {
-          currentUserPreferences: UserPreferencesType
           /**
            * @default false
            * @description Required for storybook
