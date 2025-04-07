@@ -12,6 +12,6 @@ export const APP_DETAILS_GA_EVENTS = {
     },
     SearchesAppClicked: {
         category: 'App Selector',
-        action: 'DA_SWITCH_SEARCHED_APP_CLICKEDd',
+        action: 'DA_SWITCH_SEARCHED_APP_CLICKED',
     },
 }
