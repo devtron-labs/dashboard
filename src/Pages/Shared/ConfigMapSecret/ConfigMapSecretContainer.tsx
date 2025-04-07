@@ -896,6 +896,10 @@ export const ConfigMapSecretContainer = ({
                 })
                 setIsSubmitting(false)
 
+                if (isExpressEdit) {
+                    ReactGA.event({ category: 'APP_EXPRESS_EDIT_PUBLISHED', action: 'APP_EXPRESS_EDIT_PUBLISHED' })
+                }
+
                 if (!abortControllerRef.current.signal.aborted) {
                     updateCMSecret(payloadData.name)
                 }

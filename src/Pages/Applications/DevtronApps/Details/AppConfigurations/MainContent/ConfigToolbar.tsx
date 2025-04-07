@@ -15,6 +15,7 @@
  */
 
 import { Fragment } from 'react'
+import ReactGA from 'react-ga4'
 import {
     Button,
     ButtonStyleType,
@@ -418,7 +419,17 @@ const ConfigToolbar = ({
             {(showExpressEditButton || !isPublishedValuesView || isPublishedConfigPresent) && (
                 <div className="flexbox dc__align-items-center dc__gap-8">
                     {showExpressEditButton && (
-                        <ExpressEditButton disabled={isUnpublished} {...(expressEditButtonConfig ?? {})} />
+                        <ExpressEditButton
+                            disabled={isUnpublished}
+                            {...(expressEditButtonConfig ?? {})}
+                            onClick={() => {
+                                ReactGA.event({
+                                    category: 'APP_EXPRESS_EDIT_ACCESSED',
+                                    action: 'APP_EXPRESS_EDIT_ACCESSED',
+                                })
+                                expressEditButtonConfig?.onClick?.()
+                            }}
+                        />
                     )}
                     {isPublishedValuesView && !isPublishedConfigPresent ? null : (
                         <>

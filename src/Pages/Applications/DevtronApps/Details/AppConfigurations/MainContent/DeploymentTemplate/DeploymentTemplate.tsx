@@ -1221,6 +1221,10 @@ const DeploymentTemplate = ({
             const apiService = getSaveAPIService()
             const response = await apiService(prepareDataToSave({ skipReadmeAndSchema: true }), null, isTemplateView)
 
+            if (isExpressEdit) {
+                ReactGA.event({ category: 'APP_EXPRESS_EDIT_PUBLISHED', action: 'APP_EXPRESS_EDIT_PUBLISHED' })
+            }
+
             const isLockConfigError = !!response?.result?.isLockConfigError
 
             if (isLockConfigError && showLockedTemplateDiffModal) {
