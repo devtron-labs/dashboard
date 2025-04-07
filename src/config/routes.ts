@@ -83,7 +83,7 @@ export const URLS = {
     GLOBAL_CONFIG_GITOPS: '/global-config/gitops',
     GLOBAL_CONFIG_DOCKER: '/global-config/docker',
     GLOBAL_CONFIG_CLUSTER: '/global-config/cluster-env',
-    GLOBAL_CONFIG_CREATE_CLUSTER: '/global-config/cluster-env/create/cluster',
+    GLOBAL_CONFIG_CREATE_CLUSTER: '/global-config/cluster-env/create/cluster/:type',
     GLOBAL_CONFIG_CHART: '/global-config/chart-repo',
     GLOBAL_CONFIG_AUTH: '/global-config/auth',
     GLOBAL_CONFIG_AUTH_USER_PERMISSION: '/global-config/auth/users',

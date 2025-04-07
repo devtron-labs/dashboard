@@ -389,6 +389,7 @@ export const DOCUMENTATION = {
     SECURITY: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/security-features`,
     SPECIFY_IMAGE_PULL_SECRET: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/container-registries#specify-image-pull-secret`,
     WEBHOOK_CI: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/ci-pipeline#3.-deploy-image-from-external-service`,
+    CLUSTER_AND_ENVIRONMENT: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/global-configurations/cluster-and-environments`,
 }
 
 export const HEADER_TEXT = {
