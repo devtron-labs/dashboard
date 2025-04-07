@@ -18,6 +18,8 @@ import { CreateClusterParams, CreateClusterTypeEnum } from './types'
 import Sidebar from './Sidebar'
 import FooterComponent from './FooterComponent'
 
+import './styles.scss'
+
 const CreateClusterForm = importComponentFromFELibrary('CreateClusterForm', null, 'function')
 
 const CreateCluster = () => {
@@ -59,7 +61,7 @@ const CreateCluster = () => {
             onClose={handleRedirectToClusterList}
         >
             <dialog
-                className="bg__primary h-100 cn-9 w-100 flexbox-col dc__overflow-hidden p-0"
+                className="bg__primary h-100 cn-9 w-100 flexbox-col dc__overflow-hidden p-0 create-cluster"
                 onClick={stopPropagation}
             >
                 <header className="px-20 py-12 lh-24 flexbox dc__content-space dc__align-items-center dc__border-bottom">
@@ -83,7 +85,7 @@ const CreateCluster = () => {
                     />
                 </header>
 
-                <div className="flexbox flex-grow-1 dc__overflow-hidden">
+                <div className="flexbox flex-grow-1 dc__overflow-hidden create-cluster__body">
                     <Sidebar />
 
                     <div className="bg__tertiary flex-grow-1 flexbox-col dc__overflow-auto p-20 dc__gap-16">

@@ -26,6 +26,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICDeleteInteractive } from '@Icons/ic-delete-interactive.svg'
 import { ReactComponent as ICAbort } from '@Icons/ic-abort.svg'
+import { ForwardRefExoticComponent } from 'react'
 
 const BUTTON_TEXT = 'Hello world'
 
@@ -54,7 +55,7 @@ const meta = {
             control: { type: 'radio' },
         },
     },
-} satisfies Meta<ButtonProps>
+} satisfies Meta<ForwardRefExoticComponent<ButtonProps<ButtonComponentType>>>
 
 export default meta
 
