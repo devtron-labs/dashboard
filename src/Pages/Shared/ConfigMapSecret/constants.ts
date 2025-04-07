@@ -80,7 +80,7 @@ export const VIEW_MODE = {
     GUI: 'gui',
     YAML: 'yaml',
     MANIFEST: 'manifest',
-}
+} as const
 
 export const sampleJSONs = {
     ESO_GoogleSecretsManager: {

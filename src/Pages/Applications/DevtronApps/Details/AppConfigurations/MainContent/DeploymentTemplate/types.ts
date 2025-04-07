@@ -204,6 +204,7 @@ export interface DeploymentTemplateStateType {
     isExpressEditComparisonView: boolean
     /** LHS state for Express Edit Comparison View. */
     expressEditComparisonViewLHS: DeploymentTemplateConfigState
+    showExpressEditPromptTooltip: boolean
 }
 
 export interface HandleFetchDeploymentTemplateReturnType

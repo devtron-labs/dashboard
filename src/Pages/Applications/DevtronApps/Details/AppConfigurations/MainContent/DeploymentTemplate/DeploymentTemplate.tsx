@@ -220,6 +220,7 @@ const DeploymentTemplate = ({
         showExpressDeleteDraftDialog,
         showExpressEditConfirmationModal,
         expressEditComparisonViewLHS,
+        showExpressEditPromptTooltip,
     } = state
 
     const manifestAbortController = useRef<AbortController>(new AbortController())
@@ -1098,6 +1099,14 @@ const DeploymentTemplate = ({
         handleInitialDataLoad()
     }, [])
 
+    useEffect(() => {
+        if (areChangesPresent && !showExpressEditPromptTooltip) {
+            dispatch({
+                type: DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_PROMPT_TOOLTIP,
+            })
+        }
+    }, [areChangesPresent])
+
     const handleReload = async () => {
         updateSearchParams({
             headerTab: null,
@@ -1212,6 +1221,10 @@ const DeploymentTemplate = ({
             const apiService = getSaveAPIService()
             const response = await apiService(prepareDataToSave({ skipReadmeAndSchema: true }), null, isTemplateView)
 
+            if (isExpressEdit) {
+                ReactGA.event({ category: 'APP_EXPRESS_EDIT_PUBLISHED', action: 'APP_EXPRESS_EDIT_PUBLISHED' })
+            }
+
             const isLockConfigError = !!response?.result?.isLockConfigError
 
             if (isLockConfigError && showLockedTemplateDiffModal) {
@@ -1238,8 +1251,27 @@ const DeploymentTemplate = ({
             })
         } catch (error) {
             const isProtectionError = error.code === API_STATUS_CODES.LOCKED
+            const isExceptionError = error.code === API_STATUS_CODES.CONFLICT
 
-            showError(error)
+            if (!isExceptionError) {
+                showError(error)
+            }
+
+            if (isExceptionError) {
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description:
+                        'You are not an exception user anymore. Copy your changes to avoid losing them, then refresh the page.',
+                })
+
+                dispatch({
+                    type: DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_CONFIRMATION_MODAL,
+                    payload: {
+                        showExpressEditConfirmationModal: false,
+                    },
+                })
+            }
+
             dispatch({
                 type: DeploymentTemplateActionType.SAVE_ERROR,
                 payload: {
@@ -2071,7 +2103,7 @@ const DeploymentTemplate = ({
                         isExceptionUser={isExceptionUser}
                         isExpressEditView={isExpressEditView}
                         expressEditButtonConfig={{
-                            showPromptTooltip: showPrompt && areChangesPresent,
+                            showPromptTooltip: showPrompt && showExpressEditPromptTooltip,
                             onClick: handleExpressEditClick,
                             onClose: closePromptTooltip,
                             onDoNotShowAgainClose: permanentClosePromptTooltip,
