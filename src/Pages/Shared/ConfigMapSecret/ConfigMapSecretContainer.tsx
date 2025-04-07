@@ -1007,53 +1007,46 @@ export const ConfigMapSecretContainer = ({
     }
 
     // RENDERERS
+    const getCommonProps = (onCancel: ConfigMapSecretFormProps['onCancel']) => ({
+        cmSecretStateLabel,
+        componentType,
+        isJob,
+        isExpressEditView,
+        isExpressEditComparisonView,
+        disableDataTypeChange: isDeleteDisabled,
+        areScopeVariablesResolving: resolvedScopeVariablesResLoading,
+        appChartRef,
+        handleMergeStrategyChange,
+        onSubmit: isExpressEditView ? expressEditSubmitHandler : formSubmitHandler,
+        onCancel: isExpressEditView ? handleExpressEditViewClose : onCancel,
+        useFormProps,
+    })
+
     const renderForm = ({ onCancel }: Pick<ConfigMapSecretFormProps, 'onCancel'>) =>
         isApprovalPolicyConfigured && draftData ? (
             <ConfigMapSecretProtected
-                cmSecretStateLabel={cmSecretStateLabel}
+                {...getCommonProps(onCancel)}
                 componentName={componentName}
                 publishedConfigMapSecretData={resolvedConfigMapSecretData ?? configMapSecretData}
                 draftData={resolvedDraftData ?? draftData}
                 inheritedConfigMapSecretData={resolvedInheritedConfigMapSecretData ?? inheritedConfigMapSecretData}
                 id={id}
-                onSubmit={isExpressEditView ? expressEditSubmitHandler : formSubmitHandler}
-                onCancel={isExpressEditView ? handleExpressEditViewClose : onCancel}
                 selectedProtectionViewTab={selectedProtectionViewTab}
                 updateCMSecret={updateCMSecret}
-                componentType={componentType}
-                isJob={isJob}
-                isExpressEditView={isExpressEditView}
-                isExpressEditComparisonView={isExpressEditComparisonView}
-                disableDataTypeChange={isDeleteDisabled}
                 parentName={parentName}
-                areScopeVariablesResolving={resolvedScopeVariablesResLoading}
-                appChartRef={appChartRef}
                 shouldMergeTemplateWithPatches={shouldMergeTemplateWithPatches}
-                handleMergeStrategyChange={handleMergeStrategyChange}
                 handleNoPublishedStateRedirectClick={handleNoPublishedStateRedirectClick}
-                useFormProps={useFormProps}
             />
         ) : (
             <ConfigMapSecretForm
+                {...getCommonProps(onCancel)}
                 isCreateView={isNullOrUndefined(id)}
-                cmSecretStateLabel={cmSecretStateLabel}
-                componentType={componentType}
                 configMapSecretData={configMapSecretData}
                 inheritedConfigMapSecretData={inheritedConfigMapSecretData}
                 publishedConfigMapSecretData={configMapSecretData}
                 draftData={null}
-                isJob={isJob}
                 isApprovalPolicyConfigured={false}
-                isExpressEditView={isExpressEditView}
-                isExpressEditComparisonView={isExpressEditComparisonView}
                 isSubmitting={isSubmitting}
-                disableDataTypeChange={isDeleteDisabled}
-                onSubmit={isExpressEditView ? expressEditSubmitHandler : formSubmitHandler}
-                onCancel={isExpressEditView ? handleExpressEditViewClose : onCancel}
-                areScopeVariablesResolving={resolvedScopeVariablesResLoading}
-                appChartRef={appChartRef}
-                handleMergeStrategyChange={handleMergeStrategyChange}
-                useFormProps={useFormProps}
             />
         )
 
