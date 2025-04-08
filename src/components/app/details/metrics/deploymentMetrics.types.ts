@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Moment } from 'moment'
 import { RouteComponentProps } from 'react-router-dom'
+import { Moment } from 'moment'
 
 export interface GraphType {
     xAxisLabel: string

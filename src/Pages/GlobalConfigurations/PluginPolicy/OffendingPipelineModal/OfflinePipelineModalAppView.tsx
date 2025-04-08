@@ -15,11 +15,14 @@
  */
 
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+
 import { APIResponseHandler, GenericEmptyState, ImageType, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+
 import noOffendingPipelineImg from '@Images/no-offending-pipeline.svg'
 import { WorkflowCreate } from '@Components/app/details/triggerView/config'
 import { getInitialWorkflows } from '@Components/app/details/triggerView/workflow.service'
 import { Workflow } from '@Components/workflowEditor/Workflow'
+
 import { OffendingPipelineModalAppViewProps } from './types'
 
 const OffendingPipelineModalAppView = ({

@@ -15,28 +15,31 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { JSONPath } from 'jsonpath-plus'
 import YAML from 'yaml'
+
 import {
-    InfoColourBar,
-    RJSFForm,
+    flatMapOfJSONPaths,
     FormProps,
     GenericEmptyState,
-    joinObjects,
-    flatMapOfJSONPaths,
-    HIDE_SUBMIT_BUTTON_UI_SCHEMA,
-    OverrideMergeStrategyType,
     GUIViewError,
+    HIDE_SUBMIT_BUTTON_UI_SCHEMA,
+    InfoColourBar,
+    joinObjects,
+    OverrideMergeStrategyType,
+    RJSFForm,
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { JSONPath } from 'jsonpath-plus'
-import EmptyFolderImage from '@Images/empty-folder.webp'
+
+import { ReactComponent as ICArrow } from '@Icons/ic-arrow-forward.svg'
 import { ReactComponent as Help } from '@Icons/ic-help.svg'
 import { ReactComponent as ICWarningY5 } from '@Icons/ic-warning-y5.svg'
-import { ReactComponent as ICArrow } from '@Icons/ic-arrow-forward.svg'
+import EmptyFolderImage from '@Images/empty-folder.webp'
 import { importComponentFromFELibrary } from '@Components/common'
+
+import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, GUI_VIEW_TEXTS } from '../constants'
 import { GUIViewProps, GUIViewState } from './types'
-import { GUI_VIEW_TEXTS, DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
 import { getRenderActionButton } from './utils'
 
 const makeObjectFromJsonPathArray = importComponentFromFELibrary('makeObjectFromJsonPathArray', null, 'function')

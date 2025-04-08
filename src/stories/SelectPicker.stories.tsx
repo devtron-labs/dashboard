@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
+import type { Meta, StoryObj } from '@storybook/react'
+
 import {
     ButtonVariantType,
     ComponentSizeType,
@@ -24,6 +25,7 @@ import {
     SelectPickerProps,
     SelectPickerVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as ICEnv } from '@Icons/ic-env.svg'
 
 const SELECT_PICKER_LAYOUT_MAP: Record<SelectPickerProps['layout'], null> = {

@@ -15,6 +15,7 @@
  */
 
 import React from 'react'
+
 import {
     Button,
     ButtonStyleType,
@@ -22,6 +23,7 @@ import {
     Progressing,
     sortCallback,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as RetryIcon } from '../../../../assets/icons/ic-arrow-clockwise.svg'
 import { TriggerResponseModalBodyProps, TriggerResponseModalFooterProps } from '../../AppGroup.types'
 import { BulkResponseStatus } from '../../Constants'

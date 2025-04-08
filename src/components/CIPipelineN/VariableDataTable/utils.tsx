@@ -34,9 +34,9 @@ import {
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { BuildStageVariable } from '@Config/constants'
-import { PipelineContext } from '@Components/workflowEditor/types'
 import { PluginVariableType } from '@Components/ciPipeline/types'
+import { PipelineContext } from '@Components/workflowEditor/types'
+import { BuildStageVariable } from '@Config/constants'
 
 import { excludeVariables } from '../Constants'
 import {
@@ -49,9 +49,9 @@ import {
 import {
     GetValColumnRowPropsType,
     GetVariableDataTableInitialRowsProps,
-    VariableDataTableSelectPickerOptionType,
-    VariableDataRowType,
     VariableDataCustomState,
+    VariableDataRowType,
+    VariableDataTableSelectPickerOptionType,
 } from './types'
 
 const getOptionsForValColumn = ({

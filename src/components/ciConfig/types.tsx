@@ -15,26 +15,29 @@
  */
 
 import React from 'react'
+
 import {
-    ServerError,
+    AppConfigProps,
     CIBuildConfigType,
     CIBuildType,
-    DockerConfigOverrideType,
-    VariableType,
+    CiPipeline,
     CommonNodeAttr,
-    WorkflowType,
+    DockerConfigOverrideType,
     Material,
     SelectPickerOptionType,
-    CiPipeline,
-    AppConfigProps,
+    ServerError,
+    VariableType,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { OptionTypeWithIcon } from '@Components/externalLinks/ExternalLinks.type'
+
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
+import { OptionTypeWithIcon } from '@Components/externalLinks/ExternalLinks.type'
+
+import { ComponentStates } from '../../Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { CiPipelineResult } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
 import { CIPipelineDataType } from '../ciPipeline/types'
-import { ComponentStates } from '../../Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
 
 export interface ArgsFieldSetProps {
     args: { key: string; value: string }[]

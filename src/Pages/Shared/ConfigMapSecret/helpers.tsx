@@ -16,11 +16,11 @@
 
 import { Link } from 'react-router-dom'
 
-import { CMSecretExternalType, InfoColourBar, CMSecretComponentType, Icon } from '@devtron-labs/devtron-fe-common-lib'
+import { CMSecretComponentType, CMSecretExternalType, Icon, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as InfoIcon } from '@Icons/info-filled.svg'
-import { URLS } from '@Config/routes'
 import { DOCUMENTATION } from '@Config/constants'
+import { URLS } from '@Config/routes'
 
 import { EXTERNAL_INFO_TEXT } from './constants'
 

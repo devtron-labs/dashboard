@@ -15,34 +15,38 @@
  */
 
 import { useState } from 'react'
-import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router-dom'
+import { generatePath, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+
 import {
-    showError,
-    PopupMenu,
     Checkbox,
     CHECKBOX_VALUE,
-    useSearchString,
-    MODAL_TYPE,
-    SecurityModal,
-    ToastVariantType,
-    ToastManager,
-    GetResourceScanDetailsPayloadType,
-    ResponseType,
-    useAsync,
-    ScanResultDTO,
-    noop,
     ConfirmationModal,
     ConfirmationModalVariantType,
+    GetResourceScanDetailsPayloadType,
+    MODAL_TYPE,
+    noop,
+    PopupMenu,
+    ResponseType,
+    ScanResultDTO,
+    SecurityModal,
+    showError,
+    ToastManager,
+    ToastVariantType,
+    useAsync,
+    useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as ICMoreOption } from '@Icons/ic-more-option.svg'
-import PodPopup from './PodPopup'
-import './nodeType.scss'
-import { deleteResource } from '../../appDetails.api'
-import { NodeDeleteComponentType, NodeType } from '../../appDetails.type'
-import { appendRefetchDataToUrl } from '../../../../util/URLUtil'
+
 import { URLS } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../common'
+import { appendRefetchDataToUrl } from '../../../../util/URLUtil'
+import { deleteResource } from '../../appDetails.api'
+import { NodeDeleteComponentType, NodeType } from '../../appDetails.type'
 import { getAppDetailsForManifest } from '../nodeDetail/nodeDetail.api'
+import PodPopup from './PodPopup'
+
+import './nodeType.scss'
 
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 const getResourceScanDetails: ({

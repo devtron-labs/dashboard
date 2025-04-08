@@ -15,16 +15,17 @@
  */
 
 import {
+    ApiQueuingWithBatch,
     get,
     getUrlWithSearchParams,
     noop,
     post,
-    ResponseType,
-    ApiQueuingWithBatch,
     PromiseAllStatusType,
+    ResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { RotatePodsRequest } from '../../../v2/appDetails/sourceInfo/rotatePods/rotatePodsModal.type'
+
 import { Routes } from '../../../../config'
+import { RotatePodsRequest } from '../../../v2/appDetails/sourceInfo/rotatePods/rotatePodsModal.type'
 import { AppGroupListType, ManageAppsResponseType, WorkloadListResultDTO } from '../../AppGroup.types'
 import { BULK_HIBERNATE_ERROR_MESSAGE, BULK_UNHIBERNATE_ERROR_MESSAGE, BulkResponseStatus } from '../../Constants'
 

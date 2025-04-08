@@ -15,14 +15,17 @@
  */
 
 import { useContext } from 'react'
+
 import {
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerVariantType,
     stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
+
 import { ReactComponent as ICUpdateAnimated } from '@Icons/ic-update-animated.svg'
+import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
+
 import { PluginVersionSelectOptionType, PluginVersionSelectProps } from '../types'
 import { getPluginVersionSelectOption } from './utils'
 

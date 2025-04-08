@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { ReactSelectInputAction, EntityTypes, ActionTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { ActionTypes, EntityTypes, ReactSelectInputAction } from '@devtron-labs/devtron-fe-common-lib'
+
 import { SELECT_ALL_VALUE } from '../../../../../../config'
 import { ACTION_LABEL } from '../../../constants'
-import { K8sPermissionFilter } from '../../../types'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
+import { K8sPermissionFilter } from '../../../types'
 
 export const apiGroupAll = (permission, isLabel = false) => {
     if (permission === '') {

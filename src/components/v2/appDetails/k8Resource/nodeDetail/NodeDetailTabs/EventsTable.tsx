@@ -15,11 +15,13 @@
  */
 
 import moment from 'moment'
+
 import { AppThemeType, getComponentSpecificThemeClass } from '@devtron-labs/devtron-fe-common-lib'
+
 import { MESSAGING_UI } from '../../../../../../config/constants'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
-import { EventTableType } from './node.type'
 import { TERMINAL_STATUS, TERMINAL_TEXT } from './terminal/constants'
+import { EventTableType } from './node.type'
 
 export const EventsTable = ({ loading, eventsList, isResourceBrowserView, errorValue, reconnect }: EventTableType) => {
     const renderEventsTable = () => {
