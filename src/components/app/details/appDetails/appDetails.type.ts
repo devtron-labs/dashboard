@@ -138,7 +138,7 @@ export interface DataSourceDetailsDTO {
 }
 
 export interface DataSourceDetailsQueryParams {
-    environment: string
+    environmentName: string
 }
 
 export interface DataSourceDetailsType {

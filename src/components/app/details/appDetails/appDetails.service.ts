@@ -33,7 +33,7 @@ export const getDataSourceDetailsFromEnvironment = async (envName: string): Prom
             result: { name, id },
         } = await get<DataSourceDetailsDTO>(
             getUrlWithSearchParams(Routes.ENV_DATA_SOURCE_NAME, {
-                environment: envName,
+                environmentName: envName,
             } satisfies DataSourceDetailsQueryParams),
         )
 
