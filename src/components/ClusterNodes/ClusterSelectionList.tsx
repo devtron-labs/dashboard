@@ -31,7 +31,7 @@ import dayjs, { Dayjs } from 'dayjs'
 import { importComponentFromFELibrary } from '@Components/common'
 import Timer from '@Components/common/DynamicTabs/DynamicTabs.timer'
 import NoClusterEmptyState from '@Images/no-cluster-empty-state.png'
-import { AddClusterButton } from '@Components/ResourceBrowser/PageHeader.buttons'
+import { NewClusterButton } from '@Components/ResourceBrowser/PageHeader.buttons'
 import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
 import { ReactComponent as TerminalIcon } from '@Icons/ic-terminal-fill.svg'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
@@ -222,7 +222,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                 image={NoClusterEmptyState}
                 title="No clusters found"
                 subTitle="Add a cluster to view and debug Kubernetes resources in the cluster"
-                renderButton={AddClusterButton}
+                renderButton={NewClusterButton}
             />
         )
     }
