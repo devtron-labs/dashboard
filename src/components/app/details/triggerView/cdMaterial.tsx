@@ -1610,7 +1610,8 @@ const CDMaterial = ({
             case STAGE_TYPE.CD:
                 return (
                     <>
-                        Deploy to <span className="fw-6">{`${envName}${isVirtualEnvironment ? ' (Isolated)': ''}`}</span>
+                        Deploy to
+                        &nbsp;<span className="fw-6">{`${envName}${isVirtualEnvironment ? ' (Isolated)' : ''}`}</span>
                     </>
                 )
             case STAGE_TYPE.POSTCD:
@@ -1660,11 +1661,11 @@ const CDMaterial = ({
         return <DeployIcon />
     }
 
-    const getDeployButtonStyle = (userActionState: string, canDeployWithoutApproval: boolean): ButtonStyleType => {
+    const getDeployButtonStyle = (userActionState: string): ButtonStyleType => {
         if (userActionState === ACTION_STATE.BLOCKED) {
             return ButtonStyleType.negative
         }
-        if (userActionState === ACTION_STATE.PARTIAL || canDeployWithoutApproval) {
+        if (userActionState === ACTION_STATE.PARTIAL) {
             return ButtonStyleType.warning
         }
         return ButtonStyleType.default
@@ -1693,15 +1694,15 @@ const CDMaterial = ({
     const renderTriggerDeployButton = (disableDeployButton: boolean) => {
         const userActionState: ACTION_STATE = deploymentWindowMetadata.userActionState
         const canDeployWithoutApproval = isExceptionUser && getCanDeployWithoutApproval(state)
-
-        if (
+        const showAnimatedDeployButton =
             stageType === DeploymentNodeType.CD &&
             !disableDeployButton &&
-            (userActionState ? userActionState === ACTION_STATE.ALLOWED : true) &&
-            !(deploymentLoading || isSaveLoading)
-        ) {
+            (!userActionState || userActionState === ACTION_STATE.ALLOWED)
+
+        if (showAnimatedDeployButton) {
             return (
                 <AnimatedDeployButton
+                    isLoading={deploymentLoading || isSaveLoading}
                     onButtonClick={onClickDeploy}
                     isVirtualEnvironment={isVirtualEnvironment}
                     canDeployWithoutApproval={canDeployWithoutApproval}
@@ -1719,7 +1720,7 @@ const CDMaterial = ({
                 endIcon={userActionState === ACTION_STATE.BLOCKED ? <InfoOutline /> : null}
                 onClick={(e) => onClickDeploy(e, disableDeployButton)}
                 size={ComponentSizeType.large}
-                style={getDeployButtonStyle(userActionState, canDeployWithoutApproval)}
+                style={getDeployButtonStyle(userActionState)}
                 disabled={disableDeployButton}
             />
         )
