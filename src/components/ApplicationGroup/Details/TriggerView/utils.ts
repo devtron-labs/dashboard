@@ -14,7 +14,26 @@
  * limitations under the License.
  */
 
-import { BulkCIDetailType } from '../../AppGroup.types'
+import { getIsApprovalPolicyConfigured } from '@devtron-labs/devtron-fe-common-lib'
+import { getIsMaterialApproved } from '@Components/app/details/triggerView/cdMaterials.utils'
+import { BulkCDDetailType, BulkCIDetailType } from '../../AppGroup.types'
 
 export const getIsAppUnorthodox = (app: BulkCIDetailType): boolean =>
     app.isLinkedCI || app.isWebhookCI || app.isLinkedCD
+
+export const getIsNonApprovedImageSelected = (appList: BulkCDDetailType[]): boolean => {
+    const isNonApprovedImageSelected = appList.some((app) => {
+        if (!app.isExceptionUser || !getIsApprovalPolicyConfigured(app.approvalConfigData)) {
+            return false
+        }
+
+        return app.material?.some((material) => {
+            const { approvalConfigData } = material.userApprovalMetadata
+            return (
+                (material.isSelected && !approvalConfigData.requiredCount) || !getIsMaterialApproved(approvalConfigData)
+            )
+        })
+    })
+
+    return isNonApprovedImageSelected
+}
