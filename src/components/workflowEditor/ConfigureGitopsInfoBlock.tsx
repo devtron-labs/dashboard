@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { URLS } from '@Config/routes'
 import { ButtonComponentType, ButtonProps, ButtonVariantType, InfoBlock } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as ICArrowRight } from '@Icons/ic-arrow-right.svg'
+import { URLS } from '@Config/routes'
 
 export const getConfigureGitOpsCredentialsButtonProps = ({
     size,

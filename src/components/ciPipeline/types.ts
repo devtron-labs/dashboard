@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
+import { RouteComponentProps } from 'react-router-dom'
+
 import {
-    MaterialType,
-    DockerConfigOverrideType,
+    AppConfigProps,
+    ChangeCIPayloadType,
     CiPipelineSourceTypeOption,
-    Githost,
+    CustomTagType,
+    DockerConfigOverrideType,
+    DynamicDataTableCellValidationState,
     ErrorObj,
+    Githost,
+    MaterialType,
+    OptionType,
+    PipelineFormType,
+    PluginType,
     RefVariableType,
     ScriptType,
-    PluginType,
-    CustomTagType,
-    PipelineFormType,
-    OptionType,
-    DynamicDataTableCellValidationState,
-    ChangeCIPayloadType,
-    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { RouteComponentProps } from 'react-router-dom'
-import { ValidateInputOutputVariableCellProps } from '@Components/CIPipelineN/VariableDataTable/types'
+
 import { AdvancedConfigOptionsProps } from '@Components/ciConfig/types'
+import { ValidateInputOutputVariableCellProps } from '@Components/CIPipelineN/VariableDataTable/types'
+
 import { HostURLConfig } from '../../services/service.types'
 
 export interface ExternalCIPipelineState {

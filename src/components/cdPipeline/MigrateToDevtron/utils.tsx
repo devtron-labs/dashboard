@@ -15,9 +15,12 @@
  */
 
 import { Link } from 'react-router-dom'
+
+import { DeploymentAppTypes, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { GenericAppType } from '@Components/app/list-new/AppListType'
 import { URLS } from '@Config/routes'
-import { DeploymentAppTypes, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+
 import {
     ValidateMigrateToDevtronPayloadType,
     ValidateMigrationSourceDTO,
@@ -25,7 +28,7 @@ import {
     ValidateMigrationSourceInfoType,
     ValidateMigrationSourceServiceParamsType,
 } from '../cdPipeline.types'
-import { SelectMigrateAppOptionType, SelectClusterOptionType } from './types'
+import { SelectClusterOptionType, SelectMigrateAppOptionType } from './types'
 
 export const sanitizeValidateMigrationSourceResponse = (
     response: ValidateMigrationSourceDTO,

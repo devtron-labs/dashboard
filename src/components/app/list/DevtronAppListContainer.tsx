@@ -15,9 +15,10 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import Tippy from '@tippyjs/react'
 import { Link, useHistory } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
 import moment from 'moment'
+
 import {
     abortPreviousRequests,
     AppListConstants,
@@ -34,26 +35,29 @@ import {
     useAsync,
     useStickyEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
-import ContentCard from '@Components/common/ContentCard/ContentCard'
-import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '@Components/onboardingGuide/OnboardingGuide.constants'
-import { CardLinkIconPlacement } from '@Components/common/ContentCard/ContentCard.types'
+
 import { ReactComponent as PlayMedia } from '@Icons/ic-play-outline.svg'
-import { appListModal, getDevtronAppListPayload } from './appList.modal'
-import { App, DevtronAppExpandedState, DevtronAppListProps } from './types'
-import { DEVTRON_NODE_DEPLOY_VIDEO, Routes, URLS } from '../../../config'
-import { getAppList } from '../service'
-import './list.scss'
-import { AppListSortableKeys } from '../list-new/AppListType'
-import NodeAppThumbnail from '../../../assets/img/node-app-thumbnail.png'
-import DeployCICD from '../../../assets/img/guide-onboard.png'
-import { appListLoadingArray, APP_LIST_HEADERS } from '../list-new/Constants'
+import ContentCard from '@Components/common/ContentCard/ContentCard'
+import { CardLinkIconPlacement } from '@Components/common/ContentCard/ContentCard.types'
+import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '@Components/onboardingGuide/OnboardingGuide.constants'
+
 import { ReactComponent as ArrowRight } from '../../../assets/icons/ic-arrow-right.svg'
-import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
 import { ReactComponent as DevtronAppIcon } from '../../../assets/icons/ic-devtron-app.svg'
+import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
 import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg'
+import DeployCICD from '../../../assets/img/guide-onboard.png'
+import NodeAppThumbnail from '../../../assets/img/node-app-thumbnail.png'
+import { DEVTRON_NODE_DEPLOY_VIDEO, Routes, URLS } from '../../../config'
+import { AppListSortableKeys } from '../list-new/AppListType'
+import { APP_LIST_HEADERS, appListLoadingArray } from '../list-new/Constants'
+import { getAppList } from '../service'
 import { ExpandedRow } from './expandedRow/ExpandedRow'
+import { appListModal, getDevtronAppListPayload } from './appList.modal'
 import { INITIAL_EXPANDED_STATE } from './constants'
+import { App, DevtronAppExpandedState, DevtronAppListProps } from './types'
+
+import './list.scss'
 
 const DevtronAppList = ({
     filterConfig,

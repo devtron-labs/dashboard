@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export * from './Workflow'
 export type { WorkflowProps } from './types'
+export * from './Workflow'

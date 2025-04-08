@@ -15,13 +15,16 @@
  */
 
 import React from 'react'
+
+import { AppConfigProps } from '@devtron-labs/devtron-fe-common-lib'
+
 import {
     AppConfigState,
     EnvConfigurationState,
 } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
-import { AppConfigProps } from '@devtron-labs/devtron-fe-common-lib'
-import { DOCUMENTATION, URLS } from '../../../config'
+
 import { ConfigAppList } from '../../../components/ApplicationGroup/AppGroup.types'
+import { DOCUMENTATION, URLS } from '../../../config'
 
 export enum ComponentStates {
     loading = 'loading',

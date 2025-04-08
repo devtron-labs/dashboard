@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ResponseType, DeploymentChartType, UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentChartType, ResponseType, UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface ChartUploadType {
     chartName: string

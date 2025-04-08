@@ -14,41 +14,44 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
+import { useHistory, useLocation } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
+
 import {
-    not,
-    stopPropagation,
-    CIMaterialSidebarType,
-    CiPipelineSourceConfig,
-    MaterialHistory,
-    CIMaterialType,
-    SearchBar,
-    SourceTypeMap,
-    ComponentSizeType,
-    ButtonVariantType,
     Button,
     ButtonStyleType,
+    ButtonVariantType,
+    CIMaterialSidebarType,
+    CIMaterialType,
+    CiPipelineSourceConfig,
     CommonNodeAttr,
+    ComponentSizeType,
+    MaterialHistory,
+    not,
+    SearchBar,
+    SourceTypeMap,
+    stopPropagation,
     useStateFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
-import { useHistory, useLocation } from 'react-router-dom'
+
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
-import { ReactComponent as BranchFixed } from '@Icons/misc/branch.svg'
+import { ReactComponent as ShowIconFilter } from '@Icons/ic-group-filter.svg'
+import { ReactComponent as ShowIconFilterApplied } from '@Icons/ic-group-filter-applied.svg'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
 import { ReactComponent as Hide } from '@Icons/ic-visibility-off.svg'
 import { ReactComponent as Show } from '@Icons/ic-visibility-on.svg'
-import { ReactComponent as ShowIconFilter } from '@Icons/ic-group-filter.svg'
-import { ReactComponent as ShowIconFilterApplied } from '@Icons/ic-group-filter-applied.svg'
 import { ReactComponent as Info } from '@Icons/info-filled.svg'
+import { ReactComponent as BranchFixed } from '@Icons/misc/branch.svg'
 import { CiWebhookModal } from '@Components/app/details/triggerView/CiWebhookDebuggingModal'
+
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import EmptyStateCIMaterial from '../../../app/details/triggerView/EmptyStateCIMaterial'
 import MaterialSource from '../../../app/details/triggerView/MaterialSource'
-import { getCIPipelineURL } from '../workflowURL'
 import { importComponentFromFELibrary } from '../Helpers'
-import { GitInfoMaterialProps } from './types'
+import { getCIPipelineURL } from '../workflowURL'
 import { ReceivedWebhookRedirectButton } from './ReceivedWebhookRedirectButton'
+import { GitInfoMaterialProps } from './types'
 
 const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')

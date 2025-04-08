@@ -15,10 +15,12 @@
  */
 
 import { Link } from 'react-router-dom'
-import { SortableTableHeaderCell, GenericFilterEmptyState, DeploymentStatus } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
+
+import { DeploymentStatus, GenericFilterEmptyState, SortableTableHeaderCell } from '@devtron-labs/devtron-fe-common-lib'
+
+import { appListLoading, SortableKeys } from './constants'
 import { LinkedCIApp, LinkedCIAppListProps } from './types'
-import { SortableKeys, appListLoading } from './constants'
 import { getLinkedCIAppUrl } from './utils'
 
 const AppListRow = ({ appId, appName, deploymentStatus, environmentName, triggerMode, environmentId }: LinkedCIApp) => (

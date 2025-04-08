@@ -15,6 +15,7 @@
  */
 
 import { AppEnvironment } from '@devtron-labs/devtron-fe-common-lib'
+
 import { DEFAULT_SHIMMER_LOADING_TABLE_ROWS } from '../../../config'
 
 /**

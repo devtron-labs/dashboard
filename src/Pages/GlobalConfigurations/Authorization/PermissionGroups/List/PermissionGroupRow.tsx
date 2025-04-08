@@ -15,6 +15,8 @@
  */
 
 import { useState } from 'react'
+import { Link, useRouteMatch } from 'react-router-dom'
+
 import {
     BulkSelectionEvents,
     Button,
@@ -26,14 +28,15 @@ import {
     ComponentSizeType,
     getRandomColor,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Link, useRouteMatch } from 'react-router-dom'
-import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
+
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
-import { PermissionGroupRowProps } from './types'
+import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
+
 import { deletePermissionGroup } from '../../authorization.service'
 import { useAuthorizationBulkSelection } from '../../Shared/components/BulkSelection'
 import { DeleteUserPermission } from '../../UserPermissions/DeleteUserPermission'
 import { PermissionGroupIcon } from './PermissionGroupList.component'
+import { PermissionGroupRowProps } from './types'
 
 const PermissionGroupRow = ({
     id,

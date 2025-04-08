@@ -15,7 +15,9 @@
  */
 
 import { Button, ButtonStyleType, ButtonVariantType, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
+
 import { HeaderSectionProps } from './types'
 
 const HeaderSection = ({ isJobView, handleClose, isCloseDisabled }: HeaderSectionProps) => (

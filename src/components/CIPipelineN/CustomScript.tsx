@@ -15,11 +15,13 @@
  */
 
 import React, { useContext, useEffect, useState } from 'react'
-import { ScriptType, CodeEditor, MODES } from '@devtron-labs/devtron-fe-common-lib'
-import { TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
-import TaskFieldTippyDescription from './TaskFieldTippyDescription'
+
+import { CodeEditor, MODES, ScriptType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
+import { TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 
 interface CustomScriptType {
     handleScriptChange: React.Dispatch<React.SetStateAction<unknown>>

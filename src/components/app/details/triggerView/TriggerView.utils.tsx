@@ -15,6 +15,7 @@
  */
 
 import { DeploymentWithConfigType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { deepEqual } from '../../../common'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { TriggerViewDeploymentConfigType } from './types'

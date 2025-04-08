@@ -17,21 +17,23 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import { useEffect, useState } from 'react'
+
 import {
-    showError,
-    InfoColourBar,
-    OptionType,
-    GVKType,
-    EntityTypes,
     ApiResourceGroupType,
     Button,
-    ComponentSizeType,
-    SelectPicker,
-    ButtonVariantType,
     ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    EntityTypes,
+    GVKType,
+    InfoColourBar,
+    OptionType,
     ResourceListPayloadType,
+    SelectPicker,
     SelectPickerOptionType,
+    showError,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
 import {
     getUserAccessClusterList,
@@ -39,27 +41,28 @@ import {
     getUserAccessNamespaceList,
     getUserAccessResourceGroupList,
 } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
-import {
-    processK8SObjects,
-    convertToOptionsList,
-    sortObjectArrayAlphabetically,
-    sortOptionsByLabel,
-    importComponentFromFELibrary,
-} from '../../../../../../components/common'
-import { K8SObjectType } from '../../../../../../components/ResourceBrowser/Types'
-import { formatOptionLabel } from '../../../../../../components/v2/common/ReactSelect.utils'
+
 import { ReactComponent as Clone } from '../../../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Delete } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as InfoIcon } from '../../../../../../assets/icons/info-filled.svg'
-import { multiSelectAllState } from './utils'
+import {
+    convertToOptionsList,
+    importComponentFromFELibrary,
+    processK8SObjects,
+    sortObjectArrayAlphabetically,
+    sortOptionsByLabel,
+} from '../../../../../../components/common'
+import { K8SObjectType } from '../../../../../../components/ResourceBrowser/Types'
+import { formatOptionLabel } from '../../../../../../components/v2/common/ReactSelect.utils'
+import { SELECT_ALL_VALUE } from '../../../../../../config'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
 import { ALL_NAMESPACE } from '../../../constants'
-import { K8sPermissionActionType, K8S_PERMISSION_INFO_MESSAGE } from './constants'
-import { SELECT_ALL_VALUE } from '../../../../../../config'
-import { K8sItemCardLoadingState, K8sListItemCardType } from './types'
-import { usePermissionConfiguration } from '../PermissionConfigurationForm'
-import { K8sPermissionFilter } from '../../../types'
 import { getIsStatusDropdownDisabled } from '../../../libUtils'
+import { K8sPermissionFilter } from '../../../types'
+import { usePermissionConfiguration } from '../PermissionConfigurationForm'
+import { K8S_PERMISSION_INFO_MESSAGE, K8sPermissionActionType } from './constants'
+import { K8sItemCardLoadingState, K8sListItemCardType } from './types'
+import { multiSelectAllState } from './utils'
 
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
 

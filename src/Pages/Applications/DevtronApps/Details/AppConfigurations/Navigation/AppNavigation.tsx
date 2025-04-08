@@ -33,6 +33,7 @@
 
 import { ReactNode } from 'react'
 import { Route, Switch, useLocation, useRouteMatch } from 'react-router-dom'
+
 import {
     Button,
     ButtonStyleType,
@@ -42,16 +43,16 @@ import {
     TippyCustomized,
     TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { DEVTRON_APPS_STEPS, STAGE_NAME } from '../AppConfig.types'
-import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE, URLS } from '../../../../../../config'
-import AppConfigurationCheckBox from './AppConfigurationCheckBox'
-import { GIT_MATERIAL_IN_USE_MESSAGE } from '../../../../../../config/constantMessaging'
-import DockerFileInUse from '../../../../../../assets/img/ic-dockerfile-in-use.png'
 
-import EnvironmentOverrideRouter from './EnvironmentOverrideRouter'
+import DockerFileInUse from '../../../../../../assets/img/ic-dockerfile-in-use.png'
+import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE, URLS } from '../../../../../../config'
+import { GIT_MATERIAL_IN_USE_MESSAGE } from '../../../../../../config/constantMessaging'
+import { DEVTRON_APPS_STEPS, STAGE_NAME } from '../AppConfig.types'
 import { useAppConfigurationContext } from '../AppConfiguration.provider'
-import { renderNavItem } from './Navigation.helper'
+import AppConfigurationCheckBox from './AppConfigurationCheckBox'
 import { EnvConfigurationsNav } from './EnvConfigurationsNav'
+import EnvironmentOverrideRouter from './EnvironmentOverrideRouter'
+import { renderNavItem } from './Navigation.helper'
 
 export const AppNavigation = () => {
     // HOOKS

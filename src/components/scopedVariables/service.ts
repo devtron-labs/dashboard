@@ -15,8 +15,9 @@
  */
 
 import { get, post, ROUTES as COMMON_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
-import { ScopedVariablesDataType } from './types'
+
 import { Routes } from '../../config'
+import { ScopedVariablesDataType } from './types'
 
 // Services
 export const getScopedVariablesJSON = () => get(Routes.SCOPED_GLOBAL_VARIABLES_DETAIL)

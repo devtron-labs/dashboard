@@ -33,21 +33,21 @@
 
 import {
     AppConfigProps,
-    GetTemplateAPIRouteType,
-    ResourceKindType,
-    ResponseType,
     get,
+    getTemplateAPIRoute,
+    GetTemplateAPIRouteType,
     getUrlWithSearchParams,
     noop,
+    ResourceKindType,
+    ResponseType,
     showError,
-    getTemplateAPIRoute,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '@Config/constants'
 
-import { AppConfigStatusItemType } from './service.types'
 import { DEFAULT_LANDING_STAGE, EnvConfigType } from './Details/AppConfigurations/AppConfig.types'
 import { transformEnvConfig } from './Details/AppConfigurations/AppConfig.utils'
+import { AppConfigStatusItemType } from './service.types'
 
 export const getAppConfigStatus = (
     appId: number,

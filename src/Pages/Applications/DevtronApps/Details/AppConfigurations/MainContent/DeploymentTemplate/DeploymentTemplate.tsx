@@ -14,63 +14,96 @@
  * limitations under the License.
  */
 
-import { useEffect, SyntheticEvent, useMemo, useReducer, Reducer, useRef } from 'react'
+import { Reducer, SyntheticEvent, useEffect, useMemo, useReducer, useRef } from 'react'
 import ReactGA from 'react-ga4'
-import {
-    BASE_CONFIGURATION_ENV_ID,
-    BaseURLParams,
-    ConfigurationType,
-    DeploymentChartVersionType,
-    DraftState,
-    showError,
-    useMainContext,
-    YAMLStringify,
-    DeploymentTemplateConfigState,
-    Progressing,
-    ErrorScreenManager,
-    getResolvedDeploymentTemplate,
-    ModuleStatus,
-    useAsync,
-    ModuleNameMap,
-    ToastManager,
-    ToastVariantType,
-    SelectPickerOptionType,
-    ValuesAndManifestFlagDTO,
-    CompareFromApprovalOptionsValuesType,
-    noop,
-    logExceptionToSentry,
-    ConfigHeaderTabType,
-    ProtectConfigTabsType,
-    Button,
-    ComponentSizeType,
-    ButtonStyleType,
-    ButtonVariantType,
-    DryRunEditorMode,
-    usePrompt,
-    DEFAULT_LOCKED_KEYS_CONFIG,
-    GenericEmptyState,
-    GET_RESOLVED_DEPLOYMENT_TEMPLATE_EMPTY_RESPONSE,
-    ResponseType,
-    API_STATUS_CODES,
-    OverrideMergeStrategyType,
-    useUrlFilters,
-    ConfigResourceType,
-    abortPreviousRequests,
-    getIsRequestAborted,
-    DraftAction,
-    checkIfPathIsMatching,
-    FloatingVariablesSuggestions,
-    useOneTimePrompt,
-    AppConfigProps,
-} from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt, useLocation, useParams } from 'react-router-dom'
 import YAML from 'yaml'
-import { importComponentFromFELibrary } from '@Components/common'
-import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
-import { APP_COMPOSE_STAGE, getAppComposeURL } from '@Config/routes'
+
+import {
+    abortPreviousRequests,
+    API_STATUS_CODES,
+    AppConfigProps,
+    BASE_CONFIGURATION_ENV_ID,
+    BaseURLParams,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    checkIfPathIsMatching,
+    CompareFromApprovalOptionsValuesType,
+    ComponentSizeType,
+    ConfigHeaderTabType,
+    ConfigResourceType,
+    ConfigurationType,
+    DEFAULT_LOCKED_KEYS_CONFIG,
+    DeploymentChartVersionType,
+    DeploymentTemplateConfigState,
+    DraftAction,
+    DraftState,
+    DryRunEditorMode,
+    ErrorScreenManager,
+    FloatingVariablesSuggestions,
+    GenericEmptyState,
+    GET_RESOLVED_DEPLOYMENT_TEMPLATE_EMPTY_RESPONSE,
+    getIsRequestAborted,
+    getResolvedDeploymentTemplate,
+    logExceptionToSentry,
+    ModuleNameMap,
+    ModuleStatus,
+    noop,
+    OverrideMergeStrategyType,
+    Progressing,
+    ProtectConfigTabsType,
+    ResponseType,
+    SelectPickerOptionType,
+    showError,
+    ToastManager,
+    ToastVariantType,
+    useAsync,
+    useMainContext,
+    useOneTimePrompt,
+    usePrompt,
+    useUrlFilters,
+    ValuesAndManifestFlagDTO,
+    YAMLStringify,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
 import deleteOverrideEmptyStateImage from '@Images/no-artifact.webp'
+import { importComponentFromFELibrary } from '@Components/common'
+import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
+import { APP_COMPOSE_STAGE, getAppComposeURL } from '@Config/routes'
+
+import BaseConfigurationNavigation from '../BaseConfigurationNavigation'
+import CompareConfigView from '../CompareConfigView'
+import ConfigDryRun from '../ConfigDryRun'
+import ConfigHeader from '../ConfigHeader'
+import ConfigToolbar from '../ConfigToolbar'
+import NoOverrideEmptyState from '../NoOverrideEmptyState'
+import NoPublishedVersionEmptyState from '../NoPublishedVersionEmptyState'
+import { ConfigToolbarProps, DeploymentTemplateComponentType } from '../types'
+import { getConfigToolbarPopupConfig } from '../utils'
+import { NO_SCOPED_VARIABLES_MESSAGE } from './constants'
+import DeleteOverrideDialog from './DeleteOverrideDialog'
+import DeploymentTemplateCTA from './DeploymentTemplateCTA'
+import DeploymentTemplateForm from './DeploymentTemplateForm'
+import DeploymentTemplateOptionsHeader from './DeploymentTemplateOptionsHeader'
+import {
+    DeploymentTemplateActionState,
+    DeploymentTemplateActionType,
+    deploymentTemplateReducer,
+    getDeploymentTemplateInitialState,
+} from './deploymentTemplateReducer'
+import {
+    createBaseDeploymentTemplate,
+    createEnvDeploymentTemplate,
+    deleteOverrideDeploymentTemplate,
+    getBaseDeploymentTemplate,
+    getChartList,
+    getEnvOverrideDeploymentTemplate,
+    updateBaseDeploymentTemplate,
+    updateEnvDeploymentTemplate,
+} from './service'
 import {
     ConfigEditorStatesType,
     DeploymentTemplateEditorDataStateType,
@@ -85,10 +118,6 @@ import {
     UpdateBaseDTPayloadType,
     UpdateEnvironmentDTPayloadType,
 } from './types'
-import { NO_SCOPED_VARIABLES_MESSAGE } from './constants'
-import DeploymentTemplateOptionsHeader from './DeploymentTemplateOptionsHeader'
-import DeploymentTemplateForm from './DeploymentTemplateForm'
-import DeploymentTemplateCTA from './DeploymentTemplateCTA'
 import {
     getAreTemplateChangesPresent,
     getCompareFromEditorConfig,
@@ -106,33 +135,8 @@ import {
     handleInitializeDraftData,
     parseDeploymentTemplateParams,
 } from './utils'
-import DeleteOverrideDialog from './DeleteOverrideDialog'
-import {
-    updateBaseDeploymentTemplate,
-    createBaseDeploymentTemplate,
-    updateEnvDeploymentTemplate,
-    createEnvDeploymentTemplate,
-    getEnvOverrideDeploymentTemplate,
-    getBaseDeploymentTemplate,
-    getChartList,
-    deleteOverrideDeploymentTemplate,
-} from './service'
-import ConfigHeader from '../ConfigHeader'
+
 import './DeploymentTemplate.scss'
-import ConfigToolbar from '../ConfigToolbar'
-import { ConfigToolbarProps, DeploymentTemplateComponentType } from '../types'
-import { getConfigToolbarPopupConfig } from '../utils'
-import ConfigDryRun from '../ConfigDryRun'
-import NoOverrideEmptyState from '../NoOverrideEmptyState'
-import CompareConfigView from '../CompareConfigView'
-import NoPublishedVersionEmptyState from '../NoPublishedVersionEmptyState'
-import BaseConfigurationNavigation from '../BaseConfigurationNavigation'
-import {
-    DeploymentTemplateActionState,
-    DeploymentTemplateActionType,
-    deploymentTemplateReducer,
-    getDeploymentTemplateInitialState,
-} from './deploymentTemplateReducer'
 
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
 const getJsonPath = importComponentFromFELibrary('getJsonPath', null, 'function')
