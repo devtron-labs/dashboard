@@ -26,22 +26,23 @@ import {
     stringComparatorBySortOrder,
     Nodes,
     getNamespaceListMin,
+    getClusterListRaw,
+    ClusterDetail,
+    InstallationClusterConfigType,
+    InstallationClusterStatus,
+    ClusterStatusType,
+    APIOptions,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RefObject } from 'react'
+import { importComponentFromFELibrary } from '@Components/common'
+
+import { getClusterList } from '@Components/ClusterNodes/clusterNodes.service'
 import { Routes } from '../../config'
-import { ClusterListResponse } from '../../services/service.types'
 import { GetResourceDataType, NodeRowDetail, URLParams } from './Types'
 import { SIDEBAR_KEYS } from './Constants'
 import { parseNodeList } from './Utils'
 
-export const getClusterList = async (): Promise<ClusterListResponse> => {
-    const response = await get<ClusterListResponse['result']>(Routes.CLUSTER_LIST_PERMISSION)
-
-    return {
-        ...response,
-        result: (response?.result ?? []).sort((a, b) => stringComparatorBySortOrder(a.cluster_name, b.cluster_name)),
-    }
-}
+const getInstallationClusterConfigs = importComponentFromFELibrary('getInstallationClusterConfigs', null, 'function')
 
 export const namespaceListByClusterId = async (clusterId: string) => {
     const response = await get<string[]>(`${Routes.CLUSTER_NAMESPACE}/${clusterId}`)
@@ -124,5 +125,48 @@ export const getResourceData = async ({
         }
 
         return null
+    }
+}
+
+export const getClusterListing = async (
+    minified: boolean,
+    abortControllerRef?: APIOptions['abortControllerRef'],
+): Promise<ClusterDetail[]> => {
+    try {
+        const { result: rawClusterList } = await (minified ? getClusterListRaw : getClusterList)(abortControllerRef)
+
+        const installationClustersList: InstallationClusterConfigType[] = await getInstallationClusterConfigs()
+
+        if (!installationClustersList.length) {
+            return rawClusterList
+        }
+
+        return rawClusterList.concat(
+            installationClustersList
+                .filter(
+                    ({ status }) =>
+                        status !== InstallationClusterStatus.Succeeded && status !== InstallationClusterStatus.Updating,
+                )
+                .map(({ installationId, name }) => ({
+                    id: installationId,
+                    name,
+                    status: ClusterStatusType.CREATING,
+                    cpu: null,
+                    memory: null,
+                    nodeCount: 0,
+                    nodeK8sVersions: [],
+                    serverVersion: '',
+                    nodeDetails: [],
+                    nodeErrors: [],
+                    errorInNodeListing: '',
+                    isInstallationCluster: true,
+                    isProd: false,
+                })),
+        )
+    } catch (err) {
+        if (!getIsRequestAborted(err)) {
+            showError(err)
+        }
+        throw err
     }
 }

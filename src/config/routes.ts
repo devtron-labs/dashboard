@@ -32,6 +32,7 @@ export const URLS = {
     CREATE_JOB: 'create-job',
     APPLICATION_GROUP: '/application-group',
     RESOURCE_BROWSER: COMMON_URLS.RESOURCE_BROWSER,
+    RESOURCE_BROWSER_INSTALLATION_CLUSTER: `${COMMON_URLS.RESOURCE_BROWSER}/installation-cluster/:installationId`,
     EXTERNAL_APPS: 'ea',
     DEVTRON_CHARTS: 'dc',
     EXTERNAL_ARGO_APP: 'eaa',
