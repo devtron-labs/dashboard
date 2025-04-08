@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, Fragment } from 'react'
 import {
     showError,
     Progressing,
@@ -42,6 +42,7 @@ import {
     Textarea,
     Icon,
     PasswordField,
+    NewClusterFormProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import TippyHeadless from '@tippyjs/react/headless'
@@ -140,7 +141,11 @@ export default function ClusterForm({
     toggleClusterDetails,
     isVirtualCluster,
     isProd = false,
-}: ClusterFormProps) {
+    FooterComponent = Fragment,
+    handleModalClose = noop,
+    setApiCallInProgress = noop,
+    apiCallInProgress = false,
+}: ClusterFormProps & Partial<NewClusterFormProps>) {
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(!!prometheus_url)
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
         type: prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
@@ -441,11 +446,13 @@ export default function ClusterForm({
                 setSelectedUserNameOptions(defaultUserNameSelections)
                 setClusterSeleceted(_clusterSelections)
                 setLoadingState(false)
+                setApiCallInProgress(false)
                 toggleGetCluster()
                 setValidationError(false)
             })
         } catch (err: any) {
             setLoadingState(false)
+            setApiCallInProgress(false)
             setValidationError(true)
             const error = err?.errors?.[0]
             setErrorText(`${error.userMessage}`)
@@ -944,6 +951,7 @@ export default function ClusterForm({
 
     const handleGetClustersClick = async () => {
         setLoadingState(true)
+        setApiCallInProgress(true)
         await validateClusterDetail()
     }
 
@@ -1042,7 +1050,7 @@ export default function ClusterForm({
     }
 
     const AddClusterHeader = () => (
-        <div className="flex flex-align-center dc__border-bottom flex-justify bg__primary py-12 px-20">
+        id && <div className="flex flex-align-center dc__border-bottom flex-justify bg__primary py-12 px-20">
             <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
                 <span className="fw-6 fs-16 cn-9">{clusterTitle()}</span>
             </h2>
@@ -1105,7 +1113,7 @@ export default function ClusterForm({
                     )}
                 </div>
             </div>
-            <div className="dc__border-top flex right py-12 px-20 dc__no-shrink">
+            {id && (<div className="dc__border-top flex right py-12 px-20 dc__no-shrink">
                 <button
                     className="dc__edit_button cb-5 h-36 lh-36"
                     type="button"
@@ -1126,7 +1134,7 @@ export default function ClusterForm({
                 >
                     Close
                 </button>
-            </div>
+            </div>)}
         </div>
     )
 
@@ -1222,7 +1230,7 @@ export default function ClusterForm({
                 {isKubeConfigFile && (
                     <div
                         data-testid="valid_cluster_infocolor_bar"
-                        className="cluster-form dc__position-rel h-100 bg__primary flexbox-col"
+                        className={`cluster-form ${id ? 'dc__position-rel h-100' : 'br-8 border__secondary flex-grow-1'} bg__primary flexbox-col`}
                     >
                         <AddClusterHeader />
 
@@ -1361,7 +1369,7 @@ export default function ClusterForm({
                             </div>
                         </div>
 
-                        <div className="w-100 dc__border-top flex right py-12 px-20 bg__primary dc__no-shrink">
+                        {id && <div className="w-100 dc__border-top flex right py-12 px-20 bg__primary dc__no-shrink">
                             <button
                                 className="dc__edit_button cb-5"
                                 type="button"
@@ -1385,7 +1393,19 @@ export default function ClusterForm({
                             >
                                 Save
                             </button>
-                        </div>
+                        </div>}
+
+                        <FooterComponent apiCallInProgress={apiCallInProgress} handleModalClose={handleModalClose}>
+                            <button
+                                data-testid="save_cluster_list_button_after_selection"
+                                className="cta h-36 lh-36"
+                                type="button"
+                                onClick={() => handleClusterDetailCall()}
+                                disabled={!saveClusterList || !isAnyCheckboxSelected}
+                            >
+                                Save
+                            </button>
+                        </FooterComponent>
                     </div>
                 )}
                 {isClusterDetails && !isKubeConfigFile && saveClusterDetails()}
@@ -1431,7 +1451,7 @@ export default function ClusterForm({
             return null
         }
 
-        if (isKubeConfigFile) {
+        if (isKubeConfigFile && id) {
             return (
                 <div className="dc__border-top flex right py-12 px-20">
                     <button
@@ -1459,8 +1479,27 @@ export default function ClusterForm({
             )
         }
 
+        if (isKubeConfigFile && !id) {
+            return (
+                <FooterComponent apiCallInProgress={apiCallInProgress} handleModalClose={handleModalClose}>
+                    <button
+                        className={`cta h-36 ${id ? 'ml-12' : ''} lh-36`}
+                        type="button"
+                        onClick={handleGetClustersClick}
+                        disabled={!saveYamlData}
+                        data-testId="get_cluster_button"
+                    >
+                        <div className="flex">
+                            Get cluster
+                            <ForwardArrow className={`ml-5 ${!saveYamlData ? 'scn-4' : ''}`} />
+                        </div>
+                    </button>
+                </FooterComponent>
+            )
+        }
+
         return (
-            <div className="dc__border-top flexbox py-12 px-20 dc__content-space">
+            <div className={id ? "dc__border-top flexbox py-12 px-20 dc__content-space" : ''}>
                 {id && (
                     <Button
                         text="Delete"
@@ -1472,23 +1511,36 @@ export default function ClusterForm({
                         onClick={showConfirmationModal}
                     />
                 )}
-                <div className="flex dc__gap-12 right w-100">
-                    <Button
-                        text="Cancel"
-                        variant={ButtonVariantType.secondary}
-                        style={ButtonStyleType.neutral}
-                        dataTestId="cancel_button"
-                        onClick={handleCloseButton}
-                    />
-                    <Button
-                        dataTestId="save_cluster_after_entering_cluster_details"
-                        onClick={handleOnSubmit}
-                        text={id ? 'Update cluster' : 'Save cluster'}
-                        buttonProps={{
-                            type: 'submit',
-                        }}
-                    />
-                </div>
+                {id ? (
+                    <div className="flex dc__gap-12 right w-100">
+                        <Button
+                            text="Cancel"
+                            variant={ButtonVariantType.secondary}
+                            style={ButtonStyleType.neutral}
+                            dataTestId="cancel_button"
+                            onClick={handleCloseButton}
+                        />
+                        <Button
+                            dataTestId="save_cluster_after_entering_cluster_details"
+                            onClick={handleOnSubmit}
+                            text={id ? 'Update cluster' : 'Save cluster'}
+                            buttonProps={{
+                                type: 'submit',
+                            }}
+                        />
+                    </div>
+                ) : (
+                    <FooterComponent apiCallInProgress={apiCallInProgress} handleModalClose={handleModalClose}>
+                        <Button
+                            dataTestId="save_cluster_after_entering_cluster_details"
+                            onClick={handleOnSubmit}
+                            text={'Save cluster'}
+                            buttonProps={{
+                                type: 'submit',
+                            }}
+                        />
+                    </FooterComponent>
+                )}
             </div>
         )
     }
@@ -1496,9 +1548,9 @@ export default function ClusterForm({
     return getClusterVar ? (
         displayClusterDetails()
     ) : (
-        <div className="cluster-form dc__position-rel h-100 bg__primary flexbox-col">
+        <div className={`${id ? 'dc__position-rel h-100' : 'br-8 border__secondary flex-grow-1'} cluster-form bg__primary flexbox-col`}>
             <AddClusterHeader />
-            <div className="flex-grow-1 flexbox-col dc__overflow-auto">
+            <div className={`flex-grow-1 flexbox-col ${id ? 'dc__overflow-auto' : ''}`}>
                 {VirtualClusterSelectionTab && (
                     <VirtualClusterSelectionTab
                         id={id}
@@ -1507,6 +1559,10 @@ export default function ClusterForm({
                         setIsVirtual={setIsVirtual}
                         reload={reload}
                         toggleEditMode={handleVirtualCloseButton}
+                        FooterComponent={FooterComponent}
+                        apiCallInProgress={apiCallInProgress}
+                        setApiCallInProgress={setApiCallInProgress}
+                        handleModalClose={handleModalClose}
                     />
                 )}
                 {!isVirtual && (

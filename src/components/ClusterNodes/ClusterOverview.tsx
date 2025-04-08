@@ -509,9 +509,9 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
                 {renderSideInfoData()}
                 <div className="dc__mxw-1068 flex-grow-1 mw-none">
                     {renderCardDetails()}
-                    {ClusterConfig && clusterCapacityData.installationId && <ClusterConfig installationId={clusterCapacityData.installationId} />}
+                    {ClusterConfig && <ClusterConfig clusterName={clusterCapacityData.name} clusterId={Number(clusterId)} />}
                     {renderClusterError()}
-                    {ClusterAddOns && <ClusterAddOns clusterId={clusterId} getAvailableCharts={getAvailableCharts} />}
+                    {ClusterAddOns && <ClusterAddOns clusterId={clusterId} getAvailableCharts={getAvailableCharts} />}                    
                     {Catalog && <Catalog resourceId={clusterId} resourceType={ResourceKindType.cluster} />}
                     <GenericDescription
                         isClusterTerminal
