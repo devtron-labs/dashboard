@@ -1197,6 +1197,7 @@ const CDMaterial = ({
                 ) {
                     return (
                         <CDMaterialInfo
+                            key={index}
                             commitTimestamp={handleUTCTime(materialData.createdTime)}
                             appliedFiltersTimestamp={handleUTCTime(materialData.appliedFiltersTimestamp)}
                             envName={envName}
@@ -1234,7 +1235,7 @@ const CDMaterial = ({
                         _gitCommit.Message ||
                         _gitCommit.Date ||
                         _gitCommit.Commit) && (
-                        <div className="bg__primary br-4 en-2 bw-1 m-12">
+                        <div key={index} className="bg__primary br-4 en-2 bw-1 m-12">
                             <GitCommitInfoGeneric
                                 index={index}
                                 materialUrl={mat.url}
@@ -1610,8 +1611,8 @@ const CDMaterial = ({
             case STAGE_TYPE.CD:
                 return (
                     <>
-                        Deploy to
-                        &nbsp;<span className="fw-6">{`${envName}${isVirtualEnvironment ? ' (Isolated)' : ''}`}</span>
+                        Deploy to &nbsp;
+                        <span className="fw-6">{`${envName}${isVirtualEnvironment ? ' (Isolated)' : ''}`}</span>
                     </>
                 )
             case STAGE_TYPE.POSTCD:
