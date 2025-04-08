@@ -54,9 +54,11 @@ import { MAX_LENGTH_350 } from '../../config/constantMessaging'
 import ConnectingToClusterState from '../ResourceBrowser/ResourceList/ConnectingToClusterState'
 import { importComponentFromFELibrary } from '../common'
 import { getUpgradeCompatibilityTippyConfig } from '@Components/ResourceBrowser/ResourceList/utils'
+import { getAvailableCharts } from '@Services/service'
 
 const Catalog = importComponentFromFELibrary('Catalog', null, 'function')
 const ClusterConfig = importComponentFromFELibrary('ClusterConfig', null, 'function')
+const ClusterAddOns = importComponentFromFELibrary('ClusterAddOns', null, 'function')
 const MigrateClusterVersionInfoBar = importComponentFromFELibrary('MigrateClusterVersionInfoBar', null, 'function')
 
 /* TODO: move into utils */
@@ -507,8 +509,9 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
                 {renderSideInfoData()}
                 <div className="dc__mxw-1068 flex-grow-1 mw-none">
                     {renderCardDetails()}
-                    {renderClusterError()}
                     {ClusterConfig && clusterCapacityData.installationId && <ClusterConfig installationId={clusterCapacityData.installationId} />}
+                    {renderClusterError()}
+                    {ClusterAddOns && <ClusterAddOns clusterId={clusterId} getAvailableCharts={getAvailableCharts} />}
                     {Catalog && <Catalog resourceId={clusterId} resourceType={ResourceKindType.cluster} />}
                     <GenericDescription
                         isClusterTerminal

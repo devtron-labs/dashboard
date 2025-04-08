@@ -26,6 +26,9 @@ import {
     FeatureTitleWithInfo,
     ToastVariantType,
     ToastManager,
+    Button,
+    ComponentSizeType,
+    ButtonVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink, useHistory, useLocation, useRouteMatch, Prompt } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -111,6 +114,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     const [appStoreName, setAppStoreName] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
     const [includeDeprecated, setIncludeDeprecated] = useState(0)
+    const [chartCategoryIds, setChartCategoryIds] = useState<string[]>([])
     const projectsMap = mapByKey(state.projects, 'id')
     const chartList: Chart[] = Array.from(state.availableCharts.values())
     const isLeavingPageNotAllowed = useRef(false)
@@ -262,12 +266,14 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
         toggleDeployModal(false)
     }
 
+    // should be removed and use useUrlFilters instead
     function initialiseFromQueryParams(chartRepoList): void {
         const searchParams = new URLSearchParams(location.search)
         const allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId)
         const allRegistryIds: string = searchParams.get(QueryParams.RegistryId)
         const deprecated: string = searchParams.get(QueryParams.IncludeDeprecated)
         const appStoreName: string = searchParams.get(QueryParams.AppStoreName)
+        const chartCategoryCsv: string = searchParams.get(QueryParams.ChartCategoryId)
         let chartRepoIdArray = []
         let ociRegistryArray = []
         if (allChartRepoIds) {
@@ -297,6 +303,8 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
         }
         if (deprecated) {
             setIncludeDeprecated(parseInt(deprecated))
+        } else {
+            setIncludeDeprecated(0)
         }
         if (appStoreName) {
             setSearchApplied(true)
@@ -304,6 +312,14 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
         } else {
             setSearchApplied(false)
             setAppStoreName('')
+        }
+        if (chartCategoryCsv) {
+            const idsArray = chartCategoryCsv.split(',')
+            if (idsArray) {
+                setChartCategoryIds(idsArray)
+            }
+        } else {
+            setChartCategoryIds([])
         }
     }
 
@@ -369,24 +385,25 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                             <span className="fs-16 cn-5 ml-4 mr-4"> / </span>
                         </>
                     )}
-                    <span className="fs-16 cn-9">
+                    <div className="flex dc__gap-16">
                         {state.charts.length === 0 ? (
                             <>
-                                Chart Store
+                                <span className="fs-16 cn-9">Chart Store</span>
                                 {isSuperAdmin && (
-                                    <button
-                                        className="en-2 bw-1 br-4 cb-5 fw-6 bg__primary ml-16 scb-5"
+                                    <Button
+                                        dataTestId="chart-store-source-button"
+                                        text="Source"
+                                        startIcon={<SourceIcon />}
                                         onClick={onChangeShowSourcePopup}
-                                    >
-                                        <SourceIcon className="mr-4" />
-                                        <span className="fs-12">Source</span>
-                                    </button>
+                                        size={ComponentSizeType.xs}
+                                        variant={ButtonVariantType.secondary}
+                                    />
                                 )}
                             </>
                         ) : (
                             'Deploy multiple charts'
                         )}
-                    </span>
+                    </div>
                 </div>
                 <div>
                     {showSourcePopoUp && (
@@ -429,9 +446,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
 
     return (
         <>
-            <div
-                className={`discover-charts bg__primary ${state.charts.length > 0 ? 'summary-show' : ''} chart-store-header`}
-            >
+            <div className={`discover-charts bg__primary ${state.charts.length > 0 ? 'summary-show' : ''}`}>
                 <ConditionalWrap condition={state.charts.length > 0} wrap={(children) => <div>{children}</div>}>
                     <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
                 </ConditionalWrap>
@@ -451,6 +466,8 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                 selectedChartRepo={selectedChartRepo}
                                 isGrid={isGrid}
                                 setIsGrid={setIsGrid}
+                                chartCategoryIds={chartCategoryIds}
+                                setChartCategoryIds={setChartCategoryIds}
                             />
                         )}
                         {state.loading || chartListLoading ? (
@@ -495,7 +512,8 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                             <div className={`h-100 ${!isGrid ? 'chart-list-view ' : ''}`}>
                                                 {serverMode == SERVER_MODE.FULL &&
                                                     !searchApplied &&
-                                                    selectedChartRepo.length === 0 && (
+                                                    !selectedChartRepo.length &&
+                                                    !chartCategoryIds.length && (
                                                         <ChartGroupListMin
                                                             chartGroups={state.chartGroups.slice(0, isGrid ? 5 : 1)}
                                                             showChartGroupModal={showChartGroupModal}
