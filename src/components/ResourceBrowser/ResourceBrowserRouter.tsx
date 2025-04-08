@@ -25,15 +25,18 @@ import ResourceList from './ResourceList'
 import './ResourceBrowser.scss'
 
 const CompareClusterViewWrapper = importComponentFromFELibrary('CompareClusterViewWrapper', null, 'function')
+const ClusterInstallationPage = importComponentFromFELibrary('ClusterInstallationPage', null, 'function')
 
 const ResourceBrowserRouter: React.FC = () => {
     const { path } = useRouteMatch()
 
     return (
         <Switch>
-            <Route path={URLS.RESOURCE_BROWSER_INSTALLATION_CLUSTER} exact>
-                <div />
-            </Route>
+            {ClusterInstallationPage && (
+                <Route path={URLS.RESOURCE_BROWSER_INSTALLATION_CLUSTER} exact>
+                    <ClusterInstallationPage />
+                </Route>
+            )}
 
             <Route path={`${path}/:clusterId/:namespace/:nodeType/:group/:node?`}>
                 <ResourceList />
