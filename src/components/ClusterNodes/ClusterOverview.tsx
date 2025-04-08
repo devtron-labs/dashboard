@@ -508,7 +508,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
                 <div className="dc__mxw-1068 flex-grow-1 mw-none">
                     {renderCardDetails()}
                     {renderClusterError()}
-                    {ClusterConfig && clusterCapacityData.installationId && <ClusterConfig installationId={clusterCapacityData.installationId} />}
+                    {ClusterConfig && <ClusterConfig clusterName={clusterCapacityData.name} clusterId={Number(clusterId)} />}
                     {Catalog && <Catalog resourceId={clusterId} resourceType={ResourceKindType.cluster} />}
                     <GenericDescription
                         isClusterTerminal

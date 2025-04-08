@@ -145,7 +145,7 @@ export const getClusterListing = async (
             installationClustersList
                 .filter(
                     ({ status }) =>
-                        status !== InstallationClusterStatus.Succeeded && status !== InstallationClusterStatus.Updating,
+                        status !== InstallationClusterStatus.Installed && status !== InstallationClusterStatus.Updating,
                 )
                 .map(({ installationId, name }) => ({
                     id: installationId,
