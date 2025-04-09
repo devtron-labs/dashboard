@@ -176,7 +176,7 @@ export function isK8sVersion115OrBelow(k8sVersion: string): boolean {
 export interface AppInfo {
     appId: string | number
     envId: string | number
-    environmentName: string
+    dataSourceName: string
     newPodHash: string
     k8sVersion: string
 }
@@ -197,7 +197,7 @@ export function getIframeSrc({
         grafanaURL,
         appInfo.appId,
         appInfo.envId,
-        appInfo.environmentName,
+        appInfo.dataSourceName,
         chartName,
         appInfo.newPodHash,
         calendarInputs,
@@ -321,7 +321,7 @@ export function addQueryParamToGrafanaURL(
     url: string,
     appId: string | number,
     envId: string | number,
-    environmentName: string,
+    dataSourceName: string,
     chartName: ChartTypes,
     newPodHash: string,
     calendarInputs,
@@ -338,7 +338,7 @@ export function addQueryParamToGrafanaURL(
     url += `&var-app=${appId}`
     url += `&var-env=${envId}`
     url += `&var-new_rollout_pod_template_hash=${newPodHash}`
-    url += `&var-datasource=Prometheus-${environmentName}`
+    url += `&var-datasource=${dataSourceName}`
     if (chartName === 'status') {
         if (statusCode === StatusType.Throughput) {
             // Throughput Graph
