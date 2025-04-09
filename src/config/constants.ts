@@ -264,6 +264,7 @@ export const Routes = {
     CONFIG_MANIFEST: 'config/manifest',
     USER_RESOURCE_OPTIONS: 'user/resource/options',
     HEALTH: 'health',
+    ENV_DATA_SOURCE_NAME: 'env/data-source-name',
 }
 
 export enum ViewType {
