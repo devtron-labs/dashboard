@@ -23,11 +23,11 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { GroupBase } from 'react-select'
 import { KubeConfigTippyContentProps } from './types'
-import { getKubeConfigCommand } from './utils'
+import { getKubeConfigCommand, getKubeConfigCommandWithContext } from './utils'
 
 const DefaultSelectPickerOptionType = {
     label: 'Do not set context',
-    value: 'Do not set context',
+    value: '',
 }
 
 const getOptions = (
@@ -48,10 +48,14 @@ const KubeConfigModal = ({ clusterName, handleModalClose }: KubeConfigTippyConte
     const [toggleEnabled, setToggleEnabled] = useState(false)
     const { selectedIdentifiers: bulkSelectionClusterList } =
         useBulkSelection<BulkSelectionIdentifiersType<ClusterDetail>>()
-    const [selectedClusterName, setSelectedClusterName] =
+    const [selectedClusterContext, setSelectedClusterContext] =
         useState<SelectPickerOptionType<string>>(DefaultSelectPickerOptionType)
 
     const bulkSelectedClusterNames = Object.keys(bulkSelectionClusterList)
+    const reachableClustersList = Object.values(bulkSelectionClusterList).filter(
+        (clusterData) => clusterData.status !== ClusterStatusType.CONNECTION_FAILED,
+    )
+    const reachableClusters = reachableClustersList.map((cluster) => cluster.name)
 
     const getDefaultConfig = () => {
         const command = () =>
@@ -61,14 +65,14 @@ const KubeConfigModal = ({ clusterName, handleModalClose }: KubeConfigTippyConte
 
         return (command() as string[]).join('\n')
     }
-    const [kubeconfigCommand, setKubeconfigCommand] = useState<string>(getDefaultConfig)
+    const [kubeConfigCommand, setKubeConfigCommand] = useState<string>(getDefaultConfig)
 
     const handleCopyButtonClick = () => {
         ReactGA.event({
             category: 'Resource Browser',
             action: 'Get kubeconfig copy button clicked',
         })
-        setCopyToClipboardPromise(copyToClipboard(kubeconfigCommand))
+        setCopyToClipboardPromise(copyToClipboard(kubeConfigCommand))
     }
 
     const renderHeader = () => (
@@ -86,27 +90,27 @@ const KubeConfigModal = ({ clusterName, handleModalClose }: KubeConfigTippyConte
         </div>
     )
 
-    const onChange = (selectedClusters) => {
-        setSelectedClusterName(selectedClusters)
-        setKubeconfigCommand(getKubeConfigCommand(selectedClusters.value))
+    const handleContextChange = (context) => {
+        setSelectedClusterContext(context)
+        setKubeConfigCommand(
+            getKubeConfigCommandWithContext(
+                toggleEnabled ? reachableClusters : bulkSelectedClusterNames,
+                context.value,
+            ),
+        )
         ReactGA.event({
             category: 'Resource Browser',
             action: 'Get kubeconfig set context',
-            label: selectedClusters.value,
+            label: context.value,
         })
     }
-
-    const reachableClustersList = Object.values(bulkSelectionClusterList).filter(
-        (clusterData) => clusterData.status !== ClusterStatusType.CONNECTION_FAILED,
-    )
-    console.log(reachableClustersList)
 
     const handleReachableClustersToggle = () => {
         setToggleEnabled(!toggleEnabled)
         if (toggleEnabled) {
-            setKubeconfigCommand(getDefaultConfig())
+            setKubeConfigCommand(getDefaultConfig())
         } else {
-            setKubeconfigCommand(reachableClustersList.map((cluster) => getKubeConfigCommand(cluster.name)).join('\n'))
+            setKubeConfigCommand(reachableClustersList.map((cluster) => getKubeConfigCommand(cluster.name)).join('\n'))
         }
     }
 
@@ -138,47 +142,59 @@ const KubeConfigModal = ({ clusterName, handleModalClose }: KubeConfigTippyConte
                         inputId="cluster-kube-config"
                         options={getOptions(bulkSelectedClusterNames)}
                         size={ComponentSizeType.medium}
-                        onChange={onChange}
-                        value={selectedClusterName}
+                        onChange={handleContextChange}
+                        value={selectedClusterContext}
                     />
                 </div>
             )}
         </div>
     )
 
+    const renderNoClusterReachable = () => (
+        <div className="flex column dc__gap-12 dc__align-items-center p-20">
+            <Icon name="ic-info-outline" size={24} color={null} />
+            <div className="flex fs-13 lh-20 dc__mxw-250 dc__text-center">
+                None of the selected clusters are reachable.
+            </div>
+        </div>
+    )
+
     const renderConfigCommand = () => (
         <div className="flexbox-col dc__gap-12 p-20">
             {bulkSelectedClusterNames.length > 1 && renderSelectiveClusters()}
-
-            <ol
-                className={`steps-with-trail--normal ${bulkSelectedClusterNames.length > 1 ? 'border__secondary--top' : ''} pt-12 px-0`}
-            >
-                <li>
-                    <span className="fs-13 lh-20">
-                        <b className="fw-6">Prerequisites:</b>
-                        &nbsp;
-                        <a
-                            href="https://kubernetes.io/docs/reference/kubectl/"
-                            target="_blank"
-                            rel="noreferrer noopener"
-                            className="dc__underline dc__link-n9"
-                        >
-                            kubectl
-                        </a>
-                        &nbsp;must be installed
-                    </span>
-                </li>
-                <li>
-                    <div className="flexbox-col dc__overflow-hidden dc__gap-4">
+            {!reachableClustersList.length && toggleEnabled ? (
+                renderNoClusterReachable()
+            ) : (
+                <ol
+                    className={`steps-with-trail--normal ${bulkSelectedClusterNames.length > 1 ? 'border__secondary--top' : ''} pt-12 px-0`}
+                >
+                    <li>
                         <span className="fs-13 lh-20">
-                            Run below command on terminal to get server URI & bearer token
+                            <b className="fw-6">Prerequisites:</b>
+                            &nbsp;
+                            <a
+                                href="https://kubernetes.io/docs/reference/kubectl/"
+                                target="_blank"
+                                rel="noreferrer noopener"
+                                className="dc__underline dc__link-n9"
+                            >
+                                kubectl
+                            </a>
+                            &nbsp;must be installed
                         </span>
-                        <pre className="mono p-10 br-8 fs-13 m-0 p-0 dc__overflow-auto bg__secondary dc__border-n1 mxh-100">
-                            {kubeconfigCommand}
-                        </pre>
-                    </div>
-                </li>
-            </ol>
+                    </li>
+                    <li>
+                        <div className="flexbox-col dc__overflow-hidden dc__gap-4">
+                            <span className="fs-13 lh-20">
+                                Run below command on terminal to get server URI & bearer token
+                            </span>
+                            <pre className="mono p-10 br-8 fs-13 m-0 p-0 dc__overflow-auto bg__secondary dc__border-n1 mxh-100">
+                                {kubeConfigCommand}
+                            </pre>
+                        </div>
+                    </li>
+                </ol>
+            )}
         </div>
     )
 
@@ -197,7 +213,7 @@ const KubeConfigModal = ({ clusterName, handleModalClose }: KubeConfigTippyConte
                 size={ComponentSizeType.medium}
                 onClick={handleCopyButtonClick}
                 startIcon={
-                    <ClipboardButton content={kubeconfigCommand} copyToClipboardPromise={copyToClipboardPromise} />
+                    <ClipboardButton content={kubeConfigCommand} copyToClipboardPromise={copyToClipboardPromise} />
                 }
                 text="Copy command"
             />

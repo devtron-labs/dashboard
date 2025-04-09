@@ -15,7 +15,9 @@ kubectl config set-credentials devtron-${clusterName} --token=${token}
 kubectl config set-context devtron-${clusterName} --cluster=devtron-${clusterName} --user=devtron-${clusterName}`
 }
 
-export const getKubeConfigCommandWithContext = (clusterNames: string[], context?: string) =>
-    clusterNames
-        .map((clusterName) => `${getKubeConfigCommand(clusterName)}`)
-        .join(getKubeConfigContextCommand(context || ''))
+export const getKubeConfigCommandWithContext = (clusterNames: string[], context?: string) => {
+    const commands = clusterNames.map((clusterName) => `${getKubeConfigCommand(clusterName)}`)
+    const contextCommand = context ? getKubeConfigContextCommand(context) : null
+
+    return [...commands, contextCommand].join('\n')
+}
