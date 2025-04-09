@@ -14,26 +14,28 @@
  * limitations under the License.
  */
 
+import { useRef } from 'react'
+
 import {
     DEFAULT_BASE_PAGE_SIZE,
-    ErrorScreenNotAuthorized,
     ERROR_EMPTY_SCREEN,
+    ErrorScreenNotAuthorized,
+    GenericFilterEmptyState,
     noop,
     Reload,
     TOAST_ACCESS_DENIED,
-    GenericFilterEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useRef } from 'react'
+
+import { importComponentFromFELibrary } from '../../../../../components/common'
 import { API_STATUS_CODES } from '../../../../../config'
+import { BulkSelectionModalTypes, useAuthorizationBulkSelection } from '../../Shared/components/BulkSelection'
+import BulkSelectionActionWidget from '../../Shared/components/BulkSelection/BulkSelectionActionWidget'
+import BulkSelectionModal from '../../Shared/components/BulkSelection/BulkSelectionModal'
+import { BulkSelectionEntityTypes } from '../../Shared/components/BulkSelection/constants'
 import NoUsers from './NoUsers'
 import { UserPermissionContainerProps } from './types'
 import UserPermissionListHeader from './UserPermissionListHeader'
-import BulkSelectionActionWidget from '../../Shared/components/BulkSelection/BulkSelectionActionWidget'
-import BulkSelectionModal from '../../Shared/components/BulkSelection/BulkSelectionModal'
 import UserPermissionTable from './UserPermissionTable'
-import { BulkSelectionModalTypes, useAuthorizationBulkSelection } from '../../Shared/components/BulkSelection'
-import { BulkSelectionEntityTypes } from '../../Shared/components/BulkSelection/constants'
-import { importComponentFromFELibrary } from '../../../../../components/common'
 
 const UserListFilterToolbar = importComponentFromFELibrary('UserListFilterToolbar', null, 'function')
 

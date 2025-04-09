@@ -18,37 +18,37 @@ import { useEffect, useState } from 'react'
 
 import {
     Button,
+    ButtonComponentType,
     ButtonStyleType,
     ButtonVariantType,
+    ComponentSizeType,
     CustomInput,
+    Drawer,
+    GenericEmptyState,
     noop,
+    ServerErrors,
     showError,
+    stopPropagation,
     TagType,
-    UseFormSubmitHandler,
-    useForm,
     ToastManager,
     ToastVariantType,
-    ServerErrors,
-    Drawer,
-    stopPropagation,
-    GenericEmptyState,
-    ButtonComponentType,
-    ComponentSizeType,
+    useForm,
+    UseFormSubmitHandler,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
-import { importComponentFromFELibrary } from '@Components/common'
-import { saveEnvironment, updateEnvironment, deleteEnvironment } from '@Components/cluster/cluster.service'
-
+import { deleteEnvironment, saveEnvironment, updateEnvironment } from '@Components/cluster/cluster.service'
 import { getNamespaceFromLocalStorage } from '@Components/cluster/cluster.util'
-import { URLS } from '@Config/routes'
-import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Components/cluster/constants'
-import { ClusterEnvironmentDrawerFormProps, ClusterEnvironmentDrawerProps, ClusterNamespacesDTO } from './types'
-import { getClusterNamespaceByName, getClusterEnvironmentUpdatePayload, getNamespaceLabels } from './utils'
-import { clusterEnvironmentDrawerFormValidationSchema } from './schema'
+import { importComponentFromFELibrary } from '@Components/common'
+import { URLS } from '@Config/routes'
+
 import { EnvironmentDeleteComponent } from '../EnvironmentDeleteComponent'
+import { clusterEnvironmentDrawerFormValidationSchema } from './schema'
+import { ClusterEnvironmentDrawerFormProps, ClusterEnvironmentDrawerProps, ClusterNamespacesDTO } from './types'
+import { getClusterEnvironmentUpdatePayload, getClusterNamespaceByName, getNamespaceLabels } from './utils'
 
 const virtualClusterSaveUpdateApi = importComponentFromFELibrary('virtualClusterSaveUpdateApi', null, 'function')
 const getClusterNamespaces = importComponentFromFELibrary('getClusterNamespaces', noop, 'function')

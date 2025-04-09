@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import { CustomInput, TagsContainer, Textarea } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICDevtronApp } from '@Icons/ic-devtron-app.svg'
-import { ReactComponent as ICCaretLeftSmall } from '@Icons/ic-caret-left-small.svg'
 import { ChangeEvent } from 'react'
+
+import { CustomInput, TagsContainer, Textarea } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ReactComponent as ICCaretLeftSmall } from '@Icons/ic-caret-left-small.svg'
+import { ReactComponent as ICDevtronApp } from '@Icons/ic-devtron-app.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 import { APP_TYPE } from '@Config/constants'
+
+import AppToCloneSelector from './AppToCloneSelector'
 import ProjectSelector from './ProjectSelector'
 import {
     ApplicationInfoFormProps,
@@ -29,7 +33,6 @@ import {
     HandleFormStateChangeParamsType,
     ProjectSelectorProps,
 } from './types'
-import AppToCloneSelector from './AppToCloneSelector'
 
 const MandatoryTagsContainer = importComponentFromFELibrary('MandatoryTagsContainer', null, 'function')
 

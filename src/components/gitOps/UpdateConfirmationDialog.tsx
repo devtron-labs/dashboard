@@ -15,13 +15,15 @@
  */
 
 import { ButtonWithLoader, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
-import { getProviderNameFromEnum } from '@Components/common/GitTabs/utils'
+
 import { GitProvider } from '@Components/common/GitTabs/constants'
+import { getProviderNameFromEnum } from '@Components/common/GitTabs/utils'
+
+import { ReactComponent as ICArrowRight } from '../../assets/icons/ic-arrow-right.svg'
+import { ReactComponent as ICWarning } from '../../assets/icons/ic-warning.svg'
+import { DOCUMENTATION } from '../../config'
 import GitProviderTabIcons from '../common/GitTabs/GitProviderTabIcons'
 import { UpdateConfirmationDialogProps } from './gitops.type'
-import { ReactComponent as ICWarning } from '../../assets/icons/ic-warning.svg'
-import { ReactComponent as ICArrowRight } from '../../assets/icons/ic-arrow-right.svg'
-import { DOCUMENTATION } from '../../config'
 
 const UpdateConfirmationDialog = ({
     providerTab,

@@ -15,9 +15,10 @@
  */
 
 import { AppType, post } from '@devtron-labs/devtron-fe-common-lib'
+
 import { Routes } from '../../../../../config'
-import { HibernateRequest, HibernateResponse } from './scaleWorkloadsModal.type'
 import { getK8sResourcePayloadAppType } from '../../k8Resource/nodeDetail/nodeDetail.util'
+import { HibernateRequest, HibernateResponse } from './scaleWorkloadsModal.type'
 
 export function hibernateApp(request: HibernateRequest, appType: AppType): Promise<HibernateResponse> {
     const url = `${Routes.HELM_APP_HIBERNATE_API}?appType=${getK8sResourcePayloadAppType(appType)}`

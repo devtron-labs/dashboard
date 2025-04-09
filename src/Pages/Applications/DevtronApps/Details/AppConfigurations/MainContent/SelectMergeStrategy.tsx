@@ -15,18 +15,20 @@
  */
 
 import {
+    ComponentSizeType,
+    DOCUMENTATION_HOME_PAGE,
+    getSelectPickerOptionByValue,
     InfoIconTippy,
+    noop,
     OverrideMergeStrategyType,
     OverrideStrategyTippyContent,
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerVariantType,
-    DOCUMENTATION_HOME_PAGE,
-    ComponentSizeType,
-    noop,
-    getSelectPickerOptionByValue,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { importComponentFromFELibrary } from '@Components/common'
+
 import { MERGE_STRATEGY_OPTIONS } from './constants'
 import { SelectMergeStrategyProps } from './types'
 

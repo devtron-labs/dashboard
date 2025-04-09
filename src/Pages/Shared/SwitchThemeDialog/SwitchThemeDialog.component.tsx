@@ -15,23 +15,26 @@
  */
 
 import { useEffect, useState } from 'react'
+
 import {
+    AppThemeType,
     ConfirmationModal,
     ConfirmationModalVariantType,
-    updateUserPreferences,
-    AppThemeType,
     getComponentSpecificThemeClass,
-    useTheme,
     getThemePreferenceText,
     Icon,
     THEME_PREFERENCE_STORAGE_KEY,
+    updateUserPreferences,
+    useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import {
     BaseLabelFigureProps,
     SwitchThemeDialogProps,
     ThemePreferenceLabelFigureProps,
     ThemePreferenceOptionProps,
 } from './types'
+
 import './SwitchThemeDialog.scss'
 
 const THEME_PREFERENCE_OPTION_MAP: Record<ThemePreferenceOptionProps['value'], null> = {

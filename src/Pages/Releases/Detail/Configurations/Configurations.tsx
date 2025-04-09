@@ -19,23 +19,23 @@ import { generatePath, Route, Switch, useRouteMatch } from 'react-router-dom'
 
 import {
     ApprovalConfigDataKindType,
+    CMSecretComponentType,
     DeploymentHistoryBaseParamsType,
     EnvResourceType,
     GenericEmptyState,
     getIsApprovalPolicyConfigured,
     Progressing,
-    CMSecretComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS } from '@Config/routes'
 import { importComponentFromFELibrary } from '@Components/common'
-import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret'
-import { DeploymentConfigCompare, DeploymentTemplate } from '@Pages/Applications'
-import { getEnvConfig } from '@Pages/Applications/DevtronApps/service'
-import { EnvConfigurationsNav } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/Navigation/EnvConfigurationsNav'
-
-import { EnvConfigType } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
+import { URLS } from '@Config/routes'
+import { DeploymentConfigCompare, DeploymentTemplate } from '@Pages/Applications'
+import { EnvConfigType } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
+import { EnvConfigurationsNav } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/Navigation/EnvConfigurationsNav'
+import { getEnvConfig } from '@Pages/Applications/DevtronApps/service'
+import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret'
+
 import { ReleaseConfigurationContextType } from './types'
 
 import './styles.scss'

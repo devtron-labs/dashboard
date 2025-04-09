@@ -17,9 +17,9 @@
 import {
     DynamicDataTableRowDataType,
     DynamicDataTableRowType,
-    TagType,
-    TagsTableColumnsType,
     getEmptyTagTableRow,
+    TagsTableColumnsType,
+    TagType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 const parseLabels = (currentLabelTags: TagType[]): DynamicDataTableRowType<TagsTableColumnsType>[] =>

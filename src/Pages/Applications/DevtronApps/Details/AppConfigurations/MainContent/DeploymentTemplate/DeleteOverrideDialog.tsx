@@ -15,6 +15,7 @@
  */
 
 import { useParams } from 'react-router-dom'
+
 import {
     API_STATUS_CODES,
     BaseURLParams,
@@ -22,9 +23,11 @@ import {
     ServerError,
     showError,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { DeleteComponentsName } from '@Config/constantMessaging'
-import { DeleteOverrideDialogProps } from './types'
+
 import { deleteOverrideDeploymentTemplate } from './service'
+import { DeleteOverrideDialogProps } from './types'
 
 const DeleteOverrideDialog = ({
     environmentConfigId,

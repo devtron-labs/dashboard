@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { URLS } from '@Config/routes'
+import { useContext, useEffect } from 'react'
+import { useHistory, useRouteMatch } from 'react-router-dom'
+
 import {
     Button,
     ButtonStyleType,
@@ -24,13 +26,14 @@ import {
     stopPropagation,
     VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as LeftIcon } from '@Icons/ic-arrow-backward.svg'
-import { useContext, useEffect } from 'react'
-import { useHistory, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
+import { URLS } from '@Config/routes'
+
+import { CiWebhookModal } from './CiWebhookDebuggingModal'
 import { TriggerViewContext } from './config'
 import { WebhookReceivedPayloadModalType } from './types'
-import { CiWebhookModal } from './CiWebhookDebuggingModal'
 
 export const WebhookReceivedPayloadModal = ({
     title,

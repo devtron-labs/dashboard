@@ -15,23 +15,26 @@
  */
 
 import React, { RefObject } from 'react'
+
 import {
-    K8SObjectBaseType,
-    OptionType,
-    ApiResourceGroupType,
-    GVKType,
-    WidgetEventDetails,
-    InitTabType,
-    K8sResourceDetailType,
-    K8sResourceDetailDataType,
     ALL_NAMESPACE_OPTION,
+    ApiResourceGroupType,
     ClusterDetail,
+    GVKType,
+    InitTabType,
+    K8SObjectBaseType,
+    K8sResourceDetailDataType,
+    K8sResourceDetailType,
+    OptionType,
     ResourceDetail,
     SelectedResourceType,
+    WidgetEventDetails,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
-import { LogSearchTermType } from '../v2/appDetails/appDetails.type'
+
 import { ClusterListType } from '../ClusterNodes/types'
+import { LogSearchTermType } from '../v2/appDetails/appDetails.type'
 import { BaseResourceListProps } from './ResourceList/types'
 
 export interface K8SObjectType extends K8SObjectBaseType {

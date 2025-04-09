@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import ReactGA from 'react-ga4'
-import { Route, Switch, useRouteMatch, Redirect, useLocation, useHistory } from 'react-router-dom'
-import { DynamicTabs, useTabs } from '@Components/common/DynamicTabs'
+import { Redirect, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+
 import { EnvResourceType, noop, useStickyEvent } from '@devtron-labs/devtron-fe-common-lib'
-import { DynamicTabsProps, DynamicTabsVariantType } from '@Components/common/DynamicTabs/types'
-import { ReactComponent as ICObject } from '@Icons/ic-object.svg'
+
 import { ReactComponent as ICLogs } from '@Icons/ic-logs.svg'
-import { K8ResourceComponent } from './k8Resource/K8Resource.component'
-import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component'
+import { ReactComponent as ICObject } from '@Icons/ic-object.svg'
+import { DynamicTabs, useTabs } from '@Components/common/DynamicTabs'
+import { DynamicTabsProps, DynamicTabsVariantType } from '@Components/common/DynamicTabs/types'
+
 import { URLS } from '../../../config'
+import { K8ResourceComponent } from './k8Resource/K8Resource.component'
+import { getApplicationsGAEvent } from './k8Resource/utils'
+import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component'
 import { APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX, AppDetailsTabs, getInitialTabs } from './appDetails.store'
 import { K8ResourceComponentProps, NodeTreeDetailTabProps, NodeType } from './appDetails.type'
 import IndexStore from './index.store'
 import NodeDetailComponentWrapper from './NodeDetailComponentWrapper'
-import { getApplicationsGAEvent } from './k8Resource/utils'
+
 import './appDetails.scss'
 
 const NodeTreeDetailTab = ({

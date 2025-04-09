@@ -15,8 +15,10 @@
  */
 
 import React from 'react'
-import queryString from 'query-string'
 import { useLocation } from 'react-router-dom'
+import moment from 'moment'
+import queryString from 'query-string'
+
 import {
     ApiResourceGroupType,
     DATE_TIME_FORMAT_STRING,
@@ -26,16 +28,16 @@ import {
     K8sResourceDetailType,
     ResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import moment from 'moment'
-import { URLS, LAST_SEEN } from '../../config'
+
+import { LAST_SEEN, URLS } from '../../config'
 import { eventAgeComparator, importComponentFromFELibrary, processK8SObjects } from '../common'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import {
     JUMP_TO_KIND_SHORT_NAMES,
     K8S_EMPTY_GROUP,
+    MONITORING_DASHBOARD_TAB_ID,
     NODE_LIST_HEADERS,
     ORDERED_AGGREGATORS,
-    MONITORING_DASHBOARD_TAB_ID,
     ResourceBrowserTabsId,
     SIDEBAR_KEYS,
 } from './Constants'
@@ -43,8 +45,8 @@ import {
     GetTabsBasedOnRoleParamsType,
     K8SObjectChildMapType,
     K8SObjectMapType,
-    K8SObjectType,
     K8sObjectOptionType,
+    K8SObjectType,
     NodeRowDetail,
 } from './Types'
 
