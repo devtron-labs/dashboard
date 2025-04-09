@@ -334,3 +334,5 @@ export enum CLUSTER_PROD_TYPE {
     NON_PRODUCTION= 'Non Production',
 
 }
+
+export const CLUSTER_CONFIG_POLLING_INTERVAL = 10000 // 10 seconds

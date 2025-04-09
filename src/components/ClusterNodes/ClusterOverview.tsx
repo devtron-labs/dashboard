@@ -26,6 +26,9 @@ import {
     getUrlWithSearchParams,
     showError,
     ClusterCapacityType,
+    InstallationClusterConfigType,
+    noop,
+    StatusComponent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ClusterErrorType,
@@ -40,7 +43,7 @@ import { getURLBasedOnSidebarGVK } from '@Components/ResourceBrowser/Utils'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { getClusterCapacity, getClusterDetails, updateClusterShortDescription } from './clusterNodes.service'
 import GenericDescription from '../common/Description/GenericDescription'
-import { defaultClusterNote, defaultClusterShortDescription } from './constants'
+import { CLUSTER_CONFIG_POLLING_INTERVAL, defaultClusterNote, defaultClusterShortDescription } from './constants'
 import { Moment12HourFormat, URLS } from '../../config'
 import {
     K8S_EMPTY_GROUP,
@@ -60,6 +63,7 @@ const Catalog = importComponentFromFELibrary('Catalog', null, 'function')
 const ClusterConfig = importComponentFromFELibrary('ClusterConfig', null, 'function')
 const ClusterAddOns = importComponentFromFELibrary('ClusterAddOns', null, 'function')
 const MigrateClusterVersionInfoBar = importComponentFromFELibrary('MigrateClusterVersionInfoBar', null, 'function')
+const getInstallationClusterConfig = importComponentFromFELibrary('getInstallationClusterConfig', null, 'function')
 
 /* TODO: move into utils */
 const metricsApiTippyContent = () => (
@@ -114,8 +118,10 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
     const [clusterErrorList, setClusterErrorList] = useState<ClusterErrorType[]>([])
     const [clusterDetails, setClusterDetails] = useState<ClusterDetailsType>({} as ClusterDetailsType)
     const [clusterCapacityData, setClusterCapacityData] = useState<ClusterCapacityType>(null)
+    const [clusterConfig, setClusterConfig] = useState<InstallationClusterConfigType | null>(null)
 
     const requestAbortControllerRef = useRef(null)
+    const clusterConfigPollTimeoutRef = useRef<number>(-1)
 
     const handleRetry = async () => {
         abortRequestAndResetError(true)
@@ -176,9 +182,32 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
         }
     }
 
+    const fetchClusterConfig = async (clusterName: string) => {
+        if (!getInstallationClusterConfig) {
+            return
+        }
+
+        const config = await (getInstallationClusterConfig({ clusterName }) as Promise<InstallationClusterConfigType>)
+        setClusterConfig(config)
+    }
+
+    const pollClusterConfig = async (clusterName: string) => {
+        if (clusterCapacityData?.name && !clusterConfigPollTimeoutRef.current) {
+            setTimeout(() => {
+                fetchClusterConfig(clusterCapacityData.name)
+                    .then(() => pollClusterConfig(clusterName))
+                    .catch(noop)
+            }, CLUSTER_CONFIG_POLLING_INTERVAL)
+        }
+    }
+
     const setClusterCapacityDetails = (clusterCapacityResponse: PromiseSettledResult<ClusterCapacityResponse>) => {
         if (clusterCapacityResponse.status === 'fulfilled') {
-            setClusterCapacityData(clusterCapacityResponse.value.result)
+            const clusterCapacity = clusterCapacityResponse.value.result
+            setClusterCapacityData(clusterCapacity)
+            if (clusterCapacity?.name) {
+                fetchClusterConfig(clusterCapacity.name).catch(noop)
+            }
             const _errorList = []
             const _nodeErrors = Object.keys(clusterCapacityResponse.value.result.nodeErrors || {})
             const _nodeK8sVersions = clusterCapacityResponse.value.result.nodeK8sVersions || []
@@ -410,6 +439,8 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
         }).then(() => history.push(URL))
     }
 
+    const creationPrefix = clusterConfig ? 'Created' : 'Added'
+
     const renderSideInfoData = () => {
         return (
             <aside className="flexbox-col dc__gap-16 w-300 dc__no-shrink">
@@ -436,11 +467,17 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
                 <div className="dc__border-top-n1" />
                 <div className="flexbox-col dc__gap-12">
                     <div>
-                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Added on</div>
+                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Status</div>
+                        <div className="fs-13 fw-6">
+                            <StatusComponent status={clusterCapacityData.status} iconSize={20}  />
+                        </div>
+                    </div>
+                    <div>
+                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">{creationPrefix} on</div>
                         <div className="fs-13 fw-6 lh-20 cn-9 dc__ellipsis-right">{clusterDetails.addedOn}</div>
                     </div>
                     <div>
-                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Added by</div>
+                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">{creationPrefix} by</div>
                         <div className="fs-13 fw-6 lh-20 cn-9 dc__ellipsis-right flexbox">
                             {clusterDetails.addedBy && (
                                 <>
@@ -509,7 +546,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
                 {renderSideInfoData()}
                 <div className="dc__mxw-1068 flex-grow-1 mw-none">
                     {renderCardDetails()}
-                    {ClusterConfig && <ClusterConfig clusterName={clusterCapacityData.name} clusterId={Number(clusterId)} />}
+                    {ClusterConfig && clusterConfig && <ClusterConfig clusterConfig={clusterConfig} pollClusterConfig={pollClusterConfig} />}
                     {renderClusterError()}
                     {ClusterAddOns && <ClusterAddOns clusterId={clusterId} getAvailableCharts={getAvailableCharts} />}                    
                     {Catalog && <Catalog resourceId={clusterId} resourceType={ResourceKindType.cluster} />}
