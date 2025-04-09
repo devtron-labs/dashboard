@@ -121,7 +121,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
     const [clusterConfig, setClusterConfig] = useState<InstallationClusterConfigType | null>(null)
 
     const requestAbortControllerRef = useRef(null)
-    const clusterConfigPollTimeoutRef = useRef<number>(-1)
+    const clusterConfigPollTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null)
 
     const handleRetry = async () => {
         abortRequestAndResetError(true)
@@ -191,11 +191,14 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
         setClusterConfig(config)
     }
 
-    const pollClusterConfig = async (clusterName: string) => {
-        if (clusterCapacityData?.name && !clusterConfigPollTimeoutRef.current) {
-            setTimeout(() => {
+    const pollClusterConfig = (clusterName: string) => {
+        if (clusterCapacityData?.name && clusterConfigPollTimeoutRef.current === null) {
+            clusterConfigPollTimeoutRef.current = setTimeout(() => {
                 fetchClusterConfig(clusterCapacityData.name)
-                    .then(() => pollClusterConfig(clusterName))
+                    .then(() => {
+                        clusterConfigPollTimeoutRef.current = null
+                        pollClusterConfig(clusterName)
+                    })
                     .catch(noop)
             }, CLUSTER_CONFIG_POLLING_INTERVAL)
         }
@@ -283,7 +286,10 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
     }, [selectedCluster])
 
     useEffect(() => {
-        return () => requestAbortControllerRef.current?.abort()
+        return () => {
+            requestAbortControllerRef.current?.abort()
+            clearTimeout(clusterConfigPollTimeoutRef.current)
+        }
     }, [])
 
     const setCustomFilter = (errorType: ERROR_TYPE, filterText: string): void => {
@@ -548,7 +554,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
                     {renderCardDetails()}
                     {ClusterConfig && clusterConfig && <ClusterConfig clusterConfig={clusterConfig} pollClusterConfig={pollClusterConfig} />}
                     {renderClusterError()}
-                    {ClusterAddOns && <ClusterAddOns clusterId={clusterId} getAvailableCharts={getAvailableCharts} />}                    
+                    {ClusterAddOns && <ClusterAddOns clusterId={clusterId} getAvailableCharts={getAvailableCharts} />}
                     {Catalog && <Catalog resourceId={clusterId} resourceType={ResourceKindType.cluster} />}
                     <GenericDescription
                         isClusterTerminal
