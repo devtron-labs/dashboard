@@ -26,6 +26,7 @@ import {
     ThroughputSelect,
     getCalendarValue,
     LatencySelect,
+    AppInfo,
 } from './utils'
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg'
 import { DEFAULTK8SVERSION } from '../../../../config'
@@ -39,14 +40,13 @@ export const ChartNames = {
     status: 'Status',
 }
 
-export interface GraphModalProps {
+export interface GraphModalProps extends Pick<AppInfo, 'dataSourceName'> {
     appId: string | number
     envId: string | number
     appName: string
     chartName: ChartTypes
     infraMetrics: boolean
     appMetrics: boolean
-    environmentName: string
     newPodHash: string
     calendar: { startDate: Moment; endDate: Moment }
     calendarInputs: { startDate: string; endDate: string }
@@ -135,10 +135,10 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
         if (!isK8sVersionValid(k8sVersion)) {
             k8sVersion = DEFAULTK8SVERSION
         }
-        const appInfo = {
+        const appInfo: AppInfo = {
             appId: this.props.appId,
             envId: this.props.envId,
-            environmentName: this.props.environmentName,
+            dataSourceName: this.props.dataSourceName,
             newPodHash: this.props.newPodHash,
             k8sVersion,
         }
@@ -316,10 +316,10 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
         if (!isK8sVersionValid(k8sVersion)) {
             k8sVersion = DEFAULTK8SVERSION
         }
-        const appInfo = {
+        const appInfo: AppInfo = {
             appId: this.props.appId,
             envId: this.props.envId,
-            environmentName: this.props.environmentName,
+            dataSourceName: this.props.dataSourceName,
             newPodHash: this.props.newPodHash,
             k8sVersion,
         }
