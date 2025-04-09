@@ -129,7 +129,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [filteredChartList, setFilteredChartList] = useState<ChartListType[]>([])
 
-    const noChartAvailable: boolean = chartList.length > 0 || searchApplied || selectedChartRepo.length > 0
+    const noChartAvailable: boolean = chartList.length > 0 || searchApplied || selectedChartRepo.length > 0 || !!chartCategoryIds
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
         return (acc = acc && chart.originalValuesYaml === chart.valuesYaml)
     }, true)
