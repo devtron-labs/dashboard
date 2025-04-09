@@ -17,7 +17,7 @@
 .cluster-list-main-container {
     .cluster-list-row {
         display: grid;
-        grid-template-columns: auto 150px 100px 60px 100px 100px 100px 130px;
+        grid-template-columns: 24px auto 150px 100px 60px 100px 100px 100px 130px;
         column-gap: 16px;
 
         .cluster-status {

@@ -14,46 +14,38 @@
  * limitations under the License.
  */
 
-import React, { useState, useMemo } from 'react'
-import { useHistory, useLocation, Link } from 'react-router-dom'
+import React, { useState, useMemo, useEffect } from 'react'
 import {
     GenericEmptyState,
     SearchBar,
     useUrlFilters,
-    Tooltip,
     ClusterFiltersType,
-    ALL_NAMESPACE_OPTION,
     SortableTableHeaderCell,
     ClusterDetail,
-    ClusterStatusType,
+    BulkSelection,
+    BulkSelectionIdentifiersType,
+    useBulkSelection,
+    BulkSelectionEvents,
+    BulkSelectionProvider,
+    SelectAllDialogStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
 import dayjs, { Dayjs } from 'dayjs'
 import { importComponentFromFELibrary } from '@Components/common'
 import Timer from '@Components/common/DynamicTabs/DynamicTabs.timer'
 import NoClusterEmptyState from '@Images/no-cluster-empty-state.png'
 import { AddClusterButton } from '@Components/ResourceBrowser/PageHeader.buttons'
-import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
-import { ReactComponent as TerminalIcon } from '@Icons/ic-terminal-fill.svg'
+
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import { ClusterSelectionType } from '../ResourceBrowser/Types'
-import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
-import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
-import { URLS } from '../../config'
-import {
-    CLUSTER_PROD_TYPE,
-    ClusterMapListSortableKeys,
-    ClusterMapListSortableTitle,
-    ClusterStatusByFilter,
-} from './constants'
-import './clusterNodes.scss'
-import { ClusterMapInitialStatus } from './ClusterMapInitialStatus'
-import { getSortedClusterList } from './utils'
 
-const KubeConfigButton = importComponentFromFELibrary('KubeConfigButton', null, 'function')
-const ClusterStatusCell = importComponentFromFELibrary('ClusterStatus', null, 'function')
-const ClusterFilters = importComponentFromFELibrary('ClusterFilters', null, 'function')
-const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
+import { ClusterMapListSortableKeys, ClusterMapListSortableTitle, ClusterStatusByFilter } from './constants'
+import './clusterNodes.scss'
+import { getSortedClusterList } from './utils'
+import { ClusterBulkSelectionActionWidget } from './ClusterBulkSelectionActionWidget'
+import { ClusterListRow } from './ClusterListRow'
+
 const ClusterMap = importComponentFromFELibrary('ClusterMap', null, 'function')
+const ClusterFilters = importComponentFromFELibrary('ClusterFilters', null, 'function')
 
 const parseSearchParams = (searchParams: URLSearchParams) => ({
     clusterFilter: (searchParams.get('clusterFilter') as ClusterFiltersType) || ClusterFiltersType.ALL_CLUSTERS,
@@ -64,9 +56,8 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     clusterListLoader,
     initialLoading,
     refreshData,
+    parentRef,
 }) => {
-    const location = useLocation()
-    const history = useHistory()
     const [lastSyncTime, setLastSyncTime] = useState<Dayjs>(dayjs())
 
     const {
@@ -82,6 +73,19 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
         parseSearchParams,
         initialSortKey: ClusterMapListSortableKeys.CLUSTER_NAME,
     })
+
+    const { handleBulkSelection, setIdentifiers, isBulkSelectionApplied, getSelectedIdentifiersCount } =
+        useBulkSelection<BulkSelectionIdentifiersType<ClusterDetail>>()
+
+    useEffect(() => {
+        if (clusterOptions.length) {
+            const clusterIdentifier: BulkSelectionIdentifiersType<ClusterDetail> = {}
+            clusterOptions.forEach((cluster) => {
+                clusterIdentifier[cluster.name] = cluster
+            })
+            setIdentifiers(clusterIdentifier)
+        }
+    }, [clusterOptions])
 
     const filteredList: ClusterDetail[] = useMemo(() => {
         const loweredSearchKey = searchKey.toLowerCase()
@@ -113,93 +117,6 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
         updateSearchParams({ clusterFilter: _clusterFilter })
     }
 
-    const getOpenTerminalHandler = (clusterData) => () =>
-        history.push(`${location.pathname}/${clusterData.id}/all/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`)
-
-    const hideDataOnLoad = (value) => {
-        if (clusterListLoader) {
-            return null
-        }
-        return value
-    }
-
-    const renderClusterStatus = ({ errorInNodeListing, status }: ClusterDetail) => {
-        if (ClusterStatusCell && status) {
-            return <ClusterStatusCell status={status} errorInNodeListing={errorInNodeListing} />
-        }
-
-        return <ClusterMapInitialStatus errorInNodeListing={errorInNodeListing} />
-    }
-
-    const renderClusterRow = (clusterData: ClusterDetail): JSX.Element => {
-        const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
-        return (
-            <div
-                key={`cluster-${clusterData.id}`}
-                className={`cluster-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class dc__visible-hover dc__visible-hover--parent
-                 ${clusterListLoader ? 'show-shimmer-loading dc__align-items-center' : ''}`}
-            >
-                <div data-testid={`cluster-row-${clusterData.name}`} className="flex left dc__overflow-hidden">
-                    <Link
-                        className="dc__ellipsis-right dc__no-decor lh-24"
-                        to={`${URLS.RESOURCE_BROWSER}/${clusterData.id}/${ALL_NAMESPACE_OPTION.value}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`}
-                    >
-                        {clusterData.name}
-                    </Link>
-                    {/* NOTE: visible-hover plays with display prop; therefore need to set display: flex on a new div */}
-                    <div className="cursor dc__visible-hover--child ml-8">
-                        <div className="flexbox dc__align-items-center dc__gap-4">
-                            {!!clusterData.nodeCount && !clusterListLoader && (
-                                <Tooltip alwaysShowTippyOnHover content="View terminal">
-                                    <div className="flex">
-                                        <TerminalIcon
-                                            data-testid={`cluster-terminal-${clusterData.name}`}
-                                            className="icon-dim-24 p-4 dc__no-shrink dc__hover-n100 br-4 dc__hover-color-n800 fill"
-                                            onClick={getOpenTerminalHandler(clusterData)}
-                                        />
-                                    </div>
-                                </Tooltip>
-                            )}
-
-                            {CompareClusterButton && clusterData.status !== ClusterStatusType.CONNECTION_FAILED && (
-                                <CompareClusterButton sourceClusterId={clusterData.id} isIconButton />
-                            )}
-
-                            {KubeConfigButton && <KubeConfigButton clusterName={clusterData.name} />}
-                        </div>
-                    </div>
-                </div>
-
-                {renderClusterStatus(clusterData)}
-
-                <div className="child-shimmer-loading">
-                    {hideDataOnLoad(
-                        clusterData.isProd ? CLUSTER_PROD_TYPE.PRODUCTION : CLUSTER_PROD_TYPE.NON_PRODUCTION,
-                    )}
-                </div>
-                <div className="child-shimmer-loading">{hideDataOnLoad(clusterData.nodeCount)}</div>
-                <div className="child-shimmer-loading">
-                    {errorCount > 0 &&
-                        hideDataOnLoad(
-                            <>
-                                <Error className="mr-3 icon-dim-16 dc__position-rel top-3" />
-                                <span className="cr-5">{errorCount}</span>
-                            </>,
-                        )}
-                </div>
-                <div className="flexbox child-shimmer-loading">
-                    {hideDataOnLoad(
-                        <Tooltip content={clusterData.serverVersion}>
-                            <span className="dc__truncate">{clusterData.serverVersion}</span>
-                        </Tooltip>,
-                    )}
-                </div>
-                <div className="child-shimmer-loading">{hideDataOnLoad(clusterData.cpu?.capacity)}</div>
-                <div className="child-shimmer-loading">{hideDataOnLoad(clusterData.memory?.capacity)}</div>
-            </div>
-        )
-    }
-
     if (!clusterOptions.length) {
         return (
             <GenericEmptyState
@@ -211,11 +128,11 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
         )
     }
 
-    const handleCellSorting = (cellToSort: ClusterMapListSortableKeys) => {
+    const handleCellSorting = (cellToSort: ClusterMapListSortableKeys) => () => {
         handleSorting(cellToSort)
     }
 
-    return (
+    const renderClusterListContent = () => (
         <div className="cluster-list-main-container flex-grow-1 flexbox-col bg__primary dc__overflow-auto">
             <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16 dc__zi-4">
                 <div className="flex dc__gap-12">
@@ -271,22 +188,76 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                 <div data-testid="cluster-list-container" className="flexbox-col flex-grow-1">
                     <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase bg__primary dc__position-sticky dc__top-0 dc__zi-3">
                         {Object.entries(ClusterMapListSortableKeys).map(([cellName, cellKey]) => (
-                            <SortableTableHeaderCell
-                                key={cellName}
-                                title={ClusterMapListSortableTitle[cellName]}
-                                isSorted={sortBy === cellKey}
-                                sortOrder={sortOrder}
-                                isSortable
-                                disabled={false}
-                                triggerSorting={() => handleCellSorting(cellKey)}
-                            />
+                            <>
+                                {cellKey === ClusterMapListSortableKeys.CLUSTER_NAME && (
+                                    <BulkSelection showPagination={false} />
+                                )}
+                                <SortableTableHeaderCell
+                                    key={cellName}
+                                    title={ClusterMapListSortableTitle[cellName]}
+                                    isSorted={sortBy === cellKey}
+                                    sortOrder={sortOrder}
+                                    isSortable
+                                    disabled={false}
+                                    triggerSorting={handleCellSorting(cellKey)}
+                                />
+                            </>
                         ))}
                     </div>
-                    {filteredList.map((clusterData) => renderClusterRow(clusterData))}
+                    {filteredList.map((clusterData, index) => (
+                        <ClusterListRow clusterData={clusterData} index={index} clusterListLoader={clusterListLoader} />
+                    ))}
                 </div>
             )}
         </div>
     )
+
+    const handleClearBulkSelection = () => {
+        handleBulkSelection({
+            action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
+        })
+    }
+
+    const renderClusterBulkSelection = () => {
+        if (getSelectedIdentifiersCount() > 0 || isBulkSelectionApplied) {
+            return (
+                <ClusterBulkSelectionActionWidget
+                    parentRef={parentRef}
+                    count={isBulkSelectionApplied ? clusterOptions?.length ?? 0 : getSelectedIdentifiersCount()}
+                    handleClearBulkSelection={handleClearBulkSelection}
+                />
+            )
+        }
+        return null
+    }
+
+    return (
+        <div ref={parentRef} className="flexbox-col flex-grow-1">
+            {renderClusterBulkSelection()}
+            {renderClusterListContent()}
+        </div>
+    )
 }
 
-export default ClusterSelectionList
+const BaseClusterList = (props: ClusterSelectionType) => {
+    const { clusterOptions } = props
+    const allOnThisPageIdentifiers = useMemo(
+        () =>
+            clusterOptions?.reduce((acc, cluster) => {
+                acc[cluster.name] = cluster
+                return acc
+            }, {} as ClusterDetail) ?? {},
+        [clusterOptions],
+    )
+
+    return (
+        <BulkSelectionProvider<BulkSelectionIdentifiersType<ClusterDetail>>
+            identifiers={allOnThisPageIdentifiers}
+            getSelectAllDialogStatus={() => SelectAllDialogStatus.CLOSED}
+        >
+            <ClusterSelectionList {...props} />
+        </BulkSelectionProvider>
+    )
+}
+
+export default BaseClusterList

@@ -1,0 +1,162 @@
+import { SIDEBAR_KEYS, K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
+import {
+    ALL_NAMESPACE_OPTION,
+    BulkSelectionEvents,
+    BulkSelectionIdentifiersType,
+    Checkbox,
+    CHECKBOX_VALUE,
+    ClusterDetail,
+    ClusterStatusType,
+    Icon,
+    Tooltip,
+    URLS,
+    useBulkSelection,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { Link, useHistory, useLocation } from 'react-router-dom'
+import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
+import { ReactComponent as TerminalIcon } from '@Icons/ic-terminal-fill.svg'
+import { importComponentFromFELibrary } from '@Components/common'
+import { AppDetailsTabs } from '@Components/v2/appDetails/appDetails.store'
+import { CLUSTER_PROD_TYPE } from './constants'
+import { ClusterMapInitialStatus } from './ClusterMapInitialStatus'
+import { ClusterListRowTypes } from './types'
+import { KubeConfigButton } from './KubeConfigButton'
+
+export const ClusterListRow = ({ clusterData, index, clusterListLoader }: ClusterListRowTypes) => {
+    // const KubeConfigButton = importComponentFromFELibrary('KubeConfigButton', null, 'function')
+    const ClusterStatusCell = importComponentFromFELibrary('ClusterStatus', null, 'function')
+    const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
+
+    const {
+        selectedIdentifiers: bulkSelectionState,
+        isBulkSelectionApplied,
+        handleBulkSelection,
+    } = useBulkSelection<BulkSelectionIdentifiersType<ClusterDetail>>()
+    const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
+    const history = useHistory()
+    const location = useLocation()
+
+    const handleSelection = () => {
+        const { name } = clusterData
+        if (isBulkSelectionApplied) {
+            handleBulkSelection({
+                action: BulkSelectionEvents.CLEAR_IDENTIFIERS_AFTER_ACROSS_SELECTION,
+                data: {
+                    identifierIds: [name],
+                },
+            })
+        } else if (bulkSelectionState[name]) {
+            handleBulkSelection({
+                action: BulkSelectionEvents.CLEAR_IDENTIFIERS,
+                data: {
+                    identifierIds: [name],
+                },
+            })
+        } else {
+            handleBulkSelection({
+                action: BulkSelectionEvents.SELECT_IDENTIFIER,
+                data: {
+                    identifierObject: {
+                        ...bulkSelectionState,
+                        [name]: clusterData,
+                    },
+                },
+            })
+        }
+    }
+
+    const getOpenTerminalHandler = () => () =>
+        history.push(`${location.pathname}/${clusterData.id}/all/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`)
+
+    const hideDataOnLoad = (value) => {
+        if (clusterListLoader) {
+            return null
+        }
+        return value
+    }
+
+    const renderClusterStatus = ({ errorInNodeListing, status }: ClusterDetail) => {
+        if (ClusterStatusCell && status) {
+            return <ClusterStatusCell status={status} errorInNodeListing={errorInNodeListing} />
+        }
+
+        return <ClusterMapInitialStatus errorInNodeListing={errorInNodeListing} />
+    }
+    const isIdentifierSelected = !!bulkSelectionState[clusterData.name] || isBulkSelectionApplied
+
+    return (
+        <div
+            key={`cluster-${clusterData.id}`}
+            className={`cluster-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class dc__visible-hover dc__visible-hover--parent
+                 ${clusterListLoader ? 'show-shimmer-loading dc__align-items-center' : ''}`}
+        >
+            <Checkbox
+                isChecked={isIdentifierSelected}
+                onChange={handleSelection}
+                rootClassName={`icon-dim-20 ${isIdentifierSelected ? '' : 'dc__visible-hover--child'}`}
+                dataTestId={`activate-${clusterData.name}`}
+                tabIndex={index - 1}
+                value={CHECKBOX_VALUE.CHECKED}
+            />
+            {!isIdentifierSelected && (
+                <div className="dc__visible-hover--hide-child">
+                    <Icon name="ic-bg-cluster" color={null} size={20} />
+                </div>
+            )}
+            <div data-testid={`cluster-row-${clusterData.name}`} className="flex left dc__overflow-hidden">
+                <Link
+                    className="dc__ellipsis-right dc__no-decor lh-24"
+                    to={`${URLS.RESOURCE_BROWSER}/${clusterData.id}/${ALL_NAMESPACE_OPTION.value}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`}
+                >
+                    {clusterData.name}
+                </Link>
+                {/* NOTE: visible-hover plays with display prop; therefore need to set display: flex on a new div */}
+                <div className="cursor dc__visible-hover--child ml-8">
+                    <div className="flexbox dc__align-items-center dc__gap-4">
+                        {!!clusterData.nodeCount && !clusterListLoader && (
+                            <Tooltip alwaysShowTippyOnHover content="View terminal">
+                                <div className="flex">
+                                    <TerminalIcon
+                                        data-testid={`cluster-terminal-${clusterData.name}`}
+                                        className="icon-dim-24 p-4 dc__no-shrink dc__hover-n100 br-4 dc__hover-color-n800 fill"
+                                        onClick={getOpenTerminalHandler}
+                                    />
+                                </div>
+                            </Tooltip>
+                        )}
+                        {CompareClusterButton && clusterData.status !== ClusterStatusType.CONNECTION_FAILED && (
+                            <CompareClusterButton sourceClusterId={clusterData.id} isIconButton />
+                        )}
+                        {/* {KubeConfigButton && <KubeConfigButton clusterName={clusterData.name} />} */}
+                        <KubeConfigButton clusterName={clusterData.name} />
+                    </div>
+                </div>
+            </div>
+
+            {renderClusterStatus(clusterData)}
+
+            <div className="child-shimmer-loading">
+                {hideDataOnLoad(clusterData.isProd ? CLUSTER_PROD_TYPE.PRODUCTION : CLUSTER_PROD_TYPE.NON_PRODUCTION)}
+            </div>
+            <div className="child-shimmer-loading">{hideDataOnLoad(clusterData.nodeCount)}</div>
+            <div className="child-shimmer-loading">
+                {errorCount > 0 &&
+                    hideDataOnLoad(
+                        <>
+                            <Error className="mr-3 icon-dim-16 dc__position-rel top-3" />
+                            <span className="cr-5">{errorCount}</span>
+                        </>,
+                    )}
+            </div>
+            <div className="flexbox child-shimmer-loading">
+                {hideDataOnLoad(
+                    <Tooltip content={clusterData.serverVersion}>
+                        <span className="dc__truncate">{clusterData.serverVersion}</span>
+                    </Tooltip>,
+                )}
+            </div>
+            <div className="child-shimmer-loading">{hideDataOnLoad(clusterData.cpu?.capacity)}</div>
+            <div className="child-shimmer-loading">{hideDataOnLoad(clusterData.memory?.capacity)}</div>
+        </div>
+    )
+}

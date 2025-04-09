@@ -26,12 +26,13 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DEFAULT_CLUSTER_ID } from '@Components/cluster/cluster.type'
 import { sortObjectArrayAlphabetically } from '../common'
-import ClusterSelectionList from '../ClusterNodes/ClusterSelectionList'
 import { getClusterList, getClusterListMin } from '../ClusterNodes/clusterNodes.service'
 import { AddClusterButton } from './PageHeader.buttons'
+import BaseClusterList from '../ClusterNodes/ClusterSelectionList'
 
 const ResourceBrowser: React.FC = () => {
     const abortControllerRef = useRef<AbortController>(new AbortController())
+    const parentRef = useRef<HTMLDivElement>(null)
 
     const [detailClusterListLoading, detailClusterList, , reloadDetailClusterList] = useAsync(async () => {
         try {
@@ -68,11 +69,12 @@ const ResourceBrowser: React.FC = () => {
         }
 
         return (
-            <ClusterSelectionList
+            <BaseClusterList
                 clusterOptions={sortedClusterList}
                 clusterListLoader={detailClusterListLoading}
                 initialLoading={initialLoading}
                 refreshData={reloadDetailClusterList}
+                parentRef={parentRef}
             />
         )
     }

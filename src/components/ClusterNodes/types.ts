@@ -291,3 +291,15 @@ export interface ClusterOverviewProps {
 export interface ClusterMapInitialStatusType {
     errorInNodeListing: string
 }
+
+export interface ClusterBulkSelectionActionWidgetProps {
+    parentRef: React.RefObject<HTMLDivElement>
+    count: number
+    handleClearBulkSelection: () => void
+}
+
+export interface ClusterListRowTypes {
+    clusterData: ClusterDetail
+    index: number
+    clusterListLoader: boolean
+}
