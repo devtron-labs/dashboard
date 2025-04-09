@@ -94,8 +94,8 @@ export interface SidebarType {
 }
 
 export interface ClusterOptionType extends OptionType {
-    errorInConnecting: string
     isProd: boolean
+    isInstallationCluster: boolean
 }
 
 export interface ResourceFilterOptionsProps extends Pick<SidebarType, 'updateK8sResourceTab'> {

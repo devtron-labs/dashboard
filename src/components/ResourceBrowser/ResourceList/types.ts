@@ -19,6 +19,7 @@ import {
     ServerErrors,
     ALL_NAMESPACE_OPTION,
     RBBulkOperationType,
+    useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Dispatch, ReactNode, SetStateAction } from 'react'
 import { ClusterListType } from '@Components/ClusterNodes/types'
@@ -79,3 +80,8 @@ export interface ResourceListUrlFiltersType {
 }
 
 export type BulkOperationsModalState = RBBulkOperationType | 'closed'
+
+export interface ResourcePageHeaderProps {
+    breadcrumbs: ReturnType<typeof useBreadcrumb>['breadcrumbs']
+    renderPageHeaderActionButtons?: () => JSX.Element
+}

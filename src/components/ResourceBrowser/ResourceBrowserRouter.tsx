@@ -23,18 +23,18 @@ import { URLS } from '@Config/routes'
 import ResourceBrowser from './ResourceBrowser'
 import ResourceList from './ResourceList'
 import './ResourceBrowser.scss'
+import ClusterInstallationStatus from './ClusterInstallationStatus'
 
 const CompareClusterViewWrapper = importComponentFromFELibrary('CompareClusterViewWrapper', null, 'function')
-const ClusterInstallationPage = importComponentFromFELibrary('ClusterInstallationPage', null, 'function')
 
 const ResourceBrowserRouter: React.FC = () => {
     const { path } = useRouteMatch()
 
     return (
         <Switch>
-            {ClusterInstallationPage && (
+            {CompareClusterViewWrapper && (
                 <Route path={URLS.RESOURCE_BROWSER_INSTALLATION_CLUSTER} exact>
-                    <ClusterInstallationPage />
+                    <ClusterInstallationStatus />
                 </Route>
             )}
 
