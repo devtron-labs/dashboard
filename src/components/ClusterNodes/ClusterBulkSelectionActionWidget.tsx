@@ -1,16 +1,17 @@
 import {
-    DraggableWrapper,
-    DraggablePositionVariant,
-    DraggableButton,
     Button,
     ButtonComponentType,
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
+    DraggableButton,
+    DraggablePositionVariant,
+    DraggableWrapper,
     Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ClusterBulkSelectionActionWidgetProps } from './types'
+
 import { KubeConfigButton } from './KubeConfigButton'
+import { ClusterBulkSelectionActionWidgetProps } from './types'
 
 // const KubeConfigButton = importComponentFromFELibrary('KubeConfigButton', null, 'function')
 

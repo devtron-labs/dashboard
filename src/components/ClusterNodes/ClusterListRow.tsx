@@ -1,26 +1,33 @@
-import { SIDEBAR_KEYS, K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
+import { Link } from 'react-router-dom'
+
 import {
     ALL_NAMESPACE_OPTION,
     BulkSelectionEvents,
     BulkSelectionIdentifiersType,
+    Button,
+    ButtonComponentType,
+    ButtonStyleType,
+    ButtonVariantType,
     Checkbox,
     CHECKBOX_VALUE,
     ClusterDetail,
     ClusterStatusType,
+    ComponentSizeType,
     Icon,
     Tooltip,
     URLS,
     useBulkSelection,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Link, useHistory, useLocation } from 'react-router-dom'
+
 import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
-import { ReactComponent as TerminalIcon } from '@Icons/ic-terminal-fill.svg'
 import { importComponentFromFELibrary } from '@Components/common'
+import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '@Components/ResourceBrowser/Constants'
 import { AppDetailsTabs } from '@Components/v2/appDetails/appDetails.store'
-import { CLUSTER_PROD_TYPE } from './constants'
+
 import { ClusterMapInitialStatus } from './ClusterMapInitialStatus'
-import { ClusterListRowTypes } from './types'
+import { CLUSTER_PROD_TYPE } from './constants'
 import { KubeConfigButton } from './KubeConfigButton'
+import { ClusterListRowTypes } from './types'
 
 export const ClusterListRow = ({ clusterData, index, clusterListLoader }: ClusterListRowTypes) => {
     // const KubeConfigButton = importComponentFromFELibrary('KubeConfigButton', null, 'function')
@@ -33,8 +40,6 @@ export const ClusterListRow = ({ clusterData, index, clusterListLoader }: Cluste
         handleBulkSelection,
     } = useBulkSelection<BulkSelectionIdentifiersType<ClusterDetail>>()
     const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
-    const history = useHistory()
-    const location = useLocation()
 
     const handleSelection = () => {
         const { name } = clusterData
@@ -65,8 +70,7 @@ export const ClusterListRow = ({ clusterData, index, clusterListLoader }: Cluste
         }
     }
 
-    const getOpenTerminalHandler = () => () =>
-        history.push(`${location.pathname}/${clusterData.id}/all/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`)
+    const terminalURL = `${URLS.RESOURCE_BROWSER}/${clusterData.id}/all}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`
 
     const hideDataOnLoad = (value) => {
         if (clusterListLoader) {
@@ -114,15 +118,18 @@ export const ClusterListRow = ({ clusterData, index, clusterListLoader }: Cluste
                 <div className="cursor dc__visible-hover--child ml-8">
                     <div className="flexbox dc__align-items-center dc__gap-4">
                         {!!clusterData.nodeCount && !clusterListLoader && (
-                            <Tooltip alwaysShowTippyOnHover content="View terminal">
-                                <div className="flex">
-                                    <TerminalIcon
-                                        data-testid={`cluster-terminal-${clusterData.name}`}
-                                        className="icon-dim-24 p-4 dc__no-shrink dc__hover-n100 br-4 dc__hover-color-n800 fill"
-                                        onClick={getOpenTerminalHandler}
-                                    />
-                                </div>
-                            </Tooltip>
+                            <Button
+                                icon={<Icon name="ic-terminal-fill" color={null} size={16} />}
+                                ariaLabel="View terminal"
+                                size={ComponentSizeType.xs}
+                                dataTestId={`cluster-terminal-${clusterData.name}`}
+                                style={ButtonStyleType.neutral}
+                                variant={ButtonVariantType.borderLess}
+                                component={ButtonComponentType.link}
+                                linkProps={{
+                                    to: terminalURL,
+                                }}
+                            />
                         )}
                         {CompareClusterButton && clusterData.status !== ClusterStatusType.CONNECTION_FAILED && (
                             <CompareClusterButton sourceClusterId={clusterData.id} isIconButton />

@@ -4,6 +4,7 @@
 
 import { useState } from 'react'
 import ReactGA from 'react-ga4'
+
 import {
     Button,
     ButtonStyleType,
@@ -11,18 +12,21 @@ import {
     ComponentSizeType,
     Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { KubeConfigButtonProps } from './types'
+
+import { RB_KUBE_CONFIG_GA_EVENTS } from './constants'
 import KubeConfigModal from './KubeConfigModal'
+import { KubeConfigButtonProps } from './types'
 
 const KubeConfigButton = ({ clusterName, isPrimaryButton = false }: KubeConfigButtonProps) => {
     const [openModal, setOpenModal] = useState(false)
 
     const handleOpenKubeConfigModal = () => {
         setOpenModal(true)
-        ReactGA.event({
-            category: 'Resource Browser',
-            action: 'Get kubeconfig button clicked',
-        })
+        ReactGA.event(
+            isPrimaryButton
+                ? RB_KUBE_CONFIG_GA_EVENTS.BulkSelectionWidgetClicked
+                : RB_KUBE_CONFIG_GA_EVENTS.IndividualKubeConfig,
+        )
     }
 
     const handleModalClose = () => {
@@ -40,7 +44,7 @@ const KubeConfigButton = ({ clusterName, isPrimaryButton = false }: KubeConfigBu
                 />
             ) : (
                 <Button
-                    icon={<Icon name="ic-info-filled" color={null} />}
+                    icon={<Icon name="ic-file-key" color={null} />}
                     onClick={handleOpenKubeConfigModal}
                     dataTestId="rb-cluster-bulk-selection-kube-config"
                     variant={ButtonVariantType.borderLess}

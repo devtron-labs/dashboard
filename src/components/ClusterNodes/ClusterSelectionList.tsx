@@ -110,9 +110,16 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
         handleSearch(value)
     }
 
+    const handleClearBulkSelection = () => {
+        handleBulkSelection({
+            action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
+        })
+    }
+
     const handleRefresh = () => {
         refreshData()
         setLastSyncTime(dayjs())
+        handleClearBulkSelection()
     }
 
     const setClusterFilter = (_clusterFilter: ClusterFiltersType) => {
@@ -213,12 +220,6 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
             )}
         </div>
     )
-
-    const handleClearBulkSelection = () => {
-        handleBulkSelection({
-            action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
-        })
-    }
 
     const renderClusterBulkSelection = () => {
         if (getSelectedIdentifiersCount() > 0 || isBulkSelectionApplied) {

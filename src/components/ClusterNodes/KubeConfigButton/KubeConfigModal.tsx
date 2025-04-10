@@ -4,9 +4,11 @@
 
 import { useState } from 'react'
 import ReactGA from 'react-ga4'
+
 import {
     BulkSelectionIdentifiersType,
     Button,
+    ButtonComponentType,
     ButtonStyleType,
     ButtonVariantType,
     ClipboardButton,
@@ -21,27 +23,10 @@ import {
     useBulkSelection,
     VisibleModal2,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { GroupBase } from 'react-select'
+
+import { DefaultSelectPickerOptionType, RB_KUBE_CONFIG_GA_EVENTS } from './constants'
 import { KubeConfigTippyContentProps } from './types'
-import { getKubeConfigCommand, getKubeConfigCommandWithContext } from './utils'
-
-const DefaultSelectPickerOptionType = {
-    label: 'Do not set context',
-    value: '',
-}
-
-const getOptions = (
-    clusterNames?: string[],
-): Array<GroupBase<SelectPickerOptionType<string>> | SelectPickerOptionType<string>> => [
-    DefaultSelectPickerOptionType,
-    {
-        label: 'Set Context of',
-        options: clusterNames?.map((_cluster) => ({
-            label: _cluster,
-            value: _cluster,
-        })),
-    },
-]
+import { getKubeConfigCommand, getKubeConfigCommandWithContext, getOptions } from './utils'
 
 const KubeConfigModal = ({ clusterName, handleModalClose }: KubeConfigTippyContentProps) => {
     const [copyToClipboardPromise, setCopyToClipboardPromise] = useState<ReturnType<typeof copyToClipboard>>(null)
@@ -57,14 +42,9 @@ const KubeConfigModal = ({ clusterName, handleModalClose }: KubeConfigTippyConte
     )
     const reachableClusters = reachableClustersList.map((cluster) => cluster.name)
 
-    const getDefaultConfig = () => {
-        const command = () =>
-            clusterName
-                ? getKubeConfigCommand(clusterName)
-                : bulkSelectedClusterNames?.map((cluster) => getKubeConfigCommand(cluster))
+    const getDefaultConfig = (context?: string) =>
+        getKubeConfigCommandWithContext(clusterName || bulkSelectedClusterNames, context) as string
 
-        return (command() as string[]).join('\n')
-    }
     const [kubeConfigCommand, setKubeConfigCommand] = useState<string>(getDefaultConfig)
 
     const handleCopyButtonClick = () => {
@@ -90,27 +70,33 @@ const KubeConfigModal = ({ clusterName, handleModalClose }: KubeConfigTippyConte
         </div>
     )
 
-    const handleContextChange = (context) => {
-        setSelectedClusterContext(context)
+    const onChangeContextSelect = (selectedContext: SelectPickerOptionType<string>) => {
+        setSelectedClusterContext(selectedContext)
         setKubeConfigCommand(
             getKubeConfigCommandWithContext(
                 toggleEnabled ? reachableClusters : bulkSelectedClusterNames,
-                context.value,
-            ),
+                selectedContext.value,
+            ) as string,
         )
-        ReactGA.event({
-            category: 'Resource Browser',
-            action: 'Get kubeconfig set context',
-            label: context.value,
-        })
+        ReactGA.event(
+            selectedContext.value === DefaultSelectPickerOptionType.value
+                ? RB_KUBE_CONFIG_GA_EVENTS.DoNotSetContextSelect
+                : RB_KUBE_CONFIG_GA_EVENTS.SetContextSelect,
+        )
     }
 
     const handleReachableClustersToggle = () => {
         setToggleEnabled(!toggleEnabled)
         if (toggleEnabled) {
-            setKubeConfigCommand(getDefaultConfig())
+            setKubeConfigCommand(getDefaultConfig(selectedClusterContext.value))
+            ReactGA.event(RB_KUBE_CONFIG_GA_EVENTS.ReachableClusterToggleDisabled)
         } else {
-            setKubeConfigCommand(reachableClustersList.map((cluster) => getKubeConfigCommand(cluster.name)).join('\n'))
+            setKubeConfigCommand(
+                reachableClustersList
+                    .map((cluster) => getKubeConfigCommand(cluster.name, selectedClusterContext.value))
+                    .join('\n'),
+            )
+            ReactGA.event(RB_KUBE_CONFIG_GA_EVENTS.ReachableClusterToggleEnabled)
         }
     }
 
@@ -134,15 +120,15 @@ const KubeConfigModal = ({ clusterName, handleModalClose }: KubeConfigTippyConte
                 </div>
             </div>
 
-            {reachableClustersList.length > 0 && (
+            {reachableClustersList.length > 1 && (
                 <div className="flex dc__gap-16 dc__content-space border__secondary--top pt-12">
                     <span className="lh-20">Set cluster context</span>
 
                     <SelectPicker
                         inputId="cluster-kube-config"
-                        options={getOptions(bulkSelectedClusterNames)}
+                        options={getOptions(toggleEnabled ? reachableClusters : bulkSelectedClusterNames)}
                         size={ComponentSizeType.medium}
-                        onChange={handleContextChange}
+                        onChange={onChangeContextSelect}
                         value={selectedClusterContext}
                     />
                 </div>
@@ -151,7 +137,7 @@ const KubeConfigModal = ({ clusterName, handleModalClose }: KubeConfigTippyConte
     )
 
     const renderNoClusterReachable = () => (
-        <div className="flex column dc__gap-12 dc__align-items-center p-20">
+        <div className="flex column dc__gap-12 dc__align-items-center p-20 mh-170 border__secondary--top pt-12">
             <Icon name="ic-info-outline" size={24} color={null} />
             <div className="flex fs-13 lh-20 dc__mxw-250 dc__text-center">
                 None of the selected clusters are reachable.
@@ -166,7 +152,7 @@ const KubeConfigModal = ({ clusterName, handleModalClose }: KubeConfigTippyConte
                 renderNoClusterReachable()
             ) : (
                 <ol
-                    className={`steps-with-trail--normal ${bulkSelectedClusterNames.length > 1 ? 'border__secondary--top' : ''} pt-12 px-0`}
+                    className={`steps-with-trail--normal ${bulkSelectedClusterNames.length > 1 ? 'border__secondary--top pt-12' : ''} px-0`}
                 >
                     <li>
                         <span className="fs-13 lh-20">
@@ -200,14 +186,19 @@ const KubeConfigModal = ({ clusterName, handleModalClose }: KubeConfigTippyConte
 
     const renderActionButtons = () => (
         <div className="flexbox dc__content-space dc__align-items-center dc__border-top-n1 p-12 dc__gap-12 px-20 py-16">
-            <a
-                href="https://docs.devtron.ai/usage/resource-browser#running-kubectl-commands-locally"
-                target="_blank"
-                rel="noreferrer noopener"
-                className="dc__link fs-13 lh-20 fw-6"
-            >
-                View documentation
-            </a>
+            <Button
+                variant={ButtonVariantType.borderLess}
+                size={ComponentSizeType.medium}
+                onClick={handleModalClose}
+                text="View documentation"
+                dataTestId="kubeconfig-modal-view-documentation"
+                anchorProps={{
+                    href: 'https://docs.devtron.ai/usage/resource-browser#running-kubectl-commands-locally',
+                    target: '_blank',
+                    rel: 'noreferrer noopener',
+                }}
+                component={ButtonComponentType.anchor}
+            />
             <Button
                 dataTestId="copy-kubeconfig-commands"
                 size={ComponentSizeType.medium}
