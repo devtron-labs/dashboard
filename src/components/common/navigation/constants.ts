@@ -39,5 +39,5 @@ export const ENVIRONMENT_DATA_FALLBACK: EnvironmentDataValuesDTO = {
 
 export const INITIAL_ENV_DATA_STATE: EnvironmentDataStateType = {
     ...COMMON_ENV_FALLBACK,
-    isAirgapped: ENVIRONMENT_DATA_FALLBACK.isAirGapEnvironment,
+    isAirgapped: structuredClone(ENVIRONMENT_DATA_FALLBACK).isAirGapEnvironment,
 }
