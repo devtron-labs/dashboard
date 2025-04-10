@@ -14,21 +14,32 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useRef, useEffect, useState, useMemo } from 'react'
-import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router-dom'
-import { BreadCrumb, useBreadcrumb, noop, PageHeader, TabGroup, TabProps, URLS as CommonURLS } from '@devtron-labs/devtron-fe-common-lib'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import ReactGA from 'react-ga4'
-import { URLS } from '../../../config'
-import { AppSelector } from '../../AppSelector'
-import { AppHeaderType } from '../types'
-import { importComponentFromFELibrary, trackByGAEvent } from '../../common/helpers/Helpers'
+import { generatePath, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+
+import {
+    BreadCrumb,
+    noop,
+    PageHeader,
+    TabGroup,
+    TabProps,
+    URLS as CommonURLS,
+    useBreadcrumb,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
+import { URLS } from '../../../config'
+import { FilterParentType } from '../../ApplicationGroup/AppGroup.types'
 import AppGroupAppFilter from '../../ApplicationGroup/AppGroupAppFilter'
 import { AppGroupAppFilterContext } from '../../ApplicationGroup/AppGroupDetailsRoute'
-import { FilterParentType } from '../../ApplicationGroup/AppGroup.types'
+import { AppSelector } from '../../AppSelector'
+import { useAppContext } from '../../common'
+import { importComponentFromFELibrary, trackByGAEvent } from '../../common/helpers/Helpers'
+import { AppHeaderType } from '../types'
+
 import './appDetails/appDetails.scss'
 import './app.scss'
-import { useAppContext } from '../../common'
 
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 
@@ -108,13 +119,13 @@ export const AppHeader = ({
     }, [appName])
 
     const handleAppChange = useCallback(
-        ({ label, value }) => {
+        ({ value }) => {
             const tab = currentPathname.current.replace(match.url, '').split('/')[1]
             const newUrl = generatePath(match.path, { appId: value })
             history.push(`${newUrl}/${tab}`)
             ReactGA.event({
                 category: 'App Selector',
-                action: 'App Selection Changed',
+                action: 'DA_SWITCH_SEARCHED_APP_CLICKED',
                 label: tab,
             })
         },
@@ -156,8 +167,8 @@ export const AppHeader = ({
                 showWarning: !!showWarning,
                 props: {
                     to: `${match.url}/${URLS.APP_OVERVIEW}`,
-                    ['data-action']: 'Overview Clicked',
-                    ['data-testid']: 'overview-click',
+                    'data-action': 'Overview Clicked',
+                    'data-testid': 'overview-click',
                     onClick: handleEventClick,
                 },
             },
@@ -167,8 +178,8 @@ export const AppHeader = ({
                 tabType: 'navLink',
                 props: {
                     to: `${match.url}/${URLS.APP_DETAILS}`,
-                    ['data-action']: 'App Details Clicked',
-                    ['data-testid']: 'app-details-tab',
+                    'data-action': 'App Details Clicked',
+                    'data-testid': 'app-details-tab',
                     onClick: handleEventClick,
                 },
             },
@@ -178,8 +189,8 @@ export const AppHeader = ({
                 tabType: 'navLink',
                 props: {
                     to: `${match.url}/${URLS.APP_TRIGGER}`,
-                    ['data-action']: 'Build & Deploy Clicked',
-                    ['data-testid']: 'build-deploy-click',
+                    'data-action': 'Build & Deploy Clicked',
+                    'data-testid': 'build-deploy-click',
                     onClick: handleEventClick,
                 },
             },
@@ -189,8 +200,8 @@ export const AppHeader = ({
                 tabType: 'navLink',
                 props: {
                     to: `${match.url}/${URLS.APP_CI_DETAILS}`,
-                    ['data-action']: 'Build History Clicked',
-                    ['data-testid']: 'build-history-clicked',
+                    'data-action': 'Build History Clicked',
+                    'data-testid': 'build-history-clicked',
                     onClick: handleEventClick,
                 },
             },
@@ -200,8 +211,8 @@ export const AppHeader = ({
                 tabType: 'navLink',
                 props: {
                     to: `${match.url}/${URLS.APP_CD_DETAILS}`,
-                    ['data-action']: 'Deployment History Clicked',
-                    ['data-testid']: 'deployment-history-link',
+                    'data-action': 'Deployment History Clicked',
+                    'data-testid': 'deployment-history-link',
                     onClick: handleEventClick,
                 },
             },
@@ -211,8 +222,8 @@ export const AppHeader = ({
                 tabType: 'navLink',
                 props: {
                     to: `${match.url}/${URLS.APP_DEPLOYMENT_METRICS}`,
-                    ['data-action']: 'Deployment Metrics Clicked',
-                    ['data-testid']: 'deployment-matrix',
+                    'data-action': 'Deployment Metrics Clicked',
+                    'data-testid': 'deployment-matrix',
                     onClick: handleEventClick,
                 },
             },
@@ -223,8 +234,8 @@ export const AppHeader = ({
                 icon: Settings,
                 props: {
                     to: `${match.url}/${CommonURLS.APP_CONFIG}`,
-                    ['data-action']: 'App Configuration Clicked',
-                    ['data-testid']: 'app-config-link',
+                    'data-action': 'App Configuration Clicked',
+                    'data-testid': 'app-config-link',
                     onClick: handleEventClick,
                 },
             },
@@ -233,17 +244,15 @@ export const AppHeader = ({
         return <TabGroup tabs={tabs} hideTopPadding alignActiveBorderWithContainer />
     }
 
-    const renderBreadcrumbs = () => {
-        return (
-            <>
-                <BreadCrumb breadcrumbs={breadcrumbs} />
-                <div className="dc__border-right ml-8 mr-8 h-16" />
-                <AppGroupAppFilterContext.Provider value={contextValue}>
-                    <AppGroupAppFilter />
-                </AppGroupAppFilterContext.Provider>
-            </>
-        )
-    }
+    const renderBreadcrumbs = () => (
+        <>
+            <BreadCrumb breadcrumbs={breadcrumbs} />
+            <div className="dc__border-right ml-8 mr-8 h-16" />
+            <AppGroupAppFilterContext.Provider value={contextValue}>
+                <AppGroupAppFilter />
+            </AppGroupAppFilterContext.Provider>
+        </>
+    )
 
     return (
         <PageHeader

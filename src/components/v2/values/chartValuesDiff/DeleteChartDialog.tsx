@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import { ConfirmationModal, ConfirmationModalVariantType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { DELETE_ACTION } from '@Config/constants'
 import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo/ApplicationDeletionInfo'
-import { ConfirmationModal, ConfirmationModalVariantType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { DeleteChartDialogProps } from './ChartValuesView.type'
 
 export const DeleteChartDialog = ({

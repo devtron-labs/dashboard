@@ -15,18 +15,21 @@
  */
 
 import React, { useMemo, useState } from 'react'
-import {
-    Progressing,
-    GenericEmptyState,
-    RJSFForm,
-    HIDE_SUBMIT_BUTTON_UI_SCHEMA,
-    EMPTY_STATE_STATUS,
-    showError,
-    InfoColourBar,
-} from '@devtron-labs/devtron-fe-common-lib'
 import { compare as JSONPatchCompare } from 'fast-json-patch'
-import { ReactComponent as ICInfoFilled } from '@Icons/ic-info-filled.svg'
+
+import {
+    EMPTY_STATE_STATUS,
+    GenericEmptyState,
+    HIDE_SUBMIT_BUTTON_UI_SCHEMA,
+    InfoColourBar,
+    Progressing,
+    RJSFForm,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as ICError } from '@Icons/ic-error-exclamation.svg'
+import { ReactComponent as ICInfoFilled } from '@Icons/ic-info-filled.svg'
+
 import { ChartValuesGUIFormProps } from './ChartValuesView.type'
 import { updateYamlDocument } from './ChartValuesView.utils'
 

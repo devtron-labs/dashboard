@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export { default } from './SSOLogin.component'
 export * from './constants'
 export * from './ssoConfig.types'
+export { default } from './SSOLogin.component'

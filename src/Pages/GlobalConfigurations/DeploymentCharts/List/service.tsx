@@ -15,18 +15,20 @@
  */
 
 import {
-    post,
-    get,
-    put,
-    ResponseType,
-    showError,
+    convertDeploymentChartListToChartType,
     DeploymentChartListDTO,
     DeploymentChartType,
-    convertDeploymentChartListToChartType,
+    get,
+    post,
+    put,
+    ResponseType,
     ROUTES,
+    showError,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Routes } from '@Config/constants'
+
 import { sortObjectArrayAlphabetically } from '@Components/common'
+import { Routes } from '@Config/constants'
+
 import { ChartUploadResponse, ChartUploadType } from '../types'
 
 export const getChartList = async (): Promise<DeploymentChartType[]> => {

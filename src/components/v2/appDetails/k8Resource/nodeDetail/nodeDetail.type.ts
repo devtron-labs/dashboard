@@ -15,14 +15,16 @@
  */
 
 import React from 'react'
+
 import {
-    OptionType,
-    SelectPickerOptionType,
     OptionsBase,
+    OptionType,
     SelectedResourceType,
+    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { AppDetails, Options } from '../../appDetails.type'
+
 import { CUSTOM_LOGS_FILTER, MANIFEST_KEY_FIELDS } from '../../../../../config'
+import { AppDetails, Options } from '../../appDetails.type'
 import { CustomLogFilterOptionsType, SelectedCustomLogFilterType } from './NodeDetailTabs/node.type'
 
 export enum NodeDetailTab {

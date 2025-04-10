@@ -96,12 +96,6 @@
     }
 }
 
-.ci-artifacts-grid {
-    display: grid;
-    grid-template-columns: 40px 1fr;
-    grid-column-gap: 12px;
-}
-
 .trigger-outputs-container {
     width: 100%;
     background: var(--bg-tertiary);
@@ -298,38 +292,4 @@
 .configure-blob-container {
     position: fixed;
     bottom: 40px;
-}
-
-.add-tag-button {
-    padding: 4px 8px;
-    width: fit-content;
-    height: 24px;
-    border: 1px dashed var(--N300);
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.image-tags-container {
-    .image-tags-container-edit__icon {
-        display: none;
-    }
-
-    .image-tag-left-border {
-        border-left: 2px solid var(--N200);
-    }
-}
-
-.image-tag-parent-card {
-    &:hover {
-        .image-tags-container {
-            background-color: var(--bg-secondary);
-        }
-        .image-tags-container-edit__icon {
-            display: block;
-        }
-
-        .image-tag-left-border {
-            border-color: var(--N50);
-        }
-    }
 }

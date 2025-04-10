@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import { Icon, IconsProps, SelectPickerOptionType, ValidationResponseType } from '@devtron-labs/devtron-fe-common-lib'
+
+import { importComponentFromFELibrary } from '@Components/common'
 import { MAX_LENGTH_30 } from '@Config/constantMessaging'
 import { PATTERNS } from '@Config/constants'
-import { Icon, IconsProps, SelectPickerOptionType, ValidationResponseType } from '@devtron-labs/devtron-fe-common-lib'
-import { importComponentFromFELibrary } from '@Components/common'
+
 import { CreateAppFormStateType, CreateAppModalProps, CreationMethodType } from './types'
 
 const isFELibAvailable: boolean = importComponentFromFELibrary('isFELibAvailable', null, 'function')

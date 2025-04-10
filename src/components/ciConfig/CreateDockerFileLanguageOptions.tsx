@@ -16,11 +16,14 @@
 
 import { FunctionComponent } from 'react'
 import Tippy from '@tippyjs/react'
+
 import { SelectPicker, SelectPickerVariantType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { getGitProviderIcon } from '@Components/common'
+
+import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwise.svg'
 import { CREATE_DOCKER_FILE_LANGUAGE_OPTIONS_TEXT } from './ciConfigConstant'
 import { CreateDockerFileLanguageOptionsProps, ResetEditorChangesProps } from './types'
-import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwise.svg'
 
 const Title: FunctionComponent = () => (
     <Tippy
@@ -121,7 +124,7 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
                 value={selectedMaterial}
                 onChange={handleGitRepoChange}
                 classNamePrefix="build-config__select-repository-containing-code"
-                variant={SelectPickerVariantType.BORDER_LESS}
+                variant={SelectPickerVariantType.COMPACT}
             />
 
             <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
@@ -134,7 +137,7 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
                 value={selectedLanguage}
                 isSearchable={false}
                 onChange={handleLanguageSelection}
-                variant={SelectPickerVariantType.BORDER_LESS}
+                variant={SelectPickerVariantType.COMPACT}
             />
             {selectedLanguageFrameworks?.[0]?.value && (
                 <>
@@ -148,7 +151,7 @@ export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFile
                         classNamePrefix="build-config__select-framework"
                         isSearchable={false}
                         onChange={handleFrameworkSelection}
-                        variant={SelectPickerVariantType.BORDER_LESS}
+                        variant={SelectPickerVariantType.COMPACT}
                     />
                 </>
             )}

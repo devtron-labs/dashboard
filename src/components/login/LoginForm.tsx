@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
-import {
-    CustomInput,
-    PasswordField,
-    Button,
-    ComponentSizeType,
-    ButtonComponentType,
-    URLS,
-    ButtonVariantType,
-    ServerErrors,
-    showError,
-    useUserEmail,
-    URLS as CommonURL,
-    Icon,
-} from '@devtron-labs/devtron-fe-common-lib'
 import { useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
+
+import {
+    Button,
+    ButtonComponentType,
+    ButtonVariantType,
+    ComponentSizeType,
+    CustomInput,
+    Icon,
+    PasswordField,
+    ServerErrors,
+    showError,
+    URLS as CommonURL,
+    URLS,
+    useUserEmail,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { importComponentFromFELibrary } from '@Components/common'
+import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
 import { DOCUMENTATION } from '@Config/constants'
+
 import { loginAsAdmin } from './login.service'
 import { LoginFormType } from './login.types'
 
@@ -112,7 +115,7 @@ export const LoginForm = ({ loginList }: LoginFormType) => {
     }
 
     return (
-        <form className="flexbox-col dc__gap-32" autoComplete="on" onSubmit={onSubmitLogin} noValidate>
+        <form className="flexbox-col p-36 dc__gap-32" autoComplete="on" onSubmit={onSubmitLogin} noValidate>
             <div className="flexbox-col dc__gap-16">
                 <CustomInput
                     placeholder="Enter username"
@@ -152,7 +155,7 @@ export const LoginForm = ({ loginList }: LoginFormType) => {
             </div>
             <div className="flexbox-col dc__gap-12">
                 <Button
-                    disabled={loading}
+                    disabled={loading || !form.password}
                     isLoading={loading}
                     dataTestId="login-button"
                     text="Login"

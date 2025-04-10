@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-import {
-    K8sResourceDetailType,
-    ServerErrors,
-    ALL_NAMESPACE_OPTION,
-    RBBulkOperationType,
-} from '@devtron-labs/devtron-fe-common-lib'
 import { Dispatch, ReactNode, SetStateAction } from 'react'
+
+import {
+    ALL_NAMESPACE_OPTION,
+    K8sResourceDetailType,
+    RBBulkOperationType,
+    ServerErrors,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { ClusterListType } from '@Components/ClusterNodes/types'
 import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
+
 import {
     K8SResourceListType,
     ResourceBrowserActionMenuType,

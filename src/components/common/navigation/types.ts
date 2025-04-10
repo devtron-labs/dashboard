@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
+import {
+    customEnv,
+    EnvironmentDataValuesDTO,
+    IconsProps,
+    URLS as CommonURLS,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { URLS } from '@Config/routes'
-import { customEnv, IconsProps, URLS as CommonURLS } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface NavigationListItemType {
     title: string
@@ -31,4 +37,8 @@ export interface NavigationListItemType {
     isAvailableInDesktop?: boolean
     moduleName?: string
     moduleNameTrivy?: string
+}
+
+export interface EnvironmentDataStateType extends Omit<EnvironmentDataValuesDTO, 'isAirGapEnvironment'> {
+    isAirgapped: boolean
 }

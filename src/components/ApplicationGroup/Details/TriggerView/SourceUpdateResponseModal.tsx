@@ -15,6 +15,7 @@
  */
 
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+
 import { TriggerModalRow } from './TriggerModalTableRow'
 import { SourceUpdateResponseModalProps } from './types'
 

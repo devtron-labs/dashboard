@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { BuildInfraCMCSFormProps } from '@devtron-labs/devtron-fe-common-lib'
+import { BuildInfraCMCSFormProps, noop } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ConfigMapSecretForm } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecretForm'
 
 const BuildInfraCMCSForm = ({ parsedData, useFormProps, componentType }: BuildInfraCMCSFormProps) => (
@@ -32,6 +33,11 @@ const BuildInfraCMCSForm = ({ parsedData, useFormProps, componentType }: BuildIn
         useFormProps={useFormProps}
         isExternalSubmit
         noContainerPadding
+        draftData={null}
+        handleMergeStrategyChange={noop}
+        isExpressEditComparisonView={null}
+        isExpressEditView={null}
+        publishedConfigMapSecretData={null}
     />
 )
 

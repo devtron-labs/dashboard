@@ -18,26 +18,26 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { generatePath, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
 import {
-    useUrlFilters,
-    SelectPickerOptionType,
-    SelectPickerVariantType,
-    useAsync,
+    AppEnvDeploymentConfigType,
+    BASE_CONFIGURATION_ENV_ID,
+    DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
     DeploymentConfigDiff,
     DeploymentConfigDiffProps,
-    AppEnvDeploymentConfigType,
-    getDefaultVersionAndPreviousDeploymentOptions,
-    getAppEnvDeploymentConfigList,
-    getSelectPickerOptionByValue,
     EnvResourceType,
-    BASE_CONFIGURATION_ENV_ID,
-    useMainContext,
-    getCompareSecretsData,
     getAppEnvDeploymentConfig,
-    DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
+    getAppEnvDeploymentConfigList,
+    getCompareSecretsData,
+    getDefaultVersionAndPreviousDeploymentOptions,
+    getSelectPickerOptionByValue,
+    SelectPickerOptionType,
+    SelectPickerVariantType,
     SortingOrder,
+    useAsync,
+    useMainContext,
+    useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getTemplateOptions, getChartReferencesForAppAndEnv } from '@Services/service'
+import { getChartReferencesForAppAndEnv, getTemplateOptions } from '@Services/service'
 
 import { BASE_CONFIGURATIONS } from '../../AppConfig.constants'
 import {
@@ -46,24 +46,24 @@ import {
     DeploymentConfigCompareProps,
     DeploymentConfigParams,
 } from '../../AppConfig.types'
-import {
-    getCompareEnvironmentSelectorOptions,
-    getPreviousDeploymentOptionValue,
-    getPreviousDeploymentValue,
-    parseCompareWithSearchParams,
-    getEnvironmentConfigTypeOptions,
-    getConfigChartRefId,
-    getManifestRequestValues,
-    deploymentConfigDiffTabs,
-    getDeploymentConfigDiffTabs,
-    getAppAndEnvIds,
-    isConfigTypeNonDraftOrPublished,
-    isConfigTypePublished,
-    getAppEnvDeploymentConfigPayload,
-    getIdentifierIdBasedOnConfiguration,
-} from './utils'
 import { getDeploymentTemplateData, getManifestData } from './service.utils'
 import { DeploymentConfigComparisonDataType } from './types'
+import {
+    deploymentConfigDiffTabs,
+    getAppAndEnvIds,
+    getAppEnvDeploymentConfigPayload,
+    getCompareEnvironmentSelectorOptions,
+    getConfigChartRefId,
+    getDeploymentConfigDiffTabs,
+    getEnvironmentConfigTypeOptions,
+    getIdentifierIdBasedOnConfiguration,
+    getManifestRequestValues,
+    getPreviousDeploymentOptionValue,
+    getPreviousDeploymentValue,
+    isConfigTypeNonDraftOrPublished,
+    isConfigTypePublished,
+    parseCompareWithSearchParams,
+} from './utils'
 
 export const DeploymentConfigCompare = ({
     environments,
@@ -459,7 +459,7 @@ export const DeploymentConfigCompare = ({
         classNamePrefix: 'compare-with-environment-selector',
         inputId: 'compare-with-environment-selector',
         name: 'compare-with-environment-selector',
-        variant: SelectPickerVariantType.BORDER_LESS,
+        variant: SelectPickerVariantType.COMPACT,
         value: getSelectPickerOptionByValue(compareEnvironmentSelectorOptions, chartRefId || compareWith, {
             label: BASE_CONFIGURATIONS.name,
             value: '',
@@ -497,7 +497,7 @@ export const DeploymentConfigCompare = ({
             classNamePrefix: 'environment-config-type-selector',
             inputId: `environment-config-type-selector-${isCompare ? 'compare' : 'current'}`,
             name: `environment-config-type-selector-${isCompare ? 'compare' : 'current'}`,
-            variant: SelectPickerVariantType.BORDER_LESS,
+            variant: SelectPickerVariantType.COMPACT,
             isSearchable: false,
             disableDescriptionEllipsis: true,
             value: getSelectPickerOptionByValue(

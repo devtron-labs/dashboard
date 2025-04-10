@@ -15,24 +15,27 @@
  */
 
 import { useState } from 'react'
+
 import {
-    PopupMenu,
-    stopPropagation,
-    StyledRadioGroup as RadioGroup,
+    ComponentSizeType,
     DeploymentChartVersionType,
+    InvalidYAMLTippyWrapper,
+    PipelineMigratedFromType,
+    PopupMenu,
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerVariantType,
+    stopPropagation,
+    StyledRadioGroup as RadioGroup,
     versionComparatorBySortOrder,
-    InvalidYAMLTippyWrapper,
-    ComponentSizeType,
-    PipelineMigratedFromType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ReactComponent as Dropdown } from '@Icons/ic-chevron-down.svg'
 import { sortObjectArrayAlphabetically } from '@Components/common'
 import { DEPLOYMENT } from '@Config/constants'
-import { ReactComponent as Dropdown } from '@Icons/ic-chevron-down.svg'
+
+import { CHART_DOCUMENTATION_LINK, CHART_TYPE_TAB, CHART_TYPE_TAB_KEYS } from './constants'
 import { ChartSelectorDropdownProps, DTChartSelectorProps } from './types'
-import { CHART_TYPE_TAB_KEYS, CHART_TYPE_TAB, CHART_DOCUMENTATION_LINK } from './constants'
 
 const LoadingShimmer = () => <div className="shimmer-loading h-18 w-60" />
 
@@ -212,11 +215,7 @@ const DTChartSelector = ({
     restoreLastSavedTemplate,
     migratedFrom,
 }: DTChartSelectorProps) => {
-    const filteredCharts = selectedChart
-        ? charts
-              .filter((cv) => cv.name === selectedChart.name)
-              .sort((a, b) => versionComparatorBySortOrder(a.version, b.version))
-        : []
+    const filteredCharts = selectedChart ? charts.filter((cv) => cv.name === selectedChart.name) : []
 
     const onSelectChartVersion = (selected: SelectPickerOptionType) => {
         selectChart(charts.find((chart) => chart.id === selected.value) || selectedChart)
@@ -253,7 +252,7 @@ const DTChartSelector = ({
                     value={selectedOption}
                     onChange={onSelectChartVersion}
                     isSearchable={false}
-                    variant={SelectPickerVariantType.BORDER_LESS}
+                    variant={SelectPickerVariantType.COMPACT}
                     size={ComponentSizeType.small}
                     placeholder="Select version"
                     isDisabled={migratedFrom === PipelineMigratedFromType.ARGO_APPLICATION}

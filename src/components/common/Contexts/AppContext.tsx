@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { noop } from '@devtron-labs/devtron-fe-common-lib'
 import { createContext, useContext } from 'react'
+
+import { noop } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface AppContextType {
     /**

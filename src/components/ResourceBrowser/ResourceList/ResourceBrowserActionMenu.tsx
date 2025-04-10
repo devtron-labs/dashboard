@@ -15,28 +15,30 @@
  */
 
 import React, { useState } from 'react'
+
 import {
-    PopupMenu,
-    Nodes,
-    useMainContext,
-    ModuleNameMap,
-    SecurityModal,
-    ResponseType,
     GetResourceScanDetailsPayloadType,
-    useAsync,
+    ModuleNameMap,
+    Nodes,
+    PopupMenu,
+    ResponseType,
     ScanResultDTO,
+    SecurityModal,
+    useAsync,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
-import DeleteResourcePopup from './DeleteResourcePopup'
-import { importComponentFromFELibrary, getShowResourceScanModal } from '../../common'
-import { RESOURCE_ACTION_MENU } from '../Constants'
-import { ResourceBrowserActionMenuType } from '../Types'
-import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
-import { ReactComponent as ManifestIcon } from '../../../assets/icons/ic-file-code.svg'
-import { ReactComponent as LogAnalyzerIcon } from '../../../assets/icons/ic-logs.svg'
+
+import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-menu-dots.svg'
 import { ReactComponent as CalendarIcon } from '../../../assets/icons/ic-calendar.svg'
 import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-menu-dots.svg'
+import { ReactComponent as ManifestIcon } from '../../../assets/icons/ic-file-code.svg'
+import { ReactComponent as LogAnalyzerIcon } from '../../../assets/icons/ic-logs.svg'
+import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
+import { getShowResourceScanModal, importComponentFromFELibrary } from '../../common'
 import { NodeType } from '../../v2/appDetails/appDetails.type'
+import { RESOURCE_ACTION_MENU } from '../Constants'
+import { ResourceBrowserActionMenuType } from '../Types'
+import DeleteResourcePopup from './DeleteResourcePopup'
 
 const OpenSecurityModalButton = importComponentFromFELibrary('OpenSecurityModalButton', null, 'function')
 const getResourceScanDetails: ({

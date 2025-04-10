@@ -14,33 +14,91 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
+import type { Meta, StoryObj } from '@storybook/react'
+
 import {
     ButtonVariantType,
     ComponentSizeType,
     Icon,
     SelectPicker,
-    SelectPickerOptionType,
     SelectPickerProps,
+    SelectPickerVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as ICEnv } from '@Icons/ic-env.svg'
+
+const SELECT_PICKER_LAYOUT_MAP: Record<SelectPickerProps['layout'], null> = {
+    row: null,
+    column: null,
+}
 
 const meta = {
     component: SelectPicker,
+    argTypes: {
+        variant: {
+            options: Object.values(SelectPickerVariantType),
+            control: { type: 'radio' },
+        },
+        size: {
+            options: Object.values(ComponentSizeType),
+            control: { type: 'select' },
+        },
+        menuSize: {
+            options: Object.values(ComponentSizeType),
+            control: { type: 'select' },
+        },
+        shouldMenuAlignRight: {
+            control: { type: 'boolean' },
+        },
+        layout: {
+            options: Object.keys(SELECT_PICKER_LAYOUT_MAP),
+            control: { type: 'select' },
+        },
+    },
 } satisfies Meta<SelectPickerProps>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
-const options: SelectPickerOptionType[] = [
+const options: SelectPickerProps['options'] = [
     {
-        label: 'Label 1',
-        value: 'Label 1',
+        label: 'Option 1',
+        value: 'Option 1',
     },
     {
-        label: 'Label 2',
-        value: 'Label 2',
+        label: 'Group 1',
+        options: [
+            {
+                label: 'Group 1 Label 1',
+                value: 'Group 1 Label 1',
+            },
+            {
+                label: 'Group Label 2',
+                value: 'Group 1 Label 2',
+            },
+        ],
+    },
+    {
+        label: 'Group 2',
+        options: [
+            {
+                label: 'Group 2 Label 1',
+                value: 'Group 2 Label 1',
+            },
+            {
+                label: 'Group 2 Label 2',
+                value: 'Group 2 Label 2',
+            },
+            {
+                label: 'Group 2 Label 3',
+                value: 'Group 2 Label 3',
+            },
+            {
+                label: 'Group 2 Label 4',
+                value: 'Group 2 Label 4',
+            },
+        ],
     },
 ]
 
@@ -50,6 +108,11 @@ export const Default: Story = {
         label: 'Select Picker Label',
         options,
         onChange: action('clicked'),
+        variant: SelectPickerVariantType.DEFAULT,
+        size: ComponentSizeType.medium,
+        menuSize: ComponentSizeType.small,
+        shouldMenuAlignRight: false,
+        layout: 'column',
     },
 }
 
@@ -265,12 +328,7 @@ export const MultiSelectWithGroupHeadingSelectable: Story = {
         multiSelectProps: {
             isGroupHeadingSelectable: true,
         },
-        options: [
-            {
-                label: 'Group 1',
-                options,
-            },
-        ],
+        options,
     },
 }
 

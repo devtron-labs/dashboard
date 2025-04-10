@@ -14,28 +14,41 @@
  * limitations under the License.
  */
 
+import { GroupBase } from 'react-select'
 import moment from 'moment'
+
 import {
-    BulkSelectionEvents,
-    noop,
-    OptionType,
-    ToastManager,
-    ToastVariantType,
-    UserStatus,
-    UserStatusDto,
     ACCESS_TYPE_MAP,
-    ZERO_TIME_STRING,
-    EntityTypes,
+    ActionTypes,
+    BulkSelectionEvents,
     CustomRoleAndMeta,
     CustomRoles,
+    EntityTypes,
     MetaPossibleRoles,
+    noop,
+    OptionType,
     SelectPickerOptionType,
     stringComparatorBySortOrder,
-    ActionTypes,
+    ToastManager,
+    ToastVariantType,
     UserRoleConfig,
+    UserStatus,
+    UserStatusDto,
+    ZERO_TIME_STRING,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { GroupBase } from 'react-select'
+
+import { importComponentFromFELibrary } from '../../../components/common'
 import { Moment12HourFormat, REQUIRED_FIELDS_MISSING, SELECT_ALL_VALUE, SERVER_MODE } from '../../../config'
+import { AppIdWorkflowNamesMapping } from '../../../services/service.types'
+import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './Shared/components/AppPermissions/constants'
+import { useAuthorizationBulkSelection } from './Shared/components/BulkSelection'
+import {
+    AccessTypeToErrorMapType,
+    PermissionConfigurationFormContext,
+} from './Shared/components/PermissionConfigurationForm/types'
+import { LAST_LOGIN_TIME_NULL_STATE } from './UserPermissions/constants'
+import { DEFAULT_ACCESS_TYPE_TO_ERROR_MAP, PermissionType, ViewChartGroupPermission } from './constants'
+import { getFormattedTimeToLive, getParsedUserGroupList } from './libUtils'
 import {
     APIRoleFilter,
     APIRoleFilterDto,
@@ -46,17 +59,6 @@ import {
     UserCreateOrUpdateParamsType,
     UserDto,
 } from './types'
-import { LAST_LOGIN_TIME_NULL_STATE } from './UserPermissions/constants'
-import { useAuthorizationBulkSelection } from './Shared/components/BulkSelection'
-import { PermissionType, ViewChartGroupPermission, DEFAULT_ACCESS_TYPE_TO_ERROR_MAP } from './constants'
-import { AppIdWorkflowNamesMapping } from '../../../services/service.types'
-import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './Shared/components/AppPermissions/constants'
-import { importComponentFromFELibrary } from '../../../components/common'
-import { getFormattedTimeToLive, getParsedUserGroupList } from './libUtils'
-import {
-    AccessTypeToErrorMapType,
-    PermissionConfigurationFormContext,
-} from './Shared/components/PermissionConfigurationForm/types'
 
 const getUserStatus: (status: UserStatusDto, timeToLive: string) => UserStatus = importComponentFromFELibrary(
     'getUserStatus',

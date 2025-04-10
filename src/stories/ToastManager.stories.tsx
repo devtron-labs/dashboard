@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
+import type { Meta, StoryObj } from '@storybook/react'
+
 import { Button, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
 import { ReactComponent as ICSparkles } from '@Icons/ic-sparkles.svg'
 import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG } from '@Config/constants'

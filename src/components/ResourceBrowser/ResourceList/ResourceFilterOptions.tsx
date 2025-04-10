@@ -14,23 +14,26 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, useState, useMemo, ComponentProps, KeyboardEvent } from 'react'
-import { useLocation, useParams, useHistory } from 'react-router-dom'
+import { ComponentProps, KeyboardEvent, useEffect, useMemo, useRef, useState } from 'react'
+import { useHistory, useLocation, useParams } from 'react-router-dom'
+
 import {
-    useAsync,
-    useRegisterShortcut,
+    ALL_NAMESPACE_OPTION,
     OptionType,
     SearchBar,
     SelectPicker,
-    ALL_NAMESPACE_OPTION,
+    useAsync,
+    useRegisterShortcut,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as NamespaceIcon } from '@Icons/ic-env.svg'
-import { ResourceFilterOptionsProps, URLParams } from '../Types'
-import { NAMESPACE_NOT_APPLICABLE_OPTION, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
-import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
-import { convertToOptionsList, importComponentFromFELibrary } from '../../common'
-import { namespaceListByClusterId } from '../ResourceBrowser.service'
+
 import { URLS } from '../../../config'
+import { convertToOptionsList, importComponentFromFELibrary } from '../../common'
+import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
+import { NAMESPACE_NOT_APPLICABLE_OPTION, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
+import { namespaceListByClusterId } from '../ResourceBrowser.service'
+import { ResourceFilterOptionsProps, URLParams } from '../Types'
 
 const FilterButton = importComponentFromFELibrary('FilterButton', null, 'function')
 
