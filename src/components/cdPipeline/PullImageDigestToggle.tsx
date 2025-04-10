@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { ConditionalWrap, Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
+
+import { ConditionalWrap, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as DockerWithImage } from '../../assets/icons/ic-docker-with-image.svg'
-import { PullImageDigestToggleType } from './types'
 import { DIGEST_DISABLE_TOGGLE_MESSAGE_FOR_PIPELINE, DIGEST_DISABLE_TOGGLE_MESSAGE_GLOBAL_ONLY } from '../../config'
+import { PullImageDigestToggleType } from './types'
 
 function PullImageDigestToggle({ formData, setFormData }: PullImageDigestToggleType): JSX.Element {
     const handleImageDigestToggle = (): void => {

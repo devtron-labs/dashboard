@@ -15,26 +15,27 @@
  */
 
 import { useMemo, useRef, useState } from 'react'
+
 import {
-    SortingOrder,
-    useAsync,
-    useUrlFilters,
     abortPreviousRequests,
+    BulkSelectionIdentifiersType,
+    BulkSelectionProvider,
     getIsRequestAborted,
     SelectAllDialogStatus,
-    BulkSelectionProvider,
-    BulkSelectionIdentifiersType,
-    UserStatus,
+    SortingOrder,
+    useAsync,
     UserListSortableKeys,
+    UserStatus,
+    useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getUserList } from '../../authorization.service'
 import { importComponentFromFELibrary } from '../../../../../components/common'
+import { getUserList } from '../../authorization.service'
+import { BulkSelectionModalConfig, BulkSelectionModalTypes } from '../../Shared/components/BulkSelection'
 import { User } from '../../types'
 import { getIsAdminOrSystemUser, parseSearchParams } from '../utils'
-import UserPermissionContainer from './UserPermissionContainer'
-import { BulkSelectionModalConfig, BulkSelectionModalTypes } from '../../Shared/components/BulkSelection'
 import { UserListFilter, UserPermissionContainerProps } from './types'
+import UserPermissionContainer from './UserPermissionContainer'
 
 const StatusHeaderCell = importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 const getUserTypeToFetchFromSelectedConfigOptions = importComponentFromFELibrary(

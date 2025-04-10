@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
+import type { Meta, StoryObj } from '@storybook/react'
+
 import {
     Button,
     ButtonComponentType,
@@ -24,8 +25,9 @@ import {
     ButtonVariantType,
     ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICDeleteInteractive } from '@Icons/ic-delete-interactive.svg'
+
 import { ReactComponent as ICAbort } from '@Icons/ic-abort.svg'
+import { ReactComponent as ICDeleteInteractive } from '@Icons/ic-delete-interactive.svg'
 
 const BUTTON_TEXT = 'Hello world'
 

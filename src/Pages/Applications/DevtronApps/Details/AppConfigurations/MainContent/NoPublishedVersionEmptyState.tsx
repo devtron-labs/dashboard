@@ -14,16 +14,31 @@
  * limitations under the License.
  */
 
-import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { Button, ButtonVariantType, GenericEmptyState, Icon } from '@devtron-labs/devtron-fe-common-lib'
+
 import noArtifact from '@Images/no-artifact.webp'
 
 import { NoPublishedVersionEmptyStateProps } from './types'
 
-const NoPublishedVersionEmptyState = ({ isOverride = true }: NoPublishedVersionEmptyStateProps) => (
+const NoPublishedVersionEmptyState = ({
+    isOverride = true,
+    showRedirectButton = false,
+    onRedirectClick,
+}: NoPublishedVersionEmptyStateProps) => (
     <GenericEmptyState
         image={noArtifact}
         title="No published version"
         subTitle={`Published ${isOverride ? 'override' : ''} for this file does not exist`}
+        isButtonAvailable={showRedirectButton}
+        renderButton={() => (
+            <Button
+                dataTestId="go-to-draft-redirect-button"
+                onClick={onRedirectClick}
+                text="Go to draft"
+                variant={ButtonVariantType.secondary}
+                endIcon={<Icon name="ic-arrow-right" color={null} />}
+            />
+        )}
     />
 )
 

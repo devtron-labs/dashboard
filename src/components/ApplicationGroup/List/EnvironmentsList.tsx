@@ -15,25 +15,29 @@
  */
 
 import { useMemo } from 'react'
+
 import {
-    useAsync,
+    ErrorScreenManager,
+    FilterChips,
+    FilterSelectPicker,
+    GenericEmptyState,
+    ImageType,
     PageHeader,
     SearchBar,
-    useUrlFilters,
     SelectPickerOptionType,
-    FilterSelectPicker,
-    FilterChips,
-    GenericEmptyState,
-    ErrorScreenManager,
-    ImageType,
+    useAsync,
+    useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import appGroupEmpty from '@Images/application-group-empty-state.webp'
-import './EnvironmentsList.scss'
-import EnvironmentsListView from './EnvironmentListView'
+
 import { getClusterListMinWithoutAuth } from '../../../services/service'
+import { getEnvAppList } from '../AppGroup.service'
 import { AppGroupAdminType, AppGroupUrlFilters, AppGroupUrlFiltersType } from '../AppGroup.types'
 import { parseSearchParams } from '../AppGroup.utils'
-import { getEnvAppList } from '../AppGroup.service'
+import EnvironmentsListView from './EnvironmentListView'
+
+import './EnvironmentsList.scss'
 
 const EnvironmentsList = ({ isSuperAdmin }: AppGroupAdminType) => {
     const urlFilters = useUrlFilters<never, AppGroupUrlFiltersType>({

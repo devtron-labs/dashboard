@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
+import { RefObject } from 'react'
+
 import {
     ApiResourceType,
     get,
-    ResponseType,
-    getK8sResourceList,
     getIsRequestAborted,
-    showError,
-    getUrlWithSearchParams,
+    getK8sResourceList,
     getK8sResourceListPayload,
+    getUrlWithSearchParams,
+    ResponseType,
+    showError,
     stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { RefObject } from 'react'
+
 import { Routes } from '../../config'
 import { ClusterListResponse } from '../../services/service.types'
-import { GetResourceDataType, NodeRowDetail, URLParams } from './Types'
 import { SIDEBAR_KEYS } from './Constants'
+import { GetResourceDataType, NodeRowDetail, URLParams } from './Types'
 import { parseNodeList } from './Utils'
 
 export const getClusterList = async (): Promise<ClusterListResponse> => {

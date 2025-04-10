@@ -15,27 +15,29 @@
  */
 
 import React, { useEffect, useState } from 'react'
+
 import {
-    showError,
-    Progressing,
-    Drawer,
-    InfoColourBar,
-    GenericEmptyState,
-    useRegisterShortcut,
     CodeEditor,
+    CodeEditorThemesKeys,
     createNewResource,
     CreateResourceDTO,
-    CodeEditorThemesKeys,
+    Drawer,
+    GenericEmptyState,
+    InfoColourBar,
+    Progressing,
+    showError,
+    useRegisterShortcut,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { APP_STATUS_HEADERS, MODES } from '../../../config'
+
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
-import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
-import { ReactComponent as Success } from '../../../assets/icons/ic-success.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
+import { ReactComponent as Success } from '../../../assets/icons/ic-success.svg'
+import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as MechanicalOperation } from '../../../assets/img/ic-mechanical-operation.svg'
-import { CreateResourcePayload, CreateResourceStatus, CreateResourceType } from '../Types'
+import { APP_STATUS_HEADERS, MODES } from '../../../config'
 import { CREATE_RESOURCE_MODAL_MESSAGING } from '../Constants'
+import { CreateResourcePayload, CreateResourceStatus, CreateResourceType } from '../Types'
 
 export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clusterId }) => {
     const { setDisableShortcuts } = useRegisterShortcut()

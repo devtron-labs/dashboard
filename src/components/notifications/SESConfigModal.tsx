@@ -15,31 +15,33 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
+import { useHistory } from 'react-router-dom'
+
 import {
-    showError,
-    CustomInput,
-    ToastManager,
-    ToastVariantType,
-    SelectPicker,
     ComponentSizeType,
+    CustomInput,
     DEFAULT_SECRET_PLACEHOLDER,
     OptionType,
+    SelectPicker,
     SelectPickerProps,
+    showError,
     stringComparatorBySortOrder,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory } from 'react-router-dom'
-import { saveEmailConfiguration, getSESConfiguration } from './notifications.service'
-import { SESConfigModalProps, SESFormType } from './types'
+
+import awsRegionList from '../common/awsRegionList.json'
+import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
+import { ConfigurationFieldKeys, ConfigurationsTabTypes, DefaultSESValidations } from './constants'
+import { DefaultCheckbox } from './DefaultCheckbox'
+import { getSESConfiguration, saveEmailConfiguration } from './notifications.service'
 import {
     getSESDefaultConfiguration,
     getValidationFormConfig,
     renderErrorToast,
     validateKeyValueConfig,
 } from './notifications.util'
-import { ConfigurationFieldKeys, ConfigurationsTabTypes, DefaultSESValidations } from './constants'
-import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
-import { DefaultCheckbox } from './DefaultCheckbox'
-import awsRegionList from '../common/awsRegionList.json'
+import { SESConfigModalProps, SESFormType } from './types'
 
 const awsRegionListOption = awsRegionList
     .sort((a, b) => stringComparatorBySortOrder(a.name, b.name))

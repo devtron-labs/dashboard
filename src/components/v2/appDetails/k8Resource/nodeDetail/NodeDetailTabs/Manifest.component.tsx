@@ -16,47 +16,51 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
 import YAML from 'yaml'
+
 import {
+    AppThemeType,
     Checkbox,
     CHECKBOX_VALUE,
-    ConditionalWrap,
-    DeploymentAppTypes,
-    showError,
-    useEffectAfterMount,
-    ServerErrors,
-    useMainContext,
     CodeEditor,
+    CodeEditorThemesKeys,
+    ConditionalWrap,
+    ConfigurationType,
+    DeploymentAppTypes,
+    FormProps,
+    getComponentSpecificThemeClass,
+    InfoColourBar,
+    isCodeMirrorEnabled,
+    logExceptionToSentry,
+    noop,
+    ServerErrors,
+    showError,
+    TOAST_ACCESS_DENIED,
     ToastManager,
     ToastVariantType,
-    TOAST_ACCESS_DENIED,
-    FormProps,
-    ConfigurationType,
+    useEffectAfterMount,
+    useMainContext,
     YAMLStringify,
-    InfoColourBar,
-    logExceptionToSentry,
-    CodeEditorThemesKeys,
-    noop,
-    AppThemeType,
-    isCodeMirrorEnabled,
-    getComponentSpecificThemeClass,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
+
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
 import { ReactComponent as ICInfoFilled } from '@Icons/ic-info-filled.svg'
-import { importComponentFromFELibrary } from '@Components/common'
 import { DEFAULT_CLUSTER_ID } from '@Components/cluster/cluster.type'
-import { NodeDetailTab } from '../nodeDetail.type'
+import { importComponentFromFELibrary } from '@Components/common'
+
+import { MODES } from '../../../../../../config'
 import {
-    createResource,
-    getDesiredManifestResource,
-    getManifestResource,
-    getResourceRequestPayload,
-    updateManifestResourceHelmApps,
-} from '../nodeDetail.api'
-import IndexStore from '../../../index.store'
+    EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,
+    EA_MANIFEST_SECRET_INFO_TEXT,
+} from '../../../../../../config/constantMessaging'
+import { appendRefetchDataToUrl } from '../../../../../util/URLUtil'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
+import {
+    EMPTY_YAML_ERROR,
+    SAVE_DATA_VALIDATION_ERROR_MSG,
+} from '../../../../values/chartValuesDiff/ChartValuesView.constants'
 import {
     AppType,
     ManifestActionPropsType,
@@ -65,16 +69,15 @@ import {
     Node,
     NodeType,
 } from '../../../appDetails.type'
-import { appendRefetchDataToUrl } from '../../../../../util/URLUtil'
+import IndexStore from '../../../index.store'
 import {
-    EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,
-    EA_MANIFEST_SECRET_INFO_TEXT,
-} from '../../../../../../config/constantMessaging'
-import { MODES } from '../../../../../../config'
-import {
-    EMPTY_YAML_ERROR,
-    SAVE_DATA_VALIDATION_ERROR_MSG,
-} from '../../../../values/chartValuesDiff/ChartValuesView.constants'
+    createResource,
+    getDesiredManifestResource,
+    getManifestResource,
+    getResourceRequestPayload,
+    updateManifestResourceHelmApps,
+} from '../nodeDetail.api'
+import { NodeDetailTab } from '../nodeDetail.type'
 import { getDecodedEncodedSecretManifestData, getTrimmedManifestData } from '../nodeDetail.util'
 
 const renderOutOfSyncWarning = importComponentFromFELibrary('renderOutOfSyncWarning', null, 'function')

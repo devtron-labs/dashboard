@@ -21,6 +21,7 @@ import {
     ButtonVariantType,
     ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { BaseConfigurationNavigationProps } from './types'
 
 const BaseConfigurationNavigation = ({ baseConfigurationURL }: BaseConfigurationNavigationProps) => (

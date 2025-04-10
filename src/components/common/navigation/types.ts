@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { URLS } from '@Config/routes'
 import {
     customEnv,
+    EnvironmentDataValuesDTO,
     IconsProps,
     URLS as CommonURLS,
-    EnvironmentDataValuesDTO,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { URLS } from '@Config/routes'
 
 export interface NavigationListItemType {
     title: string

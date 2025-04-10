@@ -57,6 +57,7 @@ const preview: Preview = {
                     <SwitchThemeDialogWrapper />
 
                     <div id="animated-dialog-backdrop" />
+                    <div id="visible-modal" />
 
                     <BaseConfirmationModal />
                 </ConfirmationModalProvider>

@@ -21,9 +21,16 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     Checkbox,
+    checkIfPathIsMatching,
+    CM_SECRET_STATE,
     CMSecretExternalType,
     ComponentSizeType,
+    configMapDataTypeOptions,
+    ConfigMapSecretDataTypeOptionType,
+    configMapSecretMountDataMap,
+    ConfigMapSecretReadyOnly,
     CustomInput,
+    getSecretDataTypeOptions,
     getSelectPickerOptionByValue,
     hasESO,
     hasHashiOrAWS,
@@ -31,31 +38,24 @@ import {
     Progressing,
     RadioGroup,
     RadioGroupItem,
+    renderHashiOrAwsDeprecatedInfo,
     SelectPicker,
     stopPropagation,
     usePrompt,
-    checkIfPathIsMatching,
-    CM_SECRET_STATE,
-    configMapSecretMountDataMap,
-    configMapDataTypeOptions,
-    ConfigMapSecretDataTypeOptionType,
-    renderHashiOrAwsDeprecatedInfo,
-    getSecretDataTypeOptions,
-    ConfigMapSecretReadyOnly,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ROLLOUT_DEPLOYMENT } from '@Config/constants'
 import {
     importComponentFromFELibrary,
     isChartRef3090OrBelow,
     isVersionLessThanOrEqualToTarget,
 } from '@Components/common'
-
+import { ROLLOUT_DEPLOYMENT } from '@Config/constants'
 import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
+
+import { ConfigMapSecretData } from './ConfigMapSecretData'
 import { CM_SECRET_COMPONENT_NAME } from './constants'
 import { renderChartVersionBelow3090NotSupportedText, renderESOInfo, renderExternalInfo } from './helpers'
 import { ConfigMapSecretFormProps } from './types'
-import { ConfigMapSecretData } from './ConfigMapSecretData'
 
 const DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE = importComponentFromFELibrary(
     'DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE',
@@ -67,6 +67,8 @@ export const ConfigMapSecretForm = ({
     isCreateView = false,
     configMapSecretData,
     inheritedConfigMapSecretData,
+    publishedConfigMapSecretData,
+    draftData,
     cmSecretStateLabel,
     isJob,
     appChartRef,
@@ -75,12 +77,15 @@ export const ConfigMapSecretForm = ({
     componentType,
     isSubmitting = false,
     isApprovalPolicyConfigured,
+    isExpressEditView,
+    isExpressEditComparisonView,
     areScopeVariablesResolving,
     useFormProps,
     isExternalSubmit,
     onSubmit,
     onCancel,
     noContainerPadding = false,
+    handleMergeStrategyChange,
 }: ConfigMapSecretFormProps) => {
     // HOOKS
     const location = useLocation()
@@ -332,15 +337,8 @@ export const ConfigMapSecretForm = ({
 
     const renderFormButtons = () => (
         <footer className="py-12 px-16 flex right dc__gap-12 dc__border-top-n1">
-            <Button
-                dataTestId="cm-secret-form-submit-btn"
-                text={`Save${!isCreateView ? ' Changes' : ''}${isApprovalPolicyConfigured ? '...' : ''}`}
-                size={ComponentSizeType.medium}
-                onClick={onSubmit}
-                isLoading={isSubmitting}
-                disabled={isSubmitting || areScopeVariablesResolving || isFormDisabled}
-            />
-            {!isDraft && (isCreateView || cmSecretStateLabel === CM_SECRET_STATE.INHERITED) && (
+            {(isExpressEditView ||
+                (!isDraft && (isCreateView || cmSecretStateLabel === CM_SECRET_STATE.INHERITED))) && (
                 <Button
                     dataTestId="cm-secret-form-cancel-btn"
                     text="Cancel"
@@ -351,6 +349,23 @@ export const ConfigMapSecretForm = ({
                     disabled={areScopeVariablesResolving}
                 />
             )}
+            <Button
+                dataTestId={isExpressEditView ? 'cm-secret-express-edit-form-submit-btn' : 'cm-secret-form-submit-btn'}
+                text={
+                    isExpressEditView
+                        ? 'Publish Changes'
+                        : `Save${!isCreateView ? ' Changes' : ''}${isApprovalPolicyConfigured ? '...' : ''}`
+                }
+                {...(isExpressEditView
+                    ? {
+                          style: ButtonStyleType.warning,
+                      }
+                    : {})}
+                size={ComponentSizeType.medium}
+                onClick={onSubmit}
+                isLoading={isSubmitting}
+                disabled={isSubmitting || areScopeVariablesResolving || isFormDisabled}
+            />
         </footer>
     )
 
@@ -361,32 +376,37 @@ export const ConfigMapSecretForm = ({
                 {areScopeVariablesResolving ? (
                     <Progressing fullHeight pageLoader />
                 ) : (
-                    <div className={`${!noContainerPadding ? 'p-16' : ''} flex-grow-1 dc__overflow-auto`}>
-                        <div className="flexbox-col dc__gap-16 dc__mxw-1200">
-                            {isPatchMode ? (
-                                <ConfigMapSecretReadyOnly
-                                    cmSecretStateLabel={cmSecretStateLabel}
-                                    componentType={componentType}
-                                    isJob={isJob}
-                                    configMapSecretData={inheritedConfigMapSecretData}
-                                    areScopeVariablesResolving={areScopeVariablesResolving}
-                                    hideCodeEditor
-                                    fallbackMergeStrategy={DEFAULT_MERGE_STRATEGY}
-                                />
-                            ) : (
-                                <>
-                                    {isHashiOrAWS && renderHashiOrAwsDeprecatedInfo()}
-                                    <div className="configmap-secret-form__name-container dc__grid dc__gap-12">
-                                        {renderDataTypeSelector()}
-                                        {renderName()}
-                                    </div>
-                                    {renderESOInfo(isESO)}
-                                    {renderExternalInfo(data.externalType, data.external, componentType)}
-                                    {renderMountData()}
-                                    {renderVolumeMountPath()}
-                                    {renderRollARN()}
-                                </>
-                            )}
+                    <div
+                        className={`${!noContainerPadding && !isExpressEditComparisonView ? 'p-16' : ''} flex-grow-1 dc__overflow-auto`}
+                    >
+                        <div
+                            className={`flexbox-col dc__gap-16 ${isExpressEditComparisonView ? 'h-100' : 'dc__mxw-1200'}`}
+                        >
+                            {!isExpressEditComparisonView &&
+                                (isPatchMode ? (
+                                    <ConfigMapSecretReadyOnly
+                                        cmSecretStateLabel={cmSecretStateLabel}
+                                        componentType={componentType}
+                                        isJob={isJob}
+                                        configMapSecretData={inheritedConfigMapSecretData}
+                                        areScopeVariablesResolving={areScopeVariablesResolving}
+                                        hideCodeEditor
+                                        fallbackMergeStrategy={DEFAULT_MERGE_STRATEGY}
+                                    />
+                                ) : (
+                                    <>
+                                        {isHashiOrAWS && renderHashiOrAwsDeprecatedInfo()}
+                                        <div className="configmap-secret-form__name-container dc__grid dc__gap-12">
+                                            {renderDataTypeSelector()}
+                                            {renderName()}
+                                        </div>
+                                        {renderESOInfo(isESO)}
+                                        {renderExternalInfo(data.externalType, data.external, componentType)}
+                                        {renderMountData()}
+                                        {renderVolumeMountPath()}
+                                        {renderRollARN()}
+                                    </>
+                                ))}
                             <ConfigMapSecretData
                                 isESO={isESO}
                                 isHashiOrAWS={isHashiOrAWS}
@@ -394,6 +414,15 @@ export const ConfigMapSecretForm = ({
                                 useFormProps={useFormProps}
                                 readOnly={isFormDisabled}
                                 isPatchMode={isPatchMode}
+                                hasPublishedConfig={
+                                    cmSecretStateLabel !== CM_SECRET_STATE.INHERITED &&
+                                    cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED
+                                }
+                                draftData={draftData}
+                                publishedConfigMapSecretData={publishedConfigMapSecretData}
+                                isExpressEditView={isExpressEditView}
+                                isExpressEditComparisonView={isExpressEditComparisonView}
+                                handleMergeStrategyChange={handleMergeStrategyChange}
                             />
                         </div>
                     </div>

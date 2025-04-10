@@ -35,12 +35,12 @@ import {
     ViewIsPipelineRBACConfiguredRadioTabs,
     EnvironmentDataValuesDTO,
     UserPreferencesType,
-    getUserPreferences,
     MODES,
     useTheme,
     AppThemeType,
     LicenseInfoDialogType,
     DevtronLicenseInfo,
+    useUserPreferences,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -160,15 +160,19 @@ export default function NavigationRoutes() {
         deployUnhibernatedAppOnly: false,
         devtronManagedLicensingEnabled: false,
     })
-    const [userPreferences, setUserPreferences] = useState<UserPreferencesType>(null)
-    const [userPreferencesError, setUserPreferencesError] = useState<ServerErrors>(null)
-    const [licenseInfoDialogType, setLicenseInfoDialogType] = useState<LicenseInfoDialogType>(null)
+
+    const { showThemeSwitcherDialog, handleThemeSwitcherDialogVisibilityChange, appTheme } = useTheme()
+
     const {
-        showThemeSwitcherDialog,
-        handleThemeSwitcherDialogVisibilityChange,
-        handleThemePreferenceChange,
-        appTheme,
-    } = useTheme()
+        userPreferences,
+        userPreferencesError,
+        handleFetchUserPreferences,
+        handleUpdateUserThemePreference,
+        handleUpdatePipelineRBACViewSelectedTab,
+    } = useUserPreferences({ migrateUserPreferences })
+
+    const [licenseInfoDialogType, setLicenseInfoDialogType] = useState<LicenseInfoDialogType>(null)
+
 
     const { isAirgapped, isManifestScanningEnabled, canOnlyViewPermittedEnvOrgLevel, devtronManagedLicensingEnabled } =
         environmentDataState
@@ -369,31 +373,6 @@ export default function NavigationRoutes() {
         }
     }
 
-    const handleInitializeUserPreferencesFromResponse = (userPreferencesResponse: UserPreferencesType) => {
-        if (!userPreferencesResponse?.themePreference) {
-            handleThemeSwitcherDialogVisibilityChange(true)
-        } else if (userPreferencesResponse?.themePreference) {
-            handleThemePreferenceChange(userPreferencesResponse?.themePreference)
-        }
-
-        setUserPreferences(userPreferencesResponse)
-    }
-
-    const handleFetchUserPreferences = async () => {
-        try {
-            setUserPreferencesError(null)
-            const userPreferencesResponse = await getUserPreferences()
-            if (migrateUserPreferences) {
-                const migratedUserPreferences = await migrateUserPreferences(userPreferencesResponse)
-                handleInitializeUserPreferencesFromResponse(migratedUserPreferences)
-            } else {
-                handleInitializeUserPreferencesFromResponse(userPreferencesResponse)
-            }
-        } catch (error) {
-            setUserPreferencesError(error)
-        }
-    }
-
     const handleFetchInitialData = async () => {
         try {
             const [serverModeResponse, environmentDataResponse] = await Promise.all([
@@ -458,21 +437,6 @@ export default function NavigationRoutes() {
     const isOnboardingPage = () => {
         const _pathname = location.pathname.endsWith('/') ? location.pathname.slice(0, -1) : location.pathname
         return _pathname === `/${URLS.GETTING_STARTED}` || _pathname === `/dashboard/${URLS.GETTING_STARTED}`
-    }
-
-    // To handle in case through browser prompt user cancelled the refresh
-    const handleUpdatePipelineRBACViewSelectedTab = (selectedTab: ViewIsPipelineRBACConfiguredRadioTabs) => {
-        setUserPreferences((prev) => ({
-            ...prev,
-            pipelineRBACViewSelectedTab: selectedTab,
-        }))
-    }
-
-    const handleUpdateUserThemePreference = (themePreference: UserPreferencesType['themePreference']) => {
-        setUserPreferences((prev) => ({
-            ...prev,
-            themePreference,
-        }))
     }
 
     if (pageState === ViewType.LOADING) {
@@ -540,7 +504,6 @@ export default function NavigationRoutes() {
                     <SwitchThemeDialog
                         initialThemePreference={userPreferences?.themePreference}
                         handleClose={handleCloseSwitchThemeDialog}
-                        currentUserPreferences={userPreferences}
                         handleUpdateUserThemePreference={handleUpdateUserThemePreference}
                     />
                 )}

@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { ResponseType, get, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { get, ResponseType, trash } from '@devtron-labs/devtron-fe-common-lib'
+
 import { Routes } from '../../../../config'
 import { fetchWithFullRoute } from '../../../../services/fetchWithFullRoute'
-import { ClusterConnectionResponse, DeploymentStatusDetailsResponse, ModuleConfigResponse } from './appDetails.type'
 import { AppType } from '../../../v2/appDetails/appDetails.type'
+import { ClusterConnectionResponse, DeploymentStatusDetailsResponse, ModuleConfigResponse } from './appDetails.type'
 
 export function isDatasourceConfigured(envName: string) {
     const root = window.__ORCHESTRATOR_ROOT__.replace('/orchestrator', '')

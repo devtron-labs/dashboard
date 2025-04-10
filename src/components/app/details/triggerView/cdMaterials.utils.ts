@@ -15,8 +15,9 @@
  */
 
 import { CDMaterialType, FilterStates } from '@devtron-labs/devtron-fe-common-lib'
-import { FilterConditionViews, MATERIAL_TYPE, RegexValueType } from './types'
+
 import { LAST_SAVED_CONFIG_OPTION, SPECIFIC_TRIGGER_CONFIG_OPTION } from './TriggerView.utils'
+import { FilterConditionViews, MATERIAL_TYPE, RegexValueType } from './types'
 
 export const getInitialState = (materialType: string, material: CDMaterialType[], searchImageTag: string) => () => ({
     isSecurityModuleInstalled: false,

@@ -17,13 +17,15 @@
 import {
     Button,
     ButtonVariantType,
+    CMSecretComponentType,
     ComponentSizeType,
     GenericEmptyState,
     ImageType,
-    CMSecretComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import cmCsEmptyState from '@Images/cm-cs-empty-state.png'
+
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
+import cmCsEmptyState from '@Images/cm-cs-empty-state.png'
+
 import { NoOverrideEmptyStateProps } from './types'
 
 import './NoOverrideEmptyState.scss'

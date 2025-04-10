@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { UserListSortableKeys, UserStatus, UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
 import { MutableRefObject } from 'react'
+
+import { UserListSortableKeys, UserStatus, UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { SortableKeys } from '../../../PermissionGroups/List/constants'
 import { PermissionGroup, User } from '../../../types'
 import { UserListFilter } from '../../../UserPermissions/List/types'

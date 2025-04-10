@@ -15,6 +15,7 @@
  */
 
 import { get, getUrlWithSearchParams } from '@devtron-labs/devtron-fe-common-lib'
+
 import { Routes } from '../../../../config'
 
 export const getExternalFluxCDAppDetails = (clusterId, namespace, appName, isKustomization) => {

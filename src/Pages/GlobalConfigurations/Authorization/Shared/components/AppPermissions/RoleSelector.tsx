@@ -14,27 +14,31 @@
  * limitations under the License.
  */
 
+import { useMemo, useState } from 'react'
+import Select, { GroupHeadingProps, GroupProps, OptionProps } from 'react-select'
+
 import {
+    ACCESS_TYPE_MAP,
+    ActionTypes,
     Checkbox,
     CHECKBOX_VALUE,
+    Icon,
     noop,
     RadioGroupItem,
-    Tooltip,
     RoleSelectorOptionType,
-    Icon,
-    ActionTypes,
-    ACCESS_TYPE_MAP,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Select, { GroupProps, OptionProps, GroupHeadingProps } from 'react-select'
-import './roleSelectorStyles.scss'
-import { useAuthorizationContext } from '@Pages/GlobalConfigurations/Authorization/AuthorizationProvider'
-import { useMemo, useState } from 'react'
+
 import { importComponentFromFELibrary } from '@Components/common'
-import { getDefaultRolesToggleConfig, getRoleOptions, getRoleSelectorStyles, getSelectedRolesText } from './utils'
-import { RoleSelectorProps, RoleSelectorToggleConfig } from './types'
+import { useAuthorizationContext } from '@Pages/GlobalConfigurations/Authorization/AuthorizationProvider'
+
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
-import { renderGroup, renderGroupHeading, renderOption, renderRoleInfoTippy } from './roleSelectorHelpers'
 import { ACCESS_ROLE_OPTIONS_CONTAINER_ID } from './constants'
+import { renderGroup, renderGroupHeading, renderOption, renderRoleInfoTippy } from './roleSelectorHelpers'
+import { RoleSelectorProps, RoleSelectorToggleConfig } from './types'
+import { getDefaultRolesToggleConfig, getRoleOptions, getRoleSelectorStyles, getSelectedRolesText } from './utils'
+
+import './roleSelectorStyles.scss'
 
 const DeprecatedTag = importComponentFromFELibrary('DeprecatedTag', null, 'function')
 

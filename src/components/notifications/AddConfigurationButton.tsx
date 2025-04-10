@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { Button, ButtonVariantType, ComponentSizeType, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
+
+import { Button, ButtonVariantType, ComponentSizeType, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as Add } from '@Icons/ic-add.svg'
+
 import { getTabText } from './notifications.util'
 import { AddConfigurationButtonProps } from './types'
 
