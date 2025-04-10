@@ -112,7 +112,7 @@ export default function BulkCDTrigger({
     runtimeParamsErrorState,
     setRuntimeParamsErrorState,
 }: BulkCDTriggerType) {
-    const { fetchHelmAppStatus } = useMainContext()
+    const { canFetchHelmAppStatus } = useMainContext()
     const [selectedApp, setSelectedApp] = useState<BulkCDDetailType>(
         appList.find((app) => !app.warningMessage) || appList[0],
     )
@@ -857,7 +857,7 @@ export default function BulkCDTrigger({
     const renderFooterSection = (): JSX.Element => {
         const isDeployButtonDisabled: boolean = isDeployDisabled()
         const showSkipHibernatedCheckbox =
-            stage === DeploymentNodeType.CD && !!SkipHibernatedCheckbox && fetchHelmAppStatus
+            stage === DeploymentNodeType.CD && !!SkipHibernatedCheckbox && canFetchHelmAppStatus
         return (
             <div
                 className={`dc__border-top flex ${showSkipHibernatedCheckbox ? 'dc__content-space' : 'right'} bg__primary px-20 py-16`}

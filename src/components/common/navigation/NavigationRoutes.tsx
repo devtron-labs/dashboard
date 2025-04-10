@@ -350,7 +350,7 @@ export default function NavigationRoutes() {
                     result.canOnlyViewPermittedEnvOrgLevel ??
                     ENVIRONMENT_DATA_FALLBACK['canOnlyViewPermittedEnvOrgLevel'],
                 featureGitOpsFlags: parsedFeatureGitOpsFlags,
-                fetchHelmAppStatus: result.fetchHelmAppStatus ?? ENVIRONMENT_DATA_FALLBACK['fetchHelmAppStatus'],
+                canFetchHelmAppStatus: result.canFetchHelmAppStatus ?? ENVIRONMENT_DATA_FALLBACK['canFetchHelmAppStatus'],
                 devtronManagedLicensingEnabled:
                     result.devtronManagedLicensingEnabled ??
                     ENVIRONMENT_DATA_FALLBACK['devtronManagedLicensingEnabled'],
@@ -376,7 +376,7 @@ export default function NavigationRoutes() {
                 isManifestScanningEnabled: environmentDataResponse.isManifestScanningEnabled,
                 canOnlyViewPermittedEnvOrgLevel: environmentDataResponse.canOnlyViewPermittedEnvOrgLevel,
                 featureGitOpsFlags: environmentDataResponse.featureGitOpsFlags,
-                fetchHelmAppStatus: environmentDataResponse.fetchHelmAppStatus,
+                canFetchHelmAppStatus: environmentDataResponse.canFetchHelmAppStatus,
                 devtronManagedLicensingEnabled: environmentDataResponse.devtronManagedLicensingEnabled,
             })
 
@@ -483,7 +483,7 @@ export default function NavigationRoutes() {
                 handleOpenLicenseInfoDialog,
                 licenseData,
                 setLicenseData,
-                fetchHelmAppStatus: environmentDataState.fetchHelmAppStatus,
+                canFetchHelmAppStatus: environmentDataState.canFetchHelmAppStatus,
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>

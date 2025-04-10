@@ -28,7 +28,7 @@ const COMMON_ENV_FALLBACK: Omit<EnvironmentDataValuesDTO, 'isAirGapEnvironment'>
     isManifestScanningEnabled: false,
     canOnlyViewPermittedEnvOrgLevel: false,
     featureGitOpsFlags: structuredClone(DEFAULT_GIT_OPS_FEATURE_FLAGS),
-    fetchHelmAppStatus: false,
+    canFetchHelmAppStatus: false,
     devtronManagedLicensingEnabled: false,
 }
 
