@@ -88,6 +88,7 @@ import {
     DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
     SortingOrder,
     SegmentedControlProps,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -1295,12 +1296,7 @@ const CDMaterial = ({
             )
         }
         if (mat.isSelected) {
-            return (
-                <Check
-                    className={`${shouldRenderExpireApproval ? '' : 'dc__align-right'} icon-dim-24 cursor`}
-                    data-testid={`cd-artifact-selected-check-${mat.index}`}
-                />
-            )
+            return <Icon name="ic-selected" color="B500" size={24} />
         }
         const cursorClass = mat.isSelected ? 'cursor-default' : 'cursor'
         const selectClassName = mat.vulnerable ? 'cursor-not-allowed' : cursorClass
