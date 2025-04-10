@@ -1558,7 +1558,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 appName: triggeredAppList[index].appName,
                                 statusText: statusType,
                                 status: BulkResponseStatus.SKIP,
-                                message: errorReason.errors[0].internalMessage,
+                                message: errorReason.errors[0].userMessage,
                             })
                         } else if (errorReason.code === 403 || errorReason.code === 422) {
                             // Adding 422 to handle the unauthorized state due to deployment window
