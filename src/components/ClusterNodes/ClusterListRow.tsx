@@ -94,16 +94,19 @@ export const ClusterListRow = ({ clusterData, index, clusterListLoader }: Cluste
             className={`cluster-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class dc__visible-hover dc__visible-hover--parent
                  ${clusterListLoader ? 'show-shimmer-loading dc__align-items-center' : ''}`}
         >
-            <Checkbox
-                isChecked={isIdentifierSelected}
-                onChange={handleSelection}
-                rootClassName={`icon-dim-20 ${isIdentifierSelected ? '' : 'dc__visible-hover--child'}`}
-                dataTestId={`activate-${clusterData.name}`}
-                tabIndex={index - 1}
-                value={CHECKBOX_VALUE.CHECKED}
-            />
+            <div className={isIdentifierSelected ? '' : 'dc__visible-hover--child flex'}>
+                <Checkbox
+                    isChecked={isIdentifierSelected}
+                    onChange={handleSelection}
+                    rootClassName="icon-dim-20 m-0"
+                    dataTestId={`activate-${clusterData.name}`}
+                    tabIndex={index - 1}
+                    value={CHECKBOX_VALUE.CHECKED}
+                />
+            </div>
+
             {!isIdentifierSelected && (
-                <div className="dc__visible-hover--hide-child">
+                <div className="dc__visible-hover--hide-child flex">
                     <Icon name="ic-bg-cluster" color={null} size={20} />
                 </div>
             )}
