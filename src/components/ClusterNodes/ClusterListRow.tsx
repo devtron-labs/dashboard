@@ -26,11 +26,11 @@ import { AppDetailsTabs } from '@Components/v2/appDetails/appDetails.store'
 
 import { ClusterMapInitialStatus } from './ClusterMapInitialStatus'
 import { CLUSTER_PROD_TYPE } from './constants'
-import { KubeConfigButton } from './KubeConfigButton'
 import { ClusterListRowTypes } from './types'
 
+const KubeConfigButton = importComponentFromFELibrary('KubeConfigButton', null, 'function')
+
 export const ClusterListRow = ({ clusterData, index, clusterListLoader }: ClusterListRowTypes) => {
-    // const KubeConfigButton = importComponentFromFELibrary('KubeConfigButton', null, 'function')
     const ClusterStatusCell = importComponentFromFELibrary('ClusterStatus', null, 'function')
     const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
 
@@ -144,8 +144,7 @@ export const ClusterListRow = ({ clusterData, index, clusterListLoader }: Cluste
                         {CompareClusterButton && clusterData.status !== ClusterStatusType.CONNECTION_FAILED && (
                             <CompareClusterButton sourceClusterId={clusterData.id} isIconButton />
                         )}
-                        {/* {KubeConfigButton && <KubeConfigButton clusterName={clusterData.name} />} */}
-                        <KubeConfigButton clusterName={clusterData.name} />
+                        {KubeConfigButton && <KubeConfigButton clusterName={clusterData.name} />}
                     </div>
                 </div>
             </div>

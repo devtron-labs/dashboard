@@ -10,10 +10,11 @@ import {
     Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { KubeConfigButton } from './KubeConfigButton'
+import { importComponentFromFELibrary } from '@Components/common'
+
 import { ClusterBulkSelectionActionWidgetProps } from './types'
 
-// const KubeConfigButton = importComponentFromFELibrary('KubeConfigButton', null, 'function')
+const KubeConfigButton = importComponentFromFELibrary('KubeConfigButton', null, 'function')
 
 export const ClusterBulkSelectionActionWidget = ({
     parentRef,
@@ -36,8 +37,7 @@ export const ClusterBulkSelectionActionWidget = ({
                 </div>
             </div>
 
-            {/* {KubeConfigButton && <KubeConfigButton clusterName="default-cluster" isPrimaryButton />} */}
-            <KubeConfigButton isPrimaryButton />
+            {KubeConfigButton && <KubeConfigButton isPrimaryButton />}
 
             <Button
                 icon={<Icon name="ic-close-large" color={null} />}

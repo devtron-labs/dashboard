@@ -38,7 +38,6 @@ import Timer from '@Components/common/DynamicTabs/DynamicTabs.timer'
 import { AddClusterButton } from '@Components/ResourceBrowser/PageHeader.buttons'
 
 import { ClusterSelectionType } from '../ResourceBrowser/Types'
-import { ClusterBulkSelectionActionWidget } from './ClusterBulkSelectionActionWidget'
 import { ClusterListRow } from './ClusterListRow'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import { ClusterMapListSortableKeys, ClusterMapListSortableTitle, ClusterStatusByFilter } from './constants'
@@ -48,6 +47,11 @@ import './clusterNodes.scss'
 
 const ClusterMap = importComponentFromFELibrary('ClusterMap', null, 'function')
 const ClusterFilters = importComponentFromFELibrary('ClusterFilters', null, 'function')
+const ClusterBulkSelectionActionWidget = importComponentFromFELibrary(
+    'ClusterBulkSelectionActionWidget',
+    null,
+    'function',
+)
 
 const parseSearchParams = (searchParams: URLSearchParams) => ({
     clusterFilter: (searchParams.get('clusterFilter') as ClusterFiltersType) || ClusterFiltersType.ALL_CLUSTERS,
