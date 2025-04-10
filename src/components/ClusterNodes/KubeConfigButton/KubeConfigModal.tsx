@@ -91,6 +91,11 @@ const KubeConfigModal = ({ clusterName, handleModalClose }: KubeConfigTippyConte
             setKubeConfigCommand(getDefaultConfig(selectedClusterContext.value))
             ReactGA.event(RB_KUBE_CONFIG_GA_EVENTS.ReachableClusterToggleDisabled)
         } else {
+            setSelectedClusterContext(
+                reachableClusters.includes(selectedClusterContext.value)
+                    ? selectedClusterContext
+                    : DefaultSelectPickerOptionType,
+            )
             setKubeConfigCommand(getKubeConfigCommandWithContext(reachableClusters) as string)
             ReactGA.event(RB_KUBE_CONFIG_GA_EVENTS.ReachableClusterToggleEnabled)
         }
@@ -202,6 +207,7 @@ const KubeConfigModal = ({ clusterName, handleModalClose }: KubeConfigTippyConte
                 startIcon={
                     <ClipboardButton content={kubeConfigCommand} copyToClipboardPromise={copyToClipboardPromise} />
                 }
+                disabled={!reachableClustersList.length && toggleEnabled}
                 text="Copy command"
             />
         </div>

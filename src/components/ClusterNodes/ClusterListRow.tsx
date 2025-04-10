@@ -38,6 +38,7 @@ export const ClusterListRow = ({ clusterData, index, clusterListLoader }: Cluste
         selectedIdentifiers: bulkSelectionState,
         isBulkSelectionApplied,
         handleBulkSelection,
+        getSelectedIdentifiersCount,
     } = useBulkSelection<BulkSelectionIdentifiersType<ClusterDetail>>()
     const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
 
@@ -94,7 +95,13 @@ export const ClusterListRow = ({ clusterData, index, clusterListLoader }: Cluste
             className={`cluster-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class dc__visible-hover dc__visible-hover--parent
                  ${clusterListLoader ? 'show-shimmer-loading dc__align-items-center' : ''}`}
         >
-            <div className={isIdentifierSelected ? '' : 'dc__visible-hover--child flexbox'}>
+            <div
+                className={
+                    isIdentifierSelected || getSelectedIdentifiersCount() > 0
+                        ? 'dc__visible'
+                        : 'dc__visible-hover--child flexbox'
+                }
+            >
                 <Checkbox
                     isChecked={isIdentifierSelected}
                     onChange={handleSelection}
@@ -105,8 +112,8 @@ export const ClusterListRow = ({ clusterData, index, clusterListLoader }: Cluste
                 />
             </div>
 
-            {!isIdentifierSelected && (
-                <div className="dc__visible-hover--hide-child flexbox">
+            {!isIdentifierSelected && getSelectedIdentifiersCount() === 0 && (
+                <div className="dc__visible-hover--hide-child flex left">
                     <Icon name="ic-bg-cluster" color={null} size={20} />
                 </div>
             )}
