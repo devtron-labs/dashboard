@@ -26,7 +26,7 @@ import {
 
 import { DefaultSelectPickerOptionType, RB_KUBE_CONFIG_GA_EVENTS } from './constants'
 import { KubeConfigTippyContentProps } from './types'
-import { getKubeConfigCommand, getKubeConfigCommandWithContext, getOptions } from './utils'
+import { getKubeConfigCommandWithContext, getOptions } from './utils'
 
 const KubeConfigModal = ({ clusterName, handleModalClose }: KubeConfigTippyContentProps) => {
     const [copyToClipboardPromise, setCopyToClipboardPromise] = useState<ReturnType<typeof copyToClipboard>>(null)
@@ -43,7 +43,7 @@ const KubeConfigModal = ({ clusterName, handleModalClose }: KubeConfigTippyConte
     const reachableClusters = reachableClustersList.map((cluster) => cluster.name)
 
     const getDefaultConfig = (context?: string) =>
-        getKubeConfigCommandWithContext(clusterName || bulkSelectedClusterNames, context) as string
+        getKubeConfigCommandWithContext(clusterName || bulkSelectedClusterNames, clusterName || context) as string
 
     const [kubeConfigCommand, setKubeConfigCommand] = useState<string>(getDefaultConfig)
 
@@ -91,11 +91,7 @@ const KubeConfigModal = ({ clusterName, handleModalClose }: KubeConfigTippyConte
             setKubeConfigCommand(getDefaultConfig(selectedClusterContext.value))
             ReactGA.event(RB_KUBE_CONFIG_GA_EVENTS.ReachableClusterToggleDisabled)
         } else {
-            setKubeConfigCommand(
-                reachableClustersList
-                    .map((cluster) => getKubeConfigCommand(cluster.name, selectedClusterContext.value))
-                    .join('\n'),
-            )
+            setKubeConfigCommand(getKubeConfigCommandWithContext(reachableClusters) as string)
             ReactGA.event(RB_KUBE_CONFIG_GA_EVENTS.ReachableClusterToggleEnabled)
         }
     }
@@ -106,7 +102,7 @@ const KubeConfigModal = ({ clusterName, handleModalClose }: KubeConfigTippyConte
                 <p className="m-0">
                     <div className="lh-20">Get access for reachable clusters only</div>
                     <div className="fs-12 lh-18 cn-7">
-                        {`${reachableClustersList.length}/${bulkSelectedClusterNames.length}`} selected clusters are
+                        {`${reachableClusters.length}/${bulkSelectedClusterNames.length}`} selected clusters are
                         reachable
                     </div>
                 </p>
@@ -120,7 +116,7 @@ const KubeConfigModal = ({ clusterName, handleModalClose }: KubeConfigTippyConte
                 </div>
             </div>
 
-            {reachableClustersList.length && !toggleEnabled && (
+            {(reachableClusters.length > 1 || !toggleEnabled) && (
                 <div className="flex dc__gap-16 dc__content-space border__secondary--top pt-12">
                     <span className="lh-20">Set cluster context</span>
 
@@ -148,7 +144,7 @@ const KubeConfigModal = ({ clusterName, handleModalClose }: KubeConfigTippyConte
     const renderConfigCommand = () => (
         <div className="flexbox-col dc__gap-12 p-20">
             {bulkSelectedClusterNames.length > 1 && renderSelectiveClusters()}
-            {!reachableClustersList.length && toggleEnabled ? (
+            {!reachableClusters.length && toggleEnabled ? (
                 renderNoClusterReachable()
             ) : (
                 <ol
