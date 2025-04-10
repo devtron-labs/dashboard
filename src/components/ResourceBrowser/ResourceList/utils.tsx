@@ -15,14 +15,15 @@
  */
 
 import { logExceptionToSentry, noop } from '@devtron-labs/devtron-fe-common-lib'
+
 import {
-    TARGET_K8S_VERSION_SEARCH_KEY,
     LOCAL_STORAGE_EXISTS,
     LOCAL_STORAGE_KEY_FOR_APPLIED_COLUMNS,
     OPTIONAL_NODE_LIST_HEADERS,
+    TARGET_K8S_VERSION_SEARCH_KEY,
 } from '../Constants'
-import { ResourceListUrlFiltersType } from './types'
 import { K8SResourceListType } from '../Types'
+import { ResourceListUrlFiltersType } from './types'
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
     targetK8sVersion: searchParams.get(TARGET_K8S_VERSION_SEARCH_KEY),

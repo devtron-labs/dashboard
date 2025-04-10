@@ -15,13 +15,15 @@
  */
 
 import YAML from 'yaml'
+
 import { DeploymentAppTypes, GitOpsAuthModeType } from '@devtron-labs/devtron-fe-common-lib'
+
+import { DELETE_ACTION } from '../../../../config'
+import { AppMetaInfo } from '../../../app/types'
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
 import { InstalledAppInfo, ReleaseInfo } from '../../../external-apps/ExternalAppService'
 import { AppDetails } from '../../appDetails/appDetails.type'
 import { ChartDeploymentDetail } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
-import { AppMetaInfo } from '../../../app/types'
-import { DELETE_ACTION } from '../../../../config'
 
 export enum ChartKind {
     DEFAULT = 'DEFAULT',

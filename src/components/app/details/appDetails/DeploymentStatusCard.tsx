@@ -15,15 +15,16 @@
  */
 
 import React from 'react'
-import Tippy from '@tippyjs/react'
 import { useHistory } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
+
 import { ReactComponent as CD } from '../../../../assets/icons/ic-CD.svg'
-import { ReactComponent as Rocket } from '../../../../assets/icons/ic-paper-rocket.svg'
 import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as Rocket } from '../../../../assets/icons/ic-paper-rocket.svg'
 import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../config'
 import { DeploymentStatusCardType } from './appDetails.type'
-import { validateMomentDate } from './utils'
 import LoadingCard from './LoadingCard'
+import { validateMomentDate } from './utils'
 
 const DeploymentStatusCard = ({
     deploymentStatusDetailsBreakdownData,

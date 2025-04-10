@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { importComponentFromFELibrary } from '@Components/common'
 import { EnterpriseTag, OverrideMergeStrategyType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', false, 'function')
 

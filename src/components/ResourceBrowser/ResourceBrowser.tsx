@@ -15,20 +15,23 @@
  */
 
 import React, { useEffect, useMemo, useRef } from 'react'
+
 import {
-    showError,
+    ClusterDetail,
     DevtronProgressing,
-    useAsync,
-    PageHeader,
     ErrorScreenManager,
     getIsRequestAborted,
-    ClusterDetail,
+    PageHeader,
+    showError,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { DEFAULT_CLUSTER_ID } from '@Components/cluster/cluster.type'
-import { sortObjectArrayAlphabetically } from '../common'
+
 import { getClusterList, getClusterListMin } from '../ClusterNodes/clusterNodes.service'
-import { AddClusterButton } from './PageHeader.buttons'
 import BaseClusterList from '../ClusterNodes/ClusterSelectionList'
+import { sortObjectArrayAlphabetically } from '../common'
+import { AddClusterButton } from './PageHeader.buttons'
 
 const ResourceBrowser: React.FC = () => {
     const abortControllerRef = useRef<AbortController>(new AbortController())

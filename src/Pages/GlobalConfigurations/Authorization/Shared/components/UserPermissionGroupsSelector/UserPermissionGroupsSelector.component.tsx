@@ -15,21 +15,24 @@
  */
 
 import { useEffect } from 'react'
+
 import {
-    useAsync,
-    UserRoleGroupsTable,
-    UserStatus,
-    UserRoleGroup,
+    ComponentSizeType,
     SelectPicker,
     SelectPickerOptionType,
-    ComponentSizeType,
+    useAsync,
+    UserRoleGroup,
+    UserRoleGroupsTable,
+    UserStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { PermissionGroupIcon } from '@Pages/GlobalConfigurations/Authorization/PermissionGroups/List/PermissionGroupList.component'
-import { PermissionGroup, User } from '../../../types'
+
 import { importComponentFromFELibrary, mapByKey } from '../../../../../../components/common'
 import { getPermissionGroupList } from '../../../authorization.service'
-import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
+import { PermissionGroup, User } from '../../../types'
+import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 
 const StatusHeaderCell = importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')

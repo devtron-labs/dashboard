@@ -16,7 +16,9 @@
 
 import { lazy } from 'react'
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
+
 import { Routes } from '../../../config'
+
 import './authorization.scss'
 
 const UserAndGroupPermissions = lazy(() => import('./UserAndGroupPermissions'))

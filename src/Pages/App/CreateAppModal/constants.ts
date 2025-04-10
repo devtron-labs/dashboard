@@ -15,6 +15,7 @@
  */
 
 import { getEmptyTagTableRow } from '@devtron-labs/devtron-fe-common-lib'
+
 import { CreateAppFormErrorStateType, CreateAppFormStateType } from './types'
 
 export const createAppInitialFormState: CreateAppFormStateType = {

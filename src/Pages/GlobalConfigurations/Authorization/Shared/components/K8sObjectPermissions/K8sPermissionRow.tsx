@@ -21,15 +21,16 @@ import {
     ComponentSizeType,
     OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as Clone } from '../../../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as TrashIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as Edit } from '../../../../../../assets/icons/ic-pencil.svg'
-import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
-import { K8sPermissionActionType } from './constants'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
-import { K8sPermissionFilter } from '../../../types'
 import { getIsStatusDropdownDisabled } from '../../../libUtils'
+import { K8sPermissionFilter } from '../../../types'
+import { usePermissionConfiguration } from '../PermissionConfigurationForm'
+import { K8sPermissionActionType } from './constants'
 import { K8sPermissionRowProps } from './types'
 
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')

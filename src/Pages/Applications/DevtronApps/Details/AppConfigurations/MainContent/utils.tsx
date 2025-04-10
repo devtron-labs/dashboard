@@ -21,11 +21,13 @@ import {
     PipelineMigratedFromType,
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
-import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
+
 import { ReactComponent as ICArrowSquareIn } from '@Icons/ic-arrow-square-in.svg'
 import { ReactComponent as ICDeleteInteractive } from '@Icons/ic-delete-interactive.svg'
+import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
+import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
 import { importComponentFromFELibrary } from '@Components/common'
+
 import {
     CompareConfigViewEditorConfigType,
     ConfigHeaderTabConfigType,

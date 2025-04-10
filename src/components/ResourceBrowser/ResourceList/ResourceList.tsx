@@ -14,33 +14,44 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useMemo, useRef } from 'react'
-import { useHistory, useParams, useRouteMatch, useLocation } from 'react-router-dom'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+
 import {
-    BreadCrumb,
-    useBreadcrumb,
-    ErrorScreenManager,
-    DevtronProgressing,
-    useAsync,
-    useEffectAfterMount,
-    PageHeader,
-    getResourceGroupListRaw,
-    noop,
     ALL_NAMESPACE_OPTION,
-    WidgetEventDetails,
     ApiResourceGroupType,
-    InitTabType,
-    useUrlFilters,
+    BreadCrumb,
+    DevtronProgressing,
     DynamicTabType,
+    ErrorScreenManager,
+    getResourceGroupListRaw,
+    InitTabType,
+    noop,
+    PageHeader,
+    useAsync,
+    useBreadcrumb,
+    useEffectAfterMount,
+    useUrlFilters,
+    WidgetEventDetails,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { UpdateTabUrlParamsType, DynamicTabsVariantType, DynamicTabsProps } from '@Components/common/DynamicTabs/types'
-import { ClusterListType } from '@Components/ClusterNodes/types'
+
 import { ReactComponent as ICArrowUpCircle } from '@Icons/ic-arrow-up-circle.svg'
-import { ReactComponent as ICTerminalFill } from '@Icons/ic-terminal-fill.svg'
-import { ReactComponent as ICObject } from '@Icons/ic-object.svg'
-import { ReactComponent as ICWorldBlack } from '@Icons/ic-world-black.svg'
 import { ReactComponent as ICChartLineUp } from '@Icons/ic-chart-line-up.svg'
-import { ClusterOptionType, K8SResourceListType, URLParams } from '../Types'
+import { ReactComponent as ICObject } from '@Icons/ic-object.svg'
+import { ReactComponent as ICTerminalFill } from '@Icons/ic-terminal-fill.svg'
+import { ReactComponent as ICWorldBlack } from '@Icons/ic-world-black.svg'
+import { ClusterListType } from '@Components/ClusterNodes/types'
+import { DynamicTabsProps, DynamicTabsVariantType, UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/types'
+
+import { URLS } from '../../../config'
+import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
+import { getClusterListMin } from '../../ClusterNodes/clusterNodes.service'
+import ClusterOverview from '../../ClusterNodes/ClusterOverview'
+import NodeDetails from '../../ClusterNodes/NodeDetails'
+import { convertToOptionsList, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../common'
+import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
+import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
+import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
 import {
     K8S_EMPTY_GROUP,
     MONITORING_DASHBOARD_TAB_ID,
@@ -48,24 +59,16 @@ import {
     SIDEBAR_KEYS,
     UPGRADE_CLUSTER_CONSTANTS,
 } from '../Constants'
-import { URLS } from '../../../config'
-import { convertToOptionsList, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../common'
-import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
-import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
-import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
-import { getTabsBasedOnRole } from '../Utils'
-import { getClusterListMin } from '../../ClusterNodes/clusterNodes.service'
-import ClusterSelector from './ClusterSelector'
-import ClusterOverview from '../../ClusterNodes/ClusterOverview'
-import NodeDetails from '../../ClusterNodes/NodeDetails'
-import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
-import K8SResourceTabComponent from './K8SResourceTabComponent'
-import AdminTerminal from './AdminTerminal'
-import { renderRefreshBar } from './ResourceList.component'
 import { renderCreateResourceButton } from '../PageHeader.buttons'
+import { ClusterOptionType, K8SResourceListType, URLParams } from '../Types'
+import { getTabsBasedOnRole } from '../Utils'
+import AdminTerminal from './AdminTerminal'
+import ClusterSelector from './ClusterSelector'
 import ClusterUpgradeCompatibilityInfo from './ClusterUpgradeCompatibilityInfo'
-import { getFirstResourceFromKindResourceMap, getUpgradeCompatibilityTippyConfig, parseSearchParams } from './utils'
+import K8SResourceTabComponent from './K8SResourceTabComponent'
+import { renderRefreshBar } from './ResourceList.component'
 import { ResourceListUrlFiltersType } from './types'
+import { getFirstResourceFromKindResourceMap, getUpgradeCompatibilityTippyConfig, parseSearchParams } from './utils'
 
 const EventsAIResponseWidget = importComponentFromFELibrary('EventsAIResponseWidget', null, 'function')
 const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')

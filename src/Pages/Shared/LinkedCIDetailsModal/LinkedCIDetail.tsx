@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { Switch, useRouteMatch, Route } from 'react-router-dom'
+import { Route, Switch, useRouteMatch } from 'react-router-dom'
+
 import { Drawer } from '@devtron-labs/devtron-fe-common-lib'
-import LinkedCIDetailsModal from './LinkedCIDetailsModal'
+
 import { URLS } from '../../../config'
+import LinkedCIDetailsModal from './LinkedCIDetailsModal'
 import { LinkedCIDetailModalProps } from './types'
 
 const LinkedCIDetail = ({ workflows, handleClose }: LinkedCIDetailModalProps) => {

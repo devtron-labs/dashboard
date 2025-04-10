@@ -21,7 +21,9 @@ import {
     SelectPickerProps,
     useGetResourceKindsOptions,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as ICFolderColor } from '@Icons/ic-folder-color.svg'
+
 import { CreateAppFormStateType, ProjectSelectorProps } from './types'
 
 const ProjectSelector = ({ selectedProjectId, handleProjectIdChange, error }: ProjectSelectorProps) => {
