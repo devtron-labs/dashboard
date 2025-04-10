@@ -1483,7 +1483,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         ...(getRuntimeParamsPayload
                             ? { runtimeParamsPayload: getRuntimeParamsPayload(runtimeParams[currentAppId] ?? []) }
                             : {}),
-                        skipIfHibernated: skipIfHibernated,
+                        skipIfHibernated,
                     }),
                 )
             } else {

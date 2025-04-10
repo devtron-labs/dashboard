@@ -856,8 +856,7 @@ export default function BulkCDTrigger({
 
     const renderFooterSection = (): JSX.Element => {
         const isDeployButtonDisabled: boolean = isDeployDisabled()
-        const showSkipHibernatedCheckbox =
-            stage === DeploymentNodeType.CD && !!SkipHibernatedCheckbox && canFetchHelmAppStatus
+        const showSkipHibernatedCheckbox = !!SkipHibernatedCheckbox && canFetchHelmAppStatus
         return (
             <div
                 className={`dc__border-top flex ${showSkipHibernatedCheckbox ? 'dc__content-space' : 'right'} bg__primary px-20 py-16`}
