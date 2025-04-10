@@ -120,7 +120,7 @@ const KubeConfigModal = ({ clusterName, handleModalClose }: KubeConfigTippyConte
                 </div>
             </div>
 
-            {reachableClustersList.length > 0 && (
+            {reachableClustersList.length && !toggleEnabled && (
                 <div className="flex dc__gap-16 dc__content-space border__secondary--top pt-12">
                     <span className="lh-20">Set cluster context</span>
 
