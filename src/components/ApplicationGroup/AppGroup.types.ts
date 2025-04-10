@@ -185,10 +185,21 @@ export interface TriggerResponseModalBodyProps {
     envName?: string
 }
 
-export interface TriggerResponseModalFooterProps extends Pick<TriggerResponseModalBodyProps, 'isLoading' | 'responseList'> {
-    onClickRetryBuild: (appsToRetry: Record<string, boolean>) => void
+type RetryFailedType =
+    | {
+          onClickRetryDeploy: BulkCDTriggerType['onClickTriggerBulkCD']
+          skipHibernatedApps: boolean
+          onClickRetryBuild?: never
+      }
+    | {
+          onClickRetryDeploy?: never
+          skipHibernatedApps?: never
+          onClickRetryBuild: (appsToRetry: Record<string, boolean>) => void
+      }
+
+export type TriggerResponseModalFooterProps = Pick<TriggerResponseModalBodyProps, 'isLoading' | 'responseList'> & {
     closePopup: (e) => void
-}
+} & RetryFailedType
 
 export interface TriggerModalRowType {
     rowData: ResponseRowType

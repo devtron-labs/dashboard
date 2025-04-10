@@ -77,7 +77,7 @@ import 'monaco-editor'
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import YamlWorker from '../../../yaml.worker.js?worker'
 import { TAB_DATA_LOCAL_STORAGE_KEY } from '../DynamicTabs/constants'
-import { DEFAULT_GIT_OPS_FEATURE_FLAGS } from './constants'
+import { ENVIRONMENT_DATA_FALLBACK, INITIAL_ENV_DATA_STATE } from './constants'
 import { ParsedTabsData, ParsedTabsDataV1 } from '../DynamicTabs/types'
 import { SwitchThemeDialog } from '@Pages/Shared'
 import { SwitchThemeDialogProps } from '@Pages/Shared/SwitchThemeDialog/types'
@@ -152,17 +152,11 @@ export default function NavigationRoutes() {
     }
     const [environmentId, setEnvironmentId] = useState(null)
     const contextValue = useMemo(() => ({ environmentId, setEnvironmentId }), [environmentId])
-    const [environmentDataState, setEnvironmentDataState] = useState<EnvironmentDataStateType>({
-        isAirgapped: false,
-        isManifestScanningEnabled: false,
-        canOnlyViewPermittedEnvOrgLevel: false,
-        featureGitOpsFlags: structuredClone(DEFAULT_GIT_OPS_FEATURE_FLAGS),
-        deployUnhibernatedAppOnly: false,
-        devtronManagedLicensingEnabled: false,
-    })
 
     const { showThemeSwitcherDialog, handleThemeSwitcherDialogVisibilityChange, appTheme } = useTheme()
 
+    const [environmentDataState, setEnvironmentDataState] = useState<EnvironmentDataStateType>(INITIAL_ENV_DATA_STATE)
+    const [licenseInfoDialogType, setLicenseInfoDialogType] = useState<LicenseInfoDialogType>(null)
     const {
         userPreferences,
         userPreferencesError,
@@ -170,9 +164,6 @@ export default function NavigationRoutes() {
         handleUpdateUserThemePreference,
         handleUpdatePipelineRBACViewSelectedTab,
     } = useUserPreferences({ migrateUserPreferences })
-
-    const [licenseInfoDialogType, setLicenseInfoDialogType] = useState<LicenseInfoDialogType>(null)
-
 
     const { isAirgapped, isManifestScanningEnabled, canOnlyViewPermittedEnvOrgLevel, devtronManagedLicensingEnabled } =
         environmentDataState
@@ -339,37 +330,33 @@ export default function NavigationRoutes() {
     }
 
     const getEnvironmentDataValues = async (): Promise<EnvironmentDataValuesDTO> => {
-        const fallbackResponse: EnvironmentDataValuesDTO = {
-            isAirGapEnvironment: false,
-            isManifestScanningEnabled: false,
-            canOnlyViewPermittedEnvOrgLevel: false,
-            featureGitOpsFlags: structuredClone(DEFAULT_GIT_OPS_FEATURE_FLAGS),
-            deployUnhibernatedAppOnly: false,
-            devtronManagedLicensingEnabled: false,
-        }
-
         if (!getEnvironmentData) {
-            return fallbackResponse
+            return ENVIRONMENT_DATA_FALLBACK
         }
 
         try {
             const { result } = await getEnvironmentData()
-            const parsedFeatureGitOpsFlags: typeof fallbackResponse.featureGitOpsFlags = {
+            const parsedFeatureGitOpsFlags: typeof ENVIRONMENT_DATA_FALLBACK.featureGitOpsFlags = {
                 isFeatureArgoCdMigrationEnabled: result.featureGitOpsFlags?.isFeatureArgoCdMigrationEnabled || false,
                 isFeatureGitOpsEnabled: result.featureGitOpsFlags?.isFeatureGitOpsEnabled || false,
                 isFeatureUserDefinedGitOpsEnabled:
                     result.featureGitOpsFlags?.isFeatureUserDefinedGitOpsEnabled || false,
             }
             return {
-                isAirGapEnvironment: result.isAirGapEnvironment,
-                isManifestScanningEnabled: result.isManifestScanningEnabled,
-                canOnlyViewPermittedEnvOrgLevel: result.canOnlyViewPermittedEnvOrgLevel,
+                isAirGapEnvironment: result.isAirGapEnvironment ?? ENVIRONMENT_DATA_FALLBACK['isAirGapEnvironment'],
+                isManifestScanningEnabled:
+                    result.isManifestScanningEnabled ?? ENVIRONMENT_DATA_FALLBACK['isManifestScanningEnabled'],
+                canOnlyViewPermittedEnvOrgLevel:
+                    result.canOnlyViewPermittedEnvOrgLevel ??
+                    ENVIRONMENT_DATA_FALLBACK['canOnlyViewPermittedEnvOrgLevel'],
                 featureGitOpsFlags: parsedFeatureGitOpsFlags,
-                deployUnhibernatedAppOnly: result.deployUnhibernatedAppOnly ?? false,
-                devtronManagedLicensingEnabled: result.devtronManagedLicensingEnabled || false,
+                fetchHelmAppStatus: result.fetchHelmAppStatus ?? ENVIRONMENT_DATA_FALLBACK['fetchHelmAppStatus'],
+                devtronManagedLicensingEnabled:
+                    result.devtronManagedLicensingEnabled ??
+                    ENVIRONMENT_DATA_FALLBACK['devtronManagedLicensingEnabled'],
             }
         } catch {
-            return fallbackResponse
+            return ENVIRONMENT_DATA_FALLBACK
         }
     }
 
@@ -389,7 +376,7 @@ export default function NavigationRoutes() {
                 isManifestScanningEnabled: environmentDataResponse.isManifestScanningEnabled,
                 canOnlyViewPermittedEnvOrgLevel: environmentDataResponse.canOnlyViewPermittedEnvOrgLevel,
                 featureGitOpsFlags: environmentDataResponse.featureGitOpsFlags,
-                deployUnhibernatedAppOnly: environmentDataResponse.deployUnhibernatedAppOnly,
+                fetchHelmAppStatus: environmentDataResponse.fetchHelmAppStatus,
                 devtronManagedLicensingEnabled: environmentDataResponse.devtronManagedLicensingEnabled,
             })
 
@@ -496,7 +483,7 @@ export default function NavigationRoutes() {
                 handleOpenLicenseInfoDialog,
                 licenseData,
                 setLicenseData,
-                deployUnhibernatedAppOnly: environmentDataState.deployUnhibernatedAppOnly,
+                fetchHelmAppStatus: environmentDataState.fetchHelmAppStatus,
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>

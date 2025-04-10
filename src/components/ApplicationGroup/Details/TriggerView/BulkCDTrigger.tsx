@@ -112,7 +112,7 @@ export default function BulkCDTrigger({
     runtimeParamsErrorState,
     setRuntimeParamsErrorState,
 }: BulkCDTriggerType) {
-    const { deployUnhibernatedAppOnly } = useMainContext()
+    const { fetchHelmAppStatus } = useMainContext()
     const [selectedApp, setSelectedApp] = useState<BulkCDDetailType>(
         appList.find((app) => !app.warningMessage) || appList[0],
     )
@@ -129,7 +129,7 @@ export default function BulkCDTrigger({
     const [isPartialActionAllowed, setIsPartialActionAllowed] = useState(false)
     const [showResistanceBox, setShowResistanceBox] = useState(false)
     const [currentSidebarTab, setCurrentSidebarTab] = useState<CDMaterialSidebarType>(CDMaterialSidebarType.IMAGE)
-    const [skipHibernated, setSkipHibernated] = useState<boolean>(false)
+    const [skipHibernatedApps, setSkipHibernatedApps] = useState<boolean>(false)
 
     const location = useLocation()
     const history = useHistory()
@@ -356,7 +356,7 @@ export default function BulkCDTrigger({
     const renderHeaderSection = (): JSX.Element => {
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bg__primary pt-16 pr-20 pb-16 pl-20">
-                <h2 className="fs-16 fw-6 lh-1-5 m-0">Deploy to {appList[0].envName}</h2>
+                <h2 className="fs-16 fw-6 lh-1-5 m-0 dc__truncate">Deploy to {appList[0].envName}</h2>
                 <Button
                     dataTestId="bulk-cd-modal-close"
                     disabled={isLoading}
@@ -837,15 +837,13 @@ export default function BulkCDTrigger({
         setShowResistanceBox(false)
     }
 
-    const triggerBulkCD = () => onClickTriggerBulkCD(skipHibernated)
-
     const onClickStartDeploy = (e): void => {
         if (isPartialActionAllowed && BulkDeployResistanceTippy && !showResistanceBox) {
             setShowResistanceBox(true)
         } else {
             isBulkDeploymentTriggered.current = true
             stopPropagation(e)
-            triggerBulkCD()
+            onClickTriggerBulkCD(skipHibernatedApps)
             setShowResistanceBox(false)
         }
     }
@@ -858,7 +856,8 @@ export default function BulkCDTrigger({
 
     const renderFooterSection = (): JSX.Element => {
         const isDeployButtonDisabled: boolean = isDeployDisabled()
-        const showSkipHibernatedCheckbox = stage === DeploymentNodeType.CD && !!SkipHibernatedCheckbox && deployUnhibernatedAppOnly
+        const showSkipHibernatedCheckbox =
+            stage === DeploymentNodeType.CD && !!SkipHibernatedCheckbox && fetchHelmAppStatus
         return (
             <div
                 className={`dc__border-top flex ${showSkipHibernatedCheckbox ? 'dc__content-space' : 'right'} bg__primary px-20 py-16`}
@@ -869,8 +868,8 @@ export default function BulkCDTrigger({
                         envId={appList[0].envId}
                         envName={appList[0].envName}
                         appIds={appList.map((app) => app.appId)}
-                        skipHibernated={skipHibernated}
-                        setSkipHibernated={setSkipHibernated}
+                        skipHibernated={skipHibernatedApps}
+                        setSkipHibernated={setSkipHibernatedApps}
                     />
                 )}
                 <div className="dc__position-rel tippy-over">
@@ -915,7 +914,8 @@ export default function BulkCDTrigger({
                         closePopup={closeBulkCDModal}
                         responseList={responseList}
                         isLoading={isLoading}
-                        onClickRetryBuild={triggerBulkCD}
+                        onClickRetryDeploy={onClickTriggerBulkCD}
+                        skipHibernatedApps={skipHibernatedApps}
                     />
                 ) : (
                     renderFooterSection()

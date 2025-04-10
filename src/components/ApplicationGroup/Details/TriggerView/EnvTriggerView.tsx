@@ -55,6 +55,7 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
+    API_STATUS_CODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, NO_COMMIT_SELECTED, URLS, ViewType } from '../../../../config'
@@ -1545,18 +1546,18 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         })
                     } else {
                         const errorReason = response.reason
-                        if (errorReason.code === 409) {
+                        if (errorReason.code === API_STATUS_CODES.EXPECTATION_FAILED) {
                             const statusType = filterStatusType(
                                 type,
-                                BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.FAIL],
-                                BULK_VIRTUAL_RESPONSE_STATUS[BulkResponseStatus.FAIL],
-                                BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.FAIL],
+                                BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.SKIP],
+                                BULK_VIRTUAL_RESPONSE_STATUS[BulkResponseStatus.SKIP],
+                                BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.SKIP],
                             )
                             _responseList.push({
                                 appId: triggeredAppList[index].appId,
                                 appName: triggeredAppList[index].appName,
                                 statusText: statusType,
-                                status: BulkResponseStatus.FAIL,
+                                status: BulkResponseStatus.SKIP,
                                 message: errorReason.errors[0].internalMessage,
                             })
                         } else if (errorReason.code === 403 || errorReason.code === 422) {
