@@ -49,7 +49,7 @@ const KubeConfigButton = ({ clusterName, isPrimaryButton = false }: KubeConfigBu
                     dataTestId="rb-cluster-bulk-selection-kube-config"
                     variant={ButtonVariantType.borderLess}
                     ariaLabel="Get kubeconfig"
-                    size={ComponentSizeType.small}
+                    size={ComponentSizeType.xs}
                     style={ButtonStyleType.neutral}
                 />
             )}
