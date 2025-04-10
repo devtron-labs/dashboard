@@ -33,7 +33,9 @@ export const TriggerResponseModalFooter = ({
     closePopup,
     isLoading,
     responseList,
+    skipHibernatedApps,
     onClickRetryBuild,
+    onClickRetryDeploy,
 }: TriggerResponseModalFooterProps) => {
     const isShowRetryButton = responseList?.some((response) => response.status === BulkResponseStatus.FAIL)
 
@@ -45,7 +47,12 @@ export const TriggerResponseModalFooter = ({
                 appsToRetry[response.appId] = true
             }
         })
-        onClickRetryBuild(appsToRetry)
+
+        if (onClickRetryBuild) {
+            onClickRetryBuild(appsToRetry)
+        } else {
+            onClickRetryDeploy(skipHibernatedApps, appsToRetry)
+        }
     }
 
     return (
