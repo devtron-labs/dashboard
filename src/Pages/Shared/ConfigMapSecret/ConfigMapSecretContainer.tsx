@@ -99,6 +99,7 @@ import {
     getConfigMapSecretResolvedDataPayload,
     getConfigMapSecretStateLabel,
     parseConfigMapSecretSearchParams,
+    shouldHidePatchOption,
 } from './utils'
 
 import './styles.scss'
@@ -1187,7 +1188,7 @@ export const ConfigMapSecretContainer = ({
                         handleMergeStrategyChange={handleMergeStrategyChange}
                         userApprovalMetadata={draftData?.userApprovalMetadata}
                         isApprovalPolicyConfigured={isApprovalPolicyConfigured}
-                        hidePatchOption={isJob || formData.external}
+                        hidePatchOption={shouldHidePatchOption(inheritedConfigMapSecretData, isJob)}
                         isMergeStrategySelectorDisabled={resolveScopedVariables}
                         areCommentsPresent={areCommentsPresent}
                         disableAllActions={isLoading || isSubmitting || !!parsingError}
