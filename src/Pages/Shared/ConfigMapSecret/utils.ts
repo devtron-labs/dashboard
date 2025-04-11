@@ -398,6 +398,9 @@ export const getConfigMapSecretDataType = (
         : (getSelectPickerOptionByValue(getSecretDataTypeOptions(false, true), externalType).label as string)
 }
 
+export const shouldHidePatchOption = (configMapSecretData: CMSecretConfigData, isJob: boolean) =>
+    isJob || configMapSecretData?.external || false
+
 export const getExpressEditComparisonViewLHS = ({
     isDraft,
     draftData,
@@ -436,10 +439,12 @@ export const getCMCSExpressEditComparisonDataDiffConfig = ({
     lhs,
     rhs,
     onMergeStrategySelect,
+    hidePatchOption,
 }: {
     lhs: ConfigMapSecretUseFormProps
     rhs: ConfigMapSecretUseFormProps
     onMergeStrategySelect: (newValue: SelectPickerOptionType) => void
+    hidePatchOption: boolean
 }) => [
     ...(rhs.mergeStrategy
         ? [
@@ -448,13 +453,17 @@ export const getCMCSExpressEditComparisonDataDiffConfig = ({
                   lhs: {
                       displayValue: lhs?.mergeStrategy,
                   },
-                  rhs: {
-                      value: rhs.mergeStrategy,
-                      dropdownConfig: {
-                          options: MERGE_STRATEGY_OPTIONS,
-                          onChange: onMergeStrategySelect,
-                      },
-                  },
+                  rhs: hidePatchOption
+                      ? {
+                            displayValue: rhs.mergeStrategy,
+                        }
+                      : {
+                            value: rhs.mergeStrategy,
+                            dropdownConfig: {
+                                options: MERGE_STRATEGY_OPTIONS,
+                                onChange: onMergeStrategySelect,
+                            },
+                        },
               },
           ]
         : []),
