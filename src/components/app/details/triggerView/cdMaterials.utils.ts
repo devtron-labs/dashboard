@@ -17,7 +17,7 @@
 import { CDMaterialType, FilterStates } from '@devtron-labs/devtron-fe-common-lib'
 
 import { LAST_SAVED_CONFIG_OPTION, SPECIFIC_TRIGGER_CONFIG_OPTION } from './TriggerView.utils'
-import { FilterConditionViews, MATERIAL_TYPE, RegexValueType } from './types'
+import { CDMaterialState, FilterConditionViews, MATERIAL_TYPE, RegexValueType } from './types'
 
 export const getInitialState = (materialType: string, material: CDMaterialType[], searchImageTag: string) => () => ({
     isSecurityModuleInstalled: false,
@@ -55,3 +55,25 @@ export const getRegexValue = (material): Record<number, RegexValueType> =>
         },
         {} as Record<number, RegexValueType>,
     )
+
+export const getIsMaterialApproved = (
+    approvalConfigData: CDMaterialType['userApprovalMetadata']['approvalConfigData'],
+) => {
+    if (!approvalConfigData) {
+        return false
+    }
+
+    const { currentCount, requiredCount } = approvalConfigData
+    return currentCount === requiredCount
+}
+
+export const getCanDeployWithoutApproval = (state: CDMaterialState) => {
+    const isMaterialApproved =
+        state.selectedMaterial && getIsMaterialApproved(state.selectedMaterial.userApprovalMetadata.approvalConfigData)
+
+    const canDeployWithoutApproval =
+        (state.selectedMaterial && !state.selectedMaterial.userApprovalMetadata.approvalConfigData.requiredCount) ||
+        !isMaterialApproved
+
+    return canDeployWithoutApproval
+}

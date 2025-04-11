@@ -123,7 +123,7 @@
 .material-history__top {
     display: grid;
     grid-template-columns: repeat(3, auto) 1fr;
-    grid-column-gap: 10px;
+    grid-column-gap: 16px;
     justify-content: space-between;
     align-items: center;
     background-color: var(--bg-primary);
@@ -247,7 +247,7 @@
 
 .commit-hash--docker {
     white-space: nowrap;
-    background-color: var(--N100);
+    background-color: var(--bg-tertiary);
     color: var(--N900);
 }
 

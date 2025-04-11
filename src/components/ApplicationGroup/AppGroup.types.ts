@@ -93,6 +93,7 @@ export interface BulkCDDetailType
     ciPipelineId?: number
     hideImageTaggingHardDelete?: boolean
     resourceFilters?: FilterConditionsListType[]
+    isExceptionUser?: boolean
 }
 
 export interface ResponseRowType {

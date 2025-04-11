@@ -101,8 +101,8 @@ $black: 0, 0, 0;
     --bg-sidebar-modern-layout: var(--B500);
     --bg-sidebar-item-selected: rgba(#{$black}, 0.35);
     --bg-shimmer-loader: linear-gradient(90deg, var(--N200) 0%, var(--N50) 50%, var(--N200) 80%);
-    --bg-hover: rgba(#{$N100}, 0.75);
-    --bg-hover-opaque: rgb(241, 245, 247);
+    --bg-hover: rgba(64, 96, 128, 0.05);
+    --bg-hover-opaque: rgb(245, 247, 249);
     --bg-body: linear-gradient(90deg, var(--B500) 0%, var(--B500) 10%, rgb(0, 82, 165) 25%, rgb(0, 47, 94) 50%, rgb(0, 33, 65) 100%);
     --bg-segmented-control: rgba(#{$black}, 0.03);
 
@@ -204,8 +204,8 @@ $black: 0, 0, 0;
     --bg-sidebar-modern-layout: rgb(44, 45, 53);
     --bg-sidebar-item-selected: rgba(#{$white}, 0.25);
     --bg-shimmer-loader: linear-gradient(90deg, var(--N50) 0%, var(--N200) 50%, var(--N50) 80%);
-    --bg-hover: rgba(#{$white}, 0.07);
-    --bg-hover-opaque: rgb(44, 45, 53);
+    --bg-hover: rgba(229, 242, 255, 0.05);
+    --bg-hover-opaque: rgb(41, 42, 51);
     --bg-body: var(--bg-tertiary);
     --bg-segmented-control: rgba(#{$black}, 0.30);
 
