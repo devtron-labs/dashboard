@@ -39,6 +39,8 @@ import {
     getConfigMapSecretPayload,
     getSecretDataTypeOptions,
     getSelectPickerOptionByValue,
+    KeyValueTableData,
+    KeyValueTableProps,
     OverrideMergeStrategyType,
     SelectPickerOptionType,
     YAMLStringify,
@@ -397,6 +399,19 @@ export const getConfigMapSecretDataType = (
         ? CMSecretExternalType.KubernetesSecret
         : (getSelectPickerOptionByValue(getSecretDataTypeOptions(false, true), externalType).label as string)
 }
+
+export const getConfigMapSecretKeyValueTableRows = (data: KeyValueTableData[]): KeyValueTableProps['initialRows'] =>
+    data.map(({ key, value, id }) => ({
+        data: {
+            key: {
+                value: key,
+            },
+            value: {
+                value: typeof value === 'object' ? YAMLStringify(value) : value.toString(),
+            },
+        },
+        id,
+    }))
 
 export const getExpressEditComparisonViewLHS = ({
     isDraft,
