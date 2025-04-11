@@ -212,11 +212,7 @@ const DTChartSelector = ({
     restoreLastSavedTemplate,
     migratedFrom,
 }: DTChartSelectorProps) => {
-    const filteredCharts = selectedChart
-        ? charts
-              .filter((cv) => cv.name === selectedChart.name)
-              .sort((a, b) => versionComparatorBySortOrder(a.version, b.version))
-        : []
+    const filteredCharts = selectedChart ? charts.filter((cv) => cv.name === selectedChart.name) : []
 
     const onSelectChartVersion = (selected: SelectPickerOptionType) => {
         selectChart(charts.find((chart) => chart.id === selected.value) || selectedChart)
@@ -253,7 +249,7 @@ const DTChartSelector = ({
                     value={selectedOption}
                     onChange={onSelectChartVersion}
                     isSearchable={false}
-                    variant={SelectPickerVariantType.BORDER_LESS}
+                    variant={SelectPickerVariantType.COMPACT}
                     size={ComponentSizeType.small}
                     placeholder="Select version"
                     isDisabled={migratedFrom === PipelineMigratedFromType.ARGO_APPLICATION}

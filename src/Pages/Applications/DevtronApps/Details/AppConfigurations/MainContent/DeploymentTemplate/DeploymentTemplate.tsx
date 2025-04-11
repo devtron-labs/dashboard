@@ -60,6 +60,7 @@ import {
     DraftAction,
     checkIfPathIsMatching,
     FloatingVariablesSuggestions,
+    useOneTimePrompt,
     AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt, useLocation, useParams } from 'react-router-dom'
@@ -72,6 +73,7 @@ import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey
 import deleteOverrideEmptyStateImage from '@Images/no-artifact.webp'
 import {
     ConfigEditorStatesType,
+    DeploymentTemplateEditorDataStateType,
     DeploymentTemplateProps,
     DeploymentTemplateStateType,
     DeploymentTemplateURLConfigType,
@@ -113,6 +115,7 @@ import {
     getEnvOverrideDeploymentTemplate,
     getBaseDeploymentTemplate,
     getChartList,
+    deleteOverrideDeploymentTemplate,
 } from './service'
 import ConfigHeader from '../ConfigHeader'
 import './DeploymentTemplate.scss'
@@ -136,17 +139,26 @@ const getJsonPath = importComponentFromFELibrary('getJsonPath', null, 'function'
 const getLockConfigEligibleAndIneligibleChanges: GetLockConfigEligibleAndIneligibleChangesType =
     importComponentFromFELibrary('getLockConfigEligibleAndIneligibleChanges', null, 'function')
 const ProtectedDeploymentTemplateCTA = importComponentFromFELibrary('ProtectedDeploymentTemplateCTA', null, 'function')
+const ExpressEditDeploymentTemplateCTA = importComponentFromFELibrary(
+    'ExpressEditDeploymentTemplateCTA',
+    null,
+    'function',
+)
 const DeploymentTemplateLockedDiff = importComponentFromFELibrary('DeploymentTemplateLockedDiff')
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DraftComments = importComponentFromFELibrary('DraftComments')
 const DeleteOverrideDraftModal = importComponentFromFELibrary('DeleteOverrideDraftModal')
 const ProtectionViewToolbarPopupNode = importComponentFromFELibrary('ProtectionViewToolbarPopupNode', null, 'function')
 const getConfigAfterOperations = importComponentFromFELibrary('getConfigAfterOperations', null, 'function')
+const ExpressEditHeader = importComponentFromFELibrary('ExpressEditHeader', null, 'function')
+const ExpressDeleteDraftModal = importComponentFromFELibrary('ExpressDeleteDraftModal', null, 'function')
+const ExpressEditConfirmationModal = importComponentFromFELibrary('ExpressEditConfirmationModal', null, 'function')
 
 const DeploymentTemplate = ({
     respondOnSuccess = noop,
     isCiPipeline = false,
     isApprovalPolicyConfigured,
+    isExceptionUser,
     reloadEnvironments,
     environmentName,
     clusterId,
@@ -160,7 +172,7 @@ const DeploymentTemplate = ({
 
     const [state, dispatch] = useReducer<Reducer<DeploymentTemplateStateType, DeploymentTemplateActionState>>(
         deploymentTemplateReducer,
-        getDeploymentTemplateInitialState({ isSuperAdmin }),
+        getDeploymentTemplateInitialState({ isSuperAdmin, isExceptionUser }),
     )
 
     const { headerTab: urlConfigHeaderTab, updateSearchParams } = useUrlFilters<never, DeploymentTemplateURLConfigType>(
@@ -203,11 +215,28 @@ const DeploymentTemplate = ({
         areCommentsPresent,
         wasGuiOrHideLockedKeysEdited,
         migratedFrom: pipelineMigratedFrom,
+        isExpressEditView,
+        isExpressEditComparisonView,
+        showExpressDeleteDraftDialog,
+        showExpressEditConfirmationModal,
+        expressEditComparisonViewLHS,
+        showExpressEditPromptTooltip,
     } = state
 
     const manifestAbortController = useRef<AbortController>(new AbortController())
     const loadMergedTemplateAbortController = useRef<AbortController>(new AbortController())
+    const editorStateBeforeExpressEditView = useRef<DeploymentTemplateEditorDataStateType>(null)
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [])
+
+    const {
+        showPrompt,
+        handleClose: closePromptTooltip,
+        handleDoNotShowAgainClose: permanentClosePromptTooltip,
+    } = useOneTimePrompt({
+        localStorageKey: 'express-edit-prompt-tooltip',
+    })
+
+    const isExpressEdit = isExceptionUser && isExpressEditView
 
     const isDryRunView = configHeaderTab === ConfigHeaderTabType.DRY_RUN
     const isInheritedView = configHeaderTab === ConfigHeaderTabType.INHERITED
@@ -751,6 +780,15 @@ const DeploymentTemplate = ({
         await handleConfigHeaderTabChange(ConfigHeaderTabType.INHERITED)
     }
 
+    const handleNoPublishedVersionEmptyStateRedirection = () => {
+        dispatch({
+            type: DeploymentTemplateActionType.UPDATE_PROTECTION_VIEW_TAB,
+            payload: {
+                selectedProtectionViewTab: ProtectConfigTabsType.EDIT_DRAFT,
+            },
+        })
+    }
+
     const getCurrentTemplateSelectedChart = (): DeploymentChartVersionType => currentViewEditorState?.selectedChart
 
     const getCurrentTemplateGUISchema = (): string => {
@@ -1061,6 +1099,14 @@ const DeploymentTemplate = ({
         handleInitialDataLoad()
     }, [])
 
+    useEffect(() => {
+        if (areChangesPresent && !showExpressEditPromptTooltip) {
+            dispatch({
+                type: DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_PROMPT_TOOLTIP,
+            })
+        }
+    }, [areChangesPresent])
+
     const handleReload = async () => {
         updateSearchParams({
             headerTab: null,
@@ -1070,8 +1116,10 @@ const DeploymentTemplate = ({
             type: DeploymentTemplateActionType.RESET_ALL,
             payload: {
                 isSuperAdmin,
+                isExceptionUser,
             },
         })
+        editorStateBeforeExpressEditView.current = null
 
         fetchEnvConfig(+envId || BASE_CONFIGURATION_ENV_ID)
         reloadEnvironments()
@@ -1082,24 +1130,40 @@ const DeploymentTemplate = ({
      *
      * @param skipReadmeAndSchema - true only while doing handleSave
      */
-    const prepareDataToSave = (
-        skipReadmeAndSchema: boolean = false,
-        fromDeleteOverride: boolean = false,
-    ): UpdateBaseDTPayloadType | UpdateEnvironmentDTPayloadType => {
+    const prepareDataToSave = ({ skipReadmeAndSchema = false, fromDeleteOverride = false } = {}):
+        | UpdateBaseDTPayloadType
+        | UpdateEnvironmentDTPayloadType => {
         if (!envId) {
-            return getUpdateBaseDeploymentTemplatePayload(state, +appId, skipReadmeAndSchema)
+            return getUpdateBaseDeploymentTemplatePayload({
+                state,
+                appId: +appId,
+                skipReadmeAndSchema,
+                isExpressEdit,
+                resourceName: getDeploymentTemplateResourceName(environmentName),
+            })
         }
 
         // NOTE: We don't handle lock keys in case of deletion of override
         if (fromDeleteOverride) {
-            return getDeleteProtectedOverridePayload(state, +envId, skipReadmeAndSchema)
+            return getDeleteProtectedOverridePayload(
+                state,
+                +envId,
+                skipReadmeAndSchema,
+                getDeploymentTemplateResourceName(environmentName),
+            )
         }
 
-        return getUpdateEnvironmentDTPayload(state, +envId, skipReadmeAndSchema)
+        return getUpdateEnvironmentDTPayload(
+            state,
+            +envId,
+            skipReadmeAndSchema,
+            isExpressEdit,
+            getDeploymentTemplateResourceName(environmentName),
+        )
     }
 
     // NOTE: This is a hack ideally BE should not even take data for this, they should only need action
-    const handlePrepareDataToSaveForProtectedDeleteOverride = () => prepareDataToSave(false, true)
+    const handlePrepareDataToSaveForProtectedDeleteOverride = () => prepareDataToSave({ fromDeleteOverride: true })
 
     /**
      * @description - This function returns a method to save deployment template which is based on whether it is base or env override
@@ -1155,7 +1219,11 @@ const DeploymentTemplate = ({
 
         try {
             const apiService = getSaveAPIService()
-            const response = await apiService(prepareDataToSave(true), null, isTemplateView)
+            const response = await apiService(prepareDataToSave({ skipReadmeAndSchema: true }), null, isTemplateView)
+
+            if (isExpressEdit) {
+                ReactGA.event({ category: 'APP_EXPRESS_EDIT_PUBLISHED', action: 'APP_EXPRESS_EDIT_PUBLISHED' })
+            }
 
             const isLockConfigError = !!response?.result?.isLockConfigError
 
@@ -1183,8 +1251,27 @@ const DeploymentTemplate = ({
             })
         } catch (error) {
             const isProtectionError = error.code === API_STATUS_CODES.LOCKED
+            const isExceptionError = error.code === API_STATUS_CODES.CONFLICT
 
-            showError(error)
+            if (!isExceptionError) {
+                showError(error)
+            }
+
+            if (isExceptionError) {
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description:
+                        'You are not an exception user anymore. Copy your changes to avoid losing them, then refresh the page.',
+                })
+
+                dispatch({
+                    type: DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_CONFIRMATION_MODAL,
+                    payload: {
+                        showExpressEditConfirmationModal: false,
+                    },
+                })
+            }
+
             dispatch({
                 type: DeploymentTemplateActionType.SAVE_ERROR,
                 payload: {
@@ -1201,10 +1288,12 @@ const DeploymentTemplate = ({
     const handleTriggerSave = async (e: SyntheticEvent) => {
         e.preventDefault()
 
-        ReactGA.event({
-            category: 'devtronapp-configuration-dt',
-            action: editMode === ConfigurationType.GUI ? 'clicked-saved-via-gui' : 'clicked-saved-via-yaml',
-        })
+        if (!isExpressEdit) {
+            ReactGA.event({
+                category: 'devtronapp-configuration-dt',
+                action: editMode === ConfigurationType.GUI ? 'clicked-saved-via-gui' : 'clicked-saved-via-yaml',
+            })
+        }
 
         if (shouldValidateLockChanges) {
             const { ineligibleChanges } = getLockConfigEligibleAndIneligibleChanges({
@@ -1224,7 +1313,16 @@ const DeploymentTemplate = ({
             }
         }
 
-        if (isApprovalPolicyConfigured) {
+        if (isExpressEdit && isDraftAvailable) {
+            dispatch({
+                type: DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_CONFIRMATION_MODAL,
+                payload: { showExpressEditConfirmationModal: true },
+            })
+
+            return
+        }
+
+        if (isApprovalPolicyConfigured && !isExpressEdit) {
             dispatch({
                 type: DeploymentTemplateActionType.SHOW_PROTECTED_SAVE_MODAL,
             })
@@ -1235,7 +1333,49 @@ const DeploymentTemplate = ({
         await handleSaveTemplate()
     }
 
+    const handleExpressDelete = async () => {
+        dispatch({
+            type: DeploymentTemplateActionType.INITIATE_SAVE,
+        })
+
+        try {
+            await deleteOverrideDeploymentTemplate({
+                id: currentEditorTemplateData?.environmentConfig?.id,
+                appId: Number(appId),
+                envId: Number(envId),
+                isTemplateView: false,
+                resourceName: getDeploymentTemplateResourceName(environmentName),
+                isExpressEdit: true,
+            })
+            await handleReload()
+
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Restored to global',
+            })
+        } catch (err) {
+            showError(err)
+            dispatch({
+                type: DeploymentTemplateActionType.FINISH_SAVE,
+                payload: { isLockConfigError: false },
+            })
+        }
+    }
+
     const handleTriggerSaveFromLockedModal = async () => {
+        if (isExpressEdit) {
+            if (isDraftAvailable) {
+                dispatch({
+                    type: DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_CONFIRMATION_MODAL,
+                    payload: { showExpressEditConfirmationModal: true },
+                })
+            } else {
+                await handleSaveTemplate()
+            }
+
+            return
+        }
+
         if (isApprovalPolicyConfigured) {
             dispatch({
                 type: DeploymentTemplateActionType.SHOW_PROTECTED_SAVE_MODAL,
@@ -1520,6 +1660,76 @@ const DeploymentTemplate = ({
         }
     }
 
+    const handleExpressEditClick = () => {
+        editorStateBeforeExpressEditView.current = currentEditorTemplateData
+
+        dispatch({
+            type: DeploymentTemplateActionType.IS_EXPRESS_EDIT_VIEW,
+            payload: {
+                currentEditorTemplateData: {
+                    ...publishedTemplateData,
+                    isOverridden: !!envId,
+                    parsingError: '',
+                    removedPatches: [],
+                    originalTemplateState: publishedTemplateData,
+                },
+                isExpressEditView: true,
+            },
+        })
+
+        closePromptTooltip()
+    }
+
+    const handleExpressEditViewClose = () => {
+        dispatch({
+            type: DeploymentTemplateActionType.IS_EXPRESS_EDIT_VIEW,
+            payload: {
+                currentEditorTemplateData: editorStateBeforeExpressEditView.current,
+                isExpressEditView: false,
+            },
+        })
+
+        editorStateBeforeExpressEditView.current = null
+    }
+
+    const closeExpressEditPublishConfirmationModal = () => {
+        dispatch({
+            type: DeploymentTemplateActionType.SHOW_EXPRESS_EDIT_CONFIRMATION_MODAL,
+            payload: { showExpressEditConfirmationModal: false },
+        })
+    }
+
+    const toggleExpressEditComparisonView = () => {
+        dispatch({
+            type: DeploymentTemplateActionType.TOGGLE_EXPRESS_EDIT_COMPARISON_VIEW,
+        })
+    }
+
+    const openExpressDeleteDraftDialog = () => {
+        dispatch({
+            type: DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DRAFT_DIALOG,
+            payload: { showExpressDeleteDraftDialog: true },
+        })
+    }
+
+    const closeExpressDeleteDraftDialog = () => {
+        dispatch({
+            type: DeploymentTemplateActionType.SHOW_EXPRESS_DELETE_DRAFT_DIALOG,
+            payload: { showExpressDeleteDraftDialog: false },
+        })
+    }
+
+    const handleExpressEditCompareWithChange = (isDraft: boolean) => {
+        let _expressEditComparisonViewLHS = isDraft ? draftTemplateData : null
+        if (!_expressEditComparisonViewLHS && isPublishedConfigPresent) {
+            _expressEditComparisonViewLHS = publishedTemplateData
+        }
+        dispatch({
+            type: DeploymentTemplateActionType.SET_EXPRESS_EDIT_COMPARISON_VIEW_LHS,
+            payload: { expressEditComparisonViewLHS: _expressEditComparisonViewLHS },
+        })
+    }
+
     const getIsAppMetricsEnabledForCTA = (): boolean => !!currentViewEditorState?.isAppMetricsEnabled
 
     const hideToggleLockedKeysMenuOption =
@@ -1550,6 +1760,9 @@ const DeploymentTemplate = ({
             isApprovalPolicyConfigured,
             isDeleteOverrideDraftPresent: isDeleteOverrideDraft,
             migratedFrom: pipelineMigratedFrom,
+            isExceptionUser,
+            isExpressEditView,
+            handleExpressDeleteDraft: openExpressDeleteDraftDialog,
         }),
         popupNodeType,
         popupMenuNode: ProtectionViewToolbarPopupNode ? (
@@ -1648,7 +1861,12 @@ const DeploymentTemplate = ({
         }
 
         if (showNoPublishedVersionEmptyState) {
-            return <NoPublishedVersionEmptyState />
+            return (
+                <NoPublishedVersionEmptyState
+                    showRedirectButton
+                    onRedirectClick={handleNoPublishedVersionEmptyStateRedirection}
+                />
+            )
         }
 
         return (
@@ -1671,6 +1889,14 @@ const DeploymentTemplate = ({
                 latestDraft={draftTemplateData?.latestDraft}
                 isGuiSupported={isGuiSupported}
                 mergeStrategy={currentViewEditorState?.mergeStrategy}
+                isExpressEditComparisonView={isExpressEditComparisonView}
+                isAppMetricsEnabled={currentViewEditorState?.isAppMetricsEnabled}
+                handleAppMetricsToggle={handleAppMetricsToggle}
+                handleMergeStrategyChange={handleMergeStrategyChange}
+                charts={chartDetails.charts}
+                handleChartChange={handleChartChange}
+                expressEditComparisonViewLHS={expressEditComparisonViewLHS}
+                handleExpressEditCompareWithChange={handleExpressEditCompareWithChange}
             />
         )
     }
@@ -1690,11 +1916,29 @@ const DeploymentTemplate = ({
             !!chartDetails?.charts?.length &&
             window._env_.APPLICATION_METRICS_ENABLED &&
             grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED &&
-            !isCompareView
+            !isCompareView &&
+            !isExpressEditComparisonView
 
         const isAppMetricsEnabled = getIsAppMetricsEnabledForCTA()
 
         const isDisabled = isLoadingSideEffects || resolveScopedVariables || !!currentEditorTemplateData.parsingError
+
+        if (ExpressEditDeploymentTemplateCTA && isExpressEdit) {
+            return (
+                <ExpressEditDeploymentTemplateCTA
+                    isAppMetricsEnabled={isAppMetricsEnabled}
+                    showApplicationMetrics={showApplicationMetrics}
+                    isLoading={isLoadingSideEffects}
+                    selectedChart={selectedChart}
+                    isDisabled={isDisabled}
+                    toggleAppMetrics={handleAppMetricsToggle}
+                    parsingError={currentEditorTemplateData?.parsingError}
+                    restoreLastSavedYAML={restoreLastSavedTemplate}
+                    handleExpressEditPublish={handleTriggerSave}
+                    handleExpressEditCancel={handleExpressEditViewClose}
+                />
+            )
+        }
 
         if (isApprovalPolicyConfigured && ProtectedDeploymentTemplateCTA) {
             return (
@@ -1802,21 +2046,30 @@ const DeploymentTemplate = ({
 
         return (
             <>
-                <ConfigHeader
-                    configHeaderTab={configHeaderTab}
-                    handleTabChange={handleConfigHeaderTabChange}
-                    isDisabled={!!currentEditorTemplateData?.parsingError}
-                    areChangesPresent={areChangesPresent}
-                    isOverridable={!!envId}
-                    showNoOverride={showNoOverrideTab}
-                    parsingError={currentEditorTemplateData?.parsingError}
-                    restoreLastSavedYAML={restoreLastSavedTemplate}
-                    hideTabs={{
-                        dryRun: isTemplateView,
-                    }}
-                />
-
-                {!showNoOverrideEmptyState && (
+                {!isExpressEditView ? (
+                    <ConfigHeader
+                        configHeaderTab={configHeaderTab}
+                        handleTabChange={handleConfigHeaderTabChange}
+                        isDisabled={!!currentEditorTemplateData?.parsingError}
+                        areChangesPresent={areChangesPresent}
+                        isOverridable={!!envId}
+                        showNoOverride={showNoOverrideTab}
+                        parsingError={currentEditorTemplateData?.parsingError}
+                        restoreLastSavedYAML={restoreLastSavedTemplate}
+                        hideTabs={{
+                            dryRun: isTemplateView,
+                        }}
+                    />
+                ) : (
+                    ExpressEditHeader && (
+                        <ExpressEditHeader
+                            isComparisonView={isExpressEditComparisonView}
+                            toggleComparison={toggleExpressEditComparisonView}
+                            handleClose={handleExpressEditViewClose}
+                        />
+                    )
+                )}
+                {!showNoOverrideEmptyState && !isExpressEditComparisonView && (
                     <ConfigToolbar
                         baseConfigurationURL={baseDeploymentTemplateURL}
                         selectedProtectionViewTab={selectedProtectionViewTab}
@@ -1841,12 +2094,20 @@ const DeploymentTemplate = ({
                         userApprovalMetadata={draftTemplateData?.latestDraft?.userApprovalMetadata}
                         isPublishedConfigPresent={isPublishedConfigPresent}
                         restoreLastSavedYAML={restoreLastSavedTemplate}
-                        showEnableReadMeButton={isEditMode}
+                        showEnableReadMeButton={isEditMode && !isExpressEditView}
                         showDeleteOverrideDraftEmptyState={showDeleteOverrideDraftEmptyState}
                         draftId={draftTemplateData?.latestDraft?.draftId}
                         draftVersionId={draftTemplateData?.latestDraft?.draftVersionId}
                         handleReload={handleReload}
                         requestedUserId={draftTemplateData?.latestDraft?.requestedUserId}
+                        isExceptionUser={isExceptionUser}
+                        isExpressEditView={isExpressEditView}
+                        expressEditButtonConfig={{
+                            showPromptTooltip: showPrompt && showExpressEditPromptTooltip,
+                            onClick: handleExpressEditClick,
+                            onClose: closePromptTooltip,
+                            onDoNotShowAgainClose: permanentClosePromptTooltip,
+                        }}
                     >
                         {!showNoPublishedVersionEmptyState && (
                             <DeploymentTemplateOptionsHeader
@@ -1901,7 +2162,9 @@ const DeploymentTemplate = ({
         }
 
         return (
-            <div className="dc__border br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-auto bg__primary">
+            <div
+                className={`br-4 m-8 flexbox-col dc__content-space flex-grow-1 dc__overflow-auto bg__primary ${isExpressEditView ? 'border__primary-warning' : 'border__primary'}`}
+            >
                 {renderBody()}
 
                 {showDeleteOverrideDialog && (
@@ -1923,10 +2186,23 @@ const DeploymentTemplate = ({
                         resourceType={3}
                         resourceName={getDeploymentTemplateResourceName(environmentName)}
                         prepareDataToSave={handlePrepareDataToSaveForProtectedDeleteOverride}
-                        // TODO: Should rename it to handleClose after merging cm/cs
-                        toggleModal={handleToggleDeleteDraftOverrideDialog}
+                        handleClose={handleToggleDeleteDraftOverrideDialog}
                         latestDraft={draftTemplateData?.latestDraft}
                         reload={handleReload}
+                        expressDeleteConfig={{
+                            showExpressDelete: isExceptionUser,
+                            onClick: handleExpressDelete,
+                            isLoading: isLoadingSideEffects,
+                        }}
+                    />
+                )}
+
+                {ExpressDeleteDraftModal && showExpressDeleteDraftDialog && (
+                    <ExpressDeleteDraftModal
+                        isLoading={isLoadingSideEffects}
+                        handleDelete={handleExpressDelete}
+                        handleClose={closeExpressDeleteDraftDialog}
+                        isOverride={publishedTemplateData?.isOverridden}
                     />
                 )}
 
@@ -1949,15 +2225,24 @@ const DeploymentTemplate = ({
                     <SaveChangesModal
                         appId={Number(appId)}
                         envId={+envId || BASE_CONFIGURATION_ENV_ID}
+                        envName={environmentName}
                         resourceType={3}
                         resourceName={getDeploymentTemplateResourceName(environmentName)}
                         prepareDataToSave={prepareDataToSave}
-                        toggleModal={handleCloseSaveChangesModal}
+                        handleClose={handleCloseSaveChangesModal}
                         latestDraft={draftTemplateData?.latestDraft}
                         reload={handleReload}
                         showAsModal={!showLockedTemplateDiffModal}
                         saveEligibleChangesCb={showLockedTemplateDiffModal}
                         handleProcessSaveResponse={handleProcessSaveDraftResponse}
+                    />
+                )}
+
+                {ExpressEditConfirmationModal && showExpressEditConfirmationModal && (
+                    <ExpressEditConfirmationModal
+                        handleClose={closeExpressEditPublishConfirmationModal}
+                        handleSave={handleSaveTemplate}
+                        isLoading={isLoadingSideEffects}
                     />
                 )}
             </div>

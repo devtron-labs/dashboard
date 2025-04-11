@@ -32,8 +32,8 @@ import {
     UserRoleConfig,
     APIOptions,
     ActionTypes,
+    DeleteConfirmationModalProps,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { DeleteConfirmationModalProps } from '@devtron-labs/devtron-fe-common-lib/dist/Shared/Components/ConfirmationModal/types'
 import { SERVER_MODE } from '../../../config'
 import { PermissionType, UserRoleType } from './constants'
 

@@ -1,0 +1,21 @@
+@mixin border($name, $color) {
+    &__#{$name} {
+        border: 1px solid var(#{$color});
+
+        &--top {
+            border-top: 1px solid var(#{$color});
+        }
+
+        &--left {
+            border-left: 1px solid var(#{$color});
+        }
+
+        &--bottom {
+            border-bottom: 1px solid var(#{$color});
+        }
+
+        &--right {
+            border-right: 1px solid var(#{$color});
+        }
+    }
+}
