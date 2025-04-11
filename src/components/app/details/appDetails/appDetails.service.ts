@@ -14,17 +14,37 @@
  * limitations under the License.
  */
 
-import { get, ResponseType, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { get, getUrlWithSearchParams, ResponseType, trash } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '../../../../config'
 import { fetchWithFullRoute } from '../../../../services/fetchWithFullRoute'
 import { AppType } from '../../../v2/appDetails/appDetails.type'
-import { ClusterConnectionResponse, DeploymentStatusDetailsResponse, ModuleConfigResponse } from './appDetails.type'
+import {
+    ClusterConnectionResponse,
+    DataSourceDetailsDTO,
+    DataSourceDetailsQueryParams,
+    DataSourceDetailsType,
+    DeploymentStatusDetailsResponse,
+    ModuleConfigResponse,
+} from './appDetails.type'
 
-export function isDatasourceConfigured(envName: string) {
-    const root = window.__ORCHESTRATOR_ROOT__.replace('/orchestrator', '')
-    const URL = `${root}/grafana/api/datasources/id/Prometheus-${envName}`
-    return fetchWithFullRoute(URL, 'GET')
+export const getDataSourceDetailsFromEnvironment = async (envName: string): Promise<DataSourceDetailsType> => {
+    try {
+        const {
+            result: { name, id },
+        } = await get<DataSourceDetailsDTO>(
+            getUrlWithSearchParams(Routes.ENV_DATA_SOURCE_NAME, {
+                environmentName: envName,
+            } satisfies DataSourceDetailsQueryParams),
+        )
+
+        return { dataSourceName: name, dataSourceId: id }
+    } catch {
+        return {
+            dataSourceName: '',
+            dataSourceId: null,
+        }
+    }
 }
 
 export function isDatasourceHealthy(datasourceId: number | string) {
