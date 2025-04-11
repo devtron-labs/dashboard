@@ -75,6 +75,7 @@ export const ConfigMapSecretData = ({
     isExpressEditComparisonView,
     draftData,
     publishedConfigMapSecretData,
+    hidePatchOption,
     handleMergeStrategyChange,
 }: ConfigMapSecretDataProps) => {
     // USE FORM PROPS
@@ -375,6 +376,7 @@ export const ConfigMapSecretData = ({
                     lhs: expressEditComparisonViewLHS,
                     rhs: data,
                     onMergeStrategySelect,
+                    hidePatchOption,
                 })}
                 readOnly={readOnly}
                 lhsEditor={{
@@ -386,6 +388,10 @@ export const ConfigMapSecretData = ({
                 }}
                 showDraftOption={!!draftData}
                 handleCompareWithChange={handleExpressEditCompareWithChange}
+                hideEditor={{
+                    lhs: expressEditComparisonViewLHS?.external,
+                    rhs: data.external,
+                }}
             />
         ) : (
             <CodeEditor.Container overflowHidden>
@@ -506,6 +512,14 @@ export const ConfigMapSecretData = ({
         return null
     }
 
+    const externalExpressEditEditor = () => {
+        if (data.external && isExpressEditComparisonView) {
+            return renderCodeEditor({ sheBangText: '' })
+        }
+
+        return null
+    }
+
     return (
         <div className="flex-grow-1 flexbox-col dc__gap-12">
             {renderDataEditorSelector()}
@@ -516,6 +530,7 @@ export const ConfigMapSecretData = ({
                       })
                     : renderGUIEditor())}
             {externalSecretEditor()}
+            {externalExpressEditEditor()}
         </div>
     )
 }

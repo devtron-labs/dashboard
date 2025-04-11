@@ -56,6 +56,7 @@ import { ConfigMapSecretData } from './ConfigMapSecretData'
 import { CM_SECRET_COMPONENT_NAME } from './constants'
 import { renderChartVersionBelow3090NotSupportedText, renderESOInfo, renderExternalInfo } from './helpers'
 import { ConfigMapSecretFormProps } from './types'
+import { shouldHidePatchOption } from './utils'
 
 const DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE = importComponentFromFELibrary(
     'DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE',
@@ -422,6 +423,7 @@ export const ConfigMapSecretForm = ({
                                 publishedConfigMapSecretData={publishedConfigMapSecretData}
                                 isExpressEditView={isExpressEditView}
                                 isExpressEditComparisonView={isExpressEditComparisonView}
+                                hidePatchOption={shouldHidePatchOption(inheritedConfigMapSecretData, isJob)}
                                 handleMergeStrategyChange={handleMergeStrategyChange}
                             />
                         </div>
