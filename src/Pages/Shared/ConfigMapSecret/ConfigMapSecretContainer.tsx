@@ -82,6 +82,7 @@ import {
     getConfigMapSecretResolvedDataPayload,
     getConfigMapSecretStateLabel,
     parseConfigMapSecretSearchParams,
+    shouldHidePatchOption,
 } from './utils'
 import {
     CM_SECRET_COMPONENT_NAME,
@@ -1188,7 +1189,7 @@ export const ConfigMapSecretContainer = ({
                         handleMergeStrategyChange={handleMergeStrategyChange}
                         userApprovalMetadata={draftData?.userApprovalMetadata}
                         isApprovalPolicyConfigured={isApprovalPolicyConfigured}
-                        hidePatchOption={isJob || formData.external}
+                        hidePatchOption={shouldHidePatchOption(inheritedConfigMapSecretData, isJob)}
                         isMergeStrategySelectorDisabled={resolveScopedVariables}
                         areCommentsPresent={areCommentsPresent}
                         disableAllActions={isLoading || isSubmitting || !!parsingError}
