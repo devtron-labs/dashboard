@@ -13,14 +13,18 @@ import { useState } from 'react'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { URLS } from '@Config/routes'
 import { importComponentFromFELibrary } from '@Components/common'
+import ClusterForm from '@Components/cluster/ClusterForm'
 
-import { CreateClusterParams, CreateClusterTypeEnum } from './types'
+import { CreateClusterParams, CreateClusterProps, CreateClusterTypeEnum } from './types'
 import Sidebar from './Sidebar'
 import FooterComponent from './FooterComponent'
 
+import './styles.scss'
+
+// TODO: show a default component that says its a enterprise feature
 const CreateClusterForm = importComponentFromFELibrary('CreateClusterForm', null, 'function')
 
-const CreateCluster = () => {
+const CreateCluster = ({ handleReloadClusterList, clusterFormProps }: CreateClusterProps) => {
     const { type } = useParams<CreateClusterParams>()
 
     const [apiCallInProgress, setApiCallInProgress] = useState(false)
@@ -29,23 +33,50 @@ const CreateCluster = () => {
 
     const handleRedirectToClusterList = () => {
         push(URLS.GLOBAL_CONFIG_CLUSTER)
+        handleReloadClusterList()
+    }
+
+    const handleRedirectToResourceBrowser = () => {
+        push(URLS.RESOURCE_BROWSER)
     }
 
     const renderContent = () => {
         switch (type) {
             case CreateClusterTypeEnum.CONNECT_CLUSTER:
-                return 'connect cluster'
+                return (
+                    <ClusterForm
+                        key={type}
+                        {...clusterFormProps}
+                        reload={handleReloadClusterList}
+                        apiCallInProgress={apiCallInProgress}
+                        setApiCallInProgress={setApiCallInProgress}
+                        handleModalClose={handleRedirectToClusterList}
+                        FooterComponent={FooterComponent}
+                        isVirtualCluster={false}
+                    />
+                )
             case CreateClusterTypeEnum.CREATE_EKS_CLUSTER:
                 return (
                     <CreateClusterForm
                         apiCallInProgress={apiCallInProgress}
                         setApiCallInProgress={setApiCallInProgress}
-                        handleModalClose={handleRedirectToClusterList}
+                        handleModalClose={handleRedirectToResourceBrowser}
                         FooterComponent={FooterComponent}
                     />
                 )
             case CreateClusterTypeEnum.ADD_ISOLATED_CLUSTER:
-                return 'create isolated cluster'
+                return (
+                    <ClusterForm
+                        key={type}
+                        {...clusterFormProps}
+                        reload={handleReloadClusterList}
+                        apiCallInProgress={apiCallInProgress}
+                        setApiCallInProgress={setApiCallInProgress}
+                        handleModalClose={handleRedirectToClusterList}
+                        FooterComponent={FooterComponent}
+                        isVirtualCluster
+                    />
+                )
             default:
                 return <Redirect to={URLS.GLOBAL_CONFIG_CLUSTER} />
         }
@@ -59,7 +90,7 @@ const CreateCluster = () => {
             onClose={handleRedirectToClusterList}
         >
             <dialog
-                className="bg__primary h-100 cn-9 w-100 flexbox-col dc__overflow-hidden p-0"
+                className="bg__primary h-100 cn-9 w-100 flexbox-col dc__overflow-hidden p-0 create-cluster"
                 onClick={stopPropagation}
             >
                 <header className="px-20 py-12 lh-24 flexbox dc__content-space dc__align-items-center dc__border-bottom">
@@ -83,7 +114,7 @@ const CreateCluster = () => {
                     />
                 </header>
 
-                <div className="flexbox flex-grow-1 dc__overflow-hidden">
+                <div className="flexbox flex-grow-1 dc__overflow-hidden create-cluster__body">
                     <Sidebar />
 
                     <div className="bg__tertiary flex-grow-1 flexbox-col dc__overflow-auto p-20 dc__gap-16">

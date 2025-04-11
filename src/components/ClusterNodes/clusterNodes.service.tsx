@@ -39,8 +39,8 @@ export const patchClusterNote = (requestPayload: ClusteNotePatchRequest): Promis
 export const patchApplicationNote = (requestPayload: ClusteNotePatchRequest): Promise<ClusterNoteResponse> =>
     put(Routes.APPLICATION_NOTE, requestPayload)
 
-export const getClusterList = (signal: AbortSignal): Promise<ClusterListResponse> =>
-    get(Routes.CLUSTER_LIST, { signal })
+export const getClusterList = (abortControllerRef?: APIOptions['abortControllerRef']): Promise<ClusterListResponse> =>
+    get(Routes.CLUSTER_LIST, { abortControllerRef })
 
 /** @deprecated - use `getClusterListRaw` from fe-common-lib */
 export const getClusterListMin = (): Promise<ClusterListResponse> => get(COMMON_ROUTES.CLUSTER_LIST_RAW)

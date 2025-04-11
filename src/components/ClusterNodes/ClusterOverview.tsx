@@ -56,6 +56,7 @@ import { importComponentFromFELibrary } from '../common'
 import { getUpgradeCompatibilityTippyConfig } from '@Components/ResourceBrowser/ResourceList/utils'
 
 const Catalog = importComponentFromFELibrary('Catalog', null, 'function')
+const ClusterConfig = importComponentFromFELibrary('ClusterConfig', null, 'function')
 const MigrateClusterVersionInfoBar = importComponentFromFELibrary('MigrateClusterVersionInfoBar', null, 'function')
 
 /* TODO: move into utils */
@@ -507,6 +508,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
                 <div className="dc__mxw-1068 flex-grow-1 mw-none">
                     {renderCardDetails()}
                     {renderClusterError()}
+                    {ClusterConfig && <ClusterConfig clusterName={clusterCapacityData.name} clusterId={Number(clusterId)} />}
                     {Catalog && <Catalog resourceId={clusterId} resourceType={ResourceKindType.cluster} />}
                     <GenericDescription
                         isClusterTerminal

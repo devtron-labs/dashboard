@@ -16,6 +16,8 @@
 
 import React, { useState } from 'react'
 import { Button, ButtonComponentType, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
+import { generatePath } from 'react-router-dom'
+import { CreateClusterTypeEnum } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
 import { URLS } from '../../config'
 import { CreateResource } from './ResourceList/CreateResource'
 import { CreateResourceButtonType, CreateResourceType } from './Types'
@@ -58,7 +60,7 @@ export const AddClusterButton = (): JSX.Element => (
             size={ComponentSizeType.small}
             startIcon={<Add />}
             linkProps={{
-                to: URLS.GLOBAL_CONFIG_CREATE_CLUSTER,
+                to: generatePath(URLS.GLOBAL_CONFIG_CREATE_CLUSTER, { type: CreateClusterTypeEnum.CREATE_EKS_CLUSTER }),
                 target: '_blank',
             }}
         />

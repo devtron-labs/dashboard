@@ -252,7 +252,9 @@ class ClusterList extends Component<ClusterListProps, any> {
                     <Button
                         dataTestId="add_cluster_button"
                         linkProps={{
-                            to: generatePath(URLS.GLOBAL_CONFIG_CREATE_CLUSTER, { type: CreateClusterTypeEnum.CONNECT_CLUSTER }),
+                            to: generatePath(URLS.GLOBAL_CONFIG_CREATE_CLUSTER, {
+                                type: CreateClusterTypeEnum.CONNECT_CLUSTER,
+                            }),
                         }}
                         component={ButtonComponentType.link}
                         startIcon={<Add />}
@@ -278,7 +280,33 @@ class ClusterList extends Component<ClusterListProps, any> {
                 )}
 
                 <Route path={URLS.GLOBAL_CONFIG_CREATE_CLUSTER}>
-                    <CreateCluster />
+                    <CreateCluster
+                        handleReloadClusterList={this.initialise}
+                        clusterFormProps={{
+                            ...getSSHConfig(this.state),
+                            cluster_name: this.state.cluster_name,
+                            server_url: this.state.server_url,
+                            active: true,
+                            config: {},
+                            reload: this.initialise,
+                            prometheus_url: '',
+                            prometheusAuth: this.state.prometheus,
+                            defaultClusterComponent: this.state.defaultClusterComponent,
+                            isTlsConnection: this.state.isTlsConnection,
+                            isClusterDetails: this.state.isClusterDetails,
+                            proxyUrl: this.state.proxyUrl,
+                            isConnectedViaProxy: this.state.isConnectedViaProxy,
+                            isConnectedViaSSHTunnel: this.state.isConnectedViaSSHTunnel,
+                            toggleCheckTlsConnection: this.toggleCheckTlsConnection,
+                            setTlsConnectionFalse: this.setTlsConnectionFalse,
+                            toggleKubeConfigFile: this.toggleKubeConfigFile,
+                            isKubeConfigFile: this.state.isKubeConfigFile,
+                            toggleClusterDetails: this.toggleClusterDetails,
+                            handleCloseCreateClusterForm: this.handleRedirectToClusterList,
+                            isVirtualCluster: false,
+                            isProd: false,
+                        }}
+                    />
                 </Route>
 
                 <Route
