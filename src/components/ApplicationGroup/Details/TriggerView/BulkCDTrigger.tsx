@@ -498,7 +498,7 @@ export default function BulkCDTrigger({
         if (!!warningMessage && !app.showPluginWarning) {
             return (
                 <div className="flex left top dc__gap-4">
-                    <Error className="icon-dim-12 dc__no-shrink mt-5 warning-icon-y7" />
+                    <Icon name="ic-warning" color={null} size={14} />
                     <span className="fw-4 fs-12 cy-7 dc__truncate">{warningMessage}</span>
                 </div>
             )
@@ -880,7 +880,12 @@ export default function BulkCDTrigger({
             <div className="dc__border-top flex right bg__primary px-20 py-16">
                 <div className="dc__position-rel tippy-over">
                     {!isDeployButtonDisabled && stage === DeploymentNodeType.CD && !isLoading ? (
-                        <AnimatedDeployButton onButtonClick={onClickStartDeploy} isVirtualEnvironment={false} canDeployWithoutApproval={canDeployWithoutApproval} isBulkCDTrigger />
+                        <AnimatedDeployButton
+                            onButtonClick={onClickStartDeploy}
+                            isVirtualEnvironment={false}
+                            canDeployWithoutApproval={canDeployWithoutApproval}
+                            isBulkCDTrigger
+                        />
                     ) : (
                         <Button
                             dataTestId="deploy-button"
