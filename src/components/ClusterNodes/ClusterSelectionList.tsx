@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useMemo } from 'react'
-import { useHistory, useLocation, Link } from 'react-router-dom'
+import { useHistory, useLocation, Link, generatePath } from 'react-router-dom'
 import {
     GenericEmptyState,
     SearchBar,
@@ -116,8 +116,8 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     const getOpenTerminalHandler = (clusterData) => () =>
         history.push(`${location.pathname}/${clusterData.id}/all/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`)
 
-    const hideDataOnLoad = (value) => {
-        if (clusterListLoader) {
+    const hideDataOnLoadOrIfInstallationCluster = (value, clusterData: ClusterDetail) => {
+        if (clusterListLoader || clusterData.isInstallationCluster) {
             return null
         }
         return value
@@ -131,6 +131,14 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
         return <ClusterMapInitialStatus errorInNodeListing={errorInNodeListing} />
     }
 
+    const getClusterNameLinkTarget = (clusterData: ClusterDetail) => {
+        if (clusterData.isInstallationCluster) {
+            return generatePath(URLS.RESOURCE_BROWSER_INSTALLATION_CLUSTER, { installationId: clusterData.id })
+        }
+
+        return `${URLS.RESOURCE_BROWSER}/${clusterData.id}/${ALL_NAMESPACE_OPTION.value}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
+    }
+
     const renderClusterRow = (clusterData: ClusterDetail): JSX.Element => {
         const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
         return (
@@ -140,62 +148,70 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                  ${clusterListLoader ? 'show-shimmer-loading dc__align-items-center' : ''}`}
             >
                 <div data-testid={`cluster-row-${clusterData.name}`} className="flex left dc__overflow-hidden">
-                    <Link
-                        className="dc__ellipsis-right dc__no-decor lh-24"
-                        to={`${URLS.RESOURCE_BROWSER}/${clusterData.id}/${ALL_NAMESPACE_OPTION.value}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`}
-                    >
+                    <Link className="dc__ellipsis-right dc__no-decor lh-24" to={getClusterNameLinkTarget(clusterData)}>
                         {clusterData.name}
                     </Link>
                     {/* NOTE: visible-hover plays with display prop; therefore need to set display: flex on a new div */}
-                    <div className="cursor dc__visible-hover--child ml-8">
-                        <div className="flexbox dc__align-items-center dc__gap-4">
-                            {!!clusterData.nodeCount && !clusterListLoader && (
-                                <Tooltip alwaysShowTippyOnHover content="View terminal">
-                                    <div className="flex">
-                                        <TerminalIcon
-                                            data-testid={`cluster-terminal-${clusterData.name}`}
-                                            className="icon-dim-24 p-4 dc__no-shrink dc__hover-n100 br-4 dc__hover-color-n800 fill"
-                                            onClick={getOpenTerminalHandler(clusterData)}
-                                        />
-                                    </div>
-                                </Tooltip>
-                            )}
+                    {!clusterData.isInstallationCluster && (
+                        <div className="cursor dc__visible-hover--child ml-8">
+                            <div className="flexbox dc__align-items-center dc__gap-4">
+                                {!!clusterData.nodeCount && !clusterListLoader && (
+                                    <Tooltip alwaysShowTippyOnHover content="View terminal">
+                                        <div className="flex">
+                                            <TerminalIcon
+                                                data-testid={`cluster-terminal-${clusterData.name}`}
+                                                className="icon-dim-24 p-4 dc__no-shrink dc__hover-n100 br-4 dc__hover-color-n800 fill"
+                                                onClick={getOpenTerminalHandler(clusterData)}
+                                            />
+                                        </div>
+                                    </Tooltip>
+                                )}
 
-                            {CompareClusterButton && clusterData.status !== ClusterStatusType.CONNECTION_FAILED && (
-                                <CompareClusterButton sourceClusterId={clusterData.id} isIconButton />
-                            )}
+                                {CompareClusterButton && clusterData.status !== ClusterStatusType.CONNECTION_FAILED && (
+                                    <CompareClusterButton sourceClusterId={clusterData.id} isIconButton />
+                                )}
 
-                            {KubeConfigButton && <KubeConfigButton clusterName={clusterData.name} />}
+                                {KubeConfigButton && <KubeConfigButton clusterName={clusterData.name} />}
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
 
                 {renderClusterStatus(clusterData)}
 
                 <div className="child-shimmer-loading">
-                    {hideDataOnLoad(
+                    {hideDataOnLoadOrIfInstallationCluster(
                         clusterData.isProd ? CLUSTER_PROD_TYPE.PRODUCTION : CLUSTER_PROD_TYPE.NON_PRODUCTION,
+                        clusterData,
                     )}
                 </div>
-                <div className="child-shimmer-loading">{hideDataOnLoad(clusterData.nodeCount)}</div>
+                <div className="child-shimmer-loading">
+                    {hideDataOnLoadOrIfInstallationCluster(clusterData.nodeCount, clusterData)}
+                </div>
                 <div className="child-shimmer-loading">
                     {errorCount > 0 &&
-                        hideDataOnLoad(
+                        hideDataOnLoadOrIfInstallationCluster(
                             <>
                                 <Error className="mr-3 icon-dim-16 dc__position-rel top-3" />
                                 <span className="cr-5">{errorCount}</span>
                             </>,
+                            clusterData,
                         )}
                 </div>
                 <div className="flexbox child-shimmer-loading">
-                    {hideDataOnLoad(
+                    {hideDataOnLoadOrIfInstallationCluster(
                         <Tooltip content={clusterData.serverVersion}>
                             <span className="dc__truncate">{clusterData.serverVersion}</span>
                         </Tooltip>,
+                        clusterData,
                     )}
                 </div>
-                <div className="child-shimmer-loading">{hideDataOnLoad(clusterData.cpu?.capacity)}</div>
-                <div className="child-shimmer-loading">{hideDataOnLoad(clusterData.memory?.capacity)}</div>
+                <div className="child-shimmer-loading">
+                    {hideDataOnLoadOrIfInstallationCluster(clusterData.cpu?.capacity, clusterData)}
+                </div>
+                <div className="child-shimmer-loading">
+                    {hideDataOnLoadOrIfInstallationCluster(clusterData.memory?.capacity, clusterData)}
+                </div>
             </div>
         )
     }

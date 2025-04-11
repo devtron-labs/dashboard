@@ -15,8 +15,9 @@
  */
 
 import React, { useState } from 'react'
-import { NavLink } from 'react-router-dom'
-import { Button, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
+import { Button, ButtonComponentType, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
+import { generatePath } from 'react-router-dom'
+import { CreateClusterTypeEnum } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
 import { URLS } from '../../config'
 import { CreateResource } from './ResourceList/CreateResource'
 import { CreateResourceButtonType, CreateResourceType } from './Types'
@@ -52,13 +53,17 @@ export const renderCreateResourceButton = (clusterId: string, callback: CreateRe
 
 export const AddClusterButton = (): JSX.Element => (
     <div>
-        <NavLink
-            className="flex dc__no-decor cta small h-28 pl-8 pr-10 pt-5 pb-5 lh-n fcb-5"
-            to={URLS.GLOBAL_CONFIG_CLUSTER}
-        >
-            <Add data-testid="add_cluster_button" className="icon-dim-16 mr-4 fcb-5 dc__vertical-align-middle" />
-            Add cluster
-        </NavLink>
+        <Button
+            dataTestId="add_cluster_button"
+            text="Connect Cluster"
+            component={ButtonComponentType.link}
+            size={ComponentSizeType.small}
+            startIcon={<Add />}
+            linkProps={{
+                to: generatePath(URLS.GLOBAL_CONFIG_CREATE_CLUSTER, { type: CreateClusterTypeEnum.CREATE_EKS_CLUSTER }),
+                target: '_blank',
+            }}
+        />
         <span className="dc__divider" />
     </div>
 )
