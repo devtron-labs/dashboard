@@ -172,10 +172,8 @@ const DeploymentTemplateForm = ({
                       },
                   }
                 : {
-                      displayValue:
-                          expressEditComparisonViewLHS &&
-                          (expressEditComparisonViewLHS.isAppMetricsEnabled ? 'Enabled' : 'Disabled'),
-                      value: expressEditComparisonViewLHS?.isAppMetricsEnabled ?? false,
+                      displayValue: isAppMetricsEnabled ? 'Enabled' : 'Disabled',
+                      value: isAppMetricsEnabled,
                   },
         },
     ]
