@@ -30,7 +30,7 @@ const Sidebar = () => {
     return (
         <div className="w-250 p-20 flexbox-col dc__gap-24 dc__no-shrink dc__overflow-auto">
             <div className="flexbox-col">
-                {Object.entries(SIDEBAR_CONFIG).map(([key, { title, iconName }]) => {
+                {Object.entries(SIDEBAR_CONFIG).map(([key, { title, iconName, isEnterprise }]) => {
                     const isSelected = type.toLowerCase() === key.toLowerCase()
 
                     return (
@@ -42,9 +42,13 @@ const Sidebar = () => {
                                 <Icon name={iconName as IconName} color={isSelected ? 'B500' : 'N600'} />
                             </span>
 
-                            <span className={`fs-13 lh-20 dc__truncate ${isSelected ? 'cb-5 fw-6' : 'cn-9'}`}>
+                            <span
+                                className={`fs-13 lh-20 dc__truncate flex-grow-1 ${isSelected ? 'cb-5 fw-6' : 'cn-9'}`}
+                            >
                                 {title}
                             </span>
+
+                            {isEnterprise && <Icon name="ic-enterprise-feat" color="Y700" />}
                         </NavLink>
                     )
                 })}

@@ -15,6 +15,7 @@ import { URLS } from '@Config/routes'
 import { importComponentFromFELibrary } from '@Components/common'
 import ClusterForm from '@Components/cluster/ClusterForm'
 
+import EnterpriseTrialDialog from '@Components/EnterpriseTrialDialog'
 import { CreateClusterParams, CreateClusterProps, CreateClusterTypeEnum } from './types'
 import Sidebar from './Sidebar'
 import FooterComponent from './FooterComponent'
@@ -56,7 +57,7 @@ const CreateCluster = ({ handleReloadClusterList, clusterFormProps }: CreateClus
                     />
                 )
             case CreateClusterTypeEnum.CREATE_EKS_CLUSTER:
-                return (
+                return CreateClusterForm ? (
                     <CreateClusterForm
                         apiCallInProgress={apiCallInProgress}
                         setApiCallInProgress={setApiCallInProgress}
@@ -64,9 +65,14 @@ const CreateCluster = ({ handleReloadClusterList, clusterFormProps }: CreateClus
                         handleRedirectToClusterInstallationStatus={handleRedirectToClusterInstallationStatus}
                         FooterComponent={FooterComponent}
                     />
+                ) : (
+                    <EnterpriseTrialDialog
+                        featureTitle="EKS Cluster"
+                        featureDescription="With Devtron, you can effortlessly create an Amazon EKS cluster."
+                    />
                 )
             case CreateClusterTypeEnum.ADD_ISOLATED_CLUSTER:
-                return (
+                return CreateClusterForm ? (
                     <ClusterForm
                         key={type}
                         {...clusterFormProps}
@@ -76,6 +82,11 @@ const CreateCluster = ({ handleReloadClusterList, clusterFormProps }: CreateClus
                         handleModalClose={handleRedirectToClusterList}
                         FooterComponent={FooterComponent}
                         isVirtualCluster
+                    />
+                ) : (
+                    <EnterpriseTrialDialog
+                        featureTitle="Isolated Cluster"
+                        featureDescription="An isolated cluster in Devtron is an air-gapped Kubernetes cluster with restricted network access."
                     />
                 )
             default:
