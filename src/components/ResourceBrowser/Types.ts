@@ -79,6 +79,7 @@ export interface ClusterSelectionType {
     clusterListLoader: boolean
     initialLoading: boolean
     refreshData: () => void
+    parentRef: React.RefObject<HTMLDivElement>
 }
 
 export interface CreateResourceType {

@@ -293,3 +293,9 @@ export interface ClusterOverviewProps {
 export interface ClusterMapInitialStatusType {
     errorInNodeListing: string
 }
+
+export interface ClusterListRowTypes {
+    clusterData: ClusterDetail
+    index: number
+    clusterListLoader: boolean
+}
