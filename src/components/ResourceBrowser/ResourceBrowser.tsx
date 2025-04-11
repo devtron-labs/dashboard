@@ -26,7 +26,7 @@ import { DEFAULT_CLUSTER_ID } from '@Components/cluster/cluster.type'
 
 import { sortObjectArrayAlphabetically } from '../common'
 import ClusterSelectionList from '../ClusterNodes/ClusterSelectionList'
-import { AddClusterButton } from './PageHeader.buttons'
+import { NewClusterButton } from './PageHeader.buttons'
 import { getClusterListing } from './ResourceBrowser.service'
 
 const ResourceBrowser: React.FC = () => {
@@ -78,7 +78,7 @@ const ResourceBrowser: React.FC = () => {
             <PageHeader
                 isBreadcrumbs={false}
                 headerName="Kubernetes Resource Browser"
-                renderActionButtons={AddClusterButton}
+                renderActionButtons={NewClusterButton}
             />
             {renderContent()}
         </div>

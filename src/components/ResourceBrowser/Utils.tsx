@@ -18,6 +18,7 @@ import React from 'react'
 import queryString from 'query-string'
 import { useLocation } from 'react-router-dom'
 import {
+    ALL_NAMESPACE_OPTION,
     ApiResourceGroupType,
     DATE_TIME_FORMAT_STRING,
     GVKType,
@@ -406,3 +407,10 @@ export const parseNodeList = (response: ResponseType<NodeRowDetail[]>): Response
         }),
     },
 })
+
+export const getClusterChangeRedirectionUrl = (isInstallationCluster: boolean, clusterId: string) =>
+    isInstallationCluster
+        ? `${URLS.RESOURCE_BROWSER}/installation-cluster/${clusterId}`
+        : `${URLS.RESOURCE_BROWSER}/${clusterId}/${
+              ALL_NAMESPACE_OPTION.value
+          }/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`

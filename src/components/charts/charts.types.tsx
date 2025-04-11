@@ -16,6 +16,7 @@
 
 import { RouteComponentProps } from 'react-router-dom'
 import { OptionType, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { Dispatch, SetStateAction } from 'react'
 
 export interface ChartValuesType {
     kind: 'DEFAULT' | 'TEMPLATE' | 'DEPLOYED' | 'EXISTING' | null
@@ -402,6 +403,8 @@ export interface ChartHeaderFilterProps {
     appStoreName: string
     isGrid: boolean
     setIsGrid: (isGrid: boolean) => void
+    chartCategoryIds: string[]
+    setChartCategoryIds: Dispatch<SetStateAction<string[]>>
 }
 
 export interface DeleteInstalledChartParamsType {

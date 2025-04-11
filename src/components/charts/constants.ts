@@ -34,7 +34,7 @@ export const APP_NAME_TAKEN = 'App name already taken'
 
 export enum CHART_KEYS {
     CHART_REPO = 'chart-repo',
+    CHART_CATEGORY = 'chart-category',
     DEPRECATED = 'deprecated',
     SEARCH = 'search',
-    CLEAR = 'clear',
 }

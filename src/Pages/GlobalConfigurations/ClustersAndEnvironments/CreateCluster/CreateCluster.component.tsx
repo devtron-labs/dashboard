@@ -8,7 +8,7 @@ import {
     Drawer,
     stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Prompt, Redirect, useHistory, useParams } from 'react-router-dom'
+import { generatePath, Prompt, Redirect, useHistory, useParams } from 'react-router-dom'
 import { useState } from 'react'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { URLS } from '@Config/routes'
@@ -36,8 +36,8 @@ const CreateCluster = ({ handleReloadClusterList, clusterFormProps }: CreateClus
         handleReloadClusterList()
     }
 
-    const handleRedirectToResourceBrowser = () => {
-        push(URLS.RESOURCE_BROWSER)
+    const handleRedirectToClusterInstallationStatus = (installationId: string) => {
+        push(generatePath(URLS.RESOURCE_BROWSER_INSTALLATION_CLUSTER, { installationId }))
     }
 
     const renderContent = () => {
@@ -60,7 +60,8 @@ const CreateCluster = ({ handleReloadClusterList, clusterFormProps }: CreateClus
                     <CreateClusterForm
                         apiCallInProgress={apiCallInProgress}
                         setApiCallInProgress={setApiCallInProgress}
-                        handleModalClose={handleRedirectToResourceBrowser}
+                        handleModalClose={handleRedirectToClusterList}
+                        handleRedirectToClusterInstallationStatus={handleRedirectToClusterInstallationStatus}
                         FooterComponent={FooterComponent}
                     />
                 )

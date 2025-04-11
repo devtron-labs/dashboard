@@ -51,11 +51,11 @@ export const renderCreateResourceButton = (clusterId: string, callback: CreateRe
     <CreateResourceButton closeModal={callback} clusterId={clusterId} />
 )
 
-export const AddClusterButton = (): JSX.Element => (
+export const NewClusterButton = (): JSX.Element => (
     <div>
         <Button
             dataTestId="add_cluster_button"
-            text="Connect Cluster"
+            text="New Cluster"
             component={ButtonComponentType.link}
             size={ComponentSizeType.small}
             startIcon={<Add />}

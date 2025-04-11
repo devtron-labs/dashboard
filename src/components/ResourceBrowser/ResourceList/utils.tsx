@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { logExceptionToSentry, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { ClusterDetail, logExceptionToSentry, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { sortObjectArrayAlphabetically } from '@Components/common'
 import {
     TARGET_K8S_VERSION_SEARCH_KEY,
     LOCAL_STORAGE_EXISTS,
@@ -22,7 +23,7 @@ import {
     OPTIONAL_NODE_LIST_HEADERS,
 } from '../Constants'
 import { ResourceListUrlFiltersType } from './types'
-import { K8SResourceListType } from '../Types'
+import { ClusterOptionType, K8SResourceListType } from '../Types'
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
     targetK8sVersion: searchParams.get(TARGET_K8S_VERSION_SEARCH_KEY),
@@ -87,3 +88,16 @@ export const getFirstResourceFromKindResourceMap = (
         (resourceGroup) => resourceGroup.gvk.Kind?.toLowerCase() === kind?.toLowerCase(),
     )
 }
+
+export const getClusterOptions = (clusterList: ClusterDetail[]): ClusterOptionType[] =>
+    clusterList
+        ? sortObjectArrayAlphabetically(clusterList, 'name')
+              .filter(({ isVirtualCluster }) => !isVirtualCluster)
+              .map(({ name, id, nodeErrors, isProd, isInstallationCluster }) => ({
+                  label: name,
+                  value: id.toString(),
+                  description: nodeErrors,
+                  isProd,
+                  isInstallationCluster,
+              }))
+        : []

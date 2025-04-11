@@ -29,7 +29,6 @@ import {
     getClusterListRaw,
     ClusterDetail,
     InstallationClusterConfigType,
-    InstallationClusterStatus,
     ClusterStatusType,
     APIOptions,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -135,6 +134,8 @@ export const getClusterListing = async (
     try {
         const { result: rawClusterList } = await (minified ? getClusterListRaw : getClusterList)(abortControllerRef)
 
+        const clusterListNameSet = new Set(rawClusterList.map(({ name }) => name))
+
         const installationClustersList: InstallationClusterConfigType[] = await getInstallationClusterConfigs()
 
         if (!installationClustersList.length) {
@@ -143,10 +144,13 @@ export const getClusterListing = async (
 
         return rawClusterList.concat(
             installationClustersList
-                .filter(
-                    ({ status }) =>
-                        status !== InstallationClusterStatus.Installed && status !== InstallationClusterStatus.Updating,
-                )
+                .filter(({ name }) => {
+                    if (!clusterListNameSet.has(name)) {
+                        return true
+                    }
+
+                    return false
+                })
                 .map(({ installationId, name }) => ({
                     id: installationId,
                     name,
