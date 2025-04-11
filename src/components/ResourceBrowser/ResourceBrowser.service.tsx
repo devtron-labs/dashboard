@@ -136,7 +136,9 @@ export const getClusterListing = async (
 
         const clusterListNameSet = new Set(rawClusterList.map(({ name }) => name))
 
-        const installationClustersList: InstallationClusterConfigType[] = await getInstallationClusterConfigs()
+        const installationClustersList: InstallationClusterConfigType[] = getInstallationClusterConfigs
+            ? await getInstallationClusterConfigs()
+            : []
 
         if (!installationClustersList.length) {
             return rawClusterList
