@@ -20,6 +20,7 @@ import {
     Pagination,
     SortableTableHeaderCell,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ExposureListProps } from '../security.types'
 
 const ExposureList = ({

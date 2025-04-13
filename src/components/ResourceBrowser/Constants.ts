@@ -15,10 +15,12 @@
  */
 
 import { NO_MATCHING_RESULT, Nodes } from '@devtron-labs/devtron-fe-common-lib'
+
 import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg'
+
 import { AggregationKeys, AggregationKeysType } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
-import { RBSidebarKeysType, NODE_SEARCH_KEYS } from './Types'
+import { NODE_SEARCH_KEYS, RBSidebarKeysType } from './Types'
 
 export const FILTER_SELECT_COMMON_STYLES = {
     ...multiSelectStyles,

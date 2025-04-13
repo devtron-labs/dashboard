@@ -15,6 +15,7 @@
  */
 
 import { Tooltip } from '@devtron-labs/devtron-fe-common-lib'
+
 import { InteractiveCellTextProps } from './types'
 
 export const InteractiveCellText = ({ text, onClickHandler, dataTestId }: InteractiveCellTextProps) => (

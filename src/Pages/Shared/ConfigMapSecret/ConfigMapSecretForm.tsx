@@ -21,9 +21,16 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     Checkbox,
+    checkIfPathIsMatching,
+    CM_SECRET_STATE,
     CMSecretExternalType,
     ComponentSizeType,
+    configMapDataTypeOptions,
+    ConfigMapSecretDataTypeOptionType,
+    configMapSecretMountDataMap,
+    ConfigMapSecretReadyOnly,
     CustomInput,
+    getSecretDataTypeOptions,
     getSelectPickerOptionByValue,
     hasESO,
     hasHashiOrAWS,
@@ -31,31 +38,25 @@ import {
     Progressing,
     RadioGroup,
     RadioGroupItem,
+    renderHashiOrAwsDeprecatedInfo,
     SelectPicker,
     stopPropagation,
     usePrompt,
-    checkIfPathIsMatching,
-    CM_SECRET_STATE,
-    configMapSecretMountDataMap,
-    configMapDataTypeOptions,
-    ConfigMapSecretDataTypeOptionType,
-    renderHashiOrAwsDeprecatedInfo,
-    getSecretDataTypeOptions,
-    ConfigMapSecretReadyOnly,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ROLLOUT_DEPLOYMENT } from '@Config/constants'
 import {
     importComponentFromFELibrary,
     isChartRef3090OrBelow,
     isVersionLessThanOrEqualToTarget,
 } from '@Components/common'
-
+import { ROLLOUT_DEPLOYMENT } from '@Config/constants'
 import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
+
+import { ConfigMapSecretData } from './ConfigMapSecretData'
 import { CM_SECRET_COMPONENT_NAME } from './constants'
 import { renderChartVersionBelow3090NotSupportedText, renderESOInfo, renderExternalInfo } from './helpers'
 import { ConfigMapSecretFormProps } from './types'
-import { ConfigMapSecretData } from './ConfigMapSecretData'
+import { shouldHidePatchOption } from './utils'
 
 const DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE = importComponentFromFELibrary(
     'DISABLE_DATA_TYPE_CHANGE_HELPER_MESSAGE',
@@ -422,6 +423,7 @@ export const ConfigMapSecretForm = ({
                                 publishedConfigMapSecretData={publishedConfigMapSecretData}
                                 isExpressEditView={isExpressEditView}
                                 isExpressEditComparisonView={isExpressEditComparisonView}
+                                hidePatchOption={shouldHidePatchOption(inheritedConfigMapSecretData, isJob)}
                                 handleMergeStrategyChange={handleMergeStrategyChange}
                             />
                         </div>

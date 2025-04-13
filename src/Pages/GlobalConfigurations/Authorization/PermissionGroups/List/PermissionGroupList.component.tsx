@@ -15,22 +15,24 @@
  */
 
 import { useMemo, useRef, useState } from 'react'
+
 import {
+    abortPreviousRequests,
+    BulkSelectionIdentifiersType,
+    BulkSelectionProvider,
+    getIsRequestAborted,
+    Icon,
+    SelectAllDialogStatus,
     SortingOrder,
     useAsync,
     useUrlFilters,
-    abortPreviousRequests,
-    getIsRequestAborted,
-    SelectAllDialogStatus,
-    BulkSelectionProvider,
-    BulkSelectionIdentifiersType,
-    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { getPermissionGroupList } from '../../authorization.service'
-import { SortableKeys } from './constants'
-import { PermissionGroup } from '../../types'
-import PermissionGroupContainer from './PermissionGroupContainer'
 import { BulkSelectionModalConfig, BulkSelectionModalTypes } from '../../Shared/components/BulkSelection'
+import { PermissionGroup } from '../../types'
+import { SortableKeys } from './constants'
+import PermissionGroupContainer from './PermissionGroupContainer'
 import { PermissionGroupRowProps } from './types'
 
 export const PermissionGroupIcon = ({

@@ -15,6 +15,7 @@
  */
 
 import React from 'react'
+
 import { PermissionType } from '../../../constants'
 import {
     ChartGroupPermissionsFilter,

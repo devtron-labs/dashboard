@@ -15,6 +15,7 @@
  */
 
 import { useEffect } from 'react'
+
 import { LogAnalyzerProps } from '../appDetails.type'
 import LogsComponent from '../k8Resource/nodeDetail/NodeDetailTabs/Logs.component'
 

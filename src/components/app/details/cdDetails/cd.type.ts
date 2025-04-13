@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { DeploymentAppTypes, UserApprovalMetadataType, ReleaseTag } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, ReleaseTag, UserApprovalMetadataType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ImageComment } from '../cicdHistory/types'
 
 export interface DeploymentHistorySingleValue {

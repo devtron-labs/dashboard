@@ -21,29 +21,29 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     CMSecretExternalType,
+    CODE_EDITOR_RADIO_STATE,
     CodeEditor,
     ComponentSizeType,
+    configMapSecretMountDataMap,
+    convertKeyValuePairToYAML,
+    convertYAMLToKeyValuePair,
+    isCodeMirrorEnabled,
     KeyValueConfig,
     KeyValueTable,
+    MODES,
     noop,
+    OverrideMergeStrategyType,
+    PATTERNS,
+    SelectPickerOptionType,
     StyledRadioGroup,
     ToastManager,
     ToastVariantType,
     YAMLStringify,
-    convertKeyValuePairToYAML,
-    configMapSecretMountDataMap,
-    convertYAMLToKeyValuePair,
-    CODE_EDITOR_RADIO_STATE,
-    PATTERNS,
-    MODES,
-    OverrideMergeStrategyType,
-    SelectPickerOptionType,
-    isCodeMirrorEnabled,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { ReactComponent as HideIcon } from '@Icons/ic-visibility-off.svg'
-import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 
 import {
@@ -54,12 +54,12 @@ import {
     VIEW_MODE,
 } from './constants'
 import { externalTypeSecretCodeEditorDataHeaders, renderYamlInfoText } from './helpers'
+import { ConfigMapSecretDataProps } from './types'
 import {
     getCMCSExpressEditComparisonDataDiffConfig,
     getExpressEditComparisonViewLHS,
     getLockedYamlString,
 } from './utils'
-import { ConfigMapSecretDataProps } from './types'
 
 const ExpressEditDiffEditor = importComponentFromFELibrary('ExpressEditDiffEditor', null, 'function')
 
@@ -75,6 +75,7 @@ export const ConfigMapSecretData = ({
     isExpressEditComparisonView,
     draftData,
     publishedConfigMapSecretData,
+    hidePatchOption,
     handleMergeStrategyChange,
 }: ConfigMapSecretDataProps) => {
     // USE FORM PROPS
@@ -375,6 +376,7 @@ export const ConfigMapSecretData = ({
                     lhs: expressEditComparisonViewLHS,
                     rhs: data,
                     onMergeStrategySelect,
+                    hidePatchOption,
                 })}
                 readOnly={readOnly}
                 lhsEditor={{
@@ -386,6 +388,10 @@ export const ConfigMapSecretData = ({
                 }}
                 showDraftOption={!!draftData}
                 handleCompareWithChange={handleExpressEditCompareWithChange}
+                hideEditor={{
+                    lhs: expressEditComparisonViewLHS?.external,
+                    rhs: data.external,
+                }}
             />
         ) : (
             <CodeEditor.Container overflowHidden>
@@ -506,6 +512,14 @@ export const ConfigMapSecretData = ({
         return null
     }
 
+    const externalExpressEditEditor = () => {
+        if (data.external && isExpressEditComparisonView) {
+            return renderCodeEditor({ sheBangText: '' })
+        }
+
+        return null
+    }
+
     return (
         <div className="flex-grow-1 flexbox-col dc__gap-12">
             {renderDataEditorSelector()}
@@ -516,6 +530,7 @@ export const ConfigMapSecretData = ({
                       })
                     : renderGUIEditor())}
             {externalSecretEditor()}
+            {externalExpressEditEditor()}
         </div>
     )
 }

@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import { DeleteComponentsName } from '@Config/constantMessaging'
-import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
+
+import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
+
 import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
-import { ConfigurationTableProps } from './types'
+import { DeleteComponentsName } from '@Config/constantMessaging'
+
+import { ConfigTableRowActionButton } from './ConfigTableRowActionButton'
 import { ConfigurationsTabTypes } from './constants'
 import { getConfigTabIcons, renderDefaultTag } from './notifications.util'
-import { ConfigTableRowActionButton } from './ConfigTableRowActionButton'
+import { ConfigurationTableProps } from './types'
 
 export const SMTPConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTableProps) => {
     const { smtpConfigurationList } = state

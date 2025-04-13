@@ -14,53 +14,54 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState, useMemo, useRef, useCallback, SyntheticEvent } from 'react'
+import React, { SyntheticEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { generatePath, Route, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
-    noop,
-    DeploymentAppTypes,
-    useAsync,
-    MODAL_TYPE,
     ACTION_STATE,
-    processDeploymentStatusDetailsData,
     aggregateNodes,
     ArtifactInfoModal,
+    Button,
+    ButtonComponentType,
+    DeploymentAppTypes,
+    GenericEmptyState,
+    getIsRequestAborted,
+    MODAL_TYPE,
+    noop,
+    processDeploymentStatusDetailsData,
+    Progressing,
     ReleaseMode,
-    ToastVariantType,
-    ToastManager,
     SelectPicker,
     ServerErrors,
-    getIsRequestAborted,
-    Button,
-    GenericEmptyState,
-    ButtonComponentType,
+    showError,
+    ToastManager,
+    ToastVariantType,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
-import AppNotDeployedIcon from '@Images/app-not-deployed.svg'
-import AppNotConfiguredIcon from '@Images/app-not-configured.png'
+
 import { ReactComponent as ForwardArrow } from '@Icons/ic-arrow-forward.svg'
-import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
+import AppNotConfiguredIcon from '@Images/app-not-configured.png'
+import AppNotDeployedIcon from '@Images/app-not-deployed.svg'
+
+import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
+import noGroups from '../../../../assets/img/ic-feature-deploymentgroups@3x.png'
 import {
-    URLS,
+    DEFAULT_STATUS,
+    DEFAULT_STATUS_TEXT,
+    DEPLOYMENT_STATUS,
+    DEPLOYMENT_STATUS_QUERY_PARAM,
+    DOCUMENTATION,
     getAppDetailsURL,
     getAppTriggerURL,
-    DOCUMENTATION,
-    DEFAULT_STATUS,
-    DEPLOYMENT_STATUS_QUERY_PARAM,
-    DEPLOYMENT_STATUS,
     HELM_DEPLOYMENT_STATUS_TEXT,
     RESOURCES_NOT_FOUND,
-    DEFAULT_STATUS_TEXT,
+    URLS,
 } from '../../../../config'
-import { useAppContext } from '../../../common'
+import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
 import { getAppConfigStatus, getAppOtherEnvironmentMin, stopStartApp } from '../../../../services/service'
-import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
-import { SourceInfo } from './SourceInfo'
-import { Application, AggregatedNodes } from '../../types'
-import { NoParamsNoEnvContext, NoParamsWithEnvContext, ParamsNoEnvContext, ParamsAndEnvContext } from './utils'
-import { AppMetrics } from './AppMetrics'
-import IndexStore from '../../../v2/appDetails/index.store'
+import { useAppContext } from '../../../common'
+import { AppDetailsEmptyState } from '../../../common/AppDetailsEmptyState'
+import { ClusterMetaDataBar } from '../../../common/ClusterMetaDataBar/ClusterMetaDataBar'
 import {
     importComponentFromFELibrary,
     sortObjectArrayAlphabetically,
@@ -70,10 +71,17 @@ import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.comp
 import { getExternalLinks } from '../../../externalLinks/ExternalLinks.service'
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type'
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
-import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab'
-import noGroups from '../../../../assets/img/ic-feature-deploymentgroups@3x.png'
 import { AppType, EnvType } from '../../../v2/appDetails/appDetails.type'
-import DeploymentStatusDetailModal from './DeploymentStatusDetailModal'
+import IndexStore from '../../../v2/appDetails/index.store'
+import { EmptyK8sResourceComponent } from '../../../v2/appDetails/k8Resource/K8Resource.component'
+import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab'
+import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
+import RotatePodsModal from '../../../v2/appDetails/sourceInfo/rotatePods/RotatePodsModal.component'
+import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
+import { TriggerUrlModal } from '../../list/TriggerUrl'
+import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
+import { AggregatedNodes, Application } from '../../types'
+import { renderCIListHeader } from '../cdDetails/utils'
 import { getDeploymentStatusDetail } from './appDetails.service'
 import {
     DeletedAppComponentType,
@@ -83,17 +91,12 @@ import {
     ErrorItem,
     HibernationModalTypes,
 } from './appDetails.type'
-import { TriggerUrlModal } from '../../list/TriggerUrl'
-import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
-import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
-import { AppDetailsEmptyState } from '../../../common/AppDetailsEmptyState'
-import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
-import { EmptyK8sResourceComponent } from '../../../v2/appDetails/k8Resource/K8Resource.component'
-import RotatePodsModal from '../../../v2/appDetails/sourceInfo/rotatePods/RotatePodsModal.component'
-import IssuesListingModal from './IssuesListingModal'
-import { ClusterMetaDataBar } from '../../../common/ClusterMetaDataBar/ClusterMetaDataBar'
-import { renderCIListHeader } from '../cdDetails/utils'
+import { AppMetrics } from './AppMetrics'
+import DeploymentStatusDetailModal from './DeploymentStatusDetailModal'
 import HibernateModal from './HibernateModal'
+import IssuesListingModal from './IssuesListingModal'
+import { SourceInfo } from './SourceInfo'
+import { NoParamsNoEnvContext, NoParamsWithEnvContext, ParamsAndEnvContext, ParamsNoEnvContext } from './utils'
 
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 const DeploymentWindowStatusModal = importComponentFromFELibrary('DeploymentWindowStatusModal')

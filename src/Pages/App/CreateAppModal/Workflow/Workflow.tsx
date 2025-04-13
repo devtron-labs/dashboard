@@ -15,6 +15,7 @@
  */
 
 import { useEffect, useState } from 'react'
+
 import {
     APIResponseHandler,
     GenericEmptyState,
@@ -29,6 +30,7 @@ import {
 import { getCreateWorkflows } from '@Components/app/details/triggerView/workflow.service'
 import { getEnvironmentListMin } from '@Services/service'
 
+import { HandleNodeUpdateActionProps, NodeUpdateActionType, WorkflowProps } from './types'
 import {
     getCDNodeIcon,
     getPipelineIdFromNodeId,
@@ -37,7 +39,6 @@ import {
     getWorkflowGraphVisualizerNodes,
     getWorkflowLinkedCDNodes,
 } from './utils'
-import { HandleNodeUpdateActionProps, NodeUpdateActionType, WorkflowProps } from './types'
 
 export const Workflow = ({ templateId, onChange, workflowIdToErrorMessageMap }: WorkflowProps) => {
     // STATES

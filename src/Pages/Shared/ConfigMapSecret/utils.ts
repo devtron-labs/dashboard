@@ -19,8 +19,15 @@ import YAML from 'yaml'
 import {
     AppEnvDeploymentConfigDTO,
     applyCompareDiffOnUneditedDocument,
+    CM_SECRET_STATE,
+    CMSecretComponentType,
+    CMSecretConfigData,
+    CMSecretExternalType,
     ConfigHeaderTabType,
+    configMapDataTypeOptions,
     ConfigMapSecretDataType,
+    configMapSecretMountDataMap,
+    ConfigMapSecretUseFormProps,
     decode,
     DEFAULT_SECRET_PLACEHOLDER,
     DraftAction,
@@ -28,34 +35,27 @@ import {
     DraftState,
     DryRunEditorMode,
     ERROR_STATUS_CODE,
-    OverrideMergeStrategyType,
-    YAMLStringify,
-    ConfigMapSecretUseFormProps,
-    CM_SECRET_STATE,
-    CMSecretConfigData,
-    getConfigMapSecretPayload,
-    configMapDataTypeOptions,
-    CMSecretExternalType,
-    getSelectPickerOptionByValue,
-    getSecretDataTypeOptions,
     getConfigMapSecretFormInitialValues,
-    CMSecretComponentType,
-    configMapSecretMountDataMap,
+    getConfigMapSecretPayload,
+    getSecretDataTypeOptions,
+    getSelectPickerOptionByValue,
+    OverrideMergeStrategyType,
     SelectPickerOptionType,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ResourceConfigStage } from '@Pages/Applications/DevtronApps/service.types'
 import { MERGE_STRATEGY_OPTIONS } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
+import { ResourceConfigStage } from '@Pages/Applications/DevtronApps/service.types'
 
 import {
-    ConfigMapSecretFormProps,
     CMSecretDraftData,
-    ConfigMapSecretDecodedDataReturnType,
     ConfigMapSecretDecodedDataProps,
+    ConfigMapSecretDecodedDataReturnType,
+    ConfigMapSecretDryRunProps,
     ConfigMapSecretEncodedDataProps,
     ConfigMapSecretEncodedDataReturnType,
+    ConfigMapSecretFormProps,
     ConfigMapSecretQueryParamsType,
-    ConfigMapSecretDryRunProps,
 } from './types'
 
 // HELPERS UTILS ----------------------------------------------------------------
@@ -398,6 +398,9 @@ export const getConfigMapSecretDataType = (
         : (getSelectPickerOptionByValue(getSecretDataTypeOptions(false, true), externalType).label as string)
 }
 
+export const shouldHidePatchOption = (configMapSecretData: CMSecretConfigData, isJob: boolean) =>
+    isJob || configMapSecretData?.external || false
+
 export const getExpressEditComparisonViewLHS = ({
     isDraft,
     draftData,
@@ -436,10 +439,12 @@ export const getCMCSExpressEditComparisonDataDiffConfig = ({
     lhs,
     rhs,
     onMergeStrategySelect,
+    hidePatchOption,
 }: {
     lhs: ConfigMapSecretUseFormProps
     rhs: ConfigMapSecretUseFormProps
     onMergeStrategySelect: (newValue: SelectPickerOptionType) => void
+    hidePatchOption: boolean
 }) => [
     ...(rhs.mergeStrategy
         ? [
@@ -448,13 +453,17 @@ export const getCMCSExpressEditComparisonDataDiffConfig = ({
                   lhs: {
                       displayValue: lhs?.mergeStrategy,
                   },
-                  rhs: {
-                      value: rhs.mergeStrategy,
-                      dropdownConfig: {
-                          options: MERGE_STRATEGY_OPTIONS,
-                          onChange: onMergeStrategySelect,
-                      },
-                  },
+                  rhs: hidePatchOption
+                      ? {
+                            displayValue: rhs.mergeStrategy,
+                        }
+                      : {
+                            value: rhs.mergeStrategy,
+                            dropdownConfig: {
+                                options: MERGE_STRATEGY_OPTIONS,
+                                onChange: onMergeStrategySelect,
+                            },
+                        },
               },
           ]
         : []),

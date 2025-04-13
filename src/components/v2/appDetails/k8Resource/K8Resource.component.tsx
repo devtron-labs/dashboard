@@ -16,27 +16,31 @@
 
 import { useEffect, useMemo } from 'react'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+
 import {
+    ALL_RESOURCE_KIND_FILTER,
     AppType,
     getPodsRootParentNameAndStatus,
     Node,
     StatusFilterButtonComponent,
     useSearchString,
-    ALL_RESOURCE_KIND_FILTER,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICObject } from '@Icons/ic-object.svg'
+
 import { ReactComponent as Info } from '@Icons/ic-info-outline.svg'
-import { useSharedState } from '@Components/v2/utils/useSharedState'
-import { URLS } from '@Config/routes'
+import { ReactComponent as ICObject } from '@Icons/ic-object.svg'
 import { DynamicTabs, useTabs } from '@Components/common/DynamicTabs'
 import { DynamicTabsVariantType } from '@Components/common/DynamicTabs/types'
-import IndexStore from '../index.store'
+import { useSharedState } from '@Components/v2/utils/useSharedState'
+import { URLS } from '@Config/routes'
+
 import { APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX, AppDetailsTabs, getInitialTabs } from '../appDetails.store'
 import { K8ResourceComponentProps } from '../appDetails.type'
-import NodeTreeComponent from './nodeType/NodeTree.component'
+import IndexStore from '../index.store'
 import NodeComponent from './nodeType/Node.component'
-import './k8resources.scss'
+import NodeTreeComponent from './nodeType/NodeTree.component'
 import { doesNodeSatisfiesFilter } from './utils'
+
+import './k8resources.scss'
 
 export const K8ResourceComponent = ({
     clickedNodes,

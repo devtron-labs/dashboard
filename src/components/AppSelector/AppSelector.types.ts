@@ -1,6 +1,8 @@
-import { AppHeaderType } from '@Components/app/types'
-import { BaseAppMetaData, SelectPickerOptionType, SelectPickerProps } from '@devtron-labs/devtron-fe-common-lib'
 import { GroupBase } from 'react-select'
+
+import { BaseAppMetaData, SelectPickerOptionType, SelectPickerProps } from '@devtron-labs/devtron-fe-common-lib'
+
+import { AppHeaderType } from '@Components/app/types'
 
 export interface AppSelectorType extends Pick<SelectPickerProps, 'onChange'>, Pick<AppHeaderType, 'appName'> {
     appId: number

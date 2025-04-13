@@ -15,9 +15,11 @@
  */
 
 import { ACTION_STATE, ResponseType, ScanResultDTO, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+
 import { fetchAppDetailsInTime } from '@Components/app/service'
+
+import { AppDetails, SyncErrorType } from '../../../v2/appDetails/appDetails.type'
 import { AggregatedNodes, OptionType } from '../../types'
-import { SyncErrorType, AppDetails } from '../../../v2/appDetails/appDetails.type'
 
 export enum AppMetricsTab {
     Aggregate = 'aggregate',
@@ -130,6 +132,20 @@ export interface ModuleConfigResponse extends ResponseType {
     result?: {
         enabled: boolean
     }
+}
+
+export interface DataSourceDetailsDTO {
+    id: number
+    name: string
+}
+
+export interface DataSourceDetailsQueryParams {
+    environmentName: string
+}
+
+export interface DataSourceDetailsType {
+    dataSourceName: string
+    dataSourceId: number
 }
 
 export interface ClusterConnectionResponse extends ResponseType {

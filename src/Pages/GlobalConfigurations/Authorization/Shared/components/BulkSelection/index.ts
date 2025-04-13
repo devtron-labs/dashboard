@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-export { default as BulkSelectionModal } from './BulkSelectionModal'
 export { default as BulkSelectionActionWidget } from './BulkSelectionActionWidget'
-export { default as useAuthorizationBulkSelection } from './useAuthorizationBulkSelection'
+export { default as BulkSelectionModal } from './BulkSelectionModal'
 export { BulkSelectionModalTypes } from './constants'
 export * from './types'
+export { default as useAuthorizationBulkSelection } from './useAuthorizationBulkSelection'

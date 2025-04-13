@@ -17,21 +17,21 @@
 import { Dispatch, MutableRefObject, SetStateAction } from 'react'
 
 import {
+    AppConfigProps,
+    AppEnvDeploymentConfigDTO,
+    CM_SECRET_STATE,
+    CMSecretComponentType,
     CMSecretConfigData,
+    CMSecretPayloadType,
+    ConfigHeaderTabType,
+    ConfigMapSecretDataType,
     ConfigMapSecretUseFormProps,
     DraftAction,
     DraftMetadataDTO,
+    DryRunEditorMode,
+    OverrideMergeStrategyType,
     ProtectConfigTabsType,
     useForm,
-    AppEnvDeploymentConfigDTO,
-    DryRunEditorMode,
-    ConfigHeaderTabType,
-    OverrideMergeStrategyType,
-    ConfigMapSecretDataType,
-    CMSecretComponentType,
-    CM_SECRET_STATE,
-    CMSecretPayloadType,
-    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ConfigToolbarProps } from '@Pages/Applications'
@@ -150,6 +150,7 @@ export interface ConfigMapSecretDataProps
     readOnly: boolean
     isPatchMode: boolean
     hasPublishedConfig: boolean
+    hidePatchOption: boolean
 }
 
 export type CMSecretDeleteModalType = 'deleteModal' | 'protectedDeleteModal' | 'expressDeleteDraft'

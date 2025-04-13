@@ -14,29 +14,32 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useRef, useEffect, useState, useMemo } from 'react'
-import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router-dom'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import ReactGA from 'react-ga4'
+import { generatePath, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+
 import {
     BreadCrumb,
-    useBreadcrumb,
     noop,
     PageHeader,
     TabGroup,
     TabProps,
     URLS as CommonURLS,
+    useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
-import ReactGA from 'react-ga4'
-import { URLS } from '../../../config'
-import { AppSelector } from '../../AppSelector'
-import { AppHeaderType } from '../types'
-import { importComponentFromFELibrary, trackByGAEvent } from '../../common/helpers/Helpers'
+
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
+import { URLS } from '../../../config'
+import { FilterParentType } from '../../ApplicationGroup/AppGroup.types'
 import AppGroupAppFilter from '../../ApplicationGroup/AppGroupAppFilter'
 import { AppGroupAppFilterContext } from '../../ApplicationGroup/AppGroupDetailsRoute'
-import { FilterParentType } from '../../ApplicationGroup/AppGroup.types'
+import { AppSelector } from '../../AppSelector'
+import { useAppContext } from '../../common'
+import { importComponentFromFELibrary, trackByGAEvent } from '../../common/helpers/Helpers'
+import { AppHeaderType } from '../types'
+
 import './appDetails/appDetails.scss'
 import './app.scss'
-import { useAppContext } from '../../common'
 
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 

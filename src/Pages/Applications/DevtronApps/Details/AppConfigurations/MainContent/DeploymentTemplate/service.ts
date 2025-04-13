@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-import { Routes } from '@Config/constants'
 import {
     AppConfigProps,
     BaseURLParams,
     get,
+    getTemplateAPIRoute,
     GetTemplateAPIRouteType,
+    getUrlWithSearchParams,
     post,
     put,
     ResponseType,
     trash,
-    getTemplateAPIRoute,
-    getUrlWithSearchParams,
     versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { Routes } from '@Config/constants'
 import { getChartReferencesForAppAndEnv } from '@Services/service'
+
 import {
     DeploymentTemplateConfigDTO,
     EnvironmentOverrideDeploymentTemplateDTO,
