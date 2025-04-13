@@ -28,15 +28,18 @@ import { ClusterMapInitialStatus } from './ClusterMapInitialStatus'
 import { CLUSTER_PROD_TYPE } from './constants'
 import { ClusterListRowTypes } from './types'
 
+const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
+const ClusterStatusCell = importComponentFromFELibrary('ClusterStatus', null, 'function')
 const KubeConfigButton = importComponentFromFELibrary('KubeConfigButton', null, 'function')
 
-export const ClusterListRow = ({ clusterData, index, clusterListLoader }: ClusterListRowTypes) => {
-    const ClusterStatusCell = importComponentFromFELibrary('ClusterStatus', null, 'function')
-    const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
-
+export const ClusterListRow = ({
+    clusterData,
+    clusterListLoader,
+    onChangeShowKubeConfigModal,
+    setSelectedClusterName,
+}: ClusterListRowTypes) => {
     const {
         selectedIdentifiers: bulkSelectionState,
-        isBulkSelectionApplied,
         handleBulkSelection,
         getSelectedIdentifiersCount,
     } = useBulkSelection<BulkSelectionIdentifiersType<ClusterDetail>>()
@@ -44,14 +47,7 @@ export const ClusterListRow = ({ clusterData, index, clusterListLoader }: Cluste
 
     const handleSelection = () => {
         const { name } = clusterData
-        if (isBulkSelectionApplied) {
-            handleBulkSelection({
-                action: BulkSelectionEvents.CLEAR_IDENTIFIERS_AFTER_ACROSS_SELECTION,
-                data: {
-                    identifierIds: [name],
-                },
-            })
-        } else if (bulkSelectionState[name]) {
+        if (bulkSelectionState[name]) {
             handleBulkSelection({
                 action: BulkSelectionEvents.CLEAR_IDENTIFIERS,
                 data: {
@@ -69,9 +65,8 @@ export const ClusterListRow = ({ clusterData, index, clusterListLoader }: Cluste
                 },
             })
         }
+        setSelectedClusterName('')
     }
-
-    const terminalURL = `${URLS.RESOURCE_BROWSER}/${clusterData.id}/all}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`
 
     const hideDataOnLoad = (value) => {
         if (clusterListLoader) {
@@ -87,7 +82,7 @@ export const ClusterListRow = ({ clusterData, index, clusterListLoader }: Cluste
 
         return <ClusterMapInitialStatus errorInNodeListing={errorInNodeListing} />
     }
-    const isIdentifierSelected = !!bulkSelectionState[clusterData.name] || isBulkSelectionApplied
+    const isIdentifierSelected = !!bulkSelectionState[clusterData.name]
 
     return (
         <div
@@ -99,7 +94,7 @@ export const ClusterListRow = ({ clusterData, index, clusterListLoader }: Cluste
                 className={
                     isIdentifierSelected || getSelectedIdentifiersCount() > 0
                         ? 'dc__visible'
-                        : 'dc__visible-hover--child flexbox'
+                        : 'dc__visible-hover--child flex left'
                 }
             >
                 <Checkbox
@@ -107,14 +102,13 @@ export const ClusterListRow = ({ clusterData, index, clusterListLoader }: Cluste
                     onChange={handleSelection}
                     rootClassName="icon-dim-20 m-0"
                     dataTestId={`activate-${clusterData.name}`}
-                    tabIndex={index - 1}
                     value={CHECKBOX_VALUE.CHECKED}
                 />
             </div>
 
             {!isIdentifierSelected && getSelectedIdentifiersCount() === 0 && (
                 <div className="dc__visible-hover--hide-child flex left">
-                    <Icon name="ic-bg-cluster" color={null} size={20} />
+                    <Icon name="ic-bg-cluster" color={null} size={24} />
                 </div>
             )}
             <div data-testid={`cluster-row-${clusterData.name}`} className="flex left dc__overflow-hidden">
@@ -137,14 +131,20 @@ export const ClusterListRow = ({ clusterData, index, clusterListLoader }: Cluste
                                 variant={ButtonVariantType.borderLess}
                                 component={ButtonComponentType.link}
                                 linkProps={{
-                                    to: terminalURL,
+                                    to: `${URLS.RESOURCE_BROWSER}/${clusterData.id}/${ALL_NAMESPACE_OPTION.value}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
                                 }}
                             />
                         )}
                         {CompareClusterButton && clusterData.status !== ClusterStatusType.CONNECTION_FAILED && (
                             <CompareClusterButton sourceClusterId={clusterData.id} isIconButton />
                         )}
-                        {KubeConfigButton && <KubeConfigButton clusterName={clusterData.name} />}
+                        {KubeConfigButton && (
+                            <KubeConfigButton
+                                onChangeShowKubeConfigModal={onChangeShowKubeConfigModal}
+                                clusterName={clusterData.name}
+                                setSelectedClusterName={setSelectedClusterName}
+                            />
+                        )}
                     </div>
                 </div>
             </div>

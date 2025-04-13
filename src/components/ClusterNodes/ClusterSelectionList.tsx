@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import dayjs, { Dayjs } from 'dayjs'
 
 import {
-    BulkSelection,
     BulkSelectionEvents,
     BulkSelectionIdentifiersType,
     BulkSelectionProvider,
@@ -27,7 +26,6 @@ import {
     GenericEmptyState,
     SearchBar,
     SelectAllDialogStatus,
-    SortableTableHeaderCell,
     useBulkSelection,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -38,10 +36,10 @@ import Timer from '@Components/common/DynamicTabs/DynamicTabs.timer'
 import { AddClusterButton } from '@Components/ResourceBrowser/PageHeader.buttons'
 
 import { ClusterSelectionType } from '../ResourceBrowser/Types'
-import { ClusterListRow } from './ClusterListRow'
+import { ClusterList } from './ClusterList'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
-import { ClusterMapListSortableKeys, ClusterMapListSortableTitle, ClusterStatusByFilter } from './constants'
-import { getSortedClusterList } from './utils'
+import { ClusterMapListSortableKeys, ClusterStatusByFilter } from './constants'
+import { getSortedClusterList, parseSearchParams } from './utils'
 
 import './clusterNodes.scss'
 
@@ -52,10 +50,7 @@ const ClusterBulkSelectionActionWidget = importComponentFromFELibrary(
     null,
     'function',
 )
-
-const parseSearchParams = (searchParams: URLSearchParams) => ({
-    clusterFilter: (searchParams.get('clusterFilter') as ClusterFiltersType) || ClusterFiltersType.ALL_CLUSTERS,
-})
+const KubeConfigModal = importComponentFromFELibrary('KubeConfigModal', null, 'function')
 
 const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     clusterOptions,
@@ -65,33 +60,17 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     parentRef,
 }) => {
     const [lastSyncTime, setLastSyncTime] = useState<Dayjs>(dayjs())
+    const [showKubeConfigModal, setKubeConfigModal] = useState(false)
+    const [selectedClusterName, setSelectedClusterName] = useState('')
 
-    const {
-        searchKey,
-        clusterFilter,
-        updateSearchParams,
-        handleSearch,
-        clearFilters,
-        sortBy,
-        sortOrder,
-        handleSorting,
-    } = useUrlFilters<ClusterMapListSortableKeys, { clusterFilter: ClusterFiltersType }>({
-        parseSearchParams,
-        initialSortKey: ClusterMapListSortableKeys.CLUSTER_NAME,
-    })
+    const { searchKey, clusterFilter, updateSearchParams, handleSearch, clearFilters, sortBy, sortOrder } =
+        useUrlFilters<ClusterMapListSortableKeys, { clusterFilter: ClusterFiltersType }>({
+            parseSearchParams,
+            initialSortKey: ClusterMapListSortableKeys.CLUSTER_NAME,
+        })
 
-    const { handleBulkSelection, setIdentifiers, isBulkSelectionApplied, getSelectedIdentifiersCount } =
+    const { handleBulkSelection, isBulkSelectionApplied, getSelectedIdentifiersCount } =
         useBulkSelection<BulkSelectionIdentifiersType<ClusterDetail>>()
-
-    useEffect(() => {
-        if (clusterOptions.length) {
-            const clusterIdentifier: BulkSelectionIdentifiersType<ClusterDetail> = {}
-            clusterOptions.forEach((cluster) => {
-                clusterIdentifier[cluster.name] = cluster
-            })
-            setIdentifiers(clusterIdentifier)
-        }
-    }, [clusterOptions])
 
     const filteredList: ClusterDetail[] = useMemo(() => {
         const loweredSearchKey = searchKey.toLowerCase()
@@ -141,11 +120,15 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
         )
     }
 
-    const handleCellSorting = (cellToSort: ClusterMapListSortableKeys) => () => {
-        handleSorting(cellToSort)
+    const onChangeShowKubeConfigModal = () => {
+        setKubeConfigModal(true)
     }
 
-    const renderClusterListContent = () => (
+    const onChangeCloseKubeConfigModal = () => {
+        setKubeConfigModal(false)
+    }
+
+    const renderClusterList = () => (
         <div className="cluster-list-main-container flex-grow-1 flexbox-col bg__primary dc__overflow-auto">
             <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16 dc__zi-4">
                 <div className="flex dc__gap-12">
@@ -198,29 +181,13 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                     <ClusterNodeEmptyState actionHandler={clearFilters} />
                 </div>
             ) : (
-                <div data-testid="cluster-list-container" className="flexbox-col flex-grow-1">
-                    <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase bg__primary dc__position-sticky dc__top-0 dc__zi-3">
-                        {Object.entries(ClusterMapListSortableKeys).map(([cellName, cellKey]) => (
-                            <>
-                                {cellKey === ClusterMapListSortableKeys.CLUSTER_NAME && (
-                                    <BulkSelection showPagination={false} />
-                                )}
-                                <SortableTableHeaderCell
-                                    key={cellName}
-                                    title={ClusterMapListSortableTitle[cellName]}
-                                    isSorted={sortBy === cellKey}
-                                    sortOrder={sortOrder}
-                                    isSortable
-                                    disabled={false}
-                                    triggerSorting={handleCellSorting(cellKey)}
-                                />
-                            </>
-                        ))}
-                    </div>
-                    {filteredList.map((clusterData, index) => (
-                        <ClusterListRow clusterData={clusterData} index={index} clusterListLoader={clusterListLoader} />
-                    ))}
-                </div>
+                <ClusterList
+                    filteredList={filteredList}
+                    clusterListLoader={clusterListLoader}
+                    setSelectedClusterName={setSelectedClusterName}
+                    showKubeConfigModal={showKubeConfigModal}
+                    onChangeShowKubeConfigModal={onChangeShowKubeConfigModal}
+                />
             )}
         </div>
     )
@@ -232,6 +199,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                     parentRef={parentRef}
                     count={isBulkSelectionApplied ? clusterOptions?.length ?? 0 : getSelectedIdentifiersCount()}
                     handleClearBulkSelection={handleClearBulkSelection}
+                    onChangeShowKubeConfigModal={onChangeShowKubeConfigModal}
                 />
             )
         }
@@ -241,7 +209,14 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     return (
         <div ref={parentRef} className="flexbox-col flex-grow-1">
             {renderClusterBulkSelection()}
-            {renderClusterListContent()}
+            {renderClusterList()}
+            {showKubeConfigModal && KubeConfigModal && (
+                <KubeConfigModal
+                    clusterName={selectedClusterName || getSelectedIdentifiersCount() === 0}
+                    handleModalClose={onChangeCloseKubeConfigModal}
+                    isSingleClusterButton={!!selectedClusterName}
+                />
+            )}
         </div>
     )
 }
@@ -257,10 +232,12 @@ const BaseClusterList = (props: ClusterSelectionType) => {
         [clusterOptions],
     )
 
+    const getSelectAllDialogStatus = () => SelectAllDialogStatus.CLOSED
+
     return (
         <BulkSelectionProvider<BulkSelectionIdentifiersType<ClusterDetail>>
             identifiers={allOnThisPageIdentifiers}
-            getSelectAllDialogStatus={() => SelectAllDialogStatus.CLOSED}
+            getSelectAllDialogStatus={getSelectAllDialogStatus}
         >
             <ClusterSelectionList {...props} />
         </BulkSelectionProvider>
