@@ -72,7 +72,7 @@ const ClusterListView = (props: ClusterViewType) => {
                 acc[cluster.name] = cluster
                 return acc
             }, {} as ClusterDetail) ?? {},
-        [clusterOptions],
+        [filteredList],
     )
 
     const handleClearBulkSelection = () => {
