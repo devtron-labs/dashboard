@@ -327,7 +327,7 @@ export const usePipelineDeploymentConfig = ({
         classNamePrefix: 'deployment-config-selector',
         inputId: 'deployment-config-selector',
         name: 'deployment-config-selector',
-        variant: SelectPickerVariantType.BORDER_LESS,
+        variant: SelectPickerVariantType.COMPACT,
         isSearchable: false,
         disableDescriptionEllipsis: true,
         value: getSelectPickerOptionByValue(
