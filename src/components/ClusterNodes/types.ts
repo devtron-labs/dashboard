@@ -293,14 +293,3 @@ export interface ClusterOverviewProps {
 export interface ClusterMapInitialStatusType {
     errorInNodeListing: string
 }
-
-export interface ClusterListTypes {
-    filteredList: ClusterDetail[]
-    clusterListLoader: boolean
-    showKubeConfigModal: boolean
-    onChangeShowKubeConfigModal: () => void
-    setSelectedClusterName: React.Dispatch<React.SetStateAction<string>>
-}
-export interface ClusterListRowTypes extends Omit<ClusterListTypes, 'filteredList'> {
-    clusterData: ClusterDetail
-}

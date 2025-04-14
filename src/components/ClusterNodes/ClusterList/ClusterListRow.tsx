@@ -24,15 +24,15 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '@Components/ResourceBrowser/Constants'
 import { AppDetailsTabs } from '@Components/v2/appDetails/appDetails.store'
 
-import { ClusterMapInitialStatus } from './ClusterMapInitialStatus'
-import { CLUSTER_PROD_TYPE } from './constants'
+import { ClusterMapInitialStatus } from '../ClusterMapInitialStatus'
+import { CLUSTER_PROD_TYPE } from '../constants'
 import { ClusterListRowTypes } from './types'
 
 const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
 const ClusterStatusCell = importComponentFromFELibrary('ClusterStatus', null, 'function')
 const KubeConfigButton = importComponentFromFELibrary('KubeConfigButton', null, 'function')
 
-export const ClusterListRow = ({
+const ClusterListRow = ({
     clusterData,
     clusterListLoader,
     onChangeShowKubeConfigModal,
@@ -175,3 +175,5 @@ export const ClusterListRow = ({
         </div>
     )
 }
+
+export default ClusterListRow

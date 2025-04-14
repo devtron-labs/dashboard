@@ -7,12 +7,12 @@ import {
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ClusterListRow } from './ClusterListRow'
-import { ClusterMapListSortableKeys, ClusterMapListSortableTitle } from './constants'
+import { ClusterMapListSortableKeys, ClusterMapListSortableTitle } from '../constants'
+import { parseSearchParams } from '../utils'
+import ClusterListRow from './ClusterListRow'
 import { ClusterListTypes } from './types'
-import { parseSearchParams } from './utils'
 
-export const ClusterList = ({
+const ClusterList = ({
     filteredList,
     clusterListLoader,
     showKubeConfigModal,
@@ -52,14 +52,18 @@ export const ClusterList = ({
                 ))}
             </div>
             {filteredList.map((clusterData) => (
-                <ClusterListRow
-                    clusterData={clusterData}
-                    clusterListLoader={clusterListLoader}
-                    showKubeConfigModal={showKubeConfigModal}
-                    onChangeShowKubeConfigModal={onChangeShowKubeConfigModal}
-                    setSelectedClusterName={setSelectedClusterName}
-                />
+                <React.Fragment key={clusterData.id}>
+                    <ClusterListRow
+                        clusterData={clusterData}
+                        clusterListLoader={clusterListLoader}
+                        showKubeConfigModal={showKubeConfigModal}
+                        onChangeShowKubeConfigModal={onChangeShowKubeConfigModal}
+                        setSelectedClusterName={setSelectedClusterName}
+                    />
+                </React.Fragment>
             ))}
         </div>
     )
 }
+
+export default ClusterList
