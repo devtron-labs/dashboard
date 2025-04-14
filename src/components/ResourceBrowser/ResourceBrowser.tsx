@@ -35,7 +35,6 @@ import { AddClusterButton } from './PageHeader.buttons'
 
 const ResourceBrowser: React.FC = () => {
     const abortControllerRef = useRef<AbortController>(new AbortController())
-    const parentRef = useRef<HTMLDivElement>(null)
 
     const [detailClusterListLoading, detailClusterList, , reloadDetailClusterList] = useAsync(async () => {
         try {
@@ -77,7 +76,6 @@ const ResourceBrowser: React.FC = () => {
                 clusterListLoader={detailClusterListLoading}
                 initialLoading={initialLoading}
                 refreshData={reloadDetailClusterList}
-                parentRef={parentRef}
             />
         )
     }

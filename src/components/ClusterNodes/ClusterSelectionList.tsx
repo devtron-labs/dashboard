@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import dayjs, { Dayjs } from 'dayjs'
 
 import {
@@ -57,8 +57,9 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     clusterListLoader,
     initialLoading,
     refreshData,
-    parentRef,
 }) => {
+    const parentRef = useRef<HTMLDivElement>(null)
+
     const [lastSyncTime, setLastSyncTime] = useState<Dayjs>(dayjs())
     const [showKubeConfigModal, setKubeConfigModal] = useState(false)
     const [selectedClusterName, setSelectedClusterName] = useState('')

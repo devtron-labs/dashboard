@@ -84,6 +84,8 @@ export const ClusterListRow = ({
     }
     const isIdentifierSelected = !!bulkSelectionState[clusterData.name]
 
+    // TODO: @Elessar1802 will be replacing all terminal url with new utils
+
     return (
         <div
             key={`cluster-${clusterData.id}`}
@@ -105,7 +107,6 @@ export const ClusterListRow = ({
                     value={CHECKBOX_VALUE.CHECKED}
                 />
             </div>
-
             {!isIdentifierSelected && getSelectedIdentifiersCount() === 0 && (
                 <div className="dc__visible-hover--hide-child flex left">
                     <Icon name="ic-bg-cluster" color={null} size={24} />
@@ -148,9 +149,7 @@ export const ClusterListRow = ({
                     </div>
                 </div>
             </div>
-
             {renderClusterStatus(clusterData)}
-
             <div className="child-shimmer-loading">
                 {hideDataOnLoad(clusterData.isProd ? CLUSTER_PROD_TYPE.PRODUCTION : CLUSTER_PROD_TYPE.NON_PRODUCTION)}
             </div>
