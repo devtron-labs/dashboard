@@ -154,7 +154,7 @@ export const SourceInfo = ({
         return <div className="flex left mb-16">{loadingCards}</div>
     }
 
-    const onClickConfigButton = () => {
+    const onClickSliderVerticalButton = () => {
         history.push(`${URLS.APP}/${params.appId}/edit/${URLS.APP_ENV_OVERRIDE_CONFIG}/${params.envId}`)
     }
 
@@ -290,7 +290,7 @@ export const SourceInfo = ({
                                     size={ComponentSizeType.small}
                                     icon={<Icon name="ic-sliders-vertical" color={null} />}
                                     variant={ButtonVariantType.secondary}
-                                    onClick={onClickConfigButton}
+                                    onClick={onClickSliderVerticalButton}
                                     component={ButtonComponentType.button}
                                     style={ButtonStyleType.neutral}
                                     ariaLabel="Go to Env Configuration"
