@@ -62,7 +62,7 @@ const ClusterListRow = ({
     return (
         <div
             key={`cluster-${clusterData.id}`}
-            className={`cluster-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class dc__visible-hover dc__visible-hover--parent
+            className={`cluster-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 py-12 px-20 hover-class dc__visible-hover dc__visible-hover--parent
                  ${clusterListLoader ? 'show-shimmer-loading dc__align-items-center' : ''}`}
         >
             {KubeConfigRowCheckbox && <KubeConfigRowCheckbox clusterData={clusterData} />}

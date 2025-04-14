@@ -5,6 +5,8 @@ import {
     BulkSelectionEvents,
     BulkSelectionIdentifiersType,
     BulkSelectionProvider,
+    Button,
+    ButtonVariantType,
     ClusterDetail,
     ClusterFiltersType,
     SearchBar,
@@ -109,20 +111,18 @@ const ClusterListView = (props: ClusterViewType) => {
                 {clusterListLoader ? (
                     <span className="dc__loading-dots mr-20">Syncing</span>
                 ) : (
-                    <div className="flex left">
+                    <div className="flex left dc__gap-8">
                         <span>
                             Last refreshed&nbsp;
                             <Timer start={lastSyncTime} />
                             &nbsp;ago
                         </span>
-                        <button
-                            type="button"
-                            data-testid="cluster-list-refresh-button"
-                            className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13"
+                        <Button
+                            text="Refresh"
+                            dataTestId="cluster-list-refresh-button"
                             onClick={handleRefresh}
-                        >
-                            Refresh
-                        </button>
+                            variant={ButtonVariantType.text}
+                        />
                     </div>
                 )}
             </div>
