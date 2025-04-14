@@ -15,7 +15,7 @@
  */
 
 import { useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useHistory, useParams } from 'react-router-dom'
 import moment from 'moment'
 import {
     Button,
@@ -26,6 +26,7 @@ import {
     DATE_TIME_FORMATS,
     DeploymentAppTypes,
     handleUTCTime,
+    Icon,
     Progressing,
     ReleaseMode,
     showError,
@@ -93,6 +94,8 @@ export const SourceInfo = ({
         appDetails?.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && !appDetails?.isPipelineTriggered
     const isIsolatedEnv = isVirtualEnvironment && !!appDetails?.resourceTree
 
+    const history = useHistory()
+
     if (
         ['progressing', 'degraded'].includes(status?.toLowerCase()) &&
         Array.isArray(conditions) &&
@@ -149,6 +152,10 @@ export const SourceInfo = ({
         }
 
         return <div className="flex left mb-16">{loadingCards}</div>
+    }
+
+    const onClickConfigButton = () => {
+        history.push(`${URLS.APP}/${params.appId}/edit/${URLS.APP_ENV_OVERRIDE_CONFIG}/${params.envId}`)
     }
 
     const renderDevtronAppsEnvironmentSelector = (environment) => {
@@ -278,6 +285,16 @@ export const SourceInfo = ({
                                         }}
                                     />
                                 )}
+                                <Button
+                                    dataTestId="deploy-button"
+                                    size={ComponentSizeType.small}
+                                    icon={<Icon name="ic-sliders-vertical" color={null} />}
+                                    variant={ButtonVariantType.secondary}
+                                    onClick={onClickConfigButton}
+                                    component={ButtonComponentType.button}
+                                    style={ButtonStyleType.neutral}
+                                    ariaLabel="Go to Env Configuration"
+                                />
                                 {window._env_.FEATURE_SWAP_TRAFFIC_ENABLE &&
                                     SwapTraffic &&
                                     !!appDetails.pcoId &&
@@ -395,13 +412,14 @@ export const SourceInfo = ({
                                   filteredEnvIds={filteredEnvIds}
                               />
                           )}
-                          {!appDetails?.deploymentAppDeleteRequest && !appMigratedFromExternalSourceAndIsNotTriggered && (
-                              <SecurityVulnerabilityCard
-                                  cardLoading={cardLoading}
-                                  appId={params.appId}
-                                  envId={params.envId}
-                              />
-                          )}
+                          {!appDetails?.deploymentAppDeleteRequest &&
+                              !appMigratedFromExternalSourceAndIsNotTriggered && (
+                                  <SecurityVulnerabilityCard
+                                      cardLoading={cardLoading}
+                                      appId={params.appId}
+                                      envId={params.envId}
+                                  />
+                              )}
                           <div className="flex right ml-auto">
                               {appDetails?.appStoreChartId && (
                                   <>
