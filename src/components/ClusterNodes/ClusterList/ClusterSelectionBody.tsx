@@ -15,7 +15,6 @@
  */
 
 import React, { useRef, useState } from 'react'
-import dayjs, { Dayjs } from 'dayjs'
 
 import {
     BulkSelectionEvents,
@@ -29,7 +28,6 @@ import {
 
 import NoClusterEmptyState from '@Images/no-cluster-empty-state.png'
 import { importComponentFromFELibrary } from '@Components/common'
-import Timer from '@Components/common/DynamicTabs/DynamicTabs.timer'
 import { AddClusterButton } from '@Components/ResourceBrowser/PageHeader.buttons'
 
 import ClusterNodeEmptyState from '../ClusterNodeEmptyStates'
@@ -51,12 +49,10 @@ const KubeConfigModal = importComponentFromFELibrary('KubeConfigModal', null, 'f
 const ClusterSelectionBody: React.FC<ClusterSelectionBodyTypes> = ({
     clusterOptions,
     clusterListLoader,
-    refreshData,
     filteredList,
 }) => {
     const parentRef = useRef<HTMLDivElement>(null)
 
-    const [lastSyncTime, setLastSyncTime] = useState<Dayjs>(dayjs())
     const [showKubeConfigModal, setShowKubeConfigModal] = useState(false)
     const [selectedClusterName, setSelectedClusterName] = useState('')
 
@@ -74,12 +70,6 @@ const ClusterSelectionBody: React.FC<ClusterSelectionBodyTypes> = ({
         handleBulkSelection({
             action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
         })
-    }
-
-    const handleRefresh = () => {
-        refreshData()
-        setLastSyncTime(dayjs())
-        handleClearBulkSelection()
     }
 
     if (!clusterOptions.length) {
@@ -104,29 +94,6 @@ const ClusterSelectionBody: React.FC<ClusterSelectionBodyTypes> = ({
 
     const renderClusterList = () => (
         <div className="cluster-list-main-container flex-grow-1 flexbox-col bg__primary dc__overflow-auto">
-            <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16 dc__zi-4">
-                <div className="fs-13 flex">
-                    {clusterListLoader ? (
-                        <span className="dc__loading-dots mr-20">Syncing</span>
-                    ) : (
-                        <>
-                            <span>
-                                Last refreshed&nbsp;
-                                <Timer start={lastSyncTime} />
-                                &nbsp;ago
-                            </span>
-                            <button
-                                type="button"
-                                data-testid="cluster-list-refresh-button"
-                                className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13"
-                                onClick={handleRefresh}
-                            >
-                                Refresh
-                            </button>
-                        </>
-                    )}
-                </div>
-            </div>
             {ClusterMap && window._env_.FEATURE_CLUSTER_MAP_ENABLE && (
                 <ClusterMap
                     isLoading={clusterListLoader}
