@@ -87,5 +87,5 @@ export const getSortedClusterList = (
 }
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
-    clusterFilter: (searchParams.get('clusterFilter') as ClusterFiltersType) || ClusterFiltersType.ALL_CLUSTERS,
+    clusterFilter: (searchParams.get('clusterFilter') as ClusterFiltersType) ?? ClusterFiltersType.ALL_CLUSTERS,
 })

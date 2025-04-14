@@ -57,7 +57,7 @@ const ClusterSelectionBody: React.FC<ClusterSelectionBodyTypes> = ({
     const parentRef = useRef<HTMLDivElement>(null)
 
     const [lastSyncTime, setLastSyncTime] = useState<Dayjs>(dayjs())
-    const [showKubeConfigModal, setKubeConfigModal] = useState(false)
+    const [showKubeConfigModal, setShowKubeConfigModal] = useState(false)
     const [selectedClusterName, setSelectedClusterName] = useState('')
 
     const { clearFilters } = useUrlFilters<ClusterMapListSortableKeys, { clusterFilter: ClusterFiltersType }>({
@@ -94,11 +94,12 @@ const ClusterSelectionBody: React.FC<ClusterSelectionBodyTypes> = ({
     }
 
     const onChangeShowKubeConfigModal = () => {
-        setKubeConfigModal(true)
+        setShowKubeConfigModal(true)
     }
 
     const onChangeCloseKubeConfigModal = () => {
-        setKubeConfigModal(false)
+        setShowKubeConfigModal(false)
+        setSelectedClusterName('')
     }
 
     const renderClusterList = () => (
