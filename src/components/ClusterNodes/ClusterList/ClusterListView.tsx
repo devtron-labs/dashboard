@@ -19,6 +19,8 @@ import { ClusterViewType } from './types'
 
 const ClusterFilters = importComponentFromFELibrary('ClusterFilters', null, 'function')
 
+const getSelectAllDialogStatus = () => SelectAllDialogStatus.CLOSED
+
 const ClusterListView = (props: ClusterViewType) => {
     const { searchKey, clusterFilter, updateSearchParams, handleSearch, sortBy, sortOrder } = useUrlFilters<
         ClusterMapListSortableKeys,
@@ -62,8 +64,6 @@ const ClusterListView = (props: ClusterViewType) => {
             }, {} as ClusterDetail) ?? {},
         [clusterOptions],
     )
-
-    const getSelectAllDialogStatus = () => SelectAllDialogStatus.CLOSED
 
     return (
         <BulkSelectionProvider<BulkSelectionIdentifiersType<ClusterDetail>>
