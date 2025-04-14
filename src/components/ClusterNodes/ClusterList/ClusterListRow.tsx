@@ -2,14 +2,11 @@ import { Link } from 'react-router-dom'
 
 import {
     ALL_NAMESPACE_OPTION,
-    BulkSelectionEvents,
     BulkSelectionIdentifiersType,
     Button,
     ButtonComponentType,
     ButtonStyleType,
     ButtonVariantType,
-    Checkbox,
-    CHECKBOX_VALUE,
     ClusterDetail,
     ClusterStatusType,
     ComponentSizeType,
@@ -31,6 +28,7 @@ import { ClusterListRowTypes } from './types'
 const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
 const ClusterStatusCell = importComponentFromFELibrary('ClusterStatus', null, 'function')
 const KubeConfigButton = importComponentFromFELibrary('KubeConfigButton', null, 'function')
+const KubeConfigRowCheckbox = importComponentFromFELibrary('KubeConfigRowCheckbox', null, 'function')
 
 const ClusterListRow = ({
     clusterData,
@@ -38,35 +36,10 @@ const ClusterListRow = ({
     onChangeShowKubeConfigModal,
     setSelectedClusterName,
 }: ClusterListRowTypes) => {
-    const {
-        selectedIdentifiers: bulkSelectionState,
-        handleBulkSelection,
-        getSelectedIdentifiersCount,
-    } = useBulkSelection<BulkSelectionIdentifiersType<ClusterDetail>>()
+    const { selectedIdentifiers: bulkSelectionState, getSelectedIdentifiersCount } =
+        useBulkSelection<BulkSelectionIdentifiersType<ClusterDetail>>()
     const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
-
-    const handleSelection = () => {
-        const { name } = clusterData
-        if (bulkSelectionState[name]) {
-            handleBulkSelection({
-                action: BulkSelectionEvents.CLEAR_IDENTIFIERS,
-                data: {
-                    identifierIds: [name],
-                },
-            })
-        } else {
-            handleBulkSelection({
-                action: BulkSelectionEvents.SELECT_IDENTIFIER,
-                data: {
-                    identifierObject: {
-                        ...bulkSelectionState,
-                        [name]: clusterData,
-                    },
-                },
-            })
-        }
-        setSelectedClusterName('')
-    }
+    const identifierCount = getSelectedIdentifiersCount()
 
     const hideDataOnLoad = (value) => {
         if (clusterListLoader) {
@@ -92,22 +65,8 @@ const ClusterListRow = ({
             className={`cluster-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class dc__visible-hover dc__visible-hover--parent
                  ${clusterListLoader ? 'show-shimmer-loading dc__align-items-center' : ''}`}
         >
-            <div
-                className={
-                    isIdentifierSelected || getSelectedIdentifiersCount() > 0
-                        ? 'dc__visible'
-                        : 'dc__visible-hover--child flex left'
-                }
-            >
-                <Checkbox
-                    isChecked={isIdentifierSelected}
-                    onChange={handleSelection}
-                    rootClassName="icon-dim-20 m-0"
-                    dataTestId={`activate-${clusterData.name}`}
-                    value={CHECKBOX_VALUE.CHECKED}
-                />
-            </div>
-            {!isIdentifierSelected && getSelectedIdentifiersCount() === 0 && (
+            {KubeConfigRowCheckbox && <KubeConfigRowCheckbox clusterData={clusterData} />}
+            {!isIdentifierSelected && identifierCount === 0 && (
                 <div className="dc__visible-hover--hide-child flex left">
                     <Icon name="ic-bg-cluster" color={null} size={24} />
                 </div>

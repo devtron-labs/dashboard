@@ -65,8 +65,10 @@ const ClusterSelectionBody: React.FC<ClusterSelectionBodyTypes> = ({
         initialSortKey: ClusterMapListSortableKeys.CLUSTER_NAME,
     })
 
-    const { handleBulkSelection, isBulkSelectionApplied, getSelectedIdentifiersCount } =
+    const { handleBulkSelection, getSelectedIdentifiersCount } =
         useBulkSelection<BulkSelectionIdentifiersType<ClusterDetail>>()
+
+    const identifierCount = getSelectedIdentifiersCount()
 
     const handleClearBulkSelection = () => {
         handleBulkSelection({
@@ -149,11 +151,11 @@ const ClusterSelectionBody: React.FC<ClusterSelectionBodyTypes> = ({
     )
 
     const renderClusterBulkSelection = () => {
-        if (getSelectedIdentifiersCount() > 0 || isBulkSelectionApplied) {
+        if (identifierCount > 0) {
             return (
                 <ClusterBulkSelectionActionWidget
                     parentRef={parentRef}
-                    count={isBulkSelectionApplied ? clusterOptions?.length ?? 0 : getSelectedIdentifiersCount()}
+                    count={identifierCount}
                     handleClearBulkSelection={handleClearBulkSelection}
                     onChangeShowKubeConfigModal={onChangeShowKubeConfigModal}
                 />
@@ -168,7 +170,7 @@ const ClusterSelectionBody: React.FC<ClusterSelectionBodyTypes> = ({
             {renderClusterList()}
             {showKubeConfigModal && KubeConfigModal && (
                 <KubeConfigModal
-                    clusterName={selectedClusterName || getSelectedIdentifiersCount() === 0}
+                    clusterName={selectedClusterName || identifierCount === 0}
                     handleModalClose={onChangeCloseKubeConfigModal}
                     isSingleClusterButton={!!selectedClusterName}
                 />
