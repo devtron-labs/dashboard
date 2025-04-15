@@ -818,8 +818,12 @@ const DockerForm = ({
             ...(registryStorageType !== RegistryStorageType.OCI_PUBLIC &&
             selectedDockerRegistryType.value === RegistryType.OTHER
                 ? {
-                      username: trimmedUsername,
-                      password: parsePassword(customState.password.value),
+                      ...(authenticationType === OtherRegistryAuthenticationType.USERNAME_PASSWORD
+                          ? {
+                                username: trimmedUsername,
+                                password: parsePassword(customState.password.value),
+                            }
+                          : {}),
                       connection: state.advanceSelect.value,
                       cert: state.advanceSelect.value !== CERTTYPE.SECURE_WITH_CERT ? '' : state.certInput.value,
                   }
