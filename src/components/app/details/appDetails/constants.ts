@@ -25,4 +25,12 @@ export const DA_APP_DETAILS_GA_EVENTS = {
         category: 'App Details',
         action: 'DA_APP_DETAIL_GO_TO_ENV_CONFIG',
     },
+    MetricsApplyTimeChange: {
+        category: 'App Metrics',
+        action: 'DA_APP_DETAIL_METRICS_APPLY_TIME_RANGE',
+    },
+    MetricsPresetTimeRange: {
+        category: 'App Metrics',
+        action: 'DA_APP_DETAIL_METRICS_PRESET_TIME_RANGE',
+    },
 }
