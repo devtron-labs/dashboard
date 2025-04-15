@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import ReactGA from 'react-ga4'
+
 export const APP_METRICS_CALENDAR_INPUT_DATE_FORMAT = 'DD-MM-YYYY hh:mm:ss'
 
-export const DA_APP_DETAILS_GA_EVENTS = {
+export const DA_APP_DETAILS_GA_EVENTS: Record<string, Parameters<typeof ReactGA.event>[0]> = {
     DeployButtonClicked: {
         category: 'App Details',
         action: 'DA_APP_DETAIL_DEPLOY',
