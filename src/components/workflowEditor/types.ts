@@ -202,6 +202,7 @@ export interface WebhookNodeProps extends Required<Pick<AppConfigProps, 'isTempl
      * @default false
      */
     isReadonlyView?: boolean
+    showAddImageButton?: boolean
 }
 
 export interface WebhookTippyType {
