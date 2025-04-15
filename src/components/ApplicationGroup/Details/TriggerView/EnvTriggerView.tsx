@@ -125,6 +125,7 @@ import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import CIMaterialModal from '../../../app/details/triggerView/CIMaterialModal'
 import { RenderCDMaterialContentProps } from './types'
 import { WebhookReceivedPayloadModal } from '@Components/app/details/triggerView/WebhookReceivedPayloadModal'
+import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary(
@@ -145,6 +146,7 @@ const validateRuntimeParameters = importComponentFromFELibrary(
     'function',
 )
 const ChangeImageSource = importComponentFromFELibrary('ChangeImageSource', null, 'function')
+const WebhookAddImageModal = importComponentFromFELibrary('WebhookAddImageModal', null, 'function')
 
 // FIXME: IN CIMaterials we are sending isCDLoading while in CD materials we are sending isCILoading
 let inprogressStatusTimer
@@ -192,6 +194,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [runtimeParams, setRuntimeParams] = useState<Record<string, RuntimePluginVariables[]>>({})
     const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<Record<string, RuntimeParamsErrorState>>({})
     const [isBulkTriggerLoading, setIsBulkTriggerLoading] = useState<boolean>(false)
+    const [selectedWebhookNode, setSelectedWebhookNode] = useState<{ appId: number; id: number }>(null)
 
     const selectedWorkflows = filteredWorkflows.filter((wf) => wf.isSelected)
 
@@ -1941,7 +1944,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
     if (!filteredWorkflows.length) {
         return (
-            <div className='flex-grow-1'>
+            <div className="flex-grow-1">
                 <AppNotConfigured />
             </div>
         )
@@ -2381,6 +2384,16 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         history.push(match.url)
     }
 
+    const getWebhookDetails = () => getExternalCIConfig(selectedWebhookNode.appId, selectedWebhookNode.id, false)
+
+    const handleWebhookAddImageClick = (appId: number) => (id: number) => {
+        setSelectedWebhookNode({ appId, id })
+    }
+
+    const handleWebhookAddImageModalClose = () => {
+        setSelectedWebhookNode(null)
+    }
+
     const renderWorkflow = (): JSX.Element => {
         return (
             <>
@@ -2403,10 +2416,17 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             location={location}
                             match={match}
                             index={index}
+                            handleWebhookAddImageClick={handleWebhookAddImageClick(workflow.appId)}
                         />
                     )
                 })}
                 <LinkedCIDetail workflows={filteredWorkflows} handleClose={handleModalClose} />
+                {WebhookAddImageModal && selectedWebhookNode && (
+                    <WebhookAddImageModal
+                        getWebhookDetails={getWebhookDetails}
+                        onClose={handleWebhookAddImageModalClose}
+                    />
+                )}
             </>
         )
     }

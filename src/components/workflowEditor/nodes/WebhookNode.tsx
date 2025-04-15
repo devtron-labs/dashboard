@@ -47,14 +47,14 @@ export const WebhookNode = ({
     isLastNode,
     isReadonlyView = false,
     isTemplateView,
-    showAddImageButton = false,
+    addImageButtonConfig,
 }: WebhookNodeProps) => {
     const [isWebhookTippyOpen, setIsWebhookTippyOpen] = useState(false)
 
     const selectedNodeKey = `${selectedNode?.nodeType}-${selectedNode?.id}`
     const currentNodeKey = `${WorkflowNodeType.WEBHOOK}-${id ?? ''}`
 
-    const showWebhookAddImageButton = WebhookAddImageButton && showAddImageButton
+    const showWebhookAddImageButton = WebhookAddImageButton && (addImageButtonConfig?.show || false)
 
     const addNewCD = (event): void => {
         event.preventDefault()
@@ -77,6 +77,8 @@ export const WebhookNode = ({
     const toggleIsWebhookTippyOpen = () => {
         setIsWebhookTippyOpen((prev) => !prev)
     }
+
+    const onWebhookAddImageClick = () => addImageButtonConfig?.onClick(id)
 
     const renderWrapWithLinkOrTippy = (children: ReactElement) =>
         isTemplateView ? (
@@ -138,7 +140,9 @@ export const WebhookNode = ({
                             />
                         )}
                     </div>
-                    {showWebhookAddImageButton && <WebhookAddImageButton dataTestId={id} onClick={() => {}} />}
+                    {showWebhookAddImageButton && (
+                        <WebhookAddImageButton dataTestId={id} onClick={onWebhookAddImageClick} />
+                    )}
                 </div>
             </ConditionalWrap>
         )
