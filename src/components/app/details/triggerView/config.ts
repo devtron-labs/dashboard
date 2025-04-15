@@ -17,6 +17,9 @@
 import { createContext } from 'react'
 import { DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerViewContextType } from './types'
+import { importComponentFromFELibrary } from '@Components/common'
+
+const WebhookAddImageButton = importComponentFromFELibrary('WebhookAddImageButton', null, 'function')
 
 export const TriggerViewContext = createContext<TriggerViewContextType>({
     invalidateCache: false,
@@ -100,6 +103,16 @@ export const WorkflowTrigger = {
         distanceX: 60,
         distanceY: 25,
     } as NodeDimension,
+    ...(WebhookAddImageButton
+        ? {
+              webhookNodeSize: {
+                  nodeHeight: 94,
+                  nodeWidth: 200,
+                  distanceX: 60,
+                  distanceY: 20,
+              } as NodeDimension,
+          }
+        : {}),
     workflow: {
         distanceY: 16,
         distanceX: 0,
@@ -129,6 +142,7 @@ export interface WorkflowDimensions {
     externalCINodeSizes?: NodeDimension
     linkedCINodeSizes?: NodeDimension
     cDNodeSizes: NodeDimension
+    webhookNodeSize?: NodeDimension
     workflow: Offset
 }
 

@@ -338,6 +338,7 @@ export interface WorkflowProps
     index?: number
     environmentLists?: any[]
     filteredCIPipelines?: any[]
+    handleWebhookAddImageClick?: (webhookId: number) => void
 }
 
 export interface TriggerViewContextType {
@@ -403,6 +404,7 @@ export interface TriggerViewState {
     searchImageTag?: string
     resourceFilters?: FilterConditionsListType[]
     runtimeParams?: RuntimePluginVariables[]
+    selectedWebhookNodeId: number
 }
 
 export interface CIMaterialProps

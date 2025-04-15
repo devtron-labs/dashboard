@@ -15,13 +15,22 @@
  */
 
 import { ReactElement, useState } from 'react'
-import { WorkflowNodeType, ConditionalWrap, TARGET_IDS, TippyTheme, TippyCustomized } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    WorkflowNodeType,
+    ConditionalWrap,
+    TARGET_IDS,
+    TippyTheme,
+    TippyCustomized,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import ToggleCDSelectButton from '../ToggleCDSelectButton'
 import { ReactComponent as Webhook } from '../../../assets/icons/ic-CIWebhook.svg'
 import { WebhookNodeProps } from '../types'
 import { ReactComponent as ICCIWebhook } from '@Icons/ic-CIWebhook.svg'
 import { DOCUMENTATION } from '@Config/constants'
+import { importComponentFromFELibrary } from '@Components/common'
+
+const WebhookAddImageButton = importComponentFromFELibrary('WebhookAddImageButton', null, 'function')
 
 export const WebhookNode = ({
     x,
@@ -38,11 +47,14 @@ export const WebhookNode = ({
     isLastNode,
     isReadonlyView = false,
     isTemplateView,
+    addImageButtonConfig,
 }: WebhookNodeProps) => {
     const [isWebhookTippyOpen, setIsWebhookTippyOpen] = useState(false)
 
     const selectedNodeKey = `${selectedNode?.nodeType}-${selectedNode?.id}`
     const currentNodeKey = `${WorkflowNodeType.WEBHOOK}-${id ?? ''}`
+
+    const showWebhookAddImageButton = WebhookAddImageButton && (addImageButtonConfig?.show || false)
 
     const addNewCD = (event): void => {
         event.preventDefault()
@@ -63,8 +75,10 @@ export const WebhookNode = ({
     }
 
     const toggleIsWebhookTippyOpen = () => {
-        setIsWebhookTippyOpen(prev => !prev)
+        setIsWebhookTippyOpen((prev) => !prev)
     }
+
+    const onWebhookAddImageClick = () => addImageButtonConfig?.onClick(id)
 
     const renderWrapWithLinkOrTippy = (children: ReactElement) =>
         isTemplateView ? (
@@ -90,7 +104,7 @@ export const WebhookNode = ({
                 {children}
             </Link>
         )
-    
+
     const handleCardClick = () => {
         if (isTemplateView) {
             toggleIsWebhookTippyOpen()
@@ -102,11 +116,16 @@ export const WebhookNode = ({
 
         return (
             <ConditionalWrap condition={shouldWrap} wrap={renderWrapWithLinkOrTippy}>
-                <div className={`workflow-node pl-10 ${shouldWrap ? 'cursor' : ''}`} onClick={handleCardClick}>
+                <div
+                    className={`workflow-node ${showWebhookAddImageButton ? 'flexbox-col dc__gap-10 p-12' : 'pl-10'} ${shouldWrap ? 'cursor' : ''}`}
+                    onClick={handleCardClick}
+                >
                     <div className="workflow-node__title flex workflow-node__title--no-margin h-100">
-                        <div className="workflow-node__full-width-minus-Icon p-12">
+                        <div
+                            className={`workflow-node__full-width-minus-Icon ${!showWebhookAddImageButton ? 'p-12' : ''}`}
+                        >
                             <span className="workflow-node__text-light">Webhook</span>
-                            <div className="dc__ellipsis-left">External source</div>
+                            <div className="dc__ellipsis-left lh-16">External source</div>
                         </div>
 
                         <Webhook className="icon-dim-20 mr-12" />
@@ -121,6 +140,9 @@ export const WebhookNode = ({
                             />
                         )}
                     </div>
+                    {showWebhookAddImageButton && (
+                        <WebhookAddImageButton dataTestId={id} onClick={onWebhookAddImageClick} />
+                    )}
                 </div>
             </ConditionalWrap>
         )
