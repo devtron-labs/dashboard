@@ -128,7 +128,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
         const res = this.props.providers?.filter((provider) => provider?.id === selectedId)
 
         if (res[0]?.authMode != 'SSH' && !url.startsWith('http')) {
-            return "Git Repo URL must start with 'http' or 'https:'"
+            return "Git Repo URL must start with 'http' or 'https'"
         }
 
         if (res[0]?.authMode === 'SSH' && !url.includes('@')) {
