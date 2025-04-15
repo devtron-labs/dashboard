@@ -16,6 +16,7 @@
 
 import { useMemo, useState } from 'react'
 import { Link, useHistory, useParams } from 'react-router-dom'
+import ReactGA from 'react-ga4'
 import moment from 'moment'
 import {
     Button,
@@ -33,7 +34,7 @@ import {
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICCamera } from '@Icons/ic-camera.svg'
-import { URLS } from '../../../../config'
+import { APP_COMPOSE_STAGE, getAppComposeURL, URLS } from '../../../../config'
 import { EnvSelector } from './AppDetails'
 import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
 import { Nodes, SourceInfoType } from '../../types'
@@ -52,6 +53,7 @@ import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
 import HelmAppConfigApplyStatusCard from '@Components/v2/appDetails/sourceInfo/environmentStatus/HelmAppConfigApplyStatusCard'
 import { HibernationModalTypes } from './appDetails.type'
+import { DA_APP_DETAILS_GA_EVENTS } from './constants'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
@@ -155,7 +157,8 @@ export const SourceInfo = ({
     }
 
     const onClickSliderVerticalButton = () => {
-        history.push(`${URLS.APP}/${params.appId}/edit/${URLS.APP_ENV_OVERRIDE_CONFIG}/${params.envId}`)
+        history.push(`${getAppComposeURL(params.appId, APP_COMPOSE_STAGE.ENV_OVERRIDE, false, false)}/${params.envId}`)
+        ReactGA.event(DA_APP_DETAILS_GA_EVENTS.GoToEnvironmentConfiguration)
     }
 
     const renderDevtronAppsEnvironmentSelector = (environment) => {
@@ -286,14 +289,14 @@ export const SourceInfo = ({
                                     />
                                 )}
                                 <Button
-                                    dataTestId="deploy-button"
+                                    dataTestId="app-details-env-config-button"
                                     size={ComponentSizeType.small}
                                     icon={<Icon name="ic-sliders-vertical" color={null} />}
                                     variant={ButtonVariantType.secondary}
                                     onClick={onClickSliderVerticalButton}
                                     component={ButtonComponentType.button}
                                     style={ButtonStyleType.neutral}
-                                    ariaLabel="Go to Env Configuration"
+                                    ariaLabel="Go to Environment Configuration"
                                 />
                                 {window._env_.FEATURE_SWAP_TRAFFIC_ENABLE &&
                                     SwapTraffic &&

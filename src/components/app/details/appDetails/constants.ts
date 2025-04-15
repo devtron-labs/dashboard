@@ -15,3 +15,14 @@
  */
 
 export const APP_METRICS_CALENDAR_INPUT_DATE_FORMAT = 'DD-MM-YYYY hh:mm:ss'
+
+export const DA_APP_DETAILS_GA_EVENTS = {
+    DeployButtonClicked: {
+        category: 'App Details',
+        action: 'DA_APP_DETAIL_DEPLOY',
+    },
+    GoToEnvironmentConfiguration: {
+        category: 'App Details',
+        action: 'DA_APP_DETAIL_GO_TO_ENV_CONFIG',
+    },
+}
