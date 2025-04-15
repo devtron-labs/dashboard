@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import 'react-dates/initialize'
 import 'react-dates/lib/css/_datepicker.css'
 import CustomizableCalendarDay from 'react-dates/esm/components/CustomizableCalendarDay.js'
@@ -133,10 +133,10 @@ export class DatePickerType2 extends Component<DatePickerType2Props, any> {
         ReactGA.event(DA_APP_DETAILS_GA_EVENTS.MetricsApplyTimeChange)
     }
 
-    onClickPredefinedTimeRange = (startDate, endDate, endStr) => () => {
-            ReactGA.event(DA_APP_DETAILS_GA_EVENTS.MetricsPresetTimeRange)
-            this.props.handlePredefinedRange(startDate, endDate, endStr)
-            this.setState({ showCalendar: false })
+    onClickPredefinedTimeRange = (startDate: Moment, endDate: Moment, endStr: string) => () => {
+        ReactGA.event(DA_APP_DETAILS_GA_EVENTS.MetricsPresetTimeRange)
+        this.props.handlePredefinedRange(startDate, endDate, endStr)
+        this.setState({ showCalendar: false })
     }
 
     renderDatePresets() {
@@ -181,11 +181,7 @@ export class DatePickerType2 extends Component<DatePickerType2Props, any> {
                                 }}
                             />
                         </label>
-                        <button
-                            type="button"
-                            className="cta small"
-                            onClick={this.onClickApplyTimeChange}
-                        >
+                        <button type="button" className="cta small" onClick={this.onClickApplyTimeChange}>
                             Apply Time Range
                         </button>
                     </div>

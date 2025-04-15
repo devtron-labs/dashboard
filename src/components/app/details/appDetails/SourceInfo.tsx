@@ -299,7 +299,7 @@ export const SourceInfo = ({
                                     ariaLabel="Go to Environment Configuration"
                                     showTooltip
                                     tooltipProps={{
-                                        content: "Go to Environment Config",
+                                        content: 'Go to Environment Config',
                                         placement: 'bottom',
                                     }}
                                 />
