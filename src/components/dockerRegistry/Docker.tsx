@@ -53,6 +53,7 @@ import {
     RegistryIcon,
     ComponentSizeType,
     PasswordField,
+    OtherRegistryAuthenticationType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
@@ -100,6 +101,7 @@ import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/Validate
 const RegistryHelmPushCheckbox = importComponentFromFELibrary('RegistryHelmPushCheckbox')
 const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio')
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
+const AuthenticationTypeRadio = importComponentFromFELibrary('AuthenticationTypeRadio', null, 'function')
 
 enum CERTTYPE {
     SECURE = 'secure',
@@ -259,6 +261,7 @@ const CollapsedList = ({
     repositoryList = [],
     disabledFields = [],
     ociRegistryConfig,
+    credentialsType,
     ...rest
 }) => {
     const [collapsed, toggleCollapse] = useState(true)
@@ -338,6 +341,7 @@ const CollapsedList = ({
                         isPublic,
                         disabledFields,
                         ociRegistryConfig,
+                        credentialsType,
                     }}
                 />
             )}
@@ -377,6 +381,7 @@ const DockerForm = ({
         : {
               CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
           },
+    credentialsType: authCredentialsType,
     ...rest
 }) => {
     const re = PATTERNS.APP_NAME
@@ -538,6 +543,9 @@ const DockerForm = ({
     const [showManageModal, setManageModal] = useState(false)
     const [registryStorageType, setRegistryStorageType] = useState<string>(
         isPublic ? RegistryStorageType.OCI_PUBLIC : RegistryStorageType.OCI_PRIVATE,
+    )
+    const [authenticationType, setAuthenticationType] = useState<OtherRegistryAuthenticationType>(
+        id ? authCredentialsType : OtherRegistryAuthenticationType.USERNAME_PASSWORD,
     )
 
     const InitialValueOfIsContainerStore: boolean =
@@ -712,6 +720,11 @@ const DockerForm = ({
         }
     }
 
+    const handleChangeOtherRegistryAuthType = (e) => {
+        const updatedAuthType = e.target.value as OtherRegistryAuthenticationType
+        setAuthenticationType(updatedAuthType)
+    }
+
     function fetchAWSRegion(): string {
         const pattern =
             registryStorageType === RegistryStorageType.OCI_PUBLIC
@@ -839,6 +852,9 @@ const DockerForm = ({
                 customState.remoteConnectionConfig.connectionMethod.value,
                 sshConnectionType,
             ),
+            ...(AuthenticationTypeRadio && selectedDockerRegistryType.value === RegistryType.OTHER
+                ? { credentialsType: authenticationType }
+                : {}),
         }
     }
 
@@ -1003,6 +1019,7 @@ const DockerForm = ({
                 let error = false
                 if (
                     registryStorageType === RegistryStorageType.OCI_PRIVATE &&
+                    authenticationType === OtherRegistryAuthenticationType.USERNAME_PASSWORD &&
                     (!customState.username.value || !(customState.password.value || id))
                 ) {
                     setCustomState((st) => ({
@@ -1605,13 +1622,25 @@ const DockerForm = ({
                     </>
                 )
             }
+
+            const isUserNamePasswordRequired =
+                selectedDockerRegistryType.value === RegistryType.OTHER
+                    ? authenticationType === OtherRegistryAuthenticationType.USERNAME_PASSWORD
+                    : true
+
             return (
                 <>
+                    {AuthenticationTypeRadio && selectedDockerRegistryType.value === RegistryType.OTHER && (
+                        <AuthenticationTypeRadio
+                            authenticationType={authenticationType}
+                            handleChangeOtherRegistryAuthType={handleChangeOtherRegistryAuthType}
+                        />
+                    )}
                     <div className={`${isGCROrGCP ? '' : 'form__row--two-third'}`}>
                         <div className="form__row">
                             <CustomInput
                                 name="username"
-                                required
+                                required={isUserNamePasswordRequired}
                                 value={customState.username.value || selectedDockerRegistryType.id.defaultValue}
                                 error={customState.username.error}
                                 onChange={customHandleChange}
@@ -1632,7 +1661,7 @@ const DockerForm = ({
                                 <PasswordField
                                     shouldShowDefaultPlaceholderOnBlur={!!id}
                                     name="password"
-                                    required
+                                    required={isUserNamePasswordRequired}
                                     value={customState.password.value}
                                     error={customState.password.error}
                                     onChange={customHandleChange}

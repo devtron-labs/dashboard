@@ -21,6 +21,7 @@ import {
     ToastManager,
     ROUTES as COMMON_ROUTES,
     EnvResourceType,
+    OtherRegistryAuthenticationType,
 } from '@devtron-labs/devtron-fe-common-lib'
 export const DEFAULT_STATUS = 'checking'
 export const DEFAULT_STATUS_TEXT = 'Checking Status'
@@ -471,6 +472,7 @@ export type OCIRegistryStorageConfigType = {
     CONTAINER?: OCIRegistryStorageActionType
     CHART?: OCIRegistryStorageActionType
 }
+
 export const OCIRegistryConfigConstants: Record<string, OCIRegistryStorageActionType> = {
     PULL: 'PULL',
     PUSH: 'PUSH',
@@ -541,6 +543,7 @@ export interface RegistryPayloadType {
             sshAuthKey: string
         }
     }
+    credentialsType?: OtherRegistryAuthenticationType
 }
 
 export interface RegistryPayloadWithSelectType extends RegistryPayloadType, SelectPickerOptionType {}
