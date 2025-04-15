@@ -266,7 +266,7 @@ export const SourceInfo = ({
                                         showTooltip={isApprovalConfigured}
                                         tooltipProps={{
                                             content: 'Application deployment requiring approval cannot be hibernated.',
-                                            placement: 'bottom-end',
+                                            placement: 'bottom',
                                         }}
                                     />
                                 )}
@@ -284,7 +284,7 @@ export const SourceInfo = ({
                                         showTooltip={isApprovalConfigured}
                                         tooltipProps={{
                                             content: 'Application deployment requiring approval cannot be hibernated.',
-                                            placement: 'bottom-end',
+                                            placement: 'bottom',
                                         }}
                                     />
                                 )}
@@ -297,6 +297,11 @@ export const SourceInfo = ({
                                     component={ButtonComponentType.button}
                                     style={ButtonStyleType.neutral}
                                     ariaLabel="Go to Environment Configuration"
+                                    showTooltip
+                                    tooltipProps={{
+                                        content: "Go to Environment Config",
+                                        placement: 'bottom',
+                                    }}
                                 />
                                 {window._env_.FEATURE_SWAP_TRAFFIC_ENABLE &&
                                     SwapTraffic &&
