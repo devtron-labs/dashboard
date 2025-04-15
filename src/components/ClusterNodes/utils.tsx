@@ -16,6 +16,7 @@
 
 import {
     ClusterDetail,
+    ClusterFiltersType,
     numberComparatorBySortOrder,
     SortingOrder,
     stringComparatorBySortOrder,
@@ -84,3 +85,7 @@ export const getSortedClusterList = (
             break
     }
 }
+
+export const parseSearchParams = (searchParams: URLSearchParams) => ({
+    clusterFilter: (searchParams.get('clusterFilter') as ClusterFiltersType) ?? ClusterFiltersType.ALL_CLUSTERS,
+})
