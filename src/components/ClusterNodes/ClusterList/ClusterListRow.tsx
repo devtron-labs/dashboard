@@ -67,7 +67,7 @@ const ClusterListRow = ({
         >
             {KubeConfigRowCheckbox && <KubeConfigRowCheckbox clusterData={clusterData} />}
             {!isIdentifierSelected && identifierCount === 0 && (
-                <div className="dc__visible-hover--hide-child flex left">
+                <div className={`${KubeConfigRowCheckbox ? 'dc__visible-hover--hide-child' : ''} flex left`}>
                     <Icon name="ic-bg-cluster" color={null} size={24} />
                 </div>
             )}

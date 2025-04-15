@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import 'react-dates/initialize'
 import 'react-dates/lib/css/_datepicker.css'
 import CustomizableCalendarDay from 'react-dates/esm/components/CustomizableCalendarDay.js'
@@ -23,6 +23,7 @@ import moment, { Moment } from 'moment'
 import { isInclusivelyBeforeDay, DayPickerRangeController } from 'react-dates'
 import './calendar.css'
 import { ReactComponent as ArrowDown } from '../../../assets/icons/ic-chevron-down.svg'
+import { DA_APP_DETAILS_GA_EVENTS } from '@Components/app/details/appDetails/constants'
 
 interface DatePickerType2Props {
     calendar
@@ -126,12 +127,16 @@ export class DatePickerType2 extends Component<DatePickerType2Props, any> {
         this.renderDatePresets = this.renderDatePresets.bind(this)
     }
 
-    getInitialVisibleMonth = () => {
-        return this.props.calendar.endDate
+    onClickApplyTimeChange = () => {
+        this.setState({ showCalendar: false })
+        this.props.handleApply()
+        ReactGA.event(DA_APP_DETAILS_GA_EVENTS.MetricsApplyTimeChange)
     }
 
-    handleIsDayBlocked(day) {
-        return false
+    onClickPredefinedTimeRange = (startDate: Moment, endDate: Moment, endStr: string) => () => {
+        ReactGA.event(DA_APP_DETAILS_GA_EVENTS.MetricsPresetTimeRange)
+        this.props.handlePredefinedRange(startDate, endDate, endStr)
+        this.setState({ showCalendar: false })
     }
 
     renderDatePresets() {
@@ -176,14 +181,7 @@ export class DatePickerType2 extends Component<DatePickerType2Props, any> {
                                 }}
                             />
                         </label>
-                        <button
-                            type="button"
-                            className="cta small"
-                            onClick={() => {
-                                this.setState({ showCalendar: false })
-                                this.props.handleApply()
-                            }}
-                        >
+                        <button type="button" className="cta small" onClick={this.onClickApplyTimeChange}>
                             Apply Time Range
                         </button>
                     </div>
@@ -209,15 +207,7 @@ export class DatePickerType2 extends Component<DatePickerType2Props, any> {
                                 type="button"
                                 key={text}
                                 style={{ ...buttonStyles, textAlign: 'left' }}
-                                onClick={() => {
-                                    ReactGA.event({
-                                        category: 'Deployment Metrics',
-                                        action: 'Date Range Changed',
-                                        label: 'Predefined',
-                                    })
-                                    this.props.handlePredefinedRange(startDate, endDate, endStr)
-                                    this.setState({ showCalendar: false })
-                                }}
+                                onClick={this.onClickPredefinedTimeRange(startDate, endDate, endStr)}
                             >
                                 {text}
                             </button>

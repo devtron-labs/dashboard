@@ -15,6 +15,7 @@
  */
 
 import React from 'react'
+import ReactGA from 'react-ga4'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import {
@@ -39,6 +40,7 @@ import { AppDetailsCDButtonType } from '../../types'
 import CDMaterial from '../triggerView/cdMaterial'
 import { TRIGGER_VIEW_PARAMS } from '../triggerView/Constants'
 import { MATERIAL_TYPE } from '../triggerView/types'
+import { DA_APP_DETAILS_GA_EVENTS } from './constants'
 import { getDeployButtonStyle } from './utils'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
@@ -69,6 +71,8 @@ const AppDetailsCDButton = ({
         history.push({
             search: new URLSearchParams(newParams).toString(),
         })
+
+        ReactGA.event(DA_APP_DETAILS_GA_EVENTS.DeployButtonClicked)
     }
 
     const closeCDModal = (e: React.MouseEvent): void => {
