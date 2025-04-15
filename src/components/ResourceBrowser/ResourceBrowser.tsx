@@ -27,9 +27,9 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { DEFAULT_CLUSTER_ID } from '@Components/cluster/cluster.type'
+import { ClusterListView } from '@Components/ClusterNodes/ClusterList'
 
 import { getClusterList, getClusterListMin } from '../ClusterNodes/clusterNodes.service'
-import ClusterSelectionList from '../ClusterNodes/ClusterSelectionList'
 import { sortObjectArrayAlphabetically } from '../common'
 import { AddClusterButton } from './PageHeader.buttons'
 
@@ -71,7 +71,7 @@ const ResourceBrowser: React.FC = () => {
         }
 
         return (
-            <ClusterSelectionList
+            <ClusterListView
                 clusterOptions={sortedClusterList}
                 clusterListLoader={detailClusterListLoading}
                 initialLoading={initialLoading}
