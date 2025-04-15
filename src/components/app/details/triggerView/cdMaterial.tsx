@@ -904,6 +904,7 @@ const CDMaterial = ({
                 ...(getRuntimeParamsPayload
                     ? { runtimeParamsPayload: getRuntimeParamsPayload(runtimeParamsList ?? []) }
                     : {}),
+                skipIfHibernated: false,
             })
                 .then((response: any) => {
                     if (response.result) {
