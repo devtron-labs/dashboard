@@ -3254,6 +3254,10 @@ button.anchor {
 
 .h-18 {
     height: 18px;
+
+    &--imp {
+        height: 18px !important;
+    }
 }
 
 .h-20 {
