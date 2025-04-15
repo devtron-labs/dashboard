@@ -545,7 +545,7 @@ const DockerForm = ({
         isPublic ? RegistryStorageType.OCI_PUBLIC : RegistryStorageType.OCI_PRIVATE,
     )
     const [authenticationType, setAuthenticationType] = useState<OtherRegistryAuthenticationType>(
-        id ? authCredentialsType : OtherRegistryAuthenticationType.USERNAME_PASSWORD,
+        id && authCredentialsType ? authCredentialsType : OtherRegistryAuthenticationType.USERNAME_PASSWORD,
     )
 
     const InitialValueOfIsContainerStore: boolean =
