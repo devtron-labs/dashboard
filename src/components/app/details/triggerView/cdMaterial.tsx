@@ -1180,6 +1180,7 @@ const CDMaterial = ({
         <>
             {materialData.materialInfo.map((mat: MaterialInfo, index) => {
                 const _gitCommit = getGitCommitInfo(mat)
+
                 if (
                     (materialData.appliedFilters?.length > 0 ||
                         materialData.deploymentBlockedState?.isBlocked ||
