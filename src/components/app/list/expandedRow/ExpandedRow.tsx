@@ -36,10 +36,10 @@ export class ExpandedRow extends Component<ExpandedRowProps> {
                 <Link
                     key={env.id}
                     to={`${this.props.redirect(this.props.app, env.id)}`}
-                    className="app-list__row app-list__row--expanded"
+                    className={`app-list__row app-list__row--expanded ${!this.props.isArgoInstalled ? 'app-list__row--argo-not-installed' : ''}`}
                 >
                     <div className="app-list__cell--icon" />
-                    <div className="app-list__cell app-list__cell--name">
+                    <div className="app-list__cell app-list__cell--name dc__overflow-hidden">
                         <svg className="app-status app-status--pseudo" preserveAspectRatio="none" viewBox="0 0 200 40">
                             <line x1="0" y1="20" x2="100%" y2="20" stroke={color} strokeWidth="1" />
                             <line x1="0" y1="15" x2="0" y2="25" stroke={color} strokeWidth="1" />
@@ -52,15 +52,15 @@ export class ExpandedRow extends Component<ExpandedRowProps> {
                     )}
                     <div className="app-list__cell app-list__cell--env">{env.name}</div>
                     <div className="app-list__cell app-list__cell--cluster">
-                        <p className="dc__truncate-text">{env.clusterName}</p>
+                        <p className="dc__truncate-text m-0">{env.clusterName}</p>
                     </div>
                     <div className="app-list__cell app-list__cell--namespace">
-                        <p className="dc__truncate-text">{env.namespace}</p>
+                        <p className="dc__truncate-text m-0">{env.namespace}</p>
                     </div>
                     <div className="app-list__cell app-list__cell--time">
                         {env.lastDeployedTime && (
                             <Tippy className="default-tt" arrow placement="top" content={env.lastDeployedTime}>
-                                <p className="dc__truncate-text  m-0">{handleUTCTime(env.lastDeployedTime, true)}</p>
+                                <p className="dc__truncate-text m-0">{handleUTCTime(env.lastDeployedTime, true)}</p>
                             </Tippy>
                         )}
                     </div>
