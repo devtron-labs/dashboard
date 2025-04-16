@@ -1207,7 +1207,7 @@ const CDMaterial = ({
                                 <GitCommitInfoGeneric
                                     index={index}
                                     materialUrl={mat.url}
-                                    showMaterialInfoHeader={!!mat.url}
+                                    showMaterialInfoHeader
                                     commitInfo={_gitCommit}
                                     materialSourceType={mat.type}
                                     selectedCommitInfo=""
@@ -1229,7 +1229,7 @@ const CDMaterial = ({
                             <GitCommitInfoGeneric
                                 index={index}
                                 materialUrl={mat.url}
-                                showMaterialInfoHeader={!!mat.url}
+                                showMaterialInfoHeader
                                 commitInfo={_gitCommit}
                                 materialSourceType={mat.type}
                                 selectedCommitInfo=""
