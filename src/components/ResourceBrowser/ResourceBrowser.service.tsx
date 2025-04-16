@@ -81,14 +81,14 @@ export const getResourceData = async ({
             return parseNodeList(response)
         }
 
-        if (selectedResource.gvk.Kind.toLowerCase() === Nodes.Namespace.toLowerCase()) {
-            const { result } = await getNamespaceListMin(clusterId)
-            const [{ environments }] = result
+        const response = await getK8sResourceList(
+            getK8sResourceListPayload(clusterId, selectedNamespace.value.toLowerCase(), selectedResource, filters),
+            abortControllerRef.current.signal,
+        )
 
-            const response = await getK8sResourceList(
-                getK8sResourceListPayload(clusterId, selectedNamespace.value.toLowerCase(), selectedResource, filters),
-                abortControllerRef.current.signal,
-            )
+        if (selectedResource.gvk.Kind.toLowerCase() === Nodes.Namespace.toLowerCase()) {
+            const { result } = await getNamespaceListMin(clusterId, abortControllerRef)
+            const [{ environments }] = result
 
             const namespaceToEnvironmentMap = environments.reduce(
                 (acc, { environmentName, namespace, environmentId }) => {
@@ -115,10 +115,7 @@ export const getResourceData = async ({
             }
         }
 
-        return await getK8sResourceList(
-            getK8sResourceListPayload(clusterId, selectedNamespace.value.toLowerCase(), selectedResource, filters),
-            abortControllerRef.current.signal,
-        )
+        return response
     } catch (err) {
         if (!getIsRequestAborted(err)) {
             showError(err)

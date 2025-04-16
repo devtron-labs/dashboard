@@ -37,6 +37,7 @@ const Sidebar = () => {
 
                     return (
                         <NavLink
+                            key={key}
                             className={`dc__transparent flex left dc__gap-8 py-6 px-8 br-4 ${isSelected ? 'bcb-1' : 'dc__hover-n50'}`}
                             to={generatePath(URLS.GLOBAL_CONFIG_CREATE_CLUSTER, { type: key })}
                         >

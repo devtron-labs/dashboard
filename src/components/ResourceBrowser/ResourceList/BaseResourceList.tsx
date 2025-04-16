@@ -50,6 +50,7 @@ import {
 
 import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
 import WebWorker from '@Components/app/WebWorker'
+import { AddEnvironmentFormPrefilledInfoType } from '@Components/cluster/cluster.type'
 import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Components/cluster/constants'
 import NodeActionsMenu from '@Components/ResourceBrowser/ResourceList/NodeActionsMenu'
 import {
@@ -390,7 +391,7 @@ const BaseResourceListContent = ({
     }
 
     const getAddEnvironmentClickHandler = (namespace: string) => () => {
-        const environmentFormData = {
+        const environmentFormData: AddEnvironmentFormPrefilledInfoType = {
             namespace,
         }
 

@@ -103,12 +103,12 @@ const CreateCluster = ({ handleReloadClusterList, clusterFormProps }: CreateClus
             onEscape={handleRedirectToClusterList}
             onClose={handleRedirectToClusterList}
         >
-            <dialog
+            <div
                 className="bg__primary h-100 cn-9 w-100 flexbox-col dc__overflow-hidden p-0 create-cluster"
                 onClick={stopPropagation}
             >
                 <header className="px-20 py-12 lh-24 flexbox dc__content-space dc__align-items-center dc__border-bottom">
-                    <span className="fs-16 fw-6 dc__first-letter-capitalize">New Cluster</span>
+                    <h3 className="m-0 fs-16 fw-6 lh-1-43 dc__first-letter-capitalize">New Cluster</h3>
 
                     <Button
                         icon={<ICClose />}
@@ -137,7 +137,7 @@ const CreateCluster = ({ handleReloadClusterList, clusterFormProps }: CreateClus
                 </div>
 
                 <Prompt when={apiCallInProgress} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
-            </dialog>
+            </div>
         </Drawer>
     )
 }

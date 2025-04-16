@@ -15,7 +15,7 @@
  */
 
 import { ComponentProps } from 'react'
-import { Link } from 'react-router-dom'
+import { generatePath, Link } from 'react-router-dom'
 
 import {
     Button,
@@ -41,6 +41,7 @@ import {
     ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY,
 } from '@Components/cluster/constants'
 import { URLS } from '@Config/routes'
+import { CreateClusterTypeEnum } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
 
 import { MigrationSourceValidationReasonType } from '../cdPipeline.types'
 import { GENERIC_SECTION_ERROR_STATE_COMMON_PROPS, TARGET_ENVIRONMENT_INFO_LIST } from './constants'
@@ -249,7 +250,9 @@ const MigrateToDevtronValidationFactory = ({
                                 component: ButtonComponentType.link,
                                 onClick: handleAddClusterClick,
                                 linkProps: {
-                                    to: URLS.GLOBAL_CONFIG_CREATE_CLUSTER,
+                                    to: generatePath(URLS.GLOBAL_CONFIG_CREATE_CLUSTER, {
+                                        type: CreateClusterTypeEnum.CONNECT_CLUSTER,
+                                    }),
                                     target: '_blank',
                                 },
                             }}

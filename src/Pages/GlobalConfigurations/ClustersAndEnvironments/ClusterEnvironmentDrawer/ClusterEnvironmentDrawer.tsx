@@ -15,6 +15,7 @@
  */
 
 import { useEffect, useState } from 'react'
+import { generatePath } from 'react-router-dom'
 
 import {
     Button,
@@ -45,6 +46,7 @@ import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Components/cluster/cons
 import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
 
+import { CreateClusterTypeEnum } from '../CreateCluster/types'
 import { EnvironmentDeleteComponent } from '../EnvironmentDeleteComponent'
 import { clusterEnvironmentDrawerFormValidationSchema } from './schema'
 import { ClusterEnvironmentDrawerFormProps, ClusterEnvironmentDrawerProps, ClusterNamespacesDTO } from './types'
@@ -260,7 +262,9 @@ export const ClusterEnvironmentDrawer = ({
         <Button
             dataTestId="add_cluster_button"
             linkProps={{
-                to: URLS.GLOBAL_CONFIG_CREATE_CLUSTER,
+                to: generatePath(URLS.GLOBAL_CONFIG_CREATE_CLUSTER, {
+                    type: CreateClusterTypeEnum.CONNECT_CLUSTER,
+                }),
             }}
             component={ButtonComponentType.link}
             startIcon={<ICAdd />}
@@ -401,7 +405,7 @@ export const ClusterEnvironmentDrawer = ({
         <Drawer position="right" width="800px" onEscape={hideClusterDrawer} onClose={hideClusterDrawer}>
             <div className="h-100 bg__primary flexbox-col" onClick={stopPropagation}>
                 <div className="flexbox dc__align-items-center dc__content-space dc__border-bottom bg__primary py-12 px-20">
-                    <h3 className="m-0 fs-16 fw-6 lh-1-43">
+                    <h3 className="m-0 fs-16 fw-6 lh-1-43 dc__truncate">
                         {id ? 'Edit Environment' : `Add Environment in '${clusterName}'`}
                     </h3>
                     <button
