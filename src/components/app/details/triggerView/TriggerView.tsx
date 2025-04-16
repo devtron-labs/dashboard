@@ -1365,6 +1365,27 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         return null
     }
 
+    renderWebhookAddImageModal() {
+        // Not showing modal whenever either CDMaterial, CIMaterial or LinkedCIDetails modals are open.
+        if (
+            this.props.location.search.includes('cd-node') ||
+            this.props.location.search.includes('rollback-node') ||
+            this.props.location.pathname.includes(URLS.BUILD) ||
+            this.props.location.pathname.includes(URLS.LINKED_CI_DETAILS) ||
+            !WebhookAddImageModal ||
+            !this.state.selectedWebhookNodeId
+        ) {
+            return null
+        }
+
+        return (
+            <WebhookAddImageModal
+                getWebhookDetails={this.getWebhookDetails}
+                onClose={this.handleWebhookAddImageModalClose}
+            />
+        )
+    }
+
     handleModalClose = () => {
         this.props.history.push(this.props.match.url)
     }
@@ -1397,12 +1418,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     )
                 })}
                 <LinkedCIDetail workflows={this.state.workflows} handleClose={this.handleModalClose} />
-                {WebhookAddImageModal && this.state.selectedWebhookNodeId && (
-                    <WebhookAddImageModal
-                        getWebhookDetails={this.getWebhookDetails}
-                        onClose={this.handleWebhookAddImageModalClose}
-                    />
-                )}
+                {this.renderWebhookAddImageModal()}
             </>
         )
     }

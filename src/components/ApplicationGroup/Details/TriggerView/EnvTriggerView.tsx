@@ -2396,6 +2396,22 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setSelectedWebhookNode(null)
     }
 
+    const renderWebhookAddImageModal = () => {
+        // Not showing modal whenever either CDMaterial, CIMaterial or LinkedCIDetails modals are open.
+        if (
+            location.search.includes('cd-node') ||
+            location.search.includes('rollback-node') ||
+            location.pathname.includes(URLS.BUILD) ||
+            location.pathname.includes(URLS.LINKED_CI_DETAILS) ||
+            !WebhookAddImageModal ||
+            !selectedWebhookNode
+        ) {
+            return null
+        }
+
+        return <WebhookAddImageModal getWebhookDetails={getWebhookDetails} onClose={handleWebhookAddImageModalClose} />
+    }
+
     const renderWorkflow = (): JSX.Element => {
         return (
             <>
@@ -2423,12 +2439,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     )
                 })}
                 <LinkedCIDetail workflows={filteredWorkflows} handleClose={handleModalClose} />
-                {WebhookAddImageModal && selectedWebhookNode && (
-                    <WebhookAddImageModal
-                        getWebhookDetails={getWebhookDetails}
-                        onClose={handleWebhookAddImageModalClose}
-                    />
-                )}
+                {renderWebhookAddImageModal()}
             </>
         )
     }
