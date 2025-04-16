@@ -122,6 +122,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
 
     const requestAbortControllerRef = useRef(null)
     const clusterConfigPollTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null)
+    const getClusterConfigAbortControllerRef = useRef(new AbortController())
 
     const handleRetry = async () => {
         abortRequestAndResetError(true)
@@ -187,7 +188,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
             return
         }
 
-        const config = await (getInstallationClusterConfig({ clusterName, requestAbortControllerRef }) as Promise<InstallationClusterConfigType>)
+        const config = await (getInstallationClusterConfig({ clusterName, abortControllerRef: getClusterConfigAbortControllerRef }) as Promise<InstallationClusterConfigType>)
         setClusterConfig(config)
     }
 
@@ -294,6 +295,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
         return () => {
             requestAbortControllerRef.current?.abort()
             clearTimeout(clusterConfigPollTimeoutRef.current)
+            getClusterConfigAbortControllerRef.current.abort()
         }
     }, [])
 
