@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
-import { showError, Progressing, VisibleModal, InfoColourBar, SelectPicker, ToastManager, ToastVariantType, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
+import { useEffect, useState } from 'react'
+import {
+    showError,
+    Progressing,
+    VisibleModal,
+    SelectPicker,
+    ToastManager,
+    ToastVariantType,
+    ComponentSizeType,
+    InfoBlock,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
-import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import { AboutAppInfoModalProps, NumberOptionType } from '../types'
 import { editApp } from '../service'
 
@@ -91,10 +99,10 @@ export default function AboutAppInfoModal({
 
         try {
             await editApp(payload)
-             ToastManager.showToast({
-                 variant: ToastVariantType.success,
-                 description: `Application '${appMetaInfo.appName}' is moved to project '${selectedProject.label}'`,
-             })
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: `Application '${appMetaInfo.appName}' is moved to project '${selectedProject.label}'`,
+            })
 
             // Fetch the latest project & labels details
             await getAppMetaInfoRes()
@@ -136,17 +144,7 @@ export default function AboutAppInfoModal({
                     {selectedProject &&
                         appMetaInfo &&
                         selectedProject.label !== appMetaInfo.projectName &&
-                        !isJobOverview && (
-                            <InfoColourBar
-                                classname="warn cn-9 lh-20"
-                                Icon={Error}
-                                message={projectChangeMessage()}
-                                iconClass="warning-icon"
-                                styles={{
-                                    padding: '8px 12px',
-                                }}
-                            />
-                        )}
+                        !isJobOverview && <InfoBlock description={projectChangeMessage()} variant="warning" />}
                 </div>
                 <div className="form__buttons dc__border-top pt-16 pb-16 pl-20 pr-20">
                     <button

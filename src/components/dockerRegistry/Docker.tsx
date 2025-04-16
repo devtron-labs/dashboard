@@ -18,8 +18,6 @@ import { KeyboardEventHandler, useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
-    TippyCustomized,
-    TippyTheme,
     sortCallback,
     ErrorScreenNotAuthorized,
     Reload,
@@ -29,7 +27,6 @@ import {
     CHECKBOX_VALUE,
     Checkbox,
     REGISTRY_TYPE_MAP,
-    InfoColourBar,
     ConditionalWrap,
     RepositoryAction,
     ServerErrors,
@@ -53,6 +50,8 @@ import {
     RegistryIcon,
     ComponentSizeType,
     PasswordField,
+    ButtonComponentType,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
@@ -1469,6 +1468,23 @@ const DockerForm = ({
         }
     }
 
+    const renderPrivateDockerInfoContent = () => {
+        return (
+            <div className="flexbox dc__gap-6">
+                Helm charts from provided repositories will be shown in the
+                <Button
+                    text="Chart store"
+                    variant={ButtonVariantType.text}
+                    component={ButtonComponentType.link}
+                    linkProps={{
+                        to: ChartStoreRedirectionUrl,
+                    }}
+                    dataTestId="chart-store-link"
+                />
+            </div>
+        )
+    }
+
     const renderRepositoryList = () => {
         if (selectedDockerRegistryType.value === RegistryType.GCR) {
             return
@@ -1497,15 +1513,7 @@ const DockerForm = ({
                     />
                 </div>
                 {registryStorageType === RegistryStorageType.OCI_PUBLIC && (
-                    <InfoColourBar
-                        message="Helm charts from provided repositories will be shown in the"
-                        classname="info_bar mb-16"
-                        Icon={InfoIcon}
-                        iconClass="icon-dim-20"
-                        linkText="Chart store"
-                        redirectLink={ChartStoreRedirectionUrl}
-                        internalLink
-                    />
+                    <InfoBlock description={renderPrivateDockerInfoContent()} />
                 )}
             </>
         )
