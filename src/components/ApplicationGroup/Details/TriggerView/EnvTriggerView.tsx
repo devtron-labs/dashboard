@@ -127,6 +127,7 @@ import CIMaterialModal from '../../../app/details/triggerView/CIMaterialModal'
 import { RenderCDMaterialContentProps } from './types'
 import { WebhookReceivedPayloadModal } from '@Components/app/details/triggerView/WebhookReceivedPayloadModal'
 import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
+import { shouldRenderWebhookAddImageModal } from '@Components/app/details/triggerView/TriggerView.utils'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary(
@@ -2396,6 +2397,21 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setSelectedWebhookNode(null)
     }
 
+    const renderWebhookAddImageModal = () => {
+        if (
+            WebhookAddImageModal &&
+            shouldRenderWebhookAddImageModal(location) &&
+            !location.pathname.includes('bulk-deploy/request') &&
+            selectedWebhookNode
+        ) {
+            return (
+                <WebhookAddImageModal getWebhookDetails={getWebhookDetails} onClose={handleWebhookAddImageModalClose} />
+            )
+        }
+
+        return null
+    }
+
     const renderWorkflow = (): JSX.Element => {
         return (
             <>
@@ -2423,12 +2439,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     )
                 })}
                 <LinkedCIDetail workflows={filteredWorkflows} handleClose={handleModalClose} />
-                {WebhookAddImageModal && selectedWebhookNode && (
-                    <WebhookAddImageModal
-                        getWebhookDetails={getWebhookDetails}
-                        onClose={handleWebhookAddImageModalClose}
-                    />
-                )}
+                {renderWebhookAddImageModal()}
             </>
         )
     }

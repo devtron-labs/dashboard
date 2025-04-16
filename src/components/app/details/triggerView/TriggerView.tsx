@@ -96,6 +96,7 @@ import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import { CIMaterialModal } from './CIMaterialModal'
 import { WebhookReceivedPayloadModal } from './WebhookReceivedPayloadModal'
 import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
+import { shouldRenderWebhookAddImageModal } from './TriggerView.utils'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary(
@@ -1365,6 +1366,23 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         return null
     }
 
+    renderWebhookAddImageModal() {
+        if (
+            WebhookAddImageModal &&
+            shouldRenderWebhookAddImageModal(this.props.location) &&
+            this.state.selectedWebhookNodeId
+        ) {
+            return (
+                <WebhookAddImageModal
+                    getWebhookDetails={this.getWebhookDetails}
+                    onClose={this.handleWebhookAddImageModalClose}
+                />
+            )
+        }
+
+        return null
+    }
+
     handleModalClose = () => {
         this.props.history.push(this.props.match.url)
     }
@@ -1397,12 +1415,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     )
                 })}
                 <LinkedCIDetail workflows={this.state.workflows} handleClose={this.handleModalClose} />
-                {WebhookAddImageModal && this.state.selectedWebhookNodeId && (
-                    <WebhookAddImageModal
-                        getWebhookDetails={this.getWebhookDetails}
-                        onClose={this.handleWebhookAddImageModalClose}
-                    />
-                )}
+                {this.renderWebhookAddImageModal()}
             </>
         )
     }
