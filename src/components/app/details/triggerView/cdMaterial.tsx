@@ -1180,7 +1180,6 @@ const CDMaterial = ({
         <>
             {materialData.materialInfo.map((mat: MaterialInfo, index) => {
                 const _gitCommit = getGitCommitInfo(mat)
-
                 if (
                     (materialData.appliedFilters?.length > 0 ||
                         materialData.deploymentBlockedState?.isBlocked ||
@@ -1208,7 +1207,7 @@ const CDMaterial = ({
                                 <GitCommitInfoGeneric
                                     index={index}
                                     materialUrl={mat.url}
-                                    showMaterialInfoHeader
+                                    showMaterialInfoHeader={!!mat.url}
                                     commitInfo={_gitCommit}
                                     materialSourceType={mat.type}
                                     selectedCommitInfo=""
@@ -1230,7 +1229,7 @@ const CDMaterial = ({
                             <GitCommitInfoGeneric
                                 index={index}
                                 materialUrl={mat.url}
-                                showMaterialInfoHeader
+                                showMaterialInfoHeader={!!mat.url}
                                 commitInfo={_gitCommit}
                                 materialSourceType={mat.type}
                                 selectedCommitInfo=""
