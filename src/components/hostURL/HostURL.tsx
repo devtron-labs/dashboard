@@ -25,6 +25,7 @@ import {
     FeatureTitleWithInfo,
     ToastVariantType,
     ToastManager,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -160,10 +161,9 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
     renderHostErrorMessage() {
         return (
             <div className="w-100">
-                <InfoColourBar
-                    classname="error_bar"
-                    message="Saved host URL doesn’t match the domain address in your browser."
-                    Icon={Error}
+                <InfoBlock
+                    variant="error"
+                    description="Saved host URL doesn’t match the domain address in your browser."
                 />
             </div>
         )
@@ -189,7 +189,11 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
             )
         }
         if (this.state.view === ViewType.LOADING) {
-            return <div className='bg__primary h-100'><Progressing pageLoader /></div>
+            return (
+                <div className="bg__primary h-100">
+                    <Progressing pageLoader />
+                </div>
+            )
         }
         if (this.state.view === ViewType.ERROR) {
             return (
@@ -198,6 +202,16 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                 </section>
             )
         }
+
+        const renderInfoContent = () => (
+            <>
+                Host URL is the domain address at which your devtron dashboard can be reached.
+                <br />
+                It is used to reach your devtron dashboard from external sources like configured webhooks, e-mail or
+                slack notifications, grafana dashboard, etc.
+            </>
+        )
+
         return (
             <section
                 className="flex column left top bg__primary h-100 dc__gap-24 px-20 py-16"
@@ -215,18 +229,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                     data-testid="form-host-url"
                     onSubmit={this.onSave}
                 >
-                    <InfoColourBar
-                        classname="info_bar"
-                        message={
-                            <>
-                                Host URL is the domain address at which your devtron dashboard can be reached.
-                                <br />
-                                It is used to reach your devtron dashboard from external sources like configured
-                                webhooks, e-mail or slack notifications, grafana dashboard, etc.
-                            </>
-                        }
-                        Icon={Info}
-                    />
+                    <InfoBlock description={renderInfoContent()} />
                     {this.state.form.id && window.location.origin !== this.state.form.value
                         ? this.renderHostErrorMessage()
                         : ''}

@@ -20,10 +20,12 @@ import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import moment from 'moment'
 
 import {
+    ButtonStyleType,
+    ButtonVariantType,
     ButtonWithLoader,
     ClipboardButton,
     CustomInput,
-    InfoColourBar,
+    InfoBlock,
     noop,
     Progressing,
     showError,
@@ -34,7 +36,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Delete } from '../../../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import { importComponentFromFELibrary } from '../../../../components/common'
 import { MomentDateFormat } from '../../../../config'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
@@ -90,19 +91,20 @@ const EditAPIToken = ({
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
     const [invalidDescription, setInvalidDescription] = useState(false)
 
-    const renderActionButton = () => (
-        <span className="cr-5 cursor flexbox top fw-6" onClick={() => setShowRegeneratedModal(true)}>
-            Regenerate token
-        </span>
-    )
+    const onClickShowRegenerateModal = () => {
+        setShowRegeneratedModal(true)
+    }
 
     const renderRegenerateInfoBar = () => (
-        <InfoColourBar
-            message="To set a new expiration date, you can regenerate this token. Any scripts or applications using this token will need to be updated."
-            classname="info_bar"
-            Icon={InfoIcon}
-            iconClass="icon-dim-20"
-            renderActionButton={renderActionButton}
+        <InfoBlock
+            description="To set a new expiration date, you can regenerate this token. Any scripts or applications using this token will need to be updated."
+            buttonProps={{
+                dataTestId: 'regenerate-token-button',
+                text: 'Regenerate token',
+                onClick: onClickShowRegenerateModal,
+                variant: ButtonVariantType.text,
+                style: ButtonStyleType.negative,
+            }}
         />
     )
 
@@ -265,7 +267,7 @@ const EditAPIToken = ({
                             {getExpirationText()}
                             &nbsp;
                             <span className="fw-4">To set a new expiration date you must</span>&nbsp;
-                            <span className="cb-5 cursor" onClick={() => setShowRegeneratedModal(true)}>
+                            <span className="cb-5 cursor" onClick={onClickShowRegenerateModal}>
                                 regenerate the token.
                             </span>
                         </div>
