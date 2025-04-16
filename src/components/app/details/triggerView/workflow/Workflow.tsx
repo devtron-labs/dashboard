@@ -124,7 +124,7 @@ export class Workflow extends Component<WorkflowProps> {
                 key={`webhook-${node.id}`}
                 id={node.id}
                 isTemplateView={false}
-                addImageButtonConfig={{ show: true, onClick: this.props.handleWebhookAddImageClick }}
+                addImageButtonClick={this.props.handleWebhookAddImageClick}
             />
         )
     }

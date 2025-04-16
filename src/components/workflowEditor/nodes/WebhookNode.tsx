@@ -47,14 +47,14 @@ export const WebhookNode = ({
     isLastNode,
     isReadonlyView = false,
     isTemplateView,
-    addImageButtonConfig,
+    addImageButtonClick,
 }: WebhookNodeProps) => {
     const [isWebhookTippyOpen, setIsWebhookTippyOpen] = useState(false)
 
     const selectedNodeKey = `${selectedNode?.nodeType}-${selectedNode?.id}`
     const currentNodeKey = `${WorkflowNodeType.WEBHOOK}-${id ?? ''}`
 
-    const showWebhookAddImageButton = WebhookAddImageButton && (addImageButtonConfig?.show || false)
+    const showWebhookAddImageButton = WebhookAddImageButton && !!addImageButtonClick
 
     const addNewCD = (event): void => {
         event.preventDefault()
@@ -78,7 +78,7 @@ export const WebhookNode = ({
         setIsWebhookTippyOpen((prev) => !prev)
     }
 
-    const onWebhookAddImageClick = () => addImageButtonConfig?.onClick(id)
+    const onWebhookAddImageClick = () => addImageButtonClick(id)
 
     const renderWrapWithLinkOrTippy = (children: ReactElement) =>
         isTemplateView ? (
