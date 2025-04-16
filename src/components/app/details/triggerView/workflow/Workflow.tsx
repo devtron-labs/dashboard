@@ -124,6 +124,7 @@ export class Workflow extends Component<WorkflowProps> {
                 key={`webhook-${node.id}`}
                 id={node.id}
                 isTemplateView={false}
+                addImageButtonConfig={{ show: true, onClick: this.props.handleWebhookAddImageClick }}
             />
         )
     }
@@ -386,11 +387,7 @@ export class Workflow extends Component<WorkflowProps> {
                             </span>
 
                             <div className="dc__separated-flexbox">
-                                {BulkDeployLink && numberOfCDNodes > 1 && (
-                                    <BulkDeployLink
-                                        workflowId={this.props.id}
-                                    />
-                                )}
+                                {BulkDeployLink && numberOfCDNodes > 1 && <BulkDeployLink workflowId={this.props.id} />}
 
                                 {ImagePromotionLink && (
                                     <ImagePromotionLink
@@ -402,7 +399,6 @@ export class Workflow extends Component<WorkflowProps> {
                                     />
                                 )}
                             </div>
-
                         </>
                     )}
                 </div>
