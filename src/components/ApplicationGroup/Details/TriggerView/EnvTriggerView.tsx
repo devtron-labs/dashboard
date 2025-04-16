@@ -127,6 +127,7 @@ import CIMaterialModal from '../../../app/details/triggerView/CIMaterialModal'
 import { RenderCDMaterialContentProps } from './types'
 import { WebhookReceivedPayloadModal } from '@Components/app/details/triggerView/WebhookReceivedPayloadModal'
 import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
+import { shouldRenderWebhookAddImageModal } from '@Components/app/details/triggerView/TriggerView.utils'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary(
@@ -2397,19 +2398,18 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const renderWebhookAddImageModal = () => {
-        // Not showing modal whenever either CDMaterial, CIMaterial or LinkedCIDetails modals are open.
         if (
-            location.search.includes('cd-node') ||
-            location.search.includes('rollback-node') ||
-            location.pathname.includes(URLS.BUILD) ||
-            location.pathname.includes(URLS.LINKED_CI_DETAILS) ||
-            !WebhookAddImageModal ||
-            !selectedWebhookNode
+            WebhookAddImageModal &&
+            shouldRenderWebhookAddImageModal(location) &&
+            !location.pathname.includes('bulk-deploy/request') &&
+            selectedWebhookNode
         ) {
-            return null
+            return (
+                <WebhookAddImageModal getWebhookDetails={getWebhookDetails} onClose={handleWebhookAddImageModalClose} />
+            )
         }
 
-        return <WebhookAddImageModal getWebhookDetails={getWebhookDetails} onClose={handleWebhookAddImageModalClose} />
+        return null
     }
 
     const renderWorkflow = (): JSX.Element => {
