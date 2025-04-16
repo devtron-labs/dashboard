@@ -134,17 +134,24 @@ export const getClusterListing = async (
     abortControllerRef?: APIOptions['abortControllerRef'],
 ): Promise<ClusterDetail[]> => {
     try {
-        const { result: rawClusterList } = await (minified ? getClusterListRaw : getClusterList)(abortControllerRef)
+        const [rawClusterListResponse, installationClustersListResponse] = await Promise.allSettled([
+            (minified ? getClusterListRaw : getClusterList)(abortControllerRef),
+            getInstallationClusterConfigs ? getInstallationClusterConfigs(abortControllerRef) : [],
+        ])
+
+        if (rawClusterListResponse.status === 'rejected') {
+            throw rawClusterListResponse.reason
+        }
+
+        const { result: rawClusterList } = rawClusterListResponse.value
+
+        if (installationClustersListResponse.status === 'rejected' || !installationClustersListResponse.value.length) {
+            return rawClusterList
+        }
 
         const clusterListNameSet = new Set(rawClusterList.map(({ name }) => name))
 
-        const installationClustersList: InstallationClusterConfigType[] = getInstallationClusterConfigs
-            ? await getInstallationClusterConfigs(abortControllerRef)
-            : []
-
-        if (!installationClustersList.length) {
-            return rawClusterList
-        }
+        const installationClustersList: InstallationClusterConfigType[] = installationClustersListResponse.value
 
         return rawClusterList.concat(
             installationClustersList
