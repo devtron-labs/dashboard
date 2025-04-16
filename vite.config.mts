@@ -28,6 +28,7 @@ import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfil
 import { VitePWA } from 'vite-plugin-pwa'
 // import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
 import tsconfigPaths from 'vite-tsconfig-paths'
+import { compression } from 'vite-plugin-compression2'
 
 const WRONG_CODE = `import { bpfrpt_proptype_WindowScroller } from "../WindowScroller.js";`
 const TARGET_URL = 'https://preview.devtron.ai/'
@@ -187,6 +188,9 @@ export default defineConfig(({ mode }) => {
             svgr({
                 svgrOptions: {},
             }),
+            compression({
+                algorithm: 'brotliCompress',
+            }),
             reactVirtualized(),
             requireTransform(),
             NodeGlobalsPolyfillPlugin({
@@ -210,6 +214,30 @@ export default defineConfig(({ mode }) => {
                               globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
                               cleanupOutdatedCaches: true,
                               maximumFileSizeToCacheInBytes: 10000000,
+                              runtimeCaching: [
+                                  {
+                                      urlPattern: ({ request }) => request.destination === 'style',
+                                      handler: 'NetworkFirst',
+                                      options: {
+                                          cacheName: 'css-cache',
+                                          expiration: {
+                                              maxEntries: 30,
+                                              maxAgeSeconds: 60 * 60 * 24 * 15,
+                                          },
+                                      },
+                                  },
+                                  {
+                                      urlPattern: ({ request }) => request.destination === 'script',
+                                      handler: 'NetworkFirst',
+                                      options: {
+                                          cacheName: 'js-cache',
+                                          expiration: {
+                                              maxEntries: 30,
+                                              maxAgeSeconds: 60 * 60 * 24 * 15,
+                                          },
+                                      },
+                                  },
+                              ],
                           },
                           manifest: {
                               short_name: 'Devtron',

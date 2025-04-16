@@ -28,14 +28,14 @@ import {
 
 import { Moment12HourFormat } from '@Config/constants'
 
+import { BASE_CONFIGURATIONS } from '../../AppConfig.constants'
 import {
-    AppEnvDeploymentConfigQueryParamsType,
-    EnvironmentOptionType,
     AppEnvDeploymentConfigQueryParams,
+    AppEnvDeploymentConfigQueryParamsType,
     DeploymentConfigCompareProps,
+    EnvironmentOptionType,
     GetAppEnvDeploymentConfigProps,
 } from '../../AppConfig.types'
-import { BASE_CONFIGURATIONS } from '../../AppConfig.constants'
 import { SetIdentifierIdBasedOnConfigurationProps } from './types'
 
 export const getPreviousDeploymentOptionValue = (identifierId: number, pipelineId?: number, chartRefId?: number) => {

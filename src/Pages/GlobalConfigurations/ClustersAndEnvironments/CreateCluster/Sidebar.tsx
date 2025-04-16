@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { Icon, IconName, ModalSidebarPanel } from '@devtron-labs/devtron-fe-common-lib'
-import { DOCUMENTATION } from '@Config/constants'
 import { generatePath, NavLink, useParams } from 'react-router-dom'
+
+import { Icon, IconName, ModalSidebarPanel } from '@devtron-labs/devtron-fe-common-lib'
+
+import { DOCUMENTATION } from '@Config/constants'
 import { URLS } from '@Config/routes'
 
-import { CreateClusterParams } from './types'
 import { SIDEBAR_CONFIG } from './constants'
+import { CreateClusterParams } from './types'
 
 const Sidebar = () => {
     const { type } = useParams<CreateClusterParams>()

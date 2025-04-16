@@ -14,31 +14,33 @@
  * limitations under the License.
  */
 
-import {
-    ApiResourceType,
-    get,
-    ResponseType,
-    getK8sResourceList,
-    getIsRequestAborted,
-    showError,
-    getUrlWithSearchParams,
-    getK8sResourceListPayload,
-    stringComparatorBySortOrder,
-    Nodes,
-    getNamespaceListMin,
-    getClusterListRaw,
-    ClusterDetail,
-    InstallationClusterConfigType,
-    ClusterStatusType,
-    APIOptions,
-} from '@devtron-labs/devtron-fe-common-lib'
 import { RefObject } from 'react'
-import { importComponentFromFELibrary } from '@Components/common'
+
+import {
+    APIOptions,
+    ApiResourceType,
+    ClusterDetail,
+    ClusterStatusType,
+    get,
+    getClusterListRaw,
+    getIsRequestAborted,
+    getK8sResourceList,
+    getK8sResourceListPayload,
+    getNamespaceListMin,
+    getUrlWithSearchParams,
+    InstallationClusterConfigType,
+    Nodes,
+    ResponseType,
+    showError,
+    stringComparatorBySortOrder,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { getClusterList } from '@Components/ClusterNodes/clusterNodes.service'
+import { importComponentFromFELibrary } from '@Components/common'
+
 import { Routes } from '../../config'
-import { GetResourceDataType, NodeRowDetail, URLParams } from './Types'
 import { SIDEBAR_KEYS } from './Constants'
+import { GetResourceDataType, NodeRowDetail, URLParams } from './Types'
 import { parseNodeList } from './Utils'
 
 const getInstallationClusterConfigs = importComponentFromFELibrary('getInstallationClusterConfigs', null, 'function')
@@ -137,7 +139,7 @@ export const getClusterListing = async (
         const clusterListNameSet = new Set(rawClusterList.map(({ name }) => name))
 
         const installationClustersList: InstallationClusterConfigType[] = getInstallationClusterConfigs
-            ? await getInstallationClusterConfigs()
+            ? await getInstallationClusterConfigs(abortControllerRef)
             : []
 
         if (!installationClustersList.length) {

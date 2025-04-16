@@ -18,7 +18,9 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { FunctionComponent } from 'react'
 import Tippy from '@tippyjs/react'
+
 import { ComponentSizeType, CustomInput, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+
 import { renderOptionIcon } from './CIBuildpackBuildOptions'
 import { CISelfDockerBuildOptionProps } from './types'
 import { getGitRepositoryOptions } from './utils'

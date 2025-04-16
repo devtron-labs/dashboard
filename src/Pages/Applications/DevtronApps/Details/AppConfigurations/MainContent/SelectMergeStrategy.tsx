@@ -15,18 +15,20 @@
  */
 
 import {
+    ComponentSizeType,
+    DOCUMENTATION_HOME_PAGE,
+    getSelectPickerOptionByValue,
     InfoIconTippy,
+    noop,
     OverrideMergeStrategyType,
     OverrideStrategyTippyContent,
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerVariantType,
-    DOCUMENTATION_HOME_PAGE,
-    ComponentSizeType,
-    noop,
-    getSelectPickerOptionByValue,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { importComponentFromFELibrary } from '@Components/common'
+
 import { MERGE_STRATEGY_OPTIONS } from './constants'
 import { SelectMergeStrategyProps } from './types'
 
@@ -78,7 +80,7 @@ const SelectMergeStrategy = ({
                     value={selectedOption}
                     options={options}
                     isDisabled={isDisabled}
-                    variant={SelectPickerVariantType.BORDER_LESS}
+                    variant={SelectPickerVariantType.COMPACT}
                     isSearchable={false}
                     size={ComponentSizeType.small}
                     isOptionDisabled={getIsOptionDisabled}

@@ -106,7 +106,7 @@ export const EnvironmentList = ({
                     value={getSelectedEnvironment()}
                     onChange={selectEnvironment}
                     size={ComponentSizeType.large}
-                    variant={isBorderLess ? SelectPickerVariantType.BORDER_LESS : SelectPickerVariantType.DEFAULT}
+                    variant={isBorderLess ? SelectPickerVariantType.COMPACT : SelectPickerVariantType.DEFAULT}
                 />
             </div>
         </div>

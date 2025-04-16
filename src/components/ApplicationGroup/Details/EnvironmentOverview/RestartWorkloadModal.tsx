@@ -15,9 +15,14 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
+import { Prompt, useHistory, useLocation } from 'react-router-dom'
+
 import {
-    CHECKBOX_VALUE,
+    ApiQueuingWithBatch,
+    Button,
     Checkbox,
+    CHECKBOX_VALUE,
+    DEFAULT_ROUTE_PROMPT_MESSAGE,
     Drawer,
     ErrorScreenManager,
     GenericEmptyState,
@@ -26,11 +31,16 @@ import {
     stopPropagation,
     usePrompt,
     useSearchString,
-    DEFAULT_ROUTE_PROMPT_MESSAGE,
-    ApiQueuingWithBatch,
-    Button,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Prompt, useHistory, useLocation } from 'react-router-dom'
+
+import { ReactComponent as Retry } from '../../../../assets/icons/ic-arrow-clockwise.svg'
+import { ReactComponent as DropdownIcon } from '../../../../assets/icons/ic-arrow-left.svg'
+import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
+import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
+import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
+import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
+import { ReactComponent as MechanicalIcon } from '../../../../assets/img/ic-mechanical-operation.svg'
+import { importComponentFromFELibrary } from '../../../common'
 import {
     AppInfoMetaDataDTO,
     BulkRotatePodsMetaData,
@@ -39,19 +49,12 @@ import {
     ResourcesMetaDataMap,
     RestartWorkloadModalProps,
 } from '../../AppGroup.types'
-import { ReactComponent as MechanicalIcon } from '../../../../assets/img/ic-mechanical-operation.svg'
-import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
-import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
-import { ReactComponent as DropdownIcon } from '../../../../assets/icons/ic-arrow-left.svg'
-import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
-import { ReactComponent as Retry } from '../../../../assets/icons/ic-arrow-clockwise.svg'
-import { getRestartWorkloadRotatePods, postRestartWorkloadRotatePods } from './service'
-import { APP_DETAILS_TEXT, URL_SEARCH_PARAMS } from './constants'
-import './envOverview.scss'
-import { RestartStatusListDrawer } from './RestartStatusListDrawer'
-import { importComponentFromFELibrary } from '../../../common'
 import { AllExpandableDropdown } from './AllExpandableDropdown'
-import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
+import { APP_DETAILS_TEXT, URL_SEARCH_PARAMS } from './constants'
+import { RestartStatusListDrawer } from './RestartStatusListDrawer'
+import { getRestartWorkloadRotatePods, postRestartWorkloadRotatePods } from './service'
+
+import './envOverview.scss'
 
 const BulkDeployResistanceTippy = importComponentFromFELibrary('BulkDeployResistanceTippy')
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Switch, Route, Redirect, useParams, useRouteMatch } from 'react-router-dom'
 import {
     showError,
@@ -27,6 +27,8 @@ import {
     ToastVariantType,
     URLS as CommonURLS,
     DeleteConfirmationModal,
+    API_STATUS_CODES,
+    useUserPreferences,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import {
@@ -81,9 +83,39 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const [apiError, setApiError] = useState(null)
     const [initLoading, setInitLoading] = useState<boolean>(false)
 
+    const { fetchRecentlyVisitedParsedApps } = useUserPreferences({})
+
+    const getAppMetaInfoRes = async (shouldResetAppName: boolean = false): Promise<AppMetaInfo> => {
+        try {
+            if (shouldResetAppName) {
+                setAppName('')
+            }
+            setApiError(null)
+            const { result } = await getAppMetaInfo(Number(appId))
+            if (result) {
+                setAppName(result.appName)
+                setAppMetaInfo(result)
+                setReloadMandatoryProjects(!reloadMandatoryProjects)
+                return result
+            }
+        } catch (err) {
+            if (err.code === API_STATUS_CODES.NOT_FOUND || err.code === API_STATUS_CODES.PERMISSION_DENIED) {
+                try {
+                    await fetchRecentlyVisitedParsedApps({ appId, appName: '' })
+                } catch {
+                    // Do nothing
+                }
+            }
+            setApiError(err)
+            showError(err)
+        }
+    }
+
+    const getAppMetaInfoAndResetAppName = () => getAppMetaInfoRes(true)
+
     useEffect(() => {
         setInitLoading(true)
-        getAppMetaInfoRes()
+        getAppMetaInfoAndResetAppName()
         Promise.all([getSavedFilterData(), getAppListData()])
             .then((response) => {
                 const groupFilterOptionsList = response[0]
@@ -173,22 +205,6 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         setAppListOptions(appListOptionsList)
         setAppListLoading(false)
         return appListOptionsList
-    }
-
-    const getAppMetaInfoRes = async (): Promise<AppMetaInfo> => {
-        try {
-            setApiError(null)
-            const { result } = await getAppMetaInfo(Number(appId))
-            if (result) {
-                setAppName(result.appName)
-                setAppMetaInfo(result)
-                setReloadMandatoryProjects(!reloadMandatoryProjects)
-                return result
-            }
-        } catch (err) {
-            setApiError(err)
-            showError(err)
-        }
     }
 
     const handleToast = (action: string) =>
@@ -299,12 +315,12 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     }
 
     async function handleDelete() {
-            await deleteEnvGroup(appId, clickedGroup.value, FilterParentType.app)
-            getSavedFilterData(
-                selectedGroupFilter[0] && clickedGroup.value !== selectedGroupFilter[0].value
-                    ? +selectedGroupFilter[0].value
-                    : null,
-            )
+        await deleteEnvGroup(appId, clickedGroup.value, FilterParentType.app)
+        getSavedFilterData(
+            selectedGroupFilter[0] && clickedGroup.value !== selectedGroupFilter[0].value
+                ? +selectedGroupFilter[0].value
+                : null,
+        )
     }
 
     const closeDeleteGroup = () => {
@@ -323,7 +339,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     }
 
     if (apiError) {
-        return <ErrorScreenManager code={apiError.code} reload={getAppMetaInfoRes} />
+        return <ErrorScreenManager code={apiError.code} reload={getAppMetaInfoAndResetAppName} />
     }
 
     const _filteredEnvIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
@@ -418,7 +434,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 </Suspense>
             </ErrorBoundary>
 
-            <div className='dc__no-shrink' id="cluster-meta-data-bar__container" />
+            <div className="dc__no-shrink" id="cluster-meta-data-bar__container" />
         </div>
     )
 }

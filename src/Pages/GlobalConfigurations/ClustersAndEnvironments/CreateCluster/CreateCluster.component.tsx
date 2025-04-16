@@ -1,3 +1,6 @@
+import { useState } from 'react'
+import { generatePath, Prompt, Redirect, useHistory, useParams } from 'react-router-dom'
+
 import {
     Button,
     ButtonComponentType,
@@ -8,17 +11,16 @@ import {
     Drawer,
     stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { generatePath, Prompt, Redirect, useHistory, useParams } from 'react-router-dom'
-import { useState } from 'react'
-import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
-import { URLS } from '@Config/routes'
-import { importComponentFromFELibrary } from '@Components/common'
-import ClusterForm from '@Components/cluster/ClusterForm'
 
+import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
+import ClusterForm from '@Components/cluster/ClusterForm'
+import { importComponentFromFELibrary } from '@Components/common'
 import EnterpriseTrialDialog from '@Components/EnterpriseTrialDialog'
-import { CreateClusterParams, CreateClusterProps, CreateClusterTypeEnum } from './types'
-import Sidebar from './Sidebar'
+import { URLS } from '@Config/routes'
+
 import FooterComponent from './FooterComponent'
+import Sidebar from './Sidebar'
+import { CreateClusterParams, CreateClusterProps, CreateClusterTypeEnum } from './types'
 
 import './styles.scss'
 

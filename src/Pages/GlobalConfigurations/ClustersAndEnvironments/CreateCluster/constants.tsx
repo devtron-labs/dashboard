@@ -1,4 +1,5 @@
 import { IconName } from '@devtron-labs/devtron-fe-common-lib'
+
 import { CreateClusterTypeEnum, SidebarConfigType } from './types'
 
 export const SIDEBAR_CONFIG: SidebarConfigType = {

@@ -24,6 +24,7 @@ $black: 0, 0, 0;
     --V700: rgb(73, 52, 179);
     --V500: rgb(102, 75, 238);
     --V200: rgb(182, 171, 243);
+    --V300: rgb(163, 147, 245);
     --V100: rgb(243, 240, 255);
     --B700: rgb(0, 57, 116);
     --B600: rgb(0, 79, 161);
@@ -104,6 +105,7 @@ $black: 0, 0, 0;
     --bg-hover: rgba(#{$N100}, 0.75);
     --bg-hover-opaque: rgb(241, 245, 247);
     --bg-body: linear-gradient(90deg, var(--B500) 0%, var(--B500) 10%, rgb(0, 82, 165) 25%, rgb(0, 47, 94) 50%, rgb(0, 33, 65) 100%);
+    --bg-segmented-control: rgba(#{$black}, 0.03);
 
     --backdrop-bg: rgba(#{$black}, 0.75);
 
@@ -126,6 +128,7 @@ $black: 0, 0, 0;
     --V700: rgb(202, 191, 255);
     --V500: rgb(166, 149, 255);
     --V200: rgb(79, 73, 121);
+    --V300: rgb(108, 98, 165);
     --V100: rgb(50, 47, 76);
     --B700: rgb(172, 211, 255);
     --B600: rgb(144, 196, 255);
@@ -206,6 +209,7 @@ $black: 0, 0, 0;
     --bg-hover: rgba(#{$white}, 0.07);
     --bg-hover-opaque: rgb(44, 45, 53);
     --bg-body: var(--bg-tertiary);
+    --bg-segmented-control: rgba(#{$black}, 0.30);
 
     --backdrop-bg: rgba(#{$black}, 0.6);
 

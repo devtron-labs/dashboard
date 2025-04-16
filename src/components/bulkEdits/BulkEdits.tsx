@@ -440,7 +440,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         placeholder="Update Deployment Template"
                         options={this.state.updatedTemplate}
                         onChange={() => this.handleUpdateTemplate()}
-                        variant={SelectPickerVariantType.BORDER_LESS}
+                        variant={SelectPickerVariantType.COMPACT}
                         size={ComponentSizeType.medium}
                         menuSize={ComponentSizeType.medium}
                     />

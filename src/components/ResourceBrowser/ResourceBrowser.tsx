@@ -15,17 +15,19 @@
  */
 
 import React, { useEffect, useMemo, useRef } from 'react'
+
 import {
-    DevtronProgressing,
-    useAsync,
-    PageHeader,
-    ErrorScreenManager,
     ClusterDetail,
+    DevtronProgressing,
+    ErrorScreenManager,
+    PageHeader,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { DEFAULT_CLUSTER_ID } from '@Components/cluster/cluster.type'
+import { ClusterListView } from '@Components/ClusterNodes/ClusterList'
 
 import { sortObjectArrayAlphabetically } from '../common'
-import ClusterSelectionList from '../ClusterNodes/ClusterSelectionList'
 import { NewClusterButton } from './PageHeader.buttons'
 import { getClusterListing } from './ResourceBrowser.service'
 
@@ -60,7 +62,7 @@ const ResourceBrowser: React.FC = () => {
         }
 
         return (
-            <ClusterSelectionList
+            <ClusterListView
                 clusterOptions={sortedClusterList}
                 clusterListLoader={detailClusterListLoading}
                 initialLoading={initialLoading}

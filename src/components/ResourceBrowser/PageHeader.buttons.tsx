@@ -15,13 +15,16 @@
  */
 
 import React, { useState } from 'react'
-import { Button, ButtonComponentType, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
 import { generatePath } from 'react-router-dom'
+
+import { Button, ButtonComponentType, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { CreateClusterTypeEnum } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
+
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { URLS } from '../../config'
 import { CreateResource } from './ResourceList/CreateResource'
 import { CreateResourceButtonType, CreateResourceType } from './Types'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 
 export const CreateResourceButton: React.FC<CreateResourceButtonType> = ({ clusterId, closeModal }) => {
     const [showModal, setShowModal] = useState(false)

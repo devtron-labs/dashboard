@@ -16,11 +16,13 @@
 
 /* eslint-disable react/prop-types */
 import moment from 'moment'
+
 import { InfoColourBar, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
-import { MomentDateFormat } from '../../../../config'
-import { SingleDatePickerComponent } from '../../../../components/common'
-import { getOptions, getDateInMilliseconds } from './apiToken.utils'
+
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
+import { SingleDatePickerComponent } from '../../../../components/common'
+import { MomentDateFormat } from '../../../../config'
+import { getDateInMilliseconds, getOptions } from './apiToken.utils'
 
 const ExpirationDate = ({ selectedExpirationDate, onChangeSelectFormData, handleDatesChange, customDate }) => (
     <div className="w-100">

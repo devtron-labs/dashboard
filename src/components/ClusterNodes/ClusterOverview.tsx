@@ -29,6 +29,7 @@ import {
     InstallationClusterConfigType,
     noop,
     StatusComponent,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ClusterErrorType,
@@ -52,7 +53,6 @@ import {
     UPGRADE_CLUSTER_CONSTANTS,
 } from '../ResourceBrowser/Constants'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
-import { ReactComponent as ClusterOverviewIcon } from '../../assets/icons/cluster-overview.svg'
 import { MAX_LENGTH_350 } from '../../config/constantMessaging'
 import ConnectingToClusterState from '../ResourceBrowser/ResourceList/ConnectingToClusterState'
 import { importComponentFromFELibrary } from '../common'
@@ -187,7 +187,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
             return
         }
 
-        const config = await (getInstallationClusterConfig({ clusterName }) as Promise<InstallationClusterConfigType>)
+        const config = await (getInstallationClusterConfig({ clusterName, requestAbortControllerRef }) as Promise<InstallationClusterConfigType>)
         setClusterConfig(config)
     }
 
@@ -202,6 +202,11 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
                     .catch(noop)
             }, CLUSTER_CONFIG_POLLING_INTERVAL)
         }
+    }
+
+    const refreshImmediateAndStartPolling = (clusterName: string) => {
+        fetchClusterConfig(clusterCapacityData.name).catch(noop)
+        pollClusterConfig(clusterName)
     }
 
     const setClusterCapacityDetails = (clusterCapacityResponse: PromiseSettledResult<ClusterCapacityResponse>) => {
@@ -452,7 +457,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
             <aside className="flexbox-col dc__gap-16 w-300 dc__no-shrink">
                 <div className="flexbox-col dc__gap-12">
                     <div>
-                        <ClusterOverviewIcon className="icon-dim-48" />
+                        <Icon name='ic-bg-cluster' size={48} color={null} />
                     </div>
                     <div className="fs-16 fw-7 lh-24 cn-9 font-merriweather" data-testid="clusterOveviewName">
                         {clusterDetails?.clusterName}
@@ -552,7 +557,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
                 {renderSideInfoData()}
                 <div className="dc__mxw-1068 flex-grow-1 mw-none">
                     {renderCardDetails()}
-                    {ClusterConfig && clusterConfig && <ClusterConfig clusterConfig={clusterConfig} pollClusterConfig={pollClusterConfig} />}
+                    {ClusterConfig && clusterConfig && <ClusterConfig clusterConfig={clusterConfig} pollClusterConfig={refreshImmediateAndStartPolling} />}
                     {renderClusterError()}
                     {ClusterAddOns && <ClusterAddOns clusterId={clusterId} getAvailableCharts={getAvailableCharts} />}
                     {Catalog && <Catalog resourceId={clusterId} resourceType={ResourceKindType.cluster} />}

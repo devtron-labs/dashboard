@@ -19,35 +19,37 @@
 import { useEffect, useState } from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { Moment } from 'moment'
+
 import {
-    ServerErrors,
-    showError,
     CustomInput,
     InfoIconTippy,
-    useMainContext,
-    ToastVariantType,
-    ToastManager,
+    ServerErrors,
+    showError,
     Textarea,
+    ToastManager,
+    ToastVariantType,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { FormType, GenerateTokenType } from './apiToken.type'
-import { createGeneratedAPIToken } from './service'
-import GenerateModal from './GenerateModal'
-import { getDateInMilliseconds } from './apiToken.utils'
-import GenerateActionButton from './GenerateActionButton'
-import { ValidationRules } from './validationRules'
+
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
-import ExpirationDate from './ExpirationDate'
+import { importComponentFromFELibrary } from '../../../../components/common'
 import { DOCUMENTATION, REQUIRED_FIELDS_MISSING } from '../../../../config'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
 import { createOrUpdateUser } from '../authorization.service'
+import { getDefaultUserStatusAndTimeout } from '../libUtils'
 import {
     PermissionConfigurationForm,
     PermissionConfigurationFormProvider,
     usePermissionConfiguration,
 } from '../Shared/components/PermissionConfigurationForm'
 import { createUserPermissionPayload, validateDirectPermissionForm } from '../utils'
-import { getDefaultUserStatusAndTimeout } from '../libUtils'
-import { importComponentFromFELibrary } from '../../../../components/common'
+import { FormType, GenerateTokenType } from './apiToken.type'
+import { getDateInMilliseconds } from './apiToken.utils'
+import ExpirationDate from './ExpirationDate'
+import GenerateActionButton from './GenerateActionButton'
+import GenerateModal from './GenerateModal'
+import { createGeneratedAPIToken } from './service'
+import { ValidationRules } from './validationRules'
 
 const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 

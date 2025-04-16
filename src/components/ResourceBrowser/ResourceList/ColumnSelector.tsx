@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-import { useState, useMemo, useRef } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { MultiValue, SelectInstance } from 'react-select'
-import {
-    Button,
-    ButtonVariantType,
-    Icon,
-    SelectPicker,
-    SelectPickerOptionType,
-} from '@devtron-labs/devtron-fe-common-lib'
+
+import { ButtonVariantType, Icon, SelectPicker, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { OPTIONAL_NODE_LIST_HEADERS } from '../Constants'
 import { ColumnSelectorType } from '../Types'
 import { saveAppliedColumnsInLocalStorage } from './utils'
@@ -68,18 +64,6 @@ const ColumnSelector = ({ setVisibleColumns, visibleColumns }: ColumnSelectorTyp
         setVisibleColumns(newVisibleColumns)
     }
 
-    const renderMenuListFooter = () => (
-        <div className="bg__primary p-8 dc__border-top-n1 w-100">
-            <Button
-                text="Apply"
-                onClick={handleApplySelectedColumns}
-                variant={ButtonVariantType.primary}
-                fullWidth
-                dataTestId="apply-column-selector"
-            />
-        </div>
-    )
-
     return (
         <SelectPicker
             selectRef={selectRef}
@@ -98,7 +82,15 @@ const ColumnSelector = ({ setVisibleColumns, visibleColumns }: ColumnSelectorTyp
             placeholder="Column"
             options={columnOptions}
             value={selectedColumns}
-            renderMenuListFooter={renderMenuListFooter}
+            menuListFooterConfig={{
+                type: 'button',
+                buttonProps: {
+                    text: 'Apply',
+                    onClick: handleApplySelectedColumns,
+                    variant: ButtonVariantType.primary,
+                    dataTestId: 'apply-column-selector',
+                },
+            }}
             isClearable={false}
             shouldMenuAlignRight
         />

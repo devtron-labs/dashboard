@@ -3258,6 +3258,10 @@ button.anchor {
 
 .h-18 {
     height: 18px;
+
+    &--imp {
+        height: 18px !important;
+    }
 }
 
 .h-20 {
@@ -3508,6 +3512,10 @@ button.anchor {
 
 .mxh-64 {
     max-height: 64px;
+}
+
+.mxh-100 {
+    max-height: 100px;
 }
 
 .mxh-140 {

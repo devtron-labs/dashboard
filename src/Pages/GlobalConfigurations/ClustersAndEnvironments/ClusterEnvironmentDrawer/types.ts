@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { TagType } from '@devtron-labs/devtron-fe-common-lib'
-import { DeleteConfirmationModalProps } from '@devtron-labs/devtron-fe-common-lib/dist/Shared/Components/ConfirmationModal/types'
+import { DeleteConfirmationModalProps, TagType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface ClusterEnvironmentDrawerFormProps {
     environmentName: string

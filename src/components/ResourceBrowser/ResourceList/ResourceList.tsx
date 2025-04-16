@@ -14,31 +14,41 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useMemo, useRef } from 'react'
-import { useHistory, useParams, useRouteMatch, useLocation } from 'react-router-dom'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+
 import {
-    useBreadcrumb,
-    ErrorScreenManager,
-    DevtronProgressing,
-    useAsync,
-    useEffectAfterMount,
-    getResourceGroupListRaw,
-    noop,
     ALL_NAMESPACE_OPTION,
-    WidgetEventDetails,
     ApiResourceGroupType,
-    InitTabType,
-    useUrlFilters,
+    DevtronProgressing,
     DynamicTabType,
+    ErrorScreenManager,
+    getResourceGroupListRaw,
+    InitTabType,
+    noop,
+    useAsync,
+    useBreadcrumb,
+    useEffectAfterMount,
+    useUrlFilters,
+    WidgetEventDetails,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { UpdateTabUrlParamsType, DynamicTabsVariantType, DynamicTabsProps } from '@Components/common/DynamicTabs/types'
-import { ClusterListType } from '@Components/ClusterNodes/types'
+
 import { ReactComponent as ICArrowUpCircle } from '@Icons/ic-arrow-up-circle.svg'
-import { ReactComponent as ICTerminalFill } from '@Icons/ic-terminal-fill.svg'
-import { ReactComponent as ICObject } from '@Icons/ic-object.svg'
-import { ReactComponent as ICWorldBlack } from '@Icons/ic-world-black.svg'
 import { ReactComponent as ICChartLineUp } from '@Icons/ic-chart-line-up.svg'
-import { ClusterOptionType, K8SResourceListType, URLParams } from '../Types'
+import { ReactComponent as ICObject } from '@Icons/ic-object.svg'
+import { ReactComponent as ICTerminalFill } from '@Icons/ic-terminal-fill.svg'
+import { ReactComponent as ICWorldBlack } from '@Icons/ic-world-black.svg'
+import { ClusterListType } from '@Components/ClusterNodes/types'
+import { DynamicTabsProps, DynamicTabsVariantType, UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/types'
+
+import { URLS } from '../../../config'
+import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
+import ClusterOverview from '../../ClusterNodes/ClusterOverview'
+import NodeDetails from '../../ClusterNodes/NodeDetails'
+import { importComponentFromFELibrary } from '../../common'
+import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
+import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
+import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
 import {
     K8S_EMPTY_GROUP,
     MONITORING_DASHBOARD_TAB_ID,
@@ -46,30 +56,23 @@ import {
     SIDEBAR_KEYS,
     UPGRADE_CLUSTER_CONSTANTS,
 } from '../Constants'
-import { URLS } from '../../../config'
-import { importComponentFromFELibrary } from '../../common'
-import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
-import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
-import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
-import { getClusterChangeRedirectionUrl, getTabsBasedOnRole } from '../Utils'
-import ClusterSelector from './ClusterSelector'
-import ClusterOverview from '../../ClusterNodes/ClusterOverview'
-import NodeDetails from '../../ClusterNodes/NodeDetails'
-import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
-import K8SResourceTabComponent from './K8SResourceTabComponent'
-import AdminTerminal from './AdminTerminal'
-import { renderRefreshBar } from './ResourceList.component'
 import { renderCreateResourceButton } from '../PageHeader.buttons'
+import { getClusterListing } from '../ResourceBrowser.service'
+import { ClusterOptionType, K8SResourceListType, URLParams } from '../Types'
+import { getClusterChangeRedirectionUrl, getTabsBasedOnRole } from '../Utils'
+import AdminTerminal from './AdminTerminal'
+import ClusterSelector from './ClusterSelector'
 import ClusterUpgradeCompatibilityInfo from './ClusterUpgradeCompatibilityInfo'
+import K8SResourceTabComponent from './K8SResourceTabComponent'
+import { renderRefreshBar } from './ResourceList.component'
+import ResourcePageHeader from './ResourcePageHeader'
+import { ResourceListUrlFiltersType } from './types'
 import {
     getClusterOptions,
     getFirstResourceFromKindResourceMap,
     getUpgradeCompatibilityTippyConfig,
     parseSearchParams,
 } from './utils'
-import { ResourceListUrlFiltersType } from './types'
-import ResourcePageHeader from './ResourcePageHeader'
-import { getClusterListing } from '../ResourceBrowser.service'
 
 const EventsAIResponseWidget = importComponentFromFELibrary('EventsAIResponseWidget', null, 'function')
 const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
