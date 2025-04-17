@@ -15,7 +15,9 @@
  */
 
 import { getIsApprovalPolicyConfigured } from '@devtron-labs/devtron-fe-common-lib'
+
 import { getIsMaterialApproved } from '@Components/app/details/triggerView/cdMaterials.utils'
+
 import { BulkCDDetailType, BulkCIDetailType } from '../../AppGroup.types'
 
 export const getIsAppUnorthodox = (app: BulkCIDetailType): boolean =>
@@ -30,7 +32,7 @@ export const getIsNonApprovedImageSelected = (appList: BulkCDDetailType[]): bool
         return app.material?.some((material) => {
             const { approvalConfigData } = material.userApprovalMetadata
             return (
-                (material.isSelected && !approvalConfigData.requiredCount) || !getIsMaterialApproved(approvalConfigData)
+                material.isSelected && (!approvalConfigData.requiredCount || !getIsMaterialApproved(approvalConfigData))
             )
         })
     })
