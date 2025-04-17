@@ -18,8 +18,6 @@ import { KeyboardEventHandler, useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
-    TippyCustomized,
-    TippyTheme,
     sortCallback,
     ErrorScreenNotAuthorized,
     Reload,
@@ -53,7 +51,7 @@ import {
     RegistryIcon,
     ComponentSizeType,
     PasswordField,
-    OtherRegistryAuthenticationType,
+    RegistryCredentialsType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
@@ -261,7 +259,7 @@ const CollapsedList = ({
     repositoryList = [],
     disabledFields = [],
     ociRegistryConfig,
-    credentialsType,
+    registryCredentialsType,
     ...rest
 }) => {
     const [collapsed, toggleCollapse] = useState(true)
@@ -341,7 +339,7 @@ const CollapsedList = ({
                         isPublic,
                         disabledFields,
                         ociRegistryConfig,
-                        credentialsType,
+                        registryCredentialsType,
                     }}
                 />
             )}
@@ -381,7 +379,7 @@ const DockerForm = ({
         : {
               CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
           },
-    credentialsType: authCredentialsType,
+    registryCredentialsType,
     ...rest
 }) => {
     const re = PATTERNS.APP_NAME
@@ -439,7 +437,7 @@ const DockerForm = ({
         registryUrl: { value: registryUrl, error: '' },
         username: { value: username, error: '' },
         password: {
-            value: id && !password ? DEFAULT_SECRET_PLACEHOLDER : regPass,
+            value: id && username && !password ? DEFAULT_SECRET_PLACEHOLDER : regPass,
             error: '',
         },
         repositoryList: {
@@ -544,8 +542,8 @@ const DockerForm = ({
     const [registryStorageType, setRegistryStorageType] = useState<string>(
         isPublic ? RegistryStorageType.OCI_PUBLIC : RegistryStorageType.OCI_PRIVATE,
     )
-    const [authenticationType, setAuthenticationType] = useState<OtherRegistryAuthenticationType>(
-        id && authCredentialsType ? authCredentialsType : OtherRegistryAuthenticationType.USERNAME_PASSWORD,
+    const [authenticationType, setAuthenticationType] = useState<RegistryCredentialsType>(
+        id && registryCredentialsType ? registryCredentialsType : RegistryCredentialsType.USERNAME_PASSWORD,
     )
 
     const InitialValueOfIsContainerStore: boolean =
@@ -721,7 +719,7 @@ const DockerForm = ({
     }
 
     const handleChangeOtherRegistryAuthType = (e) => {
-        const updatedAuthType = e.target.value as OtherRegistryAuthenticationType
+        const updatedAuthType = e.target.value as RegistryCredentialsType
         setAuthenticationType(updatedAuthType)
     }
 
@@ -818,7 +816,7 @@ const DockerForm = ({
             ...(registryStorageType !== RegistryStorageType.OCI_PUBLIC &&
             selectedDockerRegistryType.value === RegistryType.OTHER
                 ? {
-                      ...(authenticationType === OtherRegistryAuthenticationType.USERNAME_PASSWORD
+                      ...(authenticationType === RegistryCredentialsType.USERNAME_PASSWORD
                           ? {
                                 username: trimmedUsername,
                                 password: parsePassword(customState.password.value),
@@ -857,7 +855,7 @@ const DockerForm = ({
                 sshConnectionType,
             ),
             ...(AuthenticationTypeRadio && selectedDockerRegistryType.value === RegistryType.OTHER
-                ? { credentialsType: authenticationType }
+                ? { registryCredentialsType: authenticationType }
                 : {}),
         }
     }
@@ -1023,13 +1021,13 @@ const DockerForm = ({
                 let error = false
                 if (
                     registryStorageType === RegistryStorageType.OCI_PRIVATE &&
-                    authenticationType === OtherRegistryAuthenticationType.USERNAME_PASSWORD &&
-                    (!customState.username.value || !(customState.password.value || id))
+                    authenticationType === RegistryCredentialsType.USERNAME_PASSWORD &&
+                    (!customState.username.value || !(customState.password.value || (id && username)))
                 ) {
                     setCustomState((st) => ({
                         ...st,
                         username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
-                        password: { ...st.password, error: id || st.password.value ? '' : 'Mandatory' },
+                        password: { ...st.password, error: (id && username) || st.password.value ? '' : 'Mandatory' },
                     }))
                     error = true
                 }
@@ -1629,7 +1627,7 @@ const DockerForm = ({
 
             const isUserNamePasswordRequired =
                 selectedDockerRegistryType.value === RegistryType.OTHER
-                    ? authenticationType === OtherRegistryAuthenticationType.USERNAME_PASSWORD
+                    ? authenticationType === RegistryCredentialsType.USERNAME_PASSWORD
                     : true
 
             return (
@@ -1664,7 +1662,7 @@ const DockerForm = ({
                                     selectedDockerRegistryType.value === RegistryType.QUAY ||
                                     selectedDockerRegistryType.value === RegistryType.OTHER) && (
                                     <PasswordField
-                                        shouldShowDefaultPlaceholderOnBlur={!!id}
+                                        shouldShowDefaultPlaceholderOnBlur={!!id && !!username}
                                         name="password"
                                         required
                                         value={customState.password.value}
