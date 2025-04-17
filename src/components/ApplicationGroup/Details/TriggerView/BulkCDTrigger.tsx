@@ -903,7 +903,10 @@ export default function BulkCDTrigger({
                         <AnimatedDeployButton
                             onButtonClick={onClickStartDeploy}
                             isVirtualEnvironment={false}
-                            canDeployWithoutApproval={canDeployWithoutApproval}
+                            exceptionUserConfig={{
+                                canDeploy: canDeployWithoutApproval,
+                                isImageApprover: false
+                            }}
                             isBulkCDTrigger
                         />
                     ) : (

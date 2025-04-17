@@ -1278,7 +1278,7 @@ const CDMaterial = ({
                 </span>
             )
         }
-        if (disableSelection || (!canApproverDeploy && isImageApprover)) {
+        if (disableSelection || (!isExceptionUser && !canApproverDeploy && isImageApprover)) {
             return (
                 <Tippy
                     className="default-tt w-200"
@@ -1692,6 +1692,11 @@ const CDMaterial = ({
     const renderTriggerDeployButton = (disableDeployButton: boolean) => {
         const userActionState: ACTION_STATE = deploymentWindowMetadata.userActionState
         const canDeployWithoutApproval = isExceptionUser && getCanDeployWithoutApproval(state)
+        const canImageApproverDeploy =
+            isExceptionUser &&
+            !canApproverDeploy &&
+            state.selectedMaterial &&
+            getIsImageApprover(state.selectedMaterial.userApprovalMetadata)
         const showAnimatedDeployButton =
             stageType === DeploymentNodeType.CD &&
             !disableDeployButton &&
@@ -1703,7 +1708,10 @@ const CDMaterial = ({
                     isLoading={deploymentLoading || isSaveLoading}
                     onButtonClick={onClickDeploy}
                     isVirtualEnvironment={isVirtualEnvironment}
-                    canDeployWithoutApproval={canDeployWithoutApproval}
+                    exceptionUserConfig={{
+                        canDeploy: canDeployWithoutApproval,
+                        isImageApprover: canImageApproverDeploy,
+                    }}
                 />
             )
         }
@@ -1727,7 +1735,9 @@ const CDMaterial = ({
     const renderTriggerModalCTA = (isApprovalConfigured: boolean) => {
         const disableDeployButton =
             isDeployButtonDisabled() ||
-            (material.length > 0 && getIsImageApprover(state.selectedMaterial?.userApprovalMetadata))
+            (!isExceptionUser &&
+                material.length > 0 &&
+                getIsImageApprover(state.selectedMaterial?.userApprovalMetadata))
         const hideConfigDiffSelector = isApprovalConfigured && disableDeployButton
 
         return (
