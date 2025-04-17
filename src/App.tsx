@@ -42,11 +42,11 @@ import {
 } from './components/common'
 import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG, URLS } from './config'
 import { validateToken } from './services/service'
+import ActivateLicense from '@Pages/License/ActivateLicense'
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'))
 const Login = lazy(() => import('./components/login/Login'))
 const GenericDirectApprovalModal = importComponentFromFELibrary('GenericDirectApprovalModal')
-const ActivateLicense = importComponentFromFELibrary('ActivateLicense', null, 'function')
 
 export default function App() {
     const onlineToastRef = useRef(null)
@@ -160,7 +160,6 @@ export default function App() {
     }
 
     useEffect(() => {
-
         if (navigator.serviceWorker) {
             navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
         }
@@ -328,7 +327,7 @@ export default function App() {
                             <div className="full-height-width bg__tertiary">
                                 <Reload />
                             </div>
-                            ) : (
+                        ) : (
                             <ErrorBoundary>
                                 <BreadcrumbStore>
                                     <Switch>
@@ -340,11 +339,9 @@ export default function App() {
                                                 />
                                             </Route>
                                         )}
-                                        {ActivateLicense && (
-                                            <Route path={CommonURLS.LICENSE_AUTH}>
-                                                <ActivateLicense />
-                                            </Route>
-                                        )}
+                                        <Route path={CommonURLS.LICENSE_AUTH}>
+                                            <ActivateLicense />
+                                        </Route>
                                         {!window._env_.K8S_CLIENT && <Route path="/login" component={Login} />}
                                         <Route path="/" render={() => <NavigationRoutes />} />
                                         <Redirect

@@ -1126,10 +1126,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@1.11.0":
-  version "1.11.0"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.11.0.tgz#1cf1ae310119b5b0c1c8bb3d162cf291951b84bf"
-  integrity sha512-JRJEqnuUBcfoqEQ7x/5Oqx+HcYxNmAQAZd/++Rf2F2mvslS1UFsbA8e6irRnGSmzUuksAX5OnARXnM1VOZNIsw==
+"@devtron-labs/devtron-fe-common-lib@1.11.0-beta-8":
+  version "1.11.0-beta-8"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.11.0-beta-8.tgz#9b4a30aaa341dfdcd5a5b6fe18556ec549fdec19"
+  integrity sha512-wH0SlsJgytf+0eDZ3XSjfNHDke3FSbzZD4LO41ERWte2cLs3OLqxQBKGm9zYFghSpqwI/I3lHDnRhtkNd3kd/A==
   dependencies:
     "@codemirror/lang-json" "6.0.1"
     "@codemirror/lang-yaml" "6.1.2"
@@ -1154,6 +1154,7 @@
     jsonpath-plus "^10.3.0"
     marked "^13.0.3"
     nanoid "^3.3.8"
+    qrcode.react "^4.2.0"
     react-canvas-confetti "^2.0.7"
     react-dates "^21.8.0"
     react-diff-viewer-continued "^3.4.0"
@@ -7259,6 +7260,11 @@ punycode@^2.1.0:
   version "2.3.1"
   resolved "https://registry.npmjs.org/punycode/-/punycode-2.3.1.tgz"
   integrity sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==
+
+qrcode.react@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/qrcode.react/-/qrcode.react-4.2.0.tgz#1bce8363f348197d145c0da640929a24c83cbca3"
+  integrity sha512-QpgqWi8rD9DsS9EP3z7BT+5lY5SFhsqGjpgW5DY/i3mK4M9DTBNz3ErMi8BWYEfI3L0d8GIbGmcdFAS1uIRGjA==
 
 query-string@^7.1.1:
   version "7.1.3"
