@@ -18,8 +18,6 @@ import { KeyboardEventHandler, useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
-    TippyCustomized,
-    TippyTheme,
     sortCallback,
     ErrorScreenNotAuthorized,
     Reload,
@@ -439,7 +437,7 @@ const DockerForm = ({
         registryUrl: { value: registryUrl, error: '' },
         username: { value: username, error: '' },
         password: {
-            value: id && !password ? DEFAULT_SECRET_PLACEHOLDER : regPass,
+            value: id && username && !password ? DEFAULT_SECRET_PLACEHOLDER : regPass,
             error: '',
         },
         repositoryList: {
@@ -1024,12 +1022,12 @@ const DockerForm = ({
                 if (
                     registryStorageType === RegistryStorageType.OCI_PRIVATE &&
                     authenticationType === RegistryCredentialsType.USERNAME_PASSWORD &&
-                    (!customState.username.value || !(customState.password.value || id))
+                    (!customState.username.value || !(customState.password.value || (id && username)))
                 ) {
                     setCustomState((st) => ({
                         ...st,
                         username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
-                        password: { ...st.password, error: id || st.password.value ? '' : 'Mandatory' },
+                        password: { ...st.password, error: (id && username) || st.password.value ? '' : 'Mandatory' },
                     }))
                     error = true
                 }
@@ -1664,7 +1662,7 @@ const DockerForm = ({
                                     selectedDockerRegistryType.value === RegistryType.QUAY ||
                                     selectedDockerRegistryType.value === RegistryType.OTHER) && (
                                     <PasswordField
-                                        shouldShowDefaultPlaceholderOnBlur={!!id}
+                                        shouldShowDefaultPlaceholderOnBlur={!!id && !!username}
                                         name="password"
                                         required
                                         value={customState.password.value}
