@@ -279,6 +279,8 @@ export default function CDPipeline({
 
     const isGitOpsRepoNotConfigured = isExternalArgoPipeline ? false : isGitOpsRepoNotConfiguredProp
 
+    const areMandatoryPluginPossible = !!processPluginData && !isTemplateView
+
     const handleHideScopedVariableWidgetUpdate: PipelineContext['handleHideScopedVariableWidgetUpdate'] = (
         hideScopedVariableWidgetValue: boolean,
     ) => {
@@ -312,7 +314,7 @@ export default function CDPipeline({
         const postBuildPluginIds = getPluginIdsFromBuildStage(form.postBuildStage)
         const uniquePluginIds = Array.from(new Set([...preBuildPluginIds, ...postBuildPluginIds]))
 
-        if (processPluginData) {
+        if (areMandatoryPluginPossible) {
             await getMandatoryPluginData(form, uniquePluginIds)
             return
         }
@@ -448,7 +450,7 @@ export default function CDPipeline({
     }
 
     const getMandatoryPluginData: BuildCDProps['getMandatoryPluginData'] = async (form, requiredPluginIds = []) => {
-        if (!processPluginData || isTemplateView) {
+        if (!areMandatoryPluginPossible) {
             return
         }
 
