@@ -42,7 +42,8 @@ export const RESOURCE_CONFIG_STATE_TO_ICON_CONFIG_MAP: Record<
         iconClass: 'scv-5',
     },
     [ResourceConfigState.Unnamed]: {
-        Icon: null,
-        tippyContent: null,
+        Icon: ICStamp,
+        tippyContent: 'Approval(s) will be required for configuration change',
+        iconClass: 'scv-5',
     },
 } as const

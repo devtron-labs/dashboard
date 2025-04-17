@@ -15,6 +15,7 @@
  */
 
 import { Fragment } from 'react'
+import ReactGA from 'react-ga4'
 import {
     Button,
     ButtonStyleType,
@@ -26,6 +27,7 @@ import {
     ComponentSizeType,
     InvalidYAMLTippyWrapper,
     ToggleResolveScopedVariables,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -40,6 +42,7 @@ import SelectMergeStrategy from './SelectMergeStrategy'
 const ProtectionViewTabGroup = importComponentFromFELibrary('ProtectionViewTabGroup', null, 'function')
 const MergePatchWithTemplateCheckbox = importComponentFromFELibrary('MergePatchWithTemplateCheckbox', null, 'function')
 const ConfigApproversInfoTippy = importComponentFromFELibrary('ConfigApproversInfoTippy', null, 'function')
+const ExpressEditButton = importComponentFromFELibrary('ExpressEditButton', null, 'function')
 const ProtectConfigShowCommentsButton = importComponentFromFELibrary(
     'ProtectConfigShowCommentsButton',
     null,
@@ -114,6 +117,7 @@ const ConfigToolbar = ({
     isApprovalPolicyConfigured = false,
     isApprovalPending,
     isDraftPresent,
+    isUnpublished = false,
     draftId,
     draftVersionId,
     requestedUserId,
@@ -125,6 +129,10 @@ const ConfigToolbar = ({
     isPublishedConfigPresent = true,
     headerMessage,
     showDeleteOverrideDraftEmptyState,
+
+    isExceptionUser,
+    isExpressEditView,
+    expressEditButtonConfig,
 }: ConfigToolbarProps) => {
     const { envId } = useParams<BaseURLParams>()
     const isDisabled = disableAllActions || !!parsingError
@@ -148,9 +156,9 @@ const ConfigToolbar = ({
 
     const isEditView = !!(
         configHeaderTab === ConfigHeaderTabType.VALUES &&
-        (isApprovalPolicyConfigured && isDraftPresent
-            ? selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT
-            : true)
+        (!isApprovalPolicyConfigured ||
+            !isDraftPresent ||
+            selectedProtectionViewTab === ProtectConfigTabsType.EDIT_DRAFT)
     )
 
     const showProtectedTabs =
@@ -159,7 +167,28 @@ const ConfigToolbar = ({
         configHeaderTab === ConfigHeaderTabType.VALUES &&
         !!ProtectionViewTabGroup
 
+    const hideMergeStrategy =
+        !mergeStrategy ||
+        !envId ||
+        showDeleteOverrideDraftEmptyState ||
+        (!isEditView && !(isPublishedValuesView && !!isPublishedConfigPresent))
+
+    const showExpressEditButton =
+        !!ExpressEditButton && isExceptionUser && !isExpressEditView && isEditView && !showDeleteOverrideDraftEmptyState
+
     const getLHSActionNodes = (): JSX.Element => {
+        if (isExpressEditView) {
+            return (
+                <>
+                    <div className="flex dc__gap-6">
+                        <Icon name="ic-pencil" color="N700" />
+                        <p className="m-0 fs-12 lh-18 cn-9">Editing Published</p>
+                    </div>
+                    {(children || !hideMergeStrategy) && <div className="divider__secondary" />}
+                </>
+            )
+        }
+
         if (configHeaderTab === ConfigHeaderTabType.INHERITED) {
             return (
                 <div className="flexbox dc__align-items-center dc__gap-6">
@@ -186,6 +215,7 @@ const ConfigToolbar = ({
                                     selectedTab={selectedProtectionViewTab}
                                     handleProtectionViewTabChange={handleProtectionViewTabChange}
                                     isApprovalPending={isApprovalPending}
+                                    hasPublishedConfig={isPublishedConfigPresent}
                                     isDisabled={isDisabled}
                                     parsingError={parsingError}
                                     restoreLastSavedYAML={restoreLastSavedYAML}
@@ -224,7 +254,7 @@ const ConfigToolbar = ({
         const shouldRenderCommentsView = !!isDraftPresent
         const hasNothingToRender = !shouldRenderApproverInfoTippy && !shouldRenderCommentsView
 
-        if (!isApprovalPolicyConfigured || hasNothingToRender) {
+        if (!isApprovalPolicyConfigured || hasNothingToRender || isExpressEditView) {
             return null
         }
 
@@ -293,12 +323,7 @@ const ConfigToolbar = ({
     }
 
     const renderSelectMergeStrategy = () => {
-        if (
-            !mergeStrategy ||
-            !envId ||
-            showDeleteOverrideDraftEmptyState ||
-            (!isEditView && !(isPublishedValuesView && !!isPublishedConfigPresent))
-        ) {
+        if (hideMergeStrategy) {
             return null
         }
 
@@ -391,11 +416,28 @@ const ConfigToolbar = ({
                 {renderSelectMergeStrategy()}
             </div>
 
-            {isPublishedValuesView && !isPublishedConfigPresent ? null : (
+            {(showExpressEditButton || !isPublishedValuesView || isPublishedConfigPresent) && (
                 <div className="flexbox dc__align-items-center dc__gap-8">
-                    {renderProtectedConfigActions()}
-                    {renderReadmeAndScopedVariablesBlock()}
-                    {renderPopupMenu()}
+                    {showExpressEditButton && (
+                        <ExpressEditButton
+                            disabled={isUnpublished}
+                            {...(expressEditButtonConfig ?? {})}
+                            onClick={() => {
+                                ReactGA.event({
+                                    category: 'APP_EXPRESS_EDIT_ACCESSED',
+                                    action: 'APP_EXPRESS_EDIT_ACCESSED',
+                                })
+                                expressEditButtonConfig?.onClick?.()
+                            }}
+                        />
+                    )}
+                    {isPublishedValuesView && !isPublishedConfigPresent ? null : (
+                        <>
+                            {renderProtectedConfigActions()}
+                            {renderReadmeAndScopedVariablesBlock()}
+                            {renderPopupMenu()}
+                        </>
+                    )}
                 </div>
             )}
         </div>

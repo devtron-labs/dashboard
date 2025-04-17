@@ -59,7 +59,7 @@ const PluginVersionSelect = ({ handlePluginVersionChange }: PluginVersionSelectP
                     classNamePrefix="plugin-detail-header__version-select"
                     inputId="plugin-detail-header__version-select"
                     placeholder="Version"
-                    variant={SelectPickerVariantType.BORDER_LESS}
+                    variant={SelectPickerVariantType.COMPACT}
                     onChange={handleChange}
                     onKeyDown={stopPropagation}
                 />

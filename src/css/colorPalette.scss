@@ -104,6 +104,7 @@ $black: 0, 0, 0;
     --bg-hover: rgba(#{$N100}, 0.75);
     --bg-hover-opaque: rgb(241, 245, 247);
     --bg-body: linear-gradient(90deg, var(--B500) 0%, var(--B500) 10%, rgb(0, 82, 165) 25%, rgb(0, 47, 94) 50%, rgb(0, 33, 65) 100%);
+    --bg-segmented-control: rgba(#{$black}, 0.03);
 
     --backdrop-bg: rgba(#{$black}, 0.75);
 
@@ -206,6 +207,7 @@ $black: 0, 0, 0;
     --bg-hover: rgba(#{$white}, 0.07);
     --bg-hover-opaque: rgb(44, 45, 53);
     --bg-body: var(--bg-tertiary);
+    --bg-segmented-control: rgba(#{$black}, 0.30);
 
     --backdrop-bg: rgba(#{$black}, 0.6);
 

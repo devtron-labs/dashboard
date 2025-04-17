@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CMSecretComponentType } from '@devtron-labs/devtron-fe-common-lib'
+import { CMSecretComponentType, ConfigMapSecretUseFormProps } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigMapSecretNullStateProps } from './types'
 
 export const CM_SECRET_COMPONENT_NAME = {
@@ -80,7 +80,7 @@ export const VIEW_MODE = {
     GUI: 'gui',
     YAML: 'yaml',
     MANIFEST: 'manifest',
-}
+} as const
 
 export const sampleJSONs = {
     ESO_GoogleSecretsManager: {
@@ -211,7 +211,14 @@ export const sampleJSONs = {
     ],
 }
 
-export const CONFIG_MAP_SECRET_NO_DATA_ERROR = 'This is a required field'
+export const CONFIG_MAP_SECRET_REQUIRED_FIELD_ERROR = 'This is a required field'
 
 export const DELETE_OVERRIDE_CONFIG_SUBTITLE =
     'This action will result in the removal of all overrides, and the original base configurations for this file will be reinstated.'
+
+export const CONFIG_MAP_SECRET_DATA_KEYS: (keyof ConfigMapSecretUseFormProps)[] = [
+    'currentData',
+    'yaml',
+    'esoSecretYaml',
+    'secretDataYaml',
+]
