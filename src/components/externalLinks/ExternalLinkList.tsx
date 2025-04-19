@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-import { Trash } from '@Components/common'
+import { Fragment } from 'react'
+
 import {
     Button,
-    ButtonVariantType,
     ButtonStyleType,
+    ButtonVariantType,
     ComponentSizeType,
     GenericFilterEmptyState,
-    useUrlFilters,
     SortableTableHeaderCell,
+    useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Fragment } from 'react'
+
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
+import { Trash } from '@Components/common'
 import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
-import { getMonitoringToolIcon, getScopeLabel, onImageLoadError } from './ExternalLinks.utils'
+
 import {
     ExternalLink,
     ExternalLinkListProps,
@@ -35,6 +37,7 @@ import {
     ExternalListUrlFiltersType,
     parseSearchParams,
 } from './ExternalLinks.type'
+import { getMonitoringToolIcon, getScopeLabel, onImageLoadError } from './ExternalLinks.utils'
 
 export const ExternalLinkList = ({
     filteredExternalLinks,

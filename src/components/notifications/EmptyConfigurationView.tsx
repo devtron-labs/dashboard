@@ -15,9 +15,10 @@
  */
 
 import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+
+import { AddConfigurationButton } from './AddConfigurationButton'
 import { EmptyConfigurationSubTitle } from './constants'
 import { EmptyConfigurationViewProps } from './types'
-import { AddConfigurationButton } from './AddConfigurationButton'
 
 export const EmptyConfigurationView = ({ activeTab, image }: EmptyConfigurationViewProps) => {
     const renderButton = () => <AddConfigurationButton activeTab={activeTab} />

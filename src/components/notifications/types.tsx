@@ -15,16 +15,19 @@
  */
 
 import { RouteComponentProps } from 'react-router-dom'
+
 import {
-    ServerError,
-    ResponseType,
     DynamicDataTableRowType,
-    SelectPickerOptionType,
-    PaginationProps,
     GenericEmptyStateType,
+    PaginationProps,
+    ResponseType,
+    SelectPickerOptionType,
+    ServerError,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { VariableDataTableActionType } from '@Components/CIPipelineN/VariableDataTable/types'
 import { HostURLConfig } from '@Services/service.types'
+
 import { ConfigurationFieldKeys, ConfigurationsTabTypes } from './constants'
 
 export interface NotifierProps extends RouteComponentProps<{ id: string }> {}

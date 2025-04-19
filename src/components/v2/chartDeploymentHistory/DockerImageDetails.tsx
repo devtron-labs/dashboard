@@ -15,8 +15,9 @@
  */
 
 import Tippy from '@tippyjs/react'
-import { DockerImageDetailsProps } from './chartDeploymentHistory.service'
+
 import { ReactComponent as DockerIcon } from '../../../assets/icons/misc/docker.svg'
+import { DockerImageDetailsProps } from './chartDeploymentHistory.service'
 
 const DockerImageDetails = ({ deployment, setShowDockerInfo }: DockerImageDetailsProps) => {
     const handleOnClick = () => {

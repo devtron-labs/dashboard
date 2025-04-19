@@ -15,9 +15,11 @@
  */
 
 import React, { FunctionComponent } from 'react'
+
 import { CustomInput, InfoIconTippy, Textarea } from '@devtron-labs/devtron-fe-common-lib'
-import { DockerArgsAction, DockerArgsItemProps, DockerArgsProps } from './types'
+
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import { DockerArgsAction, DockerArgsItemProps, DockerArgsProps } from './types'
 
 const DockerArgsItem: FunctionComponent<DockerArgsItemProps> = ({
     arg,

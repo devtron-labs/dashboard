@@ -15,32 +15,34 @@
  */
 
 import { useState } from 'react'
+
 import {
     ACCESS_TYPE_MAP,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    capitalizeFirstLetter,
+    ComponentSizeType,
     EntityTypes,
     SelectPicker,
-    ComponentSizeType,
     SelectPickerOptionType,
-    Button,
-    ButtonVariantType,
-    ButtonStyleType,
-    capitalizeFirstLetter,
     SelectPickerProps,
     UserRoleConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ReactComponent as TrashIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { HELM_APP_UNASSIGNED_PROJECT } from '../../../../../../config'
-import { ReactComponent as TrashIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
-import { DirectPermissionFieldName } from './constants'
-import { DirectPermissionRowProps, WorkflowListType } from './types'
-import { usePermissionConfiguration } from '../PermissionConfigurationForm'
-import { DirectPermissionsRoleFilter } from '../../../types'
 import { getIsStatusDropdownDisabled } from '../../../libUtils'
-import EnvironmentSelector from './EnvironmentSelector'
-import WorkflowSelector from './WorkflowSelector'
+import { DirectPermissionsRoleFilter } from '../../../types'
+import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import AppOrJobSelector from './AppOrJobSelector'
-import RoleSelector from './RoleSelector'
+import { DirectPermissionFieldName } from './constants'
+import EnvironmentSelector from './EnvironmentSelector'
 import JobRoleSelector from './JobRoleSelector'
+import RoleSelector from './RoleSelector'
+import { DirectPermissionRowProps, WorkflowListType } from './types'
+import WorkflowSelector from './WorkflowSelector'
 
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
 

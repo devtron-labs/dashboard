@@ -15,8 +15,9 @@
  */
 
 import { AppType, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Helm } from '../../../assets/icons/helm-app.svg'
+
 import { ReactComponent as ArgoCD } from '../../../assets/icons/argo-cd-app.svg'
+import { ReactComponent as Helm } from '../../../assets/icons/helm-app.svg'
 import { ReactComponent as FluxCD } from '../../../assets/icons/ic-fluxcd.svg'
 import { importComponentFromFELibrary } from '../helpers/Helpers'
 

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { PermissionGroupListHeaderProps } from './types'
-import ExportToCsv from '../../../../../components/common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES, GROUP_EXPORT_HEADER_ROW } from '../../../../../components/common/ExportToCsv/constants'
+import ExportToCsv from '../../../../../components/common/ExportToCsv/ExportToCsv'
 import { useAuthorizationContext } from '../../AuthorizationProvider'
 import { getRoleFiltersToExport } from '../../utils'
+import { PermissionGroupListHeaderProps } from './types'
 
 const ExportPermissionGroupsToCsv = ({
     disabled,

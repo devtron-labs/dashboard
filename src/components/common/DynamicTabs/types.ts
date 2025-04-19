@@ -16,7 +16,9 @@
 
 import { ReactElement } from 'react'
 import { Dayjs } from 'dayjs'
+
 import { DynamicTabType, InitTabType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { TAB_DATA_VERSION } from './constants'
 
 export enum DynamicTabsVariantType {

@@ -32,6 +32,7 @@
  */
 
 import { ConfigResourceType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { STAGE_NAME } from './Details/AppConfigurations/AppConfig.types'
 
 export interface AppConfigStatusItemType {

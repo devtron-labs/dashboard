@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import React, { useEffect, useRef, useState } from 'react'
+
 import {
     Button,
     ButtonStyleType,
@@ -22,7 +24,7 @@ import {
     Drawer,
     InfoColourBar,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React, { useEffect, useRef, useState } from 'react'
+
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
 import SourceUpdateResponseModal from './SourceUpdateResponseModal'

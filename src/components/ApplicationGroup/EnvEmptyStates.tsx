@@ -15,6 +15,7 @@
  */
 
 import { GenericFilterEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+
 import { EmptyEnvState } from './AppGroup.types'
 
 export const EnvEmptyStates = ({ actionHandler }: EmptyEnvState) => (

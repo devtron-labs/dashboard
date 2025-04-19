@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { generatePath, Route, Switch, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 
 import {
     ApprovalConfigDataKindType,
+    CMSecretComponentType,
     getIsApprovalPolicyConfigured,
     Reload,
-    CMSecretComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, useRouteMatch, useHistory, useLocation, Route, Switch, generatePath } from 'react-router-dom'
 
-import { mapByKey, ErrorBoundary, useAppContext } from '@Components/common'
-import { APP_COMPOSE_STAGE, URLS, getAppComposeURL } from '@Config/index'
-import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
+import { ErrorBoundary, mapByKey, useAppContext } from '@Components/common'
+import { APP_COMPOSE_STAGE, getAppComposeURL, URLS } from '@Config/index'
 import { DeploymentTemplate } from '@Pages/Applications'
+import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
+
 import { ComponentStates, EnvironmentOverrideComponentProps } from './EnvironmentOverrides.types'
 
 import './environmentOverride.scss'

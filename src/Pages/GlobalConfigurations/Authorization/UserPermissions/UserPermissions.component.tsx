@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
+import { lazy } from 'react'
+import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
+
 import {
-    ErrorScreenNotAuthorized,
     ERROR_EMPTY_SCREEN,
+    ErrorScreenNotAuthorized,
     Progressing,
     Reload,
     TOAST_ACCESS_DENIED,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { lazy } from 'react'
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
+
 import { API_STATUS_CODES } from '../../../../config'
 import { getSSOConfigList } from '../SSOLoginServices/service'
 import SSONotConfiguredState from './SSONotConfiguredState'

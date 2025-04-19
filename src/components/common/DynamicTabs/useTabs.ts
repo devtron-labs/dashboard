@@ -16,9 +16,11 @@
 
 import { useMemo, useState } from 'react'
 import dayjs from 'dayjs'
-import { noop, InitTabType, DynamicTabType } from '@devtron-labs/devtron-fe-common-lib'
-import { AddTabParamsType, ParsedTabsData, PopulateTabDataPropsType, UseTabsReturnType } from './types'
+
+import { DynamicTabType, InitTabType, noop } from '@devtron-labs/devtron-fe-common-lib'
+
 import { FALLBACK_TAB, TAB_DATA_LOCAL_STORAGE_KEY, TAB_DATA_VERSION } from './constants'
+import { AddTabParamsType, ParsedTabsData, PopulateTabDataPropsType, UseTabsReturnType } from './types'
 import { convertV1TabsDataToV2 } from './utils'
 
 export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB): UseTabsReturnType {

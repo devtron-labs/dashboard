@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react'
-import { action } from '@storybook/addon-actions'
-import { ComponentSizeType, Textarea, TextareaProps } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
+import { action } from '@storybook/addon-actions'
+import type { Meta, StoryObj } from '@storybook/react'
+
+import { ComponentSizeType, Textarea, TextareaProps } from '@devtron-labs/devtron-fe-common-lib'
 
 const meta = {
     component: Textarea,

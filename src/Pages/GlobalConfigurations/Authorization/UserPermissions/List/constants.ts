@@ -15,9 +15,10 @@
  */
 
 import { DefaultUserKey } from '@devtron-labs/devtron-fe-common-lib'
+
 import { DEFAULT_SHIMMER_LOADING_TABLE_ROWS } from '../../../../../config'
-import { User } from '../../types'
 import { getDefaultUserStatusAndTimeout } from '../../libUtils'
+import { User } from '../../types'
 
 export const userListLoading: User[] = Array.from(Array(DEFAULT_SHIMMER_LOADING_TABLE_ROWS).keys()).map((index) => ({
     id: index,

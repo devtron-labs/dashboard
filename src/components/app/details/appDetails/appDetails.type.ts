@@ -15,9 +15,11 @@
  */
 
 import { ACTION_STATE, ResponseType, ScanResultDTO, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+
 import { fetchAppDetailsInTime } from '@Components/app/service'
+
+import { AppDetails, SyncErrorType } from '../../../v2/appDetails/appDetails.type'
 import { AggregatedNodes, OptionType } from '../../types'
-import { SyncErrorType, AppDetails } from '../../../v2/appDetails/appDetails.type'
 
 export enum AppMetricsTab {
     Aggregate = 'aggregate',

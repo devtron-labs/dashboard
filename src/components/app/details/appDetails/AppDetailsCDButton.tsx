@@ -15,7 +15,9 @@
  */
 
 import React from 'react'
+import ReactGA from 'react-ga4'
 import { useHistory, useLocation } from 'react-router-dom'
+
 import {
     ACTION_STATE,
     Button,
@@ -23,20 +25,22 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     DeploymentNodeType,
-    VisibleModal,
     stopPropagation,
     useSearchString,
+    VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
+import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
+import { BUTTON_TITLE } from '../../../ApplicationGroup/Constants'
 import { importComponentFromFELibrary } from '../../../common'
 import { URL_PARAM_MODE_TYPE } from '../../../common/helpers/types'
-import CDMaterial from '../triggerView/cdMaterial'
-import { MATERIAL_TYPE } from '../triggerView/types'
-import { BUTTON_TITLE } from '../../../ApplicationGroup/Constants'
-import { AppDetailsCDButtonType } from '../../types'
-import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
-import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
-import { TRIGGER_VIEW_PARAMS } from '../triggerView/Constants'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
+import { AppDetailsCDButtonType } from '../../types'
+import CDMaterial from '../triggerView/cdMaterial'
+import { TRIGGER_VIEW_PARAMS } from '../triggerView/Constants'
+import { MATERIAL_TYPE } from '../triggerView/types'
+import { DA_APP_DETAILS_GA_EVENTS } from './constants'
 import { getDeployButtonStyle } from './utils'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
@@ -67,6 +71,8 @@ const AppDetailsCDButton = ({
         history.push({
             search: new URLSearchParams(newParams).toString(),
         })
+
+        ReactGA.event(DA_APP_DETAILS_GA_EVENTS.DeployButtonClicked)
     }
 
     const closeCDModal = (e: React.MouseEvent): void => {

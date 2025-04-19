@@ -16,10 +16,16 @@
 
 import React from 'react'
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
+
 import { URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
+
 import { importComponentFromFELibrary } from '@Components/common'
+import { URLS } from '@Config/routes'
+
+import ClusterInstallationStatus from './ClusterInstallationStatus'
 import ResourceBrowser from './ResourceBrowser'
 import ResourceList from './ResourceList'
+
 import './ResourceBrowser.scss'
 
 const CompareClusterViewWrapper = importComponentFromFELibrary('CompareClusterViewWrapper', null, 'function')
@@ -29,6 +35,12 @@ const ResourceBrowserRouter: React.FC = () => {
 
     return (
         <Switch>
+            {CompareClusterViewWrapper && (
+                <Route path={URLS.RESOURCE_BROWSER_INSTALLATION_CLUSTER} exact>
+                    <ClusterInstallationStatus />
+                </Route>
+            )}
+
             <Route path={`${path}/:clusterId/:namespace/:nodeType/:group/:node?`}>
                 <ResourceList />
             </Route>

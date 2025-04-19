@@ -15,26 +15,30 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react'
+import moment from 'moment'
+import SockJS from 'sockjs-client'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import * as XtermWebfont from 'xterm-webfont'
-import SockJS from 'sockjs-client'
-import moment from 'moment'
+
 import {
-    LogResizeButton,
-    IS_PLATFORM_MAC_OS,
-    UseRegisterShortcutProvider,
-    getComponentSpecificThemeClass,
     AppThemeType,
+    getComponentSpecificThemeClass,
+    IS_PLATFORM_MAC_OS,
+    LogResizeButton,
     noop,
+    UseRegisterShortcutProvider,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as ICDevtronLogo } from '@Icons/ic-devtron.svg'
-import CopyToast, { handleSelectionChange } from '../CopyToast'
-import { elementDidMount } from '../../../../../../common/helpers/Helpers'
+
 import { CLUSTER_STATUS, SocketConnectionType } from '../../../../../../ClusterNodes/constants'
+import { elementDidMount } from '../../../../../../common/helpers/Helpers'
+import CopyToast, { handleSelectionChange } from '../CopyToast'
 import { TERMINAL_STATUS } from './constants'
 import { TerminalViewType } from './terminal.type'
 import { restrictXtermAccessibilityWidth } from './terminal.utils'
+
 import './terminal.scss'
 
 const TerminalView = ({

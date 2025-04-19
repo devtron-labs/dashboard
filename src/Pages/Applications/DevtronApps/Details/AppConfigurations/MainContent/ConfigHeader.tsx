@@ -20,7 +20,9 @@ import {
     ConfigHeaderTabType,
     InvalidYAMLTippyWrapper,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
+
 import { ConfigHeaderProps, ConfigHeaderTabProps } from './types'
 import { getConfigHeaderTabConfig } from './utils'
 

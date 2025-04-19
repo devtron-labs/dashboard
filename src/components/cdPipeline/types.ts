@@ -15,13 +15,15 @@
  */
 
 import { Dispatch, MutableRefObject, SetStateAction } from 'react'
+
 import {
+    AppConfigProps,
+    ChangeCIPayloadType,
     PipelineFormType,
     PluginDetailPayloadType,
     ReleaseMode,
-    ChangeCIPayloadType,
-    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { MigrateToDevtronFormState } from './cdPipeline.types'
 
 // Have added any type for most of these since they were legacy do not know the implications of changing them

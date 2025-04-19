@@ -15,9 +15,11 @@
  */
 
 import Tippy from '@tippyjs/react'
+
 import { Tooltip } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as QuestionIcon } from '../../../assets/icons/ic-question.svg'
+
 import LoadingCard from '../../../../app/details/appDetails/LoadingCard'
+import { ReactComponent as QuestionIcon } from '../../../assets/icons/ic-question.svg'
 import { HelmAppConfigApplyStatusCardType } from '../environment.type'
 
 const HelmAppConfigApplyStatusCard = ({ releaseStatus, cardLoading }: HelmAppConfigApplyStatusCardType) => {

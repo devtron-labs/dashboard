@@ -15,28 +15,31 @@
  */
 
 import { useEffect, useState } from 'react'
-import {
-    showError,
-    Progressing,
-    useSearchString,
-    ERROR_STATUS_CODE,
-    DeleteConfirmationModal,
-} from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useLocation } from 'react-router-dom'
+
+import {
+    DeleteConfirmationModal,
+    ERROR_STATUS_CODE,
+    Progressing,
+    showError,
+    useSearchString,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as SESEmpty } from '@Images/ses-empty.svg'
-import { ReactComponent as WebhookEmpty } from '@Images/webhook-empty.svg'
-import { ReactComponent as SMTPEmpty } from '@Images/smtp-empty.svg'
 import { ReactComponent as EmptySlack } from '@Images/slack-empty.svg'
-import { deleteNotification, getConfigs } from './notifications.service'
+import { ReactComponent as SMTPEmpty } from '@Images/smtp-empty.svg'
+import { ReactComponent as WebhookEmpty } from '@Images/webhook-empty.svg'
+
 import { DC_CONFIGURATION_CONFIRMATION_MESSAGE } from '../../config/constantMessaging'
-import { ConfigurationTabState } from './types'
+import { ConfigurationTables } from './ConfigurationTables'
 import { ConfigurationTabSwitcher } from './ConfigurationTabsSwitcher'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, ConfigurationTabText } from './constants'
 import { EmptyConfigurationView } from './EmptyConfigurationView'
-import { ConfigurationTables } from './ConfigurationTables'
+import { deleteNotification, getConfigs } from './notifications.service'
 import SESConfigModal from './SESConfigModal'
 import { SlackConfigModal } from './SlackConfigModal'
 import { SMTPConfigModal } from './SMTPConfigModal'
+import { ConfigurationTabState } from './types'
 import { WebhookConfigModal } from './WebhookConfigModal'
 
 export const ConfigurationTab = () => {

@@ -15,10 +15,13 @@
  */
 
 import { useHistory, useRouteMatch } from 'react-router-dom'
-import { DeleteComponentsName } from '@Config/constantMessaging'
+
 import { DeleteConfirmationModal } from '@devtron-labs/devtron-fe-common-lib'
-import { deleteGeneratedAPIToken } from './service'
+
+import { DeleteComponentsName } from '@Config/constantMessaging'
+
 import { DeleteAPITokenModalProps } from './apiToken.type'
+import { deleteGeneratedAPIToken } from './service'
 
 const DeleteAPITokenModal = ({ isEditView, tokenData, reload, setDeleteConfirmation }: DeleteAPITokenModalProps) => {
     const match = useRouteMatch()

@@ -17,9 +17,10 @@
 import { Fragment } from 'react'
 import { generatePath, Route, Switch, useRouteMatch } from 'react-router-dom'
 
+import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
 import { EnvConfigurationsNav } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/Navigation/EnvConfigurationsNav'
 import { renderNavItem } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/Navigation/Navigation.helper'
-import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
+
 import { ApplicationRouteType } from '../../AppGroup.types'
 
 const ApplicationRoute = ({

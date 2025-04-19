@@ -14,51 +14,59 @@
  * limitations under the License.
  */
 
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import DOMPurify from 'dompurify'
+
 import {
-    Pagination,
-    Progressing,
-    SortableTableHeaderCell,
-    ConditionalWrap,
-    highlightSearchText,
-    ClipboardButton,
-    Tooltip,
-    useStateFilters,
-    useSearchString,
-    GenericFilterEmptyState,
-    noop,
-    GVKType,
-    useBulkSelection,
-    BulkSelectionEvents,
+    ALL_NAMESPACE_OPTION,
     BulkSelection,
+    BulkSelectionEvents,
+    BulkSelectionProvider,
+    Button,
+    ButtonComponentType,
+    ButtonVariantType,
     Checkbox,
     CHECKBOX_VALUE,
-    BulkSelectionProvider,
-    SelectAllDialogStatus,
-    K8sResourceDetailType,
+    ClipboardButton,
+    ConditionalWrap,
+    GenericFilterEmptyState,
+    GVKType,
+    highlightSearchText,
     K8sResourceDetailDataType,
+    K8sResourceDetailType,
     Nodes,
-    ALL_NAMESPACE_OPTION,
+    noop,
+    Pagination,
+    Progressing,
+    SelectAllDialogStatus,
+    SortableTableHeaderCell,
+    Tooltip,
+    useBulkSelection,
     useResizableTableConfig,
+    useSearchString,
+    useStateFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
-import DOMPurify from 'dompurify'
-import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import WebWorker from '@Components/app/WebWorker'
-import searchWorker from '@Config/searchWorker'
-import { URLS } from '@Config/routes'
-import NodeActionsMenu from '@Components/ResourceBrowser/ResourceList/NodeActionsMenu'
+
 import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
+import WebWorker from '@Components/app/WebWorker'
+import { AddEnvironmentFormPrefilledInfoType } from '@Components/cluster/cluster.type'
+import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Components/cluster/constants'
+import NodeActionsMenu from '@Components/ResourceBrowser/ResourceList/NodeActionsMenu'
 import {
     getManifestResource,
     updateManifestResourceHelmApps,
 } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
-import ResourceListEmptyState from './ResourceListEmptyState'
+import { URLS } from '@Config/routes'
+import searchWorker from '@Config/searchWorker'
+
+import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import {
     DEFAULT_K8SLIST_PAGE_SIZE,
     K8S_EMPTY_GROUP,
     MANDATORY_NODE_LIST_HEADERS,
-    NODE_LIST_HEADERS,
     NODE_K8S_VERSION_FILTER_KEY,
+    NODE_LIST_HEADERS,
     NODE_LIST_HEADERS_TO_KEY_MAP,
     NODE_SEARCH_KEYS_TO_OBJECT_KEYS,
     RESOURCE_EMPTY_PAGE_STATE,
@@ -68,13 +76,13 @@ import {
     SIDEBAR_KEYS,
 } from '../Constants'
 import { getRenderNodeButton, renderResourceValue, updateQueryString } from '../Utils'
-import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
-import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import { EventList } from './EventList'
+import NodeListSearchFilter from './NodeListSearchFilter'
+import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import ResourceFilterOptions from './ResourceFilterOptions'
+import ResourceListEmptyState from './ResourceListEmptyState'
 import { BaseResourceListProps, BulkOperationsModalState } from './types'
 import { getAppliedColumnsFromLocalStorage, getFirstResourceFromKindResourceMap } from './utils'
-import NodeListSearchFilter from './NodeListSearchFilter'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const RBBulkSelectionActionWidget = importComponentFromFELibrary('RBBulkSelectionActionWidget', null, 'function')
@@ -129,7 +137,7 @@ const BaseResourceListContent = ({
 
     const { searchParams } = useSearchString()
 
-    const isNodeListing = selectedResource?.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind
+    const isNodeListing = selectedResource?.gvk.Kind.toLowerCase() === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
 
     const {
         selectedIdentifiers: bulkSelectionState,
@@ -382,6 +390,14 @@ const BaseResourceListContent = ({
         }
     }
 
+    const getAddEnvironmentClickHandler = (namespace: string) => () => {
+        const environmentFormData: AddEnvironmentFormPrefilledInfoType = {
+            namespace,
+        }
+
+        localStorage.setItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY, JSON.stringify(environmentFormData))
+    }
+
     const renderResourceRow = (resourceData: K8sResourceDetailDataType): JSX.Element => {
         const lowercaseKind = (resourceData.kind as string)?.toLowerCase()
         // Redirection and actions are not possible for Events since the required data for the same is not available
@@ -516,6 +532,19 @@ const BaseResourceListContent = ({
                                         }}
                                     />
                                 </Tooltip>
+                                {columnName === 'environment' && !resourceData.environment && (
+                                    <Button
+                                        text="Add environment"
+                                        dataTestId="add-environment"
+                                        variant={ButtonVariantType.text}
+                                        component={ButtonComponentType.link}
+                                        linkProps={{
+                                            to: `${URLS.GLOBAL_CONFIG_CLUSTER}/${selectedCluster.label}${URLS.CREATE_ENVIRONMENT}`,
+                                            target: '_blank',
+                                        }}
+                                        onClick={getAddEnvironmentClickHandler(resourceData.name as string)}
+                                    />
+                                )}
                                 {columnName === 'status' && isNodeUnschedulable && (
                                     <>
                                         <span className="dc__bullet mr-4 ml-4 mw-4 bcn-4" />

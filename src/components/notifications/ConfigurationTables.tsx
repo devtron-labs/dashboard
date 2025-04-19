@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-import { Switch, Route, useRouteMatch } from 'react-router-dom'
-import { DeleteComponentsName } from '@Config/constantMessaging'
+import { Route, Switch, useRouteMatch } from 'react-router-dom'
+
 import { showError } from '@devtron-labs/devtron-fe-common-lib'
+
+import { DeleteComponentsName } from '@Config/constantMessaging'
+
 import { ConfigurationsTabTypes } from './constants'
-import SESConfigurationTable from './SESConfigurationTable'
-import SlackConfigurationTable from './SlackConfigurationTable'
-import { SMTPConfigurationTable } from './SMTPConfigurationTable'
-import { WebhookConfigurationTable } from './WebhookConfigurationTable'
-import { ConfigurationTablesTypes } from './types'
 import {
-    getSlackConfiguration,
     getSESConfiguration,
+    getSlackConfiguration,
     getSMTPConfiguration,
     getWebhookConfiguration,
 } from './notifications.service'
+import SESConfigurationTable from './SESConfigurationTable'
+import SlackConfigurationTable from './SlackConfigurationTable'
+import { SMTPConfigurationTable } from './SMTPConfigurationTable'
+import { ConfigurationTablesTypes } from './types'
+import { WebhookConfigurationTable } from './WebhookConfigurationTable'
 
 export const ConfigurationTables = ({ activeTab, state, setState }: ConfigurationTablesTypes) => {
     const { path } = useRouteMatch()

@@ -19,21 +19,20 @@ import { useParams } from 'react-router-dom'
 
 import {
     abortPreviousRequests,
+    CMSecretComponentType,
     ErrorScreenManager,
     getIsRequestAborted,
     Progressing,
     showError,
     useAsync,
-    CMSecretComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getAppChartRefForAppAndEnv } from '@Services/service'
 import { ComponentStates } from '@Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
-
-import { CM_SECRET_COMPONENT_NAME } from './constants'
-import { CMSecretWrapperProps } from './types'
+import { getAppChartRefForAppAndEnv } from '@Services/service'
 
 import { ConfigMapSecretContainer } from './ConfigMapSecretContainer'
+import { CM_SECRET_COMPONENT_NAME } from './constants'
+import { CMSecretWrapperProps } from './types'
 
 export const ConfigMapSecretWrapper = (props: CMSecretWrapperProps) => {
     // PROPS

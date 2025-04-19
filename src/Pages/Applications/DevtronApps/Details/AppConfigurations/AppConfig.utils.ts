@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
+import { generatePath } from 'react-router-dom'
+
 import {
+    AppConfigProps,
+    BASE_CONFIGURATION_ENV_ID,
+    ConfigResourceType,
     ResourceKindType,
     stringComparatorBySortOrder,
-    ConfigResourceType,
-    BASE_CONFIGURATION_ENV_ID,
     URLS as CommonURLS,
-    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { generatePath } from 'react-router-dom'
-import { URLS, DOCUMENTATION, getAppComposeURL, APP_COMPOSE_STAGE } from '@Config/index'
+import { APP_COMPOSE_STAGE, DOCUMENTATION, getAppComposeURL, URLS } from '@Config/index'
+
 import { AppConfigStatusItemType, EnvConfigDTO } from '../../service.types'
 import { AppConfigState, AppStageUnlockedType, CustomNavItemsType, EnvConfigType, STAGE_NAME } from './AppConfig.types'
 

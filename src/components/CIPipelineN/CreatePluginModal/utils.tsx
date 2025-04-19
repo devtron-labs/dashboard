@@ -22,18 +22,19 @@ import {
     ValidationResponseType,
     VariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { CREATE_PLUGIN_DEFAULT_FORM, MAX_TAG_LENGTH } from './constants'
 import {
     CreatePluginFormType,
     CreatePluginPayloadPipelineScriptDTO,
-    PathPortMappingType,
-    GetCreatePluginPayloadParamsType,
-    CreatePluginPayloadType,
-    ParentPluginListItemType,
-    GetSelectPickerOptionsFromParentPluginListReturnType,
-    CreatePluginVariableType,
     CreatePluginPayloadPluginStepVariableItemType,
+    CreatePluginPayloadType,
+    CreatePluginVariableType,
+    GetCreatePluginPayloadParamsType,
+    GetSelectPickerOptionsFromParentPluginListReturnType,
+    ParentPluginListItemType,
+    PathPortMappingType,
 } from './types'
-import { CREATE_PLUGIN_DEFAULT_FORM, MAX_TAG_LENGTH } from './constants'
 
 export const getDefaultPluginFormData = (currentInputVariables: VariableType[]): CreatePluginFormType => ({
     ...structuredClone(CREATE_PLUGIN_DEFAULT_FORM),

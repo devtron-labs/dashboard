@@ -16,28 +16,31 @@
 
 import { Fragment } from 'react'
 import ReactGA from 'react-ga4'
+import { useParams } from 'react-router-dom'
+
 import {
+    BaseURLParams,
     Button,
     ButtonStyleType,
     ButtonVariantType,
-    ConfigHeaderTabType,
-    ProtectConfigTabsType,
-    PopupMenu,
-    BaseURLParams,
     ComponentSizeType,
-    InvalidYAMLTippyWrapper,
-    ToggleResolveScopedVariables,
+    ConfigHeaderTabType,
     Icon,
+    InvalidYAMLTippyWrapper,
+    PopupMenu,
+    ProtectConfigTabsType,
+    ToggleResolveScopedVariables,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams } from 'react-router-dom'
-import { importComponentFromFELibrary } from '@Components/common'
-import { ReactComponent as ICMore } from '@Icons/ic-more-option.svg'
+
 import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
 import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
+import { ReactComponent as ICMore } from '@Icons/ic-more-option.svg'
+import { importComponentFromFELibrary } from '@Components/common'
+
 import BaseConfigurationNavigation from './BaseConfigurationNavigation'
-import { PopupMenuItem } from './utils'
-import { ConfigToolbarProps } from './types'
 import SelectMergeStrategy from './SelectMergeStrategy'
+import { ConfigToolbarProps } from './types'
+import { PopupMenuItem } from './utils'
 
 const ProtectionViewTabGroup = importComponentFromFELibrary('ProtectionViewTabGroup', null, 'function')
 const MergePatchWithTemplateCheckbox = importComponentFromFELibrary('MergePatchWithTemplateCheckbox', null, 'function')

@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+import { FunctionComponent, MutableRefObject, ReactNode } from 'react'
+
 import {
+    CMSecretComponentType,
     CompareFromApprovalOptionsValuesType,
     ConfigHeaderTabType,
     ConfigToolbarPopupMenuConfigType,
@@ -23,13 +26,12 @@ import {
     DeploymentTemplateConfigState,
     DraftMetadataDTO,
     OverrideMergeStrategyType,
+    PipelineMigratedFromType,
     ProtectConfigTabsType,
     SelectPickerOptionType,
     ServerErrors,
-    CMSecretComponentType,
-    PipelineMigratedFromType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { FunctionComponent, MutableRefObject, ReactNode } from 'react'
+
 import { DeploymentTemplateStateType } from './DeploymentTemplate/types'
 
 export interface ConfigHeaderProps {

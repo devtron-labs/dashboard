@@ -15,23 +15,25 @@
  */
 
 import { useState } from 'react'
+
 import {
     ACTION_STATE,
     DEPLOYMENT_WINDOW_TYPE,
     GenericEmptyState,
     InfoColourBar,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { BulkRotatePodsMap, ResourcesMetaDataMap, RestartStatusListDrawerProps } from '../../AppGroup.types'
-import { ReactComponent as ArrowRight } from '../../../../assets/icons/ic-expand.svg'
-import { ReactComponent as Failed } from '../../../../assets/icons/ic-error.svg'
+
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
-import { APP_DETAILS_TEXT, DATA_TEST_IDS, RESTART_STATUS_TEXT } from './constants'
-import { ReactComponent as MechanicalIcon } from '../../../../assets/img/ic-mechanical-operation.svg'
+import { ReactComponent as Failed } from '../../../../assets/icons/ic-error.svg'
+import { ReactComponent as ArrowRight } from '../../../../assets/icons/ic-expand.svg'
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
+import { ReactComponent as MechanicalIcon } from '../../../../assets/img/ic-mechanical-operation.svg'
+import { importComponentFromFELibrary } from '../../../common'
+import { BulkRotatePodsMap, ResourcesMetaDataMap, RestartStatusListDrawerProps } from '../../AppGroup.types'
+import { AllExpandableDropdown } from './AllExpandableDropdown'
+import { APP_DETAILS_TEXT, DATA_TEST_IDS, RESTART_STATUS_TEXT } from './constants'
 
 import './envOverview.scss'
-import { AllExpandableDropdown } from './AllExpandableDropdown'
-import { importComponentFromFELibrary } from '../../../common'
 
 const ExcludedUsersDescription = importComponentFromFELibrary('ExcludedUsersDescription')
 export const RestartStatusListDrawer = ({

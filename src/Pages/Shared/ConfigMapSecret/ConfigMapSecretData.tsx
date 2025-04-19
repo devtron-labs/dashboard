@@ -21,29 +21,29 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     CMSecretExternalType,
+    CODE_EDITOR_RADIO_STATE,
     CodeEditor,
     ComponentSizeType,
+    configMapSecretMountDataMap,
+    convertKeyValuePairToYAML,
+    convertYAMLToKeyValuePair,
+    isCodeMirrorEnabled,
     KeyValueConfig,
     KeyValueTable,
+    MODES,
     noop,
+    OverrideMergeStrategyType,
+    PATTERNS,
+    SelectPickerOptionType,
     StyledRadioGroup,
     ToastManager,
     ToastVariantType,
     YAMLStringify,
-    convertKeyValuePairToYAML,
-    configMapSecretMountDataMap,
-    convertYAMLToKeyValuePair,
-    CODE_EDITOR_RADIO_STATE,
-    PATTERNS,
-    MODES,
-    OverrideMergeStrategyType,
-    SelectPickerOptionType,
-    isCodeMirrorEnabled,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { ReactComponent as HideIcon } from '@Icons/ic-visibility-off.svg'
-import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 
 import {
@@ -54,12 +54,12 @@ import {
     VIEW_MODE,
 } from './constants'
 import { externalTypeSecretCodeEditorDataHeaders, renderYamlInfoText } from './helpers'
+import { ConfigMapSecretDataProps } from './types'
 import {
     getCMCSExpressEditComparisonDataDiffConfig,
     getExpressEditComparisonViewLHS,
     getLockedYamlString,
 } from './utils'
-import { ConfigMapSecretDataProps } from './types'
 
 const ExpressEditDiffEditor = importComponentFromFELibrary('ExpressEditDiffEditor', null, 'function')
 

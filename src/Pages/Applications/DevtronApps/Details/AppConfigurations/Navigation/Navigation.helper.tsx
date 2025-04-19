@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { NavLink, generatePath } from 'react-router-dom'
+import { generatePath, NavLink } from 'react-router-dom'
 
 import {
     ApprovalConfigDataKindType,
@@ -31,10 +31,10 @@ import { ResourceConfigStage, ResourceConfigState } from '@Pages/Applications/De
 
 import {
     CustomNavItemsType,
+    EnvConfigObjectKey,
     EnvConfigRouteParams,
     EnvConfigType,
     ExtendedCollapsibleListItem,
-    EnvConfigObjectKey,
 } from '../AppConfig.types'
 import { RESOURCE_CONFIG_STATE_TO_ICON_CONFIG_MAP } from './constants'
 

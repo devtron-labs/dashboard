@@ -15,7 +15,9 @@
  */
 
 import { useEffect, useState } from 'react'
+
 import { ShortcutKeyBadgeProps, StyledProgressBarProps } from './Widgets.type'
+
 import './Widgets.scss'
 
 export const StyledProgressBar = ({

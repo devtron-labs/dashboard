@@ -25,10 +25,12 @@ import {
     showError,
     stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Routes } from '@Config/constants'
-import { getArgoInstalledExternalApps } from '@Components/app/list-new/AppListService'
-import { ReactComponent as ICDefaultChart } from '@Icons/ic-default-chart.svg'
+
 import { ReactComponent as ICArgoCDApp } from '@Icons/ic-argocd-app.svg'
+import { ReactComponent as ICDefaultChart } from '@Icons/ic-default-chart.svg'
+import { getArgoInstalledExternalApps } from '@Components/app/list-new/AppListService'
+import { Routes } from '@Config/constants'
+
 import {
     ValidateMigrateToDevtronPayloadType,
     ValidateMigrationSourceDTO,
@@ -36,16 +38,16 @@ import {
     ValidateMigrationSourceServiceParamsType,
 } from '../cdPipeline.types'
 import {
-    generateMigrateAppOption,
-    getValidateMigrationSourcePayload,
-    sanitizeValidateMigrationSourceResponse,
-} from './utils'
-import {
     ExternalHelmAppDTO,
     ExternalHelmAppType,
     GetMigrateAppOptionsParamsType,
     SelectMigrateAppOptionType,
 } from './types'
+import {
+    generateMigrateAppOption,
+    getValidateMigrationSourcePayload,
+    sanitizeValidateMigrationSourceResponse,
+} from './utils'
 
 export const validateMigrationSource = async (
     params: ValidateMigrationSourceServiceParamsType,

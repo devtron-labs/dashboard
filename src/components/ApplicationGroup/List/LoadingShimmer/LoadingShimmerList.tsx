@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import './loadingShimmerList.scss'
 import { LoadingShimmerListType } from './types'
+
+import './loadingShimmerList.scss'
 
 const renderShimmer = () => <div className="shimmer-loading h-16 pt-8 pb-8" />
 

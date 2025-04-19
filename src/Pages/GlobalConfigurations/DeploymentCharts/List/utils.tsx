@@ -15,6 +15,7 @@
  */
 
 import { DeploymentChartType, SortingOrder, stringComparatorBySortOrder } from '@devtron-labs/devtron-fe-common-lib'
+
 import { DeploymentChartsListSortableKeys } from '../types'
 
 export const sortChartList = (

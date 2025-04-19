@@ -18,12 +18,13 @@ import { useEffect, useState } from 'react'
 
 import { ComponentSizeType, TabGroup, TabProps } from '@devtron-labs/devtron-fe-common-lib'
 
+import { useSharedState } from '../../../utils/useSharedState'
+import { iNode } from '../../appDetails.type'
 import IndexStore from '../../index.store'
 import { getFilteredPodStatus, getNodeStatus } from './nodeType.util'
-import './nodeType.scss'
-import { iNode } from '../../appDetails.type'
-import { useSharedState } from '../../../utils/useSharedState'
 import { NodePodStatus } from './types'
+
+import './nodeType.scss'
 
 const PodHeaderComponent = ({ callBack }: { callBack: (isNewPod: boolean) => void }) => {
     const [podTab, selectPodTab] = useState<'old' | 'new'>('new')

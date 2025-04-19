@@ -15,9 +15,10 @@
  */
 
 import { Dispatch, MouseEvent, useEffect, useMemo, useState } from 'react'
-import { useRouteMatch, useLocation, NavLink, useHistory, generatePath } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
+import ReactGA from 'react-ga4'
+import { generatePath, NavLink, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import { GroupBase, OptionsOrGroups } from 'react-select'
+import Tippy from '@tippyjs/react'
 
 import {
     BASE_CONFIGURATION_ENV_ID,
@@ -36,18 +37,17 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
-import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
-import { ReactComponent as ICLocked } from '@Icons/ic-locked.svg'
+import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
+import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
 import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
+import { ReactComponent as ICLocked } from '@Icons/ic-locked.svg'
+import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
 import { URLS } from '@Config/routes'
 import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
-import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
-import ReactGA from 'react-ga4'
 import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
-import { EnvConfigRouteParams, EnvConfigurationsNavProps, EnvConfigObjectKey, EnvConfigType } from '../AppConfig.types'
+import { EnvConfigObjectKey, EnvConfigRouteParams, EnvConfigType, EnvConfigurationsNavProps } from '../AppConfig.types'
 import { getEnvConfiguration, getNavigationPath, getUnnamedIconConfig } from './Navigation.helper'
 
 // LOADING SHIMMER

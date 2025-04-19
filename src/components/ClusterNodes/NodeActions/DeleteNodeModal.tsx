@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
+import { useParams } from 'react-router-dom'
+
 import {
     DELETE_NODE_MODAL_MESSAGING,
-    deleteNodeCapacity,
     DeleteConfirmationModal,
+    deleteNodeCapacity,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams } from 'react-router-dom'
+
 import { DeleteComponentsName } from '@Config/constantMessaging'
+
 import { DeleteNodeModalProps } from '../types'
 
 const DeleteNodeModal = ({ name, version, kind, closePopup, handleClearBulkSelection }: DeleteNodeModalProps) => {

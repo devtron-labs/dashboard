@@ -15,6 +15,7 @@
  */
 
 import { createContext, useContext } from 'react'
+
 import { AuthorizationContextProps, AuthorizationProviderProps } from './types'
 
 const AuthorizationContext = createContext<AuthorizationContextProps>({

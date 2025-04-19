@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { SelectPicker, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
+import { ComponentSizeType, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+
 import { SELECT_ALL_VALUE } from '../../../../../../config'
 import { DirectPermissionFieldName } from './constants'
 import { WorkflowSelectorProps } from './types'

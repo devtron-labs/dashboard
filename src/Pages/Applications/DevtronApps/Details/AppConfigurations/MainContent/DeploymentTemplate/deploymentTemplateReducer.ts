@@ -15,6 +15,7 @@
  */
 
 import YAML from 'yaml'
+
 import {
     CompareFromApprovalOptionsValuesType,
     ConfigToolbarPopupNodeType,
@@ -30,6 +31,7 @@ import {
     ToastVariantType,
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import {
     ConfigEditorStatesType,
     DeploymentTemplateEditorDataStateType,

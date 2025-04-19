@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { NodeType } from '@devtron-labs/devtron-fe-common-lib'
 import { CSSProperties } from 'react'
+
+import { NodeType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { NodeDetailTabsType } from '../../../../app/types'
 
 export interface PodPopupProps {

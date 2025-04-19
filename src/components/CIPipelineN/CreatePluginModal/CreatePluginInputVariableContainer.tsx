@@ -15,7 +15,9 @@
  */
 
 import { Toggle } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as ICAsterisk } from '@Icons/ic-asterisk.svg'
+
 import { CreatePluginActionType, CreatePluginInputVariableContainerProps, InputVariableItemProps } from './types'
 
 const InputVariableItem = ({ handleChange, index, name, allowEmptyValue }: InputVariableItemProps) => {

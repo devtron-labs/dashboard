@@ -15,9 +15,12 @@
  */
 
 import React, { useRef } from 'react'
-import ReactSelect, { SelectInstance, Props as SelectProps } from 'react-select'
-import { AppSelectorDropdownIndicator, APP_SELECTOR_STYLES } from '@devtron-labs/devtron-fe-common-lib'
+import ReactSelect, { Props as SelectProps, SelectInstance } from 'react-select'
+
+import { APP_SELECTOR_STYLES, AppSelectorDropdownIndicator } from '@devtron-labs/devtron-fe-common-lib'
+
 import { DOCUMENTATION } from '../../../config'
+import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
 import {
     clusterOverviewNodeText,
     ERROR_SCREEN_LEARN_MORE,
@@ -26,7 +29,6 @@ import {
     SIDEBAR_KEYS,
 } from '../Constants'
 import { ClusterSelectorType } from '../Types'
-import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
 
 const ClusterSelector: React.FC<ClusterSelectorType> = ({ onChange, clusterList, clusterId }) => {
     const selectRef = useRef<SelectInstance>(null)

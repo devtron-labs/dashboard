@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export * from './BuildInfra'
 export * from './Authorization'
+export * from './BuildInfra'

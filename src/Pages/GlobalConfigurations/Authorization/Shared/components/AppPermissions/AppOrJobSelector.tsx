@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+
 import {
-    showError,
-    getIsRequestAborted,
     ACCESS_TYPE_MAP,
-    EntityTypes,
-    SelectPicker,
     ComponentSizeType,
+    EntityTypes,
+    getIsRequestAborted,
+    SelectPicker,
     SelectPickerOptionType,
+    showError,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { getUserAccessAllWorkflows } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
+
 import { HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE } from '../../../../../../config'
-import { allApplicationsOption, DirectPermissionFieldName } from './constants'
-import { getWorkflowOptions } from '../../../utils'
-import { AppOrJobSelectorProps } from './types'
 import { DirectPermissionsRoleFilter } from '../../../types'
+import { getWorkflowOptions } from '../../../utils'
+import { allApplicationsOption, DirectPermissionFieldName } from './constants'
+import { AppOrJobSelectorProps } from './types'
 import { getDisplayTextByName } from './utils'
 
 const AppOrJobSelector = ({

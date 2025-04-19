@@ -15,6 +15,7 @@
  */
 
 import { Button, ButtonVariantType, GenericEmptyState, Icon } from '@devtron-labs/devtron-fe-common-lib'
+
 import noArtifact from '@Images/no-artifact.webp'
 
 import { NoPublishedVersionEmptyStateProps } from './types'

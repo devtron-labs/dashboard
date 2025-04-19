@@ -19,7 +19,6 @@ import {
     CDMaterialResponseType,
     DeploymentNodeType,
     Drawer,
-    Progressing,
     ReleaseTag,
     ImageComment,
     showError,
@@ -48,9 +47,12 @@ import {
     Button,
     ComponentSizeType,
     AnimatedDeployButton,
+    ButtonVariantType,
+    Icon,
+    ButtonStyleType,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useLocation } from 'react-router-dom'
-import { ReactComponent as Close } from '@Icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '@Icons/ic-nav-rocket.svg'
 import { ReactComponent as PlayIcon } from '@Icons/ic-play-outline.svg'
 import { ReactComponent as Error } from '@Icons/ic-warning.svg'
@@ -89,6 +91,7 @@ const validateRuntimeParameters = importComponentFromFELibrary(
     () => ({ isValid: true, cellError: {} }),
     'function',
 )
+const SkipHibernatedCheckbox = importComponentFromFELibrary('SkipHibernatedCheckbox', null, 'function')
 
 // TODO: Fix release tags selection
 export default function BulkCDTrigger({
@@ -109,6 +112,7 @@ export default function BulkCDTrigger({
     runtimeParamsErrorState,
     setRuntimeParamsErrorState,
 }: BulkCDTriggerType) {
+    const { canFetchHelmAppStatus } = useMainContext()
     const [selectedApp, setSelectedApp] = useState<BulkCDDetailType>(
         appList.find((app) => !app.warningMessage) || appList[0],
     )
@@ -125,6 +129,7 @@ export default function BulkCDTrigger({
     const [isPartialActionAllowed, setIsPartialActionAllowed] = useState(false)
     const [showResistanceBox, setShowResistanceBox] = useState(false)
     const [currentSidebarTab, setCurrentSidebarTab] = useState<CDMaterialSidebarType>(CDMaterialSidebarType.IMAGE)
+    const [skipHibernatedApps, setSkipHibernatedApps] = useState<boolean>(false)
 
     const location = useLocation()
     const history = useHistory()
@@ -351,15 +356,18 @@ export default function BulkCDTrigger({
     const renderHeaderSection = (): JSX.Element => {
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bg__primary pt-16 pr-20 pb-16 pl-20">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0">Deploy to {appList[0].envName}</h2>
-                <button
-                    type="button"
-                    className="dc__transparent flex icon-dim-24"
+                <h2 className="fs-16 fw-6 lh-1-5 m-0 dc__truncate">Deploy to {appList[0].envName}</h2>
+                <Button
+                    dataTestId="bulk-cd-modal-close"
                     disabled={isLoading}
                     onClick={closeBulkCDModal}
-                >
-                    <Close className="icon-dim-24" />
-                </button>
+                    size={ComponentSizeType.xs}
+                    icon={<Icon name="ic-close-small" size={null} color={null} />}
+                    ariaLabel="close bulk cd trigger modal"
+                    showAriaLabelInTippy={false}
+                    style={ButtonStyleType.negativeGrey}
+                    variant={ButtonVariantType.borderLess}
+                />
             </div>
         )
     }
@@ -835,7 +843,7 @@ export default function BulkCDTrigger({
         } else {
             isBulkDeploymentTriggered.current = true
             stopPropagation(e)
-            onClickTriggerBulkCD()
+            onClickTriggerBulkCD(skipHibernatedApps)
             setShowResistanceBox(false)
         }
     }
@@ -848,8 +856,21 @@ export default function BulkCDTrigger({
 
     const renderFooterSection = (): JSX.Element => {
         const isDeployButtonDisabled: boolean = isDeployDisabled()
+        const showSkipHibernatedCheckbox = !!SkipHibernatedCheckbox && canFetchHelmAppStatus
         return (
-            <div className="dc__border-top flex right bg__primary px-20 py-16">
+            <div
+                className={`dc__border-top flex ${showSkipHibernatedCheckbox ? 'dc__content-space' : 'right'} bg__primary px-20 py-16`}
+            >
+                {showSkipHibernatedCheckbox && (
+                    <SkipHibernatedCheckbox
+                        isDeploymentLoading={isLoading}
+                        envId={appList[0].envId}
+                        envName={appList[0].envName}
+                        appIds={appList.map((app) => app.appId)}
+                        skipHibernated={skipHibernatedApps}
+                        setSkipHibernated={setSkipHibernatedApps}
+                    />
+                )}
                 <div className="dc__position-rel tippy-over">
                     {!isDeployButtonDisabled && stage === DeploymentNodeType.CD && !isLoading ? (
                         <AnimatedDeployButton onButtonClick={onClickStartDeploy} isVirtualEnvironment={false} />
@@ -874,7 +895,7 @@ export default function BulkCDTrigger({
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
             <div className="bg__primary bulk-ci-trigger-container">
-                <div className='flexbox-col flex-grow-1 dc__overflow-hidden'>
+                <div className="flexbox-col flex-grow-1 dc__overflow-hidden">
                     {renderHeaderSection()}
                     {responseListLength ? (
                         <TriggerResponseModalBody
@@ -892,7 +913,8 @@ export default function BulkCDTrigger({
                         closePopup={closeBulkCDModal}
                         responseList={responseList}
                         isLoading={isLoading}
-                        onClickRetryBuild={onClickTriggerBulkCD}
+                        onClickRetryDeploy={onClickTriggerBulkCD}
+                        skipHibernatedApps={skipHibernatedApps}
                     />
                 ) : (
                     renderFooterSection()

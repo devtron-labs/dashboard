@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-import { ToastManager, ToastVariantType, showError, IndexStore } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Close } from '@Icons/ic-cross.svg'
 import { useParams } from 'react-router-dom'
+
+import { IndexStore, showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ReactComponent as Close } from '@Icons/ic-cross.svg'
+
 import { deleteEphemeralUrl } from './nodeDetail.api'
 import { DeleteEphemeralButtonType, ParamsType, ResponsePayload } from './nodeDetail.type'
+
 import '../k8resources.scss'
 
 export const DeleteEphemeralButton = ({

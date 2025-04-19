@@ -15,15 +15,17 @@
  */
 
 import { useState } from 'react'
-import { showError, Progressing, VisibleModal, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+
+import { InfoColourBar, Progressing, showError, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
-import GenerateActionButton from './GenerateActionButton'
-import { getDateInMilliseconds } from './apiToken.utils'
 import { RegenerateModalType, TokenResponseType } from './apiToken.type'
-import { updateGeneratedAPIToken } from './service'
-import GenerateModal from './GenerateModal'
+import { getDateInMilliseconds } from './apiToken.utils'
 import ExpirationDate from './ExpirationDate'
+import GenerateActionButton from './GenerateActionButton'
+import GenerateModal from './GenerateModal'
+import { updateGeneratedAPIToken } from './service'
 
 const RegeneratedModal = ({
     close,

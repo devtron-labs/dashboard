@@ -15,6 +15,7 @@
  */
 
 import { useMemo } from 'react'
+
 import {
     CodeEditor,
     ConfigurationType,
@@ -24,14 +25,16 @@ import {
     OverrideMergeStrategyType,
     SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { importComponentFromFELibrary } from '@Components/common'
-import { DeploymentTemplateFormProps } from './types'
-import { GUIView as DeploymentTemplateGUIView } from './GUIView'
-import { APPLICATION_METRICS_DROPDOWN_OPTIONS, DEPLOYMENT_TEMPLATE_LABELS_KEYS } from './constants'
-import { getEditorSchemaURIFromChartNameAndVersion } from './utils'
+
 import { MERGE_STRATEGY_OPTIONS } from '../constants'
+import { APPLICATION_METRICS_DROPDOWN_OPTIONS, DEPLOYMENT_TEMPLATE_LABELS_KEYS } from './constants'
+import { GUIView as DeploymentTemplateGUIView } from './GUIView'
+import { DeploymentTemplateFormProps } from './types'
+import { getEditorSchemaURIFromChartNameAndVersion } from './utils'
 
 const ExpressEditDiffEditor = importComponentFromFELibrary('ExpressEditDiffEditor', null, 'function')
 

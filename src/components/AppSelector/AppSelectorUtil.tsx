@@ -15,6 +15,7 @@
  */
 
 import { BaseAppMetaData, getIsRequestAborted, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+
 import { getAppListMin } from '../../services/service'
 import { AppListOptionsTypes, RecentlyVisitedGroupedOptionsType, RecentlyVisitedOptions } from './AppSelector.types'
 import { AllApplicationsMetaData } from './constants'

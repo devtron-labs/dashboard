@@ -16,11 +16,12 @@
 
 import {
     BaseFilterQueryParams,
+    StatusType,
+    TriggerType,
     UseUrlFiltersReturnType,
     WorkflowType,
-    TriggerType,
-    StatusType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { DEPLOYMENT_STATUS } from '../../../config'
 import { SortableKeys } from './constants'
 

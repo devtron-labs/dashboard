@@ -15,6 +15,7 @@
  */
 
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { CIConfigListType } from '../../../AppGroup.types'
 
 export const filteredData: string = '1,2'

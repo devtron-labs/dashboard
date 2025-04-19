@@ -16,8 +16,11 @@
 
 import { Reducer, useEffect, useMemo, useReducer, useRef } from 'react'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
-import { showError, ServerErrors, FilterChips } from '@devtron-labs/devtron-fe-common-lib'
-import { getInitialJobListState, jobListModal, jobListReducer } from '../Utils'
+
+import { FilterChips, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+
+import { JobListViewType } from '../Constants'
+import { getJobs } from '../Service'
 import {
     JobListPayload,
     JobListProps,
@@ -26,11 +29,11 @@ import {
     JobListStateActionTypes,
     JobListUrlFiltersType,
 } from '../Types'
-import { JobListViewType } from '../Constants'
-import { getJobs } from '../Service'
-import JobListView from './JobListView'
-import '../../app/list/list.scss'
+import { getInitialJobListState, jobListModal, jobListReducer } from '../Utils'
 import JobListFilters from './JobListFilters'
+import JobListView from './JobListView'
+
+import '../../app/list/list.scss'
 
 const JobListContainer = ({
     masterFilters,

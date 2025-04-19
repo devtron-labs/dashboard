@@ -15,9 +15,10 @@
  */
 
 import { GenericEmptyState, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ReactComponent as ErrorIcon } from '../../../../assets/icons/ic-error-exclamation.svg'
 import EmptyImage from '../../../../assets/img/empty-applist@2x.png'
 import { SSO_NOT_CONFIGURED_STATE_TEXTS } from '../../../../config/constantMessaging'
-import { ReactComponent as ErrorIcon } from '../../../../assets/icons/ic-error-exclamation.svg'
 
 const Error = () => <ErrorIcon className="h-20" />
 

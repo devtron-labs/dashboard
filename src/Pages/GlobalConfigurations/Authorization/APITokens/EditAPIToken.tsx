@@ -16,42 +16,44 @@
 
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useEffect, useState } from 'react'
-import {
-    showError,
-    Progressing,
-    InfoColourBar,
-    CustomInput,
-    noop,
-    ClipboardButton,
-    useMainContext,
-    ButtonWithLoader,
-    ToastVariantType,
-    ToastManager,
-    Textarea,
-} from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
+import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import moment from 'moment'
-import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
-import RegeneratedModal from './RegenerateModal'
-import { EditDataType, EditTokenType } from './apiToken.type'
-import { isTokenExpired } from './apiToken.utils'
+
+import {
+    ButtonWithLoader,
+    ClipboardButton,
+    CustomInput,
+    InfoColourBar,
+    noop,
+    Progressing,
+    showError,
+    Textarea,
+    ToastManager,
+    ToastVariantType,
+    useMainContext,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as Delete } from '../../../../assets/icons/ic-delete-interactive.svg'
-import GenerateActionButton from './GenerateActionButton'
-import { MomentDateFormat } from '../../../../config'
+import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import { importComponentFromFELibrary } from '../../../../components/common'
-import { updateGeneratedAPIToken } from './service'
-import DeleteAPITokenModal from './DeleteAPITokenModal'
+import { MomentDateFormat } from '../../../../config'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
-import { renderQuestionwithTippy } from './CreateAPIToken'
 import { createOrUpdateUser, getUserById } from '../authorization.service'
-import { User } from '../types'
+import { getDefaultUserStatusAndTimeout } from '../libUtils'
 import {
     PermissionConfigurationForm,
     PermissionConfigurationFormProvider,
     usePermissionConfiguration,
 } from '../Shared/components/PermissionConfigurationForm'
+import { User } from '../types'
 import { createUserPermissionPayload, validateDirectPermissionForm } from '../utils'
-import { getDefaultUserStatusAndTimeout } from '../libUtils'
+import { EditDataType, EditTokenType } from './apiToken.type'
+import { isTokenExpired } from './apiToken.utils'
+import { renderQuestionwithTippy } from './CreateAPIToken'
+import DeleteAPITokenModal from './DeleteAPITokenModal'
+import GenerateActionButton from './GenerateActionButton'
+import RegeneratedModal from './RegenerateModal'
+import { updateGeneratedAPIToken } from './service'
 
 const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 

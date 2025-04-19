@@ -30,6 +30,7 @@ export interface ClusterEnvironmentDrawerProps extends ClusterEnvironmentDrawerF
     reload: () => void
     hideClusterDrawer: () => void
     isVirtual: boolean
+    clusterName: string
 }
 
 export type GetClusterEnvironmentUpdatePayloadType = Pick<

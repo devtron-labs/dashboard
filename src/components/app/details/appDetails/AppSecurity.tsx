@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { useAsync, getSecurityScan } from '@devtron-labs/devtron-fe-common-lib'
+import { getSecurityScan, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+
 import { UseGetAppSecurityDetailsProps, UseGetAppSecurityDetailsReturnType } from './appDetails.type'
 
 export const useGetAppSecurityDetails = ({

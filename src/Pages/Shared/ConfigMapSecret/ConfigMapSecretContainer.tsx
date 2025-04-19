@@ -15,21 +15,33 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { generatePath, Prompt, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import ReactGA from 'react-ga4'
+import { generatePath, Prompt, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
 import {
     abortPreviousRequests,
     API_STATUS_CODES,
+    checkIfPathIsMatching,
+    CM_SECRET_STATE,
+    CMSecretComponentType,
+    CMSecretPayloadType,
+    CONFIG_MAP_SECRET_YAML_PARSE_ERROR,
     ConfigHeaderTabType,
+    ConfigMapSecretReadyOnly,
+    ConfigMapSecretUseFormProps,
     ConfigToolbarPopupNodeType,
     DraftAction,
     DraftState,
     DryRunEditorMode,
     ERROR_STATUS_CODE,
     ErrorScreenManager,
+    FloatingVariablesSuggestions,
+    getConfigMapSecretFormInitialValues,
+    getConfigMapSecretFormValidations,
+    getConfigMapSecretPayload,
     hasESO,
     hasHashiOrAWS,
+    isNullOrUndefined,
     OverrideMergeStrategyType,
     Progressing,
     ProtectConfigTabsType,
@@ -39,32 +51,20 @@ import {
     ToastVariantType,
     useAsync,
     useForm,
-    usePrompt,
-    checkIfPathIsMatching,
-    useUrlFilters,
-    ConfigMapSecretUseFormProps,
-    CMSecretComponentType,
-    CM_SECRET_STATE,
-    getConfigMapSecretFormInitialValues,
-    getConfigMapSecretPayload,
-    CMSecretPayloadType,
-    getConfigMapSecretFormValidations,
-    ConfigMapSecretReadyOnly,
-    FloatingVariablesSuggestions,
     UseFormErrorHandler,
     UseFormSubmitHandler,
-    isNullOrUndefined,
     useOneTimePrompt,
-    CONFIG_MAP_SECRET_YAML_PARSE_ERROR,
+    usePrompt,
+    useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { importComponentFromFELibrary } from '@Components/common'
 import { APP_COMPOSE_STAGE, getAppComposeURL } from '@Config/routes'
 import { ConfigHeader, ConfigToolbar, ConfigToolbarProps, NoOverrideEmptyState } from '@Pages/Applications'
-import { getConfigToolbarPopupConfig } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/utils'
-import { importComponentFromFELibrary } from '@Components/common'
 import { EnvConfigObjectKey } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
-
 import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
+import { getConfigToolbarPopupConfig } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/utils'
+
 import {
     getConfigMapSecretConfigData,
     getConfigMapSecretConfigDraftData,
@@ -74,16 +74,11 @@ import {
     updateConfigMap,
     updateSecret,
 } from './ConfigMapSecret.service'
-import {
-    getConfigMapSecretDraftAndPublishedData,
-    getConfigMapSecretError,
-    getConfigMapSecretInheritedData,
-    getConfigMapSecretResolvedData,
-    getConfigMapSecretResolvedDataPayload,
-    getConfigMapSecretStateLabel,
-    parseConfigMapSecretSearchParams,
-    shouldHidePatchOption,
-} from './utils'
+import { ConfigMapSecretDeleteModal } from './ConfigMapSecretDeleteModal'
+import { ConfigMapSecretDryRun } from './ConfigMapSecretDryRun'
+import { ConfigMapSecretForm } from './ConfigMapSecretForm'
+import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'
+import { ConfigMapSecretProtected } from './ConfigMapSecretProtected'
 import {
     CM_SECRET_COMPONENT_NAME,
     CONFIG_MAP_SECRET_DATA_KEYS,
@@ -96,12 +91,16 @@ import {
     ConfigMapSecretFormProps,
     ConfigMapSecretQueryParamsType,
 } from './types'
-
-import { ConfigMapSecretDeleteModal } from './ConfigMapSecretDeleteModal'
-import { ConfigMapSecretForm } from './ConfigMapSecretForm'
-import { ConfigMapSecretProtected } from './ConfigMapSecretProtected'
-import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'
-import { ConfigMapSecretDryRun } from './ConfigMapSecretDryRun'
+import {
+    getConfigMapSecretDraftAndPublishedData,
+    getConfigMapSecretError,
+    getConfigMapSecretInheritedData,
+    getConfigMapSecretResolvedData,
+    getConfigMapSecretResolvedDataPayload,
+    getConfigMapSecretStateLabel,
+    parseConfigMapSecretSearchParams,
+    shouldHidePatchOption,
+} from './utils'
 
 import './styles.scss'
 

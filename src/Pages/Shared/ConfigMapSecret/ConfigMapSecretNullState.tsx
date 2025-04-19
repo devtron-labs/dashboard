@@ -18,9 +18,9 @@ import { generatePath, useRouteMatch } from 'react-router-dom'
 
 import { Button, ButtonComponentType, GenericEmptyState, ImageType } from '@devtron-labs/devtron-fe-common-lib'
 
-import EmptyFolder from '@Images/empty-folder.webp'
-import EmptyStateImg from '@Images/cm-cs-empty-state.png'
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
+import EmptyStateImg from '@Images/cm-cs-empty-state.png'
+import EmptyFolder from '@Images/empty-folder.webp'
 
 import { CM_SECRET_EMPTY_STATE_TEXT, getCMSecretNullStateText } from './constants'
 import { ConfigMapSecretNullStateProps } from './types'

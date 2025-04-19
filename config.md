@@ -45,5 +45,9 @@
 | TRIGGER_API_TIMEOUT                          | 60000      | Default timeout for all API requests for Trigger calls (Deploy artifacts, charts) in DASHBOARD                   |
 | FEATURE_HIDE_USER_DIRECT_PERMISSIONS_FOR_NON_SUPER_ADMINS | "true" | Would hide the user direct permissions for non-super admin users in User Permissions |
 | FEATURE_ACTION_AUDIOS_ENABLE                 | true         | Would enable audios in dashboard   |
+| FEATURE_EXTERNAL_FLUX_CD_ENABLE | false |  To enable flux cd option in app list page |
+| FEATURE_BULK_RESTART_WORKLOADS_FROM_RB | deployment,rollout,daemonset,statefulset | Enables the bulk operations in the resource browser for specific workload type. | 
+| FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE | false | If enabled user can pass the manual gitops repo |
+| SENTRY_RELEASE_VERSION |  | Sentry release Version |
 
 # DASHBOARD CONFIG SECRET

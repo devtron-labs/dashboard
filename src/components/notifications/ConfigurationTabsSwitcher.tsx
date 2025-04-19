@@ -15,10 +15,12 @@
  */
 
 import { useHistory } from 'react-router-dom'
+
 import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
-import { getConfigurationTabTextWithIcon } from './notifications.util'
-import { ConfigurationsTabTypes } from './constants'
+
 import { AddConfigurationButton } from './AddConfigurationButton'
+import { ConfigurationsTabTypes } from './constants'
+import { getConfigurationTabTextWithIcon } from './notifications.util'
 import { ConfigurationTabSwitcherType } from './types'
 
 export const ConfigurationTabSwitcher = ({ isEmptyView }: ConfigurationTabSwitcherType) => {

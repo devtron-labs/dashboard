@@ -133,7 +133,7 @@ export interface BulkCDTriggerType extends BulkRuntimeParamsType {
     appList: BulkCDDetailType[]
     closePopup: (e) => void
     updateBulkInputMaterial: (materialList: Record<string, any>) => void
-    onClickTriggerBulkCD: (appsToRetry?: Record<string, boolean>) => void
+    onClickTriggerBulkCD: (skipIfHibernated: boolean, appsToRetry?: Record<string, boolean>) => void
     changeTab?: (
         materrialId: string | number,
         artifactId: number,
@@ -185,10 +185,21 @@ export interface TriggerResponseModalBodyProps {
     envName?: string
 }
 
-export interface TriggerResponseModalFooterProps extends Pick<TriggerResponseModalBodyProps, 'isLoading' | 'responseList'> {
-    onClickRetryBuild: (appsToRetry: Record<string, boolean>) => void
+type RetryFailedType =
+    | {
+          onClickRetryDeploy: BulkCDTriggerType['onClickTriggerBulkCD']
+          skipHibernatedApps: boolean
+          onClickRetryBuild?: never
+      }
+    | {
+          onClickRetryDeploy?: never
+          skipHibernatedApps?: never
+          onClickRetryBuild: (appsToRetry: Record<string, boolean>) => void
+      }
+
+export type TriggerResponseModalFooterProps = Pick<TriggerResponseModalBodyProps, 'isLoading' | 'responseList'> & {
     closePopup: (e) => void
-}
+} & RetryFailedType
 
 export interface TriggerModalRowType {
     rowData: ResponseRowType

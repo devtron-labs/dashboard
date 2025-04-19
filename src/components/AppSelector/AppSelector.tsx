@@ -16,23 +16,25 @@
 
 import { useRef, useState } from 'react'
 import ReactGA from 'react-ga4'
+import { ActionMeta } from 'react-select'
+
 import {
+    AppSelectorNoOptionsMessage as appSelectorNoOptionsMessage,
+    BaseAppMetaData,
     ComponentSizeType,
+    getNoMatchingResultText,
+    ResourceKindType,
     SelectPicker,
+    SelectPickerOptionType,
     SelectPickerProps,
     SelectPickerVariantType,
     useAsync,
-    ResourceKindType,
     UserPreferenceResourceActions,
-    BaseAppMetaData,
-    getNoMatchingResultText,
     useUserPreferences,
-    AppSelectorNoOptionsMessage as appSelectorNoOptionsMessage,
-    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ActionMeta } from 'react-select'
-import { appListOptions } from './AppSelectorUtil'
+
 import { AppSelectorType, RecentlyVisitedOptions } from './AppSelector.types'
+import { appListOptions } from './AppSelectorUtil'
 import { APP_DETAILS_GA_EVENTS } from './constants'
 
 const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) => {

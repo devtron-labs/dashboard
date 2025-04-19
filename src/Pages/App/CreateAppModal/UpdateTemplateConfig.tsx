@@ -16,14 +16,14 @@
 
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
 
-import MaterialList from '@Components/material/MaterialList'
 import CIConfig from '@Components/ciConfig/CIConfig'
 import { CIConfigProps } from '@Components/ciConfig/types'
 import { DockerConfigOverrideKeys } from '@Components/ciPipeline/types'
 import { MaterialListProps } from '@Components/material/material.types'
+import MaterialList from '@Components/material/MaterialList'
 
-import { Workflow, WorkflowProps } from './Workflow'
 import { CreateAppFormStateActionType, UpdateTemplateConfigProps } from './types'
+import { Workflow, WorkflowProps } from './Workflow'
 
 const parentState: CIConfigProps['parentState'] = {
     loadingState: null,

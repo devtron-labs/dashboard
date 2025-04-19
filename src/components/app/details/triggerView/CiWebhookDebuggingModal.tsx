@@ -16,29 +16,33 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { NavLink, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import moment from 'moment'
+
 import {
-    showError,
-    Progressing,
-    sortCallback,
-    CodeEditor,
-    getFormattedSchema,
     Button,
-    ButtonVariantType,
     ButtonStyleType,
+    ButtonVariantType,
+    CodeEditor,
     ComponentSizeType,
-    useSearchString,
+    getFormattedSchema,
     getUrlWithSearchParams,
-    Tooltip,
     Icon,
     MODES,
+    Progressing,
+    showError,
+    sortCallback,
+    Tooltip,
+    useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
-import moment from 'moment'
+
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
-import { getCIWebhookPayload } from './ciWebhook.service'
-import { getCIPipelineURL } from '../../../common'
+
 import { Moment12HourFormat, URLS } from '../../../../config'
-import './triggerView.scss'
+import { getCIPipelineURL } from '../../../common'
+import { getCIWebhookPayload } from './ciWebhook.service'
 import { CiWebhookModalProps, CIWebhookPayload, WebhookPayload, WebhookReceivedFiltersType } from './types'
+
+import './triggerView.scss'
 
 export const CiWebhookModal = ({
     webhookPayloads,

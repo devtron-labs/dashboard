@@ -15,12 +15,13 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react'
+
 import {
+    ButtonVariantType,
     ComponentSizeType,
     InfoBlock,
     InfoBlockProps,
     noop,
-    ButtonVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 const componentVariantMap: Record<InfoBlockProps['variant'], null> = {

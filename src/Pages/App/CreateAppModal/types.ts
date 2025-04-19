@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { SyntheticEvent } from 'react'
+
 import {
     ButtonProps,
     DynamicDataTableCellErrorType,
@@ -21,9 +23,10 @@ import {
     SelectPickerProps,
     TagsTableColumnsType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { SyntheticEvent } from 'react'
-import { GitMaterialType } from '@Components/material/material.types'
+
 import { CIConfigProps } from '@Components/ciConfig/types'
+import { GitMaterialType } from '@Components/material/material.types'
+
 import { getCreateMethodConfig } from './utils'
 
 interface CreateAppWorkflowConfigType {

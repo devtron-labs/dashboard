@@ -14,24 +14,28 @@
  * limitations under the License.
  */
 
+import { lazy, useMemo, useState } from 'react'
+import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
+
 import {
     ConditionalWrap,
-    ErrorScreenNotAuthorized,
     ERROR_EMPTY_SCREEN,
+    ErrorScreenNotAuthorized,
     Progressing,
     Reload,
     TOAST_ACCESS_DENIED,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { lazy, useMemo, useState } from 'react'
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
+
 import { importComponentFromFELibrary } from '@Components/common'
+
 import { API_STATUS_CODES, Routes } from '../../../config'
-import './authorization.scss'
 import { getCustomRoles } from './authorization.service'
 import { AuthorizationProvider } from './AuthorizationProvider'
-import { getMetaPossibleRoles } from './utils'
 import { UserAndGroupPermissionsWrapProps } from './types'
+import { getMetaPossibleRoles } from './utils'
+
+import './authorization.scss'
 
 const APITokens = lazy(() => import('./APITokens'))
 const UserPermissions = lazy(() => import('./UserPermissions'))

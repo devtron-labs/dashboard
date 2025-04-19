@@ -16,12 +16,14 @@
 
 import React, { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
-import { Progressing, ErrorScreenManager, useAsync } from '@devtron-labs/devtron-fe-common-lib'
-import ClusterTerminal from '../../ClusterNodes/ClusterTerminal'
-import { createGroupSelectList, filterImageList } from '../../common'
+
+import { ErrorScreenManager, Progressing, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+
+import { getHostURLConfiguration } from '../../../services/service'
 import { createTaintsList } from '../../cluster/cluster.util'
 import { clusterNamespaceList, getClusterCapacity } from '../../ClusterNodes/clusterNodes.service'
-import { getHostURLConfiguration } from '../../../services/service'
+import ClusterTerminal from '../../ClusterNodes/ClusterTerminal'
+import { createGroupSelectList, filterImageList } from '../../common'
 import { AdminTerminalProps, URLParams } from '../Types'
 
 const AdminTerminal: React.FC<AdminTerminalProps> = ({ updateTerminalTabUrl }: AdminTerminalProps) => {

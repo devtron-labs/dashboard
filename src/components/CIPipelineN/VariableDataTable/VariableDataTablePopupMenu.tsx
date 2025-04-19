@@ -26,8 +26,8 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
-import { ReactComponent as ICSlidersVertical } from '@Icons/ic-sliders-vertical.svg'
 import { ReactComponent as ICDot } from '@Icons/ic-dot.svg'
+import { ReactComponent as ICSlidersVertical } from '@Icons/ic-sliders-vertical.svg'
 
 import { VariableDataTablePopupMenuProps } from './types'
 

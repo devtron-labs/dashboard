@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { NavLink } from 'react-router-dom'
+
 import {
     DEFAULT_BASE_PAGE_SIZE,
+    Icon,
     Pagination,
     ToastManager,
     ToastVariantType,
-    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { NavLink } from 'react-router-dom'
-import { EnvEmptyStates } from '../EnvEmptyStates'
+
 import { useAppContext } from '../../common'
+import { EnvApp, EnvAppList, EnvironmentLinkProps, EnvironmentsListViewType } from '../AppGroup.types'
 import { EMPTY_LIST_MESSAGING, GROUP_LIST_HEADER, NO_ACCESS_TOAST_MESSAGE } from '../Constants'
-import { EnvironmentsListViewType, EnvAppList, EnvironmentLinkProps, EnvApp } from '../AppGroup.types'
+import { EnvEmptyStates } from '../EnvEmptyStates'
 import { LoadingShimmerList } from './LoadingShimmer'
 
 const EnvironmentLink = ({

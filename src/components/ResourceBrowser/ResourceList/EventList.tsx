@@ -16,8 +16,11 @@
 
 /* eslint-disable react/no-danger */
 import DOMPurify from 'dompurify'
+
 import { highlightSearchText, Tooltip, WidgetEventDetails } from '@devtron-labs/devtron-fe-common-lib'
+
 import { importComponentFromFELibrary } from '@Components/common'
+
 import { EVENT_LIST } from '../Constants'
 import { EventListType } from '../Types'
 

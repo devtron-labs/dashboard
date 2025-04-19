@@ -16,6 +16,7 @@
 
 import { useRef } from 'react'
 import Tippy, { TippyProps } from '@tippyjs/react'
+
 import {
     Button,
     ButtonStyleType,
@@ -23,8 +24,10 @@ import {
     ComponentSizeType,
     useDownload,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as ICDownload } from '@Icons/ic-arrow-line-down.svg'
 import { Routes } from '@Config/constants'
+
 import { DownloadChartButtonProps } from '../types'
 
 const DownloadChartButton = ({ name, versions }: DownloadChartButtonProps) => {

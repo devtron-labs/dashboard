@@ -15,10 +15,11 @@
  */
 
 import { Button, ButtonComponentType, ComponentSizeType, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import nullStateImage from '../../../../../assets/img/empty-applist@2x.png'
+
 import { ReactComponent as AddIcon } from '../../../../../assets/icons/ic-add.svg'
-import { EMPTY_STATE_STATUS } from '../../../../../config/constantMessaging'
+import nullStateImage from '../../../../../assets/img/empty-applist@2x.png'
 import { URLS } from '../../../../../config'
+import { EMPTY_STATE_STATUS } from '../../../../../config/constantMessaging'
 
 const renderAddGroupButton = () => (
     <Button

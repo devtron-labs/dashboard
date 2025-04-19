@@ -15,11 +15,13 @@
  */
 
 import { FunctionComponent } from 'react'
+
 import { ErrorScreenNotAuthorized } from '@devtron-labs/devtron-fe-common-lib'
+
 import { importComponentFromFELibrary } from '../../../components/common'
-import { BuildInfraProps } from './types'
-import ProfileForm from './ProfileForm'
 import BuildInfraUtilityProvider from './BuildInfraUtiltityProvider'
+import ProfileForm from './ProfileForm'
+import { BuildInfraProps } from './types'
 
 const BuildInfraRouter = importComponentFromFELibrary('BuildInfraRouter', null, 'function')
 

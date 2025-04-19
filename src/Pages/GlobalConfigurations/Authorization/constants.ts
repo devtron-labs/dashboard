@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { EntityTypes, ACCESS_TYPE_MAP, ActionTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { ACCESS_TYPE_MAP, ActionTypes, EntityTypes } from '@devtron-labs/devtron-fe-common-lib'
+
 import { SELECT_ALL_VALUE } from '../../../config'
-import { APIRoleFilter } from './types'
-import { getDefaultStatusAndTimeout } from './libUtils'
 import { AccessTypeToErrorMapType } from './Shared/components/PermissionConfigurationForm/types'
+import { getDefaultStatusAndTimeout } from './libUtils'
+import { APIRoleFilter } from './types'
 
 /**
  * Permission types for users and permission groups

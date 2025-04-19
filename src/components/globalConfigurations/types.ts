@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { TippyCustomizedProps } from '@devtron-labs/devtron-fe-common-lib'
 import { HTMLAttributes, MutableRefObject } from 'react'
+
+import { TippyCustomizedProps } from '@devtron-labs/devtron-fe-common-lib'
 
 export type TippyConfig =
     | (Omit<TippyCustomizedProps, 'theme' | 'children' | 'placement'> & {

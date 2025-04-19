@@ -15,11 +15,12 @@
  */
 
 import { ModuleNameMap, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
-import { getShowResourceScanModal, importComponentFromFELibrary } from '../../../../common'
-import { NodeDetailTabs } from '../../../../app/types'
-import { PodPopupProps } from './types'
+
 import { ReactComponent as ICDeleteInteractive } from '../../../../../assets/icons/ic-delete-interactive.svg'
+import { NodeDetailTabs } from '../../../../app/types'
+import { getShowResourceScanModal, importComponentFromFELibrary } from '../../../../common'
 import { NodeType } from '../../appDetails.type'
+import { PodPopupProps } from './types'
 
 const OpenSecurityModalButton = importComponentFromFELibrary('OpenSecurityModalButton', null, 'function')
 

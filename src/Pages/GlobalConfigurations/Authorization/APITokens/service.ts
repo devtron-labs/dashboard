@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { get, post, put, trash, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, put, ResponseType, trash } from '@devtron-labs/devtron-fe-common-lib'
+
 import { Routes } from '../../../../config'
 
 export function getGeneratedAPITokenList(): Promise<ResponseType> {

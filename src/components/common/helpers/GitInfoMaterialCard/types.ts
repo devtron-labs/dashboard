@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { CIMaterialProps, RuntimeParamsErrorState, TriggerViewState } from '@Components/app/details/triggerView/types'
-import { CIMaterialType } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
+
+import { CIMaterialType } from '@devtron-labs/devtron-fe-common-lib'
+
+import { CIMaterialProps, RuntimeParamsErrorState, TriggerViewState } from '@Components/app/details/triggerView/types'
 
 export interface GitInfoMaterialProps
     extends Pick<TriggerViewState, 'workflowId'>,

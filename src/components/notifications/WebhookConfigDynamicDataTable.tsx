@@ -15,7 +15,9 @@
  */
 
 import { DynamicDataTable } from '@devtron-labs/devtron-fe-common-lib'
+
 import { VariableDataTableActionType } from '@Components/CIPipelineN/VariableDataTable/types'
+
 import { getEmptyVariableDataRow, getTableHeaders } from './notifications.util'
 import {
     HandleRowUpdateActionProps,

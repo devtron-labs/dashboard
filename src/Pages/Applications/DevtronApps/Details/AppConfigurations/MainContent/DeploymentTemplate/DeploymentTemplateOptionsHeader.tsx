@@ -15,13 +15,14 @@
  */
 
 import {
+    ComponentSizeType,
+    CONFIGURATION_TYPE_OPTIONS,
     ConfigurationType,
     InvalidYAMLTippyWrapper,
     SegmentedControl,
-    CONFIGURATION_TYPE_OPTIONS,
     SegmentedControlProps,
-    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import DTChartSelector from './DTChartSelector'
 import { DeploymentTemplateOptionsHeaderProps } from './types'
 

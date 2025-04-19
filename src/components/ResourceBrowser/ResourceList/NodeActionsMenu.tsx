@@ -16,24 +16,27 @@
 
 import { useState } from 'react'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+
 import { noop, PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
-import { AppDetailsTabs } from '@Components/v2/appDetails/appDetails.store'
-import { TaintType } from '@Components/ClusterNodes/types'
+
 import { ReactComponent as UncordonIcon } from '@Icons/ic-play-outline.svg'
-import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
-import { ReactComponent as CordonIcon } from '../../../assets/icons/ic-cordon.svg'
-import { ReactComponent as DrainIcon } from '../../../assets/icons/ic-clean-brush.svg'
-import { ReactComponent as EditTaintsIcon } from '../../../assets/icons/ic-spraycan.svg'
-import { ReactComponent as EditFileIcon } from '../../../assets/icons/ic-edit-lines.svg'
-import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
+import { TaintType } from '@Components/ClusterNodes/types'
+import { AppDetailsTabs } from '@Components/v2/appDetails/appDetails.store'
+
 import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-menu-dots.svg'
-import { NodeActionsMenuProps } from '../Types'
-import CordonNodeModal from '../../ClusterNodes/NodeActions/CordonNodeModal'
-import DrainNodeModal from '../../ClusterNodes/NodeActions/DrainNodeModal'
-import DeleteNodeModal from '../../ClusterNodes/NodeActions/DeleteNodeModal'
+import { ReactComponent as DrainIcon } from '../../../assets/icons/ic-clean-brush.svg'
+import { ReactComponent as CordonIcon } from '../../../assets/icons/ic-cordon.svg'
+import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as EditFileIcon } from '../../../assets/icons/ic-edit-lines.svg'
+import { ReactComponent as EditTaintsIcon } from '../../../assets/icons/ic-spraycan.svg'
+import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
 import { CLUSTER_NODE_ACTIONS_LABELS } from '../../ClusterNodes/constants'
+import CordonNodeModal from '../../ClusterNodes/NodeActions/CordonNodeModal'
+import DeleteNodeModal from '../../ClusterNodes/NodeActions/DeleteNodeModal'
+import DrainNodeModal from '../../ClusterNodes/NodeActions/DrainNodeModal'
 import EditTaintsModal from '../../ClusterNodes/NodeActions/EditTaintsModal'
 import { K8S_EMPTY_GROUP } from '../Constants'
+import { NodeActionsMenuProps } from '../Types'
 
 // TODO: This should be commoned out with ResourceBrowserActionMenu to have consistent styling
 const NodeActionsMenu = ({ nodeData, getNodeListData, addTab, handleClearBulkSelection }: NodeActionsMenuProps) => {

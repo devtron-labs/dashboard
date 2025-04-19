@@ -15,10 +15,12 @@
  */
 
 import { useEffect, useRef } from 'react'
+
 import { Drawer } from '@devtron-labs/devtron-fe-common-lib'
-import { IssuesListingModalType } from './appDetails.type'
-import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
+
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
+import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
+import { IssuesListingModalType } from './appDetails.type'
 
 const IssuesListingModal = ({ errorsList, closeIssuesListingModal }: IssuesListingModalType) => {
     const issuesModalRef = useRef<HTMLDivElement>(null)

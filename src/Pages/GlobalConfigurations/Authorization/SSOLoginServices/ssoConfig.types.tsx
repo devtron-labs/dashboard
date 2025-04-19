@@ -15,8 +15,9 @@
  */
 
 import { RouteComponentProps } from 'react-router-dom'
-import { SSOProvider } from './constants'
+
 import { GlobalConfiguration } from '../../../../components/globalConfigurations/types'
+import { SSOProvider } from './constants'
 
 export interface SSOConfigDTO {
     active: boolean

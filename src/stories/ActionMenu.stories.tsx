@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { action } from '@storybook/addon-actions'
 import type { Meta, StoryObj } from '@storybook/react'
 
 import { ActionMenu, ActionMenuProps, Button, Icon } from '@devtron-labs/devtron-fe-common-lib'
-import { action } from '@storybook/addon-actions'
 
 const meta = {
     component: ActionMenu,

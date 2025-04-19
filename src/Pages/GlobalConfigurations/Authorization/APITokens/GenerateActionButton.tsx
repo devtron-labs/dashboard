@@ -15,6 +15,7 @@
  */
 
 import { ButtonWithLoader } from '@devtron-labs/devtron-fe-common-lib'
+
 import { GenerateActionButtonType } from './apiToken.type'
 
 const GenerateActionButton = ({

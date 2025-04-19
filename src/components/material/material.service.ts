@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { GetTemplateAPIRouteType, post, put, trash, getTemplateAPIRoute } from '@devtron-labs/devtron-fe-common-lib'
+import { getTemplateAPIRoute, GetTemplateAPIRouteType, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
+
 import { Routes } from '../../config'
 import { MaterialServiceProps } from './material.types'
 

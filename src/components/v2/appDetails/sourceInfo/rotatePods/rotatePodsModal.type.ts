@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
+import { Dispatch, SetStateAction } from 'react'
+
 import {
     CHECKBOX_VALUE,
-    ResponseType,
-    GVKType,
     DeploymentStrategy,
+    GVKType,
     Nodes,
     NodeType,
+    ResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Dispatch, SetStateAction } from 'react'
 
 export interface WorkloadCheckType {
     isChecked: boolean

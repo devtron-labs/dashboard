@@ -15,8 +15,11 @@
  */
 
 import { Redirect, Route, Switch } from 'react-router-dom'
-import { ERROR_STATUS_CODE, ErrorScreenManager, useMainContext, URLS } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ERROR_STATUS_CODE, ErrorScreenManager, URLS, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+
 import { importComponentFromFELibrary } from '@Components/common'
+
 import { DeploymentChartsList } from './List'
 
 const DeploymentChartDetailRouter = importComponentFromFELibrary('DeploymentChartDetailRouter', null, 'function')

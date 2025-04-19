@@ -16,23 +16,24 @@
 
 import { SyntheticEvent } from 'react'
 import { Operation } from 'fast-json-patch'
+
 import {
-    ConfigKeysWithLockType,
-    DeploymentChartVersionType,
-    ChartMetadataType,
-    DeploymentTemplateConfigState,
-    SelectedChartDetailsType,
-    CompareFromApprovalOptionsValuesType,
-    ConfigurationType,
-    ServerErrors,
-    ConfigToolbarPopupNodeType,
-    DryRunEditorMode,
-    ConfigHeaderTabType,
-    ProtectConfigTabsType,
-    DraftMetadataDTO,
-    OverrideMergeStrategyType,
     AppConfigProps,
+    ChartMetadataType,
+    CompareFromApprovalOptionsValuesType,
+    ConfigHeaderTabType,
+    ConfigKeysWithLockType,
+    ConfigToolbarPopupNodeType,
+    ConfigurationType,
+    DeploymentChartVersionType,
+    DeploymentTemplateConfigState,
+    DraftMetadataDTO,
+    DryRunEditorMode,
+    OverrideMergeStrategyType,
     PipelineMigratedFromType,
+    ProtectConfigTabsType,
+    SelectedChartDetailsType,
+    ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ConfigToolbarProps } from '../types'

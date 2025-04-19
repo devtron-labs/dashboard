@@ -15,12 +15,12 @@
  */
 
 import {
-    OptionType,
-    StepType,
-    PipelineFormType,
     Environment,
-    SelectPickerOptionType,
+    OptionType,
     ParentPluginType,
+    PipelineFormType,
+    SelectPickerOptionType,
+    StepType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 export enum DockerArgsAction {

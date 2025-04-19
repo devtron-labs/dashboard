@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { ReactComponent as Error } from '@Icons/ic-error-cross.svg'
-import { ReactComponent as Success } from '@Icons/appstatus/healthy.svg'
 import { Tooltip } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ReactComponent as Success } from '@Icons/appstatus/healthy.svg'
+import { ReactComponent as Error } from '@Icons/ic-error-cross.svg'
+
 import { ClusterMapInitialStatusType } from './types'
 
 export const ClusterMapInitialStatus = ({ errorInNodeListing }: ClusterMapInitialStatusType) => (

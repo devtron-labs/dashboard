@@ -19,28 +19,28 @@ import YAML from 'yaml'
 
 import {
     applyCompareDiffOnUneditedDocument,
+    CM_SECRET_STATE,
+    CMSecretConfigData,
     CompareFromApprovalOptionsValuesType,
+    ConfigMapSecretReadyOnly,
     DraftAction,
     DraftState,
+    getConfigMapSecretPayload,
+    getConfigMapSecretReadOnlyValues,
+    isNullOrUndefined,
     OverrideMergeStrategyType,
     Progressing,
     ProtectConfigTabsType,
     SelectPickerOptionType,
-    CM_SECRET_STATE,
-    CMSecretConfigData,
-    getConfigMapSecretPayload,
-    getConfigMapSecretReadOnlyValues,
-    ConfigMapSecretReadyOnly,
-    isNullOrUndefined,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { CompareConfigView, CompareConfigViewProps, NoPublishedVersionEmptyState } from '@Pages/Applications'
 import { importComponentFromFELibrary } from '@Components/common'
-
+import { CompareConfigView, CompareConfigViewProps, NoPublishedVersionEmptyState } from '@Pages/Applications'
 import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
-import { ConfigMapSecretProtectedProps } from './types'
+
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'
+import { ConfigMapSecretProtectedProps } from './types'
 
 const ConfigMapSecretApproveButton = importComponentFromFELibrary('ConfigMapSecretApproveButton', null, 'function')
 

@@ -15,28 +15,29 @@
  */
 
 import React, { lazy, Suspense } from 'react'
-import { useRouteMatch, useHistory, Route, Switch, Redirect, useLocation, generatePath } from 'react-router-dom'
+import { generatePath, Redirect, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+
 import {
-    Progressing,
-    EnvResourceType,
-    BASE_CONFIGURATION_ENV_ID,
     ApprovalConfigDataKindType,
-    getIsApprovalPolicyConfigured,
-    CMSecretComponentType,
+    BASE_CONFIGURATION_ENV_ID,
     Button,
+    CMSecretComponentType,
+    EnvResourceType,
+    getIsApprovalPolicyConfigured,
+    Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Next } from '@Icons/ic-arrow-forward.svg'
-import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE, URLS } from '@Config/index'
 import { ErrorBoundary, useAppContext } from '@Components/common'
 import ExternalLinks from '@Components/externalLinks/ExternalLinks'
+import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE, URLS } from '@Config/index'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
 
 import { NextButtonProps, STAGE_NAME } from '../AppConfig.types'
 import { useAppConfigurationContext } from '../AppConfiguration.provider'
+import { DeploymentConfigCompare } from './DeploymentConfigCompare'
 
 import '../appConfig.scss'
-import { DeploymentConfigCompare } from './DeploymentConfigCompare'
 
 const MaterialList = lazy(() => import('@Components/material/MaterialList'))
 const CIConfig = lazy(() => import('@Components/ciConfig/CIConfig'))

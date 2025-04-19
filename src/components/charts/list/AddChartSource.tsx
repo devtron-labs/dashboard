@@ -15,6 +15,7 @@
  */
 
 import { NavLink } from 'react-router-dom'
+
 import { URLS } from '../../../config'
 
 const AddChartSource = ({ baseClass }: { baseClass?: string }) => (

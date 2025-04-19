@@ -15,6 +15,7 @@
  */
 
 import { InfoIconTippy, RadioGroup, RadioGroupItem, TriggerType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { TriggerTypeRadioProps } from './cdPipeline.types'
 
 const TriggerTypeRadioInfoTippyAdditionalContentItem = ({

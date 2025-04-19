@@ -15,7 +15,9 @@
  */
 
 import { SyntheticEvent } from 'react'
+
 import { CustomInput, Textarea } from '@devtron-labs/devtron-fe-common-lib'
+
 import { CreatePluginFormFieldProps } from './types'
 
 const CreatePluginFormField = ({ action, handleChange, useTextArea, ...props }: CreatePluginFormFieldProps) => {

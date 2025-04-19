@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
+export { EnvironmentOverviewTableSortableKeys } from './EnvironmentOverview.constants'
 export * from './EnvironmentOverviewTable.component'
 export * from './EnvironmentOverviewTable.types'
-export { EnvironmentOverviewTableSortableKeys } from './EnvironmentOverview.constants'

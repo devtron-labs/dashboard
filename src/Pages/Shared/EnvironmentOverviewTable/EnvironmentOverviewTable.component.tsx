@@ -20,24 +20,24 @@ import { Link } from 'react-router-dom'
 import {
     AppStatus,
     Checkbox,
-    ImageChipCell,
-    SortableTableHeaderCell,
-    useUrlFilters,
-    RegistryType,
     CommitChipCell,
-    getRandomColor,
-    processDeployedTime,
-    PopupMenu,
-    stringComparatorBySortOrder,
-    handleRelativeDateSorting,
-    Tooltip,
     DeploymentStatus,
+    getRandomColor,
+    handleRelativeDateSorting,
+    ImageChipCell,
+    PopupMenu,
+    processDeployedTime,
+    RegistryType,
+    SortableTableHeaderCell,
     StatusType,
+    stringComparatorBySortOrder,
+    Tooltip,
+    useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as DevtronIcon } from '@Icons/ic-devtron-app.svg'
 import { ReactComponent as ICActivity } from '@Icons/ic-activity.svg'
 import { ReactComponent as ICArrowLineDown } from '@Icons/ic-arrow-line-down.svg'
+import { ReactComponent as DevtronIcon } from '@Icons/ic-devtron-app.svg'
 import { ReactComponent as ICMoreOption } from '@Icons/ic-more-option.svg'
 
 import {
@@ -51,6 +51,7 @@ import {
     EnvironmentOverviewTableRow,
     EnvironmentOverviewTableRowData,
 } from './EnvironmentOverviewTable.types'
+
 import './EnvironmentOverviewTable.scss'
 
 const renderPopUpMenu = (items: EnvironmentOverviewTableRow['popUpMenuItems']) => (

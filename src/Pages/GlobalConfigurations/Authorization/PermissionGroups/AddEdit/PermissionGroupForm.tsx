@@ -14,35 +14,37 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { Link, useHistory } from 'react-router-dom'
+
 import {
-    showError,
-    CustomInput,
-    useMainContext,
-    ToastVariantType,
-    ToastManager,
+    Button,
     ButtonComponentType,
+    ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
-    ButtonStyleType,
-    Button,
+    CustomInput,
+    showError,
     Textarea,
+    ToastManager,
+    ToastVariantType,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Link, useHistory } from 'react-router-dom'
+
 import { ReactComponent as ICDeleteInteractive } from '@Icons/ic-delete-interactive.svg'
 import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
-import { deepEqual } from '../../../../../components/common'
 
+import { deepEqual } from '../../../../../components/common'
 import { URLS } from '../../../../../config'
-import { PermissionGroup, PermissionGroupCreateOrUpdatePayload } from '../../types'
 import { createOrUpdatePermissionGroup, deletePermissionGroup } from '../../authorization.service'
+import { excludeKeyAndClusterValue } from '../../Shared/components/K8sObjectPermissions/utils'
 import {
     PermissionConfigurationForm,
     usePermissionConfiguration,
 } from '../../Shared/components/PermissionConfigurationForm'
-import { getIsSuperAdminPermission, getRolesAndAccessRoles, validateDirectPermissionForm } from '../../utils'
-import { excludeKeyAndClusterValue } from '../../Shared/components/K8sObjectPermissions/utils'
+import { PermissionGroup, PermissionGroupCreateOrUpdatePayload } from '../../types'
 import { DeleteUserPermission } from '../../UserPermissions/DeleteUserPermission'
+import { getIsSuperAdminPermission, getRolesAndAccessRoles, validateDirectPermissionForm } from '../../utils'
 
 const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const { serverMode } = useMainContext()

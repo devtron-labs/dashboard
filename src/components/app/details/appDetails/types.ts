@@ -15,6 +15,7 @@
  */
 
 import { SyntheticEvent } from 'react'
+
 import { AppMetricsTabType, ChartTypes, HibernationModalTypes, StatusTypes } from './appDetails.type'
 import { AppInfo } from './utils'
 

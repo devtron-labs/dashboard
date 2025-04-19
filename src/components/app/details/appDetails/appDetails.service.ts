@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { ResponseType, get, getUrlWithSearchParams, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { get, getUrlWithSearchParams, ResponseType, trash } from '@devtron-labs/devtron-fe-common-lib'
+
 import { Routes } from '../../../../config'
 import { fetchWithFullRoute } from '../../../../services/fetchWithFullRoute'
+import { AppType } from '../../../v2/appDetails/appDetails.type'
 import {
     ClusterConnectionResponse,
     DataSourceDetailsDTO,
@@ -25,7 +27,6 @@ import {
     DeploymentStatusDetailsResponse,
     ModuleConfigResponse,
 } from './appDetails.type'
-import { AppType } from '../../../v2/appDetails/appDetails.type'
 
 export const getDataSourceDetailsFromEnvironment = async (envName: string): Promise<DataSourceDetailsType> => {
     try {

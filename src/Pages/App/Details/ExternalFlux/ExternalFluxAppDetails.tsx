@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-import {
-    AppType,
-    ErrorScreenManager,
-    IndexStore,
-    useMainContext,
-    DeploymentAppTypes,
-    showError,
-    ResponseType,
-    noop,
-    ERROR_STATUS_CODE,
-} from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { ExternalFluxAppDetailParams } from './types'
-import { getExternalFluxCDAppDetails } from './service'
+
+import {
+    AppType,
+    DeploymentAppTypes,
+    ERROR_STATUS_CODE,
+    ErrorScreenManager,
+    IndexStore,
+    noop,
+    ResponseType,
+    showError,
+    useMainContext,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { FluxCDTemplateType } from '../../../../components/app/list-new/AppListType'
 import AppDetailsComponent from '../../../../components/v2/appDetails/AppDetails.component'
-import { getAppStatus } from './utils'
 import { AppDetails } from '../../../../components/v2/appDetails/appDetails.type'
+import { getExternalFluxCDAppDetails } from './service'
+import { ExternalFluxAppDetailParams } from './types'
+import { getAppStatus } from './utils'
 
 let initTimer = null
 

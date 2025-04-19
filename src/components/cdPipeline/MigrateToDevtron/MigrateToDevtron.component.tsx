@@ -15,6 +15,8 @@
  */
 
 import { useEffect, useRef } from 'react'
+import { useParams } from 'react-router-dom'
+
 import {
     abortPreviousRequests,
     APIResponseHandler,
@@ -27,25 +29,26 @@ import {
     RadioGroup,
     RadioGroupItem,
     SelectPicker,
+    Tooltip,
     useAsync,
     useMainContext,
-    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams } from 'react-router-dom'
-import { ReactComponent as ICDefaultChart } from '@Icons/ic-default-chart.svg'
+
 import { ReactComponent as ICArgoCDApp } from '@Icons/ic-argocd-app.svg'
-import { ClusterSelectProps, MigrateToDevtronProps, SelectMigrateAppOptionType } from './types'
-import ClusterSelect from './ClusterSelect'
+import { ReactComponent as ICDefaultChart } from '@Icons/ic-default-chart.svg'
+
 import {
     MigrateToDevtronBaseFormStateType,
     MigrateToDevtronFormState,
     TriggerTypeRadioProps,
 } from '../cdPipeline.types'
-import { getMigrateAppOptions, validateMigrationSource } from './service'
-import { generateMigrateAppOption, getDeploymentAppTypeLabel, sanitizeValidateMigrationSourceResponse } from './utils'
+import TriggerTypeRadio from '../TriggerTypeRadio'
+import ClusterSelect from './ClusterSelect'
 import { GENERIC_SECTION_ERROR_STATE_COMMON_PROPS } from './constants'
 import MigrateToDevtronValidationFactory from './MigrateToDevtronValidationFactory'
-import TriggerTypeRadio from '../TriggerTypeRadio'
+import { getMigrateAppOptions, validateMigrationSource } from './service'
+import { ClusterSelectProps, MigrateToDevtronProps, SelectMigrateAppOptionType } from './types'
+import { generateMigrateAppOption, getDeploymentAppTypeLabel, sanitizeValidateMigrationSourceResponse } from './utils'
 
 const MigrateToDevtron = ({
     migrateToDevtronFormState,

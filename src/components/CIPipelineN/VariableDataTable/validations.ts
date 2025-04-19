@@ -16,8 +16,8 @@
 
 import {
     DynamicDataTableCellValidationState,
-    PATTERNS as FE_COMMON_LIB_PATTERNS,
     InputOutputVariablesHeaderKeys,
+    PATTERNS as FE_COMMON_LIB_PATTERNS,
     RefVariableType,
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -25,13 +25,13 @@ import {
 import { PluginVariableType } from '@Components/ciPipeline/types'
 import { PATTERNS } from '@Config/constants'
 
+import { VARIABLE_DATA_TABLE_CELL_ERROR_MSGS } from './constants'
 import {
     GetValidateCellProps,
     ValidateInputOutputVariableCellProps,
     ValidateVariableDataTableKeysProps,
     VariableDataRowType,
 } from './types'
-import { VARIABLE_DATA_TABLE_CELL_ERROR_MSGS } from './constants'
 
 const getVariableDataTableVariableKeysFrequency = (
     rows: VariableDataRowType[],

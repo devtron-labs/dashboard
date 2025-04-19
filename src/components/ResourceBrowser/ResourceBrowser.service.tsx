@@ -14,32 +14,36 @@
  * limitations under the License.
  */
 
+import { RefObject } from 'react'
+
 import {
+    APIOptions,
     ApiResourceType,
+    ClusterDetail,
+    ClusterStatusType,
     get,
-    ResponseType,
-    getK8sResourceList,
+    getClusterListRaw,
     getIsRequestAborted,
-    showError,
-    getUrlWithSearchParams,
+    getK8sResourceList,
     getK8sResourceListPayload,
+    getNamespaceListMin,
+    getUrlWithSearchParams,
+    InstallationClusterConfigType,
+    Nodes,
+    ResponseType,
+    showError,
     stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { RefObject } from 'react'
+
+import { getClusterList } from '@Components/ClusterNodes/clusterNodes.service'
+import { importComponentFromFELibrary } from '@Components/common'
+
 import { Routes } from '../../config'
-import { ClusterListResponse } from '../../services/service.types'
-import { GetResourceDataType, NodeRowDetail, URLParams } from './Types'
 import { SIDEBAR_KEYS } from './Constants'
+import { GetResourceDataType, NodeRowDetail, URLParams } from './Types'
 import { parseNodeList } from './Utils'
 
-export const getClusterList = async (): Promise<ClusterListResponse> => {
-    const response = await get<ClusterListResponse['result']>(Routes.CLUSTER_LIST_PERMISSION)
-
-    return {
-        ...response,
-        result: (response?.result ?? []).sort((a, b) => stringComparatorBySortOrder(a.cluster_name, b.cluster_name)),
-    }
-}
+const getInstallationClusterConfigs = importComponentFromFELibrary('getInstallationClusterConfigs', null, 'function')
 
 export const namespaceListByClusterId = async (clusterId: string) => {
     const response = await get<string[]>(`${Routes.CLUSTER_NAMESPACE}/${clusterId}`)
@@ -77,10 +81,41 @@ export const getResourceData = async ({
             return parseNodeList(response)
         }
 
-        return await getK8sResourceList(
+        const response = await getK8sResourceList(
             getK8sResourceListPayload(clusterId, selectedNamespace.value.toLowerCase(), selectedResource, filters),
             abortControllerRef.current.signal,
         )
+
+        if (selectedResource.gvk.Kind.toLowerCase() === Nodes.Namespace.toLowerCase()) {
+            const { result } = await getNamespaceListMin(clusterId, abortControllerRef)
+            const [{ environments }] = result
+
+            const namespaceToEnvironmentMap = environments.reduce(
+                (acc, { environmentName, namespace, environmentId }) => {
+                    if (environmentId === 0) {
+                        return acc
+                    }
+
+                    acc[namespace] = environmentName
+                    return acc
+                },
+                {},
+            )
+
+            return {
+                ...response,
+                result: {
+                    ...response.result,
+                    headers: [...response.result.headers, 'environment'],
+                    data: response.result.data.map((data) => ({
+                        ...data,
+                        environment: namespaceToEnvironmentMap[data.name as string],
+                    })),
+                },
+            }
+        }
+
+        return response
     } catch (err) {
         if (!getIsRequestAborted(err)) {
             showError(err)
@@ -88,5 +123,62 @@ export const getResourceData = async ({
         }
 
         return null
+    }
+}
+
+export const getClusterListing = async (
+    minified: boolean,
+    abortControllerRef?: APIOptions['abortControllerRef'],
+): Promise<ClusterDetail[]> => {
+    try {
+        const [rawClusterListResponse, installationClustersListResponse] = await Promise.allSettled([
+            (minified ? getClusterListRaw : getClusterList)(abortControllerRef),
+            getInstallationClusterConfigs ? getInstallationClusterConfigs(abortControllerRef) : [],
+        ])
+
+        if (rawClusterListResponse.status === 'rejected') {
+            throw rawClusterListResponse.reason
+        }
+
+        const { result: rawClusterList } = rawClusterListResponse.value
+
+        if (installationClustersListResponse.status === 'rejected' || !installationClustersListResponse.value.length) {
+            return rawClusterList
+        }
+
+        const clusterListNameSet = new Set(rawClusterList.map(({ name }) => name))
+
+        const installationClustersList: InstallationClusterConfigType[] = installationClustersListResponse.value
+
+        return rawClusterList.concat(
+            installationClustersList
+                .filter(({ name }) => {
+                    if (!clusterListNameSet.has(name)) {
+                        return true
+                    }
+
+                    return false
+                })
+                .map(({ installationId, name }) => ({
+                    id: installationId,
+                    name,
+                    status: ClusterStatusType.CREATING,
+                    cpu: null,
+                    memory: null,
+                    nodeCount: 0,
+                    nodeK8sVersions: [],
+                    serverVersion: '',
+                    nodeDetails: [],
+                    nodeErrors: [],
+                    errorInNodeListing: '',
+                    isInstallationCluster: true,
+                    isProd: false,
+                })),
+        )
+    } catch (err) {
+        if (!getIsRequestAborted(err)) {
+            showError(err)
+        }
+        throw err
     }
 }

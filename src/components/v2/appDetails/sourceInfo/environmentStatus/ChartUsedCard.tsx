@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
+import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { useRef } from 'react'
-import { ReactComponent as QuestionIcon } from '../../../assets/icons/ic-question.svg'
-import { ReactComponent as File } from '../../../../../assets/icons/ic-file.svg'
+
 import { ReactComponent as DefaultChart } from '../../../../../assets/icons/ic-default-chart.svg'
+import { ReactComponent as File } from '../../../../../assets/icons/ic-file.svg'
 import { URLS } from '../../../../../config'
-import { ChartToolTipType, ChartUsedCardType } from '../environment.type'
 import LoadingCard from '../../../../app/details/appDetails/LoadingCard'
+import { ReactComponent as QuestionIcon } from '../../../assets/icons/ic-question.svg'
+import { ChartToolTipType, ChartUsedCardType } from '../environment.type'
 import { getUsedChartContent } from '../utils'
 
 const ChartToolTip = ({ children, isDeprecated, onClickUpgrade, chartRef }: ChartToolTipType) => (

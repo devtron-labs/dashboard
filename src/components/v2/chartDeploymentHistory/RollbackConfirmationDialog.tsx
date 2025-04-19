@@ -15,13 +15,15 @@
  */
 
 import React from 'react'
+import { Prompt } from 'react-router-dom'
+
 import {
-    usePrompt,
-    DEFAULT_ROUTE_PROMPT_MESSAGE,
     ConfirmationModal,
     ConfirmationModalVariantType,
+    DEFAULT_ROUTE_PROMPT_MESSAGE,
+    usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Prompt } from 'react-router-dom'
+
 import { ReactComponent as DeployButton } from '@Icons/ic-nav-rocket.svg'
 import { ReactComponent as ICRollback } from '@Icons/ic-rollback-medium.svg'
 

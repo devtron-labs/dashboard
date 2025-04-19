@@ -15,9 +15,11 @@
  */
 
 import { useEffect, useState } from 'react'
-import type { Meta, StoryObj } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
+import type { Meta, StoryObj } from '@storybook/react'
+
 import { ComponentSizeType, CustomInput, CustomInputProps } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as ICKeyBulb } from '@Icons/ic-key-bulb.svg'
 
 const TEXT_FIELD_LAYOUT_MAP: Record<CustomInputProps['layout'], null> = {

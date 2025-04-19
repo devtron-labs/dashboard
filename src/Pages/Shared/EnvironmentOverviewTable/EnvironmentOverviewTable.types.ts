@@ -15,6 +15,7 @@
  */
 
 import { FunctionComponent, MouseEvent, ReactElement, SVGProps } from 'react'
+
 import { EnvironmentOverviewTableHeaderKeys } from './EnvironmentOverview.constants'
 
 export interface EnvironmentOverviewTableRowData {
