@@ -22,8 +22,35 @@ RUN yarn build
 
 FROM nginx:stable
 
-RUN apt update && \
-    apt install nginx-plus-module-brotli 
+ARG BROTLI_VERSION=master
+
+RUN apt-get update \
+    && apt-get install -y \
+        build-essential \
+        libpcre++-dev \
+        zlib1g-dev \
+        libgeoip-dev \
+        wget \
+        git
+
+RUN cd /opt \
+    && git clone --depth 1 -b $BROTLI_VERSION --single-branch https://github.com/google/ngx_brotli.git \
+    && cd /opt/ngx_brotli \
+    && git submodule update --init \
+    && cd /opt \
+    && wget -O - http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz | tar zxfv - \
+    && mv /opt/nginx-$NGINX_VERSION /opt/nginx \
+    && cd /opt/nginx \
+    && ./configure --with-compat --add-dynamic-module=/opt/ngx_brotli \
+    && make modules 
+
+COPY --from=0 /opt/nginx/objs/ngx_http_brotli_filter_module.so /usr/lib/nginx/modules
+COPY --from=0 /opt/nginx/objs/ngx_http_brotli_static_module.so /usr/lib/nginx/modules
+
+RUN chmod -R 644 \
+        /usr/lib/nginx/modules/ngx_http_brotli_filter_module.so \
+        /usr/lib/nginx/modules/ngx_http_brotli_static_module.so 
+        
 RUN useradd -ms /bin/bash devtron
 COPY --from=builder /app/dist/ /usr/share/nginx/html
 COPY ./nginx.conf /etc/nginx/nginx.conf
