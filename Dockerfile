@@ -22,6 +22,7 @@ RUN yarn build
 
 FROM nginx:stable
 
+RUN echo "/usr/local/lib" > /etc/ld.so.conf.d/usrlocal.conf && ldconfig -v
 RUN sudo apt update && \
     sudo apt install nginx-plus-module-brotli
 RUN useradd -ms /bin/bash devtron
