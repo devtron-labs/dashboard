@@ -20,8 +20,10 @@ RUN echo "SENTRY_RELEASE_VERSION=dashboard@$(git rev-parse --short HEAD)\n" >> .
 
 RUN yarn build
 
-FROM fholzer/nginx-brotli:v1.26.2
+FROM nginx:stable
 
+RUN apt update && \
+    apt install libnginx-mod-http-brotli-filter 
 RUN useradd -ms /bin/bash devtron
 COPY --from=builder /app/dist/ /usr/share/nginx/html
 COPY ./nginx.conf /etc/nginx/nginx.conf
