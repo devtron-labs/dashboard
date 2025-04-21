@@ -94,6 +94,8 @@ import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import { CIMaterialModal } from './CIMaterialModal'
 import { WebhookReceivedPayloadModal } from './WebhookReceivedPayloadModal'
+import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
+import { shouldRenderWebhookAddImageModal } from './TriggerView.utils'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary(
@@ -102,6 +104,7 @@ const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponent
     'function',
 )
 const WorkflowActionRouter = importComponentFromFELibrary('WorkflowActionRouter', null, 'function')
+const WebhookAddImageModal = importComponentFromFELibrary('WebhookAddImageModal', null, 'function')
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
 const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
 
@@ -145,6 +148,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             searchImageTag: '',
             resourceFilters: [],
             runtimeParams: [],
+            selectedWebhookNodeId: null,
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -1140,6 +1144,17 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ selectedEnv: _selectedEnv })
     }
 
+    getWebhookDetails = () =>
+        getExternalCIConfig(this.props.match.params.appId, this.state.selectedWebhookNodeId, false)
+
+    handleWebhookAddImageClick = (webhookId: number) => {
+        this.setState({ selectedWebhookNodeId: webhookId })
+    }
+
+    handleWebhookAddImageModalClose = () => {
+        this.setState({ selectedWebhookNodeId: null })
+    }
+
     getCINode = (): CommonNodeAttr => {
         let nd: CommonNodeAttr
         if (this.state.ciNodeId) {
@@ -1313,7 +1328,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                         <CloseIcon />
                                     </button>
                                 </div>
-                                <div className='flex-grow-1'>
+                                <div className="flex-grow-1">
                                     <Progressing pageLoader size={32} />
                                 </div>
                             </>
@@ -1350,6 +1365,23 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         return null
     }
 
+    renderWebhookAddImageModal() {
+        if (
+            WebhookAddImageModal &&
+            shouldRenderWebhookAddImageModal(this.props.location) &&
+            this.state.selectedWebhookNodeId
+        ) {
+            return (
+                <WebhookAddImageModal
+                    getWebhookDetails={this.getWebhookDetails}
+                    onClose={this.handleWebhookAddImageModalClose}
+                />
+            )
+        }
+
+        return null
+    }
+
     handleModalClose = () => {
         this.props.history.push(this.props.match.url)
     }
@@ -1377,10 +1409,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             filteredCIPipelines={this.state.filteredCIPipelines}
                             environmentLists={this.state.environmentLists}
                             appId={+this.props.match.params.appId}
+                            handleWebhookAddImageClick={this.handleWebhookAddImageClick}
                         />
                     )
                 })}
                 <LinkedCIDetail workflows={this.state.workflows} handleClose={this.handleModalClose} />
+                {this.renderWebhookAddImageModal()}
             </>
         )
     }
@@ -1417,7 +1451,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         }
         if (!this.state.workflows.length) {
             return (
-                <div className='flex-grow-1'>
+                <div className="flex-grow-1">
                     {this.props.isJobView ? (
                         <AppNotConfigured
                             title={APP_DETAILS.JOB_FULLY_NOT_CONFIGURED.title}

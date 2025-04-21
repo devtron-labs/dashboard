@@ -52,6 +52,7 @@ import {
     PasswordField,
     ButtonComponentType,
     InfoBlock,
+    RegistryCredentialsType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
@@ -99,6 +100,7 @@ import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/Validate
 const RegistryHelmPushCheckbox = importComponentFromFELibrary('RegistryHelmPushCheckbox')
 const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio')
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
+const AuthenticationTypeRadio = importComponentFromFELibrary('AuthenticationTypeRadio', null, 'function')
 
 enum CERTTYPE {
     SECURE = 'secure',
@@ -258,6 +260,7 @@ const CollapsedList = ({
     repositoryList = [],
     disabledFields = [],
     ociRegistryConfig,
+    registryCredentialsType,
     ...rest
 }) => {
     const [collapsed, toggleCollapse] = useState(true)
@@ -337,6 +340,7 @@ const CollapsedList = ({
                         isPublic,
                         disabledFields,
                         ociRegistryConfig,
+                        registryCredentialsType,
                     }}
                 />
             )}
@@ -376,6 +380,7 @@ const DockerForm = ({
         : {
               CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
           },
+    registryCredentialsType,
     ...rest
 }) => {
     const re = PATTERNS.APP_NAME
@@ -433,7 +438,7 @@ const DockerForm = ({
         registryUrl: { value: registryUrl, error: '' },
         username: { value: username, error: '' },
         password: {
-            value: id && !password ? DEFAULT_SECRET_PLACEHOLDER : regPass,
+            value: id && username && !password ? DEFAULT_SECRET_PLACEHOLDER : regPass,
             error: '',
         },
         repositoryList: {
@@ -537,6 +542,9 @@ const DockerForm = ({
     const [showManageModal, setManageModal] = useState(false)
     const [registryStorageType, setRegistryStorageType] = useState<string>(
         isPublic ? RegistryStorageType.OCI_PUBLIC : RegistryStorageType.OCI_PRIVATE,
+    )
+    const [authenticationType, setAuthenticationType] = useState<RegistryCredentialsType>(
+        id && registryCredentialsType ? registryCredentialsType : RegistryCredentialsType.USERNAME_PASSWORD,
     )
 
     const InitialValueOfIsContainerStore: boolean =
@@ -711,6 +719,11 @@ const DockerForm = ({
         }
     }
 
+    const handleChangeOtherRegistryAuthType = (e) => {
+        const updatedAuthType = e.target.value as RegistryCredentialsType
+        setAuthenticationType(updatedAuthType)
+    }
+
     function fetchAWSRegion(): string {
         const pattern =
             registryStorageType === RegistryStorageType.OCI_PUBLIC
@@ -804,8 +817,12 @@ const DockerForm = ({
             ...(registryStorageType !== RegistryStorageType.OCI_PUBLIC &&
             selectedDockerRegistryType.value === RegistryType.OTHER
                 ? {
-                      username: trimmedUsername,
-                      password: parsePassword(customState.password.value),
+                      ...(authenticationType === RegistryCredentialsType.USERNAME_PASSWORD
+                          ? {
+                                username: trimmedUsername,
+                                password: parsePassword(customState.password.value),
+                            }
+                          : {}),
                       connection: state.advanceSelect.value,
                       cert: state.advanceSelect.value !== CERTTYPE.SECURE_WITH_CERT ? '' : state.certInput.value,
                   }
@@ -838,6 +855,9 @@ const DockerForm = ({
                 customState.remoteConnectionConfig.connectionMethod.value,
                 sshConnectionType,
             ),
+            ...(AuthenticationTypeRadio && selectedDockerRegistryType.value === RegistryType.OTHER
+                ? { registryCredentialsType: authenticationType }
+                : {}),
         }
     }
 
@@ -1002,12 +1022,13 @@ const DockerForm = ({
                 let error = false
                 if (
                     registryStorageType === RegistryStorageType.OCI_PRIVATE &&
-                    (!customState.username.value || !(customState.password.value || id))
+                    authenticationType === RegistryCredentialsType.USERNAME_PASSWORD &&
+                    (!customState.username.value || !(customState.password.value || (id && username)))
                 ) {
                     setCustomState((st) => ({
                         ...st,
                         username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
-                        password: { ...st.password, error: id || st.password.value ? '' : 'Mandatory' },
+                        password: { ...st.password, error: (id && username) || st.password.value ? '' : 'Mandatory' },
                     }))
                     error = true
                 }
@@ -1613,47 +1634,61 @@ const DockerForm = ({
                     </>
                 )
             }
+
+            const isUserNamePasswordRequired =
+                selectedDockerRegistryType.value === RegistryType.OTHER
+                    ? authenticationType === RegistryCredentialsType.USERNAME_PASSWORD
+                    : true
+
             return (
                 <>
-                    <div className={`${isGCROrGCP ? '' : 'form__row--two-third'}`}>
-                        <div className="form__row">
-                            <CustomInput
-                                name="username"
-                                required
-                                value={customState.username.value || selectedDockerRegistryType.id.defaultValue}
-                                error={customState.username.error}
-                                onChange={customHandleChange}
-                                label={selectedDockerRegistryType.id.label}
-                                disabled={!!selectedDockerRegistryType.id.defaultValue}
-                                placeholder={
-                                    selectedDockerRegistryType.id.placeholder
-                                        ? selectedDockerRegistryType.id.placeholder
-                                        : 'Enter username'
-                                }
-                            />
-                        </div>
-                        <div className="form__row">
-                            {(selectedDockerRegistryType.value === RegistryType.DOCKER_HUB ||
-                                selectedDockerRegistryType.value === RegistryType.ACR ||
-                                selectedDockerRegistryType.value === RegistryType.QUAY ||
-                                selectedDockerRegistryType.value === RegistryType.OTHER) && (
-                                <PasswordField
-                                    shouldShowDefaultPlaceholderOnBlur={!!id}
-                                    name="password"
+                    {AuthenticationTypeRadio && selectedDockerRegistryType.value === RegistryType.OTHER && (
+                        <AuthenticationTypeRadio
+                            authenticationType={authenticationType}
+                            handleChangeOtherRegistryAuthType={handleChangeOtherRegistryAuthType}
+                        />
+                    )}
+                    {isUserNamePasswordRequired && (
+                        <div className={`${isGCROrGCP ? '' : 'form__row--two-third'}`}>
+                            <div className="form__row">
+                                <CustomInput
+                                    name="username"
                                     required
-                                    value={customState.password.value}
-                                    error={customState.password.error}
+                                    value={customState.username.value || selectedDockerRegistryType.id.defaultValue}
+                                    error={customState.username.error}
                                     onChange={customHandleChange}
-                                    label={selectedDockerRegistryType.password.label}
+                                    label={selectedDockerRegistryType.id.label}
+                                    disabled={!!selectedDockerRegistryType.id.defaultValue}
                                     placeholder={
-                                        selectedDockerRegistryType.password.placeholder
-                                            ? selectedDockerRegistryType.password.placeholder
-                                            : 'Enter password/token'
+                                        selectedDockerRegistryType.id.placeholder
+                                            ? selectedDockerRegistryType.id.placeholder
+                                            : 'Enter username'
                                     }
                                 />
-                            )}
+                            </div>
+                            <div className="form__row">
+                                {(selectedDockerRegistryType.value === RegistryType.DOCKER_HUB ||
+                                    selectedDockerRegistryType.value === RegistryType.ACR ||
+                                    selectedDockerRegistryType.value === RegistryType.QUAY ||
+                                    selectedDockerRegistryType.value === RegistryType.OTHER) && (
+                                    <PasswordField
+                                        shouldShowDefaultPlaceholderOnBlur={!!id && !!username}
+                                        name="password"
+                                        required
+                                        value={customState.password.value}
+                                        error={customState.password.error}
+                                        onChange={customHandleChange}
+                                        label={selectedDockerRegistryType.password.label}
+                                        placeholder={
+                                            selectedDockerRegistryType.password.placeholder
+                                                ? selectedDockerRegistryType.password.placeholder
+                                                : 'Enter password/token'
+                                        }
+                                    />
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    )}
                     {isGCROrGCP && (
                         <Textarea
                             label={selectedDockerRegistryType.password.label}

@@ -1246,6 +1246,6 @@ const renderHostURLWarning = () => (
     </div>
 )
 
-export const inValidHostUrlWarningBlock = () => {
+export const InValidHostUrlWarningBlock = () => {
     return <InfoBlock variant="error" description={renderHostURLWarning()} />
 }
