@@ -55,7 +55,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
             showError: false,
             form: {
                 name: '',
-                args: [{ key: '', value: '' }],
+                args: [{ key: '', value: '', id: 0 }],
                 materials: [],
                 triggerType: TriggerType.Auto,
                 beforeDockerBuildScripts: [],
@@ -93,7 +93,12 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
 
     componentDidMount() {
         document.addEventListener('keydown', this.escFunction)
-        getInitDataWithCIPipeline(this.props.match.params.appId, this.props.match.params.ciPipelineId, true, this.props.isTemplateView)
+        getInitDataWithCIPipeline(
+            this.props.match.params.appId,
+            this.props.match.params.ciPipelineId,
+            true,
+            this.props.isTemplateView,
+        )
             .then((response) => {
                 this.setState({ ...response, loadingData: false }, () => {
                     this.generateSourceUrl().catch(() => {
