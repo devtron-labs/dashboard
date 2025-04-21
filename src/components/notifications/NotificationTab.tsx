@@ -35,9 +35,7 @@ import {
     ComponentSizeType,
     ConfirmationModal,
     ConfirmationModalVariantType,
-    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Link, NavLink } from 'react-router-dom'
 import EmptyImage from '../../assets/img/ic-empty-notifications.png'
 import {
     getNotificationConfigurations,
@@ -54,13 +52,13 @@ import { ReactComponent as Email } from '@Icons/ic-mail.svg'
 import { ReactComponent as Check } from '@Icons/ic-check.svg'
 import { ReactComponent as Play } from '@Icons/ic-play.svg'
 import { ReactComponent as Info } from '@Icons/ic-info-outline.svg'
-import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
 import { ReactComponent as Webhook } from '@Icons/ic-CIWebhook.svg'
 import { ViewType, URLS, SourceTypeMap } from '../../config'
 import { ModifyRecipientsModal } from './ModifyRecipientsModal'
 import { getHostURLConfiguration } from '../../services/service'
 import { renderPipelineTypeIcon } from './notifications.util'
 import { NotificationTabState } from './types'
+import { InValidHostUrlWarningBlock } from '@Components/common'
 
 export class NotificationTab extends Component<any, NotificationTabState> {
     constructor(props) {
@@ -799,18 +797,9 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         }
     }
 
-    renderHostURLWarning = () => (
-        <div>
-            Host url is not configured or is incorrect. Reach out to your DevOps team (super-admin) to &nbsp;
-            <Link className="dc__link-bold" to={URLS.GLOBAL_CONFIG_HOST_URL}>
-                Review and update
-            </Link>
-        </div>
-    )
-
     renderHostErrorMessage() {
         if (!this.state.hostURLConfig || this.state.hostURLConfig.value !== window.location.origin) {
-            return <InfoBlock variant="error" description={this.renderHostURLWarning()} />
+            return <InValidHostUrlWarningBlock />
         }
     }
 

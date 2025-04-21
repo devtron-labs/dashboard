@@ -28,6 +28,7 @@ import {
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
 import { AboutAppInfoModalProps, NumberOptionType } from '../types'
 import { editApp } from '../service'
+import { projectChangeMessage } from './utils'
 
 export default function AboutAppInfoModal({
     isLoading,
@@ -121,21 +122,6 @@ export default function AboutAppInfoModal({
         }
     }
 
-    const projectChangeMessage = (): JSX.Element => {
-        return (
-            <>
-                <span className="fs-13 fw-4 lh-20 cn-9">Project change may lead to:</span>
-                <ol className="fs-13 fw-4 lh-20 cn-9 pl-20 pr-4 m-0">
-                    <li>Current users losing access to this application.</li>
-                    <li>
-                        Users getting an access to the application automatically, if they have an access to the selected
-                        project.
-                    </li>
-                </ol>
-            </>
-        )
-    }
-
     const renderAboutModalInfo = (): JSX.Element => {
         return (
             <>
@@ -144,7 +130,7 @@ export default function AboutAppInfoModal({
                     {selectedProject &&
                         appMetaInfo &&
                         selectedProject.label !== appMetaInfo.projectName &&
-                        !isJobOverview && <InfoBlock description={projectChangeMessage()} variant="warning" />}
+                        !isJobOverview && <InfoBlock variant="warning" description={projectChangeMessage()} />}
                 </div>
                 <div className="form__buttons dc__border-top pt-16 pb-16 pl-20 pr-20">
                     <button

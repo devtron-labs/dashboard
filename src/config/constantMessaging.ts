@@ -115,7 +115,7 @@ export const SSO_NOT_CONFIGURED_STATE_TEXTS = {
     subTitle: 'Add users and assign group or direct permissions',
     notConfigured: 'SSO Login not configured:',
     infoText:
-        ' Devtron uses Single Sign-On (SSO) to enable one-click login. Please set up an SSO login service before adding users.Go to SSO login services',
+        ' Devtron uses Single Sign-On (SSO) to enable one-click login. Please set up an SSO login service before adding users.',
     linkText: 'Go to SSO login services',
     redirectLink: '/global-config/auth/login-service',
 }
@@ -439,3 +439,8 @@ export const FEATURE_DISABLED = 'This feature is disabled'
 
 export const DUPLICATE_PIPELINE_NAME_VALIDATION = 'You cannot use same name for pipeline within an app.'
 export const GENERATE_TOKEN_NAME_VALIDATION = 'Token name is required to generate token'
+
+export const HOST_ERROR_MESSAGE = {
+    NotConfigured: 'Host url is not configured or is incorrect. Reach out to your DevOps team (super-admin) to',
+    Review: 'Review and update',
+}

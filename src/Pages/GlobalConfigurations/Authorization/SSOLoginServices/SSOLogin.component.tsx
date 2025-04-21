@@ -39,7 +39,7 @@ import {
     DEFAULT_SECRET_PLACEHOLDER,
     ErrorScreenManager,
     FeatureTitleWithInfo,
-    InfoColourBar,
+    InfoBlock,
     isCodeMirrorEnabled,
     MODES,
     noop,
@@ -51,7 +51,6 @@ import {
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Help } from '@Icons/ic-help.svg'
 import { ReactComponent as InfoIcon } from '@Icons/ic-info-warn.svg'
 import Check from '@Icons/ic-selected-corner.png'
 import { ReactComponent as UsersIcon } from '@Icons/ic-users.svg'
@@ -810,12 +809,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     ))}
                 </div>
                 <div className="flex-grow-1 w-100">
-                    <InfoColourBar
-                        message={renderInfoText()}
-                        classname="question-bar w-100 dc__mw-600"
-                        iconClass="icon-dim-20 fcv-5"
-                        Icon={Help}
-                    />
+                    <InfoBlock variant="help" description={renderInfoText()} />
                 </div>
                 <div className="flex-grow-1 w-100">
                     <CustomInput

@@ -49,6 +49,7 @@ import {
     getCDPipelineURL,
     getCIPipelineURL,
     importComponentFromFELibrary,
+    InValidHostUrlWarningBlock,
     preventBodyScroll,
     sortObjectArrayAlphabetically,
     withAppContext,
@@ -68,13 +69,11 @@ import {
 } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { getHostURLConfiguration } from '../../../../services/service'
-import { ReactComponent as ICError } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
 import { getCIWebhookRes } from './ciWebhook.service'
 import { TriggerViewContext } from './config'
 import {
     DEFAULT_ENV,
-    HOST_ERROR_MESSAGE,
     TIME_STAMP_ORDER,
     TRIGGER_VIEW_PARAMS,
     TRIGGER_VIEW_GA_EVENTS,
@@ -1389,15 +1388,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     renderHostErrorMessage() {
         if (!this.state.hostURLConfig || this.state.hostURLConfig.value !== window.location.origin) {
             return (
-                <div className="br-4 bw-1 er-2 pt-10 pb-10 pl-16 pr-16 bcr-1 mb-16 flex left">
-                    <ICError className="icon-dim-20 mr-8" />
-                    <div className="cn-9 fs-13">
-                        {HOST_ERROR_MESSAGE.NotConfigured}
-                        &nbsp;
-                        <NavLink className="dc__link-bold" to={URLS.GLOBAL_CONFIG_HOST_URL}>
-                            {HOST_ERROR_MESSAGE.Review}
-                        </NavLink>
-                    </div>
+                <div className="mb-6">
+                  <InValidHostUrlWarningBlock />
                 </div>
             )
         }
