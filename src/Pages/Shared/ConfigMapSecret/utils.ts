@@ -42,6 +42,7 @@ import {
     KeyValueTableData,
     KeyValueTableProps,
     OverrideMergeStrategyType,
+    PATTERNS,
     SelectPickerOptionType,
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -412,6 +413,17 @@ export const getConfigMapSecretKeyValueTableRows = (data: KeyValueTableData[]): 
         },
         id,
     }))
+
+export const getConfigMapSecretKeyValueTableValidationSchema: KeyValueTableProps['validationSchema'] = (value, key) => {
+    if (key === 'key' && value) {
+        const isValid = new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_KEY).test(value)
+        return {
+            isValid,
+            errorMessages: ['Can only contain alphanumeric chars and ( - ), ( _ ), ( . )', 'Spaces not allowed'],
+        }
+    }
+    return { isValid: true }
+}
 
 export const shouldHidePatchOption = (configMapSecretData: CMSecretConfigData, isJob: boolean) =>
     isJob || configMapSecretData?.external || false

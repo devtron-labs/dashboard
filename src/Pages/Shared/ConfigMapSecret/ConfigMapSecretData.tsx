@@ -33,7 +33,6 @@ import {
     MODES,
     noop,
     OverrideMergeStrategyType,
-    PATTERNS,
     SelectPickerOptionType,
     StyledRadioGroup,
     ToastManager,
@@ -58,6 +57,7 @@ import { ConfigMapSecretDataProps } from './types'
 import {
     getCMCSExpressEditComparisonDataDiffConfig,
     getConfigMapSecretKeyValueTableRows,
+    getConfigMapSecretKeyValueTableValidationSchema,
     getExpressEditComparisonViewLHS,
     getLockedYamlString,
 } from './utils'
@@ -417,17 +417,7 @@ export const ConfigMapSecretData = ({
                         value: isLocked,
                     }}
                     showError
-                    validationSchema={(value, key) => {
-                        if (key === 'key' && value) {
-                            const isValid = new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_KEY).test(value)
-                            return isValid
-                        }
-                        return true
-                    }}
-                    errorMessages={[
-                        'Can only contain alphanumeric chars and ( - ), ( _ ), ( . )',
-                        'Spaces not allowed',
-                    ]}
+                    validationSchema={getConfigMapSecretKeyValueTableValidationSchema}
                     onError={keyValueHandleError}
                     headerComponent={renderSecretShowHide(false)}
                     validateEmptyKeys
