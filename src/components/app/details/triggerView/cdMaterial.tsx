@@ -674,16 +674,16 @@ const CDMaterial = ({
     }
 
     const getConsumedAndAvailableMaterialList = (isApprovalConfigured: boolean) => {
-        let _consumedImage = []
-        let materialList: CDMaterialType[] = []
-
         if (isExceptionUser) {
             return {
                 consumedImage: [],
                 materialList: material,
-                eligibleImagesCount: 0,
+                eligibleImagesCount: material.filter((mat) => mat.filterState === FilterStates.ALLOWED).length,
             }
         }
+
+        let _consumedImage = []
+        let materialList: CDMaterialType[] = []
 
         if (isApprovalConfigured) {
             const { consumedImage, approvedImages } = processConsumedAndApprovedImages()
