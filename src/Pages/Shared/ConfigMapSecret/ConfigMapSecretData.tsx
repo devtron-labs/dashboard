@@ -407,7 +407,7 @@ export const ConfigMapSecretData = ({
                         key: isSelectedTypeVolume ? 'File Name' : 'Key',
                         value: isSelectedTypeVolume ? 'File Content' : 'Value',
                     }}
-                    initialRows={getConfigMapSecretKeyValueTableRows(data.currentData)}
+                    rows={getConfigMapSecretKeyValueTableRows(data.currentData)}
                     placeholder={{
                         key: 'Enter Key',
                         value: 'Enter Value',

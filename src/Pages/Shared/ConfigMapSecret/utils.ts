@@ -401,7 +401,7 @@ export const getConfigMapSecretDataType = (
         : (getSelectPickerOptionByValue(getSecretDataTypeOptions(false, true), externalType).label as string)
 }
 
-export const getConfigMapSecretKeyValueTableRows = (data: KeyValueTableData[]): KeyValueTableProps['initialRows'] =>
+export const getConfigMapSecretKeyValueTableRows = (data: KeyValueTableData[]): KeyValueTableProps['rows'] =>
     data.map(({ key, value, id }) => ({
         data: {
             key: {

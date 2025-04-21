@@ -60,7 +60,7 @@ const DockerArgs = ({
             <KeyValueTable
                 headerLabel={{ key: 'Key', value: 'Value' }}
                 placeholder={{ key: 'Enter key', value: 'Enter value' }}
-                initialRows={args.map(({ key, value }, id) => ({
+                rows={args.map(({ key, value }, id) => ({
                     data: { key: { value: key }, value: { value } },
                     id,
                 }))}
