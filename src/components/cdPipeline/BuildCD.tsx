@@ -253,16 +253,14 @@ export default function BuildCD({
 
     const renderWebhookInfo = () => {
         return (
-            <InfoColourBar
-                message={
+            <InfoBlock
+                variant="help"
+                description={
                     <div>
                         <span className="fw-6">Connecting to external CI service: </span>A webhook url and sample JSON
                         will be generated after the pipeline is created.
                     </div>
                 }
-                classname="bw-1 bcv-1 ev-2 bcv-1 fs-12 mt-20"
-                Icon={Help}
-                iconClass="fcv-5 h-20"
             />
         )
     }

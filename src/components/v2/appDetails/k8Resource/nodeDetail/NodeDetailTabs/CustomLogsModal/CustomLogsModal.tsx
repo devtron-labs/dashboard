@@ -15,7 +15,16 @@
  */
 
 import React, { useEffect, useState } from 'react'
-import { RadioGroupItem, VisibleModal, RadioGroup, InfoColourBar, SelectPicker, ComponentSizeType, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    RadioGroupItem,
+    VisibleModal,
+    RadioGroup,
+    InfoColourBar,
+    SelectPicker,
+    ComponentSizeType,
+    CustomInput,
+    InfoBlock,
+} from '@devtron-labs/devtron-fe-common-lib'
 import Select from 'react-select'
 import { SingleDatePicker } from 'react-dates'
 import 'react-dates/initialize'
@@ -24,7 +33,6 @@ import moment from 'moment'
 import CustomizableCalendarDay from 'react-dates/lib/components/CustomizableCalendarDay'
 import { Option } from '../../../../../common/ReactSelect.utils'
 import { ReactComponent as Close } from '../../../../../../../assets/icons/ic-close.svg'
-import { ReactComponent as Warn } from '../../../../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as CalendarIcon } from '../../../../../../../assets/icons/ic-calendar.svg'
 import { ReactComponent as ClockIcon } from '../../../../../../../assets/icons/ic-clock.svg'
 import { ReactComponent as Info } from '../../../../../../../assets/icons/ic-info-outline-grey.svg'
@@ -191,11 +199,9 @@ export const InputForSelectedOption = ({
             return (
                 <div className="flexbox-col">
                     <div className="fs-13 fw-4 cn-9 mb-16">All available logs will be shown.</div>
-                    <InfoColourBar
-                        classname="warn"
-                        Icon={Warn}
-                        message="Note: It might take longer or result in browser issues for extensive logs."
-                        iconClass="warning-icon"
+                    <InfoBlock
+                        variant="warning"
+                        description="Note: It might take longer or result in browser issues for extensive logs."
                     />
                 </div>
             )

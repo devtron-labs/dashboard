@@ -25,6 +25,7 @@ import {
     SearchBar,
     ToastManager,
     ToastVariantType,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { NavLink } from 'react-router-dom'
@@ -179,12 +180,7 @@ const ChartListPopUp = ({
                         )
                     )
                 })}
-                <InfoColourBar
-                    message={renderInfoText()}
-                    classname="question-bar m-16"
-                    Icon={Help}
-                    iconClass="icon-dim-20 fcv-5"
-                />
+                <InfoBlock variant="help" description={renderInfoText()} />
             </div>
         )
     }

@@ -20,7 +20,7 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     CustomInput,
-    InfoColourBar,
+    InfoBlock,
     SourceTypeMap,
     stopPropagation,
     VisibleModal2,
@@ -28,7 +28,6 @@ import {
 
 import { ReactComponent as LeftIcon } from '@Icons/ic-arrow-backward.svg'
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
-import { ReactComponent as Info } from '@Icons/info-filled.svg'
 import { getGitProviderIcon } from '@Components/common'
 
 import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
@@ -88,11 +87,7 @@ const BranchRegexModal = ({
 
     const renderRegexInfo = () => (
         <div className="dc__border-bottom--b2">
-            <InfoColourBar
-                classname="info_bar dc__no-border-radius dc__no-border-imp"
-                message="Commit will be fetched from the provided branch. This can be changed later."
-                Icon={Info}
-            />
+            <InfoBlock description="Commit will be fetched from the provided branch. This can be changed later." />
         </div>
     )
 

@@ -33,7 +33,6 @@ import { TriggerPrePostCDNode } from './nodes/triggerPrePostCDNode'
 import { getCIPipelineURL, importComponentFromFELibrary, RectangularEdge as Edge } from '../../../../common'
 import { WorkflowProps, TriggerViewContextType } from '../types'
 import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
-import DeprecatedPipelineWarning from '../../../../workflowEditor/DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
 import { TriggerViewContext } from '../config'
 
@@ -402,7 +401,6 @@ export class Workflow extends Component<WorkflowProps> {
                         </>
                     )}
                 </div>
-                {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
                 <div
                     className={`workflow__body bg__secondary dc__overflow-auto dc__border-n1 br-4 ${this.props.isSelected ? 'eb-2' : ''}`}
                 >

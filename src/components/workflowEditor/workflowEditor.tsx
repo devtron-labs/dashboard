@@ -15,12 +15,11 @@
  */
 
 import { Component, createContext } from 'react'
-import { Route, Switch, withRouter, NavLink, generatePath } from 'react-router-dom'
+import { Route, Switch, withRouter, generatePath } from 'react-router-dom'
 import {
     showError,
     Progressing,
     ErrorScreenManager,
-    InfoColourBar,
     ConditionalWrap,
     WorkflowNodeType,
     PipelineType,
@@ -37,11 +36,12 @@ import {
     ConfirmationModal,
     ConfirmationModalVariantType,
     deleteWorkflow,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
 import { URLS, AppConfigStatus, ViewType, DOCUMENTATION } from '../../config'
-import { importComponentFromFELibrary } from '../common'
+import { importComponentFromFELibrary, InValidHostUrlWarningBlock } from '../common'
 import { Workflow } from './Workflow'
 import {
     getAllChildDownstreams,
@@ -53,8 +53,6 @@ import CIPipeline from '../CIPipelineN/CIPipeline'
 import emptyWorkflow from '../../assets/img/ic-empty-workflow@3x.png'
 import LinkedCIPipeline from '../ciPipeline/LinkedCIPipelineEdit'
 import LinkedCIPipelineView from '../ciPipeline/LinkedCIPipelineView'
-import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as ICHelpOutline } from '../../assets/img/ic-help-outline.svg'
 import { ReactComponent as ICAddWhite } from '../../assets/icons/ic-add.svg'
@@ -841,15 +839,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     renderHostErrorMessage() {
         if (!this.state.hostURLConfig || this.state.hostURLConfig.value !== window.location.origin) {
             return (
-                <div className="br-4 bw-1 er-2 pt-10 pb-10 pl-16 pr-16 bcr-1 mb-16 flex left">
-                    <Error className="icon-dim-20 mr-8" />
-                    <div className="cn-9 fs-13">
-                        Host url is not configured or is incorrect. Reach out to your DevOps team (super-admin) to
-                        &nbsp;
-                        <NavLink className="dc__link-bold" to={URLS.GLOBAL_CONFIG_HOST_URL}>
-                            Review and update
-                        </NavLink>
-                    </div>
+                <div className="mb-6">
+                    <InValidHostUrlWarningBlock />
                 </div>
             )
         }
@@ -916,9 +907,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     renderOpenCIPipelineBanner = () => {
         return (
             <div className="open-cipipeline-banner dc__position-abs">
-                <InfoColourBar
-                    classname="bcv-5 cn-9 lh-20"
-                    message={
+                <InfoBlock
+                    variant="help"
+                    description={
                         <div className="flex fs-13 fw-4 lh-20 cn-0">
                             Open a build pipeline to override
                             <CloseIcon
@@ -927,9 +918,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             />
                         </div>
                     }
-                    Icon={HelpIcon}
-                    iconSize={20}
-                    iconClass="fcn-0"
                 />
             </div>
         )
@@ -944,7 +932,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             return (
                 <>
                     {this.renderRouter()}
-                    <div className="mt-16 ml-20 mr-20 mb-16">{this.renderHostErrorMessage()}</div>
+                    {this.renderHostErrorMessage()}
                     {this.renderEmptyState()}
                 </>
             )

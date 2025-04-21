@@ -31,6 +31,7 @@ import {
     Button,
     ButtonVariantType,
     ButtonStyleType,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
@@ -191,12 +192,7 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
                     </button>
                 </div>
                 <div className="flexbox-col pt-16 pr-20 pb-16 pl-20 dc__overflow-auto flex-grow-1">
-                    <InfoColourBar
-                        message={<RenderInfoMessage />}
-                        classname="info_bar mb-16"
-                        Icon={InfoIcon}
-                        iconClass="icon-dim-20"
-                    />
+                    <InfoBlock description={<RenderInfoMessage />} />
                     <div className="cursor cb-5 fw-6 fs-13 flexbox mr-20 mb-12" onClick={addNewTaint}>
                         <Add className="icon-dim-20 fcb-5" /> {EDIT_TAINTS_MODAL_MESSAGING.addTaint}
                     </div>
@@ -221,9 +217,7 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
                                     value={taintDetails.value}
                                     onChange={handleInputChange}
                                     placeholder="Value"
-                                    error={
-                                        errorObj && !_errorObj['value'].isValid ? _errorObj['value'].message : null
-                                    }
+                                    error={errorObj && !_errorObj['value'].isValid ? _errorObj['value'].message : null}
                                     fullWidth
                                 />
                                 <div className="w-70">

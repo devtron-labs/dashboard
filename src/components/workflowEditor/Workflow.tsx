@@ -33,7 +33,6 @@ import { PipelineSelect } from './PipelineSelect'
 import { WorkflowCreate } from '../app/details/triggerView/config'
 import { WebhookNode } from './nodes/WebhookNode'
 import WebhookTippyCard from './nodes/WebhookTippyCard'
-import DeprecatedPipelineWarning from './DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED, URLS } from '../../config'
 import {
     CommonNodeAttr,
@@ -888,7 +887,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                             </div>
                         )}
                     </div>
-                    {!this.props.isOffendingPipelineView && isExternalCiWorkflow && <DeprecatedPipelineWarning />}
                     <div
                         className={
                             configDiffView
