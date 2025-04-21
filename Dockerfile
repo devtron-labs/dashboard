@@ -27,7 +27,7 @@ ARG BROTLI_VERSION=master
 RUN apt-get update \
     && apt-get install -y \
         build-essential \
-        libpcre++-dev \
+        libpcre3-dev \
         zlib1g-dev \
         libgeoip-dev \
         wget \
@@ -50,7 +50,7 @@ COPY --from=0 /opt/nginx/objs/ngx_http_brotli_static_module.so /usr/lib/nginx/mo
 RUN chmod -R 644 \
         /usr/lib/nginx/modules/ngx_http_brotli_filter_module.so \
         /usr/lib/nginx/modules/ngx_http_brotli_static_module.so 
-        
+
 RUN useradd -ms /bin/bash devtron
 COPY --from=builder /app/dist/ /usr/share/nginx/html
 COPY ./nginx.conf /etc/nginx/nginx.conf
