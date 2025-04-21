@@ -17,8 +17,7 @@
 import { Dayjs } from 'dayjs'
 
 import { MARK_AS_STALE_DATA_CUT_OFF_MINS } from '../../ResourceBrowser/Constants'
-import { TAB_DATA_VERSION } from './constants'
-import { DynamicTabsVariantType, ParsedTabsData, ParsedTabsDataV1 } from './types'
+import { DynamicTabsVariantType } from './types'
 
 export const checkIfDataIsStale = (start: Dayjs, now: Dayjs): boolean =>
     now.diff(start, 'minutes') > MARK_AS_STALE_DATA_CUT_OFF_MINS
@@ -33,16 +32,5 @@ export const getClassNameForVariant = (variant: DynamicTabsVariantType) => {
             return `${prefix}rectangular`
         default:
             return ''
-    }
-}
-
-export const convertV1TabsDataToV2 = (tabsData: ParsedTabsDataV1 | ParsedTabsData): ParsedTabsData => {
-    if (tabsData.version === TAB_DATA_VERSION) {
-        return tabsData
-    }
-
-    return {
-        data: { [tabsData.key]: tabsData.data },
-        version: TAB_DATA_VERSION,
     }
 }
