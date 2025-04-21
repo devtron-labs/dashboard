@@ -23,7 +23,7 @@ RUN yarn build
 FROM nginx:stable
 
 RUN apt update && \
-    apt install libnginx-mod-http-brotli-filter 
+    apt install nginx-plus-module-brotli 
 RUN useradd -ms /bin/bash devtron
 COPY --from=builder /app/dist/ /usr/share/nginx/html
 COPY ./nginx.conf /etc/nginx/nginx.conf
