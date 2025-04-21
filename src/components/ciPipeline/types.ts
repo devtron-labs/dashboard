@@ -22,7 +22,6 @@ import {
     CiPipelineSourceTypeOption,
     CustomTagType,
     DockerConfigOverrideType,
-    DynamicDataTableCellValidationState,
     ErrorObj,
     Githost,
     MaterialType,
@@ -34,7 +33,8 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { AdvancedConfigOptionsProps } from '@Components/ciConfig/types'
-import { ValidateInputOutputVariableCellProps } from '@Components/CIPipelineN/VariableDataTable/types'
+import { validateConditionDataCell } from '@Components/CIPipelineN/ConditionDataTable/utils'
+import { validateInputOutputVariableCell } from '@Components/CIPipelineN/VariableDataTable/validations'
 
 import { HostURLConfig } from '../../services/service.types'
 
@@ -366,10 +366,8 @@ export enum VariableFieldType {
 export interface ValidationRulesType {
     name: (value: string) => ErrorObj
     requiredField: (value: string) => ErrorObj
-    validateInputOutputVariableCell: (
-        props: ValidateInputOutputVariableCellProps,
-    ) => DynamicDataTableCellValidationState
-    conditionDetail: (value: object) => ErrorObj
+    validateInputOutputVariableCell: typeof validateInputOutputVariableCell
+    validateConditionDataCell: typeof validateConditionDataCell
     sourceValue: (value: string, doRegexValidation: boolean) => ErrorObj
     mountPathMap: (value: object) => ErrorObj
 }

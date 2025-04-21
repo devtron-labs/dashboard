@@ -278,6 +278,7 @@ export interface PipelineContext {
         options?: {
             isSaveAsPlugin?: boolean
             validateVariableDataTable?: boolean
+            validateConditionDetails?: boolean
         },
     ) => void
     setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>

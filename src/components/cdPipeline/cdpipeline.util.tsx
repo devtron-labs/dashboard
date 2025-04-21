@@ -28,6 +28,7 @@ import {
     VariableType,
     PipelineFormType,
     InputOutputVariablesHeaderKeys,
+    ConditionDataTableHeaderKeys,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Search } from '../../assets/icons/ic-nav-search.svg'
@@ -66,9 +67,10 @@ export const validateTask = (
     options?: {
         isSaveAsPlugin?: boolean
         validateVariableDataTable?: boolean
+        validateConditionDetails?: boolean
     },
 ) => {
-    const { isSaveAsPlugin = false, validateVariableDataTable = true } = options ?? {}
+    const { isSaveAsPlugin = false, validateVariableDataTable = true, validateConditionDetails = true } = options ?? {}
     const validationRules = new ValidationRules()
     if (taskData && taskErrorObj) {
         taskErrorObj.name = validationRules.requiredField(taskData.name)
@@ -196,24 +198,50 @@ export const validateTask = (
                 })
             }
 
-            taskErrorObj[currentStepTypeVariable]['conditionDetails'] = []
-            taskData[currentStepTypeVariable].conditionDetails?.forEach((element, index) => {
-                if (element.conditionOnVariable) {
-                    if (
-                        ((element.conditionType === ConditionType.FAIL ||
-                            element.conditionType === ConditionType.PASS) &&
-                            !outputVarMap[element.conditionOnVariable]) ||
-                        ((element.conditionType === ConditionType.TRIGGER ||
-                            element.conditionType === ConditionType.SKIP) &&
-                            !inputVarMap[element.conditionOnVariable])
-                    ) {
-                        element.conditionOnVariable = ''
-                    }
-                }
-                taskErrorObj[currentStepTypeVariable]['conditionDetails'].push(validationRules.conditionDetail(element))
-                taskErrorObj.isValid =
-                    taskErrorObj.isValid && taskErrorObj[currentStepTypeVariable]['conditionDetails'][index].isValid
-            })
+            if (validateConditionDetails) {
+                taskErrorObj[currentStepTypeVariable].isConditionDetailsValid = true
+
+                taskErrorObj[currentStepTypeVariable]['conditionDetails'] = (
+                    taskData[currentStepTypeVariable].conditionDetails ?? []
+                ).reduce((acc, element) => {
+                    acc[element.id] = Object.values(ConditionDataTableHeaderKeys).reduce((keyAcc, key) => {
+                        let _conditionOnVariable = element.conditionOnVariable
+
+                        if (element.conditionOnVariable) {
+                            if (
+                                ((element.conditionType === ConditionType.FAIL ||
+                                    element.conditionType === ConditionType.PASS) &&
+                                    !outputVarMap[element.conditionOnVariable]) ||
+                                ((element.conditionType === ConditionType.TRIGGER ||
+                                    element.conditionType === ConditionType.SKIP) &&
+                                    !inputVarMap[element.conditionOnVariable])
+                            ) {
+                                _conditionOnVariable = ''
+                            }
+                        }
+
+                        const validationState = validationRules.validateConditionDataCell({
+                            key,
+                            condition: {
+                                conditionalValue: element.conditionalValue,
+                                conditionOnVariable: _conditionOnVariable,
+                                conditionOperator: element.conditionOperator,
+                            },
+                        })
+
+                        taskErrorObj[currentStepTypeVariable].isConditionDetailsValid =
+                            taskErrorObj[currentStepTypeVariable].isConditionDetailsValid && validationState.isValid
+                        keyAcc[key] = validationState
+
+                        return keyAcc
+                    }, {})
+
+                    return acc
+                }, {})
+            }
+
+            taskErrorObj.isValid =
+                taskErrorObj.isValid && (taskErrorObj[currentStepTypeVariable].isConditionDetailsValid ?? true)
         }
     }
 }
