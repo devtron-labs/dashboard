@@ -22,6 +22,8 @@ RUN yarn build
 
 FROM nginx:stable
 
+RUN apt-get update 
+RUN apt install brotli
 RUN useradd -ms /bin/bash devtron
 COPY --from=builder /app/dist/ /usr/share/nginx/html
 COPY ./nginx.conf /etc/nginx/nginx.conf
