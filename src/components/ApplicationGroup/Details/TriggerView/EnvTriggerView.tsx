@@ -918,7 +918,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             const nodes = workflow.nodes.map((node) => {
                 if (cdNodeId == node.id && node.type === nodeType) {
                     // TODO: Ig not using this, can remove it
-                    node.approvalConfigData = workflow.approvalConfiguredIdsMap[cdNodeId]
+                    if (node.type === WorkflowNodeType.CD) {
+                        node.approvalConfigData = workflow.approvalConfiguredIdsMap[cdNodeId]
+                    }
                     _selectedNode = node
                     _workflowId = workflow.id
                     _appID = workflow.appId

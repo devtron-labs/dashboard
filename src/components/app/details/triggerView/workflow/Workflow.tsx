@@ -330,7 +330,7 @@ export class Workflow extends Component<WorkflowProps> {
     renderEdgeList() {
         const edges = this.getEdges()
         return edges.map((edgeNode) => {
-            if (ApprovalNodeEdge && edgeNode.endNode.type === WorkflowNodeType.CD) {
+            if (ApprovalNodeEdge) {
                 return (
                     <ApprovalNodeEdge
                         key={`trigger-edge-${edgeNode.startNode.id}${edgeNode.startNode.x}-${edgeNode.endNode.id}`}
