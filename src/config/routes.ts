@@ -24,6 +24,8 @@ export interface NavItem {
     isLocked: boolean
 }
 
+const CREATE_CLUSTER_PATH = 'create/cluster/:type(connect-cluster|create-eks-cluster|add-isolated-cluster)'
+
 export const URLS = {
     CHARTS: '/chart-store',
     CHARTS_DISCOVER: '/chart-store/discover',
@@ -33,6 +35,7 @@ export const URLS = {
     APPLICATION_GROUP: '/application-group',
     RESOURCE_BROWSER: COMMON_URLS.RESOURCE_BROWSER,
     RESOURCE_BROWSER_INSTALLATION_CLUSTER: `${COMMON_URLS.RESOURCE_BROWSER}/installation-cluster/:installationId`,
+    RESOURCE_BROWSER_CREATE_CLUSTER: `${COMMON_URLS.RESOURCE_BROWSER}/${CREATE_CLUSTER_PATH}`,
     EXTERNAL_APPS: 'ea',
     DEVTRON_CHARTS: 'dc',
     EXTERNAL_ARGO_APP: 'eaa',
@@ -84,7 +87,7 @@ export const URLS = {
     GLOBAL_CONFIG_GITOPS: '/global-config/gitops',
     GLOBAL_CONFIG_DOCKER: '/global-config/docker',
     GLOBAL_CONFIG_CLUSTER: '/global-config/cluster-env',
-    GLOBAL_CONFIG_CREATE_CLUSTER: '/global-config/cluster-env/create/cluster/:type(connect-cluster|create-eks-cluster|add-isolated-cluster)',
+    GLOBAL_CONFIG_CREATE_CLUSTER: `/global-config/cluster-env/${CREATE_CLUSTER_PATH}`,
     GLOBAL_CONFIG_CHART: '/global-config/chart-repo',
     GLOBAL_CONFIG_AUTH: '/global-config/auth',
     GLOBAL_CONFIG_AUTH_USER_PERMISSION: '/global-config/auth/users',

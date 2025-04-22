@@ -24,7 +24,6 @@ import {
     BulkSelectionEvents,
     BulkSelectionProvider,
     Button,
-    ButtonComponentType,
     ButtonVariantType,
     Checkbox,
     CHECKBOX_VALUE,
@@ -50,6 +49,7 @@ import {
 
 import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
 import WebWorker from '@Components/app/WebWorker'
+import { getClusterList } from '@Components/cluster/cluster.service'
 import { AddEnvironmentFormPrefilledInfoType } from '@Components/cluster/cluster.type'
 import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Components/cluster/constants'
 import NodeActionsMenu from '@Components/ResourceBrowser/ResourceList/NodeActionsMenu'
@@ -59,6 +59,7 @@ import {
 } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import { URLS } from '@Config/routes'
 import searchWorker from '@Config/searchWorker'
+import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
 
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import {
@@ -118,8 +119,10 @@ const BaseResourceListContent = ({
 }: BaseResourceListProps) => {
     const [filteredResourceList, setFilteredResourceList] = useState<K8sResourceDetailType['data']>(null)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
+    const [clusterList, setClusterList] = useState<Awaited<ReturnType<typeof getClusterList>>>(null)
     const [resourceListOffset, setResourceListOffset] = useState(0)
     const [bulkOperationModalState, setBulkOperationModalState] = useState<BulkOperationsModalState>('closed')
+    const [showCreateEnvironmentDrawer, setShowCreateEnvironmentDrawer] = useState(false)
 
     // NOTE: this is to re-mount node filters component & avoid useEffects inside it
     const [lastTimeStringSinceClearAllFilters, setLastTimeStringSinceClearAllFilters] = useState(null)
@@ -138,6 +141,18 @@ const BaseResourceListContent = ({
     const { searchParams } = useSearchString()
 
     const isNodeListing = selectedResource?.gvk.Kind.toLowerCase() === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
+
+    useEffect(() => {
+        if (clusterList || selectedResource?.gvk.Kind !== Nodes.Namespace) {
+            return
+        }
+
+        getClusterList()
+            .then(({ result }) => {
+                setClusterList(result)
+            })
+            .catch(noop)
+    }, [selectedResource])
 
     const {
         selectedIdentifiers: bulkSelectionState,
@@ -395,7 +410,13 @@ const BaseResourceListContent = ({
             namespace,
         }
 
+        setShowCreateEnvironmentDrawer(true)
+
         localStorage.setItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY, JSON.stringify(environmentFormData))
+    }
+
+    const handleCloseCreateEnvironmentDrawer = () => {
+        setShowCreateEnvironmentDrawer(false)
     }
 
     const renderResourceRow = (resourceData: K8sResourceDetailDataType): JSX.Element => {
@@ -537,11 +558,6 @@ const BaseResourceListContent = ({
                                         text="Add environment"
                                         dataTestId="add-environment"
                                         variant={ButtonVariantType.text}
-                                        component={ButtonComponentType.link}
-                                        linkProps={{
-                                            to: `${URLS.GLOBAL_CONFIG_CLUSTER}/${selectedCluster.label}${URLS.CREATE_ENVIRONMENT}`,
-                                            target: '_blank',
-                                        }}
                                         onClick={getAddEnvironmentClickHandler(resourceData.name as string)}
                                     />
                                 )}
@@ -657,6 +673,31 @@ const BaseResourceListContent = ({
         )
     }
 
+    const renderCreateEnvironmentDrawer = () => {
+        if (!clusterList) {
+            return null
+        }
+
+        const { isVirtualCluster, prometheus_url: prometheusUrl } =
+            clusterList.find((cluster) => cluster.cluster_name === clusterName) || {}
+
+        return (
+            <ClusterEnvironmentDrawer
+                reload={reloadResourceListData}
+                clusterName={clusterName}
+                id={null}
+                environmentName={null}
+                clusterId={Number(clusterId)}
+                namespace={null}
+                prometheusEndpoint={prometheusUrl}
+                isProduction={null}
+                description={null}
+                hideClusterDrawer={handleCloseCreateEnvironmentDrawer}
+                isVirtual={isVirtualCluster}
+            />
+        )
+    }
+
     return (
         <div
             className={`resource-list-container flex-grow-1 dc__border-left flexbox-col dc__overflow-hidden ${
@@ -733,6 +774,8 @@ const BaseResourceListContent = ({
                             updateManifestResourceHelmApps={updateManifestResourceHelmApps}
                         />
                     )}
+
+                    {showCreateEnvironmentDrawer && renderCreateEnvironmentDrawer()}
                 </>
             )}
         </div>

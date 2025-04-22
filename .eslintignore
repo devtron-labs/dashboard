@@ -210,7 +210,6 @@ src/components/ciPipeline/ciPipeline.service.ts
 src/components/ciPipeline/validationRules.ts
 src/components/cluster/Cluster.tsx
 src/components/cluster/ClusterComponentModal.tsx
-src/components/cluster/ClusterForm.tsx
 src/components/cluster/ClusterInfoStepsModal.tsx
 src/components/cluster/ClusterInstallStatus.tsx
 src/components/cluster/UseNameListDropdown.tsx

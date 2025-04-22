@@ -23,10 +23,7 @@ import {
     Drawer,
     sortCallback,
     noop,
-    DEFAULT_SECRET_PLACEHOLDER,
     FeatureTitleWithInfo,
-    ToastVariantType,
-    ToastManager,
     Button,
     ButtonComponentType,
     ButtonVariantType,
@@ -35,9 +32,9 @@ import {
     useStickyEvent,
     getClassNameForStickyHeaderWithShadow,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { generatePath, Route, useHistory, withRouter } from 'react-router-dom'
+import { generatePath, Route, withRouter } from 'react-router-dom'
 import { ReactComponent as ClusterIcon } from '@Icons/ic-cluster.svg'
-import { importComponentFromFELibrary, useForm } from '../common'
+import { importComponentFromFELibrary } from '../common'
 import { List } from '../globalConfigurations/GlobalConfiguration'
 import {
     getClusterList,
@@ -51,9 +48,8 @@ import { ReactComponent as PencilEdit } from '@Icons/ic-pencil.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { ReactComponent as VirtualClusterIcon } from '@Icons/ic-virtual-cluster.svg'
 import { ReactComponent as VirtualEnvIcon } from '@Icons/ic-environment-temp.svg'
-import { POLLING_INTERVAL, ClusterListProps, AuthenticationType, ClusterFormProps } from './cluster.type'
+import { POLLING_INTERVAL, ClusterListProps, AuthenticationType, ClusterFormProps, EditClusterFormProps } from './cluster.type'
 import { DOCUMENTATION, ViewType, CONFIGURATION_TYPES, URLS, AppCreationType } from '../../config'
-import { getEnvName } from './cluster.util'
 import ClusterForm from './ClusterForm'
 import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
 import { EnvironmentDeleteComponent } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/EnvironmentDeleteComponent'
@@ -63,8 +59,9 @@ import { CreateClusterTypeEnum } from '@Pages/GlobalConfigurations/ClustersAndEn
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 const getSSHConfig: (
     ...props
-) => Pick<ClusterFormProps, 'sshUsername' | 'sshPassword' | 'sshAuthKey' | 'sshServerAddress'> =
+) => Pick<EditClusterFormProps, 'sshUsername' | 'sshPassword' | 'sshAuthKey' | 'sshServerAddress'> =
     importComponentFromFELibrary('getSSHConfig', noop, 'function')
+const VirtualClusterForm = importComponentFromFELibrary('VirtualClusterForm', null, 'function')
 
 class ClusterList extends Component<ClusterListProps, any> {
     timerRef
@@ -75,21 +72,14 @@ class ClusterList extends Component<ClusterListProps, any> {
             view: ViewType.LOADING,
             clusters: [],
             clusterEnvMap: {},
-            isTlsConnection: false,
             appCreationType: AppCreationType.Blank,
-            isKubeConfigFile: false,
             browseFile: false,
-            isClusterDetails: false,
             showEditCluster: false,
             isConnectedViaProxy: false,
             isConnectedViaSSHTunnel: false,
         }
         this.initialise = this.initialise.bind(this)
-        this.toggleCheckTlsConnection = this.toggleCheckTlsConnection.bind(this)
-        this.setTlsConnectionFalse = this.setTlsConnectionFalse.bind(this)
-        this.toggleKubeConfigFile = this.toggleKubeConfigFile.bind(this)
         this.toggleBrowseFile = this.toggleBrowseFile.bind(this)
-        this.toggleClusterDetails = this.toggleClusterDetails.bind(this)
         this.toggleShowEditCluster = this.toggleShowEditCluster.bind(this)
     }
 
@@ -189,24 +179,8 @@ class ClusterList extends Component<ClusterListProps, any> {
         clearInterval(this.timerRef)
     }
 
-    toggleCheckTlsConnection() {
-        this.setState({ isTlsConnection: !this.state.isTlsConnection })
-    }
-
-    setTlsConnectionFalse() {
-        this.setState({ isTlsConnection: false })
-    }
-
-    toggleClusterDetails(updateClusterDetails: boolean) {
-        this.setState({ isClusterDetails: updateClusterDetails })
-    }
-
     toggleShowEditCluster() {
         this.setState({ showEditCluster: !this.state.showEditCluster })
-    }
-
-    toggleKubeConfigFile(updateKubeConfigFile: boolean) {
-        this.setState({ isKubeConfigFile: updateKubeConfigFile })
     }
 
     toggleBrowseFile() {
@@ -271,9 +245,7 @@ class ClusterList extends Component<ClusterListProps, any> {
                                 key={cluster.id || Math.random().toString(36).substr(2, 5)}
                                 showEditCluster={this.state.showEditCluster}
                                 toggleShowAddCluster={this.toggleShowEditCluster}
-                                toggleCheckTlsConnection={this.toggleCheckTlsConnection}
-                                setTlsConnectionFalse={this.setTlsConnectionFalse}
-                                isTlsConnection={this.state.isTlsConnection}
+                                isTlsConnection={cluster.isTlsConnection}
                                 prometheus_url={cluster.prometheus_url}
                             />
                         ),
@@ -282,30 +254,6 @@ class ClusterList extends Component<ClusterListProps, any> {
                 <Route path={URLS.GLOBAL_CONFIG_CREATE_CLUSTER}>
                     <CreateCluster
                         handleReloadClusterList={this.initialise}
-                        clusterFormProps={{
-                            ...getSSHConfig(this.state),
-                            cluster_name: this.state.cluster_name,
-                            server_url: this.state.server_url,
-                            active: true,
-                            config: {},
-                            reload: this.initialise,
-                            prometheus_url: '',
-                            prometheusAuth: this.state.prometheus,
-                            defaultClusterComponent: this.state.defaultClusterComponent,
-                            isTlsConnection: this.state.isTlsConnection,
-                            isClusterDetails: this.state.isClusterDetails,
-                            proxyUrl: this.state.proxyUrl,
-                            isConnectedViaProxy: this.state.isConnectedViaProxy,
-                            isConnectedViaSSHTunnel: this.state.isConnectedViaSSHTunnel,
-                            toggleCheckTlsConnection: this.toggleCheckTlsConnection,
-                            setTlsConnectionFalse: this.setTlsConnectionFalse,
-                            toggleKubeConfigFile: this.toggleKubeConfigFile,
-                            isKubeConfigFile: this.state.isKubeConfigFile,
-                            toggleClusterDetails: this.toggleClusterDetails,
-                            handleCloseCreateClusterForm: this.handleRedirectToClusterList,
-                            isVirtualCluster: false,
-                            isProd: false,
-                        }}
                     />
                 </Route>
 
@@ -344,40 +292,25 @@ class ClusterList extends Component<ClusterListProps, any> {
 export default withRouter(ClusterList)
 
 const Cluster = ({
-    id,
     id: clusterId,
     cluster_name,
     insecureSkipTlsVerify,
     defaultClusterComponent,
-    agentInstallationStage,
     server_url,
-    active,
-    config: defaultConfig,
     environments,
     reload,
     prometheus_url,
     proxyUrl,
     toConnectWithSSHTunnel,
     sshTunnelConfig,
-    isTlsConnection,
-    toggleShowAddCluster,
-    toggleCheckTlsConnection,
-    setTlsConnectionFalse,
     isVirtualCluster,
     isProd,
 }) => {
     const [editMode, toggleEditMode] = useState(false)
     const [environment, setEnvironment] = useState(null)
-    const [config, setConfig] = useState(defaultConfig)
     const [prometheusAuth, setPrometheusAuth] = useState(undefined)
     const [showWindow, setShowWindow] = useState(false)
     const [confirmation, setConfirmation] = useState(false)
-    const [prometheusToggleEnabled] = useState(!!prometheus_url)
-
-    const [prometheusAuthenticationType] = useState({
-        type: prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
-    })
-    const authenticationType = prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
 
     const drawerRef = useRef(null)
 
@@ -386,188 +319,27 @@ const Cluster = ({
         identifier: `cluster-list__${cluster_name}`,
     })
 
-    const isDefaultCluster = (): boolean => {
-        return id == 1
+    const handleModalClose = () => {
+        toggleEditMode(false)
     }
 
-    const { state } = useForm(
-        {
-            cluster_name: { value: cluster_name, error: '' },
-            url: { value: server_url, error: '' },
-            userName: { value: prometheusAuth?.userName, error: '' },
-            password: { value: prometheusAuth?.password, error: '' },
-            prometheusTlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
-            prometheusTlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
-            proxyUrl: { value: proxyUrl, error: '' },
-            sshUsername: { value: sshTunnelConfig?.user, error: '' },
-            sshPassword: { value: sshTunnelConfig?.password, error: '' },
-            sshAuthKey: { value: sshTunnelConfig?.authKey, error: '' },
-            sshServerAddress: { value: sshTunnelConfig?.sshServerAddress, error: '' },
-            isConnectedViaProxy: !!proxyUrl?.length,
-            isConnectedViaSSHTunnel: toConnectWithSSHTunnel,
-            tlsClientKey: { value: config.tls_key, error: '' },
-            tlsClientCert: { value: config.cert_data, error: '' },
-            certificateAuthorityData: { value: config.cert_auth_data, error: '' },
-            token: { value: config?.bearer_token ? config.bearer_token : '', error: '' },
-            endpoint: { value: prometheus_url || '', error: '' },
-            authType: { value: authenticationType, error: '' },
-        },
-        {
-            cluster_name: {
-                required: true,
-                validators: [
-                    { error: 'Name is required', regex: /^.*$/ },
-                    { error: "Use only lowercase alphanumeric characters, '-', '_' or '.'", regex: /^[a-z0-9-\.\_]+$/ },
-                    { error: "Cannot start/end with '-', '_' or '.'", regex: /^(?![-._]).*[^-._]$/ },
-                    { error: 'Minimum 3 and Maximum 63 characters required', regex: /^.{3,63}$/ },
-                ],
-            },
-            url: {
-                required: true,
-                validator: { error: 'URL is required', regex: /^.*$/ },
-            },
-            proxyUrl: {
-                required: false,
-                validator: { error: 'Incorrect Url', regex: /^.*$/ },
-            },
-            toConnectWithSSHTunnel: {
-                required: false,
-            },
-            sshUsername: {
-                required: false,
-                validator: {
-                    error: 'Username or User Identifier is required. Username cannot contain spaces or special characters other than _ and -',
-                    regex: /^[A-Za-z0-9_-]+$/,
-                },
-            },
-            sshPassword: {
-                required: false,
-                validator: { error: 'password is required', regex: /^(?!\s*$).+/ },
-            },
-            sshAuthKey: {
-                required: false,
-                validator: { error: 'ssh private key is required', regex: /^(?!\s*$).+/ },
-            },
-            sshServerAddress: {
-                required: false,
-                validator: { error: 'URL is required', regex: /^.*$/ },
-            },
-            isConnectedViaProxy: {
-                required: false,
-            },
-            authType: {
-                required: false,
-                validator: { error: 'Authentication Type is required', regex: /^(?!\s*$).+/ },
-            },
-            userName: {
-                required: !!(prometheusToggleEnabled && prometheusAuthenticationType.type === AuthenticationType.BASIC),
-                validator: { error: 'username is required', regex: /^(?!\s*$).+/ },
-            },
-            password: {
-                required: !!(prometheusToggleEnabled && prometheusAuthenticationType.type === AuthenticationType.BASIC),
-                validator: { error: 'password is required', regex: /^(?!\s*$).+/ },
-            },
-            tlsClientKey: {
-                required: false,
-                validator: { error: 'TLS Key is required', regex: /^(?!\s*$).+/ },
-            },
-            tlsClientCert: {
-                required: false,
-                validator: { error: 'TLS Certificate is required', regex: /^(?!\s*$).+/ },
-            },
-            prometheusTlsClientKey: {
-                required: false,
-            },
-            prometheusTlsClientCert: {
-                required: false,
-            },
-            certificateAuthorityData: {
-                required: false,
-                validator: { error: 'Certificate authority data is required', regex: /^(?!\s*$).+/ },
-            },
-            token:
-                isDefaultCluster() || id
-                    ? {}
-                    : {
-                          required: true,
-                          validator: { error: 'token is required', regex: /[^]+/ },
-                      },
-            endpoint: {
-                required: !!prometheusToggleEnabled,
-                validator: { error: 'endpoint is required', regex: /^.*$/ },
-            },
-        },
-        onValidation,
-    )
-
-    const history = useHistory()
     const newEnvs = useMemo(() => {
         return clusterId ? [{ id: null }].concat(environments || []) : environments || []
     }, [environments])
 
-    async function handleEdit(e) {
+    async function handleEdit() {
         try {
             const { result } = await getCluster(clusterId)
             setPrometheusAuth(result.prometheusAuth)
-            setConfig({ ...result.config, ...(clusterId != 1 ? { bearer_token: DEFAULT_SECRET_PLACEHOLDER } : null) })
             toggleEditMode((t) => !t)
         } catch (err) {
             showError(err)
         }
     }
 
-    const hideClusterDrawer = (e) => {
+    const hideClusterDrawer = () => {
         setShowWindow(false)
     }
-
-    async function onValidation() {
-        const payload = getClusterPayload()
-        const urlValue = state.url.value?.trim() ?? ''
-        if (urlValue.endsWith('/')) {
-            payload['server_url'] = urlValue.slice(0, -1)
-        } else {
-            payload['server_url'] = urlValue
-        }
-        const proxyUrlValue = state.proxyUrl.value?.trim() ?? ''
-        if (proxyUrlValue.endsWith('/')) {
-            payload.remoteConnectionConfig.proxyConfig['proxyUrl'] = proxyUrlValue.slice(0, -1)
-        }
-        if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
-            const isValid = state.userName?.value && state.password?.value
-            if (!isValid) {
-                ToastManager.showToast({
-                    variant: ToastVariantType.error,
-                    description: 'Please add both username and password',
-                })
-            } else {
-                payload.prometheusAuth['userName'] = state.userName.value || ''
-                payload.prometheusAuth['password'] = state.password.value || ''
-            }
-        }
-    }
-
-    const getClusterPayload = () => {
-        return {
-            id,
-            cluster_name: state.cluster_name.value,
-            config: {
-                bearer_token:
-                    state.token.value && state.token.value !== DEFAULT_SECRET_PLACEHOLDER ? state.token.value : '',
-            },
-            active,
-            prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
-            prometheusAuth: {
-                userName: prometheusToggleEnabled ? state.userName.value : '',
-                password: prometheusToggleEnabled ? state.password.value : '',
-                tlsClientKey: prometheusToggleEnabled ? state.tlsClientKey.value : '',
-                tlsClientCert: prometheusToggleEnabled ? state.tlsClientCert.value : '',
-            },
-            remoteConnectionConfig: getRemoteConnectionConfig(state),
-            insecureSkipTlsVerify: !isTlsConnection,
-        }
-    }
-
-    const envName: string = getEnvName(defaultClusterComponent, agentInstallationStage)
 
     const renderNoEnvironmentTab = () => {
         return (
@@ -591,9 +363,6 @@ const Cluster = ({
     const editModeToggle = (): void => {
         if (!clusterId) {
             toggleEditMode((t) => !t)
-        }
-        if (isTlsConnection === insecureSkipTlsVerify) {
-            toggleCheckTlsConnection()
         }
     }
 
@@ -641,9 +410,14 @@ const Cluster = ({
                     clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list'
                 }`}
             >
-                <List internalRef={stickyElementRef} className={`dc__border dc__zi-1 ${getClassNameForStickyHeaderWithShadow(isHeaderStuck)} ${
-                    isHeaderStuck ? 'dc__no-border-radius' : ''
-                }`} key={clusterId} onClick={editModeToggle}>
+                <List
+                    internalRef={stickyElementRef}
+                    className={`dc__border dc__zi-1 ${getClassNameForStickyHeaderWithShadow(isHeaderStuck)} ${
+                        isHeaderStuck ? 'dc__no-border-radius' : ''
+                    }`}
+                    key={clusterId}
+                    onClick={editModeToggle}
+                >
                     {!clusterId && (
                         <List.Logo>
                             <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />
@@ -780,38 +554,37 @@ const Cluster = ({
                 ) : (
                     clusterId && renderNoEnvironmentTab()
                 )}
-                {editMode && (
-                    <Drawer position="right" width="1000px" onEscape={handleToggleEditMode}>
-                        <div className="h-100 bg__primary" ref={drawerRef}>
-                            <ClusterForm
-                                {...getSSHConfig(sshTunnelConfig)}
-                                id={clusterId}
-                                cluster_name={cluster_name}
-                                server_url={server_url}
-                                active
-                                config={{}}
-                                reload={reload}
-                                prometheus_url={prometheus_url}
-                                prometheusAuth={prometheusAuth}
-                                defaultClusterComponent={state.defaultClusterComponent}
-                                isTlsConnection={isTlsConnection}
-                                isClusterDetails={state.isClusterDetails}
-                                proxyUrl={proxyUrl}
-                                isConnectedViaProxy={!!proxyUrl}
-                                isConnectedViaSSHTunnel={toConnectWithSSHTunnel}
-                                toggleCheckTlsConnection={toggleCheckTlsConnection}
-                                setTlsConnectionFalse={setTlsConnectionFalse}
-                                toggleKubeConfigFile
-                                isKubeConfigFile={state.isKubeConfigFile}
-                                toggleEditMode={toggleEditMode}
-                                toggleClusterDetails
-                                isVirtualCluster={isVirtualCluster}
-                                isProd={isProd}
-                            />
-                        </div>
-                    </Drawer>
-                )}
+                {editMode &&
+                    (!isVirtualCluster ? (
+                        <Drawer position="right" width="1000px" onEscape={handleToggleEditMode}>
+                            <div className="h-100 bg__primary" ref={drawerRef}>
+                                <ClusterForm
+                                    {...getSSHConfig(sshTunnelConfig)}
+                                    id={clusterId}
+                                    clusterName={cluster_name}
+                                    serverUrl={server_url}
+                                    reload={reload}
+                                    prometheusUrl={prometheus_url}
+                                    prometheusAuth={prometheusAuth}
+                                    defaultClusterComponent={defaultClusterComponent}
+                                    proxyUrl={proxyUrl}
+                                    isConnectedViaSSHTunnel={toConnectWithSSHTunnel}
+                                    toggleEditMode={toggleEditMode}
+                                    isProd={isProd}
+                                    isTlsConnection={!insecureSkipTlsVerify}
+                                />
+                            </div>
+                        </Drawer>
+                    ) : (
+                        <VirtualClusterForm
+                            id={clusterId}
+                            clusterName={cluster_name}
+                            handleModalClose={handleModalClose}
+                            reload={reload}
+                        />
+                    ))}
             </article>
+
             {showWindow && (
                 <ClusterEnvironmentDrawer
                     reload={reload}

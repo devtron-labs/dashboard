@@ -51,7 +51,7 @@ const ResourceBrowserRouter: React.FC = () => {
                 </Route>
             )}
 
-            <Route path={path} exact>
+            <Route path={[path, URLS.RESOURCE_BROWSER_CREATE_CLUSTER]} exact>
                 <ResourceBrowser />
             </Route>
 

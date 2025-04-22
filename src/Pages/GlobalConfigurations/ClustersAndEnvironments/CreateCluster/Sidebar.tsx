@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-import { generatePath, NavLink, useParams } from 'react-router-dom'
+import { generatePath, NavLink, useParams, useRouteMatch } from 'react-router-dom'
 
-import { Icon, IconName, ModalSidebarPanel } from '@devtron-labs/devtron-fe-common-lib'
+import { Icon, IconName, ModalSidebarPanel, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 
+import { importComponentFromFELibrary } from '@Components/common'
 import { DOCUMENTATION } from '@Config/constants'
-import { URLS } from '@Config/routes'
 
 import { SIDEBAR_CONFIG } from './constants'
 import { CreateClusterParams } from './types'
 
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
+
 const Sidebar = () => {
+    const { path } = useRouteMatch()
     const { type } = useParams<CreateClusterParams>()
 
     const selectedSidebarElement = SIDEBAR_CONFIG[type]
@@ -39,7 +42,7 @@ const Sidebar = () => {
                         <NavLink
                             key={key}
                             className={`dc__transparent flex left dc__gap-8 py-6 px-8 br-4 ${isSelected ? 'bcb-1' : 'dc__hover-n50'}`}
-                            to={generatePath(URLS.GLOBAL_CONFIG_CREATE_CLUSTER, { type: key })}
+                            to={generatePath(path, { type: key })}
                         >
                             <span className="dc__fill-available-space dc__no-shrink icon-dim-16">
                                 <Icon name={iconName as IconName} color={isSelected ? 'B500' : 'N600'} />
@@ -51,7 +54,11 @@ const Sidebar = () => {
                                 {title}
                             </span>
 
-                            {isEnterprise && <Icon name="ic-enterprise-feat" color="Y700" />}
+                            {isEnterprise && !isFELibAvailable && (
+                                <Tooltip content="This is an enterprise only feature">
+                                    <Icon name="ic-enterprise-feat" color="Y700" />
+                                </Tooltip>
+                            )}
                         </NavLink>
                     )
                 })}

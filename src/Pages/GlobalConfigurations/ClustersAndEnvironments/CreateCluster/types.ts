@@ -1,5 +1,3 @@
-import { ClusterFormProps } from '@Components/cluster/cluster.type'
-
 export enum CreateClusterTypeEnum {
     CONNECT_CLUSTER = 'connect-cluster',
     CREATE_EKS_CLUSTER = 'create-eks-cluster',
@@ -23,5 +21,5 @@ export interface CreateClusterParams {
 
 export interface CreateClusterProps {
     handleReloadClusterList: () => void
-    clusterFormProps: ClusterFormProps
+    handleRedirectOnModalClose?: () => void
 }

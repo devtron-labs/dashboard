@@ -24,10 +24,28 @@ import { CreateClusterParams, CreateClusterProps, CreateClusterTypeEnum } from '
 
 import './styles.scss'
 
-// TODO: show a default component that says its a enterprise feature
-const CreateClusterForm = importComponentFromFELibrary('CreateClusterForm', null, 'function')
+const CreateClusterForm = importComponentFromFELibrary(
+    'CreateClusterForm',
+    () => (
+        <EnterpriseTrialDialog
+            featureTitle="EKS Cluster"
+            featureDescription="With Devtron, you can effortlessly create an Amazon EKS cluster."
+        />
+    ),
+    'function',
+)
+const VirtualClusterForm = importComponentFromFELibrary(
+    'VirtualClusterForm',
+    () => (
+        <EnterpriseTrialDialog
+            featureTitle="Isolated Cluster"
+            featureDescription="An isolated cluster in Devtron is an air-gapped Kubernetes cluster with restricted network access."
+        />
+    ),
+    'function',
+)
 
-const CreateCluster = ({ handleReloadClusterList, clusterFormProps }: CreateClusterProps) => {
+const CreateCluster = ({ handleReloadClusterList, handleRedirectOnModalClose }: CreateClusterProps) => {
     const { type } = useParams<CreateClusterParams>()
 
     const [apiCallInProgress, setApiCallInProgress] = useState(false)
@@ -39,6 +57,8 @@ const CreateCluster = ({ handleReloadClusterList, clusterFormProps }: CreateClus
         handleReloadClusterList()
     }
 
+    const handleModalClose = handleRedirectOnModalClose ?? handleRedirectToClusterList
+
     const handleRedirectToClusterInstallationStatus = (installationId: string) => {
         push(generatePath(URLS.RESOURCE_BROWSER_INSTALLATION_CLUSTER, { installationId }))
     }
@@ -49,46 +69,30 @@ const CreateCluster = ({ handleReloadClusterList, clusterFormProps }: CreateClus
                 return (
                     <ClusterForm
                         key={type}
-                        {...clusterFormProps}
+                        handleCloseCreateClusterForm={handleModalClose}
                         reload={handleReloadClusterList}
-                        apiCallInProgress={apiCallInProgress}
-                        setApiCallInProgress={setApiCallInProgress}
-                        handleModalClose={handleRedirectToClusterList}
+                        handleModalClose={handleModalClose}
                         FooterComponent={FooterComponent}
-                        isVirtualCluster={false}
                     />
                 )
             case CreateClusterTypeEnum.CREATE_EKS_CLUSTER:
-                return CreateClusterForm ? (
+                return (
+                    // TODO: reload the cluster list after creating the cluster
                     <CreateClusterForm
                         apiCallInProgress={apiCallInProgress}
                         setApiCallInProgress={setApiCallInProgress}
-                        handleModalClose={handleRedirectToClusterList}
+                        handleModalClose={handleModalClose}
                         handleRedirectToClusterInstallationStatus={handleRedirectToClusterInstallationStatus}
                         FooterComponent={FooterComponent}
                     />
-                ) : (
-                    <EnterpriseTrialDialog
-                        featureTitle="EKS Cluster"
-                        featureDescription="With Devtron, you can effortlessly create an Amazon EKS cluster."
-                    />
                 )
             case CreateClusterTypeEnum.ADD_ISOLATED_CLUSTER:
-                return CreateClusterForm ? (
-                    <ClusterForm
-                        key={type}
-                        {...clusterFormProps}
+                return (
+                    <VirtualClusterForm
+                        id={null}
+                        newClusterFormProps={{ apiCallInProgress, setApiCallInProgress, FooterComponent }}
+                        handleModalClose={handleModalClose}
                         reload={handleReloadClusterList}
-                        apiCallInProgress={apiCallInProgress}
-                        setApiCallInProgress={setApiCallInProgress}
-                        handleModalClose={handleRedirectToClusterList}
-                        FooterComponent={FooterComponent}
-                        isVirtualCluster
-                    />
-                ) : (
-                    <EnterpriseTrialDialog
-                        featureTitle="Isolated Cluster"
-                        featureDescription="An isolated cluster in Devtron is an air-gapped Kubernetes cluster with restricted network access."
                     />
                 )
             default:
@@ -97,12 +101,7 @@ const CreateCluster = ({ handleReloadClusterList, clusterFormProps }: CreateClus
     }
 
     return (
-        <Drawer
-            position="right"
-            width="1024px"
-            onEscape={handleRedirectToClusterList}
-            onClose={handleRedirectToClusterList}
-        >
+        <Drawer position="right" width="1024px" onEscape={handleModalClose} onClose={handleModalClose}>
             <div
                 className="bg__primary h-100 cn-9 w-100 flexbox-col dc__overflow-hidden p-0 create-cluster"
                 onClick={stopPropagation}
@@ -123,7 +122,7 @@ const CreateCluster = ({ handleReloadClusterList, clusterFormProps }: CreateClus
                             content: DEFAULT_ROUTE_PROMPT_MESSAGE,
                         }}
                         disabled={apiCallInProgress}
-                        onClick={handleRedirectToClusterList}
+                        onClick={handleModalClose}
                         showAriaLabelInTippy={false}
                     />
                 </header>
