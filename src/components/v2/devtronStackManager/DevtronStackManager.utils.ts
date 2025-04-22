@@ -16,6 +16,7 @@
 
 import React from 'react'
 import { RouteComponentProps } from 'react-router-dom'
+import { ModuleStatus } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass.svg'
 import { ReactComponent as DevtronIcon } from '../../../assets/icons/ic-devtron.svg'
 import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
@@ -29,11 +30,9 @@ import {
     ModuleActions,
     ModuleDetails,
     ModuleResourceStatus,
-    ModuleStatus,
     StackManagerNavLinkType,
 } from './DevtronStackManager.type'
-import { AppDetails, AppType } from '../appDetails/appDetails.type'
-import IndexStore from '../appDetails/index.store'
+import { AppDetails } from '../appDetails/appDetails.type'
 
 export const MORE_MODULE_DETAILS: ModuleDetails = {
     id: 'moreIntegrations',
@@ -171,7 +170,17 @@ export const MODULE_CONFIGURATION_DETAIL_MAP = {
     },
 }
 
-export const buildResourceStatusModalData = (moduleResourcesStatus: ModuleResourceStatus[]): any => {
+export const AppStatusClass = {
+    [ModuleStatus.INSTALLING]: 'progressing',
+    [ModuleStatus.TIMEOUT]: 'degraded',
+    [ModuleStatus.INSTALL_FAILED]: 'degraded',
+    [ModuleStatus.INSTALLED]: 'healthy',
+}
+
+export const getAppDetailsFromResourceStatusData = (
+    moduleResourcesStatus: ModuleResourceStatus[],
+    installationStatus: ModuleStatus,
+): AppDetails => {
     const _nodes = []
     const _resources = []
     const resourceStatusDetails = {}
@@ -191,27 +200,21 @@ export const buildResourceStatusModalData = (moduleResourcesStatus: ModuleResour
         resourceStatusDetails[`${moduleResourceStatus.kind}/${moduleResourceStatus.name}`] =
             moduleResourceStatus.healthMessage
     })
-    const _appDetail: AppDetails = JSON.parse(
+    // Ask if index store does some special processing on the data
+    return JSON.parse(
         JSON.stringify({
             resourceTree: {
                 nodes: _nodes,
-                status: 'INTEGRATION_INSTALLING',
+                // Need to confirm if can show this text itself instead of status
+                status: AppStatusClass[installationStatus] || installationStatus,
                 resourcesSyncResult: resourceStatusDetails,
             },
         }),
     )
-    IndexStore.publishAppDetails(_appDetail, AppType.DEVTRON_APP)
-}
-
-export const AppStatusClass = {
-    [ModuleStatus.INSTALLING]: 'progressing',
-    [ModuleStatus.TIMEOUT]: 'degraded',
-    [ModuleStatus.INSTALL_FAILED]: 'degraded',
-    [ModuleStatus.INSTALLED]: 'healthy',
 }
 
 export const INSTALLATION_TYPE_TO_REPO_MAP = {
     [InstallationType.ENTERPRISE]: 'devtron-enterprise',
     [InstallationType.OSS_HELM]: 'devtron',
-    [InstallationType.OSS_KUBECTL]: 'devtron'
+    [InstallationType.OSS_KUBECTL]: 'devtron',
 }

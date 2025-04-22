@@ -80,7 +80,7 @@ export const Routes = {
     APP_LIST_V1: 'v1',
     APP_LIST_V2: 'v2',
     APP_LIST_MIN: 'app/autocomplete',
-    APP_DETAIL: 'app/detail',
+    APP_DETAIL: COMMON_ROUTES.APP_DETAIL,
     APP_CONFIG_STATUS: 'app/stage/status',
     APP_OTHER_ENVIRONMENT: 'app/other-env',
     APP_OTHER_ENVIRONMENT_MIN: 'app/other-env/min',
@@ -587,12 +587,6 @@ export const CDDeploymentTabText = {
 export const JobPipelineTabText = {
     buildStage: 'Basic configuration',
     preBuildStage: 'Tasks to be executed',
-}
-
-export const APP_STATUS_CUSTOM_MESSAGES = {
-    HIBERNATED: "This application's workloads are scaled down to 0 replicas",
-    'PARTIALLY HIBERNATED': "Some of this application's workloads are scaled down to 0 replicas.",
-    INTEGRATION_INSTALLING: 'The installation will complete when status for all the below resources become HEALTHY.',
 }
 
 export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'

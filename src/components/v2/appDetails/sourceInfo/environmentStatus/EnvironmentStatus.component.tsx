@@ -15,7 +15,6 @@
  */
 
 import { useMemo, useState } from 'react'
-import AppStatusDetailModal from './AppStatusDetailModal'
 import './environmentStatus.scss'
 import IndexStore from '../../index.store'
 import { URLS } from '../../../../../config'
@@ -25,7 +24,7 @@ import { useRouteMatch, useHistory, useParams } from 'react-router-dom'
 import NotesDrawer from './NotesDrawer'
 import { getInstalledChartNotesDetail } from '../../appDetails.api'
 import { importComponentFromFELibrary } from '../../../../common'
-import { DeploymentAppTypes, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { AppStatusModal, DeploymentAppTypes, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import { EnvironmentStatusComponentType } from '../environment.type'
 import HelmAppConfigApplyStatusCard from './HelmAppConfigApplyStatusCard'
 import AppStatusCard from '../../../../app/details/appDetails/AppStatusCard'
@@ -52,8 +51,6 @@ const EnvironmentStatusComponent = ({
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
     const [showNotes, setShowNotes] = useState(false)
     const status = appDetails.resourceTree?.status || appDetails?.appStatus || ''
-    const showHibernationStatusMessage =
-        status.toLowerCase() === 'hibernated' || status.toLowerCase() === 'partially hibernated'
     const { url } = useRouteMatch()
     const history = useHistory()
     const params = useParams<{ appId: string; envId: string }>()
@@ -172,6 +169,10 @@ const EnvironmentStatusComponent = ({
         )
     }
 
+    const handleCloseAppStatusModal = () => {
+        setShowAppStatusDetail(false)
+    }
+
     return (
         <div>
             {loadingDetails ? (
@@ -192,11 +193,19 @@ const EnvironmentStatusComponent = ({
                 </div>
             )}
             {showAppStatusDetail && (
-                <AppStatusDetailModal
-                    close={() => {
-                        setShowAppStatusDetail(false)
-                    }}
-                    showAppStatusMessage={showHibernationStatusMessage}
+                <AppStatusModal
+                    title={
+                        <h2 className="m-0 dc__truncate fs-16 fw-6 lh-1-5">
+                            {appDetails?.appName} <span className="cn-6 fs-16 fw-4">/</span> {appDetails?.environmentName || appDetails?.namespace || '--'}
+                        </h2>
+                    }
+                    handleClose={handleCloseAppStatusModal}
+                    // Test showAppStatusMessage={showHibernationStatusMessage}
+                    type="external-apps"
+                    // Should we send index store here?
+                    appDetails={appDetails}
+                    isConfigDriftEnabled={false}
+                    configDriftModal={null}
                 />
             )}
             {showIssuesModal && (

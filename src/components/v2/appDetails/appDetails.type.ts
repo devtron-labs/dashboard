@@ -423,16 +423,6 @@ export interface LogState {
     grepTokens?: any
 }
 
-export interface AppStatusDetailType {
-    close: () => void
-    showAppStatusMessage?: boolean
-    title?: string
-    appStatus?: string
-    appStatusText?: string
-    showFooter?: boolean
-    showConfigDriftInfo?: boolean
-}
-
 export interface StatusFilterButtonType {
     nodes: Array<Node>
     handleFilterClick?: (selectedFilter: string) => void

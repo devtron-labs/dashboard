@@ -20,6 +20,7 @@ import { generatePath, Route, useHistory, useLocation, useParams, useRouteMatch 
 import {
     ACTION_STATE,
     aggregateNodes,
+    AppStatusModal,
     ArtifactInfoModal,
     Button,
     ButtonComponentType,
@@ -75,7 +76,6 @@ import { AppType, EnvType } from '../../../v2/appDetails/appDetails.type'
 import IndexStore from '../../../v2/appDetails/index.store'
 import { EmptyK8sResourceComponent } from '../../../v2/appDetails/k8Resource/K8Resource.component'
 import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab'
-import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
 import RotatePodsModal from '../../../v2/appDetails/sourceInfo/rotatePods/RotatePodsModal.component'
 import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
 import { TriggerUrlModal } from '../../list/TriggerUrl'
@@ -114,6 +114,8 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     null,
     'function',
 )
+
+const ConfigDriftModal = importComponentFromFELibrary('ConfigDriftModal', null, 'function')
 
 export const AppNotConfigured = ({
     image,
@@ -843,10 +845,18 @@ export const Details: React.FC<DetailsType> = ({
                 renderAppDetails()
             )}
             {detailedStatus && (
-                <AppStatusDetailModal
-                    close={hideAppDetailsStatus}
-                    showAppStatusMessage={false}
-                    showConfigDriftInfo={isConfigDriftEnabled}
+                <AppStatusModal
+                    title={
+                        <h2 className="m-0 dc__truncate fs-16 fw-6 lh-1-5">
+                            {appDetails.appName} <span className="cn-6 fs-16 fw-4">/</span> {appDetails.environmentName}
+                        </h2>
+                    }
+                    handleClose={hideAppDetailsStatus}
+                    type="devtron-app"
+                    // Should we send index store here?
+                    appDetails={appDetails}
+                    isConfigDriftEnabled={isConfigDriftEnabled}
+                    configDriftModal={ConfigDriftModal}
                 />
             )}
             {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
