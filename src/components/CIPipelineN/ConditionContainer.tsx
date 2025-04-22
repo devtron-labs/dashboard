@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { useContext, useEffect, useState } from 'react'
+import { ChangeEvent, useContext, useEffect, useState } from 'react'
 
-import { ConditionType, PluginType, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionType, PluginType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ConditionContainerType } from '../ciPipeline/types'
@@ -139,6 +139,10 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
         }
     }
 
+    const handleConditionTypeChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setConditionType(event.target.value as ConditionType)
+    }
+
     return (
         <div>
             <div className="mb-10 flexbox justify-space">
@@ -153,34 +157,11 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
                 />
             </div>
             {!collapsedSection && (
-                <>
-                    <RadioGroup
-                        className="no-border mb-10"
-                        value={conditionType}
-                        name={`${type}-Condition${activeStageName}`}
-                        onChange={(event) => {
-                            setConditionType(event.target.value)
-                        }}
-                    >
-                        <RadioGroupItem
-                            value={
-                                type === ConditionContainerType.PASS_FAILURE
-                                    ? ConditionType.PASS
-                                    : ConditionType.TRIGGER
-                            }
-                        >
-                            Set {type === ConditionContainerType.PASS_FAILURE ? 'pass' : 'trigger'} conditions
-                        </RadioGroupItem>
-                        <RadioGroupItem
-                            value={
-                                type === ConditionContainerType.PASS_FAILURE ? ConditionType.FAIL : ConditionType.SKIP
-                            }
-                        >
-                            Set {type === ConditionContainerType.PASS_FAILURE ? 'failure' : 'skip'} conditions
-                        </RadioGroupItem>
-                    </RadioGroup>
-                    <ConditionDataTable conditionType={conditionType} type={type} />
-                </>
+                <ConditionDataTable
+                    conditionType={conditionType}
+                    type={type}
+                    handleConditionTypeChange={handleConditionTypeChange}
+                />
             )}
         </div>
     )

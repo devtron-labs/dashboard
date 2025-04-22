@@ -1,3 +1,5 @@
+import { ChangeEvent } from 'react'
+
 import { ConditionDataTableHeaderKeys, ConditionType, DynamicDataTableProps } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ConditionContainerType } from '@Components/ciPipeline/types'
@@ -10,6 +12,7 @@ export type ConditionDataTableType = DynamicDataTableProps<ConditionDataTableHea
 
 export interface ConditionDataTableProps extends Pick<ConditionDataTableCustomState, 'conditionType'> {
     type: ConditionContainerType
+    handleConditionTypeChange: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
 export enum ConditionDataTableActionType {

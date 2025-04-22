@@ -1,11 +1,16 @@
 import { useContext, useMemo } from 'react'
 
 import {
+    Button,
+    ButtonVariantType,
     ConditionDataTableHeaderKeys,
     ConditionDetails,
     ConditionType,
     DynamicDataTable,
+    Icon,
     PluginType,
+    RadioGroup,
+    RadioGroupItem,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ConditionContainerType } from '@Components/ciPipeline/types'
@@ -28,7 +33,7 @@ import {
     getConditionDataTableRows,
 } from './utils'
 
-export const ConditionDataTable = ({ type, conditionType }: ConditionDataTableProps) => {
+export const ConditionDataTable = ({ type, conditionType, handleConditionTypeChange }: ConditionDataTableProps) => {
     // CONTEXTS
     const {
         activeStageName,
@@ -204,13 +209,51 @@ export const ConditionDataTable = ({ type, conditionType }: ConditionDataTablePr
     }
 
     return (
-        <DynamicDataTable<ConditionDataTableHeaderKeys, ConditionDataTableCustomState>
-            headers={headers}
-            rows={rows}
-            onRowAdd={handleRowAdd}
-            onRowDelete={handleRowDelete}
-            onRowEdit={handleRowEdit}
-            cellError={cellError}
-        />
+        <>
+            <div className="flex dc__content-space">
+                <RadioGroup
+                    className="no-border mb-10"
+                    value={conditionType}
+                    name={`${type}-Condition${activeStageName}`}
+                    onChange={handleConditionTypeChange}
+                >
+                    <RadioGroupItem
+                        value={
+                            type === ConditionContainerType.PASS_FAILURE ? ConditionType.PASS : ConditionType.TRIGGER
+                        }
+                    >
+                        Set {type === ConditionContainerType.PASS_FAILURE ? 'pass' : 'trigger'} conditions
+                    </RadioGroupItem>
+                    <RadioGroupItem
+                        value={type === ConditionContainerType.PASS_FAILURE ? ConditionType.FAIL : ConditionType.SKIP}
+                    >
+                        Set {type === ConditionContainerType.PASS_FAILURE ? 'failure' : 'skip'} conditions
+                    </RadioGroupItem>
+                </RadioGroup>
+                {!rows.length && (
+                    <Button
+                        dataTestId="add-condition-row"
+                        variant={ButtonVariantType.text}
+                        text="Add Condition"
+                        startIcon={<Icon name="ic-add" color={null} />}
+                        onClick={handleRowAdd}
+                    />
+                )}
+            </div>
+            {rows.length ? (
+                <DynamicDataTable<ConditionDataTableHeaderKeys, ConditionDataTableCustomState>
+                    headers={headers}
+                    rows={rows}
+                    onRowAdd={handleRowAdd}
+                    onRowDelete={handleRowDelete}
+                    onRowEdit={handleRowEdit}
+                    cellError={cellError}
+                />
+            ) : (
+                <div className="p-8 bg__secondary dc__border-dashed--n3 br-4">
+                    <p className="m-0 fs-12 lh-18 cn-7">Get this text from Utkarsh</p>
+                </div>
+            )}
+        </>
     )
 }
