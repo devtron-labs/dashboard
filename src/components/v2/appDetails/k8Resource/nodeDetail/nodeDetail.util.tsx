@@ -411,3 +411,17 @@ export const getDeploymentType = (deploymentAppType: DeploymentAppTypes): K8sRes
     }
     return K8sResourcePayloadDeploymentType.FLUXCD_INSTALLED
 }
+
+export const manifestBorderConfig = {
+    borderConfig: {
+      top: false,
+      left: false,
+      right: false,
+    },
+    borderRadiusConfig: {
+      top: false,
+      left: false,
+      right: false,
+      bottom: false,
+    },
+  };

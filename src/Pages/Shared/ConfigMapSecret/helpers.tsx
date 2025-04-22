@@ -16,7 +16,13 @@
 
 import { Link } from 'react-router-dom'
 
-import { CMSecretComponentType, CMSecretExternalType, Icon, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CMSecretComponentType,
+    CMSecretExternalType,
+    Icon,
+    InfoBlock,
+    InfoColourBar,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as InfoIcon } from '@Icons/info-filled.svg'
 import { DOCUMENTATION } from '@Config/constants'
@@ -26,9 +32,8 @@ import { EXTERNAL_INFO_TEXT } from './constants'
 
 export const renderESOInfo = (isESO: boolean) =>
     isESO ? (
-        <InfoColourBar
-            classname="info_bar"
-            message={
+        <InfoBlock
+            description={
                 <p className="m-0 cn-9 fs-13 fw-4 lh-20">
                     <Link
                         to={`${URLS.CHARTS_DISCOVER}?appStoreName=external-secret`}
@@ -48,8 +53,6 @@ export const renderESOInfo = (isESO: boolean) =>
                     </a>
                 </p>
             }
-            Icon={InfoIcon}
-            iconSize={20}
         />
     ) : null
 
