@@ -556,7 +556,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                 <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20">
                     {cpuData && (
                         <div className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
-                            <Icon name="ic-cpu" color={null} size={18} />
+                            <Icon name="ic-cpu" color={null} size={20} />
                             <div>{cpuData.name || '-'}</div>
                             <div>{cpuData.requestPercentage || '-'}</div>
                             <div>{cpuData.limitPercentage || '-'}</div>
@@ -567,7 +567,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                     )}
                     {memoryData && (
                         <div className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
-                            <Icon name="ic-memory" color={null}  size={18} />
+                            <Icon name="ic-memory" color={null}  size={20} />
                             <div>{memoryData.name || '-'}</div>
                             <div>{memoryData.requestPercentage || '-'}</div>
                             <div>{memoryData.limitPercentage || '-'}</div>
@@ -581,7 +581,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                             key={resource.name}
                             className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9"
                         >
-                            <Storage className="mt-2 mb-2 icon-dim-18" />
+                            <Storage className="mt-2 mb-2 icon-dim-20" />
                             <div>{resource.name || '-'}</div>
                             <div>{resource.requestPercentage || '-'}</div>
                             <div>{resource.limitPercentage || '-'}</div>
