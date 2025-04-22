@@ -143,7 +143,21 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
         if (showCodeEditorView) {
             return (
                 <>
-                    <InfoBlock variant="information" description={CREATE_RESOURCE_MODAL_MESSAGING.infoMessage} />
+                    <InfoBlock
+                        borderConfig={{
+                            top: false,
+                            right: false,
+                            bottom: false,
+                            left: false,
+                        }}
+                        borderRadiusConfig={{
+                            top: false,
+                            right: false,
+                            bottom: false,
+                            left: false,
+                        }}
+                        description={CREATE_RESOURCE_MODAL_MESSAGING.infoMessage}
+                    />
 
                     <CodeEditor
                         mode={MODES.YAML}

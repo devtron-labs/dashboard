@@ -20,15 +20,12 @@ import {
     Progressing,
     ErrorScreenManager,
     ErrorScreenNotAuthorized,
-    InfoColourBar,
     CustomInput,
     FeatureTitleWithInfo,
     ToastVariantType,
     ToastManager,
     InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
-import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { HostURLConfigState, HostURLConfigProps } from './hosturl.type'
 import { HEADER_TEXT, NO_HOST_URL, ViewType } from '../../config'
 import { getHostURLConfiguration } from '../../services/service'
@@ -36,6 +33,14 @@ import TriangleAlert from '../../assets/icons/ic-alert-triangle.svg'
 import { saveHostURLConfiguration, updateHostURLConfiguration } from './hosturl.service'
 import './hosturl.scss'
 
+const renderInfoContent = () => (
+    <>
+        Host URL is the domain address at which your devtron dashboard can be reached.
+        <br />
+        It is used to reach your devtron dashboard from external sources like configured webhooks, e-mail or
+        slack notifications, grafana dashboard, etc.
+    </>
+)
 export default class HostURLConfiguration extends Component<HostURLConfigProps, HostURLConfigState> {
     constructor(props) {
         super(props)
@@ -203,14 +208,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
             )
         }
 
-        const renderInfoContent = () => (
-            <>
-                Host URL is the domain address at which your devtron dashboard can be reached.
-                <br />
-                It is used to reach your devtron dashboard from external sources like configured webhooks, e-mail or
-                slack notifications, grafana dashboard, etc.
-            </>
-        )
+      
 
         return (
             <section

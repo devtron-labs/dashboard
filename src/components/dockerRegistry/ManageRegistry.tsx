@@ -34,6 +34,10 @@ import {
     StyledRadioGroup as RadioGroup,
     InfoIconTippy,
     InfoBlock,
+    Icon,
+    ButtonVariantType,
+    ButtonStyleType,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 import { DOCUMENTATION } from '../../config'
@@ -105,19 +109,31 @@ const ManageRegistry = ({
         return `All Cluster except ${ignoredClusterList}`
     }
 
+    const renderActionButton = (): JSX.Element => {
+        return <Close className="cursor icon-dim-16 flex" onClick={onClickHideAlertInfo} />
+    }
+
     const renderAlertMessage = (): JSX.Element => {
         return (
-            <>
-                If you want to edit this, {blackListEnabled ? 'above' : 'below'} selection will not be applicable.
-                <span className="cb-5 cursor ml-4 fw-6" onClick={onClickAlertEditConfirmation}>
-                    Confirm to edit
-                </span>
-            </>
+            <div className="flexbox dc__content-space center">
+                <div>
+                    If you want to edit this, {blackListEnabled ? 'above' : 'below'} selection will not be applicable.
+                    <span className="cb-5 cursor ml-4 fw-6" onClick={onClickAlertEditConfirmation}>
+                        Confirm to edit
+                    </span>
+                </div>
+                {renderActionButton()}
+            </div>
         )
     }
 
     const renderEditAlert = (): JSX.Element => {
-        return <InfoBlock variant="warning" description={renderAlertMessage()} />
+        return (
+            <InfoBlock
+                variant="warning"
+                description={renderAlertMessage()}
+            />
+        )
     }
 
     const renderNoSelectionView = (): JSX.Element => {

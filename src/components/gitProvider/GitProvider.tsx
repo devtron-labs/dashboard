@@ -67,7 +67,6 @@ import { ReactComponent as Warn } from '@Icons/ic-info-warn.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { DC_GIT_PROVIDER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { AuthenticationType } from '../cluster/cluster.type'
-import { ReactComponent as Info } from '@Icons/info-filled.svg'
 import { safeTrim } from '../../util/Util'
 import { TLSInputType } from './types'
 

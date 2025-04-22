@@ -34,6 +34,23 @@ import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 import { BRANCH_REGEX_MODAL_MESSAGING } from './Constants'
 import { BranchRegexModalProps } from './types'
 
+const renderRegexInfo = () => (
+    <InfoBlock
+        borderConfig={{
+            top: false,
+            right: false,
+            left: false,
+        }}
+        borderRadiusConfig={{
+            top: false,
+            right: false,
+            bottom: false,
+            left: false,
+        }}
+        description="Commit will be fetched from the provided branch. This can be changed later."
+    />
+)
+
 const BranchRegexModal = ({
     material,
     selectedCIPipeline,
@@ -82,12 +99,6 @@ const BranchRegexModal = ({
                 icon={<Close />}
                 style={ButtonStyleType.negativeGrey}
             />
-        </div>
-    )
-
-    const renderRegexInfo = () => (
-        <div className="dc__border-bottom--b2">
-            <InfoBlock description="Commit will be fetched from the provided branch. This can be changed later." />
         </div>
     )
 

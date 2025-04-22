@@ -253,15 +253,17 @@ export default function BuildCD({
 
     const renderWebhookInfo = () => {
         return (
-            <InfoBlock
-                variant="help"
-                description={
-                    <div>
-                        <span className="fw-6">Connecting to external CI service: </span>A webhook url and sample JSON
-                        will be generated after the pipeline is created.
-                    </div>
-                }
-            />
+            <div className="mt-16">
+                <InfoBlock
+                    variant="help"
+                    description={
+                        <div>
+                            <span className="fw-6">Connecting to external CI service: </span>A webhook url and sample
+                            JSON will be generated after the pipeline is created.
+                        </div>
+                    }
+                />
+            </div>
         )
     }
 
@@ -301,20 +303,21 @@ export default function BuildCD({
             })
     }
 
-    const gitOpsRepoConfigInfoBar = (content: string) => isTemplateView ? null : (
-        <InfoBlock
-            description={content}
-            variant="warning"
-            buttonProps={{
-                dataTestId: 'configure-gitops-repo-button',
-                variant: ButtonVariantType.text,
-                text: 'Configure',
-                endIcon: <ICArrowRight />,
-                onClick: checkGitOpsRepoConflict,
-                isLoading: gitopsConflictLoading,
-            }}
-        />
-    )
+    const gitOpsRepoConfigInfoBar = (content: string) =>
+        isTemplateView ? null : (
+            <InfoBlock
+                description={content}
+                variant="warning"
+                buttonProps={{
+                    dataTestId: 'configure-gitops-repo-button',
+                    variant: ButtonVariantType.text,
+                    text: 'Configure',
+                    endIcon: <ICArrowRight />,
+                    onClick: checkGitOpsRepoConflict,
+                    isLoading: gitopsConflictLoading,
+                }}
+            />
+        )
 
     const renderTriggerType = () => (
         <TriggerTypeRadio

@@ -31,13 +31,12 @@ const renderSsoInfoDescription = () => (
 const SSONotConfiguredState = () => (
     <GenericEmptyState
         image={EmptyImage}
-        classname="fs-16 dc__align-center lh-24 mb-8-imp mt-20"
         title={SSO_NOT_CONFIGURED_STATE_TEXTS.title}
         subTitle={
-            <>
+            <div className="flexbox-col dc__gap-8">
                 {SSO_NOT_CONFIGURED_STATE_TEXTS.subTitle}
                 <InfoBlock variant="error" description={renderSsoInfoDescription()} />
-            </>
+            </div>
         }
     />
 )

@@ -781,9 +781,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         const ciPipeline = nodesWithBufferHeight.find((nd) => nd.type == WorkflowNodeType.CI)
         ciPipelineId = ciPipeline ? +ciPipeline.id : ciPipelineId
         const configDiffView = this.props.cdWorkflowList?.length > 0
-        const isExternalCiWorkflow = nodesWithBufferHeight.some(
-            (node) => node.isExternalCI && !node.isLinkedCI && node.type === WorkflowNodeType.CI,
-        )
 
         // If no node is present in workflow then disable change CI button
         const isChangeCIEnabled = !this.props.isOffendingPipelineView && nodesWithBufferHeight.length > 0

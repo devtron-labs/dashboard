@@ -1236,7 +1236,16 @@ export default function ClusterForm({
 
                         <div className="flexbox-col flex-grow-1 dc__overflow-auto">
                             <div className="api-token__list en-2 bw-1 bg__primary br-4 mr-20 ml-20 mt-16">
-                                <InfoBlock description={renderKubeConfigClusterCountInfo(validCluster())} />
+                                <InfoBlock
+                                    borderConfig={{
+                                        top: false,
+                                        right: false,
+                                        bottom: false,
+                                        left: false
+                                    }}
+                                    borderRadiusConfig={{ top: false, right: false }}
+                                    description={renderKubeConfigClusterCountInfo(validCluster())}
+                                />
                                 <div className="cluster-list-row-1 cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-16 pr-16 dc__border-top dc__border-bottom">
                                     <div data-testid="select_all_cluster_checkbox">
                                         <Checkbox

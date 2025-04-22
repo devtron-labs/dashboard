@@ -26,5 +26,3 @@ export const AUTO_GENERATE_GITOPS_REPO = 'Default'
 export enum CHART_VALUE_ID {
     CREATE_CHART_VALUE_VIEW = '0',
 }
-
-export const RAISE_ISSUE = 'https://github.com/devtron-labs/devtron/issues/new/choose'

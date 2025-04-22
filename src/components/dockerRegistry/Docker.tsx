@@ -50,12 +50,10 @@ import {
     RegistryIcon,
     ComponentSizeType,
     PasswordField,
-    ButtonComponentType,
-    InfoBlock,
     RegistryCredentialsType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import { Link, useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { useForm, handleOnBlur, handleOnFocus, parsePassword, importComponentFromFELibrary, Trash } from '../common'
 import {
     getClusterListMinWithoutAuth,
@@ -94,7 +92,6 @@ import {
     RemoteConnectionTypeRegistry,
     SSHAuthenticationType,
 } from './dockerType'
-import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
 
 const RegistryHelmPushCheckbox = importComponentFromFELibrary('RegistryHelmPushCheckbox')
@@ -1491,17 +1488,9 @@ const DockerForm = ({
 
     const renderPrivateDockerInfoContent = () => {
         return (
-            <div className="flexbox dc__gap-6">
+            <div className="flex">
                 Helm charts from provided repositories will be shown in the
-                <Button
-                    text="Chart store"
-                    variant={ButtonVariantType.text}
-                    component={ButtonComponentType.link}
-                    linkProps={{
-                        to: ChartStoreRedirectionUrl,
-                    }}
-                    dataTestId="chart-store-link"
-                />
+                <Link to={ChartStoreRedirectionUrl}>&nbsp;Chart Store</Link>
             </div>
         )
     }
@@ -1531,11 +1520,9 @@ const DockerForm = ({
                         error={repositoryError || customState.repositoryList?.error}
                         shouldHideMenu
                         size={ComponentSizeType.large}
+                        helperText={registryStorageType === RegistryStorageType.OCI_PUBLIC && renderPrivateDockerInfoContent()}
                     />
                 </div>
-                {registryStorageType === RegistryStorageType.OCI_PUBLIC && (
-                    <InfoBlock description={renderPrivateDockerInfoContent()} />
-                )}
             </>
         )
     }

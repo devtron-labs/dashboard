@@ -360,10 +360,6 @@ export class Workflow extends Component<WorkflowProps> {
     }
 
     render() {
-        const isExternalCiWorkflow = this.props.nodes.some(
-            (node) => node.isExternalCI && !node.isLinkedCI && node.type === WorkflowNodeType.CI,
-        )
-
         const numberOfCDNodes = this.props.nodes.reduce((acc, node) => acc + (node.type === 'CD' ? 1 : 0), 0)
 
         return (
