@@ -456,7 +456,8 @@ export const RestartWorkloadModal = ({
         return (
             <div className="flexbox-col dc__overflow-auto">
                 <InfoBlock
-                    borderConfig={{ top: false, left: false, right: false }}
+                    borderConfig={{ top: false, right: false, left: false }}
+                    borderRadiusConfig={{ top: false, right: false, bottom: false, left: false }}
                     description={APP_DETAILS_TEXT.APP_GROUP_INFO_TEXT}
                 />
                 {renderWorkloadTableHeader()}

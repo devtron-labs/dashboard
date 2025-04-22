@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState } from 'react'
+import { ReactNode, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -45,7 +45,7 @@ import { EditTaintsModalType, EditTaintsRequest, EFFECT_TYPE, TaintErrorObj, Tai
 import { ValidationRules } from './validationRules'
 import { EDIT_TAINTS_MODAL_MESSAGING, TAINT_OPTIONS } from '../constants'
 
-const TaintInfoMessage = (tippyContent) => {
+const TaintInfoMessage = ({ tippyContent }: { tippyContent: () => ReactNode }) => {
     return (
         <div className="fs-13 fw-4 lh-20">
             <span>{EDIT_TAINTS_MODAL_MESSAGING.infoText}</span> &nbsp;

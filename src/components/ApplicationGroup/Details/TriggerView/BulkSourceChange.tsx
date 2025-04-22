@@ -107,7 +107,7 @@ const BulkSourceChange = ({
     const renderInfoBar = (): JSX.Element => (
         <InfoBlock
             variant="warning"
-            borderRadiusConfig={{ top: false }}
+            borderRadiusConfig={{ top: false, right: false, bottom: false, left: false }}
             borderConfig={{ top: false, left: false, right: false }}
             description="Branch will be changed only for build pipelines with source type as ‘Branch Fixed’ or ‘Branch Regex’."
         />
