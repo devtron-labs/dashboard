@@ -1401,7 +1401,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 }
                 wf.appReleaseTags = _materialData?.appReleaseTagNames
                 wf.tagsEditable = _materialData?.tagsEditable
-                wf.isExceptionUser = _materialData.isExceptionUser
+                wf.canApproverDeploy = _materialData?.canApproverDeploy ?? false
+                wf.isExceptionUser = _materialData?.deploymentApprovalInfo?.approvalConfigData?.isExceptionUser ?? false
             }
 
             return wf
@@ -1795,7 +1796,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 ? `${stageText} is blocked`
                                 : '',
                         triggerBlockedInfo: _selectedNode.triggerBlockedInfo,
-                        isExceptionUser: wf.isExceptionUser ?? false,
+                        isExceptionUser: wf.isExceptionUser,
                     })
                 } else {
                     let warningMessage = ''

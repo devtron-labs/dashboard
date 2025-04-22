@@ -89,6 +89,7 @@ import {
     SortingOrder,
     SegmentedControlProps,
     Icon,
+    isNullOrUndefined,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -122,7 +123,13 @@ import {
 } from './TriggerView.utils'
 import { TRIGGER_VIEW_GA_EVENTS, CD_MATERIAL_GA_EVENT, TRIGGER_VIEW_PARAMS } from './Constants'
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
-import { getCanDeployWithoutApproval, getInitialState, getIsMaterialApproved, getWfrId } from './cdMaterials.utils'
+import {
+    getCanDeployWithoutApproval,
+    getCanImageApproverDeploy,
+    getInitialState,
+    getIsMaterialApproved,
+    getWfrId,
+} from './cdMaterials.utils'
 import { URLS } from '../../../../config'
 import { PipelineConfigDiff } from './PipelineConfigDiff'
 import { usePipelineDeploymentConfig } from './PipelineConfigDiff/usePipelineDeploymentConfig'
@@ -316,7 +323,7 @@ const CDMaterial = ({
     )
     const canApproverDeploy = materialsResult?.canApproverDeploy ?? false
     const showConfigDiffView = searchParams.mode === 'review-config' && searchParams.deploy
-    const isExceptionUser = materialsResult?.isExceptionUser ?? false
+    const isExceptionUser = materialsResult?.deploymentApprovalInfo?.approvalConfigData?.isExceptionUser ?? false
 
     const {
         pipelineDeploymentConfigLoading,
@@ -1319,7 +1326,7 @@ const CDMaterial = ({
     const renderCTA = ({ mat, disableSelection }: RenderCTAType) => {
         const isApprovalRequester = getIsApprovalRequester(mat.userApprovalMetadata)
         const isImageApprover = getIsImageApprover(mat.userApprovalMetadata)
-        const isMaterialApproved = getIsMaterialApproved(mat.userApprovalMetadata.approvalConfigData)
+        const isMaterialApproved = getIsMaterialApproved(mat.userApprovalMetadata)
 
         const shouldRenderExpireApproval =
             materialType !== MATERIAL_TYPE.none &&
@@ -1433,7 +1440,7 @@ const CDMaterial = ({
                 (stageType === DeploymentNodeType.CD || state.isRollbackTrigger) &&
                 isApprovalConfigured &&
                 ApprovalInfoTippy &&
-                !!mat.userApprovalMetadata.approvalConfigData.requiredCount
+                !isNullOrUndefined(mat.userApprovalMetadata.approvalRuntimeState)
             const imageCardRootClassName =
                 mat.isSelected && !disableSelection && !isImageApprover ? 'material-history-selected' : ''
 
@@ -1691,12 +1698,9 @@ const CDMaterial = ({
 
     const renderTriggerDeployButton = (disableDeployButton: boolean) => {
         const userActionState: ACTION_STATE = deploymentWindowMetadata.userActionState
-        const canDeployWithoutApproval = isExceptionUser && getCanDeployWithoutApproval(state)
-        const canImageApproverDeploy =
-            isExceptionUser &&
-            !canApproverDeploy &&
-            state.selectedMaterial &&
-            getIsImageApprover(state.selectedMaterial.userApprovalMetadata)
+        const canDeployWithoutApproval = getCanDeployWithoutApproval(state, isExceptionUser)
+        const canImageApproverDeploy = getCanImageApproverDeploy(state, canApproverDeploy, isExceptionUser)
+
         const showAnimatedDeployButton =
             stageType === DeploymentNodeType.CD &&
             !disableDeployButton &&

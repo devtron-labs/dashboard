@@ -70,7 +70,7 @@ import TriggerResponseModalBody, { TriggerResponseModalFooter } from './TriggerR
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 import { importComponentFromFELibrary } from '../../../common'
 import { BULK_ERROR_MESSAGES } from './constants'
-import { getIsNonApprovedImageSelected } from './utils'
+import { getIsNonApprovedImageSelected, getIsImageApprovedByDeployerSelected } from './utils'
 
 const DeploymentWindowInfoBar = importComponentFromFELibrary('DeploymentWindowInfoBar')
 const BulkDeployResistanceTippy = importComponentFromFELibrary('BulkDeployResistanceTippy')
@@ -440,24 +440,22 @@ export default function BulkCDTrigger({
     }
 
     const renderDeploymentWithoutApprovalWarning = (app: BulkCDDetailType) => {
-        if (!app.isExceptionUser || !getIsApprovalPolicyConfigured(app.approvalConfigData)) {
+        if (!app.isExceptionUser) {
             return null
         }
 
         const selectedMaterial: CDMaterialType = app.material?.find((mat: CDMaterialType) => mat.isSelected)
 
-        if (!selectedMaterial) {
+        if (!selectedMaterial || getIsMaterialApproved(selectedMaterial?.userApprovalMetadata)) {
             return null
         }
 
-        const { approvalConfigData } = selectedMaterial.userApprovalMetadata
-
-        return !approvalConfigData.requiredCount || !getIsMaterialApproved(approvalConfigData) ? (
+        return (
             <div className="flex left dc__gap-4 mb-4">
                 <Icon name="ic-warning" color={null} size={14} />
                 <p className="m-0 fs-12 lh-16 fw-4 cy-7">Non-approved image selected</p>
             </div>
-        ) : null
+        )
     }
 
     const renderAppWarningAndErrors = (app: BulkCDDetailType) => {
@@ -882,6 +880,7 @@ export default function BulkCDTrigger({
     const renderFooterSection = (): JSX.Element => {
         const isDeployButtonDisabled: boolean = isDeployDisabled()
         const canDeployWithoutApproval = getIsNonApprovedImageSelected(appList)
+        const canImageApproverDeploy = getIsImageApprovedByDeployerSelected(appList)
         const showSkipHibernatedCheckbox = !!SkipHibernatedCheckbox && canFetchHelmAppStatus
 
         return (
@@ -905,7 +904,7 @@ export default function BulkCDTrigger({
                             isVirtualEnvironment={false}
                             exceptionUserConfig={{
                                 canDeploy: canDeployWithoutApproval,
-                                isImageApprover: false
+                                isImageApprover: canImageApproverDeploy,
                             }}
                             isBulkCDTrigger
                         />
