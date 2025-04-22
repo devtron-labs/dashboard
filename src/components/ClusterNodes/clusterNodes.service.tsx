@@ -14,7 +14,16 @@
  * limitations under the License.
  */
 
-import { APIOptions, get, post, put, ResponseType, ROUTES as COMMON_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    APIOptions,
+    ClusterDetail,
+    get,
+    getUrlWithSearchParams,
+    post,
+    put,
+    ResponseType,
+    ROUTES as COMMON_ROUTES,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '../../config'
 import {
@@ -43,8 +52,18 @@ export const patchApplicationNote = (requestPayload: ClusteNotePatchRequest): Pr
 export const getClusterList = (abortControllerRef?: APIOptions['abortControllerRef']): Promise<ClusterListResponse> =>
     get(Routes.CLUSTER_LIST, { abortControllerRef })
 
+export const getClusterListWithInstalledClusters = (abortControllerRef?: APIOptions['abortControllerRef']) =>
+    get<ClusterDetail[]>(getUrlWithSearchParams(Routes.CLUSTER_LIST, { includeInstallations: true }), {
+        abortControllerRef,
+    })
+
 /** @deprecated - use `getClusterListRaw` from fe-common-lib */
 export const getClusterListMin = (): Promise<ClusterListResponse> => get(COMMON_ROUTES.CLUSTER_LIST_RAW)
+
+export const getClusterListMinWithInstalledClusters = (abortControllerRef?: APIOptions['abortControllerRef']) =>
+    get<ClusterDetail[]>(getUrlWithSearchParams(COMMON_ROUTES.CLUSTER_LIST_RAW, { includeInstallations: true }), {
+        abortControllerRef,
+    })
 
 export const getClusterCapacity = (clusterId: string, signal?): Promise<ClusterCapacityResponse> =>
     get(`${Routes.CLUSTER_CAPACITY}/${clusterId}`, { signal })

@@ -95,11 +95,11 @@ export const getClusterOptions = (clusterList: ClusterDetail[]): ClusterOptionTy
     clusterList
         ? sortObjectArrayAlphabetically(clusterList, 'name')
               .filter(({ isVirtualCluster }) => !isVirtualCluster)
-              .map(({ name, id, nodeErrors, isProd, isInstallationCluster }) => ({
+              .map(({ name, id, nodeErrors, isProd, installationId }) => ({
                   label: name,
-                  value: id.toString(),
+                  value: String(id ?? installationId),
                   description: nodeErrors,
                   isProd,
-                  isInstallationCluster,
+                  isInstallationCluster: !!installationId,
               }))
         : []

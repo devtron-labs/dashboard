@@ -20,30 +20,27 @@ import {
     APIOptions,
     ApiResourceType,
     ClusterDetail,
-    ClusterStatusType,
     get,
-    getClusterListRaw,
     getIsRequestAborted,
     getK8sResourceList,
     getK8sResourceListPayload,
     getNamespaceListMin,
     getUrlWithSearchParams,
-    InstallationClusterConfigType,
     Nodes,
     ResponseType,
     showError,
     stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getClusterList } from '@Components/ClusterNodes/clusterNodes.service'
-import { importComponentFromFELibrary } from '@Components/common'
+import {
+    getClusterListMinWithInstalledClusters,
+    getClusterListWithInstalledClusters,
+} from '@Components/ClusterNodes/clusterNodes.service'
 
 import { Routes } from '../../config'
 import { SIDEBAR_KEYS } from './Constants'
 import { GetResourceDataType, NodeRowDetail, URLParams } from './Types'
 import { parseNodeList } from './Utils'
-
-const getInstallationClusterConfigs = importComponentFromFELibrary('getInstallationClusterConfigs', null, 'function')
 
 export const namespaceListByClusterId = async (clusterId: string) => {
     const response = await get<string[]>(`${Routes.CLUSTER_NAMESPACE}/${clusterId}`)
@@ -131,50 +128,11 @@ export const getClusterListing = async (
     abortControllerRef?: APIOptions['abortControllerRef'],
 ): Promise<ClusterDetail[]> => {
     try {
-        const [rawClusterListResponse, installationClustersListResponse] = await Promise.allSettled([
-            (minified ? getClusterListRaw : getClusterList)(abortControllerRef),
-            getInstallationClusterConfigs ? getInstallationClusterConfigs(abortControllerRef) : [],
-        ])
+        const { result: clusterList } = await (
+            minified ? getClusterListMinWithInstalledClusters : getClusterListWithInstalledClusters
+        )(abortControllerRef)
 
-        if (rawClusterListResponse.status === 'rejected') {
-            throw rawClusterListResponse.reason
-        }
-
-        const { result: rawClusterList } = rawClusterListResponse.value
-
-        if (installationClustersListResponse.status === 'rejected' || !installationClustersListResponse.value.length) {
-            return rawClusterList
-        }
-
-        const clusterListNameSet = new Set(rawClusterList.map(({ name }) => name))
-
-        const installationClustersList: InstallationClusterConfigType[] = installationClustersListResponse.value
-
-        return rawClusterList.concat(
-            installationClustersList
-                .filter(({ name }) => {
-                    if (!clusterListNameSet.has(name)) {
-                        return true
-                    }
-
-                    return false
-                })
-                .map(({ installationId, name }) => ({
-                    id: installationId,
-                    name,
-                    status: ClusterStatusType.CREATING,
-                    cpu: null,
-                    memory: null,
-                    nodeCount: 0,
-                    nodeK8sVersions: [],
-                    serverVersion: '',
-                    nodeDetails: [],
-                    nodeErrors: [],
-                    errorInNodeListing: '',
-                    isInstallationCluster: true,
-                    isProd: false,
-                })),
-        )
+        return clusterList
     } catch (err) {
         if (!getIsRequestAborted(err)) {
             showError(err)
