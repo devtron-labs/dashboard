@@ -4,7 +4,7 @@ import { CreateClusterTypeEnum, SidebarConfigType } from './types'
 
 export const SIDEBAR_CONFIG: SidebarConfigType = {
     [CreateClusterTypeEnum.CONNECT_CLUSTER]: {
-        title: 'Connect cluster',
+        title: 'Connect Cluster',
         iconName: 'ic-ci-linked' as IconName,
         body: (
             <p className="m-0">
@@ -14,7 +14,7 @@ export const SIDEBAR_CONFIG: SidebarConfigType = {
         ),
     },
     [CreateClusterTypeEnum.CREATE_EKS_CLUSTER]: {
-        title: 'Create EKS cluster',
+        title: 'Create EKS Cluster',
         iconName: 'ic-cluster' as IconName,
         body: (
             <>

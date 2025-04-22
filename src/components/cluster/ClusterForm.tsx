@@ -1553,7 +1553,7 @@ const ClusterForm = ({
         displayClusterDetails()
     ) : (
         <div
-            className={`${id ? 'dc__position-rel h-100' : 'br-8 border__secondary flex-grow-1'} cluster-form bg__primary flexbox-col`}
+            className={`${id ? 'dc__position-rel h-100' : 'br-8 border__secondary'} ${isKubeConfigFile ? 'flex-grow-1' : ''} cluster-form bg__primary flexbox-col`}
         >
             {id && renderHeader()}
             <div className={`flex-grow-1 flexbox-col ${id ? 'dc__overflow-auto' : ''}`}>
