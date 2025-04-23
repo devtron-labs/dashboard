@@ -34,10 +34,6 @@ import {
     StyledRadioGroup as RadioGroup,
     InfoIconTippy,
     InfoBlock,
-    Icon,
-    ButtonVariantType,
-    ButtonStyleType,
-    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 import { DOCUMENTATION } from '../../config'

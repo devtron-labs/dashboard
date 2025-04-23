@@ -1500,30 +1500,30 @@ const DockerForm = ({
             return
         }
         return (
-            <>
-                <div className="mb-12">
-                    <SelectPicker
-                        required
-                        label="List of repositories"
-                        isMulti
-                        options={[]}
-                        autoFocus
-                        isClearable
-                        placeholder="Enter repository name and press enter"
-                        inputValue={customState.repositoryList.inputValue}
-                        value={customState.repositoryList.value}
-                        onBlur={setRepoListValue}
-                        onInputChange={handleCreatableInputChange}
-                        onKeyDown={handleCreatableKeyDown}
-                        onChange={handleCreatableChange}
-                        inputId="repository-list"
-                        error={repositoryError || customState.repositoryList?.error}
-                        shouldHideMenu
-                        size={ComponentSizeType.large}
-                        helperText={registryStorageType === RegistryStorageType.OCI_PUBLIC && renderPrivateDockerInfoContent()}
-                    />
-                </div>
-            </>
+            <div className="mb-12">
+                <SelectPicker
+                    required
+                    label="List of repositories"
+                    isMulti
+                    options={[]}
+                    autoFocus
+                    isClearable
+                    placeholder="Enter repository name and press enter"
+                    inputValue={customState.repositoryList.inputValue}
+                    value={customState.repositoryList.value}
+                    onBlur={setRepoListValue}
+                    onInputChange={handleCreatableInputChange}
+                    onKeyDown={handleCreatableKeyDown}
+                    onChange={handleCreatableChange}
+                    inputId="repository-list"
+                    error={repositoryError || customState.repositoryList?.error}
+                    shouldHideMenu
+                    size={ComponentSizeType.large}
+                    helperText={
+                        registryStorageType === RegistryStorageType.OCI_PUBLIC && renderPrivateDockerInfoContent()
+                    }
+                />
+            </div>
         )
     }
 

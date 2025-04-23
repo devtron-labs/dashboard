@@ -37,9 +37,9 @@ const ChartBetaFeatureInfo = () => (
     <InfoBlock
         description={
             <span className="fs-12 cn-9">
-                This feature is in BETA. If you find an issue please&nbsp;
+                This feature is in BETA. If you find an issue please
                 <a href={RAISE_ISSUE} target="_blank" rel="noopener noreferrer">
-                    report it here.
+                    &nbsp;report it here.
                 </a>
             </span>
         }
