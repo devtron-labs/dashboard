@@ -29,6 +29,7 @@ import {
     TagsTableColumnsType,
     DynamicDataTableCellErrorType,
     BaseAppMetaData,
+    EnvAppsMetaDTO,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentStatusDetailsBreakdownDataType, ErrorItem, HibernationModalTypes } from './details/appDetails/appDetails.type'
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
@@ -586,6 +587,8 @@ export interface SourceInfoType {
     filteredEnvIds?: string
     deploymentUserActionState?: ACTION_STATE
     setHibernationPatchChartName?: Dispatch<SetStateAction<string>>
+    applications?: EnvAppsMetaDTO['apps']
+    isAppDetailsType: boolean
 }
 
 export interface AppDetailsCDButtonType

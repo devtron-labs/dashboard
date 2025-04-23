@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { ACTION_STATE, ResponseType, ScanResultDTO, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ACTION_STATE,
+    AppEnvironment,
+    EnvAppsMetaDTO,
+    ResponseType,
+    ScanResultDTO,
+    ServerErrors,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { fetchAppDetailsInTime } from '@Components/app/service'
 
@@ -212,6 +219,8 @@ export interface DetailsType {
     onCloseHideDeploymentWindowConfirmationModal?: () => void
     appDetails: any
     setAppDetails: React.Dispatch<React.SetStateAction<AppDetails>>
+    isAppDetailsType: boolean
+    applications: EnvAppsMetaDTO['apps']
 }
 
 export interface DeletedAppComponentType extends SyncErrorType {
@@ -294,3 +303,22 @@ export enum HibernationModalTypes {
     RESUME = 'resume',
     CONFIGURE_PATCH = 'configurePatch',
 }
+
+type AppEnvDetailsType = 'app' | 'env'
+
+export interface AppDetailProps {
+    detailsType: AppEnvDetailsType
+    filteredResourceIds: string
+}
+
+export type AppEnvSelectorProps =
+    | {
+          isAppDetailsType: true
+          environments: AppEnvironment[]
+          applications?: never
+      }
+    | {
+          isAppDetailsType: false
+          applications: EnvAppsMetaDTO['apps']
+          environments?: never
+      }

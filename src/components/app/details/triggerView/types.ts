@@ -618,9 +618,6 @@ export interface BranchRegexModalProps {
     onCloseBranchRegexModal
     savingRegexValue: boolean
 }
-export interface AppDetailsProps {
-    isV2: boolean
-}
 
 export interface TriggerViewDeploymentConfigType {
     configMap: DeploymentHistoryDetail[]

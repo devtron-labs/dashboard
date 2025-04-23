@@ -142,7 +142,7 @@ const NodeComponent = ({
 
             setTableHeader(tableHeaders)
 
-            let [, _selectedResource] = url.split('group/')
+            let [, _selectedResource] = url.split('/group/')
             let _selectedNodes: Array<iNode>
             if (_selectedResource) {
                 _selectedResource = _selectedResource.replace(/\/$/, '')
@@ -165,7 +165,6 @@ const NodeComponent = ({
                     podMetaData?.some((f) => f.name === el.name && !!f.isNew === podType),
                 )
             }
-
             setSelectedNodes(isPodAvailable ? [...podsType] : [..._selectedNodes])
 
             setSelectedHealthyNodeCount(_healthyNodeCount)
