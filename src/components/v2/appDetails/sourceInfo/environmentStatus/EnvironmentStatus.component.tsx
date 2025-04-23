@@ -201,8 +201,7 @@ const EnvironmentStatusComponent = ({
                 <AppStatusModal
                     title={getAppStatusModalTitle([
                         appDetails?.appName,
-                        appDetails?.environmentName,
-                        appDetails?.namespace,
+                        appDetails?.environmentName || appDetails?.namespace,
                     ])}
                     handleClose={handleCloseAppStatusModal}
                     // Test showAppStatusMessage={showHibernationStatusMessage}

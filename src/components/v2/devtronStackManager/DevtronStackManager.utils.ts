@@ -204,7 +204,6 @@ export const getAppDetailsFromResourceStatusData = (
         JSON.stringify({
             resourceTree: {
                 nodes: _nodes,
-                // Need to confirm if can show this text itself instead of status
                 status: AppStatusClass[installationStatus] || installationStatus,
                 resourcesSyncResult: resourceStatusDetails,
             },
