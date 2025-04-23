@@ -204,8 +204,7 @@ const EnvironmentStatusComponent = ({
                         appDetails?.environmentName || appDetails?.namespace,
                     ])}
                     handleClose={handleCloseAppStatusModal}
-                    // Test showAppStatusMessage={showHibernationStatusMessage}
-                    type="external-apps"
+                    type="other-apps"
                     appDetails={appDetails}
                     isConfigDriftEnabled={false}
                     configDriftModal={null}

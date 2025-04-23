@@ -16,7 +16,7 @@
 
 import React from 'react'
 import { RouteComponentProps } from 'react-router-dom'
-import { ModuleStatus } from '@devtron-labs/devtron-fe-common-lib'
+import { AppType, ModuleStatus } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass.svg'
 import { ReactComponent as DevtronIcon } from '../../../assets/icons/ic-devtron.svg'
 import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
@@ -200,6 +200,7 @@ export const getAppDetailsFromResourceStatusData = (
         resourceStatusDetails[`${moduleResourceStatus.kind}/${moduleResourceStatus.name}`] =
             moduleResourceStatus.healthMessage
     })
+
     return JSON.parse(
         JSON.stringify({
             resourceTree: {
@@ -207,6 +208,7 @@ export const getAppDetailsFromResourceStatusData = (
                 status: AppStatusClass[installationStatus] || installationStatus,
                 resourcesSyncResult: resourceStatusDetails,
             },
+            appType: AppType.DEVTRON_APP,
         }),
     )
 }

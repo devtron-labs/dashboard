@@ -333,6 +333,9 @@ export const Details: React.FC<DetailsType> = ({
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
+
+    const appDetailsFromIndexStore = IndexStore.getAppDetails()
+
     // fixme: the state is not being set anywhere and just being drilled down
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false)
     const [resourceTreeFetchTimeOut, setResourceTreeFetchTimeOut] = useState<boolean>(false)
@@ -845,10 +848,13 @@ export const Details: React.FC<DetailsType> = ({
             )}
             {detailedStatus && (
                 <AppStatusModal
-                    title={getAppStatusModalTitle([appDetails.appName, appDetails.environmentName])}
+                    title={getAppStatusModalTitle([
+                        appDetailsFromIndexStore.appName,
+                        appDetailsFromIndexStore.environmentName,
+                    ])}
                     handleClose={hideAppDetailsStatus}
                     type="devtron-app"
-                    appDetails={appDetails}
+                    appDetails={appDetailsFromIndexStore}
                     isConfigDriftEnabled={isConfigDriftEnabled}
                     configDriftModal={ConfigDriftModal}
                 />
