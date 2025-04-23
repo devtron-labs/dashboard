@@ -24,7 +24,12 @@ import { useRouteMatch, useHistory, useParams } from 'react-router-dom'
 import NotesDrawer from './NotesDrawer'
 import { getInstalledChartNotesDetail } from '../../appDetails.api'
 import { importComponentFromFELibrary } from '../../../../common'
-import { AppStatusModal, DeploymentAppTypes, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AppStatusModal,
+    DeploymentAppTypes,
+    getAppStatusModalTitle,
+    useAsync,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { EnvironmentStatusComponentType } from '../environment.type'
 import HelmAppConfigApplyStatusCard from './HelmAppConfigApplyStatusCard'
 import AppStatusCard from '../../../../app/details/appDetails/AppStatusCard'
@@ -194,15 +199,14 @@ const EnvironmentStatusComponent = ({
             )}
             {showAppStatusDetail && (
                 <AppStatusModal
-                    title={
-                        <h2 className="m-0 dc__truncate fs-16 fw-6 lh-1-5">
-                            {appDetails?.appName} <span className="cn-6 fs-16 fw-4">/</span> {appDetails?.environmentName || appDetails?.namespace || '--'}
-                        </h2>
-                    }
+                    title={getAppStatusModalTitle([
+                        appDetails?.appName,
+                        appDetails?.environmentName,
+                        appDetails?.namespace,
+                    ])}
                     handleClose={handleCloseAppStatusModal}
                     // Test showAppStatusMessage={showHibernationStatusMessage}
                     type="external-apps"
-                    // Should we send index store here?
                     appDetails={appDetails}
                     isConfigDriftEnabled={false}
                     configDriftModal={null}

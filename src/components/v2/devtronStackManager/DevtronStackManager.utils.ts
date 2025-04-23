@@ -200,7 +200,6 @@ export const getAppDetailsFromResourceStatusData = (
         resourceStatusDetails[`${moduleResourceStatus.kind}/${moduleResourceStatus.name}`] =
             moduleResourceStatus.healthMessage
     })
-    // Ask if index store does some special processing on the data
     return JSON.parse(
         JSON.stringify({
             resourceTree: {
