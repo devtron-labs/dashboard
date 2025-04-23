@@ -32,7 +32,7 @@ const AppEnvDropdown = ({
                 className="bcb-5 br-10 cn-0 pl-8 pr-8"
                 style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
             >
-                {name.slice(0, 2).toUpperCase()}
+                {name.slice(0, 3).toUpperCase()}
             </div>
         </div>
         <div data-testid="app-deployed-env-name" className="app-details__selector w-200 dc__zi-12">
