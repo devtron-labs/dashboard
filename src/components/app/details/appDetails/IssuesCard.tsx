@@ -224,7 +224,7 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
                         </Tippy>
                     </div>
                     <div className="flex fs-12 fw-4">
-                        <div className="fs-13 fw-6  lh-20 f-degraded">{getErrorCountText()}</div>
+                        <div className="fs-13 fw-6 lh-20 app-summary__status-name f-degraded dc__first-letter-capitalize--imp">{getErrorCountText()}</div>
                     </div>
                 </div>
                 <ErrorIcon className="form__icon--error icon-dim-24" />

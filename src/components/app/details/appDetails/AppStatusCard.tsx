@@ -86,7 +86,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
                         </Tippy>
                     </div>
                     <div className="flex fs-12 fw-4">
-                        <div className={`fs-13 fw-6 lh-20 f-${status.toLowerCase()}`}>
+                        <div className={`fs-13 fw-6 lh-20 app-summary__status-name f-${status.toLowerCase()}`}>
                             {isHibernated ? 'Hibernating' : status}
                         </div>
                     </div>

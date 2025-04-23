@@ -102,7 +102,6 @@ import { NoParamsNoEnvContext, NoParamsWithEnvContext, ParamsAndEnvContext, Para
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 const DeploymentWindowStatusModal = importComponentFromFELibrary('DeploymentWindowStatusModal')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
-const ConfigDriftModalRoute = importComponentFromFELibrary('ConfigDriftModalRoute', null, 'function')
 const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
     'processVirtualEnvironmentDeploymentData',
     null,
@@ -333,7 +332,6 @@ export const Details: React.FC<DetailsType> = ({
     setAppDetails,
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
-    const { path } = useRouteMatch()
     const location = useLocation()
     // fixme: the state is not being set anywhere and just being drilled down
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false)
@@ -375,7 +373,7 @@ export const Details: React.FC<DetailsType> = ({
             deploymentStatus: DEFAULT_STATUS,
             deploymentStatusText: DEFAULT_STATUS_TEXT,
         })
-    const isConfigDriftEnabled: boolean = window._env_.FEATURE_CONFIG_DRIFT_ENABLE && !!ConfigDriftModalRoute
+    const isConfigDriftEnabled: boolean = window._env_.FEATURE_CONFIG_DRIFT_ENABLE && !!ConfigDriftModal
     const isExternalToolAvailable: boolean =
         externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0
     const interval = Number(window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL) || 30000
@@ -888,7 +886,6 @@ export const Details: React.FC<DetailsType> = ({
             )}
             {appDetails && !!hibernateConfirmationModal && renderHibernateModal()}
             {rotateModal && renderRestartWorkload()}
-            {isConfigDriftEnabled && !isVirtualEnvRef.current && <ConfigDriftModalRoute path={path} />}
         </>
     )
 }
