@@ -14,54 +14,68 @@
  * limitations under the License.
  */
 
-import { lazy, Suspense, useRef, useState, useEffect } from 'react'
-import { Route, Switch, Redirect, useHistory, useLocation } from 'react-router-dom'
-import './css/application.scss'
+import { lazy, MutableRefObject, Suspense, useEffect, useRef, useState } from 'react'
+import { Redirect, Route, Switch, useHistory, useLocation } from 'react-router-dom'
+import { useRegisterSW } from 'virtual:pwa-register/react'
+
 import {
-    showError,
-    BreadcrumbStore,
-    Reload,
-    DevtronProgressing,
+    API_STATUS_CODES,
     APPROVAL_MODAL_TYPE,
-    useUserEmail,
-    URLS as CommonURLS,
+    BreadcrumbStore,
+    DevtronProgressing,
+    ErrorScreenManager,
+    logExceptionToSentry,
+    showError,
     ToastManager,
     ToastVariantType,
-    API_STATUS_CODES,
-    logExceptionToSentry,
+    URLS as CommonURLS,
+    useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICSparkles } from '@Icons/ic-sparkles.svg'
+
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
-import { useRegisterSW } from 'virtual:pwa-register/react'
-import {
-    useOnline,
-    ErrorBoundary,
-    importComponentFromFELibrary,
-    getApprovalModalTypeFromURL,
-    reloadLocation,
-} from './components/common'
-import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG, URLS } from './config'
-import { validateToken } from './services/service'
+import { ReactComponent as ICSparkles } from '@Icons/ic-sparkles.svg'
 import ActivateLicense from '@Pages/License/ActivateLicense'
+
+import {
+    ErrorBoundary,
+    getApprovalModalTypeFromURL,
+    importComponentFromFELibrary,
+    reloadLocation,
+    useOnline,
+} from './components/common'
+import { validateToken } from './services/service'
+import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG, URLS } from './config'
+
+import './css/application.scss'
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'))
 const Login = lazy(() => import('./components/login/Login'))
 const GenericDirectApprovalModal = importComponentFromFELibrary('GenericDirectApprovalModal')
 
-export default function App() {
+const dismissIfToastActive = (toastRef: MutableRefObject<any>) => {
+    if (ToastManager.isToastActive(toastRef.current)) {
+        ToastManager.dismissToast(toastRef.current)
+    }
+}
+
+const App = () => {
     const onlineToastRef = useRef(null)
     const updateToastRef = useRef(null)
-    const [errorPage, setErrorPage] = useState<boolean>(false)
-    const isOnline = useOnline()
+    const didMountRef = useRef(false)
     const refreshing = useRef(false)
-    const { setEmail } = useUserEmail()
+
+    const [errorPage, setErrorPage] = useState<boolean>(false)
     const [bgUpdated, setBGUpdated] = useState(false)
     const [validating, setValidating] = useState(true)
     const [approvalToken, setApprovalToken] = useState<string>('')
     const [approvalType, setApprovalType] = useState<APPROVAL_MODAL_TYPE>(APPROVAL_MODAL_TYPE.CONFIG)
+
+    const isOnline = useOnline()
+    const { setEmail } = useUserEmail()
+
     const location = useLocation()
     const { push } = useHistory()
-    const didMountRef = useRef(false)
+
     const isDirectApprovalNotification =
         location.pathname &&
         location.pathname.includes('approve') &&
@@ -132,7 +146,7 @@ export default function App() {
             defaultRedirection()
         } catch (err: any) {
             // push to login without breaking search
-            if (err?.code === 401) {
+            if (err?.code === API_STATUS_CODES.UNAUTHORIZED) {
                 const loginPath = URLS.LOGIN_SSO
                 const newSearch = location.pathname.includes(URLS.LOGIN_SSO)
                     ? location.search
@@ -170,6 +184,7 @@ export default function App() {
             if (isDirectApprovalNotification) {
                 redirectToDirectApprovalNotification()
             } else {
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 validation()
             }
         } else {
@@ -198,7 +213,7 @@ export default function App() {
     } = useRegisterSW({
         onRegisteredSW(swUrl, swRegistration) {
             console.log(`Service Worker at: ${swUrl}`)
-            swRegistration &&
+            if (swRegistration) {
                 setInterval(
                     async () => {
                         if (
@@ -224,8 +239,9 @@ export default function App() {
                             // Do nothing
                         }
                     },
-                    serviceWorkerTimeout * 1000 * 60,
+                    serviceWorkerTimeout * 60 * 1000,
                 )
+            }
         },
         onRegisterError(error) {
             console.error('SW registration error', error)
@@ -236,18 +252,16 @@ export default function App() {
         },
     })
 
-    function handleAppUpdate() {
-        if (ToastManager.isToastActive(updateToastRef.current)) {
-            ToastManager.dismissToast(updateToastRef.current)
-        }
+    const handleAppUpdate = () => {
+        // TODO: Why is this needed
+        dismissIfToastActive(updateToastRef)
 
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         updateServiceWorker(true)
     }
 
     function handleNeedRefresh() {
-        if (ToastManager.isToastActive(updateToastRef.current)) {
-            ToastManager.dismissToast(updateToastRef.current)
-        }
+        dismissIfToastActive(updateToastRef)
 
         updateToastRef.current = ToastManager.showToast(
             {
@@ -275,13 +289,14 @@ export default function App() {
     useEffect(() => {
         if (window.isSecureContext && navigator.serviceWorker) {
             // check for sw updates on page change
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             navigator.serviceWorker
                 .getRegistrations()
                 .then((registrations) => registrations.forEach((reg) => reg.update()))
             if (doesNeedRefresh) {
                 handleAppUpdate()
-            } else if (ToastManager.isToastActive(updateToastRef.current)) {
-                ToastManager.dismissToast(updateToastRef.current)
+            } else {
+                dismissIfToastActive(updateToastRef)
             }
         }
     }, [location])
@@ -290,9 +305,7 @@ export default function App() {
         if (!bgUpdated) {
             return
         }
-        if (ToastManager.isToastActive(updateToastRef.current)) {
-            ToastManager.dismissToast(updateToastRef.current)
-        }
+        dismissIfToastActive(updateToastRef)
 
         updateToastRef.current = ToastManager.showToast(
             {
@@ -314,6 +327,34 @@ export default function App() {
         )
     }, [bgUpdated])
 
+    const renderRoutesWithErrorBoundary = () =>
+        errorPage ? (
+            <div className="full-height-width bg__tertiary">
+                <ErrorScreenManager />
+            </div>
+        ) : (
+            <ErrorBoundary>
+                <BreadcrumbStore>
+                    <Switch>
+                        {isDirectApprovalNotification && GenericDirectApprovalModal && (
+                            <Route exact path={`/${approvalType?.toLocaleLowerCase()}/approve`}>
+                                <GenericDirectApprovalModal approvalType={approvalType} approvalToken={approvalToken} />
+                            </Route>
+                        )}
+                        <Route path={CommonURLS.LICENSE_AUTH}>
+                            <ActivateLicense />
+                        </Route>
+                        {!window._env_.K8S_CLIENT && <Route path={URLS.LOGIN} component={Login} />}
+                        <Route path="/" render={() => <NavigationRoutes />} />
+                        <Redirect to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`} />
+                    </Switch>
+                    <div id="visible-modal" />
+                    <div id="visible-modal-2" />
+                    <div id="animated-dialog-backdrop" />
+                </BreadcrumbStore>
+            </ErrorBoundary>
+        )
+
     return (
         <div className={customThemeClassName}>
             <Suspense fallback={null}>
@@ -322,41 +363,11 @@ export default function App() {
                         <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />
                     </div>
                 ) : (
-                    <>
-                        {errorPage ? (
-                            <div className="full-height-width bg__tertiary">
-                                <Reload />
-                            </div>
-                        ) : (
-                            <ErrorBoundary>
-                                <BreadcrumbStore>
-                                    <Switch>
-                                        {isDirectApprovalNotification && GenericDirectApprovalModal && (
-                                            <Route exact path={`/${approvalType?.toLocaleLowerCase()}/approve`}>
-                                                <GenericDirectApprovalModal
-                                                    approvalType={approvalType}
-                                                    approvalToken={approvalToken}
-                                                />
-                                            </Route>
-                                        )}
-                                        <Route path={CommonURLS.LICENSE_AUTH}>
-                                            <ActivateLicense />
-                                        </Route>
-                                        {!window._env_.K8S_CLIENT && <Route path="/login" component={Login} />}
-                                        <Route path="/" render={() => <NavigationRoutes />} />
-                                        <Redirect
-                                            to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`}
-                                        />
-                                    </Switch>
-                                    <div id="visible-modal" />
-                                    <div id="visible-modal-2" />
-                                    <div id="animated-dialog-backdrop" />
-                                </BreadcrumbStore>
-                            </ErrorBoundary>
-                        )}
-                    </>
+                    renderRoutesWithErrorBoundary()
                 )}
             </Suspense>
         </div>
     )
 }
+
+export default App
