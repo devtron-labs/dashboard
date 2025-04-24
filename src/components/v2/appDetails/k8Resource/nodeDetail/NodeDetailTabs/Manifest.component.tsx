@@ -30,7 +30,7 @@ import {
     DeploymentAppTypes,
     FormProps,
     getComponentSpecificThemeClass,
-    InfoColourBar,
+    InfoBlock,
     isCodeMirrorEnabled,
     logExceptionToSentry,
     noop,
@@ -45,8 +45,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
-import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
-import { ReactComponent as ICInfoFilled } from '@Icons/ic-info-filled.svg'
 import { DEFAULT_CLUSTER_ID } from '@Components/cluster/cluster.type'
 import { importComponentFromFELibrary } from '@Components/common'
 
@@ -78,7 +76,7 @@ import {
     updateManifestResourceHelmApps,
 } from '../nodeDetail.api'
 import { NodeDetailTab } from '../nodeDetail.type'
-import { getDecodedEncodedSecretManifestData, getTrimmedManifestData } from '../nodeDetail.util'
+import { getDecodedEncodedSecretManifestData, getTrimmedManifestData, manifestBorderConfig } from '../nodeDetail.util'
 
 const renderOutOfSyncWarning = importComponentFromFELibrary('renderOutOfSyncWarning', null, 'function')
 const getManifestGUISchema = importComponentFromFELibrary('getManifestGUISchema', null, 'function')
@@ -660,15 +658,7 @@ const ManifestComponent = ({
             )
         }
 
-        return (
-            <InfoColourBar
-                message={message}
-                classname="w-100 m-0 fs-12 fw-4 lh-16 cn-9 py-8 px-16 bcb-1 dc__border-bottom dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
-                Icon={ICInfoFilled}
-                iconClass="icon-dim-16"
-                linkClass="dc__truncate--clamp-6"
-            />
-        )
+        return <InfoBlock description={message} {...manifestBorderConfig} />
     }
 
     const renderErrorBar = (isCodeEditorView: boolean = false) => {
@@ -680,15 +670,7 @@ const ManifestComponent = ({
             return <CodeEditor.ErrorBar text={errorText} />
         }
 
-        return (
-            <InfoColourBar
-                message={errorText}
-                classname="w-100 m-0 fs-12 fw-4 lh-16 py-8 px-16 bco-1 co-5 dc__border-bottom dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
-                Icon={ICErrorExclamation}
-                iconClass="icon-dim-16"
-                linkClass="dc__truncate--clamp-6"
-            />
-        )
+        return <InfoBlock variant="error" description={errorText} {...manifestBorderConfig} />
     }
 
     const renderContent = () => {

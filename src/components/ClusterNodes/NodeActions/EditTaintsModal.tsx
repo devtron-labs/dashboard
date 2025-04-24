@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState } from 'react'
+import { ReactNode, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -31,6 +31,7 @@ import {
     Button,
     ButtonVariantType,
     ButtonStyleType,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
@@ -43,6 +44,31 @@ import { OptionType } from '../../app/types'
 import { EditTaintsModalType, EditTaintsRequest, EFFECT_TYPE, TaintErrorObj, TaintType } from '../types'
 import { ValidationRules } from './validationRules'
 import { EDIT_TAINTS_MODAL_MESSAGING, TAINT_OPTIONS } from '../constants'
+
+const TaintInfoMessage = ({ tippyContent }: { tippyContent: () => ReactNode }) => {
+    return (
+        <div className="fs-13 fw-4 lh-20">
+            <span>{EDIT_TAINTS_MODAL_MESSAGING.infoText}</span> &nbsp;
+            <TippyCustomized
+                theme={TippyTheme.white}
+                className="w-400"
+                placement="top"
+                Icon={HelpIcon}
+                iconClass="fcv-5"
+                heading={EDIT_TAINTS_MODAL_MESSAGING.tippyTitle}
+                infoText=""
+                showCloseButton
+                trigger="click"
+                interactive
+                additionalContent={tippyContent()}
+            >
+                <span className="cb-5 cursor" onClick={stopPropagation}>
+                    {EDIT_TAINTS_MODAL_MESSAGING.infoLinkText}
+                </span>
+            </TippyCustomized>
+        </div>
+    )
+}
 
 export default function EditTaintsModal({ name, version, kind, taints, closePopup }: EditTaintsModalType) {
     const { clusterId } = useParams<{ clusterId: string }>()
@@ -156,31 +182,6 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
         )
     }
 
-    const RenderInfoMessage = () => {
-        return (
-            <div className="fs-13 fw-4 lh-20">
-                <span>{EDIT_TAINTS_MODAL_MESSAGING.infoText}</span> &nbsp;
-                <TippyCustomized
-                    theme={TippyTheme.white}
-                    className="w-400"
-                    placement="top"
-                    Icon={HelpIcon}
-                    iconClass="fcv-5"
-                    heading={EDIT_TAINTS_MODAL_MESSAGING.tippyTitle}
-                    infoText=""
-                    showCloseButton
-                    trigger="click"
-                    interactive
-                    additionalContent={tippyContent()}
-                >
-                    <span className="cb-5 cursor" onClick={stopPropagation}>
-                        {EDIT_TAINTS_MODAL_MESSAGING.infoLinkText}
-                    </span>
-                </TippyCustomized>
-            </div>
-        )
-    }
-
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
             <div className="flexbox-col bg__primary h-100 flex-grow-1 mh-0">
@@ -190,71 +191,68 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
-                <div className="flexbox-col pt-16 pr-20 pb-16 pl-20 dc__overflow-auto flex-grow-1">
-                    <InfoColourBar
-                        message={<RenderInfoMessage />}
-                        classname="info_bar mb-16"
-                        Icon={InfoIcon}
-                        iconClass="icon-dim-20"
-                    />
-                    <div className="cursor cb-5 fw-6 fs-13 flexbox mr-20 mb-12" onClick={addNewTaint}>
-                        <Add className="icon-dim-20 fcb-5" /> {EDIT_TAINTS_MODAL_MESSAGING.addTaint}
-                    </div>
-                    {taintList?.map((taintDetails, index) => {
-                        const _errorObj = errorObj?.taintErrorList[index]
-                        return (
-                            <div className="flex left dc__gap-8 mb-8">
-                                <CustomInput
-                                    type="text"
-                                    name="key"
-                                    data-index={index}
-                                    value={taintDetails.key}
-                                    onChange={handleInputChange}
-                                    placeholder="Key"
-                                    error={errorObj && !_errorObj['key'].isValid ? _errorObj['key'].message : null}
-                                    fullWidth
-                                />
-                                <CustomInput
-                                    type="text"
-                                    name="value"
-                                    data-index={index}
-                                    value={taintDetails.value}
-                                    onChange={handleInputChange}
-                                    placeholder="Value"
-                                    error={
-                                        errorObj && !_errorObj['value'].isValid ? _errorObj['value'].message : null
-                                    }
-                                    fullWidth
-                                />
-                                <div className="w-70">
-                                    <SelectPicker
-                                        inputId="select-taint-effect"
-                                        options={TAINT_OPTIONS}
-                                        onChange={(selectedValue: OptionType) => {
-                                            onEffectChange(selectedValue, index)
-                                        }}
+                <div className="flexbox-col px-20 py-16 dc__overflow-auto flex-grow-1 dc__gap-16">
+                    <InfoBlock description={<TaintInfoMessage tippyContent={tippyContent} />} />
+                    <div className="flexbox-col dc__gap-12">
+                        <div className="cursor cb-5 fw-6 fs-13 flexbox dc__gap-8" onClick={addNewTaint}>
+                            <Add className="icon-dim-20 fcb-5" /> {EDIT_TAINTS_MODAL_MESSAGING.addTaint}
+                        </div>
+                        {taintList?.map((taintDetails, index) => {
+                            const _errorObj = errorObj?.taintErrorList[index]
+                            return (
+                                <div className="flex left dc__gap-8 mb-8">
+                                    <CustomInput
+                                        type="text"
+                                        name="key"
                                         data-index={index}
-                                        value={{
-                                            label: taintDetails.effect,
-                                            value: taintDetails.effect,
-                                        }}
-                                        size={ComponentSizeType.large}
+                                        value={taintDetails.key}
+                                        onChange={handleInputChange}
+                                        placeholder="Key"
+                                        error={errorObj && !_errorObj['key'].isValid ? _errorObj['key'].message : null}
+                                        fullWidth
+                                    />
+                                    <CustomInput
+                                        type="text"
+                                        name="value"
+                                        data-index={index}
+                                        value={taintDetails.value}
+                                        onChange={handleInputChange}
+                                        placeholder="Value"
+                                        error={
+                                            errorObj && !_errorObj['value'].isValid ? _errorObj['value'].message : null
+                                        }
+                                        fullWidth
+                                    />
+                                    <div className="w-70">
+                                        <SelectPicker
+                                            inputId="select-taint-effect"
+                                            options={TAINT_OPTIONS}
+                                            onChange={(selectedValue: OptionType) => {
+                                                onEffectChange(selectedValue, index)
+                                            }}
+                                            data-index={index}
+                                            value={{
+                                                label: taintDetails.effect,
+                                                value: taintDetails.effect,
+                                            }}
+                                            size={ComponentSizeType.large}
+                                        />
+                                    </div>
+                                    <Button
+                                        icon={<DeleteIcon />}
+                                        dataTestId={`delete-taint-${index}`}
+                                        onClick={deleteTaint}
+                                        data-index={index}
+                                        ariaLabel="Delete Taint"
+                                        showAriaLabelInTippy={false}
+                                        size={ComponentSizeType.small}
+                                        variant={ButtonVariantType.borderLess}
+                                        style={ButtonStyleType.negativeGrey}
                                     />
                                 </div>
-                                <Button
-                                    icon={<DeleteIcon />}
-                                    dataTestId={`delete-taint-${index}`}
-                                    onClick={deleteTaint}
-                                    data-index={index}
-                                    ariaLabel="Delete Taint"
-                                    showAriaLabelInTippy={false}
-                                    size={ComponentSizeType.small}
-                                    variant={ButtonVariantType.borderLess}
-                                    style={ButtonStyleType.negativeGrey}
-                                />
-                            </div>
-                        )
-                    })}
+                            )
+                        })}
+                    </div>
                 </div>
                 <div className="dc__border-top flex right p-16">
                     <button
