@@ -29,6 +29,7 @@ import {
     SeverityCount,
     useMainContext,
     SelectPickerOptionType,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
@@ -47,10 +48,9 @@ import { AUTO_SELECT } from '../../ClusterNodes/constants'
 import { PATTERNS } from '../../../config/constants'
 import { AppEnvLocalStorageKeyType, FilterParentType } from '@Components/ApplicationGroup/AppGroup.types'
 import { APP_GROUP_LOCAL_STORAGE_KEY, ENV_GROUP_LOCAL_STORAGE_KEY } from '@Components/ApplicationGroup/Constants'
-import {
-    GetAndSetAppGroupFiltersParamsType,
-    SetFiltersInLocalStorageParamsType,
-} from './types'
+import { GetAndSetAppGroupFiltersParamsType, SetFiltersInLocalStorageParamsType } from './types'
+import { URLS } from '@Config/routes'
+import { HOST_ERROR_MESSAGE } from '@Config/constantMessaging'
 
 let module
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -1235,4 +1235,17 @@ export const setAppGroupFilterInLocalStorage = ({
     } catch {
         localStorage.setItem(localStorageKey, '')
     }
+}
+
+const renderHostURLWarning = () => (
+    <div className="flexbox dc__content-space">
+        {HOST_ERROR_MESSAGE.NotConfigured} &nbsp;
+        <Link className="dc__link-bold" to={URLS.GLOBAL_CONFIG_HOST_URL}>
+            {HOST_ERROR_MESSAGE.Review}
+        </Link>
+    </div>
+)
+
+export const InValidHostUrlWarningBlock = () => {
+    return <InfoBlock variant="error" description={renderHostURLWarning()} />
 }
