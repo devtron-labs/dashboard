@@ -54,6 +54,8 @@ const AppDetailsCDButton = ({
     deploymentUserActionState,
     loadingDetails,
     environmentName,
+    isForEmptyState = false,
+    handleSuccess,
 }: AppDetailsCDButtonType): JSX.Element => {
     const history = useHistory()
     const { searchParams } = useSearchString()
@@ -83,7 +85,7 @@ const AppDetailsCDButton = ({
     const renderDeployButton = () => (
         <Button
             dataTestId="deploy-button"
-            size={ComponentSizeType.small}
+            size={isForEmptyState ? ComponentSizeType.large : ComponentSizeType.small}
             variant={ButtonVariantType.primary}
             text={BUTTON_TITLE[DeploymentNodeType.CD]}
             startIcon={deploymentUserActionState === ACTION_STATE.BLOCKED ? <InfoOutline /> : <DeployIcon />}
@@ -134,7 +136,8 @@ const AppDetailsCDButton = ({
                         deploymentAppType={deploymentAppType}
                         parentEnvironmentName={cdModal.parentEnvironmentName}
                         isLoading={loadingDetails}
-                        isRedirectedFromAppDetails={cdModal.isRedirectedFromAppDetails}
+                        isRedirectedFromAppDetails
+                        handleSuccess={handleSuccess}
                     />
                 </div>
             </VisibleModal>

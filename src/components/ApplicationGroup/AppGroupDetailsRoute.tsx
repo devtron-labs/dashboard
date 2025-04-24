@@ -434,7 +434,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                             />
                         </Route>
                         <Route path={`${path}${URLS.DETAILS}/:appId(\\d+)?`}>
-                            <AppDetail detailsType='env' filteredResourceIds={_filteredAppsIds} />
+                            <AppDetail detailsType="app-group" filteredResourceIds={_filteredAppsIds} />
                         </Route>
                         <Route path={`${path}/${URLS.APP_TRIGGER}`}>
                             <EnvTriggerView filteredAppIds={_filteredAppsIds} isVirtualEnv={isVirtualEnv} />
@@ -637,7 +637,8 @@ export const EnvHeader = ({
                 tabType: 'navLink',
                 props: {
                     to: `${match.url}${URLS.DETAILS}`,
-                    onClick: (event) => handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.EnvDetailsClicked.action),
+                    onClick: (event) =>
+                        handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.EnvDetailsClicked.action),
                 },
             },
             {

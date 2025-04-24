@@ -142,6 +142,7 @@ const NodeComponent = ({
 
             setTableHeader(tableHeaders)
 
+            // splitting with /group as group is present in application-group url as well
             let [, _selectedResource] = url.split('/group/')
             let _selectedNodes: Array<iNode>
             if (_selectedResource) {

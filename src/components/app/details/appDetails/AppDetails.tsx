@@ -56,7 +56,6 @@ import {
     getAppTriggerURL,
     HELM_DEPLOYMENT_STATUS_TEXT,
     RESOURCES_NOT_FOUND,
-    URLS,
 } from '../../../../config'
 import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
 import { getAppConfigStatus, getAppOtherEnvironmentMin, stopStartApp } from '../../../../services/service'
@@ -90,6 +89,7 @@ import {
     ErrorItem,
     HibernationModalTypes,
 } from './appDetails.type'
+import AppDetailsCDButton from './AppDetailsCDButton'
 import { AppMetrics } from './AppMetrics'
 import DeploymentStatusDetailModal from './DeploymentStatusDetailModal'
 import HibernateModal from './HibernateModal'
@@ -118,32 +118,24 @@ export const AppNotConfigured = ({
     title,
     subtitle,
     buttonTitle,
-    appConfigTabs = '',
     isJobView,
-    isAppGroup,
+    renderCustomButton,
 }: {
     image?: any
     title?: string
     subtitle?: React.ReactNode
     buttonTitle?: string
-    appConfigTabs?: string
     isJobView?: boolean
-    isAppGroup?: boolean
+    renderCustomButton?: () => JSX.Element
 }) => {
-    const { appId, envId } = useParams<{ appId: string; envId: string }>()
+    const { appId } = useParams<{ appId: string }>()
     const { push } = useHistory()
 
     const handleEditApp = () => {
         getAppConfigStatus(+appId, isJobView, false)
             .then(() => {
-                const _urlPrefix = `/${isJobView ? 'job' : 'app'}/${appId}`
-                let url = `${_urlPrefix}/edit`
-                if (appConfigTabs) {
-                    url = `${_urlPrefix}/${appConfigTabs}`
-                }
-                if (isAppGroup) {
-                    url = `${URLS.APPLICATION_GROUP}/${envId}/${URLS.APP_TRIGGER}`
-                }
+                const url = `/${isJobView ? 'job' : 'app'}/${appId}/edit`
+
                 push(url)
             })
             .catch(noop)
@@ -175,7 +167,7 @@ export const AppNotConfigured = ({
                 )
             }
             isButtonAvailable
-            renderButton={renderButton}
+            renderButton={renderCustomButton ?? renderButton}
         />
     )
 }
@@ -268,6 +260,8 @@ const Details: React.FC<DetailsType> = ({
         externalLinks: [],
         monitoringTools: [],
     })
+
+    const primaryResourceList = isAppDetailsType ? environments : applications
 
     // NOTE: this might seem like a duplicate of loadingResourceTree
     // but its not since loadingResourceTree runs a loader on the whole page
@@ -517,9 +511,7 @@ const Details: React.FC<DetailsType> = ({
             if (!response.result.isPipelineTriggered && response.result.releaseMode === ReleaseMode.NEW_DEPLOYMENT) {
                 setResourceTreeFetchTimeOut(false)
                 setLoadingResourceTree(false)
-                setAppDetails(null)
                 pollResourceTreeRef.current = false
-                return
             }
             appDetailsRef.current = {
                 ...appDetailsRef.current,
@@ -600,6 +592,27 @@ const Details: React.FC<DetailsType> = ({
         toggleDetailedStatus(true)
     }
 
+    const renderAppDetailsCDButton = () =>
+        appDetails && (
+            <AppDetailsCDButton
+                appId={appDetails.appId}
+                environmentId={appDetails.environmentId}
+                environmentName={appDetails.environmentName}
+                isVirtualEnvironment={appDetails.isVirtualEnvironment}
+                deploymentAppType={appDetails.deploymentAppType}
+                loadingDetails={loadingDetails}
+                cdModal={{
+                    cdPipelineId: appDetails.cdPipelineId,
+                    ciPipelineId: appDetails.ciPipelineId,
+                    parentEnvironmentName: appDetails.parentEnvironmentName,
+                    deploymentUserActionState,
+                    triggerType: appDetails.triggerType,
+                }}
+                isForEmptyState
+                handleSuccess={callAppDetailsAPI}
+            />
+        )
+
     if (
         !loadingResourceTree &&
         (!appDetails?.resourceTree || !appDetails.resourceTree.nodes?.length) &&
@@ -607,8 +620,7 @@ const Details: React.FC<DetailsType> = ({
     ) {
         return (
             <>
-                {((isAppDetailsType && environments?.length > 0) ||
-                    (!isAppDetailsType && applications?.length > 0)) && (
+                {primaryResourceList.length && (
                     <div className="flex left ml-20 mt-16">
                         <AppEnvSelector
                             {...(isAppDetailsType
@@ -634,9 +646,7 @@ const Details: React.FC<DetailsType> = ({
                         image={noGroups}
                         title={ERROR_EMPTY_SCREEN.ALL_SET_GO_CONFIGURE}
                         subtitle={ERROR_EMPTY_SCREEN.DEPLOYEMENT_WILL_BE_HERE}
-                        buttonTitle={ERROR_EMPTY_SCREEN.GO_TO_DEPLOY}
-                        {...(isAppDetailsType ? { appConfigTabs: URLS.APP_TRIGGER } : {})}
-                        isAppGroup={!isAppDetailsType}
+                        renderCustomButton={renderAppDetailsCDButton}
                     />
                 )}
             </>
@@ -815,7 +825,7 @@ const AppDetail = ({ detailsType, filteredResourceIds }: AppDetailProps) => {
     const { environmentId, setEnvironmentId } = useAppContext() // global state for app to synchronise environments
     const [isAppDeleted, setIsAppDeleted] = useState(false)
 
-    const isAppDetailsType = detailsType === 'app'
+    const isAppDetailsType = detailsType === 'app-details'
 
     const [otherEnvsLoading, otherEnvsResult] = useAsync(
         () => getAppOtherEnvironmentMin(params.appId, false),
@@ -841,7 +851,7 @@ const AppDetail = ({ detailsType, filteredResourceIds }: AppDetailProps) => {
         () =>
             (otherEnvsResult?.result ?? [])
                 .filter((env) => !filteredEntityMap || filteredEntityMap.get(env.environmentId))
-                .sort((a, b) => stringComparatorBySortOrder(a.environmentName, b.environmentName)) || [],
+                .sort((a, b) => stringComparatorBySortOrder(a.environmentName, b.environmentName)),
         [filteredResourceIds, otherEnvsResult],
     )
 
@@ -849,7 +859,7 @@ const AppDetail = ({ detailsType, filteredResourceIds }: AppDetailProps) => {
         () =>
             (otherAppsResult?.apps ?? [])
                 .filter((app) => !filteredEntityMap || filteredEntityMap.get(app.appId))
-                .sort((a, b) => stringComparatorBySortOrder(a.appName, b.appName)) || [],
+                .sort((a, b) => stringComparatorBySortOrder(a.appName, b.appName)),
         [filteredResourceIds, otherAppsResult],
     )
 
@@ -861,16 +871,13 @@ const AppDetail = ({ detailsType, filteredResourceIds }: AppDetailProps) => {
                     ? userDefinedEnvId
                     : envList[0]?.environmentId
 
-            if (envList.length && selectedEnvId) {
-                if (selectedEnvId !== +params.envId) {
-                    const newUrl = getAppDetailsURL(params.appId, selectedEnvId)
-                    replace(newUrl)
-                } else {
-                    setEnvironmentId(null)
-                }
+            if (envList.length && selectedEnvId && selectedEnvId !== +params.envId) {
+                const newUrl = getAppDetailsURL(params.appId, selectedEnvId)
+                replace(newUrl)
             } else {
                 setEnvironmentId(null)
             }
+            setEnvironmentId(null)
         }
 
         const selectedAppId =

@@ -339,7 +339,6 @@ export const SourceInfo = ({
                                         parentEnvironmentName: appDetails.parentEnvironmentName,
                                         deploymentUserActionState: deploymentUserActionState,
                                         triggerType: appDetails.triggerType,
-                                        isRedirectedFromAppDetails: true,
                                     }}
                                 />
                             </div>

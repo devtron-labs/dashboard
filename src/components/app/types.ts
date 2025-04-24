@@ -29,12 +29,12 @@ import {
     TagsTableColumnsType,
     DynamicDataTableCellErrorType,
     BaseAppMetaData,
-    EnvAppsMetaDTO,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { DeploymentStatusDetailsBreakdownDataType, ErrorItem, HibernationModalTypes } from './details/appDetails/appDetails.type'
+import { DeploymentStatusDetailsBreakdownDataType, DetailsType, ErrorItem, HibernationModalTypes } from './details/appDetails/appDetails.type'
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
 import { APP_TYPE } from '@Config/constants'
 import { CreateAppFormStateType } from '@Pages/App/CreateAppModal/types'
+import { CDMaterialProps } from './details/triggerView/types'
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
     close: (e) => void
@@ -83,7 +83,7 @@ export interface AddNewAppState {
     createAppLoader: boolean
 }
 
-export interface CDModalProps {
+interface CDModalProps {
     cdPipelineId?: number
     triggerType?: string
     parentEnvironmentName: string
@@ -566,7 +566,7 @@ export interface TagChipsContainerType {
      */
     whiteBackground?: boolean
 }
-export interface SourceInfoType {
+export interface SourceInfoType extends Pick<DetailsType, 'isAppDetailsType'>, Partial<Pick<DetailsType, 'applications'>> {
     appDetails: AppDetails
     setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
     environment: AppEnvironment
@@ -587,8 +587,6 @@ export interface SourceInfoType {
     filteredEnvIds?: string
     deploymentUserActionState?: ACTION_STATE
     setHibernationPatchChartName?: Dispatch<SetStateAction<string>>
-    applications?: EnvAppsMetaDTO['apps']
-    isAppDetailsType: boolean
 }
 
 export interface AppDetailsCDButtonType
@@ -599,6 +597,8 @@ export interface AppDetailsCDButtonType
         Pick<SourceInfoType, 'deploymentUserActionState' | 'loadingDetails'> {
     isRedirectedFromAppDetails?: boolean
     cdModal: CDModalProps
+    isForEmptyState?: boolean
+    handleSuccess?: CDMaterialProps['handleSuccess']
 }
 
 export interface EnvironmentListMinType {

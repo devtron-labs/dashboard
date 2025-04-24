@@ -165,6 +165,7 @@ export type CDMaterialProps = {
      */
     selectedAppName?: string
     isTriggerBlockedDueToPlugin?: boolean
+    handleSuccess?: () => void
 } & CDMaterialBulkRuntimeParams &
     CDMaterialPluginWarningProps
 

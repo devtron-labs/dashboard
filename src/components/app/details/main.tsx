@@ -339,7 +339,7 @@ export default function AppDetailsPage() {
     }
 
     const _filteredEnvIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
-    
+
     return (
         <div className="app-details-page flexbox-col w-100 h-100 dc__overflow-auto">
             <AppHeader
@@ -382,7 +382,7 @@ export default function AppDetailsPage() {
                     <Switch>
                         <Route
                             path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`}
-                            render={() => <AppDetails detailsType='app' filteredResourceIds={_filteredEnvIds} />}
+                            render={() => <AppDetails detailsType="app-details" filteredResourceIds={_filteredEnvIds} />}
                         />
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
                             <Overview

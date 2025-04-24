@@ -197,6 +197,7 @@ const CDMaterial = ({
     configurePluginURL,
     isTriggerBlockedDueToPlugin,
     bulkUploadFile,
+    handleSuccess,
 }: Readonly<CDMaterialProps>) => {
     // stageType should handle approval node, compute CDMaterialServiceEnum, create queryParams state
     // FIXME: the query params returned by useSearchString seems faulty
@@ -919,6 +920,7 @@ const CDMaterial = ({
                             description: msg,
                         })
                         setDeploymentLoading(false)
+                        handleSuccess?.()
                         closeCDModal(e)
                     }
                 })

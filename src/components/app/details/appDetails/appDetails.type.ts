@@ -20,6 +20,7 @@ import {
     EnvAppsMetaDTO,
     ResponseType,
     ScanResultDTO,
+    SelectPickerProps,
     ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -206,7 +207,7 @@ export interface DetailsType {
     appDetailsAPI: typeof fetchAppDetailsInTime
     setAppDetailResultInParent?: (appDetails) => void
     isAppDeployment?: boolean
-    environments: any
+    environments: AppEnvironment[]
     isPollingRequired?: boolean
     setIsAppDeleted?: any
     commitInfo?: boolean
@@ -304,12 +305,14 @@ export enum HibernationModalTypes {
     CONFIGURE_PATCH = 'configurePatch',
 }
 
-type AppEnvDetailsType = 'app' | 'env'
+type AppEnvDetailsType = 'app-details' | 'app-group'
 
 export interface AppDetailProps {
     detailsType: AppEnvDetailsType
     filteredResourceIds: string
 }
+
+export type AppEnvDropdownProps = Pick<SelectPickerProps, 'options' | 'value'> & { isAppDetailsType?: boolean }
 
 export type AppEnvSelectorProps =
     | {

@@ -200,7 +200,7 @@ export default function EnvironmentOverview({
     const getDeploymentHistoryLink = (appId: number, pipelineId: number) =>
         `${URLS.APPLICATION_GROUP}/${envId}/cd-details/${appId}/${pipelineId}/`
 
-    const getAppRedirectLink = (appId: number, envId: number) => `/app/${appId}/details/${envId}`
+    const getAppRedirectLink = (appId: number, envId: number) => `${URLS.APPLICATION_GROUP}/${envId}${URLS.DETAILS}/${appId}`
 
     const parseAppListData = (
         data: AppGroupListType,
