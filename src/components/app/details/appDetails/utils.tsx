@@ -30,8 +30,10 @@ import {
     prefixZeroIfSingleDigit,
     AppEnvironment,
     SelectPickerOptionType,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { GetIFrameSrcParamsType } from './types'
+import { ReactComponent as ICDeploy } from '@Icons/ic-nav-rocket.svg'
 
 export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: boolean): AggregationKeys {
     switch (nodeType) {
@@ -386,7 +388,14 @@ export const getDeployButtonStyle = (actionState: ACTION_STATE): ButtonStyleType
         default:
             return ButtonStyleType.default
     }
-}   
+}
+
+export const getDeployButtonIcon = (actionState: ACTION_STATE, isForEmptyState: boolean): JSX.Element => {
+    if (actionState === ACTION_STATE.BLOCKED) {
+        return <Icon name="ic-info-outline" color={null} />
+    }
+    return isForEmptyState ? <Icon name="ic-hand-pointing" color={null} /> : <ICDeploy />
+}
 
 export const getEnvOptions = (env: AppEnvironment): SelectPickerOptionType<number> => ({
     label: env.environmentName,

@@ -19,7 +19,6 @@ import ReactGA from 'react-ga4'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import {
-    ACTION_STATE,
     Button,
     ButtonComponentType,
     ButtonVariantType,
@@ -30,8 +29,6 @@ import {
     VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
-import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { BUTTON_TITLE } from '../../../ApplicationGroup/Constants'
 import { importComponentFromFELibrary } from '../../../common'
 import { URL_PARAM_MODE_TYPE } from '../../../common/helpers/types'
@@ -41,7 +38,7 @@ import CDMaterial from '../triggerView/cdMaterial'
 import { TRIGGER_VIEW_PARAMS } from '../triggerView/Constants'
 import { MATERIAL_TYPE } from '../triggerView/types'
 import { DA_APP_DETAILS_GA_EVENTS } from './constants'
-import { getDeployButtonStyle } from './utils'
+import { getDeployButtonIcon, getDeployButtonStyle } from './utils'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 
@@ -87,8 +84,8 @@ const AppDetailsCDButton = ({
             dataTestId="deploy-button"
             size={isForEmptyState ? ComponentSizeType.large : ComponentSizeType.small}
             variant={ButtonVariantType.primary}
-            text={BUTTON_TITLE[DeploymentNodeType.CD]}
-            startIcon={deploymentUserActionState === ACTION_STATE.BLOCKED ? <InfoOutline /> : <DeployIcon />}
+            text={isForEmptyState ? 'Select Image to Deploy' : BUTTON_TITLE[DeploymentNodeType.CD]}
+            startIcon={getDeployButtonIcon(deploymentUserActionState, isForEmptyState)}
             onClick={onClickDeployButton}
             component={ButtonComponentType.button}
             style={getDeployButtonStyle(deploymentUserActionState)}
