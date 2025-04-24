@@ -39,7 +39,7 @@ import CDMaterial from '../triggerView/cdMaterial'
 import { TRIGGER_VIEW_PARAMS } from '../triggerView/Constants'
 import { MATERIAL_TYPE } from '../triggerView/types'
 import { DA_APP_DETAILS_GA_EVENTS } from './constants'
-import { getDeployButtonIcon, getDeployButtonStyle } from './utils'
+import { getDeployButtonConfig } from './utils'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 
@@ -80,7 +80,7 @@ const AppDetailsCDButton = ({
         history.push({ search: '' })
     }
 
-    const iconName = getDeployButtonIcon(deploymentUserActionState, isForEmptyState)
+    const { buttonStyle, iconName } = getDeployButtonConfig(deploymentUserActionState, isForEmptyState)
 
     const renderDeployButton = () => (
         <Button
@@ -91,7 +91,7 @@ const AppDetailsCDButton = ({
             startIcon={iconName && <Icon name={iconName} color={null} />}
             onClick={onClickDeployButton}
             component={ButtonComponentType.button}
-            style={getDeployButtonStyle(deploymentUserActionState)}
+            style={buttonStyle}
         />
     )
 

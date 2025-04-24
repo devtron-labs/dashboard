@@ -378,22 +378,21 @@ export const validateMomentDate = (date: string, format: string): string => {
     return moment(date, format).fromNow()
 }
 
-export const getDeployButtonStyle = (actionState: ACTION_STATE): ButtonStyleType => {
+export const getDeployButtonConfig = (
+    actionState: ACTION_STATE,
+    isForEmptyState: boolean,
+): { buttonStyle: ButtonStyleType; iconName: IconsProps['name'] } => {
+    if (isForEmptyState) {
+        return { buttonStyle: ButtonStyleType.default, iconName: 'ic-hand-pointing' }
+    }
     switch (actionState) {
         case ACTION_STATE.BLOCKED:
-            return ButtonStyleType.negative
+            return { buttonStyle: ButtonStyleType.negative, iconName: 'ic-info-outline' }
         case ACTION_STATE.PARTIAL:
-            return ButtonStyleType.warning
+            return { buttonStyle: ButtonStyleType.warning, iconName: 'ic-rocket-launch' }
         default:
-            return ButtonStyleType.default
+            return { buttonStyle: ButtonStyleType.default, iconName: 'ic-rocket-launch' }
     }
-}
-
-export const getDeployButtonIcon = (actionState: ACTION_STATE, isForEmptyState: boolean): IconsProps['name'] => {
-    if (actionState === ACTION_STATE.BLOCKED) {
-        return 'ic-info-outline'
-    }
-    return isForEmptyState ? 'ic-hand-pointing' : 'ic-rocket-launch'
 }
 
 export const getEnvOptions = (env: AppEnvironment): SelectPickerOptionType<number> => ({
