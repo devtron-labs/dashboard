@@ -36,7 +36,6 @@ import {
     ConfirmationModal,
     ConfirmationModalVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { NavLink } from 'react-router-dom'
 import EmptyImage from '../../assets/img/ic-empty-notifications.png'
 import {
     getNotificationConfigurations,
@@ -53,13 +52,13 @@ import { ReactComponent as Email } from '@Icons/ic-mail.svg'
 import { ReactComponent as Check } from '@Icons/ic-check.svg'
 import { ReactComponent as Play } from '@Icons/ic-play.svg'
 import { ReactComponent as Info } from '@Icons/ic-info-outline.svg'
-import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
 import { ReactComponent as Webhook } from '@Icons/ic-CIWebhook.svg'
 import { ViewType, URLS, SourceTypeMap } from '../../config'
 import { ModifyRecipientsModal } from './ModifyRecipientsModal'
 import { getHostURLConfiguration } from '../../services/service'
 import { renderPipelineTypeIcon } from './notifications.util'
 import { NotificationTabState } from './types'
+import { InValidHostUrlWarningBlock } from '@Components/common'
 
 export class NotificationTab extends Component<any, NotificationTabState> {
     constructor(props) {
@@ -800,18 +799,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     renderHostErrorMessage() {
         if (!this.state.hostURLConfig || this.state.hostURLConfig.value !== window.location.origin) {
-            return (
-                <div className="br-4 bw-1 er-2 pt-10 pb-10 pl-16 pr-16 bcr-1 flex left">
-                    <Error className="icon-dim-20 mr-8" />
-                    <div className="cn-9 fs-13">
-                        Host url is not configured or is incorrect. Reach out to your DevOps team (super-admin) to
-                        &nbsp;
-                        <NavLink className="dc__link-bold" to={URLS.GLOBAL_CONFIG_HOST_URL}>
-                            Review and update
-                        </NavLink>
-                    </div>
-                </div>
-            )
+            return <InValidHostUrlWarningBlock />
         }
     }
 

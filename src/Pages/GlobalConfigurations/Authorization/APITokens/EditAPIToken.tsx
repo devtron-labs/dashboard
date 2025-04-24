@@ -20,10 +20,12 @@ import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import moment from 'moment'
 
 import {
+    ButtonStyleType,
+    ButtonVariantType,
     ButtonWithLoader,
     ClipboardButton,
     CustomInput,
-    InfoColourBar,
+    InfoBlock,
     noop,
     Progressing,
     showError,
@@ -34,7 +36,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Delete } from '../../../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import { importComponentFromFELibrary } from '../../../../components/common'
 import { MomentDateFormat } from '../../../../config'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
@@ -90,21 +91,9 @@ const EditAPIToken = ({
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
     const [invalidDescription, setInvalidDescription] = useState(false)
 
-    const renderActionButton = () => (
-        <span className="cr-5 cursor flexbox top fw-6" onClick={() => setShowRegeneratedModal(true)}>
-            Regenerate token
-        </span>
-    )
-
-    const renderRegenerateInfoBar = () => (
-        <InfoColourBar
-            message="To set a new expiration date, you can regenerate this token. Any scripts or applications using this token will need to be updated."
-            classname="info_bar"
-            Icon={InfoIcon}
-            iconClass="icon-dim-20"
-            renderActionButton={renderActionButton}
-        />
-    )
+    const onClickShowRegenerateModal = () => {
+        setShowRegeneratedModal(true)
+    }
 
     const redirectToTokenList = () => {
         history.push(`${match.path.split('edit')[0]}list`)
@@ -181,23 +170,37 @@ const EditAPIToken = ({
     const getExpirationText = () => {
         if (isTokenExpired(editData.expireAtInMs)) {
             return (
-                <span className="cr-5">
+                <span className="cr-5 fw-6">
                     This token expired on&nbsp;
                     {moment(editData.expireAtInMs).format(MomentDateFormat)}.
                 </span>
             )
         }
         if (editData.expireAtInMs === 0) {
-            return <span>This token has no expiration date.</span>
+            return <span className="fw-6">This token has no expiration date.</span>
         }
 
         return (
-            <span>
+            <span className="fw-6">
                 This token expires on&nbsp;
                 {moment(editData.expireAtInMs).format(MomentDateFormat)}.
             </span>
         )
     }
+
+    const renderRegenerateInfoBar = () => (
+        <InfoBlock
+            heading={getExpirationText()}
+            description="Regenerate this token to set a new expiration date. Any scripts or applications using this token will need to be updated."
+            buttonProps={{
+                dataTestId: 'regenerate-token-button',
+                text: 'Regenerate token',
+                onClick: onClickShowRegenerateModal,
+                variant: ButtonVariantType.text,
+                style: ButtonStyleType.negative,
+            }}
+        />
+    )
 
     if (isLoading || !editData) {
         return <Progressing pageLoader />
@@ -257,17 +260,6 @@ const EditAPIToken = ({
                             <div className="icon-dim-16 ml-8">
                                 <ClipboardButton content={editData.token} />
                             </div>
-                        </div>
-                    </label>
-                    <label className="form__row">
-                        <span className="form__label">Expiration</span>
-                        <div className="dc__align-left">
-                            {getExpirationText()}
-                            &nbsp;
-                            <span className="fw-4">To set a new expiration date you must</span>&nbsp;
-                            <span className="cb-5 cursor" onClick={() => setShowRegeneratedModal(true)}>
-                                regenerate the token.
-                            </span>
                         </div>
                     </label>
                     <div className="dc__border-top" />
