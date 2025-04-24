@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import TippyHeadless from '@tippyjs/react/headless'
 import YAML from 'yaml'
 
@@ -28,11 +28,7 @@ import {
     CodeEditor,
     ComponentSizeType,
     CustomInput,
-    DC_DELETE_SUBTITLES,
     DEFAULT_SECRET_PLACEHOLDER,
-    DeleteConfirmationModal,
-    ERROR_STATUS_CODE,
-    GenericEmptyState,
     GenericFilterEmptyState,
     Icon,
     InfoColourBar,
@@ -59,15 +55,13 @@ import { ReactComponent as ErrorIcon } from '@Icons/ic-warning-y6.svg'
 import { ReactComponent as InfoIcon } from '@Icons/info-filled.svg'
 import { UPLOAD_STATE } from '@Pages/GlobalConfigurations/DeploymentCharts/types'
 
-import { ReactComponent as MechanicalOperation } from '../../assets/img/ic-mechanical-operation.svg'
 import { AppCreationType, CLUSTER_COMMAND, MODES, ModuleNameMap } from '../../config'
-import { DeleteComponentsName, EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 import { clusterId } from '../ClusterNodes/__mocks__/clusterAbout.mock'
 import { importComponentFromFELibrary, useForm } from '../common'
 import { RemoteConnectionType } from '../dockerRegistry/dockerType'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
-import { deleteCluster, saveCluster, saveClusters, updateCluster, validateCluster } from './cluster.service'
+import { saveCluster, saveClusters, updateCluster, validateCluster } from './cluster.service'
 import {
     AuthenticationType,
     ClusterFormProps,
@@ -81,6 +75,7 @@ import {
 import { getServerURLFromLocalStorage } from './cluster.util'
 import ClusterInfoStepsModal from './ClusterInfoStepsModal'
 import { ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY } from './constants'
+import DeleteClusterConfirmationModal from './DeleteClusterConfirmationModal'
 import UserNameDropDownList from './UseNameListDropdown'
 
 const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio')
@@ -117,7 +112,6 @@ const ClusterForm = ({
     reload = noop,
     prometheusUrl = '',
     prometheusAuth,
-    defaultClusterComponent,
     proxyUrl = '',
     sshUsername = '',
     sshPassword = '',
@@ -126,7 +120,7 @@ const ClusterForm = ({
     isConnectedViaSSHTunnel = false,
     handleCloseCreateClusterForm = noop,
     isProd = false,
-    FooterComponent = Fragment,
+    FooterComponent,
     handleModalClose = noop,
     isTlsConnection: initialIsTlsConnection = false,
 }: ClusterFormProps & Partial<NewClusterFormProps>) => {
@@ -164,7 +158,6 @@ const ClusterForm = ({
     const [selectedUserNameOptions, setSelectedUserNameOptions] = useState<Record<string, any>>({})
     const [isClusterSelected, setClusterSeleceted] = useState<Record<string, boolean>>({})
     const [selectAll, setSelectAll] = useState<boolean>(false)
-    const [getClusterVar, setGetClusterState] = useState<boolean>(false)
     const [isConnectedViaProxyTemp, setIsConnectedViaProxyTemp] = useState(isConnectedViaProxy)
     const [isConnectedViaSSHTunnelTemp, setIsConnectedViaSSHTunnelTemp] = useState(isConnectedViaSSHTunnel)
 
@@ -212,13 +205,8 @@ const ClusterForm = ({
 
     const isGrafanaModuleInstalled = grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED
 
-    const toggleGetCluster = () => {
-        setGetClusterState(!getClusterVar)
-    }
-
     const handleEditConfigClick = () => {
-        toggleGetCluster()
-        toggleKubeConfigFile(true)
+        setDataList([])
     }
 
     const getSaveClusterPayload = (dataLists: DataListType[]) => {
@@ -339,7 +327,6 @@ const ClusterForm = ({
                 setSelectedUserNameOptions(defaultUserNameSelections)
                 setClusterSeleceted(_clusterSelections)
                 setLoadingState(false)
-                toggleGetCluster()
                 setValidationError(false)
             })
         } catch (err: any) {
@@ -659,9 +646,6 @@ const ClusterForm = ({
         }
         if (isKubeConfigFile) {
             toggleKubeConfigFile(!isKubeConfigFile)
-        }
-        if (getClusterVar) {
-            toggleGetCluster()
         }
         if (isClusterDetails) {
             toggleClusterDetails(!isClusterDetails)
@@ -1035,7 +1019,7 @@ const ClusterForm = ({
                             type="file"
                             ref={inputFileRef}
                             onChange={onFileChange}
-                            accept=".yaml"
+                            accept="text/plain application/yaml"
                             style={{ display: 'none' }}
                             data-testid="select_code_editor"
                         />
@@ -1046,45 +1030,16 @@ const ClusterForm = ({
         </CodeEditor.Container>
     )
 
-    const renderLoading = () => (
-        <div className="cluster-form dc__position-rel h-100 bg__primary flexbox-col">
-            {renderHeader()}
-
-            <div className="dc__position-rel flex-grow-1">
-                <GenericEmptyState
-                    SvgImage={MechanicalOperation}
-                    title={EMPTY_STATE_STATUS.LOADING_CLUSTER.TITLE}
-                    subTitle={EMPTY_STATE_STATUS.LOADING_CLUSTER.SUBTITLE}
-                />
-            </div>
-            <div className="w-100 dc__border-top flex right py-12 px-20 dc__no-shrink">
-                <button className="cta cancel h-36 lh-36" type="button" onClick={handleCloseButton} disabled>
-                    Cancel
-                </button>
-                {/* Dummy button */}
-                <Button dataTestId="cluster-form-loader-cta" isLoading text="" />
-            </div>
-        </div>
-    )
-
-    if (loader) {
-        return renderLoading()
-    }
-
     const saveClusterDetails = (): JSX.Element => (
-        <div className="cluster-form dc__position-rel h-100 bg__primary flexbox-col">
-            {renderHeader()}
-
+        <>
             <div className="api-token__list en-2 bw-0 bg__primary br-8 flexbox-col flex-grow-1 dc__overflow-auto">
                 <div
                     data-testid="cluster_list_page_after_selection"
                     className="saved-cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20  dc__border-bottom-n1"
                 >
-                    <div />
                     <div data-testid="cluster_validate">CLUSTER</div>
                     <div data-testid="status_validate">STATUS</div>
                     <div data-testid="message_validate">MESSAGE</div>
-                    <div />
                 </div>
                 <div className="dc__overflow-auto flex-grow-1 h-100">
                     {!saveClusterList || saveClusterList.length === 0 ? (
@@ -1096,7 +1051,6 @@ const ClusterForm = ({
                                 key={`api_${index}`}
                                 className="saved-cluster-list-row cluster-env-list_table flex-align-center fw-4 cn-9 fs-13 pr-16 pl-16 pt-6 pb-6"
                             >
-                                <div />
                                 <div
                                     data-testid={`validate-cluster-${clusterListDetail.clusterName}`}
                                     className="flexbox dc__align-items-center ml-2"
@@ -1121,6 +1075,7 @@ const ClusterForm = ({
                     )}
                 </div>
             </div>
+
             {id && (
                 <div className="dc__border-top flex right py-12 px-20 dc__no-shrink">
                     <button
@@ -1145,7 +1100,25 @@ const ClusterForm = ({
                     </button>
                 </div>
             )}
-        </div>
+
+            {!id && (
+                <FooterComponent apiCallInProgress={loader} handleModalClose={handleModalClose}>
+                    <FooterComponent.Start>
+                        <button
+                            className="dc__edit_button cb-5 h-36 lh-36"
+                            type="button"
+                            onClick={handleEditConfigClick}
+                            style={{ marginRight: 'auto' }}
+                        >
+                            <span className="flex dc__align-items-center">
+                                <Edit className="icon-dim-16 scb-5 mr-4" />
+                                Edit Kubeconfig
+                            </span>
+                        </button>
+                    </FooterComponent.Start>
+                </FooterComponent>
+            )}
+        </>
     )
 
     const handleClusterDetailCall = async () => {
@@ -1230,23 +1203,14 @@ const ClusterForm = ({
         toggleIsSelected(clusterDetail.cluster_name, true)
     }
 
-    if (loader) {
-        return renderLoading()
-    }
-
     const displayClusterDetails = () => {
         const isAnyCheckboxSelected = Object.values(isClusterSelected).some((value) => value === true)
         return (
             <>
                 {isKubeConfigFile && (
-                    <div
-                        data-testid="valid_cluster_infocolor_bar"
-                        className={`cluster-form ${id ? 'dc__position-rel h-100' : 'br-8 border__secondary flex-grow-1'} bg__primary flexbox-col`}
-                    >
-                        {renderHeader()}
-
+                    <div data-testid="valid_cluster_infocolor_bar">
                         <div className="flexbox-col flex-grow-1 dc__overflow-auto">
-                            <div className="api-token__list en-2 bw-1 bg__primary br-4 mr-20 ml-20 mt-16">
+                            <div className="api-token__list en-2 bw-1 bg__primary br-4 m-20">
                                 <InfoColourBar
                                     message={
                                         <>
@@ -1258,7 +1222,7 @@ const ClusterForm = ({
                                     Icon={InfoIcon}
                                     styles={{ borderRadius: '3px 3px 0 0' }}
                                 />
-                                <div className="cluster-list-row-1 cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-16 pr-16 dc__border-top dc__border-bottom">
+                                <div className="cluster-list-row-1 border__secondary--bottom cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-16 pr-16 dc__border-top dc__border-bottom">
                                     <div data-testid="select_all_cluster_checkbox">
                                         <Checkbox
                                             rootClassName={`form__checkbox-label--ignore-cache mb-0 flex${
@@ -1273,17 +1237,16 @@ const ClusterForm = ({
                                     <div>CLUSTER</div>
                                     <div>USER</div>
                                     <div>MESSAGE</div>
-                                    <div />
                                 </div>
                                 <div style={{ height: 'auto' }}>
-                                    {!dataList || dataList.length === 0 ? (
+                                    {!dataList?.length ? (
                                         <GenericFilterEmptyState />
                                     ) : (
                                         dataList.map((clusterDetail, index) => (
                                             <div
                                                 // eslint-disable-next-line react/no-array-index-key
                                                 key={`api_${index}`}
-                                                className="cluster-list-row-1 flex-align-center fw-4 cn-9 fs-13 pr-16 pl-16 pt-6 pb-6"
+                                                className="cluster-list-row-1 border__secondary--bottom flex-align-center fw-4 cn-9 fs-13 pr-16 pl-16 pt-6 pb-6"
                                                 style={{
                                                     height: 'auto',
                                                     alignItems: 'start',
@@ -1295,9 +1258,9 @@ const ClusterForm = ({
                                                     dataTestId={`checkbox_selection_of_cluster-${clusterDetail.cluster_name}`}
                                                     rootClassName={`form__checkbox-label--ignore-cache mb-0 flex${
                                                         selectedUserNameOptions[clusterDetail.cluster_name]
-                                                            .errorInConnecting === 'cluster-already-exists' ||
+                                                            ?.errorInConnecting === 'cluster-already-exists' ||
                                                         !selectedUserNameOptions[clusterDetail.cluster_name]
-                                                            .errorInConnecting
+                                                            ?.errorInConnecting
                                                             ? ''
                                                             : ' dc__opacity-0_5'
                                                     }`}
@@ -1306,10 +1269,10 @@ const ClusterForm = ({
                                                     value={CHECKBOX_VALUE.CHECKED}
                                                     disabled={
                                                         selectedUserNameOptions[clusterDetail.cluster_name]
-                                                            .errorInConnecting === 'cluster-already-exists'
+                                                            ?.errorInConnecting === 'cluster-already-exists'
                                                             ? false
                                                             : selectedUserNameOptions[clusterDetail.cluster_name]
-                                                                  .errorInConnecting.length > 0
+                                                                  ?.errorInConnecting.length > 0
                                                     }
                                                 />
                                                 <div
@@ -1317,9 +1280,9 @@ const ClusterForm = ({
                                                     onClick={() => {
                                                         if (
                                                             selectedUserNameOptions[clusterDetail.cluster_name]
-                                                                .errorInConnecting !== 'cluster-already-exists' &&
+                                                                ?.errorInConnecting !== 'cluster-already-exists' &&
                                                             selectedUserNameOptions[clusterDetail.cluster_name]
-                                                                .errorInConnecting.length > 0
+                                                                ?.errorInConnecting.length > 0
                                                         ) {
                                                             return
                                                         }
@@ -1352,9 +1315,9 @@ const ClusterForm = ({
                                                         </div>
                                                     )}
                                                     {selectedUserNameOptions[clusterDetail.cluster_name]
-                                                        .errorInConnecting !== '' &&
+                                                        ?.errorInConnecting !== '' &&
                                                         selectedUserNameOptions[clusterDetail.cluster_name]
-                                                            .errorInConnecting !== 'cluster-already-exists' && (
+                                                            ?.errorInConnecting !== 'cluster-already-exists' && (
                                                             <div
                                                                 className="flex left top"
                                                                 style={{
@@ -1362,7 +1325,7 @@ const ClusterForm = ({
                                                                 }}
                                                             >
                                                                 {selectedUserNameOptions[clusterDetail.cluster_name]
-                                                                    .errorInConnecting.length !== 0 && (
+                                                                    ?.errorInConnecting.length !== 0 && (
                                                                     <div className="m-2">
                                                                         <Icon name="ic-error" color={null} />
                                                                     </div>
@@ -1411,15 +1374,30 @@ const ClusterForm = ({
                         )}
 
                         <FooterComponent apiCallInProgress={loader} handleModalClose={handleModalClose}>
-                            <button
-                                data-testid="save_cluster_list_button_after_selection"
-                                className="cta h-36 lh-36"
-                                type="button"
-                                onClick={() => handleClusterDetailCall()}
-                                disabled={!saveClusterList || !isAnyCheckboxSelected}
-                            >
-                                Save
-                            </button>
+                            <FooterComponent.Start>
+                                <button
+                                    className="dc__edit_button cb-5 h-36 lh-36"
+                                    type="button"
+                                    onClick={handleEditConfigClick}
+                                    style={{ marginRight: 'auto' }}
+                                >
+                                    <span className="flex dc__align-items-center">
+                                        <Edit className="icon-dim-16 scb-5 mr-4" />
+                                        Edit Kubeconfig
+                                    </span>
+                                </button>
+                            </FooterComponent.Start>
+                            <FooterComponent.CTA>
+                                <button
+                                    data-testid="save_cluster_list_button_after_selection"
+                                    className="cta h-36 lh-36"
+                                    type="button"
+                                    onClick={() => handleClusterDetailCall()}
+                                    disabled={!saveClusterList || !isAnyCheckboxSelected}
+                                >
+                                    Save
+                                </button>
+                            </FooterComponent.CTA>
                         </FooterComponent>
                     </div>
                 )}
@@ -1430,29 +1408,6 @@ const ClusterForm = ({
 
     const showConfirmationModal = () => setConfirmation(true)
     const hideConfirmationModal = () => setConfirmation(false)
-
-    const onDelete = async () => {
-        const payload = {
-            id,
-            cluster_name: clusterName,
-            config: { bearer_token: state.token.value },
-            active: true,
-            prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
-            prometheusAuth: {
-                userName: prometheusToggleEnabled ? state.userName.value : '',
-                password: prometheusToggleEnabled ? state.password.value : '',
-                tlsClientCert: prometheusToggleEnabled ? state.prometheusTlsClientKey.value : '',
-                tlsClientKey: prometheusToggleEnabled ? state.prometheusTlsClientCert.value : '',
-            },
-            remoteConnectionConfig: getRemoteConnectionConfig(state, remoteConnectionMethod),
-            server_url: serverUrl,
-            defaultClusterComponent,
-            k8sversion: '',
-            insecureSkipTlsVerify: !isTlsConnection,
-        }
-        await deleteCluster(payload)
-        reload()
-    }
 
     const renderFooter = () => {
         if (isKubeConfigFile && id) {
@@ -1486,18 +1441,16 @@ const ClusterForm = ({
         if (isKubeConfigFile && !id) {
             return (
                 <FooterComponent apiCallInProgress={loader} handleModalClose={handleModalClose}>
-                    <button
-                        className={`cta h-36 ${id ? 'ml-12' : ''} lh-36`}
-                        type="button"
-                        onClick={handleGetClustersClick}
-                        disabled={!saveYamlData}
-                        data-testId="get_cluster_button"
-                    >
-                        <div className="flex">
-                            Get cluster
-                            <ForwardArrow className={`ml-5 ${!saveYamlData ? 'scn-4' : ''}`} />
-                        </div>
-                    </button>
+                    <FooterComponent.CTA>
+                        <Button
+                            text="Get Cluster"
+                            endIcon={<Icon name="ic-arrow-right" color="N900" />}
+                            disabled={isDefaultCluster}
+                            dataTestId="get_cluster_button"
+                            onClick={handleGetClustersClick}
+                            isLoading={loader}
+                        />
+                    </FooterComponent.CTA>
                 </FooterComponent>
             )
         }
@@ -1510,7 +1463,7 @@ const ClusterForm = ({
                         variant={ButtonVariantType.secondary}
                         style={ButtonStyleType.negative}
                         startIcon={<Trash />}
-                        disabled={isDefaultCluster}
+                        disabled={isDefaultCluster || loader}
                         dataTestId="delete_cluster"
                         onClick={showConfirmationModal}
                     />
@@ -1521,13 +1474,15 @@ const ClusterForm = ({
                             text="Cancel"
                             variant={ButtonVariantType.secondary}
                             style={ButtonStyleType.neutral}
+                            disabled={loader}
                             dataTestId="cancel_button"
                             onClick={handleCloseButton}
                         />
                         <Button
                             dataTestId="save_cluster_after_entering_cluster_details"
                             onClick={handleOnSubmit}
-                            text={id ? 'Update cluster' : 'Save cluster'}
+                            text="Update cluster"
+                            isLoading={loader}
                             buttonProps={{
                                 type: 'submit',
                             }}
@@ -1535,66 +1490,72 @@ const ClusterForm = ({
                     </div>
                 ) : (
                     <FooterComponent apiCallInProgress={loader} handleModalClose={handleModalClose}>
-                        <Button
-                            dataTestId="save_cluster_after_entering_cluster_details"
-                            onClick={handleOnSubmit}
-                            text="Save cluster"
-                            buttonProps={{
-                                type: 'submit',
-                            }}
-                        />
+                        <FooterComponent.CTA>
+                            <Button
+                                dataTestId="save_cluster_after_entering_cluster_details"
+                                onClick={handleOnSubmit}
+                                text="Save cluster"
+                                buttonProps={{
+                                    type: 'submit',
+                                }}
+                            />
+                        </FooterComponent.CTA>
                     </FooterComponent>
                 )}
             </div>
         )
     }
 
-    return getClusterVar ? (
-        displayClusterDetails()
-    ) : (
+    return (
         <div
-            className={`${id ? 'dc__position-rel h-100' : 'br-8 border__secondary'} ${isKubeConfigFile ? 'flex-grow-1' : ''} cluster-form bg__primary flexbox-col`}
+            className={`${id ? 'dc__position-rel h-100' : 'br-8 border__secondary'} ${isKubeConfigFile && !dataList.length ? 'flex-grow-1' : ''} cluster-form bg__primary flexbox-col`}
         >
             {id && renderHeader()}
-            <div className={`flex-grow-1 flexbox-col ${id ? 'dc__overflow-auto' : ''}`}>
-                <div className="p-20 flex-grow-1 flexbox-col">
-                    {!id && (
-                        <div className="form__row clone-apps dc__inline-block pd-0 pt-0 pb-12">
-                            <RadioGroup
-                                className="radio-group-no-border"
-                                value={isKubeConfigFile ? 'EXISTING' : 'BLANK'}
-                                name="trigger-type"
-                                onChange={() => toggleKubeConfigFile(!isKubeConfigFile)}
-                            >
-                                <RadioGroupItem value={AppCreationType.Blank}>
-                                    Use Server URL & Bearer token
-                                </RadioGroupItem>
-                                <RadioGroupItem
-                                    dataTestId="add_cluster_from_kubeconfig_file"
-                                    value={AppCreationType.Existing}
-                                >
-                                    From kubeconfig
-                                </RadioGroupItem>
-                            </RadioGroup>
+
+            {dataList.length ? (
+                displayClusterDetails()
+            ) : (
+                <>
+                    <div className={`flex-grow-1 flexbox-col ${id ? 'dc__overflow-auto' : ''}`}>
+                        <div className="p-20 flex-grow-1 flexbox-col">
+                            {!id && (
+                                <div className="form__row clone-apps dc__inline-block p-0">
+                                    <RadioGroup
+                                        className="radio-group-no-border"
+                                        value={isKubeConfigFile ? 'EXISTING' : 'BLANK'}
+                                        name="trigger-type"
+                                        onChange={() => toggleKubeConfigFile(!isKubeConfigFile)}
+                                    >
+                                        <RadioGroupItem value={AppCreationType.Blank}>
+                                            Use Server URL & Bearer token
+                                        </RadioGroupItem>
+                                        <RadioGroupItem
+                                            dataTestId="add_cluster_from_kubeconfig_file"
+                                            value={AppCreationType.Existing}
+                                        >
+                                            From kubeconfig
+                                        </RadioGroupItem>
+                                    </RadioGroup>
+                                </div>
+                            )}
+
+                            {isKubeConfigFile ? codeEditor() : renderUrlAndBearerToken()}
                         </div>
-                    )}
 
-                    {isKubeConfigFile ? codeEditor() : renderUrlAndBearerToken()}
-                </div>
+                        {confirmation && (
+                            <DeleteClusterConfirmationModal
+                                clusterId={clusterId}
+                                clusterName={clusterName}
+                                handleClose={hideConfirmationModal}
+                                reload={reload}
+                                // TODO: get installationId here
+                            />
+                        )}
+                    </div>
 
-                {confirmation && (
-                    <DeleteConfirmationModal
-                        title={clusterName}
-                        component={DeleteComponentsName.Cluster}
-                        subtitle={DC_DELETE_SUBTITLES.DELETE_ENVIRONMENT_SUBTITLE}
-                        onDelete={onDelete}
-                        closeConfirmationModal={hideConfirmationModal}
-                        errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.BAD_REQUEST}
-                    />
-                )}
-            </div>
-
-            {renderFooter()}
+                    {renderFooter()}
+                </>
+            )}
         </div>
     )
 }

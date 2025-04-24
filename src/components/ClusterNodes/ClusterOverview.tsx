@@ -516,13 +516,17 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
                     <div className="flexbox-col dc__gap-12">
                         <div>
                             <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Status</div>
-                            <div className="fs-13 fw-6">
-                                <StatusComponent
-                                    status={clusterCapacityData?.status ?? StatusType.FAILED}
-                                    message={clusterCapacityData?.status ?? 'Connection Failed'}
-                                    iconSize={20}
-                                />
-                            </div>
+                            {isClusterCapacityDataLoading ? (
+                                <div className="shimmer w-64" />
+                            ) : (
+                                <div className="fs-13 fw-6">
+                                    <StatusComponent
+                                        status={clusterCapacityData?.status ?? StatusType.FAILED}
+                                        message={clusterCapacityData?.status ?? 'Connection Failed'}
+                                        iconSize={20}
+                                    />
+                                </div>
+                            )}
                         </div>
                         <div>
                             <div className="fs-13 fw-4 lh-20 cn-7 mb-4">{creationPrefix} on</div>

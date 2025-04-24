@@ -70,13 +70,13 @@
 
 .saved-cluster-list-row {
     display: grid;
-    grid-template-columns: 0px minmax(278px, 346px) 100px 360px 190px minmax(80px, 90px);
+    grid-template-columns: minmax(278px, 346px) 100px 1fr;
     grid-column-gap: 16px;
 }
 
 .cluster-list-row-1 {
     display: grid;
-    grid-template-columns: 24px minmax(240px, 250px) 150px 420px minmax(80px, 90px);
+    grid-template-columns: 24px minmax(240px, 250px) 150px 1fr;
     grid-column-gap: 16px;
     line-height: 20px;
 }

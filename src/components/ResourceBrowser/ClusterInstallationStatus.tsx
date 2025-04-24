@@ -47,6 +47,7 @@ const ClusterInstallationStatus = () => {
                             onChange={onClusterChange}
                             clusterList={clusterOptions}
                             clusterId={installationId}
+                            isInstallationStatusView
                         />
                     ),
                 },

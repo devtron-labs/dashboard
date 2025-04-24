@@ -187,7 +187,6 @@ export type EditClusterFormProps = {
     serverUrl: string
     prometheusUrl: string
     prometheusAuth: any
-    defaultClusterComponent: any
     proxyUrl: string
     sshUsername: string
     sshPassword: string
@@ -214,4 +213,16 @@ export interface AddClusterFormPrefilledInfoType {
 
 export interface AddEnvironmentFormPrefilledInfoType {
     namespace: string
+}
+
+export interface DeleteClusterConfirmationModalProps {
+    clusterId: string
+    clusterName: string
+    handleClose: () => void
+    installationId?: string
+    reload?: () => void
+}
+
+export interface DeleteClusterPayload {
+    id: number
 }

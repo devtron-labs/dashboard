@@ -222,6 +222,7 @@ export interface ClusterSelectorType {
     onChange: ({ label, value }) => void
     clusterList: ClusterOptionType[]
     clusterId: string
+    isInstallationStatusView?: boolean
 }
 
 export interface CreateResourceButtonType {

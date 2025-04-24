@@ -295,7 +295,6 @@ const Cluster = ({
     id: clusterId,
     cluster_name,
     insecureSkipTlsVerify,
-    defaultClusterComponent,
     server_url,
     environments,
     reload,
@@ -566,7 +565,6 @@ const Cluster = ({
                                     reload={reload}
                                     prometheusUrl={prometheus_url}
                                     prometheusAuth={prometheusAuth}
-                                    defaultClusterComponent={defaultClusterComponent}
                                     proxyUrl={proxyUrl}
                                     isConnectedViaSSHTunnel={toConnectWithSSHTunnel}
                                     toggleEditMode={toggleEditMode}

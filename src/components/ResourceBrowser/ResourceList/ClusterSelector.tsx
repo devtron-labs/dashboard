@@ -14,10 +14,21 @@
  * limitations under the License.
  */
 
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import ReactSelect, { Props as SelectProps, SelectInstance } from 'react-select'
 
-import { APP_SELECTOR_STYLES, AppSelectorDropdownIndicator } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    APP_SELECTOR_STYLES,
+    AppSelectorDropdownIndicator,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    Icon,
+    PopupMenu,
+} from '@devtron-labs/devtron-fe-common-lib'
+
+import { ReactComponent as MenuDots } from '@Icons/appstatus/ic-menu-dots.svg'
+import DeleteClusterConfirmationModal from '@Components/cluster/DeleteClusterConfirmationModal'
 
 import { DOCUMENTATION } from '../../../config'
 import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
@@ -30,19 +41,35 @@ import {
 } from '../Constants'
 import { ClusterSelectorType } from '../Types'
 
-const ClusterSelector: React.FC<ClusterSelectorType> = ({ onChange, clusterList, clusterId }) => {
+const ClusterSelector: React.FC<ClusterSelectorType> = ({
+    onChange,
+    clusterList,
+    clusterId,
+    isInstallationStatusView,
+}) => {
+    const [openDeleteClusterModal, setOpenDeleteClusterModal] = useState(false)
     const selectRef = useRef<SelectInstance>(null)
 
     let filteredClusterList = clusterList
     if (window._env_.HIDE_DEFAULT_CLUSTER) {
         filteredClusterList = clusterList.filter((item) => Number(item.value) !== DEFAULT_CLUSTER_ID)
     }
-    const defaultOption = filteredClusterList.find((item) => String(item.value) === clusterId)
+    const defaultOption = filteredClusterList.find(
+        (item) => String(item.value) === clusterId && (!isInstallationStatusView || item.isInstallationCluster),
+    )
 
     const handleOnKeyDown: SelectProps['onKeyDown'] = (event) => {
         if (event.key === 'Escape') {
             selectRef.current?.inputRef.blur()
         }
+    }
+
+    const handleOpenDeleteModal = () => {
+        setOpenDeleteClusterModal(true)
+    }
+
+    const handleCloseDeleteModal = () => {
+        setOpenDeleteClusterModal(false)
     }
 
     return (
@@ -62,7 +89,37 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({ onChange, clusterList,
                 value={defaultOption}
                 styles={APP_SELECTOR_STYLES}
             />
+
             {defaultOption?.isProd && <span className="px-6 py-2 br-4 bcb-1 cb-7 fs-12 lh-16 fw-5">Production</span>}
+
+            <PopupMenu autoClose>
+                <PopupMenu.Button rootClassName="flex ml-auto p-4" isKebab>
+                    <MenuDots className="icon-dim-16" data-testid="popup-menu-button" />
+                </PopupMenu.Button>
+
+                <PopupMenu.Body rootClassName="dc__border p-4">
+                    <div className="w-120 flexbox-col">
+                        <Button
+                            dataTestId="delete-cluster-button"
+                            text="Delete"
+                            variant={ButtonVariantType.borderLess}
+                            style={ButtonStyleType.negative}
+                            fullWidth
+                            startIcon={<Icon name="ic-delete" color={null} />}
+                            onClick={handleOpenDeleteModal}
+                        />
+                    </div>
+                </PopupMenu.Body>
+            </PopupMenu>
+
+            {openDeleteClusterModal && (
+                <DeleteClusterConfirmationModal
+                    clusterId={clusterId}
+                    clusterName={defaultOption.label}
+                    handleClose={handleCloseDeleteModal}
+                    {...(defaultOption.isInstallationCluster ? { installationId: clusterId } : {})}
+                />
+            )}
         </div>
     )
 }
