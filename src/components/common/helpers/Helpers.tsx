@@ -1238,7 +1238,7 @@ export const setAppGroupFilterInLocalStorage = ({
 }
 
 const renderHostURLWarning = () => (
-    <div className='flexbox dc__content-space'>
+    <div className="flexbox dc__content-space">
         {HOST_ERROR_MESSAGE.NotConfigured} &nbsp;
         <Link className="dc__link-bold" to={URLS.GLOBAL_CONFIG_HOST_URL}>
             {HOST_ERROR_MESSAGE.Review}
