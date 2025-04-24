@@ -441,6 +441,6 @@ export const DUPLICATE_PIPELINE_NAME_VALIDATION = 'You cannot use same name for 
 export const GENERATE_TOKEN_NAME_VALIDATION = 'Token name is required to generate token'
 
 export const HOST_ERROR_MESSAGE = {
-    NotConfigured: 'Host url is not configured or is incorrect. Reach out to your DevOps team (super-admin) to',
-    Review: 'Review and update',
+    NotConfigured: 'Host URL is missing or incorrect. Please contact a super admin.',
+    Review: 'Review & update',
 }

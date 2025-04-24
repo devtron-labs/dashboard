@@ -839,7 +839,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     renderHostErrorMessage() {
         if (!this.state.hostURLConfig || this.state.hostURLConfig.value !== window.location.origin) {
             return (
-                <div className="mb-6">
+                <div className="mb-16">
                     <InValidHostUrlWarningBlock />
                 </div>
             )

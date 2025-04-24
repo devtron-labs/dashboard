@@ -72,12 +72,7 @@ import { getHostURLConfiguration } from '../../../../services/service'
 import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
 import { getCIWebhookRes } from './ciWebhook.service'
 import { TriggerViewContext } from './config'
-import {
-    DEFAULT_ENV,
-    TIME_STAMP_ORDER,
-    TRIGGER_VIEW_PARAMS,
-    TRIGGER_VIEW_GA_EVENTS,
-} from './Constants'
+import { DEFAULT_ENV, TIME_STAMP_ORDER, TRIGGER_VIEW_PARAMS, TRIGGER_VIEW_GA_EVENTS } from './Constants'
 import {
     APP_DETAILS,
     CI_CONFIGURED_GIT_MATERIAL_ERROR,
@@ -1422,8 +1417,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     renderHostErrorMessage() {
         if (!this.state.hostURLConfig || this.state.hostURLConfig.value !== window.location.origin) {
             return (
-                <div className="mb-6">
-                  <InValidHostUrlWarningBlock />
+                <div className="mb-16">
+                    <InValidHostUrlWarningBlock />
                 </div>
             )
         }
