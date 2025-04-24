@@ -204,27 +204,25 @@ export const validateTask = (
                 taskErrorObj[currentStepTypeVariable]['conditionDetails'] = (
                     taskData[currentStepTypeVariable].conditionDetails ?? []
                 ).reduce((acc, element) => {
-                    acc[element.id] = Object.values(ConditionDataTableHeaderKeys).reduce((keyAcc, key) => {
-                        let _conditionOnVariable = element.conditionOnVariable
-
-                        if (element.conditionOnVariable) {
-                            if (
-                                ((element.conditionType === ConditionType.FAIL ||
-                                    element.conditionType === ConditionType.PASS) &&
-                                    !outputVarMap[element.conditionOnVariable]) ||
-                                ((element.conditionType === ConditionType.TRIGGER ||
-                                    element.conditionType === ConditionType.SKIP) &&
-                                    !inputVarMap[element.conditionOnVariable])
-                            ) {
-                                _conditionOnVariable = ''
-                            }
+                    if (element.conditionOnVariable) {
+                        if (
+                            ((element.conditionType === ConditionType.FAIL ||
+                                element.conditionType === ConditionType.PASS) &&
+                                !outputVarMap[element.conditionOnVariable]) ||
+                            ((element.conditionType === ConditionType.TRIGGER ||
+                                element.conditionType === ConditionType.SKIP) &&
+                                !inputVarMap[element.conditionOnVariable])
+                        ) {
+                            element.conditionOnVariable = ''
                         }
+                    }
 
+                    acc[element.id] = Object.values(ConditionDataTableHeaderKeys).reduce((keyAcc, key) => {
                         const validationState = validationRules.validateConditionDataCell({
                             key,
                             condition: {
                                 conditionalValue: element.conditionalValue,
-                                conditionOnVariable: _conditionOnVariable,
+                                conditionOnVariable: element.conditionOnVariable,
                                 conditionOperator: element.conditionOperator,
                             },
                         })

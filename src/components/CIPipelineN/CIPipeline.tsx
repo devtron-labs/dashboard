@@ -428,9 +428,8 @@ export default function CIPipeline({
                 }
             }
 
-            _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid && valid
             _formDataErrorObj[BuildStageVariable.Build].isValid =
-                _formDataErrorObj[BuildStageVariable.Build].isValid && _formDataErrorObj.dockerArgsError.isValid
+                _formDataErrorObj.name.isValid && valid && _formDataErrorObj.dockerArgsError.isValid
 
             if (!_formDataErrorObj[BuildStageVariable.Build].isValid) {
                 setShowFormError(true)
@@ -627,8 +626,7 @@ export default function CIPipeline({
         ) {
             setApiInProgress(false)
             const branchNameNotPresent = formData.materials.some((_mat) => !_mat.value)
-            const dockerArgsInvalid = !formDataErrorObj.dockerArgsError.isValid
-            if (formData.name === '' || branchNameNotPresent || dockerArgsInvalid) {
+            if (formData.name === '' || branchNameNotPresent || !formDataErrorObj.dockerArgsError.isValid) {
                 ToastManager.showToast({
                     variant: ToastVariantType.error,
                     description: 'Please ensure all fields are valid',

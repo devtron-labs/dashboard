@@ -1,4 +1,4 @@
-import { useContext, useMemo } from 'react'
+import { useContext } from 'react'
 
 import {
     Button,
@@ -62,13 +62,9 @@ export const ConditionDataTable = ({ type, conditionType, handleConditionTypeCha
     const ioVariablesError =
         formDataErrorObj[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]?.conditionDetails || {}
 
+    // TABLE HEADERS & ROWS
     const headers = getConditionDataTableHeaders(conditionType)
-
-    // TABLE ROWS
-    const rows = useMemo<ConditionDataTableType['rows']>(
-        () => getConditionDataTableRows({ ioVariables, conditionDetails, conditionType }),
-        [conditionDetails, ioVariables, conditionType],
-    )
+    const rows = getConditionDataTableRows({ ioVariables, conditionDetails, conditionType })
 
     // TABLE CELL ERROR
     const cellError: ConditionDataTableType['cellError'] = Object.keys(ioVariablesError).length

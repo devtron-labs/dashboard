@@ -20,6 +20,7 @@ import {
     AppConfigProps,
     ChangeCIPayloadType,
     CiPipelineSourceTypeOption,
+    ConditionDetails,
     CustomTagType,
     DockerConfigOverrideType,
     ErrorObj,
@@ -168,13 +169,6 @@ interface CommandArgsMap {
 export interface PortMapType {
     portOnLocal: number
     portOnContainer: number
-}
-interface ConditionDetails {
-    id: number
-    conditionOnVariable: string
-    conditionOperator: string
-    conditionType: ConditionType
-    conditionalValue: string
 }
 
 interface InlineStepDetailType {
