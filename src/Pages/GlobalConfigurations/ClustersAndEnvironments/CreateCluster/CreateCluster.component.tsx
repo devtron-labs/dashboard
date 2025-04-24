@@ -15,8 +15,8 @@ import {
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import ClusterForm from '@Components/cluster/ClusterForm'
 import { importComponentFromFELibrary } from '@Components/common'
-import EnterpriseTrialDialog from '@Components/EnterpriseTrialDialog'
 import { URLS } from '@Config/routes'
+import EnterpriseTrialDialog from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/EnterpriseTrialDialog'
 
 import FooterComponent from './FooterComponent'
 import Sidebar from './Sidebar'
@@ -68,7 +68,6 @@ const CreateCluster = ({ handleReloadClusterList, handleRedirectOnModalClose }: 
             case CreateClusterTypeEnum.CONNECT_CLUSTER:
                 return (
                     <ClusterForm
-                        key={type}
                         handleCloseCreateClusterForm={handleModalClose}
                         reload={handleReloadClusterList}
                         handleModalClose={handleModalClose}

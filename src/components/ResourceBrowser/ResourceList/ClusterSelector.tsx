@@ -17,17 +17,9 @@
 import React, { useRef, useState } from 'react'
 import ReactSelect, { Props as SelectProps, SelectInstance } from 'react-select'
 
-import {
-    APP_SELECTOR_STYLES,
-    AppSelectorDropdownIndicator,
-    Button,
-    ButtonStyleType,
-    ButtonVariantType,
-    Icon,
-    PopupMenu,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { APP_SELECTOR_STYLES, AppSelectorDropdownIndicator, Icon, PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as MenuDots } from '@Icons/appstatus/ic-menu-dots.svg'
+import { ReactComponent as MenuDots } from '@Icons/ic-dot.svg'
 import DeleteClusterConfirmationModal from '@Components/cluster/DeleteClusterConfirmationModal'
 
 import { DOCUMENTATION } from '../../../config'
@@ -93,21 +85,20 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
             {defaultOption?.isProd && <span className="px-6 py-2 br-4 bcb-1 cb-7 fs-12 lh-16 fw-5">Production</span>}
 
             <PopupMenu autoClose>
-                <PopupMenu.Button rootClassName="flex ml-auto p-4" isKebab>
-                    <MenuDots className="icon-dim-16" data-testid="popup-menu-button" />
+                <PopupMenu.Button rootClassName="flex ml-auto p-4 border__secondary" isKebab>
+                    <MenuDots className="icon-dim-16 fcn-7" data-testid="popup-menu-button" />
                 </PopupMenu.Button>
 
                 <PopupMenu.Body rootClassName="dc__border p-4">
-                    <div className="w-120 flexbox-col">
-                        <Button
-                            dataTestId="delete-cluster-button"
-                            text="Delete"
-                            variant={ButtonVariantType.borderLess}
-                            style={ButtonStyleType.negative}
-                            fullWidth
-                            startIcon={<Icon name="ic-delete" color={null} />}
+                    <div className="w-150 flexbox-col">
+                        <button
+                            type="button"
+                            className="dc__outline-none flexbox dc__gap-8 dc__transparent dc__hover-n50 px-12 py-6 dc__align-items-center"
                             onClick={handleOpenDeleteModal}
-                        />
+                        >
+                            <Icon name="ic-delete" color="R500" />
+                            <span className="fs-14 lh-1-5 cr-5">Delete</span>
+                        </button>
                     </div>
                 </PopupMenu.Body>
             </PopupMenu>
@@ -115,9 +106,9 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
             {openDeleteClusterModal && (
                 <DeleteClusterConfirmationModal
                     clusterId={clusterId}
-                    clusterName={defaultOption.label}
+                    clusterName={defaultOption?.label}
                     handleClose={handleCloseDeleteModal}
-                    {...(defaultOption.isInstallationCluster ? { installationId: clusterId } : {})}
+                    {...(defaultOption?.isInstallationCluster ? { installationId: clusterId } : {})}
                 />
             )}
         </div>

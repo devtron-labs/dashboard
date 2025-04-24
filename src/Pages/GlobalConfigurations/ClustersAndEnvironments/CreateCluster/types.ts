@@ -23,3 +23,13 @@ export interface CreateClusterProps {
     handleReloadClusterList: () => void
     handleRedirectOnModalClose?: () => void
 }
+
+export enum FooterComponentChildKey {
+    START = 'Start',
+    CTA = 'CTA',
+}
+
+export interface EnterpriseTrialDialogProps {
+    featureTitle: string
+    featureDescription: string
+}

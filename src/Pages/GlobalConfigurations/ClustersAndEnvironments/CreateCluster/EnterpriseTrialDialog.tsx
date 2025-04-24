@@ -8,10 +8,7 @@ import {
     TestimonialContent,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-interface EnterpriseTrialDialogProps {
-    featureTitle: string
-    featureDescription: string
-}
+import { EnterpriseTrialDialogProps } from './types'
 
 const EnterpriseTrialDialog = ({ featureTitle, featureDescription }: EnterpriseTrialDialogProps) => {
     const testimonialCount = TESTIMONIAL_CARD_DATA.length

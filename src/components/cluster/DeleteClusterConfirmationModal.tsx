@@ -27,7 +27,6 @@ const DeleteClusterConfirmationModal = ({
 
     const handleDelete = async () => {
         if (shouldDeleteInstalledCluster && deleteInstalledCluster) {
-            // TODO: if we are deleting the installed cluster do we need to manually delete the added cluster?
             await deleteInstalledCluster(Number(installationId))
         }
         await deleteCluster({ id: Number(clusterId) })
@@ -44,6 +43,7 @@ const DeleteClusterConfirmationModal = ({
             component={DeleteComponentsName.Cluster}
             subtitle={DC_DELETE_SUBTITLES.DELETE_CLUSTER_SUBTITLES}
             onDelete={handleDelete}
+            confirmationConfig={{ confirmationKeyword: clusterName, identifier: 'delete-cluster-confirmation-input' }}
             closeConfirmationModal={handleClose}
             errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.BAD_REQUEST}
         >
@@ -55,7 +55,7 @@ const DeleteClusterConfirmationModal = ({
                     rootClassName="m-0"
                     onChange={handleToggleShouldDeleteInstalledCluster}
                 >
-                    Delete installation cluster
+                    Delete cluster from AWS
                 </Checkbox>
             )}
         </DeleteConfirmationModal>

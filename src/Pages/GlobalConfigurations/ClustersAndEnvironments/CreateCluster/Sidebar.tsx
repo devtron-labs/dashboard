@@ -55,8 +55,14 @@ const Sidebar = () => {
                             </span>
 
                             {isEnterprise && !isFELibAvailable && (
-                                <Tooltip content="This is an enterprise only feature">
-                                    <Icon name="ic-enterprise-feat" color="Y700" />
+                                <Tooltip
+                                    content="This is an enterprise only feature"
+                                    alwaysShowTippyOnHover
+                                    placement="right"
+                                >
+                                    <div className="flex">
+                                        <Icon name="ic-enterprise-feat" color="Y700" />
+                                    </div>
                                 </Tooltip>
                             )}
                         </NavLink>

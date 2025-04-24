@@ -340,6 +340,6 @@ export const CLUSTER_CONFIG_POLLING_INTERVAL = 10000 // 10 seconds
 export const CLUSTER_DESCRIPTION_DUMMY_DATA: DescriptionDataType = {
     descriptionId: 0,
     descriptionText: defaultClusterNote,
-    descriptionUpdatedBy: defaultClusterNote,
+    descriptionUpdatedBy: '',
     descriptionUpdatedOn: '',
 }

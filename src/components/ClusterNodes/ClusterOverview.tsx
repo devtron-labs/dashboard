@@ -54,7 +54,6 @@ import { getClusterCapacity, getClusterDetails, updateClusterShortDescription } 
 import {
     CLUSTER_CONFIG_POLLING_INTERVAL,
     CLUSTER_DESCRIPTION_DUMMY_DATA,
-    defaultClusterNote,
     defaultClusterShortDescription,
 } from './constants'
 import { ClusterDetailsType, ClusterOverviewProps, DescriptionDataType, ERROR_TYPE } from './types'
@@ -129,12 +128,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
             clusterDetails.addedOn = _moment.format(Moment12HourFormat)
             clusterDetails.serverURL = result.serverUrl
 
-            const data: DescriptionDataType = {
-                descriptionText: defaultClusterNote,
-                descriptionId: 0,
-                descriptionUpdatedBy: '',
-                descriptionUpdatedOn: '',
-            }
+            const data: DescriptionDataType = CLUSTER_DESCRIPTION_DUMMY_DATA
 
             if (_clusterNote) {
                 data.descriptionText = _clusterNote.description

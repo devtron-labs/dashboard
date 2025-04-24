@@ -233,7 +233,7 @@ class ClusterList extends Component<ClusterListProps, any> {
                         component={ButtonComponentType.link}
                         startIcon={<Add />}
                         size={ComponentSizeType.medium}
-                        text="Add cluster"
+                        text="New Cluster"
                     />
                 </div>
                 {this.state.clusters.map(

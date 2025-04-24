@@ -1,4 +1,4 @@
-import { generatePath, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import {
     ALL_NAMESPACE_OPTION,
@@ -12,13 +12,13 @@ import {
     ComponentSizeType,
     Icon,
     Tooltip,
-    URLS as CommonURLS,
     useBulkSelection,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
 import { importComponentFromFELibrary } from '@Components/common'
-import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '@Components/ResourceBrowser/Constants'
+import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
+import { getClusterChangeRedirectionUrl } from '@Components/ResourceBrowser/Utils'
 import { AppDetailsTabs } from '@Components/v2/appDetails/appDetails.store'
 import { URLS } from '@Config/routes'
 
@@ -60,10 +60,12 @@ const ClusterListRow = ({
 
     // TODO: @Elessar1802 will be replacing all terminal url with new utils
 
-    // TODO: merging to be done at backend
-    const clusterLinkURL = clusterData.installationId
-        ? generatePath(URLS.RESOURCE_BROWSER_INSTALLATION_CLUSTER, { installationId: clusterData.id })
-        : `${CommonURLS.RESOURCE_BROWSER}/${clusterData.id}/${ALL_NAMESPACE_OPTION.value}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
+    const clusterLinkURL = getClusterChangeRedirectionUrl(
+        !!clusterData.installationId,
+        // NOTE: installationId is 0 for added clusters
+        // it is non zero for created clusters, therefore using || instead of ??
+        String(clusterData.installationId || clusterData.id),
+    )
 
     return (
         <div

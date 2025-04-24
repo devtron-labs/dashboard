@@ -569,7 +569,6 @@ const ClusterForm = ({
 
     const OnPrometheusAuthTypeChange = (e) => {
         handleOnChange(e)
-        // TODO: check if this works
         if (state.authType.value === AuthenticationType.BASIC) {
             setPrometheusAuthenticationType({ type: AuthenticationType.ANONYMOUS })
         } else {
@@ -1253,8 +1252,6 @@ const ClusterForm = ({
                                                 }}
                                             >
                                                 <Checkbox
-                                                    // eslint-disable-next-line react/no-array-index-key
-                                                    key={`app-$${index}`}
                                                     dataTestId={`checkbox_selection_of_cluster-${clusterDetail.cluster_name}`}
                                                     rootClassName={`form__checkbox-label--ignore-cache mb-0 flex${
                                                         selectedUserNameOptions[clusterDetail.cluster_name]

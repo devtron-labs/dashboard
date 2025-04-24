@@ -60,7 +60,7 @@ const meta = {
             control: { type: 'radio' },
         },
     },
-} satisfies Meta<ButtonProps<ButtonComponentType>>
+} satisfies Meta<ButtonProps>
 
 export default meta
 

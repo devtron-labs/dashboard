@@ -17,7 +17,7 @@
 import React, { useState } from 'react'
 import { generatePath, Route, useHistory } from 'react-router-dom'
 
-import { Button, ButtonComponentType, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
+import { Button, ButtonComponentType, ComponentSizeType, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 
 import CreateCluster from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/CreateCluster.component'
 import {
@@ -60,36 +60,39 @@ export const renderCreateResourceButton = (clusterId: string, callback: CreateRe
 
 export const NewClusterButton = ({ handleReloadClusterList }: Pick<CreateClusterProps, 'handleReloadClusterList'>) => {
     const { replace } = useHistory()
+    const { isSuperAdmin } = useMainContext()
 
     const handleCloseCreateClusterModal = () => {
         replace(URLS.RESOURCE_BROWSER)
     }
 
     return (
-        <>
-            <div>
-                <Button
-                    dataTestId="add_cluster_button"
-                    text="New Cluster"
-                    size={ComponentSizeType.small}
-                    component={ButtonComponentType.link}
-                    startIcon={<Add />}
-                    linkProps={{
-                        to: generatePath(URLS.RESOURCE_BROWSER_CREATE_CLUSTER, {
-                            type: CreateClusterTypeEnum.CONNECT_CLUSTER,
-                        }),
-                    }}
-                />
-                <span className="dc__divider" />
-            </div>
+        isSuperAdmin && (
+            <>
+                <div>
+                    <Button
+                        dataTestId="add_cluster_button"
+                        text="New Cluster"
+                        size={ComponentSizeType.small}
+                        component={ButtonComponentType.link}
+                        startIcon={<Add />}
+                        linkProps={{
+                            to: generatePath(URLS.RESOURCE_BROWSER_CREATE_CLUSTER, {
+                                type: CreateClusterTypeEnum.CONNECT_CLUSTER,
+                            }),
+                        }}
+                    />
+                    <span className="dc__divider" />
+                </div>
 
-            <Route path={URLS.RESOURCE_BROWSER_CREATE_CLUSTER} exact>
-                <CreateCluster
-                    handleReloadClusterList={handleReloadClusterList}
-                    handleRedirectOnModalClose={handleCloseCreateClusterModal}
-                />
-            </Route>
-        </>
+                <Route path={URLS.RESOURCE_BROWSER_CREATE_CLUSTER} exact>
+                    <CreateCluster
+                        handleReloadClusterList={handleReloadClusterList}
+                        handleRedirectOnModalClose={handleCloseCreateClusterModal}
+                    />
+                </Route>
+            </>
+        )
     )
 }
 

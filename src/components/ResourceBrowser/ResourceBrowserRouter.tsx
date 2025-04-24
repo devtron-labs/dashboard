@@ -29,13 +29,14 @@ import ResourceList from './ResourceList'
 import './ResourceBrowser.scss'
 
 const CompareClusterViewWrapper = importComponentFromFELibrary('CompareClusterViewWrapper', null, 'function')
+const isFeLibAvailable = !!CompareClusterViewWrapper
 
 const ResourceBrowserRouter: React.FC = () => {
     const { path } = useRouteMatch()
 
     return (
         <Switch>
-            {CompareClusterViewWrapper && (
+            {isFeLibAvailable && (
                 <Route path={URLS.RESOURCE_BROWSER_INSTALLATION_CLUSTER} exact>
                     <ClusterInstallationStatus />
                 </Route>
@@ -45,7 +46,7 @@ const ResourceBrowserRouter: React.FC = () => {
                 <ResourceList />
             </Route>
 
-            {CompareClusterViewWrapper && window._env_.FEATURE_RB_SYNC_CLUSTER_ENABLE && (
+            {isFeLibAvailable && window._env_.FEATURE_RB_SYNC_CLUSTER_ENABLE && (
                 <Route path={`${COMMON_URLS.RESOURCE_BROWSER}${COMMON_URLS.COMPARE_CLUSTERS}`} exact>
                     <CompareClusterViewWrapper />
                 </Route>

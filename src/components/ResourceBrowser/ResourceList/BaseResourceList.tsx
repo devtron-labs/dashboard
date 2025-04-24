@@ -143,7 +143,7 @@ const BaseResourceListContent = ({
     const isNodeListing = selectedResource?.gvk.Kind.toLowerCase() === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
 
     useEffect(() => {
-        if (clusterList || selectedResource?.gvk.Kind !== Nodes.Namespace) {
+        if (selectedResource?.gvk.Kind !== Nodes.Namespace) {
             return
         }
 
@@ -410,9 +410,9 @@ const BaseResourceListContent = ({
             namespace,
         }
 
-        setShowCreateEnvironmentDrawer(true)
-
         localStorage.setItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY, JSON.stringify(environmentFormData))
+
+        setShowCreateEnvironmentDrawer(true)
     }
 
     const handleCloseCreateEnvironmentDrawer = () => {
@@ -774,10 +774,9 @@ const BaseResourceListContent = ({
                             updateManifestResourceHelmApps={updateManifestResourceHelmApps}
                         />
                     )}
-
-                    {showCreateEnvironmentDrawer && renderCreateEnvironmentDrawer()}
                 </>
             )}
+            {showCreateEnvironmentDrawer && renderCreateEnvironmentDrawer()}
         </div>
     )
 }
