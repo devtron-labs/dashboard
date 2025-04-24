@@ -382,7 +382,7 @@ export default function AppDetailsPage() {
                     <Switch>
                         <Route
                             path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`}
-                            render={() => <AppDetails detailsType="app-details" filteredResourceIds={_filteredEnvIds} />}
+                            render={() => <AppDetails detailsType="app" filteredResourceIds={_filteredEnvIds} />}
                         />
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
                             <Overview

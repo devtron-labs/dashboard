@@ -12,15 +12,15 @@ import {
 import { AppEnvDropdownProps, AppEnvSelectorProps } from './appDetails.type'
 import { getEnvOptions } from './utils'
 
-const AppEnvDropdown = ({ isAppDetailsType = false, options, value }: AppEnvDropdownProps) => {
+const AppEnvDropdown = ({ isAppView = false, options, value }: AppEnvDropdownProps) => {
     const { push } = useHistory()
     const { path } = useRouteMatch()
     const { appId, envId } = useParams<Pick<BaseURLParams, 'appId' | 'envId'>>()
 
     const handleOnChange = (option: SelectPickerOptionType) => {
         const newUrl = generatePath(path, {
-            appId: isAppDetailsType ? appId : option.value,
-            envId: isAppDetailsType ? option.value : envId,
+            appId: isAppView ? appId : option.value,
+            envId: isAppView ? option.value : envId,
         })
         push(newUrl)
     }
@@ -40,13 +40,13 @@ const AppEnvDropdown = ({ isAppDetailsType = false, options, value }: AppEnvDrop
                     className="bcb-5 br-10 cn-0 pl-8 pr-8"
                     style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
                 >
-                    {isAppDetailsType ? 'ENV' : 'APP'}
+                    {isAppView ? 'ENV' : 'APP'}
                 </div>
             </div>
             <div data-testid="app-deployed-env-name" className="app-details__selector w-200 dc__zi-12">
                 <SelectPicker
                     inputId="app-environment-select"
-                    placeholder={`Select ${isAppDetailsType ? 'Environment' : 'Application'}`}
+                    placeholder={`Select ${isAppView ? 'Environment' : 'Application'}`}
                     options={options}
                     value={value}
                     onChange={handleOnChange}
@@ -103,14 +103,14 @@ const EnvSelector = ({ environments }: { environments: AppEnvironment[] }) => {
 
     return (
         <AppEnvDropdown
-            isAppDetailsType
+            isAppView
             options={envOptions}
             value={envId ? { label: envIdVsNameMap[+envId], value: +envId } : null}
         />
     )
 }
 
-const AppEnvSelector = ({ isAppDetailsType, environments, applications }: AppEnvSelectorProps) =>
-    isAppDetailsType ? <EnvSelector environments={environments} /> : <AppSelector applications={applications} />
+const AppEnvSelector = ({ isAppView, environments, applications }: AppEnvSelectorProps) =>
+    isAppView ? <EnvSelector environments={environments} /> : <AppSelector applications={applications} />
 
 export default AppEnvSelector

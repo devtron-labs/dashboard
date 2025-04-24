@@ -220,7 +220,7 @@ export interface DetailsType {
     onCloseHideDeploymentWindowConfirmationModal?: () => void
     appDetails: any
     setAppDetails: React.Dispatch<React.SetStateAction<AppDetails>>
-    isAppDetailsType: boolean
+    isAppView: boolean
     applications: EnvAppsMetaDTO['apps']
 }
 
@@ -305,23 +305,23 @@ export enum HibernationModalTypes {
     CONFIGURE_PATCH = 'configurePatch',
 }
 
-type AppEnvDetailsType = 'app-details' | 'app-group'
+type AppEnvDetailsType = 'app' | 'app-group'
 
 export interface AppDetailProps {
     detailsType: AppEnvDetailsType
     filteredResourceIds: string
 }
 
-export type AppEnvDropdownProps = Pick<SelectPickerProps, 'options' | 'value'> & { isAppDetailsType?: boolean }
+export type AppEnvDropdownProps = Pick<SelectPickerProps, 'options' | 'value'> & { isAppView?: boolean }
 
 export type AppEnvSelectorProps =
     | {
-          isAppDetailsType: true
+          isAppView: true
           environments: AppEnvironment[]
           applications?: never
       }
     | {
-          isAppDetailsType: false
+          isAppView: false
           applications: EnvAppsMetaDTO['apps']
           environments?: never
       }

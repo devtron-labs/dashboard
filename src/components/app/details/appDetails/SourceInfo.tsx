@@ -84,7 +84,7 @@ export const SourceInfo = ({
     deploymentUserActionState,
     setHibernationPatchChartName,
     applications,
-    isAppDetailsType,
+    isAppView,
 }: SourceInfoType) => {
     const params = useParams<{ appId: string; envId?: string }>()
 
@@ -172,11 +172,7 @@ export const SourceInfo = ({
 
         return (
             <div className="flex left w-100">
-                <AppEnvSelector
-                    {...(isAppDetailsType
-                        ? { isAppDetailsType, environments }
-                        : { isAppDetailsType: false, applications })}
-                />
+                <AppEnvSelector {...(isAppView ? { isAppView, environments } : { isAppView: false, applications })} />
                 {appDetails?.deploymentAppType && (
                     <Tooltip
                         placement="top"
@@ -309,7 +305,7 @@ export const SourceInfo = ({
                                         placement: 'bottom',
                                     }}
                                     linkProps={{
-                                        to: isAppDetailsType
+                                        to: isAppView
                                             ? `${getAppComposeURL(params.appId, APP_COMPOSE_STAGE.ENV_OVERRIDE, false, false)}/${params.envId}`
                                             : `${URLS.APPLICATION_GROUP}/${envId}/${CommonURLS.APP_CONFIG}/${appDetails?.appId}`,
                                     }}

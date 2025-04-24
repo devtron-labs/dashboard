@@ -24,6 +24,7 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     DeploymentNodeType,
+    Icon,
     stopPropagation,
     useSearchString,
     VisibleModal,
@@ -79,13 +80,15 @@ const AppDetailsCDButton = ({
         history.push({ search: '' })
     }
 
+    const iconName = getDeployButtonIcon(deploymentUserActionState, isForEmptyState)
+
     const renderDeployButton = () => (
         <Button
             dataTestId="deploy-button"
             size={isForEmptyState ? ComponentSizeType.large : ComponentSizeType.small}
             variant={ButtonVariantType.primary}
             text={isForEmptyState ? 'Select Image to Deploy' : BUTTON_TITLE[DeploymentNodeType.CD]}
-            startIcon={getDeployButtonIcon(deploymentUserActionState, isForEmptyState)}
+            startIcon={iconName && <Icon name={iconName} color={null} />}
             onClick={onClickDeployButton}
             component={ButtonComponentType.button}
             style={getDeployButtonStyle(deploymentUserActionState)}

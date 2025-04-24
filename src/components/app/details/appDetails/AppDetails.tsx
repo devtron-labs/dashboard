@@ -239,7 +239,7 @@ const Details: React.FC<DetailsType> = ({
     deploymentUserActionState,
     appDetails,
     setAppDetails,
-    isAppDetailsType,
+    isAppView,
     applications,
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
@@ -261,7 +261,7 @@ const Details: React.FC<DetailsType> = ({
         monitoringTools: [],
     })
 
-    const primaryResourceList = isAppDetailsType ? environments : applications
+    const primaryResourceList = isAppView ? environments : applications
 
     // NOTE: this might seem like a duplicate of loadingResourceTree
     // but its not since loadingResourceTree runs a loader on the whole page
@@ -623,9 +623,7 @@ const Details: React.FC<DetailsType> = ({
                 {primaryResourceList.length && (
                     <div className="flex left ml-20 mt-16">
                         <AppEnvSelector
-                            {...(isAppDetailsType
-                                ? { isAppDetailsType, environments }
-                                : { isAppDetailsType: false, applications })}
+                            {...(isAppView ? { isAppView, environments } : { isAppView: false, applications })}
                         />
                         {isAppDeleted && appDetails?.deploymentAppDeleteRequest && (
                             <div data-testid="deleteing-argocd-pipeline" className="flex left">
@@ -726,7 +724,7 @@ const Details: React.FC<DetailsType> = ({
                     appDetails={appDetails}
                     setDetailed={toggleDetailedStatus}
                     environment={environment}
-                    isAppDetailsType={isAppDetailsType}
+                    isAppView={isAppView}
                     environments={environments}
                     showCommitInfo={showCommitInfo}
                     showUrlInfo={setUrlInfo}
@@ -825,7 +823,7 @@ const AppDetail = ({ detailsType, filteredResourceIds }: AppDetailProps) => {
     const { environmentId, setEnvironmentId } = useAppContext() // global state for app to synchronise environments
     const [isAppDeleted, setIsAppDeleted] = useState(false)
 
-    const isAppDetailsType = detailsType === 'app-details'
+    const isAppView = detailsType === 'app'
 
     const [otherEnvsLoading, otherEnvsResult] = useAsync(
         () => getAppOtherEnvironmentMin(params.appId, false),
@@ -836,7 +834,7 @@ const AppDetail = ({ detailsType, filteredResourceIds }: AppDetailProps) => {
     const [, otherAppsResult] = useAsync(
         () => getAppsInfoForEnv({ envId: +params.envId }),
         [params.envId],
-        !!params.envId && !isAppDetailsType,
+        !!params.envId && !isAppView,
     )
 
     const [commitInfo, showCommitInfo] = useState<boolean>(false)
@@ -864,7 +862,7 @@ const AppDetail = ({ detailsType, filteredResourceIds }: AppDetailProps) => {
     )
 
     useEffect(() => {
-        if (isAppDetailsType) {
+        if (isAppView) {
             const userDefinedEnvId = +params.envId || environmentId
             const selectedEnvId =
                 userDefinedEnvId && envList.some((env) => env.environmentId === userDefinedEnvId)
@@ -877,7 +875,6 @@ const AppDetail = ({ detailsType, filteredResourceIds }: AppDetailProps) => {
             } else {
                 setEnvironmentId(null)
             }
-            setEnvironmentId(null)
         }
 
         const selectedAppId =
@@ -894,7 +891,7 @@ const AppDetail = ({ detailsType, filteredResourceIds }: AppDetailProps) => {
             return
         }
         // Setting environmentId in app context only in cse of app details and not env details
-        if (isAppDetailsType) {
+        if (isAppView) {
             setEnvironmentId(Number(params.envId))
         }
         setIsAppDeleted(false)
@@ -936,7 +933,7 @@ const AppDetail = ({ detailsType, filteredResourceIds }: AppDetailProps) => {
                                 environments={envList}
                                 environment={environment}
                                 refetchDeploymentStatus={noop}
-                                isAppDetailsType={isAppDetailsType}
+                                isAppView={isAppView}
                             />
                         </div>
                     )}
@@ -958,7 +955,7 @@ const AppDetail = ({ detailsType, filteredResourceIds }: AppDetailProps) => {
                             appDetails={appDetails}
                             setAppDetails={setAppDetails}
                             applications={appList}
-                            isAppDetailsType={isAppDetailsType}
+                            isAppView={isAppView}
                         />
                     </Route>
                     {otherEnvsResult && !otherEnvsLoading && !isVirtualEnvRef.current && renderAppNotConfigured()}

@@ -566,7 +566,7 @@ export interface TagChipsContainerType {
      */
     whiteBackground?: boolean
 }
-export interface SourceInfoType extends Pick<DetailsType, 'isAppDetailsType'>, Partial<Pick<DetailsType, 'applications'>> {
+export interface SourceInfoType extends Pick<DetailsType, 'isAppView'>, Partial<Pick<DetailsType, 'applications'>> {
     appDetails: AppDetails
     setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
     environment: AppEnvironment
