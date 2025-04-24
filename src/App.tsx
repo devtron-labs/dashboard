@@ -31,6 +31,7 @@ import {
 import ActivateLicense from '@Pages/License/ActivateLicense'
 
 import { ErrorBoundary, getApprovalModalTypeFromURL, importComponentFromFELibrary } from './components/common'
+import { useVersionUpdateReload } from './components/common/Banner/useVersionUpdateReload'
 import { validateToken } from './services/service'
 import { URLS } from './config'
 
@@ -40,18 +41,8 @@ const NavigationRoutes = lazy(() => import('./components/common/navigation/Navig
 const Login = lazy(() => import('./components/login/Login'))
 const GenericDirectApprovalModal = importComponentFromFELibrary('GenericDirectApprovalModal')
 
-// const dismissIfToastActive = (toastRef: MutableRefObject<any>) => {
-//     if (ToastManager.isToastActive(toastRef.current)) {
-//         ToastManager.dismissToast(toastRef.current)
-//     }
-// }
-
 const App = () => {
-    // const updateToastRef = useRef(null)
-    // const refreshing = useRef(false)
-
     const [errorPage, setErrorPage] = useState<boolean>(false)
-    // const [bgUpdated, setBGUpdated] = useState(false)
     const [validating, setValidating] = useState(true)
     const [approvalToken, setApprovalToken] = useState<string>('')
     const [approvalType, setApprovalType] = useState<APPROVAL_MODAL_TYPE>(APPROVAL_MODAL_TYPE.CONFIG)
@@ -112,22 +103,27 @@ const App = () => {
         }
     }
 
-    // function handleControllerChange() {
-    //     if (refreshing.current) {
-    //         return
-    //     }
-    //     if (document.visibilityState === 'visible') {
-    //         window.location.reload()
-    //         refreshing.current = true
-    //     } else {
-    //         setBGUpdated(true)
-    //     }
-    // }
+    // Add this near other hooks in the App component
+    const { handleAppUpdate, doesNeedRefresh, handleControllerChange } = useVersionUpdateReload()
+
+    // Add this effect in the App component
+    useEffect(() => {
+        if (window.isSecureContext && navigator.serviceWorker) {
+            // check for sw updates on page change
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            navigator.serviceWorker
+                .getRegistrations()
+                .then((registrations) => registrations.forEach((reg) => reg.update()))
+            if (doesNeedRefresh) {
+                handleAppUpdate()
+            }
+        }
+    }, [location, doesNeedRefresh, handleAppUpdate])
 
     useEffect(() => {
-        // if (navigator.serviceWorker) {
-        //     navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
-        // }
+        if (navigator.serviceWorker) {
+            navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
+        }
         // If not K8S_CLIENT then validateToken otherwise directly redirect
         //  No need to validate token if on license auth page
         if (!window._env_.K8S_CLIENT && location.pathname !== CommonURLS.LICENSE_AUTH) {
@@ -143,148 +139,12 @@ const App = () => {
             defaultRedirection()
         }
 
-        // return () => {
-        //     if (navigator.serviceWorker) {
-        //         navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange)
-        //     }
-        // }
+        return () => {
+            if (navigator.serviceWorker) {
+                navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange)
+            }
+        }
     }, [])
-
-    // const serviceWorkerTimeout = (() => {
-    //     const parsedTimeout = parseInt(window._env_.SERVICE_WORKER_TIMEOUT, 10)
-
-    //     if (parsedTimeout) {
-    //         return parsedTimeout
-    //     }
-
-    //     return 3
-    // })()
-
-    // function handleNeedRefresh(_updateServiceWorker) {
-    //     dismissIfToastActive(updateToastRef)
-
-    //     updateToastRef.current = ToastManager.showToast(
-    //         {
-    //             variant: ToastVariantType.info,
-    //             title: 'Update available',
-    //             description: 'You are viewing an outdated version of Devtron UI.',
-    //             buttonProps: {
-    //                 text: 'Reload',
-    //                 dataTestId: 'reload-btn',
-    //                 onClick: () => {
-    //                     // Inline handleAppUpdate
-    //                     dismissIfToastActive(updateToastRef)
-    //                     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    //                     _updateServiceWorker(true)
-    //                 },
-    //                 startIcon: <ICArrowClockwise />,
-    //             },
-    //             icon: <ICSparkles />,
-    //             progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
-    //         },
-    //         {
-    //             autoClose: false,
-    //         },
-    //     )
-    //     if (typeof Storage !== 'undefined') {
-    //         localStorage.removeItem('serverInfo')
-    //     }
-    // }
-
-    // const {
-    //     needRefresh: [doesNeedRefresh],
-    //     updateServiceWorker,
-    // } = useRegisterSW({
-    //     onRegisteredSW(swUrl, swRegistration) {
-    //         console.log(`Service Worker at: ${swUrl}`)
-    //         if (swRegistration) {
-    //             setInterval(
-    //                 async () => {
-    //                     if (
-    //                         swRegistration.installing ||
-    //                         !navigator ||
-    //                         ('connection' in navigator && !navigator.onLine)
-    //                     ) {
-    //                         return
-    //                     }
-
-    //                     try {
-    //                         const resp = await fetch(swUrl, {
-    //                             cache: 'no-store',
-    //                             headers: {
-    //                                 cache: 'no-store',
-    //                                 'cache-control': 'no-cache',
-    //                             },
-    //                         })
-    //                         if (resp?.status === API_STATUS_CODES.OK) {
-    //                             await swRegistration.update()
-    //                         }
-    //                     } catch {
-    //                         // Do nothing
-    //                     }
-    //                 },
-    //                 serviceWorkerTimeout * 60 * 1000,
-    //             )
-    //         }
-    //         return noop
-    //     },
-    //     onRegisterError(error) {
-    //         console.error('SW registration error', error)
-    //         logExceptionToSentry(error)
-    //     },
-    //     onNeedRefresh() {
-    //         handleNeedRefresh(updateServiceWorker)
-    //     },
-    // })
-
-    // const handleAppUpdate = () => {
-    //     // TODO: Why is this needed
-    //     dismissIfToastActive(updateToastRef)
-
-    //     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    //     updateServiceWorker(true)
-    // }
-
-    // useEffect(() => {
-    //     if (window.isSecureContext && navigator.serviceWorker) {
-    //         // check for sw updates on page change
-    //         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    //         navigator.serviceWorker
-    //             .getRegistrations()
-    //             .then((registrations) => registrations.forEach((reg) => reg.update()))
-    //         if (doesNeedRefresh) {
-    //             handleAppUpdate()
-    //         } else {
-    //             dismissIfToastActive(updateToastRef)
-    //         }
-    //     }
-    // }, [location])
-
-    // useEffect(() => {
-    //     if (!bgUpdated) {
-    //         return
-    //     }
-    //     dismissIfToastActive(updateToastRef)
-
-    //     updateToastRef.current = ToastManager.showToast(
-    //         {
-    //             variant: ToastVariantType.info,
-    //             title: 'Update available',
-    //             description: 'This page has been updated. Please save any unsaved changes and refresh.',
-    //             buttonProps: {
-    //                 text: 'Reload',
-    //                 dataTestId: 'reload-btn',
-    //                 onClick: reloadLocation,
-    //                 startIcon: <ICArrowClockwise />,
-    //             },
-    //             icon: <ICSparkles />,
-    //             progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
-    //         },
-    //         {
-    //             autoClose: false,
-    //         },
-    //     )
-    // }, [bgUpdated])
 
     const renderRoutesWithErrorBoundary = () =>
         errorPage ? (
