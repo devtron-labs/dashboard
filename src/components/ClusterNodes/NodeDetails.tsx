@@ -34,7 +34,6 @@ import {
     ToastManager,
     ToastVariantType,
     ResourceDetail,
-    CodeEditorThemesKeys,
     noop,
     AppThemeType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -543,7 +542,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
 
         return (
             <div>
-                <div className='dc__border-bottom dc__position-sticky dc__top-0 dc__zi-1 bg__primary'>
+                <div className="dc__border-bottom dc__position-sticky dc__top-0 dc__zi-1 bg__primary">
                     <div className="en-2 bw-1 dc__top-radius-4 bg__primary dc__no-bottom-border resource-row dc__border-bottom fw-6 fs-13 pt-8 pb-8 pr-20 pl-20 cn-7">
                         <div />
                         <div>Resource</div>
@@ -554,7 +553,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                         <div>Capacity</div>
                     </div>
                 </div>
-                <div className='en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20'>
+                <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20">
                     {cpuData && (
                         <div className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
                             <Cpu className="mt-2 mb-2 icon-dim-18" />
@@ -833,7 +832,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                         {renderProbableIssuesOverviewCard()}
                         {renderNodeOverviewCard()}
                     </div>
-                    <div className='dc__overflow-auto pr-20'>
+                    <div className="dc__overflow-auto pr-20">
                         {renderResourceList()}
                         {renderLabelAnnotationTaint()}
                         {renderPodList()}
@@ -926,7 +925,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                     mode={MODES.YAML}
                     noParsing
                     codeEditorProps={{
-                        theme: CodeEditorThemesKeys.vsDarkDT,
+                        theme: 'vs-dark--dt',
                         value: modifiedManifest,
                         defaultValue: (nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || '',
                         height: '0',
@@ -1055,9 +1054,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         return (
             <ErrorScreenManager
                 code={errorResponseCode}
-                subtitle={
-                    errorResponseCode == 403 ? unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) : ''
-                }
+                subtitle={errorResponseCode == 403 ? unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) : ''}
             />
         )
     }

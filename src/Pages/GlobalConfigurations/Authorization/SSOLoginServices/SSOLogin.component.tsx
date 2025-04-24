@@ -40,7 +40,6 @@ import {
     ErrorScreenManager,
     FeatureTitleWithInfo,
     InfoColourBar,
-    isCodeMirrorEnabled,
     MODES,
     noop,
     Progressing,
@@ -667,9 +666,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             this.state.configMap === SwitchItemValues.Configuration ? ssoConfig : YAMLStringify(sample[this.state.sso])
 
         let presetConfig = (
-            <div
-                className={`w-100 code-editor__text ${!isCodeMirrorEnabled() ? 'code-editor__text--monaco-editor' : ''}`}
-            >
+            <div className="w-100 code-editor__text">
                 <p className="m-0">config:</p>
                 <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
                 <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;name: {this.state.ssoConfig.config.name}</p>
@@ -680,9 +677,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
         if (this.state.configMap === SwitchItemValues.Configuration && this.state.sso === OIDCType) {
             presetConfig = (
-                <div
-                    className={`w-100 code-editor__text ${!isCodeMirrorEnabled() ? 'code-editor__text--monaco-editor' : ''}`}
-                >
+                <div className="w-100 code-editor__text">
                     <p className="m-0">config:</p>
                     <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
                 </div>
@@ -717,7 +712,6 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 >
                     <CodeEditor.Header>
                         <div className="flex dc__content-space dc__gap-6">
-                            <CodeEditor.ValidationError />
                             <div className="dc__no-shrink ml-auto">
                                 <Switch
                                     value={this.state.configMap}

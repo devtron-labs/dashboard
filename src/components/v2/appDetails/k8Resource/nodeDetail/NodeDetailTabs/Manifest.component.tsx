@@ -24,14 +24,11 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     CodeEditor,
-    CodeEditorThemesKeys,
     ConditionalWrap,
     ConfigurationType,
     DeploymentAppTypes,
     FormProps,
-    getComponentSpecificThemeClass,
     InfoColourBar,
-    isCodeMirrorEnabled,
     logExceptionToSentry,
     noop,
     ServerErrors,
@@ -710,11 +707,7 @@ const ManifestComponent = ({
         }
 
         return (
-            <div
-                className={`flex-grow-1 flexbox-col ${
-                    !isCodeMirrorEnabled() ? getComponentSpecificThemeClass(AppThemeType.dark) : ''
-                }`}
-            >
+            <div className="flex-grow-1 flexbox-col">
                 <CodeEditor
                     cleanData={showManifestCompareView}
                     diffView={showManifestCompareView}
@@ -723,7 +716,7 @@ const ManifestComponent = ({
                     loading={loading}
                     customLoader={<MessageUI msg={loadingMsg} icon={MsgUIType.LOADING} size={24} />}
                     codeEditorProps={{
-                        theme: CodeEditorThemesKeys.vsDarkDT,
+                        theme: 'vs-dark--dt',
                         value: getCodeEditorValue(),
                         defaultValue: showManifestCompareView ? desiredManifest : '',
                         onChange: handleEditorValueChange,

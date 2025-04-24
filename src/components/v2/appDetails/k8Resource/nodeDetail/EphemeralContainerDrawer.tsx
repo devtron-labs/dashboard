@@ -29,7 +29,6 @@ import {
     SelectPicker,
     ComponentSizeType,
     MODES,
-    isCodeMirrorEnabled,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
@@ -395,11 +394,6 @@ const EphemeralContainerDrawer = ({
                                 <SwitchItem value={SwitchItemValues.Configuration}> Manifest </SwitchItem>
                                 <SwitchItem value={SwitchItemValues.Sample}> Sample manifest</SwitchItem>
                             </Switch>
-                            {!isCodeMirrorEnabled() && (
-                                <div style={{ flex: '0 0 60%' }}>
-                                    <CodeEditor.ValidationError />
-                                </div>
-                            )}
                         </div>
                     </CodeEditor.Header>
                 </CodeEditor>

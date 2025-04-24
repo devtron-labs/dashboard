@@ -24,7 +24,6 @@ import {
     CodeEditor,
     MarkDown,
     MODES,
-    isCodeMirrorEnabled,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import { Select, mapByKey, useKeyDown, Info, Pencil } from '../common'
@@ -650,16 +649,7 @@ const ValuesDiffViewer = ({
                         <Pencil style={{ marginLeft: 'auto' }} />
                     </h5>
                 </div>
-                <div
-                    {...(isCodeMirrorEnabled()
-                        ? {
-                              className: 'mw-none mh-0',
-                          }
-                        : {
-                              className: 'readme-config--body',
-                              style: { gridTemplateColumns: '1fr' },
-                          })}
-                >
+                <div className="mw-none mh-0">
                     <CodeEditor
                         mode={MODES.YAML}
                         noParsing

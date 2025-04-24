@@ -18,7 +18,6 @@ import React, { useEffect, useState } from 'react'
 
 import {
     CodeEditor,
-    CodeEditorThemesKeys,
     createNewResource,
     CreateResourceDTO,
     Drawer,
@@ -155,7 +154,7 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
                         noParsing
                         loading={loader}
                         codeEditorProps={{
-                            theme: CodeEditorThemesKeys.vsDarkDT,
+                            theme: 'vs-dark--dt',
                             value: resourceYAML,
                             height: '0',
                             onChange: handleEditorValueChange,
