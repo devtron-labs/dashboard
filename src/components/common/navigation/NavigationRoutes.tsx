@@ -82,6 +82,7 @@ import { ParsedTabsData } from '../DynamicTabs/types'
 import { SwitchThemeDialog } from '@Pages/Shared'
 import { SwitchThemeDialogProps } from '@Pages/Shared/SwitchThemeDialog/types'
 import { EnvironmentDataStateType } from './types'
+import { Banner } from '../Banner/Banner'
 
 // Monaco Editor worker initialization
 self.MonacoEnvironment = {
@@ -510,6 +511,7 @@ export default function NavigationRoutes() {
                     <div
                         className={`main flexbox-col bg__primary ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} m-8 br-6 dc__overflow-hidden`}
                     >
+                        <Banner />
                         {/* To be replaced with Announcement Banner */}
                         {EnterpriseLicenseBar && <EnterpriseLicenseBar />}
                         <div className="flexbox-col flex-grow-1 dc__overflow-auto">
