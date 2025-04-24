@@ -7,11 +7,12 @@ import {
     PluginType,
     SelectPickerOptionType,
     VariableType,
+    VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { PipelineContext } from '@Components/workflowEditor/types'
 
-import { CONDITION_DATA_TABLE_OPERATOR_OPTIONS } from './constants'
+import { CONDITION_DATA_TABLE_OPERATOR_OPTIONS, EQUAL_NOT_EQUAL_TO_OPERATOR_OPTIONS } from './constants'
 import { ConditionDataTableType } from './types'
 
 // DYNAMIC DATA TABLE UTILS
@@ -38,6 +39,24 @@ const getConditionDataTableVariableOptions = (ioVariables: VariableType[]): Sele
         .filter((variable) => variable.name)
         .map((variable) => ({ label: variable.name, value: variable.name }))
 
+const getOperatorOptionsBasedOnVariableTypeFormat = (
+    conditionOnVariable: ConditionDetails['conditionOnVariable'],
+    ioVariables: VariableType[],
+) => {
+    const type = ioVariables.find(({ name }) => name === conditionOnVariable)?.format
+
+    switch (type) {
+        case VariableTypeFormat.STRING:
+        case VariableTypeFormat.BOOL:
+        case VariableTypeFormat.FILE:
+            return EQUAL_NOT_EQUAL_TO_OPERATOR_OPTIONS
+        case VariableTypeFormat.DATE:
+        case VariableTypeFormat.NUMBER:
+        default:
+            return CONDITION_DATA_TABLE_OPERATOR_OPTIONS
+    }
+}
+
 export const getConditionDataTableRows = ({
     conditionDetails,
     ioVariables,
@@ -63,7 +82,10 @@ export const getConditionDataTableRows = ({
                     },
                     operator: {
                         type: DynamicDataTableRowDataType.DROPDOWN,
-                        props: { options: CONDITION_DATA_TABLE_OPERATOR_OPTIONS, isSearchable: false },
+                        props: {
+                            options: getOperatorOptionsBasedOnVariableTypeFormat(conditionOnVariable, ioVariables),
+                            isSearchable: false,
+                        },
                         value: conditionOperator,
                     },
                     val: {

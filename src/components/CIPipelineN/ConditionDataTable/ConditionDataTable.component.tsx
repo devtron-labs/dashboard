@@ -16,7 +16,12 @@ import {
 import { ConditionContainerType } from '@Components/ciPipeline/types'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
 
-import { CONDITION_DATA_TABLE_OPERATOR_OPTIONS } from './constants'
+import {
+    CONDITION_DATA_TABLE_ADD_BUTTON_TIPPY_MAP,
+    CONDITION_DATA_TABLE_OPERATOR_OPTIONS,
+    CONDITION_TYPE_HELP_TEXT_MAP,
+    EQUAL_NOT_EQUAL_TO_OPERATOR_OPTIONS,
+} from './constants'
 import {
     ConditionDataTableActionType,
     ConditionDataTableCustomState,
@@ -83,8 +88,7 @@ export const ConditionDataTable = ({ type, conditionType, handleConditionTypeCha
 
         switch (actionType) {
             case ConditionDataTableActionType.ADD_ROW: {
-                let id = +rowId
-                let _conditionDetails = conditionDetails || []
+                const id = +rowId
                 let conditionTypeToRemove: ConditionType
 
                 if (type === ConditionContainerType.PASS_FAILURE) {
@@ -99,13 +103,9 @@ export const ConditionDataTable = ({ type, conditionType, handleConditionTypeCha
                     conditionTypeToRemove = ConditionType.TRIGGER
                 }
 
-                _conditionDetails = _conditionDetails.filter((detail) => {
-                    if (detail.conditionType === conditionTypeToRemove) {
-                        return false
-                    }
-                    id = Math.max(id, detail.id)
-                    return true
-                })
+                const filteredConditionDetails = (conditionDetails || []).filter(
+                    (detail) => detail.conditionType !== conditionTypeToRemove,
+                )
 
                 const newCondition: (typeof conditionDetails)[0] = {
                     id,
@@ -116,7 +116,7 @@ export const ConditionDataTable = ({ type, conditionType, handleConditionTypeCha
                 }
 
                 updatedRows = getConditionDataTableRows({
-                    conditionDetails: [newCondition, ..._conditionDetails],
+                    conditionDetails: [newCondition, ...filteredConditionDetails],
                     ioVariables,
                     conditionType,
                 })
@@ -134,6 +134,10 @@ export const ConditionDataTable = ({ type, conditionType, handleConditionTypeCha
             case ConditionDataTableActionType.UPDATE_ROW: {
                 if (selectedRow) {
                     selectedRow.data[rowAction.headerKey].value = rowAction.actionValue
+
+                    if (rowAction.headerKey === ConditionDataTableHeaderKeys.VARIABLE) {
+                        selectedRow.data.operator.value = EQUAL_NOT_EQUAL_TO_OPERATOR_OPTIONS[0].value
+                    }
 
                     Object.values(ConditionDataTableHeaderKeys).forEach((key: ConditionDataTableHeaderKeys) => {
                         if (key === rowAction.headerKey) {
@@ -240,6 +244,7 @@ export const ConditionDataTable = ({ type, conditionType, handleConditionTypeCha
                 <DynamicDataTable<ConditionDataTableHeaderKeys, ConditionDataTableCustomState>
                     headers={headers}
                     rows={rows}
+                    addBtnTooltip={CONDITION_DATA_TABLE_ADD_BUTTON_TIPPY_MAP[conditionType]}
                     onRowAdd={handleRowAdd}
                     onRowDelete={handleRowDelete}
                     onRowEdit={handleRowEdit}
@@ -247,7 +252,7 @@ export const ConditionDataTable = ({ type, conditionType, handleConditionTypeCha
                 />
             ) : (
                 <div className="p-8 bg__secondary dc__border-dashed--n3 br-4">
-                    <p className="m-0 fs-12 lh-18 cn-7">Get this text from Utkarsh</p>
+                    <p className="m-0 fs-12 lh-18 cn-7">{CONDITION_TYPE_HELP_TEXT_MAP[conditionType]}</p>
                 </div>
             )}
         </>
