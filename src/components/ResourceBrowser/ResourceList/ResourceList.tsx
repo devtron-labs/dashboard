@@ -120,7 +120,8 @@ const ResourceList = () => {
                 label: '',
                 value: clusterId,
                 isProd: false,
-                isInstallationCluster: false,
+                isClusterInCreationPhase: false,
+                installationId: 0,
             },
         [clusterId, clusterOptions],
     )
@@ -274,7 +275,7 @@ const ResourceList = () => {
         markTabActiveById(ResourceBrowserTabsId.k8s_Resources).catch(noop)
     }, [location.pathname])
 
-    const onClusterChange = (selected) => {
+    const onClusterChange = (selected: ClusterOptionType) => {
         if (selected.value === selectedCluster?.value) {
             return
         }
@@ -283,14 +284,17 @@ const ResourceList = () => {
         setWidgetEventDetails(null)
 
         /* if user manually tries default cluster url redirect */
-        if (selected.value === DEFAULT_CLUSTER_ID && window._env_.HIDE_DEFAULT_CLUSTER) {
+        if (Number(selected.value) === DEFAULT_CLUSTER_ID && window._env_.HIDE_DEFAULT_CLUSTER) {
             replace({
                 pathname: URLS.RESOURCE_BROWSER,
             })
             return
         }
 
-        const path = getClusterChangeRedirectionUrl(selected.isInstallationCluster, selected.value)
+        const path = getClusterChangeRedirectionUrl(
+            selected.isClusterInCreationPhase,
+            String(selected.isClusterInCreationPhase ? selected.installationId : selected.value),
+        )
 
         replace({
             pathname: path,

@@ -56,7 +56,6 @@ import { ReactComponent as InfoIcon } from '@Icons/info-filled.svg'
 import { UPLOAD_STATE } from '@Pages/GlobalConfigurations/DeploymentCharts/types'
 
 import { AppCreationType, CLUSTER_COMMAND, MODES, ModuleNameMap } from '../../config'
-import { clusterId } from '../ClusterNodes/__mocks__/clusterAbout.mock'
 import { importComponentFromFELibrary, useForm } from '../common'
 import { RemoteConnectionType } from '../dockerRegistry/dockerType'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
@@ -77,6 +76,8 @@ import ClusterInfoStepsModal from './ClusterInfoStepsModal'
 import { ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY } from './constants'
 import DeleteClusterConfirmationModal from './DeleteClusterConfirmationModal'
 import UserNameDropDownList from './UseNameListDropdown'
+
+import './cluster.scss'
 
 const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio')
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
@@ -123,6 +124,7 @@ const ClusterForm = ({
     FooterComponent,
     handleModalClose = noop,
     isTlsConnection: initialIsTlsConnection = false,
+    installationId,
 }: ClusterFormProps & Partial<NewClusterFormProps>) => {
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(!!prometheusUrl)
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
@@ -156,8 +158,9 @@ const ClusterForm = ({
     const [loader, setLoadingState] = useState<boolean>(false)
     const [hasValidationError, setValidationError] = useState<any>(null)
     const [selectedUserNameOptions, setSelectedUserNameOptions] = useState<Record<string, any>>({})
-    const [isClusterSelected, setClusterSeleceted] = useState<Record<string, boolean>>({})
-    const [selectAll, setSelectAll] = useState<boolean>(false)
+    const [isClusterSelected, setClusterSelected] = useState<Record<string, boolean>>({})
+    const areAllEntriesSelected = Object.values(isClusterSelected).every((isSelected) => isSelected)
+    const areSomeEntriesSelected = Object.values(isClusterSelected).some((_selected) => _selected)
     const [isConnectedViaProxyTemp, setIsConnectedViaProxyTemp] = useState(isConnectedViaProxy)
     const [isConnectedViaSSHTunnelTemp, setIsConnectedViaSSHTunnelTemp] = useState(isConnectedViaSSHTunnel)
 
@@ -170,11 +173,7 @@ const ClusterForm = ({
         [],
     )
 
-    const [, grafanaModuleStatus] = useAsync(
-        () => getModuleInfo(ModuleNameMap.GRAFANA),
-        [clusterId],
-        !window._env_.K8S_CLIENT,
-    )
+    const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [id], !window._env_.K8S_CLIENT)
 
     const getRemoteConnectionConfigType = () => {
         if (isConnectedViaProxyTemp) {
@@ -206,6 +205,7 @@ const ClusterForm = ({
     const isGrafanaModuleInstalled = grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED
 
     const handleEditConfigClick = () => {
+        setClusterSelected({})
         setDataList([])
     }
 
@@ -325,7 +325,7 @@ const ClusterForm = ({
                     }),
                 ])
                 setSelectedUserNameOptions(defaultUserNameSelections)
-                setClusterSeleceted(_clusterSelections)
+                setClusterSelected(_clusterSelections)
                 setLoadingState(false)
                 setValidationError(false)
             })
@@ -1018,7 +1018,9 @@ const ClusterForm = ({
                             type="file"
                             ref={inputFileRef}
                             onChange={onFileChange}
-                            accept="text/plain application/yaml"
+                            // NOTE: by default the .kube/config file does not have .yml/.yaml extension
+                            // therefore won't be selectable under these formats, although it is yaml file
+                            accept="text/plain, text/x-yaml, application/x-yaml, text/yaml, application/yaml"
                             style={{ display: 'none' }}
                             data-testid="select_code_editor"
                         />
@@ -1101,7 +1103,7 @@ const ClusterForm = ({
             )}
 
             {!id && (
-                <FooterComponent apiCallInProgress={loader} handleModalClose={handleModalClose}>
+                <FooterComponent closeButtonText="Close" apiCallInProgress={loader} handleModalClose={handleModalClose}>
                     <FooterComponent.Start>
                         <button
                             className="dc__edit_button cb-5 h-36 lh-36"
@@ -1125,6 +1127,7 @@ const ClusterForm = ({
         await saveClustersDetails()
         toggleKubeConfigFile(false)
         toggleClusterDetails(true)
+        reload()
     }
 
     const toggleIsSelected = (clusterNameString: string, forceUnselect?: boolean) => {
@@ -1132,13 +1135,7 @@ const ClusterForm = ({
             ...isClusterSelected,
             [clusterNameString]: forceUnselect ? false : !isClusterSelected[clusterNameString],
         }
-        setClusterSeleceted(_currentSelections)
-
-        if (Object.values(_currentSelections).some((selected) => selected)) {
-            setSelectAll(true)
-        } else {
-            setSelectAll(false)
-        }
+        setClusterSelected(_currentSelections)
     }
 
     const toggleSelectAll = (event) => {
@@ -1159,8 +1156,7 @@ const ClusterForm = ({
             currentSelections[selection] = _selectAll
         })
 
-        setSelectAll(_selectAll)
-        setClusterSeleceted(currentSelections)
+        setClusterSelected(currentSelections)
     }
 
     const validCluster = () => {
@@ -1185,10 +1181,10 @@ const ClusterForm = ({
     }
 
     const getAllClustersCheckBoxValue = () => {
-        if (Object.values(isClusterSelected).every((_selected) => _selected)) {
+        if (areAllEntriesSelected) {
             return CHECKBOX_VALUE.CHECKED
         }
-        if (Object.values(isClusterSelected).some((_selected) => _selected)) {
+        if (areSomeEntriesSelected) {
             return CHECKBOX_VALUE.INTERMEDIATE
         }
         return null
@@ -1228,7 +1224,7 @@ const ClusterForm = ({
                                                 isCheckboxDisabled() ? ' dc__opacity-0_5' : ''
                                             }`}
                                             onChange={toggleSelectAll}
-                                            isChecked={selectAll}
+                                            isChecked={areSomeEntriesSelected}
                                             value={getAllClustersCheckBoxValue()}
                                             disabled={isCheckboxDisabled()}
                                         />
@@ -1295,7 +1291,7 @@ const ClusterForm = ({
                                                     selectedUserNameOptions={selectedUserNameOptions}
                                                     onChangeUserName={onChangeUserName}
                                                 />
-                                                <div>
+                                                <div className="dc__word-break">
                                                     {clusterDetail.id !== 0 && (
                                                         <div
                                                             className="flex left top"
@@ -1372,28 +1368,24 @@ const ClusterForm = ({
 
                         <FooterComponent apiCallInProgress={loader} handleModalClose={handleModalClose}>
                             <FooterComponent.Start>
-                                <button
-                                    className="dc__edit_button cb-5 h-36 lh-36"
-                                    type="button"
+                                <Button
+                                    text="Edit kubeconfig"
+                                    startIcon={<Icon name="ic-pencil" color={null} />}
+                                    disabled={loader}
+                                    style={ButtonStyleType.neutral}
+                                    dataTestId="get_cluster_button"
                                     onClick={handleEditConfigClick}
-                                    style={{ marginRight: 'auto' }}
-                                >
-                                    <span className="flex dc__align-items-center">
-                                        <Edit className="icon-dim-16 scb-5 mr-4" />
-                                        Edit Kubeconfig
-                                    </span>
-                                </button>
+                                    variant={ButtonVariantType.secondary}
+                                />
                             </FooterComponent.Start>
                             <FooterComponent.CTA>
-                                <button
-                                    data-testid="save_cluster_list_button_after_selection"
-                                    className="cta h-36 lh-36"
-                                    type="button"
-                                    onClick={() => handleClusterDetailCall()}
+                                <Button
+                                    text="Save"
                                     disabled={!saveClusterList || !isAnyCheckboxSelected}
-                                >
-                                    Save
-                                </button>
+                                    dataTestId="save_cluster_list_button_after_selection"
+                                    onClick={handleClusterDetailCall}
+                                    isLoading={loader}
+                                />
                             </FooterComponent.CTA>
                         </FooterComponent>
                     </div>
@@ -1491,7 +1483,8 @@ const ClusterForm = ({
                             <Button
                                 dataTestId="save_cluster_after_entering_cluster_details"
                                 onClick={handleOnSubmit}
-                                text="Save cluster"
+                                isLoading={loader}
+                                text="Save Cluster"
                                 buttonProps={{
                                     type: 'submit',
                                 }}
@@ -1541,11 +1534,11 @@ const ClusterForm = ({
 
                         {confirmation && (
                             <DeleteClusterConfirmationModal
-                                clusterId={clusterId}
+                                clusterId={String(id)}
                                 clusterName={clusterName}
                                 handleClose={hideConfirmationModal}
                                 reload={reload}
-                                // TODO: get installationId here
+                                installationId={String(installationId)}
                             />
                         )}
                     </div>

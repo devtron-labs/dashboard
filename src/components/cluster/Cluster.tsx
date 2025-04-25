@@ -48,7 +48,7 @@ import { ReactComponent as PencilEdit } from '@Icons/ic-pencil.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { ReactComponent as VirtualClusterIcon } from '@Icons/ic-virtual-cluster.svg'
 import { ReactComponent as VirtualEnvIcon } from '@Icons/ic-environment-temp.svg'
-import { POLLING_INTERVAL, ClusterListProps, AuthenticationType, ClusterFormProps, EditClusterFormProps } from './cluster.type'
+import { POLLING_INTERVAL, ClusterListProps, EditClusterFormProps } from './cluster.type'
 import { DOCUMENTATION, ViewType, CONFIGURATION_TYPES, URLS, AppCreationType } from '../../config'
 import ClusterForm from './ClusterForm'
 import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
@@ -163,6 +163,7 @@ class ClusterList extends Component<ClusterListProps, any> {
                 insecureSkipTlsVerify: true,
                 isVirtualCluster: false,
                 remoteConnectionConfig: defaultRemoteConnectionConfig,
+                installationId: 0,
             })
             clusters = clusters.sort((a, b) => sortCallback('cluster_name', a, b))
             this.setState({ clusters })
@@ -304,6 +305,7 @@ const Cluster = ({
     sshTunnelConfig,
     isVirtualCluster,
     isProd,
+    installationId = 0,
 }) => {
     const [editMode, toggleEditMode] = useState(false)
     const [environment, setEnvironment] = useState(null)
@@ -570,6 +572,7 @@ const Cluster = ({
                                     toggleEditMode={toggleEditMode}
                                     isProd={isProd}
                                     isTlsConnection={!insecureSkipTlsVerify}
+                                    installationId={installationId}
                                 />
                             </div>
                         </Drawer>

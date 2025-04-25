@@ -28,6 +28,7 @@ const FooterComponent = ({
     apiCallInProgress,
     handleModalClose,
     children,
+    closeButtonText = 'Cancel',
 }: PropsWithChildren<NewClusterFormFooterProps>) => {
     const childrenArray = Children.toArray(children)
     // We need to find the children that are of type CTA and Start
@@ -37,7 +38,7 @@ const FooterComponent = ({
     )
 
     return (
-        <footer className="dc__position-abs dc__bottom-0 dc__left-0 w-100 dc__zi-1 bg__primary flexbox dc__content-end dc__border-top-n1 px-20 py-16 dc__gap-12 dc__no-shrink">
+        <footer className="dc__position-abs dc__bottom-0 dc__left-0 w-100 bg__primary flexbox dc__content-end dc__border-top-n1 px-20 py-16 dc__gap-12 dc__no-shrink">
             {Start}
 
             <div className="flexbox dc__gap-12">
@@ -45,7 +46,7 @@ const FooterComponent = ({
                     dataTestId="cancel-create-cluster-button"
                     onClick={handleModalClose}
                     disabled={apiCallInProgress}
-                    text="Cancel"
+                    text={closeButtonText}
                     variant={ButtonVariantType.secondary}
                 />
 

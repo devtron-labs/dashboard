@@ -97,9 +97,10 @@ export const getClusterOptions = (clusterList: ClusterDetail[]): ClusterOptionTy
               .filter(({ isVirtualCluster }) => !isVirtualCluster)
               .map(({ name, id, nodeErrors, isProd, installationId }) => ({
                   label: name,
-                  value: String(id ?? installationId),
+                  value: String(id ?? '0'),
                   description: nodeErrors,
+                  installationId,
                   isProd,
-                  isInstallationCluster: !!installationId,
+                  isClusterInCreationPhase: !!installationId && !id,
               }))
         : []

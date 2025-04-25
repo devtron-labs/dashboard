@@ -26,8 +26,15 @@ const ClusterInstallationStatus = () => {
 
     const clusterOptions = useMemo(() => getClusterOptions(clusterList), [clusterList, installationId])
 
-    const onClusterChange = ({ value, isInstallationCluster }: ClusterOptionType) => {
-        const path = getClusterChangeRedirectionUrl(isInstallationCluster, value)
+    const onClusterChange = ({
+        value,
+        installationId: clusterInstallationId,
+        isClusterInCreationPhase,
+    }: ClusterOptionType) => {
+        const path = getClusterChangeRedirectionUrl(
+            isClusterInCreationPhase,
+            isClusterInCreationPhase ? String(clusterInstallationId) : value,
+        )
 
         replace({
             pathname: path,

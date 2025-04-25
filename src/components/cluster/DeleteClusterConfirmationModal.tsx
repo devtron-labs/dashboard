@@ -6,6 +6,7 @@ import {
     DC_DELETE_SUBTITLES,
     DeleteConfirmationModal,
     ERROR_STATUS_CODE,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
@@ -23,14 +24,22 @@ const DeleteClusterConfirmationModal = ({
     installationId,
     reload,
 }: DeleteClusterConfirmationModalProps) => {
-    const [shouldDeleteInstalledCluster, setShouldDeleteInstalledCluster] = useState(false)
+    const isClusterInCreationPhase = Number(clusterId) === 0
+
+    const [shouldDeleteInstalledCluster, setShouldDeleteInstalledCluster] = useState(isClusterInCreationPhase)
 
     const handleDelete = async () => {
         if (shouldDeleteInstalledCluster && deleteInstalledCluster) {
             await deleteInstalledCluster(Number(installationId))
         }
-        await deleteCluster({ id: Number(clusterId) })
-        reload()
+        const numberedClusterId = Number(clusterId)
+        // NOTE: suppose we are in cluster creation phase in that case
+        // the cluster wouldn't have been added to cluster DB
+        // In this case the clusterId will be 0
+        if (!Number.isNaN(numberedClusterId) && numberedClusterId) {
+            await deleteCluster({ id: numberedClusterId })
+        }
+        reload?.()
     }
 
     const handleToggleShouldDeleteInstalledCluster = () => {
@@ -47,15 +56,22 @@ const DeleteClusterConfirmationModal = ({
             closeConfirmationModal={handleClose}
             errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.BAD_REQUEST}
         >
-            {!!installationId && !!deleteInstalledCluster && (
+            {!!Number(installationId) && !!deleteInstalledCluster && (
                 <Checkbox
                     value={CHECKBOX_VALUE.CHECKED}
                     isChecked={shouldDeleteInstalledCluster}
                     dataTestId="delete-installed-cluster"
+                    disabled={isClusterInCreationPhase}
                     rootClassName="m-0"
                     onChange={handleToggleShouldDeleteInstalledCluster}
                 >
-                    Delete cluster from AWS
+                    <Tooltip
+                        content="Since this cluster is being created, you can only delete the request and prevent its creation."
+                        alwaysShowTippyOnHover={isClusterInCreationPhase}
+                        placement="right"
+                    >
+                        <span>Delete cluster from AWS</span>
+                    </Tooltip>
                 </Checkbox>
             )}
         </DeleteConfirmationModal>

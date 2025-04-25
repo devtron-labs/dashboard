@@ -60,11 +60,11 @@ const ClusterListRow = ({
 
     // TODO: @Elessar1802 will be replacing all terminal url with new utils
 
+    const isClusterInCreationPhase = !!clusterData.installationId && !clusterData.id
+
     const clusterLinkURL = getClusterChangeRedirectionUrl(
-        !!clusterData.installationId,
-        // NOTE: installationId is 0 for added clusters
-        // it is non zero for created clusters, therefore using || instead of ??
-        String(clusterData.installationId || clusterData.id),
+        isClusterInCreationPhase,
+        String(isClusterInCreationPhase ? clusterData.installationId : clusterData.id),
     )
 
     return (

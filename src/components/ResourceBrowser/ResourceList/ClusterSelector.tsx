@@ -15,6 +15,7 @@
  */
 
 import React, { useRef, useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import ReactSelect, { Props as SelectProps, SelectInstance } from 'react-select'
 
 import { APP_SELECTOR_STYLES, AppSelectorDropdownIndicator, Icon, PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
@@ -22,7 +23,7 @@ import { APP_SELECTOR_STYLES, AppSelectorDropdownIndicator, Icon, PopupMenu } fr
 import { ReactComponent as MenuDots } from '@Icons/ic-dot.svg'
 import DeleteClusterConfirmationModal from '@Components/cluster/DeleteClusterConfirmationModal'
 
-import { DOCUMENTATION } from '../../../config'
+import { DOCUMENTATION, URLS } from '../../../config'
 import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
 import {
     clusterOverviewNodeText,
@@ -31,7 +32,7 @@ import {
     LEARN_MORE,
     SIDEBAR_KEYS,
 } from '../Constants'
-import { ClusterSelectorType } from '../Types'
+import { ClusterOptionType, ClusterSelectorType } from '../Types'
 
 const ClusterSelector: React.FC<ClusterSelectorType> = ({
     onChange,
@@ -39,6 +40,8 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
     clusterId,
     isInstallationStatusView,
 }) => {
+    const { replace } = useHistory()
+
     const [openDeleteClusterModal, setOpenDeleteClusterModal] = useState(false)
     const selectRef = useRef<SelectInstance>(null)
 
@@ -46,8 +49,8 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
     if (window._env_.HIDE_DEFAULT_CLUSTER) {
         filteredClusterList = clusterList.filter((item) => Number(item.value) !== DEFAULT_CLUSTER_ID)
     }
-    const defaultOption = filteredClusterList.find(
-        (item) => String(item.value) === clusterId && (!isInstallationStatusView || item.isInstallationCluster),
+    const defaultOption = filteredClusterList.find((item) =>
+        isInstallationStatusView ? String(item.installationId) === clusterId : String(item.value) === clusterId,
     )
 
     const handleOnKeyDown: SelectProps['onKeyDown'] = (event) => {
@@ -64,6 +67,17 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
         setOpenDeleteClusterModal(false)
     }
 
+    const handleRedirectToClusterList = () => {
+        replace(URLS.RESOURCE_BROWSER)
+    }
+
+    const getOptionsValue = (option: ClusterOptionType) =>
+        // NOTE: all the options with value equal to that of the selected option will be highlighted
+        // therefore, since installed clusters that are in creation phase have value = '0', we need to instead
+        // get its value as installationId. Prefixing it with installation- to avoid collision with normal clusters have same value of
+        // clusterId as this installationId
+        isInstallationStatusView ? `installation-${String(option.installationId)}` : option.value
+
     return (
         <div className="flexbox dc__align-items-center dc__gap-12">
             <ReactSelect
@@ -71,6 +85,7 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
                 options={filteredClusterList}
                 ref={selectRef}
                 onChange={onChange}
+                getOptionValue={getOptionsValue}
                 blurInputOnSelect
                 onKeyDown={handleOnKeyDown}
                 components={{
@@ -105,10 +120,12 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
 
             {openDeleteClusterModal && (
                 <DeleteClusterConfirmationModal
-                    clusterId={clusterId}
                     clusterName={defaultOption?.label}
+                    // NOTE: look inside DeleteClusterConfirmationModal to know why '0' is passed
+                    clusterId={defaultOption?.isClusterInCreationPhase ? '0' : defaultOption?.value}
                     handleClose={handleCloseDeleteModal}
-                    {...(defaultOption?.isInstallationCluster ? { installationId: clusterId } : {})}
+                    reload={handleRedirectToClusterList}
+                    {...(defaultOption?.isClusterInCreationPhase ? { installationId: clusterId } : {})}
                 />
             )}
         </div>

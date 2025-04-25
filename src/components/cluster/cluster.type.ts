@@ -200,10 +200,12 @@ export type ClusterFormProps = { reload: () => void } & (
     | ({
           handleCloseCreateClusterForm?: never
           id: number
+          installationId: number
       } & EditClusterFormProps)
     | ({
           handleCloseCreateClusterForm: () => void
           id?: never
+          installationId?: never
       } & Partial<Record<keyof EditClusterFormProps, never>>)
 )
 
