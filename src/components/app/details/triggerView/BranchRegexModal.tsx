@@ -15,23 +15,25 @@
  */
 
 import {
-    CustomInput,
-    stopPropagation,
-    InfoColourBar,
-    SourceTypeMap,
     Button,
+    ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
-    ButtonStyleType,
+    CustomInput,
+    InfoColourBar,
+    SourceTypeMap,
+    stopPropagation,
     VisibleModal2,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { getGitProviderIcon } from '@Components/common'
-import { ReactComponent as Close } from '@Icons/ic-close.svg'
+
 import { ReactComponent as LeftIcon } from '@Icons/ic-arrow-backward.svg'
+import { ReactComponent as Close } from '@Icons/ic-close.svg'
 import { ReactComponent as Info } from '@Icons/info-filled.svg'
-import { BranchRegexModalProps } from './types'
-import { BRANCH_REGEX_MODAL_MESSAGING } from './Constants'
+import { getGitProviderIcon } from '@Components/common'
+
 import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
+import { BRANCH_REGEX_MODAL_MESSAGING } from './Constants'
+import { BranchRegexModalProps } from './types'
 
 const BranchRegexModal = ({
     material,

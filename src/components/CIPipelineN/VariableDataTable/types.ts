@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { PluginVariableType } from '@Components/ciPipeline/types'
-import { PipelineContext } from '@Components/workflowEditor/types'
 import {
     DynamicDataTableCellErrorType,
     DynamicDataTableRowType,
@@ -27,6 +25,9 @@ import {
     VariableType,
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { PluginVariableType } from '@Components/ciPipeline/types'
+import { PipelineContext } from '@Components/workflowEditor/types'
 
 export interface VariableDataTableProps {
     type: PluginVariableType

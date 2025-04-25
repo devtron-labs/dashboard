@@ -15,17 +15,17 @@
  */
 
 import {
-    ResourceKindType,
-    CollapsibleListItem,
-    AppEnvDeploymentConfigType,
-    EnvResourceType,
-    AppEnvironment,
-    ResourceIdToResourceApprovalPolicyConfigMapType,
     AppConfigProps,
+    AppEnvDeploymentConfigType,
+    AppEnvironment,
+    CollapsibleListItem,
+    EnvResourceType,
+    ResourceIdToResourceApprovalPolicyConfigMapType,
+    ResourceKindType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ViewType } from '@Config/constants'
 import { WorkflowResult } from '@Components/app/details/triggerView/types'
+import { ViewType } from '@Config/constants'
 import { UserRoleType } from '@Pages/GlobalConfigurations/Authorization/constants'
 
 import { ResourceConfig, ResourceConfigState } from '../../service.types'

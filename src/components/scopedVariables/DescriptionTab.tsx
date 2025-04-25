@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { DescriptorTabProps } from './types'
 import { DESCRIPTOR_TABS } from './constants'
+import { DescriptorTabProps } from './types'
 
 const DescriptorTab = ({ handleCurrentViewUpdate, currentView, targetView }: DescriptorTabProps) => {
     const handleViewChange = () => {

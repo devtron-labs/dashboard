@@ -15,23 +15,25 @@
  */
 
 import React, { RefObject } from 'react'
+
 import {
-    K8SObjectBaseType,
-    OptionType,
+    ALL_NAMESPACE_OPTION,
     ApiResourceGroupType,
     GVKType,
-    WidgetEventDetails,
     InitTabType,
-    K8sResourceDetailType,
+    K8SObjectBaseType,
     K8sResourceDetailDataType,
-    ALL_NAMESPACE_OPTION,
-    ClusterDetail,
+    K8sResourceDetailType,
+    OptionType,
     ResourceDetail,
     SelectedResourceType,
+    WidgetEventDetails,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
-import { LogSearchTermType } from '../v2/appDetails/appDetails.type'
+
 import { ClusterListType } from '../ClusterNodes/types'
+import { LogSearchTermType } from '../v2/appDetails/appDetails.type'
 import { BaseResourceListProps } from './ResourceList/types'
 
 export interface K8SObjectType extends K8SObjectBaseType {
@@ -69,13 +71,6 @@ export enum CreateResourceStatus {
 
 export interface ResourceDetailsPropType extends LogSearchTermType {
     selectedResource: SelectedResourceType
-}
-
-export interface ClusterSelectionType {
-    clusterOptions: ClusterDetail[]
-    clusterListLoader: boolean
-    initialLoading: boolean
-    refreshData: () => void
 }
 
 export interface CreateResourceType {

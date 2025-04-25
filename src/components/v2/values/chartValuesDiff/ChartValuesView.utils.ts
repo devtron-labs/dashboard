@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-import YAML from 'yaml'
 import { Operation } from 'fast-json-patch'
 import { JSONPath } from 'jsonpath-plus'
+import YAML from 'yaml'
+
 import {
     convertJSONPointerToJSONPath,
     doesJSONConformToSchema07,
     getDefaultValueFromType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ChartValuesViewAction, ChartValuesViewActionTypes, ChartValuesViewState } from './ChartValuesView.type'
-import { getGeneratedHelmManifest } from '../common/chartValues.api'
+
 import {
     ChartDeploymentManifestDetailResponse,
     getDeploymentManifestDetails,
 } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
+import { getGeneratedHelmManifest } from '../common/chartValues.api'
+import { ChartValuesViewAction, ChartValuesViewActionTypes, ChartValuesViewState } from './ChartValuesView.type'
 
 const generateManifestGenerationKey = (
     isCreateValueView: boolean,

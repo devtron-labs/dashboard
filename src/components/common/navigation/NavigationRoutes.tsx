@@ -77,8 +77,8 @@ import 'monaco-editor'
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import YamlWorker from '../../../yaml.worker.js?worker'
 import { TAB_DATA_LOCAL_STORAGE_KEY } from '../DynamicTabs/constants'
-import { DEFAULT_GIT_OPS_FEATURE_FLAGS } from './constants'
-import { ParsedTabsData, ParsedTabsDataV1 } from '../DynamicTabs/types'
+import { ENVIRONMENT_DATA_FALLBACK, INITIAL_ENV_DATA_STATE } from './constants'
+import { ParsedTabsData } from '../DynamicTabs/types'
 import { SwitchThemeDialog } from '@Pages/Shared'
 import { SwitchThemeDialogProps } from '@Pages/Shared/SwitchThemeDialog/types'
 import { EnvironmentDataStateType } from './types'
@@ -152,16 +152,11 @@ export default function NavigationRoutes() {
     }
     const [environmentId, setEnvironmentId] = useState(null)
     const contextValue = useMemo(() => ({ environmentId, setEnvironmentId }), [environmentId])
-    const [environmentDataState, setEnvironmentDataState] = useState<EnvironmentDataStateType>({
-        isAirgapped: false,
-        isManifestScanningEnabled: false,
-        canOnlyViewPermittedEnvOrgLevel: false,
-        featureGitOpsFlags: structuredClone(DEFAULT_GIT_OPS_FEATURE_FLAGS),
-        devtronManagedLicensingEnabled: false,
-    })
 
     const { showThemeSwitcherDialog, handleThemeSwitcherDialogVisibilityChange, appTheme } = useTheme()
 
+    const [environmentDataState, setEnvironmentDataState] = useState<EnvironmentDataStateType>(INITIAL_ENV_DATA_STATE)
+    const [licenseInfoDialogType, setLicenseInfoDialogType] = useState<LicenseInfoDialogType>(null)
     const {
         userPreferences,
         userPreferencesError,
@@ -169,9 +164,6 @@ export default function NavigationRoutes() {
         handleUpdateUserThemePreference,
         handleUpdatePipelineRBACViewSelectedTab,
     } = useUserPreferences({ migrateUserPreferences })
-
-    const [licenseInfoDialogType, setLicenseInfoDialogType] = useState<LicenseInfoDialogType>(null)
-
 
     const { isAirgapped, isManifestScanningEnabled, canOnlyViewPermittedEnvOrgLevel, devtronManagedLicensingEnabled } =
         environmentDataState
@@ -338,35 +330,33 @@ export default function NavigationRoutes() {
     }
 
     const getEnvironmentDataValues = async (): Promise<EnvironmentDataValuesDTO> => {
-        const fallbackResponse: EnvironmentDataValuesDTO = {
-            isAirGapEnvironment: false,
-            isManifestScanningEnabled: false,
-            canOnlyViewPermittedEnvOrgLevel: false,
-            featureGitOpsFlags: structuredClone(DEFAULT_GIT_OPS_FEATURE_FLAGS),
-            devtronManagedLicensingEnabled: false,
-        }
-
         if (!getEnvironmentData) {
-            return fallbackResponse
+            return ENVIRONMENT_DATA_FALLBACK
         }
 
         try {
             const { result } = await getEnvironmentData()
-            const parsedFeatureGitOpsFlags: typeof fallbackResponse.featureGitOpsFlags = {
+            const parsedFeatureGitOpsFlags: typeof ENVIRONMENT_DATA_FALLBACK.featureGitOpsFlags = {
                 isFeatureArgoCdMigrationEnabled: result.featureGitOpsFlags?.isFeatureArgoCdMigrationEnabled || false,
                 isFeatureGitOpsEnabled: result.featureGitOpsFlags?.isFeatureGitOpsEnabled || false,
                 isFeatureUserDefinedGitOpsEnabled:
                     result.featureGitOpsFlags?.isFeatureUserDefinedGitOpsEnabled || false,
             }
             return {
-                isAirGapEnvironment: result.isAirGapEnvironment,
-                isManifestScanningEnabled: result.isManifestScanningEnabled,
-                canOnlyViewPermittedEnvOrgLevel: result.canOnlyViewPermittedEnvOrgLevel,
+                isAirGapEnvironment: result.isAirGapEnvironment ?? ENVIRONMENT_DATA_FALLBACK['isAirGapEnvironment'],
+                isManifestScanningEnabled:
+                    result.isManifestScanningEnabled ?? ENVIRONMENT_DATA_FALLBACK['isManifestScanningEnabled'],
+                canOnlyViewPermittedEnvOrgLevel:
+                    result.canOnlyViewPermittedEnvOrgLevel ??
+                    ENVIRONMENT_DATA_FALLBACK['canOnlyViewPermittedEnvOrgLevel'],
                 featureGitOpsFlags: parsedFeatureGitOpsFlags,
-                devtronManagedLicensingEnabled: result.devtronManagedLicensingEnabled || false,
+                canFetchHelmAppStatus: result.canFetchHelmAppStatus ?? ENVIRONMENT_DATA_FALLBACK['canFetchHelmAppStatus'],
+                devtronManagedLicensingEnabled:
+                    result.devtronManagedLicensingEnabled ??
+                    ENVIRONMENT_DATA_FALLBACK['devtronManagedLicensingEnabled'],
             }
         } catch {
-            return fallbackResponse
+            return ENVIRONMENT_DATA_FALLBACK
         }
     }
 
@@ -386,6 +376,7 @@ export default function NavigationRoutes() {
                 isManifestScanningEnabled: environmentDataResponse.isManifestScanningEnabled,
                 canOnlyViewPermittedEnvOrgLevel: environmentDataResponse.canOnlyViewPermittedEnvOrgLevel,
                 featureGitOpsFlags: environmentDataResponse.featureGitOpsFlags,
+                canFetchHelmAppStatus: environmentDataResponse.canFetchHelmAppStatus,
                 devtronManagedLicensingEnabled: environmentDataResponse.devtronManagedLicensingEnabled,
             })
 
@@ -410,19 +401,10 @@ export default function NavigationRoutes() {
         const persistedTabs = localStorage.getItem(TAB_DATA_LOCAL_STORAGE_KEY)
         if (persistedTabs) {
             try {
-                const parsedTabsData: ParsedTabsData | ParsedTabsDataV1 = JSON.parse(persistedTabs)
-                if (parsedTabsData.version === 'v1') {
-                    if (
-                        location.pathname === parsedTabsData.key ||
-                        !location.pathname.startsWith(`${parsedTabsData.key}/`)
-                    ) {
-                        localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
-                    }
-                } else {
-                    const keys = Object.keys(parsedTabsData.data)
-                    if (keys.every((key) => location.pathname !== key && !location.pathname.startsWith(`${key}/`))) {
-                        localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
-                    }
+                const parsedTabsData: ParsedTabsData = JSON.parse(persistedTabs)
+                const keys = Object.keys(parsedTabsData.data)
+                if (keys.every((key) => location.pathname !== key && !location.pathname.startsWith(`${key}/`))) {
+                    localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
                 }
             } catch {
                 localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
@@ -492,6 +474,7 @@ export default function NavigationRoutes() {
                 handleOpenLicenseInfoDialog,
                 licenseData,
                 setLicenseData,
+                canFetchHelmAppStatus: environmentDataState.canFetchHelmAppStatus,
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>

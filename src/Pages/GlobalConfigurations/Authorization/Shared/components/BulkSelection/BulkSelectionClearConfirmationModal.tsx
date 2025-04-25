@@ -15,6 +15,7 @@
  */
 
 import { BulkSelectionEvents, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as CleanBrush } from '../../../../../../assets/icons/ic-clean-brush-medium.svg'
 import { BulkSelectionModalTypes } from './constants'
 import { BulkSelectionClearConfirmationModalProps } from './types'

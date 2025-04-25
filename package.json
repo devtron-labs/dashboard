@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "1.11.2",
+        "@devtron-labs/devtron-fe-common-lib": "1.12.0",
         "@esbuild-plugins/node-globals-polyfill": "0.2.3",
         "@rjsf/core": "^5.13.3",
         "@rjsf/utils": "^5.13.3",
@@ -42,7 +42,7 @@
         "rxjs": "^7.5.4",
         "sockjs-client": "1.6.1",
         "tippy.js": "^6.3.7",
-        "vite": "5.4.14",
+        "vite": "5.4.17",
         "vite-plugin-require-transform": "1.0.21",
         "vite-plugin-svgr": "^2.4.0",
         "xterm": "^4.19.0",
@@ -111,6 +111,7 @@
         "eslint-plugin-prettier": "^5.1.2",
         "eslint-plugin-react": "^7.33.2",
         "eslint-plugin-react-hooks": "^4.6.0",
+        "eslint-plugin-simple-import-sort": "^12.1.1",
         "eslint-plugin-storybook": "^0.8.0",
         "husky": "^7.0.4",
         "jest-extended": "^2.0.0",
@@ -129,6 +130,7 @@
         "ts-jest": "29.2.5",
         "ts-node": "10.9.2",
         "typescript": "5.5.4",
+        "vite-plugin-compression2": "^1.3.3",
         "vite-plugin-image-optimizer": "^1.1.8",
         "vite-plugin-pwa": "^0.21.1",
         "vite-tsconfig-paths": "5.0.1"

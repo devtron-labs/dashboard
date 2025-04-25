@@ -15,6 +15,7 @@
  */
 
 import { Severity } from '@devtron-labs/devtron-fe-common-lib'
+
 import { SearchType, SecurityScansTabMultiFilterKeys, SecurityScansTabSingleFilterKeys, SeverityMapping } from './types'
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({

@@ -24,13 +24,14 @@ import {
     DraggablePositionVariant,
     DraggableWrapper,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { importComponentFromFELibrary } from '../../../../../../components/common'
-import { ReactComponent as Trash } from '../../../../../../assets/icons/ic-delete-interactive.svg'
+
 import { ReactComponent as Close } from '../../../../../../assets/icons/ic-close.svg'
+import { ReactComponent as Trash } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as Tilde } from '../../../../../../assets/icons/ic-tilde.svg'
-import useAuthorizationBulkSelection from './useAuthorizationBulkSelection'
-import { BulkSelectionActionWidgetProps } from './types'
+import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { BulkSelectionEntityTypes, BulkSelectionModalTypes } from './constants'
+import { BulkSelectionActionWidgetProps } from './types'
+import useAuthorizationBulkSelection from './useAuthorizationBulkSelection'
 
 const BulkStatusUpdateDropdown = importComponentFromFELibrary('BulkStatusUpdateDropdown', null, 'function')
 

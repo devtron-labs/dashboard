@@ -15,33 +15,37 @@
  */
 
 import { Fragment, useEffect, useRef, useState } from 'react'
-import { useRouteMatch, useParams, useHistory, useLocation } from 'react-router-dom'
+import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { followCursor } from 'tippy.js'
+
 import {
-    TippyCustomized,
-    TippyTheme,
     ClipboardButton,
-    SortableTableHeaderCell,
-    Tooltip,
-    TabGroup,
     ComponentSizeType,
     noop,
+    SortableTableHeaderCell,
+    TabGroup,
+    TippyCustomized,
+    TippyTheme,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as ICExpand } from '@Icons/ic-expand.svg'
-import { followCursor } from 'tippy.js'
-import IndexStore from '../../index.store'
+
 import { getElapsedTime, importComponentFromFELibrary, Pod as PodIcon } from '../../../../common'
-import PodHeaderComponent from './PodHeader.component'
-import { Node, iNode, NodeComponentProps, NodeType } from '../../appDetails.type'
-import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util'
-import NodeDeleteComponent from './NodeDelete.component'
-import { getNodeStatus, nodeRowClassModifierMap } from './nodeType.util'
-import { useSharedState } from '../../../utils/useSharedState'
 import { getExternalLinkIcon, NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component'
 import { OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type'
 import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils'
-import { getPodRestartRBACPayload } from '../nodeDetail/nodeDetail.api'
+import { useSharedState } from '../../../utils/useSharedState'
 import { AppDetailsTabs } from '../../appDetails.store'
+import { iNode, Node, NodeComponentProps, NodeType } from '../../appDetails.type'
+import IndexStore from '../../index.store'
+import { getPodRestartRBACPayload } from '../nodeDetail/nodeDetail.api'
+import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util'
+import NodeDeleteComponent from './NodeDelete.component'
+import { getNodeStatus, nodeRowClassModifierMap } from './nodeType.util'
+import PodHeaderComponent from './PodHeader.component'
 import { NoPodProps } from './types'
+
 import './nodeType.scss'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
