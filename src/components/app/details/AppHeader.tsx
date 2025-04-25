@@ -28,7 +28,6 @@ import {
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import { URLS } from '../../../config'
 import { FilterParentType } from '../../ApplicationGroup/AppGroup.types'
 import AppGroupAppFilter from '../../ApplicationGroup/AppGroupAppFilter'
@@ -231,7 +230,7 @@ export const AppHeader = ({
                 id: 'app-configuration-tab',
                 label: 'Configurations',
                 tabType: 'navLink',
-                icon: Settings,
+                icon: 'ic-sliders-vertical',
                 props: {
                     to: `${match.url}/${CommonURLS.APP_CONFIG}`,
                     'data-action': 'App Configuration Clicked',

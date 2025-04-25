@@ -26,6 +26,7 @@ import {
     getUrlWithSearchParams,
     showError,
     ClusterCapacityType,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ClusterErrorType,
@@ -412,7 +413,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
             <aside className="flexbox-col dc__gap-16 w-300 dc__no-shrink">
                 <div className="flexbox-col dc__gap-12">
                     <div>
-                        <ClusterOverviewIcon className="icon-dim-48" />
+                        <Icon name='ic-bg-cluster' size={48} color={null} />
                     </div>
                     <div className="fs-16 fw-7 lh-24 cn-9 font-merriweather" data-testid="clusterOveviewName">
                         {clusterDetails?.clusterName}

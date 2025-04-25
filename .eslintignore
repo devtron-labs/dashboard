@@ -383,7 +383,6 @@ src/components/v2/values/chartValuesDiff/ProjectUpdateModal.tsx
 src/components/v2/values/common/chartValues.api.ts
 src/components/workflowEditor/CDSuccessModal.tsx
 src/components/workflowEditor/CreateWorkflow.tsx
-src/components/workflowEditor/DeprecatedPipelineWarning.tsx
 src/components/workflowEditor/DeprecatedWarningModal.tsx
 src/components/workflowEditor/EmptyWorkflow.tsx
 src/components/workflowEditor/NoGitOpsConfiguredWarning.tsx

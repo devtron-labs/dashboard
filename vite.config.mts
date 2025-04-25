@@ -214,6 +214,30 @@ export default defineConfig(({ mode }) => {
                               globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
                               cleanupOutdatedCaches: true,
                               maximumFileSizeToCacheInBytes: 10000000,
+                              runtimeCaching: [
+                                  {
+                                      urlPattern: ({ request }) => request.destination === 'style',
+                                      handler: 'NetworkFirst',
+                                      options: {
+                                          cacheName: 'css-cache',
+                                          expiration: {
+                                              maxEntries: 30,
+                                              maxAgeSeconds: 60 * 60 * 24 * 15,
+                                          },
+                                      },
+                                  },
+                                  {
+                                      urlPattern: ({ request }) => request.destination === 'script',
+                                      handler: 'NetworkFirst',
+                                      options: {
+                                          cacheName: 'js-cache',
+                                          expiration: {
+                                              maxEntries: 30,
+                                              maxAgeSeconds: 60 * 60 * 24 * 15,
+                                          },
+                                      },
+                                  },
+                              ],
                           },
                           manifest: {
                               short_name: 'Devtron',
