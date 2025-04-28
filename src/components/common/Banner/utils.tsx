@@ -47,6 +47,7 @@ export const getBannerConfig = (
     isOnline?: boolean,
     _announcementConfig?: { message: string; type: string },
     licenseType?: InfoBlockProps['variant'],
+    enterpriseLicenseBarMessage?: string,
 ): BannerConfigType => {
     const bannerConfigMap: Record<BannerVariant, BannerConfigType> = {
         [BannerVariant.INTERNET_CONNECTIVITY]: isOnline
@@ -59,17 +60,17 @@ export const getBannerConfig = (
                   text: 'You’re offline! Please check your internet connection.',
                   icon: 'ic-disconnected',
                   rootClassName: 'bcr-5',
-                  type: 'online',
+                  type: 'offline',
               },
 
         [BannerVariant.VERSION_UPDATE]: {
             text: 'A new version is available. Please refresh the page to get the latest features.',
-            icon: 'ic-warning',
+            icon: 'ic-sparkle-color',
             rootClassName: 'banner__version-update',
         },
 
         [BannerVariant.LICENSE]: {
-            text: 'You’re using unlicensed version of Devtron',
+            text: enterpriseLicenseBarMessage,
             icon: licenseType,
             rootClassName: VARIANT_TO_BG_MAP[licenseType as InfoBlockProps['variant']],
         },

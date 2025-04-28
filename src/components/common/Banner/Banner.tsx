@@ -99,20 +99,20 @@ export const Banner = () => {
         if (showOnlineBanner) {
             return BannerVariant.INTERNET_CONNECTIVITY
         }
+        if (updateToastRef.current) {
+            return BannerVariant.VERSION_UPDATE
+        }
         if (showAnnouncementBanner) {
             return BannerVariant.ANNOUNCEMENT
         }
         if (enterpriseLicenseBarMessage) {
             return BannerVariant.LICENSE
         }
-        if (updateToastRef.current) {
-            return BannerVariant.VERSION_UPDATE
-        }
         return null
     }
 
     const bannerView: BannerVariant = getHierarchialBannerView()
-    const config = getBannerConfig(bannerView, isOnline, AnnouncementConfig, licenseType)
+    const config = getBannerConfig(bannerView, isOnline, AnnouncementConfig, licenseType, enterpriseLicenseBarMessage)
     if (!config) {
         return null
     }
