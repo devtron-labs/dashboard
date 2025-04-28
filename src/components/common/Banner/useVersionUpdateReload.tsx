@@ -63,9 +63,7 @@ export const useVersionUpdateReload = () => {
                     text: 'Reload',
                     dataTestId: 'reload-btn',
                     onClick: () => {
-                        // Inline handleAppUpdate
                         dismissIfToastActive(updateToastRef)
-                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
                         _updateServiceWorker(true)
                     },
                     startIcon: <Icon name="ic-arrow-clockwise" color={null} />,

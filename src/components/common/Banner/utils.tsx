@@ -46,18 +46,23 @@ export const getBannerConfig = ({
     isOnline,
     licenseType,
     enterpriseLicenseBarMessage = '',
+    hideInternetConnectivityBar = false,
 }: BannerConfigProps): BannerConfigType => {
-    const bannerConfigMap: Record<BannerVariant, BannerConfigType> = {
-        [BannerVariant.INTERNET_CONNECTIVITY]: isOnline
+    const bannerConfigMap: Partial<Record<BannerVariant, BannerConfigType>> = {
+        ...(!hideInternetConnectivityBar
             ? {
-                  text: 'You’re back online!',
-                  rootClassName: 'bcg-5',
+                  [BannerVariant.INTERNET_CONNECTIVITY]: isOnline
+                      ? {
+                            text: 'You’re back online!',
+                            rootClassName: 'bcg-5',
+                        }
+                      : {
+                            text: 'You’re offline! Please check your internet connection.',
+                            icon: 'ic-disconnected',
+                            rootClassName: 'bcr-5',
+                        },
               }
-            : {
-                  text: 'You’re offline! Please check your internet connection.',
-                  icon: 'ic-disconnected',
-                  rootClassName: 'bcr-5',
-              },
+            : {}),
 
         [BannerVariant.VERSION_UPDATE]: {
             text: 'A new version is available. Please refresh the page to get the latest features.',
@@ -85,13 +90,14 @@ export const getBannerConfig = ({
 export const getButtonConfig = (
     bannerView: BannerVariant,
     handleOpenLicenseDialog: () => void,
+    handleAppUpdate: () => void,
 ): ButtonProps<ButtonComponentType> | null => {
     switch (bannerView) {
         case BannerVariant.VERSION_UPDATE:
             return {
                 startIcon: <Icon name="ic-arrow-clockwise" color={null} />,
                 text: 'Reload',
-                onClick: refresh,
+                onClick: handleAppUpdate,
                 variant: ButtonVariantType.text,
                 size: ComponentSizeType.xxs,
                 dataTestId: 'banner-version-update-reload-button',

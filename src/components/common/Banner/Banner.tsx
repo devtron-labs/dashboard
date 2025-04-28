@@ -8,6 +8,7 @@ import {
     getDateInMilliseconds,
     Icon,
     setActionWithExpiry,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary, useOnline } from '../helpers/Helpers'
@@ -29,6 +30,7 @@ const shouldShowAnnouncementBanner = (): boolean => {
 export const Banner = () => {
     const didMountRef = useRef(false)
     const isOnline = useOnline()
+    const { isAirgapped } = useMainContext()
 
     const [showOnlineBanner, setShowOnlineBanner] = useState(false)
     const [showAnnouncementBanner, setShowAnnouncementBanner] = useState(
@@ -39,7 +41,7 @@ export const Banner = () => {
 
     const licenseConfig = enterpriseLicenseConfig ? enterpriseLicenseConfig() : null
 
-    const { updateToastRef } = useVersionUpdateReload()
+    const { bgUpdated, doesNeedRefresh, handleAppUpdate } = useVersionUpdateReload()
 
     useEffect(() => {
         let timer: NodeJS.Timeout
@@ -75,7 +77,7 @@ export const Banner = () => {
     const getCurrentBanner = (): BannerVariant => {
         if (!isOnline) return BannerVariant.INTERNET_CONNECTIVITY
         if (showOnlineBanner) return BannerVariant.INTERNET_CONNECTIVITY
-        if (updateToastRef.current) return BannerVariant.VERSION_UPDATE
+        if (doesNeedRefresh || bgUpdated) return BannerVariant.VERSION_UPDATE
         if (showAnnouncementBanner) return BannerVariant.ANNOUNCEMENT
         if (licenseConfig?.message) return BannerVariant.LICENSE
         return null
@@ -90,11 +92,12 @@ export const Banner = () => {
         isOnline,
         licenseType,
         enterpriseLicenseBarMessage,
+        hideInternetConnectivityBar: isAirgapped,
     })
 
     if (!config) return null
 
-    const actionButtons = getButtonConfig(bannerVariant, handleOpenLicenseDialog)
+    const actionButtons = getButtonConfig(bannerVariant, handleOpenLicenseDialog, handleAppUpdate)
     const baseClassName = `w-100 ${config.rootClassName || ''} ${getBannerTextColor(bannerVariant)} ${config.isDismissible ? 'dc__grid banner-row' : 'flex'}`
     const isOffline = !(isOnline && bannerVariant === BannerVariant.INTERNET_CONNECTIVITY)
 
