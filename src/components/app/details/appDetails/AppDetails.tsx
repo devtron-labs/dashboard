@@ -507,18 +507,21 @@ const Details: React.FC<DetailsType> = ({
             const response = await appDetailsAPI(params.appId, params.envId, interval - 5000, appDetailsAbortRef)
             // eslint-disable-next-line no-param-reassign
             isVirtualEnvRef.current = response.result?.isVirtualEnvironment
-            // This means the CD is not triggered and the app is not helm migrated i.e. Empty State
-            if (!response.result.isPipelineTriggered && response.result.releaseMode === ReleaseMode.NEW_DEPLOYMENT) {
-                setResourceTreeFetchTimeOut(false)
-                setLoadingResourceTree(false)
-                pollResourceTreeRef.current = false
-            }
+
             appDetailsRef.current = {
                 ...appDetailsRef.current,
                 ...response.result,
             }
             IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_APP)
             setAppDetails(appDetailsRef.current)
+
+            // This means the CD is not triggered and the app is not helm migrated i.e. Empty State
+            if (!response.result.isPipelineTriggered && response.result.releaseMode === ReleaseMode.NEW_DEPLOYMENT) {
+                setResourceTreeFetchTimeOut(false)
+                setLoadingResourceTree(false)
+                pollResourceTreeRef.current = false
+                return
+            }
 
             if (fetchExternalLinks && response.result?.clusterId) {
                 getExternalLinksAndTools(response.result.clusterId)
@@ -610,6 +613,7 @@ const Details: React.FC<DetailsType> = ({
                 }}
                 isForEmptyState
                 handleSuccess={callAppDetailsAPI}
+                isAppView={isAppView}
             />
         )
 
@@ -848,7 +852,7 @@ const AppDetail = ({ detailsType, filteredResourceIds }: AppDetailProps) => {
     const envList = useMemo(
         () =>
             (otherEnvsResult?.result ?? [])
-                .filter((env) => !filteredEntityMap || filteredEntityMap.get(env.environmentId))
+                .filter((env) => !isAppView || !filteredEntityMap || filteredEntityMap.get(env.environmentId))
                 .sort((a, b) => stringComparatorBySortOrder(a.environmentName, b.environmentName)),
         [filteredResourceIds, otherEnvsResult],
     )

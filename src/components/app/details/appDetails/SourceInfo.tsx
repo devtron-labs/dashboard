@@ -53,7 +53,7 @@ import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
 import HelmAppConfigApplyStatusCard from '@Components/v2/appDetails/sourceInfo/environmentStatus/HelmAppConfigApplyStatusCard'
 import { HibernationModalTypes } from './appDetails.type'
-import { DA_APP_DETAILS_GA_EVENTS } from './constants'
+import { AG_APP_DETAILS_GA_EVENTS, DA_APP_DETAILS_GA_EVENTS } from './constants'
 import AppEnvSelector from './AppDetails.components'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
@@ -160,7 +160,7 @@ export const SourceInfo = ({
     }
 
     const onClickSliderVerticalButton = () => {
-        ReactGA.event(DA_APP_DETAILS_GA_EVENTS.GoToEnvironmentConfiguration)
+        ReactGA.event(isAppView ? DA_APP_DETAILS_GA_EVENTS.GoToEnvironmentConfiguration: AG_APP_DETAILS_GA_EVENTS.GoToEnvironmentConfiguration)
     }
 
     const renderDevtronAppsEnvironmentSelector = () => {
@@ -336,6 +336,7 @@ export const SourceInfo = ({
                                         deploymentUserActionState: deploymentUserActionState,
                                         triggerType: appDetails.triggerType,
                                     }}
+                                    isAppView={isAppView}
                                 />
                             </div>
                         )}

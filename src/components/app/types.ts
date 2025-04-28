@@ -594,7 +594,7 @@ export interface AppDetailsCDButtonType
             AppDetails,
             'appId' | 'environmentId' | 'isVirtualEnvironment' | 'deploymentAppType' | 'environmentName'
         >,
-        Pick<SourceInfoType, 'deploymentUserActionState' | 'loadingDetails'> {
+        Pick<SourceInfoType, 'deploymentUserActionState' | 'loadingDetails' | 'isAppView'> {
     isRedirectedFromAppDetails?: boolean
     cdModal: CDModalProps
     isForEmptyState?: boolean

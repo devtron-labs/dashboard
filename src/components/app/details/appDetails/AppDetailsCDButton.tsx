@@ -38,7 +38,7 @@ import { AppDetailsCDButtonType } from '../../types'
 import CDMaterial from '../triggerView/cdMaterial'
 import { TRIGGER_VIEW_PARAMS } from '../triggerView/Constants'
 import { MATERIAL_TYPE } from '../triggerView/types'
-import { DA_APP_DETAILS_GA_EVENTS } from './constants'
+import { AG_APP_DETAILS_GA_EVENTS, DA_APP_DETAILS_GA_EVENTS } from './constants'
 import { getDeployButtonConfig } from './utils'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
@@ -54,6 +54,7 @@ const AppDetailsCDButton = ({
     environmentName,
     isForEmptyState = false,
     handleSuccess,
+    isAppView,
 }: AppDetailsCDButtonType): JSX.Element => {
     const history = useHistory()
     const { searchParams } = useSearchString()
@@ -72,7 +73,9 @@ const AppDetailsCDButton = ({
             search: new URLSearchParams(newParams).toString(),
         })
 
-        ReactGA.event(DA_APP_DETAILS_GA_EVENTS.DeployButtonClicked)
+        ReactGA.event(
+            isAppView ? DA_APP_DETAILS_GA_EVENTS.DeployButtonClicked : AG_APP_DETAILS_GA_EVENTS.DeployButtonClicked,
+        )
     }
 
     const closeCDModal = (e: React.MouseEvent): void => {
