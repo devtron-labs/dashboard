@@ -402,6 +402,7 @@ export const ConfigMapSecretData = ({
                     key={`${isExpressEditView}-${data.isResolvedData}`}
                     isAdditionNotAllowed={secretMode || data.yamlMode || data.external}
                     readOnly={readOnly || secretMode}
+                    isSortable
                     headerLabel={{
                         key: isSelectedTypeVolume ? 'File Name' : 'Key',
                         value: isSelectedTypeVolume ? 'File Content' : 'Value',
