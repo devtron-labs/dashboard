@@ -208,7 +208,7 @@ export default function CreateAppGroup({
         }
 
         return (
-            <div className='flexbox-col flex-grow-1'>
+            <div className="flexbox-col flex-grow-1">
                 <SearchBar
                     inputProps={{
                         placeholder: `Search ${filterParentTypeMsg}'s`,
@@ -218,7 +218,7 @@ export default function CreateAppGroup({
                     handleEnter={handleAppSearchEnterChange}
                     dataTestId="create-app-group"
                 />
-                <div className='flexbox-col flex-grow-1'>
+                <div className="flexbox-col flex-grow-1">
                     {filteredAuthList.length <= 0 && filteredUnAuthList.length <= 0
                         ? renderEmptyState()
                         : filteredAuthList.map((app) => {
@@ -271,7 +271,7 @@ export default function CreateAppGroup({
         }
 
         return (
-            <div className='flexbox-col flex-grow-1'>
+            <div className="flexbox-col flex-grow-1">
                 <SearchBar
                     inputProps={{
                         placeholder: `Search ${filterParentTypeMsg}'s`,
@@ -280,7 +280,7 @@ export default function CreateAppGroup({
                     initialSearchText={allAppSearchText}
                     handleEnter={handleAllAppSearchEnterChange}
                 />
-                <div className='flexbox-col flex-grow-1'>
+                <div className="flexbox-col flex-grow-1">
                     {filteredAllApps.length <= 0
                         ? renderEmptyState()
                         : filteredAllApps.map((app) => (
@@ -377,7 +377,7 @@ export default function CreateAppGroup({
                         }
                     />
                 </div>
-                <div className='flexbox-col flex-grow-1'>
+                <div className="flexbox-col flex-grow-1">
                     <div className="dc__border-bottom mb-8">
                         <TabGroup
                             tabs={[
@@ -395,7 +395,6 @@ export default function CreateAppGroup({
                                 ),
                             ]}
                             hideTopPadding
-                            alignActiveBorderWithContainer
                         />
                     </div>
                     {selectedTab === CreateGroupTabs.SELECTED_APPS || selectedTab === CreateGroupTabs.SELECTED_ENV

@@ -403,7 +403,6 @@ const ChartDeploymentHistory = ({
                             'data-testid': `nav-bar-option-${index}`,
                         },
                     }))}
-                    alignActiveBorderWithContainer
                 />
             </div>
         )

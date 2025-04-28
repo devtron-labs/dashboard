@@ -300,7 +300,6 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                         },
                     }))}
                     hideTopPadding
-                    alignActiveBorderWithContainer={!isChildTab}
                     size={isChildTab ? ComponentSizeType.medium : ComponentSizeType.large}
                 />
             </div>

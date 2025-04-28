@@ -822,7 +822,6 @@ export default function CIPipeline({
                                       ]
                             }
                             hideTopPadding
-                            alignActiveBorderWithContainer
                         />
                     </div>
                 )}

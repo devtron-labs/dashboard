@@ -674,7 +674,7 @@ export const EnvHeader = ({
             },
         ]
 
-        return <TabGroup tabs={tabs} hideTopPadding alignActiveBorderWithContainer />
+        return <TabGroup tabs={tabs} hideTopPadding />
     }
 
     const renderBreadcrumbs = () => {

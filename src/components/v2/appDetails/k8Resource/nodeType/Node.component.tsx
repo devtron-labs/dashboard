@@ -543,7 +543,6 @@ const NodeComponent = ({
                                         },
                                     ]}
                                     size={ComponentSizeType.xl}
-                                    alignActiveBorderWithContainer
                                 />
                             </div>
                         )}
