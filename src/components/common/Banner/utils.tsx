@@ -1,104 +1,128 @@
+import { Link } from 'react-router-dom'
+
 import {
     ButtonProps,
+    ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
     Icon,
+    IconBaseColorType,
     IconsProps,
     InfoBlockProps,
+    refresh,
+    VARIANT_TO_BG_MAP,
+    VARIANT_TO_ICON_COLOR_MAP,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { BANNER_VARIANT, INTERNET_CONNECTIVITY, VARIANT_TO_BG_MAP, VARIANT_TO_ICON_COLOR_MAP } from './constants'
+import { AnnouncementConfig, BannerVariant } from './constants'
 import { BannerConfigType } from './types'
 
-export const getBannerIconName = (bannerVariant: BANNER_VARIANT, type) => {
-    const variantWithIconMap: Record<BANNER_VARIANT, IconsProps['name'] | null> = {
-        [BANNER_VARIANT.INTERNET_CONNECTIVITY]: 'ic-disconnect',
-        [BANNER_VARIANT.VERSION_UPDATE]: 'ic-sparkle-color',
-        [BANNER_VARIANT.LICENSE]: 'ic-error',
-        [BANNER_VARIANT.ANNOUNCEMENT]: 'ic-megaphone-left',
+export const getBannerIconName = (
+    bannerVariant: BannerVariant,
+    type: InfoBlockProps['variant'],
+    iconName: IconsProps['name'],
+) => {
+    const variantWithIconMap: Record<BannerVariant, IconsProps['name'] | null> = {
+        [BannerVariant.INTERNET_CONNECTIVITY]: 'ic-disconnect',
+        [BannerVariant.VERSION_UPDATE]: 'ic-sparkle-color',
+        [BannerVariant.LICENSE]: iconName,
+        [BannerVariant.ANNOUNCEMENT]: 'ic-megaphone-left',
     }
 
     return (
         <Icon
             name={variantWithIconMap[bannerVariant]}
-            color={bannerVariant === BANNER_VARIANT.ANNOUNCEMENT ? VARIANT_TO_ICON_COLOR_MAP[type] : null}
+            color={
+                bannerVariant === BannerVariant.ANNOUNCEMENT
+                    ? (VARIANT_TO_ICON_COLOR_MAP[type] as IconBaseColorType)
+                    : null
+            }
             size={16}
         />
     )
 }
 
 export const getBannerConfig = (
-    variant: BANNER_VARIANT,
+    variant: BannerVariant,
     isOnline?: boolean,
     _announcementConfig?: { message: string; type: string },
+    licenseType?: InfoBlockProps['variant'],
 ): BannerConfigType => {
-    const bannerConfigMap: Record<BANNER_VARIANT, BannerConfigType> = {
-        [BANNER_VARIANT.INTERNET_CONNECTIVITY]: isOnline
+    const bannerConfigMap: Record<BannerVariant, BannerConfigType> = {
+        [BannerVariant.INTERNET_CONNECTIVITY]: isOnline
             ? {
                   text: 'You’re back online!',
                   rootClassName: 'bcg-5',
-                  type: INTERNET_CONNECTIVITY.ONLINE,
+                  type: 'online',
               }
             : {
                   text: 'You’re offline! Please check your internet connection.',
                   icon: 'ic-disconnected',
                   rootClassName: 'bcr-5',
-                  type: INTERNET_CONNECTIVITY.OFFLINE,
+                  type: 'online',
               },
 
-        [BANNER_VARIANT.VERSION_UPDATE]: {
+        [BannerVariant.VERSION_UPDATE]: {
             text: 'A new version is available. Please refresh the page to get the latest features.',
             icon: 'ic-warning',
-            rootClassName: 'bcy-1',
+            rootClassName: 'banner__version-update',
         },
 
-        [BANNER_VARIANT.LICENSE]: {
+        [BannerVariant.LICENSE]: {
             text: 'You’re using unlicensed version of Devtron',
-            icon: 'ic-error',
-            rootClassName: 'bcr-1',
+            icon: licenseType,
+            rootClassName: VARIANT_TO_BG_MAP[licenseType as InfoBlockProps['variant']],
         },
 
-        [BANNER_VARIANT.ANNOUNCEMENT]: {
+        [BannerVariant.ANNOUNCEMENT]: {
             text: _announcementConfig.message,
             icon: 'ic-megaphone-left',
             rootClassName: VARIANT_TO_BG_MAP[_announcementConfig.type as InfoBlockProps['variant']],
+            isDismissible: true,
         },
     }
 
     return bannerConfigMap[variant]
 }
 
-export const buttonConfig = (bannerView: BANNER_VARIANT): ButtonProps[] | ButtonProps | null => {
+export const buttonConfig = (bannerView: BannerVariant, handleOpenLicenseDialog: () => void): ButtonProps => {
     switch (bannerView) {
-        case BANNER_VARIANT.VERSION_UPDATE:
-            return [
-                {
-                    startIcon: <Icon name="ic-gift" color={null} />,
-                    text: 'What’s New',
-                    onClick: () => window.location.reload(), // TODO: need to replace
-                    variant: ButtonVariantType.borderLess,
-                    size: ComponentSizeType.small,
-                    dataTestId: 'banner-what-is-new',
-                },
-                {
-                    startIcon: <Icon name="ic-arrow-clockwise" color={null} />,
-                    text: 'Reload',
-                    onClick: () => window.location.reload(),
-                    variant: ButtonVariantType.borderLess,
-                    size: ComponentSizeType.small,
-                    dataTestId: 'banner-reload',
-                },
-            ]
-        case BANNER_VARIANT.LICENSE:
-            return null
-        case BANNER_VARIANT.ANNOUNCEMENT:
+        case BannerVariant.VERSION_UPDATE:
             return {
-                text: 'Learn more',
+                startIcon: <Icon name="ic-arrow-clockwise" color={null} />,
+                text: 'Reload',
+                onClick: refresh,
                 variant: ButtonVariantType.text,
-                size: ComponentSizeType.small,
+                size: ComponentSizeType.xxs,
+                dataTestId: 'banner-version-update-reload-button',
+                style: ButtonStyleType.neutralWhite,
+            }
+        case BannerVariant.LICENSE:
+            return {
+                text: 'Know more',
+                variant: ButtonVariantType.text,
+                size: ComponentSizeType.xxs,
+                onClick: handleOpenLicenseDialog,
+                dataTestId: 'banner-license-know-more-button',
+            }
+        case BannerVariant.ANNOUNCEMENT:
+            return {
+                text: AnnouncementConfig.buttonText || 'Learn more',
+                variant: ButtonVariantType.text,
+                size: ComponentSizeType.xxs,
                 endIcon: <Icon name="ic-arrow-right" color={null} />,
-                onClick: () => window.open('https://devtron.ai', '_blank'),
-                dataTestId: 'banner-learn-more',
+                onClick: () => <Link to={AnnouncementConfig.buttonLink} />,
+                dataTestId: 'banner-announcement-action-button',
+            }
+        case BannerVariant.INTERNET_CONNECTIVITY:
+            return {
+                text: 'Retry',
+                startIcon: <Icon name="ic-arrow-clockwise" color={null} />,
+                variant: ButtonVariantType.text,
+                size: ComponentSizeType.xxs,
+                dataTestId: 'banner-offline-reload',
+                onClick: refresh,
+                style: ButtonStyleType.neutralN0,
             }
         default:
             return null

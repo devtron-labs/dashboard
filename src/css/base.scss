@@ -2286,9 +2286,6 @@ button.anchor {
     max-width: 80%;
 }
 
-.dc__mxw-92-per {
-    max-width: 92%;
-}
 
 .fw-n {
     font-weight: normal !important;
@@ -5182,4 +5179,8 @@ details[open] {
             border-color: var(--N50);
         }
     }
+}
+
+.banner__version-update {
+    background: linear-gradient(92deg, #4C40BF 0%, #4084BF 72.45%, #8529A3 96.63%);
 }

@@ -199,7 +199,7 @@ const EnvironmentsList = ({ isSuperAdmin }: AppGroupAdminType) => {
 
     return (
         <div className="flexbox-col h-100 dc__overflow-auto">
-            <PageHeader headerName="Application Groups" showAnnouncementHeader />
+            <PageHeader headerName="Application Groups" />
             {renderBody()}
         </div>
     )

@@ -7,6 +7,7 @@ import {
     Icon,
     logExceptionToSentry,
     noop,
+    refresh,
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -34,7 +35,7 @@ export const useVersionUpdateReload = () => {
             return
         }
         if (document.visibilityState === 'visible') {
-            window.location.reload()
+            refresh()
             refreshing.current = true
         } else {
             setBGUpdated(true)
@@ -47,7 +48,6 @@ export const useVersionUpdateReload = () => {
         if (parsedTimeout) {
             return parsedTimeout
         }
-
         return 3
     })()
 
@@ -129,7 +129,6 @@ export const useVersionUpdateReload = () => {
     })
 
     const handleAppUpdate = () => {
-        // TODO: Why is this needed
         dismissIfToastActive(updateToastRef)
 
         // eslint-disable-next-line @typescript-eslint/no-floating-promises

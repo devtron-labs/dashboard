@@ -129,7 +129,6 @@ const AppHeaderComponent = () => {
                 breadCrumbs={renderBreadcrumbs}
                 showTabs
                 renderHeaderTabs={renderHelmDetailsTabs}
-                showAnnouncementHeader
             />
         </div>
     )
