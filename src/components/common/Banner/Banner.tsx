@@ -102,7 +102,7 @@ export const Banner = () => {
 
     if (!config) return null
 
-    const buttons = buttonConfig(bannerVariant, handleOpenLicenseDialog)
+    const actionButtons = buttonConfig(bannerVariant, handleOpenLicenseDialog)
     const baseClassName = `w-100 ${config.rootClassName || ''} ${getBannerTextColor(bannerVariant)} ${config.isDismissible ? 'banner-row' : 'flex'}`
 
     return (
@@ -118,7 +118,7 @@ export const Banner = () => {
 
                 {!(isOnline && bannerVariant === BannerVariant.INTERNET_CONNECTIVITY) && (
                     <div className="dc__no-shrink">
-                        <Button {...buttons} />
+                        <Button {...actionButtons} />
                     </div>
                 )}
             </div>
