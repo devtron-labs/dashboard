@@ -143,13 +143,14 @@ export const convertConditionDataTableToFormData = ({
     formDataErrorObj,
     activeStageName,
     selectedTaskIndex,
+    conditionType,
     validateTask,
 }: Pick<ConditionDataTableType, 'rows' | 'cellError'> &
     Pick<
         PipelineContext,
         'activeStageName' | 'selectedTaskIndex' | 'formData' | 'formDataErrorObj' | 'validateTask'
-    >) => {
-    const updatedFormData = structuredClone(formData)
+    > & { conditionType: ConditionType }) => {
+    const updatedFormData = formData
     const updatedFormDataErrorObj = structuredClone(formDataErrorObj)
 
     const currentStepTypeVariable =
@@ -165,8 +166,13 @@ export const convertConditionDataTableToFormData = ({
         id: +id,
     }))
 
-    updatedFormData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails =
-        updatedConditionDetails
+    updatedFormData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails = [
+        // Remove existing entries of the selected conditionType, as they will be replaced by the data of rows from DynamicDataTable
+        ...updatedFormData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails.filter(
+            (item) => item.conditionType !== conditionType,
+        ),
+        ...updatedConditionDetails,
+    ]
 
     const isValid = Object.values(cellError).reduce(
         (acc, curr) => acc && !Object.values(curr).some((item) => !item.isValid),

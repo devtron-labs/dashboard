@@ -82,6 +82,7 @@ export const ConditionDataTable = ({ type, conditionType, handleConditionTypeCha
 
         let updatedRows = rows
         const updatedCellError = structuredClone(cellError)
+        const _formData = structuredClone(formData)
 
         const selectedRowIndex = rows.findIndex((row) => row.id === rowId)
         const selectedRow = rows[selectedRowIndex]
@@ -89,7 +90,7 @@ export const ConditionDataTable = ({ type, conditionType, handleConditionTypeCha
         switch (actionType) {
             case ConditionDataTableActionType.ADD_ROW: {
                 const id = +rowId
-                let conditionTypeToRemove: ConditionType
+                let conditionTypeToRemove: ConditionType = null
 
                 if (type === ConditionContainerType.PASS_FAILURE) {
                     if (conditionType === ConditionType.PASS) {
@@ -106,6 +107,9 @@ export const ConditionDataTable = ({ type, conditionType, handleConditionTypeCha
                 const filteredConditionDetails = (conditionDetails || []).filter(
                     (detail) => detail.conditionType !== conditionTypeToRemove,
                 )
+
+                _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails =
+                    filteredConditionDetails
 
                 const newCondition: (typeof conditionDetails)[0] = {
                     id,
@@ -175,9 +179,10 @@ export const ConditionDataTable = ({ type, conditionType, handleConditionTypeCha
             rows: updatedRows,
             cellError: updatedCellError,
             activeStageName,
-            formData,
+            formData: _formData,
             formDataErrorObj,
             selectedTaskIndex,
+            conditionType,
             validateTask,
         })
 

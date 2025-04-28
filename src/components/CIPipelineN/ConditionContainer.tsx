@@ -16,7 +16,7 @@
 
 import { ChangeEvent, useContext, useEffect, useState } from 'react'
 
-import { ConditionType, PluginType } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionDataTableHeaderKeys, ConditionType, PluginType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ConditionContainerType } from '../ciPipeline/types'
@@ -25,7 +25,8 @@ import { ConditionDataTable } from './ConditionDataTable/ConditionDataTable.comp
 import { CONDITION_DATA_TABLE_OPERATOR_OPTIONS } from './ConditionDataTable/constants'
 
 export const ConditionContainer = ({ type }: { type: ConditionContainerType }) => {
-    const { formData, setFormData, selectedTaskIndex, activeStageName, formDataErrorObj } = useContext(pipelineContext)
+    const { formData, setFormData, selectedTaskIndex, activeStageName, formDataErrorObj, setFormDataErrorObj } =
+        useContext(pipelineContext)
 
     const [collapsedSection, setCollapsedSection] = useState<boolean>(true)
     const [conditionType, setConditionType] = useState<ConditionType>(
@@ -83,6 +84,7 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
         setCollapsedSection(!collapsedSection)
         if (collapsedSection) {
             const _formData = { ...formData }
+            const updatedFormDataErrorObj = structuredClone(formDataErrorObj)
             let _conditionType: ConditionType
             let { conditionDetails } = _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
             let addNewRow = false
@@ -135,6 +137,22 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
                 _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails =
                     conditionDetails
                 setFormData(_formData)
+
+                const updatedConditionDetailsCellError =
+                    updatedFormDataErrorObj[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
+                        .conditionDetails || {}
+
+                updatedConditionDetailsCellError[newCondition.id] = {
+                    [ConditionDataTableHeaderKeys.VARIABLE]: { isValid: true, errorMessages: [] },
+                    [ConditionDataTableHeaderKeys.OPERATOR]: { isValid: true, errorMessages: [] },
+                    [ConditionDataTableHeaderKeys.VALUE]: { isValid: true, errorMessages: [] },
+                }
+
+                updatedFormDataErrorObj[activeStageName].steps[selectedTaskIndex][
+                    currentStepTypeVariable
+                ].conditionDetails = updatedConditionDetailsCellError
+
+                setFormDataErrorObj(updatedFormDataErrorObj)
             }
         }
     }
