@@ -21,7 +21,6 @@ export enum APP_DETAILS_TEXT {
     ALL = 'All',
     APP_NAME = 'app-name',
     APP_GROUP_RESTART_WORKLOAD_SUBTITLE = 'It might take some time depending upon the number of applications',
-    APP_GROUP_EMPTY_WORKLOAD_INFO_BAR = "Please don't wander off! Reloading or going back might disrupt the ongoing operation.",
     APP_GROUP_INFO_TEXT = 'Pods for selected workloads will be restarted. Configured deployment strategies will be used to restart workloads.',
     APPLICATIONS = 'APPLICATIONS',
     EXPAND_ALL = 'Expand all',

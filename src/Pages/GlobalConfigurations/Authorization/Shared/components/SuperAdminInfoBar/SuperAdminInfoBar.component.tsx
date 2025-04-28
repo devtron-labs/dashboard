@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-import { InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
-
-import { ReactComponent as InfoIcon } from '../../../../../../assets/icons/ic-info-filled.svg'
+import { InfoBlock } from '@devtron-labs/devtron-fe-common-lib'
 
 const SuperAdminInfoBar = () => (
-    <InfoColourBar
-        message="Super admins can perform all actions across the Devtron dashboard. Super admins can add more super admins."
-        classname="info_bar"
-        Icon={InfoIcon}
-    />
+    <InfoBlock description="Super admins can perform all actions across the Devtron dashboard. Super admins can add more super admins." />
 )
 
 export default SuperAdminInfoBar

@@ -39,7 +39,7 @@ import {
     AppDetailsPathParams,
 } from './appDetails.type'
 import { GraphModal, GraphModalProps } from './GraphsModal'
-import { DatePickerType2 as DateRangePicker } from '../../../common'
+import { DatePickerType2 as DateRangePicker, InValidHostUrlWarningBlock } from '../../../common'
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg'
 import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullscreen-2.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
@@ -60,15 +60,13 @@ import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManag
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { APP_METRICS_CALENDAR_INPUT_DATE_FORMAT } from './constants'
 
-export const AppMetrics: React.FC<
-    {
-        appName: string
-        environment
-        podMap: Map<string, any>
-        k8sVersion
-        addExtraSpace: boolean
-    }
-> = ({ appName, podMap, k8sVersion, addExtraSpace, environment }) => {
+export const AppMetrics: React.FC<{
+    appName: string
+    environment
+    podMap: Map<string, any>
+    k8sVersion
+    addExtraSpace: boolean
+}> = ({ appName, podMap, k8sVersion, addExtraSpace, environment }) => {
     const { appTheme } = useTheme()
     const { appMetrics, infraMetrics, environmentName } = environment
     const [calendar, setDateRange] = useState<{ startDate: Moment; endDate: Moment }>({
@@ -613,21 +611,8 @@ const AppMetricsEmptyState = ({ isLoading, isConfigured, isHealthy, hostURLConfi
                             <p className="fw-6 fs-14 cn-9">
                                 Unable to show metrics due to insufficient/incorrect configurations
                             </p>
-                            {(!hostURLConfig || hostURLConfig.value !== window.location.origin) && (
-                                <>
-                                    <p className="fw-4 fs-12 cn-7 mt-16 mb-0">
-                                        Host url is not configured or is incorrect. Reach out to your DevOps team
-                                        (super-admin) to configure host url.
-                                    </p>
-                                    <Link
-                                        to={URLS.GLOBAL_CONFIG_HOST_URL}
-                                        className="cta small text"
-                                        style={{ paddingLeft: '0' }}
-                                    >
-                                        Review and update
-                                    </Link>
-                                </>
-                            )}
+                            {(!hostURLConfig || hostURLConfig.value !== window.location.origin) &&
+                                <InValidHostUrlWarningBlock />}
                             {(!isConfigured || !isHealthy) && (
                                 <>
                                     <p className="fw-4 fs-12 cn-7 mt-16 mb-0">{subtitle}</p>
