@@ -24,7 +24,7 @@ import {
     ErrorScreenNotAuthorized,
     GenericEmptyState,
     getIsRequestAborted,
-    InfoColourBar,
+    InfoBlock,
     OptionType,
     Pagination,
     Reload,
@@ -36,7 +36,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg'
 import { preventBodyScroll } from '../../../components/common'
 import { API_STATUS_CODES, SELECT_ALL_VALUE } from '../../../config'
 import { ALL_ENVIRONMENT_OPTION, SortableKeys } from './constants'
@@ -173,11 +172,7 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
                             <Close className="icon-dim-24" />
                         </button>
                     </div>
-                    <InfoColourBar
-                        message={getLinkedCITippyContent(linkedWorkflowCount)}
-                        classname="bcb-1 dc__border-bottom--b2"
-                        Icon={Info}
-                    />
+                    <InfoBlock description={getLinkedCITippyContent(linkedWorkflowCount)} />
                 </div>
                 <div className="flexbox-col flex-grow-1">
                     <div className="flex flex-justify-start dc__gap-8 pl-20 pr-20 pt-8 pb-8 lh-20 dc__zi-5">

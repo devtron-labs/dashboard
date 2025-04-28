@@ -22,7 +22,6 @@ import {
     Checkbox,
     RadioGroupItem,
     RadioGroup,
-    InfoColourBar,
     Toggle,
     GenericEmptyState,
     useAsync,
@@ -42,6 +41,7 @@ import {
     Textarea,
     Icon,
     PasswordField,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import TippyHeadless from '@tippyjs/react/headless'
@@ -71,7 +71,6 @@ import {
 import { CLUSTER_COMMAND, AppCreationType, MODES, ModuleNameMap } from '../../config'
 import { DeleteComponentsName, EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
-import { ReactComponent as InfoIcon } from '@Icons/info-filled.svg'
 import ClusterInfoStepsModal from './ClusterInfoStepsModal'
 import { UPLOAD_STATE } from '@Pages/GlobalConfigurations/DeploymentCharts/types'
 import UserNameDropDownList from './UseNameListDropdown'
@@ -111,6 +110,15 @@ const PrometheusRequiredFieldInfo = () => {
         </div>
     )
 }
+
+const renderKubeConfigClusterCountInfo = (clusterCount: number) => (
+    <div>
+        <div className="flex left dc__gap-4">
+            <span className="fw-6">{clusterCount} valid cluster(s). </span>
+            <span>Select the cluster you want to add/update</span>
+        </div>
+    </div>
+)
 
 export default function ClusterForm({
     id = null,
@@ -1228,16 +1236,15 @@ export default function ClusterForm({
 
                         <div className="flexbox-col flex-grow-1 dc__overflow-auto">
                             <div className="api-token__list en-2 bw-1 bg__primary br-4 mr-20 ml-20 mt-16">
-                                <InfoColourBar
-                                    message={
-                                        <>
-                                            <span className="fw-6">{validCluster()} valid cluster(s). </span>
-                                            <span>Select the cluster you want to add/update</span>
-                                        </>
-                                    }
-                                    classname="info_bar cn-9 lh-20 dc__no-border-imp pl-16"
-                                    Icon={InfoIcon}
-                                    styles={{ borderRadius: '3px 3px 0 0' }}
+                                <InfoBlock
+                                    borderConfig={{
+                                        top: false,
+                                        right: false,
+                                        bottom: false,
+                                        left: false
+                                    }}
+                                    borderRadiusConfig={{ top: false, right: false }}
+                                    description={renderKubeConfigClusterCountInfo(validCluster())}
                                 />
                                 <div className="cluster-list-row-1 cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-16 pr-16 dc__border-top dc__border-bottom">
                                     <div data-testid="select_all_cluster_checkbox">

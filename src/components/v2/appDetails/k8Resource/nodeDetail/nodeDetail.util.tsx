@@ -21,7 +21,7 @@ import {
     K8sResourcePayloadAppType,
     YAMLStringify,
     OptionsBase,
-    SelectedResourceType
+    SelectedResourceType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     AppType,
@@ -294,7 +294,17 @@ export const getDurationUnits = () => [
     { label: 'Hours', value: 'hours' },
 ]
 
-export const getGroupedContainerOptions = (containers: Options[],isTerminal?, isResourceBrowserView?, setContainers?, selectedNamespace?, selectedClusterId?, selectedPodName?, switchSelectedContainer?, params?) => {
+export const getGroupedContainerOptions = (
+    containers: Options[],
+    isTerminal?,
+    isResourceBrowserView?,
+    setContainers?,
+    selectedNamespace?,
+    selectedClusterId?,
+    selectedPodName?,
+    switchSelectedContainer?,
+    params?,
+) => {
     const containerOptions = []
     const initContainerOptions = []
     const ephemeralContainerOptions = [] as EphemeralContainerOptionsType[]
@@ -410,4 +420,18 @@ export const getDeploymentType = (deploymentAppType: DeploymentAppTypes): K8sRes
         return K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
     }
     return K8sResourcePayloadDeploymentType.FLUXCD_INSTALLED
+}
+
+export const manifestBorderConfig = {
+    borderConfig: {
+        top: false,
+        left: false,
+        right: false,
+    },
+    borderRadiusConfig: {
+        top: false,
+        left: false,
+        right: false,
+        bottom: false,
+    },
 }

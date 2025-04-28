@@ -36,6 +36,7 @@ import {
     ResourceDetail,
     noop,
     AppThemeType,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
 import YAML from 'yaml'
@@ -44,8 +45,6 @@ import { applyPatch } from 'fast-json-patch'
 import { ReactComponent as Info } from '@Icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
 import { ReactComponent as AlertTriangle } from '@Icons/ic-alert-triangle.svg'
-import { ReactComponent as Cpu } from '@Icons/ic-cpu.svg'
-import { ReactComponent as Memory } from '@Icons/ic-memory.svg'
 import { ReactComponent as Storage } from '@Icons/ic-storage.svg'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
 import { ReactComponent as Dropdown } from '@Icons/ic-chevron-down.svg'
@@ -556,7 +555,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                 <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20">
                     {cpuData && (
                         <div className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
-                            <Cpu className="mt-2 mb-2 icon-dim-18" />
+                            <Icon name="ic-cpu" color={null} size={20} />
                             <div>{cpuData.name || '-'}</div>
                             <div>{cpuData.requestPercentage || '-'}</div>
                             <div>{cpuData.limitPercentage || '-'}</div>
@@ -567,7 +566,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                     )}
                     {memoryData && (
                         <div className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
-                            <Memory className="mt-2 mb-2 icon-dim-18" />
+                            <Icon name="ic-memory" color={null}  size={20} />
                             <div>{memoryData.name || '-'}</div>
                             <div>{memoryData.requestPercentage || '-'}</div>
                             <div>{memoryData.limitPercentage || '-'}</div>
@@ -581,7 +580,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                             key={resource.name}
                             className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9"
                         >
-                            <Storage className="mt-2 mb-2 icon-dim-18" />
+                            <Storage className="mt-2 mb-2 icon-dim-20" />
                             <div>{resource.name || '-'}</div>
                             <div>{resource.requestPercentage || '-'}</div>
                             <div>{resource.limitPercentage || '-'}</div>

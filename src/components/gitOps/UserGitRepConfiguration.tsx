@@ -63,7 +63,7 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
     }, [])
 
     const renderInfoColorBar = () => (
-        <InfoBlock description="GitOps repository for this application is immutable once saved." variant="warning" />
+        <InfoBlock variant="warning" description="GitOps repository for this application is immutable once saved." />
     )
 
     const renderSavedGitOpsRepoState = (repoURL) => (

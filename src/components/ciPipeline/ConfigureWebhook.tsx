@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-purple.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { WebhookSelectorCondition } from './WebhookSelectorCondition'
-import { ClipboardButton, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
+import { ClipboardButton, copyToClipboard, InfoBlock } from '@devtron-labs/devtron-fe-common-lib'
 
 export const ConfigureWebhook = ({
     webhookConditionList,
@@ -32,7 +32,8 @@ export const ConfigureWebhook = ({
     canEditPipeline,
 }) => {
     const [copyToClipboardUrlPromise, setCopyToClipboardUrlPromise] = useState<ReturnType<typeof copyToClipboard>>(null)
-    const [copyToClipboardSecretPromise, setCopyToClipboardSecretPromise] = useState<ReturnType<typeof copyToClipboard>>(null)
+    const [copyToClipboardSecretPromise, setCopyToClipboardSecretPromise] =
+        useState<ReturnType<typeof copyToClipboard>>(null)
 
     const handleCopyUrl = () => {
         setCopyToClipboardUrlPromise(copyToClipboard(gitHost.webhookUrl))
@@ -49,14 +50,10 @@ export const ConfigureWebhook = ({
 
     return (
         <>
-            <div className="ci-webhook-info bcv-1 bw-1 ev-2 br-4">
-                <Info className="icon-dim-20" />
-                <p className="fs-13 cn-9 m-0">
-                    <span className="fw-6 mr-5">Info:</span>
-                    This will checkout or merge required code locally to build an image. No changes will be pushed to
-                    your remote git repository.
-                </p>
-            </div>
+            <InfoBlock
+                description="This will checkout or merge required code locally to build an image. No changes will be pushed
+                        to your remote git repository."
+            />
             <div className="bcn-1 pl-16 pr-16 pt-12 pb-12 cn-9 br-5 mt-16">
                 <div className="configure-ci-webhook ">
                     <Webhook className="icon-dim-24" />
