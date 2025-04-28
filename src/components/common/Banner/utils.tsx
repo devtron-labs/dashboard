@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
     ButtonComponentType,
     ButtonProps,
@@ -5,7 +21,6 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     Icon,
-    IconBaseColorType,
     IconsProps,
     InfoBlockProps,
     refresh,
@@ -31,11 +46,7 @@ export const getBannerIcon = (
     return (
         <Icon
             name={variantWithIconMap[bannerVariant]}
-            color={
-                bannerVariant === BannerVariant.ANNOUNCEMENT
-                    ? (VARIANT_TO_ICON_COLOR_MAP[type] as IconBaseColorType)
-                    : null
-            }
+            color={bannerVariant === BannerVariant.ANNOUNCEMENT ? VARIANT_TO_ICON_COLOR_MAP[type] : null}
             size={16}
         />
     )
@@ -79,7 +90,7 @@ export const getBannerConfig = ({
         [BannerVariant.ANNOUNCEMENT]: {
             text: ANNOUNCEMENT_CONFIG.message,
             icon: 'ic-megaphone-left',
-            rootClassName: VARIANT_TO_BG_MAP[ANNOUNCEMENT_CONFIG.type as InfoBlockProps['variant']],
+            rootClassName: VARIANT_TO_BG_MAP[ANNOUNCEMENT_CONFIG.type],
             isDismissible: true,
         },
     }
@@ -150,3 +161,6 @@ export const getBannerTextColor = (bannerVariant: BannerVariant) => {
             return 'cn-9'
     }
 }
+
+export const getValidAnnouncementType = (type: string): type is InfoBlockProps['variant'] =>
+    ['success', 'warning', 'error', 'info', 'help'].includes(type)
