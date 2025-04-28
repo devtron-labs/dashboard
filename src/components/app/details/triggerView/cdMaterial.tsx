@@ -22,7 +22,6 @@ import {
     showError,
     Progressing,
     ConditionalWrap,
-    InfoColourBar,
     noop,
     MaterialInfo,
     UserApprovalMetadataType,
@@ -90,6 +89,7 @@ import {
     SegmentedControlProps,
     Icon,
     isNullOrUndefined,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -106,7 +106,6 @@ import close from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Check } from '../../../../assets/icons/ic-check-circle.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as BackIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
-import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
 import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search.svg'
 import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
@@ -1878,11 +1877,10 @@ const CDMaterial = ({
                 !isExceptionUser &&
                 ApprovedImagesMessage &&
                 (state.isRollbackTrigger || material.length - Number(isConsumedImageAvailable) > 0) && (
-                    <InfoColourBar
-                        message={<ApprovedImagesMessage viewAllImages={viewAllImages} />}
-                        classname="info_bar dc__no-border-radius dc__no-top-border"
-                        Icon={InfoIcon}
-                        iconClass="icon-dim-20"
+                    <InfoBlock
+                        borderConfig={{ top: false }}
+                        borderRadiusConfig={{ top: false, bottom: false, left: false, right: false }}
+                        description={<ApprovedImagesMessage viewAllImages={viewAllImages} />}
                     />
                 )}
             {!isFromBulkCD &&
