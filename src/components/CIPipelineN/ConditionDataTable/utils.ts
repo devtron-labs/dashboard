@@ -77,6 +77,7 @@ export const getConditionDataTableRows = ({
                             options: getConditionDataTableVariableOptions(ioVariables),
                             placeholder: 'Select variable',
                             isSearchable: false,
+                            autoFocus: true,
                         },
                         value: conditionOnVariable,
                     },
