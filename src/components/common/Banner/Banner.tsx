@@ -35,7 +35,10 @@ export const Banner = () => {
         ANNOUNCEMENT_CONFIG.message ? shouldShowAnnouncementBanner() : false,
     )
 
-    const licenseConfig = useEnterpriseLicenseConfig()
+    const enterpriseLicenseConfig = useEnterpriseLicenseConfig
+
+    const licenseConfig = enterpriseLicenseConfig ? enterpriseLicenseConfig() : null
+
     const { updateToastRef } = useVersionUpdateReload()
 
     useEffect(() => {
@@ -93,19 +96,25 @@ export const Banner = () => {
 
     const actionButtons = getButtonConfig(bannerVariant, handleOpenLicenseDialog)
     const baseClassName = `w-100 ${config.rootClassName || ''} ${getBannerTextColor(bannerVariant)} ${config.isDismissible ? 'dc__grid banner-row' : 'flex'}`
+    const isOffline = !(isOnline && bannerVariant === BannerVariant.INTERNET_CONNECTIVITY)
+
+    const shouldShowActionButton = () => {
+        if (bannerVariant === BannerVariant.INTERNET_CONNECTIVITY) {
+            return isOffline
+        }
+        if (bannerVariant === BannerVariant.ANNOUNCEMENT) {
+            return !!ANNOUNCEMENT_CONFIG.buttonLink
+        }
+        return false
+    }
 
     return (
         <div className={baseClassName}>
             {config.isDismissible && <div className="icon-dim-28" />}
             <div className="py-4 flex dc__gap-8 dc__align-center pr-16">
-                <p className="flex dc__gap-8 m-0">
-                    {!(isOnline && bannerVariant === BannerVariant.INTERNET_CONNECTIVITY) &&
-                        getBannerIcon(bannerVariant, ANNOUNCEMENT_CONFIG.type, iconName)}
-
-                    <div className="fs-12 fw-5 lh-20 dc__truncate">{config.text}</div>
-                </p>
-
-                {!(isOnline && bannerVariant === BannerVariant.INTERNET_CONNECTIVITY) && (
+                {isOffline && getBannerIcon(bannerVariant, ANNOUNCEMENT_CONFIG.type, iconName)}
+                <span className="fs-12 fw-5 lh-20 dc__truncate">{config.text}</span>
+                {shouldShowActionButton() && (
                     <div className="dc__no-shrink">
                         <Button {...actionButtons} />
                     </div>

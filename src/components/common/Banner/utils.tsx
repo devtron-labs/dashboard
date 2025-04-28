@@ -1,6 +1,5 @@
-import { Link } from 'react-router-dom'
-
 import {
+    ButtonComponentType,
     ButtonProps,
     ButtonStyleType,
     ButtonVariantType,
@@ -83,7 +82,10 @@ export const getBannerConfig = ({
     return bannerConfigMap[bannerVariant]
 }
 
-export const getButtonConfig = (bannerView: BannerVariant, handleOpenLicenseDialog: () => void): ButtonProps => {
+export const getButtonConfig = (
+    bannerView: BannerVariant,
+    handleOpenLicenseDialog: () => void,
+): ButtonProps<ButtonComponentType> | null => {
     switch (bannerView) {
         case BannerVariant.VERSION_UPDATE:
             return {
@@ -109,8 +111,13 @@ export const getButtonConfig = (bannerView: BannerVariant, handleOpenLicenseDial
                 variant: ButtonVariantType.text,
                 size: ComponentSizeType.xxs,
                 endIcon: <Icon name="ic-arrow-right" color={null} />,
-                onClick: () => <Link to={ANNOUNCEMENT_CONFIG.buttonLink} />,
                 dataTestId: 'banner-announcement-action-button',
+                component: ButtonComponentType.anchor,
+                anchorProps: {
+                    href: ANNOUNCEMENT_CONFIG.buttonLink,
+                    target: '_blank',
+                    rel: 'noreferrer noopener',
+                },
             }
         case BannerVariant.INTERNET_CONNECTIVITY:
             return {
