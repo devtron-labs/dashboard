@@ -16,17 +16,17 @@
 
 import { ChangeEvent, useContext, useEffect, useState } from 'react'
 
-import { ConditionDataTableHeaderKeys, ConditionType, PluginType } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionType, PluginType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ConditionContainerType } from '../ciPipeline/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { ConditionDataTable } from './ConditionDataTable/ConditionDataTable.component'
 import { CONDITION_DATA_TABLE_OPERATOR_OPTIONS } from './ConditionDataTable/constants'
+import { CONTAINER_CONDITION_TYPE_TO_CONDITION_TYPE_MAP } from './Constants'
 
 export const ConditionContainer = ({ type }: { type: ConditionContainerType }) => {
-    const { formData, setFormData, selectedTaskIndex, activeStageName, formDataErrorObj, setFormDataErrorObj } =
-        useContext(pipelineContext)
+    const { formData, setFormData, selectedTaskIndex, activeStageName, formDataErrorObj } = useContext(pipelineContext)
 
     const [collapsedSection, setCollapsedSection] = useState<boolean>(true)
     const [conditionType, setConditionType] = useState<ConditionType>(
@@ -43,38 +43,46 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
     }, [activeStageName])
 
     useEffect(() => {
-        const { conditionDetails } = formDataErrorObj[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
-        if (conditionDetails?.length) {
-            const errorConditionIndexArr = []
-            for (let i = 0; i < conditionDetails.length; i++) {
-                if (!conditionDetails[i].isValid) {
-                    errorConditionIndexArr.push(i)
+        const { isConditionDetailsValid, conditionDetails: conditionDetailsError } =
+            formDataErrorObj[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
+
+        if (!isConditionDetailsValid) {
+            const { conditionDetails } = formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
+
+            const invalidConditionDetailsIds = Object.keys(conditionDetailsError).reduce((acc, key) => {
+                if (
+                    Object.keys(conditionDetailsError[key]).some(
+                        (dataKey) => !conditionDetailsError[key][dataKey].isValid,
+                    )
+                ) {
+                    acc.push(key)
                 }
-            }
-            if (errorConditionIndexArr?.length) {
-                let derivedConditionType
-                for (let index = 0; index < errorConditionIndexArr.length; index++) {
-                    const currentCondition =
-                        formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[
-                            index
-                        ]
-                    if (
-                        (type === ConditionContainerType.PASS_FAILURE &&
-                            (currentCondition.conditionType === ConditionType.PASS ||
-                                currentCondition.conditionType === ConditionType.FAIL)) ||
-                        (type === ConditionContainerType.TRIGGER_SKIP &&
-                            (currentCondition.conditionType === ConditionType.TRIGGER ||
-                                currentCondition.conditionType === ConditionType.SKIP))
-                    ) {
-                        derivedConditionType = currentCondition.conditionType
-                        break
-                    }
-                }
-                if (derivedConditionType) {
-                    setConditionType(derivedConditionType)
-                    if (collapsedSection) {
-                        setCollapsedSection(false) // expand conditions in case of error
-                    }
+
+                return acc
+            }, [])
+
+            const filteredConditionDetails = conditionDetails.filter(({ conditionType: _conditionType }) =>
+                CONTAINER_CONDITION_TYPE_TO_CONDITION_TYPE_MAP[type].includes(_conditionType),
+            )
+
+            const derivedConditionType = filteredConditionDetails.length
+                ? invalidConditionDetailsIds.reduce((acc, currId) => {
+                      const currentCondition = filteredConditionDetails.find(({ id }) =>
+                          typeof +currId === 'number' ? id === +currId : id === currId,
+                      )?.conditionType
+
+                      if (currentCondition) {
+                          return currentCondition
+                      }
+
+                      return acc
+                  }, null)
+                : null
+
+            if (derivedConditionType) {
+                setConditionType(derivedConditionType)
+                if (collapsedSection) {
+                    setCollapsedSection(false) // expand conditions in case of error
                 }
             }
         }
@@ -84,7 +92,6 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
         setCollapsedSection(!collapsedSection)
         if (collapsedSection) {
             const _formData = { ...formData }
-            const updatedFormDataErrorObj = structuredClone(formDataErrorObj)
             let _conditionType: ConditionType
             let { conditionDetails } = _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
             let addNewRow = false
@@ -137,22 +144,6 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
                 _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails =
                     conditionDetails
                 setFormData(_formData)
-
-                const updatedConditionDetailsCellError =
-                    updatedFormDataErrorObj[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
-                        .conditionDetails || {}
-
-                updatedConditionDetailsCellError[newCondition.id] = {
-                    [ConditionDataTableHeaderKeys.VARIABLE]: { isValid: true, errorMessages: [] },
-                    [ConditionDataTableHeaderKeys.OPERATOR]: { isValid: true, errorMessages: [] },
-                    [ConditionDataTableHeaderKeys.VALUE]: { isValid: true, errorMessages: [] },
-                }
-
-                updatedFormDataErrorObj[activeStageName].steps[selectedTaskIndex][
-                    currentStepTypeVariable
-                ].conditionDetails = updatedConditionDetailsCellError
-
-                setFormDataErrorObj(updatedFormDataErrorObj)
             }
         }
     }

@@ -144,6 +144,10 @@ export const ConditionDataTable = ({ type, conditionType, handleConditionTypeCha
                     }
 
                     Object.values(ConditionDataTableHeaderKeys).forEach((key: ConditionDataTableHeaderKeys) => {
+                        if (!updatedCellError[rowAction.rowId]) {
+                            updatedCellError[rowAction.rowId] = getConditionDataTableRowEmptyValidationState()
+                        }
+
                         if (key === rowAction.headerKey) {
                             updatedCellError[rowAction.rowId][rowAction.headerKey] =
                                 getConditionDataTableCellValidateState({
