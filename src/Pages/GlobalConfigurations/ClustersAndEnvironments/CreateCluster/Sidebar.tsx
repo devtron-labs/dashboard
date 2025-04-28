@@ -35,11 +35,12 @@ const Sidebar = () => {
     return (
         <div className="w-250 p-20 flexbox-col dc__gap-24 dc__no-shrink dc__overflow-auto">
             <div className="flexbox-col">
-                {Object.entries(SIDEBAR_CONFIG).map(([key, { title, iconName, isEnterprise }]) => {
+                {Object.entries(SIDEBAR_CONFIG).map(([key, { title, iconName, isEnterprise, dataTestId }]) => {
                     const isSelected = type.toLowerCase() === key.toLowerCase()
 
                     return (
                         <NavLink
+                            data-testid={dataTestId}
                             key={key}
                             className={`dc__transparent flex left dc__gap-8 py-6 px-8 br-4 ${isSelected ? 'bcb-1' : 'dc__hover-n50'}`}
                             to={generatePath(path, { type: key })}

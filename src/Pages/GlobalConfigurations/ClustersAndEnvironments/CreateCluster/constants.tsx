@@ -6,6 +6,7 @@ export const SIDEBAR_CONFIG: SidebarConfigType = {
     [CreateClusterTypeEnum.CONNECT_CLUSTER]: {
         title: 'Connect Cluster',
         iconName: 'ic-ci-linked' as IconName,
+        dataTestId: 'cluster-button-switch',
         body: (
             <p className="m-0">
                 Connect an existing Kubernetes cluster to manage Kubernetes resources and deploy containerized
@@ -16,6 +17,7 @@ export const SIDEBAR_CONFIG: SidebarConfigType = {
     [CreateClusterTypeEnum.CREATE_EKS_CLUSTER]: {
         title: 'Create EKS Cluster',
         iconName: 'ic-cluster' as IconName,
+        dataTestId: 'create-eks-cluster-tab',
         body: (
             <>
                 <p className="m-0">With Devtron, you can effortlessly create an Amazon EKS cluster.</p>
@@ -31,6 +33,7 @@ export const SIDEBAR_CONFIG: SidebarConfigType = {
         title: 'Add Isolated Cluster',
         iconName: 'ic-add' as IconName,
         documentationHeader: 'Isolated Cluster',
+        dataTestId: 'virtual-cluster-button-switch',
         body: (
             <>
                 <p className="m-0">

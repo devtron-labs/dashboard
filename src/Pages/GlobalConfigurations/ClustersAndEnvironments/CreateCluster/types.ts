@@ -10,6 +10,7 @@ export type SidebarConfigType = Record<
         title: string
         iconName: string
         body: React.ReactElement
+        dataTestId: string
         documentationHeader?: string
         isEnterprise?: true
     }
