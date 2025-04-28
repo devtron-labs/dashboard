@@ -129,3 +129,14 @@ export const buttonConfig = (bannerView: BannerVariant, handleOpenLicenseDialog:
             return null
     }
 }
+
+export const getBannerTextColor = (bannerView: BannerVariant) => {
+    switch (bannerView) {
+        case BannerVariant.INTERNET_CONNECTIVITY:
+            return 'cn-0'
+        case BannerVariant.ANNOUNCEMENT:
+            return 'text-white'
+        default:
+            return 'cn-9'
+    }
+}

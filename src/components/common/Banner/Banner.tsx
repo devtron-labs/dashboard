@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import {
     Button,
@@ -8,44 +8,31 @@ import {
     getDateInMilliseconds,
     Icon,
     setActionWithExpiry,
-    ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary, useOnline } from '../helpers/Helpers'
 import { AnnouncementConfig, BannerVariant, ONLINE_BANNER_TIMEOUT } from './constants'
 import { useVersionUpdateReload } from './useVersionUpdateReload'
-import { buttonConfig, getBannerConfig, getBannerIconName } from './utils'
+import { buttonConfig, getBannerConfig, getBannerIconName, getBannerTextColor } from './utils'
 
 import './banner.scss'
 
 const useEnterPriceLicenseConfig = importComponentFromFELibrary('useEnterPriceLicenseConfig', null, 'function')
 
+const shouldShowAnnouncementBanner = (): boolean => {
+    const expiry = localStorage.getItem('expiryDateOfHidingAnnouncementBanner')
+    const loginTime = localStorage.getItem('dashboardLoginTime')
+    if (!expiry) return true
+    return getDateInMilliseconds(loginTime) > getDateInMilliseconds(expiry)
+}
+
 export const Banner = () => {
     const didMountRef = useRef(false)
-    const onlineToastRef = useRef(null)
     const isOnline = useOnline()
 
     const [showOnlineBanner, setShowOnlineBanner] = useState(false)
-    const isAnnouncementBanner = (): boolean => {
-        const expiryDateOfHidingAnnouncementBanner: string =
-            typeof Storage !== 'undefined' &&
-            localStorage.getItem(
-                // it will store date and time of next day i.e, it will hide banner until this date
-                'expiryDateOfHidingAnnouncementBanner',
-            )
-        const showAnnouncementBannerNextDay: boolean =
-            typeof Storage !== 'undefined' &&
-            getDateInMilliseconds(localStorage.getItem('dashboardLoginTime')) >
-                getDateInMilliseconds(expiryDateOfHidingAnnouncementBanner)
-
-        if (showAnnouncementBannerNextDay && !expiryDateOfHidingAnnouncementBanner) {
-            return true
-        }
-        return getDateInMilliseconds(new Date().valueOf()) > getDateInMilliseconds(expiryDateOfHidingAnnouncementBanner)
-    }
-
     const [showAnnouncementBanner, setShowAnnouncementBanner] = useState(
-        AnnouncementConfig.message ? isAnnouncementBanner() : false,
+        AnnouncementConfig.message ? shouldShowAnnouncementBanner() : false,
     )
 
     const licenseConfig = useEnterPriceLicenseConfig()
@@ -65,7 +52,6 @@ export const Banner = () => {
         } else {
             didMountRef.current = true
             // Removing any toast explicitly due to race condition of offline toast for some users
-            ToastManager.dismissToast(onlineToastRef.current)
             setShowOnlineBanner(false)
 
             if (isOnline) {
@@ -91,58 +77,46 @@ export const Banner = () => {
         handleOpenLicenseDialog,
     } = licenseConfig || {}
 
-    const getHierarchialBannerView = (): BannerVariant => {
-        if (!isOnline) {
-            return BannerVariant.INTERNET_CONNECTIVITY
-        }
-        // Show online banner temporarily if needed
-        if (showOnlineBanner) {
-            return BannerVariant.INTERNET_CONNECTIVITY
-        }
-        if (updateToastRef.current) {
-            return BannerVariant.VERSION_UPDATE
-        }
-        if (showAnnouncementBanner) {
-            return BannerVariant.ANNOUNCEMENT
-        }
-        if (enterpriseLicenseBarMessage) {
-            return BannerVariant.LICENSE
-        }
+    const getCurrentBanner = (): BannerVariant => {
+        if (!isOnline) return BannerVariant.INTERNET_CONNECTIVITY
+        if (showOnlineBanner) return BannerVariant.INTERNET_CONNECTIVITY
+        if (updateToastRef.current) return BannerVariant.VERSION_UPDATE
+        if (showAnnouncementBanner) return BannerVariant.ANNOUNCEMENT
+        if (licenseConfig?.message) return BannerVariant.LICENSE
         return null
     }
 
-    const bannerView: BannerVariant = getHierarchialBannerView()
-    const config = getBannerConfig(bannerView, isOnline, AnnouncementConfig, licenseType, enterpriseLicenseBarMessage)
-    if (!config) {
-        return null
-    }
+    const bannerVariant: BannerVariant = useMemo(
+        () => getCurrentBanner(),
+        [isOnline, showOnlineBanner, updateToastRef.current, showAnnouncementBanner, enterpriseLicenseBarMessage],
+    )
+    if (!bannerVariant) return null
 
-    const getTextColor = () => {
-        switch (bannerView) {
-            case BannerVariant.INTERNET_CONNECTIVITY:
-                return 'cn-0'
-            case BannerVariant.ANNOUNCEMENT:
-                return 'text-white'
-            default:
-                return 'cn-9'
-        }
-    }
-    const baseClassName = `w-100 ${config.rootClassName || ''} ${getTextColor()} ${config.isDismissible ? 'banner-row' : 'flex'}`
+    const config = getBannerConfig(
+        bannerVariant,
+        isOnline,
+        AnnouncementConfig,
+        licenseType,
+        enterpriseLicenseBarMessage,
+    )
 
-    const buttons = buttonConfig(bannerView, handleOpenLicenseDialog)
+    if (!config) return null
+
+    const buttons = buttonConfig(bannerVariant, handleOpenLicenseDialog)
+    const baseClassName = `w-100 ${config.rootClassName || ''} ${getBannerTextColor(bannerVariant)} ${config.isDismissible ? 'banner-row' : 'flex'}`
 
     return (
         <div className={baseClassName}>
             {config.isDismissible && <div className="icon-dim-28" />}
             <div className="py-4 flex dc__gap-8 dc__align-center pr-16">
                 <p className="flex dc__gap-8 m-0 ">
-                    {!(isOnline && bannerView === BannerVariant.INTERNET_CONNECTIVITY) &&
-                        getBannerIconName(bannerView, AnnouncementConfig.type, iconName)}
+                    {!(isOnline && bannerVariant === BannerVariant.INTERNET_CONNECTIVITY) &&
+                        getBannerIconName(bannerVariant, AnnouncementConfig.type, iconName)}
 
                     <div className="fs-12 fw-5 lh-20 dc__truncate">{config.text}</div>
                 </p>
 
-                {!(isOnline && bannerView === BannerVariant.INTERNET_CONNECTIVITY) && (
+                {!(isOnline && bannerVariant === BannerVariant.INTERNET_CONNECTIVITY) && (
                     <div className="dc__no-shrink">
                         <Button {...buttons} />
                     </div>
