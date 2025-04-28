@@ -103,21 +103,7 @@ const App = () => {
         }
     }
 
-    const { handleAppUpdate, doesNeedRefresh, handleControllerChange } = useVersionUpdateReload()
-
-    // Add this effect in the App component
-    useEffect(() => {
-        if (window.isSecureContext && navigator.serviceWorker) {
-            // check for sw updates on page change
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            navigator.serviceWorker
-                .getRegistrations()
-                .then((registrations) => registrations.forEach((reg) => reg.update()))
-            if (doesNeedRefresh) {
-                handleAppUpdate()
-            }
-        }
-    }, [location, doesNeedRefresh, handleAppUpdate])
+    const { handleControllerChange } = useVersionUpdateReload()
 
     useEffect(() => {
         if (navigator.serviceWorker) {
