@@ -876,9 +876,10 @@ const AppDetail = ({ detailsType, filteredResourceIds }: AppDetailProps) => {
             if (envList.length && selectedEnvId && selectedEnvId !== +params.envId) {
                 const newUrl = getAppDetailsURL(params.appId, selectedEnvId)
                 replace(newUrl)
-            } else {
-                setEnvironmentId(null)
+                return
             }
+            setEnvironmentId(null)
+            return
         }
 
         const selectedAppId =
