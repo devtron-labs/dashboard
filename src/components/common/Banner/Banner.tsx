@@ -17,7 +17,7 @@ import { buttonConfig, getBannerConfig, getBannerIconName, getBannerTextColor } 
 
 import './banner.scss'
 
-const useEnterPriceLicenseConfig = importComponentFromFELibrary('useEnterPriceLicenseConfig', null, 'function')
+const useEnterpriseLicenseConfig = importComponentFromFELibrary('useEnterpriseLicenseConfig', null, 'function')
 
 const shouldShowAnnouncementBanner = (): boolean => {
     const expiry = localStorage.getItem('expiryDateOfHidingAnnouncementBanner')
@@ -35,7 +35,7 @@ export const Banner = () => {
         AnnouncementConfig.message ? shouldShowAnnouncementBanner() : false,
     )
 
-    const licenseConfig = useEnterPriceLicenseConfig()
+    const licenseConfig = useEnterpriseLicenseConfig()
     const { updateToastRef } = useVersionUpdateReload()
 
     useEffect(() => {
