@@ -14,10 +14,10 @@ import {
     VARIANT_TO_ICON_COLOR_MAP,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { AnnouncementConfig, BannerVariant } from './constants'
-import { BannerConfigType } from './types'
+import { ANNOUNCEMENT_CONFIG, BannerVariant } from './constants'
+import { BannerConfigProps, BannerConfigType } from './types'
 
-export const getBannerIconName = (
+export const getBannerIcon = (
     bannerVariant: BannerVariant,
     type: InfoBlockProps['variant'],
     iconName: IconsProps['name'],
@@ -42,25 +42,22 @@ export const getBannerIconName = (
     )
 }
 
-export const getBannerConfig = (
-    variant: BannerVariant,
-    isOnline?: boolean,
-    _announcementConfig?: { message: string; type: string },
-    licenseType?: InfoBlockProps['variant'],
-    enterpriseLicenseBarMessage?: string,
-): BannerConfigType => {
+export const getBannerConfig = ({
+    bannerVariant,
+    isOnline,
+    licenseType,
+    enterpriseLicenseBarMessage = '',
+}: BannerConfigProps): BannerConfigType => {
     const bannerConfigMap: Record<BannerVariant, BannerConfigType> = {
         [BannerVariant.INTERNET_CONNECTIVITY]: isOnline
             ? {
                   text: 'You’re back online!',
                   rootClassName: 'bcg-5',
-                  type: 'online',
               }
             : {
                   text: 'You’re offline! Please check your internet connection.',
                   icon: 'ic-disconnected',
                   rootClassName: 'bcr-5',
-                  type: 'offline',
               },
 
         [BannerVariant.VERSION_UPDATE]: {
@@ -72,21 +69,21 @@ export const getBannerConfig = (
         [BannerVariant.LICENSE]: {
             text: enterpriseLicenseBarMessage,
             icon: licenseType,
-            rootClassName: VARIANT_TO_BG_MAP[licenseType as InfoBlockProps['variant']],
+            rootClassName: VARIANT_TO_BG_MAP[licenseType],
         },
 
         [BannerVariant.ANNOUNCEMENT]: {
-            text: _announcementConfig.message,
+            text: ANNOUNCEMENT_CONFIG.message,
             icon: 'ic-megaphone-left',
-            rootClassName: VARIANT_TO_BG_MAP[_announcementConfig.type as InfoBlockProps['variant']],
+            rootClassName: VARIANT_TO_BG_MAP[ANNOUNCEMENT_CONFIG.type as InfoBlockProps['variant']],
             isDismissible: true,
         },
     }
 
-    return bannerConfigMap[variant]
+    return bannerConfigMap[bannerVariant]
 }
 
-export const buttonConfig = (bannerView: BannerVariant, handleOpenLicenseDialog: () => void): ButtonProps => {
+export const getButtonConfig = (bannerView: BannerVariant, handleOpenLicenseDialog: () => void): ButtonProps => {
     switch (bannerView) {
         case BannerVariant.VERSION_UPDATE:
             return {
@@ -108,11 +105,11 @@ export const buttonConfig = (bannerView: BannerVariant, handleOpenLicenseDialog:
             }
         case BannerVariant.ANNOUNCEMENT:
             return {
-                text: AnnouncementConfig.buttonText || 'Learn more',
+                text: ANNOUNCEMENT_CONFIG.buttonText || 'Learn more',
                 variant: ButtonVariantType.text,
                 size: ComponentSizeType.xxs,
                 endIcon: <Icon name="ic-arrow-right" color={null} />,
-                onClick: () => <Link to={AnnouncementConfig.buttonLink} />,
+                onClick: () => <Link to={ANNOUNCEMENT_CONFIG.buttonLink} />,
                 dataTestId: 'banner-announcement-action-button',
             }
         case BannerVariant.INTERNET_CONNECTIVITY:
@@ -130,8 +127,8 @@ export const buttonConfig = (bannerView: BannerVariant, handleOpenLicenseDialog:
     }
 }
 
-export const getBannerTextColor = (bannerView: BannerVariant) => {
-    switch (bannerView) {
+export const getBannerTextColor = (bannerVariant: BannerVariant) => {
+    switch (bannerVariant) {
         case BannerVariant.INTERNET_CONNECTIVITY:
             return 'cn-0'
         case BannerVariant.ANNOUNCEMENT:

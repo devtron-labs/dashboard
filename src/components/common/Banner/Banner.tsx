@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import {
     Button,
@@ -11,9 +11,9 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary, useOnline } from '../helpers/Helpers'
-import { AnnouncementConfig, BannerVariant, ONLINE_BANNER_TIMEOUT } from './constants'
+import { ANNOUNCEMENT_CONFIG, BannerVariant, ONLINE_BANNER_TIMEOUT } from './constants'
 import { useVersionUpdateReload } from './useVersionUpdateReload'
-import { buttonConfig, getBannerConfig, getBannerIconName, getBannerTextColor } from './utils'
+import { getBannerConfig, getBannerIcon, getBannerTextColor, getButtonConfig } from './utils'
 
 import './banner.scss'
 
@@ -32,7 +32,7 @@ export const Banner = () => {
 
     const [showOnlineBanner, setShowOnlineBanner] = useState(false)
     const [showAnnouncementBanner, setShowAnnouncementBanner] = useState(
-        AnnouncementConfig.message ? shouldShowAnnouncementBanner() : false,
+        ANNOUNCEMENT_CONFIG.message ? shouldShowAnnouncementBanner() : false,
     )
 
     const licenseConfig = useEnterpriseLicenseConfig()
@@ -41,9 +41,7 @@ export const Banner = () => {
     useEffect(() => {
         let timer: NodeJS.Timeout
         if (didMountRef.current) {
-            if (!isOnline) {
-                setShowOnlineBanner(false)
-            } else {
+            if (isOnline) {
                 setShowOnlineBanner(true)
 
                 // Auto-hide online banner after timeout
@@ -53,12 +51,6 @@ export const Banner = () => {
             didMountRef.current = true
             // Removing any toast explicitly due to race condition of offline toast for some users
             setShowOnlineBanner(false)
-
-            if (isOnline) {
-                timer = setTimeout(() => {
-                    setShowOnlineBanner(false)
-                }, ONLINE_BANNER_TIMEOUT)
-            }
         }
         return () => clearTimeout(timer)
     }, [isOnline])
@@ -86,32 +78,29 @@ export const Banner = () => {
         return null
     }
 
-    const bannerVariant: BannerVariant = useMemo(
-        () => getCurrentBanner(),
-        [isOnline, showOnlineBanner, updateToastRef.current, showAnnouncementBanner, enterpriseLicenseBarMessage],
-    )
+    const bannerVariant: BannerVariant = getCurrentBanner()
+
     if (!bannerVariant) return null
 
-    const config = getBannerConfig(
+    const config = getBannerConfig({
         bannerVariant,
         isOnline,
-        AnnouncementConfig,
         licenseType,
         enterpriseLicenseBarMessage,
-    )
+    })
 
     if (!config) return null
 
-    const actionButtons = buttonConfig(bannerVariant, handleOpenLicenseDialog)
-    const baseClassName = `w-100 ${config.rootClassName || ''} ${getBannerTextColor(bannerVariant)} ${config.isDismissible ? 'banner-row' : 'flex'}`
+    const actionButtons = getButtonConfig(bannerVariant, handleOpenLicenseDialog)
+    const baseClassName = `w-100 ${config.rootClassName || ''} ${getBannerTextColor(bannerVariant)} ${config.isDismissible ? 'dc__grid banner-row' : 'flex'}`
 
     return (
         <div className={baseClassName}>
             {config.isDismissible && <div className="icon-dim-28" />}
             <div className="py-4 flex dc__gap-8 dc__align-center pr-16">
-                <p className="flex dc__gap-8 m-0 ">
+                <p className="flex dc__gap-8 m-0">
                     {!(isOnline && bannerVariant === BannerVariant.INTERNET_CONNECTIVITY) &&
-                        getBannerIconName(bannerVariant, AnnouncementConfig.type, iconName)}
+                        getBannerIcon(bannerVariant, ANNOUNCEMENT_CONFIG.type, iconName)}
 
                     <div className="fs-12 fw-5 lh-20 dc__truncate">{config.text}</div>
                 </p>

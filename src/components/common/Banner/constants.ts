@@ -9,7 +9,7 @@ export enum BannerVariant {
     LICENSE = 'LICENSE',
 }
 
-export const AnnouncementConfig: AnnouncementConfigTypes = {
+export const ANNOUNCEMENT_CONFIG: AnnouncementConfigTypes = {
     message: window._env_.ANNOUNCEMENT_BANNER_MSG,
     type: window._env_.ANNOUNCEMENT_BANNER_TYPE as InfoBlockProps['variant'],
     buttonText: window._env_.ANNOUNCEMENT_BANNER_BUTTON_TEXT,

@@ -2286,7 +2286,6 @@ button.anchor {
     max-width: 80%;
 }
 
-
 .fw-n {
     font-weight: normal !important;
 }
@@ -5125,7 +5124,7 @@ details[open] {
 
     &:has(.deployment-config__comments-view) {
         grid-template-columns: 0 1fr !important;
-        
+
         .collapsible-sidebar {
             overflow: hidden;
         }
@@ -5171,6 +5170,7 @@ details[open] {
         .image-tags-container {
             background-color: var(--bg-secondary);
         }
+
         .image-tags-container-edit__icon {
             display: block;
         }
@@ -5179,8 +5179,4 @@ details[open] {
             border-color: var(--N50);
         }
     }
-}
-
-.banner__version-update {
-    background: linear-gradient(92deg, #4C40BF 0%, #4084BF 72.45%, #8529A3 96.63%);
 }

@@ -103,7 +103,6 @@ const App = () => {
         }
     }
 
-    // Add this near other hooks in the App component
     const { handleAppUpdate, doesNeedRefresh, handleControllerChange } = useVersionUpdateReload()
 
     // Add this effect in the App component
