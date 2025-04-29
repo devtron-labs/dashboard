@@ -1,33 +1,13 @@
-import { MutableRefObject, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 
-import {
-    API_STATUS_CODES,
-    Icon,
-    logExceptionToSentry,
-    noop,
-    refresh,
-    ToastManager,
-    ToastVariantType,
-} from '@devtron-labs/devtron-fe-common-lib'
-
-import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG } from '@Config/constants'
-
-import { reloadLocation } from '../helpers/Helpers'
-
-const dismissIfToastActive = (toastRef: MutableRefObject<any>) => {
-    if (ToastManager.isToastActive(toastRef.current)) {
-        ToastManager.dismissToast(toastRef.current)
-    }
-}
+import { API_STATUS_CODES, logExceptionToSentry, noop, refresh } from '@devtron-labs/devtron-fe-common-lib'
 
 export const useVersionUpdateReload = () => {
     const refreshing = useRef(false)
-    const updateToastRef = useRef(null)
-
     const [bgUpdated, setBGUpdated] = useState(false)
-
+    const [doesNeedRefresh, setDoesNeedRefresh] = useState(false)
     const location = useLocation()
 
     function handleControllerChange() {
@@ -44,50 +24,27 @@ export const useVersionUpdateReload = () => {
 
     const serviceWorkerTimeout = (() => {
         const parsedTimeout = parseInt(window._env_.SERVICE_WORKER_TIMEOUT, 10)
-
         if (parsedTimeout) {
             return parsedTimeout
         }
         return 3
     })()
 
-    function handleNeedRefresh(_updateServiceWorker) {
-        dismissIfToastActive(updateToastRef)
-
-        updateToastRef.current = ToastManager.showToast(
-            {
-                variant: ToastVariantType.info,
-                title: 'Update available',
-                description: 'You are viewing an outdated version of Devtron UI.',
-                buttonProps: {
-                    text: 'Reload',
-                    dataTestId: 'reload-btn',
-                    onClick: () => {
-                        dismissIfToastActive(updateToastRef)
-                        _updateServiceWorker(true)
-                    },
-                    startIcon: <Icon name="ic-arrow-clockwise" color={null} />,
-                },
-                icon: <Icon name="ic-sparkle-color" color={null} />,
-                progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
-            },
-            {
-                autoClose: false,
-            },
-        )
+    function handleNeedRefresh() {
+        setDoesNeedRefresh(true)
         if (typeof Storage !== 'undefined') {
             localStorage.removeItem('serverInfo')
         }
     }
 
     const {
-        needRefresh: [doesNeedRefresh],
+        needRefresh: [needRefresh],
         updateServiceWorker,
     } = useRegisterSW({
         onRegisteredSW(swUrl, swRegistration) {
             console.log(`Service Worker at: ${swUrl}`)
             if (swRegistration) {
-                setInterval(
+                const intervalId = setInterval(
                     async () => {
                         if (
                             swRegistration.installing ||
@@ -114,6 +71,7 @@ export const useVersionUpdateReload = () => {
                     },
                     serviceWorkerTimeout * 60 * 1000,
                 )
+                return () => clearInterval(intervalId)
             }
             return noop
         },
@@ -122,13 +80,18 @@ export const useVersionUpdateReload = () => {
             logExceptionToSentry(error)
         },
         onNeedRefresh() {
-            handleNeedRefresh(updateServiceWorker)
+            handleNeedRefresh()
         },
     })
 
-    const handleAppUpdate = () => {
-        dismissIfToastActive(updateToastRef)
+    // Sync local state with the service worker's needRefresh state
+    useEffect(() => {
+        if (needRefresh) {
+            setDoesNeedRefresh(true)
+        }
+    }, [needRefresh])
 
+    const handleAppUpdate = () => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         updateServiceWorker(true)
     }
@@ -141,41 +104,12 @@ export const useVersionUpdateReload = () => {
                 .getRegistrations()
                 .then((registrations) => registrations.forEach((reg) => reg.update()))
             if (doesNeedRefresh) {
-                handleAppUpdate()
-            } else {
-                dismissIfToastActive(updateToastRef)
+                handleNeedRefresh()
             }
         }
     }, [location])
 
-    useEffect(() => {
-        if (!bgUpdated) {
-            return
-        }
-        dismissIfToastActive(updateToastRef)
-
-        updateToastRef.current = ToastManager.showToast(
-            {
-                variant: ToastVariantType.info,
-                title: 'Update available',
-                description: 'This page has been updated. Please save any unsaved changes and refresh.',
-                buttonProps: {
-                    text: 'Reload',
-                    dataTestId: 'reload-btn',
-                    onClick: reloadLocation,
-                    startIcon: <Icon name="ic-arrow-clockwise" color={null} />,
-                },
-                icon: <Icon name="ic-sparkle-color" color={null} />,
-                progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
-            },
-            {
-                autoClose: false,
-            },
-        )
-    }, [bgUpdated])
-
     return {
-        updateToastRef,
         bgUpdated,
         handleAppUpdate,
         doesNeedRefresh,

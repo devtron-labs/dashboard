@@ -15,7 +15,6 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
-import { useLocation } from 'react-router-dom'
 
 import {
     Button,
@@ -55,21 +54,6 @@ export const Banner = () => {
         ANNOUNCEMENT_CONFIG.message ? shouldShowAnnouncementBanner() : false,
     )
     const { bgUpdated, doesNeedRefresh, handleAppUpdate } = useVersionUpdateReload()
-
-    const location = useLocation()
-
-    useEffect(() => {
-        if (window.isSecureContext && navigator.serviceWorker) {
-            // check for sw updates on page change
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            navigator.serviceWorker
-                .getRegistrations()
-                .then((registrations) => registrations.forEach((reg) => reg.update()))
-            if (doesNeedRefresh) {
-                handleAppUpdate()
-            }
-        }
-    }, [location, doesNeedRefresh, handleAppUpdate])
 
     const enterpriseLicenseConfig = useEnterpriseLicenseConfig
 
