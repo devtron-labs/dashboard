@@ -23,7 +23,6 @@ import {
     DevtronProgressing,
     useMainContext,
     AppStatusModal,
-    getAppStatusModalTitle,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ModuleNameMap, SERVER_MODE, URLS } from '../../../config'
 import { ErrorBoundary, useInterval } from '../../common'
@@ -580,7 +579,7 @@ export default function DevtronStackManager({
                                 <Body />
                                 {showResourceStatusModal && selectedModule && (
                                     <AppStatusModal
-                                        title={getAppStatusModalTitle(["Integration installation status"])}
+                                        titleSegments={["Integration installation status"]}
                                         handleClose={closeCheckResourceStatusModal}
                                         type="stack-manager"
                                         appDetails={appDetails}

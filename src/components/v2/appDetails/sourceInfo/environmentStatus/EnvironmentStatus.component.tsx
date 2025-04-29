@@ -27,7 +27,6 @@ import { importComponentFromFELibrary } from '../../../../common'
 import {
     AppStatusModal,
     DeploymentAppTypes,
-    getAppStatusModalTitle,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { EnvironmentStatusComponentType } from '../environment.type'
@@ -199,10 +198,10 @@ const EnvironmentStatusComponent = ({
             )}
             {showAppStatusDetail && (
                 <AppStatusModal
-                    title={getAppStatusModalTitle([
+                    titleSegments={[
                         appDetails?.appName,
                         appDetails?.environmentName || appDetails?.namespace,
-                    ])}
+                    ]}
                     handleClose={handleCloseAppStatusModal}
                     type="other-apps"
                     appDetails={appDetails}

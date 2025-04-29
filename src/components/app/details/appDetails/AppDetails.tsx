@@ -26,7 +26,6 @@ import {
     ButtonComponentType,
     DeploymentAppTypes,
     GenericEmptyState,
-    getAppStatusModalTitle,
     getIsRequestAborted,
     MODAL_TYPE,
     noop,
@@ -848,10 +847,7 @@ export const Details: React.FC<DetailsType> = ({
             )}
             {detailedStatus && (
                 <AppStatusModal
-                    title={getAppStatusModalTitle([
-                        appDetailsFromIndexStore.appName,
-                        appDetailsFromIndexStore.environmentName,
-                    ])}
+                    titleSegments={[appDetailsFromIndexStore.appName, appDetailsFromIndexStore.environmentName]}
                     handleClose={hideAppDetailsStatus}
                     type="devtron-app"
                     appDetails={appDetailsFromIndexStore}
