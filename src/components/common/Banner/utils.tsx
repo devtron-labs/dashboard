@@ -23,6 +23,8 @@ import {
     Icon,
     IconsProps,
     InfoBlockProps,
+    InfoBlockVariant,
+    InfoBlockVariantType,
     refresh,
     VARIANT_TO_BG_MAP,
     VARIANT_TO_ICON_COLOR_MAP,
@@ -81,17 +83,17 @@ export const getBannerConfig = ({
             rootClassName: 'banner__version-update',
         },
 
-        [BannerVariant.LICENSE]: {
-            text: enterpriseLicenseBarMessage,
-            icon: licenseType,
-            rootClassName: VARIANT_TO_BG_MAP[licenseType],
-        },
-
         [BannerVariant.ANNOUNCEMENT]: {
             text: ANNOUNCEMENT_CONFIG.message,
             icon: 'ic-megaphone-left',
             rootClassName: VARIANT_TO_BG_MAP[ANNOUNCEMENT_CONFIG.type],
             isDismissible: true,
+        },
+
+        [BannerVariant.LICENSE]: {
+            text: enterpriseLicenseBarMessage,
+            icon: licenseType,
+            rootClassName: VARIANT_TO_BG_MAP[licenseType],
         },
     }
 
@@ -162,5 +164,11 @@ export const getBannerTextColor = (bannerVariant: BannerVariant) => {
     }
 }
 
-export const getValidAnnouncementType = (type: string): type is InfoBlockProps['variant'] =>
-    ['success', 'warning', 'error', 'info', 'help'].includes(type)
+export const getValidAnnouncementType = (type): type is InfoBlockVariantType =>
+    [
+        InfoBlockVariant.SUCCESS,
+        InfoBlockVariant.WARNING,
+        InfoBlockVariant.ERROR,
+        InfoBlockVariant.INFORMATION,
+        InfoBlockVariant.HELP,
+    ].includes(type)

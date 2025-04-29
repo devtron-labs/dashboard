@@ -24,6 +24,7 @@ import {
     ComponentSizeType,
     getDateInMilliseconds,
     Icon,
+    InfoBlockVariant,
     setActionWithExpiry,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -100,7 +101,7 @@ export const Banner = () => {
 
     const {
         message: enterpriseLicenseBarMessage = '',
-        type: licenseType = 'help',
+        type: licenseType = InfoBlockVariant.HELP,
         iconName = '',
         handleOpenLicenseDialog,
     } = licenseConfig ?? {}

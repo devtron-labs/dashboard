@@ -138,7 +138,7 @@ if (!window || !window._env_) {
         ANNOUNCEMENT_BANNER_MSG: '',
         ANNOUNCEMENT_BANNER_TYPE: 'help',
         ANNOUNCEMENT_BANNER_BUTTON_TEXT: 'Learn more',
-        ANNOUNCEMENT_BANNER_BUTTON_LINK: 'https://devtron.ai',
+        ANNOUNCEMENT_BANNER_BUTTON_LINK: '',
         HIDE_DEFAULT_CLUSTER: false,
         GLOBAL_API_TIMEOUT: 60000,
         TRIGGER_API_TIMEOUT: 60000,

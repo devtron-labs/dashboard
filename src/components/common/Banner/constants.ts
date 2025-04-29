@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { InfoBlockVariant } from '@devtron-labs/devtron-fe-common-lib'
+
 import { AnnouncementConfigTypes } from './types'
 import { getValidAnnouncementType } from './utils'
 
@@ -28,7 +30,7 @@ export const ANNOUNCEMENT_CONFIG: AnnouncementConfigTypes = {
     message: window._env_.ANNOUNCEMENT_BANNER_MSG,
     type: getValidAnnouncementType(window._env_.ANNOUNCEMENT_BANNER_TYPE)
         ? window._env_.ANNOUNCEMENT_BANNER_TYPE
-        : 'help',
+        : InfoBlockVariant.HELP,
     buttonText: window._env_.ANNOUNCEMENT_BANNER_BUTTON_TEXT,
     buttonLink: window._env_.ANNOUNCEMENT_BANNER_BUTTON_LINK,
 }
