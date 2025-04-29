@@ -26,18 +26,12 @@ export const InteractiveCellText = ({
     interactive = false,
     fontSize = 13,
 }: InteractiveCellTextProps) => (
-    <Tooltip
-        content={text}
-        alwaysShowTippyOnHover
-        placement="top"
-        className="mxh-210 dc__overflow-auto flex left"
-        interactive={interactive}
-    >
+    <Tooltip content={text} placement="bottom" className="mxh-210 dc__overflow-auto" interactive={interactive}>
         {typeof onClickHandler === 'function' ? (
             <button
                 type="button"
                 onClick={onClickHandler}
-                className={`flex left dc__unset-button-styles lh-20 dc__truncate fs-13 cb-5 dc__no-decor cursor ${rootClassName}`}
+                className={`flex left dc__unset-button-styles lh-20 dc__truncate fs-13 cb-5 dc__no-decor cursor ${rootClassName} fs-${fontSize}`}
                 data-testid={dataTestId}
             >
                 {text || '-'}
