@@ -39,6 +39,3 @@ Note:
 
 -   Any argument that is not present is suggestedArgument is an invalid argument
 -   isCommandBarActive is also used to make event listener active or inactive
-
-
-test

@@ -106,6 +106,16 @@ export const getButtonConfig = (
     handleAppUpdate: () => void,
 ): ButtonProps<ButtonComponentType> | null => {
     switch (bannerView) {
+        case BannerVariant.INTERNET_CONNECTIVITY:
+            return {
+                text: 'Retry',
+                startIcon: <Icon name="ic-arrow-clockwise" color={null} />,
+                variant: ButtonVariantType.text,
+                size: ComponentSizeType.xxs,
+                dataTestId: 'banner-offline-reload',
+                onClick: refresh,
+                style: ButtonStyleType.neutralN0,
+            }
         case BannerVariant.VERSION_UPDATE:
             return {
                 startIcon: <Icon name="ic-arrow-clockwise" color={null} />,
@@ -115,14 +125,6 @@ export const getButtonConfig = (
                 size: ComponentSizeType.xxs,
                 dataTestId: 'banner-version-update-reload-button',
                 style: ButtonStyleType.neutralWhite,
-            }
-        case BannerVariant.LICENSE:
-            return {
-                text: 'Know more',
-                variant: ButtonVariantType.text,
-                size: ComponentSizeType.xxs,
-                onClick: handleOpenLicenseDialog,
-                dataTestId: 'banner-license-know-more-button',
             }
         case BannerVariant.ANNOUNCEMENT:
             return {
@@ -138,15 +140,13 @@ export const getButtonConfig = (
                     rel: 'noreferrer noopener',
                 },
             }
-        case BannerVariant.INTERNET_CONNECTIVITY:
+        case BannerVariant.LICENSE:
             return {
-                text: 'Retry',
-                startIcon: <Icon name="ic-arrow-clockwise" color={null} />,
+                text: 'Know more',
                 variant: ButtonVariantType.text,
                 size: ComponentSizeType.xxs,
-                dataTestId: 'banner-offline-reload',
-                onClick: refresh,
-                style: ButtonStyleType.neutralN0,
+                onClick: handleOpenLicenseDialog,
+                dataTestId: 'banner-license-know-more-button',
             }
         default:
             return null
@@ -156,9 +156,8 @@ export const getButtonConfig = (
 export const getBannerTextColor = (bannerVariant: BannerVariant) => {
     switch (bannerVariant) {
         case BannerVariant.INTERNET_CONNECTIVITY:
-            return 'cn-0'
         case BannerVariant.ANNOUNCEMENT:
-            return 'text-white'
+            return 'cn-0'
         default:
             return 'cn-9'
     }

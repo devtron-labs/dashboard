@@ -140,6 +140,9 @@ export const Banner = () => {
         if (bannerVariant === BannerVariant.ANNOUNCEMENT) {
             return !!ANNOUNCEMENT_CONFIG.buttonLink
         }
+        if (bannerVariant === BannerVariant.VERSION_UPDATE) {
+            return true
+        }
         return false
     }
 
