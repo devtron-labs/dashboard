@@ -66,6 +66,7 @@ export const getBannerConfig = ({
     licenseType,
     enterpriseLicenseBarMessage = '',
     hideInternetConnectivityBar = false,
+    microservice,
 }: BannerConfigProps): BannerConfigType => {
     const bannerConfigMap: Partial<Record<BannerVariant, BannerConfigType>> = {
         ...(!hideInternetConnectivityBar
@@ -90,7 +91,7 @@ export const getBannerConfig = ({
         },
 
         [BannerVariant.INCOMPATIBLE_MICROSERVICES]: {
-            text: 'Running frontend service is incompatible.',
+            text: `Incompatible ${microservice} service detected.`,
             icon: 'ic-info-outline',
             rootClassName: 'bcr-5',
         },

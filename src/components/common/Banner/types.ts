@@ -30,6 +30,7 @@ export interface BannerConfigProps {
     hideInternetConnectivityBar?: boolean
     isDismissible?: boolean
     showAnnouncementBannerOnly?: boolean
+    microservice: 'frontend' | 'backend' | null
 }
 
 export interface BannerConfigType {

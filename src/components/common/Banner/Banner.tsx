@@ -117,6 +117,7 @@ export const Banner = () => {
         licenseType,
         enterpriseLicenseBarMessage,
         hideInternetConnectivityBar: isAirgapped,
+        microservice: getIncompatibleMicroserviceName(),
     })
 
     if (!config) return null
