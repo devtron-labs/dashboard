@@ -27,6 +27,8 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { InstallationType } from '@Components/v2/devtronStackManager/DevtronStackManager.type'
+
 import { importComponentFromFELibrary, useOnline } from '../helpers/Helpers'
 import { InteractiveCellText } from '../helpers/InteractiveCellText/InteractiveCellText'
 import { ANNOUNCEMENT_CONFIG, BannerVariant, ONLINE_BANNER_TIMEOUT } from './constants'
@@ -41,12 +43,13 @@ import {
 
 import './banner.scss'
 
-const useEnterpriseLicenseConfig = importComponentFromFELibrary('useEnterpriseLicenseConfig', null, 'function')
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
+const useEnterpriseLicenseConfig = importComponentFromFELibrary('useEnterpriseLicenseConfig', () => null, 'function')
 
 export const Banner = () => {
     const didMountRef = useRef(false)
     const isOnline = useOnline()
-    const { isAirgapped } = useMainContext()
+    const { isAirgapped, currentServerInfo } = useMainContext()
 
     const [showOnlineBanner, setShowOnlineBanner] = useState(false)
     const [showAnnouncementBanner, setShowAnnouncementBanner] = useState(
@@ -54,9 +57,7 @@ export const Banner = () => {
     )
     const { bgUpdated, doesNeedRefresh, handleAppUpdate } = useVersionUpdateReload()
 
-    const enterpriseLicenseConfig = useEnterpriseLicenseConfig
-
-    const licenseConfig = enterpriseLicenseConfig ? enterpriseLicenseConfig() : null
+    const licenseConfig = useEnterpriseLicenseConfig()
 
     useEffect(() => {
         let timer: NodeJS.Timeout
@@ -80,6 +81,15 @@ export const Banner = () => {
         }
     }
 
+    const getIncompatibleMicroserviceName = (): 'frontend' | 'backend' | null => {
+        const { serverInfo } = currentServerInfo
+        if (serverInfo) {
+            if (serverInfo.installationType !== InstallationType.ENTERPRISE && isFELibAvailable) return 'backend'
+            if (serverInfo.installationType === InstallationType.ENTERPRISE && !isFELibAvailable) return 'frontend'
+        }
+        return null
+    }
+
     const {
         message: enterpriseLicenseBarMessage = '',
         type: licenseType = InfoBlockVariant.HELP,
@@ -91,6 +101,7 @@ export const Banner = () => {
         if (!isOnline) return BannerVariant.INTERNET_CONNECTIVITY
         if (showOnlineBanner) return BannerVariant.INTERNET_CONNECTIVITY
         if (doesNeedRefresh || bgUpdated) return BannerVariant.VERSION_UPDATE
+        if (getIncompatibleMicroserviceName()?.length) return BannerVariant.INCOMPATIBLE_MICROSERVICES
         if (showAnnouncementBanner) return BannerVariant.ANNOUNCEMENT
         if (licenseConfig?.message) return BannerVariant.LICENSE
         return null
@@ -121,18 +132,24 @@ export const Banner = () => {
         if (bannerVariant === BannerVariant.ANNOUNCEMENT) {
             return !!ANNOUNCEMENT_CONFIG.buttonLink
         }
-        if (bannerVariant === BannerVariant.VERSION_UPDATE) {
+        if (
+            bannerVariant === BannerVariant.VERSION_UPDATE ||
+            bannerVariant === BannerVariant.INCOMPATIBLE_MICROSERVICES
+        ) {
             return true
         }
+
         return false
     }
 
     return (
         <div className={baseClassName}>
             {config.isDismissible && <div className="icon-dim-28" />}
-            <div className="py-4 flex dc__gap-8 dc__align-center pr-16">
-                {isOffline && getBannerIcon(bannerVariant, ANNOUNCEMENT_CONFIG.type, iconName)}
-                <InteractiveCellText text={config.text} rootClassName="fs-12 fw-5" />
+            <div className="py-4 flex dc__gap-12 dc__align-items-center">
+                <div className="flex dc__gap-8">
+                    {isOffline && getBannerIcon(bannerVariant, ANNOUNCEMENT_CONFIG.type, iconName)}
+                    <InteractiveCellText text={config.text} rootClassName="fw-5" fontSize={12} interactive />
+                </div>
 
                 {shouldShowActionButton() && (
                     <div className="dc__no-shrink">

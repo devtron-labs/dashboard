@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
- .banner-row {
+.banner-row {
     grid-template-columns: 28px 1fr 28px;
+    grid-gap: 16px
 }
 
 .banner__version-update {

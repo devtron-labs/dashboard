@@ -18,8 +18,21 @@ import { Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 
 import { InteractiveCellTextProps } from './types'
 
-export const InteractiveCellText = ({ text, onClickHandler, dataTestId, rootClassName }: InteractiveCellTextProps) => (
-    <Tooltip content={text} placement="top" showOnTruncate={!!text} className="mxh-210 dc__overflow-auto">
+export const InteractiveCellText = ({
+    text,
+    onClickHandler,
+    dataTestId,
+    rootClassName,
+    interactive = false,
+    fontSize = 13,
+}: InteractiveCellTextProps) => (
+    <Tooltip
+        content={text}
+        alwaysShowTippyOnHover
+        placement="top"
+        className="mxh-210 dc__overflow-auto flex left"
+        interactive={interactive}
+    >
         {typeof onClickHandler === 'function' ? (
             <button
                 type="button"
@@ -30,7 +43,10 @@ export const InteractiveCellText = ({ text, onClickHandler, dataTestId, rootClas
                 {text || '-'}
             </button>
         ) : (
-            <p className={`lh-20 dc__truncate m-0 fs-13 ${rootClassName}`} data-testid={dataTestId}>
+            <p
+                className={`lh-20 dc__truncate m-0 dc__align-item-left ${rootClassName} fs-${fontSize}`}
+                data-testid={dataTestId}
+            >
                 {text || '-'}
             </p>
         )}

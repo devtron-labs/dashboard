@@ -20,8 +20,10 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
+    CONTACT_SUPPORT_LINK,
     getDateInMilliseconds,
     Icon,
+    IconBaseColorType,
     IconsProps,
     InfoBlockProps,
     InfoBlockVariant,
@@ -39,20 +41,23 @@ export const getBannerIcon = (
     type: InfoBlockProps['variant'],
     iconName: IconsProps['name'],
 ) => {
-    const variantWithIconMap: Record<BannerVariant, IconsProps['name'] | null> = {
+    const variantWithIconMap: Record<BannerVariant, IconsProps['name']> = {
         [BannerVariant.INTERNET_CONNECTIVITY]: 'ic-disconnect',
         [BannerVariant.VERSION_UPDATE]: 'ic-sparkle-color',
+        [BannerVariant.INCOMPATIBLE_MICROSERVICES]: 'ic-info-outline',
         [BannerVariant.LICENSE]: iconName,
         [BannerVariant.ANNOUNCEMENT]: 'ic-megaphone-left',
     }
 
-    return (
-        <Icon
-            name={variantWithIconMap[bannerVariant]}
-            color={bannerVariant === BannerVariant.ANNOUNCEMENT ? VARIANT_TO_ICON_COLOR_MAP[type] : null}
-            size={16}
-        />
-    )
+    const VariantWithIconColorMap: Record<BannerVariant, IconBaseColorType | null> = {
+        [BannerVariant.INTERNET_CONNECTIVITY]: null,
+        [BannerVariant.VERSION_UPDATE]: null,
+        [BannerVariant.INCOMPATIBLE_MICROSERVICES]: 'N0',
+        [BannerVariant.LICENSE]: null,
+        [BannerVariant.ANNOUNCEMENT]: VARIANT_TO_ICON_COLOR_MAP[type],
+    }
+
+    return <Icon name={variantWithIconMap[bannerVariant]} color={VariantWithIconColorMap[bannerVariant]} size={16} />
 }
 
 export const getBannerConfig = ({
@@ -79,9 +84,15 @@ export const getBannerConfig = ({
             : {}),
 
         [BannerVariant.VERSION_UPDATE]: {
-            text: 'A new version is available. Please refresh the page to get the latest features.',
+            text: 'A new version is available.',
             icon: 'ic-sparkle-color',
             rootClassName: 'banner__version-update',
+        },
+
+        [BannerVariant.INCOMPATIBLE_MICROSERVICES]: {
+            text: 'Running frontend service is incompatible.',
+            icon: 'ic-info-outline',
+            rootClassName: 'bcr-5',
         },
 
         [BannerVariant.ANNOUNCEMENT]: {
@@ -127,6 +138,21 @@ export const getButtonConfig = (
                 dataTestId: 'banner-version-update-reload-button',
                 style: ButtonStyleType.neutralWhite,
             }
+        case BannerVariant.INCOMPATIBLE_MICROSERVICES:
+            return {
+                startIcon: <Icon name="ic-chat-circle-dots" color={null} />,
+                text: 'Contact Support',
+                variant: ButtonVariantType.text,
+                size: ComponentSizeType.xxs,
+                dataTestId: 'banner-incompatible-reload-button',
+                style: ButtonStyleType.neutralN0,
+                component: ButtonComponentType.anchor,
+                anchorProps: {
+                    href: CONTACT_SUPPORT_LINK,
+                    target: '_blank',
+                    rel: 'noreferrer noopener',
+                },
+            }
         case BannerVariant.ANNOUNCEMENT:
             return {
                 text: ANNOUNCEMENT_CONFIG.buttonText || 'Learn more',
@@ -157,6 +183,7 @@ export const getButtonConfig = (
 export const getBannerTextColor = (bannerVariant: BannerVariant) => {
     switch (bannerVariant) {
         case BannerVariant.INTERNET_CONNECTIVITY:
+        case BannerVariant.INCOMPATIBLE_MICROSERVICES:
             return 'cn-0'
         case BannerVariant.VERSION_UPDATE:
             return 'text__white'

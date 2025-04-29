@@ -19,4 +19,6 @@ export interface InteractiveCellTextProps {
     onClickHandler?: () => void
     dataTestId?: string
     rootClassName?: string
+    interactive?: boolean
+    fontSize?: number
 }
