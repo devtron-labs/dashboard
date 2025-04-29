@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { multiSelectStyles, CIBuildType, DockerConfigOverrideType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    multiSelectStyles,
+    CIBuildType,
+    DockerConfigOverrideType,
+    getUniqueId,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { PATTERNS } from '../../config'
 import { CiPipelineResult } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
@@ -28,7 +33,11 @@ export const _multiSelectStyles = {
     control: (base, state) => ({
         ...base,
         cursor: state.isDisabled ? 'not-allowed' : 'normal',
-        border: state.isDisabled ? '1px solid var(--N200)' : state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
+        border: state.isDisabled
+            ? '1px solid var(--N200)'
+            : state.isFocused
+              ? '1px solid var(--B500)'
+              : '1px solid var(--N200)',
         backgroundColor: state.isDisabled ? 'var(--bg-secondary)' : 'var(--bg-primary)',
         boxShadow: 'none',
     }),
@@ -218,15 +227,14 @@ export const initCurrentCIBuildConfig = (
 export const processBuildArgs = (args: Record<string, string>): CIBuildArgType[] => {
     const processedArgs = args
         ? Object.keys(args).map((arg) => ({
-              k: arg,
-              v: args[arg],
-              keyError: '',
-              valueError: '',
+              key: arg,
+              value: args[arg],
+              id: getUniqueId(),
           }))
         : []
 
     if (processedArgs.length === 0) {
-        processedArgs.push({ k: '', v: '', keyError: '', valueError: '' })
+        processedArgs.push({ key: '', value: '', id: getUniqueId() })
     }
 
     return processedArgs
