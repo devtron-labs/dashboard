@@ -146,7 +146,7 @@ export const K8ResourceComponent = ({
                         className="dc__border-right--n1 dc__overflow-hidden flexbox-col dc__no-shrink w-250"
                         data-testid="k8-resources-node-tree"
                     >
-                        <div className="pt-16 pb-15 px-16 border__secondary--bottom">
+                        <div className="pt-16 pb-15 px-16 border__secondary--bottom k8s-resources__status-filter--container">
                             <StatusFilterButtonComponent
                                 nodes={nodes}
                                 selectedTab={currentFilter}
