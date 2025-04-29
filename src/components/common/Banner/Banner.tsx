@@ -21,7 +21,6 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
-    getDateInMilliseconds,
     Icon,
     InfoBlockVariant,
     setActionWithExpiry,
@@ -30,21 +29,21 @@ import {
 
 import { importComponentFromFELibrary, useOnline } from '../helpers/Helpers'
 import { ANNOUNCEMENT_CONFIG, BannerVariant, ONLINE_BANNER_TIMEOUT } from './constants'
+import { BannerType } from './types'
 import { useVersionUpdateReload } from './useVersionUpdateReload'
-import { getBannerConfig, getBannerIcon, getBannerTextColor, getButtonConfig } from './utils'
+import {
+    getBannerConfig,
+    getBannerIcon,
+    getBannerTextColor,
+    getButtonConfig,
+    shouldShowAnnouncementBanner,
+} from './utils'
 
 import './banner.scss'
 
 const useEnterpriseLicenseConfig = importComponentFromFELibrary('useEnterpriseLicenseConfig', null, 'function')
 
-const shouldShowAnnouncementBanner = (): boolean => {
-    const expiry = localStorage.getItem('expiryDateOfHidingAnnouncementBanner')
-    const loginTime = localStorage.getItem('dashboardLoginTime')
-    if (!expiry) return true
-    return getDateInMilliseconds(loginTime) > getDateInMilliseconds(expiry)
-}
-
-export const Banner = ({ isDismissible = false }: { isDismissible?: boolean }) => {
+export const Banner = ({ isDismissible = false, showAnnouncementBannerOnly = false }: BannerType) => {
     const didMountRef = useRef(false)
     const isOnline = useOnline()
     const { isAirgapped } = useMainContext()
@@ -89,6 +88,7 @@ export const Banner = ({ isDismissible = false }: { isDismissible?: boolean }) =
     } = licenseConfig ?? {}
 
     const getCurrentBanner = (): BannerVariant => {
+        if (showAnnouncementBannerOnly) return BannerVariant.ANNOUNCEMENT
         if (!isOnline) return BannerVariant.INTERNET_CONNECTIVITY
         if (showOnlineBanner) return BannerVariant.INTERNET_CONNECTIVITY
         if (doesNeedRefresh || bgUpdated) return BannerVariant.VERSION_UPDATE
@@ -108,6 +108,7 @@ export const Banner = ({ isDismissible = false }: { isDismissible?: boolean }) =
         enterpriseLicenseBarMessage,
         hideInternetConnectivityBar: isAirgapped,
         isDismissible,
+        showAnnouncementBannerOnly,
     })
 
     if (!config) return null

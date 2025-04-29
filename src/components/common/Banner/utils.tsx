@@ -20,6 +20,7 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
+    getDateInMilliseconds,
     Icon,
     IconsProps,
     InfoBlockProps,
@@ -61,42 +62,52 @@ export const getBannerConfig = ({
     enterpriseLicenseBarMessage = '',
     hideInternetConnectivityBar = false,
     isDismissible,
+    showAnnouncementBannerOnly,
 }: BannerConfigProps): BannerConfigType => {
-    const bannerConfigMap: Partial<Record<BannerVariant, BannerConfigType>> = {
-        ...(!hideInternetConnectivityBar
-            ? {
-                  [BannerVariant.INTERNET_CONNECTIVITY]: isOnline
-                      ? {
-                            text: 'You’re back online!',
-                            rootClassName: 'bcg-5',
-                        }
-                      : {
-                            text: 'You’re offline! Please check your internet connection.',
-                            icon: 'ic-disconnected',
-                            rootClassName: 'bcr-5',
-                        },
-              }
-            : {}),
+    const bannerConfigMap: Partial<Record<BannerVariant, BannerConfigType>> = showAnnouncementBannerOnly
+        ? {
+              [BannerVariant.ANNOUNCEMENT]: {
+                  text: ANNOUNCEMENT_CONFIG.message,
+                  icon: 'ic-megaphone-left',
+                  rootClassName: VARIANT_TO_BG_MAP[ANNOUNCEMENT_CONFIG.type],
+                  isDismissible,
+              },
+          }
+        : {
+              ...(!hideInternetConnectivityBar
+                  ? {
+                        [BannerVariant.INTERNET_CONNECTIVITY]: isOnline
+                            ? {
+                                  text: 'You’re back online!',
+                                  rootClassName: 'bcg-5',
+                              }
+                            : {
+                                  text: 'You’re offline! Please check your internet connection.',
+                                  icon: 'ic-disconnected',
+                                  rootClassName: 'bcr-5',
+                              },
+                    }
+                  : {}),
 
-        [BannerVariant.VERSION_UPDATE]: {
-            text: 'A new version is available. Please refresh the page to get the latest features.',
-            icon: 'ic-sparkle-color',
-            rootClassName: 'banner__version-update',
-        },
+              [BannerVariant.VERSION_UPDATE]: {
+                  text: 'A new version is available. Please refresh the page to get the latest features.',
+                  icon: 'ic-sparkle-color',
+                  rootClassName: 'banner__version-update',
+              },
 
-        [BannerVariant.ANNOUNCEMENT]: {
-            text: ANNOUNCEMENT_CONFIG.message,
-            icon: 'ic-megaphone-left',
-            rootClassName: VARIANT_TO_BG_MAP[ANNOUNCEMENT_CONFIG.type],
-            isDismissible,
-        },
+              [BannerVariant.ANNOUNCEMENT]: {
+                  text: ANNOUNCEMENT_CONFIG.message,
+                  icon: 'ic-megaphone-left',
+                  rootClassName: VARIANT_TO_BG_MAP[ANNOUNCEMENT_CONFIG.type],
+                  isDismissible,
+              },
 
-        [BannerVariant.LICENSE]: {
-            text: enterpriseLicenseBarMessage,
-            icon: licenseType,
-            rootClassName: VARIANT_TO_BG_MAP[licenseType],
-        },
-    }
+              [BannerVariant.LICENSE]: {
+                  text: enterpriseLicenseBarMessage,
+                  icon: licenseType,
+                  rootClassName: VARIANT_TO_BG_MAP[licenseType],
+              },
+          }
 
     return bannerConfigMap[bannerVariant]
 }
@@ -173,3 +184,10 @@ export const getValidAnnouncementType = (type): type is InfoBlockVariantType =>
         InfoBlockVariant.INFORMATION,
         InfoBlockVariant.HELP,
     ].includes(type)
+
+export const shouldShowAnnouncementBanner = (): boolean => {
+    const expiry = localStorage.getItem('expiryDateOfHidingAnnouncementBanner')
+    const loginTime = localStorage.getItem('dashboardLoginTime')
+    if (!expiry) return true
+    return getDateInMilliseconds(loginTime) > getDateInMilliseconds(expiry)
+}

@@ -51,7 +51,6 @@ import {
     getGitCommitInfo,
     ImageTaggingContainerType,
     SequentialCDCardTitleProps,
-    AnnouncementBanner,
     ButtonWithLoader,
     ACTION_STATE,
     MODAL_TYPE,
@@ -1832,7 +1831,7 @@ const CDMaterial = ({
             </div>
 
             {!showConfigDiffView && window?._env_?.ANNOUNCEMENT_BANNER_MSG && (
-                <Banner isDismissible />
+                <Banner isDismissible showAnnouncementBannerOnly />
             )}
 
             {/* FIXME: This material.length>1 needs to be optimised */}
@@ -1951,7 +1950,7 @@ const CDMaterial = ({
         return isFromBulkCD ? (
             <>
                 {!showConfigDiffView && window?._env_?.ANNOUNCEMENT_BANNER_MSG && (
-                    <Banner isDismissible />
+                    <Banner isDismissible showAnnouncementBannerOnly />
                 )}
                 {renderTriggerBody(isApprovalConfigured)}
             </>

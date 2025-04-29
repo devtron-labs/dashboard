@@ -18,6 +18,10 @@ import { InfoBlockProps } from '@devtron-labs/devtron-fe-common-lib'
 
 import { BannerVariant } from './constants'
 
+export interface BannerType {
+    isDismissible?: boolean
+    showAnnouncementBannerOnly?: boolean
+}
 export interface BannerConfigProps {
     bannerVariant: Partial<BannerVariant>
     isOnline: boolean
@@ -25,6 +29,7 @@ export interface BannerConfigProps {
     enterpriseLicenseBarMessage?: string
     hideInternetConnectivityBar?: boolean
     isDismissible?: boolean
+    showAnnouncementBannerOnly?: boolean
 }
 
 export interface BannerConfigType {
