@@ -34,6 +34,7 @@ import { sortObjectArrayAlphabetically } from '../common'
 import { AddClusterButton } from './PageHeader.buttons'
 
 const ResourceBrowser: React.FC = () => {
+    const parentRef = useRef<HTMLDivElement>(null)
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
     const [detailClusterListLoading, detailClusterList, , reloadDetailClusterList] = useAsync(async () => {
@@ -72,6 +73,7 @@ const ResourceBrowser: React.FC = () => {
 
         return (
             <ClusterListView
+                parentRef={parentRef}
                 clusterOptions={sortedClusterList}
                 clusterListLoader={detailClusterListLoading}
                 initialLoading={initialLoading}
@@ -85,7 +87,7 @@ const ResourceBrowser: React.FC = () => {
     }
 
     return (
-        <div className="flexbox-col h-100 bg__primary">
+        <div className="flexbox-col h-100 bg__primary" ref={parentRef}>
             <PageHeader
                 isBreadcrumbs={false}
                 headerName="Kubernetes Resource Browser"
