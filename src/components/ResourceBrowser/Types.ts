@@ -19,7 +19,6 @@ import React, { RefObject } from 'react'
 import {
     ALL_NAMESPACE_OPTION,
     ApiResourceGroupType,
-    ClusterDetail,
     GVKType,
     InitTabType,
     K8SObjectBaseType,
@@ -72,13 +71,6 @@ export enum CreateResourceStatus {
 
 export interface ResourceDetailsPropType extends LogSearchTermType {
     selectedResource: SelectedResourceType
-}
-
-export interface ClusterSelectionType {
-    clusterOptions: ClusterDetail[]
-    clusterListLoader: boolean
-    initialLoading: boolean
-    refreshData: () => void
 }
 
 export interface CreateResourceType {

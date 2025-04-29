@@ -250,8 +250,7 @@ export function getDockerRegistryStatus(isStorageActionPush?: boolean): Promise<
 }
 
 export function getDockerRegistryList(): Promise<ResponseType> {
-    const URL = `${Routes.DOCKER_REGISTRY_CONFIG}`
-    return get(URL)
+    return get(Routes.DOCKER_REGISTRY_CONFIG)
 }
 
 export function getAppOtherEnvironmentMin(

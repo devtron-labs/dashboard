@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
+import { useLocation } from 'react-router-dom'
+
 import { DeploymentWithConfigType } from '@devtron-labs/devtron-fe-common-lib'
+
+import { URLS } from '@Config/routes'
 
 import { deepEqual } from '../../../common'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
+import { TRIGGER_VIEW_PARAMS } from './Constants'
 import { TriggerViewDeploymentConfigType } from './types'
 
 export const DEPLOYMENT_CONFIGURATION_NAV_MAP = {
@@ -163,3 +168,26 @@ export const checkForDiff = (configA: TriggerViewDeploymentConfigType, configB: 
 
     return diffForOptions
 }
+
+/**
+ * Determines whether the "Webhook Add Image" modal should be rendered based on the current location.
+ *
+ * This function checks the `location` object to ensure that the modal is not displayed
+ * when certain other modals or views are active. Specifically, the modal will not be shown
+ * if any of the following conditions are met:
+ * - The URL query string contains 'cd-node' or 'rollback-node'.
+ * - The URL path includes the `BUILD` route.
+ * - The URL path includes the `LINKED_CI_DETAILS` route.
+ * - The URL query string contains the `APPROVAL_NODE` parameter.
+ *
+ * @param location - The current location object, typically obtained from the `useLocation` hook.
+ * @returns A boolean indicating whether the "Webhook Add Image" modal should be rendered.
+ */
+export const shouldRenderWebhookAddImageModal = (location: ReturnType<typeof useLocation>) =>
+    !(
+        location.search.includes('cd-node') ||
+        location.search.includes('rollback-node') ||
+        location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE) ||
+        location.pathname.includes(URLS.BUILD) ||
+        location.pathname.includes(URLS.LINKED_CI_DETAILS)
+    )

@@ -23,7 +23,7 @@ import {
     CreateResourceDTO,
     Drawer,
     GenericEmptyState,
-    InfoColourBar,
+    InfoBlock,
     Progressing,
     showError,
     useRegisterShortcut,
@@ -33,7 +33,6 @@ import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Success } from '../../../assets/icons/ic-success.svg'
-import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as MechanicalOperation } from '../../../assets/img/ic-mechanical-operation.svg'
 import { APP_STATUS_HEADERS, MODES } from '../../../config'
 import { CREATE_RESOURCE_MODAL_MESSAGING } from '../Constants'
@@ -144,10 +143,20 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
         if (showCodeEditorView) {
             return (
                 <>
-                    <InfoColourBar
-                        message={CREATE_RESOURCE_MODAL_MESSAGING.infoMessage}
-                        classname="info_bar dc__no-border-radius dc__no-top-border"
-                        Icon={InfoIcon}
+                    <InfoBlock
+                        borderConfig={{
+                            top: false,
+                            right: false,
+                            bottom: false,
+                            left: false,
+                        }}
+                        borderRadiusConfig={{
+                            top: false,
+                            right: false,
+                            bottom: false,
+                            left: false,
+                        }}
+                        description={CREATE_RESOURCE_MODAL_MESSAGING.infoMessage}
                     />
 
                     <CodeEditor
