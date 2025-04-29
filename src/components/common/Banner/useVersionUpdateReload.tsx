@@ -10,7 +10,7 @@ export const useVersionUpdateReload = () => {
     const [doesNeedRefresh, setDoesNeedRefresh] = useState(false)
     const location = useLocation()
 
-    function handleControllerChange() {
+    const handleControllerChange = () => {
         if (refreshing.current) {
             return
         }
@@ -21,6 +21,17 @@ export const useVersionUpdateReload = () => {
             setBGUpdated(true)
         }
     }
+
+    useEffect(() => {
+        if (navigator.serviceWorker) {
+            navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
+        }
+        return () => {
+            if (navigator.serviceWorker) {
+                navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange)
+            }
+        }
+    }, [])
 
     const serviceWorkerTimeout = (() => {
         const parsedTimeout = parseInt(window._env_.SERVICE_WORKER_TIMEOUT, 10)

@@ -31,7 +31,6 @@ import {
 import ActivateLicense from '@Pages/License/ActivateLicense'
 
 import { ErrorBoundary, getApprovalModalTypeFromURL, importComponentFromFELibrary } from './components/common'
-import { useVersionUpdateReload } from './components/common/Banner/useVersionUpdateReload'
 import { validateToken } from './services/service'
 import { URLS } from './config'
 
@@ -103,12 +102,7 @@ const App = () => {
         }
     }
 
-    const { handleControllerChange } = useVersionUpdateReload()
-
     useEffect(() => {
-        if (navigator.serviceWorker) {
-            navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
-        }
         // If not K8S_CLIENT then validateToken otherwise directly redirect
         //  No need to validate token if on license auth page
         if (!window._env_.K8S_CLIENT && location.pathname !== CommonURLS.LICENSE_AUTH) {
@@ -122,12 +116,6 @@ const App = () => {
         } else {
             setValidating(false)
             defaultRedirection()
-        }
-
-        return () => {
-            if (navigator.serviceWorker) {
-                navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange)
-            }
         }
     }, [])
 
