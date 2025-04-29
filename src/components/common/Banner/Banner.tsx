@@ -28,8 +28,8 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary, useOnline } from '../helpers/Helpers'
+import { InteractiveCellText } from '../helpers/InteractiveCellText/InteractiveCellText'
 import { ANNOUNCEMENT_CONFIG, BannerVariant, ONLINE_BANNER_TIMEOUT } from './constants'
-import { BannerType } from './types'
 import { useVersionUpdateReload } from './useVersionUpdateReload'
 import {
     getBannerConfig,
@@ -43,7 +43,7 @@ import './banner.scss'
 
 const useEnterpriseLicenseConfig = importComponentFromFELibrary('useEnterpriseLicenseConfig', null, 'function')
 
-export const Banner = ({ isDismissible = false, showAnnouncementBannerOnly = false }: BannerType) => {
+export const Banner = () => {
     const didMountRef = useRef(false)
     const isOnline = useOnline()
     const { isAirgapped } = useMainContext()
@@ -88,7 +88,6 @@ export const Banner = ({ isDismissible = false, showAnnouncementBannerOnly = fal
     } = licenseConfig ?? {}
 
     const getCurrentBanner = (): BannerVariant => {
-        if (showAnnouncementBannerOnly) return BannerVariant.ANNOUNCEMENT
         if (!isOnline) return BannerVariant.INTERNET_CONNECTIVITY
         if (showOnlineBanner) return BannerVariant.INTERNET_CONNECTIVITY
         if (doesNeedRefresh || bgUpdated) return BannerVariant.VERSION_UPDATE
@@ -107,8 +106,6 @@ export const Banner = ({ isDismissible = false, showAnnouncementBannerOnly = fal
         licenseType,
         enterpriseLicenseBarMessage,
         hideInternetConnectivityBar: isAirgapped,
-        isDismissible,
-        showAnnouncementBannerOnly,
     })
 
     if (!config) return null
@@ -133,9 +130,10 @@ export const Banner = ({ isDismissible = false, showAnnouncementBannerOnly = fal
     return (
         <div className={baseClassName}>
             {config.isDismissible && <div className="icon-dim-28" />}
-            <div className={`py-4 flex dc__gap-8 ${config.isDismissible ? 'left' : 'dc__align-center'} pr-16`}>
+            <div className="py-4 flex dc__gap-8 dc__align-center pr-16">
                 {isOffline && getBannerIcon(bannerVariant, ANNOUNCEMENT_CONFIG.type, iconName)}
-                <span className="fs-12 fw-5 lh-20 dc__truncate">{config.text}</span>
+                <InteractiveCellText text={config.text} rootClassName="fs-12 fw-5" />
+
                 {shouldShowActionButton() && (
                     <div className="dc__no-shrink">
                         <Button {...actionButtons} />

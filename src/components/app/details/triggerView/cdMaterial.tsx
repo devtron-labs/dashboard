@@ -1830,10 +1830,6 @@ const CDMaterial = ({
                 </button>
             </div>
 
-            {!showConfigDiffView && window?._env_?.ANNOUNCEMENT_BANNER_MSG && (
-                <Banner isDismissible showAnnouncementBannerOnly />
-            )}
-
             {/* FIXME: This material.length>1 needs to be optimised */}
             {isApprovalConfigured &&
                 ApprovedImagesMessage &&
@@ -1949,9 +1945,6 @@ const CDMaterial = ({
     if (material.length > 0) {
         return isFromBulkCD ? (
             <>
-                {!showConfigDiffView && window?._env_?.ANNOUNCEMENT_BANNER_MSG && (
-                    <Banner isDismissible showAnnouncementBannerOnly />
-                )}
                 {renderTriggerBody(isApprovalConfigured)}
             </>
         ) : (
