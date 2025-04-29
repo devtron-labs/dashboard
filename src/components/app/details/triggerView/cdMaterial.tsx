@@ -125,6 +125,7 @@ import { URLS } from '../../../../config'
 import { PipelineConfigDiff } from './PipelineConfigDiff'
 import { usePipelineDeploymentConfig } from './PipelineConfigDiff/usePipelineDeploymentConfig'
 import { PipelineConfigDiffStatusTile } from './PipelineConfigDiff/PipelineConfigDiffStatusTile'
+import { Banner } from '@Components/common/Banner/Banner'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -1831,7 +1832,7 @@ const CDMaterial = ({
             </div>
 
             {!showConfigDiffView && window?._env_?.ANNOUNCEMENT_BANNER_MSG && (
-                <AnnouncementBanner parentClassName="cd-trigger-announcement" isCDMaterial />
+                <Banner isDismissible />
             )}
 
             {/* FIXME: This material.length>1 needs to be optimised */}
@@ -1950,7 +1951,7 @@ const CDMaterial = ({
         return isFromBulkCD ? (
             <>
                 {!showConfigDiffView && window?._env_?.ANNOUNCEMENT_BANNER_MSG && (
-                    <AnnouncementBanner parentClassName="cd-trigger-announcement" isCDMaterial />
+                    <Banner isDismissible />
                 )}
                 {renderTriggerBody(isApprovalConfigured)}
             </>

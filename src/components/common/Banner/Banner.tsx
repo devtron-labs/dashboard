@@ -44,7 +44,7 @@ const shouldShowAnnouncementBanner = (): boolean => {
     return getDateInMilliseconds(loginTime) > getDateInMilliseconds(expiry)
 }
 
-export const Banner = () => {
+export const Banner = ({ isDismissible = false }: { isDismissible?: boolean }) => {
     const didMountRef = useRef(false)
     const isOnline = useOnline()
     const { isAirgapped } = useMainContext()
@@ -64,13 +64,11 @@ export const Banner = () => {
         if (didMountRef.current) {
             if (isOnline) {
                 setShowOnlineBanner(true)
-
                 // Auto-hide online banner after timeout
                 timer = setTimeout(() => setShowOnlineBanner(false), ONLINE_BANNER_TIMEOUT)
             }
         } else {
             didMountRef.current = true
-            // Removing any toast explicitly due to race condition of offline toast for some users
             setShowOnlineBanner(false)
         }
         return () => clearTimeout(timer)
@@ -109,6 +107,7 @@ export const Banner = () => {
         licenseType,
         enterpriseLicenseBarMessage,
         hideInternetConnectivityBar: isAirgapped,
+        isDismissible,
     })
 
     if (!config) return null
@@ -133,7 +132,7 @@ export const Banner = () => {
     return (
         <div className={baseClassName}>
             {config.isDismissible && <div className="icon-dim-28" />}
-            <div className="py-4 flex dc__gap-8 dc__align-center pr-16">
+            <div className={`py-4 flex dc__gap-8 ${config.isDismissible ? 'left' : 'dc__align-center'} pr-16`}>
                 {isOffline && getBannerIcon(bannerVariant, ANNOUNCEMENT_CONFIG.type, iconName)}
                 <span className="fs-12 fw-5 lh-20 dc__truncate">{config.text}</span>
                 {shouldShowActionButton() && (

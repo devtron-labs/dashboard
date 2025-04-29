@@ -24,6 +24,7 @@ export interface BannerConfigProps {
     licenseType?: InfoBlockProps['variant']
     enterpriseLicenseBarMessage?: string
     hideInternetConnectivityBar?: boolean
+    isDismissible?: boolean
 }
 
 export interface BannerConfigType {

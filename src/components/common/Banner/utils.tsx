@@ -60,6 +60,7 @@ export const getBannerConfig = ({
     licenseType,
     enterpriseLicenseBarMessage = '',
     hideInternetConnectivityBar = false,
+    isDismissible,
 }: BannerConfigProps): BannerConfigType => {
     const bannerConfigMap: Partial<Record<BannerVariant, BannerConfigType>> = {
         ...(!hideInternetConnectivityBar
@@ -87,7 +88,7 @@ export const getBannerConfig = ({
             text: ANNOUNCEMENT_CONFIG.message,
             icon: 'ic-megaphone-left',
             rootClassName: VARIANT_TO_BG_MAP[ANNOUNCEMENT_CONFIG.type],
-            isDismissible: true,
+            isDismissible,
         },
 
         [BannerVariant.LICENSE]: {
@@ -156,8 +157,9 @@ export const getButtonConfig = (
 export const getBannerTextColor = (bannerVariant: BannerVariant) => {
     switch (bannerVariant) {
         case BannerVariant.INTERNET_CONNECTIVITY:
-        case BannerVariant.ANNOUNCEMENT:
             return 'cn-0'
+        case BannerVariant.VERSION_UPDATE:
+            return 'text__white'
         default:
             return 'cn-9'
     }
