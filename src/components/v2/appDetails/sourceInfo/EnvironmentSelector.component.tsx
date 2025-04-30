@@ -40,7 +40,7 @@ import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-interactive.svg'
 import { deleteApplicationRelease } from '../../../external-apps/ExternalAppService'
 import { deleteInstalledChart } from '../../../charts/charts.service'
-import { ReactComponent as Dots } from '../../assets/icons/ic-menu-dot.svg'
+import { ReactComponent as Dots } from '@Icons/ic-dot.svg'
 import { DELETE_ACTION, URLS, checkIfDevtronOperatorHelmRelease } from '../../../../config'
 import { ReactComponent as BinWithDots } from '../../../../assets/icons/ic-delete-dots.svg'
 import { DELETE_DEPLOYMENT_PIPELINE, DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
@@ -384,7 +384,7 @@ const EnvironmentSelectorComponent = ({
                         >
                             <PopupMenu autoClose>
                                 <PopupMenu.Button rootClassName="flex" isKebab>
-                                    <Dots className="pod-info__dots icon-dim-20 icon-color-n6" />
+                                    <Dots className="pod-info__dots icon-dim-20 fcn-6" />
                                 </PopupMenu.Button>
                                 <PopupMenu.Body>
                                     <div className="helm-delete-pop-up bg__primary br-4">

@@ -19,7 +19,6 @@ import { ClusterNamespacesDTO, GetClusterEnvironmentUpdatePayloadType } from './
 export const getClusterEnvironmentUpdatePayload = ({
     id,
     data,
-    prometheusEndpoint,
     clusterId,
     namespaceLabels,
     resourceVersion,
@@ -38,7 +37,6 @@ export const getClusterEnvironmentUpdatePayload = ({
               id,
               environment_name: data.environmentName,
               cluster_id: clusterId,
-              prometheus_endpoint: prometheusEndpoint,
               namespace: data.namespace || '',
               active: true,
               default: data.isProduction,

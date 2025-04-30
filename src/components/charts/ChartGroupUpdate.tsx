@@ -16,7 +16,16 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useParams, useRouteMatch, useHistory, useLocation, Prompt } from 'react-router-dom'
-import { showError, Progressing, BreadCrumb, useBreadcrumb, PageHeader, DetectBottom, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    BreadCrumb,
+    useBreadcrumb,
+    PageHeader,
+    DetectBottom,
+    ToastManager,
+    ToastVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import ChartSelect from './util/ChartSelect'
 import { ChartGroupEntry, Chart, ChartListType } from './charts.types'
 import MultiChartSummary from './MultiChartSummary'
@@ -66,6 +75,7 @@ export default function ChartGroupUpdate({}) {
     const [chartListLoading, setChartListLoading] = useState(true)
     const chartList: Chart[] = Array.from(state.availableCharts.values())
     const [chartLists, setChartLists] = useState<ChartListType[]>([])
+    const [chartCategoryIds, setChartCategoryIds] = useState<string[]>([])
     const [isGrid, setIsGrid] = useState<boolean>(true)
 
     const { breadcrumbs } = useBreadcrumb(
@@ -109,10 +119,10 @@ export default function ChartGroupUpdate({}) {
             await updateChartGroupEntries(requestBody)
             await reloadState()
             updateChartGroupEntriesFromResponse()
-             ToastManager.showToast({
-                 variant: ToastVariantType.success,
-                 description: 'Successfully saved',
-             })
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Successfully saved',
+            })
         } catch (err) {
             showError(err)
         } finally {
@@ -186,6 +196,7 @@ export default function ChartGroupUpdate({}) {
         const allRegistryIds: string = searchParams.get(QueryParams.RegistryId)
         const deprecated: string = searchParams.get(QueryParams.IncludeDeprecated)
         const appStoreName: string = searchParams.get(QueryParams.AppStoreName)
+        const chartCategoryCsv: string = searchParams.get(QueryParams.ChartCategoryId)
         let chartRepoIdArray = []
         let ociRegistryArray = []
         if (allChartRepoIds) {
@@ -215,6 +226,8 @@ export default function ChartGroupUpdate({}) {
         }
         if (deprecated) {
             setIncludeDeprecated(parseInt(deprecated))
+        } else {
+            setIncludeDeprecated(0)
         }
         if (appStoreName) {
             setSearchApplied(true)
@@ -222,6 +235,14 @@ export default function ChartGroupUpdate({}) {
         } else {
             setSearchApplied(false)
             setAppStoreName('')
+        }
+        if (chartCategoryCsv) {
+            const idsArray = chartCategoryCsv.split(',')
+            if (idsArray) {
+                setChartCategoryIds(idsArray)
+            }
+        } else {
+            setChartCategoryIds([])
         }
     }
 
@@ -291,6 +312,8 @@ export default function ChartGroupUpdate({}) {
                                 selectedChartRepo={selectedChartRepo}
                                 isGrid={isGrid}
                                 setIsGrid={setIsGrid}
+                                chartCategoryIds={chartCategoryIds}
+                                setChartCategoryIds={setChartCategoryIds}
                             />
                         ) : null}
                         {chartListLoading ? (
@@ -309,9 +332,7 @@ export default function ChartGroupUpdate({}) {
                                         discardValuesYamlChanges={discardValuesYamlChanges}
                                     />
                                 ) : !chartList.length ? (
-                                    <ChartEmptyState
-                                        onClickViewChartButton={handleViewAllCharts}
-                                    />
+                                    <ChartEmptyState onClickViewChartButton={handleViewAllCharts} />
                                 ) : (
                                     <div className={`${!isGrid ? 'chart-list-view ' : ''}`}>
                                         <ChartList

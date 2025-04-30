@@ -117,6 +117,7 @@ export const QueryParams = {
     AppStoreName: 'appStoreName',
     RegistryId: 'registryId',
     SearchKey: 'searchKey',
+    ChartCategoryId: 'chartCategoryId',
 }
 
 export const PaginationParams = {

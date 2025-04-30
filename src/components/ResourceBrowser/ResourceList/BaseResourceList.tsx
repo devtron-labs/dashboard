@@ -23,6 +23,8 @@ import {
     BulkSelection,
     BulkSelectionEvents,
     BulkSelectionProvider,
+    Button,
+    ButtonVariantType,
     Checkbox,
     CHECKBOX_VALUE,
     ClipboardButton,
@@ -47,6 +49,8 @@ import {
 
 import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
 import WebWorker from '@Components/app/WebWorker'
+import { AddEnvironmentFormPrefilledInfoType } from '@Components/cluster/cluster.type'
+import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Components/cluster/constants'
 import NodeActionsMenu from '@Components/ResourceBrowser/ResourceList/NodeActionsMenu'
 import {
     getManifestResource,
@@ -54,6 +58,7 @@ import {
 } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import { URLS } from '@Config/routes'
 import searchWorker from '@Config/searchWorker'
+import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
 
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import {
@@ -115,6 +120,7 @@ const BaseResourceListContent = ({
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
     const [resourceListOffset, setResourceListOffset] = useState(0)
     const [bulkOperationModalState, setBulkOperationModalState] = useState<BulkOperationsModalState>('closed')
+    const [showCreateEnvironmentDrawer, setShowCreateEnvironmentDrawer] = useState(false)
 
     // NOTE: this is to re-mount node filters component & avoid useEffects inside it
     const [lastTimeStringSinceClearAllFilters, setLastTimeStringSinceClearAllFilters] = useState(null)
@@ -132,7 +138,7 @@ const BaseResourceListContent = ({
 
     const { searchParams } = useSearchString()
 
-    const isNodeListing = selectedResource?.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind
+    const isNodeListing = selectedResource?.gvk.Kind.toLowerCase() === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
 
     const {
         selectedIdentifiers: bulkSelectionState,
@@ -385,6 +391,20 @@ const BaseResourceListContent = ({
         }
     }
 
+    const getAddEnvironmentClickHandler = (namespace: string) => () => {
+        const environmentFormData: AddEnvironmentFormPrefilledInfoType = {
+            namespace,
+        }
+
+        localStorage.setItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY, JSON.stringify(environmentFormData))
+
+        setShowCreateEnvironmentDrawer(true)
+    }
+
+    const handleCloseCreateEnvironmentDrawer = () => {
+        setShowCreateEnvironmentDrawer(false)
+    }
+
     const renderResourceRow = (resourceData: K8sResourceDetailDataType): JSX.Element => {
         const lowercaseKind = (resourceData.kind as string)?.toLowerCase()
         // Redirection and actions are not possible for Events since the required data for the same is not available
@@ -519,6 +539,14 @@ const BaseResourceListContent = ({
                                         }}
                                     />
                                 </Tooltip>
+                                {columnName === 'environment' && !resourceData.environment && (
+                                    <Button
+                                        text="Add environment"
+                                        dataTestId="add-environment"
+                                        variant={ButtonVariantType.text}
+                                        onClick={getAddEnvironmentClickHandler(resourceData.name as string)}
+                                    />
+                                )}
                                 {columnName === 'status' && isNodeUnschedulable && (
                                     <>
                                         <span className="dc__bullet mr-4 ml-4 mw-4 bcn-4" />
@@ -631,6 +659,21 @@ const BaseResourceListContent = ({
         )
     }
 
+    const renderCreateEnvironmentDrawer = () => (
+        <ClusterEnvironmentDrawer
+            reload={reloadResourceListData}
+            clusterName={clusterName}
+            id={null}
+            environmentName={null}
+            clusterId={Number(clusterId)}
+            namespace={null}
+            isProduction={null}
+            description={null}
+            hideClusterDrawer={handleCloseCreateEnvironmentDrawer}
+            isVirtual={false} // NOTE: if a cluster is visible in RB, it is not a virtual cluster
+        />
+    )
+
     return (
         <div
             className={`resource-list-container flex-grow-1 dc__border-left flexbox-col dc__overflow-hidden ${
@@ -709,6 +752,7 @@ const BaseResourceListContent = ({
                     )}
                 </>
             )}
+            {showCreateEnvironmentDrawer && renderCreateEnvironmentDrawer()}
         </div>
     )
 }

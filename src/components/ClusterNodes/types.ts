@@ -15,6 +15,7 @@
  */
 
 import {
+    APIOptions,
     ClusterCapacityType,
     ClusterDetail,
     K8sResourceDetailDataType,
@@ -292,4 +293,10 @@ export interface ClusterOverviewProps {
 
 export interface ClusterMapInitialStatusType {
     errorInNodeListing: string
+}
+
+export interface GetClusterOverviewDetailsProps {
+    clusterId: string
+    requestAbortControllerRef: APIOptions['abortControllerRef']
+    fetchClusterConfig: (clusterName: string) => Promise<void>
 }

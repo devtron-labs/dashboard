@@ -174,7 +174,7 @@ export function getAvailableCharts(
     pageSize?: number,
     options?: APIOptions,
 ): Promise<{ code: number; result: Chart[] }> {
-    let url = `${Routes.CHART_AVAILABLE}/discover/`
+    let url = `${Routes.CHART_STORE}/discover/`
 
     if (pageOffset >= 0 && pageSize) {
         queryString = `${queryString || '?'}&offset=${pageOffset}&size=${pageSize}`

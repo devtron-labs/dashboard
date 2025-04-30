@@ -644,7 +644,7 @@ export const ActiveReadmeColumn = ({ fetchingReadMe, activeReadMe }: ActiveReadm
     return (
         <div className="dc__overflow-auto dc__border-right">
             <div
-                className="code-editor__header flex left fs-12 fw-6 cn-7 dc__position-sticky dc__top-0 dc__zi-1"
+                className="px-16 pt-6 pb-5 bg__secondary border__primary--bottom flex left fs-12 fw-6 cn-7 dc__position-sticky dc__top-0 dc__zi-1"
                 data-testid="readme-heading"
             >
                 Readme

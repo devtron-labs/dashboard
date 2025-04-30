@@ -28,7 +28,8 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-menu-dots.svg'
+import { ReactComponent as MenuDots } from '@Icons/ic-dot.svg'
+
 import { ReactComponent as CalendarIcon } from '../../../assets/icons/ic-calendar.svg'
 import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as ManifestIcon } from '../../../assets/icons/ic-file-code.svg'
@@ -108,7 +109,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
         <>
             <PopupMenu autoClose>
                 <PopupMenu.Button rootClassName="flex ml-auto p-4 dc__no-background" isKebab>
-                    <MenuDots className="node-actions-menu-icon icon-dim-16" data-testid="popup-menu-button" />
+                    <MenuDots className="fcn-7 icon-dim-16" data-testid="popup-menu-button" />
                 </PopupMenu.Button>
                 <PopupMenu.Body rootClassName="dc__border pt-4 pb-4">
                     <div className="fs-13 fw-4 lh-20 w-120 flexbox-col">

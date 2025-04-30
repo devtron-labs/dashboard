@@ -32,7 +32,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 import TaskTitle from './TaskTitle'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Drag } from '../../assets/icons/drag.svg'
-import { ReactComponent as Dots } from '../../assets/icons/appstatus/ic-menu-dots.svg'
+import { ReactComponent as Dots } from '@Icons/ic-dot.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as MoveToPre } from '../../assets/icons/ic-arrow-backward.svg'
@@ -367,7 +367,7 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
                             <PopupMenu autoClose>
                                 <PopupMenu.Button isKebab>
                                     <Dots
-                                        className="icon-dim-16 mt-2 rotate"
+                                        className="icon-dim-16 mt-2 rotate fcn-7"
                                         style={{ ['--rotateBy' as any]: '90deg' }}
                                     />
                                 </PopupMenu.Button>
