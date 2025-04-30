@@ -45,18 +45,3 @@
         }
     }
 }
-
-.k8s-resources {
-    &__status-filter--container {
-        .segmented-control {
-            border-radius: 6px;
-        }
-    }
-
-    &__status-filter--container:has(.popup-button-kebab) {
-        .segmented-control {
-            border-top-right-radius: 0px !important;
-            border-bottom-right-radius: 0px !important;
-        }
-    }
-}
