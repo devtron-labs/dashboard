@@ -18,7 +18,13 @@ import React, { useRef, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import ReactSelect, { Props as SelectProps, SelectInstance } from 'react-select'
 
-import { APP_SELECTOR_STYLES, AppSelectorDropdownIndicator, Icon, PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    APP_SELECTOR_STYLES,
+    AppSelectorDropdownIndicator,
+    Icon,
+    PopupMenu,
+    ValueContainerWithLoadingShimmer,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as MenuDots } from '@Icons/ic-dot.svg'
 import DeleteClusterConfirmationModal from '@Components/cluster/DeleteClusterConfirmationModal'
@@ -39,6 +45,7 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
     clusterList,
     clusterId,
     isInstallationStatusView,
+    isClusterListLoading,
 }) => {
     const { replace } = useHistory()
 
@@ -83,6 +90,7 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
             <ReactSelect
                 classNamePrefix="cluster-select-header"
                 options={filteredClusterList}
+                isLoading={isClusterListLoading}
                 ref={selectRef}
                 onChange={onChange}
                 getOptionValue={getOptionsValue}
@@ -92,9 +100,16 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
                     IndicatorSeparator: null,
                     DropdownIndicator: AppSelectorDropdownIndicator,
                     LoadingIndicator: null,
+                    ValueContainer: ValueContainerWithLoadingShimmer,
                 }}
                 value={defaultOption}
-                styles={APP_SELECTOR_STYLES}
+                styles={{
+                    ...APP_SELECTOR_STYLES,
+                    valueContainer: (base, state) => ({
+                        ...APP_SELECTOR_STYLES.valueContainer(base, state),
+                        flexWrap: 'nowrap',
+                    }),
+                }}
             />
 
             {defaultOption?.isProd && <span className="px-6 py-2 br-4 bcb-1 cb-7 fs-12 lh-16 fw-5">Production</span>}
@@ -125,7 +140,9 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
                     clusterId={defaultOption?.isClusterInCreationPhase ? '0' : defaultOption?.value}
                     handleClose={handleCloseDeleteModal}
                     reload={handleRedirectToClusterList}
-                    {...(defaultOption?.isClusterInCreationPhase ? { installationId: clusterId } : {})}
+                    {...(defaultOption?.isClusterInCreationPhase
+                        ? { installationId: clusterId }
+                        : { installationId: String(defaultOption?.installationId ?? 0) })}
                 />
             )}
         </div>

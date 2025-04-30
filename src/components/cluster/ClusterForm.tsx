@@ -286,7 +286,6 @@ const ClusterForm = ({
             const jsonStr = JSON.stringify(obj)
             return jsonStr
         } catch {
-            noop()
             return ''
         }
     }
@@ -567,7 +566,6 @@ const ClusterForm = ({
                 validator: { error: 'endpoint is required', regex: /^.*$/ },
             },
         },
-        // eslint-disable-next-line @typescript-eslint/no-use-before-define
         onValidation,
     )
 

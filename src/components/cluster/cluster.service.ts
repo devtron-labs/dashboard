@@ -69,9 +69,7 @@ export const getEnvironmentList = (): Promise<any> => {
 }
 
 export function deleteCluster(payload: DeleteClusterPayload): Promise<any> {
-    // TODO: remove this when backend is ready
-    // filling it with dummy data for now
-    return trash(Routes.CLUSTER, { ...payload, server_url: 'http://xyz', cluster_name: 'xyz' })
+    return trash(Routes.CLUSTER, { ...payload })
 }
 
 export function deleteEnvironment(request): Promise<any> {

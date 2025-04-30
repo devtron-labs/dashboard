@@ -1,3 +1,5 @@
+import { IconName } from '@devtron-labs/devtron-fe-common-lib/dist'
+
 export enum CreateClusterTypeEnum {
     CONNECT_CLUSTER = 'connect-cluster',
     CREATE_EKS_CLUSTER = 'create-eks-cluster',
@@ -8,7 +10,7 @@ export type SidebarConfigType = Record<
     CreateClusterTypeEnum,
     {
         title: string
-        iconName: string
+        iconName: IconName
         body: React.ReactElement
         dataTestId: string
         documentationHeader?: string

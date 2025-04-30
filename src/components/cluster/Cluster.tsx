@@ -276,7 +276,6 @@ class ClusterList extends Component<ClusterListProps, any> {
                                 environmentName={null}
                                 clusterId={clusterId}
                                 namespace={null}
-                                prometheusEndpoint={prometheus_url}
                                 isProduction={null}
                                 description={null}
                                 hideClusterDrawer={this.handleRedirectToClusterList}

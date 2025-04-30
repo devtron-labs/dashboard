@@ -314,6 +314,7 @@ const ResourceList = () => {
                             onChange={onClusterChange}
                             clusterList={clusterOptions || []}
                             clusterId={clusterId}
+                            isClusterListLoading={loading}
                         />
                     ),
                     linked: false,

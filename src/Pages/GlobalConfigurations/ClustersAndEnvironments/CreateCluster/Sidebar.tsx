@@ -16,7 +16,7 @@
 
 import { generatePath, NavLink, useParams, useRouteMatch } from 'react-router-dom'
 
-import { Icon, IconName, ModalSidebarPanel, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
+import { Icon, IconName, ModalSidebarPanel } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 import { DOCUMENTATION } from '@Config/constants'
@@ -56,15 +56,15 @@ const Sidebar = () => {
                             </span>
 
                             {isEnterprise && !isFELibAvailable && (
-                                <Tooltip
-                                    content="This is an enterprise only feature"
-                                    alwaysShowTippyOnHover
-                                    placement="right"
-                                >
-                                    <div className="flex">
-                                        <Icon name="ic-enterprise-feat" color="Y700" />
-                                    </div>
-                                </Tooltip>
+                                <Icon
+                                    name="ic-enterprise-feat"
+                                    color="Y700"
+                                    tooltipProps={{
+                                        content: 'This is an enterprise only feature',
+                                        placement: 'right',
+                                        alwaysShowTippyOnHover: true,
+                                    }}
+                                />
                             )}
                         </NavLink>
                     )

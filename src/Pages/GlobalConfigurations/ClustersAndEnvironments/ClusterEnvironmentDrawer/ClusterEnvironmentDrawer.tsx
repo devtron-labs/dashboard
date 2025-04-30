@@ -33,6 +33,7 @@ import {
     TagType,
     ToastManager,
     ToastVariantType,
+    Tooltip,
     useForm,
     UseFormSubmitHandler,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -63,7 +64,6 @@ export const ClusterEnvironmentDrawer = ({
     namespace,
     id,
     clusterId,
-    prometheusEndpoint,
     isProduction,
     description,
     reload,
@@ -91,6 +91,8 @@ export const ClusterEnvironmentDrawer = ({
         data: null,
         error: null,
     })
+
+    const addEnvironmentHeaderText = `Add Environment in '${clusterName}'`
 
     /**
      * Fetches the list of namespaces from the cluster and updates the state accordingly. \
@@ -172,7 +174,6 @@ export const ClusterEnvironmentDrawer = ({
                 clusterId,
                 id,
                 namespaceLabels: namespaceLabels.labels,
-                prometheusEndpoint,
                 resourceVersion: namespaceLabels.resourceVersion,
                 isVirtual,
             })
@@ -251,7 +252,6 @@ export const ClusterEnvironmentDrawer = ({
             data,
             clusterId,
             id,
-            prometheusEndpoint,
             isVirtual,
         })
         await deleteEnvironment(payload)
@@ -405,9 +405,12 @@ export const ClusterEnvironmentDrawer = ({
         <Drawer position="right" width="800px" onEscape={hideClusterDrawer} onClose={hideClusterDrawer}>
             <div className="h-100 bg__primary flexbox-col" onClick={stopPropagation}>
                 <div className="flexbox dc__align-items-center dc__content-space dc__border-bottom bg__primary py-12 px-20">
-                    <h3 className="m-0 fs-16 fw-6 lh-1-43 dc__truncate">
-                        {id ? 'Edit Environment' : `Add Environment in '${clusterName}'`}
-                    </h3>
+                    {/* NOTE: only in case of add environment, can we have truncation */}
+                    <Tooltip content={addEnvironmentHeaderText}>
+                        <h3 className="m-0 fs-16 fw-6 lh-1-43 dc__truncate">
+                            {id ? 'Edit Environment' : addEnvironmentHeaderText}
+                        </h3>
+                    </Tooltip>
                     <button
                         type="button"
                         aria-label="close-btn"

@@ -223,6 +223,7 @@ export interface ClusterSelectorType {
     onChange: ({ label, value }) => void
     clusterList: ClusterOptionType[]
     clusterId: string
+    isClusterListLoading: boolean
     isInstallationStatusView?: boolean
 }
 

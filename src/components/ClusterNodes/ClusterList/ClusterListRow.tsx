@@ -10,7 +10,9 @@ import {
     ClusterDetail,
     ClusterStatusType,
     ComponentSizeType,
+    ConditionalWrap,
     Icon,
+    InstallationClusterStatus,
     Tooltip,
     useBulkSelection,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -50,12 +52,17 @@ const ClusterListRow = ({
     }
 
     const renderClusterStatus = ({ errorInNodeListing, status }: ClusterDetail) => {
+        if (!status && !errorInNodeListing) {
+            return null
+        }
+
         if (ClusterStatusCell && status) {
             return <ClusterStatusCell status={status} errorInNodeListing={errorInNodeListing} />
         }
 
         return <ClusterMapInitialStatus errorInNodeListing={errorInNodeListing} />
     }
+
     const isIdentifierSelected = !!bulkSelectionState[clusterData.name]
 
     // TODO: @Elessar1802 will be replacing all terminal url with new utils
@@ -65,6 +72,12 @@ const ClusterListRow = ({
     const clusterLinkURL = getClusterChangeRedirectionUrl(
         isClusterInCreationPhase,
         String(isClusterInCreationPhase ? clusterData.installationId : clusterData.id),
+    )
+
+    const wrapWithLinkForClusterName = (children) => (
+        <Link className="dc__ellipsis-right dc__no-decor" to={clusterLinkURL}>
+            {children}
+        </Link>
     )
 
     return (
@@ -80,40 +93,46 @@ const ClusterListRow = ({
                 </div>
             )}
             <div data-testid={`cluster-row-${clusterData.name}`} className="flex left dc__overflow-hidden">
-                <Link className="dc__ellipsis-right dc__no-decor lh-24" to={clusterLinkURL}>
-                    {clusterData.name}
-                </Link>
+                <ConditionalWrap
+                    wrap={wrapWithLinkForClusterName}
+                    condition={(clusterData.status as string) !== InstallationClusterStatus.Deleted}
+                >
+                    <span className="lh-24">{clusterData.name}</span>
+                </ConditionalWrap>
                 {/* NOTE: visible-hover plays with display prop; therefore need to set display: flex on a new div */}
-                <div className="cursor dc__visible-hover--child ml-8">
-                    <div className="flexbox dc__align-items-center dc__gap-4">
-                        {!!clusterData.nodeCount && !clusterListLoader && (
-                            <Button
-                                icon={<Icon name="ic-terminal-fill" color={null} size={16} />}
-                                ariaLabel="View terminal"
-                                size={ComponentSizeType.xs}
-                                dataTestId={`cluster-terminal-${clusterData.name}`}
-                                style={ButtonStyleType.neutral}
-                                variant={ButtonVariantType.borderLess}
-                                component={ButtonComponentType.link}
-                                linkProps={{
-                                    to: `${URLS.RESOURCE_BROWSER}/${clusterData.id}/${ALL_NAMESPACE_OPTION.value}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
-                                }}
-                            />
-                        )}
-                        {CompareClusterButton && clusterData.status !== ClusterStatusType.CONNECTION_FAILED && (
-                            <CompareClusterButton sourceClusterId={clusterData.id} isIconButton />
-                        )}
-                        {KubeConfigButton && (
-                            <KubeConfigButton
-                                onChangeShowKubeConfigModal={onChangeShowKubeConfigModal}
-                                clusterName={clusterData.name}
-                                setSelectedClusterName={setSelectedClusterName}
-                            />
-                        )}
+                {clusterData.id && (
+                    <div className="cursor dc__visible-hover--child ml-8">
+                        <div className="flexbox dc__align-items-center dc__gap-4">
+                            {!!clusterData.nodeCount && !clusterListLoader && (
+                                <Button
+                                    icon={<Icon name="ic-terminal-fill" color={null} size={16} />}
+                                    ariaLabel="View terminal"
+                                    size={ComponentSizeType.xs}
+                                    dataTestId={`cluster-terminal-${clusterData.name}`}
+                                    style={ButtonStyleType.neutral}
+                                    variant={ButtonVariantType.borderLess}
+                                    component={ButtonComponentType.link}
+                                    linkProps={{
+                                        to: `${URLS.RESOURCE_BROWSER}/${clusterData.id}/${ALL_NAMESPACE_OPTION.value}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
+                                    }}
+                                />
+                            )}
+                            {CompareClusterButton && clusterData.status !== ClusterStatusType.CONNECTION_FAILED && (
+                                <CompareClusterButton sourceClusterId={clusterData.id} isIconButton />
+                            )}
+                            {KubeConfigButton && (
+                                <KubeConfigButton
+                                    onChangeShowKubeConfigModal={onChangeShowKubeConfigModal}
+                                    clusterName={clusterData.name}
+                                    setSelectedClusterName={setSelectedClusterName}
+                                />
+                            )}
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
-            {renderClusterStatus(clusterData)}
+            <div className="child-shimmer-loading">{hideDataOnLoad(renderClusterStatus(clusterData))}</div>
+            {}
             <div className="child-shimmer-loading">
                 {hideDataOnLoad(clusterData.isProd ? CLUSTER_PROD_TYPE.PRODUCTION : CLUSTER_PROD_TYPE.NON_PRODUCTION)}
             </div>

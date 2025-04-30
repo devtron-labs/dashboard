@@ -14,27 +14,37 @@
  * limitations under the License.
  */
 
+import moment from 'moment'
+
 import {
     APIOptions,
     ClusterDetail,
     get,
+    getIsRequestAborted,
     getUrlWithSearchParams,
+    noop,
     post,
     put,
     ResponseType,
     ROUTES as COMMON_ROUTES,
+    showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { Routes } from '../../config'
+import { Moment12HourFormat, Routes } from '../../config'
+import { CLUSTER_DESCRIPTION_DUMMY_DATA, defaultClusterShortDescription } from './constants'
 import {
     ClusteNotePatchRequest,
     ClusterCapacityResponse,
     ClusterDescriptionResponse,
+    ClusterDetailsType,
     ClusterEditManifestType,
     ClusterListResponse,
     ClusterNoteResponse,
     ClusterShortDescriptionPatchRequest,
+    DescriptionDataType,
     EditTaintsRequest,
+    ERROR_TYPE,
+    GetClusterOverviewDetailsProps,
     NodeDetailResponse,
     TerminalDataType,
     UpdateNodeRequestBody,
@@ -111,3 +121,127 @@ export const updateTaints = (taintData: EditTaintsRequest): Promise<ResponseType
 
 export const clusterManifestEdit = (data: ClusterEditManifestType, option: APIOptions): Promise<ResponseType> =>
     put(`${Routes.CLUSTER_TERMINAL}/${Routes.EDIT}`, data, option)
+
+export const getClusterOverviewDetails = async ({
+    clusterId,
+    requestAbortControllerRef,
+    fetchClusterConfig,
+}: GetClusterOverviewDetailsProps) => {
+    try {
+        const { result } = await getClusterDetails(clusterId, requestAbortControllerRef.current.signal)
+
+        const { clusterName = '' } = result
+
+        if (clusterName) {
+            fetchClusterConfig(clusterName).catch(noop)
+        }
+
+        const _clusterNote = result.clusterNote
+        let _moment: moment.Moment
+        const clusterDetails = {} as ClusterDetailsType
+        clusterDetails.clusterName = clusterName
+        clusterDetails.shortDescription = result.description || defaultClusterShortDescription
+        clusterDetails.addedBy = result.clusterCreatedBy
+        _moment = moment(result.clusterCreatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
+        clusterDetails.addedOn = _moment.format(Moment12HourFormat)
+        clusterDetails.serverURL = result.serverUrl
+
+        const data: DescriptionDataType = CLUSTER_DESCRIPTION_DUMMY_DATA
+
+        if (_clusterNote) {
+            data.descriptionText = _clusterNote.description
+            data.descriptionId = _clusterNote.id
+            data.descriptionUpdatedBy = _clusterNote.updatedBy
+            _moment = moment(_clusterNote.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
+            data.descriptionUpdatedOn = _moment.isValid() ? _moment.format(Moment12HourFormat) : _clusterNote.updatedOn
+        }
+
+        return {
+            clusterDetails,
+            descriptionData: data,
+        }
+    } catch (error) {
+        if (!getIsRequestAborted(error)) {
+            showError(error)
+        }
+        throw error
+    }
+}
+
+export const getClusterOverviewClusterCapacity = async ({
+    clusterId,
+    requestAbortControllerRef,
+}: Pick<GetClusterOverviewDetailsProps, 'clusterId' | 'requestAbortControllerRef'>) => {
+    try {
+        const { result: clusterCapacity } = await getClusterCapacity(
+            clusterId,
+            requestAbortControllerRef.current.signal,
+        )
+
+        const _errorList = []
+        const _nodeErrors = Object.keys(clusterCapacity.nodeErrors || {})
+        const _nodeK8sVersions = clusterCapacity.nodeK8sVersions || []
+        if (_nodeK8sVersions.length > 1) {
+            let majorVersion
+            let minorVersion
+
+            const diffType = _nodeK8sVersions.reduce((dt, _nodeK8sVersion) => {
+                if (dt === 'Major') {
+                    return dt
+                }
+
+                const elementArr = _nodeK8sVersion.split('.')
+                const [_majorVersion, _minorVersion] = elementArr
+
+                if (!majorVersion) {
+                    majorVersion = _majorVersion
+                }
+
+                if (!minorVersion) {
+                    minorVersion = _minorVersion
+                }
+
+                if (majorVersion !== _majorVersion) {
+                    return 'Major'
+                }
+
+                if (dt !== 'Minor' && minorVersion !== elementArr[1]) {
+                    return 'Minor'
+                }
+
+                return dt
+            }, '')
+
+            if (diffType !== '') {
+                _errorList.push({
+                    errorText: `${diffType} version diff identified among nodes. Current versions `,
+                    errorType: ERROR_TYPE.VERSION_ERROR,
+                    filterText: _nodeK8sVersions,
+                })
+            }
+        }
+
+        if (_nodeErrors.length > 0) {
+            _nodeErrors.forEach((_nodeError) => {
+                const _errorLength = clusterCapacity.nodeErrors[_nodeError].length
+                _errorList.push({
+                    errorText: `${_nodeError} on ${
+                        _errorLength === 1 ? `${_errorLength} node` : `${_errorLength} nodes`
+                    }`,
+                    errorType: _nodeError,
+                    filterText: clusterCapacity.nodeErrors[_nodeError],
+                })
+            })
+        }
+
+        return {
+            clusterErrorList: _errorList,
+            clusterCapacityData: clusterCapacity,
+        }
+    } catch (error) {
+        if (!getIsRequestAborted(error)) {
+            showError(error)
+        }
+        throw error
+    }
+}

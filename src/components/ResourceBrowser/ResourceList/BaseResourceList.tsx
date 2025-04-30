@@ -49,7 +49,6 @@ import {
 
 import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
 import WebWorker from '@Components/app/WebWorker'
-import { getClusterList } from '@Components/cluster/cluster.service'
 import { AddEnvironmentFormPrefilledInfoType } from '@Components/cluster/cluster.type'
 import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Components/cluster/constants'
 import NodeActionsMenu from '@Components/ResourceBrowser/ResourceList/NodeActionsMenu'
@@ -119,7 +118,6 @@ const BaseResourceListContent = ({
 }: BaseResourceListProps) => {
     const [filteredResourceList, setFilteredResourceList] = useState<K8sResourceDetailType['data']>(null)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
-    const [clusterList, setClusterList] = useState<Awaited<ReturnType<typeof getClusterList>>>(null)
     const [resourceListOffset, setResourceListOffset] = useState(0)
     const [bulkOperationModalState, setBulkOperationModalState] = useState<BulkOperationsModalState>('closed')
     const [showCreateEnvironmentDrawer, setShowCreateEnvironmentDrawer] = useState(false)
@@ -141,18 +139,6 @@ const BaseResourceListContent = ({
     const { searchParams } = useSearchString()
 
     const isNodeListing = selectedResource?.gvk.Kind.toLowerCase() === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
-
-    useEffect(() => {
-        if (selectedResource?.gvk.Kind !== Nodes.Namespace) {
-            return
-        }
-
-        getClusterList()
-            .then(({ result }) => {
-                setClusterList(result)
-            })
-            .catch(noop)
-    }, [selectedResource])
 
     const {
         selectedIdentifiers: bulkSelectionState,
@@ -673,30 +659,20 @@ const BaseResourceListContent = ({
         )
     }
 
-    const renderCreateEnvironmentDrawer = () => {
-        if (!clusterList) {
-            return null
-        }
-
-        const { isVirtualCluster, prometheus_url: prometheusUrl } =
-            clusterList.find((cluster) => cluster.cluster_name === clusterName) || {}
-
-        return (
-            <ClusterEnvironmentDrawer
-                reload={reloadResourceListData}
-                clusterName={clusterName}
-                id={null}
-                environmentName={null}
-                clusterId={Number(clusterId)}
-                namespace={null}
-                prometheusEndpoint={prometheusUrl}
-                isProduction={null}
-                description={null}
-                hideClusterDrawer={handleCloseCreateEnvironmentDrawer}
-                isVirtual={isVirtualCluster}
-            />
-        )
-    }
+    const renderCreateEnvironmentDrawer = () => (
+        <ClusterEnvironmentDrawer
+            reload={reloadResourceListData}
+            clusterName={clusterName}
+            id={null}
+            environmentName={null}
+            clusterId={Number(clusterId)}
+            namespace={null}
+            isProduction={null}
+            description={null}
+            hideClusterDrawer={handleCloseCreateEnvironmentDrawer}
+            isVirtual={false} // NOTE: if a cluster is visible in RB, it is not a virtual cluster
+        />
+    )
 
     return (
         <div

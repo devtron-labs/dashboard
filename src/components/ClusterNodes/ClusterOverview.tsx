@@ -16,12 +16,10 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import moment from 'moment'
 
 import {
     EditableTextArea,
     ErrorScreenManager,
-    getIsRequestAborted,
     getRandomColor,
     getUrlWithSearchParams,
     Icon,
@@ -40,7 +38,7 @@ import { getURLBasedOnSidebarGVK } from '@Components/ResourceBrowser/Utils'
 import { getAvailableCharts } from '@Services/service'
 
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
-import { Moment12HourFormat, URLS } from '../../config'
+import { URLS } from '../../config'
 import { MAX_LENGTH_350 } from '../../config/constantMessaging'
 import { importComponentFromFELibrary } from '../common'
 import GenericDescription from '../common/Description/GenericDescription'
@@ -50,13 +48,17 @@ import {
     TARGET_K8S_VERSION_SEARCH_KEY,
     UPGRADE_CLUSTER_CONSTANTS,
 } from '../ResourceBrowser/Constants'
-import { getClusterCapacity, getClusterDetails, updateClusterShortDescription } from './clusterNodes.service'
+import {
+    getClusterOverviewClusterCapacity,
+    getClusterOverviewDetails,
+    updateClusterShortDescription,
+} from './clusterNodes.service'
 import {
     CLUSTER_CONFIG_POLLING_INTERVAL,
     CLUSTER_DESCRIPTION_DUMMY_DATA,
     defaultClusterShortDescription,
 } from './constants'
-import { ClusterDetailsType, ClusterOverviewProps, DescriptionDataType, ERROR_TYPE } from './types'
+import { ClusterOverviewProps, ERROR_TYPE } from './types'
 
 const Catalog = importComponentFromFELibrary('Catalog', null, 'function')
 const ClusterConfig = importComponentFromFELibrary('ClusterConfig', null, 'function')
@@ -94,6 +96,24 @@ const tippyForMetricsApi = () => (
     </div>
 )
 
+const LoadingMetricCard = () => (
+    <div className="dc__grid-cols-2 dc__gap-16 pb-16">
+        <div className="flexbox dc__gap-12 dc__content-space dc__overflow-auto bg__primary br-4 en-2 bw-1 pt-16 pl-16 pb-16 pr-16">
+            <div className="flexbox-col dc__gap-6">
+                <div className="shimmer w-200" />
+                <div className="shimmer h-36 w-64" />
+            </div>
+        </div>
+
+        <div className="flexbox dc__gap-12 dc__content-space dc__overflow-auto bg__primary br-4 en-2 bw-1 pt-16 pl-16 pb-16 pr-16">
+            <div className="flexbox-col dc__gap-6">
+                <div className="shimmer w-200" />
+                <div className="shimmer h-36 w-64" />
+            </div>
+        </div>
+    </div>
+)
+
 function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
     const { clusterId, namespace } = useParams<{
         clusterId: string
@@ -108,49 +128,28 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
     const clusterConfigPollTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null)
     const getClusterConfigAbortControllerRef = useRef(new AbortController())
 
+    const fetchClusterConfig = async (clusterName: string) => {
+        if (!getInstallationClusterConfig) {
+            return
+        }
+
+        const config = await (getInstallationClusterConfig({
+            clusterName,
+            abortControllerRef: getClusterConfigAbortControllerRef,
+        }) as Promise<InstallationClusterConfigType>)
+        setClusterConfig(config)
+    }
+
     const [
         isClusterNoteDetailsLoading,
         clusterNodeDetailsResponse,
         clusterNodeDetailsError,
         reloadClusterNodeDetails,
         setClusterNodeDetails,
-    ] = useAsync(async () => {
-        try {
-            const { result } = await getClusterDetails(clusterId, requestAbortControllerRef.current.signal)
-
-            const _clusterNote = result.clusterNote
-            let _moment: moment.Moment
-            const clusterDetails = {} as ClusterDetailsType
-            clusterDetails.clusterName = result.clusterName
-            clusterDetails.shortDescription = result.description || defaultClusterShortDescription
-            clusterDetails.addedBy = result.clusterCreatedBy
-            _moment = moment(result.clusterCreatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
-            clusterDetails.addedOn = _moment.format(Moment12HourFormat)
-            clusterDetails.serverURL = result.serverUrl
-
-            const data: DescriptionDataType = CLUSTER_DESCRIPTION_DUMMY_DATA
-
-            if (_clusterNote) {
-                data.descriptionText = _clusterNote.description
-                data.descriptionId = _clusterNote.id
-                data.descriptionUpdatedBy = _clusterNote.updatedBy
-                _moment = moment(_clusterNote.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
-                data.descriptionUpdatedOn = _moment.isValid()
-                    ? _moment.format(Moment12HourFormat)
-                    : _clusterNote.updatedOn
-            }
-
-            return {
-                clusterDetails,
-                descriptionData: data,
-            }
-        } catch (error) {
-            if (!getIsRequestAborted(error)) {
-                showError(error)
-            }
-            throw error
-        }
-    }, [selectedCluster])
+    ] = useAsync(
+        () => getClusterOverviewDetails({ clusterId, requestAbortControllerRef, fetchClusterConfig }),
+        [selectedCluster],
+    )
 
     const { clusterDetails, descriptionData = structuredClone(CLUSTER_DESCRIPTION_DUMMY_DATA) } =
         clusterNodeDetailsResponse ?? {}
@@ -177,95 +176,10 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
         }
     }
 
-    const fetchClusterConfig = async (clusterName: string) => {
-        if (!getInstallationClusterConfig) {
-            return
-        }
-
-        const config = await (getInstallationClusterConfig({
-            clusterName,
-            abortControllerRef: getClusterConfigAbortControllerRef,
-        }) as Promise<InstallationClusterConfigType>)
-        setClusterConfig(config)
-    }
-
-    const [isClusterCapacityDataLoading, clusterCapacityResponse] = useAsync(async () => {
-        try {
-            const { result } = await getClusterCapacity(clusterId, requestAbortControllerRef.current.signal)
-
-            const clusterCapacity = result
-
-            if (clusterCapacity?.name) {
-                fetchClusterConfig(clusterCapacity.name).catch(noop)
-            }
-
-            const _errorList = []
-            const _nodeErrors = Object.keys(result.nodeErrors || {})
-            const _nodeK8sVersions = result.nodeK8sVersions || []
-            if (_nodeK8sVersions.length > 1) {
-                let majorVersion
-                let minorVersion
-
-                const diffType = _nodeK8sVersions.reduce((dt, _nodeK8sVersion) => {
-                    if (dt === 'Major') {
-                        return dt
-                    }
-
-                    const elementArr = _nodeK8sVersion.split('.')
-                    const [_majorVersion, _minorVersion] = elementArr
-
-                    if (!majorVersion) {
-                        majorVersion = _majorVersion
-                    }
-
-                    if (!minorVersion) {
-                        minorVersion = _minorVersion
-                    }
-
-                    if (majorVersion !== _majorVersion) {
-                        return 'Major'
-                    }
-
-                    if (dt !== 'Minor' && minorVersion !== elementArr[1]) {
-                        return 'Minor'
-                    }
-
-                    return dt
-                }, '')
-
-                if (diffType !== '') {
-                    _errorList.push({
-                        errorText: `${diffType} version diff identified among nodes. Current versions `,
-                        errorType: ERROR_TYPE.VERSION_ERROR,
-                        filterText: _nodeK8sVersions,
-                    })
-                }
-            }
-
-            if (_nodeErrors.length > 0) {
-                _nodeErrors.forEach((_nodeError) => {
-                    const _errorLength = result.nodeErrors[_nodeError].length
-                    _errorList.push({
-                        errorText: `${_nodeError} on ${
-                            _errorLength === 1 ? `${_errorLength} node` : `${_errorLength} nodes`
-                        }`,
-                        errorType: _nodeError,
-                        filterText: result.nodeErrors[_nodeError],
-                    })
-                })
-            }
-
-            return {
-                clusterErrorList: _errorList,
-                clusterCapacityData: clusterCapacity,
-            }
-        } catch (error) {
-            if (!getIsRequestAborted(error)) {
-                showError(error)
-            }
-            throw error
-        }
-    }, [selectedCluster])
+    const [isClusterCapacityDataLoading, clusterCapacityResponse] = useAsync(
+        () => getClusterOverviewClusterCapacity({ clusterId, requestAbortControllerRef }),
+        [selectedCluster],
+    )
 
     const { clusterCapacityData, clusterErrorList = [] } = clusterCapacityResponse ?? {}
 
@@ -363,24 +277,6 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
             </div>
         )
     }
-
-    const loadingMetricCard = () => (
-        <div className="dc__grid-cols-2 dc__gap-16 pb-16">
-            <div className="flexbox dc__gap-12 dc__content-space dc__overflow-auto bg__primary br-4 en-2 bw-1 pt-16 pl-16 pb-16 pr-16">
-                <div className="flexbox-col dc__gap-6">
-                    <div className="shimmer w-200" />
-                    <div className="shimmer h-36 w-64" />
-                </div>
-            </div>
-
-            <div className="flexbox dc__gap-12 dc__content-space dc__overflow-auto bg__primary br-4 en-2 bw-1 pt-16 pl-16 pb-16 pr-16">
-                <div className="flexbox-col dc__gap-6">
-                    <div className="shimmer w-200" />
-                    <div className="shimmer h-36 w-64" />
-                </div>
-            </div>
-        </div>
-    )
 
     const renderCardDetails = () => (
         <>
@@ -579,7 +475,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
             >
                 {renderSideInfoData()}
                 <div className="dc__mxw-1068 flex-grow-1 mw-none">
-                    {isClusterCapacityDataLoading ? loadingMetricCard() : renderCardDetails()}
+                    {isClusterCapacityDataLoading ? <LoadingMetricCard /> : renderCardDetails()}
                     {ClusterConfig && clusterConfig && (
                         <ClusterConfig
                             clusterConfig={clusterConfig}

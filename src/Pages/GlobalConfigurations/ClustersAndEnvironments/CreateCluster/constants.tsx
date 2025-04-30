@@ -1,11 +1,9 @@
-import { IconName } from '@devtron-labs/devtron-fe-common-lib'
-
 import { CreateClusterTypeEnum, SidebarConfigType } from './types'
 
 export const SIDEBAR_CONFIG: SidebarConfigType = {
     [CreateClusterTypeEnum.CONNECT_CLUSTER]: {
         title: 'Connect Cluster',
-        iconName: 'ic-ci-linked' as IconName,
+        iconName: 'ic-ci-linked',
         dataTestId: 'cluster-button-switch',
         body: (
             <p className="m-0">
@@ -16,7 +14,7 @@ export const SIDEBAR_CONFIG: SidebarConfigType = {
     },
     [CreateClusterTypeEnum.CREATE_EKS_CLUSTER]: {
         title: 'Create EKS Cluster',
-        iconName: 'ic-cluster' as IconName,
+        iconName: 'ic-cluster',
         dataTestId: 'create-eks-cluster-tab',
         body: (
             <>
@@ -31,7 +29,7 @@ export const SIDEBAR_CONFIG: SidebarConfigType = {
     },
     [CreateClusterTypeEnum.ADD_ISOLATED_CLUSTER]: {
         title: 'Add Isolated Cluster',
-        iconName: 'ic-add' as IconName,
+        iconName: 'ic-add',
         documentationHeader: 'Isolated Cluster',
         dataTestId: 'virtual-cluster-button-switch',
         body: (

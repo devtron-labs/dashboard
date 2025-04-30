@@ -22,7 +22,7 @@ const ClusterInstallationStatus = () => {
     const { replace } = useHistory()
     const { installationId } = useParams<{ installationId: string }>()
 
-    const [, clusterList] = useAsync(() => getClusterListing(true))
+    const [isClusterListLoading, clusterList] = useAsync(() => getClusterListing(true))
 
     const clusterOptions = useMemo(() => getClusterOptions(clusterList), [clusterList, installationId])
 
@@ -55,6 +55,7 @@ const ClusterInstallationStatus = () => {
                             clusterList={clusterOptions}
                             clusterId={installationId}
                             isInstallationStatusView
+                            isClusterListLoading={isClusterListLoading}
                         />
                     ),
                 },

@@ -26,7 +26,6 @@ export interface ClusterEnvironmentDrawerFormProps {
 export interface ClusterEnvironmentDrawerProps extends ClusterEnvironmentDrawerFormProps {
     id: string
     clusterId: number
-    prometheusEndpoint: string
     reload: () => void
     hideClusterDrawer: () => void
     isVirtual: boolean
@@ -35,7 +34,7 @@ export interface ClusterEnvironmentDrawerProps extends ClusterEnvironmentDrawerF
 
 export type GetClusterEnvironmentUpdatePayloadType = Pick<
     ClusterEnvironmentDrawerProps,
-    'clusterId' | 'id' | 'prometheusEndpoint' | 'isVirtual'
+    'clusterId' | 'id' | 'isVirtual'
 > &
     Partial<Pick<ClusterNamespacesDTO, 'resourceVersion'>> & {
         data: ClusterEnvironmentDrawerFormProps

@@ -88,7 +88,6 @@ const CreateCluster = ({ handleReloadClusterList, handleRedirectOnModalClose }: 
             case CreateClusterTypeEnum.ADD_ISOLATED_CLUSTER:
                 return (
                     <VirtualClusterForm
-                        id={null}
                         newClusterFormProps={{ apiCallInProgress, setApiCallInProgress, FooterComponent }}
                         handleModalClose={handleModalClose}
                         reload={handleReloadClusterList}
