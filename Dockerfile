@@ -38,4 +38,4 @@ RUN chown -R devtron:devtron /usr/share/nginx/html
 RUN chmod +x env.sh
 USER devtron
 
-CMD ["/bin/bash", "-c", "/usr/share/nginx/html/env.sh && nginx -g 'daemon off;'"]
+CMD ["/bin/bash", "-c", "/usr/share/nginx/html/env.sh && nginx -g 'daemon off'"]
