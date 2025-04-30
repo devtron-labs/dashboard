@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import React, { Suspense, useEffect, useRef, useState } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import { useRouteMatch, useParams, Redirect, useLocation, useHistory, Switch, Route } from 'react-router-dom'
-import { ErrorScreenManager, DetailsProgressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ErrorScreenManager,
+    DetailsProgressing,
+    showError,
+    getIsRequestAborted,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { sortOptionsByValue } from '../common'
 import ValuesComponent from './values/ChartValues.component'
@@ -45,6 +50,8 @@ const RouterComponent = ({ envType }) => {
     const { path } = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
+    const abortControllerRef = useRef<AbortController>(new AbortController())
+
     const [errorResponseCode, setErrorResponseCode] = useState(undefined)
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
         externalLinks: [],
@@ -78,6 +85,12 @@ const RouterComponent = ({ envType }) => {
         }
     }, [params.appId, params.envId])
 
+    useEffect(() => {
+        return () => {
+            abortControllerRef.current.abort()
+        }
+    }, [])
+
     // clearing the timer on component unmount
     useEffect(() => {
         return (): void => {
@@ -105,6 +118,11 @@ const RouterComponent = ({ envType }) => {
     }
 
     const handleAppDetailsCallError = (e: any) => {
+        if (getIsRequestAborted(e)) {
+            // FIXME: initTimer
+            return
+        }
+
         setErrorResponseCode(e.code)
         if (e.code === 404 && initTimer) {
             clearTimeout(initTimer)
@@ -124,7 +142,7 @@ const RouterComponent = ({ envType }) => {
     const _getAndSetAppDetail = async (fetchExternalLinks: boolean) => {
         if (envType === EnvType.CHART) {
             // Get App Details
-            getInstalledChartDetail(+params.appId, +params.envId)
+            getInstalledChartDetail(+params.appId, +params.envId, abortControllerRef)
                 .then((response) => {
                     handlePublishAppDetails(response)
                     isVirtualRef.current = response.result?.isVirtualEnvironment
@@ -139,7 +157,7 @@ const RouterComponent = ({ envType }) => {
                 })
 
             // Get App Resource Tree
-            getInstalledChartResourceTree(+params.appId, +params.envId)
+            getInstalledChartResourceTree(+params.appId, +params.envId, abortControllerRef)
                 .then(handlePublishAppDetails)
                 .catch(handleAppDetailsCallError)
                 .finally(() => {
@@ -162,10 +180,12 @@ const RouterComponent = ({ envType }) => {
     const handleReloadResourceTree = () => {
         if (envType === EnvType.CHART) {
             setIsReloadResourceTreeInProgress(true)
-            getInstalledChartResourceTree(+params.appId, +params.envId)
+            getInstalledChartResourceTree(+params.appId, +params.envId, abortControllerRef)
                 .then(handlePublishAppDetails)
                 .catch((err) => {
-                    showError(err)
+                    if (!getIsRequestAborted(err)) {
+                        showError(err)
+                    }
                 })
                 .finally(() => {
                     setLoadingResourceTree(false)
