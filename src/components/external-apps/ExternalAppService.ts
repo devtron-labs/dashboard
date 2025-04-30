@@ -28,6 +28,7 @@ import { Routes } from '../../config'
 import { HelmApp, AppEnvironmentDetail } from '../app/list-new/AppListType'
 import { ResourceTree } from '../v2/appDetails/appDetails.type'
 import { getK8sResourcePayloadAppType } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.util'
+import { GetArgoAppDetailParamsType } from './types'
 
 export interface ReleaseInfoResponse extends ResponseType {
     result?: ReleaseAndInstalledAppInfo
@@ -144,17 +145,14 @@ export const getReleaseInfo = (appId: string): Promise<ReleaseInfoResponse> => {
 export const getAppDetail = async (
     appId: string,
     abortControllerRef?: APIOptions['abortControllerRef'],
-): Promise<HelmAppDetailResponse> => {
-    const url = `${Routes.HELM_RELEASE_APP_DETAIL_API}?appId=${appId}`
-    return get(url, { abortControllerRef })
-}
+): Promise<HelmAppDetailResponse> => get(`${Routes.HELM_RELEASE_APP_DETAIL_API}?appId=${appId}`, { abortControllerRef })
 
-export const getArgoAppDetail = async (
-    appName: string,
-    clusterId: string,
-    namespace: string,
-    abortControllerRef?: APIOptions['abortControllerRef'],
-) =>
+export const getArgoAppDetail = async ({
+    appName,
+    clusterId,
+    namespace,
+    abortControllerRef,
+}: GetArgoAppDetailParamsType) =>
     get(`${Routes.ARGO_APPLICATION}?name=${appName}&clusterId=${clusterId}&namespace=${namespace}`, {
         abortControllerRef,
     })

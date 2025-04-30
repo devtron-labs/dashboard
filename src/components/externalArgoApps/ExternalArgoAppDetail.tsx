@@ -77,7 +77,7 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
     const _getAndSetAppDetail = async () => {
         isAPICallInProgress = true
         setIsReloadResourceTreeInProgress(true)
-        getArgoAppDetail(appName, clusterId, namespace, abortControllerRef)
+        getArgoAppDetail({ appName, clusterId, namespace, abortControllerRef })
             .then((appDetailResponse) => {
                 const genericAppDetail: AppDetails = {
                     ...appDetailResponse.result,

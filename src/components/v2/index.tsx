@@ -15,18 +15,22 @@
  */
 
 import { Suspense, useEffect, useRef, useState } from 'react'
-import { useRouteMatch, useParams, Redirect, useLocation, useHistory, Switch, Route } from 'react-router-dom'
+import { Redirect, Route, Switch, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+
 import {
-    ErrorScreenManager,
     DetailsProgressing,
-    showError,
+    ErrorScreenManager,
     getIsRequestAborted,
+    showError,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { URLS } from '../../config'
 import { sortOptionsByValue } from '../common'
-import ValuesComponent from './values/ChartValues.component'
-import AppHeaderComponent from './headers/AppHeader.component'
-import ChartHeaderComponent from './headers/ChartHeader.component'
+import { AppDetailsEmptyState } from '../common/AppDetailsEmptyState'
+import { getExternalLinks } from '../externalLinks/ExternalLinks.service'
+import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../externalLinks/ExternalLinks.type'
+import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils'
+import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil'
 import {
     getInstalledAppDetail,
     getInstalledChartDetail,
@@ -35,13 +39,11 @@ import {
 import AppDetailsComponent from './appDetails/AppDetails.component'
 import { AppDetails, AppType, EnvType } from './appDetails/appDetails.type'
 import IndexStore from './appDetails/index.store'
-import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil'
 import ChartDeploymentHistory from './chartDeploymentHistory/ChartDeploymentHistory.component'
-import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../externalLinks/ExternalLinks.type'
-import { getExternalLinks } from '../externalLinks/ExternalLinks.service'
-import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils'
-import { AppDetailsEmptyState } from '../common/AppDetailsEmptyState'
+import AppHeaderComponent from './headers/AppHeader.component'
+import ChartHeaderComponent from './headers/ChartHeader.component'
 import { HelmAppOverview } from './HelmAppOverview/HelmAppOverview'
+import ValuesComponent from './values/ChartValues.component'
 
 let initTimer = null
 
@@ -85,21 +87,23 @@ const RouterComponent = ({ envType }) => {
         }
     }, [params.appId, params.envId])
 
-    useEffect(() => {
-        return () => {
+    useEffect(
+        () => () => {
             abortControllerRef.current.abort()
-        }
-    }, [])
+        },
+        [],
+    )
 
     // clearing the timer on component unmount
-    useEffect(() => {
-        return (): void => {
+    useEffect(
+        () => (): void => {
             if (initTimer) {
                 clearTimeout(initTimer)
             }
             IndexStore.clearAppDetails() // Cleared out the data on unmount
-        }
-    }, [])
+        },
+        [],
+    )
 
     useEffect(() => {
         if (checkIfToRefetchData(location)) {
@@ -119,7 +123,6 @@ const RouterComponent = ({ envType }) => {
 
     const handleAppDetailsCallError = (e: any) => {
         if (getIsRequestAborted(e)) {
-            // FIXME: initTimer
             return
         }
 

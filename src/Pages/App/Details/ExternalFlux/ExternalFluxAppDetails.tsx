@@ -73,7 +73,7 @@ const ExternalFluxAppDetails = () => {
         new Promise<void>((resolve) => {
             setIsReloadResourceTreeInProgress(true)
 
-            getExternalFluxCDAppDetails(clusterId, namespace, appName, isKustomization, abortControllerRef)
+            getExternalFluxCDAppDetails({ clusterId, namespace, appName, isKustomization, abortControllerRef })
                 .then(handleUpdateIndexStoreWithDetails)
                 .catch((error) => {
                     if (!getIsRequestAborted(error)) {

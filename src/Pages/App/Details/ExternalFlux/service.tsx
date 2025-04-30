@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-import { APIOptions, get, getUrlWithSearchParams } from '@devtron-labs/devtron-fe-common-lib'
+import { get, getUrlWithSearchParams } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '../../../../config'
+import { GetExternalFluxCDAppDetailsParamsType } from './types'
 
-export const getExternalFluxCDAppDetails = async (
+export const getExternalFluxCDAppDetails = async ({
     clusterId,
     namespace,
     appName,
     isKustomization,
-    abortControllerRef?: APIOptions['abortControllerRef'],
-) => {
+    abortControllerRef,
+}: GetExternalFluxCDAppDetailsParamsType) => {
     const appId = `${clusterId}|${namespace}|${appName}|${isKustomization}`
     const baseurl = `${Routes.FLUX_APPS}/${Routes.APP}`
     const params = {
