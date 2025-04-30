@@ -38,6 +38,7 @@ RUN chown -R devtron:devtron /usr/share/nginx/html
 RUN chmod +x env.sh
 USER devtron
 
-ENTRYPOINT [] # as fholzer/nginx-brotli 's entrypoint is by default nginx
+# as fholzer/nginx-brotli 's entrypoint is by default nginx
+ENTRYPOINT []
 
 CMD ["/bin/bash", "-c", "/usr/share/nginx/html/env.sh && nginx -g \"daemon off;\""]
