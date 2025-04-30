@@ -76,7 +76,6 @@ const CreateCluster = ({ handleReloadClusterList, handleRedirectOnModalClose }: 
                 )
             case CreateClusterTypeEnum.CREATE_EKS_CLUSTER:
                 return (
-                    // TODO: reload the cluster list after creating the cluster
                     <CreateClusterForm
                         apiCallInProgress={apiCallInProgress}
                         setApiCallInProgress={setApiCallInProgress}
