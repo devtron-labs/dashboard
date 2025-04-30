@@ -101,7 +101,7 @@ export const Banner = () => {
         if (!isOnline) return BannerVariant.INTERNET_CONNECTIVITY
         if (showOnlineBanner) return BannerVariant.INTERNET_CONNECTIVITY
         if (doesNeedRefresh || bgUpdated) return BannerVariant.VERSION_UPDATE
-        if (getIncompatibleMicroserviceName()?.length) return BannerVariant.INCOMPATIBLE_MICROSERVICES
+        if (getIncompatibleMicroserviceName()) return BannerVariant.INCOMPATIBLE_MICROSERVICES
         if (showAnnouncementBanner) return BannerVariant.ANNOUNCEMENT
         if (licenseConfig?.message) return BannerVariant.LICENSE
         return null
