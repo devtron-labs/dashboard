@@ -17,5 +17,15 @@
         &--right {
             border-right: 1px solid var(#{$color});
         }
+
+        &--x {
+            border-left: 1px solid var(#{$color});
+            border-right: 1px solid var(#{$color});
+        }
+
+        &--y {
+            border-top: 1px solid var(#{$color});
+            border-bottom: 1px solid var(#{$color});
+        }
     }
 }
