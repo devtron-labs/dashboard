@@ -15,6 +15,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 
 import {
     Button,
@@ -56,7 +57,6 @@ export const Banner = () => {
         ANNOUNCEMENT_CONFIG.message ? shouldShowAnnouncementBanner() : false,
     )
     const { bgUpdated, doesNeedRefresh, handleAppUpdate } = useVersionUpdateReload()
-
     const licenseConfig = useEnterpriseLicenseConfig()
 
     useEffect(() => {
@@ -144,32 +144,54 @@ export const Banner = () => {
     }
 
     return (
-        <div className={baseClassName}>
-            {config.isDismissible && <div className="icon-dim-28" />}
-            <div className="py-4 flex dc__gap-12 dc__align-items-center">
-                <div className="flex dc__gap-8">
-                    {isOffline && getBannerIcon(bannerVariant, ANNOUNCEMENT_CONFIG.type, iconName)}
-                    <InteractiveCellText text={config.text} rootClassName="fw-5" fontSize={12} interactive />
-                </div>
+        <div className="banner-container">
+            <AnimatePresence mode="wait">
+                {bannerVariant && (
+                    <motion.div
+                        key={bannerVariant}
+                        initial={{ y: -28 }}
+                        animate={{ y: 0 }}
+                        exit={{ y: 28 }}
+                        transition={{
+                            duration: 0.6,
+                            ease: 'easeOut',
+                        }}
+                        className={baseClassName}
+                        style={{ position: 'absolute' }}
+                    >
+                        {config.isDismissible && <div className="icon-dim-28" />}
+                        <div className="py-4 flex dc__gap-12 dc__align-items-center">
+                            <div className="flex dc__gap-8">
+                                {isOffline && getBannerIcon(bannerVariant, ANNOUNCEMENT_CONFIG.type, iconName)}
+                                <InteractiveCellText
+                                    text={config.text}
+                                    rootClassName="fw-5"
+                                    fontSize={12}
+                                    interactive
+                                />
+                            </div>
 
-                {shouldShowActionButton() && (
-                    <div className="dc__no-shrink">
-                        <Button {...actionButtons} />
-                    </div>
+                            {shouldShowActionButton() && (
+                                <div className="dc__no-shrink">
+                                    <Button {...actionButtons} />
+                                </div>
+                            )}
+                        </div>
+                        {config.isDismissible && (
+                            <Button
+                                icon={<Icon name="ic-close-small" color="N700" />}
+                                variant={ButtonVariantType.borderLess}
+                                style={ButtonStyleType.negativeGrey}
+                                size={ComponentSizeType.small}
+                                onClick={onClickCloseAnnouncementBanner}
+                                dataTestId="banner-dismiss-button"
+                                ariaLabel="Close banner"
+                                showAriaLabelInTippy={false}
+                            />
+                        )}
+                    </motion.div>
                 )}
-            </div>
-            {config.isDismissible && (
-                <Button
-                    icon={<Icon name="ic-close-small" color="N700" />}
-                    variant={ButtonVariantType.borderLess}
-                    style={ButtonStyleType.negativeGrey}
-                    size={ComponentSizeType.small}
-                    onClick={onClickCloseAnnouncementBanner}
-                    dataTestId="banner-dismiss-button"
-                    ariaLabel="Close banner"
-                    showAriaLabelInTippy={false}
-                />
-            )}
+            </AnimatePresence>
         </div>
     )
 }
