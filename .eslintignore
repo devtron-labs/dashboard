@@ -36,7 +36,6 @@ src/components/ApplicationGroup/SearchBar.tsx
 src/components/CIPipelineN/AdvancedConfigOptions.tsx
 src/components/CIPipelineN/Build.tsx
 src/components/CIPipelineN/CIPipeline.tsx
-src/components/CIPipelineN/ConditionContainer.tsx
 src/components/CIPipelineN/CustomImageTags.tsx
 src/components/CIPipelineN/CustomInputOutputVariables.tsx
 src/components/CIPipelineN/CustomInputVariableSelect.tsx

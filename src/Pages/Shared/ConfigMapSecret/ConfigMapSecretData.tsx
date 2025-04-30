@@ -28,12 +28,11 @@ import {
     convertKeyValuePairToYAML,
     convertYAMLToKeyValuePair,
     isCodeMirrorEnabled,
-    KeyValueConfig,
     KeyValueTable,
+    KeyValueTableData,
     MODES,
     noop,
     OverrideMergeStrategyType,
-    PATTERNS,
     SelectPickerOptionType,
     StyledRadioGroup,
     ToastManager,
@@ -57,6 +56,8 @@ import { externalTypeSecretCodeEditorDataHeaders, renderYamlInfoText } from './h
 import { ConfigMapSecretDataProps } from './types'
 import {
     getCMCSExpressEditComparisonDataDiffConfig,
+    getConfigMapSecretKeyValueTableRows,
+    getConfigMapSecretKeyValueTableValidationSchema,
     getExpressEditComparisonViewLHS,
     getLockedYamlString,
 } from './utils'
@@ -99,81 +100,16 @@ export const ConfigMapSecretData = ({
     const isSelectedTypeVolume =
         data.externalType === '' && data.selectedType === configMapSecretMountDataMap.volume.value
 
-    // METHODS & CONFIGURATIONS
-    const config: KeyValueConfig<'k' | 'v'> = {
-        headers: [
-            {
-                label: isSelectedTypeVolume ? 'File Name' : 'Key',
-                key: 'k',
-            },
-            {
-                label: isSelectedTypeVolume ? 'File Content' : 'Value',
-                key: 'v',
-            },
-        ],
-        rows: data.currentData.map(({ k, v, id }) => ({
-            data: {
-                k: {
-                    value: k,
-                },
-                v: {
-                    value: typeof v === 'object' ? YAMLStringify(v) : v.toString(),
-                },
-            },
-            id,
-        })),
-    }
-
+    // METHODS
     const onMergeStrategySelect = (newValue: SelectPickerOptionType) => {
         handleMergeStrategyChange(newValue.value as OverrideMergeStrategyType)
     }
 
-    const keyValueTableHandleChange =
-        (onChange: (value: unknown) => void) => (rowId: string | number, headerKey: string, value: string) => {
-            // - When data is changed from the YAML editor to the GUI, IDs are mapped to indices (numbers).
-            // - When data is added via the GUI, IDs are created internally by the GUI editor as strings.
-            const _currentData = data.currentData.reduce(
-                (acc, currentData) => {
-                    if (currentData.id === rowId) {
-                        // If the item is found, update it with the new value and reset errors.
-                        acc.found = true
-                        acc.updatedData.push({
-                            ...currentData,
-                            [headerKey]: value,
-                        })
-                    } else {
-                        // If the item is not the one we're looking for, just add it as is.
-                        acc.updatedData.push(currentData)
-                    }
-                    return acc
-                },
-                { updatedData: [], found: false },
-            )
-
-            // If the item is not found, it means it's a new entry added via the GUI editor.
-            // Create a new data object and add it to the current data state.
-            if (!_currentData.found) {
-                _currentData.updatedData.push({
-                    k: '',
-                    v: '',
-                    [headerKey]: value,
-                    id: rowId,
-                })
-            }
-
-            // call useForm register 'onChange' method to update the form data value
-            onChange(_currentData.updatedData)
-            // Convert the current key-value data to YAML format and set it in the 'yaml' field.
-            setValue('yaml', convertKeyValuePairToYAML(_currentData.updatedData), { shouldDirty: true })
-        }
-
-    const keyValueHandleDelete = (onChange: (e: unknown) => void) => (rowId: string | number) => {
-        // Create a new array by filtering out the item with the matching rowId.
-        const _currentData = data.currentData.filter(({ id }) => id !== rowId)
+    const keyValueTableHandleChange = (onChange: (value: unknown) => void) => (keyValueData: KeyValueTableData[]) => {
         // call useForm register 'onChange' method to update the form data value
-        onChange(_currentData)
+        onChange(keyValueData)
         // Convert the current key-value data to YAML format and set it in the 'yaml' field.
-        setValue('yaml', convertKeyValuePairToYAML(_currentData), { shouldDirty: true })
+        setValue('yaml', convertKeyValuePairToYAML(keyValueData), { shouldDirty: true })
     }
 
     const keyValueHandleError = (err: boolean) => {
@@ -467,28 +403,21 @@ export const ConfigMapSecretData = ({
                     isAdditionNotAllowed={secretMode || data.yamlMode || data.external}
                     readOnly={readOnly || secretMode}
                     isSortable
-                    config={config}
+                    headerLabel={{
+                        key: isSelectedTypeVolume ? 'File Name' : 'Key',
+                        value: isSelectedTypeVolume ? 'File Content' : 'Value',
+                    }}
+                    rows={getConfigMapSecretKeyValueTableRows(data.currentData)}
                     placeholder={{
-                        k: 'Enter Key',
-                        v: 'Enter Value',
+                        key: 'Enter Key',
+                        value: 'Enter Value',
                     }}
                     onChange={keyValueTableHandleChange(onChange)}
                     maskValue={{
-                        v: isLocked,
+                        value: isLocked,
                     }}
-                    onDelete={keyValueHandleDelete(onChange)}
                     showError
-                    validationSchema={(value, key) => {
-                        if (key === 'k' && value) {
-                            const isValid = new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_KEY).test(value)
-                            return isValid
-                        }
-                        return true
-                    }}
-                    errorMessages={[
-                        'Can only contain alphanumeric chars and ( - ), ( _ ), ( . )',
-                        'Spaces not allowed',
-                    ]}
+                    validationSchema={getConfigMapSecretKeyValueTableValidationSchema}
                     onError={keyValueHandleError}
                     headerComponent={renderSecretShowHide(false)}
                     validateEmptyKeys

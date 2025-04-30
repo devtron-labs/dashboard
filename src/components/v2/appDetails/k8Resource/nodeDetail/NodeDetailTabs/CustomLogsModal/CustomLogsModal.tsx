@@ -89,6 +89,10 @@ export const InputForSelectedOption = ({
     }, [])
 
     const handleDatesChange = (selected) => {
+        if (!selected) {
+            return
+        }
+
         setCustomLogFilterOptions({
             ...customLogFilterOptions,
             [filterTypeRadio]: {
