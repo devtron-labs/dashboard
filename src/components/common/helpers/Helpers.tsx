@@ -51,6 +51,7 @@ import { APP_GROUP_LOCAL_STORAGE_KEY, ENV_GROUP_LOCAL_STORAGE_KEY } from '@Compo
 import { GetAndSetAppGroupFiltersParamsType, SetFiltersInLocalStorageParamsType } from './types'
 import { URLS } from '@Config/routes'
 import { HOST_ERROR_MESSAGE } from '@Config/constantMessaging'
+import { getInternetConnectivity } from '@Services/service'
 
 let module
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -394,17 +395,33 @@ export function deepEqual(configA: any, configB: any): boolean {
 
 export function useOnline() {
     const [online, setOnline] = useState(navigator.onLine)
+
     useEffect(() => {
-        function handleOnline(e) {
-            setOnline(true)
+       const handleOnline = () => setOnline(true);
+       const handleOffline = () => setOnline(false);
+
+        // Check connectivity with a ping
+        const checkRealConnectivity = async() => {
+            try {
+                const response = await getInternetConnectivity()
+                // Use a small image or API endpoint from your own domain to avoid CORS issues
+                const controller = new AbortController()
+                const timeoutId = setTimeout(() => controller.abort(), 5000)
+                clearTimeout(timeoutId)
+                setOnline(true)
+            } catch (error) {
+                setOnline(false)
+            }
         }
 
-        function handleOffline(e) {
-            setOnline(false)
-        }
+        // Initial check
+        checkRealConnectivity()
+
+        const intervalId = setInterval(checkRealConnectivity, 30000)
         window.addEventListener('online', handleOnline)
         window.addEventListener('offline', handleOffline)
         return () => {
+            clearInterval(intervalId)
             window.removeEventListener('online', handleOnline)
             window.removeEventListener('offline', handleOffline)
         }

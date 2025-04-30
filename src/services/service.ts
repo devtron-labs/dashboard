@@ -523,3 +523,9 @@ export const validateContainerConfiguration = (request: any): Promise<any> => {
 export const getTemplateOptions = (appId: number, envId: number): Promise<ResponseType<TemplateListDTO[]>> => (
     get(getUrlWithSearchParams(Routes.DEPLOYMENT_OPTIONS, { appId, envId }))
 )
+
+export const getInternetConnectivity = (): Promise<any> => {
+    return fetch(`${window?._env_?.CENTRAL_API_ENDPOINT || 'https://api.devtron.ai'}/health`).then((res) =>
+        res.json(),
+    )
+}
