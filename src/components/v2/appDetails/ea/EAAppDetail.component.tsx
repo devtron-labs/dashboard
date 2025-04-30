@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useLocation, useHistory } from 'react-router-dom'
 import {
     showError,
@@ -22,6 +22,7 @@ import {
     ErrorScreenManager,
     ServerErrors,
     DeploymentAppTypes,
+    getIsRequestAborted,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { sortOptionsByValue } from '../../../common'
@@ -49,6 +50,8 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
     })
     const [isReloadResourceTreeInProgress, setIsReloadResourceTreeInProgress] = useState(false)
 
+    const abortControllerRef = useRef<AbortController>(new AbortController())
+
     let initTimer = null
     let isAPICallInProgress = false
 
@@ -56,6 +59,8 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
     useEffect(() => {
         _init()
         return (): void => {
+            abortControllerRef.current.abort()
+
             if (initTimer) {
                 clearTimeout(initTimer)
             }
@@ -120,7 +125,7 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
     const _getAndSetAppDetail = () => {
         isAPICallInProgress = true
         setIsReloadResourceTreeInProgress(true)
-        getAppDetail(appId)
+        getAppDetail(appId, abortControllerRef)
             .then((appDetailResponse: HelmAppDetailResponse) => {
                 IndexStore.publishAppDetails(
                     _convertToGenericAppDetailModel(appDetailResponse.result),
@@ -159,8 +164,11 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
                 setErrorResponseCode(undefined)
             })
             .catch((errors: ServerErrors) => {
-                showError(errors)
-                setErrorResponseCode(errors.code)
+                if (!getIsRequestAborted(errors)) {
+                    showError(errors)
+                    setErrorResponseCode(errors.code)
+                }
+
                 setIsLoading(false)
                 isAPICallInProgress = false
             })
