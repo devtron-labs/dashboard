@@ -149,9 +149,15 @@ export const getAppDetail = async (
     return get(url, { abortControllerRef })
 }
 
-export const getArgoAppDetail = (appName: string, clusterId: string, namespace: string) => {
-    return get(`${Routes.ARGO_APPLICATION}?name=${appName}&clusterId=${clusterId}&namespace=${namespace}`)
-}
+export const getArgoAppDetail = async (
+    appName: string,
+    clusterId: string,
+    namespace: string,
+    abortControllerRef?: APIOptions['abortControllerRef'],
+) =>
+    get(`${Routes.ARGO_APPLICATION}?name=${appName}&clusterId=${clusterId}&namespace=${namespace}`, {
+        abortControllerRef,
+    })
 
 export const deleteApplicationRelease = (appId: string): Promise<UninstallReleaseResponse> => {
     const url = `${Routes.HELM_RELEASE_APP_DELETE_API}?appId=${appId}`

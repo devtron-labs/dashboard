@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useLocation, useHistory } from 'react-router-dom'
 import {
     showError,
@@ -22,6 +22,7 @@ import {
     ErrorScreenManager,
     ServerErrors,
     DeploymentAppTypes,
+    getIsRequestAborted,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getArgoAppDetail } from '../external-apps/ExternalAppService'
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil'
@@ -40,10 +41,14 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
     let initTimer = null
     let isAPICallInProgress = false
 
+    const abortControllerRef = useRef<AbortController>(new AbortController())
+
     // component load
     useEffect(() => {
         _init()
         return (): void => {
+            abortControllerRef.current.abort()
+
             if (initTimer) {
                 clearTimeout(initTimer)
             }
@@ -72,7 +77,7 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
     const _getAndSetAppDetail = async () => {
         isAPICallInProgress = true
         setIsReloadResourceTreeInProgress(true)
-        getArgoAppDetail(appName, clusterId, namespace)
+        getArgoAppDetail(appName, clusterId, namespace, abortControllerRef)
             .then((appDetailResponse) => {
                 const genericAppDetail: AppDetails = {
                     ...appDetailResponse.result,
@@ -82,8 +87,10 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
                 setErrorResponseCode(undefined)
             })
             .catch((errors: ServerErrors) => {
-                showError(errors)
-                setErrorResponseCode(errors.code)
+                if (!getIsRequestAborted(errors)) {
+                    showError(errors)
+                    setErrorResponseCode(errors.code)
+                }
             })
             .finally(() => {
                 setIsLoading(false)
