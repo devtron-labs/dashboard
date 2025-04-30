@@ -19,19 +19,17 @@ import ReactGA from 'react-ga4'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import {
-    ACTION_STATE,
     Button,
     ButtonComponentType,
     ButtonVariantType,
     ComponentSizeType,
     DeploymentNodeType,
+    Icon,
     stopPropagation,
     useSearchString,
     VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
-import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { BUTTON_TITLE } from '../../../ApplicationGroup/Constants'
 import { importComponentFromFELibrary } from '../../../common'
 import { URL_PARAM_MODE_TYPE } from '../../../common/helpers/types'
@@ -40,8 +38,8 @@ import { AppDetailsCDButtonType } from '../../types'
 import CDMaterial from '../triggerView/cdMaterial'
 import { TRIGGER_VIEW_PARAMS } from '../triggerView/Constants'
 import { MATERIAL_TYPE } from '../triggerView/types'
-import { DA_APP_DETAILS_GA_EVENTS } from './constants'
-import { getDeployButtonStyle } from './utils'
+import { AG_APP_DETAILS_GA_EVENTS, DA_APP_DETAILS_GA_EVENTS } from './constants'
+import { getDeployButtonConfig } from './utils'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 
@@ -54,6 +52,9 @@ const AppDetailsCDButton = ({
     deploymentUserActionState,
     loadingDetails,
     environmentName,
+    isForEmptyState = false,
+    handleSuccess,
+    isAppView,
 }: AppDetailsCDButtonType): JSX.Element => {
     const history = useHistory()
     const { searchParams } = useSearchString()
@@ -72,7 +73,9 @@ const AppDetailsCDButton = ({
             search: new URLSearchParams(newParams).toString(),
         })
 
-        ReactGA.event(DA_APP_DETAILS_GA_EVENTS.DeployButtonClicked)
+        ReactGA.event(
+            isAppView ? DA_APP_DETAILS_GA_EVENTS.DeployButtonClicked : AG_APP_DETAILS_GA_EVENTS.DeployButtonClicked,
+        )
     }
 
     const closeCDModal = (e: React.MouseEvent): void => {
@@ -80,16 +83,18 @@ const AppDetailsCDButton = ({
         history.push({ search: '' })
     }
 
+    const { buttonStyle, iconName } = getDeployButtonConfig(deploymentUserActionState, isForEmptyState)
+
     const renderDeployButton = () => (
         <Button
             dataTestId="deploy-button"
-            size={ComponentSizeType.small}
+            size={isForEmptyState ? ComponentSizeType.large : ComponentSizeType.small}
             variant={ButtonVariantType.primary}
-            text={BUTTON_TITLE[DeploymentNodeType.CD]}
-            startIcon={deploymentUserActionState === ACTION_STATE.BLOCKED ? <InfoOutline /> : <DeployIcon />}
+            text={isForEmptyState ? 'Select Image to Deploy' : BUTTON_TITLE[DeploymentNodeType.CD]}
+            startIcon={iconName && <Icon name={iconName} color={null} />}
             onClick={onClickDeployButton}
             component={ButtonComponentType.button}
-            style={getDeployButtonStyle(deploymentUserActionState)}
+            style={buttonStyle}
         />
     )
 
@@ -134,7 +139,8 @@ const AppDetailsCDButton = ({
                         deploymentAppType={deploymentAppType}
                         parentEnvironmentName={cdModal.parentEnvironmentName}
                         isLoading={loadingDetails}
-                        isRedirectedFromAppDetails={cdModal.isRedirectedFromAppDetails}
+                        isRedirectedFromAppDetails
+                        handleSuccess={handleSuccess}
                     />
                 </div>
             </VisibleModal>

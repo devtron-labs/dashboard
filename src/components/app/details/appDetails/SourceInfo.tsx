@@ -32,10 +32,10 @@ import {
     ReleaseMode,
     showError,
     Tooltip,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICCamera } from '@Icons/ic-camera.svg'
 import { APP_COMPOSE_STAGE, getAppComposeURL, URLS } from '../../../../config'
-import { EnvSelector } from './AppDetails'
 import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
 import { Nodes, SourceInfoType } from '../../types'
 import DeploymentStatusCard from './DeploymentStatusCard'
@@ -53,7 +53,8 @@ import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
 import HelmAppConfigApplyStatusCard from '@Components/v2/appDetails/sourceInfo/environmentStatus/HelmAppConfigApplyStatusCard'
 import { HibernationModalTypes } from './appDetails.type'
-import { DA_APP_DETAILS_GA_EVENTS } from './constants'
+import { AG_APP_DETAILS_GA_EVENTS, DA_APP_DETAILS_GA_EVENTS } from './constants'
+import AppEnvSelector from './AppDetails.components'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
@@ -82,12 +83,16 @@ export const SourceInfo = ({
     filteredEnvIds,
     deploymentUserActionState,
     setHibernationPatchChartName,
+    applications,
+    isAppView,
 }: SourceInfoType) => {
+    const params = useParams<{ appId: string; envId?: string }>()
+
     const [hibernationPatchResponseLoading, setHibernationPatchResponseLoading] = useState<boolean>(false)
+
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
     const status = appDetails?.resourceTree?.status || ''
-    const params = useParams<{ appId: string; envId?: string }>()
     const conditions = appDetails?.resourceTree?.conditions
     let message = null
     const Rollout = appDetails?.resourceTree?.nodes?.filter(({ kind }) => kind === Nodes.Rollout)
@@ -95,8 +100,6 @@ export const SourceInfo = ({
     const appMigratedFromExternalSourceAndIsNotTriggered =
         appDetails?.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && !appDetails?.isPipelineTriggered
     const isIsolatedEnv = isVirtualEnvironment && !!appDetails?.resourceTree
-
-    const history = useHistory()
 
     if (
         ['progressing', 'degraded'].includes(status?.toLowerCase()) &&
@@ -157,11 +160,10 @@ export const SourceInfo = ({
     }
 
     const onClickSliderVerticalButton = () => {
-        history.push(`${getAppComposeURL(params.appId, APP_COMPOSE_STAGE.ENV_OVERRIDE, false, false)}/${params.envId}`)
-        ReactGA.event(DA_APP_DETAILS_GA_EVENTS.GoToEnvironmentConfiguration)
+        ReactGA.event(isAppView ? DA_APP_DETAILS_GA_EVENTS.GoToEnvironmentConfiguration: AG_APP_DETAILS_GA_EVENTS.GoToEnvironmentConfiguration)
     }
 
-    const renderDevtronAppsEnvironmentSelector = (environment) => {
+    const renderDevtronAppsEnvironmentSelector = () => {
         // If moving to a component then move getIsApprovalConfigured with it as well with memoization.
         const isApprovalConfigured = appDetails?.isApprovalPolicyApplicable ?? false
         const relativeSnapshotTime = appDetails?.resourceTree?.lastSnapshotTime
@@ -170,7 +172,7 @@ export const SourceInfo = ({
 
         return (
             <div className="flex left w-100">
-                <EnvSelector environments={environments} />
+                <AppEnvSelector {...(isAppView ? { isAppView, environments } : { isAppView: false, applications })} />
                 {appDetails?.deploymentAppType && (
                     <Tooltip
                         placement="top"
@@ -294,13 +296,18 @@ export const SourceInfo = ({
                                     icon={<Icon name="ic-sliders-vertical" color={null} />}
                                     variant={ButtonVariantType.secondary}
                                     onClick={onClickSliderVerticalButton}
-                                    component={ButtonComponentType.button}
+                                    component={ButtonComponentType.link}
                                     style={ButtonStyleType.neutral}
                                     ariaLabel="Go to Environment Configuration"
                                     showTooltip
                                     tooltipProps={{
                                         content: 'Go to Environment Config',
                                         placement: 'bottom',
+                                    }}
+                                    linkProps={{
+                                        to: isAppView
+                                            ? `${getAppComposeURL(params.appId, APP_COMPOSE_STAGE.ENV_OVERRIDE, false, false)}/${params.envId}`
+                                            : `${URLS.APPLICATION_GROUP}/${envId}/${CommonURLS.APP_CONFIG}/${appDetails?.appId}`,
                                     }}
                                 />
                                 {window._env_.FEATURE_SWAP_TRAFFIC_ENABLE &&
@@ -328,8 +335,8 @@ export const SourceInfo = ({
                                         parentEnvironmentName: appDetails.parentEnvironmentName,
                                         deploymentUserActionState: deploymentUserActionState,
                                         triggerType: appDetails.triggerType,
-                                        isRedirectedFromAppDetails: true,
                                     }}
+                                    isAppView={isAppView}
                                 />
                             </div>
                         )}
@@ -355,7 +362,7 @@ export const SourceInfo = ({
 
     return (
         <div className="flex left w-100 column source-info-container dc__gap-16">
-            {renderDevtronAppsEnvironmentSelector(environment)}
+            {renderDevtronAppsEnvironmentSelector()}
             {loadingDetails
                 ? shimmerLoaderBlocks()
                 : !isdeploymentAppDeleting &&
