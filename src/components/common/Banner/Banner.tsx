@@ -145,7 +145,7 @@ export const Banner = () => {
 
     return (
         <div className="banner-container">
-            <AnimatePresence mode="wait">
+            <AnimatePresence>
                 {bannerVariant && (
                     <motion.div
                         key={bannerVariant}
