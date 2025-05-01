@@ -69,7 +69,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
 
     return (
         <div className="bg__primary">
-            <div data-testid="api-token-page-header" className="flex dc__content-space pl-20 pr-20 pb-16">
+            <div data-testid="api-token-page-header" className="flex dc__content-space pl-20 pr-20 py-16">
                 <FeatureTitleWithInfo
                     title={HEADER_TEXT.API_TOKEN.title}
                     renderDescriptionContent={() => HEADER_TEXT.API_TOKEN.description}

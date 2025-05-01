@@ -42,13 +42,18 @@ const emptyStepsData = () => {
     return { id: 0, steps: [] }
 }
 
-function getCIPipelineNameSuggestion(appId: string | number, isTemplateView: AppConfigProps['isTemplateView']): Promise<any> {
-    const URL = isTemplateView ? getTemplateAPIRoute({
-        type: GetTemplateAPIRouteType.PIPELINE_SUGGEST_CI,
-        queryParams: {
-            id: appId,
-        }
-    }) : `app/pipeline/suggest/ci/${appId}`
+function getCIPipelineNameSuggestion(
+    appId: string | number,
+    isTemplateView: AppConfigProps['isTemplateView'],
+): Promise<any> {
+    const URL = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.PIPELINE_SUGGEST_CI,
+              queryParams: {
+                  id: appId,
+              },
+          })
+        : `app/pipeline/suggest/ci/${appId}`
     return get(URL)
 }
 
@@ -76,7 +81,7 @@ export function getInitData(
                 result: {
                     form: {
                         name: !isJobCard ? pipelineNameRes.result : '',
-                        args: [{ key: '', value: '' }],
+                        args: [{ key: '', value: '', id: 0 }],
                         materials: pipelineMetaConfig.result.materials,
                         gitHost: pipelineMetaConfig.result.gitHost,
                         webhookEvents: pipelineMetaConfig.result.webhookEvents,
@@ -119,7 +124,7 @@ export function getCIPipeline(
 function getPipelineBaseMetaConfiguration(
     appId: string,
     queryParams: Record<'pipelineType', CIPipelineBuildType.CI_BUILD | CIPipelineBuildType.CI_JOB>,
-    isTemplateView: AppConfigProps['isTemplateView']
+    isTemplateView: AppConfigProps['isTemplateView'],
 ): Promise<any> {
     return getSourceConfig(appId, queryParams, isTemplateView).then((response) => {
         const materials = response?.result?.material?.map((mat) => {
@@ -206,7 +211,7 @@ export function getInitDataWithCIPipeline(
     appId: string,
     ciPipelineId: string,
     includeWebhookData: boolean = false,
-    isTemplateView: AppConfigProps['isTemplateView']
+    isTemplateView: AppConfigProps['isTemplateView'],
 ): Promise<any> {
     return Promise.all([
         getCIPipeline(appId, ciPipelineId, isTemplateView),
@@ -240,7 +245,10 @@ export function getInitDataWithCIPipeline(
 
 export function saveLinkedCIPipeline(
     parentCIPipeline,
-    { isTemplateView, ...params }: { name: string; appId: number; workflowId: number; isTemplateView: AppConfigProps['isTemplateView'] },
+    {
+        isTemplateView,
+        ...params
+    }: { name: string; appId: number; workflowId: number; isTemplateView: AppConfigProps['isTemplateView'] },
     changeCIPayload?: ChangeCIPayloadType,
 ) {
     delete parentCIPipeline['beforeDockerBuildScripts']
@@ -288,7 +296,7 @@ export function saveCIPipeline(
     webhookConditionList,
     ciPipelineSourceTypeOptions,
     changeCIPayload: ChangeCIPayloadType,
-    isTemplateView: AppConfigProps['isTemplateView']
+    isTemplateView: AppConfigProps['isTemplateView'],
 ) {
     const ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
 
@@ -326,7 +334,7 @@ export function deleteCIPipeline(
     workflowId: number,
     isExternalCI: boolean,
     webhookConditionList,
-    isTemplateView: AppConfigProps['isTemplateView']
+    isTemplateView: AppConfigProps['isTemplateView'],
 ) {
     const updatedCI = {
         id: ciPipeline.id,
@@ -363,9 +371,11 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
         linkedCount: ciPipeline.linkedCount,
         isExternal: isExternalCI,
         isManual: formData.triggerType == TriggerType.Manual,
-        ...(formData.workflowCacheConfig ? {
-            workflowCacheConfig: formData.workflowCacheConfig,
-        } : {}),
+        ...(formData.workflowCacheConfig
+            ? {
+                  workflowCacheConfig: formData.workflowCacheConfig,
+              }
+            : {}),
         ciMaterial: formData.materials
             .filter((mat) => mat.isSelected)
             .map((mat) => {
@@ -570,10 +580,11 @@ function parseCIResponse(
         }
 
         const keys = Object.keys(ciPipeline.dockerArgs)
-        const args = keys.map((arg) => {
+        const args = keys.map((arg, id) => {
             return {
                 key: arg,
                 value: ciPipeline.dockerArgs[arg],
+                id,
             }
         })
 

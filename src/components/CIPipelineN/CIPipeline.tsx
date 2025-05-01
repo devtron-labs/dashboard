@@ -58,11 +58,7 @@ import {
     sortObjectArrayAlphabetically,
 } from '../common'
 import { BuildStageVariable, BuildTabText, JobPipelineTabText, URLS, ViewType } from '../../config'
-import {
-    getInitData,
-    getInitDataWithCIPipeline,
-    saveCIPipeline,
-} from '../ciPipeline/ciPipeline.service'
+import { getInitData, getInitDataWithCIPipeline, saveCIPipeline } from '../ciPipeline/ciPipeline.service'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { CIBuildType, CIPipelineBuildType, CIPipelineDataType, CIPipelineType } from '../ciPipeline/types'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
@@ -172,6 +168,10 @@ export default function CIPipeline({
             isValid: true,
         },
         counterX: {
+            message: '',
+            isValid: true,
+        },
+        dockerArgsError: {
             message: '',
             isValid: true,
         },
@@ -407,8 +407,10 @@ export default function CIPipeline({
     ): void => {
         const _formDataErrorObj = {
             ...(formDataErrorObject ?? formDataErrorObj),
+            // validating name always as it's a mandatory field
             name: validationRules.name(_formData.name),
-        } // validating name always as it's a mandatory field
+        }
+
         if (stageName === BuildStageVariable.Build) {
             _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid
 
@@ -426,7 +428,9 @@ export default function CIPipeline({
                 }
             }
 
-            _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid && valid
+            _formDataErrorObj[BuildStageVariable.Build].isValid =
+                _formDataErrorObj.name.isValid && valid && _formDataErrorObj.dockerArgsError.isValid
+
             if (!_formDataErrorObj[BuildStageVariable.Build].isValid) {
                 setShowFormError(true)
             }
@@ -622,7 +626,7 @@ export default function CIPipeline({
         ) {
             setApiInProgress(false)
             const branchNameNotPresent = formData.materials.some((_mat) => !_mat.value)
-            if (formData.name === '' || branchNameNotPresent) {
+            if (formData.name === '' || branchNameNotPresent || !formDataErrorObj.dockerArgsError.isValid) {
                 ToastManager.showToast({
                     variant: ToastVariantType.error,
                     description: 'Please ensure all fields are valid',
