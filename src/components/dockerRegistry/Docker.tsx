@@ -796,10 +796,10 @@ const DockerForm = ({
             selectedDockerRegistryType.value === RegistryType.GCR
                 ? {
                       username: trimmedUsername,
-                      password:
-                          customState.password.value === DEFAULT_SECRET_PLACEHOLDER
-                              ? parsePassword(customState.password.value)
-                              : `'${parsePassword(customState.password.value)}'`,
+                      password: JSON.stringify(JSON.parse(parsePassword(customState.password.value) || '{}')).replace(
+                          /\{\}/g,
+                          '',
+                      ),
                   }
                 : {}),
             ...(registryStorageType !== RegistryStorageType.OCI_PUBLIC &&

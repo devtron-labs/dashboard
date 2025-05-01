@@ -32,7 +32,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { API_STATUS_CODES, Routes } from '../../../config'
 import { getCustomRoles } from './authorization.service'
 import { AuthorizationProvider } from './AuthorizationProvider'
-import { UserAndGroupPermissionsWrapProps } from './types'
+import { AuthorizationContextProps, UserAndGroupPermissionsWrapProps } from './types'
 import { getMetaPossibleRoles } from './utils'
 
 import './authorization.scss'
@@ -57,7 +57,9 @@ const UserAndGroupPermissionsWrap = ({ children, setIsAutoAssignFlowEnabled }: U
     )
 }
 
-const UserAndGroupPermissions = () => {
+const UserAndGroupPermissions = ({
+    authorizationContainerRef,
+}: Pick<AuthorizationContextProps, 'authorizationContainerRef'>) => {
     const { path } = useRouteMatch()
     const [isDataLoading, customRolesList, error, reload] = useAsync(getCustomRoles)
     // For handling the auto assign flow for enterprise
@@ -71,6 +73,7 @@ const UserAndGroupPermissions = () => {
         () => ({
             customRoles: getMetaPossibleRoles(filteredCustomRoles ?? []),
             isAutoAssignFlowEnabled,
+            authorizationContainerRef,
         }),
         [isAutoAssignFlowEnabled, customRolesList],
     )
@@ -92,7 +95,7 @@ const UserAndGroupPermissions = () => {
     }
 
     return (
-        <div className="flexbox-col flex-grow-1 h-100 w-100 dc__content-center">
+        <div className="flexbox-col flex-grow-1 dc__content-center">
             <AuthorizationProvider value={authorizationProviderValue}>
                 <Switch>
                     <Route path={`${path}/${Routes.USER_PERMISSIONS}`}>
