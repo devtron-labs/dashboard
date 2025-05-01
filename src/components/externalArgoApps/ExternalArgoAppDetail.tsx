@@ -68,14 +68,11 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
 
     const _init = () => {
         if (!isAPICallInProgress) {
-            _getAndSetAppDetail()
+            _getAndSetAppDetail(true)
         }
-        initTimer = setTimeout(() => {
-            _init()
-        }, window._env_.EA_APP_DETAILS_POLLING_INTERVAL || 30000)
     }
 
-    const _getAndSetAppDetail = async () => {
+    const _getAndSetAppDetail = async (shouldTriggerPolling: boolean = false) => {
         isAPICallInProgress = true
         setIsReloadResourceTreeInProgress(true)
 
@@ -101,6 +98,12 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
                 setIsLoading(false)
                 isAPICallInProgress = false
                 setIsReloadResourceTreeInProgress(false)
+
+                if (shouldTriggerPolling) {
+                    initTimer = setTimeout(() => {
+                        _init()
+                    }, window._env_.EA_APP_DETAILS_POLLING_INTERVAL || 30000)
+                }
             })
     }
 

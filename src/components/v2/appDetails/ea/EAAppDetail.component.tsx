@@ -80,11 +80,8 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
 
     const _init = () => {
         if (!isAPICallInProgress) {
-            _getAndSetAppDetail()
+            _getAndSetAppDetail(true)
         }
-        initTimer = setTimeout(() => {
-            _init()
-        }, window._env_.EA_APP_DETAILS_POLLING_INTERVAL || 30000)
     }
 
     const _convertToGenericAppDetailModel = (
@@ -123,7 +120,7 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
         return genericAppDetail
     }
 
-    const _getAndSetAppDetail = () => {
+    const _getAndSetAppDetail = (shouldTriggerPolling: boolean = false) => {
         isAPICallInProgress = true
         setIsReloadResourceTreeInProgress(true)
 
@@ -176,6 +173,12 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
             })
             .finally(() => {
                 setIsReloadResourceTreeInProgress(false)
+
+                if (shouldTriggerPolling) {
+                    initTimer = setTimeout(() => {
+                        _init()
+                    }, window._env_.EA_APP_DETAILS_POLLING_INTERVAL || 30000)
+                }
             })
     }
 

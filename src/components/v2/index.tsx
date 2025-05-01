@@ -116,10 +116,7 @@ const RouterComponent = ({ envType }) => {
     }, [location.search])
 
     const _init = (fetchExternalLinks?: boolean) => {
-        abortPreviousRequests(() => _getAndSetAppDetail(fetchExternalLinks), abortControllerRef)
-        initTimer = setTimeout(() => {
-            _init()
-        }, window._env_.HELM_APP_DETAILS_POLLING_INTERVAL || 30000)
+        abortPreviousRequests(() => _getAndSetAppDetail(fetchExternalLinks, true), abortControllerRef)
     }
 
     const handleAppDetailsCallError = (e: any) => {
@@ -143,30 +140,50 @@ const RouterComponent = ({ envType }) => {
         setErrorResponseCode(undefined)
     }
 
-    const _getAndSetAppDetail = async (fetchExternalLinks: boolean) => {
-        if (envType === EnvType.CHART) {
-            // Get App Details
-            getInstalledChartDetail(+params.appId, +params.envId, abortControllerRef)
-                .then((response) => {
-                    handlePublishAppDetails(response)
-                    isVirtualRef.current = response.result?.isVirtualEnvironment
-                    setHelmAppPackageName(response.result?.helmPackageName)
-                    if (fetchExternalLinks) {
-                        getExternalLinksAndTools(response.result?.clusterId)
-                    }
-                })
-                .catch(handleAppDetailsCallError)
-                .finally(() => {
-                    setLoadingDetails(false)
-                })
+    const handleInitiatePolling = () => {
+        initTimer = setTimeout(() => {
+            _init()
+        }, window._env_.HELM_APP_DETAILS_POLLING_INTERVAL || 30000)
+    }
 
-            // Get App Resource Tree
-            getInstalledChartResourceTree(+params.appId, +params.envId, abortControllerRef)
-                .then(handlePublishAppDetails)
-                .catch(handleAppDetailsCallError)
-                .finally(() => {
-                    setLoadingResourceTree(false)
-                })
+    const handleFetchAppDetails = async (fetchExternalLinks: boolean) => {
+        try {
+            const response = await getInstalledChartDetail(+params.appId, +params.envId, abortControllerRef)
+            handlePublishAppDetails(response)
+            isVirtualRef.current = response.result?.isVirtualEnvironment
+            setHelmAppPackageName(response.result?.helmPackageName)
+            if (fetchExternalLinks) {
+                getExternalLinksAndTools(response.result?.clusterId)
+            }
+        } catch (error) {
+            handleAppDetailsCallError(error)
+        } finally {
+            setLoadingDetails(false)
+        }
+    }
+
+    const handleFetchResourceTree = async () => {
+        try {
+            const response = await getInstalledChartResourceTree(+params.appId, +params.envId, abortControllerRef)
+            handlePublishAppDetails(response)
+        } catch (error) {
+            handleAppDetailsCallError(error)
+        } finally {
+            setLoadingResourceTree(false)
+        }
+    }
+
+    const _getAndSetAppDetail = async (fetchExternalLinks: boolean, shouldTriggerPolling: boolean = false) => {
+        if (envType === EnvType.CHART) {
+            // Intentionally not setting await since it was not awaited earlier when in thens as well
+            Promise.allSettled([
+                handleFetchAppDetails(fetchExternalLinks),
+                handleFetchResourceTree(),
+            ]).finally(() => {
+                if (shouldTriggerPolling) {
+                    handleInitiatePolling()
+                }
+            })
         } else {
             try {
                 // Revisit this flow
@@ -176,6 +193,10 @@ const RouterComponent = ({ envType }) => {
             } catch (e: any) {
                 if (e.code) {
                     setErrorResponseCode(e.code)
+                }
+            } finally {
+                if (shouldTriggerPolling) {
+                    handleInitiatePolling()
                 }
             }
         }
