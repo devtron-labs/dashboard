@@ -1740,6 +1740,7 @@ const CDMaterial = ({
             isDeployButtonDisabled() ||
             (!isExceptionUser &&
                 material.length > 0 &&
+                !canApproverDeploy &&
                 getIsImageApprover(state.selectedMaterial?.userApprovalMetadata))
         const hideConfigDiffSelector = isApprovalConfigured && disableDeployButton
 
