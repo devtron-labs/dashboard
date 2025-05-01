@@ -541,7 +541,7 @@ export const getTemplateOptions = (appId: number, envId: number): Promise<Respon
     get(getUrlWithSearchParams(Routes.DEPLOYMENT_OPTIONS, { appId, envId }))
 
 export const getInternetConnectivity = (controller: AbortController): Promise<any> => {
-    return fetch(`${window?._env_?.CENTRAL_API_ENDPOINT || 'https://api.devtron.ai'}/health`, {
+    return fetch(`${window?._env_?.CENTRAL_API_ENDPOINT ?? 'https://api.devtron.ai'}/health`, {
         signal: controller.signal,
     }).then((res) => res.json())
 }

@@ -413,7 +413,8 @@ export function useOnline() {
                 await getInternetConnectivity(controller)
                 setOnline(true)
             } catch (error) {
-                setOnline(false)
+                   showError(error)
+                setOnline(false);
             } finally {
                 clearTimeout(timeoutId)
             }
