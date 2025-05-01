@@ -20,25 +20,22 @@ RUN echo "SENTRY_RELEASE_VERSION=dashboard@$(git rev-parse --short HEAD)\n" >> .
 
 RUN yarn build
 
-FROM fholzer/nginx-brotli:v1.26.2
+FROM nginx:stable-bullseye
 
-RUN adduser -D -s /bin/sh devtron
+RUN apt update && \
+    apt install -y nginx-plus-module-brotli
+    
+RUN useradd -ms /bin/bash devtron
 COPY --from=builder /app/dist/ /usr/share/nginx/html
 COPY ./nginx.conf /etc/nginx/nginx.conf
 COPY ./nginx-default.conf /etc/nginx/conf.d/default.conf
-
 WORKDIR /usr/share/nginx/html
-
 COPY --from=builder  /app/./env.sh .
 COPY --from=builder  /app/.env .
 COPY --from=builder  /app/health.html .
 
 RUN chown -R devtron:devtron /usr/share/nginx/html
-
+# Make our shell script executable
 RUN chmod +x env.sh
 USER devtron
-
-# as fholzer/nginx-brotli 's entrypoint is by default nginx
-# ENTRYPOINT ["/bin/sh", "-c"]
-
-# CMD ["./env.sh && nginx -g 'daemon off;'"]
+CMD ["/bin/bash", "-c", "/usr/share/nginx/html/env.sh && nginx -g \"daemon off;\""]
