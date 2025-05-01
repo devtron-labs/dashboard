@@ -24,6 +24,7 @@ import {
     DeploymentAppTypes,
     TabGroup,
     getIsRequestAborted,
+    abortPreviousRequests,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Info } from '../../../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
@@ -126,11 +127,16 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
     const _getAndSetAppDetail = async () => {
         try {
             if (appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS && isHelmApp) {
-                const response = await getInstalledChartDetailWithResourceTree(
-                    +appDetails.installedAppId,
-                    +appDetails.environmentId,
+                const response = await abortPreviousRequests(
+                    () =>
+                        getInstalledChartDetailWithResourceTree(
+                            +appDetails.installedAppId,
+                            +appDetails.environmentId,
+                            abortControllerRef,
+                        ),
                     abortControllerRef,
                 )
+
                 IndexStore.publishAppDetails(response.result, AppType.DEVTRON_HELM_CHART)
             }
         } catch (e) {
@@ -398,7 +404,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                                         </div>
                                     </Checkbox>
                                 </div>
-                                <div  className="h-192 dc__overflow-auto">
+                                <div className="h-192 dc__overflow-auto">
                                     {Array.from(_workloadsList.values()).map((item) => (
                                         <div key={`${item.kind}/${item.name}`} className="check-single-workload">
                                             <Checkbox

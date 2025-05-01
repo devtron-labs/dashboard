@@ -18,6 +18,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import {
+    abortPreviousRequests,
     AppType,
     DeploymentAppTypes,
     ERROR_STATUS_CODE,
@@ -73,7 +74,11 @@ const ExternalFluxAppDetails = () => {
         new Promise<void>((resolve) => {
             setIsReloadResourceTreeInProgress(true)
 
-            getExternalFluxCDAppDetails({ clusterId, namespace, appName, isKustomization, abortControllerRef })
+            abortPreviousRequests(
+                () =>
+                    getExternalFluxCDAppDetails({ clusterId, namespace, appName, isKustomization, abortControllerRef }),
+                abortControllerRef,
+            )
                 .then(handleUpdateIndexStoreWithDetails)
                 .catch((error) => {
                     if (!getIsRequestAborted(error)) {

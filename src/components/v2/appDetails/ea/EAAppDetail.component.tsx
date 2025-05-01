@@ -23,6 +23,7 @@ import {
     ServerErrors,
     DeploymentAppTypes,
     getIsRequestAborted,
+    abortPreviousRequests,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { sortOptionsByValue } from '../../../common'
@@ -125,7 +126,8 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
     const _getAndSetAppDetail = () => {
         isAPICallInProgress = true
         setIsReloadResourceTreeInProgress(true)
-        getAppDetail(appId, abortControllerRef)
+
+        abortPreviousRequests(() => getAppDetail(appId, abortControllerRef), abortControllerRef)
             .then((appDetailResponse: HelmAppDetailResponse) => {
                 IndexStore.publishAppDetails(
                     _convertToGenericAppDetailModel(appDetailResponse.result),

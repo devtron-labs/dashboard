@@ -23,6 +23,7 @@ import {
     ServerErrors,
     DeploymentAppTypes,
     getIsRequestAborted,
+    abortPreviousRequests,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getArgoAppDetail } from '../external-apps/ExternalAppService'
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil'
@@ -77,7 +78,11 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
     const _getAndSetAppDetail = async () => {
         isAPICallInProgress = true
         setIsReloadResourceTreeInProgress(true)
-        getArgoAppDetail({ appName, clusterId, namespace, abortControllerRef })
+
+        abortPreviousRequests(
+            () => getArgoAppDetail({ appName, clusterId, namespace, abortControllerRef }),
+            abortControllerRef,
+        )
             .then((appDetailResponse) => {
                 const genericAppDetail: AppDetails = {
                     ...appDetailResponse.result,

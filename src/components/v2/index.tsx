@@ -18,6 +18,7 @@ import { Suspense, useEffect, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 
 import {
+    abortPreviousRequests,
     DetailsProgressing,
     ErrorScreenManager,
     getIsRequestAborted,
@@ -108,14 +109,14 @@ const RouterComponent = ({ envType }) => {
     useEffect(() => {
         if (checkIfToRefetchData(location)) {
             setTimeout(() => {
-                _getAndSetAppDetail(true)
+                abortPreviousRequests(() => _getAndSetAppDetail(true), abortControllerRef)
                 deleteRefetchDataFromUrl(history, location)
             }, 5000)
         }
     }, [location.search])
 
     const _init = (fetchExternalLinks?: boolean) => {
-        _getAndSetAppDetail(fetchExternalLinks)
+        abortPreviousRequests(() => _getAndSetAppDetail(fetchExternalLinks), abortControllerRef)
         initTimer = setTimeout(() => {
             _init()
         }, window._env_.HELM_APP_DETAILS_POLLING_INTERVAL || 30000)
@@ -183,7 +184,10 @@ const RouterComponent = ({ envType }) => {
     const handleReloadResourceTree = () => {
         if (envType === EnvType.CHART) {
             setIsReloadResourceTreeInProgress(true)
-            getInstalledChartResourceTree(+params.appId, +params.envId, abortControllerRef)
+            abortPreviousRequests(
+                () => getInstalledChartResourceTree(+params.appId, +params.envId, abortControllerRef),
+                abortControllerRef,
+            )
                 .then(handlePublishAppDetails)
                 .catch((err) => {
                     if (!getIsRequestAborted(err)) {
