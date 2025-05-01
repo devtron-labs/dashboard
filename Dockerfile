@@ -41,4 +41,4 @@ USER devtron
 # as fholzer/nginx-brotli 's entrypoint is by default nginx
 ENTRYPOINT ["/bin/sh", "-c"]
 
-CMD ["/usr/share/nginx/html/env.sh && nginx -g \"daemon off;\""]
+CMD ["./env.sh && nginx -g 'daemon off;'"]
