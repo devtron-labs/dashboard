@@ -39,6 +39,6 @@ RUN chmod +x env.sh
 USER devtron
 
 # as fholzer/nginx-brotli 's entrypoint is by default nginx
-ENTRYPOINT ["/bin/sh", "-c"]
+# ENTRYPOINT ["/bin/sh", "-c"]
 
 # CMD ["./env.sh && nginx -g 'daemon off;'"]
