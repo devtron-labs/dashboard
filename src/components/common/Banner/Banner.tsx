@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 import {
@@ -51,35 +51,32 @@ export const Banner = () => {
     const didMountRef = useRef(false)
     const isOnline = useOnline()
     const { isAirgapped, currentServerInfo } = useMainContext()
+    const { bgUpdated, doesNeedRefresh, handleAppUpdate } = useVersionUpdateReload()
+    const licenseConfig = useEnterpriseLicenseConfig()
 
     const [showOnlineBanner, setShowOnlineBanner] = useState(false)
     const [showAnnouncementBanner, setShowAnnouncementBanner] = useState(
         ANNOUNCEMENT_CONFIG.message ? shouldShowAnnouncementBanner() : false,
     )
-    const { bgUpdated, doesNeedRefresh, handleAppUpdate } = useVersionUpdateReload()
-    const licenseConfig = useEnterpriseLicenseConfig()
+    const [activeBannerVariant, setActiveBannerVariant] = useState<BannerVariant | null>(null)
+    const [isVisible, setIsVisible] = useState(true)
+    const prevBannerRef = useRef<BannerVariant | null>(null)
 
     useEffect(() => {
         let timer: NodeJS.Timeout
         if (didMountRef.current) {
             if (isOnline) {
                 setShowOnlineBanner(true)
-                // Auto-hide online banner after timeout
                 timer = setTimeout(() => setShowOnlineBanner(false), ONLINE_BANNER_TIMEOUT)
+                setIsVisible(false)
             }
         } else {
             didMountRef.current = true
-            setShowOnlineBanner(false)
         }
-        return () => clearTimeout(timer)
+        return () => {
+            if (timer) clearTimeout(timer)
+        }
     }, [isOnline])
-
-    const onClickCloseAnnouncementBanner = () => {
-        setShowAnnouncementBanner(false)
-        if (typeof Storage !== 'undefined') {
-            setActionWithExpiry('expiryDateOfHidingAnnouncementBanner', 1)
-        }
-    }
 
     const getIncompatibleMicroserviceName = (): 'frontend' | 'backend' | null => {
         const { serverInfo } = currentServerInfo
@@ -90,6 +87,7 @@ export const Banner = () => {
         return null
     }
 
+    const incompatibleService = useMemo(() => getIncompatibleMicroserviceName(), [currentServerInfo])
     const {
         message: enterpriseLicenseBarMessage = '',
         type: licenseType = InfoBlockVariant.HELP,
@@ -97,72 +95,87 @@ export const Banner = () => {
         handleOpenLicenseDialog,
     } = licenseConfig ?? {}
 
-    const getCurrentBanner = (): BannerVariant => {
-        if (!isOnline) return BannerVariant.INTERNET_CONNECTIVITY
-        if (showOnlineBanner) return BannerVariant.INTERNET_CONNECTIVITY
+    const getCurrentBanner = (): BannerVariant | null => {
+        if ((!isOnline || showOnlineBanner) && !isAirgapped) return BannerVariant.INTERNET_CONNECTIVITY
         if (doesNeedRefresh || bgUpdated) return BannerVariant.VERSION_UPDATE
-        if (getIncompatibleMicroserviceName()) return BannerVariant.INCOMPATIBLE_MICROSERVICES
+        if (incompatibleService) return BannerVariant.INCOMPATIBLE_MICROSERVICES
         if (showAnnouncementBanner) return BannerVariant.ANNOUNCEMENT
         if (licenseConfig?.message) return BannerVariant.LICENSE
         return null
     }
 
-    const bannerVariant: BannerVariant = getCurrentBanner()
+    const bannerVariant = getCurrentBanner()
 
-    if (!bannerVariant) return null
+    useEffect(() => {
+        if (bannerVariant !== prevBannerRef.current) {
+            setIsVisible(true)
+            setActiveBannerVariant(bannerVariant)
+            prevBannerRef.current = bannerVariant
+        }
+    }, [bannerVariant])
+
+    if (!activeBannerVariant) return null
 
     const config = getBannerConfig({
-        bannerVariant,
+        bannerVariant: activeBannerVariant,
         isOnline,
         licenseType,
         enterpriseLicenseBarMessage,
         hideInternetConnectivityBar: isAirgapped,
-        microservice: getIncompatibleMicroserviceName(),
+        microservice: incompatibleService,
     })
 
     if (!config) return null
 
-    const actionButtons = getButtonConfig(bannerVariant, handleOpenLicenseDialog, handleAppUpdate)
-    const baseClassName = `w-100 ${config.rootClassName || ''} ${getBannerTextColor(bannerVariant)} ${config.isDismissible ? 'dc__grid banner-row' : 'flex'}`
-    const isOffline = !(isOnline && bannerVariant === BannerVariant.INTERNET_CONNECTIVITY)
+    const actionButtons = getButtonConfig(activeBannerVariant, handleOpenLicenseDialog, handleAppUpdate)
+    const isOffline = !(isOnline && activeBannerVariant === BannerVariant.INTERNET_CONNECTIVITY)
+    const baseClassName = `w-100 ${config.rootClassName || ''} ${getBannerTextColor(activeBannerVariant)} ${config.isDismissible ? 'dc__grid banner-row' : 'flex'} dc__position-abs`
 
     const shouldShowActionButton = () => {
-        if (bannerVariant === BannerVariant.INTERNET_CONNECTIVITY) {
-            return isOffline
-        }
-        if (bannerVariant === BannerVariant.ANNOUNCEMENT) {
-            return !!ANNOUNCEMENT_CONFIG.buttonLink
-        }
+        if (activeBannerVariant === BannerVariant.INTERNET_CONNECTIVITY) return isOffline
+        if (activeBannerVariant === BannerVariant.ANNOUNCEMENT) return !!ANNOUNCEMENT_CONFIG.buttonLink
         if (
-            bannerVariant === BannerVariant.VERSION_UPDATE ||
-            bannerVariant === BannerVariant.INCOMPATIBLE_MICROSERVICES
-        ) {
+            activeBannerVariant === BannerVariant.VERSION_UPDATE ||
+            activeBannerVariant === BannerVariant.INCOMPATIBLE_MICROSERVICES
+        )
             return true
-        }
-
         return false
     }
 
+    const onClickCloseAnnouncementBanner = () => {
+        if (typeof Storage !== 'undefined' && activeBannerVariant === BannerVariant.ANNOUNCEMENT) {
+            setActionWithExpiry('expiryDateOfHidingAnnouncementBanner', 1)
+        }
+        setIsVisible(false)
+    }
+
+    const handleAnimationComplete = () => {
+        if (!isVisible && activeBannerVariant === BannerVariant.ANNOUNCEMENT) {
+            setShowAnnouncementBanner(false)
+            setActiveBannerVariant(null)
+        }
+    }
+
     return (
-        <div className="banner-container">
-            <AnimatePresence>
-                {bannerVariant && (
+        <div className="banner-container" style={{ position: 'relative', overflow: 'hidden' }}>
+            <AnimatePresence mode="wait">
+                {isVisible && activeBannerVariant && (
                     <motion.div
-                        key={bannerVariant}
+                        key={`${activeBannerVariant}-${config?.text}`}
                         initial={{ y: -28 }}
-                        animate={{ y: 0 }}
-                        exit={{ y: 28 }}
+                        animate={{ y: isVisible ? 0 : -28 }}
+                        exit={{ y: -28 }}
                         transition={{
-                            duration: 0.6,
-                            ease: 'easeOut',
+                            duration: 0.3,
+                            ease: 'easeIn',
                         }}
                         className={baseClassName}
-                        style={{ position: 'absolute' }}
+                        onAnimationComplete={handleAnimationComplete}
                     >
                         {config.isDismissible && <div className="icon-dim-28" />}
                         <div className="py-4 flex dc__gap-12 dc__align-items-center">
                             <div className="flex dc__gap-8">
-                                {isOffline && getBannerIcon(bannerVariant, ANNOUNCEMENT_CONFIG.type, iconName)}
+                                {isOffline && getBannerIcon(activeBannerVariant, ANNOUNCEMENT_CONFIG.type, iconName)}
                                 <InteractiveCellText
                                     text={config.text}
                                     rootClassName="fw-5"
@@ -170,7 +183,6 @@ export const Banner = () => {
                                     interactive
                                 />
                             </div>
-
                             {shouldShowActionButton() && (
                                 <div className="dc__no-shrink">
                                     <Button {...actionButtons} />
