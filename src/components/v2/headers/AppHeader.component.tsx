@@ -117,7 +117,6 @@ const AppHeaderComponent = () => {
                     },
                 ]}
                 hideTopPadding
-                alignActiveBorderWithContainer
             />
         )
     }

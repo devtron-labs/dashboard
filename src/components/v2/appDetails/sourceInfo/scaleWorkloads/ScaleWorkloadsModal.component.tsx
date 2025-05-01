@@ -228,7 +228,6 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                             'data-testid': `scale-workloads-tab-${index}`,
                         },
                     }))}
-                    alignActiveBorderWithContainer
                 />
             </div>
         )

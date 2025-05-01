@@ -238,7 +238,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
 
         return (
             <div className="pl-20 dc__border-bottom flex dc__gap-16">
-                <TabGroup tabs={tabs} alignActiveBorderWithContainer size={ComponentSizeType.medium} />
+                <TabGroup tabs={tabs} size={ComponentSizeType.medium} />
                 {nodeControls()}
             </div>
         )
@@ -395,7 +395,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
             <div>
                 <div className="dc__border-bottom dc__position-sticky dc__top-0 dc__zi-1 bg__primary">
                     <div className="en-2 bw-1 dc__top-radius-4 bg__primary dc__no-bottom-border px-20">
-                        <TabGroup tabs={tabs} alignActiveBorderWithContainer />
+                        <TabGroup tabs={tabs} />
                     </div>
                 </div>
                 <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20">

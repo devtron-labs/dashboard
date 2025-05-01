@@ -62,7 +62,6 @@ export class Security extends Component<SecurityProps> {
                     },
                 ]}
                 hideTopPadding
-                alignActiveBorderWithContainer
             />
         )
     }
