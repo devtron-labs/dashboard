@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 
 import {
     Button,
@@ -24,6 +24,7 @@ import {
     ComponentSizeType,
     Icon,
     InfoBlockVariant,
+    MotionDiv,
     setActionWithExpiry,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -162,10 +163,10 @@ export const Banner = () => {
     }
 
     return (
-        <div className="banner-container dc__position-rel dc__overflow-hidden">
-            <AnimatePresence>
-                {isVisible && activeBannerVariant && (
-                    <motion.div
+        <AnimatePresence>
+            {isVisible && activeBannerVariant && (
+                <div className="banner-container dc__position-rel dc__overflow-hidden">
+                    <MotionDiv
                         key={`${activeBannerVariant}-${config?.text}`}
                         initial={{ y: -28 }}
                         animate={{ y: isVisible ? 0 : -28 }}
@@ -206,9 +207,9 @@ export const Banner = () => {
                                 showAriaLabelInTippy={false}
                             />
                         )}
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
+                    </MotionDiv>
+                </div>
+            )}
+        </AnimatePresence>
     )
 }
