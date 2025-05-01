@@ -450,7 +450,10 @@ export default function NavigationRoutes() {
                 initialDialogType={licenseInfoDialogType}
             />
         ) : (
-            <AboutDevtronDialog handleCloseLicenseInfoDialog={handleCloseLicenseInfoDialog} />
+            <AboutDevtronDialog
+                handleCloseLicenseInfoDialog={handleCloseLicenseInfoDialog}
+                isFELibAvailable={!!LicenseInfoDialog}
+            />
         )
     }
 
