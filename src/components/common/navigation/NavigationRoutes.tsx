@@ -99,7 +99,7 @@ const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
 const ExternalArgoApps = lazy(() => import('../../externalArgoApps/ExternalArgoApp'))
 const AppDetailsPage = lazy(() => import('../../app/details/main'))
 const NewAppList = lazy(() => import('../../app/list-new/AppList'))
-const V2Details = lazy(() => import('../../v2/index'))
+const DevtronChartRouter = lazy(() => import('../../v2/index'))
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 const ResourceBrowser = lazy(() => import('../../ResourceBrowser/ResourceBrowserRouter'))
@@ -683,10 +683,9 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterT
                     )}
                     <Route
                         path={`${path}/${URLS.DEVTRON_CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`}
-                        render={(props) => <V2Details envType={EnvType.CHART} />}
+                        render={(props) => <DevtronChartRouter envType={EnvType.CHART} />}
                     />
-                    <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage isV2={false} />} />
-                    <Route path={`${path}/v2/:appId(\\d+)`} render={() => <AppDetailsPage isV2 />} />
+                    <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage />} />
 
                     <Route exact path="">
                         <RedirectToAppList />

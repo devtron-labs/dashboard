@@ -55,6 +55,7 @@ export default function CIDockerFileConfig({
     setArgs,
     buildEnvArgs,
     setBuildEnvArgs,
+    setArgsError,
     handleOnChangeConfig,
     selectedTargetPlatforms,
     setSelectedTargetPlatforms,
@@ -125,9 +126,9 @@ export default function CIDockerFileConfig({
                 ...currentCIBuildConfig,
                 buildPackConfig: {
                     ...currentCIBuildConfig.buildPackConfig,
-                    args: buildEnvArgs.reduce((agg, { k, v }) => {
-                        if (k && v) {
-                            agg[k] = v
+                    args: buildEnvArgs.reduce((agg, { key, value }) => {
+                        if (key && value) {
+                            agg[key] = value
                         }
                         return agg
                     }, {}),
@@ -434,6 +435,7 @@ export default function CIDockerFileConfig({
                         allowOverride={allowOverride}
                         args={isBuildpackType ? buildEnvArgs : args}
                         setArgs={isBuildpackType ? setBuildEnvArgs : setArgs}
+                        setArgsError={setArgsError}
                         isBuildpackType={isBuildpackType}
                         selectedTargetPlatforms={selectedTargetPlatforms}
                         setSelectedTargetPlatforms={setSelectedTargetPlatforms}

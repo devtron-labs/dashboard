@@ -23,6 +23,7 @@ import {
     CiPipeline,
     CommonNodeAttr,
     DockerConfigOverrideType,
+    KeyValueTableData,
     Material,
     SelectPickerOptionType,
     ServerError,
@@ -255,12 +256,7 @@ export interface CIContainerRegistryConfigProps extends Required<Pick<AppConfigP
     isCreateAppView?: boolean
 }
 
-export interface CIBuildArgType {
-    k: string
-    v: string
-    keyError: string
-    valueError: string
-}
+export interface CIBuildArgType extends KeyValueTableData {}
 
 export interface FrameworkOptionType extends OptionType {
     templateUrl: string
@@ -289,6 +285,7 @@ export interface CIDockerFileConfigProps {
     setArgs: React.Dispatch<React.SetStateAction<CIBuildArgType[]>>
     buildEnvArgs: CIBuildArgType[]
     setBuildEnvArgs: React.Dispatch<React.SetStateAction<CIBuildArgType[]>>
+    setArgsError: React.Dispatch<React.SetStateAction<{ args: boolean; buildEnvArgs: boolean }>>
     handleOnChangeConfig: (e) => void
     selectedTargetPlatforms: any
     setSelectedTargetPlatforms: any
@@ -340,11 +337,9 @@ export interface CIBuildpackBuildOptionsProps {
     readOnly?: boolean
 }
 
-export interface CIAdvancedConfigProps {
+export interface CIAdvancedConfigProps extends Pick<CIDockerFileConfigProps, 'args' | 'setArgs' | 'setArgsError'> {
     configOverrideView: boolean
     allowOverride: boolean
-    args: CIBuildArgType[]
-    setArgs: React.Dispatch<React.SetStateAction<CIBuildArgType[]>>
     isBuildpackType: boolean
     selectedTargetPlatforms: any
     setSelectedTargetPlatforms: any
