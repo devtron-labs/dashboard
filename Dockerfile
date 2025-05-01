@@ -1,28 +1,21 @@
 FROM node:20-alpine AS builder
 
-RUN apk add --no-cache git
-
 WORKDIR /app
-COPY package.json .
-COPY yarn.lock .
 
-RUN yarn install --frozen-lockfile --network-timeout 600000
+COPY package.json yarn.lock .
 
-COPY src/ src
-COPY nginx.conf .
-COPY tsconfig.json .
-COPY vite.config.mts .
+RUN apk add --no-cache git && \
+    yarn install --network-timeout 600000
+
 COPY . .
 
-RUN echo `git rev-parse --short=9 HEAD` > health.html
-
-RUN echo "SENTRY_RELEASE_VERSION=dashboard@$(git rev-parse --short HEAD)\n" >> .env
-
-RUN yarn build
+RUN echo `git rev-parse --short HEAD` > health.html && \
+    echo "SENTRY_RELEASE_VERSION=dashboard@$(git rev-parse --short HEAD)" >> .env && \
+    yarn build
 
 FROM fholzer/nginx-brotli:v1.26.2
 
-# Install bash and useradd
+# Install bash
 RUN apk add --no-cache bash shadow
 
 RUN useradd -m -s /bin/bash devtron
@@ -43,7 +36,7 @@ RUN chown -R devtron:devtron /usr/share/nginx/html && \
 
 USER devtron
 
-# Override the default ENTRYPOINT to allow shell scripting
+# Override the default ENTRYPOINT to allow shell scripting as fholzer/nginx-brotli has by-default entrypoint of nginx
 ENTRYPOINT ["/bin/bash", "-c"]
 
 CMD ["./env.sh && nginx -g 'daemon off;'"]
