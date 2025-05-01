@@ -395,37 +395,50 @@ export function deepEqual(configA: any, configB: any): boolean {
 
 export function useOnline() {
     const [online, setOnline] = useState(navigator.onLine)
+    const realTimeConnectivityAbortRef = useRef<AbortController | null>(null)
+    const { isAirgapped } = useMainContext()
 
     useEffect(() => {
-       const handleOnline = () => setOnline(true);
-       const handleOffline = () => setOnline(false);
+        const handleOnline = () => setOnline(true)
+        const handleOffline = () => setOnline(false)
 
-        // Check connectivity with a ping
-        const checkRealConnectivity = async() => {
+        const checkRealConnectivity = async () => {
+            // Create a new AbortController for each check
+            const controller = new AbortController()
+            realTimeConnectivityAbortRef.current = controller
+
+            const timeoutId = setTimeout(() => controller.abort(), 5000)
+
             try {
-                const response = await getInternetConnectivity()
-                // Use a small image or API endpoint from your own domain to avoid CORS issues
-                const controller = new AbortController()
-                const timeoutId = setTimeout(() => controller.abort(), 5000)
-                clearTimeout(timeoutId)
+                await getInternetConnectivity(controller)
                 setOnline(true)
             } catch (error) {
                 setOnline(false)
+            } finally {
+                clearTimeout(timeoutId)
             }
         }
 
-        // Initial check
-        checkRealConnectivity()
+        if (!isAirgapped) {
+            checkRealConnectivity()
+        }
 
-        const intervalId = setInterval(checkRealConnectivity, 30000)
+        const intervalId = setInterval(() => {
+            if (!isAirgapped) {
+                checkRealConnectivity()
+            }
+        }, 30000)
+
         window.addEventListener('online', handleOnline)
         window.addEventListener('offline', handleOffline)
+
         return () => {
             clearInterval(intervalId)
             window.removeEventListener('online', handleOnline)
             window.removeEventListener('offline', handleOffline)
+            realTimeConnectivityAbortRef.current?.abort()
         }
-    }, [])
+    }, [isAirgapped])
 
     return online
 }

@@ -146,7 +146,12 @@ export const Banner = () => {
         if (typeof Storage !== 'undefined' && activeBannerVariant === BannerVariant.ANNOUNCEMENT) {
             setActionWithExpiry('expiryDateOfHidingAnnouncementBanner', 1)
         }
-        setIsVisible(false)
+        if (licenseConfig?.message) {
+            setActiveBannerVariant(BannerVariant.LICENSE)
+            setIsVisible(true)
+        } else {
+            setIsVisible(false)
+        }
     }
 
     const handleAnimationComplete = () => {
@@ -157,8 +162,8 @@ export const Banner = () => {
     }
 
     return (
-        <div className="banner-container" style={{ position: 'relative', overflow: 'hidden' }}>
-            <AnimatePresence mode="wait">
+        <div className="banner-container dc__position-rel dc__overflow-hidden">
+            <AnimatePresence>
                 {isVisible && activeBannerVariant && (
                     <motion.div
                         key={`${activeBannerVariant}-${config?.text}`}
