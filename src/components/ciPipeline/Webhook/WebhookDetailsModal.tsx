@@ -36,6 +36,7 @@ import {
     Button,
     ButtonVariantType,
     ActionTypes,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -306,7 +307,6 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
         )
     }
 
-
     const toggleTokenSection = (): void => {
         setShowTokenSection(true)
     }
@@ -411,7 +411,6 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     }
 
     const renderSelectTokenSection = (): JSX.Element => {
-
         const handleSelectedTokenChange = (selectedToken): void => {
             setSelectedToken(selectedToken)
         }
@@ -727,12 +726,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     const renderTokenPermissionSection = (): JSX.Element | null => {
         return (
             <div className="bg__primary p-16 mb-16 br-4 bw-1 en-2">
-                <InfoColourBar
-                    message="Authentication via API token is required to allow requests from an external service."
-                    classname="info_bar mb-16"
-                    Icon={InfoIcon}
-                    iconClass="h-20"
-                />
+                <InfoBlock description="Authentication via API token is required to allow requests from an external service." />
                 <div className="fw-6 fs-13 cn-9 pb-16">Use API token with below permissions in the cURL request</div>
                 <div className="permission-row dc__border-bottom pt-8 pb-8">
                     <span>Project</span>
@@ -947,7 +941,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
             return <Reload />
         }
         return (
-            <div className='flexbox-col flex-grow-1 mh-0'>
+            <div className="flexbox-col flex-grow-1 mh-0">
                 {renderBodySection()}
                 {!isSuperAdmin && renderFooterSection()}
             </div>

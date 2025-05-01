@@ -33,6 +33,7 @@ import {
     TOAST_ACCESS_DENIED,
     MarkDown,
     Button,
+    RAISE_ISSUE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -169,7 +170,7 @@ const ModuleDetailsCard = ({
                     <>
                         You can&nbsp;
                         <a
-                            href="https://github.com/devtron-labs/devtron/issues/new/choose"
+                            href={RAISE_ISSUE}
                             className="cb-5 fw-6"
                             target="_blank"
                             rel="noreferrer noopener"
