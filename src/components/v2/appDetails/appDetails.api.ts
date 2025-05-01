@@ -46,9 +46,14 @@ export const getInstalledChartNotesDetail = (_appId: number, _envId: number) => 
     return get(`${Routes.APP_STORE_INSTALLED_APP}/notes?installed-app-id=${_appId}&env-id=${_envId}`)
 }
 
-export const getInstalledChartDetailWithResourceTree = (_appId: number, _envId: number) => {
-    return get(`${Routes.APP_STORE_INSTALLED_APP}/resource/hibernate?installed-app-id=${_appId}&env-id=${_envId}`)
-}
+export const getInstalledChartDetailWithResourceTree = (
+    _appId: number,
+    _envId: number,
+    abortControllerRef?: APIOptions['abortControllerRef'],
+) =>
+    get(`${Routes.APP_STORE_INSTALLED_APP}/resource/hibernate?installed-app-id=${_appId}&env-id=${_envId}`, {
+        abortControllerRef,
+    })
 
 export const getInstalledAppDetail = (_appId: number, _envId: number) => {
     return get(`app/detail?app-id=${_appId}&env-id=${_envId}`)

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -23,6 +23,7 @@ import {
     Checkbox,
     DeploymentAppTypes,
     TabGroup,
+    getIsRequestAborted,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Info } from '../../../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
@@ -66,8 +67,14 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
     const isHelmApp =
         appDetails.appType === AppType.DEVTRON_HELM_CHART || appDetails.appType === AppType.EXTERNAL_HELM_CHART
 
+    const abortControllerRef = useRef<AbortController>(new AbortController())
+
     useEffect(() => {
         _getAndSetAppDetail()
+
+        return () => {
+            abortControllerRef.current.abort()
+        }
     }, [])
 
     useEffect(() => {
@@ -122,11 +129,14 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                 const response = await getInstalledChartDetailWithResourceTree(
                     +appDetails.installedAppId,
                     +appDetails.environmentId,
+                    abortControllerRef,
                 )
                 IndexStore.publishAppDetails(response.result, AppType.DEVTRON_HELM_CHART)
             }
         } catch (e) {
-            showError(e)
+            if (!getIsRequestAborted(e)) {
+                showError(e)
+            }
         } finally {
             setfetchingDetails(false)
         }
