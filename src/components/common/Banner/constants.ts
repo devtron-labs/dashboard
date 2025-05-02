@@ -20,11 +20,12 @@ import { AnnouncementConfigTypes } from './types'
 import { getValidAnnouncementType } from './utils'
 
 export enum BannerVariant {
-    INTERNET_CONNECTIVITY = 'INTERNET_CONNECTIVITY',
     VERSION_UPDATE = 'VERSION_UPDATE',
     ANNOUNCEMENT = 'ANNOUNCEMENT',
     LICENSE = 'LICENSE',
     INCOMPATIBLE_MICROSERVICES = 'INCOMPATIBLE_MICROSERVICES',
+    OFFLINE = 'OFFLINE',
+    ONLINE = 'ONLINE',
 }
 
 export const ANNOUNCEMENT_CONFIG: AnnouncementConfigTypes = {

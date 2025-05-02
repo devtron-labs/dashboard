@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 
-import { useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import { noop, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getInternetConnectivity } from '@Services/service'
 
 import { INTERNET_CONNECTIVITY_INTERVAL } from '../constants'
 
-export const useOnline = () => {
+export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
     const [online, setOnline] = useState(navigator.onLine)
     const abortControllerRef = useRef<AbortController>()
     const timeoutRef = useRef<NodeJS.Timeout>()
@@ -23,8 +23,12 @@ export const useOnline = () => {
         try {
             await getInternetConnectivity(abortControllerRef.current)
             setOnline(true)
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (_) {
+            // TODO: Del this and uncomment code below
+            onOnline()
+            // if (!online) {
+            //     onOnline()
+            // }
+        } catch {
             setOnline(false)
         } finally {
             if (!isAirgapped) {
@@ -50,6 +54,7 @@ export const useOnline = () => {
         return () => {
             clearTimeout(timeoutRef.current)
             window.removeEventListener('offline', handleOffline)
+            window.removeEventListener('online', handleOnline)
             abortControllerRef.current?.abort()
         }
     }, [isAirgapped])
