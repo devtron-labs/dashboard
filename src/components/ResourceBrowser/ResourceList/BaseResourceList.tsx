@@ -192,7 +192,7 @@ const BaseResourceListContent = ({
 
     const gvkString = useMemo(
         () =>
-            Object.values(selectedResource?.gvk || {})
+            Object.values(selectedResource?.gvk ?? {})
                 .filter((value) => !!value)
                 .join('/'),
         [selectedResource],

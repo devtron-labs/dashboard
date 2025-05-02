@@ -81,6 +81,7 @@ export const EventsTable = ({
                         const isNormalEventType = type === 'Normal'
                         return (
                             <div
+                                key={`${reason}-${message}`}
                                 className={`px-16 py-12 fs-14 fw-4 lh-1-5 dc__grid dc__gap-16 event-row ${ExplainWithAIButton ? 'ai-widget' : ''} ${index % 2 === 0 && 'alternate-row'}`}
                             >
                                 <Icon
